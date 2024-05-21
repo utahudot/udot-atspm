@@ -113,10 +113,13 @@ namespace ATSPM.Application.Business.LeftTurnGapReport
         public int GetNumberOfOpposingLanes(Location Location, int opposingPhase)
         {
             List<MovementTypes> thruMovements = new List<MovementTypes>() { MovementTypes.T, MovementTypes.TR, MovementTypes.TL };
-            return Location
+            var detectors = Location
                 .Approaches
                 .SelectMany(a => a.Detectors)
-                .Where(d => d.DetectionTypes.First().Id == DetectionTypes.LLC && thruMovements.Contains(d.MovementType))
+                .Where(d => d.DetectionTypes.Select(dt => dt.Id).Contains(DetectionTypes.LLC) && thruMovements.Contains(d.MovementType)).ToList();
+            if (detectors.Count == 0)
+                return 0;
+            return detectors
                 .Count(d => d.Approach.ProtectedPhaseNumber == opposingPhase);
         }
 

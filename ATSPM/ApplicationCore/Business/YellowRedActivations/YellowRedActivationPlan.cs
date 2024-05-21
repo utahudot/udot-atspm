@@ -32,6 +32,7 @@ namespace ATSPM.Application.Business.YellowRedActivations
             RLMCycleCollection = cycles.Where(c => c.StartTime >= startTime && c.StartTime < endTime).ToList();
             //GetRedCycle(start, end, cycleEvents);
             CycleCount = RLMCycleCollection.Count;
+            TotalVolume = cycles == null ? 0 : cycles.SelectMany(c => c.DetectorActivations).Count();
         }
 
         public YellowRedActivationPlan(

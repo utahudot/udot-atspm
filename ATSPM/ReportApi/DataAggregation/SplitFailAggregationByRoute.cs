@@ -13,7 +13,7 @@ namespace MOE.Common.Business.DataAggregation
             //{
             //    options.SignalID = sig.SignalID;
             //    var locationRepository = MOE.Common.Models.Repositories.SignalsRepositoryFactory.Create();
-            //    Location signal = locationRepository.GetVersionOfSignalByDate(sig.SignalID, options.StartDate);
+            //    Location signal = locationRepository.GetVersionOfSignalByDate(sig.SignalID, options.Start);
 
             //    SpliFailAggregationBySignal signalAggregation = new SpliFailAggregationBySignal(options);
 

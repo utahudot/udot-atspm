@@ -88,6 +88,7 @@ namespace ATSPM.Application.Business.PedDelay
                     pedRecallMessage,
                     Convert.ToInt32(plan.CyclesWithPedRequests),
                     plan.UniquePedDetections,
+                    plan.PedPresses,
                     plan.AvgDelay,
                     averageCycleLength));
             }
