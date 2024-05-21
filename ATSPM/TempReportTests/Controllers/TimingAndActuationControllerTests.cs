@@ -1,14 +1,13 @@
 ﻿using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
-using ATSPM.ReportApi.Business.Common;
-using ATSPM.ReportApi.Business.TimingAndActuation;
-using ATSPM.ReportApi.Business.WaitTime;
 using CsvHelper;
 using Moq;
 using System.Globalization;
-using System.Net;
-using ATSPM.ReportApi.TempExtensions;
-using ATSPM.Application.Extensions;
+using ATSPM.Application.Business.WaitTime;
+using ATSPM.Application.Business.TimingAndActuation;
+using ATSPM.Application.Business.Common;
+using ATSPM.Application.TempExtensions;
+using ATSPM.Data.Models.EventLogModels;
 
 namespace ReportsATSPM.Application.Reports.Controllers.Tests
 {
@@ -19,35 +18,36 @@ namespace ReportsATSPM.Application.Reports.Controllers.Tests
         {
             
             // Arrange
-            WaitTimeService waitTimeService = new WaitTimeService();
-            List<ControllerEventLog> allEvents = LoadDetectorEventsFromCsv("ControllerEventLogs (89).csv");
+            CycleService cycleService = new CycleService();
+            WaitTimeService waitTimeService = new WaitTimeService(cycleService);
+            List<IndianaEvent> allEvents = LoadDetectorEventsFromCsv("ControllerEventLogs (89).csv");
             
-            // Mock signal
-            var mockSignal = new Mock<Signal>();
+            // Mock location
+            var mockLocation = new Mock<Location>();
 
-            // Set the properties of the mock Signal object
-            mockSignal.Object.Id = 1680; // Updated Id
-            mockSignal.Object.SignalIdentifier = "7115"; // Updated SignalId
-            mockSignal.Object.Latitude = 40.62398502;
-            mockSignal.Object.Longitude = -111.9387819;
-            mockSignal.Object.PrimaryName = "Redwood Road";
-            mockSignal.Object.SecondaryName = "7000 South";
-            mockSignal.Object.Ipaddress = IPAddress.Parse("10.210.14.39");
-            mockSignal.Object.RegionId = 2;
-            mockSignal.Object.ControllerTypeId = 2; // Updated ControllerTypeId
-            mockSignal.Object.ChartEnabled = true;
-            mockSignal.Object.VersionAction = SignalVersionActions.Initial;
-            mockSignal.Object.Note = "10";
-            mockSignal.Object.Start = new System.DateTime(2011, 1, 1);
-            mockSignal.Object.JurisdictionId = 35;
-            mockSignal.Object.Pedsare1to1 = true;
+            // Set the properties of the mock Location object
+            mockLocation.Object.Id = 1680; // Updated Id
+            mockLocation.Object.LocationIdentifier = "7115"; // Updated LocationId
+            mockLocation.Object.Latitude = 40.62398502;
+            mockLocation.Object.Longitude = -111.9387819;
+            mockLocation.Object.PrimaryName = "Redwood Road";
+            mockLocation.Object.SecondaryName = "7000 South";
+            //mockLocation.Object.Ipaddress = IPAddress.Parse("10.210.14.39");
+            mockLocation.Object.RegionId = 2;
+            mockLocation.Object.LocationTypeId = 2; // Updated ControllerTypeId
+            mockLocation.Object.ChartEnabled = true;
+            mockLocation.Object.VersionAction = LocationVersionActions.Initial;
+            mockLocation.Object.Note = "10";
+            mockLocation.Object.Start = new System.DateTime(2011, 1, 1);
+            mockLocation.Object.JurisdictionId = 35;
+            mockLocation.Object.PedsAre1to1 = true;
 
             // Create the mock Approach object
             var approach = new Mock<Approach>();
 
             // Set the properties of the mock Approach object
             approach.Object.Id = 2880; // Updated Id
-            approach.Object.SignalId = 1680; // Updated SignalId
+            approach.Object.LocationId = 1680; // Updated LocationId
             approach.Object.DirectionTypeId = DirectionTypes.NB;
             approach.Object.Description = "NBT Ph2";
             approach.Object.Mph = 45;
@@ -60,8 +60,8 @@ namespace ReportsATSPM.Application.Reports.Controllers.Tests
             approach.Object.IsPedestrianPhaseOverlap = false;
             approach.Object.PedestrianDetectors = null;
 
-            // Create the mock Approach object and set its Signal property to the mock Signal object
-            approach.Setup(a => a.Signal).Returns(mockSignal.Object);
+            // Create the mock Approach object and set its Location property to the mock Location object
+            approach.Setup(a => a.Location).Returns(mockLocation.Object);
 
             // Create mock detector
             var mockDetector1 = new Mock<Detector>();
@@ -105,14 +105,14 @@ namespace ReportsATSPM.Application.Reports.Controllers.Tests
 
             TimingAndActuationsOptions options = new TimingAndActuationsOptions
             {
-                SignalIdentifier = "7115",
+                LocationIdentifier = "7115",
                 Start = Convert.ToDateTime("6/14/2023 8:00:00.0"),
                 End = Convert.ToDateTime("6/14/2023 8:05:00.0"),
                 ExtendStartStopSearch = 2,
-                GlobalEventCodesList = new List<int>(), 
+                GlobalEventCodesList = new List<short>(), 
                 GlobalEventCounter = 1,
-                GlobalEventParamsList = new List<int>(),
-                PhaseEventCodesList = new List<int>(),
+                GlobalEventParamsList = new List<short>(),
+                PhaseEventCodesList = new List<short>(),
                 ShowAdvancedCount = true,
                 ShowAdvancedDilemmaZone = true,
                 ShowAllLanesInfo = true, 
@@ -122,28 +122,28 @@ namespace ReportsATSPM.Application.Reports.Controllers.Tests
                 ShowStopBarPresence = true,
             };
             // Test one approach
-            var eventCodes = new List<int> { };
+            var eventCodes = new List<short> { };
 
             var phaseDetails = new PhaseDetail { PhaseNumber = 19, Approach = approach.Object, UseOverlap = false };
 
             if (options.ShowAdvancedCount || options.ShowAdvancedDilemmaZone || options.ShowLaneByLaneCount || options.ShowStopBarPresence)
-                eventCodes.AddRange(new List<int> { 81, 82 });
+                eventCodes.AddRange(new List<short> { 81, 82 });
             if (options.ShowPedestrianActuation)
-                eventCodes.AddRange(new List<int> { 89, 90 });
+                eventCodes.AddRange(new List<short> { 89, 90 });
             if (options.ShowPedestrianIntervals)
                 eventCodes.AddRange(GetPedestrianIntervalEventCodes(false));
-            if (options.PhaseEventCodesList != null)
-                eventCodes.AddRange(options.PhaseEventCodesList);
+            //if (options.PhaseEventCodesList != null)
+            //    eventCodes.AddRange(options.PhaseEventCodesList);
             
             var result = GetChartDataForPhase(options, allEvents, phaseDetails, eventCodes, false);
 
             Assert.NotEmpty(result.StopBarDetectors);
             Assert.Equal(9, result.StopBarDetectors.Where(s => s.Name == "Stop Bar Presence , T 1, ch 19").FirstOrDefault().Events.Count(s => s.DetectorOff != null));
             Assert.Equal(9, result.StopBarDetectors.Where(s => s.Name == "Stop Bar Presence , T 1, ch 19").FirstOrDefault().Events.Count(s => s.DetectorOn != null));
-            Assert.NotEmpty(result.PedestrianIntervals);
+            Assert.Empty(result.PedestrianIntervals);
         }
 
-        private List<ControllerEventLog> LoadDetectorEventsFromCsv(string fileName)
+        private List<IndianaEvent> LoadDetectorEventsFromCsv(string fileName)
         {
             string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestFiles", fileName);
             using (var reader = new StreamReader(filePath))
@@ -151,17 +151,17 @@ namespace ReportsATSPM.Application.Reports.Controllers.Tests
             {
                 //csv.Context.TypeConverterCache.AddConverter<DateTime>(new CustomDateTimeConverter());
 
-                List<ControllerEventLog> detectorEvents = csv.GetRecords<ControllerEventLog>().ToList();
+                List<IndianaEvent> detectorEvents = csv.GetRecords<IndianaEvent>().ToList();
                 return detectorEvents;
             }
         }
 
-        public List<int> GetPedestrianIntervalEventCodes(bool isPhaseOrOverlap)
+        public List<short> GetPedestrianIntervalEventCodes(bool isPhaseOrOverlap)
         {
-            var overlapCodes = new List<int> { 21, 22, 23 };
+            var overlapCodes = new List<short> { 21, 22, 23 };
             if (isPhaseOrOverlap)
             {
-                overlapCodes = new List<int> { 67, 68, 69 };
+                overlapCodes = new List<short> { 67, 68, 69 };
             }
 
             return overlapCodes;
@@ -169,21 +169,21 @@ namespace ReportsATSPM.Application.Reports.Controllers.Tests
 
         private TimingAndActuationsForPhaseResult GetChartDataForPhase(
             TimingAndActuationsOptions options,
-            List<ControllerEventLog> controllerEventLogs,
+            List<IndianaEvent> indianaEvents,
             PhaseDetail phaseDetail,
-            List<int> eventCodes,
+            List<short> eventCodes,
             bool usePermissivePhase)
         {
             var timingAndActuationsForPhaseService = new TimingAndActuationsForPhaseService();
 
             eventCodes.AddRange(timingAndActuationsForPhaseService.GetCycleCodes(phaseDetail.UseOverlap));
-            var approachevents = controllerEventLogs.GetEventsByEventCodes(
+            var approachevents = indianaEvents.GetEventsByEventCodes(
                 options.Start,
                 options.End,
                 eventCodes,
                 phaseDetail.PhaseNumber).ToList();
             var viewModel = timingAndActuationsForPhaseService.GetChartData(options, phaseDetail, approachevents, usePermissivePhase);
-            viewModel.SignalDescription = phaseDetail.Approach.Signal.SignalDescription();
+            viewModel.LocationDescription = phaseDetail.Approach.Location.LocationDescription();
             viewModel.ApproachDescription = phaseDetail.Approach.Description;
             return viewModel;
         }

@@ -64,14 +64,16 @@ namespace ATSPM.Application.Business.WaitTime
             IReadOnlyList<PlanSplitMonitorData> plans
             )
         {
-            var volume = new VolumeCollection(
-           options.Start,
-            options.End,
-               events.Where(e => e.EventCode == 82 && e.EventParam == phaseDetail.PhaseNumber).ToList(),
-               options.BinSize);
             bool useDroppingAlgorithm;
             string detectionTypesForApproach;
             GetDetectionTypes(phaseDetail.Approach, out useDroppingAlgorithm, out detectionTypesForApproach);
+            var detectorsForVolume = phaseDetail.Approach.GetDetectorsForMetricType(32);
+            var channels = detectorsForVolume.Select(x => x.DetectorChannel).ToList();
+            var volume = new VolumeCollection(
+           options.Start,
+            options.End,
+               events.Where(e => e.EventCode == 82 && channels.Contains(e.EventParam)).ToList(),
+               options.BinSize);
             var cycleEvents = events.Where(x =>
                 (x.EventCode == 11 || x.EventCode == 1)
                 && x.EventParam == phaseDetail.PhaseNumber);
@@ -80,7 +82,7 @@ namespace ATSPM.Application.Business.WaitTime
             //&& x.EventParam == phaseDetail.PhaseNumber)
             //.OrderBy(x => x.Timestamp);
             var orderedPhaseRegisterList = events.Where(x =>
-                (x.EventCode == 45 ||
+                (x.EventCode == 43 ||
                 x.EventCode == 44)
                 && x.EventParam == phaseDetail.PhaseNumber);
             var waitTimeTrackerList = new List<WaitTimeTracker>();
@@ -101,7 +103,7 @@ namespace ATSPM.Application.Business.WaitTime
 
                     //Find all events between the red and green
                     //var phaseCallList = orderedPhaseRegisterList
-                    //    .Where(x => x.Timestamp >= red.Timestamp && x.Timestamp < green.Timestamp)
+                    //    .Where(x => x.Timestamp >= cycle.RedEvent && x.Timestamp < cycle.GreenEvent)
                     //    .OrderBy(x => x.Timestamp).ToList();
 
                     if (!cycle.PhaseRegisterDroppedCalls.Any())
