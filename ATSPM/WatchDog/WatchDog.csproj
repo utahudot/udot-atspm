@@ -33,6 +33,7 @@
   <ItemGroup>
     <PackageReference Include="Google.Apis.Gmail.v1" Version="1.67.0.3287" />
     <PackageReference Include="MailKit" Version="4.5.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis" Version="4.9.2" />
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.1" />
   </ItemGroup>
 
