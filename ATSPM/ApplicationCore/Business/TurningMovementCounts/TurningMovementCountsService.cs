@@ -5,6 +5,7 @@ using ATSPM.Data.Models.EventLogModels;
 using Microsoft.OpenApi.Extensions;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -26,7 +27,7 @@ namespace ATSPM.Application.Business.TurningMovementCounts
             this.planService = planService;
         }
 
-        public async Task<TurningMovementCountsResult> GetChartData(
+        public async Task<TurningMovementCountsLanesResult> GetChartData(
             List<Detector> detectorsByDirection,
             LaneTypes laneType,
             MovementTypes movementType,
@@ -84,17 +85,18 @@ namespace ATSPM.Application.Business.TurningMovementCounts
                 .Where(i => i.StartTime >= peakHour.Key && i.StartTime < peakHourEnd)
                 .Sum(i => i.DetectorCount);
 
-            return new TurningMovementCountsResult(
+            return new TurningMovementCountsLanesResult(
                 locationIdentifier,
                 LocationDescription,
                 options.Start,
                 options.End,
-                directionType.GetDisplayName(),
-                laneType.GetDisplayName(),
-                movementType.GetDisplayName(),
+                directionType.GetAttributeOfType<DisplayAttribute>().Name,
+                laneType.GetAttributeOfType<DisplayAttribute>().Name,
+                movementType.GetAttributeOfType<DisplayAttribute>().Name,
                 plans,
                 lanes,
                 allLanesMovementVolumes.Items.Select(i => new DataPointForInt(i.StartTime, i.HourlyVolume)).ToList(),
+                allLanesMovementVolumes.Items.Select(i => new DataPointForInt(i.StartTime, i.DetectorCount)).ToList(),
                 totalDetectorCounts,
                 $"{peakHour.Key.ToShortTimeString()} - {peakHourEnd.ToShortTimeString()}",
                 peakHour.Value / binMultiplier,

@@ -12,9 +12,9 @@ namespace ATSPM.ReportApi.Controllers
     [ApiVersion(1.0)]
     [ApiController]
     [Route("v{version:apiVersion}/[controller]")]
-    public class TurningMovementCountsController : ReportControllerBase<TurningMovementCountsOptions, IEnumerable<TurningMovementCountsResult>>
+    public class TurningMovementCountsController : ReportControllerBase<TurningMovementCountsOptions, TurningMovementCountsResult>
     {
         /// <inheritdoc/>
-        public TurningMovementCountsController(IReportService<TurningMovementCountsOptions, IEnumerable<TurningMovementCountsResult>> reportService) : base(reportService) { }
+        public TurningMovementCountsController(IReportService<TurningMovementCountsOptions, TurningMovementCountsResult> reportService) : base(reportService) { }
     }
 }

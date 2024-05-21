@@ -12,12 +12,14 @@ namespace ATSPM.Application.Business.PedDelay
             string pedRecallMessage,
             int cyclesWithPedRequests,
             int uniquePedDetections,
+            int pedPresses,
             double averageDelaySeconds,
             double averageCycleLengthSeconds) : base(planNumber, startTime, endTime)
         {
             PedRecallMessage = pedRecallMessage;
             CyclesWithPedRequests = cyclesWithPedRequests;
             UniquePedDetections = uniquePedDetections;
+            PedPresses = pedPresses;
             AverageDelaySeconds = averageDelaySeconds;
             AverageCycleLengthSeconds = averageCycleLengthSeconds;
         }
@@ -25,6 +27,7 @@ namespace ATSPM.Application.Business.PedDelay
         public string PedRecallMessage { get; internal set; }
         public int CyclesWithPedRequests { get; internal set; }
         public int UniquePedDetections { get; internal set; }
+        public int PedPresses { get; internal set; }
         public double AverageDelaySeconds { get; internal set; }
         public double AverageCycleLengthSeconds { get; internal set; }
 

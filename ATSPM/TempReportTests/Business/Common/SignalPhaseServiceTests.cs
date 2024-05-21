@@ -1,6 +1,7 @@
 ﻿using ATSPM.Application.Business.Common;
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
+using ATSPM.Data.Models.EventLogModels;
 using CsvHelper;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -14,27 +15,27 @@ namespace ATSPM.Application.Reports.Business.Common.Tests
 
     }
 
-    public class SignalPhaseServiceTests
+    public class LocationPhaseServiceTests
     {
         [Fact()]
-        public async void GetSignalPhaseDataTest()
+        public async void GetLocationPhaseDataTest()
         {
             // Arrange
             PlanService planService = new PlanService(); // Replace with your PlanService instance
             CycleService cycleService = new CycleService(); // Replace with your CycleService instance
             ILoggerFactory loggerFactory = new LoggerFactory(); // Create an instance of ILoggerFactory
-            ILogger<LocationPhaseService> logger = loggerFactory.CreateLogger<LocationPhaseService>(); // Create the ILogger<SignalPhaseService> instance
+            ILogger<LocationPhaseService> logger = loggerFactory.CreateLogger<LocationPhaseService>(); // Create the ILogger<LocationPhaseService> instance
             PhaseService phaseService = new PhaseService();
 
-            LocationPhaseService signalPhaseService = new LocationPhaseService(planService, cycleService, logger);
+            LocationPhaseService locationPhaseService = new LocationPhaseService(planService, cycleService, logger);
 
 
             DateTime start = new DateTime(2020, 12, 1, 6, 0, 0);
             DateTime end = new DateTime(2020, 12, 1, 7, 0, 0);
-            List<ControllerEventLog> events = LoadDetectorEventsFromCsv(@"ControllerEventLogs-7119-Phase2-CycleDetectorPlanEvents-20201201-00-24.csv"); // Sampleevents
-            List<ControllerEventLog> cycleEvents = events.Where(e => new List<int> { 1, 8, 9 }.Contains(e.EventCode)).ToList(); // Sample cycle events
-            List<ControllerEventLog> detectorEvents = events.Where(e => new List<int> { 82 }.Contains(e.EventCode)).ToList(); // Load detector events from CSV
-            List<ControllerEventLog> planEvents = events.Where(e => new List<int> { 131 }.Contains(e.EventCode)).ToList(); // Load plan events from CSV
+            List<IndianaEvent> events = LoadDetectorEventsFromCsv(@"ControllerEventLogs-7119-Phase2-CycleDetectorPlanEvents-20201201-00-24.csv"); // Sampleevents
+            List<IndianaEvent> cycleEvents = events.Where(e => new List<short> { (short)IndianaEnumerations.PhaseBeginGreen, (short)IndianaEnumerations.PhaseBeginYellowChange, (short)IndianaEnumerations.PhaseEndYellowChange }.Contains(e.EventCode)).ToList(); // Sample cycle events
+            List<IndianaEvent> detectorEvents = events.Where(e => new List<short> { (short)IndianaEnumerations.VehicleDetectorOn }.Contains(e.EventCode)).ToList(); // Load detector events from CSV
+            List<IndianaEvent> planEvents = events.Where(e => new List<short> { (short)IndianaEnumerations.CoordPatternChange }.Contains(e.EventCode)).ToList(); // Load plan events from CSV
 
             // Create the mock Approach object
             var approach = new Mock<Approach>();
@@ -53,32 +54,32 @@ namespace ATSPM.Application.Reports.Business.Common.Tests
             approach.Object.IsPedestrianPhaseOverlap = false;
             approach.Object.PedestrianDetectors = null;
 
-            var mockSignal = new Mock<Location>();
+            var mockLocation = new Mock<Location>();
 
-            // Set the properties of the mock Signal object
-            mockSignal.Object.Id = 1933;
-            mockSignal.Object.LocationIdentifier = "7191";
-            mockSignal.Object.Latitude = 40.69988569;
-            mockSignal.Object.Longitude = -111.8713268;
-            mockSignal.Object.PrimaryName = "700 East";
-            mockSignal.Object.SecondaryName = "3300 South";
-            mockSignal.Object.Ipaddress = IPAddress.Parse("10.202.6.75");
-            mockSignal.Object.RegionId = 2;
-            mockSignal.Object.ControllerTypeId = 4;
-            mockSignal.Object.ChartEnabled = true;
-            mockSignal.Object.VersionAction = SignalVersionActions.Initial;
-            mockSignal.Object.Note = "10";
-            mockSignal.Object.Start = new DateTime(2011, 1, 1);
-            mockSignal.Object.JurisdictionId = 35;
-            mockSignal.Object.Pedsare1to1 = true;
-            //mockSignal.Object.Approaches = new List<Approach>() { approach };
+            // Set the properties of the mock Location object
+            mockLocation.Object.Id = 1933;
+            mockLocation.Object.LocationIdentifier = "7191";
+            mockLocation.Object.Latitude = 40.69988569;
+            mockLocation.Object.Longitude = -111.8713268;
+            mockLocation.Object.PrimaryName = "700 East";
+            mockLocation.Object.SecondaryName = "3300 South";
+            //mockLocation.Object.Ipaddress = IPAddress.Parse("10.202.6.75");
+            mockLocation.Object.RegionId = 2;
+            mockLocation.Object.LocationTypeId = 4;
+            mockLocation.Object.ChartEnabled = true;
+            mockLocation.Object.VersionAction = LocationVersionActions.Initial;
+            mockLocation.Object.Note = "10";
+            mockLocation.Object.Start = new DateTime(2011, 1, 1);
+            mockLocation.Object.JurisdictionId = 35;
+            mockLocation.Object.PedsAre1to1 = true;
+            //mockLocation.Object.Approaches = new List<Approach>() { approach };
 
-            // Create the mock Approach object and set its Signal property to the mock Signal object
-            mockSignal.Setup(mock => mock.Approaches).Returns(new List<Approach>() { approach.Object });
-            approach.Setup(a => a.Signal).Returns(mockSignal.Object);
-            var phaseDetail = phaseService.GetPhases(mockSignal.Object);
+            // Create the mock Approach object and set its Location property to the mock Location object
+            mockLocation.Setup(mock => mock.Approaches).Returns(new List<Approach>() { approach.Object });
+            approach.Setup(a => a.Location).Returns(mockLocation.Object);
+            var phaseDetail = phaseService.GetPhases(mockLocation.Object);
 
-            SignalPhase result = await signalPhaseService.GetSignalPhaseData(phaseDetail.FirstOrDefault(), start, end, true, 0, 15, cycleEvents, planEvents, detectorEvents);
+            LocationPhase result = await locationPhaseService.GetLocationPhaseData(phaseDetail.FirstOrDefault(), start, end, true, 0, 15, cycleEvents, planEvents, detectorEvents);
 
             // Assert
             Assert.NotNull(result);
@@ -107,7 +108,7 @@ namespace ATSPM.Application.Reports.Business.Common.Tests
             Assert.Null(result.Volume);
         }
 
-        private List<ControllerEventLog> LoadDetectorEventsFromCsv(string fileName)
+        private List<IndianaEvent> LoadDetectorEventsFromCsv(string fileName)
         {
             string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestFiles", fileName);
             using (var reader = new StreamReader(filePath))
@@ -115,7 +116,7 @@ namespace ATSPM.Application.Reports.Business.Common.Tests
             {
                 //csv.Context.TypeConverterCache.AddConverter<DateTime>(new CustomDateTimeConverter());
 
-                List<ControllerEventLog> detectorEvents = csv.GetRecords<ControllerEventLog>().ToList();
+                List<IndianaEvent> detectorEvents = csv.GetRecords<IndianaEvent>().ToList();
                 return detectorEvents;
             }
         }
