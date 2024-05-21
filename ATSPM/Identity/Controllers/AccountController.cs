@@ -1,9 +1,11 @@
-﻿using Identity.Business.Accounts;
+﻿using ATSPM.Domain.Services;
+using Identity.Business.Accounts;
 using Identity.Business.EmailSender;
 using Identity.Models.Account;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Net.Mail;
 
 namespace Identity.Controllers
 {
@@ -13,7 +15,7 @@ namespace Identity.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly IEmailService _emailService;
+        private readonly EmailService _emailService;
         private readonly IAccountService _accountService;
 
 
@@ -21,7 +23,7 @@ namespace Identity.Controllers
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             IAccountService accountService,
-            IEmailService emailService)
+            EmailService emailService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
