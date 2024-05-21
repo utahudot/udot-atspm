@@ -1,25 +1,22 @@
 ﻿using ATSPM.Application.Repositories.EventLogRepositories;
-using ATSPM.Application.Specifications;
-using ATSPM.Application.ValueObjects;
-using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using ATSPM.Data.Models.EventLogModels;
-using ATSPM.Domain.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
 
 namespace ATSPM.Application.Extensions
 {
     public static class SpeedEventRepositoryExtensions
     {
-        public static IReadOnlyList<SpeedEvent> GetSpeedEventsByDetector(this ISpeedEventLogRepository repo, Detector detector, DateTime startDate, DateTime endDate, int minSpeedFilter = 5)
+        public static IReadOnlyList<SpeedEvent> GetSpeedEventsByDetector(this ISpeedEventLogRepository repo, string locationIdentifier, Detector detector, DateTime start, DateTime end, int minSpeedFilter = 5)
         {
-            throw new NotImplementedException();
-        }
+            return repo.GetEventsBetweenDates(locationIdentifier, start, end)
+                .Where(e => e.DetectorId == detector.DectectorIdentifier
+                && e.Mph > minSpeedFilter
+                ).ToList();
 
+        }
         #region Obsolete
 
         [Obsolete("This method isn't currently being used")]
