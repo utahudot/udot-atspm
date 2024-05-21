@@ -16,7 +16,7 @@ namespace Identity.Business.EmailSender
         {
             var mailMessage = new MailMessage
             {
-                From = new MailAddress("dlowe@avenueconsultants.com"),
+                From = new MailAddress("atspmsupport@utah.gov"),
                 Subject = subject,
                 Body = htmlMessage,
                 IsBodyHtml = true,
