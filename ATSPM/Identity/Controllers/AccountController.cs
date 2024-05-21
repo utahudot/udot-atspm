@@ -194,7 +194,7 @@ namespace Identity.Controllers
             await _emailService.SendEmailAsync(
                 model.Email,
                 "Reset Password",
-                $"Please reset your password by clicking here: {callbackUrl}");
+                $"<p>Please reset your password by clicking <a href=\"{callbackUrl}\">here</a>.</p>");
 
             // You can return a success message or any other relevant information
             return Ok();
