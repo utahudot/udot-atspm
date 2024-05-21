@@ -1,9 +1,12 @@
 ﻿using ATSPM.Application.Repositories.ConfigurationRepositories;
-using ATSPM.Application.ValueObjects;
+using ATSPM.Application.Specifications;
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
+using ATSPM.Domain.Extensions;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace ATSPM.Application.Extensions
@@ -65,6 +68,19 @@ namespace ATSPM.Application.Extensions
             {
                 throw new ArgumentException($"{id} is not a valid Location");
             }
+        }
+
+
+        public static Location GetLocationWithDevice(this ILocationRepository repo, string locationIdentifier, DateTime startDate)
+        {
+            var result = repo.GetList()
+                .Include(i => i.Devices)
+                .FromSpecification(new LocationIdSpecification(locationIdentifier))
+                .Where(Location => Location.Start <= startDate)
+                .FromSpecification(new ActiveLocationSpecification())
+                .FirstOrDefault();
+
+            return result;
         }
 
         #region Obsolete
