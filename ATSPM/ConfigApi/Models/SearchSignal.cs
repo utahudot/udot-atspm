@@ -14,5 +14,6 @@
         public IEnumerable<int> Areas { get; set; }
         public IEnumerable<int> Charts { get; set; }
         public DateTime Start { get; set; }
+        public int LocationTypeId { get; set; }
     }
 }

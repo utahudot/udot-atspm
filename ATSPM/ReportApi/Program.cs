@@ -126,7 +126,7 @@ builder.Host.ConfigureServices((h, s) =>
     //report services
     s.AddScoped<IReportService<AggregationOptions, IEnumerable<AggregationResult>>, AggregationReportService>();
     s.AddScoped<IReportService<ApproachDelayOptions, IEnumerable<ApproachDelayResult>>, ApproachDelayReportService>();
-    //s.AddScoped<IReportService<ApproachSpeedOptions, IEnumerable<ApproachSpeedResult>>, ApproachSpeedReportService>();
+    s.AddScoped<IReportService<ApproachSpeedOptions, IEnumerable<ApproachSpeedResult>>, ApproachSpeedReportService>();
     s.AddScoped<IReportService<ApproachVolumeOptions, IEnumerable<ApproachVolumeResult>>, ApproachVolumeReportService>();
     s.AddScoped<IReportService<ArrivalOnRedOptions, IEnumerable<ArrivalOnRedResult>>, ArrivalOnRedReportService>();
     s.AddScoped<IReportService<GapDurationOptions, GapDurationResult>, LeftTurnGapDurationService>();
@@ -134,6 +134,7 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddScoped<IReportService<LeftTurnGapAnalysisOptions, IEnumerable<LeftTurnGapAnalysisResult>>, LeftTurnGapAnalysisReportService>();
     s.AddScoped<IReportService<LeftTurnGapDataCheckOptions, LeftTurnGapDataCheckResult>, LeftTurnGapReportDataCheckService>();
     s.AddScoped<IReportService<LeftTurnSplitFailOptions, LeftTurnSplitFailResult>, LeftTurnSplitFailService>();
+    s.AddScoped<IReportService<LeftTurnGapReportOptions, IEnumerable<LeftTurnGapReportResult>>, LeftTurnGapReportService>();
     s.AddScoped<IReportService<LinkPivotOptions, LinkPivotResult>, LinkPivotReportService>();
     s.AddScoped<LinkPivotReportService>();
     s.AddScoped<IReportService<VolumeOptions, VolumeResult>, LeftTurnVolumeService>();
@@ -149,7 +150,7 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddScoped<IReportService<SplitMonitorOptions, IEnumerable<SplitMonitorResult>>, SplitMonitorReportService>();
     s.AddScoped<IReportService<TimeSpaceDiagramOptions, IEnumerable<TimeSpaceDiagramResultForPhase>>, TimeSpaceDiagramReportService>();
     s.AddScoped<IReportService<TimingAndActuationsOptions, IEnumerable<TimingAndActuationsForPhaseResult>>, TimingAndActuactionReportService>();
-    s.AddScoped<IReportService<TurningMovementCountsOptions, IEnumerable<TurningMovementCountsResult>>, TurningMovementCountReportService>();
+    s.AddScoped<IReportService<TurningMovementCountsOptions, TurningMovementCountsResult>, TurningMovementCountReportService>();
     s.AddScoped<IReportService<YellowRedActivationsOptions, IEnumerable<YellowRedActivationsResult>>, YellowRedActivationsReportService>();
     s.AddScoped<IReportService<WaitTimeOptions, IEnumerable<WaitTimeResult>>, WaitTimeReportService>();
     s.AddScoped<IReportService<WatchDogOptions, WatchDogResult>, WatchDogReportService>();
@@ -166,6 +167,8 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddScoped<LeftTurnPedActuationService>();
     s.AddScoped<LeftTurnGapDurationService>();
     s.AddScoped<LeftTurnVolumeService>();
+    s.AddScoped<LeftTurnGapReportService>();
+
     //s.AddScoped<LeftTurnVolumeAnalysisService>();
     s.AddScoped<PedDelayService>();
     s.AddScoped<GreenTimeUtilizationService>();

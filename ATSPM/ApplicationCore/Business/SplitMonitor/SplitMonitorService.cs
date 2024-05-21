@@ -1,6 +1,5 @@
 ﻿using ATSPM.Application.Business.Common;
 using ATSPM.Application.TempExtensions;
-using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using ATSPM.Data.Models.EventLogModels;
 using System;
@@ -72,7 +71,6 @@ namespace ATSPM.Application.Business.SplitMonitor
         private async Task<SplitMonitorResult> GetChartDataForPhase(SplitMonitorOptions options, AnalysisPhaseCollectionData phaseCollection, AnalysisPhaseData phase)
         {
             var plans = GetSplitMonitorPlansWithStatistics(options, phaseCollection, phase);
-            var test = plans.SelectMany(p => p.Splits.Where(s => s.Key == phase.PhaseNumber));
             var splits = new List<DataPointForDouble>();
             foreach (var plan in plans)
             {
@@ -116,7 +114,10 @@ namespace ATSPM.Application.Business.SplitMonitor
                     PercentMaxOuts = p.PercentMaxOuts * 100,
                     PercentForceOffs = p.PercentForceOffs * 100,
                     PercentileSplit = p.PercentileSplit,
-
+                    MinTime = p.MinTime,
+                    ProgrammedSplit = p.ProgrammedSplit,
+                    PercentileSplit85th = p.PercentileSplit85th,
+                    PercentileSplit50th = p.PercentileSplit50th
                 }).ToList(),
                 LocationDescription = phase.Location.LocationDescription()
             };
@@ -150,7 +151,31 @@ namespace ATSPM.Application.Business.SplitMonitor
                         PercentForceOffs = GetPercentForceOffs(cycles, highCycleCount, plan.PlanNumber),
                         AverageSplit = cycles.Count > 0 ? Convert.ToDouble(cycles.Sum(c => c.Duration.TotalSeconds)) / cycles.Count : 0,
                         PercentileSplit = GetPercentSplit(highCycleCount, percentile, cycles),
-                        Splits = plan.Splits
+                        Splits = plan.Splits,
+                        MinTime = cycles.Min(c => c.Duration.TotalSeconds),
+                        ProgrammedSplit = plan.Splits.Where(s => s.Key == phase.PhaseNumber).FirstOrDefault().Value,
+                        PercentileSplit85th = GetPercentSplit(highCycleCount, .85, cycles),
+                        PercentileSplit50th = GetPercentSplit(highCycleCount, .5, cycles),
+                    });
+                }
+                else
+                {
+                    phasePlans.Add(new PlanSplitMonitorData(plan.Start, plan.End, plan.PlanNumber)
+                    {
+                        Start = plan.Start,
+                        End = plan.End,
+                        PlanNumber = plan.PlanNumber,
+                        PercentSkips = 0,
+                        PercentGapOuts = 0,
+                        PercentMaxOuts = 0,
+                        PercentForceOffs = 0,
+                        AverageSplit = 0,
+                        PercentileSplit = 0,
+                        Splits = plan.Splits,
+                        MinTime = 0,
+                        ProgrammedSplit = plan.Splits.Where(s => s.Key == phase.PhaseNumber).FirstOrDefault().Value,
+                        PercentileSplit85th = 0,
+                        PercentileSplit50th = 0,
                     });
                 }
             }

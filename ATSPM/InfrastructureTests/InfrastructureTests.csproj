@@ -29,6 +29,7 @@
   <ItemGroup>
     <PackageReference Include="AutoFixture" Version="4.17.0" />
     <PackageReference Include="AutoFixture.Xunit2" Version="4.17.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis" Version="4.9.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.4.0" />
