@@ -21,18 +21,21 @@ namespace Identity.Controllers
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly EmailService _emailService;
         private readonly IAccountService _accountService;
+        private readonly IConfiguration configuration;
 
 
         public AccountController(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             IAccountService accountService,
-            EmailService emailService)
+            EmailService emailService,
+            IConfiguration configuration)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _accountService = accountService;
             _emailService = emailService;
+            this.configuration = configuration;
         }
 
         [HttpPost("register")]
@@ -194,7 +197,7 @@ namespace Identity.Controllers
             //    "Account",
             //    new { email = user.Email, token },
             //    protocol: HttpContext.Request.Scheme);
-            var callbackUrl = "http://localhost:3000/changePassword?username=" + user.UserName + "&token=" + uriEncodedToken;
+            var callbackUrl = $"{configuration["AtspmSite"]}/changePassword?username=" + user.UserName + "&token=" + uriEncodedToken;
 
             await _emailService.SendEmailAsync(
                 model.Email,
