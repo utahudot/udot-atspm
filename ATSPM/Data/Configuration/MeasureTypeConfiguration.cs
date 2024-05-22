@@ -328,7 +328,16 @@ namespace ATSPM.Data.Configuration
                     ShowOnWebsite = true,
                     ShowOnAggregationSite = false,
                     DisplayOrder = 130
-                });
+                },
+                 new MeasureType
+                 {
+                     Id = 37,
+                     Name = "Ramp Metering",
+                     Abbreviation = "RM",
+                     ShowOnWebsite = true,
+                     ShowOnAggregationSite = false,
+                     DisplayOrder = 131
+                 });
         }
     }
 }
