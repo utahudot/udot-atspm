@@ -5,7 +5,11 @@ using Identity.Models.Account;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
+using System.Buffers.Text;
 using System.Net.Mail;
+using System.Text;
+using System.Web;
 
 namespace Identity.Controllers
 {
@@ -183,13 +187,14 @@ namespace Identity.Controllers
             }
 
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var uriEncodedToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
 
             //var callbackUrl = Url.Action(
             //    "ResetPassword", // Action method to reset password in your web application
             //    "Account",
             //    new { email = user.Email, token },
             //    protocol: HttpContext.Request.Scheme);
-            var callbackUrl = "http://localhost:3000/changepassword?username=" + user.UserName + "&token=" + token;
+            var callbackUrl = "http://localhost:3000/changePassword?username=" + user.UserName + "&token=" + uriEncodedToken;
 
             await _emailService.SendEmailAsync(
                 model.Email,
