@@ -83,6 +83,7 @@ builder.Host.ConfigureServices((h, s) =>
         l.RequestBodyLogLimit = 4096;
         l.ResponseBodyLogLimit = 4096;
     });
+
     var allowedHosts = builder.Configuration.GetSection("AllowedHosts").Get<string>();
     s.AddCors(options =>
     {
