@@ -11,7 +11,6 @@ namespace ATSPM.Infrastructure.Repositories.EventLogRepositories
         ///<inheritdoc/>
         public IndianaEventLogEFRepository(EventLogContext db, ILogger<IndianaEventLogEFRepository> log) : base(db, log) { }
 
-
         #region IIndiannaEventRepository
 
         #endregion
