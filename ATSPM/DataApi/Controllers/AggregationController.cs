@@ -9,12 +9,12 @@ namespace ATSPM.DataApi.Controllers
 {
     /// <summary>
     /// Aggregation controller
-    /// for querying raw device log data
+    /// for querying raw aggregation data
     /// </summary>
     [ApiController]
     [ApiVersion("1.0")]
     [Route("v{version:apiVersion}/[controller]")]
-    //[Authorize(Policy = "CanViewData")]
+    [Authorize(Policy = "CanViewData")]
     public class AggregationController : ControllerBase
     {
         private readonly IAggregationRepository _repository;
