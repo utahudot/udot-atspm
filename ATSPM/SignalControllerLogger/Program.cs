@@ -18,6 +18,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using ATSPM.Domain.Extensions;
 
 namespace ATSPM.LocationControllerLogger
 {
@@ -128,7 +129,7 @@ namespace ATSPM.LocationControllerLogger
                     s.AddEmailServices(h);
                     
 
-
+                    
 
 
                     s.PostConfigureAll<SignalControllerDownloaderConfiguration>(o =>
@@ -164,68 +165,12 @@ namespace ATSPM.LocationControllerLogger
                 //.UseConsoleLifetime()
                 .Build();
 
-            //host.Services.PrintHostInformation();
+            host.Services.PrintHostInformation();
 
             //await host.RunAsync();
-            //await host.StartAsync();
-            //await host.StopAsync();
+            await host.StartAsync();
+            await host.StopAsync();
 
-
-            //using (var scope = host.Services.CreateScope())
-            //{
-            //    var db = scope.ServiceProvider.GetService<ConfigContext>();
-
-            //    var region = new Region() { Description = "test region" };
-            //    var jurisdiction = new Jurisdiction() { Name = "test jurisdiction" };
-            //    var locType = new LocationType() { Name = "test location type" };
-
-            //    var r = db.Add(region);
-            //    var j = db.Add(jurisdiction);
-            //    var l = db.Add(locType);
-
-            //    await db.SaveChangesAsync();
-
-            //    var loc = new Location()
-            //    {
-            //        LocationIdentifier = "1234",
-            //        PrimaryName = "primary",
-            //        SecondaryName = "secondary",
-            //        VersionAction = Data.Enums.LocationVersionActions.Initial,
-            //        Longitude = 123,
-            //        Latitude = 123,
-            //        Start = DateTime.Now,
-            //        RegionId = r.Entity.Id,
-            //        JurisdictionId = j.Entity.Id,
-            //        LocationTypeId = l.Entity.Id,
-            //    };
-
-            //    db.Add(loc);
-            //    await db.SaveChangesAsync();
-            //}
-
-            using (var scope = host.Services.CreateScope())
-            {
-                //var db = scope.ServiceProvider.GetService<ConfigContext>();
-
-                //var test = db.ChangeTracker.DebugView.ShortView;
-
-                //var r = db.Regions.Include(i => i.Locations).FirstOrDefault();
-                //db.Remove(r);
-
-                //var j = db.Jurisdictions.Include(i => i.Locations).FirstOrDefault();
-                //db.Remove(j);
-
-                //await db.SaveChangesAsync();
-
-                var regions = scope.ServiceProvider.GetService<IRegionsRepository>();
-                var r = regions.Lookup(regions.GetList().FirstOrDefault());
-                regions.Remove(r);
-
-                var jurisdictions = scope.ServiceProvider.GetService<IJurisdictionRepository>();
-                var j = jurisdictions.Lookup(jurisdictions.GetList().FirstOrDefault());
-                jurisdictions.Remove(j);
-
-            }
 
             Console.ReadLine();
         }

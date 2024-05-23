@@ -107,7 +107,7 @@ namespace ATSPM.LocationControllerLogger
                     .Where(w => w.DeviceType == DeviceTypes.RampController)
                     .OrderBy(o => o.Ipaddress.ToString())
                     //.Skip(2)
-                    .Take(8);
+                    .Take(1);
 
                 //var devices = sftpDevices.Where(w => w.Ipaddress.IsValidIPAddress(true));
                 var devices = sftpDevices;
@@ -120,50 +120,53 @@ namespace ATSPM.LocationControllerLogger
                     Console.WriteLine($"device: {d}");
                 }
 
-                //var input = new BufferBlock<Device>();
+                var input = new BufferBlock<Device>();
 
-                //var downloadStep = new DownloadDeviceData(_serviceProvider, new ExecutionDataflowBlockOptions() { MaxDegreeOfParallelism = _options.Value.MaxDegreeOfParallelism, CancellationToken = cancellationToken });
-                //var processEventLogFileWorkflow = new ProcessEventLogFileWorkflow<IndianaEvent>(_serviceProvider, _options.Value.SaveToDatabaseBatchSize, _options.Value.MaxDegreeOfParallelism);
+                var downloadStep = new DownloadDeviceData(_serviceProvider, new ExecutionDataflowBlockOptions() { MaxDegreeOfParallelism = _options.Value.MaxDegreeOfParallelism, CancellationToken = cancellationToken });
+                var processEventLogFileWorkflow = new ProcessEventLogFileWorkflow<IndianaEvent>(_serviceProvider, _options.Value.SaveToDatabaseBatchSize, _options.Value.MaxDegreeOfParallelism);
                 //var SaveEventsToRepo = new SaveEventsToRepo(_serviceProvider, new ExecutionDataflowBlockOptions() { MaxDegreeOfParallelism = 1, CancellationToken = cancellationToken });
 
-                //var actionResult = new ActionBlock<CompressedEventLogBase>(t =>
-                //{
-                //    Console.WriteLine($"{t.LocationIdentifier} - {t.ArchiveDate} - {t.DeviceId} - {t.DataType} - {t.Data.Count()}");
+                var actionResult = new ActionBlock<CompressedEventLogBase>(t =>
+                {
+                    Console.WriteLine($"{t.LocationIdentifier} - {t.ArchiveDate} - {t.DeviceId} - {t.DataType} - {t.Data.Count()}");
 
-                //    //var repo = scope.ServiceProvider.GetService<IEventLogRepository>();
+                    //var repo = scope.ServiceProvider.GetService<IEventLogRepository>();
 
-                //    //var i = await repo.LookupAsync(t);
-                //    //Console.WriteLine($"======================={i.LocationIdentifier} - {i.ArchiveDate} - {i.DeviceId} - {i.Data.Count()}=======================");
+                    //var i = await repo.LookupAsync(t);
+                    //Console.WriteLine($"======================={i.LocationIdentifier} - {i.ArchiveDate} - {i.DeviceId} - {i.Data.Count()}=======================");
 
-                //    //foreach (var i in repo.GetList())
-                //    //{
-                //    //    Console.WriteLine($"{t.LocationIdentifier} - {t.ArchiveDate} - {t.DeviceId} - {t.DataType} - {t.Data.Count()}");
-                //    //}
-                //}, new ExecutionDataflowBlockOptions() { MaxDegreeOfParallelism = _options.Value.MaxDegreeOfParallelism, CancellationToken = cancellationToken });
+                    //foreach (var i in repo.GetList())
+                    //{
+                    //    Console.WriteLine($"{t.LocationIdentifier} - {t.ArchiveDate} - {t.DeviceId} - {t.DataType} - {t.Data.Count()}");
+                    //}
+                }, new ExecutionDataflowBlockOptions() { MaxDegreeOfParallelism = _options.Value.MaxDegreeOfParallelism, CancellationToken = cancellationToken });
 
-                //input.LinkTo(downloadStep, new DataflowLinkOptions() { PropagateCompletion = true });
+                input.LinkTo(downloadStep, new DataflowLinkOptions() { PropagateCompletion = true });
 
-                //await Task.Delay(TimeSpan.FromSeconds(1));
+                await Task.Delay(TimeSpan.FromSeconds(1));
 
-                //downloadStep.LinkTo(processEventLogFileWorkflow.Input, new DataflowLinkOptions() { PropagateCompletion = true });
+                downloadStep.LinkTo(processEventLogFileWorkflow.Input, new DataflowLinkOptions() { PropagateCompletion = true });
+
                 //processEventLogFileWorkflow.Output.LinkTo(SaveEventsToRepo, new DataflowLinkOptions() { PropagateCompletion = true });
                 //SaveEventsToRepo.LinkTo(actionResult, new DataflowLinkOptions() { PropagateCompletion = true });
 
-                //foreach (var d in devices)
-                //{
-                //    input.Post(d);
-                //}
+                processEventLogFileWorkflow.Output.LinkTo(actionResult, new DataflowLinkOptions() { PropagateCompletion = true });
 
-                //input.Complete();
+                foreach (var d in devices)
+                {
+                    input.Post(d);
+                }
 
-                //try
-                //{
-                //    await actionResult.Completion.ContinueWith(t => Console.WriteLine($"!!!Task actionResult is complete!!! {t.Status}"), cancellationToken);
-                //}
-                //catch (Exception e)
-                //{
-                //    Console.WriteLine($"{actionResult.Completion.Status}---------------{e}");
-                //}
+                input.Complete();
+
+                try
+                {
+                    await actionResult.Completion.ContinueWith(t => Console.WriteLine($"!!!Task actionResult is complete!!! {t.Status}"), cancellationToken);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine($"{actionResult.Completion.Status}---------------{e}");
+                }
 
 
                 sw.Stop();
