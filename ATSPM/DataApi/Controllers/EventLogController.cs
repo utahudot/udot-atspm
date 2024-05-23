@@ -34,7 +34,7 @@ namespace ATSPM.DataApi.Controllers
         /// <response code="200">Call completed successfully</response>
         [HttpGet("[Action]")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public ActionResult<IEnumerable<string>> GetEventDataTypes()
+        public ActionResult<IEnumerable<string>> GetDataTypes()
         {
             var result = typeof(EventLogModelBase).Assembly.GetTypes().Where(w => w.IsSubclassOf(typeof(EventLogModelBase))).Select(s => s.Name).ToList();
 
