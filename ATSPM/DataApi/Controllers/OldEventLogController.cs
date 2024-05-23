@@ -1,6 +1,7 @@
 ﻿using Asp.Versioning;
 using ATSPM.Application.Extensions;
 using ATSPM.Application.Repositories;
+using ATSPM.Application.Repositories.EventLogRepositories;
 using ATSPM.Data.Models;
 using Google.Api;
 using Microsoft.AspNetCore.Mvc;
