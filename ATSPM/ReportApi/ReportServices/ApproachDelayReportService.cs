@@ -19,6 +19,7 @@ namespace ATSPM.ReportApi.ReportServices
         private readonly ILocationRepository _LocationRepository;
         private readonly IIndianaEventLogRepository _controllerEventLogRepository;
         private readonly PhaseService _phaseService;
+        private readonly IDeviceRepository deviceRepository;
 
         /// <inheritdoc/>
         public ApproachDelayReportService(
@@ -26,7 +27,8 @@ namespace ATSPM.ReportApi.ReportServices
             LocationPhaseService LocationPhaseService,
             ILocationRepository LocationRepository,
             IIndianaEventLogRepository controllerEventLogRepository,
-            PhaseService phaseService
+            PhaseService phaseService,
+            IDeviceRepository deviceRepository
             )
         {
             _approachDelayService = approachDelayService;
@@ -34,11 +36,13 @@ namespace ATSPM.ReportApi.ReportServices
             _LocationRepository = LocationRepository;
             _controllerEventLogRepository = controllerEventLogRepository;
             _phaseService = phaseService;
+            this.deviceRepository = deviceRepository;
         }
 
         /// <inheritdoc/>
         public override async Task<IEnumerable<ApproachDelayResult>> ExecuteAsync(ApproachDelayOptions parameter, IProgress<int> progress = null, CancellationToken cancelToken = default)
         {
+            var test = deviceRepository.GetActiveDevicesByAllLatestLocations();
             var Location = _LocationRepository.GetLatestVersionOfLocation(parameter.LocationIdentifier, parameter.Start);
 
             if (Location == null)
