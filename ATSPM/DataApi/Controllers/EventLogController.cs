@@ -36,7 +36,9 @@ namespace ATSPM.DataApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public ActionResult<IEnumerable<string>> GetEventDataTypes()
         {
-            return Ok(typeof(EventLogModelBase).Assembly.GetTypes().Where(w => w.IsSubclassOf(typeof(EventLogModelBase))).Select(s => s.Name));
+            var result = typeof(EventLogModelBase).Assembly.GetTypes().Where(w => w.IsSubclassOf(typeof(EventLogModelBase))).Select(s => s.Name).ToList();
+
+            return Ok(result);
         }
 
 
@@ -57,7 +59,7 @@ namespace ATSPM.DataApi.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult GetArchivedEvents(string locationIdentifier, DateOnly start, DateOnly end)
         {
-            if (start == DateOnly.MinValue || end == DateOnly.MinValue || end > start)
+            if (start == DateOnly.MinValue || end == DateOnly.MinValue || end < start)
                 return BadRequest("Invalid date range");
 
             var result = _repository.GetArchivedEvents(locationIdentifier, start, end);
@@ -71,7 +73,7 @@ namespace ATSPM.DataApi.Controllers
         }
 
         /// <summary>
-        /// Get all event logs for location by date
+        /// Get all event logs for location by date and device id
         /// </summary>
         /// <param name="locationIdentifier">Location identifier</param>
         /// <param name="deviceId">Deivce id events came from</param>
@@ -88,7 +90,7 @@ namespace ATSPM.DataApi.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult GetArchivedEvents(string locationIdentifier, int deviceId, DateOnly start, DateOnly end)
         {
-            if (start == DateOnly.MinValue || end == DateOnly.MinValue || end > start)
+            if (start == DateOnly.MinValue || end == DateOnly.MinValue || end < start)
                 return BadRequest("Invalid date range");
 
             if (deviceId == 0)
@@ -105,7 +107,7 @@ namespace ATSPM.DataApi.Controllers
         }
 
         /// <summary>
-        /// Get all event logs for location by date
+        /// Get all event logs for location by date and datatype
         /// </summary>
         /// <param name="locationIdentifier">Location identifier</param>
         /// <param name="dataType">Type that inherits from <see cref="EventLogModelBase"/></param>
@@ -122,7 +124,7 @@ namespace ATSPM.DataApi.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult GetArchivedEvents(string locationIdentifier, string dataType, DateOnly start, DateOnly end)
         {
-            if (start == DateOnly.MinValue || end == DateOnly.MinValue || end > start)
+            if (start == DateOnly.MinValue || end == DateOnly.MinValue || end < start)
                 return BadRequest("Invalid date range");
 
             Type type;
@@ -147,7 +149,7 @@ namespace ATSPM.DataApi.Controllers
         }
 
         /// <summary>
-        /// Get all event logs for location by date
+        /// Get all event logs for location by date, device id and datatype
         /// </summary>
         /// <param name="locationIdentifier">Location identifier</param>
         /// <param name="deviceId">Deivce id events came from</param>
@@ -165,7 +167,7 @@ namespace ATSPM.DataApi.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult GetArchivedEvents(string locationIdentifier, int deviceId, string dataType, DateOnly start, DateOnly end)
         {
-            if (start == DateOnly.MinValue || end == DateOnly.MinValue || end > start)
+            if (start == DateOnly.MinValue || end == DateOnly.MinValue || end < start)
                 return BadRequest("Invalid date range");
 
             if (deviceId == 0)
