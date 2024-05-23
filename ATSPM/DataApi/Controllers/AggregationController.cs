@@ -57,7 +57,7 @@ namespace ATSPM.DataApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public ActionResult<IEnumerable<AggregationModelBase>> GetArchivedAggregations(string locationIdentifier, DateOnly start, DateOnly end)
+        public IActionResult GetArchivedAggregations(string locationIdentifier, DateOnly start, DateOnly end)
         {
             if (start == DateOnly.MinValue || end == DateOnly.MinValue || end < start)
                 return BadRequest("Invalid date range");
