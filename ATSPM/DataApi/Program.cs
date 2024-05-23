@@ -1,4 +1,7 @@
 using Asp.Versioning;
+using ATSPM.Data.Models.AggregationModels;
+using ATSPM.Data.Models.EventLogModels;
+using ATSPM.DataApi.CustomOperations;
 using ATSPM.DataApi.Formatters;
 using ATSPM.Domain.Extensions;
 using ATSPM.Infrastructure.Extensions;
@@ -6,6 +9,7 @@ using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Options;
+using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -64,6 +68,8 @@ builder.Host.ConfigureServices((h, s) =>
          o.IncludeXmlComments(filePath);
 
          o.OperationFilter<TimestampFormatHeader>();
+         o.DocumentFilter<GenerateAggregationSchemas>();
+         o.DocumentFilter<GenerateEventSchemas>();
      });
 
     s.AddAtspmDbContext(h);
@@ -129,7 +135,6 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
 app.Run();
-
 
 
 /// <summary>
