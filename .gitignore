@@ -87,12 +87,16 @@ dkms.conf
 /ATSPM/OracleDatabaseProvider/bin/
 /ATSPM/PostgreSQLDatabaseProvider/obj/
 /ATSPM/PostgreSQLDatabaseProvider/bin/
+/ATSPM/SpeedManagementApi/obj/
+/ATSPM/SpeedManagementApi/bin/
 /ATSPM/SqlDatabaseProvider/obj/
 /ATSPM/SqlDatabaseProvider/bin/
 /ATSPM/SqlLiteDatabaseProvider/obj/
 /ATSPM/SqlLiteDatabaseProvider/bin/
 /ATSPM/ReportAPI/obj
 /ATSPM/ReportAPI/bin
+/ATSPM/ReportApi/obj
+/ATSPM/ReportApi/bin
 /ATSPM/SignalControllerLogger/obj
 /ATSPM/SignalControllerLogger/bin
 /ATSPM/WatchDog/obj/
