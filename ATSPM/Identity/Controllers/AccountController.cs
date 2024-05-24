@@ -102,10 +102,11 @@ namespace Identity.Controllers
         {
             var redirectUrl = model.ReturnUrl; //Url.Action("ExternalLoginCallback", "Account", new { ReturnUrl = model.ReturnUrl });
             var properties = signInManager.ConfigureExternalAuthenticationProperties(model.Provider, redirectUrl);
-            return Challenge(properties, model.Provider);
+            var result = Challenge(properties, model.Provider);
+            return result;
         }
 
-        [HttpGet("signin-oidc")]
+        [HttpGet("oidc-callback")]
         public async Task<IActionResult> ExternalLoginCallback(string returnUrl = null, string remoteError = null)
         {
             if (remoteError != null)
