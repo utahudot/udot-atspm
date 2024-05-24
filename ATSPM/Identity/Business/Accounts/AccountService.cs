@@ -72,10 +72,7 @@ namespace Identity.Business.Accounts
                     var roleClaims = await _roleManager.GetClaimsAsync(role);
                     foreach (var roleClaim in roleClaims)
                     {
-                        if (roleClaim.Value.ToLower().Contains("view"))
-                        {
                            claims.Add(roleClaim.Value);
-                        }
                     }
                 }
             }
