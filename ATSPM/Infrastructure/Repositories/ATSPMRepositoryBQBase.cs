@@ -1,5 +1,7 @@
-﻿using ATSPM.Domain.Services;
+﻿using ATSPM.Data;
+using ATSPM.Domain.Services;
 using ATSPM.Domain.Specifications;
+using ATSPM.Infrastructure.Repositories.ConfigurationRepositories;
 using Google.Cloud.BigQuery.V2;
 using Microsoft.Extensions.Logging;
 using System;
@@ -17,6 +19,8 @@ namespace ATSPM.Infrastructure.Repositories
         protected readonly BigQueryClient _client;
         protected readonly string _datasetId;
         protected readonly string _tableId;
+        private ConfigContext db;
+        private ILogger<HourlySpeedBQRepository> log;
 
         public ATSPMRepositoryBQBase(BigQueryClient client, string datasetId, string tableId, ILogger<ATSPMRepositoryBQBase<T>> log)
         {
@@ -28,10 +32,10 @@ namespace ATSPM.Infrastructure.Repositories
 
         #region IAsyncRepository
 
-        public IQueryable<T> GetList()
-        {
-            throw new NotImplementedException("BigQuery does not support IQueryable directly. Use GetListAsync instead.");
-        }
+        public abstract IQueryable<T> GetList();
+        //{
+        //    throw new NotImplementedException("BigQuery does not support IQueryable directly. Use GetListAsync instead.");
+        //}
 
         public IReadOnlyList<T> GetList(Expression<Func<T, bool>> criteria)
         {
@@ -59,31 +63,31 @@ namespace ATSPM.Infrastructure.Repositories
             return results.Select(row => MapRowToEntity(row)).ToList();
         }
 
-        public T Lookup(object key)
-        {
-            return LookupAsync(key).Result;
-        }
+        public abstract T Lookup(object key);
+        //{
+        //    return LookupAsync(key).Result;
+        //}
 
-        public T Lookup(T item)
-        {
-            throw new NotImplementedException("Lookup by item is not implemented.");
-        }
+        public abstract T Lookup(T item);
+        //{
+        //    throw new NotImplementedException("Lookup by item is not implemented.");
+        //}
 
-        public async Task<T> LookupAsync(object key)
-        {
-            var query = $"SELECT * FROM `{_datasetId}.{_tableId}` WHERE Id = @key"; // Assuming primary key column is named "Id"
-            var parameters = new List<BigQueryParameter>
-            {
-                new BigQueryParameter("key", BigQueryDbType.String, key) // Adjust BigQueryDbType as needed
-            };
-            var results = await _client.ExecuteQueryAsync(query, parameters);
-            return results.Select(row => MapRowToEntity(row)).FirstOrDefault();
-        }
+        public abstract Task<T> LookupAsync(object key);
+        //{
+        //    var query = $"SELECT * FROM `{_datasetId}.{_tableId}` WHERE Id = @key"; // Assuming primary key column is named "Id"
+        //    var parameters = new List<BigQueryParameter>
+        //    {
+        //        new BigQueryParameter("key", BigQueryDbType.String, key) // Adjust BigQueryDbType as needed
+        //    };
+        //    var results = await _client.ExecuteQueryAsync(query, parameters);
+        //    return results.Select(row => MapRowToEntity(row)).FirstOrDefault();
+        //}
 
-        public Task<T> LookupAsync(T item)
-        {
-            throw new NotImplementedException("Lookup by item is not implemented.");
-        }
+        public abstract Task<T> LookupAsync(T item);
+        //{
+        //    throw new NotImplementedException("Lookup by item is not implemented.");
+        //}
 
         public void Add(T item)
         {
@@ -109,69 +113,55 @@ namespace ATSPM.Infrastructure.Repositories
             await table.InsertRowsAsync(rows);
         }
 
-        public void Remove(T item)
-        {
-            RemoveAsync(GetPrimaryKey(item)).Wait();
-        }
+        public abstract void Remove(T item);
+        //{
+        //    throw new NotImplementedException("Remove by item is not implemented.");
+        //}
 
-        public async Task RemoveAsync(T item)
-        {
-            var key = GetPrimaryKey(item);
-            await RemoveAsync(key);
-        }
+        public abstract Task RemoveAsync(T item);
+        //{
+        //    throw new NotImplementedException("Lookup by item is not implemented.");
+        //}
 
-        public async Task RemoveAsync(object key)
-        {
-            var query = $"DELETE FROM `{_datasetId}.{_tableId}` WHERE Id = @key"; // Assuming primary key column is named "Id"
-            var parameters = new List<BigQueryParameter>
-            {
-                new BigQueryParameter("key", BigQueryDbType.String, key) // Adjust BigQueryDbType as needed
-            };
-            await _client.ExecuteQueryAsync(query, parameters);
-        }
 
-        public void RemoveRange(IEnumerable<T> items)
-        {
-            RemoveRangeAsync(items).Wait();
-        }
 
-        public async Task RemoveRangeAsync(IEnumerable<T> items)
-        {
-            foreach (var item in items)
-            {
-                await RemoveAsync(GetPrimaryKey(item));
-            }
-        }
+        public abstract void RemoveRange(IEnumerable<T> items);
+        //{
+        //    RemoveRangeAsync(items).Wait();
+        //}
 
-        public void Update(T item)
-        {
-            UpdateAsync(item).Wait();
-        }
+        public abstract Task RemoveRangeAsync(IEnumerable<T> items);
+        //{
 
-        public async Task UpdateAsync(T item)
-        {
-            var key = GetPrimaryKey(item);
-            var updateRow = CreateRow(item);
-            var query = $"UPDATE `{_datasetId}.{_tableId}` SET {GenerateUpdateQuery(updateRow)} WHERE Id = @key";
-            var parameters = new List<BigQueryParameter>
-            {
-                new BigQueryParameter("key", BigQueryDbType.String, key) // Adjust BigQueryDbType as needed
-            };
-            await _client.ExecuteQueryAsync(query, parameters);
-        }
+        //    throw new NotImplementedException("RemoveRangeAsync by items is not implemented.");
+        //}
 
-        public void UpdateRange(IEnumerable<T> items)
-        {
-            UpdateRangeAsync(items).Wait();
-        }
+        public abstract void Update(T item);
+        //{
+        //    UpdateAsync(item).Wait();
+        //}
 
-        public async Task UpdateRangeAsync(IEnumerable<T> items)
-        {
-            foreach (var item in items)
-            {
-                await UpdateAsync(item);
-            }
-        }
+        public abstract Task UpdateAsync(T item);
+        //{
+
+        //    throw new NotImplementedException("UpdateAsync by item is not implemented.");
+        //}
+
+        public abstract void UpdateRange(IEnumerable<T> items);
+
+        //public void UpdateRange(IEnumerable<T> items)
+        //{
+        //    UpdateRangeAsync(items).Wait();
+        //}
+
+
+        public abstract Task UpdateRangeAsync(IEnumerable<T> items);
+        //{
+        //    foreach (var item in items)
+        //    {
+        //        await UpdateAsync(item);
+        //    }
+        //}
 
         #endregion
 
@@ -179,7 +169,7 @@ namespace ATSPM.Infrastructure.Repositories
 
         protected abstract T MapRowToEntity(BigQueryRow row);
 
-        protected abstract object GetPrimaryKey(T item);
+        //protected abstract object GetPrimaryKey(T item);
 
         private string GenerateUpdateQuery(BigQueryInsertRow row)
         {
