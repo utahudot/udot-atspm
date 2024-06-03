@@ -1,18 +1,23 @@
 ﻿using ATSPM.Application.Repositories.SpeedManagementAggregationRepositories;
-using ATSPM.Data;
 using ATSPM.Data.Models.SpeedManagementAggregation;
 using ATSPM.Domain.Extensions;
 using Google.Cloud.BigQuery.V2;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace ATSPM.Infrastructure.Repositories.ConfigurationRepositories
 {
     ///<inheritdoc cref="IHourlySpeedRepository"/>
     public class HourlySpeedBQRepository : ATSPMRepositoryBQBase<HourlySpeed>, IHourlySpeedRepository
     {
-        /// <inheritdoc/>
-        public HourlySpeedBQRepository(ConfigContext db, ILogger<HourlySpeedBQRepository> log) : base(db, log) { }
+        public HourlySpeedBQRepository(BigQueryClient client, string datasetId, string tableId, ILogger<ATSPMRepositoryBQBase<HourlySpeed>> log) : base(client, datasetId, tableId, log)
+        {
+        }
+
+
 
         #region Overrides
         protected override BigQueryInsertRow CreateRow(HourlySpeed item)
@@ -51,6 +56,89 @@ namespace ATSPM.Infrastructure.Repositories.ConfigurationRepositories
                 Violation = row.GetPropertyValue<int?>("Violation"),
                 Flow = row.GetPropertyValue<int?>("Flow")
             };
+        }
+
+        public override async Task RemoveAsync(HourlySpeed key)
+        {
+
+            var query = $"DELETE FROM `{_datasetId}.{_tableId}` WHERE Id = @key"; // Assuming primary key column is named "Id"
+            var parameters = new List<BigQueryParameter>
+             {
+                 new BigQueryParameter("key", BigQueryDbType.String, key) // Adjust BigQueryDbType as needed
+             };
+            await _client.ExecuteQueryAsync(query, parameters);
+        }
+
+        //    public async Task UpdateAsync(T item)
+        //    {
+        //        var key = GetPrimaryKey(item);
+        //        var updateRow = CreateRow(item);
+        //        var query = $"UPDATE `{_datasetId}.{_tableId}` SET {GenerateUpdateQuery(updateRow)} WHERE Id = @key";
+        //        var parameters = new List<BigQueryParameter>
+        //{
+        //    new BigQueryParameter("key", BigQueryDbType.String, key) // Adjust BigQueryDbType as needed
+        //};
+        //        await _client.ExecuteQueryAsync(query, parameters);
+        //    }
+
+        public override IQueryable<HourlySpeed> GetList()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override HourlySpeed Lookup(object key)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override HourlySpeed Lookup(HourlySpeed item)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Task<HourlySpeed> LookupAsync(object key)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Task<HourlySpeed> LookupAsync(HourlySpeed item)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Remove(HourlySpeed item)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void RemoveRange(IEnumerable<HourlySpeed> items)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Task RemoveRangeAsync(IEnumerable<HourlySpeed> items)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Update(HourlySpeed item)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Task UpdateAsync(HourlySpeed item)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void UpdateRange(IEnumerable<HourlySpeed> items)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Task UpdateRangeAsync(IEnumerable<HourlySpeed> items)
+        {
+            throw new NotImplementedException();
         }
 
 
