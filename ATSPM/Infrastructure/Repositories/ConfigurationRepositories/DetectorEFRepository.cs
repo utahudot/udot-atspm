@@ -6,6 +6,7 @@ using ATSPM.Data.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -48,7 +49,7 @@ namespace ATSPM.Infrastructure.Repositories.ConfigurationRepositories
 
                         foreach (var a in add)
                         {
-                            oldItem.DetectionTypes.Add(a);
+                            oldItem.DetectionTypes.Add(_db.Find<DetectionType>(a.Id));
                         }
 
                         break;
