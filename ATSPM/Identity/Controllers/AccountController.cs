@@ -1,6 +1,8 @@
 ﻿using Identity.Business.Accounts;
 using Identity.Business.EmailSender;
 using Identity.Models.Account;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -100,11 +102,12 @@ namespace Identity.Controllers
         [HttpPost("external-login")]
         public IActionResult ExternalLogin([FromBody] LoginViewModel model)
         {
-            var redirectUrl = model.ReturnUrl; //Url.Action("ExternalLoginCallback", "Account", new { ReturnUrl = model.ReturnUrl });
-            var properties = signInManager.ConfigureExternalAuthenticationProperties(model.Provider, redirectUrl);
-            var result = Challenge(properties, model.Provider);
-            return result;
+            //var redirectUrl = model.ReturnUrl;
+            //var properties = signInManager.ConfigureExternalAuthenticationProperties(model.Provider, redirectUrl);
+            //return Challenge(properties, model.Provider);
+            return Challenge(new AuthenticationProperties { RedirectUri = model.ReturnUrl }, OpenIdConnectDefaults.AuthenticationScheme);
         }
+
 
         [HttpGet("oidc-callback")]
         public async Task<IActionResult> ExternalLoginCallback(string returnUrl = null, string remoteError = null)
