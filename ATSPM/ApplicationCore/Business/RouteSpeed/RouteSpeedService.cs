@@ -1,7 +1,10 @@
 ﻿using ATSPM.Application.Extensions;
 using ATSPM.Application.Repositories.AggregationRepositories;
+using ATSPM.Application.Repositories.SpeedManagementAggregationRepositories;
+using ATSPM.Data.Models.SpeedManagementAggregation;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace ATSPM.Application.Business.RouteSpeed
 {
@@ -15,10 +18,12 @@ namespace ATSPM.Application.Business.RouteSpeed
     public class RouteSpeedService
     {
         private readonly IClearguideAggregationRepository routeSpeedRepository;
+        private readonly IHourlySpeedRepository hourlySpeedRepository;
 
-        public RouteSpeedService(IClearguideAggregationRepository crashSpeedRepository)
+        public RouteSpeedService(IClearguideAggregationRepository crashSpeedRepository, IHourlySpeedRepository hourlySpeedRepository)
         {
             routeSpeedRepository = crashSpeedRepository;
+            this.hourlySpeedRepository = hourlySpeedRepository;
         }
 
         public List<RouteSpeed> GetRouteSpeeds(
@@ -44,6 +49,22 @@ namespace ATSPM.Application.Business.RouteSpeed
 
             return routeSpeeds;
         }
+
+        public async Task AddPemsSpeed(RouteSpeedOptions options)
+        {
+            HourlySpeed value = new HourlySpeed()
+            {
+                Date = new DateTime(),
+                BinStartTime = new DateTime(),
+                RouteId = 1,
+                SourceId = 2,
+                ConfidenceId = 3,
+                Average = 45
+            };
+            await Task.Run(() => hourlySpeedRepository.AddHourlySpeedAsync(value));
+        }
+
+
 
         //public async Task<HistoricalDTO> GetHistoricalSpeeds(
         //    int routeId,
