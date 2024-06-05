@@ -24,7 +24,18 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementAggregationRepositori
             _logger = log;
         }
 
-        public async Task AddRoutesAsync(Route route)
+        public async Task AddRoutesAsync(IEnumerable<Route> routes)
+        {
+            var table = _client.GetTable(_datasetId, _tableId);
+            List<BigQueryInsertRow> insertRows = new List<BigQueryInsertRow>();
+            foreach (var route in routes)
+            {
+                insertRows.Add(CreateRow(route));
+            }
+            await table.InsertRowsAsync(insertRows);
+        }
+
+        public async Task AddRouteAsync(Route route)
         {
             var table = _client.GetTable(_datasetId, _tableId);
             var insertRow = CreateRow(route);

@@ -111,7 +111,8 @@ builder.Host.ConfigureServices((h, s) =>
     Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", builder.Configuration["GoogleApplicationCredentials"]);
 
     s.AddScoped<RouteSpeedService>();
-
+    s.AddScoped<RouteService>();
+    
 
 
 
