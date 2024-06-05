@@ -14,8 +14,10 @@ using ATSPM.Infrastructure.Repositories.EventLogRepositories;
 using ATSPM.Infrastructure.Services.ControllerDecoders;
 using ATSPM.Infrastructure.SqlDatabaseProvider;
 using ATSPM.Infrastructure.SqlLiteDatabaseProvider;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,6 +26,7 @@ using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace ATSPM.Infrastructure.Extensions
 {
@@ -101,10 +104,14 @@ namespace ATSPM.Infrastructure.Extensions
         {
             services.AddAuthentication(options =>
             {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+                //options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                //options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                //options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
             })
+            .AddCookie()
            .AddJwtBearer(options =>
            {
                options.TokenValidationParameters = new TokenValidationParameters
@@ -125,17 +132,26 @@ namespace ATSPM.Infrastructure.Extensions
                 options.Authority = builder.Configuration["Oidc:Authority"];
                 options.ClientId = builder.Configuration["Oidc:ClientId"];
                 options.ClientSecret = builder.Configuration["Oidc:ClientSecret"];
-                options.ResponseType = OpenIdConnectResponseType.IdToken;
+                options.ResponseType = OpenIdConnectResponseType.Code;
                 options.SaveTokens = true;
-
-                options.TokenValidationParameters = new TokenValidationParameters
+                options.CallbackPath = new PathString("/api/Account/oidc-callback");
+                options.ClaimsIssuer = "Auth0";
+                //options.TokenValidationParameters = new TokenValidationParameters
+                //{
+                //    ValidateIssuer = true,
+                //    NameClaimType = "username"
+                //};
+                options.Scope.Clear();
+                options.Scope.Add("openid");
+                //options.Scope.Add("profile");
+                options.Events = new OpenIdConnectEvents
                 {
-                    ValidateIssuer = true
+                    OnRedirectToIdentityProvider = context =>
+                    {
+                        context.ProtocolMessage.RedirectUri = builder.Configuration["Oidc:RedirectUri"];
+                        return Task.CompletedTask;
+                    }
                 };
-
-                options.Scope.Add("email");
-                options.Scope.Add("profile");
-                // Additional configurations as necessary
             });
 
             return services;

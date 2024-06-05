@@ -12,9 +12,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{B7CD987F-6522-4FE0-9285-0AF80C572979}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DomainCoreTests", "DomainCoreTests\DomainCoreTests.csproj", "{71926079-5B17-4E5C-888A-D95C12ADFA48}"
-	ProjectSection(ProjectDependencies) = postProject
-		{95EDDA04-9E9A-47AF-AE60-87F1B7F9E825} = {95EDDA04-9E9A-47AF-AE60-87F1B7F9E825}
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{338188AC-81F0-40E2-903F-4F713286D12B}"
 	ProjectSection(SolutionItems) = preProject
@@ -41,8 +38,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityTests", "IdentityTe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WatchDog", "WatchDog\WatchDog.csproj", "{D578C245-BDE0-4883-88A9-4C6727426478}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WatchDogTests", "WatchDogTests\WatchDogTests.csproj", "{5246F2DA-DE29-4163-A4B7-FF188AE2CFD8}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReportApi", "ReportApi\ReportApi.csproj", "{803EAFDD-E25A-4D22-906F-67676BEBDE80}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DatabaseProviders", "DatabaseProviders", "{EA135084-6954-488E-8E0F-86480ACD9803}"
@@ -50,6 +45,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SqlDatabaseProvider", "SqlDatabaseProvider\SqlDatabaseProvider.csproj", "{01F8C3CB-C7F2-49BA-956D-6AB734934C3E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PostgreSQLDatabaseProvider", "PostgreSQLDatabaseProvider\PostgreSQLDatabaseProvider.csproj", "{66B69A6E-EB9F-49F2-AE89-5018556563F5}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WatchDogTests", "WatchDogTests\WatchDogTests.csproj", "{5246F2DA-DE29-4163-A4B7-FF188AE2CFD8}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SqlLiteDatabaseProvider", "SqlLiteDatabaseProvider\SqlLiteDatabaseProvider.csproj", "{6EFC17B6-81A2-4B9B-B73A-A4951DD52FEF}"
 EndProject
@@ -125,10 +122,6 @@ Global
 		{D578C245-BDE0-4883-88A9-4C6727426478}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D578C245-BDE0-4883-88A9-4C6727426478}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D578C245-BDE0-4883-88A9-4C6727426478}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5246F2DA-DE29-4163-A4B7-FF188AE2CFD8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5246F2DA-DE29-4163-A4B7-FF188AE2CFD8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5246F2DA-DE29-4163-A4B7-FF188AE2CFD8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5246F2DA-DE29-4163-A4B7-FF188AE2CFD8}.Release|Any CPU.Build.0 = Release|Any CPU
 		{803EAFDD-E25A-4D22-906F-67676BEBDE80}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{803EAFDD-E25A-4D22-906F-67676BEBDE80}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{803EAFDD-E25A-4D22-906F-67676BEBDE80}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -141,6 +134,10 @@ Global
 		{66B69A6E-EB9F-49F2-AE89-5018556563F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{66B69A6E-EB9F-49F2-AE89-5018556563F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{66B69A6E-EB9F-49F2-AE89-5018556563F5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5246F2DA-DE29-4163-A4B7-FF188AE2CFD8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5246F2DA-DE29-4163-A4B7-FF188AE2CFD8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5246F2DA-DE29-4163-A4B7-FF188AE2CFD8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5246F2DA-DE29-4163-A4B7-FF188AE2CFD8}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6EFC17B6-81A2-4B9B-B73A-A4951DD52FEF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{6EFC17B6-81A2-4B9B-B73A-A4951DD52FEF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6EFC17B6-81A2-4B9B-B73A-A4951DD52FEF}.Release|Any CPU.ActiveCfg = Release|Any CPU
