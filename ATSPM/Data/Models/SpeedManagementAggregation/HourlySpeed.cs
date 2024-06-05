@@ -2,8 +2,8 @@
 
 public class HourlySpeed
 {
-    public DateOnly Date { get; set; }
-    public TimeOnly BinStartTime { get; set; }
+    public DateTime Date { get; set; }
+    public DateTime BinStartTime { get; set; }
     public int RouteId { get; set; }
     public int SourceId { get; set; }
     public int ConfidenceId { get; set; }

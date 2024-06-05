@@ -1,4 +1,5 @@
 using Asp.Versioning;
+using ATSPM.Application.Business.RouteSpeed;
 using ATSPM.Application.Repositories;
 using ATSPM.Application.Repositories.SpeedManagementAggregationRepositories;
 using ATSPM.Infrastructure.Extensions;
@@ -106,6 +107,11 @@ builder.Host.ConfigureServices((h, s) =>
         var logger = provider.GetRequiredService<ILogger<HourlySpeedBQRepository>>();
         return new HourlySpeedBQRepository(client, datasetId, tableId, logger);
     });
+
+    Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", builder.Configuration["GoogleApplicationCredentials"]);
+
+    s.AddScoped<RouteSpeedService>();
+
 
 
 

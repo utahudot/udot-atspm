@@ -13,19 +13,35 @@ namespace ATSPM.Infrastructure.Repositories.ConfigurationRepositories
     ///<inheritdoc cref="IHourlySpeedRepository"/>
     public class HourlySpeedBQRepository : ATSPMRepositoryBQBase<HourlySpeed>, IHourlySpeedRepository
     {
+
+        private readonly BigQueryClient _client;
+        private readonly string _datasetId;
+        private readonly string _tableId;
+        private readonly ILogger<ATSPMRepositoryBQBase<HourlySpeed>> _logger;
+
         public HourlySpeedBQRepository(BigQueryClient client, string datasetId, string tableId, ILogger<ATSPMRepositoryBQBase<HourlySpeed>> log) : base(client, datasetId, tableId, log)
         {
+            _client = client;
+            _datasetId = datasetId;
+            _tableId = tableId;
+            _logger = log;
         }
 
 
+        public async Task AddHourlySpeedAsync(HourlySpeed hourlySpeed)
+        {
+            var table = _client.GetTable(_datasetId, _tableId);
+            var insertRow = CreateRow(hourlySpeed);
+            await table.InsertRowAsync(insertRow);
+        }
 
         #region Overrides
         protected override BigQueryInsertRow CreateRow(HourlySpeed item)
         {
             return new BigQueryInsertRow
             {
-                { "Date", item.Date },
-                {"BinStartTime", item.BinStartTime },
+                { "Date", item.Date.AsBigQueryDate() },
+                {"BinStartTime", item.BinStartTime.TimeOfDay },
                 {"RouteId", item.RouteId },
                 {"SourceId", item.SourceId },
                 {"ConfidenceId", item.ConfidenceId },
@@ -43,8 +59,8 @@ namespace ATSPM.Infrastructure.Repositories.ConfigurationRepositories
         {
             return new HourlySpeed
             {
-                Date = DateOnly.FromDateTime(row.GetPropertyValue<DateTime>("Id")),
-                BinStartTime = TimeOnly.FromDateTime(row.GetPropertyValue<DateTime>("BinStartTime")),
+                Date = row.GetPropertyValue<DateTime>("Id"),
+                BinStartTime = row.GetPropertyValue<DateTime>("BinStartTime"),
                 RouteId = row.GetPropertyValue<int>("RouteId"),
                 SourceId = row.GetPropertyValue<int>("SourceId"),
                 ConfidenceId = row.GetPropertyValue<int>("ConfidenceId"),

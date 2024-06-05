@@ -1,4 +1,5 @@
 ﻿using NetTopologySuite.Geometries;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ATSPM.Data.Models.SpeedManagementConfigModels
 {
@@ -16,6 +17,7 @@ namespace ATSPM.Data.Models.SpeedManagementConfigModels
         public string City { get; set; }
         public string County { get; set; }
         public Geometry Shape { get; set; }
+        public string ShapeWKT { get; set; }
         public string? AlternateIdentifier { get; set; }
         public virtual List<RouteEntity> RouteEntities { get; set; }
 
