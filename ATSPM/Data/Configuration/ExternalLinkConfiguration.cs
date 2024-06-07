@@ -12,7 +12,7 @@ namespace ATSPM.Data.Configuration
         ///<inheritdoc/>
         public void Configure(EntityTypeBuilder<ExternalLink> builder)
         {
-            builder.HasComment("External Links");
+            builder.ToTable(t => t.HasComment("External Links"));
 
             builder.Property(e => e.Name)
                 .IsRequired()

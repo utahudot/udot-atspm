@@ -8,7 +8,7 @@ namespace ATSPM.Data.Configuration
     {
         public void Configure(EntityTypeBuilder<OldSpeedEvent> builder)
         {
-            builder.HasComment("Speed Event Data");
+            builder.ToTable(t => t.HasComment("Speed Event Data"));
 
             builder.HasKey(e => new { e.DetectorId, e.Mph, e.Kph, e.TimeStamp });
 

@@ -43,12 +43,9 @@ namespace ATSPM.Application.Business.Common
         /// </summary>
         /// <param name="start"></param>
         /// <param name="end"></param>
-        /// <param name="getPermissivePhase"></param>
         /// <param name="showVolume"></param>
         /// <param name="pcdCycleTime"></param>
         /// <param name="binSize"></param>
-        /// <param name="approach"></param>
-        /// <param name="events"></param>
         /// <returns></returns>
         public async Task<LocationPhase> GetLocationPhaseData(
             PhaseDetail phaseDetail,
