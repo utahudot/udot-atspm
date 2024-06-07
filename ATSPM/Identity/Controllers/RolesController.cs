@@ -116,6 +116,10 @@ namespace Identity.Controllers
         public async Task<IActionResult> SetupClaims()
         {
             var userAdminRole = roleManager.FindByNameAsync("UserAdmin").Result;
+            if (userAdminRole == null)
+            {
+                return BadRequest("UserAdmin role not found.");
+            }
             await roleManager.AddClaimAsync(userAdminRole, new Claim("http://schemas.microsoft.com/ws/2008/06/identity/claims/role", "User:View"));
             await roleManager.AddClaimAsync(userAdminRole, new Claim("http://schemas.microsoft.com/ws/2008/06/identity/claims/role", "User:Edit"));
             await roleManager.AddClaimAsync(userAdminRole, new Claim("http://schemas.microsoft.com/ws/2008/06/identity/claims/role", "User:Delete"));

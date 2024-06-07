@@ -12,7 +12,7 @@ namespace ATSPM.Data.Configuration
         /// <inheritdoc/>
         public void Configure(EntityTypeBuilder<MenuItem> builder)
         {
-            builder.HasComment("Menu Items");
+            builder.ToTable(t => t.HasComment("Menu Items"));
 
             builder.Property(e => e.Name)
                 .IsRequired()
