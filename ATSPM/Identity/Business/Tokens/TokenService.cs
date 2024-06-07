@@ -26,6 +26,14 @@ namespace Identity.Business.Tokens
 
         public async Task<string> GenerateJwtTokenAsync(ApplicationUser user)
         {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+            if (user.Email == null)
+            {
+                throw new ArgumentNullException(nameof(user.Email));
+            }
             var claims = new List<Claim>
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id),

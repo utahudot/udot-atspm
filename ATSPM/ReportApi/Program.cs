@@ -100,6 +100,10 @@ builder.Host.ConfigureServices((h, s) =>
         o.IncludeXmlComments(filePath);
     });
     var allowedHosts = builder.Configuration.GetSection("AllowedHosts").Get<string>();
+    if (allowedHosts == null)
+    {
+        throw new Exception("AllowedHosts configuration is missing");
+    }
     s.AddCors(options =>
     {
         options.AddPolicy("CorsPolicy",
