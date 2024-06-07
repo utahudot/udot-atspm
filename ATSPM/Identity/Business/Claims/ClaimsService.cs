@@ -16,6 +16,10 @@ namespace ATSPM.Identity.Business.Claims
         public async Task<IList<string>> GetAllClaimsForRole(string roleName)
         {
             var role = await roleManager.FindByNameAsync(roleName);
+            if (role == null)
+            {
+                throw new DataException($"Role {roleName} not found");
+            }
             var claims = await roleManager.GetClaimsAsync(role);
             return claims.Select(c => c.Value).ToList();
         }

@@ -1,6 +1,5 @@
 ﻿using ATSPM.Identity.Business.Users;
 using Identity.Business.Users;
-using Identity.Models.Role;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -40,8 +39,8 @@ namespace Identity.Controllers
                         FirstName = user.FirstName,
                         LastName = user.LastName,
                         Agency = user.Agency,
-                        Email = user.Email,
-                        UserName = user.UserName,
+                        Email = user.Email ?? string.Empty,
+                        UserName = user.UserName ?? string.Empty,
                         Roles = await scopedUserManager.GetRolesAsync(user)
                     };
                     usersDto.Add(userDto);
