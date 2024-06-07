@@ -12,7 +12,7 @@ namespace ATSPM.Data.Configuration
         /// <inheritdoc/>
         public void Configure(EntityTypeBuilder<MeasureType> builder)
         {
-            builder.HasComment("Measure Types");
+            builder.ToTable(t => t.HasComment("Measure Types"));
 
             //builder.Property(e => e.Id)
             //    .ValueGeneratedNever();
