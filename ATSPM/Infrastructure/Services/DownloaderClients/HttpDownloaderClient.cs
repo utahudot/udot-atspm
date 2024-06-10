@@ -82,7 +82,11 @@ namespace ATSPM.Infrastructure.Services.DownloaderClients
 
             try
             {
+                Console.WriteLine($"*****************{_getPath}*************************");
+
                 response = await Client.GetAsync(_getPath, token);
+
+                Console.WriteLine($"*****************{response.StatusCode}*************************");
 
                 if (response.IsSuccessStatusCode && response?.Content != null)
                 {
@@ -129,6 +133,8 @@ namespace ATSPM.Infrastructure.Services.DownloaderClients
                 }
 
                 _getPath = builder.Uri;
+
+                //Console.WriteLine($"*****************{_getPath}*************************");
 
                 return Task.FromResult<IEnumerable<string>>(new List<string>() { $"{DateTime.Now.Ticks}.xml" });
             }
