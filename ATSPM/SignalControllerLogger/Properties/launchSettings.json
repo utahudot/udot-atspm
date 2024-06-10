@@ -4,7 +4,7 @@
       "commandName": "Project",
       "environmentVariables": {
         "PUBSUB_EMULATOR_HOST": "localhost:8085",
-        "DOTNET_ENVIRONMENT": "Development",
+        "DOTNET_ENVIRONMENT": "Staging",
         "GOOGLE_APPLICATION_CREDENTIALS": "M:\\My Drive\\ut-udot-atspm-dev-023438451801.json",
         "CLOUD_RUN_TASK_INDEX": "0"
       }
