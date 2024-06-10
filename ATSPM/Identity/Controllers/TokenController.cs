@@ -1,8 +1,9 @@
 ﻿using Identity.Business.Tokens;
 using Identity.Models.Token;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
+using System.Text;
 
 namespace Identity.Controllers
 {
@@ -34,8 +35,9 @@ namespace Identity.Controllers
                 return Unauthorized(new { Message = "User not found." });
             }
 
+            var resetToken = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(model.Token));
             // Verify the reset token
-            var result = await _userManager.VerifyUserTokenAsync(user, TokenOptions.DefaultProvider, UserManager<ApplicationUser>.ResetPasswordTokenPurpose, model.Token);
+            var result = await _userManager.VerifyUserTokenAsync(user, _userManager.Options.Tokens.PasswordResetTokenProvider, UserManager<ApplicationUser>.ResetPasswordTokenPurpose, resetToken);
 
             if (result)
             {
@@ -57,6 +59,10 @@ namespace Identity.Controllers
             }
 
             var user = await _userManager.FindByEmailAsync(model.Username);
+            if (user == null)
+            {
+                return Unauthorized(new { Message = "User not found." });
+            }
             var roles = await _userManager.GetRolesAsync(user);
 
             if (user != null && roles.Contains("Admin"))

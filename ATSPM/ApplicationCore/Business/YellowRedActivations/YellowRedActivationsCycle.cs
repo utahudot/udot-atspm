@@ -76,7 +76,6 @@ namespace ATSPM.Application.Business.YellowRedActivations
         /// <summary>
         ///     Constructor for the PCDDataPointGroup
         /// </summary>
-        /// <param name="cycleStartTime"></param>
         public YellowRedActivationsCycle(
             DateTime yellowClearance,
             DateTime redClearance,

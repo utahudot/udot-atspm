@@ -12,7 +12,7 @@ namespace ATSPM.Data.Configuration
         /// <inheritdoc/>
         public void Configure(EntityTypeBuilder<DetectorComment> builder)
         {
-            builder.HasComment("Detector Comments");
+            builder.ToTable(t => t.HasComment("Detector Comments"));
 
             builder.Property(e => e.Comment)
                 .IsRequired()

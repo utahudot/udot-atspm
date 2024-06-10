@@ -26,7 +26,6 @@ namespace ATSPM.Application.Business.TimingAndActuation
                 {
                     foreach (var globalEventParam in options.GlobalEventParamsList)
                     {
-                        options.GlobalEventCounter = 1;
                         var globalCustomEvents = controllerEventLogRepository.GetEventsByEventCodesParam
                         (
                             locationId,
