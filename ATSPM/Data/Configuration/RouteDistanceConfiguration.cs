@@ -12,7 +12,7 @@ namespace ATSPM.Data.Configuration
         /// <inheritdoc/>
         public void Configure(EntityTypeBuilder<RouteDistance> builder)
         {
-            builder.HasComment("Route Distances");
+            builder.ToTable(t => t.HasComment("Route Distances"));
 
             builder.HasIndex(e => new { e.LocationIdentifierA, e.LocationIdentifierB }).IsUnique();
 

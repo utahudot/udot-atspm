@@ -96,7 +96,7 @@ namespace ATSPM.Application.Business.Common
         ///     Constructor Used for Split monitor
         /// </summary>
         /// <param name="phasenumber"></param>
-        /// <param name="locationId"></param>
+        /// <param name="LocationId"></param>
         /// <param name="CycleEventsTable"></param>
         //public AnalysisPhaseData GetAnalysisPhaseData(
         //    int phasenumber,

@@ -9,7 +9,6 @@ namespace ATSPM.Application.Business.YellowRedActivations
     {
         protected int cycleCount;
         protected DateTime endTime;
-        private readonly string planNumber;
         protected List<YellowRedActivationsCycle> rlmCycleCollection = new List<YellowRedActivationsCycle>();
         public SortedDictionary<int, int> Splits = new SortedDictionary<int, int>();
         protected DateTime startTime;
@@ -32,6 +31,7 @@ namespace ATSPM.Application.Business.YellowRedActivations
             RLMCycleCollection = cycles.Where(c => c.StartTime >= startTime && c.StartTime < endTime).ToList();
             //GetRedCycle(start, end, cycleEvents);
             CycleCount = RLMCycleCollection.Count;
+            TotalVolume = cycles == null ? 0 : cycles.SelectMany(c => c.DetectorActivations).Count();
         }
 
         public YellowRedActivationPlan(

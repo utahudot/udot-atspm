@@ -1,29 +1,22 @@
-﻿using System.Net.Mail;
-using System.Net;
+﻿using ATSPM.Domain.Services;
+using System.Net.Mail;
 
 namespace Identity.Business.EmailSender
 {
-    public class EmailService : IEmailService
+    public class EmailService 
     {
-        private readonly SmtpClient _smtpClient;
+        private readonly IEmailService mailService;
 
-        public EmailService()
+        public EmailService(IEmailService mailService)
         {
-            // Configure your SMTP settings
-            _smtpClient = new SmtpClient
-            {
-                Host = "smtp.freesmtpservers.com",
-                Port = 25,
-                Credentials = new NetworkCredential(),
-                //EnableSsl = true,
-            };
+            this.mailService = mailService;
         }
 
         public Task SendEmailAsync(string email, string subject, string htmlMessage)
         {
             var mailMessage = new MailMessage
             {
-                From = new MailAddress("support@avenueconsultants.com"),
+                From = new MailAddress("atspmsupport@utah.gov"),
                 Subject = subject,
                 Body = htmlMessage,
                 IsBodyHtml = true,
@@ -31,7 +24,7 @@ namespace Identity.Business.EmailSender
 
             mailMessage.To.Add(email);
 
-            return _smtpClient.SendMailAsync(mailMessage);
+            return mailService.SendEmailAsync(mailMessage);
         }
     }
 }
