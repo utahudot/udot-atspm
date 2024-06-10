@@ -39,12 +39,12 @@ namespace ATSPM.Data.Models
         /// <summary>
         /// Parent version
         /// </summary>
-        public VersionHistory Parent { get; set; }
+        public virtual VersionHistory Parent { get; set; }
 
         /// <summary>
         /// Chile versions
         /// </summary>
-        public ICollection<VersionHistory> Children { get; set; } = new List<VersionHistory>();
+        public virtual ICollection<VersionHistory> Children { get; set; } = new List<VersionHistory>();
 
         /// <inheritdoc/>
         public override string ToString() => $"{Id} - {Version} - {Date} - {Name} - {Notes}";

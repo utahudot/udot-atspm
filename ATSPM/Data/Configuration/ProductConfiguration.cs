@@ -1,8 +1,6 @@
-﻿using ATSPM.Data.Enums;
-using ATSPM.Data.Models;
+﻿using ATSPM.Data.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System.Linq;
 
 namespace ATSPM.Data.Configuration
 {
@@ -14,7 +12,7 @@ namespace ATSPM.Data.Configuration
         /// <inheritdoc/>
         public void Configure(EntityTypeBuilder<Product> builder)
         {
-            builder.HasComment("Products");
+            builder.ToTable(t => t.HasComment("Products"));
 
             builder.Property(e => e.Manufacturer)
                 .IsRequired()

@@ -10,11 +10,11 @@ namespace ATSPM.Data.Relationships
         /// <summary>
         /// Related Id
         /// </summary>
-        int DeviceConfigurationId { get; set; }
+        int? DeviceConfigurationId { get; set; }
 
         /// <summary>
         /// Related device configuration
         /// </summary>
-        DeviceConfiguration DeviceConfiguration { get; set; }
+        DeviceConfiguration? DeviceConfiguration { get; set; }
     }
 }

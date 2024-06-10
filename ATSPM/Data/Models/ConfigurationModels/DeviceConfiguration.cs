@@ -70,10 +70,10 @@ namespace ATSPM.Data.Models
         #region IRelatedProduct
 
         /// <inheritdoc/>
-        public int ProductId { get; set; }
+        public int? ProductId { get; set; }
 
         /// <inheritdoc/>
-        public Product Product { get; set; }
+        public virtual Product? Product { get; set; }
 
         #endregion
 

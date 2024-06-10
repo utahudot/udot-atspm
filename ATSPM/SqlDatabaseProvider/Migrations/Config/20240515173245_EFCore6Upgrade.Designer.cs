@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.Config
 {
     [DbContext(typeof(ConfigContext))]
-    [Migration("20240118162420_EFCore6Upgrade")]
+    [Migration("20240515173245_EFCore6Upgrade")]
     partial class EFCore6Upgrade
     {
         /// <inheritdoc />
@@ -99,6 +99,83 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.Config
                         {
                             t.HasComment("Areas");
                         });
+                });
+
+            modelBuilder.Entity("ATSPM.Data.Models.ConfigurationModels.LocationType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Icon")
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("LocationTypes", t =>
+                        {
+                            t.HasComment("Location Types");
+                        });
+                });
+
+            modelBuilder.Entity("ATSPM.Data.Models.ConfigurationModels.UserArea", b =>
+                {
+                    b.Property<string>("UserId")
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(900)");
+
+                    b.Property<int>("AreaId")
+                        .HasColumnType("int");
+
+                    b.HasKey("UserId", "AreaId");
+
+                    b.HasIndex("AreaId");
+
+                    b.ToTable("UserAreas", t =>
+                        {
+                            t.HasComment("UserAreas");
+                        });
+                });
+
+            modelBuilder.Entity("ATSPM.Data.Models.ConfigurationModels.UserJurisdiction", b =>
+                {
+                    b.Property<string>("UserId")
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(900)");
+
+                    b.Property<int>("JurisdictionId")
+                        .HasColumnType("int");
+
+                    b.HasKey("UserId", "JurisdictionId");
+
+                    b.HasIndex("JurisdictionId");
+
+                    b.ToTable("UserJurisdictions");
+                });
+
+            modelBuilder.Entity("ATSPM.Data.Models.ConfigurationModels.UserRegion", b =>
+                {
+                    b.Property<string>("UserId")
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(900)");
+
+                    b.Property<int>("RegionId")
+                        .HasColumnType("int");
+
+                    b.HasKey("UserId", "RegionId");
+
+                    b.HasIndex("RegionId");
+
+                    b.ToTable("UserRegions");
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.DetectionType", b =>
@@ -287,29 +364,30 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.Config
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("DeviceConfigurationId")
+                    b.Property<int?>("DeviceConfigurationId")
                         .HasColumnType("int");
 
                     b.Property<string>("DeviceStatus")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
-                        .HasMaxLength(7)
-                        .HasColumnType("nvarchar(7)")
+                        .HasMaxLength(14)
+                        .HasColumnType("nvarchar(14)")
                         .HasDefaultValue("Unknown");
 
                     b.Property<string>("DeviceType")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
-                        .HasMaxLength(7)
-                        .HasColumnType("nvarchar(7)")
+                        .HasMaxLength(16)
+                        .HasColumnType("nvarchar(16)")
                         .HasDefaultValue("Unknown");
 
                     b.Property<string>("Ipaddress")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(15)
-                        .HasColumnType("nvarchar(15)")
-                        .HasDefaultValueSql("('10.0.0.1')");
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(15)")
+                        .HasDefaultValueSql("('0.0.0.0')");
 
                     b.Property<int>("LocationId")
                         .HasColumnType("int");
@@ -382,7 +460,7 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.Config
                         .HasColumnType("bigint")
                         .HasDefaultValueSql("((0))");
 
-                    b.Property<int>("ProductId")
+                    b.Property<int?>("ProductId")
                         .HasColumnType("int");
 
                     b.Property<string>("Protocol")
@@ -407,7 +485,7 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.Config
 
                     b.ToTable("DeviceConfigurations", t =>
                         {
-                            t.HasComment("DeviceConfiguration");
+                            t.HasComment("Device Configuration");
                         });
                 });
 
@@ -839,7 +917,7 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.Config
                     b.Property<bool>("ChartEnabled")
                         .HasColumnType("bit");
 
-                    b.Property<int>("JurisdictionId")
+                    b.Property<int?>("JurisdictionId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasDefaultValueSql("((0))");
@@ -878,7 +956,7 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.Config
                         .HasColumnType("varchar(100)")
                         .HasDefaultValueSql("('')");
 
-                    b.Property<int>("RegionId")
+                    b.Property<int?>("RegionId")
                         .HasColumnType("int");
 
                     b.Property<string>("SecondaryName")
@@ -905,33 +983,6 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.Config
                     b.ToTable("Locations", t =>
                         {
                             t.HasComment("Locations");
-                        });
-                });
-
-            modelBuilder.Entity("ATSPM.Data.Models.LocationType", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Icon")
-                        .HasMaxLength(1024)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(1024)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(50)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("LocationTypes", t =>
-                        {
-                            t.HasComment("Location Types");
                         });
                 });
 
@@ -975,7 +1026,7 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.Config
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("MeasureTypeId")
+                    b.Property<int>("MeasureTypeId")
                         .HasColumnType("int");
 
                     b.Property<string>("Option")
@@ -995,6 +1046,372 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.Config
                     b.ToTable("MeasureOptions", t =>
                         {
                             t.HasComment("Measure Options");
+                        });
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 4,
+                            MeasureTypeId = 8,
+                            Option = "binSize",
+                            Value = "15"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            MeasureTypeId = 10,
+                            Option = "binSize",
+                            Value = "15"
+                        },
+                        new
+                        {
+                            Id = 18,
+                            MeasureTypeId = 7,
+                            Option = "binSize",
+                            Value = "15"
+                        },
+                        new
+                        {
+                            Id = 19,
+                            MeasureTypeId = 7,
+                            Option = "showAdvanceDetection",
+                            Value = "TRUE"
+                        },
+                        new
+                        {
+                            Id = 20,
+                            MeasureTypeId = 7,
+                            Option = "showDirectionalSplits",
+                            Value = "TRUE"
+                        },
+                        new
+                        {
+                            Id = 21,
+                            MeasureTypeId = 7,
+                            Option = "showNbEbVolume",
+                            Value = "TRUE"
+                        },
+                        new
+                        {
+                            Id = 22,
+                            MeasureTypeId = 7,
+                            Option = "showSbWbVolume",
+                            Value = "TRUE"
+                        },
+                        new
+                        {
+                            Id = 23,
+                            MeasureTypeId = 7,
+                            Option = "showTMCDetection",
+                            Value = "TRUE"
+                        },
+                        new
+                        {
+                            Id = 24,
+                            MeasureTypeId = 7,
+                            Option = "showTotalVolume",
+                            Value = "FALSE"
+                        },
+                        new
+                        {
+                            Id = 27,
+                            MeasureTypeId = 31,
+                            Option = "binSize",
+                            Value = "15"
+                        },
+                        new
+                        {
+                            Id = 28,
+                            MeasureTypeId = 31,
+                            Option = "gap1Max",
+                            Value = "3.3"
+                        },
+                        new
+                        {
+                            Id = 29,
+                            MeasureTypeId = 31,
+                            Option = "gap1Min",
+                            Value = "1"
+                        },
+                        new
+                        {
+                            Id = 30,
+                            MeasureTypeId = 31,
+                            Option = "gap2Max",
+                            Value = "3.7"
+                        },
+                        new
+                        {
+                            Id = 31,
+                            MeasureTypeId = 31,
+                            Option = "gap2Min",
+                            Value = "3.3"
+                        },
+                        new
+                        {
+                            Id = 32,
+                            MeasureTypeId = 31,
+                            Option = "gap3Max",
+                            Value = "7.4"
+                        },
+                        new
+                        {
+                            Id = 33,
+                            MeasureTypeId = 31,
+                            Option = "gap3Min",
+                            Value = "3.7"
+                        },
+                        new
+                        {
+                            Id = 34,
+                            MeasureTypeId = 31,
+                            Option = "gap4Min",
+                            Value = "7.4"
+                        },
+                        new
+                        {
+                            Id = 35,
+                            MeasureTypeId = 31,
+                            Option = "trendLineGapThreshold",
+                            Value = "7.4"
+                        },
+                        new
+                        {
+                            Id = 36,
+                            MeasureTypeId = 6,
+                            Option = "binSize",
+                            Value = "15"
+                        },
+                        new
+                        {
+                            Id = 39,
+                            MeasureTypeId = 6,
+                            Option = "showPlanStatistics",
+                            Value = "TRUE"
+                        },
+                        new
+                        {
+                            Id = 40,
+                            MeasureTypeId = 6,
+                            Option = "showVolumes",
+                            Value = "TRUE"
+                        },
+                        new
+                        {
+                            Id = 43,
+                            MeasureTypeId = 3,
+                            Option = "pedRecallThreshold",
+                            Value = "75"
+                        },
+                        new
+                        {
+                            Id = 44,
+                            MeasureTypeId = 3,
+                            Option = "showCycleLength",
+                            Value = "TRUE"
+                        },
+                        new
+                        {
+                            Id = 45,
+                            MeasureTypeId = 3,
+                            Option = "showPedBeginWalk",
+                            Value = "TRUE"
+                        },
+                        new
+                        {
+                            Id = 46,
+                            MeasureTypeId = 3,
+                            Option = "showPedRecall",
+                            Value = "FALSE"
+                        },
+                        new
+                        {
+                            Id = 47,
+                            MeasureTypeId = 3,
+                            Option = "showPercentDelay",
+                            Value = "TRUE"
+                        },
+                        new
+                        {
+                            Id = 48,
+                            MeasureTypeId = 3,
+                            Option = "timeBuffer",
+                            Value = "15"
+                        },
+                        new
+                        {
+                            Id = 50,
+                            MeasureTypeId = 1,
+                            Option = "selectedConsecutiveCount",
+                            Value = "1"
+                        },
+                        new
+                        {
+                            Id = 54,
+                            MeasureTypeId = 12,
+                            Option = "firstSecondsOfRed",
+                            Value = "5"
+                        },
+                        new
+                        {
+                            Id = 55,
+                            MeasureTypeId = 12,
+                            Option = "showAvgLines",
+                            Value = "TRUE"
+                        },
+                        new
+                        {
+                            Id = 56,
+                            MeasureTypeId = 12,
+                            Option = "showFailLines",
+                            Value = "TRUE"
+                        },
+                        new
+                        {
+                            Id = 57,
+                            MeasureTypeId = 12,
+                            Option = "showPercentFailLines",
+                            Value = "FALSE"
+                        },
+                        new
+                        {
+                            Id = 58,
+                            MeasureTypeId = 2,
+                            Option = "percentileSplit",
+                            Value = "85"
+                        },
+                        new
+                        {
+                            Id = 69,
+                            MeasureTypeId = 17,
+                            Option = "extendStartStopSearch",
+                            Value = "2"
+                        },
+                        new
+                        {
+                            Id = 71,
+                            MeasureTypeId = 17,
+                            Option = "showAdvancedCount",
+                            Value = "TRUE"
+                        },
+                        new
+                        {
+                            Id = 72,
+                            MeasureTypeId = 17,
+                            Option = "showAdvancedDilemmaZone",
+                            Value = "TRUE"
+                        },
+                        new
+                        {
+                            Id = 73,
+                            MeasureTypeId = 17,
+                            Option = "showAllLanesInfo",
+                            Value = "FALSE"
+                        },
+                        new
+                        {
+                            Id = 76,
+                            MeasureTypeId = 17,
+                            Option = "showLaneByLaneCount",
+                            Value = "TRUE"
+                        },
+                        new
+                        {
+                            Id = 79,
+                            MeasureTypeId = 17,
+                            Option = "showPedestrianActuation",
+                            Value = "TRUE"
+                        },
+                        new
+                        {
+                            Id = 80,
+                            MeasureTypeId = 17,
+                            Option = "showPedestrianIntervals",
+                            Value = "TRUE"
+                        },
+                        new
+                        {
+                            Id = 83,
+                            MeasureTypeId = 17,
+                            Option = "showStopBarPresence",
+                            Value = "TRUE"
+                        },
+                        new
+                        {
+                            Id = 85,
+                            MeasureTypeId = 5,
+                            Option = "binSize",
+                            Value = "15"
+                        },
+                        new
+                        {
+                            Id = 92,
+                            MeasureTypeId = 11,
+                            Option = "severeLevelSeconds",
+                            Value = "5"
+                        },
+                        new
+                        {
+                            Id = 102,
+                            MeasureTypeId = 8,
+                            Option = "getVolume",
+                            Value = "TRUE"
+                        },
+                        new
+                        {
+                            Id = 103,
+                            MeasureTypeId = 8,
+                            Option = "getPermissivePhase",
+                            Value = "TRUE"
+                        },
+                        new
+                        {
+                            Id = 104,
+                            MeasureTypeId = 9,
+                            Option = "usePermissivePhase",
+                            Value = "TRUE"
+                        },
+                        new
+                        {
+                            Id = 105,
+                            MeasureTypeId = 9,
+                            Option = "showPlanStatistics",
+                            Value = "TRUE"
+                        },
+                        new
+                        {
+                            Id = 106,
+                            MeasureTypeId = 9,
+                            Option = "binSize",
+                            Value = "15"
+                        },
+                        new
+                        {
+                            Id = 107,
+                            MeasureTypeId = 6,
+                            Option = "showArrivalsOnGreen",
+                            Value = "TRUE"
+                        },
+                        new
+                        {
+                            Id = 113,
+                            MeasureTypeId = 36,
+                            Option = "xAxisBinSize",
+                            Value = "15"
+                        },
+                        new
+                        {
+                            Id = 114,
+                            MeasureTypeId = 36,
+                            Option = "yAxisBinSize",
+                            Value = "4"
+                        },
+                        new
+                        {
+                            Id = 115,
+                            MeasureTypeId = 32,
+                            Option = "binSize",
+                            Value = "15"
                         });
                 });
 
@@ -1329,6 +1746,15 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.Config
                             Name = "Split Monitor",
                             ShowOnAggregationSite = true,
                             ShowOnWebsite = false
+                        },
+                        new
+                        {
+                            Id = 36,
+                            Abbreviation = "GTU",
+                            DisplayOrder = 130,
+                            Name = "Green Time Utilization",
+                            ShowOnAggregationSite = false,
+                            ShowOnWebsite = true
                         });
                 });
 
@@ -1347,19 +1773,19 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.Config
                         .HasColumnType("varbinary(max)");
 
                     b.Property<string>("Icon")
-                        .HasMaxLength(1024)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(1024)");
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Link")
-                        .HasMaxLength(512)
-                        .HasColumnType("nvarchar(512)");
+                        .HasMaxLength(4000)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(4000)");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(24)
+                        .HasMaxLength(128)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(24)");
+                        .HasColumnType("varchar(128)");
 
                     b.Property<int?>("ParentId")
                         .HasColumnType("int");
@@ -1400,7 +1826,8 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.Config
                         .HasColumnType("varchar(512)");
 
                     b.Property<string>("WebPage")
-                        .HasColumnType("nvarchar(max)");
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(max)");
 
                     b.HasKey("Id");
 
@@ -1551,88 +1978,6 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.Config
                         });
                 });
 
-            modelBuilder.Entity("ATSPM.Data.Models.Settings", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Setting")
-                        .IsRequired()
-                        .HasMaxLength(32)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(32)");
-
-                    b.Property<string>("Value")
-                        .IsRequired()
-                        .HasMaxLength(128)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(128)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Setting")
-                        .IsUnique();
-
-                    b.ToTable("Settings", t =>
-                        {
-                            t.HasComment("Application Settings");
-                        });
-                });
-
-            modelBuilder.Entity("ATSPM.Data.Models.UserArea", b =>
-                {
-                    b.Property<string>("UserId")
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(900)");
-
-                    b.Property<int>("AreaId")
-                        .HasColumnType("int");
-
-                    b.HasKey("UserId", "AreaId");
-
-                    b.HasIndex("AreaId");
-
-                    b.ToTable("UserAreas", t =>
-                        {
-                            t.HasComment("UserAreas");
-                        });
-                });
-
-            modelBuilder.Entity("ATSPM.Data.Models.UserJurisdiction", b =>
-                {
-                    b.Property<string>("UserId")
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(900)");
-
-                    b.Property<int>("JurisdictionId")
-                        .HasColumnType("int");
-
-                    b.HasKey("UserId", "JurisdictionId");
-
-                    b.HasIndex("JurisdictionId");
-
-                    b.ToTable("UserJurisdictions");
-                });
-
-            modelBuilder.Entity("ATSPM.Data.Models.UserRegion", b =>
-                {
-                    b.Property<string>("UserId")
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(900)");
-
-                    b.Property<int>("RegionId")
-                        .HasColumnType("int");
-
-                    b.HasKey("UserId", "RegionId");
-
-                    b.HasIndex("RegionId");
-
-                    b.ToTable("UserRegions");
-                });
-
             modelBuilder.Entity("ATSPM.Data.Models.VersionHistory", b =>
                 {
                     b.Property<int>("Id")
@@ -1644,7 +1989,7 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.Config
                     b.Property<DateTime>("Date")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
-                        .HasDefaultValue(new DateTime(2024, 1, 18, 9, 24, 20, 718, DateTimeKind.Local).AddTicks(9750));
+                        .HasDefaultValue(new DateTime(2024, 5, 15, 11, 32, 45, 875, DateTimeKind.Local).AddTicks(1874));
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -1793,6 +2138,39 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.Config
                     b.Navigation("Location");
                 });
 
+            modelBuilder.Entity("ATSPM.Data.Models.ConfigurationModels.UserArea", b =>
+                {
+                    b.HasOne("ATSPM.Data.Models.Area", "Area")
+                        .WithMany("UserAreas")
+                        .HasForeignKey("AreaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Area");
+                });
+
+            modelBuilder.Entity("ATSPM.Data.Models.ConfigurationModels.UserJurisdiction", b =>
+                {
+                    b.HasOne("ATSPM.Data.Models.Jurisdiction", "Jurisdiction")
+                        .WithMany("UserJurisdictions")
+                        .HasForeignKey("JurisdictionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Jurisdiction");
+                });
+
+            modelBuilder.Entity("ATSPM.Data.Models.ConfigurationModels.UserRegion", b =>
+                {
+                    b.HasOne("ATSPM.Data.Models.Region", "Region")
+                        .WithMany("UserRegions")
+                        .HasForeignKey("RegionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Region");
+                });
+
             modelBuilder.Entity("ATSPM.Data.Models.Detector", b =>
                 {
                     b.HasOne("ATSPM.Data.Models.Approach", "Approach")
@@ -1819,9 +2197,7 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.Config
                 {
                     b.HasOne("ATSPM.Data.Models.DeviceConfiguration", "DeviceConfiguration")
                         .WithMany("Devices")
-                        .HasForeignKey("DeviceConfigurationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("DeviceConfigurationId");
 
                     b.HasOne("ATSPM.Data.Models.Location", "Location")
                         .WithMany("Devices")
@@ -1838,9 +2214,7 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.Config
                 {
                     b.HasOne("ATSPM.Data.Models.Product", "Product")
                         .WithMany()
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ProductId");
 
                     b.Navigation("Product");
                 });
@@ -1849,11 +2223,9 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.Config
                 {
                     b.HasOne("ATSPM.Data.Models.Jurisdiction", "Jurisdiction")
                         .WithMany("Locations")
-                        .HasForeignKey("JurisdictionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("JurisdictionId");
 
-                    b.HasOne("ATSPM.Data.Models.LocationType", "LocationType")
+                    b.HasOne("ATSPM.Data.Models.ConfigurationModels.LocationType", "LocationType")
                         .WithMany("Locations")
                         .HasForeignKey("LocationTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1861,9 +2233,7 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.Config
 
                     b.HasOne("ATSPM.Data.Models.Region", "Region")
                         .WithMany("Locations")
-                        .HasForeignKey("RegionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("RegionId");
 
                     b.Navigation("Jurisdiction");
 
@@ -1875,8 +2245,10 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.Config
             modelBuilder.Entity("ATSPM.Data.Models.MeasureOption", b =>
                 {
                     b.HasOne("ATSPM.Data.Models.MeasureType", "MeasureType")
-                        .WithMany()
-                        .HasForeignKey("MeasureTypeId");
+                        .WithMany("MeasureOptions")
+                        .HasForeignKey("MeasureTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("MeasureType");
                 });
@@ -1930,39 +2302,6 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.Config
                     b.Navigation("PrimaryDirection");
 
                     b.Navigation("Route");
-                });
-
-            modelBuilder.Entity("ATSPM.Data.Models.UserArea", b =>
-                {
-                    b.HasOne("ATSPM.Data.Models.Area", "Area")
-                        .WithMany("UserAreas")
-                        .HasForeignKey("AreaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Area");
-                });
-
-            modelBuilder.Entity("ATSPM.Data.Models.UserJurisdiction", b =>
-                {
-                    b.HasOne("ATSPM.Data.Models.Jurisdiction", "Jurisdiction")
-                        .WithMany("UserJurisdictions")
-                        .HasForeignKey("JurisdictionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Jurisdiction");
-                });
-
-            modelBuilder.Entity("ATSPM.Data.Models.UserRegion", b =>
-                {
-                    b.HasOne("ATSPM.Data.Models.Region", "Region")
-                        .WithMany("UserRegions")
-                        .HasForeignKey("RegionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Region");
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.VersionHistory", b =>
@@ -2045,6 +2384,11 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.Config
                     b.Navigation("UserAreas");
                 });
 
+            modelBuilder.Entity("ATSPM.Data.Models.ConfigurationModels.LocationType", b =>
+                {
+                    b.Navigation("Locations");
+                });
+
             modelBuilder.Entity("ATSPM.Data.Models.Detector", b =>
                 {
                     b.Navigation("DetectorComments");
@@ -2078,9 +2422,9 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.Config
                     b.Navigation("Devices");
                 });
 
-            modelBuilder.Entity("ATSPM.Data.Models.LocationType", b =>
+            modelBuilder.Entity("ATSPM.Data.Models.MeasureType", b =>
                 {
-                    b.Navigation("Locations");
+                    b.Navigation("MeasureOptions");
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.MenuItem", b =>

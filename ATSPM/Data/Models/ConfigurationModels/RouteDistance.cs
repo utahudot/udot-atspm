@@ -12,7 +12,7 @@ namespace ATSPM.Data.Models
     public partial class RouteDistance : AtspmConfigModelBase<int>
     {
         /// <summary>
-        /// Distance between <see cref="RouteLocationA"/> and <see cref="RouteLocationB"/>
+        /// Distance between <see cref="LocationIdentifierA"/> and <see cref="LocationIdentifierB"/>
         /// </summary>
         public double Distance { get; set; }
         

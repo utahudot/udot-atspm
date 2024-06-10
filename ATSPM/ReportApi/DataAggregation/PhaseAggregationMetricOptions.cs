@@ -116,7 +116,7 @@ namespace MOE.Common.Business.WCFServiceLibrary
                     seriesList.Add(series);
                 });
             }
-            catch (Exception e)
+            catch
             {
                 throw;
             }

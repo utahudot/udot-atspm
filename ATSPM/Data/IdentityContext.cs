@@ -12,7 +12,7 @@ public class IdentityContext : IdentityDbContext<ApplicationUser>
 
 }
 
-
+//TODO: this should be moved into models
 public class ApplicationUser : IdentityUser
 {
     // Additional properties for your custom user entity
