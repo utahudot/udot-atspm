@@ -1,4 +1,21 @@
-﻿using ATSPM.Application.Configuration;
+﻿#region license
+// Copyright 2024 Utah Departement of Transportation
+// for LocationControllerLogger - ATSPM.LocationControllerLogger/TestService.cs
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+// http://www.apache.org/licenses/LICENSE-2.
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+#endregion
+
+using ATSPM.Application.Configuration;
 using ATSPM.Application.Repositories.ConfigurationRepositories;
 using ATSPM.Application.Repositories.EventLogRepositories;
 using ATSPM.Application.Services;
@@ -100,12 +117,12 @@ namespace ATSPM.LocationControllerLogger
                 sw.Start();
 
                 var sftpDevices = scope.ServiceProvider.GetService<IDeviceRepository>().GetActiveDevicesByAllLatestLocations()
-                    .Where(w => w.Ipaddress.ToString() != "10.10.10.10")
-                    .Where(w => w.Ipaddress.IsValidIPAddress())
+                    //.Where(w => w.Ipaddress.ToString() != "10.10.10.10")
+                    //.Where(w => w.Ipaddress.IsValidIPAddress())
                     //.Where(w => w.DeviceConfiguration.Protocol == TransportProtocols.Sftp)
                     //.Where(w => w.DeviceConfiguration.Protocol != TransportProtocols.Http)
                     .Where(w => w.DeviceType == DeviceTypes.RampController)
-                    .OrderBy(o => o.Ipaddress.ToString())
+                    .OrderBy(o => o.Ipaddress)
                     //.Skip(2)
                     .Take(1);
 
@@ -126,31 +143,28 @@ namespace ATSPM.LocationControllerLogger
                 var processEventLogFileWorkflow = new ProcessEventLogFileWorkflow<IndianaEvent>(_serviceProvider, _options.Value.SaveToDatabaseBatchSize, _options.Value.MaxDegreeOfParallelism);
                 //var SaveEventsToRepo = new SaveEventsToRepo(_serviceProvider, new ExecutionDataflowBlockOptions() { MaxDegreeOfParallelism = 1, CancellationToken = cancellationToken });
 
-                var actionResult = new ActionBlock<CompressedEventLogBase>(t =>
+                var actionResult = new ActionBlock<Tuple<Device, FileInfo>>(t =>
                 {
-                    Console.WriteLine($"{t.LocationIdentifier} - {t.ArchiveDate} - {t.DeviceId} - {t.DataType} - {t.Data.Count()}");
-
-                    //var repo = scope.ServiceProvider.GetService<IEventLogRepository>();
-
-                    //var i = await repo.LookupAsync(t);
-                    //Console.WriteLine($"======================={i.LocationIdentifier} - {i.ArchiveDate} - {i.DeviceId} - {i.Data.Count()}=======================");
-
-                    //foreach (var i in repo.GetList())
-                    //{
-                    //    Console.WriteLine($"{t.LocationIdentifier} - {t.ArchiveDate} - {t.DeviceId} - {t.DataType} - {t.Data.Count()}");
-                    //}
+                    Console.WriteLine($"{t.Item1} - {t.Item2.FullName}");
                 }, new ExecutionDataflowBlockOptions() { MaxDegreeOfParallelism = _options.Value.MaxDegreeOfParallelism, CancellationToken = cancellationToken });
+
+                //var actionResult = new ActionBlock<CompressedEventLogBase>(t =>
+                //{
+                //    Console.WriteLine($"{t.LocationIdentifier} - {t.ArchiveDate} - {t.DeviceId} - {t.DataType} - {t.Data.Count()}");
+                //}, new ExecutionDataflowBlockOptions() { MaxDegreeOfParallelism = _options.Value.MaxDegreeOfParallelism, CancellationToken = cancellationToken });
 
                 input.LinkTo(downloadStep, new DataflowLinkOptions() { PropagateCompletion = true });
 
                 await Task.Delay(TimeSpan.FromSeconds(1));
 
-                downloadStep.LinkTo(processEventLogFileWorkflow.Input, new DataflowLinkOptions() { PropagateCompletion = true });
+                //downloadStep.LinkTo(processEventLogFileWorkflow.Input, new DataflowLinkOptions() { PropagateCompletion = true });
+
+                downloadStep.LinkTo(actionResult, new DataflowLinkOptions() { PropagateCompletion = true });
 
                 //processEventLogFileWorkflow.Output.LinkTo(SaveEventsToRepo, new DataflowLinkOptions() { PropagateCompletion = true });
                 //SaveEventsToRepo.LinkTo(actionResult, new DataflowLinkOptions() { PropagateCompletion = true });
 
-                processEventLogFileWorkflow.Output.LinkTo(actionResult, new DataflowLinkOptions() { PropagateCompletion = true });
+                //processEventLogFileWorkflow.Output.LinkTo(actionResult, new DataflowLinkOptions() { PropagateCompletion = true });
 
                 foreach (var d in devices)
                 {
