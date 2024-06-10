@@ -28,7 +28,11 @@ namespace Identity.Business.Accounts
 
             if (createUserResult.Succeeded)
             {
-                //await userManager.AddToRoleAsync(user, "User");
+                //await _userManager.AddToRoleAsync(user, "User");
+                if (user.Email == null)
+                {
+                    return new AccountResult(StatusCodes.Status400BadRequest, "", new List<string>(), "Email is required");
+                }
                 return await Login(user.Email, password);
             }
 
@@ -51,7 +55,7 @@ namespace Identity.Business.Accounts
             {
                 var token = await tokenService.GenerateJwtTokenAsync(user);
                 var viewClaims = await GetViewClaimsForUser(user);
-                return new AccountResult( StatusCodes.Status200OK, token, viewClaims, null);
+                return new AccountResult(StatusCodes.Status200OK, token, viewClaims, null);
             }
 
             return new AccountResult(StatusCodes.Status400BadRequest, "", new List<string>(), "Incorrect username or password");
@@ -64,7 +68,8 @@ namespace Identity.Business.Accounts
             if (roles.Contains("Admin"))
             {
                 claims.Add("Admin");
-            } else
+            }
+            else
             {
                 foreach (var roleName in roles)
                 {
@@ -72,14 +77,11 @@ namespace Identity.Business.Accounts
                     var roleClaims = await _roleManager.GetClaimsAsync(role);
                     foreach (var roleClaim in roleClaims)
                     {
-                        if (roleClaim.Value.ToLower().Contains("view"))
-                        {
-                           claims.Add(roleClaim.Value);
-                        }
+                        claims.Add(roleClaim.Value);
                     }
                 }
             }
-            
+
             return claims;
         }
     }

@@ -2,12 +2,11 @@ using ATSPM.Identity.Business.Claims;
 using ATSPM.Infrastructure.Extensions;
 using Identity.Business.Accounts;
 using Identity.Business.Agency;
-using Identity.Business.EmailSender;
 using Identity.Business.Tokens;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi.Models;
 using ATSPM.Identity.Business.Users;
-
+using Identity.Business.EmailSender;
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
@@ -23,9 +22,11 @@ builder.Host.ConfigureServices((host, services) =>
     services.AddAtspmAuthentication(host, builder);
     services.AddAtspmAuthorization(host);
 
+    services.AddEmailServices(host);
+    services.AddScoped<EmailService>();
+
     services.AddScoped<IAgencyService, AgencyService>();
     services.AddScoped<IAccountService, AccountService>();
-    services.AddScoped<IEmailService, EmailService>();
     services.AddScoped<ClaimsService, ClaimsService>();
     services.AddScoped<TokenService, TokenService>();
     services.AddScoped<RoleManager<IdentityRole>>();
