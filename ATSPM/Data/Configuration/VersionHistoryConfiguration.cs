@@ -12,7 +12,7 @@ namespace ATSPM.Data.Configuration
         /// <inheritdoc/>
         public void Configure(EntityTypeBuilder<VersionHistory> builder)
         {
-            builder.HasComment("Version History");
+            builder.ToTable(t => t.HasComment("Version History"));
 
             builder.Property(e => e.Name)
                 .IsRequired()

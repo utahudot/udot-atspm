@@ -36,17 +36,17 @@ namespace ATSPM.Application.Business.WaitTime
             if (hasAdvanceDetection && hasStopBarDetection)
             {
                 useDroppingAlgorithm = true;
-                detectionTypesForApproach = "Advance + Stop Bar Detection";
+                detectionTypesForApproach = "Advanced Count Detection + Stop Bar Presence Detection";
             }
             else if (hasAdvanceDetection)
             {
                 useDroppingAlgorithm = false;
-                detectionTypesForApproach = "Advance Detection";
+                detectionTypesForApproach = "Advanced Count Detection";
             }
             else if (hasStopBarDetection)
             {
                 useDroppingAlgorithm = true;
-                detectionTypesForApproach = "Stop Bar Detection";
+                detectionTypesForApproach = "Stop Bar Presence Detection";
             }
             else
             {

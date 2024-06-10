@@ -1,39 +1,23 @@
 using ATSPM.Application.Configuration;
-using ATSPM.Application.Repositories.AggregationRepositories;
 using ATSPM.Application.Repositories.ConfigurationRepositories;
-using ATSPM.Application.Repositories.EventLogRepositories;
 using ATSPM.Application.Services;
 using ATSPM.Data;
-using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
-using ATSPM.Data.Models.AggregationModels;
+using ATSPM.Data.Models.ConfigurationModels;
 using ATSPM.Data.Models.EventLogModels;
-using ATSPM.Domain.Extensions;
-using ATSPM.Domain.Workflows;
 using ATSPM.Infrastructure.Extensions;
 using ATSPM.Infrastructure.Services.ControllerDecoders;
 using ATSPM.Infrastructure.Services.ControllerDownloaders;
 using ATSPM.Infrastructure.Services.DownloaderClients;
-using AutoFixture;
 using Google.Cloud.Diagnostics.Common;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using NetTopologySuite.Index.HPRtree;
-using Newtonsoft.Json;
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Net;
 using System.Reflection;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using System.Threading;
 using System.Threading.Tasks;
-using System.Threading.Tasks.Dataflow;
 
 namespace ATSPM.LocationControllerLogger
 {
@@ -137,6 +121,16 @@ namespace ATSPM.LocationControllerLogger
 
 
 
+
+                    //s.AddTransient<IEmailService, SendGridEmailService>();
+                    //s.AddTransient<IEmailService, SmtpEmailService>();
+
+                    s.AddEmailServices(h);
+                    
+
+
+
+
                     s.PostConfigureAll<SignalControllerDownloaderConfiguration>(o =>
                     {
                         o.LocalPath = "C:\\temp2";
@@ -146,7 +140,25 @@ namespace ATSPM.LocationControllerLogger
                         o.DeleteFile = false;
                     });
 
-                    
+                    //s.PostConfigureAll<EmailConfiguration>(o =>
+                    //{
+                    //    o.Host = "smtp.sendgrid.net";
+                    //    o.Port = 587;
+                    //    o.EnableSsl = false;
+                    //    o.UserName = "apikey";
+                    //    o.Password = "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";
+                    //});
+
+                    //              "DefaultEmailAddress": "dlowe@avenueconsultants.com",
+                    //"EmailAllErrors": false,
+                    //"EmailType": "smtp",
+                    //"SmtpSettings": {
+                    //              "Host": "smtp-relay.brevo.com",
+                    //  "Port": 587,
+                    //  "EnableSsl": true,
+                    //  "UserName": "dlowe@avenueconsultants.com",
+                    //  "Password": "Bb1SkPtsE5hLQYn4"
+                    //},
                 })
 
                 //.UseConsoleLifetime()
@@ -155,10 +167,67 @@ namespace ATSPM.LocationControllerLogger
             //host.Services.PrintHostInformation();
 
             //await host.RunAsync();
-            await host.StartAsync();
-            await host.StopAsync();
+            //await host.StartAsync();
+            //await host.StopAsync();
 
-            //Console.ReadLine();
+
+            //using (var scope = host.Services.CreateScope())
+            //{
+            //    var db = scope.ServiceProvider.GetService<ConfigContext>();
+
+            //    var region = new Region() { Description = "test region" };
+            //    var jurisdiction = new Jurisdiction() { Name = "test jurisdiction" };
+            //    var locType = new LocationType() { Name = "test location type" };
+
+            //    var r = db.Add(region);
+            //    var j = db.Add(jurisdiction);
+            //    var l = db.Add(locType);
+
+            //    await db.SaveChangesAsync();
+
+            //    var loc = new Location()
+            //    {
+            //        LocationIdentifier = "1234",
+            //        PrimaryName = "primary",
+            //        SecondaryName = "secondary",
+            //        VersionAction = Data.Enums.LocationVersionActions.Initial,
+            //        Longitude = 123,
+            //        Latitude = 123,
+            //        Start = DateTime.Now,
+            //        RegionId = r.Entity.Id,
+            //        JurisdictionId = j.Entity.Id,
+            //        LocationTypeId = l.Entity.Id,
+            //    };
+
+            //    db.Add(loc);
+            //    await db.SaveChangesAsync();
+            //}
+
+            using (var scope = host.Services.CreateScope())
+            {
+                //var db = scope.ServiceProvider.GetService<ConfigContext>();
+
+                //var test = db.ChangeTracker.DebugView.ShortView;
+
+                //var r = db.Regions.Include(i => i.Locations).FirstOrDefault();
+                //db.Remove(r);
+
+                //var j = db.Jurisdictions.Include(i => i.Locations).FirstOrDefault();
+                //db.Remove(j);
+
+                //await db.SaveChangesAsync();
+
+                var regions = scope.ServiceProvider.GetService<IRegionsRepository>();
+                var r = regions.Lookup(regions.GetList().FirstOrDefault());
+                regions.Remove(r);
+
+                var jurisdictions = scope.ServiceProvider.GetService<IJurisdictionRepository>();
+                var j = jurisdictions.Lookup(jurisdictions.GetList().FirstOrDefault());
+                jurisdictions.Remove(j);
+
+            }
+
+            Console.ReadLine();
         }
     }
 }

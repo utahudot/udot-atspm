@@ -73,7 +73,6 @@ namespace WatchDog.Models
                 logger.LogError(ex.Message);
                 return false;
             }
-
         }
 
         private void AddUsersToMessage(List<ApplicationUser> users, MimeMessage? message)
