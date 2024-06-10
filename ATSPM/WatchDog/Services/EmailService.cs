@@ -1,19 +1,22 @@
 ﻿using ATSPM.Data.Models;
 using ATSPM.Data.Models.ConfigurationModels;
+using ATSPM.Domain.Services;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using WatchDog.Models;
+using ATSPM.Application.Extensions;
+using System.Net.Mail;
 
 namespace WatchDog.Services
 {
     public class EmailService
     {
         private readonly ILogger<EmailService> logger;
-        private readonly IMailService mailService;
+        private readonly IEmailService mailService;
 
         public EmailService(
             ILogger<EmailService> logger,
-            IMailService mailService)
+            IEmailService mailService)
         {
             this.logger = logger;
             this.mailService = mailService;
@@ -48,7 +51,11 @@ namespace WatchDog.Services
         {
             var subject = $"All Locations ATSPM Alerts for {options.ScanDate.ToShortDateString()}";
             var emailBody = await CreateEmailBody(options, eventsContainer, locations, logsFromPreviousDay);
-            await mailService.SendEmailAsync(options.DefaultEmailAddress, users, subject, emailBody);
+
+            //await mailService.SendEmailAsync(options.DefaultEmailAddress, users, subject, emailBody);
+
+            await mailService.SendEmailAsync(new MailAddress(options.DefaultEmailAddress), users.GetMailingAddresses(), subject, emailBody, true);
+
         }
 
         private async Task SendJurisdictionEmails(
@@ -75,7 +82,9 @@ namespace WatchDog.Services
                         eventsContainer,
                         LocationsByJurisdiction,
                         logsFromPreviousDay);
-                    await mailService.SendEmailAsync(options.DefaultEmailAddress, usersByJurisdiction, subject, emailBody);
+                    //await mailService.SendEmailAsync(options.DefaultEmailAddress, usersByJurisdiction, subject, emailBody);
+
+                    await mailService.SendEmailAsync(new MailAddress(options.DefaultEmailAddress), usersByJurisdiction.GetMailingAddresses(), subject, emailBody, true);
                 }
             }
         }
@@ -104,7 +113,9 @@ namespace WatchDog.Services
                         eventsContainer,
                         LocationsByArea,
                         logsFromPreviousDay);
-                    await mailService.SendEmailAsync(options.DefaultEmailAddress, usersByArea, subject, emailBody);
+                    //await mailService.SendEmailAsync(options.DefaultEmailAddress, usersByArea, subject, emailBody);
+
+                    await mailService.SendEmailAsync(new MailAddress(options.DefaultEmailAddress), usersByArea.GetMailingAddresses(), subject, emailBody, true);
                 }
             }
         }
@@ -132,7 +143,9 @@ namespace WatchDog.Services
                         eventsContainer,
                         LocationsByRegion,
                         logsFromPreviousDay);
-                    await mailService.SendEmailAsync(options.DefaultEmailAddress, usersByRegion, subject, emailBody);
+                    //await mailService.SendEmailAsync(options.DefaultEmailAddress, usersByRegion, subject, emailBody);
+
+                    await mailService.SendEmailAsync(new MailAddress(options.DefaultEmailAddress), usersByRegion.GetMailingAddresses(), subject, emailBody, true);
                 }
             }
         }

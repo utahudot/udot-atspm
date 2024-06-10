@@ -25,5 +25,13 @@ namespace ATSPM.Data.Enums
         SBP = 6,
         [Display(Name = "Advanced Presence", Order = 7)]
         AP = 7,
+        [Display(Name = "Passage", Order = 8)]
+        P = 8,
+        [Display(Name = "Demand", Order = 9)]
+        D = 9,
+        [Display(Name = "Intermediate Queue", Order = 10)]
+        IQ = 10,
+        [Display(Name = "Excessive Queue", Order = 11)]
+        EQ = 11,
     }
 }

@@ -50,10 +50,10 @@ namespace ATSPM.Data.Models
         #region IRelatedDeviceConfiguration
 
         /// <inheritdoc/>
-        public int DeviceConfigurationId { get; set; }
+        public int? DeviceConfigurationId { get; set; }
 
         /// <inheritdoc/>
-        public DeviceConfiguration DeviceConfiguration { get; set; }
+        public virtual DeviceConfiguration? DeviceConfiguration { get; set; }
 
         #endregion
 

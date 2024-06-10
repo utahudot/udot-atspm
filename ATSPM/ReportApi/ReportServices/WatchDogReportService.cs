@@ -84,11 +84,11 @@ namespace ATSPM.ReportApi.ReportServices
             foreach (var e in events)
             {
                 var location = locations.Where(l => l.Id == e.locationId).FirstOrDefault();
-                string jurisdictionName = jurisdictionDict.ContainsKey(location.JurisdictionId)
-                                              ? jurisdictionDict[location.JurisdictionId]
+                string jurisdictionName = jurisdictionDict.ContainsKey(location.JurisdictionId ?? 0)
+                                              ? jurisdictionDict[location.JurisdictionId ?? 0]
                                               : "NA";
-                string regionDescription = regionsDict.ContainsKey(location.RegionId)
-                                  ? regionsDict[location.RegionId]
+                string regionDescription = regionsDict.ContainsKey(location.RegionId ?? 0)
+                                  ? regionsDict[location.RegionId ?? 0]
                                   : "NA";
 
                 result.LogEvents.Add(

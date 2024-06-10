@@ -13,7 +13,7 @@ namespace ATSPM.Data.Configuration
         /// <inheritdoc/>
         public void Configure(EntityTypeBuilder<Device> builder)
         {
-            builder.HasComment("Devices");
+            builder.ToTable(t => t.HasComment("Devices"));
 
             builder.Property(e => e.Ipaddress)
                 .IsRequired()
