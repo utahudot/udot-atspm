@@ -1,7 +1,7 @@
 ﻿using ATSPM.Application.Repositories.SpeedManagementAggregationRepositories;
 using ATSPM.Data.Models.SpeedManagementConfigModels;
-using Google.Cloud.BigQuery.V2;
 using System;
+using Google.Cloud.BigQuery.V2;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 
 namespace ATSPM.Infrastructure.Repositories.SpeedManagementAggregationRepositories
 {
+    ///<inheritdoc cref="IRouteRepository"/>
     public class RouteBQRepository : ATSPMRepositoryBQBase<Route>, IRouteRepository
     {
         private readonly BigQueryClient _client;
@@ -59,7 +60,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementAggregationRepositori
                 { "County", route.County },
                 { "Shape", route.ShapeWKT }, // Assuming ShapeWKT is used for GEOGRAPHY
                 { "ShapeWKT", route.ShapeWKT },
-                { "AlternateIdentifier", route.AlternateIdentifier ?? (object)DBNull.Value }
+                //{ "AlternateIdentifier", route.AlternateIdentifier ?? null }
             };
         }
 

@@ -1,6 +1,4 @@
-﻿using ATSPM.Application.Extensions;
-using ATSPM.Application.Repositories.AggregationRepositories;
-using ATSPM.Application.Repositories.SpeedManagementAggregationRepositories;
+﻿using ATSPM.Application.Repositories.SpeedManagementAggregationRepositories;
 using ATSPM.Data.Models.SpeedManagementAggregation;
 using System;
 using System.Collections.Generic;
@@ -17,35 +15,18 @@ namespace ATSPM.Application.Business.RouteSpeed
     }
     public class RouteSpeedService
     {
-        private readonly IClearguideAggregationRepository routeSpeedRepository;
         private readonly IHourlySpeedRepository hourlySpeedRepository;
+        private int numRoutes = 14000;
 
-        public RouteSpeedService(IClearguideAggregationRepository crashSpeedRepository, IHourlySpeedRepository hourlySpeedRepository)
+        public RouteSpeedService(IHourlySpeedRepository hourlySpeedRepository)
         {
-            routeSpeedRepository = crashSpeedRepository;
             this.hourlySpeedRepository = hourlySpeedRepository;
         }
 
-        public List<RouteSpeed> GetRouteSpeeds(
-            DateOnly startDate,
-            DateOnly endDate,
-            TimeOnly startTime,
-            TimeOnly endTime,
-            string daysOfWeek,
-            int violationThreshold,
-            int sourceId,
-            AnalysisPeriod analysisPeriod)
+        public async Task<List<RouteSpeed>> GetRouteSpeedsAsync(RouteSpeedOptions options)
 
         {
-            List<RouteSpeed> routeSpeeds = routeSpeedRepository.GetRoutesSpeeds(
-                startDate,
-                endDate,
-                startTime,
-                endTime,
-                daysOfWeek,
-                violationThreshold,
-                sourceId,
-                analysisPeriod);
+            List<RouteSpeed> routeSpeeds = await hourlySpeedRepository.GetRoutesSpeeds(options);
 
             return routeSpeeds;
         }
@@ -64,85 +45,88 @@ namespace ATSPM.Application.Business.RouteSpeed
             await Task.Run(() => hourlySpeedRepository.AddHourlySpeedAsync(value));
         }
 
+        public async Task AddTestSpeedsPerRoute()
+        {
+            var speeds = new List<HourlySpeed>();
+            for (int i = 0; i < numRoutes; i++)
+            {
+                speeds.AddRange(GenerateHourlySpeeds(i));
+            }
+            Console.WriteLine(speeds.Count.ToString());
+            await hourlySpeedRepository.AddHourlySpeedsAsync(speeds);
+        }
 
+        public List<HourlySpeed> GenerateHourlySpeeds(int routeId)
+        {
+            var hourlySpeeds = new List<HourlySpeed>();
+            var rand = new Random();
+            DateTime now = DateTime.UtcNow;
+            DateTime firstDayOfLastMonth = new DateTime(now.Year, now.Month, 1).AddMonths(-1); // First day of last month
 
-        //public async Task<HistoricalDTO> GetHistoricalSpeeds(
-        //    int routeId,
-        //    DateOnly startDate,
-        //    DateOnly endDate,
-        //    TimeOnly startTime,
-        //    TimeOnly endTime,
-        //    string daysOfWeek,
-        //    int percentile,
-        //    AnalysisPeriod analysisPeriod)
+            for (int day = 0; day < DateTime.DaysInMonth(firstDayOfLastMonth.Year, firstDayOfLastMonth.Month); day++)
+            {
+                DateTime currentDate = firstDayOfLastMonth.AddDays(day);
 
-        //{
-        //    var routeSpeeds = new HistoricalDTO
-        //    {
-        //        RouteId = routeId
-        //    };
-        //    var sources = new List<int> { 1, 2, 3 };
-        //    foreach (var soureceId in sources)
-        //    {
-        //        var result = await routeSpeedRepository.GetHistoricalSpeedsAsync(
-        //            routeId,
-        //            startDate,
-        //            endDate,
-        //            startTime,
-        //            endTime,
-        //            daysOfWeek,
-        //            soureceId,
-        //            percentile,
-        //            analysisPeriod);
-        //        if (result.Item1.Count > 0)
-        //        {
-        //            var monthlyAverages = result.Item1.Select(x => new MonthlyAverage
-        //            {
-        //                Month = x.Month,
-        //                Year = x.Year,
-        //                AverageSpeed = x.AverageSpeed
-        //            }).OrderByDescending(a => a.Year).ThenByDescending(a => a.Month).ToList();
-        //            routeSpeeds.MonthlyHistoricalRouteData.Add(new MonthlyHistoricalRouteData
-        //            {
-        //                SourceId = soureceId,
-        //                MonthlyAverages = monthlyAverages
-        //            });
-        //        }
-        //        else
-        //        {
-        //            routeSpeeds.MonthlyHistoricalRouteData.Add(new MonthlyHistoricalRouteData
-        //            {
-        //                SourceId = soureceId,
-        //                MonthlyAverages = new List<MonthlyAverage>()
-        //            });
-        //        }
+                for (int hour = 0; hour < 24; hour++)
+                {
+                    DateTime binStartTime = currentDate.AddHours(hour);
+                    var hourlySpeed = new HourlySpeed
+                    {
+                        Date = currentDate,
+                        BinStartTime = binStartTime,
+                        RouteId = routeId,
+                        SourceId = rand.Next(1, 4), // Random source id
+                        ConfidenceId = rand.Next(1, 5), // Random confidence id
+                        Average = rand.Next(20, 70), // Random average speed
+                        FifteenthSpeed = rand.Next(15, 30), // Random 15th percentile speed
+                        EightyFifthSpeed = rand.Next(70, 85), // Random 85th percentile speed
+                        NinetyFifthSpeed = rand.Next(80, 95), // Random 95th percentile speed
+                        NinetyNinthSpeed = rand.Next(90, 100), // Random 99th percentile speed
+                        Violation = rand.Next(0, 5), // Random violation count
+                        Flow = rand.Next(0, 1000) // Random flow count
+                    };
 
-        //        if (result.Item2.Count > 0)
-        //        {
-        //            var dailyAverages = result.Item2.Select(x => new DailyAverage
-        //            {
-        //                Date = x.Date,
-        //                AverageSpeed = x.AverageSpeed
-        //            }).OrderByDescending(a => a.Date).ThenByDescending(a => a.Date).ToList();
-        //            routeSpeeds.DailyHistoricalRouteData.Add(new DailyHistoricalRouteData
-        //            {
-        //                SourceId = soureceId,
-        //                DailyAverages = dailyAverages
-        //            });
-        //        }
-        //        else
-        //        {
-        //            routeSpeeds.DailyHistoricalRouteData.Add(new DailyHistoricalRouteData
-        //            {
-        //                SourceId = soureceId,
-        //                DailyAverages = new List<DailyAverage>()
-        //            });
-        //        }
+                    hourlySpeeds.Add(hourlySpeed);
+                }
+            }
 
+            return hourlySpeeds;
+        }
 
-        //    }
+        public async Task<HistoricalDTO> GetHistoricalSpeeds(
+            int routeId,
+            DateOnly startDate,
+            DateOnly endDate,
+            string daysOfWeek,
+            int percentile,
+            AnalysisPeriod analysisPeriod)
+        {
+            var routeSpeeds = new HistoricalDTO
+            {
+                RouteId = routeId
+            };
 
-        //    return routeSpeeds;
-        //}
+            var sources = new List<int> { 1, 2, 3 };
+
+            foreach (var sourceId in sources)
+            {
+                var monthlyAverages = await this.hourlySpeedRepository.GetMonthlyAveragesAsync(routeId, startDate, endDate, daysOfWeek, sourceId);
+                var dailyAverages = await this.hourlySpeedRepository.GetDailyAveragesAsync(routeId, startDate, endDate, daysOfWeek, sourceId);
+
+                routeSpeeds.MonthlyHistoricalRouteData.Add(new MonthlyHistoricalRouteData
+                {
+                    SourceId = sourceId,
+                    MonthlyAverages = monthlyAverages
+                });
+
+                routeSpeeds.DailyHistoricalRouteData.Add(new DailyHistoricalRouteData
+                {
+                    SourceId = sourceId,
+                    DailyAverages = dailyAverages
+                });
+            }
+
+            return routeSpeeds;
+        }
     }
 }
