@@ -138,7 +138,7 @@ namespace ATSPM.Infrastructure.Extensions
                 options.ClientSecret = builder.Configuration["Oidc:ClientSecret"];
                 options.ResponseType = OpenIdConnectResponseType.Code;
                 options.SaveTokens = true;
-                options.CallbackPath = new PathString("/account/ExternalLoginCallback");
+                options.CallbackPath = new PathString("/api/account/OIDCLoginCallback");
                 options.ClaimsIssuer = "Auth0";
                 //options.TokenValidationParameters = new TokenValidationParameters
                 //{
