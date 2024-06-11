@@ -28,7 +28,7 @@ namespace Identity.Business.Accounts
 
             if (createUserResult.Succeeded)
             {
-                //await _userManager.AddToRoleAsync(user, "User");
+                //await userManager.AddToRoleAsync(user, "User");
                 if (user.Email == null)
                 {
                     return new AccountResult(StatusCodes.Status400BadRequest, "", new List<string>(), "Email is required");

@@ -1,5 +1,4 @@
-﻿using ATSPM.Domain.Services;
-using Identity.Business.Accounts;
+﻿using Identity.Business.Accounts;
 using Identity.Business.EmailSender;
 using Identity.Models.Account;
 using Microsoft.AspNetCore.Authentication;
@@ -8,10 +7,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
-using System.Buffers.Text;
-using System.Net.Mail;
+using System.Security.Claims;
 using System.Text;
-using System.Web;
 
 namespace Identity.Controllers
 {
@@ -19,10 +16,10 @@ namespace Identity.Controllers
     [Route("api/[controller]")]
     public class AccountController : ControllerBase
     {
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly EmailService _emailService;
-        private readonly IAccountService _accountService;
+        private readonly UserManager<ApplicationUser> userManager;
+        private readonly SignInManager<ApplicationUser> signInManager;
+        private readonly EmailService emailService;
+        private readonly IAccountService accountService;
         private readonly IConfiguration configuration;
 
 
@@ -33,10 +30,10 @@ namespace Identity.Controllers
             EmailService emailService,
             IConfiguration configuration)
         {
-            _userManager = userManager;
-            _signInManager = signInManager;
-            _accountService = accountService;
-            _emailService = emailService;
+            this.userManager = userManager;
+            this.signInManager = signInManager;
+            this.accountService = accountService;
+            this.emailService = emailService;
             this.configuration = configuration;
         }
 
@@ -107,18 +104,19 @@ namespace Identity.Controllers
             return BadRequest(authenticationResult);
         }
 
-        [HttpPost("external-login")]
-        public IActionResult ExternalLogin([FromBody] LoginViewModel model)
+        [HttpGet("external-login")]
+        public IActionResult ExternalLogin()
         {
             //var redirectUrl = model.ReturnUrl;
             //var properties = signInManager.ConfigureExternalAuthenticationProperties(model.Provider, redirectUrl);
             //return Challenge(properties, model.Provider);
-            return Challenge(new AuthenticationProperties { RedirectUri = model.ReturnUrl }, OpenIdConnectDefaults.AuthenticationScheme);
+            var result = Challenge(new AuthenticationProperties { RedirectUri = "https://localhost:44392/api/Account/OIDCLoginCallback" }, OpenIdConnectDefaults.AuthenticationScheme);
+            return result;
         }
 
 
-        [HttpGet("oidc-callback")]
-        public async Task<IActionResult> ExternalLoginCallback(string returnUrl = null, string remoteError = null)
+        [HttpGet("OIDCLoginCallback")]
+        public async Task<IActionResult> OIDCLoginCallback(string returnUrl = null, string remoteError = null)
         {
             if (remoteError != null)
             {
@@ -257,7 +255,7 @@ namespace Identity.Controllers
                 return Ok();
             }
 
-            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var token = await userManager.GeneratePasswordResetTokenAsync(user);
             var uriEncodedToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
 
             //var callbackUrl = Url.Action(
