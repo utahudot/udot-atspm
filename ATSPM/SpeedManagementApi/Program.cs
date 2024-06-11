@@ -5,6 +5,7 @@ using ATSPM.Application.Repositories.SpeedManagementAggregationRepositories;
 using ATSPM.Infrastructure.Extensions;
 using ATSPM.Infrastructure.Repositories;
 using ATSPM.Infrastructure.Repositories.ConfigurationRepositories;
+using ATSPM.Infrastructure.Repositories.SpeedManagementAggregationRepositories;
 using Google.Cloud.BigQuery.V2;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Mvc;
@@ -106,6 +107,14 @@ builder.Host.ConfigureServices((h, s) =>
         var tableId = builder.Configuration["BigQuery:HourlySpeedTableId"];
         var logger = provider.GetRequiredService<ILogger<HourlySpeedBQRepository>>();
         return new HourlySpeedBQRepository(client, datasetId, tableId, logger);
+    });
+    s.AddScoped<IRouteRepository, RouteBQRepository>(provider =>
+    {
+        var client = provider.GetRequiredService<BigQueryClient>();
+        var datasetId = builder.Configuration["BigQuery:DatasetId"];
+        var tableId = builder.Configuration["BigQuery:RouteTableId"];
+        var logger = provider.GetRequiredService<ILogger<RouteBQRepository>>();
+        return new RouteBQRepository(client, datasetId, tableId, logger);
     });
 
     Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", builder.Configuration["GoogleApplicationCredentials"]);
