@@ -19,6 +19,7 @@ using ATSPM.Infrastructure.SqlLiteDatabaseProvider;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -106,35 +107,33 @@ namespace ATSPM.Infrastructure.Extensions
         }
         public static IServiceCollection AddAtspmAuthentication(this IServiceCollection services, HostBuilderContext host, WebApplicationBuilder builder)
         {
+            services.Configure<CookiePolicyOptions>(options =>
+            {
+                options.MinimumSameSitePolicy = SameSiteMode.Lax;
+                options.HttpOnly = HttpOnlyPolicy.Always;
+                options.Secure = CookieSecurePolicy.Always;
+            });
+
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-                //options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                //options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                //options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
             })
-            .AddCookie(options =>
+            .AddJwtBearer(options =>
             {
-                options.Cookie.SameSite = SameSiteMode.None;
-                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = false,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = builder.Configuration["Jwt:Issuer"],
+                    ValidAudience = builder.Configuration["Jwt:Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(
+                        Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+                };
             })
-           .AddJwtBearer(options =>
-           {
-               options.TokenValidationParameters = new TokenValidationParameters
-               {
-                   ValidateIssuer = true,
-                   //remeber this was set to true if we need to revert it
-                   ValidateAudience = false,
-                   ValidateLifetime = true,
-                   ValidateIssuerSigningKey = true,
-                   ValidIssuer = builder.Configuration["Jwt:Issuer"],
-                   ValidAudience = builder.Configuration["Jwt:Audience"],
-                   IssuerSigningKey = new SymmetricSecurityKey(
-                       Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
-               };
-           })
             .AddOpenIdConnect(options =>
             {
                 options.Authority = builder.Configuration["Oidc:Authority"];
@@ -143,7 +142,6 @@ namespace ATSPM.Infrastructure.Extensions
                 options.ResponseType = OpenIdConnectResponseType.Code;
                 options.SaveTokens = true;
                 options.CallbackPath = new PathString("/api/account/OIDCLoginCallback");
-                options.ClaimsIssuer = "Auth0";
                 options.Scope.Clear();
                 options.Scope.Add("openid");
                 options.Events = new OpenIdConnectEvents
@@ -155,7 +153,6 @@ namespace ATSPM.Infrastructure.Extensions
                     },
                     OnAuthorizationCodeReceived = context =>
                     {
-                        // Add any additional code if needed when the authorization code is received
                         return Task.CompletedTask;
                     },
                     OnRemoteFailure = context =>
@@ -165,26 +162,12 @@ namespace ATSPM.Infrastructure.Extensions
                         return Task.CompletedTask;
                     }
                 };
-                //options.TokenValidationParameters = new TokenValidationParameters
-                //{
-                //    ValidateIssuer = true,
-                //    NameClaimType = "username"
-                //};
-                //options.Scope.Clear();
-                //options.Scope.Add("openid");
-                ////options.Scope.Add("profile");
-                //options.Events = new OpenIdConnectEvents
-                //{
-                //    OnRedirectToIdentityProvider = context =>
-                //    {
-                //        context.ProtocolMessage.RedirectUri = builder.Configuration["Oidc:RedirectUri"];
-                //        return Task.CompletedTask;
-                //    }
-                //};
             });
+
 
             return services;
         }
+
 
         public static IServiceCollection AddAtspmAuthorization(this IServiceCollection services, HostBuilderContext host)
         {
