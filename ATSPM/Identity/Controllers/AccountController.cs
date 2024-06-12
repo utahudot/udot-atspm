@@ -107,12 +107,10 @@ namespace Identity.Controllers
         [HttpGet("external-login")]
         public IActionResult ExternalLogin()
         {
-            //var redirectUrl = model.ReturnUrl;
-            //var properties = signInManager.ConfigureExternalAuthenticationProperties(model.Provider, redirectUrl);
-            //return Challenge(properties, model.Provider);
-            var result = Challenge(new AuthenticationProperties { RedirectUri = "https://localhost:44392/api/Account/OIDCLoginCallback" }, OpenIdConnectDefaults.AuthenticationScheme);
-            return result;
+            var properties = new AuthenticationProperties { RedirectUri = Url.Action("OIDCLoginCallback", "Account") };
+            return Challenge(properties, OpenIdConnectDefaults.AuthenticationScheme);
         }
+
 
 
         [HttpGet("OIDCLoginCallback")]
@@ -121,7 +119,7 @@ namespace Identity.Controllers
             if (remoteError != null)
             {
                 // Handle the error received from the external provider
-                return RedirectToAction(nameof(Login), new { ErrorMessage = remoteError });
+                return RedirectToAction("Login", new { ErrorMessage = remoteError });
             }
 
             // Retrieve the login information from the external provider
@@ -129,7 +127,7 @@ namespace Identity.Controllers
             if (info == null)
             {
                 // No information was returned
-                return RedirectToAction(nameof(Login), new { ErrorMessage = "Error loading external login information." });
+                return RedirectToAction("Login", new { ErrorMessage = "Error loading external login information." });
             }
 
             // Attempt to sign in the user with the external login info
@@ -137,7 +135,7 @@ namespace Identity.Controllers
             if (result.Succeeded)
             {
                 // Sign-in success, redirect to the return URL or a default page
-                return Redirect(returnUrl ?? "/");
+                return LocalRedirect(returnUrl ?? "/");
             }
             else if (result.IsLockedOut)
             {
@@ -160,14 +158,15 @@ namespace Identity.Controllers
                     if (identityResult.Succeeded)
                     {
                         await signInManager.SignInAsync(user, isPersistent: false);
-                        return Redirect(returnUrl ?? "/");
+                        return LocalRedirect(returnUrl ?? "/");
                     }
                 }
 
                 // If there were any issues with account creation, handle them appropriately
-                return RedirectToAction(nameof(Login), new { ErrorMessage = "Could not create user account." });
+                return RedirectToAction("Login", new { ErrorMessage = "Could not create user account." });
             }
         }
+
 
         [Authorize]
         [HttpPost("link-external-login")]
