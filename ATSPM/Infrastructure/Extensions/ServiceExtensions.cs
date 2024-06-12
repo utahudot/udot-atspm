@@ -16,7 +16,7 @@ using ATSPM.Infrastructure.Repositories.EventLogRepositories;
 using ATSPM.Infrastructure.Services.ControllerDecoders;
 using ATSPM.Infrastructure.SqlDatabaseProvider;
 using ATSPM.Infrastructure.SqlLiteDatabaseProvider;
-using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -108,14 +108,18 @@ namespace ATSPM.Infrastructure.Extensions
         {
             services.AddAuthentication(options =>
             {
-                //options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                //options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                //options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+                //options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                //options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                //options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
             })
-            .AddCookie()
+            .AddCookie(options =>
+            {
+                options.Cookie.SameSite = SameSiteMode.None;
+                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+            })
            .AddJwtBearer(options =>
            {
                options.TokenValidationParameters = new TokenValidationParameters
@@ -140,22 +144,43 @@ namespace ATSPM.Infrastructure.Extensions
                 options.SaveTokens = true;
                 options.CallbackPath = new PathString("/api/account/OIDCLoginCallback");
                 options.ClaimsIssuer = "Auth0";
-                //options.TokenValidationParameters = new TokenValidationParameters
-                //{
-                //    ValidateIssuer = true,
-                //    NameClaimType = "username"
-                //};
                 options.Scope.Clear();
                 options.Scope.Add("openid");
-                //options.Scope.Add("profile");
                 options.Events = new OpenIdConnectEvents
                 {
                     OnRedirectToIdentityProvider = context =>
                     {
                         context.ProtocolMessage.RedirectUri = builder.Configuration["Oidc:RedirectUri"];
                         return Task.CompletedTask;
+                    },
+                    OnAuthorizationCodeReceived = context =>
+                    {
+                        // Add any additional code if needed when the authorization code is received
+                        return Task.CompletedTask;
+                    },
+                    OnRemoteFailure = context =>
+                    {
+                        context.HandleResponse();
+                        context.Response.Redirect("/Home/Error?message=" + context.Failure.Message);
+                        return Task.CompletedTask;
                     }
                 };
+                //options.TokenValidationParameters = new TokenValidationParameters
+                //{
+                //    ValidateIssuer = true,
+                //    NameClaimType = "username"
+                //};
+                //options.Scope.Clear();
+                //options.Scope.Add("openid");
+                ////options.Scope.Add("profile");
+                //options.Events = new OpenIdConnectEvents
+                //{
+                //    OnRedirectToIdentityProvider = context =>
+                //    {
+                //        context.ProtocolMessage.RedirectUri = builder.Configuration["Oidc:RedirectUri"];
+                //        return Task.CompletedTask;
+                //    }
+                //};
             });
 
             return services;
