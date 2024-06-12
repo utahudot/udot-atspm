@@ -18,16 +18,15 @@
 using ATSPM.Application.Configuration;
 using ATSPM.Application.Repositories.ConfigurationRepositories;
 using ATSPM.Application.Services;
-using ATSPM.Data;
 using ATSPM.Data.Models;
 using ATSPM.Data.Models.ConfigurationModels;
 using ATSPM.Data.Models.EventLogModels;
+using ATSPM.Domain.Extensions;
 using ATSPM.Infrastructure.Extensions;
 using ATSPM.Infrastructure.Services.ControllerDecoders;
 using ATSPM.Infrastructure.Services.ControllerDownloaders;
 using ATSPM.Infrastructure.Services.DownloaderClients;
 using Google.Cloud.Diagnostics.Common;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -35,7 +34,6 @@ using System;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using ATSPM.Domain.Extensions;
 
 namespace ATSPM.LocationControllerLogger
 {
@@ -185,8 +183,38 @@ namespace ATSPM.LocationControllerLogger
             host.Services.PrintHostInformation();
 
             //await host.RunAsync();
-            await host.StartAsync();
-            await host.StopAsync();
+            //await host.StartAsync();
+            //await host.StopAsync();
+
+            using (var scope = host.Services.CreateScope())
+            {
+                var loc = scope.ServiceProvider.GetService<ILocationRepository>();
+                var areas = scope.ServiceProvider.GetService<IAreaRepository>();
+
+                var area = areas.Lookup(1);
+
+                var n = new Location()
+                {
+                    ChartEnabled = true,
+                    PedsAre1to1 = false,
+                    VersionAction = Data.Enums.LocationVersionActions.New,
+                    JurisdictionId = 1,
+                    Latitude = 40.75854665,
+                    Longitude = -111.8824063,
+                    LocationIdentifier = "hello",
+                    LocationTypeId = 1,
+                    PrimaryName = "test",
+                    SecondaryName = "test",
+                    RegionId = 1,
+                    Start = DateTime.Now,
+
+                    Areas = new[] { area },
+                };
+
+
+
+                await loc.AddAsync(n);
+            }
 
 
             Console.ReadLine();
