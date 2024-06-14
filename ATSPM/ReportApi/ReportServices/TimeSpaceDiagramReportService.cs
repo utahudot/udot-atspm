@@ -116,7 +116,7 @@ namespace ATSPM.ReportApi.ReportServices
 
                 if (controllerEventLogs.IsNullOrEmpty())
                 {
-                    throw new NullReferenceException("No Controller Event Logs found for Location");
+                    throw new NullReferenceException($"No Controller Event Logs found for Location {location.LocationIdentifier}");
                 }
 
                 var primaryPhaseDetail = phaseService.GetPhases(location).Find(p => p.PhaseNumber == routeLocation.PrimaryPhase);
