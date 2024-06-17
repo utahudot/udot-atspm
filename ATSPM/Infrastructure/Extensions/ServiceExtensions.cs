@@ -16,6 +16,7 @@ using ATSPM.Infrastructure.Repositories.EventLogRepositories;
 using ATSPM.Infrastructure.Services.ControllerDecoders;
 using ATSPM.Infrastructure.SqlDatabaseProvider;
 using ATSPM.Infrastructure.SqlLiteDatabaseProvider;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
@@ -139,23 +140,19 @@ namespace ATSPM.Infrastructure.Extensions
             if (oidc.Exists() && oidc.GetChildren().Any())
             {
                 services.AddAuthentication()
-                .AddOpenIdConnect(options =>
+                .AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options =>
                 {
                     options.Authority = oidc["Authority"];
                     options.ClientId = oidc["ClientId"];
                     options.ClientSecret = oidc["ClientSecret"];
-                    options.ResponseType = OpenIdConnectResponseType.CodeToken;
+                    options.ResponseType = OpenIdConnectResponseType.IdToken;
                     options.SaveTokens = true;
                     options.Scope.Clear();
                     options.Scope.Add("openid");
                     options.Scope.Add("profile");
-                    options.Scope.Add("app:LogBook");
+                    options.Scope.Add("app:Atspm");
+                    options.CallbackPath = "/OIDCLoginCallback";
                     options.GetClaimsFromUserInfoEndpoint = true;
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        NameClaimType = "Full name",
-                        RoleClaimType = "role"
-                    };
                     options.Events = new OpenIdConnectEvents
                     {
                         OnRedirectToIdentityProvider = context =>
