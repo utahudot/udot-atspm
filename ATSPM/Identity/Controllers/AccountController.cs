@@ -15,7 +15,7 @@ using System.Text;
 namespace Identity.Controllers
 {
     [ApiController]
-    [Route("/[controller]")]
+    [Route("api/[controller]")]
     public class AccountController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> userManager;
@@ -106,54 +106,37 @@ namespace Identity.Controllers
             return BadRequest(authenticationResult);
         }
 
-        [HttpGet("ExternalLoginCallback")]
+        [HttpGet("external-login")]
         public IActionResult ExternalLogin()
         {
             var properties = new AuthenticationProperties { RedirectUri = Url.Action("OIDCLoginCallback", "Account") };
             return Challenge(properties, OpenIdConnectDefaults.AuthenticationScheme);
         }
 
-
-
-        [HttpPost("OIDCLogin")]
-        public async Task<IActionResult> OIDCLogin(string returnUrl = null, string remoteError = null)
-        {
-            return Ok();
-        }
-
         [HttpPost("OIDCLoginCallback")]
-        public async Task<IActionResult> OIDCLoginCallback(string returnUrl = null, string remoteError = null)
+        [HttpGet("OIDCLoginCallback")]
+        public async Task<IActionResult> OIDCLoginCallback()
         {
-            if (!string.IsNullOrEmpty(remoteError))
-            {
-                // Handle the remote error
-                ModelState.AddModelError(string.Empty, $"Error from external provider: {remoteError}");
-                return Ok("Error"); // or any other error view you have
-            }
-
-            // Authenticate the user using the Cookie scheme
             var result = await HttpContext.AuthenticateAsync(OpenIdConnectDefaults.AuthenticationScheme);
-            if (result?.Principal == null)
+            if (!result.Succeeded)
             {
-                return Ok("Error");
+                // Handle login failure (e.g., redirect to an error page)
+                return RedirectToAction("Login", "Account");
             }
 
-            // Retrieve user information from the authentication result
+            // Access user claims
             var claims = result.Principal.Claims;
-            var username = claims.FirstOrDefault(c => c.Type == "username")?.Value;
-            var name = claims.FirstOrDefault(c => c.Type == "name")?.Value;
-            var email = claims.FirstOrDefault(c => c.Type == "email")?.Value;
-            var profilePicture = claims.FirstOrDefault(c => c.Type == "picture")?.Value;
+            var emailClaim = claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.Email);
+            var openIdClaim = claims.FirstOrDefault(c => c.Type == "openid");
 
-            // Perform additional logic with user information
-            // For example, create or update the user in your database
+            // Example: Retrieve the email and OpenID values
+            var email = emailClaim?.Value;
+            var openId = openIdClaim?.Value;
 
-            // Sign in the user
-            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, result.Principal);
+            // TODO: Use the retrieved values (e.g., create a user account, sign in the user, etc.)
 
-            // Redirect to the return URL if provided, otherwise to the home page
-            returnUrl = returnUrl ?? Url.Content("~/");
-            return LocalRedirect(returnUrl);
+            // Redirect to a specific page after successful login
+            return RedirectToAction("Index", "Home");
         }
 
 
