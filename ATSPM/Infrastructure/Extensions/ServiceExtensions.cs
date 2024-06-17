@@ -133,37 +133,59 @@ namespace ATSPM.Infrastructure.Extensions
                     IssuerSigningKey = new SymmetricSecurityKey(
                         Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
                 };
-            })
-            .AddOpenIdConnect(options =>
-            {
-                options.Authority = builder.Configuration["Oidc:Authority"];
-                options.ClientId = builder.Configuration["Oidc:ClientId"];
-                options.ClientSecret = builder.Configuration["Oidc:ClientSecret"];
-                options.ResponseType = OpenIdConnectResponseType.Code;
-                options.SaveTokens = true;
-                options.CallbackPath = new PathString("/api/account/OIDCLoginCallback");
-                options.Scope.Clear();
-                options.Scope.Add("openid");
-                options.Events = new OpenIdConnectEvents
-                {
-                    OnRedirectToIdentityProvider = context =>
-                    {
-                        context.ProtocolMessage.RedirectUri = builder.Configuration["Oidc:RedirectUri"];
-                        return Task.CompletedTask;
-                    },
-                    OnAuthorizationCodeReceived = context =>
-                    {
-                        return Task.CompletedTask;
-                    },
-                    OnRemoteFailure = context =>
-                    {
-                        context.HandleResponse();
-                        context.Response.Redirect("/Home/Error?message=" + context.Failure.Message);
-                        return Task.CompletedTask;
-                    }
-                };
             });
 
+            var oidc = builder.Configuration.GetSection("Oidc");
+            if (oidc.Exists() && oidc.GetChildren().Any())
+            {
+                services.AddAuthentication()
+                .AddOpenIdConnect(options =>
+                {
+                    options.Authority = oidc["Authority"];
+                    options.ClientId = oidc["ClientId"];
+                    options.ClientSecret = oidc["ClientSecret"];
+                    options.ResponseType = OpenIdConnectResponseType.CodeToken;
+                    options.SaveTokens = true;
+                    options.Scope.Clear();
+                    options.Scope.Add("openid");
+                    options.Scope.Add("profile");
+                    options.Scope.Add("app:LogBook");
+                    options.GetClaimsFromUserInfoEndpoint = true;
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        NameClaimType = "Full name",
+                        RoleClaimType = "role"
+                    };
+                    options.Events = new OpenIdConnectEvents
+                    {
+                        OnRedirectToIdentityProvider = context =>
+                        {
+                            context.ProtocolMessage.RedirectUri = oidc["RedirectUri"];
+                            return Task.CompletedTask;
+                        },
+                        OnTokenResponseReceived = context =>
+                        {
+                            var identity = context.Principal.Claims;
+                            return Task.CompletedTask;
+                        },
+                        OnUserInformationReceived = context =>
+                        {
+                            var identity = context.Principal.Claims;
+                            return Task.CompletedTask;
+                        },
+                        OnAuthorizationCodeReceived = context =>
+                        {
+                            var identity = context.Principal.Claims;
+                            return Task.CompletedTask;
+                        },
+                        OnTokenValidated = context =>
+                        {
+                            var identity = context.Principal.Claims;
+                            return Task.CompletedTask;
+                        },
+                    };
+                });
+            }
 
             return services;
         }
