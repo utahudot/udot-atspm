@@ -2,6 +2,8 @@
 using Identity.Business.EmailSender;
 using Identity.Models.Account;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -13,7 +15,7 @@ using System.Text;
 namespace Identity.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("/[controller]")]
     public class AccountController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> userManager;
@@ -104,7 +106,7 @@ namespace Identity.Controllers
             return BadRequest(authenticationResult);
         }
 
-        [HttpGet("external-login")]
+        [HttpGet("ExternalLoginCallback")]
         public IActionResult ExternalLogin()
         {
             var properties = new AuthenticationProperties { RedirectUri = Url.Action("OIDCLoginCallback", "Account") };
@@ -113,58 +115,45 @@ namespace Identity.Controllers
 
 
 
-        [HttpGet("OIDCLoginCallback")]
+        [HttpPost("OIDCLogin")]
+        public async Task<IActionResult> OIDCLogin(string returnUrl = null, string remoteError = null)
+        {
+            return Ok();
+        }
+
+        [HttpPost("OIDCLoginCallback")]
         public async Task<IActionResult> OIDCLoginCallback(string returnUrl = null, string remoteError = null)
         {
-            if (remoteError != null)
+            if (!string.IsNullOrEmpty(remoteError))
             {
-                // Handle the error received from the external provider
-                return RedirectToAction("Login", new { ErrorMessage = remoteError });
+                // Handle the remote error
+                ModelState.AddModelError(string.Empty, $"Error from external provider: {remoteError}");
+                return Ok("Error"); // or any other error view you have
             }
 
-            // Retrieve the login information from the external provider
-            var info = await signInManager.GetExternalLoginInfoAsync();
-            if (info == null)
+            // Authenticate the user using the Cookie scheme
+            var result = await HttpContext.AuthenticateAsync(OpenIdConnectDefaults.AuthenticationScheme);
+            if (result?.Principal == null)
             {
-                // No information was returned
-                return RedirectToAction("Login", new { ErrorMessage = "Error loading external login information." });
+                return Ok("Error");
             }
 
-            // Attempt to sign in the user with the external login info
-            var result = await signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false);
-            if (result.Succeeded)
-            {
-                // Sign-in success, redirect to the return URL or a default page
-                return LocalRedirect(returnUrl ?? "/");
-            }
-            else if (result.IsLockedOut)
-            {
-                // Handle if the user is locked out
-                return RedirectToAction("Lockout");
-            }
-            else
-            {
-                // User does not have a local account, you may need to create one
-                var email = info.Principal.FindFirstValue(ClaimTypes.Email);
-                var userName = email;
+            // Retrieve user information from the authentication result
+            var claims = result.Principal.Claims;
+            var username = claims.FirstOrDefault(c => c.Type == "username")?.Value;
+            var name = claims.FirstOrDefault(c => c.Type == "name")?.Value;
+            var email = claims.FirstOrDefault(c => c.Type == "email")?.Value;
+            var profilePicture = claims.FirstOrDefault(c => c.Type == "picture")?.Value;
 
-                // You can extract more information from the info object as needed
-                var user = new ApplicationUser { UserName = userName, Email = email };
+            // Perform additional logic with user information
+            // For example, create or update the user in your database
 
-                var identityResult = await userManager.CreateAsync(user);
-                if (identityResult.Succeeded)
-                {
-                    identityResult = await userManager.AddLoginAsync(user, info);
-                    if (identityResult.Succeeded)
-                    {
-                        await signInManager.SignInAsync(user, isPersistent: false);
-                        return LocalRedirect(returnUrl ?? "/");
-                    }
-                }
+            // Sign in the user
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, result.Principal);
 
-                // If there were any issues with account creation, handle them appropriately
-                return RedirectToAction("Login", new { ErrorMessage = "Could not create user account." });
-            }
+            // Redirect to the return URL if provided, otherwise to the home page
+            returnUrl = returnUrl ?? Url.Content("~/");
+            return LocalRedirect(returnUrl);
         }
 
 
