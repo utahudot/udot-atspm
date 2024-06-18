@@ -63,6 +63,8 @@ dkms.conf
 /ATSPM/ArchiveLogs/bin
 /ATSPM/ConfigApi/obj
 /ATSPM/ConfigApi/bin
+/ATSPM/ConfigApiTests/obj
+/ATSPM/ConfigApiTests/bin
 /ATSPM/Data/obj
 /ATSPM/Data/bin
 /ATSPM/DataApi/obj
