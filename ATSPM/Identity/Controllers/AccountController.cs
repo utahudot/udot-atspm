@@ -113,30 +113,41 @@ namespace Identity.Controllers
             return Challenge(properties, OpenIdConnectDefaults.AuthenticationScheme);
         }
 
+        [Authorize(AuthenticationSchemes = OpenIdConnectDefaults.AuthenticationScheme)]
         [HttpPost("OIDCLoginCallback")]
         [HttpGet("OIDCLoginCallback")]
         public async Task<IActionResult> OIDCLoginCallback()
         {
-            var result = await HttpContext.AuthenticateAsync(OpenIdConnectDefaults.AuthenticationScheme);
-            if (!result.Succeeded)
+            var authenticate = await HttpContext.AuthenticateAsync(OpenIdConnectDefaults.AuthenticationScheme);
+            if (!authenticate.Succeeded)
             {
                 // Handle login failure (e.g., redirect to an error page)
                 return RedirectToAction("Login", "Account");
             }
 
             // Access user claims
-            var claims = result.Principal.Claims;
-            var emailClaim = claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.Email);
-            var openIdClaim = claims.FirstOrDefault(c => c.Type == "openid");
+            var claims = authenticate.Principal.Claims;
 
-            // Example: Retrieve the email and OpenID values
-            var email = emailClaim?.Value;
-            var openId = openIdClaim?.Value;
+            var emailClaim = claims.FirstOrDefault(c => c.Type.Contains("email"));
+            var firstName = claims.FirstOrDefault(c => c.Type.Contains("givenname"));
+            var lastName = claims.FirstOrDefault(c => c.Type.Contains("surname"));
 
-            // TODO: Use the retrieved values (e.g., create a user account, sign in the user, etc.)
+            if(firstName == null || lastName == null || emailClaim == null) 
+            {
+                var message = "unable to access information from sso, try again later";
+                return Redirect($"http://localhost:3000/ssoLogin?error={message}");
+            }
 
-            // Redirect to a specific page after successful login
-            return RedirectToAction("Index", "Home");
+            var result = await accountService.HandleSsoRequest(emailClaim.Value, firstName.Value, lastName.Value);
+
+            if (result.Code == StatusCodes.Status200OK)
+            {
+                // Assuming the authenticationResult includes the generated JWT token
+                return Redirect($"http://localhost:3000/ssoLogin?token={result.Token},claims={result.Claims}");
+            }
+
+            return Redirect($"http://localhost:3000/ssoLogin?error={result.Message}");
+
         }
 
 
