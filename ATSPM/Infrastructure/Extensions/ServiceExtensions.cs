@@ -110,8 +110,7 @@ namespace ATSPM.Infrastructure.Extensions
         {
             services.Configure<CookiePolicyOptions>(options =>
             {
-                options.MinimumSameSitePolicy = SameSiteMode.Lax;
-                options.HttpOnly = HttpOnlyPolicy.Always;
+                options.MinimumSameSitePolicy = SameSiteMode.None;
                 options.Secure = CookieSecurePolicy.Always;
             });
 
@@ -151,8 +150,10 @@ namespace ATSPM.Infrastructure.Extensions
                     options.Scope.Add("openid");
                     options.Scope.Add("profile");
                     options.Scope.Add("app:Atspm");
-                    options.CallbackPath = "/OIDCLoginCallback";
+                    options.CallbackPath = "/api/Account/OIDCLoginCallback";
                     options.GetClaimsFromUserInfoEndpoint = true;
+                    options.UseTokenLifetime = true;
+                    options.SkipUnrecognizedRequests = true;
                     options.Events = new OpenIdConnectEvents
                     {
                         OnRedirectToIdentityProvider = context =>
@@ -183,6 +184,9 @@ namespace ATSPM.Infrastructure.Extensions
                     };
                 });
             }
+
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+            .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme);
 
             return services;
         }
