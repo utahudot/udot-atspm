@@ -61,6 +61,39 @@ namespace Identity.Business.Accounts
             return new AccountResult(StatusCodes.Status400BadRequest, "", new List<string>(), "Incorrect username or password");
         }
 
+        public async Task<AccountResult> HandleSsoRequest(string email, string firstName, string lastName)
+        {
+            string token = "";
+            List<string> viewClaims = new List<string>();
+            var user = await _signInManager.UserManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                var newUser = new ApplicationUser
+                {
+                    UserName = email,
+                    Email = email,
+                    Agency = "",
+                    FirstName = firstName,
+                    LastName = lastName
+                };
+
+                var createdUser = await _userManager.CreateAsync(newUser);
+
+                if (createdUser.Succeeded)
+                {
+                    token = await tokenService.GenerateJwtTokenAsync(user);
+                    viewClaims = await GetViewClaimsForUser(user);
+                    return new AccountResult(StatusCodes.Status200OK, token, viewClaims, null);
+                }
+
+                return new AccountResult(StatusCodes.Status400BadRequest, "", new List<string>(), "Issue Validating Sso");
+            }
+
+            token = await tokenService.GenerateJwtTokenAsync(user);
+            viewClaims = await GetViewClaimsForUser(user);
+            return new AccountResult(StatusCodes.Status200OK, token, viewClaims, null);
+        }
+
         private async Task<List<string>> GetViewClaimsForUser(ApplicationUser user)
         {
             var claims = new List<string>();
