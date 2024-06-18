@@ -57,6 +57,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OracleDatabaseProvider", "O
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{E7665D70-9B21-4D3A-9F6B-82941D4680F9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConfigApiTests", "..\ConfigApiTests\ConfigApiTests.csproj", "{3CE6230C-44C9-4E5C-B8CE-CB7DBE60C445}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -147,6 +149,10 @@ Global
 		{11E2931D-E0C1-4BCC-95C4-6A6792590A2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{11E2931D-E0C1-4BCC-95C4-6A6792590A2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{11E2931D-E0C1-4BCC-95C4-6A6792590A2B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3CE6230C-44C9-4E5C-B8CE-CB7DBE60C445}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3CE6230C-44C9-4E5C-B8CE-CB7DBE60C445}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3CE6230C-44C9-4E5C-B8CE-CB7DBE60C445}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3CE6230C-44C9-4E5C-B8CE-CB7DBE60C445}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -161,6 +167,7 @@ Global
 		{6EFC17B6-81A2-4B9B-B73A-A4951DD52FEF} = {EA135084-6954-488E-8E0F-86480ACD9803}
 		{E70816BB-6279-4CA2-A7E9-A2B0F8E43F62} = {EA135084-6954-488E-8E0F-86480ACD9803}
 		{11E2931D-E0C1-4BCC-95C4-6A6792590A2B} = {EA135084-6954-488E-8E0F-86480ACD9803}
+		{3CE6230C-44C9-4E5C-B8CE-CB7DBE60C445} = {E7665D70-9B21-4D3A-9F6B-82941D4680F9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EEE1679F-AC1D-4DE8-93ED-A8CBCDC6F71F}

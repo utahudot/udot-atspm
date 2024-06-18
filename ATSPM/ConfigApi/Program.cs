@@ -1,5 +1,4 @@
 using Asp.Versioning;
-using ATSPM.Application.Repositories.ConfigurationRepositories;
 using ATSPM.ConfigApi.Services;
 using ATSPM.Domain.Extensions;
 using ATSPM.Infrastructure.Extensions;
@@ -12,7 +11,6 @@ using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
@@ -146,6 +144,17 @@ app.UseAuthorization();
 app.UseVersionedODataBatching();
 app.MapControllers();
 app.Run();
+
+public class IgnoreTypeSchemaFilter : ISchemaFilter
+{
+    public void Apply(OpenApiSchema schema, SchemaFilterContext context)
+    {
+        if (context.Type == typeof(Route)) // Replace Route with the type you want to ignore
+        {
+            schema.Properties.Clear();
+        }
+    }
+}
 
 /// <summary>
 /// Represents the OpenAPI/Swashbuckle operation filter used to document the implicit API version parameter.

@@ -1,11 +1,10 @@
 ﻿using Asp.Versioning;
 using ATSPM.Application.Repositories.ConfigurationRepositories;
+using ATSPM.ConfigApi.Models;
 using ATSPM.ConfigApi.Services;
 using ATSPM.Data.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
-using Microsoft.AspNetCore.OData.Routing.Controllers;
-using System.Collections.Generic;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 using static Microsoft.AspNetCore.OData.Query.AllowedQueryOptions;
 
@@ -55,7 +54,7 @@ namespace ATSPM.ConfigApi.Controllers
         [HttpPost("CreateRouteWithLocations")]
         [ProducesResponseType(Status200OK)]
         [ProducesResponseType(Status400BadRequest)]
-        public IActionResult CreateRouteWithLocations([FromBody] Data.Models.Route route)
+        public IActionResult CreateRouteWithLocations([FromBody] RouteDto route)
         {
             if (route == null || route.RouteLocations == null)
             {
@@ -64,7 +63,7 @@ namespace ATSPM.ConfigApi.Controllers
 
             try
             {
-                _routeService.CreateRouteWithLocations(route, route.RouteLocations);
+                _routeService.CreateOrUpdateRoute(route);
                 return Ok();
             }
             catch (Exception ex)
