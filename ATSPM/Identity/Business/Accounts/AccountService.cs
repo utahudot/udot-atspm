@@ -28,7 +28,7 @@ namespace Identity.Business.Accounts
 
             if (createUserResult.Succeeded)
             {
-                //await _userManager.AddToRoleAsync(user, "User");
+                //await userManager.AddToRoleAsync(user, "User");
                 if (user.Email == null)
                 {
                     return new AccountResult(StatusCodes.Status400BadRequest, "", new List<string>(), "Email is required");
@@ -59,6 +59,44 @@ namespace Identity.Business.Accounts
             }
 
             return new AccountResult(StatusCodes.Status400BadRequest, "", new List<string>(), "Incorrect username or password");
+        }
+
+        public async Task<AccountResult> HandleSsoRequest(string email, string firstName, string lastName)
+        {
+            string token = "";
+            List<string> viewClaims = new List<string>();
+            var user = await _signInManager.UserManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                var createUser = new ApplicationUser
+                {
+                    UserName = email,
+                    Email = email,
+                    Agency = "",
+                    FirstName = firstName,
+                    LastName = lastName
+                };
+
+                var createUserResult = await _userManager.CreateAsync(createUser);
+
+                if (createUserResult.Succeeded)
+                {
+                    var newUser = await _userManager.FindByEmailAsync(email);
+                    if (newUser != null)
+                    {
+                        token = await tokenService.GenerateJwtTokenAsync(newUser);
+                        viewClaims = await GetViewClaimsForUser(newUser);
+                        return new AccountResult(StatusCodes.Status200OK, token, viewClaims, null);
+                    }
+                    return new AccountResult(StatusCodes.Status400BadRequest, "", new List<string>(), "Issue Validating Sso");
+                }
+
+                return new AccountResult(StatusCodes.Status400BadRequest, "", new List<string>(), "Issue Validating Sso");
+            }
+
+            token = await tokenService.GenerateJwtTokenAsync(user);
+            viewClaims = await GetViewClaimsForUser(user);
+            return new AccountResult(StatusCodes.Status200OK, token, viewClaims, null);
         }
 
         private async Task<List<string>> GetViewClaimsForUser(ApplicationUser user)
