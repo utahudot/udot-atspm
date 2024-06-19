@@ -11,8 +11,9 @@ namespace Identity.Models.Account
         [Required]
         [DataType(DataType.Password)]
         public string Password { get; set; }
-
         public bool RememberMe { get; set; }
+        public string? ReturnUrl { get; set; }
+        public string? Provider { get; set; }
     }
 
 }
