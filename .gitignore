@@ -95,6 +95,8 @@ dkms.conf
 /ATSPM/ReportAPI/bin
 /ATSPM/SignalControllerLogger/obj
 /ATSPM/SignalControllerLogger/bin
+/ATSPM/SpeedManagementApi/obj
+/ATSPM/SpeedManagementApi/bin
 /ATSPM/WatchDog/obj/
 /ATSPM/WatchDog/bin/
 /ATSPM/WatchDogTests/obj/
