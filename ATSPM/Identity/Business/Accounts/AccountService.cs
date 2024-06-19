@@ -68,7 +68,7 @@ namespace Identity.Business.Accounts
             var user = await _signInManager.UserManager.FindByEmailAsync(email);
             if (user == null)
             {
-                var newUser = new ApplicationUser
+                var createUser = new ApplicationUser
                 {
                     UserName = email,
                     Email = email,
@@ -77,13 +77,18 @@ namespace Identity.Business.Accounts
                     LastName = lastName
                 };
 
-                var createdUser = await _userManager.CreateAsync(newUser);
+                var createUserResult = await _userManager.CreateAsync(createUser);
 
-                if (createdUser.Succeeded)
+                if (createUserResult.Succeeded)
                 {
-                    token = await tokenService.GenerateJwtTokenAsync(user);
-                    viewClaims = await GetViewClaimsForUser(user);
-                    return new AccountResult(StatusCodes.Status200OK, token, viewClaims, null);
+                    var newUser = await _userManager.FindByEmailAsync(email);
+                    if (newUser != null)
+                    {
+                        token = await tokenService.GenerateJwtTokenAsync(newUser);
+                        viewClaims = await GetViewClaimsForUser(newUser);
+                        return new AccountResult(StatusCodes.Status200OK, token, viewClaims, null);
+                    }
+                    return new AccountResult(StatusCodes.Status400BadRequest, "", new List<string>(), "Issue Validating Sso");
                 }
 
                 return new AccountResult(StatusCodes.Status400BadRequest, "", new List<string>(), "Issue Validating Sso");
