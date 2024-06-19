@@ -148,6 +148,7 @@ namespace ATSPM.Infrastructure.Extensions
                     options.SaveTokens = true;
                     options.Scope.Clear();
                     options.Scope.Add("openid");
+                    options.Scope.Add("email");
                     options.Scope.Add("profile");
                     options.Scope.Add("app:Atspm");
                     options.CallbackPath = "/api/Account/OIDCLoginCallback";

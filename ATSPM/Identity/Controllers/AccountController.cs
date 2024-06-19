@@ -1,4 +1,5 @@
-﻿using Identity.Business.Accounts;
+﻿using FluentFTP.Helpers;
+using Identity.Business.Accounts;
 using Identity.Business.EmailSender;
 using Identity.Models.Account;
 using Microsoft.AspNetCore.Authentication;
@@ -125,9 +126,7 @@ namespace Identity.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            // Access user claims
             var claims = authenticate.Principal.Claims;
-
             var emailClaim = claims.FirstOrDefault(c => c.Type.Contains("email"));
             var firstName = claims.FirstOrDefault(c => c.Type.Contains("givenname"));
             var lastName = claims.FirstOrDefault(c => c.Type.Contains("surname"));
@@ -135,18 +134,17 @@ namespace Identity.Controllers
             if(firstName == null || lastName == null || emailClaim == null) 
             {
                 var message = "unable to access information from sso, try again later";
-                return Redirect($"http://localhost:3000/ssoLogin?error={message}");
+                return Redirect($"{configuration["AtspmSite"]}/ssoLogin?error={message}");
             }
 
             var result = await accountService.HandleSsoRequest(emailClaim.Value, firstName.Value, lastName.Value);
 
             if (result.Code == StatusCodes.Status200OK)
             {
-                // Assuming the authenticationResult includes the generated JWT token
-                return Redirect($"http://localhost:3000/ssoLogin?token={result.Token},claims={result.Claims}");
+                return Redirect($"{configuration["AtspmSite"]}/ssoLogin?token={result.Token}&claims={result.Claims.Join(",")}");
             }
 
-            return Redirect($"http://localhost:3000/ssoLogin?error={result.Message}");
+            return Redirect($"{configuration["AtspmSite"]}/ssoLogin?error={result.Message}");
 
         }
 
