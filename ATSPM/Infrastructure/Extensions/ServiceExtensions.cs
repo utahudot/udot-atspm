@@ -16,17 +16,23 @@ using ATSPM.Infrastructure.Repositories.EventLogRepositories;
 using ATSPM.Infrastructure.Services.ControllerDecoders;
 using ATSPM.Infrastructure.SqlDatabaseProvider;
 using ATSPM.Infrastructure.SqlLiteDatabaseProvider;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.CookiePolicy;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace ATSPM.Infrastructure.Extensions
 {
@@ -102,30 +108,90 @@ namespace ATSPM.Infrastructure.Extensions
         }
         public static IServiceCollection AddAtspmAuthentication(this IServiceCollection services, HostBuilderContext host, WebApplicationBuilder builder)
         {
+            services.Configure<CookiePolicyOptions>(options =>
+            {
+                options.MinimumSameSitePolicy = SameSiteMode.None;
+                options.Secure = CookieSecurePolicy.Always;
+            });
+
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
             })
-           .AddJwtBearer(options =>
-           {
-               options.TokenValidationParameters = new TokenValidationParameters
-               {
-                   ValidateIssuer = true,
-                   //remeber this was set to true if we need to revert it
-                   ValidateAudience = false,
-                   ValidateLifetime = true,
-                   ValidateIssuerSigningKey = true,
-                   ValidIssuer = builder.Configuration["Jwt:Issuer"],
-                   ValidAudience = builder.Configuration["Jwt:Audience"],
-                   IssuerSigningKey = new SymmetricSecurityKey(
-                       Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
-               };
-           });
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = false,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = builder.Configuration["Jwt:Issuer"],
+                    ValidAudience = builder.Configuration["Jwt:Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(
+                        Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+                };
+            });
+
+            var oidc = builder.Configuration.GetSection("Oidc");
+            if (oidc.Exists() && oidc.GetChildren().Any())
+            {
+                services.AddAuthentication()
+                .AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options =>
+                {
+                    options.Authority = oidc["Authority"];
+                    options.ClientId = oidc["ClientId"];
+                    options.ClientSecret = oidc["ClientSecret"];
+                    options.ResponseType = OpenIdConnectResponseType.IdToken;
+                    options.SaveTokens = true;
+                    options.Scope.Clear();
+                    options.Scope.Add("openid");
+                    options.Scope.Add("email");
+                    options.Scope.Add("profile");
+                    options.Scope.Add("app:Atspm");
+                    options.CallbackPath = "/api/Account/OIDCLoginCallback";
+                    options.GetClaimsFromUserInfoEndpoint = true;
+                    options.UseTokenLifetime = true;
+                    options.SkipUnrecognizedRequests = true;
+                    options.Events = new OpenIdConnectEvents
+                    {
+                        OnRedirectToIdentityProvider = context =>
+                        {
+                            context.ProtocolMessage.RedirectUri = oidc["RedirectUri"];
+                            return Task.CompletedTask;
+                        },
+                        OnTokenResponseReceived = context =>
+                        {
+                            var identity = context.Principal.Claims;
+                            return Task.CompletedTask;
+                        },
+                        OnUserInformationReceived = context =>
+                        {
+                            var identity = context.Principal.Claims;
+                            return Task.CompletedTask;
+                        },
+                        OnAuthorizationCodeReceived = context =>
+                        {
+                            var identity = context.Principal.Claims;
+                            return Task.CompletedTask;
+                        },
+                        OnTokenValidated = context =>
+                        {
+                            var identity = context.Principal.Claims;
+                            return Task.CompletedTask;
+                        },
+                    };
+                });
+            }
+
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+            .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme);
 
             return services;
         }
+
 
         public static IServiceCollection AddAtspmAuthorization(this IServiceCollection services, HostBuilderContext host)
         {
