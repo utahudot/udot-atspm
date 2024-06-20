@@ -299,7 +299,7 @@ namespace ATSPM.Application.Business.Common
                 11 => YellowRedEventType.BeginRed,
                 1 => YellowRedEventType.EndRed,
                 // overlap green
-                61 => YellowRedEventType.EndRed,
+                62 => YellowRedEventType.EndRed,
                 _ => YellowRedEventType.Unknown,
             };
         }
