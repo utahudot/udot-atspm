@@ -119,7 +119,8 @@ namespace ATSPM.ReportApi.ReportServices
                 {
                     62,
                     63,
-                    64
+                    64,
+                    65
                 }
                 : new List<short>
                 {
