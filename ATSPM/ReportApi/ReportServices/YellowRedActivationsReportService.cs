@@ -64,7 +64,7 @@ namespace ATSPM.ReportApi.ReportServices
             var results = await Task.WhenAll(tasks);
 
             // Only send back data where detector events exists
-            var finalResultcheck = results.Where(result => result.DetectorEvents.Count != 0)
+            var finalResultcheck = results//.Where(result => result.DetectorEvents.Count != 0)
                 .OrderBy(r => r.PhaseType)
                 .ThenBy(r => r.ProtectedPhaseNumber)
                 .ThenBy(r => r.IsPermissivePhase)
@@ -93,7 +93,7 @@ namespace ATSPM.ReportApi.ReportServices
                 phaseDetail.PhaseNumber)
                 .OrderBy(e => e.Timestamp)
             .ToList();
-            var detectorEvents = controllerEventLogRepository.GetDetectorEvents(
+            var detectorEvents = controllerEventLogs.GetDetectorEvents(
                 options.MetricTypeId,
                 phaseDetail.Approach,
                 options.Start,
