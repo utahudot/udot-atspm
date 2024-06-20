@@ -1,8 +1,5 @@
 ﻿using ATSPM.Data.Models;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 
 
 namespace ATSPM.Application.Business.PedDelay
@@ -26,8 +23,14 @@ namespace ATSPM.Application.Business.PedDelay
             Protected,
             [Description("Permissive")]
             Permissive,
+            [Description("Protected Overlap")]
+            ProtectedOverlap,
+            [Description("Permissive Overlap")]
+            PermissiveOverlap,
             [Description("Protected/Permissive")]
-            ProtectedPermissive
+            ProtectedPermissive,
+            [Description("Protected/Permissive Overlap")]
+            ProtectedPermissiveOverlap
         }
         public static LocationHeadType GetLocationHeadType(this Approach approach)
         {
@@ -63,11 +66,19 @@ namespace ATSPM.Application.Business.PedDelay
 
             if (protectedPhaseNumber > 0 && permissivePhaseNumber == null)
             {
+                if (approach.IsProtectedPhaseOverlap)
+                {
+                    return PhaseType.ProtectedOverlap;
+                }
                 return PhaseType.Protected;
             }
 
             if (protectedPhaseNumber == 0 && permissivePhaseNumber > 0)
             {
+                if (approach.IsPermissivePhaseOverlap)
+                {
+                    return PhaseType.PermissiveOverlap;
+                }
                 return PhaseType.Permissive;
             }
 
