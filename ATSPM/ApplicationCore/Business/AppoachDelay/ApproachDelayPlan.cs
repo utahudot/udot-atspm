@@ -16,11 +16,9 @@ namespace ATSPM.Application.Business.AppoachDelay
             AverageDelay = averageDelay;
             TotalDelay = totalDelay;
             PlanNumber = planNumber;
-            PlanDescription = planDescription;
         }
 
         public double AverageDelay { get; }
         public double TotalDelay { get; }
-        public string PlanDescription { get; }
     }
 }

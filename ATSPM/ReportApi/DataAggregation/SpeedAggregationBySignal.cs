@@ -116,7 +116,7 @@ namespace MOE.Common.Business.DataAggregation
                 }
         }
 
-        protected override void LoadBins(ApproachAggregationMetricOptions approachAggregationMetricOptions, Location signal, AggregationOptions options)
+        protected override void LoadBins(ApproachAggregationMetricOptions? approachAggregationMetricOptions, Location? signal, AggregationOptions options)
         {
             for (var i = 0; i < BinsContainers.Count; i++)
                 for (var binIndex = 0; binIndex < BinsContainers[i].Bins.Count; binIndex++)

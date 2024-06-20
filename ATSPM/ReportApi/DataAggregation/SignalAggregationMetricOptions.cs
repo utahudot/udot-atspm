@@ -499,6 +499,11 @@ namespace MOE.Common.Business.WCFServiceLibrary
         private void SetDataPointsForTimeAggregationSeries(List<BinsContainer> binsContainers, Series series,
             DateTime endTime, int minutes, AggregationOptions options)
         {
+            if (binsContainers is null)
+            {
+                throw new ArgumentNullException(nameof(binsContainers));
+            }
+
             switch (options.TimeOptions.SelectedBinSize)
             {
                 case TimeOptions.BinSize.Year:

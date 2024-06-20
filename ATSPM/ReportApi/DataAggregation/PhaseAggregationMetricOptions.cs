@@ -216,6 +216,8 @@ namespace MOE.Common.Business.WCFServiceLibrary
         private Series GetTimeXAxisPhaseSeries(int phaseNumber, Location signal, AggregationOptions options)
         {
             var binsContainers = GetBinsContainersByPhaseNumber(signal, phaseNumber, options);
+            if (binsContainers == null || binsContainers.Count == 0)
+                throw new Exception("No bins found for signal " + signal.LocationIdentifier + " and phase " + phaseNumber);
             var series = CreateSeries("Phase " + phaseNumber);
             if ((options.TimeOptions.SelectedBinSize == TimeOptions.BinSize.Month ||
                  options.TimeOptions.SelectedBinSize == TimeOptions.BinSize.Year) &&
