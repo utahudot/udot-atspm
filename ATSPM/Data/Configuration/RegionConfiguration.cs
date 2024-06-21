@@ -15,6 +15,8 @@ namespace ATSPM.Data.Configuration
             builder.ToTable(t => t.HasComment("Regions"));
 
             builder.Property(e => e.Description).HasMaxLength(50);
+            builder.Property(e => e.Description).IsRequired();
+
         }
     }
 }
