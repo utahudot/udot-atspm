@@ -20,7 +20,7 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Config
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "character varying(50)", unicode: false, maxLength: 50, nullable: true)
+                    Name = table.Column<string>(type: "character varying(50)", unicode: false, maxLength: 50, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -96,7 +96,7 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Config
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "character varying(50)", unicode: false, maxLength: 50, nullable: true),
+                    Name = table.Column<string>(type: "character varying(50)", unicode: false, maxLength: 50, nullable: false),
                     Mpo = table.Column<string>(type: "character varying(50)", unicode: false, maxLength: 50, nullable: true),
                     CountyParish = table.Column<string>(type: "character varying(50)", unicode: false, maxLength: 50, nullable: true),
                     OtherPartners = table.Column<string>(type: "character varying(50)", unicode: false, maxLength: 50, nullable: true)
@@ -204,7 +204,7 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Config
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Description = table.Column<string>(type: "character varying(50)", unicode: false, maxLength: 50, nullable: true)
+                    Description = table.Column<string>(type: "character varying(50)", unicode: false, maxLength: 50, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -250,7 +250,7 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Config
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "character varying(64)", unicode: false, maxLength: 64, nullable: false),
                     Notes = table.Column<string>(type: "character varying(512)", unicode: false, maxLength: 512, nullable: true),
-                    Date = table.Column<DateTime>(type: "timestamp", nullable: false, defaultValue: new DateTime(2024, 5, 16, 9, 14, 36, 448, DateTimeKind.Local).AddTicks(4908)),
+                    Date = table.Column<DateTime>(type: "timestamp", nullable: false, defaultValue: new DateTime(2024, 6, 21, 11, 27, 21, 133, DateTimeKind.Local).AddTicks(4999)),
                     Version = table.Column<int>(type: "integer", nullable: false),
                     ParentId = table.Column<int>(type: "integer", nullable: true)
                 },
@@ -719,7 +719,11 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Config
                     { 4, "LLC", "Lane-by-lane Count", 4 },
                     { 5, "LLS", "Lane-by-lane with Speed Restriction", 5 },
                     { 6, "SBP", "Stop Bar Presence", 6 },
-                    { 7, "AP", "Advanced Presence", 7 }
+                    { 7, "AP", "Advanced Presence", 7 },
+                    { 8, "P", "Passage", 8 },
+                    { 9, "D", "Demand", 9 },
+                    { 10, "IQ", "Intermediate Queue", 10 },
+                    { 11, "EQ", "Excessive Queue", 11 }
                 });
 
             migrationBuilder.InsertData(
@@ -822,7 +826,8 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Config
                     { 33, "GVD", 115, "Gap Vs Demand", false, false },
                     { 34, "LTG", 114, "Left Turn Gap", true, false },
                     { 35, "SM", 120, "Split Monitor", true, false },
-                    { 36, "GTU", 130, "Green Time Utilization", false, true }
+                    { 36, "GTU", 130, "Green Time Utilization", false, true },
+                    { 37, "RM", 131, "Ramp Metering", false, true }
                 });
 
             migrationBuilder.InsertData(
