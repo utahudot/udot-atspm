@@ -66,12 +66,14 @@ namespace ATSPM.Application.TempExtensions
                 67,
                 68,
                 45,
+                89,
                 90
             } : new List<short>
             {
                 21,
                 22,
                 45,
+                89,
                 90
             };
 
