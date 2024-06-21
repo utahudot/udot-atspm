@@ -57,25 +57,47 @@ namespace ATSPM.ReportApi.ReportServices
             var ebPhase = Location.Approaches.FirstOrDefault(x => x.ProtectedPhaseNumber == 6);
             if (ebPhase != null && Location.Approaches.Any(x => x.ProtectedPhaseNumber == 2))
             {
-                tasks.Add(leftTurnGapAnalysisService.GetAnalysisForPhase(ebPhase, controllerEventLogs, parameter));
+                var leftTurnApproach = Location.Approaches.First(x => x.ProtectedPhaseNumber == 2);
+                tasks.Add(leftTurnGapAnalysisService.GetAnalysisForPhase(
+                    ebPhase,
+                    controllerEventLogs,
+                    parameter,
+                    leftTurnApproach));
             }
 
             var nbPhase = Location.Approaches.FirstOrDefault(x => x.ProtectedPhaseNumber == 8);
             if (nbPhase != null && Location.Approaches.Any(x => x.ProtectedPhaseNumber == 4))
             {
-                tasks.Add(leftTurnGapAnalysisService.GetAnalysisForPhase(nbPhase, controllerEventLogs, parameter));
+
+                var leftTurnApproach = Location.Approaches.First(x => x.ProtectedPhaseNumber == 4);
+                tasks.Add(leftTurnGapAnalysisService.GetAnalysisForPhase(
+                    nbPhase,
+                    controllerEventLogs,
+                    parameter,
+                    leftTurnApproach));
             }
 
             var wbPhase = Location.Approaches.FirstOrDefault(x => x.ProtectedPhaseNumber == 2);
             if (wbPhase != null && Location.Approaches.Any(x => x.ProtectedPhaseNumber == 6))
             {
-                tasks.Add(leftTurnGapAnalysisService.GetAnalysisForPhase(wbPhase, controllerEventLogs, parameter));
+
+                var leftTurnApproach = Location.Approaches.First(x => x.ProtectedPhaseNumber == 6);
+                tasks.Add(leftTurnGapAnalysisService.GetAnalysisForPhase(
+                    wbPhase,
+                    controllerEventLogs,
+                    parameter,
+                    leftTurnApproach));
             }
 
             var sbPhase = Location.Approaches.FirstOrDefault(x => x.ProtectedPhaseNumber == 4);
             if (sbPhase != null && Location.Approaches.Any(x => x.ProtectedPhaseNumber == 8))
             {
-                tasks.Add(leftTurnGapAnalysisService.GetAnalysisForPhase(sbPhase, controllerEventLogs, parameter));
+                var leftTurnApproach = Location.Approaches.First(x => x.ProtectedPhaseNumber == 8);
+                tasks.Add(leftTurnGapAnalysisService.GetAnalysisForPhase(
+                    sbPhase,
+                    controllerEventLogs,
+                    parameter,
+                    leftTurnApproach));
             }
             var results = await Task.WhenAll(tasks);
 

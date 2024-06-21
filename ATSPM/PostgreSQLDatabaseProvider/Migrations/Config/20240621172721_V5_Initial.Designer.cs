@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Config
 {
     [DbContext(typeof(ConfigContext))]
-    [Migration("20240516151436_V5_Initial")]
+    [Migration("20240621172721_V5_Initial")]
     partial class V5_Initial
     {
         /// <inheritdoc />
@@ -89,6 +89,7 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Config
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasMaxLength(50)
                         .IsUnicode(false)
                         .HasColumnType("character varying(50)");
@@ -260,6 +261,34 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Config
                             Abbreviation = "AP",
                             Description = "Advanced Presence",
                             DisplayOrder = 7
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Abbreviation = "P",
+                            Description = "Passage",
+                            DisplayOrder = 8
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Abbreviation = "D",
+                            Description = "Demand",
+                            DisplayOrder = 9
+                        },
+                        new
+                        {
+                            Id = 10,
+                            Abbreviation = "IQ",
+                            Description = "Intermediate Queue",
+                            DisplayOrder = 10
+                        },
+                        new
+                        {
+                            Id = 11,
+                            Abbreviation = "EQ",
+                            Description = "Excessive Queue",
+                            DisplayOrder = 11
                         });
                 });
 
@@ -889,6 +918,7 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Config
                         .HasColumnType("character varying(50)");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasMaxLength(50)
                         .IsUnicode(false)
                         .HasColumnType("character varying(50)");
@@ -1755,6 +1785,15 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Config
                             Name = "Green Time Utilization",
                             ShowOnAggregationSite = false,
                             ShowOnWebsite = true
+                        },
+                        new
+                        {
+                            Id = 37,
+                            Abbreviation = "RM",
+                            DisplayOrder = 131,
+                            Name = "Ramp Metering",
+                            ShowOnAggregationSite = false,
+                            ShowOnWebsite = true
                         });
                 });
 
@@ -1846,6 +1885,7 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Config
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
+                        .IsRequired()
                         .HasMaxLength(50)
                         .IsUnicode(false)
                         .HasColumnType("character varying(50)");
@@ -1989,7 +2029,7 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Config
                     b.Property<DateTime>("Date")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp")
-                        .HasDefaultValue(new DateTime(2024, 5, 16, 9, 14, 36, 448, DateTimeKind.Local).AddTicks(4908));
+                        .HasDefaultValue(new DateTime(2024, 6, 21, 11, 27, 21, 133, DateTimeKind.Local).AddTicks(4999));
 
                     b.Property<string>("Name")
                         .IsRequired()
