@@ -1,7 +1,7 @@
-﻿using System;
-using System.ComponentModel;
-using System.Linq;
-using System.Reflection;
+﻿
+using Microsoft.OpenApi.Extensions;
+using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace ATSPM.Application.Extensions
 {
@@ -9,12 +9,7 @@ namespace ATSPM.Application.Extensions
     {
         public static string GetDescription(this Enum value)
         {
-            FieldInfo field = value.GetType().GetField(value.ToString());
-
-            DescriptionAttribute attribute = field.GetCustomAttributes(typeof(DescriptionAttribute), false)
-                                                  .SingleOrDefault() as DescriptionAttribute;
-
-            return attribute == null ? value.ToString() : attribute.Description;
+            return value.GetAttributeOfType<DisplayAttribute>().Name;
         }
     }
 }
