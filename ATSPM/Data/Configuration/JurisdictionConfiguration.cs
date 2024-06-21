@@ -17,6 +17,8 @@ namespace ATSPM.Data.Configuration
             builder.Property(e => e.CountyParish).HasMaxLength(50);
 
             builder.Property(e => e.Name).HasMaxLength(50);
+            builder.Property(e => e.Name).IsRequired();
+
 
             builder.Property(e => e.Mpo).HasMaxLength(50);
 
