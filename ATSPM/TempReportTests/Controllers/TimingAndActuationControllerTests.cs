@@ -108,29 +108,17 @@ namespace ReportsATSPM.Application.Reports.Controllers.Tests
                 LocationIdentifier = "7115",
                 Start = Convert.ToDateTime("6/14/2023 8:00:00.0"),
                 End = Convert.ToDateTime("6/14/2023 8:05:00.0"),
-                ExtendStartStopSearch = 2,
                 GlobalEventCodesList = new List<short>(), 
-                GlobalEventCounter = 1,
                 GlobalEventParamsList = new List<short>(),
                 PhaseEventCodesList = new List<short>(),
-                ShowAdvancedCount = true,
-                ShowAdvancedDilemmaZone = true,
-                ShowAllLanesInfo = true, 
-                ShowLaneByLaneCount = true, 
-                ShowPedestrianActuation = true, 
-                ShowPedestrianIntervals = true, 
-                ShowStopBarPresence = true,
             };
             // Test one approach
             var eventCodes = new List<short> { };
 
             var phaseDetails = new PhaseDetail { PhaseNumber = 19, Approach = approach.Object, UseOverlap = false };
 
-            if (options.ShowAdvancedCount || options.ShowAdvancedDilemmaZone || options.ShowLaneByLaneCount || options.ShowStopBarPresence)
                 eventCodes.AddRange(new List<short> { 81, 82 });
-            if (options.ShowPedestrianActuation)
                 eventCodes.AddRange(new List<short> { 89, 90 });
-            if (options.ShowPedestrianIntervals)
                 eventCodes.AddRange(GetPedestrianIntervalEventCodes(false));
             //if (options.PhaseEventCodesList != null)
             //    eventCodes.AddRange(options.PhaseEventCodesList);
