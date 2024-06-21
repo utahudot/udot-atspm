@@ -21,7 +21,7 @@ namespace ATSPM.Application.Business.LeftTurnGapAnalysis
         {
         }
 
-        public async Task<LeftTurnGapAnalysisResult> GetAnalysisForPhase(Approach approach, List<IndianaEvent> eventLogs, LeftTurnGapAnalysisOptions options)
+        public async Task<LeftTurnGapAnalysisResult> GetAnalysisForPhase(Approach approach, List<IndianaEvent> eventLogs, LeftTurnGapAnalysisOptions options, Approach leftTurnPhase)
         {
             var cycleEventsByPhase = new List<IndianaEvent>();
 
@@ -58,6 +58,7 @@ namespace ATSPM.Application.Business.LeftTurnGapAnalysis
             if (detectorEvents.Any() && cycleEventsByPhase.Any())
             {
                 var result = GetData(cycleEventsByPhase, detectorEvents, options, detectionTypeStr, approach);
+                result.PhaseDescription = $"{leftTurnPhase.DirectionType.Description} Left Phase {leftTurnPhase.ProtectedPhaseNumber} crossing {approach.DirectionType.Description} {string.Join(',', detectorsToUse.Select(d => d.MovementType.GetDescription()))} Phase {approach.ProtectedPhaseNumber}";
                 result.ApproachDescription = approach.Description;
                 result.LocationDescription = approach.Location.LocationDescription();
                 return result;
