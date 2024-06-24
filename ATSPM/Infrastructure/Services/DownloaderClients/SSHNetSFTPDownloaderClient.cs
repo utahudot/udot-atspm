@@ -29,15 +29,18 @@ using System.Threading.Tasks;
 
 namespace ATSPM.Infrastructure.Services.DownloaderClients
 {
+    ///<inheritdoc/>
     public class SSHNetSFTPDownloaderClient : ServiceObjectBase, ISFTPDownloaderClient
     {
-        public ISftpClientWrapper Client;
+        private ISftpClientWrapper client;
 
         #region ISFTPDownloaderClient
 
-        public bool IsConnected => Client != null && Client.IsConnected;
+        ///<inheritdoc/>
+        public bool IsConnected => client != null && client.IsConnected;
 
-        public Task ConnectAsync(NetworkCredential credentials, int connectionTimeout = 2, int operationTImeout = 2, CancellationToken token = default)
+        ///<inheritdoc/>
+        public Task<bool> ConnectAsync(NetworkCredential credentials, int connectionTimeout = 2, int operationTImeout = 2, CancellationToken token = default)
         {
             token.ThrowIfCancellationRequested();
 
@@ -51,14 +54,13 @@ namespace ATSPM.Infrastructure.Services.DownloaderClients
                     Timeout = TimeSpan.FromMilliseconds(connectionTimeout)
                 };
 
-                Client ??= new SftpClientWrapper(connectionInfo);
+                client ??= new SftpClientWrapper(connectionInfo);
 
-                Client.OperationTimeout = TimeSpan.FromMilliseconds(operationTImeout);
+                client.OperationTimeout = TimeSpan.FromMilliseconds(operationTImeout);
 
-                //await Task.Run(() => Client.Connect(), token);
-                Client.Connect();
+                client.Connect();
 
-                return Task.CompletedTask;
+                return Task.FromResult(client.IsConnected);
             }
             catch (Exception e)
             {
@@ -66,6 +68,7 @@ namespace ATSPM.Infrastructure.Services.DownloaderClients
             }
         }
 
+        ///<inheritdoc/>
         public Task DeleteFileAsync(string path, CancellationToken token = default)
         {
             token.ThrowIfCancellationRequested();
@@ -75,8 +78,8 @@ namespace ATSPM.Infrastructure.Services.DownloaderClients
 
             try
             {
-                //Task.Run(() => Client.DeleteFile(path), token);
-                Client.DeleteFile(path);
+                //Task.Run(() => client.DeleteFile(path), token);
+                client.DeleteFile(path);
 
                 return Task.CompletedTask;
             }
@@ -86,6 +89,7 @@ namespace ATSPM.Infrastructure.Services.DownloaderClients
             }
         }
 
+        ///<inheritdoc/>
         public Task DisconnectAsync(CancellationToken token = default)
         {
             token.ThrowIfCancellationRequested();
@@ -95,17 +99,18 @@ namespace ATSPM.Infrastructure.Services.DownloaderClients
 
             try
             {
-                //await Task.Run(() => Client.Disconnect(), token);
-                Client.Disconnect();
+                //await Task.Run(() => client.Disconnect(), token);
+                client.Disconnect();
 
                 return Task.CompletedTask;
             }
             catch (Exception e)
             {
-                throw new ControllerConnectionException(Client.ConnectionInfo.Host, this, e.Message, e);
+                throw new ControllerConnectionException(client.ConnectionInfo.Host, this, e.Message, e);
             }
         }
 
+        ///<inheritdoc/>
         public async Task<FileInfo> DownloadFileAsync(string localPath, string remotePath, CancellationToken token = default)
         {
             token.ThrowIfCancellationRequested();
@@ -115,7 +120,7 @@ namespace ATSPM.Infrastructure.Services.DownloaderClients
 
             try
             {
-                return await Client.DownloadFileAsync(localPath, remotePath);
+                return await client.DownloadFileAsync(localPath, remotePath);
             }
             catch (Exception e)
             {
@@ -123,6 +128,7 @@ namespace ATSPM.Infrastructure.Services.DownloaderClients
             }
         }
 
+        ///<inheritdoc/>
         public async Task<IEnumerable<string>> ListDirectoryAsync(string directory, CancellationToken token = default, params string[] filters)
         {
             token.ThrowIfCancellationRequested();
@@ -132,7 +138,7 @@ namespace ATSPM.Infrastructure.Services.DownloaderClients
 
             try
             {
-                return await Client.ListDirectoryAsync(directory, filters);
+                return await client.ListDirectoryAsync(directory, filters);
             }
             catch (Exception e)
             {
@@ -142,16 +148,17 @@ namespace ATSPM.Infrastructure.Services.DownloaderClients
 
         #endregion
 
+        ///<inheritdoc/>
         protected override void DisposeManagedCode()
         {
-            if (Client != null)
+            if (client != null)
             {
-                if (Client.IsConnected)
+                if (client.IsConnected)
                 {
-                    Client.Disconnect();
+                    client.Disconnect();
                 }
-                Client.Dispose();
-                Client = null;
+                client.Dispose();
+                client = null;
             }
         }
     }

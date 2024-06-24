@@ -22,19 +22,20 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace ATSPM.Infrastructure.Services.DownloaderClients
 {
+    ///<inheritdoc/>
     public class FTPDownloaderStubClient : ServiceObjectBase, IFTPDownloaderClient
     {
         private bool _connected;
 
         public bool IsConnected => _connected;
 
-        public async Task ConnectAsync(NetworkCredential credentials, int connectionTimeout = 1000, int operationTImeout = 1000, CancellationToken token = default)
+        ///<inheritdoc/>
+        public async Task<bool> ConnectAsync(NetworkCredential credentials, int connectionTimeout = 1000, int operationTImeout = 1000, CancellationToken token = default)
         {
             if (string.IsNullOrEmpty(credentials.UserName) || string.IsNullOrEmpty(credentials.Password) || string.IsNullOrEmpty(credentials.Domain))
                 throw new ArgumentNullException("Network Credentials can't be null");
@@ -42,8 +43,11 @@ namespace ATSPM.Infrastructure.Services.DownloaderClients
             await Task.Delay(TimeSpan.FromMilliseconds(250));
 
             _connected = true;
+
+            return _connected;
         }
 
+        ///<inheritdoc/>
         public async Task DeleteFileAsync(string path, CancellationToken token = default)
         {
             token.ThrowIfCancellationRequested();
@@ -55,6 +59,7 @@ namespace ATSPM.Infrastructure.Services.DownloaderClients
 
         }
 
+        ///<inheritdoc/>
         public async Task DisconnectAsync(CancellationToken token = default)
         {
             token.ThrowIfCancellationRequested();
@@ -67,6 +72,7 @@ namespace ATSPM.Infrastructure.Services.DownloaderClients
             _connected = false;
         }
 
+        ///<inheritdoc/>
         public Task<FileInfo> DownloadFileAsync(string localPath, string remotePath, CancellationToken token = default)
         {
             token.ThrowIfCancellationRequested();
@@ -77,6 +83,7 @@ namespace ATSPM.Infrastructure.Services.DownloaderClients
             return Task.FromResult(new FileInfo(remotePath));
         }
 
+        ///<inheritdoc/>
         public Task<IEnumerable<string>> ListDirectoryAsync(string directory, CancellationToken token = default, params string[] filters)
         {
             token.ThrowIfCancellationRequested();
