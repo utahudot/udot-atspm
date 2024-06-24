@@ -149,10 +149,10 @@ namespace ATSPM.LocationControllerLogger
 
                     s.PostConfigureAll<SignalControllerDownloaderConfiguration>(o =>
                     {
-                        o.LocalPath = "C:\\temp2";
-                        o.PingControllerToVerify = false;
-                        o.ConnectionTimeout = 7500;
-                        o.ReadTimeout = 7500;
+                        o.LocalPath = "C:\\temp3";
+                        o.PingControllerToVerify = true;
+                        o.ConnectionTimeout = 2000;
+                        o.ReadTimeout = 30000;
                         o.DeleteFile = false;
                     });
 
@@ -183,39 +183,8 @@ namespace ATSPM.LocationControllerLogger
             host.Services.PrintHostInformation();
 
             //await host.RunAsync();
-            //await host.StartAsync();
-            //await host.StopAsync();
-
-            using (var scope = host.Services.CreateScope())
-            {
-                var loc = scope.ServiceProvider.GetService<ILocationRepository>();
-                var areas = scope.ServiceProvider.GetService<IAreaRepository>();
-
-                var area = areas.Lookup(1);
-
-                var n = new Location()
-                {
-                    ChartEnabled = true,
-                    PedsAre1to1 = false,
-                    VersionAction = Data.Enums.LocationVersionActions.New,
-                    JurisdictionId = 1,
-                    Latitude = 40.75854665,
-                    Longitude = -111.8824063,
-                    LocationIdentifier = "hello",
-                    LocationTypeId = 1,
-                    PrimaryName = "test",
-                    SecondaryName = "test",
-                    RegionId = 1,
-                    Start = DateTime.Now,
-
-                    Areas = new[] { area },
-                };
-
-
-
-                await loc.AddAsync(n);
-            }
-
+            await host.StartAsync();
+            await host.StopAsync();
 
             Console.ReadLine();
         }

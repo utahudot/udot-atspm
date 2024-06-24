@@ -56,7 +56,7 @@ namespace InfrastructureTests.LogDownloaderClientTests
 
             if (_client is FluentFTPDownloaderClient sut)
             {
-                sut.Client = client.Object;
+                sut.client = client.Object;
 
                 var credentials = new NetworkCredential("username", "password", "domain");
 
@@ -85,7 +85,7 @@ namespace InfrastructureTests.LogDownloaderClientTests
 
             if (_client is FluentFTPDownloaderClient sut)
             {
-                sut.Client = client.Object;
+                sut.client = client.Object;
 
                 var credentials = new NetworkCredential("username", "password", "domain");
 
@@ -120,11 +120,11 @@ namespace InfrastructureTests.LogDownloaderClientTests
                     //connection will fail, just want to see if credentials are set correctly
                 }
 
-                var actual1 = sut.Client.Credentials.UserName;
-                var actual2 = sut.Client.Credentials.Password;
-                var actual3 = sut.Client.Credentials.Domain;
-                var actual4 = sut.Client.Config.DataConnectionConnectTimeout;
-                var actual5 = sut.Client.Config.DataConnectionReadTimeout;
+                var actual1 = sut.client.Credentials.UserName;
+                var actual2 = sut.client.Credentials.Password;
+                var actual3 = sut.client.Credentials.Domain;
+                var actual4 = sut.client.Config.DataConnectionConnectTimeout;
+                var actual5 = sut.client.Config.DataConnectionReadTimeout;
 
                 Assert.Equal(expected1, actual1);
                 Assert.Equal(expected2, actual2);
@@ -191,7 +191,7 @@ namespace InfrastructureTests.LogDownloaderClientTests
 
             if (_client is FluentFTPDownloaderClient sut)
             {
-                sut.Client = client.Object;
+                sut.client = client.Object;
 
                 await sut.DeleteFileAsync(expected);
 
@@ -213,7 +213,7 @@ namespace InfrastructureTests.LogDownloaderClientTests
 
             if (_client is FluentFTPDownloaderClient sut)
             {
-                sut.Client = client.Object;
+                sut.client = client.Object;
 
                 await Assert.ThrowsAsync<ControllerDeleteFileException>(async () => await sut.DeleteFileAsync(string.Empty));
             }
@@ -282,7 +282,7 @@ namespace InfrastructureTests.LogDownloaderClientTests
 
             if (_client is FluentFTPDownloaderClient sut)
             {
-                sut.Client = client.Object;
+                sut.client = client.Object;
 
                 var actual = await sut.DownloadFileAsync(expected, remotePath);
 
@@ -309,7 +309,7 @@ namespace InfrastructureTests.LogDownloaderClientTests
 
             if (_client is FluentFTPDownloaderClient sut)
             {
-                sut.Client = client.Object;
+                sut.client = client.Object;
                 
                 await Assert.ThrowsAsync<ControllerDownloadFileException>(async () => await sut.DownloadFileAsync(string.Empty, string.Empty));
             }
@@ -382,7 +382,7 @@ namespace InfrastructureTests.LogDownloaderClientTests
 
             if (_client is FluentFTPDownloaderClient sut)
             {
-                sut.Client = client.Object;
+                sut.client = client.Object;
 
                 var actual = await sut.ListDirectoryAsync(directory, default, filters);
                 var expected = returnFiles;
@@ -448,7 +448,7 @@ namespace InfrastructureTests.LogDownloaderClientTests
 
             if (_client is FluentFTPDownloaderClient sut)
             {
-                sut.Client = client.Object;
+                sut.client = client.Object;
 
                 await sut.DisconnectAsync();
 
@@ -475,7 +475,7 @@ namespace InfrastructureTests.LogDownloaderClientTests
 
             if (_client is FluentFTPDownloaderClient sut)
             {
-                sut.Client = client.Object;
+                sut.client = client.Object;
 
                 await Assert.ThrowsAsync<ControllerConnectionException>(async () => await sut.DisconnectAsync());
             }
@@ -534,7 +534,7 @@ namespace InfrastructureTests.LogDownloaderClientTests
 
             if (_client is FluentFTPDownloaderClient sut)
             {
-                sut.Client = client.Object;
+                sut.client = client.Object;
 
                 sut.Dispose();
 
@@ -542,7 +542,7 @@ namespace InfrastructureTests.LogDownloaderClientTests
                 client.Verify();
 
                 Assert.False(sut.IsConnected);
-                Assert.Null(sut.Client);
+                Assert.Null(sut.client);
             }
             else
             {

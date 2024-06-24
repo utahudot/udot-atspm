@@ -37,12 +37,12 @@ namespace ATSPM.Application.Services
         /// <summary>
         /// Open connection to the server
         /// </summary>
-        /// <param name="credentials">Uwername/password</param>
+        /// <param name="credentials">domain/username/password</param>
         /// <param name="connectionTimeout">Timeout for connections</param>
         /// <param name="operationTImeout">Timeout for operations</param>
         /// <param name="token">Cancellation token</param>
-        /// <returns></returns>
-        Task ConnectAsync(NetworkCredential credentials, int connectionTimeout = 2000, int operationTImeout = 2000, CancellationToken token = default);
+        /// <returns>true if connection is successfull</returns>
+        Task<bool> ConnectAsync(NetworkCredential credentials, int connectionTimeout = 2000, int operationTImeout = 2000, CancellationToken token = default);
 
         /// <summary>
         /// List files in directory
