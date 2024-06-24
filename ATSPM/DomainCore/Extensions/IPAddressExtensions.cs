@@ -71,7 +71,7 @@ namespace ATSPM.Domain.Extensions
         /// <param name="ipaddress">IPAddress to ping</param>
         /// <param name="timeout">Ping timeout in milliseconds</param>
         /// <returns>True if ping succeeds</returns>
-        public static bool PingIPAddress(this IPAddress ipaddress, int timeout = 4000)
+        public static bool PingIPAddress(this IPAddress ipaddress, int timeout = 5000)
         {
             Ping pingSender = new();
             //byte[] buffer = new byte[32];

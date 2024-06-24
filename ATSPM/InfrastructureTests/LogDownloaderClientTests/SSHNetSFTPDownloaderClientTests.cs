@@ -59,7 +59,7 @@ namespace InfrastructureTests.LogDownloaderClientTests
 
             if (_client is SSHNetSFTPDownloaderClient sut)
             {
-                sut.Client = client.Object;
+                sut.client = client.Object;
 
                 var credentials = new NetworkCredential("username", "password", "domain");
 
@@ -88,7 +88,7 @@ namespace InfrastructureTests.LogDownloaderClientTests
 
             if (_client is SSHNetSFTPDownloaderClient sut)
             {
-                sut.Client = client.Object;
+                sut.client = client.Object;
 
                 var credentials = new NetworkCredential("username", "password", "domain");
 
@@ -123,12 +123,12 @@ namespace InfrastructureTests.LogDownloaderClientTests
                     //connection will fail, just want to see if credentials are set correctly
                 }
 
-                var actual1 = sut.Client.ConnectionInfo.Username;
-                var actual2 = sut.Client.ConnectionInfo.AuthenticationMethods[0].Username;
-                var actual3 = sut.Client.ConnectionInfo.AuthenticationMethods[0].Name;
-                var actual4 = sut.Client.ConnectionInfo.Host;
-                var actual5 = sut.Client.ConnectionInfo.Timeout;
-                var actual6 = sut.Client.OperationTimeout;
+                var actual1 = sut.client.ConnectionInfo.Username;
+                var actual2 = sut.client.ConnectionInfo.AuthenticationMethods[0].Username;
+                var actual3 = sut.client.ConnectionInfo.AuthenticationMethods[0].Name;
+                var actual4 = sut.client.ConnectionInfo.Host;
+                var actual5 = sut.client.ConnectionInfo.Timeout;
+                var actual6 = sut.client.OperationTimeout;
 
                 Assert.Equal(expected1, actual1);
                 Assert.Equal(expected1, actual2);
@@ -196,7 +196,7 @@ namespace InfrastructureTests.LogDownloaderClientTests
 
             if (_client is SSHNetSFTPDownloaderClient sut)
             {
-                sut.Client = client.Object;
+                sut.client = client.Object;
 
                 await sut.DeleteFileAsync(expected);
 
@@ -218,7 +218,7 @@ namespace InfrastructureTests.LogDownloaderClientTests
 
             if (_client is SSHNetSFTPDownloaderClient sut)
             {
-                sut.Client = client.Object;
+                sut.client = client.Object;
 
                 await Assert.ThrowsAsync<ControllerDeleteFileException>(async () => await sut.DeleteFileAsync(string.Empty));
             }
@@ -286,7 +286,7 @@ namespace InfrastructureTests.LogDownloaderClientTests
 
             if (_client is SSHNetSFTPDownloaderClient sut)
             {
-                sut.Client = client.Object;
+                sut.client = client.Object;
 
                 var actual = await sut.DownloadFileAsync(expected, remotePath);
 
@@ -312,7 +312,7 @@ namespace InfrastructureTests.LogDownloaderClientTests
 
             if (_client is SSHNetSFTPDownloaderClient sut)
             {
-                sut.Client = client.Object;
+                sut.client = client.Object;
                 
                 await Assert.ThrowsAsync<ControllerDownloadFileException>(async () => await sut.DownloadFileAsync(string.Empty, string.Empty));
             }
@@ -381,7 +381,7 @@ namespace InfrastructureTests.LogDownloaderClientTests
 
             if (_client is SSHNetSFTPDownloaderClient sut)
             {
-                sut.Client = client.Object;
+                sut.client = client.Object;
 
                 var actual = await sut.ListDirectoryAsync(directory, default, filters);
                 var expected = returnFiles;
@@ -447,7 +447,7 @@ namespace InfrastructureTests.LogDownloaderClientTests
 
             if (_client is SSHNetSFTPDownloaderClient sut)
             {
-                sut.Client = client.Object;
+                sut.client = client.Object;
 
                 await sut.DisconnectAsync();
 
@@ -474,7 +474,7 @@ namespace InfrastructureTests.LogDownloaderClientTests
 
             if (_client is SSHNetSFTPDownloaderClient sut)
             {
-                sut.Client = client.Object;
+                sut.client = client.Object;
 
                 await Assert.ThrowsAsync<ControllerConnectionException>(async () => await sut.DisconnectAsync());
             }
@@ -533,7 +533,7 @@ namespace InfrastructureTests.LogDownloaderClientTests
 
             if (_client is SSHNetSFTPDownloaderClient sut)
             {
-                sut.Client = client.Object;
+                sut.client = client.Object;
 
                 sut.Dispose();
 
@@ -541,7 +541,7 @@ namespace InfrastructureTests.LogDownloaderClientTests
                 client.Verify();
 
                 Assert.False(sut.IsConnected);
-                Assert.Null(sut.Client);
+                Assert.Null(sut.client);
             }
             else
             {
