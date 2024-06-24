@@ -122,9 +122,12 @@ namespace ATSPM.LocationControllerLogger
                     //.Where(w => w.DeviceConfiguration.Protocol == TransportProtocols.Sftp)
                     //.Where(w => w.DeviceConfiguration.Protocol != TransportProtocols.Http)
                     .Where(w => w.DeviceType == DeviceTypes.RampController)
-                    .OrderBy(o => o.Ipaddress)
+
+                    .Where(w => w.Ipaddress != "10.204.8.216" && w.Ipaddress != "10.233.8.191")
+
+                    .OrderBy(o => o.Ipaddress);
                     //.Skip(2)
-                    .Take(1);
+                    //.Take(1);
 
                 //var devices = sftpDevices.Where(w => w.Ipaddress.IsValidIPAddress(true));
                 var devices = sftpDevices;
@@ -145,7 +148,7 @@ namespace ATSPM.LocationControllerLogger
 
                 var actionResult = new ActionBlock<Tuple<Device, FileInfo>>(t =>
                 {
-                    Console.WriteLine($"{t.Item1} - {t.Item2.FullName}");
+                    //Console.WriteLine($"{t.Item1} - {t.Item2.FullName}");
                 }, new ExecutionDataflowBlockOptions() { MaxDegreeOfParallelism = _options.Value.MaxDegreeOfParallelism, CancellationToken = cancellationToken });
 
                 //var actionResult = new ActionBlock<CompressedEventLogBase>(t =>
