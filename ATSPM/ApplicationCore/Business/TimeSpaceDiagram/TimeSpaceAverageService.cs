@@ -72,7 +72,7 @@ namespace ATSPM.Application.Business.TimeSpaceDiagram
 
             if (speedLimit == 0)
             {
-                throw new ArgumentNullException($"No speed available for {phaseDetail.PhaseNumber}");
+                throw new ArgumentNullException($"Speed not configured in route for all phases");
             }
 
             if (!isLastElement)

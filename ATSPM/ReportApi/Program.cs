@@ -153,6 +153,7 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddScoped<IReportService<SplitFailOptions, IEnumerable<SplitFailsResult>>, SplitFailReportService>();
     s.AddScoped<IReportService<SplitMonitorOptions, IEnumerable<SplitMonitorResult>>, SplitMonitorReportService>();
     s.AddScoped<IReportService<TimeSpaceDiagramOptions, IEnumerable<TimeSpaceDiagramResultForPhase>>, TimeSpaceDiagramReportService>();
+    s.AddScoped<IReportService<TimeSpaceDiagramAverageOptions, IEnumerable<TimeSpaceDiagramAverageResult>>, TimeSpaceDiagramAverageReportService>();
     s.AddScoped<IReportService<TimingAndActuationsOptions, IEnumerable<TimingAndActuationsForPhaseResult>>, TimingAndActuactionReportService>();
     s.AddScoped<IReportService<TurningMovementCountsOptions, TurningMovementCountsResult>, TurningMovementCountReportService>();
     s.AddScoped<IReportService<YellowRedActivationsOptions, IEnumerable<YellowRedActivationsResult>>, YellowRedActivationsReportService>();
@@ -183,6 +184,7 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddScoped<SplitFailPhaseService>();
     s.AddScoped<SplitMonitorService>();
     s.AddScoped<TimeSpaceDiagramForPhaseService>();
+    s.AddScoped<TimeSpaceAverageService>();
     s.AddScoped<TimingAndActuationsForPhaseService>();
     s.AddScoped<TurningMovementCountsService>();
     s.AddScoped<WaitTimeService>();
