@@ -29,38 +29,56 @@ using System.Threading.Tasks;
 
 namespace ATSPM.Infrastructure.Services.DownloaderClients
 {
-    ///<inheritdoc/>
+    /// <summary>
+    /// Connect to services and interact with their file directories using <see cref="ISftpClientWrapper"/>
+    /// </summary>
     public class SSHNetSFTPDownloaderClient : ServiceObjectBase, ISFTPDownloaderClient
     {
-        private ISftpClientWrapper client;
+        private ISftpClientWrapper _client;
+
+        ///<inheritdoc/>
+        public SSHNetSFTPDownloaderClient() { }
+
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        /// <param name="client">External client used for special settings and mocking</param>
+        public SSHNetSFTPDownloaderClient(ISftpClientWrapper client)
+        {
+            _client = client;
+        }
 
         #region ISFTPDownloaderClient
 
         ///<inheritdoc/>
-        public bool IsConnected => client != null && client.IsConnected;
+        public bool IsConnected => _client != null && _client.IsConnected;
 
         ///<inheritdoc/>
-        public Task<bool> ConnectAsync(NetworkCredential credentials, int connectionTimeout = 2, int operationTImeout = 2, CancellationToken token = default)
+        public Task ConnectAsync(NetworkCredential credentials, int connectionTimeout = 2, int operationTImeout = 2, CancellationToken token = default)
         {
-            token.ThrowIfCancellationRequested();
+            if (string.IsNullOrEmpty(credentials.Domain))
+                throw new ArgumentNullException("Network Credentials can't be null");
 
             try
             {
-                var connectionInfo = new ConnectionInfo
+                if (_client == null)
+                {
+                    var connectionInfo = new ConnectionInfo
                 (credentials.Domain,
                 credentials.UserName,
                 new PasswordAuthenticationMethod(credentials.UserName, credentials.Password))
-                {
-                    Timeout = TimeSpan.FromMilliseconds(connectionTimeout)
-                };
+                    {
+                        Timeout = TimeSpan.FromMilliseconds(connectionTimeout)
+                    };
 
-                client ??= new SftpClientWrapper(connectionInfo);
+                    _client ??= new SftpClientWrapper(connectionInfo);
 
-                client.OperationTimeout = TimeSpan.FromMilliseconds(operationTImeout);
+                    _client.OperationTimeout = TimeSpan.FromMilliseconds(operationTImeout);
+                }
 
-                client.Connect();
+                _client.Connect();
 
-                return Task.FromResult(client.IsConnected);
+                return Task.CompletedTask;
             }
             catch (Exception e)
             {
@@ -78,8 +96,7 @@ namespace ATSPM.Infrastructure.Services.DownloaderClients
 
             try
             {
-                //Task.Run(() => client.DeleteFile(path), token);
-                client.DeleteFile(path);
+                _client.DeleteFile(path);
 
                 return Task.CompletedTask;
             }
@@ -99,15 +116,14 @@ namespace ATSPM.Infrastructure.Services.DownloaderClients
 
             try
             {
-                //await Task.Run(() => client.Disconnect(), token);
-                client.Disconnect();
-
-                return Task.CompletedTask;
+                _client.Disconnect();
             }
             catch (Exception e)
             {
-                throw new ControllerConnectionException(client.ConnectionInfo.Host, this, e.Message, e);
+                throw new ControllerConnectionException(_client.ConnectionInfo.Host, this, e.Message, e);
             }
+
+            return Task.CompletedTask;
         }
 
         ///<inheritdoc/>
@@ -120,7 +136,7 @@ namespace ATSPM.Infrastructure.Services.DownloaderClients
 
             try
             {
-                return await client.DownloadFileAsync(localPath, remotePath);
+                return await _client.DownloadFileAsync(localPath, remotePath);
             }
             catch (Exception e)
             {
@@ -138,7 +154,7 @@ namespace ATSPM.Infrastructure.Services.DownloaderClients
 
             try
             {
-                return await client.ListDirectoryAsync(directory, filters);
+                return await _client.ListDirectoryAsync(directory, filters);
             }
             catch (Exception e)
             {
@@ -151,14 +167,14 @@ namespace ATSPM.Infrastructure.Services.DownloaderClients
         ///<inheritdoc/>
         protected override void DisposeManagedCode()
         {
-            if (client != null)
+            if (_client != null)
             {
-                if (client.IsConnected)
+                if (_client.IsConnected)
                 {
-                    client.Disconnect();
+                    _client.Disconnect();
                 }
-                client.Dispose();
-                client = null;
+                _client.Dispose();
+                _client = null;
             }
         }
     }
