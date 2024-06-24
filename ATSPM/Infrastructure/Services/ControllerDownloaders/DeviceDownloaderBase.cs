@@ -181,7 +181,6 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
                                 logMessages.OperationCancelledException(locationIdentifier, ipaddress, e);
                             }
 
-                            // TODO: delete file here
                             if (_options.DeleteFile)
                             {
                                 try
@@ -243,5 +242,10 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
         }
 
         #endregion
+
+        protected override void DisposeManagedCode()
+        {
+            _client.Dispose();
+        }
     }
 }

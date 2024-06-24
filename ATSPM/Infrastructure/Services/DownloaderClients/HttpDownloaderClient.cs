@@ -20,39 +20,44 @@ using ATSPM.Domain.BaseClasses;
 using ATSPM.Domain.Extensions;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Xml;
 
 namespace ATSPM.Infrastructure.Services.DownloaderClients
 {
+    ///<inheritdoc/>
     public class HttpDownloaderClient : ServiceObjectBase, IHTTPDownloaderClient
     {
-        public HttpClient Client;
-        private Uri _getPath;
+        private HttpClient client;
+        private Uri getPath;
 
         #region IHTTPDownloaderClient
 
-        public bool IsConnected => Client != null && Client.BaseAddress.Host.IsValidIPAddress();
+        ///<inheritdoc/>
+        public bool IsConnected => client != null && client.BaseAddress.Host.IsValidIPAddress();
 
-        public async Task ConnectAsync(NetworkCredential credentials, int connectionTimeout = 2000, int operationTImeout = 2000, CancellationToken token = default)
+        ///<inheritdoc/>
+        public Task<bool> ConnectAsync(NetworkCredential credentials, int connectionTimeout = 2000, int operationTImeout = 2000, CancellationToken token = default)
         {
             token.ThrowIfCancellationRequested();
 
             try
             {
-                //if (string.IsNullOrEmpty(credentials.UserName) || string.IsNullOrEmpty(credentials.Password) || string.IsNullOrEmpty(credentials.Domain))
-                //    throw new ArgumentNullException("Network Credentials can't be null");
+                if (string.IsNullOrEmpty(credentials.UserName) || string.IsNullOrEmpty(credentials.Password) || string.IsNullOrEmpty(credentials.Domain))
+                    throw new ArgumentNullException("Network Credentials can't be null");
 
-                Client ??= new HttpClient() { Timeout = TimeSpan.FromMilliseconds(connectionTimeout), BaseAddress = new Uri($"http://{credentials.Domain}/") };
+                client ??= new HttpClient() { Timeout = TimeSpan.FromMilliseconds(operationTImeout), BaseAddress = new Uri($"http://{credentials.Domain}/") };
+                //client ??= new HttpClient() { BaseAddress = new Uri($"http://{credentials.Domain}/") };
 
-                Client.DefaultRequestHeaders.Accept.Clear();
-                Client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/xml"));
+                client.DefaultRequestHeaders.Accept.Clear();
+                //HACK: this is specific to maxtimecontrollers future versions will need this adjustable
+                client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/xml"));
 
-                await Task.CompletedTask;
+                return Task.FromResult(true);
             }
             catch (Exception e)
             {
@@ -60,6 +65,7 @@ namespace ATSPM.Infrastructure.Services.DownloaderClients
             }
         }
 
+        ///<inheritdoc/>
         public async Task DeleteFileAsync(string path, CancellationToken token = default)
         {
             token.ThrowIfCancellationRequested();
@@ -70,6 +76,7 @@ namespace ATSPM.Infrastructure.Services.DownloaderClients
             await Task.CompletedTask;
         }
 
+        ///<inheritdoc/>
         public async Task DisconnectAsync(CancellationToken token = default)
         {
             token.ThrowIfCancellationRequested();
@@ -77,13 +84,14 @@ namespace ATSPM.Infrastructure.Services.DownloaderClients
             if (!IsConnected)
                 throw new ControllerConnectionException("", this, "Client not connected");
 
-            Client.CancelPendingRequests();
+            client.CancelPendingRequests();
 
-            _getPath = null;
+            getPath = null;
 
             await Task.CompletedTask;
         }
 
+        ///<inheritdoc/>
         public async Task<FileInfo> DownloadFileAsync(string localPath, string remotePath, CancellationToken token = default)
         {
             token.ThrowIfCancellationRequested();
@@ -91,18 +99,18 @@ namespace ATSPM.Infrastructure.Services.DownloaderClients
             if (!IsConnected)
                 throw new ControllerConnectionException("", this, "Client not connected");
 
-            if (_getPath == null)
+            if (getPath == null)
                 throw new ControllerDownloadFileException(remotePath, this, "HTTP Get Path not defined");
 
             HttpResponseMessage response = new HttpResponseMessage();
 
+            var sw = new Stopwatch();
+            
             try
             {
-                Console.WriteLine($"*****************{_getPath}*************************");
+                response = await client.GetAsync(getPath, token);
 
-                response = await Client.GetAsync(_getPath, token);
-
-                Console.WriteLine($"*****************{response.StatusCode}*************************");
+                sw.Stop();
 
                 if (response.IsSuccessStatusCode && response?.Content != null)
                 {
@@ -111,11 +119,7 @@ namespace ATSPM.Infrastructure.Services.DownloaderClients
                     var fileInfo = new FileInfo(localPath);
                     fileInfo.Directory.Create();
 
-                    XmlDocument xml = new XmlDocument();
-
-                    xml.LoadXml(data);
-
-                    xml.Save(fileInfo.FullName);
+                    await File.WriteAllTextAsync(localPath, data, token).ConfigureAwait(false);
 
                     return fileInfo;
                 }
@@ -128,6 +132,7 @@ namespace ATSPM.Infrastructure.Services.DownloaderClients
             }
         }
 
+        ///<inheritdoc/>
         public Task<IEnumerable<string>> ListDirectoryAsync(string directory, CancellationToken token = default, params string[] filters)
         {
             token.ThrowIfCancellationRequested();
@@ -137,20 +142,22 @@ namespace ATSPM.Infrastructure.Services.DownloaderClients
 
             try
             {
-                var builder = new UriBuilder("http", Client.BaseAddress.Host.ToString(), 80, directory);
+                var builder = new UriBuilder("http", client.BaseAddress.Host.ToString(), 80, directory);
 
                 //for maxtime controllers it uses this searchterm:  $"since={DateTime.Now.AddHours(-24):MM-dd-yyyy HH:mm:ss.f}"
+
+                //HACK: this is for maxtime controllers, needs to be moved to search terms in the db
+                builder.Query = $"since={DateTime.Now.AddHours(-1):MM-dd-yyyy HH:mm:ss.f}";
+
                 if (filters?.Length > 0)
                 {
                     foreach (var filter in filters)
                     {
-                        builder.Query = builder.Query + filter;
+                        builder.Query += filter;
                     }
                 }
 
-                _getPath = builder.Uri;
-
-                //Console.WriteLine($"*****************{_getPath}*************************");
+                getPath = builder.Uri;
 
                 return Task.FromResult<IEnumerable<string>>(new List<string>() { $"{DateTime.Now.Ticks}.xml" });
             }
@@ -162,13 +169,14 @@ namespace ATSPM.Infrastructure.Services.DownloaderClients
 
         #endregion
 
+        ///<inheritdoc/>
         protected override void DisposeManagedCode()
         {
-            if (Client != null)
+            if (client != null)
             {
-                Client.CancelPendingRequests();
-                Client.Dispose();
-                Client = null;
+                client.CancelPendingRequests();
+                client.Dispose();
+                client = null;
             }
         }
     }
