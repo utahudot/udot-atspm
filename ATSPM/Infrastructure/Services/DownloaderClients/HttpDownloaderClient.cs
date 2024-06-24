@@ -29,35 +29,47 @@ using System.Threading.Tasks;
 
 namespace ATSPM.Infrastructure.Services.DownloaderClients
 {
-    ///<inheritdoc/>
+    /// <summary>
+    /// Connect to services and interact with their file directories using <see cref="HttpClient"/>
+    /// </summary>
     public class HttpDownloaderClient : ServiceObjectBase, IHTTPDownloaderClient
     {
-        private HttpClient client;
+        private HttpClient _client;
         private Uri getPath;
+
+        ///<inheritdoc/>
+        public HttpDownloaderClient() {}
+
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        /// <param name="client">External client used for special settings and mocking</param>
+        public HttpDownloaderClient(HttpClient client)
+        {
+            _client = client;
+        }
 
         #region IHTTPDownloaderClient
 
         ///<inheritdoc/>
-        public bool IsConnected => client != null && client.BaseAddress.Host.IsValidIPAddress();
+        public bool IsConnected => _client != null && _client.BaseAddress.Host.IsValidIPAddress();
 
         ///<inheritdoc/>
-        public Task<bool> ConnectAsync(NetworkCredential credentials, int connectionTimeout = 2000, int operationTImeout = 2000, CancellationToken token = default)
+        public Task ConnectAsync(NetworkCredential credentials, int connectionTimeout = 2000, int operationTImeout = 2000, CancellationToken token = default)
         {
-            token.ThrowIfCancellationRequested();
+            if (string.IsNullOrEmpty(credentials.Domain))
+                throw new ArgumentNullException("Network Credentials can't be null");
 
             try
             {
-                if (string.IsNullOrEmpty(credentials.UserName) || string.IsNullOrEmpty(credentials.Password) || string.IsNullOrEmpty(credentials.Domain))
-                    throw new ArgumentNullException("Network Credentials can't be null");
+                _client ??= new HttpClient() { Timeout = TimeSpan.FromMilliseconds(operationTImeout), BaseAddress = new Uri($"http://{credentials.Domain}/") };
+                //_client ??= new HttpClient() { BaseAddress = new Uri($"http://{credentials.Domain}/") };
 
-                client ??= new HttpClient() { Timeout = TimeSpan.FromMilliseconds(operationTImeout), BaseAddress = new Uri($"http://{credentials.Domain}/") };
-                //client ??= new HttpClient() { BaseAddress = new Uri($"http://{credentials.Domain}/") };
-
-                client.DefaultRequestHeaders.Accept.Clear();
+                _client.DefaultRequestHeaders.Accept.Clear();
                 //HACK: this is specific to maxtimecontrollers future versions will need this adjustable
-                client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/xml"));
+                _client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/xml"));
 
-                return Task.FromResult(true);
+                return Task.CompletedTask;
             }
             catch (Exception e)
             {
@@ -84,7 +96,7 @@ namespace ATSPM.Infrastructure.Services.DownloaderClients
             if (!IsConnected)
                 throw new ControllerConnectionException("", this, "Client not connected");
 
-            client.CancelPendingRequests();
+            _client.CancelPendingRequests();
 
             getPath = null;
 
@@ -108,7 +120,7 @@ namespace ATSPM.Infrastructure.Services.DownloaderClients
             
             try
             {
-                response = await client.GetAsync(getPath, token);
+                response = await _client.GetAsync(getPath, token);
 
                 sw.Stop();
 
@@ -142,7 +154,7 @@ namespace ATSPM.Infrastructure.Services.DownloaderClients
 
             try
             {
-                var builder = new UriBuilder("http", client.BaseAddress.Host.ToString(), 80, directory);
+                var builder = new UriBuilder("http", _client.BaseAddress.Host.ToString(), 80, directory);
 
                 //for maxtime controllers it uses this searchterm:  $"since={DateTime.Now.AddHours(-24):MM-dd-yyyy HH:mm:ss.f}"
 
@@ -172,11 +184,11 @@ namespace ATSPM.Infrastructure.Services.DownloaderClients
         ///<inheritdoc/>
         protected override void DisposeManagedCode()
         {
-            if (client != null)
+            if (_client != null)
             {
-                client.CancelPendingRequests();
-                client.Dispose();
-                client = null;
+                _client.CancelPendingRequests();
+                _client.Dispose();
+                _client = null;
             }
         }
     }

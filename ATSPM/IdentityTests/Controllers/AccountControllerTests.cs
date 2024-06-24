@@ -51,7 +51,7 @@ namespace YourProject.Tests.Controllers
             // Mock any new services or dependencies you've added to the AccountController
             // var newServiceMock = new Mock<INewService>();
 
-            // Consider using a mock HTTP client if you're making external HTTP requests
+            // Consider using a mock HTTP _client if you're making external HTTP requests
             // var httpClientMock = new Mock<IHttpClientFactory>();
             //var serviceMock = new AccountService(_userManagerMock.Object, agencyServiceMock.Object, _signInManagerMock.Object);
 

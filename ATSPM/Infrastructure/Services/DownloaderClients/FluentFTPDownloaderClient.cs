@@ -18,7 +18,6 @@ using ATSPM.Application.Exceptions;
 using ATSPM.Application.Services;
 using ATSPM.Domain.BaseClasses;
 using FluentFTP;
-using Google.Apis.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -29,35 +28,50 @@ using System.Threading.Tasks;
 
 namespace ATSPM.Infrastructure.Services.DownloaderClients
 {
-    ///<inheritdoc/>
+    /// <summary>
+    /// Connect to services and interact with their file directories using <see cref="IAsyncFtpClient"/>
+    /// </summary>
     public class FluentFTPDownloaderClient : ServiceObjectBase, IFTPDownloaderClient
     {
-        private IAsyncFtpClient client;
+        private IAsyncFtpClient _client;
+
+        ///<inheritdoc/>
+        public FluentFTPDownloaderClient() { }
+
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        /// <param name="client">External client used for special settings and mocking</param>
+        public FluentFTPDownloaderClient(IAsyncFtpClient client)
+        {
+            _client = client;
+        }
 
         #region IFTPDownloaderClient
 
         ///<inheritdoc/>
-        public bool IsConnected => client != null && client.IsConnected;
+        public bool IsConnected => _client != null && _client.IsConnected;
 
         ///<inheritdoc/>
-        public async Task<bool> ConnectAsync(NetworkCredential credentials, int connectionTimeout = 2000, int operationTImeout = 2000, CancellationToken token = default)
+        public async Task ConnectAsync(NetworkCredential credentials, int connectionTimeout = 2000, int operationTImeout = 2000, CancellationToken token = default)
         {
+            if (string.IsNullOrEmpty(credentials.Domain))
+                throw new ArgumentNullException("Network Credentials can't be null");
+
             try
             {
-                if (string.IsNullOrEmpty(credentials.UserName) || string.IsNullOrEmpty(credentials.Password) || string.IsNullOrEmpty(credentials.Domain))
-                    throw new ArgumentNullException("Network Credentials can't be null");
+                if (_client == null)
+                {
+                    _client = new AsyncFtpClient(credentials.Domain, credentials);
+                    _client.Config.DataConnectionConnectTimeout = connectionTimeout;
+                    _client.Config.DataConnectionReadTimeout = operationTImeout;
+                    _client.Config.ConnectTimeout = connectionTimeout;
+                    _client.Config.ReadTimeout = operationTImeout;
+                    _client.Config.DataConnectionType = FtpDataConnectionType.AutoActive;
+                }
 
-                client ??= new AsyncFtpClient(credentials.Domain, credentials);
-                client.Config.DataConnectionConnectTimeout = connectionTimeout;
-                client.Config.DataConnectionReadTimeout = operationTImeout;
-                client.Config.ConnectTimeout = connectionTimeout;
-                client.Config.ReadTimeout = operationTImeout;
-                client.Config.DataConnectionType = FtpDataConnectionType.AutoActive;
-
-                var result = await client.AutoConnect(token);
-                //await client.Connect(token);
-
-                return true;
+                var result = await _client.AutoConnect(token);
+                //await _client.Connect(token);
             }
             catch (Exception e)
             {
@@ -75,7 +89,7 @@ namespace ATSPM.Infrastructure.Services.DownloaderClients
 
             try
             {
-                await client.DeleteFile(path, token);
+                await _client.DeleteFile(path, token);
             }
             catch (Exception e)
             {
@@ -93,11 +107,11 @@ namespace ATSPM.Infrastructure.Services.DownloaderClients
 
             try
             {
-                await client.Disconnect(token);
+                await _client.Disconnect(token);
             }
             catch (Exception e)
             {
-                throw new ControllerConnectionException(client.Host, this, e.Message, e);
+                throw new ControllerConnectionException(_client.Host, this, e.Message, e);
             }
         }
 
@@ -114,7 +128,7 @@ namespace ATSPM.Infrastructure.Services.DownloaderClients
                 var fileInfo = new FileInfo(localPath);
                 fileInfo.Directory.Create();
 
-                await client.DownloadFile(localPath, remotePath, FtpLocalExists.Overwrite, FtpVerify.None, null, token);
+                await _client.DownloadFile(localPath, remotePath, FtpLocalExists.Overwrite, FtpVerify.None, null, token);
 
                 return fileInfo;
             }
@@ -134,7 +148,7 @@ namespace ATSPM.Infrastructure.Services.DownloaderClients
 
             try
             {
-                var results = await client.GetListing(directory, FtpListOption.Auto, token);
+                var results = await _client.GetListing(directory, FtpListOption.Auto, token);
 
                 return results.Select(s => s.FullName).Where(f => filters.Any(a => f.Contains(a))).ToList();
             }
@@ -149,14 +163,14 @@ namespace ATSPM.Infrastructure.Services.DownloaderClients
         ///<inheritdoc/>
         protected override void DisposeManagedCode()
         {
-            if (client != null)
+            if (_client != null)
             {
-                if (client.IsConnected)
+                if (_client.IsConnected)
                 {
-                    client.Disconnect();
+                    _client.Disconnect();
                 }
-                client.Dispose();
-                client = null;
+                _client.Dispose();
+                _client = null;
             }
         }
     }
