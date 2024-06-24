@@ -35,11 +35,24 @@ namespace ATSPM.ConfigApi.Services
             // Update route properties
             route.Name = routeDto.Name;
 
+            // Create a list of routeLocation identifiers from the DTO
+            var routeLocationIds = routeDto.RouteLocations.Select(rl => rl.LocationIdentifier).ToList();
+
+            // Delete RouteLocations that are not in the DTO
+            var routeLocationsToDelete = route.RouteLocations
+                .Where(rl => !routeLocationIds.Contains(rl.LocationIdentifier))
+                .ToList();
+
+            foreach (var routeLocation in routeLocationsToDelete)
+            {
+                route.RouteLocations.Remove(routeLocation);
+            }
+
             // Update or create RouteLocations
             foreach (var routeLocationDto in routeDto.RouteLocations)
             {
                 var existingLocation = route.RouteLocations
-                    .FirstOrDefault(rl => rl.Order == routeLocationDto.Order);
+                    .FirstOrDefault(rl => rl.LocationIdentifier == routeLocationDto?.LocationIdentifier);
 
                 if (existingLocation == null)
                 {
@@ -66,6 +79,7 @@ namespace ATSPM.ConfigApi.Services
                 else
                 {
                     // Update existing RouteLocation
+                    existingLocation.Order = routeLocationDto.Order;
                     existingLocation.PrimaryPhase = routeLocationDto.PrimaryPhase;
                     existingLocation.OpposingPhase = routeLocationDto.OpposingPhase;
                     existingLocation.PrimaryDirectionId = routeLocationDto.PrimaryDirectionId;
@@ -94,7 +108,7 @@ namespace ATSPM.ConfigApi.Services
         private void HandleDistances(RouteLocationDto routeLocationDto, RouteLocation location)
         {
             // Handle PreviousLocationDistance
-            if (routeLocationDto.PreviousLocationDistanceId == null && routeLocationDto.PreviousLocationDistance != null)
+            if (routeLocationDto.PreviousLocationDistance != null)
             {
                 var previousDistance = _routeDistanceRepository.GetList()
                     .FirstOrDefault(rd => rd.LocationIdentifierA == routeLocationDto.PreviousLocationDistance.LocationIdentifierA &&
@@ -129,7 +143,7 @@ namespace ATSPM.ConfigApi.Services
             }
 
             // Handle NextLocationDistance
-            if (routeLocationDto.NextLocationDistanceId == null && routeLocationDto.NextLocationDistance != null)
+            if (routeLocationDto.NextLocationDistance != null)
             {
                 var nextDistance = _routeDistanceRepository.GetList()
                     .FirstOrDefault(rd => rd.LocationIdentifierA == routeLocationDto.NextLocationDistance.LocationIdentifierA &&
