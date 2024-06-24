@@ -14,6 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+using ATSPM.Application.Exceptions;
 using ATSPM.Data.Enums;
 using System;
 using System.Collections.Generic;
@@ -41,8 +42,10 @@ namespace ATSPM.Application.Services
         /// <param name="connectionTimeout">Timeout for connections</param>
         /// <param name="operationTImeout">Timeout for operations</param>
         /// <param name="token">Cancellation token</param>
-        /// <returns>true if connection is successfull</returns>
-        Task<bool> ConnectAsync(NetworkCredential credentials, int connectionTimeout = 2000, int operationTImeout = 2000, CancellationToken token = default);
+        /// <returns></returns>
+        /// <exception cref="ControllerConnectionException"></exception>
+        /// <exception cref="ArgumentNullException">Thrown if <see cref="NetworkCredential.Domain"/> is null</exception>
+        Task ConnectAsync(NetworkCredential credentials, int connectionTimeout = 2000, int operationTImeout = 2000, CancellationToken token = default);
 
         /// <summary>
         /// List files in directory
@@ -50,7 +53,9 @@ namespace ATSPM.Application.Services
         /// <param name="directory">Directory to list</param>
         /// <param name="token">Cancellation token</param>
         /// <param name="filters">File type and name filters</param>
-        /// <returns></returns>
+        /// <returns>List of files in directory</returns>
+        /// <exception cref="ControllerConnectionException"></exception>
+        /// <exception cref="ControllerListDirectoryException"></exception>
         Task<IEnumerable<string>> ListDirectoryAsync(string directory, CancellationToken token = default, params string[] filters);
 
         /// <summary>
@@ -60,6 +65,8 @@ namespace ATSPM.Application.Services
         /// <param name="remotePath">Path of directory to download from</param>
         /// <param name="token">Cancellation token</param>
         /// <returns></returns>
+        /// <exception cref="ControllerConnectionException"></exception>
+        /// <exception cref="ControllerDownloadFileException"></exception>
         Task<FileInfo> DownloadFileAsync(string localPath, string remotePath, CancellationToken token = default);
 
         /// <summary>
@@ -68,6 +75,8 @@ namespace ATSPM.Application.Services
         /// <param name="path">Directory of files to delete</param>
         /// <param name="token">Cancellation token</param>
         /// <returns></returns>
+        /// <exception cref="ControllerConnectionException"></exception>
+        /// <exception cref="ControllerDeleteFileException"></exception>
         Task DeleteFileAsync(string path, CancellationToken token = default);
 
         /// <summary>
@@ -75,6 +84,7 @@ namespace ATSPM.Application.Services
         /// </summary>
         /// <param name="token">Cancellation token</param>
         /// <returns></returns>
+        /// <exception cref="ControllerConnectionException"></exception>
         Task DisconnectAsync(CancellationToken token = default);
     }
 
