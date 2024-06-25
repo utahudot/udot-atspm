@@ -63,7 +63,6 @@ namespace ATSPM.Infrastructure.Services.DownloaderClients
             try
             {
                 _client ??= new HttpClient() { Timeout = TimeSpan.FromMilliseconds(operationTImeout), BaseAddress = new Uri($"http://{credentials.Domain}/") };
-                //_client ??= new HttpClient() { BaseAddress = new Uri($"http://{credentials.Domain}/") };
 
                 _client.DefaultRequestHeaders.Accept.Clear();
                 //HACK: this is specific to maxtimecontrollers future versions will need this adjustable
@@ -96,7 +95,15 @@ namespace ATSPM.Infrastructure.Services.DownloaderClients
             if (!IsConnected)
                 throw new ControllerConnectionException("", this, "Client not connected");
 
-            _client.CancelPendingRequests();
+            try
+            {
+                _client.CancelPendingRequests();
+                _client = null;
+            }
+            catch (Exception e)
+            {
+                throw new ControllerConnectionException(_client?.BaseAddress?.Host, this, e.Message, e);
+            }
 
             getPath = null;
 
@@ -111,8 +118,8 @@ namespace ATSPM.Infrastructure.Services.DownloaderClients
             if (!IsConnected)
                 throw new ControllerConnectionException("", this, "Client not connected");
 
-            if (getPath == null)
-                throw new ControllerDownloadFileException(remotePath, this, "HTTP Get Path not defined");
+            //if (getPath == null)
+            //    throw new ControllerDownloadFileException(remotePath, this, "HTTP Get Path not defined");
 
             HttpResponseMessage response = new HttpResponseMessage();
 
