@@ -92,6 +92,10 @@ namespace InfrastructureTests.DownloaderClientTests
         public async virtual void DisconnectAsyncSucceeded()
         {
             await Sut.DisconnectAsync();
+
+            var condition = Sut.IsConnected;
+
+            Assert.False(condition);
         }
 
         [Fact]
