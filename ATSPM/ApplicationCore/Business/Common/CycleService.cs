@@ -3,11 +3,11 @@ using ATSPM.Application.Business.PreemptService;
 using ATSPM.Application.Business.SplitFail;
 using ATSPM.Application.Business.YellowRedActivations;
 using ATSPM.Data.Models.EventLogModels;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-//using System.IO;
 
 namespace ATSPM.Application.Business.Common
 {
@@ -61,9 +61,6 @@ namespace ATSPM.Application.Business.Common
         /// <returns></returns>
         public List<GreenToGreenCycle> GetGreenToGreenCycles(DateTime startTime, DateTime endTime, List<IndianaEvent> cycleEvents)
         {
-            //    if (cycleEvents != null && cycleEvents.Count > 0 && (GetEventType(cycleEvents.LastOrDefault().EventCode) !=
-            //        RedToRedCycle.EventType.ChangeToGreen || cycleEvents.LastOrDefault().TimeStamp < endTime))
-            //        GetEventsToCompleteCycle(getPermissivePhase, endTime, approach, cycleEvents);
             var cycles = new List<GreenToGreenCycle>();
             for (var i = 0; i < cycleEvents.Count; i++)
                 if (i < cycleEvents.Count - 3
@@ -100,25 +97,6 @@ namespace ATSPM.Application.Business.Common
                     detectorEvents
                     ));
                 }
-
-
-            //var cycles = cycleEvents
-            //    .Select((eventLog, index) => new { EventLog = eventLog, Index = index })
-            //    .Where(item =>
-            //        item.Index < cycleEvents.Count - 3
-            //        && GetYellowToRedEventType(cycleEvents[item.Index].EventCode) == YellowRedEventType.BeginYellowClearance
-            //        && GetYellowToRedEventType(cycleEvents[item.Index + 1].EventCode) == YellowRedEventType.BeginRedClearance
-            //        && GetYellowToRedEventType(cycleEvents[item.Index + 2].EventCode) == YellowRedEventType.BeginRed
-            //        && GetYellowToRedEventType(cycleEvents[item.Index + 3].EventCode) == YellowRedEventType.EndRed)
-            //    .Select(item => new YellowRedActivationsCycle(
-            //        cycleEvents[item.Index].Timestamp,
-            //        cycleEvents[item.Index + 1].Timestamp,
-            //        cycleEvents[item.Index + 2].Timestamp,
-            //        cycleEvents[item.Index + 3].Timestamp,
-            //        severeViolationSeconds,
-            //        phaseDropsCalls
-            //        ))
-            //    .ToList();
             return cycles.Where(c => c.EndTime >= startTime && c.EndTime <= endTime || c.StartTime <= endTime && c.StartTime >= startTime).ToList();
 
 
@@ -148,8 +126,6 @@ namespace ATSPM.Application.Business.Common
             {
                 return new List<CyclePcd>();
             }
-            var min = cycleEvents.Min(c => c.Timestamp);
-            var max = cycleEvents.Max(c => c.Timestamp);
             double pcdCycleShift = pcdCycleTime ?? 0;
             var cycles = new List<CyclePcd>();
             for (var i = 0; i < cycleEvents.Count; i++)
@@ -162,10 +138,6 @@ namespace ATSPM.Application.Business.Common
                         cycleEvents[i + 2].Timestamp, cycleEvents[i + 3].Timestamp));
             if (cycles.Any())
             {
-                //Parallel.ForEach(cycles, cycle =>
-                //{
-                //    AddDetectorEventsToCycles(phaseDropsCalls, cycle, pcdCycleShift);
-                //});
                 var tasks = new List<Task>();
                 foreach (var cycle in cycles)
                 {
@@ -179,7 +151,7 @@ namespace ATSPM.Application.Business.Common
             return cycles.Where(c => c.EndTime >= startDate && c.EndTime <= endDate || c.StartTime <= endDate && c.StartTime >= startDate).ToList();
         }
 
-        private async void AddDetectorEventsToCycles(List<IndianaEvent> detectorEvents, CyclePcd cycle, double pcdCycleShift)
+        private static async Task AddDetectorEventsToCycles(List<IndianaEvent> detectorEvents, CyclePcd cycle, double pcdCycleShift)
         {
             var eventsForCycle = detectorEvents
                                     .Where(d => d.Timestamp >= cycle.StartTime.AddSeconds(-pcdCycleShift) &&
@@ -188,12 +160,12 @@ namespace ATSPM.Application.Business.Common
                 cycle.AddDetectorData(new DetectorDataPoint(cycle.StartTime, controllerEventLog.Timestamp,
                                                cycle.GreenEvent, cycle.YellowEvent));
         }
-        private async void AddPhaseDropsCallsEventsToCycles(List<IndianaEvent> phaseDropsCalls, WaitTimeCycle cycle)
+        private static async void AddPhaseDropsCallsEventsToCycles(List<IndianaEvent> phaseDropsCalls, WaitTimeCycle cycle)
         {
             cycle.PhaseRegisterDroppedCalls = phaseDropsCalls.Where(d => d.Timestamp >= cycle.RedEvent && d.Timestamp < cycle.GreenEvent).OrderBy(e => e.Timestamp).ToList();
         }
 
-        private RedToRedCycle.EventType GetEventType(short eventCode)
+        private static RedToRedCycle.EventType GetEventType(short eventCode)
         {
             return eventCode switch
             {
@@ -223,16 +195,15 @@ namespace ATSPM.Application.Business.Common
             var mainEvents = cycleEvents.Where(c => c.Timestamp <= endDate && c.Timestamp >= startDate).ToList();
             var previousEvents = cycleEvents.Where(c => c.Timestamp < startDate).ToList();
             var nextEvents = cycleEvents.Where(c => c.Timestamp > endDate).ToList();
-            if (mainEvents.Any() && (GetEventType(mainEvents.Last().EventCode) !=
-                RedToRedCycle.EventType.ChangeToRed || mainEvents.LastOrDefault().Timestamp < endDate))
-                //Get events to complete cycles
-                mainEvents.AddRange(nextEvents.OrderBy(e => e.Timestamp).Take(3));
-            if (mainEvents.Any() && (GetEventType(mainEvents.First().EventCode) !=
-                RedToRedCycle.EventType.ChangeToRed || mainEvents.FirstOrDefault().Timestamp > startDate))
-                //Get events to start cycles
-                mainEvents.InsertRange(0, previousEvents.OrderByDescending(e => e.Timestamp).Take(3).OrderBy(e => e.Timestamp));
             var cycles = new List<CycleSpeed>();
-            if (mainEvents != null)
+            if (!mainEvents.IsNullOrEmpty())
+            {
+                if (GetEventType(mainEvents[mainEvents.Count - 1].EventCode) != RedToRedCycle.EventType.ChangeToRed || mainEvents.LastOrDefault().Timestamp < endDate)
+                    //Get events to complete cycles
+                    mainEvents.AddRange(nextEvents.OrderBy(e => e.Timestamp).Take(3));
+                if (GetEventType(mainEvents[0].EventCode) != RedToRedCycle.EventType.ChangeToRed || mainEvents[0].Timestamp > startDate)
+                    //Get events to start cycles
+                    mainEvents.InsertRange(0, previousEvents.OrderByDescending(e => e.Timestamp).Take(3).OrderBy(e => e.Timestamp));
                 for (var i = 0; i < mainEvents.Count; i++)
                     if (i < mainEvents.Count - 3
                         && GetEventType(mainEvents[i].EventCode) == RedToRedCycle.EventType.ChangeToRed
@@ -241,12 +212,9 @@ namespace ATSPM.Application.Business.Common
                         && GetEventType(mainEvents[i + 3].EventCode) == RedToRedCycle.EventType.ChangeToRed)
                         cycles.Add(new CycleSpeed(mainEvents[i].Timestamp, mainEvents[i + 1].Timestamp,
                             mainEvents[i + 2].Timestamp, mainEvents[i + 3].Timestamp));
-
-
+            }
             return cycles;
         }
-
-
 
         public List<CycleSplitFail> GetSplitFailCycles(SplitFailOptions options, IReadOnlyList<IndianaEvent> cycleEvents, IReadOnlyList<IndianaEvent> terminationEvents)
         {
@@ -268,7 +236,7 @@ namespace ATSPM.Application.Business.Common
             return cycles;
         }
 
-        private CycleSplitFail.TerminationType GetTerminationEventBetweenStartAndEnd(DateTime start,
+        private static CycleSplitFail.TerminationType GetTerminationEventBetweenStartAndEnd(DateTime start,
             DateTime end, IReadOnlyList<IndianaEvent> terminationEvents)
         {
             var terminationType = CycleSplitFail.TerminationType.Unknown;
@@ -285,7 +253,7 @@ namespace ATSPM.Application.Business.Common
         }
 
 
-        private YellowRedEventType GetYellowToRedEventType(short EventCode)
+        private static YellowRedEventType GetYellowToRedEventType(short EventCode)
         {
             return EventCode switch
             {
@@ -320,7 +288,6 @@ namespace ATSPM.Application.Business.Common
             PreemptCycle cycle = null;
 
 
-            //foreach (MOE.Common.Models.Controller_Event_Log row in DTTB.Events)
             for (var x = 0; x < preemptEvents.Count; x++)
             {
                 //It can happen that there is no defined terminaiton event.
@@ -390,9 +357,8 @@ namespace ATSPM.Application.Business.Common
                         {
                             cycle.BeginTrackClearance = preemptEvents[x].Timestamp;
 
-                            if (x + 1 < preemptEvents.Count)
-                                if (!DoesTrackClearEndNormal(preemptEvents, x))
-                                    cycle.BeginDwellService = FindNext111Event(preemptEvents, x);
+                            if (x + 1 < preemptEvents.Count && !DoesTrackClearEndNormal(preemptEvents, x))
+                                cycle.BeginDwellService = FindNext111Event(preemptEvents, x);
                         }
                         break;
 
@@ -402,15 +368,14 @@ namespace ATSPM.Application.Business.Common
                         {
                             cycle.BeginDwellService = preemptEvents[x].Timestamp;
 
-                            if (x + 1 < preemptEvents.Count)
-                                if (!DoesTheCycleEndNormal(preemptEvents, x))
-                                {
-                                    cycle.BeginExitInterval = preemptEvents[x + 1].Timestamp;
+                            if (x + 1 < preemptEvents.Count && !DoesTheCycleEndNormal(preemptEvents, x))
+                            {
+                                cycle.BeginExitInterval = preemptEvents[x + 1].Timestamp;
 
-                                    EndCycle(cycle, preemptEvents[x + 1], CycleCollection);
+                                EndCycle(cycle, preemptEvents[x + 1], CycleCollection);
 
-                                    cycle = null;
-                                }
+                                cycle = null;
+                            }
                         }
 
 
@@ -458,7 +423,7 @@ namespace ATSPM.Application.Business.Common
             return CycleCollection;
         }
 
-        private DateTime FindNext111Event(List<IndianaEvent> DTTB, int counter)
+        private static DateTime FindNext111Event(List<IndianaEvent> DTTB, int counter)
         {
             var Next111Event = new DateTime();
             for (var x = counter; x < DTTB.Count; x++)
@@ -470,7 +435,7 @@ namespace ATSPM.Application.Business.Common
             return Next111Event;
         }
 
-        private bool DoesTheCycleEndNormal(List<IndianaEvent> DTTB, int counter)
+        private static bool DoesTheCycleEndNormal(List<IndianaEvent> DTTB, int counter)
         {
             var foundEvent111 = false;
 
@@ -495,7 +460,7 @@ namespace ATSPM.Application.Business.Common
             return foundEvent111;
         }
 
-        private bool DoesTrackClearEndNormal(List<IndianaEvent> DTTB, int counter)
+        private static bool DoesTrackClearEndNormal(List<IndianaEvent> DTTB, int counter)
         {
             var foundEvent107 = false;
 
@@ -535,14 +500,14 @@ namespace ATSPM.Application.Business.Common
             CycleCollection.Add(cycle);
         }
 
-        private double GetTimeToGateDown(DateTime cycleStart, DateTime gateDown)
+        private static double GetTimeToGateDown(DateTime cycleStart, DateTime gateDown)
         {
             if (cycleStart > DateTime.MinValue && gateDown > DateTime.MinValue && gateDown > cycleStart)
                 return (gateDown - cycleStart).TotalSeconds;
             return 0;
         }
 
-        private double GetTimeToTrackClear(DateTime beginDwellService, DateTime beginTrackClearance)
+        private static double GetTimeToTrackClear(DateTime beginDwellService, DateTime beginTrackClearance)
         {
             if (beginDwellService > DateTime.MinValue && beginTrackClearance > DateTime.MinValue &&
                     beginDwellService > beginTrackClearance)
@@ -550,14 +515,14 @@ namespace ATSPM.Application.Business.Common
             return 0;
         }
 
-        private double GetTimeToEndOfEntryDelay(DateTime entryStarted, DateTime cycleStart)
+        private static double GetTimeToEndOfEntryDelay(DateTime entryStarted, DateTime cycleStart)
         {
             if (cycleStart > DateTime.MinValue && entryStarted > DateTime.MinValue && entryStarted > cycleStart)
                 return (entryStarted - cycleStart).TotalSeconds;
             return 0;
         }
 
-        private double GetTimeToCallMaxOut(DateTime CycleStart, DateTime MaxPresenceExceeded)
+        private static double GetTimeToCallMaxOut(DateTime CycleStart, DateTime MaxPresenceExceeded)
         {
             if (CycleStart > DateTime.MinValue && MaxPresenceExceeded > DateTime.MinValue &&
                    MaxPresenceExceeded > CycleStart)
@@ -565,7 +530,7 @@ namespace ATSPM.Application.Business.Common
             return 0;
         }
 
-        private double GetDwellTime(DateTime cycleEnd, DateTime beginDwellService)
+        private static double GetDwellTime(DateTime cycleEnd, DateTime beginDwellService)
         {
             if (cycleEnd > DateTime.MinValue && beginDwellService > DateTime.MinValue &&
                     cycleEnd >= beginDwellService)
@@ -573,7 +538,7 @@ namespace ATSPM.Application.Business.Common
             return 0;
         }
 
-        private double GetTimeToService(
+        private static double GetTimeToService(
             bool hasDelay,
             DateTime beginTrackClearance,
             DateTime cycleStart,
@@ -599,7 +564,7 @@ namespace ATSPM.Application.Business.Common
             return 0;
         }
 
-        private double GetDelay(bool hasDelay, DateTime entryStarted, DateTime cycleStart)
+        private static double GetDelay(bool hasDelay, DateTime entryStarted, DateTime cycleStart)
         {
             if (hasDelay && entryStarted > DateTime.MinValue && cycleStart > DateTime.MinValue &&
                         entryStarted > cycleStart)
@@ -609,7 +574,7 @@ namespace ATSPM.Application.Business.Common
         }
 
 
-        private PreemptCycle StartCycle(IndianaEvent controller_Event_Log)
+        private static PreemptCycle StartCycle(IndianaEvent controller_Event_Log)
         {
             var cycle = new PreemptCycle();
 
@@ -642,8 +607,6 @@ namespace ATSPM.Application.Business.Common
             {
                 return new List<WaitTimeCycle>();
             }
-            var min = cycleEvents.Min(c => c.Timestamp);
-            var max = cycleEvents.Max(c => c.Timestamp);
             var cycles = new List<WaitTimeCycle>();
             for (var i = 0; i < cycleEvents.Count; i++)
                 if (i < cycleEvents.Count - 3

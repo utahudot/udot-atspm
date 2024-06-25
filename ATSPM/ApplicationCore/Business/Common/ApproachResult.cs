@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.ChangeTracking;
-using System;
+﻿using System;
 
 namespace ATSPM.Application.Business.Common
 {
@@ -7,15 +6,15 @@ namespace ATSPM.Application.Business.Common
     {
         public ApproachResult()
         {
-                
-        }
 
-        public int ApproachId { get; set; }
-        public string ApproachDescription { get; set; }
+        }
 
         public ApproachResult(int approachId, string locationId, DateTime start, DateTime end) : base(locationId, start, end)
         {
             ApproachId = approachId;
         }
+
+        public int ApproachId { get; set; }
+        public string ApproachDescription { get; set; }
     }
 }

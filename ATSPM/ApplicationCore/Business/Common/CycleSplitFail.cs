@@ -1,7 +1,7 @@
-﻿using System;
+﻿using ATSPM.Application.Business.SplitFail;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using ATSPM.Application.Business.SplitFail;
 
 namespace ATSPM.Application.Business.Common
 {
@@ -76,15 +76,15 @@ namespace ATSPM.Application.Business.Common
         }
 
 
-        private double CheckForDetectorActivationBiggerThanPeriod(DateTime startTime, DateTime endTime,
+        private static double CheckForDetectorActivationBiggerThanPeriod(DateTime startTime, DateTime endTime,
             List<SplitFailDetectorActivation> detectorActivations)
         {
-            if (detectorActivations.Count(d => d.DetectorOn < startTime && d.DetectorOff > endTime) > 0)
+            if (detectorActivations.Any(d => d.DetectorOn < startTime && d.DetectorOff > endTime))
                 return (endTime - startTime).TotalMilliseconds;
             return 0;
         }
 
-        private double GetOccupancy(DateTime start, DateTime end,
+        private static double GetOccupancy(DateTime start, DateTime end,
             List<SplitFailDetectorActivation> cycleDetectorActivations)
         {
             double occupancy = 0;

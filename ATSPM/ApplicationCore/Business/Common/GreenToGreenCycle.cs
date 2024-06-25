@@ -25,19 +25,14 @@ namespace ATSPM.Application.Business.Common
             YellowLineY = (yellowEvent - StartTime).TotalSeconds;
             EndTime = lastGreenEvent;
             GreenLineY = (lastGreenEvent - StartTime).TotalSeconds;
-            //PreemptCollection = new List<DetectorDataPoint>();
         }
 
         public DateTime StartTime { get; }
         public DateTime EndTime { get; }
         public double GreenLineY { get; }
         public double YellowLineY { get; }
-
         public double RedLineY { get; }
-
-        //public List<DetectorDataPoint> PreemptCollection { get; }
         public DateTime RedEvent { get; }
-
         public DateTime YellowEvent { get; }
 
 

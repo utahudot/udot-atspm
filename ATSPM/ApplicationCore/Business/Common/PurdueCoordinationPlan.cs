@@ -6,11 +6,12 @@ namespace ATSPM.Application.Business.Common
 {
     public class PurdueCoordinationPlan : Plan
     {
-        public SortedDictionary<int, int> Splits = new SortedDictionary<int, int>();
+        public SortedDictionary<int, int> Splits { get; set; }
 
         public PurdueCoordinationPlan(DateTime start, DateTime end, string planNumber, List<CyclePcd> cyclesForPlan) : base(planNumber, start, end
             )
         {
+            Splits = new SortedDictionary<int, int>();
             TotalTime = cyclesForPlan.Sum(d => d.TotalTimeSeconds);
             TotalRedTime = cyclesForPlan.Sum(d => d.TotalRedTimeSeconds);
             TotalYellowTime = cyclesForPlan.Sum(d => d.TotalYellowTimeSeconds);
