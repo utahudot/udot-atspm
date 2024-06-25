@@ -94,6 +94,8 @@ namespace InfrastructureTests.DownloaderClientTests
 
             client.SetupGet(p => p.IsConnected).Returns(true);
 
+            client.Setup(s => s.Disconnect()).Callback(() => client.SetupGet(p => p.IsConnected).Returns(false));
+
             Sut = new SSHNetSFTPDownloaderClient(client.Object);
 
             base.DisconnectAsyncSucceeded();
