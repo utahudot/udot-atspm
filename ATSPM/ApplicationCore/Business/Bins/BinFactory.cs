@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace ATSPM.Application.Business.Bins
 {
@@ -19,8 +17,6 @@ namespace ATSPM.Application.Business.Bins
                     return GetBinsForRange(timeOptions, 60);
                 case TimeOptions.BinSize.Day:
                     return GetDayBinsContainersForRange(timeOptions);
-                //case TimeOptions.BinSize.Week:
-                //    return GetBinsForRange(timeOptions, 60 * 24 * 7);
                 case TimeOptions.BinSize.Month:
                     return GetMonthBinsForRange(timeOptions);
                 case TimeOptions.BinSize.Year:
@@ -72,17 +68,17 @@ namespace ATSPM.Application.Business.Bins
                 else
                 {
                     if (timeOptions.TimeOfDayStartHour != null && timeOptions.TimeOfDayStartMinute != null &&
-                        timeOptions.TimeOfDayEndHour != null && timeOptions.TimeOfDayEndMinute != null)
-                        if (timeOptions.DaysOfWeek.Contains(startTime.DayOfWeek))
+                        timeOptions.TimeOfDayEndHour != null && timeOptions.TimeOfDayEndMinute != null &&
+                        timeOptions.DaysOfWeek.Contains(startTime.DayOfWeek))
+                    {
+                        binsContainer.Bins.Add(new Bin
                         {
-                            binsContainer.Bins.Add(new Bin
-                            {
-                                Start = startTime.AddHours(timeOptions.TimeOfDayStartHour.Value)
-                                    .AddMinutes(timeOptions.TimeOfDayStartMinute.Value),
-                                End = startTime.AddHours(timeOptions.TimeOfDayEndHour.Value)
-                                    .AddMinutes(timeOptions.TimeOfDayEndMinute.Value)
-                            });
-                        }
+                            Start = startTime.AddHours(timeOptions.TimeOfDayStartHour.Value)
+                                .AddMinutes(timeOptions.TimeOfDayStartMinute.Value),
+                            End = startTime.AddHours(timeOptions.TimeOfDayEndHour.Value)
+                                .AddMinutes(timeOptions.TimeOfDayEndMinute.Value)
+                        });
+                    }
                 }
             binsContainers.Add(binsContainer);
             return binsContainers;
@@ -192,21 +188,6 @@ namespace ATSPM.Application.Business.Bins
                     }
                     break;
             }
-            //for (var startTime = tempStart; startTime < tempEnd; startTime = startTime.AddMinutes(minutes))
-            //    switch (timeOptions.TimeOption)
-            //    {
-            //        case TimeOptions.TimePeriodOptions.StartToEnd:
-            //            binsContainer.Bins.Add(new Bin { Start = startTime, End = startTime.AddMinutes(minutes) });
-            //            break;
-            //        case TimeOptions.TimePeriodOptions.TimePeriod:
-            //            var periodStartTimeSpan = new TimeSpan(0, startTime.Hour,
-            //                startTime.Minute, 0);
-            //            if (timeOptions.DaysOfWeek.Contains(startTime.DayOfWeek)
-            //                && periodStartTimeSpan >= startTimeSpan
-            //                && periodStartTimeSpan < endTimeSpan)
-            //                binsContainer.Bins.Add(new Bin { Start = startTime, End = startTime.AddMinutes(minutes) });
-            //            break;
-            //    }
             binsContainers.Add(binsContainer);
             return binsContainers;
         }

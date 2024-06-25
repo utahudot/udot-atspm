@@ -6,7 +6,11 @@ namespace ATSPM.Application.Business.Bins
 {
     public class LargeBinsContainer
     {
-        public List<BinsContainer> BinsContainers = new List<BinsContainer>();
+        public List<BinsContainer> BinsContainers { get; set; }
+        public LargeBinsContainer()
+        {
+            BinsContainers = new List<BinsContainer>();
+        }
 
         public double SumValue
         {
@@ -39,21 +43,26 @@ namespace ATSPM.Application.Business.Bins
             get
             {
                 {
-                    double sum = 0;
-                    double count = 0;
-
-                    foreach (var containter in BinsContainers)
-                    {
-                        sum = sum + containter.Bins.Sum(b => b.Sum);
-                        count = count + containter.Bins.Count;
-                    }
-
-                    if (sum > count && sum > 0 && count > 0)
-                        return Convert.ToInt32(Math.Round(sum / count));
-
-                    return 0;
+                    return GetAverageValue();
                 }
             }
+        }
+
+        private int GetAverageValue()
+        {
+            double sum = 0;
+            double count = 0;
+
+            foreach (var bins in BinsContainers.Select(b => b.Bins))
+            {
+                sum = sum + bins.Sum(b => b.Sum);
+                count = count + bins.Count;
+            }
+
+            if (sum > count && sum > 0 && count > 0)
+                return Convert.ToInt32(Math.Round(sum / count));
+
+            return 0;
         }
 
         public DateTime Start { get; set; }
