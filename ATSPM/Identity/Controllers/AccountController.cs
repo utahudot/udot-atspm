@@ -110,7 +110,9 @@ namespace Identity.Controllers
         [HttpGet("external-login")]
         public IActionResult ExternalLogin()
         {
-            var properties = new AuthenticationProperties { RedirectUri = Url.Action("OIDCLoginCallback", "Account") };
+            var redirectUri = Url.Action("OIDCLoginCallback", "Account");
+            //var properties = new AuthenticationProperties { RedirectUri = Url.Action("OIDCLoginCallback", "Account") };
+            var properties = signInManager.ConfigureExternalAuthenticationProperties(OpenIdConnectDefaults.AuthenticationScheme, redirectUri);
             return Challenge(properties, OpenIdConnectDefaults.AuthenticationScheme);
         }
 
@@ -119,25 +121,15 @@ namespace Identity.Controllers
         [HttpGet("OIDCLoginCallback")]
         public async Task<IActionResult> OIDCLoginCallback()
         {
-            var authenticate = await HttpContext.AuthenticateAsync(OpenIdConnectDefaults.AuthenticationScheme);
-            if (!authenticate.Succeeded)
+            //var authenticate = await HttpContext.AuthenticateAsync(OpenIdConnectDefaults.AuthenticationScheme);
+            var info = await signInManager.GetExternalLoginInfoAsync();
+            if (info == null)
             {
                 // Handle login failure (e.g., redirect to an error page)
-                return RedirectToAction("Login", "Account");
+                return BadRequest("External login information not available. Make sure you've authenticated with the external provider.");
             }
 
-            var claims = authenticate.Principal.Claims;
-            var emailClaim = claims.FirstOrDefault(c => c.Type.Contains("email"));
-            var firstName = claims.FirstOrDefault(c => c.Type.Contains("givenname"));
-            var lastName = claims.FirstOrDefault(c => c.Type.Contains("surname"));
-
-            if(firstName == null || lastName == null || emailClaim == null) 
-            {
-                var message = "unable to access information from sso, try again later";
-                return Redirect($"{configuration["AtspmSite"]}/ssoLogin?error={message}");
-            }
-
-            var result = await accountService.HandleSsoRequest(emailClaim.Value, firstName.Value, lastName.Value);
+            var result = await accountService.HandleSsoRequest(info);
 
             if (result.Code == StatusCodes.Status200OK)
             {
