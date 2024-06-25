@@ -1,5 +1,4 @@
 ﻿using ATSPM.Application.Business.Common;
-using ATSPM.Application.Extensions;
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using ATSPM.Data.Models.EventLogModels;
@@ -49,18 +48,10 @@ namespace ATSPM.Application.Business.ApproachVolume
                 opposingDetectorEvents,
                 options.BinSize);
             var combinedDirectionsVolumes = new VolumeCollection(primaryDirectionVolume, opposingDirectionVolume, options.BinSize);
-            //ApproachVolume approachVolume = new ApproachVolume(
-            //    primaryApproaches,
-            //    opposingApproaches,
-            //    options,
-            //    opposingDirection,
-            //    options.DetectionType,
-            //    detectionTypeRepository,
-            //    controllerEventLogRepository);
             var direction1VolumesSeries = GetDirectionSeries(primaryDirectionVolume);
             var direction2VolumesSeries = GetDirectionSeries(opposingDirectionVolume);
             var combinedDirectionsVolumesSeries = GetDirectionSeries(combinedDirectionsVolumes);
-            var combinedDirectionVolumeDictionary = CombineDirectionHourlyVolumes(direction1VolumesSeries, direction2VolumesSeries);
+            //var combinedDirectionVolumeDictionary = CombineDirectionHourlyVolumes(direction1VolumesSeries, direction2VolumesSeries);
 
             var primaryDirectionTotalVolume = Convert.ToDouble(primaryDirectionVolume.Items.Sum(d => d.DetectorCount));
             var opposingDirectionTotalVolume = Convert.ToDouble(opposingDirectionVolume.Items.Sum(d => d.DetectorCount));
@@ -68,7 +59,7 @@ namespace ATSPM.Application.Business.ApproachVolume
             KeyValuePair<DateTime, int> primayDirectionPeakHourItem = GetPeakHourVolumeItem(primaryDirectionVolume, binSizeMultiplier);
             KeyValuePair<DateTime, int> opposingDirectionPeakHourItem = GetPeakHourVolumeItem(opposingDirectionVolume, binSizeMultiplier);
 
-            //This could be different than the opposing peak hour volume so it needs to be calculated here
+            //This could be different than the opposing peak hour start so it needs to be calculated here
             var opposingVolumeForPrimaryPeakHour = opposingDirectionVolume.Items.Where(d => d.StartTime >= primayDirectionPeakHourItem.Key && d.StartTime < primayDirectionPeakHourItem.Key.AddHours(1)).Sum(d => d.DetectorCount);
             var primaryVolumeForOpposingPeakHour = primaryDirectionVolume.Items.Where(d => d.StartTime >= opposingDirectionPeakHourItem.Key && d.StartTime < opposingDirectionPeakHourItem.Key.AddHours(1)).Sum(d => d.DetectorCount);
 
@@ -97,7 +88,6 @@ namespace ATSPM.Application.Business.ApproachVolume
             double opposingDirectionPeakHourFactor = GetPeakHourFactor(opposingDirectionPeakHourItem.Value, opposingDirectionPeakHourlyValueInHour);
             double opposingDirectionPeakHourDFactor = GetPeakHourDFactor(opposingDirectionPeakHourItem.Key, opposingDirectionPeakHourItem.Value, primaryDirectionVolume);
             string opposingDirectionPeakHourString = opposingDirectionPeakHourItem.Key.ToShortTimeString() + " - " + opposingDirectionPeakHourItem.Key.AddHours(1).ToShortTimeString();
-            var detector = primaryApproaches.First().GetAllDetectorsOfDetectionType(detectionType).FirstOrDefault();
 
             return new ApproachVolumeResult(
                 options.LocationIdentifier,
@@ -105,9 +95,9 @@ namespace ATSPM.Application.Business.ApproachVolume
                 options.End,
                 detectionType.Id.GetDisplayAttribute()?.Name,
                 distanceFromStopBar,
-                primaryApproaches.First().DirectionType.Description,
+                primaryApproaches[0].DirectionType.Description,
                 direction1VolumesSeries,
-                opposingApproaches.First().DirectionType.Description,
+                opposingApproaches[0].DirectionType.Description,
                 direction2VolumesSeries,
                 combinedDirectionsVolumesSeries,
                 GetDFactorSeries(primaryDirectionVolume, combinedDirectionsVolumes),
@@ -132,26 +122,10 @@ namespace ATSPM.Application.Business.ApproachVolume
                 );
         }
 
-        private double GetKFactor(int primaryDirectionPeakHourVolume, int opposingVolumeForPrimaryPeakHour, double primaryDirectionTotalVolume, double opposingDirectionTotalVolume)
+        private static double GetKFactor(int primaryDirectionPeakHourVolume, int opposingVolumeForPrimaryPeakHour, double primaryDirectionTotalVolume, double opposingDirectionTotalVolume)
         {
             return (primaryDirectionPeakHourVolume + opposingVolumeForPrimaryPeakHour) / (primaryDirectionTotalVolume + opposingDirectionTotalVolume);
         }
-
-        //private VolumeCollection GetVolumeByDetection(
-        //   List<Approach> approaches,
-        //   ApproachVolumeOptions options,
-        //   List<IndianaEvent> detectorEvents)
-        //{
-        //    var detectors = approaches.SelectMany(a => a.GetDetectorsForMetricType(7))
-        //        .Where(d => d.LaneTypeId == LaneTypes.V).ToList();
-
-
-        //    return new VolumeCollection(
-        //        options.Start,
-        //        options.End,
-        //        detectorEvents,
-        //        options.SelectedBinSize);
-        //}
 
         public static DirectionTypes GetOpposingDirection(DirectionTypes direction)
         {
@@ -182,11 +156,11 @@ namespace ATSPM.Application.Business.ApproachVolume
                 case DirectionTypes.SW:
                     opposingDirection = DirectionTypes.NE;
                     break;
-            };
+            }
             return opposingDirection;
         }
 
-        private List<DataPointForDouble> GetDFactorSeries(VolumeCollection approachVolume, VolumeCollection combinedVolume)
+        private static List<DataPointForDouble> GetDFactorSeries(VolumeCollection approachVolume, VolumeCollection combinedVolume)
         {
             List<DataPointForDouble> result = new List<DataPointForDouble>();
             for (int i = 0; i < approachVolume.Items.Count; i++)
@@ -203,7 +177,7 @@ namespace ATSPM.Application.Business.ApproachVolume
             return result;
         }
 
-        private List<DataPointForInt> GetDirectionSeries(VolumeCollection approachVolume)
+        private static List<DataPointForInt> GetDirectionSeries(VolumeCollection approachVolume)
         {
             if (approachVolume != null && approachVolume.Items.Any())
             {
@@ -212,19 +186,17 @@ namespace ATSPM.Application.Business.ApproachVolume
             return new List<DataPointForInt>();
         }
 
-
-
-        private static double GetPeakHourFactor(int direction1PeakHourVolume, int PeakHourMaxHourlyVolume)
+        private static double GetPeakHourFactor(int direction1PeakHourVolume, int peakHourMaxHourlyVolume)
         {
-            double PeakHourFactor = 0;
-            if (PeakHourMaxHourlyVolume > 0)
+            double peakHourFactor = 0;
+            if (peakHourMaxHourlyVolume > 0)
             {
-                PeakHourFactor = Convert.ToDouble(direction1PeakHourVolume) / Convert.ToDouble(PeakHourMaxHourlyVolume);
+                peakHourFactor = Convert.ToDouble(direction1PeakHourVolume) / Convert.ToDouble(peakHourMaxHourlyVolume);
             }
-            return PeakHourFactor;
+            return peakHourFactor;
         }
 
-        private SortedDictionary<DateTime, int> CombineDirectionHourlyVolumes(List<DataPointForInt> direction1Volumes, List<DataPointForInt> direction2Volumes)
+        private static SortedDictionary<DateTime, int> CombineDirectionHourlyVolumes(List<DataPointForInt> direction1Volumes, List<DataPointForInt> direction2Volumes)
         {
             var sortedDictionary = new SortedDictionary<DateTime, int>();
             foreach (DataPointForInt current in direction1Volumes)
@@ -236,17 +208,8 @@ namespace ATSPM.Application.Business.ApproachVolume
             return sortedDictionary;
         }
 
-        //private static bool IsValidTimePeriodForKFactors(DateTime startTime, DateTime endTime)
-        //{
-        //    TimeSpan timeDiff = endTime.Subtract(startTime);
-        //    bool validKfactors = timeDiff.TotalHours >= 23 && timeDiff.TotalHours < 25;
-        //    return validKfactors;
-        //}
-
         private static void SetStartTimeAndEndTime(VolumeCollection direction1Volumes, VolumeCollection direction2Volumes, out DateTime startTime, out DateTime endTime)
         {
-            startTime = new DateTime();
-            endTime = new DateTime();
             //Create the Volume Metrics table
             if (direction1Volumes.Items.Count > 0)
             {
@@ -258,49 +221,56 @@ namespace ATSPM.Application.Business.ApproachVolume
                 startTime = direction2Volumes.Items.Min(d => d.StartTime);
                 endTime = direction2Volumes.Items.Max(d => d.StartTime);
             }
+            else
+            {
+                startTime = new DateTime();
+                endTime = new DateTime();
+            }
         }
 
-        protected KeyValuePair<DateTime, int> GetPeakHourVolumeItem(VolumeCollection volumes,
+        protected static KeyValuePair<DateTime, int> GetPeakHourVolumeItem(VolumeCollection volumes,
             int binMultiplier)
         {
             KeyValuePair<DateTime, int> peakHourValue = new KeyValuePair<DateTime, int>();
             SortedDictionary<DateTime, int> iteratedVolumes = new SortedDictionary<DateTime, int>();
-            foreach (var volume in volumes.Items)
+            foreach (var start in volumes.Items.Select(i => i.StartTime))
             {
-                iteratedVolumes.Add(volume.StartTime, volumes.Items.Where(v => v.StartTime >= volume.StartTime && v.StartTime < volume.StartTime.AddHours(1)).Sum(v => v.DetectorCount));
+                iteratedVolumes.Add(start, volumes.Items.Where(v => v.StartTime >= start && v.StartTime < start.AddHours(1)).Sum(v => v.DetectorCount));
             }
             peakHourValue = iteratedVolumes.OrderByDescending(i => i.Value).FirstOrDefault();
 
             return peakHourValue;
         }
 
-        protected int FindPeakValueinHour(DateTime StartofHour, VolumeCollection volDic,
+        protected static int FindPeakValueinHour(DateTime StartofHour, VolumeCollection volDic,
             int binMultiplier)
         {
             int maxVolume = 0;
 
             for (int i = 0; i < binMultiplier; i++)
             {
-                if (volDic.Items.Any(d => d.StartTime == StartofHour))
-                    if (maxVolume < volDic.Items.FirstOrDefault(i => i.StartTime == StartofHour).DetectorCount)
-                        maxVolume = volDic.Items.FirstOrDefault(i => i.StartTime == StartofHour).DetectorCount;
+                if (volDic.Items.Exists(d => d.StartTime == StartofHour))
+                {
+                    var detectorCount = volDic.Items.Find(i => i.StartTime == StartofHour).DetectorCount;
+                    if (maxVolume < detectorCount)
+                        maxVolume = detectorCount;
+                }
 
-                StartofHour = StartofHour.AddMinutes(60 / binMultiplier);
+                StartofHour = StartofHour.AddMinutes(60 / (double)binMultiplier);
             }
             return maxVolume;
         }
 
-        protected double GetPeakHourDFactor(DateTime startofHour, int peakhourvolume, VolumeCollection volumes)
+        protected static double GetPeakHourDFactor(DateTime startofHour, int peakhourvolume, VolumeCollection volumes)
         {
             int totalVolume = 0;
             double PHDF = 0;
-            if (volumes.Items.Any(v => v.StartTime >= startofHour && v.StartTime < startofHour.AddHours(1)))
+            if (volumes.Items.Exists(v => v.StartTime >= startofHour && v.StartTime < startofHour.AddHours(1)))
             {
                 totalVolume = volumes.Items
                     .Where(v => v.StartTime >= startofHour && v.StartTime < startofHour.AddHours(1))
                     .Sum(v => v.DetectorCount);
             }
-            //totalVolume /= binMultiplier;
             totalVolume += peakhourvolume;
             if (totalVolume > 0)
                 PHDF = Round(Convert.ToDouble(peakhourvolume) / Convert.ToDouble(totalVolume), 3);
