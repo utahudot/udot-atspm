@@ -29,11 +29,10 @@ namespace ATSPM.Application.Business.LeftTurnGapAnalysis
                 x.EventParam == approach.ProtectedPhaseNumber &&
                 (x.EventCode == EVENT_GREEN || x.EventCode == EVENT_RED)));
 
-            var detectorsToUse = new List<Detector>();
             var detectionTypeStr = "Lane-By-Lane Count";
 
             //Use only lane-by-lane count detectors if they exists, otherwise check for stop bar
-            detectorsToUse = approach.GetAllDetectorsOfDetectionType(DetectionTypes.LLC);
+            var detectorsToUse = approach.GetAllDetectorsOfDetectionType(DetectionTypes.LLC);
 
             if (!detectorsToUse.Any())
             {
