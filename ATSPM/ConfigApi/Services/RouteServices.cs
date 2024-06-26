@@ -1,6 +1,8 @@
 ﻿using ATSPM.Application.Repositories.ConfigurationRepositories;
+using ATSPM.Application.Specifications;
 using ATSPM.ConfigApi.Models;
 using ATSPM.Data.Models;
+using ATSPM.Domain.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace ATSPM.ConfigApi.Services
@@ -10,15 +12,29 @@ namespace ATSPM.ConfigApi.Services
         private readonly IRouteRepository _routeRepository;
         private readonly IRouteLocationsRepository _routeLocationRepository;
         private readonly IRouteDistanceRepository _routeDistanceRepository;
+        private readonly ILocationRepository _locationRepository;
+        private readonly List<Location> _locations;
 
         public RouteService(
             IRouteRepository routeRepository,
             IRouteLocationsRepository routeLocationRepository,
-            IRouteDistanceRepository routeDistanceRepository)
+            IRouteDistanceRepository routeDistanceRepository,
+            ILocationRepository locationRepository)
         {
             _routeRepository = routeRepository;
             _routeLocationRepository = routeLocationRepository;
             _routeDistanceRepository = routeDistanceRepository;
+            _locationRepository = locationRepository;
+
+            _locations = locationRepository.GetList()
+                .Include(i => i.Jurisdiction)
+                .Include(i => i.Region)
+                .Include(i => i.Approaches)
+                .ThenInclude(i => i.Detectors)
+                .Include(i => i.Areas)
+                .FromSpecification(new ActiveLocationSpecification())
+                .GroupBy(r => r.LocationIdentifier)
+                .Select(g => g.OrderByDescending(r => r.Start).FirstOrDefault()).ToList();
         }
 
         public void CreateOrUpdateRoute(RouteDto routeDto)
@@ -103,6 +119,35 @@ namespace ATSPM.ConfigApi.Services
             {
                 _routeRepository.Update(route);
             }
+        }
+
+        public RouteDto GetRouteWithExpandedLocationsAsync(int routeId)
+        {
+            var routesWithExpandedLocations = new RouteDto();
+            var route = _routeRepository.GetList().Include(r => r.RouteLocations).Where(r => r.Id == routeId).FirstOrDefault();
+
+            if (route != null)
+            {
+                var locationIdentifiers = route.RouteLocations.Select(l => l.LocationIdentifier).ToList();
+                var locations = _locations
+                    .Where(l => locationIdentifiers.Contains(l.LocationIdentifier))
+                    .ToList();
+
+                var routeLocations = TransformLocationToRouteLocations(locations);
+                routesWithExpandedLocations = new RouteDto { Id = route.Id, Name = route.Name, RouteLocations = routeLocations };
+            }
+
+            return routesWithExpandedLocations;
+        }
+
+        private List<RouteLocationDto> TransformLocationToRouteLocations(List<Location> locations)
+        {
+            var routeLocations = new List<RouteLocationDto>();
+            foreach (var location in locations)
+            {
+
+            }
+            return routeLocations;
         }
 
         private void HandleDistances(RouteLocationDto routeLocationDto, RouteLocation location)

@@ -72,6 +72,31 @@ namespace ATSPM.ConfigApi.Controllers
             }
         }
 
+        /// <summary>
+        /// Creates a route with its associated route locations
+        /// </summary>
+        /// <param name="route"></param>
+        /// <returns></returns>
+        [HttpPost("GetRouteWithExpandedLocations")]
+        [ProducesResponseType(Status200OK)]
+        [ProducesResponseType(Status400BadRequest)]
+        public IActionResult GetRouteWithExpandedLocationsAsync([FromBody] RouteIdDto dto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            try
+            {
+                var routes = _routeService.GetRouteWithExpandedLocationsAsync(dto.RouteId);
+                return Ok(routes);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
         #endregion
     }
 }
