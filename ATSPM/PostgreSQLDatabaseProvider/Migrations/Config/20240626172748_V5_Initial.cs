@@ -250,7 +250,7 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Config
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "character varying(64)", unicode: false, maxLength: 64, nullable: false),
                     Notes = table.Column<string>(type: "character varying(512)", unicode: false, maxLength: 512, nullable: true),
-                    Date = table.Column<DateTime>(type: "timestamp", nullable: false, defaultValue: new DateTime(2024, 6, 21, 11, 27, 21, 133, DateTimeKind.Local).AddTicks(4999)),
+                    Date = table.Column<DateTime>(type: "timestamp", nullable: false, defaultValue: new DateTime(2024, 6, 26, 11, 27, 48, 97, DateTimeKind.Local).AddTicks(4084)),
                     Version = table.Column<int>(type: "integer", nullable: false),
                     ParentId = table.Column<int>(type: "integer", nullable: true)
                 },
@@ -406,7 +406,7 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Config
                     Directory = table.Column<string>(type: "character varying(512)", unicode: false, maxLength: 512, nullable: true),
                     SearchTerms = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: true),
                     ConnectionTimeout = table.Column<int>(type: "integer", nullable: false, defaultValueSql: "((2000))"),
-                    OperationTimout = table.Column<int>(type: "integer", nullable: false, defaultValueSql: "((2000))"),
+                    OperationTimeout = table.Column<int>(type: "integer", nullable: false, defaultValueSql: "((2000))"),
                     DataModel = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: true),
                     UserName = table.Column<string>(type: "character varying(50)", unicode: false, maxLength: 50, nullable: true),
                     Password = table.Column<string>(type: "character varying(50)", unicode: false, maxLength: 50, nullable: true),
