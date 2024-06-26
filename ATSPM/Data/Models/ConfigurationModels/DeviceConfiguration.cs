@@ -46,7 +46,7 @@ namespace ATSPM.Data.Models
         /// <summary>
         /// Logging communication port
         /// </summary>
-        public long Port { get; set; }
+        public int Port { get; set; }
 
         /// <summary>
         /// Path to log directory

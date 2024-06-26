@@ -26,7 +26,7 @@ using Xunit.Abstractions;
 
 namespace InfrastructureTests.DownloaderClientTests
 {
-    public class HttpDownloaderClientTests : DownloaderClientTestsBase
+    public class HttpDownloaderClientTests : DownloaderClientTestsBase<HttpClient>
     {
         public HttpDownloaderClientTests(ITestOutputHelper output) : base(output) { }
 
@@ -35,13 +35,6 @@ namespace InfrastructureTests.DownloaderClientTests
             Sut = new HttpDownloaderClient();
 
             base.ConnectAsyncSucceeded();
-        }
-
-        public override void ConnectAsyncArgumentNullException()
-        {
-            Sut = new HttpDownloaderClient();
-
-            base.ConnectAsyncArgumentNullException();
         }
 
         public override void ConnectAsyncControllerConnectionException()
@@ -97,7 +90,7 @@ namespace InfrastructureTests.DownloaderClientTests
                 ItExpr.IsAny<CancellationToken>())
                 .ReturnsAsync(mockResponse);
 
-            Sut = new HttpDownloaderClient(new HttpClient(client.Object) { BaseAddress = new Uri($"http://127.0.0.1") });
+            Sut = new HttpDownloaderClient(new HttpClient(client.Object) { BaseAddress = new Uri("http://192.168.1.1")});
 
             base.DownloadFileAsyncSucceeded();
         }
@@ -119,7 +112,7 @@ namespace InfrastructureTests.DownloaderClientTests
                 ItExpr.IsAny<CancellationToken>())
                 .Throws<Exception>();
 
-            Sut = new HttpDownloaderClient(new HttpClient(client.Object) { BaseAddress = new Uri($"http://127.0.0.1") });
+            Sut = new HttpDownloaderClient(new HttpClient(client.Object) { BaseAddress = new Uri("http://192.168.1.1") });
 
             base.DownloadFileAsyncControllerDownloadFileException();
         }
@@ -137,6 +130,44 @@ namespace InfrastructureTests.DownloaderClientTests
 
         public override void ListDirectoryAsyncControllerDownloadFileException()
         {
+        }
+
+        public override void ConnectAsyncConnectionProperties()
+        {
+            Client = new HttpClient();
+            Sut = new HttpDownloaderClient(Client);
+
+            base.ConnectAsyncConnectionProperties();
+        }
+
+        public override bool VerifyIpAddress(HttpClient client, string ipAddress)
+        {
+            return client.BaseAddress.Host.Contains(ipAddress.ToString());
+        }
+
+        public override bool VerifyPort(HttpClient client, int port)
+        {
+            return client.BaseAddress.Port == port;
+        }
+
+        public override bool VerifyUserName(HttpClient client, string userName)
+        {
+            return true;
+        }
+
+        public override bool VerifyPassword(HttpClient client, string password)
+        {
+            return true;
+        }
+
+        public override bool VerifyConnectionTimeout(HttpClient client, int connectionTimeout)
+        {
+            return true;
+        }
+
+        public override bool VerifyOperationTimeout(HttpClient client, int operationTImeout)
+        {
+            return client.Timeout.TotalMilliseconds == operationTImeout;
         }
     }
 }
