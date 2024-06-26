@@ -68,6 +68,12 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
         //{
         //}
 
+        /// <summary>
+        /// Generates a pattern for folder structure used for temp event log storage
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="file"></param>
+        /// <returns></returns>
         public virtual string GenerateLocalFilePath(Device value, string file)
         {
             var result = Path.Combine
@@ -115,11 +121,12 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
                 {
                     try
                     {
+                        var connection = new IPEndPoint(ipaddress, parameter.DeviceConfiguration.Port);
                         var credentials = new NetworkCredential(user, password, ipaddress.ToString());
-
+                        
                         logMessages.ConnectingToHostMessage(locationIdentifier, ipaddress);
 
-                        await _client.ConnectAsync(credentials, _options.ConnectionTimeout, _options.ReadTimeout, cancelToken);
+                        await _client.ConnectAsync(connection, credentials, _options.ConnectionTimeout, _options.ReadTimeout, cancelToken);
                     }
                     catch (ControllerConnectionException e)
                     {

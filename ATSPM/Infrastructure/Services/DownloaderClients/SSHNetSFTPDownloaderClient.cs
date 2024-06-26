@@ -54,27 +54,25 @@ namespace ATSPM.Infrastructure.Services.DownloaderClients
         public bool IsConnected => _client != null && _client.IsConnected;
 
         ///<inheritdoc/>
-        public Task ConnectAsync(NetworkCredential credentials, int connectionTimeout = 2, int operationTImeout = 2, CancellationToken token = default)
+        public Task ConnectAsync(IPEndPoint connection, NetworkCredential credentials, int connectionTimeout = 2, int operationTImeout = 2, CancellationToken token = default)
         {
-            if (string.IsNullOrEmpty(credentials.Domain))
-                throw new ArgumentNullException("Network Credentials can't be null");
-
             try
             {
-                if (_client == null)
-                {
-                    var connectionInfo = new ConnectionInfo
-                (credentials.Domain,
+                var connectionInfo = new ConnectionInfo
+                (connection.Address.ToString(),
+                connection.Port,
                 credentials.UserName,
                 new PasswordAuthenticationMethod(credentials.UserName, credentials.Password))
-                    {
-                        Timeout = TimeSpan.FromMilliseconds(connectionTimeout)
-                    };
+                {
+                    Timeout = TimeSpan.FromMilliseconds(connectionTimeout)
+                };
 
-                    _client ??= new SftpClientWrapper(connectionInfo);
-
-                    _client.OperationTimeout = TimeSpan.FromMilliseconds(operationTImeout);
+                if (_client == null)
+                {
+                    _client = new SftpClientWrapper(connectionInfo);
                 }
+
+                _client.OperationTimeout = TimeSpan.FromMilliseconds(operationTImeout);
 
                 _client.Connect();
 
