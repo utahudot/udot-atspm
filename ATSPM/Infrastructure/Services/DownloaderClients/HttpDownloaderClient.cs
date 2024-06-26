@@ -36,6 +36,7 @@ namespace ATSPM.Infrastructure.Services.DownloaderClients
     {
         private HttpClient _client;
         private Uri getPath;
+        private IPEndPoint ip;
 
         ///<inheritdoc/>
         public HttpDownloaderClient() {}
@@ -55,14 +56,16 @@ namespace ATSPM.Infrastructure.Services.DownloaderClients
         public bool IsConnected => _client != null && _client.BaseAddress.Host.IsValidIPAddress();
 
         ///<inheritdoc/>
-        public Task ConnectAsync(NetworkCredential credentials, int connectionTimeout = 2000, int operationTImeout = 2000, CancellationToken token = default)
+        public Task ConnectAsync(IPEndPoint connection, NetworkCredential credentials, int connectionTimeout = 2000, int operationTImeout = 2000, CancellationToken token = default)
         {
-            if (string.IsNullOrEmpty(credentials.Domain))
-                throw new ArgumentNullException("Network Credentials can't be null");
+            ip = connection;
 
             try
             {
-                _client ??= new HttpClient() { Timeout = TimeSpan.FromMilliseconds(operationTImeout), BaseAddress = new Uri($"http://{credentials.Domain}/") };
+                _client ??= new HttpClient();
+
+                _client.Timeout = TimeSpan.FromMilliseconds(operationTImeout);
+                _client.BaseAddress = new Uri($"http://{ip.Address}:{ip.Port}/");
 
                 _client.DefaultRequestHeaders.Accept.Clear();
                 //HACK: this is specific to maxtimecontrollers future versions will need this adjustable
@@ -161,7 +164,8 @@ namespace ATSPM.Infrastructure.Services.DownloaderClients
 
             try
             {
-                var builder = new UriBuilder("http", _client.BaseAddress.Host.ToString(), 80, directory);
+                var builder = new UriBuilder(_client.BaseAddress);
+                builder.Path = directory;
 
                 //for maxtime controllers it uses this searchterm:  $"since={DateTime.Now.AddHours(-24):MM-dd-yyyy HH:mm:ss.f}"
 

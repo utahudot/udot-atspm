@@ -22,13 +22,15 @@ using System.IO;
 using System.Net;
 using Xunit;
 using Xunit.Abstractions;
+using Xunit.Sdk;
 
 namespace InfrastructureTests.DownloaderClientTests
 {
-    public abstract class DownloaderClientTestsBase : IDisposable
+    public abstract class DownloaderClientTestsBase<T> : IDisposable where T : class
     {
         protected ITestOutputHelper Output;
         protected IDownloaderClient Sut;
+        protected T Client;
 
         public DownloaderClientTestsBase(ITestOutputHelper output)
         {
@@ -39,9 +41,10 @@ namespace InfrastructureTests.DownloaderClientTests
         [Trait(nameof(IDownloaderClient), "ConnectAsync")]
         public async virtual void ConnectAsyncSucceeded()
         {
+            var connection = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 1);
             var credentials = new NetworkCredential("user", "password", "127.0.0.1");
 
-            await Sut.ConnectAsync(credentials, 2000, 2000);
+            await Sut.ConnectAsync(connection, credentials, 2000, 2000);
 
             var condition = Sut.IsConnected;
 
@@ -50,20 +53,12 @@ namespace InfrastructureTests.DownloaderClientTests
 
         [Fact]
         [Trait(nameof(IDownloaderClient), "ConnectAsync")]
-        public async virtual void ConnectAsyncArgumentNullException()
-        {
-            var credentials = new NetworkCredential("user", "password");
-
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => await Sut.ConnectAsync(credentials, 2000, 2000));
-        }
-
-        [Fact]
-        [Trait(nameof(IDownloaderClient), "ConnectAsync")]
         public async virtual void ConnectAsyncControllerConnectionException()
         {
+            var connection = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 1);
             var credentials = new NetworkCredential("user", "password", "127.0.0.1");
 
-            await Assert.ThrowsAsync<ControllerConnectionException>(async () => await Sut.ConnectAsync(credentials, 2000, 2000));
+            await Assert.ThrowsAsync<ControllerConnectionException>(async () => await Sut.ConnectAsync(connection, credentials, 2000, 2000));
         }
 
         [Fact]
@@ -157,6 +152,37 @@ namespace InfrastructureTests.DownloaderClientTests
         {
             await Assert.ThrowsAsync<ControllerListDirectoryException>(async () => await Sut.ListDirectoryAsync(""));
         }
+
+        [Fact]
+        [Trait(nameof(IDownloaderClient), "ConnectAsync")]
+        public async virtual void ConnectAsyncConnectionProperties()
+        {
+            var ipAddress = "127.0.0.1";
+            var port = Random.Shared.Next(1, 10);
+            var userName = new Guid().ToString();
+            var password = new Guid().ToString();
+            var connectionTimeout = Random.Shared.Next(1000, 10000);
+            var operationTImeout = Random.Shared.Next(1000, 10000);
+
+            var connection = new IPEndPoint(IPAddress.Parse(ipAddress), port);
+            var credentials = new NetworkCredential(userName, password, ipAddress);
+
+            await Sut.ConnectAsync(connection, credentials, connectionTimeout, operationTImeout);
+
+            Assert.True(VerifyIpAddress(Client, ipAddress));
+            Assert.True(VerifyPort(Client, port));
+            Assert.True(VerifyUserName(Client, userName));
+            Assert.True(VerifyPassword(Client, password));
+            Assert.True(VerifyConnectionTimeout(Client, connectionTimeout));
+            Assert.True(VerifyOperationTimeout(Client, operationTImeout));
+        }
+
+        public abstract bool VerifyIpAddress(T client, string ipAddress);
+        public abstract bool VerifyPort(T client, int port);
+        public abstract bool VerifyUserName(T client, string userName);
+        public abstract bool VerifyPassword(T client, string password);
+        public abstract bool VerifyConnectionTimeout(T client, int connectionTimeout);
+        public abstract bool VerifyOperationTimeout(T client, int operationTImeout);
 
         public virtual void Dispose()
         {

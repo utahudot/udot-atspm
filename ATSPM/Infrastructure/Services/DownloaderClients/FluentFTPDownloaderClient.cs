@@ -53,22 +53,23 @@ namespace ATSPM.Infrastructure.Services.DownloaderClients
         public bool IsConnected => _client != null && _client.IsConnected;
 
         ///<inheritdoc/>
-        public async Task ConnectAsync(NetworkCredential credentials, int connectionTimeout = 2000, int operationTImeout = 2000, CancellationToken token = default)
+        public async Task ConnectAsync(IPEndPoint connection, NetworkCredential credentials, int connectionTimeout = 2000, int operationTImeout = 2000, CancellationToken token = default)
         {
-            if (string.IsNullOrEmpty(credentials.Domain))
-                throw new ArgumentNullException("Network Credentials can't be null");
-
             try
             {
                 if (_client == null)
                 {
-                    _client = new AsyncFtpClient(credentials.Domain, credentials);
-                    _client.Config.DataConnectionConnectTimeout = connectionTimeout;
-                    _client.Config.DataConnectionReadTimeout = operationTImeout;
-                    _client.Config.ConnectTimeout = connectionTimeout;
-                    _client.Config.ReadTimeout = operationTImeout;
-                    _client.Config.DataConnectionType = FtpDataConnectionType.AutoActive;
+                    _client = new AsyncFtpClient();
                 }
+
+                _client.Host = connection.Address.ToString();
+                _client.Port = connection.Port;
+                _client.Credentials = credentials;
+                _client.Config.DataConnectionConnectTimeout = connectionTimeout;
+                _client.Config.DataConnectionReadTimeout = operationTImeout;
+                _client.Config.ConnectTimeout = connectionTimeout;
+                _client.Config.ReadTimeout = operationTImeout;
+                _client.Config.DataConnectionType = FtpDataConnectionType.AutoActive;
 
                 var result = await _client.AutoConnect(token);
                 //await _client.Connect(token);
