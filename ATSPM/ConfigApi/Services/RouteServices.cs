@@ -21,7 +21,7 @@ namespace ATSPM.ConfigApi.Services
             _routeDistanceRepository = routeDistanceRepository;
         }
 
-        public void CreateOrUpdateRoute(RouteDto routeDto)
+        public Data.Models.Route CreateOrUpdateRoute(RouteDto routeDto)
         {
             // Find existing route or create a new one
             var route = _routeRepository.GetList()
@@ -103,6 +103,7 @@ namespace ATSPM.ConfigApi.Services
             {
                 _routeRepository.Update(route);
             }
+            return route;
         }
 
         private void HandleDistances(RouteLocationDto routeLocationDto, RouteLocation location)

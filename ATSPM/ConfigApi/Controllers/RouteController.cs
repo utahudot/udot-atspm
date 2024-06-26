@@ -63,8 +63,17 @@ namespace ATSPM.ConfigApi.Controllers
 
             try
             {
-                _routeService.CreateOrUpdateRoute(route);
-                return Ok();
+                var routeResult = _routeService.CreateOrUpdateRoute(route);
+                foreach (var routeLocation in routeResult.RouteLocations)
+                {
+                    routeLocation.Route = null;
+                    if (routeLocation.PreviousLocationDistance != null)
+                        routeLocation.PreviousLocationDistance.PreviousLocations = null;
+
+                    if (routeLocation.NextLocationDistance != null)
+                        routeLocation.NextLocationDistance.NextLocations = null;
+                }
+                return Ok(routeResult);
             }
             catch (Exception ex)
             {

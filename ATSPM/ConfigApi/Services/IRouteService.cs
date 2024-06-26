@@ -5,6 +5,6 @@ namespace ATSPM.ConfigApi.Services
 {
     public interface IRouteService
     {
-        void CreateOrUpdateRoute(RouteDto route);
+        Data.Models.Route CreateOrUpdateRoute(RouteDto route);
     }
 }
