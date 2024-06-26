@@ -18,30 +18,31 @@ using ATSPM.Infrastructure.Services.DownloaderClients;
 using FluentFTP;
 using Moq;
 using System;
+using System.Net;
 using Xunit.Abstractions;
+using IPAddress = System.Net.IPAddress;
 
 namespace InfrastructureTests.DownloaderClientTests
 {
-    public class FluentFTPDownloaderClientTests : DownloaderClientTestsBase
+    public class FluentFTPDownloaderClientTests : DownloaderClientTestsBase<IAsyncFtpClient>
     {
         public FluentFTPDownloaderClientTests(ITestOutputHelper output) : base(output) { }
 
         public override void ConnectAsyncSucceeded()
         {
             var client = new Mock<IAsyncFtpClient>();
+            var config = new Mock<FtpConfig>();
+
+            client.SetupAllProperties();
 
             client.Setup(s => s.AutoConnect(default)).Callback(() => client.SetupGet(p => p.IsConnected).Returns(true));
 
-            Sut = new FluentFTPDownloaderClient(client.Object);
+            Client = client.Object;
+            Client.Config = config.Object;
+
+            Sut = new FluentFTPDownloaderClient(Client);
 
             base.ConnectAsyncSucceeded();
-        }
-
-        public override void ConnectAsyncArgumentNullException()
-        {
-            Sut = new FluentFTPDownloaderClient();
-
-            base.ConnectAsyncArgumentNullException();
         }
 
         public override void ConnectAsyncControllerConnectionException()
@@ -187,6 +188,52 @@ namespace InfrastructureTests.DownloaderClientTests
             Sut = new FluentFTPDownloaderClient(client.Object);
 
             base.ListDirectoryAsyncControllerDownloadFileException();
+        }
+
+        public override void ConnectAsyncConnectionProperties()
+        {
+            var client = new Mock<IAsyncFtpClient>();
+            var config = new Mock<FtpConfig>();
+
+            client.SetupAllProperties();
+
+            client.Setup(s => s.AutoConnect(default)).Callback(() => client.SetupGet(p => p.IsConnected).Returns(true));
+
+            Client = client.Object;
+            Client.Config = config.Object;
+            Sut = new FluentFTPDownloaderClient(Client);
+
+            base.ConnectAsyncConnectionProperties();
+        }
+
+        public override bool VerifyIpAddress(IAsyncFtpClient client, string ipAddress)
+        {
+            return client.Host == ipAddress.ToString();
+        }
+
+        public override bool VerifyPort(IAsyncFtpClient client, int port)
+        {
+            return client.Port == port;
+        }
+
+        public override bool VerifyUserName(IAsyncFtpClient client, string userName)
+        {
+            return client.Credentials.UserName == userName;
+        }
+
+        public override bool VerifyPassword(IAsyncFtpClient client, string password)
+        {
+            return client.Credentials.Password == password;
+        }
+
+        public override bool VerifyConnectionTimeout(IAsyncFtpClient client, int connectionTimeout)
+        {
+            return client.Config.ConnectTimeout == connectionTimeout;
+        }
+
+        public override bool VerifyOperationTimeout(IAsyncFtpClient client, int operationTImeout)
+        {
+            return client.Config.ReadTimeout == operationTImeout;
         }
     }
 }
