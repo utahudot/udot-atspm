@@ -72,10 +72,10 @@ namespace ATSPM.ConfigApi.Controllers
             }
         }
 
-        [HttpGet("api/v1/GetRoute/{id}")]
+        [HttpGet("api/v1/GetRouteView/{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult GetRoute(int id, bool includeLocationDetail)
+        public IActionResult GetRouteView(int id, bool includeLocationDetail)
         {
             if (!ModelState.IsValid)
             {
