@@ -51,10 +51,10 @@ namespace ATSPM.ConfigApi.Controllers
         /// </summary>
         /// <param name="route"></param>
         /// <returns></returns>
-        [HttpPost("CreateRouteWithLocations")]
+        [HttpPost("api/v1/UpsertRoute")]
         [ProducesResponseType(Status200OK)]
         [ProducesResponseType(Status400BadRequest)]
-        public IActionResult CreateRouteWithLocations([FromBody] RouteDto route)
+        public IActionResult UpsertRoute([FromBody] RouteDto route)
         {
             if (route == null || route.RouteLocations == null)
             {
@@ -63,16 +63,7 @@ namespace ATSPM.ConfigApi.Controllers
 
             try
             {
-                var routeResult = _routeService.CreateOrUpdateRoute(route);
-                foreach (var routeLocation in routeResult.RouteLocations)
-                {
-                    routeLocation.Route = null;
-                    if (routeLocation.PreviousLocationDistance != null)
-                        routeLocation.PreviousLocationDistance.PreviousLocations = null;
-
-                    if (routeLocation.NextLocationDistance != null)
-                        routeLocation.NextLocationDistance.NextLocations = null;
-                }
+                var routeResult = _routeService.UpsertRoute(route);
                 return Ok(routeResult);
             }
             catch (Exception ex)
@@ -80,6 +71,27 @@ namespace ATSPM.ConfigApi.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
+
+        [HttpGet("api/v1/GetRoute/{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public IActionResult GetRoute(int id, bool includeLocationDetail)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            try
+            {
+                var routes = _routeService.GetRouteWithExpandedLocations(id, includeLocationDetail);
+                return Ok(routes);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
 
         #endregion
     }

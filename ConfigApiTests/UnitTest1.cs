@@ -65,7 +65,7 @@ namespace ConfigApiTests
                 .Returns(new List<Route>().AsQueryable());
 
             // Act
-            _routeService.CreateOrUpdateRoute(routeDto);
+            _routeService.UpsertRoute(routeDto);
 
             // Assert
             _mockRouteRepository.Verify(r => r.Add(It.IsAny<Route>()), Times.Once);
@@ -149,7 +149,7 @@ namespace ConfigApiTests
                 .Returns(new List<Route> { existingRoute }.AsQueryable());
 
             // Act
-            _routeService.CreateOrUpdateRoute(routeDto);
+            _routeService.UpsertRoute(routeDto);
 
             // Assert
             _mockRouteRepository.Verify(r => r.Update(It.IsAny<Route>()), Times.Once);
@@ -234,7 +234,7 @@ namespace ConfigApiTests
                                                                  .FirstOrDefault(d => d.Id == id));
 
             // Act
-            _routeService.CreateOrUpdateRoute(routeDto);
+            _routeService.UpsertRoute(routeDto);
 
             // Assert
             _mockRouteDistanceRepository.Verify(rd => rd.Update(It.Is<RouteDistance>(d => d.Id == 1 && d.Distance == 150)), Times.Once);
