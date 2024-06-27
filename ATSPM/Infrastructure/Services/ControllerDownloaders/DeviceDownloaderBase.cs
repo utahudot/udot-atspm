@@ -41,9 +41,9 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
     {
         #region Fields
 
-        protected IDownloaderClient _client;
-        protected ILogger _log;
-        protected readonly SignalControllerDownloaderConfiguration _options;
+        private readonly IDownloaderClient _client;
+        private readonly ILogger _log;
+        private readonly SignalControllerDownloaderConfiguration _options;
 
         #endregion
 
@@ -93,18 +93,18 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
         }
 
         /// <exception cref="ArgumentNullException"></exception>
-        /// <exception cref="InvalidSignalControllerIpAddressException"></exception>
+        /// <exception cref="InvalidDeviceIpAddressException"></exception>
         /// <exception cref="ExecuteException"></exception>
         public override async IAsyncEnumerable<Tuple<Device, FileInfo>> Execute(Device parameter, IProgress<ControllerDownloadProgress> progress = null, [EnumeratorCancellation] CancellationToken cancelToken = default)
         {
             if (parameter == null)
-                throw new ArgumentNullException(nameof(parameter), $"Location parameter can not be null");
+                throw new ArgumentNullException(nameof(parameter), $"Parameter can not be null");
 
             //if (CanExecute(parameter) && !cancelToken.IsCancellationRequested)
             if (CanExecute(parameter))
             {
                 if (!parameter.Ipaddress.IsValidIPAddress(_options.PingControllerToVerify))
-                    throw new InvalidSignalControllerIpAddressException(parameter);
+                    throw new InvalidDeviceIpAddressException(parameter);
 
                 var locationIdentifier = parameter?.Location?.LocationIdentifier;
                 var user = parameter?.DeviceConfiguration?.UserName;
@@ -114,8 +114,6 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
                 var searchTerms = parameter?.DeviceConfiguration?.SearchTerms;
 
                 var logMessages = new ControllerLoggerDownloaderLogMessages(_log, parameter);
-
-                //_log.LogError("this is a test");
 
                 using (_client)
                 {
@@ -250,6 +248,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
 
         #endregion
 
+        ///<inheritdoc/>
         protected override void DisposeManagedCode()
         {
             _client.Dispose();
