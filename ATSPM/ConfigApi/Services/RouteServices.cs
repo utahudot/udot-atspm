@@ -168,6 +168,7 @@ namespace ATSPM.ConfigApi.Services
                 routeLocationDto.Longitude = location.Longitude;
                 routeLocationDto.PrimaryName = location.PrimaryName;
                 routeLocationDto.SecondaryName = location.SecondaryName;
+                routeLocationDto.LocationId = location.Id;
 
                 if (includeLocationDetail && routeLocationDto.Approaches != null)
                 {

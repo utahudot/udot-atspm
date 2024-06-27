@@ -35,6 +35,7 @@ namespace ATSPM.ConfigApi.Models
         public double Latitude { get; set; }
         public string PrimaryName { get; set; }
         public string SecondaryName { get; set; }
+        public int? LocationId { get; set; }
         public int RouteId { get; set; }
         public virtual ICollection<RouteApproachDto>? Approaches { get; set; } = new HashSet<RouteApproachDto>();
     }
