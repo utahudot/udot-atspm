@@ -24,14 +24,14 @@ using System.Threading.Tasks.Dataflow;
 #nullable enable
 namespace ATSPM.Application.Exceptions
 {
-    public class InvalidSignalControllerIpAddressException : ATSPMException
+    public class InvalidDeviceIpAddressException : ATSPMException
     {
-        public InvalidSignalControllerIpAddressException(Device device) : base($"{device.Location.LocationIdentifier} address {device.Ipaddress} is either invalid or can't be reached")
+        public InvalidDeviceIpAddressException(Device device) : base($"{device.Ipaddress} is either invalid or can't be reached")
         {
-            SignalController = device;
+            Device = device;
         }
 
-        public Device SignalController { get; private set; }
+        public Device Device { get; private set; }
     }
 
     public abstract class ControllerLoggerException : ATSPMException
