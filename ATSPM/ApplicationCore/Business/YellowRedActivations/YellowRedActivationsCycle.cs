@@ -76,7 +76,6 @@ namespace ATSPM.Application.Business.YellowRedActivations
         /// <summary>
         ///     Constructor for the PCDDataPointGroup
         /// </summary>
-        /// <param name="cycleStartTime"></param>
         public YellowRedActivationsCycle(
             DateTime yellowClearance,
             DateTime redClearance,
@@ -93,9 +92,16 @@ namespace ATSPM.Application.Business.YellowRedActivations
             redEvent = red;
             redEndEvent = redEnd;
             endTime = redEnd;
-            DetectorActivations = detectorEvents
-                .Where(d => d.Timestamp >= yellowClearance && d.Timestamp < redEnd)
-                .Select(d => new YellowRedActivation(yellowClearance, d.Timestamp)).ToList();
+            if (detectorEvents == null)
+            {
+                DetectorActivations = new List<YellowRedActivation>();
+            }
+            else
+            {
+                DetectorActivations = detectorEvents
+                    .Where(d => d.Timestamp >= yellowClearance && d.Timestamp < redEnd)
+                    .Select(d => new YellowRedActivation(yellowClearance, d.Timestamp)).ToList();
+            }
         }
 
         public DateTime StartTime => startTime;

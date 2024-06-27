@@ -97,6 +97,8 @@ dkms.conf
 /ATSPM/ReportAPI/bin
 /ATSPM/SignalControllerLogger/obj
 /ATSPM/SignalControllerLogger/bin
+/ATSPM/SpeedManagementApi/obj
+/ATSPM/SpeedManagementApi/bin
 /ATSPM/WatchDog/obj/
 /ATSPM/WatchDog/bin/
 /ATSPM/WatchDogTests/obj/
@@ -107,3 +109,6 @@ dkms.conf
 
 /ATSPM/WatchDog/bin/Debug/net7.0/ReportApi.xml
 /ATSPM/WatchDogTests/bin/Debug/net7.0/ReportApi.xml
+/ATSPM/TempReportTests/bin/Release/net7.0/CoverletSourceRootsMapping
+/ConfigApiTests/bin/Release/net7.0
+/ConfigApiTests/obj/Release/net7.0

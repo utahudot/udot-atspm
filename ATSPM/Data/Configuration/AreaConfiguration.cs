@@ -12,9 +12,10 @@ namespace ATSPM.Data.Configuration
         /// <inheritdoc/>
         public void Configure(EntityTypeBuilder<Area> builder)
         {
-            builder.HasComment("Areas");
+            builder.ToTable(t => t.HasComment("Areas"));
 
             builder.Property(e => e.Name).HasMaxLength(50);
+            builder.Property(e => e.Name).IsRequired();
 
             //builder.HasData(new Area() { Name = "Unknown"});
         }

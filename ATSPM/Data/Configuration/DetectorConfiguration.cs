@@ -12,7 +12,7 @@ namespace ATSPM.Data.Configuration
         /// <inheritdoc/>
         public void Configure(EntityTypeBuilder<Detector> builder)
         {
-            builder.HasComment("Detectors");
+            builder.ToTable(t => t.HasComment("Detectors"));
 
             builder.HasIndex(e => e.ApproachId);
 

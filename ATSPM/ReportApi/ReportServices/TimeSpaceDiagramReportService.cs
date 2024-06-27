@@ -20,24 +20,28 @@ namespace ATSPM.ReportApi.ReportServices
         private readonly TimeSpaceDiagramForPhaseService timeSpaceDiagramReportService;
         private readonly PhaseService phaseService;
         private readonly IRouteLocationsRepository routeLocationsRepository;
+        private readonly IRouteRepository routeRepository;
 
         public TimeSpaceDiagramReportService(IIndianaEventLogRepository controllerEventLogRepository,
             ILocationRepository locationRepository,
             TimeSpaceDiagramForPhaseService timeSpaceDiagramReportService,
             PhaseService phaseService,
-            IRouteLocationsRepository routeLocationsRepository)
+            IRouteLocationsRepository routeLocationsRepository,
+            IRouteRepository routeRepository)
         {
             this.controllerEventLogRepository = controllerEventLogRepository;
             LocationRepository = locationRepository;
             this.timeSpaceDiagramReportService = timeSpaceDiagramReportService;
             this.phaseService = phaseService;
             this.routeLocationsRepository = routeLocationsRepository;
+            this.routeRepository = routeRepository;
         }
 
         /// <inheritdoc/>
         public override async Task<IEnumerable<TimeSpaceDiagramResultForPhase>> ExecuteAsync(TimeSpaceDiagramOptions parameter, IProgress<int> progress = null, CancellationToken cancelToken = default)
         {
             var routeLocations = GetLocationsFromRouteId(parameter.RouteId);
+            var routeName = GetRouteNameFromId(parameter.RouteId);
             if (routeLocations.Count == 0)
             {
                 throw new Exception($"No locations present for route");
@@ -52,7 +56,7 @@ namespace ATSPM.ReportApi.ReportServices
             {
                 if (routeLocation.NextLocationDistance == null && routeLocation.PreviousLocationDistance == null)
                 {
-                    throw new Exception($"Distance not configured for route: {parameter.RouteId}");
+                    throw new Exception($"Distance not configured for route: {routeName}");
                 }
             }
 
@@ -62,6 +66,7 @@ namespace ATSPM.ReportApi.ReportServices
             {
                 var nextLocationDistance = i == routeLocations.Count - 1 ? 0 : routeLocations[i].NextLocationDistance.Distance;
                 var previousLocationDistance = i == 0 ? 0 : routeLocations[i].PreviousLocationDistance.Distance;
+
                 tasks.Add(GetChartDataForPhase(parameter,
                     controllerEventLogsList[i],
                     primaryPhaseDetails[i],
@@ -78,6 +83,7 @@ namespace ATSPM.ReportApi.ReportServices
             {
                 var nextLocationDistance = i == 0 ? 0 : routeLocations[i].PreviousLocationDistance.Distance;
                 var previousLocationDistance = i == routeLocations.Count - 1 ? 0 : routeLocations[i].NextLocationDistance.Distance;
+
                 tasks.Add(GetChartDataForPhase(parameter,
                     controllerEventLogsList[i],
                     opposingPhaseDetails[i],
@@ -92,6 +98,12 @@ namespace ATSPM.ReportApi.ReportServices
 
             var results = await Task.WhenAll(tasks);
             return results;
+        }
+
+        private string GetRouteNameFromId(int routeId)
+        {
+            var routeName = routeRepository.GetList().Where(r => r.Id == routeId).FirstOrDefault().Name;
+            return routeName != null ? routeName : "";
         }
 
         private (List<List<IndianaEvent>> controllerEventLogsList,
@@ -109,14 +121,7 @@ namespace ATSPM.ReportApi.ReportServices
 
                 if (location == null)
                 {
-                    throw new NullReferenceException("Issue fetching location from route");
-                }
-
-                var controllerEventLogs = controllerEventLogRepository.GetEventsBetweenDates(location.LocationIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
-
-                if (controllerEventLogs.IsNullOrEmpty())
-                {
-                    throw new NullReferenceException("No Controller Event Logs found for Location");
+                    throw new Exception("Issue fetching location from route");
                 }
 
                 var primaryPhaseDetail = phaseService.GetPhases(location).Find(p => p.PhaseNumber == routeLocation.PrimaryPhase);
@@ -124,7 +129,24 @@ namespace ATSPM.ReportApi.ReportServices
 
                 if (primaryPhaseDetail == null || opposingPhaseDetail == null)
                 {
-                    throw new NullReferenceException("Error grabbing phase details");
+                    throw new Exception("Error grabbing phase details");
+                }
+
+                if(parameter.SpeedLimit == null && primaryPhaseDetail.Approach.Mph == null)
+                {
+                    throw new Exception($"Speed not configured in route for all phases");
+                }
+
+                if (parameter.SpeedLimit == null && opposingPhaseDetail.Approach.Mph == null)
+                {
+                    throw new Exception($"Speed not configured in route for all phases");
+                }
+
+                var controllerEventLogs = controllerEventLogRepository.GetEventsBetweenDates(location.LocationIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
+
+                if (controllerEventLogs.IsNullOrEmpty())
+                {
+                    throw new Exception($"No Controller Event Logs found for Location {location.LocationIdentifier}");
                 }
 
                 controllerEventLogsList.Add(controllerEventLogs);
