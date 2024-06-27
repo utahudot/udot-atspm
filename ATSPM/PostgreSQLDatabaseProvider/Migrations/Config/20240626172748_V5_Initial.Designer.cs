@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Config
 {
     [DbContext(typeof(ConfigContext))]
-    [Migration("20240621172721_V5_Initial")]
+    [Migration("20240626172748_V5_Initial")]
     partial class V5_Initial
     {
         /// <inheritdoc />
@@ -474,7 +474,7 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Config
                         .IsUnicode(false)
                         .HasColumnType("character varying(512)");
 
-                    b.Property<int>("OperationTimout")
+                    b.Property<int>("OperationTimeout")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
                         .HasDefaultValueSql("((2000))");
@@ -2029,7 +2029,7 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Config
                     b.Property<DateTime>("Date")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp")
-                        .HasDefaultValue(new DateTime(2024, 6, 21, 11, 27, 21, 133, DateTimeKind.Local).AddTicks(4999));
+                        .HasDefaultValue(new DateTime(2024, 6, 26, 11, 27, 48, 97, DateTimeKind.Local).AddTicks(4084));
 
                     b.Property<string>("Name")
                         .IsRequired()
