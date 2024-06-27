@@ -15,18 +15,6 @@ namespace ATSPM.Infrastructure.Repositories.ConfigurationRepositories
 
         #region Overrides
 
-        /// <inheritdoc/>
-        public override IQueryable<RouteLocation> GetList()
-        {
-            return base.GetList()
-                .Include(i => i.Route)
-                .Include(i => i.PrimaryDirection)
-                .Include(i => i.OpposingDirection)
-                .Include(i => i.PreviousLocationDistance)
-                .Include(i => i.NextLocationDistance)
-                .OrderBy(o => o.Order);
-        }
-
         #endregion
 
         #region IRouteLocationsRepository
