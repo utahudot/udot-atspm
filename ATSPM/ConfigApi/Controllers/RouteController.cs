@@ -1,5 +1,7 @@
 ﻿using Asp.Versioning;
 using ATSPM.Application.Repositories.ConfigurationRepositories;
+using ATSPM.ConfigApi.Models;
+using ATSPM.ConfigApi.Services;
 using ATSPM.Data.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
@@ -15,11 +17,13 @@ namespace ATSPM.ConfigApi.Controllers
     public class RouteController : AtspmConfigControllerBase<Data.Models.Route, int>
     {
         private readonly IRouteRepository _repository;
+        private readonly IRouteService _routeService;
 
         /// <inheritdoc/>
-        public RouteController(IRouteRepository repository) : base(repository)
+        public RouteController(IRouteRepository repository, IRouteService routeService) : base(repository)
         {
             _repository = repository;
+            _routeService = routeService;
         }
 
         #region NavigationProperties
@@ -35,16 +39,59 @@ namespace ATSPM.ConfigApi.Controllers
         [ProducesResponseType(Status400BadRequest)]
         public ActionResult<IEnumerable<RouteLocation>> GetRouteLocations([FromRoute] int key)
         {
-            return GetNavigationProperty<IEnumerable<RouteLocation>>(key);
+            return Ok(_repository.GetList().Where(r => r.Id == key).SelectMany(r => r.RouteLocations));
         }
 
         #endregion
 
         #region Actions
 
-        #endregion
+        /// <summary>
+        /// Creates a route with its associated route locations
+        /// </summary>
+        /// <param name="route"></param>
+        /// <returns></returns>
+        [HttpPost("api/v1/UpsertRoute")]
+        [ProducesResponseType(Status200OK)]
+        [ProducesResponseType(Status400BadRequest)]
+        public IActionResult UpsertRoute([FromBody] RouteDto route)
+        {
+            if (route == null || route.RouteLocations == null)
+            {
+                return BadRequest();
+            }
 
-        #region Functions
+            try
+            {
+                var routeResult = _routeService.UpsertRoute(route);
+                return Ok(routeResult);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpGet("api/v1/GetRouteView/{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public IActionResult GetRouteView(int id, bool includeLocationDetail)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            try
+            {
+                var routes = _routeService.GetRouteWithExpandedLocations(id, includeLocationDetail);
+                return Ok(routes);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
 
         #endregion
     }

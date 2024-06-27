@@ -50,7 +50,7 @@ namespace ATSPM.Data.Models
         /// <summary>
         /// Device operation timeout in milliseconds
         /// </summary>
-        public int OperationTimout { get; set; }
+        public int OperationTimeout { get; set; }
 
         /// <summary>
         /// The object and assembly used to model the event data
