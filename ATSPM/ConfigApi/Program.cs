@@ -1,4 +1,5 @@
 using Asp.Versioning;
+using ATSPM.ConfigApi.Services;
 using ATSPM.Domain.Extensions;
 using ATSPM.Infrastructure.Extensions;
 using Microsoft.AspNetCore.HttpLogging;
@@ -10,7 +11,6 @@ using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
@@ -66,23 +66,27 @@ builder.Host.ConfigureServices((h, s) =>
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
     builder.Services.AddSwaggerGen(o =>
-        {
-            // add a custom operation filter which sets default values
-            o.OperationFilter<SwaggerDefaultValues>();
+    {
+        // add a custom operation filter which sets default values
+        o.OperationFilter<SwaggerDefaultValues>();
 
-            var fileName = typeof(Program).Assembly.GetName().Name + ".xml";
-            var filePath = Path.Combine(AppContext.BaseDirectory, fileName);
+        var fileName = typeof(Program).Assembly.GetName().Name + ".xml";
+        var filePath = Path.Combine(AppContext.BaseDirectory, fileName);
 
-            // integrate xml comments
-            o.IncludeXmlComments(filePath);
-        });
+        // integrate xml comments
+        o.IncludeXmlComments(filePath);
+
+        // Use the full name to avoid schema ID conflicts
+        o.CustomSchemaIds(type => type.FullName);
+    });
 
     s.AddAtspmDbContext(h);
     s.AddAtspmEFConfigRepositories();
 
+    s.AddScoped<IRouteService, RouteService>();
+
     s.AddAtspmAuthentication(h, builder);
     s.AddAtspmAuthorization(h);
-
 
     //https://learn.microsoft.com/en-us/aspnet/core/fundamentals/http-logging/?view=aspnetcore-7.0
     s.AddHttpLogging(l =>
@@ -121,17 +125,17 @@ app.UseHttpLogging();
 
 app.UseSwagger();
 app.UseSwaggerUI(o =>
-    {
-        var descriptions = app.DescribeApiVersions();
+{
+    var descriptions = app.DescribeApiVersions();
 
-        // build a swagger endpoint for each discovered API version
-        foreach (var description in descriptions)
-        {
-            var url = $"/swagger/{description.GroupName}/swagger.json";
-            var name = description.GroupName.ToUpperInvariant();
-            o.SwaggerEndpoint(url, name);
-        }
-    });
+    // build a swagger endpoint for each discovered API version
+    foreach (var description in descriptions)
+    {
+        var url = $"/swagger/{description.GroupName}/swagger.json";
+        var name = description.GroupName.ToUpperInvariant();
+        o.SwaggerEndpoint(url, name);
+    }
+});
 app.UseCors("CorsPolicy");
 app.UseHttpsRedirection();
 app.UseRouting();
@@ -141,8 +145,16 @@ app.UseVersionedODataBatching();
 app.MapControllers();
 app.Run();
 
-
-
+public class IgnoreTypeSchemaFilter : ISchemaFilter
+{
+    public void Apply(OpenApiSchema schema, SchemaFilterContext context)
+    {
+        if (context.Type == typeof(Route)) // Replace Route with the type you want to ignore
+        {
+            schema.Properties.Clear();
+        }
+    }
+}
 
 /// <summary>
 /// Represents the OpenAPI/Swashbuckle operation filter used to document the implicit API version parameter.
