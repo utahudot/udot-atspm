@@ -1,6 +1,7 @@
 ﻿using ATSPM.Application.Repositories.ConfigurationRepositories;
 using ATSPM.ConfigApi.Models;
 using ATSPM.Data.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace ATSPM.ConfigApi.Services
 {
@@ -16,11 +17,10 @@ namespace ATSPM.ConfigApi.Services
         public async Task<ApproachDto> UpsertApproachAsync(ApproachDto dto)
         {
             Approach approach;
-            if (dto.Id > 0)
+            if (dto.Id.HasValue && dto.Id > 0)
             {
                 // Update existing approach
-                approach = _approachRepository.GetList()
-                    .FirstOrDefault(a => a.Id == dto.Id);
+                approach = _approachRepository.GetList().FirstOrDefault(a => a.Id == dto.Id.Value);
 
                 if (approach == null)
                 {
@@ -59,11 +59,11 @@ namespace ATSPM.ConfigApi.Services
                         detector.DecisionPoint = detectorDto.DecisionPoint;
                         detector.MovementDelay = detectorDto.MovementDelay;
                         detector.LatencyCorrection = detectorDto.LatencyCorrection;
-                        detector.ApproachId = detectorDto.ApproachId;
+                        detector.ApproachId = dto.Id ?? 0; // Assuming the approach is already created and has an ID
                     }
                     else
                     {
-                        approach.Detectors.Add(new Detector
+                        var newDetector = new Detector
                         {
                             DectectorIdentifier = detectorDto.DectectorIdentifier,
                             DetectorChannel = detectorDto.DetectorChannel,
@@ -78,8 +78,9 @@ namespace ATSPM.ConfigApi.Services
                             DecisionPoint = detectorDto.DecisionPoint,
                             MovementDelay = detectorDto.MovementDelay,
                             LatencyCorrection = detectorDto.LatencyCorrection,
-                            ApproachId = detectorDto.ApproachId
-                        });
+                            ApproachId = dto.Id ?? 0 // Assuming the approach is already created and has an ID
+                        };
+                        approach.Detectors.Add(newDetector);
                     }
                 }
 
@@ -122,18 +123,70 @@ namespace ATSPM.ConfigApi.Services
                         DetectionHardware = d.DetectionHardware,
                         DecisionPoint = d.DecisionPoint,
                         MovementDelay = d.MovementDelay,
-                        LatencyCorrection = d.LatencyCorrection,
-                        ApproachId = d.ApproachId
+                        LatencyCorrection = d.LatencyCorrection
                     }).ToList()
                 };
 
                 await _approachRepository.AddAsync(approach);
             }
 
-
-            dto.Id = approach.Id;
-            return dto;
+            // Return the updated DTO with IDs
+            return ConvertToDto(approach);
         }
+
+
+
+        public async Task<ApproachDto> GetApproachDtoByIdAsync(int id)
+        {
+            var approach = _approachRepository.GetList().Include(a => a.Detectors).FirstOrDefault(a => a.Id == id);
+            if (approach == null)
+            {
+                throw new KeyNotFoundException("Approach not found.");
+            }
+
+            return ConvertToDto(approach);
+        }
+
+        private ApproachDto ConvertToDto(Approach approach)
+        {
+            return new ApproachDto
+            {
+                Id = approach.Id,
+                Description = approach.Description,
+                Mph = approach.Mph,
+                ProtectedPhaseNumber = approach.ProtectedPhaseNumber,
+                IsProtectedPhaseOverlap = approach.IsProtectedPhaseOverlap,
+                PermissivePhaseNumber = approach.PermissivePhaseNumber,
+                IsPermissivePhaseOverlap = approach.IsPermissivePhaseOverlap,
+                PedestrianPhaseNumber = approach.PedestrianPhaseNumber,
+                IsPedestrianPhaseOverlap = approach.IsPedestrianPhaseOverlap,
+                PedestrianDetectors = approach.PedestrianDetectors,
+                LocationId = approach.LocationId,
+                DirectionTypeId = approach.DirectionTypeId,
+                Detectors = approach.Detectors.Select(d => new DetectorDto
+                {
+                    Id = d.Id,
+                    DectectorIdentifier = d.DectectorIdentifier,
+                    DetectorChannel = d.DetectorChannel,
+                    DistanceFromStopBar = d.DistanceFromStopBar,
+                    MinSpeedFilter = d.MinSpeedFilter,
+                    DateAdded = d.DateAdded,
+                    DateDisabled = d.DateDisabled,
+                    LaneNumber = d.LaneNumber,
+                    MovementType = d.MovementType,
+                    LaneType = d.LaneType,
+                    DetectionHardware = d.DetectionHardware,
+                    DecisionPoint = d.DecisionPoint,
+                    MovementDelay = d.MovementDelay,
+                    LatencyCorrection = d.LatencyCorrection,
+                    ApproachId = d.ApproachId
+                }).ToList()
+            };
+        }
+
+
     }
+
+
 
 }
