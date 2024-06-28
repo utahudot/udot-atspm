@@ -108,3 +108,6 @@ dkms.conf
 /ATSPM/WatchDog/bin/Debug/net7.0/ReportApi.xml
 /ATSPM/WatchDogTests/bin/Debug/net7.0/ReportApi.xml
 /ATSPM/.sonarqube
+/ConfigApiTests/bin/Release/net7.0
+/ConfigApiTests/obj/Release/net7.0
+/ConfigApiTests/obj
