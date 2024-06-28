@@ -30,17 +30,19 @@ namespace ATSPM.Application.Business.TimeSpaceDiagram
            bool isLastElement
            )
         {
+            var speedLimit = options.SpeedLimit ?? phaseDetail.Approach.Mph ?? 0;
+
+            if (speedLimit == 0)
+            {
+                throw new Exception($"Speed not configured in route for all phases");
+            }
+
             var greenTimeEventsResult = new List<TimeSpaceEventBase>();
             var countEventsTimeSpaceResult = new List<TimeSpaceEventBase>();
             var stopBarPresenceEventsTimeSpaceResult = new List<TimeSpaceEventBase>();
             var advanceCountEventsTimeSpaceResult = new List<TimeSpaceEventBase>();
             var cycleAllEvents = GetCycleEvents(phaseDetail, controllerEventLogs, options, out List<GreenToGreenCycle> resultCycles);
-            var speedLimit = options.SpeedLimit ?? phaseDetail.Approach.Mph ?? 0;
 
-            if (speedLimit == 0)
-            {
-                throw new ArgumentNullException($"No speed available for {phaseDetail.PhaseNumber}");
-            }
 
             if (isFirstElement)
             {
