@@ -4,7 +4,7 @@ using ATSPM.Data.Models;
 
 namespace ATSPM.ConfigApi.Services
 {
-    public class ApproachService
+    public class ApproachService : IApproachService
     {
         private readonly IApproachRepository _approachRepository;
 
