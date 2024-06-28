@@ -4,7 +4,7 @@ namespace ATSPM.ConfigApi.Models
 {
     public class ApproachDto
     {
-        public int Id { get; set; }
+        public int? Id { get; set; }
         public string Description { get; set; }
         public int? Mph { get; set; }
         public int ProtectedPhaseNumber { get; set; }
