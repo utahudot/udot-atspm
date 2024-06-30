@@ -11,6 +11,8 @@ using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Text.Json;
+using System.Text.Json.Serialization;
+using static IdentityModel.ClaimComparer;
 
 var builder = WebApplication.CreateBuilder(args);
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
@@ -25,6 +27,7 @@ builder.Host.ConfigureServices((h, s) =>
     .AddJsonOptions(o =>
     {
         o.JsonSerializerOptions.DictionaryKeyPolicy = JsonNamingPolicy.CamelCase;
+        o.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
         //o.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
     })
     .AddOData(o =>
