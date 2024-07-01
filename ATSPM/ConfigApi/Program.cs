@@ -84,6 +84,7 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddAtspmEFConfigRepositories();
 
     s.AddScoped<IRouteService, RouteService>();
+    s.AddScoped<ILocationService, LocationService>();
 
     s.AddAtspmAuthentication(h, builder);
     s.AddAtspmAuthorization(h);
