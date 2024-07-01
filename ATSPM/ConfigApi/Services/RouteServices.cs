@@ -286,6 +286,7 @@ namespace ATSPM.ConfigApi.Services
         public RouteApproachDto CreateRouteApproachDto(Approach approach)
         {
             var routeApproachDto = new RouteApproachDto();
+            routeApproachDto.Id = approach.Id;
             routeApproachDto.Description = approach.Description;
             routeApproachDto.Mph = approach.Mph;
             routeApproachDto.ProtectedPhaseNumber = approach.ProtectedPhaseNumber;
@@ -307,6 +308,7 @@ namespace ATSPM.ConfigApi.Services
         public RouteDetectorDto CreateRouteDetectorsDto(Detector detector)
         {
             var routeDetectorDto = new RouteDetectorDto();
+            routeDetectorDto.Id = detector.Id;
             routeDetectorDto.DectectorIdentifier = detector.DectectorIdentifier;
             routeDetectorDto.DetectorChannel = detector.DetectorChannel;
             routeDetectorDto.DistanceFromStopBar = detector.DistanceFromStopBar;
