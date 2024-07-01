@@ -1,3 +1,5 @@
+import { LocationExpanded } from '@/features/locations/types'
+
 export interface RouteApproaches {
   id: number
   direction: string
@@ -53,4 +55,10 @@ export interface RouteDistance {
   id: number
   locationIdentifierA: string
   locationIdentifierB: string
+}
+
+export interface RouteWithExpandedLocations {
+  id: number
+  name: string
+  routeLocations: LocationExpanded[]
 }

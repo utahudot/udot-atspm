@@ -1,4 +1,4 @@
-import { useGetRoute } from '@/features/routes/api/getRoutes'
+import { useGetRoutes } from '@/features/routes/api'
 import { Route } from '@/features/routes/types'
 import { useEffect, useState } from 'react'
 
@@ -9,7 +9,7 @@ export interface RouteHandler {
 }
 
 export const useRouteHandler = () => {
-  const { data } = useGetRoute()
+  const { data } = useGetRoutes()
   const [routeId, setRouteId] = useState('')
   const [routes, setRoutes] = useState<Route[]>([])
 
