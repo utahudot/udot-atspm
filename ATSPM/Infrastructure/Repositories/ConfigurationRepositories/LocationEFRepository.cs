@@ -132,6 +132,22 @@ namespace ATSPM.Infrastructure.Repositories.ConfigurationRepositories
             return result;
         }
 
+        public Location GetLatestVersionOfLocationDetached(string LocationIdentifier)
+        {
+            var result = BaseQuery()
+                .Include(i => i.Approaches).ThenInclude(i => i.Detectors).ThenInclude(i => i.DetectionTypes).ThenInclude(i => i.MeasureTypes)
+                .Include(i => i.Approaches).ThenInclude(i => i.DirectionType)
+                .Include(i => i.Devices)
+                .Include(i => i.Areas)
+                .FromSpecification(new LocationIdSpecification(LocationIdentifier))
+                .FromSpecification(new ActiveLocationSpecification())
+                .FirstOrDefault();
+
+            _db.Entry(result).State = EntityState.Detached;
+
+            return result;
+        }
+
         /// <inheritdoc/>
         public Location GetLatestVersionOfLocation(string LocationIdentifier, DateTime startDate)
         {
