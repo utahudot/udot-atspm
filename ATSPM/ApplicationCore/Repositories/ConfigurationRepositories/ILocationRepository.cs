@@ -52,6 +52,13 @@ namespace ATSPM.Application.Repositories.ConfigurationRepositories
         /// <param name="startDate">Starting date of Location controllers</param>
         /// <returns>Lastest <see cref="Location"/> version</returns>
         Location GetLatestVersionOfLocation(string LocationIdentifier, DateTime startDate);
+       
+        /// <summary>
+        /// Get latest version of <see cref="Location"/> and related entities that match <paramref name="LocationIdentifier"/>. This allows for cloning and editing of the  returned location. 
+        /// </summary>
+        /// <param name="LocationIdentifier"></param>
+        /// <returns></returns>
+        Location GetLatestVersionOfLocationDetached(string LocationIdentifier);
 
         /// <summary>
         /// Get all active <see cref="Location"/> and related entities that match <paramref name="LocationIdentifier"/>

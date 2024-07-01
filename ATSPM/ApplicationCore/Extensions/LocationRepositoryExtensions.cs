@@ -13,40 +13,6 @@ namespace ATSPM.Application.Extensions
 {
     public static class LocationRepositoryExtensions
     {
-        /// <summary>
-        /// Copies <see cref="Location"/> and associated <see cref="Approach"/> to new version
-        /// and archives old version
-        /// </summary>
-        /// <param name="repo"></param>
-        /// <param name="id">Location version to copy</param>
-        /// <returns>New version of copied <see cref="Location"/></returns>
-        public static async Task<Location> CopyLocationToNewVersion(this ILocationRepository repo, int id)
-        {
-            Location Location = await repo.LookupAsync(id);
-
-            if (Location != null)
-            {
-                var newVersion = (Location)Location.Clone();
-
-                newVersion.VersionAction = LocationVersionActions.NewVersion;
-                newVersion.Start = DateTime.Today;
-                newVersion.Note = $"Copy of {Location.Note}";
-
-                newVersion.Id = 0;
-
-                //newVersion.ControllerType = null;
-                newVersion.Jurisdiction = null;
-                newVersion.Region = null;
-
-                await repo.AddAsync(newVersion);
-
-                return newVersion;
-            }
-            else
-            {
-                throw new ArgumentException($"{id} is not a valid Location");
-            }
-        }
 
         /// <summary>
         /// Marks <see cref="Location"/> to deleted
