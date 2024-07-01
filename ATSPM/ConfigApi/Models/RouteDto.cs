@@ -50,6 +50,7 @@ namespace ATSPM.ConfigApi.Models
 
     public class RouteApproachDto
     {
+        public int Id { get; set; }
         public string Description { get; set; }
         public int? Mph { get; set; }
         public int ProtectedPhaseNumber { get; set; }
@@ -65,6 +66,7 @@ namespace ATSPM.ConfigApi.Models
 
     public class RouteDetectorDto
     {
+        public int Id { get; set; }
         public string DectectorIdentifier { get; set; }
         public int DetectorChannel { get; set; }
         public int? DistanceFromStopBar { get; set; }
