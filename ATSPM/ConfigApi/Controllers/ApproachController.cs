@@ -1,5 +1,7 @@
 ﻿using Asp.Versioning;
 using ATSPM.Application.Repositories.ConfigurationRepositories;
+using ATSPM.ConfigApi.Models;
+using ATSPM.ConfigApi.Services;
 using ATSPM.Data.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -17,11 +19,13 @@ namespace ATSPM.ConfigApi.Controllers
     public class ApproachController : AtspmGeneralConfigBase<Approach, int>
     {
         private readonly IApproachRepository _repository;
+        private readonly IApproachService approachService;
 
         /// <inheritdoc/>
-        public ApproachController(IApproachRepository repository) : base(repository)
+        public ApproachController(IApproachRepository repository, IApproachService approachService) : base(repository)
         {
             _repository = repository;
+            this.approachService = approachService;
         }
 
         [Authorize(Policy = "CanEditGeneralConfigurations")]
@@ -65,7 +69,46 @@ namespace ATSPM.ConfigApi.Controllers
         #endregion
 
         #region Functions
+        [HttpPost("api/v1/UpsertApproach")]
+        [ProducesResponseType(Status200OK)]
+        [ProducesResponseType(Status400BadRequest)]
+        public async Task<IActionResult> UpsertApproach([FromBody] ApproachDto approach)
+        {
+            if (approach == null)
+            {
+                return BadRequest();
+            }
 
+            try
+            {
+                var approachResult = await approachService.UpsertApproachAsync(approach);
+                return Ok(approachResult);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpGet("api/v1/GetApproachDto/{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> GetApproachDto(int id)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            try
+            {
+                var approachResult = await approachService.GetApproachDtoByIdAsync(id);
+                return Ok(approachResult);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
         #endregion
     }
 }
