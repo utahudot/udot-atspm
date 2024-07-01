@@ -52,6 +52,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{E7665D70
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConfigApiTests", "..\ConfigApiTests\ConfigApiTests.csproj", "{3CE6230C-44C9-4E5C-B8CE-CB7DBE60C445}"
 EndProject
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "webUI", "WebUI\webUI.esproj", "{A9857706-C039-4A3C-8997-3F5756AE92A3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -138,6 +140,12 @@ Global
 		{3CE6230C-44C9-4E5C-B8CE-CB7DBE60C445}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3CE6230C-44C9-4E5C-B8CE-CB7DBE60C445}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3CE6230C-44C9-4E5C-B8CE-CB7DBE60C445}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A9857706-C039-4A3C-8997-3F5756AE92A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A9857706-C039-4A3C-8997-3F5756AE92A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A9857706-C039-4A3C-8997-3F5756AE92A3}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{A9857706-C039-4A3C-8997-3F5756AE92A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A9857706-C039-4A3C-8997-3F5756AE92A3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A9857706-C039-4A3C-8997-3F5756AE92A3}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
