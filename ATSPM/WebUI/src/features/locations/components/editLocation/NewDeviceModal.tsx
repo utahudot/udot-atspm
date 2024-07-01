@@ -22,6 +22,7 @@ import {
 } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 
+
 export const modalStyle = {
   position: 'absolute',
   top: '50%',
@@ -69,11 +70,11 @@ const DeviceModal = ({
   >([])
   const [errors, setErrors] = useState({
     product: false,
-    deviceConfiguration: false,
+    configuration: false,
     deviceType: false,
-    deviceStatus: false,
-  })
+  });
 
+  // const { refetch: refetchDevices } = useGetDevicesForLocation(locationId)
   const { data: productsData } = useGetProducts()
   const { data: deviceConfigurationsData } = useGetDeviceConfigurations()
   const { mutate: updateDevice } = useUpdateDevice()
@@ -90,6 +91,10 @@ const DeviceModal = ({
     (member) => member.name
   )
 
+  // useEffect(() => {
+  //   setDeviceData(device || initialState)
+  // }, [device, locationId, initialState])
+
   useEffect(() => {
     const product = deviceData.deviceConfiguration?.product
     if (!product || !deviceConfigurations) return
@@ -100,16 +105,23 @@ const DeviceModal = ({
     setFilteredConfigurations(configurations)
   }, [deviceData.deviceConfiguration?.product, deviceConfigurations])
 
+  const handleFieldChange = (name: keyof Device, value: any) => {
+    setDeviceData((prev) => ({ ...prev, [name]: value }));
+      setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: false
+    }));
+  };
+  
+
   const handleChange = (
     event: React.ChangeEvent<{ name?: string; value: unknown }>
   ) => {
     const name = event.target.name as keyof Device
     const value = event.target.value as string | boolean
     setDeviceData((prev) => ({ ...prev, [name]: value }))
-    
-    if (value) {
-      setErrors((prev) => ({ ...prev, [name]: false }))
-    }
+    handleFieldChange(name, value);
+
   }
 
 
@@ -122,13 +134,17 @@ const DeviceModal = ({
       ...prev,
       deviceConfiguration: { ...prev.deviceConfiguration, product },
     }))
+    setDeviceData((prev) => ({
+      ...prev,
+      deviceConfiguration: { ...prev.deviceConfiguration, product, firmware: null },
+    }));
     setFilteredConfigurations([])
-
-    if (product) {
-      setErrors((prev) => ({ ...prev, product: false }))
-    }
+    setErrors({
+      product: false,
+      configuration: errors.configuration,
+      deviceType: errors.deviceType,
+    });
   }
-
 
   const handleConfigurationChange = (
     event: React.ChangeEvent<{ value: unknown }>
@@ -138,50 +154,49 @@ const DeviceModal = ({
       (c) => c.id === parseInt(configurationId)
     )
     setDeviceData((prev) => ({ ...prev, deviceConfiguration: configuration }))
-
-    if (configuration) {
-      setErrors((prev) => ({ ...prev, deviceConfiguration: false }))
-    }
+    setErrors(prevErrors => ({
+      ...prevErrors,
+      configuration: !configuration
+    }));
   }
 
   const handleSave = () => {
+    console.log("DAN TEST ", deviceData)
+    console.log(deviceData?.deviceConfiguration)
     const newErrors = {
-      product: !deviceData.deviceConfiguration?.product,
-      deviceConfiguration: !deviceData.deviceConfiguration,
+      product: !deviceData?.deviceConfiguration?.product,
+      configuration: !deviceData?.deviceConfiguration?.firmware,
       deviceType: !deviceData.deviceType,
-      deviceStatus: !deviceData.deviceStatus,
-    }
-    setErrors(newErrors)
+    };
+    setErrors(newErrors);
+    if (Object.values(newErrors).some((e) => e)) return;
 
-    if (
-      !newErrors.product &&
-      !newErrors.deviceConfiguration &&
-      !newErrors.deviceType &&
-      !newErrors.deviceStatus
-    ) {
-      if (deviceData.id) {
-        console.log('Updating device', deviceData)
-        const { location, product, ...deviceDTO } = deviceData
-        updateDevice(
-          { data: deviceDTO, id: deviceData.id },
-          {
-            onSuccess: () => {
-              refetchDevices()
-              onClose()
-            },
-          }
-        )
-      } else {
-        if (!deviceData.deviceConfiguration) return
-        deviceData.deviceConfigurationId = deviceData?.deviceConfiguration?.id
-        const { deviceConfiguration, product, id, ...deviceDTO } = deviceData
-        createDevice(deviceDTO, {
+    if (deviceData.id) {
+      console.log('Updating device', deviceData)
+      const deviceDTO = JSON.parse(JSON.stringify(deviceData))
+      deviceDTO.deviceConfigurationId = deviceData.deviceConfiguration?.id
+      delete deviceDTO.location
+      delete deviceDTO.product
+      delete deviceDTO.deviceConfiguration
+      updateDevice(
+        { data: deviceDTO, id: deviceDTO.id,  },
+        {
           onSuccess: () => {
             refetchDevices()
             onClose()
           },
-        })
-      }
+        }
+      )
+    } else {
+      if (!deviceData.deviceConfiguration) return
+      deviceData.deviceConfigurationId = deviceData?.deviceConfiguration?.id
+      const { deviceConfiguration, product, id, ...deviceDTO } = deviceData
+      createDevice(deviceDTO, {
+        onSuccess: () => {
+          refetchDevices()
+          onClose()
+        },
+      })
     }
   }
 
@@ -189,6 +204,7 @@ const DeviceModal = ({
     setDeviceData(initialState)
     onClose()
   }
+  
 
   if (!products || !deviceTypes || !deviceConfigurations) return null
 
@@ -198,7 +214,7 @@ const DeviceModal = ({
         <Typography variant="h4" sx={{ mb: 2 }}>
           {device ? 'Edit Device' : 'Add New Device'}
         </Typography>
-        <FormControl fullWidth sx={{ mb: 2 }} error={errors.product}>
+        <FormControl fullWidth sx={{ mb: 2 }}  error={errors.product}>
           <InputLabel>Product</InputLabel>
           <Select
             name="product"
@@ -214,14 +230,9 @@ const DeviceModal = ({
               </MenuItem>
             ))}
           </Select>
-          {errors.product}
         </FormControl>
-        <FormControl
-          fullWidth
-          sx={{ mb: 2 }}
-          error={errors.deviceConfiguration}
-        >
-          <InputLabel>Configuration</InputLabel>
+        <FormControl fullWidth sx={{ mb: 2 }} error={errors.configuration}>
+          <InputLabel> {deviceData.deviceConfiguration?.product ? 'Configurations' : 'Please select a product'}</InputLabel>
           <Select
             name="deviceConfiguration"
             value={deviceData?.deviceConfiguration?.id?.toString() || ''}
@@ -235,7 +246,6 @@ const DeviceModal = ({
               </MenuItem>
             ))}
           </Select>
-          {errors.deviceConfiguration}
         </FormControl>
         <FormControl fullWidth sx={{ mb: 2 }} error={errors.deviceType}>
           <InputLabel>Device Type</InputLabel>
@@ -251,9 +261,8 @@ const DeviceModal = ({
               </MenuItem>
             ))}
           </Select>
-          {errors.deviceType}
         </FormControl>
-        <FormControl fullWidth sx={{ mb: 2 }} error={errors.deviceStatus}>
+        <FormControl fullWidth sx={{ mb: 2 }}>
           <InputLabel>Status</InputLabel>
           <Select
             name="deviceStatus"
@@ -267,7 +276,6 @@ const DeviceModal = ({
               </MenuItem>
             ))}
           </Select>
-          {errors.deviceStatus}
         </FormControl>
         <FormControl fullWidth sx={{ mb: 2 }}>
           <InputLabel htmlFor="ip-input">IP Address</InputLabel>
