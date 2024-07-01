@@ -88,6 +88,7 @@ builder.Host.ConfigureServices((h, s) =>
 
     s.AddScoped<IRouteService, RouteService>();
     s.AddScoped<IApproachService, ApproachService>();
+    s.AddScoped<ILocationService, LocationService>();
 
     s.AddAtspmAuthentication(h, builder);
     s.AddAtspmAuthorization(h);
