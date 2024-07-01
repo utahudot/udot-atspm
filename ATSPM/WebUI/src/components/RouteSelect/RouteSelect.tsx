@@ -50,7 +50,7 @@ export const RouteSelect = ({
               (r) => r.id.toString() === handler.routeId.toString()
             )?.id || ''
           }
-          onChange={(e) => handler.changeRouteId(e.target.value)}
+          onChange={(e) => handler.changeRouteId(e.target.value as string)}
           inputProps={{ id: 'route-select' }}
         >
           {handler.routes.map(
