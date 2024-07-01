@@ -61,7 +61,6 @@ const DevicesAdmin = () => {
       productId,
     } = deviceData
 
-    //TODO: is there a better way to do this? Note from Dan: created sanitized object as backend will only accept vars that have value otherwise they shouldn't be passed through.
     const sanitizedDevice: Partial<DeviceConfiguration> = {}
 
     if (firmware) sanitizedDevice.firmware = firmware
@@ -110,7 +109,6 @@ const DevicesAdmin = () => {
       productId,
     } = deviceData
 
-    //TODO: is there a better way to do this? Note from Dan: created sanitized object as backend will only accept vars that have value otherwise they shouldn't be passed through.
     const sanitizedDevice: Partial<DeviceConfiguration> = {}
 
     if (firmware) sanitizedDevice.firmware = firmware
