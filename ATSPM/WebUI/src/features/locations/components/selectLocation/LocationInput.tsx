@@ -17,15 +17,15 @@ const customSort = (options: Location[], value: string) => {
       const aStartsWithInput = a.locationIdentifier.startsWith(value)
       const bStartsWithInput = b.locationIdentifier.startsWith(value)
       if (aStartsWithInput && !bStartsWithInput) {
-        return -1 // Prioritize 'a' if its signal ID matches the input
+        return -1 
       }
       if (bStartsWithInput && !aStartsWithInput) {
-        return 1 // Prioritize 'b' if its signal ID matches the input
+        return 1
       }
-      return 0 // If both or neither start with the input, keep original order
+      return 0
     })
   }
-  return options // Return unsorted options if the input is not numeric
+  return options
 }
 
 interface LocationInputProps {
