@@ -27,7 +27,7 @@ export function useDeleteRoute() {
 }
 
 export function useGetRoutes() {
-  return useGetRequest<ApiResponse<Route[]>>({ route: '/Route', headers })
+  return useGetRequest<ApiResponse<Route>>({ route: '/Route', headers })
 }
 
 export function useGetRouteLocations(id: string) {
