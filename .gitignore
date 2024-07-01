@@ -112,3 +112,4 @@ dkms.conf
 /ATSPM/TempReportTests/bin/Release/net7.0/CoverletSourceRootsMapping
 /ConfigApiTests/bin/Release/net7.0
 /ConfigApiTests/obj/Release/net7.0
+/ConfigApiTests/obj

@@ -1,10 +1,11 @@
 ﻿using ATSPM.Data.Enums;
+using ATSPM.Data.Models;
 
 namespace ATSPM.ConfigApi.Models
 {
     public class DetectorDto
     {
-        public int Id { get; set; }
+        public int? Id { get; set; }
         public string DectectorIdentifier { get; set; }
         public int DetectorChannel { get; set; }
         public int? DistanceFromStopBar { get; set; }
@@ -18,6 +19,7 @@ namespace ATSPM.ConfigApi.Models
         public int? DecisionPoint { get; set; }
         public int? MovementDelay { get; set; }
         public double LatencyCorrection { get; set; }
-        public int ApproachId { get; set; }
+        public int? ApproachId { get; set; }
+        public ICollection<DetectionType> DetectionTypes { get; set; }
     }
 }
