@@ -67,33 +67,34 @@ export const useExpandLocationHandler = ({
   >([])
 
   useEffect(() => {
-    const tranformedExpandedLocation = locations.map((location) => {
-      return {
-        locationIdentifier: location.locationIdentifier,
-        primaryName: location.primaryName,
-        secondaryName: location.secondaryName,
-        exclude: false,
-        open: false,
-        approaches: location.approaches.map((approach) => {
-          return {
-            approachId: approach.approachId,
-            description: approach.description,
-            exclude: false,
-            open: false,
-            detectors: approach.detectors.map((detector) => {
-              return {
-                id: detector.id,
-                dectectorIdentifier: detector.dectectorIdentifier,
-                detChannel: detector.detChannel,
-                laneNumber: detector.laneNumber,
-                laneType: detector.laneType,
-                exclude: false,
-              }
-            }),
-          }
-        }),
-      }
-    })
+    const tranformedExpandedLocation: ExpandLocationForAggregation[] =
+      locations.map((location) => {
+        return {
+          locationIdentifier: location.locationIdentifier,
+          primaryName: location.primaryName,
+          secondaryName: location.secondaryName,
+          exclude: false,
+          open: false,
+          approaches: location.approaches.map((approach) => {
+            return {
+              approachId: approach.id,
+              description: approach.description,
+              exclude: false,
+              open: false,
+              detectors: approach.detectors.map((detector) => {
+                return {
+                  id: detector.id,
+                  dectectorIdentifier: detector.dectectorIdentifier,
+                  detChannel: detector.detectorChannel,
+                  laneNumber: detector.laneNumber as number,
+                  laneType: {},
+                  exclude: false,
+                }
+              }),
+            } as ExpandApproachForAggregation
+          }),
+        }
+      })
 
     setUpdatedLocations(tranformedExpandedLocation)
   }, [locations])
