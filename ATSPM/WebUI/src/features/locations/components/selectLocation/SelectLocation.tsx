@@ -27,6 +27,7 @@ export function SelectLocation({
   const { data } = useLatestVersionOfAllLocations()
 
   const locations = data?.value || []
+  const filteredLocations:Location = locations.filter(loc => loc.chartEnabled === true)
 
   const handleChange = (_: React.SyntheticEvent, value: Location | null) => {
     if (value) {
@@ -38,7 +39,7 @@ export function SelectLocation({
     <>
       <LocationInput
         location={location}
-        locations={locations}
+        locations={filteredLocations}
         handleChange={handleChange}
       />
       {addLocationBtn && <Button sx={{ ml: 0 }}>Add Location</Button>}
@@ -46,7 +47,7 @@ export function SelectLocation({
       <SelectLocationMap
         location={location}
         setLocation={setLocation}
-        locations={locations}
+        locations={filteredLocations}
         center={center}
         zoom={zoom}
         route={route}
