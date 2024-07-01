@@ -17,23 +17,11 @@ const headers: AxiosHeaders = new AxiosHeaders({
 })
 const axiosInstance = configAxios
 
-export function useGetLocation(
-  id: string,
-  config?: UseQueryOptions<
-    ApiResponse<LocationExpanded>,
-    unknown,
-    ApiResponse<LocationExpanded>,
-    QueryKey
-  >
-) {
-  return useGetRequest({
-    config: {
-      ...config,
-      enabled: false,
-    },
+export function useGetLocation(id: string) {
+  return useGetRequest<ApiResponse<LocationExpanded>>({
     route: `/Location/${id}?$expand=areas, devices, approaches($expand=Detectors($expand=DetectionTypes, detectorComments))`,
-    axiosInstance,
     headers,
+    enabled: false,
   })
 }
 
