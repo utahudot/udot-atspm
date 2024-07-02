@@ -66,8 +66,9 @@ jobs:
 
       - name: Decode GCP service account key
         run: |
-          echo "${{ env.GCP_SA_KEY }}" | base64 --decode > $HOME/credentials.json
-          echo "::set-env name=GCP_SA_KEY_JSON::$HOME/credentials.json"
+          DECODED_JSON=$(echo "${{ env.GCP_SA_KEY }}" | base64 --decode)
+          echo "GCP_SA_KEY_JSON=$DECODED_JSON" >> $GITHUB_ENV
+          # echo "${{ env.GCP_SA_KEY }}" | base64 --decode > $HOME/credentials.json
           # export GCP_SA_KEY_JSON="/tmp/credentials.json"
           # echo "the JSON file contents:"
           # cat /tmp/credentials.json  # Print contents of the JSON file for debugging
