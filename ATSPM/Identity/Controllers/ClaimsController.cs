@@ -5,6 +5,7 @@ using ATSPM.Identity.Business.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using ATSPM.Application.Extensions;
 
 [Authorize()]
 [Route("api/[controller]")]
