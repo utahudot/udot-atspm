@@ -110,7 +110,7 @@ jobs:
         if: success()
         run: |
           gcloud auth configure-docker
-          docker build -t us-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/atspm/atspmwebsite:${{ github.sha }} .
+          docker build -t us-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/atspm/atspmwebsite:${{ github.sha }} -f ATSPM/WebUI/Dockerfile
           docker push us-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/atspm/atspmwebsite:${{ github.sha }}
 
       - name: Deploy to Cloud Run
