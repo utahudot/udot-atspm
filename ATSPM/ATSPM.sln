@@ -44,6 +44,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OracleDatabaseProvider", "O
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{E7665D70-9B21-4D3A-9F6B-82941D4680F9}"
 EndProject
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "webUI", "WebUI\webUI.esproj", "{A9857706-C039-4A3C-8997-3F5756AE92A3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -114,6 +116,24 @@ Global
 		{11E2931D-E0C1-4BCC-95C4-6A6792590A2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{11E2931D-E0C1-4BCC-95C4-6A6792590A2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{11E2931D-E0C1-4BCC-95C4-6A6792590A2B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5246F2DA-DE29-4163-A4B7-FF188AE2CFD8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5246F2DA-DE29-4163-A4B7-FF188AE2CFD8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5246F2DA-DE29-4163-A4B7-FF188AE2CFD8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5246F2DA-DE29-4163-A4B7-FF188AE2CFD8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E3F3C1E0-02C0-4F3A-BF74-58D3C028CB8C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E3F3C1E0-02C0-4F3A-BF74-58D3C028CB8C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E3F3C1E0-02C0-4F3A-BF74-58D3C028CB8C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E3F3C1E0-02C0-4F3A-BF74-58D3C028CB8C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3CE6230C-44C9-4E5C-B8CE-CB7DBE60C445}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3CE6230C-44C9-4E5C-B8CE-CB7DBE60C445}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3CE6230C-44C9-4E5C-B8CE-CB7DBE60C445}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3CE6230C-44C9-4E5C-B8CE-CB7DBE60C445}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A9857706-C039-4A3C-8997-3F5756AE92A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A9857706-C039-4A3C-8997-3F5756AE92A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A9857706-C039-4A3C-8997-3F5756AE92A3}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{A9857706-C039-4A3C-8997-3F5756AE92A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A9857706-C039-4A3C-8997-3F5756AE92A3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A9857706-C039-4A3C-8997-3F5756AE92A3}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
