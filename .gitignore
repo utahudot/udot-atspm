@@ -109,6 +109,9 @@ dkms.conf
 
 /ATSPM/WatchDog/bin/
 /ATSPM/WatchDogTests/bin/
+
+/ATSPM/WebUI/obj/
+
 /ATSPM/.sonarqube
 /ConfigApiTests/bin/
 /ConfigApiTests/obj/
