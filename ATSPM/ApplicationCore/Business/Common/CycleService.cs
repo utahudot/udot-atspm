@@ -160,7 +160,7 @@ namespace ATSPM.Application.Business.Common
                 cycle.AddDetectorData(new DetectorDataPoint(cycle.StartTime, controllerEventLog.Timestamp,
                                                cycle.GreenEvent, cycle.YellowEvent));
         }
-        private static async void AddPhaseDropsCallsEventsToCycles(List<IndianaEvent> phaseDropsCalls, WaitTimeCycle cycle)
+        private static async Task AddPhaseDropsCallsEventsToCycles(List<IndianaEvent> phaseDropsCalls, WaitTimeCycle cycle)
         {
             cycle.PhaseRegisterDroppedCalls = phaseDropsCalls.Where(d => d.Timestamp >= cycle.RedEvent && d.Timestamp < cycle.GreenEvent).OrderBy(e => e.Timestamp).ToList();
         }

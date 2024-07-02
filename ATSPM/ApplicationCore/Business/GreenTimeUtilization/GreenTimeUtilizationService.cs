@@ -290,8 +290,14 @@ namespace ATSPM.Application.Business.GreenTimeUtilization
                 {
                     continue;
                 }
-                var yPermissive = yPermissiveEvents.Where(x => x.Timestamp > gPermissive.Timestamp).OrderBy(x => x.Timestamp)
+                var yPermissive = yPermissiveEvents
+                    .Where(x => x.Timestamp > gPermissive.Timestamp)
+                    .OrderBy(x => x.Timestamp)
                     .FirstOrDefault();
+                if (yPermissive == null)
+                {
+                    continue;
+                }
                 if (yPermissive.Timestamp > yProtected.Timestamp)
                 {
                     gPermissive.Timestamp = yProtected.Timestamp;

@@ -11,11 +11,6 @@ namespace ATSPM.Application.Business.WaitTime
 {
     public class WaitTimeService
     {
-
-        //public const int PHASE_BEGIN_GREEN = 1;
-        //public const int PHASE_END_RED_CLEARANCE = 11;
-        //public const int PHASE_CALL_REGISTERED = 43;
-        //public const int PHASE_CALL_DROPPED = 44;
         private readonly CycleService cycleService;
 
         public WaitTimeService(CycleService cycleService)
@@ -151,7 +146,7 @@ namespace ATSPM.Application.Business.WaitTime
                     }
 
                     //Toss anything longer than 6 minutes - usually a bad value as a result of missing data
-                    if (waitTimeTrackerToFill.WaitTimeSeconds > 360)
+                    if (waitTimeTrackerToFill == null || waitTimeTrackerToFill.WaitTimeSeconds > 360)
                         continue;
                     var priorPhase = analysisPhaseData.Cycles.Cycles.FirstOrDefault(x => x.EndTime == cycle.RedEvent);
                     if (priorPhase != null)

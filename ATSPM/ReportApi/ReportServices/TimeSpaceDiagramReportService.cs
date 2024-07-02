@@ -102,7 +102,7 @@ namespace ATSPM.ReportApi.ReportServices
 
         private string GetRouteNameFromId(int routeId)
         {
-            var routeName = routeRepository.GetList().Where(r => r.Id == routeId).FirstOrDefault().Name;
+            var routeName = routeRepository.GetList().Where(r => r.Id == routeId)?.FirstOrDefault()?.Name;
             return routeName != null ? routeName : "";
         }
 
@@ -132,7 +132,7 @@ namespace ATSPM.ReportApi.ReportServices
                     throw new Exception("Error grabbing phase details");
                 }
 
-                if(parameter.SpeedLimit == null && primaryPhaseDetail.Approach.Mph == null)
+                if (parameter.SpeedLimit == null && primaryPhaseDetail.Approach.Mph == null)
                 {
                     throw new Exception($"Speed not configured in route for all phases");
                 }

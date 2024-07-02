@@ -162,14 +162,3 @@ namespace ATSPM.Application.Business.LeftTurnGapReport
     }
 
 }
-
-public class CycleAverageResult
-{
-    public double CycleAverage { get; set; }
-    public Dictionary<DateTime, double> CycleAverageList { get; set; }
-}
-public class PedCycleAverageResult
-{
-    public double PedCycleAverage { get; set; }
-    public Dictionary<DateTime, double> PedCycleAverageList { get; set; }
-}

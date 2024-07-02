@@ -29,7 +29,7 @@ namespace ATSPM.Application.Business.Common
 
 
 
-        public static void LinkPivotAddSeconds(LocationPhase LocationPhase, int seconds)
+        public void LinkPivotAddSeconds(LocationPhase LocationPhase, int seconds)
         {
             LocationPhase.ResetVolume();
             foreach (var cyclePcd in LocationPhase.Cycles)

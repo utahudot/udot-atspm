@@ -53,7 +53,7 @@ namespace ATSPM.Application.Business.YellowRedActivations
                 phaseDetail.Approach.Location.LocationIdentifier,
                 phaseDetail.Approach.Id,
                 phaseDetail.Approach.DirectionType.Abbreviation,
-                phaseDetail.Approach.Detectors.FirstOrDefault().MovementType.ToString(),
+                phaseDetail.Approach.Detectors?.FirstOrDefault()?.MovementType.ToString(),
                 phaseDetail.Approach.ProtectedPhaseNumber,
                 phaseDetail.Approach.PermissivePhaseNumber,
                 phaseDetail.IsPermissivePhase,
