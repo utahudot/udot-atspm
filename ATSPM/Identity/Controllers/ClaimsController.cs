@@ -1,6 +1,7 @@
 ﻿using ATSPM.Application.Enums;
 using ATSPM.Application.Extensions;
 using ATSPM.Identity.Business.Claims;
+using Identity.Models.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;

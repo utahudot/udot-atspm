@@ -1,5 +1,8 @@
-﻿public class ClaimModel
+﻿namespace Identity.Models.Claims
 {
-    public string Type { get; set; }
-    public string Value { get; set; }
+    public class ClaimModel
+    {
+        public string Type { get; set; }
+        public string Value { get; set; }
+    }
 }
