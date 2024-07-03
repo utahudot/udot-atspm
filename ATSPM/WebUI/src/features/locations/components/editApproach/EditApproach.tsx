@@ -51,11 +51,12 @@ const modalStyle = {
   p: 4,
 }
 
-function EditApproach({ approach, handler }: ApproachAdminProps) {
-  const [open, setOpen] = useState(
-    handler.approaches.find((val) => val.index === approach.index)?.open ||
-      false
-  )
+function EditApproach({
+  approach: locationApproach,
+  handler,
+}: ApproachAdminProps) {
+  const [approach, setApproach] = useState<ApproachForConfig>(locationApproach)
+  const [open, setOpen] = useState(false)
   const [openModal, setOpenModal] = useState(false)
 
   const { mutate: editApproach } = useEditApproach()
@@ -68,6 +69,8 @@ function EditApproach({ approach, handler }: ApproachAdminProps) {
   const laneTypesData = useConfigEnums(ConfigEnum.LaneTypes)
   const movementTypesData = useConfigEnums(ConfigEnum.MovementTypes)
 
+  console.log('approach rendered')
+
   // const deviceConfigurations = deviceConfigurationsData?.value
   // const products = productsData?.value
   // const deviceTypes = deviceTypesData?.data?.members.map(
@@ -78,7 +81,6 @@ function EditApproach({ approach, handler }: ApproachAdminProps) {
   // )
 
   const handleApproachClick = () => {
-    handler.updateApproach({ ...approach, open: !approach.open })
     setOpen(!open)
   }
 
@@ -94,10 +96,7 @@ function EditApproach({ approach, handler }: ApproachAdminProps) {
       })),
     }
 
-    handler.updateApproaches([
-      ...handler.approaches,
-      newApproach as ApproachForConfig,
-    ])
+    setApproach(newApproach as ApproachForConfig)
   }
 
   const handleSaveApproach = () => {
@@ -198,7 +197,7 @@ function EditApproach({ approach, handler }: ApproachAdminProps) {
       detectors: [newDetector as Detector, ...approach.detectors],
     }
 
-    handler.updateApproach(updatedApproach)
+    setApproach(updatedApproach)
   }
 
   return (
@@ -283,12 +282,12 @@ function EditApproach({ approach, handler }: ApproachAdminProps) {
         </Box>
       </Paper>
       <Collapse in={open} unmountOnExit>
-        <>
+        <Box minHeight={'600px'}>
           <EditApproachGrid
             approach={approach}
             approaches={handler.approaches}
             location={handler.expandedLocation as LocationExpanded}
-            updateApproach={handler.updateApproach}
+            updateApproach={setApproach}
             updateApproaches={handler.updateApproaches}
           />
           <br />
@@ -302,9 +301,9 @@ function EditApproach({ approach, handler }: ApproachAdminProps) {
           <EditDetectors
             detectors={approach.detectors}
             approach={approach}
-            updateApproach={handler.updateApproach}
+            updateApproach={setApproach}
           />
-        </>
+        </Box>
       </Collapse>
       <Modal
         open={openModal}
