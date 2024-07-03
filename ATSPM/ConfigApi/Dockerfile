@@ -8,16 +8,17 @@ EXPOSE 443
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /src
 
-COPY ["../ConfigApi/ConfigApi.csproj", "ConfigApi/"]
-COPY ["../Infrastructure/Infrastructure.csproj", "Infrastructure/"]
-COPY ["../ApplicationCore/ApplicationCore.csproj", "ApplicationCore/"]
-COPY ["../Data/Data.csproj", "Data/"]
-COPY ["../DomainCore/DomainCore.csproj", "DomainCore/"]
-COPY ["../MySqlDatabaseProvider/MySqlDatabaseProvider.csproj", "MySqlDatabaseProvider/"]
-COPY ["../OracleDatabaseProvider/OracleDatabaseProvider.csproj", "OracleDatabaseProvider/"]
-COPY ["../PostgreSQLDatabaseProvider/PostgreSQLDatabaseProvider.csproj", "PostgreSQLDatabaseProvider/"]
-COPY ["../SqlDatabaseProvider/SqlDatabaseProvider.csproj", "SqlDatabaseProvider/"]
-# COPY ["../SqlLiteDatabaseProvider/SqlLiteDatabaseProvider.csproj", "SqlLiteDatabaseProvider/"]
+COPY ["ConfigApi/ConfigApi.csproj", "ConfigApi/"]
+COPY ["Infrastructure/Infrastructure.csproj", "Infrastructure/"]
+COPY ["ApplicationCore/ApplicationCore.csproj", "ApplicationCore/"]
+COPY ["Data/Data.csproj", "Data/"]
+COPY ["DomainCore/DomainCore.csproj", "DomainCore/"]
+COPY ["MySqlDatabaseProvider/MySqlDatabaseProvider.csproj", "MySqlDatabaseProvider/"]
+COPY ["OracleDatabaseProvider/OracleDatabaseProvider.csproj", "OracleDatabaseProvider/"]
+COPY ["PostgreSQLDatabaseProvider/PostgreSQLDatabaseProvider.csproj", "PostgreSQLDatabaseProvider/"]
+COPY ["SqlDatabaseProvider/SqlDatabaseProvider.csproj", "SqlDatabaseProvider/"]
+COPY ["SqlLiteDatabaseProvider/SqlLiteDatabaseProvider.csproj", "SqlLiteDatabaseProvider/"]
+
 RUN dotnet restore "ConfigApi/ConfigApi.csproj"
 COPY . .
 WORKDIR "/src/ConfigApi"
