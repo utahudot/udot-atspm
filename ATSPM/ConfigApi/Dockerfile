@@ -7,6 +7,10 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /src
+
+# Verify WORKDIR creation and current directory
+RUN mkdir -p /src && echo "Current directory: $(pwd)" && ls -la /src
+
 COPY ["../ConfigApi/ConfigApi.csproj", "ConfigApi/"]
 COPY ["../Infrastructure/Infrastructure.csproj", "Infrastructure/"]
 COPY ["../ApplicationCore/ApplicationCore.csproj", "ApplicationCore/"]
