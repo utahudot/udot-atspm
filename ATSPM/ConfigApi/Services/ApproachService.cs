@@ -79,17 +79,9 @@ namespace ATSPM.ConfigApi.Services
                         detector.MovementDelay = detectorDto.MovementDelay;
                         detector.LatencyCorrection = detectorDto.LatencyCorrection;
                         detector.ApproachId = dto.Id ?? 0; // Assuming the approach is already created and has an ID
-
-                        // Update detection types
-                        var existingDetectionTypes = detector.DetectionTypes.ToList();
-                        var dtoDetectionTypes = detectorDto.DetectionTypes.ToList();
-
-                        // Remove detection types not in DTO
-                        foreach (var existingDetectionType in existingDetectionTypes)
-                        {
-                            if (!dtoDetectionTypes.Contains(existingDetectionType))
-                            {
-                                detector.DetectionTypes.Remove(existingDetectionType);
+                        detector.DetectionTypes = detectorDto.DetectionTypes
+                            .Select(dto => allDetectionTypes.FirstOrDefault(dt => dt.Id == dto.Id))
+                            .Where(dt => dt != null).ToList();
                             }
                         }
 
