@@ -3,7 +3,7 @@ import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank'
 import LockIcon from '@mui/icons-material/Lock'
 import LockOpenIcon from '@mui/icons-material/LockOpen'
 import { Box, IconButton, TableCell, TextField, Tooltip } from '@mui/material'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 
 interface EditableTableCellProps {
   value: string | number | boolean | null
@@ -11,7 +11,7 @@ interface EditableTableCellProps {
   disabled?: boolean
   lockable?: boolean
   isLocked?: boolean
-  sx?: object;
+  sx?: object
 }
 
 const EditableTableCell = ({
@@ -22,13 +22,7 @@ const EditableTableCell = ({
   isLocked = false,
   sx,
 }: EditableTableCellProps) => {
-  const [inputValue, setInputValue] = useState(value)
   const [isEditing, setIsEditing] = useState(false)
-  
-
-  useEffect(() => {
-    setInputValue(value)
-  }, [value])
 
   const toggleBoolean = () => {
     if (typeof value === 'boolean' && !disabled && !isLocked) {
@@ -37,19 +31,16 @@ const EditableTableCell = ({
   }
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValue(event.target.value)
     onUpdate(event.target.value)
   }
 
   const handleBlur = () => {
     setIsEditing(false)
-    onUpdate(inputValue)
   }
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
       setIsEditing(false)
-      onUpdate(inputValue)
     }
   }
 
@@ -63,9 +54,12 @@ const EditableTableCell = ({
     >
       <TableCell
         onClick={typeof value === 'boolean' ? toggleBoolean : undefined}
-        sx={
-          sx
-        }
+        sx={{
+          ...sx,
+          boxShadow: isEditing
+            ? '0 0 0 2px rgba(0, 123, 255, 0.5) inset'
+            : 'none',
+        }}
         aria-disabled={disabled || isLocked}
       >
         <Box
@@ -82,11 +76,10 @@ const EditableTableCell = ({
               inputProps={{ 'aria-label': 'editable-cell' }}
               size="small"
               fullWidth
-              value={inputValue || ''}
+              value={value || ''}
               onChange={handleChange}
               onBlur={handleBlur}
               onKeyDown={handleKeyDown}
-              autoFocus
               disabled={disabled || isLocked}
               onClick={() => setIsEditing(true)}
               sx={{
