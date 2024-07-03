@@ -1,4 +1,3 @@
-import { useGetDirectionTypes } from '@/features/locations/api'
 import DirectionTypeCell from '@/features/locations/components/editApproach/DirectionTypeCell'
 import EditableTableCell from '@/features/locations/components/editableTableCell'
 import { LocationExpanded } from '@/features/locations/types'
@@ -37,12 +36,7 @@ const EditApproachGrid = ({
   location,
   updateApproach,
 }: EditApproachGridProps) => {
-  const { data: directionTypesData } = useGetDirectionTypes()
-
   const { pedsAre1to1 } = location
-  const directionTypes = directionTypesData?.value
-
-  if (!directionTypes) return null
 
   const handleUpdate = (field: string, value: any) => {
     const updatedApproach = { ...approach, [field]: value }
@@ -119,7 +113,7 @@ const EditApproachGrid = ({
             }}
           >
             <DirectionTypeCell
-              value={approach?.directionTypeId}
+              value={approach.directionTypeId}
               onUpdate={(value) => handleUpdate('directionTypeId', value)}
             />
             <EditableTableCell

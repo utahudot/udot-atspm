@@ -1,4 +1,5 @@
 import { useGetLocation } from '@/features/locations/api'
+import { sortApproachesByPhaseNumber } from '@/features/locations/components/editApproach/utils/sortApproaches'
 import {
   Approach,
   Detector,
@@ -60,18 +61,18 @@ export const useLocationConfigHandler = ({
 
   useEffect(() => {
     if (!expandedLocation) return
-    const existingApproaches = expandedLocation.approaches.map(
-      (approach, index) => ({
+    const existingApproaches = sortApproachesByPhaseNumber(
+      expandedLocation.approaches.map((approach, index) => ({
         ...approach,
         index,
         open: false,
         isNew: false,
-      })
+      }))
     )
     const newApproaches = approaches.filter((item) => item.isNew)
     setApproaches([
-      ...(existingApproaches as ApproachForConfig[]),
       ...newApproaches,
+      ...(existingApproaches as ApproachForConfig[]),
     ])
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [expandedLocation])
@@ -104,7 +105,7 @@ export const useLocationConfigHandler = ({
       },
     }
 
-    setApproaches((prev) => [...prev, newApproach as ApproachForConfig])
+    setApproaches((prev) => [newApproach as ApproachForConfig, ...prev])
   }
 
   const component: LocationConfigHandler = {

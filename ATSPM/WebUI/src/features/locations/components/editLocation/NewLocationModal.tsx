@@ -175,7 +175,7 @@ const NewLocationModal = ({
         />
         <Box>
           {form.locationIdentifier === '' ? null : locationIsUnique ? (
-            <Alert severity="success">Identifier Not currently in use</Alert>
+            <Alert severity="success">Identifier not currently in use</Alert>
           ) : (
             <Alert severity="error">Location identifier already in use.</Alert>
           )}
