@@ -66,7 +66,7 @@ jobs:
           cd ATSPM
           pwd
           gcloud auth configure-docker
-          docker build -t us-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/atspm/configapi:${{ github.sha }} -f ConfigApi/Dockerfile ConfigApi
+          docker build -t us-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/atspm/configapi:${{ github.sha }} --no-cache --force-rm -f ConfigApi/Dockerfile ConfigApi
           docker push us-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/atspm/configapi:${{ github.sha }}
 
       - name: Deploy to Cloud Run
