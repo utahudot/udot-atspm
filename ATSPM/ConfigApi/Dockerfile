@@ -17,7 +17,7 @@ COPY ["../MySqlDatabaseProvider/MySqlDatabaseProvider.csproj", "MySqlDatabasePro
 COPY ["../OracleDatabaseProvider/OracleDatabaseProvider.csproj", "OracleDatabaseProvider/"]
 COPY ["../PostgreSQLDatabaseProvider/PostgreSQLDatabaseProvider.csproj", "PostgreSQLDatabaseProvider/"]
 COPY ["../SqlDatabaseProvider/SqlDatabaseProvider.csproj", "SqlDatabaseProvider/"]
-COPY ["../SqlLiteDatabaseProvider/SqlLiteDatabaseProvider.csproj", "SqlLiteDatabaseProvider/"]
+# COPY ["../SqlLiteDatabaseProvider/SqlLiteDatabaseProvider.csproj", "SqlLiteDatabaseProvider/"]
 RUN dotnet restore "ConfigApi/ConfigApi.csproj"
 COPY . .
 WORKDIR "/src/ConfigApi"
