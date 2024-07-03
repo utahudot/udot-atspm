@@ -60,9 +60,6 @@ jobs:
             exit 0
           fi
 
-      - name: Debug - List root directory
-        run: ls -R
-
       - name: Build and push Docker image to Google Artifact Registry
         if: success()
         run: |
