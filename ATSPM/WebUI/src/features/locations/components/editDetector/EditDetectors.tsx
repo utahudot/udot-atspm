@@ -24,7 +24,7 @@ import {
   TableRow,
   Typography,
 } from '@mui/material'
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { ApproachForConfig } from '../editLocation/editLocationConfigHandler'
 
 export const modalStyle = {
@@ -165,9 +165,9 @@ function EditDetectors({
                 </TableCell>
               </TableRow>
             )}
-            {detectors.map((detector, i) => (
+            {detectors.map((detector) => (
               <TableRow
-                key={detector.id || i}
+                key={detector.id}
                 sx={{
                   backgroundColor: detector.isNew
                     ? 'rgba(100, 210, 100, 0.3)'
@@ -278,4 +278,4 @@ function EditDetectors({
   )
 }
 
-export default React.memo(EditDetectors)
+export default EditDetectors
