@@ -1,23 +1,22 @@
-import { ChartType } from '@/features/charts/common/types'
+import React, { useEffect, useRef, useState } from 'react';
+import { ChartType } from '@/features/charts/common/types';
 import {
   adjustPlanPositions,
   handleGreenTimeUtilizationDataZoom,
-} from '@/features/charts/utils'
-import { useSidebarStore } from '@/stores/sidebar'
-import type { ECharts, EChartsOption, SetOptionOpts } from 'echarts'
-import { connect, getInstanceByDom, init } from 'echarts'
-import type { CSSProperties } from 'react'
-import { useEffect, useRef } from 'react'
+} from '@/features/charts/utils';
+import { useSidebarStore } from '@/stores/sidebar';
+import type { ECharts, EChartsOption, SetOptionOpts } from 'echarts';
+import { connect, getInstanceByDom, init } from 'echarts';
+import type { CSSProperties } from 'react';
 
 export interface ApacheEChartsProps {
-  id: string
-  option: EChartsOption
-  chartType?: ChartType
-  style?: CSSProperties
-  settings?: SetOptionOpts
-  loading?: boolean
-  theme?: 'light' | 'dark'
-  // eventHandlers?: { [K in keyof ElementEvent]?: ElementEvent[K] }
+  id: string;
+  option: EChartsOption;
+  chartType?: ChartType;
+  style?: CSSProperties;
+  settings?: SetOptionOpts;
+  loading?: boolean;
+  theme?: 'light' | 'dark';
 }
 
 export default function ApacheEChart({
@@ -28,77 +27,177 @@ export default function ApacheEChart({
   settings,
   loading,
   theme,
-}: // eventHandlers,
-ApacheEChartsProps) {
-  const chartRef = useRef<HTMLDivElement>(null)
-  const { isSidebarOpen } = useSidebarStore()
+}: ApacheEChartsProps) {
+  const chartRef = useRef<HTMLDivElement>(null);
+  const { isSidebarOpen } = useSidebarStore();
+  const [isActivated, setIsActivated] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+  const [isScrolling, setIsScrolling] = useState(false);
+  const chartInstance = useRef<ECharts | null>(null);
 
-  useEffect(() => {
-    let chart: ECharts
+  const initChart = () => {
     if (chartRef.current !== null) {
-      chart = init(chartRef.current, theme, { useDirtyRect: true })
+      chartInstance.current = init(chartRef.current, theme, { useDirtyRect: true });
+      
+      // Set initial options with zooming disabled
+      const disabledZoomOption: EChartsOption = {
+        ...option,
+        dataZoom: (option.dataZoom as any[])?.map(zoom => ({
+          ...zoom,
+          disabled: true,
+          zoomLock: true
+        })),
+        toolbox: {
+          feature: {
+            dataZoom: { show: false },
+            brush: { type: 'rect', show: false }
+          }
+        },
+        series: (option.series as any[])?.map(series => ({
+          ...series,
+          silent: true
+        }))
+      };
+      
+      chartInstance.current.setOption(disabledZoomOption, settings);
+
       if (chartType === ChartType.GreenTimeUtilization) {
-        chart.on('datazoom', () => handleGreenTimeUtilizationDataZoom(chart)) // TODO: fix this
+        chartInstance.current.on('datazoom', () => handleGreenTimeUtilizationDataZoom(chartInstance.current!));
       } else if (chartType === ChartType.TimingAndActuation) {
-        chart.group = 'group1'
-        connect('group1')
+        chartInstance.current.group = 'group1';
+        connect('group1');
       } else {
-        chart.on('datazoom', () => adjustPlanPositions(chart))
+        chartInstance.current.on('datazoom', () => adjustPlanPositions(chartInstance.current!));
       }
     }
+  };
+
+  useEffect(() => {
+    initChart();
 
     const resizeChart = () => {
-      chart?.resize()
-    }
-    window.addEventListener('resize', resizeChart)
+      chartInstance.current?.resize();
+    };
+    window.addEventListener('resize', resizeChart);
 
     return () => {
-      chart?.dispose()
-      window.removeEventListener('resize', resizeChart)
-    }
-  }, [theme, chartType])
+      chartInstance.current?.dispose();
+      window.removeEventListener('resize', resizeChart);
+    };
+  }, [theme, chartType]);
 
   useEffect(() => {
-    if (chartRef.current !== null) {
-      const chart = getInstanceByDom(chartRef.current)
-      setTimeout(() => {
-        chart?.resize()
-      }, 500)
-    }
-  }, [isSidebarOpen])
+    setTimeout(() => {
+      chartInstance.current?.resize();
+    }, 500);
+  }, [isSidebarOpen]);
 
   useEffect(() => {
-    if (chartRef.current !== null) {
-      const chart = getInstanceByDom(chartRef.current)
-      if (!chart) {
-        throw new Error('Internal error: chart instance not found')
+    if (chartInstance.current) {
+      const updatedOption: EChartsOption = {
+        ...option,
+        dataZoom: (option.dataZoom as any[])?.map(zoom => ({
+          ...zoom,
+          disabled: !isActivated,
+          zoomLock: !isActivated
+        })),
+        toolbox: {
+          feature: {
+            dataZoom: { show: isActivated },
+            brush: { type: 'rect', show: isActivated }
+          }
+        },
+        series: (option.series as any[])?.map(series => ({
+          ...series,
+          silent: !isActivated
+        }))
+      };
+      chartInstance.current.setOption(updatedOption, settings);
+    }
+  }, [option, settings, theme, isActivated]);
+
+  useEffect(() => {
+    if (chartInstance.current) {
+      loading ? chartInstance.current.showLoading() : chartInstance.current.hideLoading();
+    }
+  }, [loading]);
+
+  useEffect(() => {
+    let scrollTimeout: NodeJS.Timeout;
+
+    const handleScroll = () => {
+      setIsScrolling(true);
+      clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(() => {
+        setIsScrolling(false);
+      }, 1300);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      clearTimeout(scrollTimeout);
+    };
+  }, []);
+
+  const handleActivate = () => {
+    if (!isActivated) {
+      setIsActivated(true);
+      if (chartInstance.current) {
+        chartInstance.current.setOption({
+          ...option,
+          dataZoom: (option.dataZoom as any[])?.map(zoom => ({
+            ...zoom,
+            disabled: false,
+            zoomLock: false
+          })),
+          toolbox: {
+            feature: {
+              dataZoom: { show: true },
+              brush: { type: 'rect', show: true }
+            }
+          },
+          series: (option.series as any[])?.map(series => ({
+            ...series,
+            silent: false 
+          }))
+        });
       }
-      chart.setOption(option, settings)
     }
-  }, [option, settings, theme])
+  };
 
-  useEffect(() => {
-    if (chartRef.current !== null) {
-      const chart = getInstanceByDom(chartRef.current)
-
-      if (!chart) {
-        throw new Error('Internal error: chart instance not found')
-      }
-
-      loading ? chart.showLoading() : chart.hideLoading()
-    }
-  }, [loading, theme])
-
-  useEffect(() => {
-    const chart = chartRef.current ? getInstanceByDom(chartRef.current) : null
-    if (chart) {
-      const resizeTimer = setTimeout(() => {
-        chart.resize()
-      }, 500) // 0.5 seconds delay
-
-      return () => clearTimeout(resizeTimer)
-    }
-  }, [isSidebarOpen])
-
-  return <div id={id} ref={chartRef} style={{ ...style }} />
+  return (
+    <div
+      style={{
+        position: 'relative',
+        width: '100%',
+        height: '100%',
+        ...style,
+      }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      onClick={handleActivate}
+    >
+      <div id={id} ref={chartRef} style={{ width: '100%', height: '100%' }} />
+      {!isActivated && isHovered && isScrolling && (
+        <div style={{
+          position: 'absolute',
+          top: '21%',
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'rgba(0, 0, 0, 0.2)',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          color: 'white',
+          fontSize: '16px',
+          zIndex: 1,
+        }}>
+          Click to interact
+        </div>
+      )}
+    </div>
+  );
 }

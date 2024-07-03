@@ -20,10 +20,10 @@ import {
 import { styled } from '@mui/material/styles'
 
 const CheckboxCell = styled(TableCell)({
-  width: '10%', // Set a fixed width for checkbox cells
-  paddingRight: 0, // Remove padding to ensure alignment
-  paddingLeft: 0, // Remove padding to ensure alignment
-  textAlign: 'center', // Center the checkbox within the cell
+  width: '10%',
+  paddingRight: 0, 
+  paddingLeft: 0, 
+  textAlign: 'center',
 })
 
 interface props {
