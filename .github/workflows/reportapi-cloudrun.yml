@@ -63,8 +63,9 @@ jobs:
       - name: Build and push Docker image to Google Artifact Registry
         if: success()
         run: |
+          cd ATSPM
           gcloud auth configure-docker
-          docker build -t us-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/atspm/reportapi:${{ github.sha }} -f ATSPM/ReportApi/Dockerfile ATSPM/ReportApi
+          docker build -t us-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/atspm/reportapi:${{ github.sha }} -f ReportApi/Dockerfile .
           docker push us-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/atspm/reportapi:${{ github.sha }}
 
       - name: Deploy to Cloud Run
