@@ -35,7 +35,7 @@ export function ApproachVolumeTable({ data }: ApproachVolumeTableProps) {
       }}
     >
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-        <Typography variant="h4">Details</Typography>
+        <Typography variant="h4" component="h2">Details</Typography>
       </AccordionSummary>
       <AccordionDetails>
         <Grid container spacing={2}>
@@ -43,7 +43,7 @@ export function ApproachVolumeTable({ data }: ApproachVolumeTableProps) {
             <Table sx={{ boxShadow: '1' }}>
               <TableHead>
                 <TableRow>
-                  <TableCell></TableCell>
+                  <TableCell scope="col" aria-label="content"></TableCell>
                   <TableCell>Total</TableCell>
                   <TableCell>{data.primaryDirectionName}</TableCell>
                   <TableCell>{data.opposingDirectionName}</TableCell>
