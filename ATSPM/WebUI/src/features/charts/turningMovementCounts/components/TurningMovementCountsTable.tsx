@@ -119,7 +119,7 @@ const TurningMovementCountsTable = ({
                 }}
               >
                 <TableRow>
-                  <TableCell sx={{ borderBottom: 'none', pb: 0 }} />
+                  <TableCell component="td" sx={{ borderBottom: 'none', pb: 0 }} />
                   {directions.map((direction) => (
                     <TableCell
                       key={direction}
@@ -260,17 +260,17 @@ const TurningMovementCountsTable = ({
                 }}
               >
                 <TableRow>
-                  <TableCell colSpan={7} sx={{ borderBottom: 'none', pb: 0 }} />
+                  <TableCell component="td" colSpan={7} sx={{ borderBottom: 'none', pb: 0 }} />
                   <TableCell
                     colSpan={4}
                     sx={{ borderBottom: 'none', pb: 0, textAlign: 'center' }}
                   >
                     Peak Hour (PHF = {peakHourFactor})
                   </TableCell>
-                  <TableCell colSpan={7} sx={{ borderBottom: 'none', pb: 0 }} />
+                  <TableCell component="td" colSpan={7} sx={{ borderBottom: 'none', pb: 0 }} />
                 </TableRow>
                 <TableRow>
-                  <TableCell sx={{ borderBottom: 'none', pb: 0 }} />
+                  <TableCell component="td" sx={{ borderBottom: 'none', pb: 0 }} />
                   {directions.map((direction) => (
                     <TableCell
                       key={direction}
