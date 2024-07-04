@@ -78,7 +78,6 @@ namespace ATSPM.ConfigApi.Controllers
             {
                 return BadRequest();
             }
-
             try
             {
                 var approachResult = await approachService.UpsertApproachAsync(approach);

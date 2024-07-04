@@ -79,32 +79,9 @@ namespace ATSPM.ConfigApi.Services
                         detector.MovementDelay = detectorDto.MovementDelay;
                         detector.LatencyCorrection = detectorDto.LatencyCorrection;
                         detector.ApproachId = dto.Id ?? 0; // Assuming the approach is already created and has an ID
-
-                        // Update detection types
-                        var existingDetectionTypes = detector.DetectionTypes.ToList();
-                        var dtoDetectionTypes = detectorDto.DetectionTypes.ToList();
-
-                        // Remove detection types not in DTO
-                        foreach (var existingDetectionType in existingDetectionTypes)
-                        {
-                            if (!dtoDetectionTypes.Contains(existingDetectionType))
-                            {
-                                detector.DetectionTypes.Remove(existingDetectionType);
-                            }
-                        }
-
-                        // Add new detection types
-                        foreach (var dtoDetectionType in dtoDetectionTypes)
-                        {
-                            if (!existingDetectionTypes.Contains(dtoDetectionType))
-                            {
-                                var detectionType = allDetectionTypes.FirstOrDefault(dt => dt.Id == dtoDetectionType.Id);
-                                if (detectionType != null)
-                                {
-                                    detector.DetectionTypes.Add(detectionType);
-                                }
-                            }
-                        }
+                        detector.DetectionTypes = detectorDto.DetectionTypes
+                            .Select(dto => allDetectionTypes.FirstOrDefault(dt => dt.Id == dto.Id))
+                            .Where(dt => dt != null).ToList();
                     }
                     else
                     {
@@ -248,9 +225,43 @@ namespace ATSPM.ConfigApi.Services
                     MovementDelay = d.MovementDelay,
                     LatencyCorrection = d.LatencyCorrection,
                     ApproachId = d.ApproachId,
-                    DetectionTypes = d.DetectionTypes.Select(dt => dt).ToList()
+                    DetectionTypes = ExtractDetectionTypesToDto(d.DetectionTypes.ToList())
                 }).ToList()
             };
+        }
+
+        private static List<DetectionTypeDto> ExtractDetectionTypesToDto(List<DetectionType> d)
+        {
+            return d.Select(dt => new DetectionTypeDto
+            {
+                Id = dt.Id,
+                Description = dt.Description,
+                Abbreviation = dt.Abbreviation,
+                DisplayOrder = dt.DisplayOrder,
+                MeasureTypes = dt.MeasureTypes.Select(mt => new MeasureTypeDto
+                {
+                    Id = mt.Id,
+                    Name = mt.Name,
+                    Abbreviation = mt.Abbreviation,
+                    ShowOnWebsite = mt.ShowOnWebsite,
+                    ShowOnAggregationSite = mt.ShowOnAggregationSite,
+                    DisplayOrder = mt.DisplayOrder,
+                    MeasureComments = mt.MeasureComments.Select(mc => new MeasureCommentsDto
+                    {
+                        Id = mc.Id,
+                        TimeStamp = mc.TimeStamp,
+                        Comment = mc.Comment,
+                        LocationIdentifier = mc.LocationIdentifier
+                    }).ToList(),
+                    MeasureOptions = mt.MeasureOptions.Select(mo => new MeasureOptionDto
+                    {
+                        Id = mo.Id,
+                        Option = mo.Option,
+                        Value = mo.Value,
+                        MeasureTypeId = mo.MeasureTypeId
+                    }).ToList()
+                }).ToList()
+            }).ToList();
         }
     }
 }
