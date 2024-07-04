@@ -20,6 +20,6 @@ namespace ATSPM.ConfigApi.Models
         public int? MovementDelay { get; set; }
         public double LatencyCorrection { get; set; }
         public int? ApproachId { get; set; }
-        public ICollection<DetectionType> DetectionTypes { get; set; }
+        public ICollection<DetectionTypeDto> DetectionTypes { get; set; }
     }
 }
