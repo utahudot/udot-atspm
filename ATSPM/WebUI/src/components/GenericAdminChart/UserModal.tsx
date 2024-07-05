@@ -52,16 +52,6 @@ const UserModal: React.FC<ModalProps> = ({ open, onClose, data, onSave }) => {
     const { name, value } = event.target
     setUser((prevUser) => {
       if (prevUser) {
-        if (name === 'userName') {
-          const usernameRegex = /^[a-zA-Z0-9_]+$/
-          if (!usernameRegex.test(value as string)) {
-            setUsernameError(
-              'Username can only contain letters, numbers, and underscores'
-            )
-          } else {
-            setUsernameError('')
-          }
-        }
         if (name === 'email') {
           const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
           if (!emailRegex.test(value as string)) {
