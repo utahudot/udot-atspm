@@ -82,13 +82,16 @@ function LocationsConfigContainer({
 
   return (
     <Box>
-      <Typography variant="h4" fontWeight={'bold'} my={2}>
+      <Typography variant="h4" component="h2" fontWeight={'bold'} my={2}>
         Version
       </Typography>
       <Paper sx={{ width: '300px', mb: 2 }}>
         <FormControl fullWidth>
-          <InputLabel>Version</InputLabel>
-          <Select value={version.id} label="Version" onChange={handleChange}>
+          <InputLabel htmlFor="version-label">Version</InputLabel>
+          <Select 
+            value={version.id}
+            onChange={handleChange}
+            inputProps={{id: 'version-label' }}>
             {versionData.map((version, index) => (
               <MenuItem key={index} value={version.id}>
                 {formatTimestampToDDMMYYYY(version.start)} - {version.note}
@@ -102,7 +105,7 @@ function LocationsConfigContainer({
         onChange={() => setIsLocationInfoExpanded(!isLocationInfoExpanded)}
       >
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography variant="h4" fontWeight={'bold'}>
+          <Typography variant="h4" component="h3" fontWeight={'bold'}>
             Location
           </Typography>
         </AccordionSummary>
@@ -128,7 +131,7 @@ function LocationsConfigContainer({
         onChange={() => setIsDetectorsExpanded(!isDetectorsExpanded)}
       >
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography variant="h4" fontWeight={'bold'}>
+          <Typography variant="h4" component="h5" fontWeight={'bold'}>
             Detectors
           </Typography>
         </AccordionSummary>
