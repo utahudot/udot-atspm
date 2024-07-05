@@ -124,7 +124,7 @@ export default function Topbar() {
               menuItems={
                 item.children.length > 0
                   ? item.children
-                  : [{ name: item.name, icon: item.icon, link: item.link }]
+                  : [{ name: "No links associated", icon: item.icon, link: item.link }]
               }
             />
           )
