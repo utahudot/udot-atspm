@@ -157,16 +157,7 @@ export const LinkPivotAdjustmentComponent = ({ data, cycleLength }: props) => {
           </TableHead>
           <TableBody>
             {rows.map((row, index) => (
-              <TableRow
-                sx={{
-                  '& .MuiTableCell-body': {
-                    fontSize: '1rem',
-                    borderRight: '1px solid #e0e0e0',
-                    lineHeight: 'inherit',
-                    // width: '90px',
-                },
-              }}
-              >
+              <TableRow>
                 <TableCell sx={{ width: '160px' }}>{row.linkNumber}</TableCell>
                 <TableCell sx={{ width: '160px' }}>{row.locationIdentifier}</TableCell>
                 <TableCell>{row.location}</TableCell>

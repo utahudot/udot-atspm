@@ -62,6 +62,17 @@ export const TimingAndActuationChartOptions = ({
     })
   }
 
+  const visuallyHidden = {
+    position: 'absolute',
+    width: '1px',
+    height: '1px',
+    padding: 0,
+    margin: '-1px',
+    overflow: 'hidden',
+    clip: 'rect(0, 0, 0, 0)',
+    border: 0,
+  }
+
   return (
     <>
       <Box
@@ -73,7 +84,11 @@ export const TimingAndActuationChartOptions = ({
       >
         <Typography>Phase Event Codes</Typography>
         <FormControl variant="standard" sx={{ width: '120px' }}>
+        <label htmlFor="phase-event-codes" style={visuallyHidden}>
+            Phase Event Codes
+          </label>
           <TextField
+            id="phase-event-codes"
             variant="standard"
             value={phaseEventCodesList}
             onChange={handlePhaseEventCodesListChange}
@@ -90,7 +105,11 @@ export const TimingAndActuationChartOptions = ({
       >
         <Typography>Global Event Codes</Typography>
         <FormControl variant="standard" sx={{ width: '120px' }}>
+          <label htmlFor="global-event-codes" style={visuallyHidden}>
+            Global Event Codes
+          </label>
           <TextField
+            id="global-event-codes"
             variant="standard"
             value={globalEventCodesList}
             onChange={handleGlobalEventCodesListChange}
@@ -107,7 +126,11 @@ export const TimingAndActuationChartOptions = ({
       >
         <Typography>Global Event Params</Typography>
         <FormControl variant="standard" sx={{ width: '120px' }}>
+        <label htmlFor="global-event-params" style={visuallyHidden}>
+            Global Event Params
+          </label>
           <TextField
+            id="global-event-params"
             variant="standard"
             value={globalEventParamsList}
             onChange={handleGlobalEventParamsListChange}
