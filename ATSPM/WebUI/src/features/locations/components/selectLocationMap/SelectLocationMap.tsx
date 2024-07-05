@@ -25,7 +25,6 @@ function SelectLocationMap({
   const [isInteractive, setIsInteractive] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [showPopup, setShowPopup] = useState(false);
-
   const Map = useMemo(
     () =>
       dynamic(() => import('@/components/map/Map'), {
