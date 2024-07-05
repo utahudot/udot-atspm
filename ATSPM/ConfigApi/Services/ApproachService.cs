@@ -1,4 +1,5 @@
-﻿using ATSPM.Application.Repositories.ConfigurationRepositories;
+﻿using ATSPM.Application.Business.PedDelay;
+using ATSPM.Application.Repositories.ConfigurationRepositories;
 using ATSPM.ConfigApi.Models;
 using ATSPM.Data.Models;
 using Microsoft.EntityFrameworkCore;
@@ -136,7 +137,7 @@ namespace ATSPM.ConfigApi.Services
                     PedestrianDetectors = dto.PedestrianDetectors,
                     LocationId = dto.LocationId,
                     DirectionTypeId = dto.DirectionTypeId,
-                    Detectors = dto.Detectors.Select(d => new Detector
+                    Detectors = dto.Detectors?.Select(d => new Detector
                     {
                         DectectorIdentifier = d.DectectorIdentifier,
                         DetectorChannel = d.DetectorChannel,
@@ -151,25 +152,9 @@ namespace ATSPM.ConfigApi.Services
                         DecisionPoint = d.DecisionPoint,
                         MovementDelay = d.MovementDelay,
                         LatencyCorrection = d.LatencyCorrection,
-                        DetectionTypes = new List<DetectionType>()
+                        DetectionTypes = DtoToDetectionType(d.DetectionTypes.ToList())
                     }).ToList()
                 };
-
-                // Get all detection types
-                var allDetectionTypes = _detectionTypeRepository.GetList().ToList();
-
-                // Add detection types to the new detectors
-                foreach (var detector in approach.Detectors)
-                {
-                    foreach (var dtoDetectionType in detector.DetectionTypes)
-                    {
-                        var detectionType = allDetectionTypes.FirstOrDefault(dt => dt.Id == dtoDetectionType.Id);
-                        if (detectionType != null)
-                        {
-                            detector.DetectionTypes.Add(detectionType);
-                        }
-                    }
-                }
 
                 await _approachRepository.AddAsync(approach);
             }
@@ -263,5 +248,24 @@ namespace ATSPM.ConfigApi.Services
                 }).ToList()
             }).ToList();
         }
+
+        private List<DetectionType> DtoToDetectionType(List<DetectionTypeDto> d)
+        {
+            List<DetectionType> detectionTypes = new List<DetectionType>();
+            // Get all detection types
+            var allDetectionTypes = _detectionTypeRepository.GetList().ToList();
+
+            foreach (var dtoDetectionType in d)
+            {
+                var detectionType = allDetectionTypes.FirstOrDefault(dt => dt.Id == dtoDetectionType.Id);
+                if (detectionType != null)
+                {
+                    detectionTypes.Add(detectionType);
+                }
+            }
+            return detectionTypes;
+        }
+
+
     }
 }
