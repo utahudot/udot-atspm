@@ -39,6 +39,7 @@ const EditApproachGrid = ({
   const { pedsAre1to1 } = location
 
   const handleUpdate = (field: string, value: any) => {
+    console.log('field:', field, 'value:', value)
     const updatedApproach = { ...approach, [field]: value }
     updateApproach(updatedApproach)
   }
