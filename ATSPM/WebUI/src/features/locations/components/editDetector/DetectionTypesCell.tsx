@@ -69,8 +69,6 @@ const DetectionTypesCell = ({
     detector.detectionTypes?.map((dt) => dt.abbreviation)
   )
 
-  console.log('detector.detectionTypes', detector.detectionTypes)
-
   const handleClick = (event: React.MouseEvent<HTMLDivElement>) => {
     setAnchorEl(event.currentTarget)
   }
