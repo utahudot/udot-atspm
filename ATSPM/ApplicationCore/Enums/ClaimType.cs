@@ -1,58 +1,59 @@
 ﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace ATSPM.Application.Enums
 {
     public enum ClaimTypes
     {
-        [Description("Admin")]
+        [Display(Name = "Admin")]
         Admin,
 
-        [Description("User:View")]
+        [Display(Name = "User:View")]
         UserView,
 
-        [Description("User:Edit")]
+        [Display(Name = "User:Edit")]
         UserEdit,
 
-        [Description("User:Delete")]
+        [Display(Name = "User:Delete")]
         UserDelete,
 
-        [Description("Role:View")]
+        [Display(Name = "Role:View")]
         RoleView,
 
-        [Description("Role:Edit")]
+        [Display(Name = "Role:Edit")]
         RoleEdit,
 
-        [Description("Role:Delete")]
+        [Display(Name = "Role:Delete")]
         RoleDelete,
 
-        [Description("LocationConfiguration:View")]
+        [Display(Name = "LocationConfiguration:View")]
         LocationConfigurationView,
 
-        [Description("LocationConfiguration:Edit")]
+        [Display(Name = "LocationConfiguration:Edit")]
         LocationConfigurationEdit,
 
-        [Description("LocationConfiguration:Delete")]
+        [Display(Name = "LocationConfiguration:Delete")]
         LocationConfigurationDelete,
 
-        [Description("GeneralConfiguration:View")]
+        [Display(Name = "GeneralConfiguration:View")]
         GeneralConfigurationView,
 
-        [Description("GeneralConfiguration:Edit")]
+        [Display(Name = "GeneralConfiguration:Edit")]
         GeneralConfigurationEdit,
 
-        [Description("GeneralConfiguration:Delete")]
+        [Display(Name = "GeneralConfiguration:Delete")]
         GeneralConfigurationDelete,
 
-        [Description("Data:View")]
+        [Display(Name = "Data:View")]
         DataView,
 
-        [Description("Data:Edit")]
+        [Display(Name = "Data:Edit")]
         DataEdit,
 
-        [Description("Watchdog:View")]
+        [Display(Name = "Watchdog:View")]
         WatchdogView,
 
-        [Description("Report:View")]
+        [Display(Name = "Report:View")]
         ReportView
     }
 }

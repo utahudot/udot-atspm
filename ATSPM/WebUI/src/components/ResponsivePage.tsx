@@ -29,7 +29,7 @@ export const ResponsivePageLayout = ({
       }}
     >
       <Head>
-        <title>{title} - ATSPM</title>
+        <title>{`${title} - ATSPM`}</title>
       </Head>
       {!hideTitle && (
         <Box sx={{ mb: noBottomMargin ? 0 : 3 }}>

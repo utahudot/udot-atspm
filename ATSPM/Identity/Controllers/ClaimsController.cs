@@ -5,6 +5,7 @@ using Identity.Models.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using ATSPM.Application.Extensions;
 
 namespace Identity.Controllers
 {

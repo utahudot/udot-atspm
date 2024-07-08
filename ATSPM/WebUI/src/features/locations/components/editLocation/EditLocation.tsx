@@ -1,6 +1,5 @@
 import { AddButton } from '@/components/addButton'
 import EditApproach from '@/features/locations/components/editApproach/EditApproach'
-import { sortApproachesByPhaseNumber } from '@/features/locations/components/editApproach/utils/sortApproaches'
 import EditGeneralLocation from '@/features/locations/components/editLocation/editGeneralLocation'
 import { TabContext, TabList, TabPanel } from '@mui/lab'
 import { Box, Tab, Typography } from '@mui/material'
@@ -28,7 +27,7 @@ const EditLocation = ({
   )
 
   useEffect(() => {
-    setSortedApproaches(sortApproachesByPhaseNumber(handler.approaches))
+    setSortedApproaches(handler.approaches)
   }, [handler.approaches])
 
   if (!handler.expandedLocation) return null
@@ -60,33 +59,35 @@ const EditLocation = ({
       <TabPanel value="2" sx={{ padding: '0px', marginBottom: '100px' }}>
         <EditDevices locationId={handler.expandedLocation.id} />
       </TabPanel>
-      <TabPanel value="3" sx={{ padding: 0 }}>
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'flex-end',
-          }}
-        >
-          <AddButton
-            label="New Approach"
-            onClick={handler.handleAddNewApproach}
-            sx={{ mb: 0.2 }}
-          />
-        </Box>
-        {sortedApproaches?.map((approach) => (
-          <EditApproach
-            key={approach.id ?? approach.index}
-            approach={approach}
-            handler={handler}
-          />
-        ))}
-        {sortedApproaches.length === 0 && (
-          <Box sx={{ p: 2, mt: 2, textAlign: 'center' }}>
-            <Typography variant="caption" fontStyle={'italic'}>
-              No approaches found
-            </Typography>
+      <TabPanel value="3" sx={{ padding: 0, minHeight: '400px' }}>
+        <Box sx={{ minHeight: '400px' }}>
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'flex-end',
+            }}
+          >
+            <AddButton
+              label="New Approach"
+              onClick={handler.handleAddNewApproach}
+              sx={{ mb: 0.2 }}
+            />
           </Box>
-        )}
+          {sortedApproaches?.map((approach) => (
+            <EditApproach
+              key={approach.id}
+              approach={approach}
+              handler={handler}
+            />
+          ))}
+          {sortedApproaches.length === 0 && (
+            <Box sx={{ p: 2, mt: 2, textAlign: 'center' }}>
+              <Typography variant="caption" fontStyle={'italic'}>
+                No approaches found
+              </Typography>
+            </Box>
+          )}
+        </Box>
       </TabPanel>
     </TabContext>
   )
