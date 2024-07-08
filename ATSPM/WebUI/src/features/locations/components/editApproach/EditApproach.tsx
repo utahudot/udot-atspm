@@ -147,8 +147,8 @@ function EditApproach({
     delete modifiedApproach.isNew
 
     editApproach(modifiedApproach, {
-      onSuccess: (data) => {
-        console.log('Approach saved', data)
+      onSuccess: () => {
+        handler.refetchLocation()
       },
     })
   }
