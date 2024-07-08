@@ -132,14 +132,14 @@ namespace ATSPM.Infrastructure.Repositories.ConfigurationRepositories
             return result;
         }
 
-        public Location GetLatestVersionOfLocationDetached(string LocationIdentifier)
+        public Location GetVersionByIdDetached(int LocationId)
         {
             var result = BaseQuery()
                 .Include(i => i.Approaches).ThenInclude(i => i.Detectors).ThenInclude(i => i.DetectionTypes).ThenInclude(i => i.MeasureTypes)
                 .Include(i => i.Approaches).ThenInclude(i => i.DirectionType)
                 .Include(i => i.Devices)
                 .Include(i => i.Areas)
-                .FromSpecification(new LocationIdSpecification(LocationIdentifier))
+                .Where(i => i.Id == LocationId)
                 .FromSpecification(new ActiveLocationSpecification())
                 .FirstOrDefault();
 
