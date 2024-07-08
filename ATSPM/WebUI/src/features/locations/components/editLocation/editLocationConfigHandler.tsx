@@ -70,10 +70,7 @@ export const useLocationConfigHandler = ({
       }))
     )
     const newApproaches = approaches.filter((item) => item.isNew)
-    setApproaches([
-      ...newApproaches,
-      ...(existingApproaches as ApproachForConfig[]),
-    ])
+    setApproaches([...newApproaches, ...existingApproaches])
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [expandedLocation])
 

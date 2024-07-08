@@ -12,7 +12,7 @@ import {
 } from '@mui/material'
 import React, { useState } from 'react'
 
-const options: Record<string, DetectionType> = {
+export const detectionTypes: Record<string, DetectionType> = {
   LLC: {
     id: 'LLC',
     description: 'Lane-by-lane Count',
@@ -69,6 +69,8 @@ const DetectionTypesCell = ({
     detector.detectionTypes?.map((dt) => dt.abbreviation)
   )
 
+  console.log('detector.detectionTypes', detector.detectionTypes)
+
   const handleClick = (event: React.MouseEvent<HTMLDivElement>) => {
     setAnchorEl(event.currentTarget)
   }
@@ -78,7 +80,7 @@ const DetectionTypesCell = ({
   }
 
   const handleSelect = (abbreviation: string) => {
-    const selectedOption = Object.values(options).find(
+    const selectedOption = Object.values(detectionTypes).find(
       (option) => option.abbreviation === abbreviation
     )
     if (selectedOption) {
@@ -108,7 +110,7 @@ const DetectionTypesCell = ({
         }}
         onClick={handleClick}
       >
-        {Object.entries(options).map(([abbreviation, option]) => (
+        {Object.entries(detectionTypes).map(([abbreviation, option]) => (
           <Tooltip key={option.id} title={option.description}>
             <Avatar
               sx={{
@@ -131,7 +133,7 @@ const DetectionTypesCell = ({
           open={Boolean(anchorEl)}
           onClose={handleClose}
         >
-          {Object.values(options).map((option) => (
+          {Object.values(detectionTypes).map((option) => (
             <MenuItem
               key={option.id}
               onClick={() => handleSelect(option.abbreviation)}

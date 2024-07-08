@@ -69,8 +69,6 @@ function EditApproach({
   const laneTypesData = useConfigEnums(ConfigEnum.LaneTypes)
   const movementTypesData = useConfigEnums(ConfigEnum.MovementTypes)
 
-  console.log(detectionTypesData?.data?.members)
-
   // const deviceConfigurations = deviceConfigurationsData?.value
   // const products = productsData?.value
   // const deviceTypes = deviceTypesData?.data?.members.map(
@@ -148,18 +146,8 @@ function EditApproach({
     delete modifiedApproach.isNew
 
     editApproach(modifiedApproach, {
-      onSuccess: (data) => {
-        // remove isNew from each detector
-        const updatedDetectors = data.detectors.map((detector) => {
-          delete detector.isNew
-          return detector
-        })
-        setApproach({
-          ...approach,
-          isNew: false,
-          id: data.id,
-          detectors: updatedDetectors,
-        })
+      onSuccess: () => {
+        handler.refetchLocation()
       },
     })
   }
