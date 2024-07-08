@@ -1,4 +1,7 @@
-﻿public class ClaimsModel
+﻿namespace Identity.Models.Claims
 {
-    public List<string> Claims { get; set; }
+    public class ClaimsModel
+    {
+        public List<string> Claims { get; set; }
+    }
 }
