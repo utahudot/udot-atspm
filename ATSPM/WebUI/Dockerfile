@@ -32,9 +32,11 @@ WORKDIR /app
 
 
 # Install dependencies based on the preferred package manager
-COPY package.json yarn.lock* package-lock.json* ./
+COPY package.json .
+COPY yarn.lock* .
+COPY package-lock.json* .
 RUN \
-  if [ -f package-lock.json ]; then npm ci; \
+  if [ -f package-lock.json ]; then npm ci --ignore-scripts; \
   else echo "Lockfile not found." && exit 1; \
   fi
 
@@ -51,7 +53,7 @@ COPY . .
 # ENV NEXT_TELEMETRY_DISABLED 1
 
 
-RUN npm install
+RUN npm install --ignore-scripts
 COPY . ./
 RUN npm run build
 
@@ -78,9 +80,8 @@ RUN chown nextjs:nodejs .next
 # Automatically leverage output traces to reduce image size
 # https://nextjs.org/docs/advanced-features/output-file-tracing
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
-RUN chmod -R a-w ./standalone
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
-RUN chmod -R a-w ./.next/static
+RUN chmod -R 555 ./
 
 USER nextjs
 
