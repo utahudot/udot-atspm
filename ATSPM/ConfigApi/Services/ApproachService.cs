@@ -1,4 +1,5 @@
-﻿using ATSPM.Application.Repositories.ConfigurationRepositories;
+﻿using ATSPM.Application.Business.PedDelay;
+using ATSPM.Application.Repositories.ConfigurationRepositories;
 using ATSPM.ConfigApi.Models;
 using ATSPM.Data.Models;
 using Microsoft.EntityFrameworkCore;
@@ -79,32 +80,9 @@ namespace ATSPM.ConfigApi.Services
                         detector.MovementDelay = detectorDto.MovementDelay;
                         detector.LatencyCorrection = detectorDto.LatencyCorrection;
                         detector.ApproachId = dto.Id ?? 0; // Assuming the approach is already created and has an ID
-
-                        // Update detection types
-                        var existingDetectionTypes = detector.DetectionTypes.ToList();
-                        var dtoDetectionTypes = detectorDto.DetectionTypes.ToList();
-
-                        // Remove detection types not in DTO
-                        foreach (var existingDetectionType in existingDetectionTypes)
-                        {
-                            if (!dtoDetectionTypes.Contains(existingDetectionType))
-                            {
-                                detector.DetectionTypes.Remove(existingDetectionType);
-                            }
-                        }
-
-                        // Add new detection types
-                        foreach (var dtoDetectionType in dtoDetectionTypes)
-                        {
-                            if (!existingDetectionTypes.Contains(dtoDetectionType))
-                            {
-                                var detectionType = allDetectionTypes.FirstOrDefault(dt => dt.Id == dtoDetectionType.Id);
-                                if (detectionType != null)
-                                {
-                                    detector.DetectionTypes.Add(detectionType);
-                                }
-                            }
-                        }
+                        detector.DetectionTypes = detectorDto.DetectionTypes
+                            .Select(dto => allDetectionTypes.FirstOrDefault(dt => dt.Id == dto.Id))
+                            .Where(dt => dt != null).ToList();
                     }
                     else
                     {
@@ -159,7 +137,7 @@ namespace ATSPM.ConfigApi.Services
                     PedestrianDetectors = dto.PedestrianDetectors,
                     LocationId = dto.LocationId,
                     DirectionTypeId = dto.DirectionTypeId,
-                    Detectors = dto.Detectors.Select(d => new Detector
+                    Detectors = dto.Detectors?.Select(d => new Detector
                     {
                         DectectorIdentifier = d.DectectorIdentifier,
                         DetectorChannel = d.DetectorChannel,
@@ -174,25 +152,9 @@ namespace ATSPM.ConfigApi.Services
                         DecisionPoint = d.DecisionPoint,
                         MovementDelay = d.MovementDelay,
                         LatencyCorrection = d.LatencyCorrection,
-                        DetectionTypes = new List<DetectionType>()
+                        DetectionTypes = DtoToDetectionType(d.DetectionTypes.ToList())
                     }).ToList()
                 };
-
-                // Get all detection types
-                var allDetectionTypes = _detectionTypeRepository.GetList().ToList();
-
-                // Add detection types to the new detectors
-                foreach (var detector in approach.Detectors)
-                {
-                    foreach (var dtoDetectionType in detector.DetectionTypes)
-                    {
-                        var detectionType = allDetectionTypes.FirstOrDefault(dt => dt.Id == dtoDetectionType.Id);
-                        if (detectionType != null)
-                        {
-                            detector.DetectionTypes.Add(detectionType);
-                        }
-                    }
-                }
 
                 await _approachRepository.AddAsync(approach);
             }
@@ -248,9 +210,62 @@ namespace ATSPM.ConfigApi.Services
                     MovementDelay = d.MovementDelay,
                     LatencyCorrection = d.LatencyCorrection,
                     ApproachId = d.ApproachId,
-                    DetectionTypes = d.DetectionTypes.Select(dt => dt).ToList()
+                    DetectionTypes = ExtractDetectionTypesToDto(d.DetectionTypes.ToList())
                 }).ToList()
             };
         }
+
+        private static List<DetectionTypeDto> ExtractDetectionTypesToDto(List<DetectionType> d)
+        {
+            return d.Select(dt => new DetectionTypeDto
+            {
+                Id = dt.Id,
+                Description = dt.Description,
+                Abbreviation = dt.Abbreviation,
+                DisplayOrder = dt.DisplayOrder,
+                MeasureTypes = dt.MeasureTypes.Select(mt => new MeasureTypeDto
+                {
+                    Id = mt.Id,
+                    Name = mt.Name,
+                    Abbreviation = mt.Abbreviation,
+                    ShowOnWebsite = mt.ShowOnWebsite,
+                    ShowOnAggregationSite = mt.ShowOnAggregationSite,
+                    DisplayOrder = mt.DisplayOrder,
+                    MeasureComments = mt.MeasureComments.Select(mc => new MeasureCommentsDto
+                    {
+                        Id = mc.Id,
+                        TimeStamp = mc.TimeStamp,
+                        Comment = mc.Comment,
+                        LocationIdentifier = mc.LocationIdentifier
+                    }).ToList(),
+                    MeasureOptions = mt.MeasureOptions.Select(mo => new MeasureOptionDto
+                    {
+                        Id = mo.Id,
+                        Option = mo.Option,
+                        Value = mo.Value,
+                        MeasureTypeId = mo.MeasureTypeId
+                    }).ToList()
+                }).ToList()
+            }).ToList();
+        }
+
+        private List<DetectionType> DtoToDetectionType(List<DetectionTypeDto> d)
+        {
+            List<DetectionType> detectionTypes = new List<DetectionType>();
+            // Get all detection types
+            var allDetectionTypes = _detectionTypeRepository.GetList().ToList();
+
+            foreach (var dtoDetectionType in d)
+            {
+                var detectionType = allDetectionTypes.FirstOrDefault(dt => dt.Id == dtoDetectionType.Id);
+                if (detectionType != null)
+                {
+                    detectionTypes.Add(detectionType);
+                }
+            }
+            return detectionTypes;
+        }
+
+
     }
 }
