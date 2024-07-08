@@ -70,10 +70,7 @@ export const useLocationConfigHandler = ({
       }))
     )
     const newApproaches = approaches.filter((item) => item.isNew)
-    setApproaches([
-      ...newApproaches,
-      ...(existingApproaches as ApproachForConfig[]),
-    ])
+    setApproaches([...newApproaches, ...existingApproaches])
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [expandedLocation])
 
@@ -84,8 +81,8 @@ export const useLocationConfigHandler = ({
 
   const addNewApproach = () => {
     const newApproach: Partial<ApproachForConfig> = {
+      id: crypto.randomUUID(),
       description: 'New Approach',
-      index: approaches.length,
       open: false,
       isNew: true,
       detectors: [],
@@ -97,12 +94,7 @@ export const useLocationConfigHandler = ({
       pedestrianPhaseNumber: null,
       pedestrianDetectors: '',
       locationId: parseInt((expandedLocation as LocationExpanded).id),
-      directionType: {
-        id: '0',
-        abbreviation: 'NA',
-        description: 'Unknown',
-        displayOrder: 0,
-      },
+      directionTypeId: 'NA',
     }
 
     setApproaches((prev) => [newApproach as ApproachForConfig, ...prev])

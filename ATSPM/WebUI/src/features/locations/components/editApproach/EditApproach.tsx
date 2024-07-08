@@ -69,8 +69,6 @@ function EditApproach({
   const laneTypesData = useConfigEnums(ConfigEnum.LaneTypes)
   const movementTypesData = useConfigEnums(ConfigEnum.MovementTypes)
 
-  console.log('approach rendered')
-
   // const deviceConfigurations = deviceConfigurationsData?.value
   // const products = productsData?.value
   // const deviceTypes = deviceTypesData?.data?.members.map(
@@ -101,6 +99,9 @@ function EditApproach({
 
   const handleSaveApproach = () => {
     const modifiedApproach = JSON.parse(JSON.stringify(approach)) as Approach
+    if (modifiedApproach.isNew) {
+      delete modifiedApproach.id
+    }
     modifiedApproach.directionTypeId = parseInt(
       directionTypesData?.data?.members.find(
         (member) => member.name === modifiedApproach.directionTypeId
@@ -145,8 +146,8 @@ function EditApproach({
     delete modifiedApproach.isNew
 
     editApproach(modifiedApproach, {
-      onSuccess: (data) => {
-        console.log('Approach saved', data)
+      onSuccess: () => {
+        handler.refetchLocation()
       },
     })
   }
