@@ -19,19 +19,13 @@ namespace ATSPM.Application.Business.SplitMonitor
 
     public class SplitMonitorService
     {
-        private readonly AnalysisPhaseService analysisPhaseService;
         private readonly AnalysisPhaseCollectionService analysisPhaseCollectionService;
-        private readonly PlanService planService;
 
         public SplitMonitorService(
-            AnalysisPhaseService analysisPhaseService,
-            AnalysisPhaseCollectionService analysisPhaseCollectionService,
-            PlanService planService
+            AnalysisPhaseCollectionService analysisPhaseCollectionService
             )
         {
-            this.analysisPhaseService = analysisPhaseService;
             this.analysisPhaseCollectionService = analysisPhaseCollectionService;
-            this.planService = planService;
         }
 
 

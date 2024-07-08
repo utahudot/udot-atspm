@@ -3,9 +3,7 @@ using ATSPM.Application.Extensions;
 using ATSPM.Identity.Business.Claims;
 using Identity.Models.Claims;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using ATSPM.Application.Extensions;
 
 namespace Identity.Controllers
 {
@@ -15,12 +13,10 @@ namespace Identity.Controllers
     public class ClaimsController : ControllerBase
     {
         private readonly ClaimsService claimsService;
-        private readonly RoleManager<IdentityRole> _roleManager;
 
-        public ClaimsController(ClaimsService claimsService, RoleManager<IdentityRole> roleManager)
+        public ClaimsController(ClaimsService claimsService)
         {
             this.claimsService = claimsService;
-            _roleManager = roleManager;
         }
 
         // GET: api/claims

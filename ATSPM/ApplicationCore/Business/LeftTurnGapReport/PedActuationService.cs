@@ -8,12 +8,9 @@ namespace ATSPM.Application.Business.LeftTurnGapReport
 {
     public class PedActuationService
     {
-        private readonly LeftTurnReportService leftTurnReportPreCheckService;
 
-        public PedActuationService(
-            LeftTurnReportService leftTurnReportService)
+        public PedActuationService()
         {
-            this.leftTurnReportPreCheckService = leftTurnReportService;
         }
         public PedActuationResult GetPedestrianPercentage(
             Location Location,
