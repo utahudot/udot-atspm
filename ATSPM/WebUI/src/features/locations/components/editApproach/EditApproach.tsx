@@ -26,7 +26,7 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   ApproachForConfig,
   DetectorForConfig,
@@ -69,7 +69,9 @@ function EditApproach({
   const laneTypesData = useConfigEnums(ConfigEnum.LaneTypes)
   const movementTypesData = useConfigEnums(ConfigEnum.MovementTypes)
 
-  console.log('approach rendered')
+  useEffect(() => {
+    setApproach(locationApproach)
+  }, [locationApproach])
 
   // const deviceConfigurations = deviceConfigurationsData?.value
   // const products = productsData?.value
