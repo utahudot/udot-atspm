@@ -137,7 +137,7 @@ export default function ApacheEChart({
       clearTimeout(scrollTimeout)
       scrollTimeout = setTimeout(() => {
         setIsScrolling(false)
-      }, 1500)
+      }, 1200)
     }
 
     window.addEventListener('scroll', handleScroll)
@@ -182,13 +182,14 @@ export default function ApacheEChart({
         height: '100%',
         ...style,
       }}
-      onClick={handleActivate}
+      onMouseLeave={() => {
+        // setIsActivated(false)
+      }}
     >
       <div id={id} ref={chartRef} style={{ width: '100%', height: '100%' }} />
       {!isActivated && isScrolling && (
         <div
           style={{
-            // backgroundColor: 'blue',
             position: 'absolute',
             top: option.grid.top,
             left: option.grid.left,
@@ -196,7 +197,10 @@ export default function ApacheEChart({
             bottom: option.grid.bottom,
           }}
           onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
+          onMouseLeave={() => {
+            setIsHovered(false)
+          }}
+          onClick={handleActivate}
         >
           {!isActivated && isHovered && isScrolling && (
             <div
