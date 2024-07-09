@@ -109,8 +109,8 @@ namespace ATSPM.LocationControllerLogger
                     //s.AddScoped<IDeviceDownloader, DeviceSnmpDownloader>();
 
                     //decoders
-                    s.AddScoped<ILocationControllerDecoder<IndianaEvent>, ASCLocationControllerDecoder>();
-                    //s.AddScoped<ILocationControllerDecoder<IndianaEvent>, MaxTimeLocationControllerDecoder>();
+                    s.AddScoped<IEventLogDecoder<IndianaEvent>, ASCEventLogDecoder>();
+                    //s.AddScoped<IEventLogDecoder<IndianaEvent>, MaxTimeLocationControllerDecoder>();
 
                     //LocationControllerDataFlow
                     //s.AddScoped<ILocationControllerLoggerService, CompressedLocationControllerLogger>();
@@ -128,7 +128,7 @@ namespace ATSPM.LocationControllerLogger
                     //s.Configure<SignalControllerDownloaderConfiguration>(nameof(NewCobaltLocationControllerDownloader), h.Configuration.GetSection($"{nameof(SignalControllerDownloaderConfiguration)}:{nameof(NewCobaltLocationControllerDownloader)}"));
 
                     //decoder configurations
-                    //s.Configure<SignalControllerDecoderConfiguration>(nameof(ASCLocationControllerDecoder), h.Configuration.GetSection($"{nameof(SignalControllerDecoderConfiguration)}:{nameof(ASCLocationControllerDecoder)}"));
+                    //s.Configure<SignalControllerDecoderConfiguration>(nameof(ASCEventLogDecoder), h.Configuration.GetSection($"{nameof(SignalControllerDecoderConfiguration)}:{nameof(ASCEventLogDecoder)}"));
                     //s.Configure<SignalControllerDecoderConfiguration>(nameof(MaxTimeLocationControllerDecoder), h.Configuration.GetSection($"{nameof(SignalControllerDecoderConfiguration)}:{nameof(MaxTimeLocationControllerDecoder)}"));
 
                     //s.Configure<FileRepositoryConfiguration>(h.Configuration.GetSection("FileRepositoryConfiguration"));
@@ -183,8 +183,18 @@ namespace ATSPM.LocationControllerLogger
             host.Services.PrintHostInformation();
 
             //await host.RunAsync();
-            await host.StartAsync();
-            await host.StopAsync();
+            //await host.StartAsync();
+            //await host.StopAsync();
+
+
+
+            using (var scope = host.Services.CreateScope())
+            {
+                var dc = scope.ServiceProvider.GetService<IDeviceConfigurationRepository>();
+
+                var all = dc.GetList().Select(s => new {s.Id,s.DataModel} ).ToList();
+            }
+
 
             Console.ReadLine();
         }

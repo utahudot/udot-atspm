@@ -202,8 +202,8 @@ var result = await test.ExecuteAsync(testData);
 //        s.AddScoped<IDeviceDownloader, NewCobaltLocationControllerDownloader>();
 
 //        //decoders
-//        s.AddScoped<ILocationControllerDecoder, ASCLocationControllerDecoder>();
-//        s.AddScoped<ILocationControllerDecoder, MaxTimeLocationControllerDecoder>();
+//        s.AddScoped<IEventLogDecoder, ASCEventLogDecoder>();
+//        s.AddScoped<IEventLogDecoder, MaxTimeLocationControllerDecoder>();
 
 //        //LocationControllerLogger
 //        //s.AddScoped<ILocationControllerLoggerService, CompressedLocationControllerLogger>();
