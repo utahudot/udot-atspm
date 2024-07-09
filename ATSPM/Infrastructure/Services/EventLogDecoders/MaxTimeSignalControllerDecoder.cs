@@ -14,36 +14,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
-using ATSPM.Application.Common.EqualityComparers;
 using ATSPM.Application.Configuration;
-using ATSPM.Application.Enums;
 using ATSPM.Application.Exceptions;
-using ATSPM.Application.Extensions;
-using ATSPM.Application.ValueObjects;
-using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using ATSPM.Data.Models.EventLogModels;
-using ATSPM.Domain.BaseClasses;
-using ATSPM.Domain.Common;
-using ATSPM.Domain.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.IO.Compression;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Input;
 using System.Xml.Linq;
 
 namespace ATSPM.Infrastructure.Services.ControllerDecoders
 {
-    public class MaxTimeLocationControllerDecoder : ControllerDecoderBase<IndianaEvent>
+    /// <inheritdoc/>
+    public class MaxTimeLocationControllerDecoder : EventLogDecoderBase<IndianaEvent>
     {
+
+        /// <inheritdoc/>
         public MaxTimeLocationControllerDecoder(ILogger<MaxTimeLocationControllerDecoder> log, IOptionsSnapshot<SignalControllerDecoderConfiguration> options) : base(log, options) { }
 
         #region Properties
@@ -52,6 +41,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDecoders
 
         #region Methods
 
+        /// <inheritdoc/>
         public override bool CanExecute(Tuple<Device, FileInfo> parameter)
         {
             var device = parameter.Item1;
@@ -60,6 +50,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDecoders
             return file.Exists && (file.Extension == ".xml" || file.Extension == ".XML");
         }
 
+        /// <inheritdoc/>
         public override IEnumerable<IndianaEvent> Decode(Device device, Stream stream)
         {
             var locationId = device.Location.LocationIdentifier;
@@ -90,33 +81,26 @@ namespace ATSPM.Infrastructure.Services.ControllerDecoders
 
             foreach (var l in logs)
             {
-                IndianaEvent log;
-
                 try
                 {
-                    log = new IndianaEvent()
+                    var log = new IndianaEvent()
                     {
                         LocationIdentifier = locationId,
                         EventCode = Convert.ToInt16(l.Attribute("EventTypeID").Value),
                         EventParam = Convert.ToByte(l.Attribute("Parameter").Value),
                         Timestamp = Convert.ToDateTime(l.Attribute("TimeStamp").Value)
                     };
+
+                    decodedLogs.Add(log);
                 }
                 catch (Exception e)
                 {
                     throw new ControllerLoggerDecoderException($"Exception decoding {locationId}", e);
                 }
-
-                decodedLogs.Add(log);
             }
 
             return decodedLogs;
         }
-
-        //public override void Dispose()
-        //{
-        //    //throw new NotImplementedException();
-        //}
 
         #endregion
     }

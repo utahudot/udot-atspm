@@ -16,25 +16,23 @@
 #endregion
 using ATSPM.Application.Configuration;
 using ATSPM.Application.Exceptions;
-using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using ATSPM.Data.Models.EventLogModels;
-using Duende.IdentityServer.Services;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
-using System.Runtime.CompilerServices;
 using System.Text;
-using System.Threading;
 
 namespace ATSPM.Infrastructure.Services.ControllerDecoders
 {
-    public class ASCLocationControllerDecoder : ControllerDecoderBase<IndianaEvent>
+    /// <inheritdoc/>
+    public class ASCEventLogDecoder : EventLogDecoderBase<IndianaEvent>
     {
-        public ASCLocationControllerDecoder(ILogger<ASCLocationControllerDecoder> log, IOptionsSnapshot<SignalControllerDecoderConfiguration> options) : base(log, options) { }
+        /// <inheritdoc/>
+        public ASCEventLogDecoder(ILogger<ASCEventLogDecoder> log, IOptionsSnapshot<SignalControllerDecoderConfiguration> options) : base(log, options) { }
 
         #region Properties
 
@@ -42,6 +40,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDecoders
 
         #region Methods
 
+        /// <inheritdoc/>
         public override bool CanExecute(Tuple<Device, FileInfo> parameter)
         {
             if (parameter == null)
@@ -54,6 +53,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDecoders
         }
 
         //HACK: need to use extension methods and GetFileSignatureFromMagicHeader to get compression type
+        /// <inheritdoc/>
         public override Stream Decompress(Stream stream)
         {
             stream?.Seek(2, SeekOrigin.Begin);
@@ -68,6 +68,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDecoders
             }
         }
 
+        /// <inheritdoc/>
         public override IEnumerable<IndianaEvent> Decode(Device device, Stream stream)
         {
             var locationId = device.Location.LocationIdentifier;
@@ -75,7 +76,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDecoders
             //cancelToken.ThrowIfCancellationRequested();
 
             if (string.IsNullOrEmpty(locationId))
-                throw new ControllerLoggerDecoderException("locationId can not be null", new ArgumentNullException(nameof(locationId)));
+                throw new ControllerLoggerDecoderException("LocationIdentifier can not be null", new ArgumentNullException(nameof(locationId)));
 
             if (stream?.Length == 0)
                 throw new ControllerLoggerDecoderException("Stream is empty", new InvalidDataException(nameof(stream)));
