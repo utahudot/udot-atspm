@@ -238,7 +238,7 @@ namespace ATSPM.LocationControllerLogger
             {
                 using (var scope = _serviceProvider.CreateAsyncScope())
                 {
-                    var decoder = scope.ServiceProvider.GetServices<ILocationControllerDecoder<T>>().First(c => c.CanExecute(input));
+                    var decoder = scope.ServiceProvider.GetServices<IEventLogDecoder<T>>().First(c => c.CanExecute(input));
 
                     return decoder.Execute(input, cancelToken);
                 }

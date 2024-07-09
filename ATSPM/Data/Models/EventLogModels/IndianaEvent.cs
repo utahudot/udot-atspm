@@ -16,6 +16,8 @@
 #endregion
 #nullable disable
 
+using ATSPM.Data.Enums;
+
 namespace ATSPM.Data.Models.EventLogModels
 {
     /// <summary>

@@ -349,7 +349,6 @@ namespace ATSPM.Domain.Extensions
         public static FileSignature GetFileSignatureFromMagicHeader(this byte[] bytes)
         {
             return FileSignatures.Where(f => f.MagicHeader.SequenceEqual(bytes.Skip(f.Offset).Take(f.MagicHeader.Length))).FirstOrDefault();
-
         }
     }
 }

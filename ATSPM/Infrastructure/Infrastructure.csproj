@@ -14,11 +14,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="Services\ControllerDecoders\StubSignalControllerDecoder.cs" />
+    <Compile Remove="Services\EventLogDecoders\StubSignalControllerDecoder.cs" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="Services\ControllerDecoders\StubSignalControllerDecoder.cs" />
+    <None Include="Services\EventLogDecoders\StubSignalControllerDecoder.cs" />
   </ItemGroup>
 
   <ItemGroup>
