@@ -12,6 +12,7 @@ using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using ATSPM.ConfigApi.Utility;
 using static IdentityModel.ClaimComparer;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -38,6 +39,11 @@ builder.Host.ConfigureServices((h, s) =>
         o.RouteOptions.EnablePropertyNameCaseInsensitive = true;
         o.RouteOptions.EnableQualifiedOperationCall = false;
         o.RouteOptions.EnableUnqualifiedOperationCall = true;
+    })
+    // Configure JSON options to use custom DateTime converter
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new CustomDateTimeConverter());
     });
 
     s.AddProblemDetails();
