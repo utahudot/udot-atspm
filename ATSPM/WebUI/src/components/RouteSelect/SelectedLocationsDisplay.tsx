@@ -9,6 +9,7 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 import {
   Box,
   Checkbox,
+  FormControlLabel,
   IconButton,
   Table,
   TableBody,
@@ -94,6 +95,7 @@ const SelectedLocationsDisplay = ({ handler }: props) => {
       <TableRow key={index}>
         <TableCell>
           <IconButton
+            aria-label='collapse-button'
             size="small"
             onClick={() => handler.updateLocationOpen(location)}
           >
@@ -108,13 +110,18 @@ const SelectedLocationsDisplay = ({ handler }: props) => {
           {`${location.locationIdentifier} - ${location.primaryName} ${location.secondaryName}`}
         </TableCell>
         <CheckboxCell>
+          <FormControlLabel
+            control={
           <Checkbox
             checked={location.exclude}
             onChange={() => handler.updateLocationExclude(location)}
           />
+            }
+            aria-label="excludeLocation" />
         </CheckboxCell>
         <TableCell style={{ textAlign: 'center' }}>
           <IconButton
+            aria-label="x-button"
             size="small"
             onClick={() => handler.deleteLocation(location)}
           >
@@ -136,10 +143,19 @@ const SelectedLocationsDisplay = ({ handler }: props) => {
     >
       <Table size="small" aria-label="collapsible table">
         <TableHead>
-          <TableRow>
+          <TableRow
+            sx={{
+              '& .MuiTableCell-body': {
+                fontSize: '1rem',
+                borderRight: '1px solid #e0e0e0',
+                lineHeight: 'inherit',
+              },
+            }}>
             <TableCell aria-label="expandable rows"></TableCell>
             <TableCell>
-              <Typography fontWeight="bold">Location</Typography>
+              <Typography fontWeight="bold">
+                Location
+              </Typography>
             </TableCell>
             <CheckboxCell>
               <Typography fontWeight="bold" marginRight="30px">
@@ -147,7 +163,9 @@ const SelectedLocationsDisplay = ({ handler }: props) => {
               </Typography>
             </CheckboxCell>
             <TableCell width="100px">
-              <Typography fontWeight="bold">Remove Location</Typography>
+              <Typography fontWeight="bold">
+                Remove Location
+              </Typography>
             </TableCell>
           </TableRow>
         </TableHead>

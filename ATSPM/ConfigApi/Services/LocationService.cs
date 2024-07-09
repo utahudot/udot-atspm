@@ -28,7 +28,7 @@ namespace ATSPM.ConfigApi.Services
         /// <returns>New version of copied <see cref="Location"/></returns>
         public async Task<Location> CopyLocationToNewVersion(int id)
         {
-            var sourceLocation = locationRepository.GetLatestVersionOfLocationDetached(id.ToString());
+            var sourceLocation = locationRepository.GetVersionByIdDetached(id);
             if (sourceLocation != null)
             {
                 var newVersion = (Location)sourceLocation.Clone();
