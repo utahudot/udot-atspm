@@ -121,10 +121,11 @@ export default function Topbar() {
               key={item.name}
               title={item.name}
               icon={item.icon || <InfoOutlinedIcon />}
+              disabled={item.children.length === 0}
               menuItems={
                 item.children.length > 0
                   ? item.children
-                  : [{ name: "No links associated", icon: item.icon, link: item.link }]
+                  : [{ name: "", icon: item.icon, link: item.link }]
               }
             />
           )
