@@ -69,7 +69,7 @@ namespace ATSPM.Data.Configuration
 
             builder.Property(e => e.DataModel)
                 .IsRequired(false)
-                .HasMaxLength(512)
+                .HasMaxLength(32)
                 .HasConversion(new CompressionTypeConverter(typeof(EventLogModelBase).Namespace.ToString(), typeof(EventLogModelBase).Assembly.ToString()));
 
             builder.Property(e => e.UserName)

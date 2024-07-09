@@ -249,7 +249,7 @@ namespace ATSPM.Infrastructure.Extensions
 
         public static IServiceCollection ConfigureSignalControllerDecoders(this IServiceCollection services, HostBuilderContext host)
         {
-            services.Configure<SignalControllerDecoderConfiguration>(nameof(ASCLocationControllerDecoder), host.Configuration.GetSection($"{nameof(SignalControllerDecoderConfiguration)}:{nameof(ASCLocationControllerDecoder)}"));
+            services.Configure<SignalControllerDecoderConfiguration>(nameof(ASCEventLogDecoder), host.Configuration.GetSection($"{nameof(SignalControllerDecoderConfiguration)}:{nameof(ASCEventLogDecoder)}"));
             services.Configure<SignalControllerDecoderConfiguration>(nameof(MaxTimeLocationControllerDecoder), host.Configuration.GetSection($"{nameof(SignalControllerDecoderConfiguration)}:{nameof(MaxTimeLocationControllerDecoder)}"));
 
             return services;

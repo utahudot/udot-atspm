@@ -24,11 +24,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Net;
-using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -217,7 +213,7 @@ namespace InfrastructureTests.DeviceDownloaderTests
 
             //Mock.Get(mockConfig).Setup(s => s.Value).Returns(new SignalControllerDownloaderConfiguration()
             //{
-            //    LocalPath = "C:\\TestPath",
+            //    LocalPath = Path.GetTempPath(),
             //    PingControllerToVerify = false
             //});
 

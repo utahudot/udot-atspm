@@ -15,9 +15,15 @@
 // limitations under the License.
 #endregion
 using ATSPM.Application.Configuration;
+using ATSPM.Application.Services;
+using ATSPM.Data.Models;
+using ATSPM.Data.Models.EventLogModels;
 using ATSPM.Domain.Exceptions;
+using ATSPM.Domain.Extensions;
 using ATSPM.Infrastructure.Services.ControllerDecoders;
+using ATSPM.Infrastructure.Services.ControllerDownloaders;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Moq;
 using System;
@@ -26,64 +32,82 @@ using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace InfrastructureTests.LocationControllerDecoderTests
+namespace InfrastructureTests.EventLogDecoderTests
 {
-    public class ILocationControllerDecoderTests : IDisposable
+    public class IEventLogDecoderTests : IDisposable
     {
-        private const string TestDataPath = "C:\\Projects\\udot-atsmp\\ATSPM\\InfrastructureTests\\TestData";
+        private const string TestDataPath = "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\InfrastructureTests\\EventLogDecoderTests\\TestData";
 
         private readonly ITestOutputHelper _output;
-        //private ILocationControllerDecoder _decoder;
+        //private IEventLogDecoder _decoder;
         //private ILogger _nullLogger;
         //private IOptions<SignalControllerDecoderConfiguration> _nullOptions;
 
-        public ILocationControllerDecoderTests(ITestOutputHelper output)
+        public IEventLogDecoderTests(ITestOutputHelper output)
         {
             _output = output;
             //_nullLogger = new Microsoft.Extensions.Logging.Abstractions.NullLogger<StubLocationControllerDecoder>();
             //_nullOptions = Options.Create(new SignalControllerDecoderConfiguration() { EarliestAcceptableDate = new DateTime() });
             //_decoder = new StubLocationControllerDecoder((ILogger<StubLocationControllerDecoder>)_nullLogger, _nullOptions);
 
-            //_output.WriteLine($"Created ILocationControllerDecoder Instance: {_decoder.GetHashCode()}");
+            //_output.WriteLine($"Created IEventLogDecoder Instance: {_decoder.GetHashCode()}");
         }
 
-        #region ILocationControllerDecoder
+        #region IEventLogDecoder
 
-        //#region ILocationControllerDecoder.IsCompressed
+        //#region IEventLogDecoder.IsCompressed
 
-        //[Theory]
-        //[EncodedControllerTestFiles]
-        //public void IsCompressed(FileInfo fileInfo, bool isCompressed, bool isEncoded)
-        //{
-        //    var expected = isCompressed;
-        //    _output.WriteLine($"Expected: {expected}");
+        [Fact]
+        public void IEventLogDecoderIsCompressed()
+        {
+            var mockConfig = Mock.Of<IOptionsSnapshot<SignalControllerDecoderConfiguration>>();
+            var file = new FileInfo(Path.Combine(TestDataPath, "4895_ECON_10.210.8.179_2024_02_21_1115.dat"));
+            var data = file.ToMemoryStream();
 
-        //    var actual = _decoder.IsCompressed(fileInfo.ToMemoryStream());
-        //    _output.WriteLine($"Actual: {actual}");
+            IEventLogDecoder<IndianaEvent> sut = new ASCEventLogDecoder(new NullLogger<ASCEventLogDecoder>(), mockConfig);
 
-        //    Assert.Equal(expected, actual);
-        //}
+            var condition = sut.IsCompressed(data);
 
-        //#endregion
-
-        //#region ILocationControllerDecoder.IsEncoded
-
-        //[Theory]
-        //[EncodedControllerTestFiles]
-        //public void IsEncoded(FileInfo fileInfo, bool isCompressed, bool isEncoded)
-        //{
-        //    var expected = isEncoded;
-        //    _output.WriteLine($"Expected: {expected}");
-
-        //    var actual = _decoder.IsEncoded(fileInfo.ToMemoryStream());
-        //    _output.WriteLine($"Actual: {actual}");
-
-        //    Assert.Equal(expected, actual);
-        //}
+            Assert.False(condition);
+        }
 
         //#endregion
 
-        //#region ILocationControllerDecoder.Decompress
+        //#region IEventLogDecoder.IsEncoded
+
+        [Fact]
+        public void IEventLogDecoderIsEncoded()
+        {
+            var mockConfig = Mock.Of<IOptionsSnapshot<SignalControllerDecoderConfiguration>>();
+            var file = new FileInfo(Path.Combine(TestDataPath, "4895_ECON_10.210.8.179_2024_02_21_1115.dat"));
+            var data = file.ToMemoryStream();
+
+            IEventLogDecoder<IndianaEvent> sut = new ASCEventLogDecoder(new NullLogger<ASCEventLogDecoder>(), mockConfig);
+
+            var condition = sut.IsEncoded(data);
+
+            Assert.True(condition);
+        }
+
+        //#endregion
+
+        //#region IEventLogDecoder.Decompress
+
+        [Fact]
+        public void IEventLogDecoderDecompress()
+        {
+            var mockConfig = Mock.Of<IOptionsSnapshot<SignalControllerDecoderConfiguration>>();
+            var file = new FileInfo(Path.Combine(TestDataPath, "1210_ECON_10.204.7.239_2021_08_09_1841.datZ"));
+            var data = file.ToMemoryStream();
+
+            IEventLogDecoder<IndianaEvent> sut = new ASCEventLogDecoder(new NullLogger<ASCEventLogDecoder>(), mockConfig);
+
+            var d = sut.Decompress(data);
+
+            var condition = d.IsCompressed();
+
+            Assert.False(condition);
+        }
 
         //[Theory]
         //[EncodedControllerTestFiles]
@@ -106,7 +130,28 @@ namespace InfrastructureTests.LocationControllerDecoderTests
 
         //#endregion
 
-        //#region ILocationControllerDecoder.Decode
+        //#region IEventLogDecoder.Decode
+
+        [Fact]
+        public void IEventLogDecoderDecode()
+        {
+            var mockConfig = Mock.Of<IOptionsSnapshot<SignalControllerDecoderConfiguration>>();
+            var file = new FileInfo(Path.Combine(TestDataPath, "4895_ECON_10.210.8.179_2024_02_21_1115.dat"));
+            var data = file.ToMemoryStream();
+            var device = new Device()
+            {
+                Location = new Location()
+                {
+                    LocationIdentifier = "1001"
+                }
+            };
+
+            IEventLogDecoder<IndianaEvent> sut = new ASCEventLogDecoder(new NullLogger<ASCEventLogDecoder>(), mockConfig);
+
+            var stuff = sut.Decode(device, data);
+
+
+        }
 
         //[Theory]
         //[EncodedControllerTestFiles]
@@ -305,7 +350,7 @@ namespace InfrastructureTests.LocationControllerDecoderTests
 
         public void Dispose()
         {
-            //_output.WriteLine($"Disposing ILocationControllerDecoder Instance: {_decoder.GetHashCode()}");
+            //_output.WriteLine($"Disposing IEventLogDecoder Instance: {_decoder.GetHashCode()}");
         }
     }
 }
