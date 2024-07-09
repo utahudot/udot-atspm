@@ -46,14 +46,15 @@ const CommentCell = ({ detector }: CommentCellProps) => {
   const { mutate: deleteComment } = useDeleteDetectorComment()
   const { mutate: updateComment } = useUpdateDetectorComment()
 
-  if (!commentsData?.value) return null
+  // if (!commentsData?.value) return null
 
-  const comments = commentsData.value
-    .filter((comment) => comment.detectorId === detector.id)
-    .sort(
-      (a, b) =>
-        new Date(b.timeStamp).getTime() - new Date(a.timeStamp).getTime()
-    )
+  const comments =
+    commentsData?.value
+      .filter((comment) => comment.detectorId === detector.id)
+      .sort(
+        (a, b) =>
+          new Date(b.timeStamp).getTime() - new Date(a.timeStamp).getTime()
+      ) || []
 
   const handleOpenPopover = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget)
@@ -253,4 +254,4 @@ const CommentCell = ({ detector }: CommentCellProps) => {
   )
 }
 
-export default CommentCell
+export default React.memo(CommentCell)
