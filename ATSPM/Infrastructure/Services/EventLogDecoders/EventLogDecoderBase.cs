@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for Infrastructure - ATSPM.Infrastructure.Services.ControllerDecoders/ControllerDecoderBase.cs
+// for Infrastructure - ATSPM.Infrastructure.Services.ControllerDecoders/EventLogDecoderBase.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -35,10 +35,9 @@ using System.Threading;
 
 namespace ATSPM.Infrastructure.Services.ControllerDecoders
 {
-    public abstract class ControllerDecoderBase<T> : ExecutableServiceWithProgressAsyncBase<Tuple<Device, FileInfo>, Tuple<Device, T>, ControllerDecodeProgress>, ILocationControllerDecoder<T> where T : EventLogModelBase
+    ///<inheritdoc cref="IEventLogDecoder{T}"/>
+    public abstract class EventLogDecoderBase<T> : ExecutableServiceWithProgressAsyncBase<Tuple<Device, FileInfo>, Tuple<Device, T>, ControllerDecodeProgress>, IEventLogDecoder<T> where T : EventLogModelBase
     {
-        public event EventHandler CanExecuteChanged;
-
         #region Fields
 
         private readonly ILogger _log;
@@ -46,7 +45,8 @@ namespace ATSPM.Infrastructure.Services.ControllerDecoders
 
         #endregion
 
-        public ControllerDecoderBase(ILogger log, IOptionsSnapshot<SignalControllerDecoderConfiguration> options) : base(true)
+        /// <inheritdoc/>
+        public EventLogDecoderBase(ILogger log, IOptionsSnapshot<SignalControllerDecoderConfiguration> options) : base(true)
         {
             _log = log;
             _options = options?.Get(this.GetType().Name) ?? options?.Value;
@@ -67,8 +67,10 @@ namespace ATSPM.Infrastructure.Services.ControllerDecoders
             return log.Timestamp <= DateTime.Now && log.Timestamp > _options.EarliestAcceptableDate;
         }
 
+        /// <inheritdoc/>
         public abstract bool CanExecute(Tuple<Device, FileInfo> parameter);
 
+        /// <inheritdoc/>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="FileNotFoundException"></exception>
         /// <exception cref="ExecuteException"></exception>
@@ -128,11 +130,13 @@ namespace ATSPM.Infrastructure.Services.ControllerDecoders
             }
         }
 
+        /// <inheritdoc/>
         public virtual bool IsCompressed(Stream stream)
         {
             return stream.IsCompressed();
         }
 
+        /// <inheritdoc/>
         public virtual bool IsEncoded(Stream stream)
         {
             MemoryStream memoryStream = (MemoryStream)stream;
@@ -142,12 +146,13 @@ namespace ATSPM.Infrastructure.Services.ControllerDecoders
             return bytes.Any(b => b >= 0x80);
         }
 
+        /// <inheritdoc/>
         public virtual Stream Decompress(Stream stream)
         {
             return stream.GZipDecompressToStream();
         }
 
-        /// <exception cref="ControllerLoggerDecoderException"></exception>
+        /// <inheritdoc/>
         public abstract IEnumerable<T> Decode(Device device, Stream stream);
 
         #endregion
