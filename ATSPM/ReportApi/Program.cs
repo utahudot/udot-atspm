@@ -39,6 +39,7 @@ using Microsoft.OpenApi.Models;
 using MOE.Common.Business.WCFServiceLibrary;
 using Moq;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using ATSPM.ReportApi.Utilities;
 
 var builder = WebApplication.CreateBuilder(args);
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
@@ -57,7 +58,12 @@ builder.Host.ConfigureServices((h, s) =>
         o.Filters.Add(new ProducesResponseTypeAttribute(StatusCodes.Status406NotAcceptable));
         o.Filters.Add(new ProducesAttribute("application/json", "application/xml"));
     })
-    .AddXmlDataContractSerializerFormatters();
+    .AddXmlDataContractSerializerFormatters()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new CustomDateTimeConverter());
+    });
+
     s.AddProblemDetails();
 
     s.AddResponseCompression(o =>
