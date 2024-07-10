@@ -104,7 +104,7 @@ const LTGRReportView: React.FC<LTGRReportViewProps> = ({
     const logoX = 10
     const logoY = 10
     doc.addImage(
-      '/images/new-atspm-logo.png',
+      '/images/atspm-logo-new.png',
       'PNG',
       logoX,
       logoY,
@@ -518,7 +518,7 @@ const LTGRReportView: React.FC<LTGRReportViewProps> = ({
         >
           <Image
             alt="ATSPM Logo"
-            src="/images/new-atspm-logo.png"
+            src="/images/atspm-logo-new.png"
             width={500}
             height={300}
             style={{ width: '100%', height: 'auto' }}

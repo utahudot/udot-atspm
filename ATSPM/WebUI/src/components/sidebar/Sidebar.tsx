@@ -117,7 +117,7 @@ export default function Sidebar() {
         >
           <Image
             alt="ATSPM Logo"
-            src="/images/new-atspm-logo.png"
+            src="/images/atspm-logo-new.png"
             priority
             width={0}
             height={0}
