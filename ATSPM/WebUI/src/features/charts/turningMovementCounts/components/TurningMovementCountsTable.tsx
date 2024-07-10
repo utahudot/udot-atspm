@@ -103,7 +103,7 @@ const TurningMovementCountsTable = ({
     <Box sx={{ mt: 4 }}>
       <Accordion disableGutters>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography variant="h4" component="h2">Data Table</Typography>
+          <Typography variant="h4">Data Table</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <TableContainer>
@@ -119,7 +119,7 @@ const TurningMovementCountsTable = ({
                 }}
               >
                 <TableRow>
-                  <TableCell component="td" sx={{ borderBottom: 'none', pb: 0 }} />
+                  <TableCell sx={{ borderBottom: 'none', pb: 0 }} />
                   {directions.map((direction) => (
                     <TableCell
                       key={direction}
@@ -260,17 +260,17 @@ const TurningMovementCountsTable = ({
                 }}
               >
                 <TableRow>
-                  <TableCell component="td" colSpan={7} sx={{ borderBottom: 'none', pb: 0 }} />
+                  <TableCell colSpan={7} sx={{ borderBottom: 'none', pb: 0 }} />
                   <TableCell
                     colSpan={4}
                     sx={{ borderBottom: 'none', pb: 0, textAlign: 'center' }}
                   >
                     Peak Hour (PHF = {peakHourFactor})
                   </TableCell>
-                  <TableCell component="td" colSpan={7} sx={{ borderBottom: 'none', pb: 0 }} />
+                  <TableCell colSpan={7} sx={{ borderBottom: 'none', pb: 0 }} />
                 </TableRow>
                 <TableRow>
-                  <TableCell component="td" sx={{ borderBottom: 'none', pb: 0 }} />
+                  <TableCell sx={{ borderBottom: 'none', pb: 0 }} />
                   {directions.map((direction) => (
                     <TableCell
                       key={direction}
