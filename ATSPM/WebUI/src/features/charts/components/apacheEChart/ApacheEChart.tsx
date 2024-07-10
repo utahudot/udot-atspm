@@ -3,8 +3,16 @@ import {
   adjustPlanPositions,
   handleGreenTimeUtilizationDataZoom,
 } from '@/features/charts/utils'
+import { useChartsStore } from '@/stores/charts'
 import { useSidebarStore } from '@/stores/sidebar'
-import type { ECharts, EChartsOption, SetOptionOpts } from 'echarts'
+import type {
+  DataZoomComponentOption,
+  DatasetComponentOption,
+  ECharts,
+  EChartsOption,
+  SeriesOption,
+  SetOptionOpts,
+} from 'echarts'
 import { connect, init } from 'echarts'
 import type { CSSProperties } from 'react'
 import { useEffect, useRef, useState } from 'react'
@@ -30,10 +38,12 @@ export default function ApacheEChart({
 }: ApacheEChartsProps) {
   const chartRef = useRef<HTMLDivElement>(null)
   const { isSidebarOpen } = useSidebarStore()
-  const [isActivated, setIsActivated] = useState(false)
+  const { activeChart, setActiveChart } = useChartsStore()
   const [isHovered, setIsHovered] = useState(false)
   const [isScrolling, setIsScrolling] = useState(false)
   const chartInstance = useRef<ECharts | null>(null)
+
+  const isActive = activeChart === id
 
   const initChart = () => {
     if (chartRef.current !== null) {
@@ -44,18 +54,14 @@ export default function ApacheEChart({
       // Set initial options with zooming disabled
       const disabledZoomOption: EChartsOption = {
         ...option,
-        dataZoom: (option.dataZoom as any[])?.map((zoom) => ({
-          ...zoom,
-          disabled: true,
-          zoomLock: true,
-        })),
-        toolbox: {
-          feature: {
-            dataZoom: { show: false },
-            brush: { type: 'rect', show: false },
-          },
-        },
-        series: (option.series as any[])?.map((series) => ({
+        dataZoom: (option.dataZoom as DataZoomComponentOption[])?.map(
+          (zoom) => ({
+            ...zoom,
+            disabled: true,
+            zoomLock: true,
+          })
+        ),
+        series: (option.series as SeriesOption[])?.map((series) => ({
           ...series,
           silent: true,
         })),
@@ -101,25 +107,21 @@ export default function ApacheEChart({
     if (chartInstance.current) {
       const updatedOption: EChartsOption = {
         ...option,
-        dataZoom: (option.dataZoom as any[])?.map((zoom) => ({
-          ...zoom,
-          disabled: !isActivated,
-          zoomLock: !isActivated,
-        })),
-        toolbox: {
-          feature: {
-            dataZoom: { show: isActivated },
-            brush: { type: 'rect', show: isActivated },
-          },
-        },
-        series: (option.series as any[])?.map((series) => ({
+        dataZoom: (option.dataZoom as DataZoomComponentOption[])?.map(
+          (zoom) => ({
+            ...zoom,
+            disabled: !isActive,
+            zoomLock: !isActive,
+          })
+        ),
+        series: (option.series as SeriesOption[])?.map((series) => ({
           ...series,
-          silent: !isActivated,
+          silent: !isActive,
         })),
       }
       chartInstance.current.setOption(updatedOption, settings)
     }
-  }, [option, settings, theme, isActivated])
+  }, [option, settings, theme, isActive])
 
   useEffect(() => {
     if (chartInstance.current) {
@@ -137,7 +139,7 @@ export default function ApacheEChart({
       clearTimeout(scrollTimeout)
       scrollTimeout = setTimeout(() => {
         setIsScrolling(false)
-      }, 1200)
+      }, 700)
     }
 
     window.addEventListener('scroll', handleScroll)
@@ -149,23 +151,19 @@ export default function ApacheEChart({
   }, [])
 
   const handleActivate = () => {
-    if (!isActivated) {
-      setIsActivated(true)
+    if (!isActive) {
+      setActiveChart(id)
       if (chartInstance.current) {
         chartInstance.current.setOption({
           ...option,
-          dataZoom: (option.dataZoom as any[])?.map((zoom) => ({
-            ...zoom,
-            disabled: false,
-            zoomLock: false,
-          })),
-          toolbox: {
-            feature: {
-              dataZoom: { show: true },
-              brush: { type: 'rect', show: true },
-            },
-          },
-          series: (option.series as any[])?.map((series) => ({
+          dataZoom: (option.dataZoom as DatasetComponentOption[])?.map(
+            (zoom) => ({
+              ...zoom,
+              disabled: false,
+              zoomLock: false,
+            })
+          ),
+          series: (option.series as SeriesOption[])?.map((series) => ({
             ...series,
             silent: false,
           })),
@@ -182,44 +180,54 @@ export default function ApacheEChart({
         height: '100%',
         ...style,
       }}
-      onMouseLeave={() => {
-        // setIsActivated(false)
-      }}
+      onClick={handleActivate}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      onCli
     >
-      <div id={id} ref={chartRef} style={{ width: '100%', height: '100%' }} />
-      {!isActivated && isScrolling && (
+      <div
+        id={id}
+        ref={chartRef}
+        style={{
+          width: '100%',
+          height: '100%',
+        }}
+      />
+      <div
+        style={{
+          position: 'absolute',
+          top: option.grid.top,
+          left: option.grid.left,
+          right: option.grid.right,
+          bottom: option.grid.bottom,
+          background: 'rgba(0, 0, 0, 0.3)',
+          display: 'flex',
+          visibility:
+            !isActive && isHovered && isScrolling ? 'visible' : 'hidden',
+          justifyContent: 'center',
+          alignItems: 'center',
+          color: 'white',
+          fontSize: '24px',
+          zIndex: 1,
+          textShadow: '0 0 2px black',
+        }}
+      >
+        Click to enable zoom
+      </div>
+      {isActive && (
         <div
           style={{
+            display: isActive ? 'block' : 'none',
             position: 'absolute',
             top: option.grid.top,
             left: option.grid.left,
             right: option.grid.right,
             bottom: option.grid.bottom,
+            outline: '2px solid #0060df80',
+            zIndex: 1,
+            pointerEvents: 'none',
           }}
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => {
-            setIsHovered(false)
-          }}
-          onClick={handleActivate}
-        >
-          {!isActivated && isHovered && isScrolling && (
-            <div
-              style={{
-                width: '100%',
-                height: '100%',
-                background: 'rgba(0, 0, 0, 0.2)',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                color: 'white',
-                fontSize: '16px',
-                zIndex: 1,
-              }}
-            >
-              Click to enable zoom
-            </div>
-          )}
-        </div>
+        />
       )}
     </div>
   )
