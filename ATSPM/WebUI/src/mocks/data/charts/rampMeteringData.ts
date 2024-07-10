@@ -619,7 +619,11 @@ export const rampMeteringData: RampMeteringData[] = [
             value: 390,
           },
           {
-            timestamp: '2023-08-24T07:22:49.0',
+            timestamp: '2023-08-24T07:22:22.0',
+            value: 0,
+          },
+          {
+            timestamp: '2023-08-24T07:30:51.0',
             value: 0,
           },
           {
@@ -861,10 +865,6 @@ export const rampMeteringData: RampMeteringData[] = [
             value: 1,
           },
           {
-            timestamp: '2023-08-24T07:28:49.0',
-            value: 2,
-          },
-          {
             timestamp: '2023-08-24T16:15:49.0',
             value: 1,
           },
@@ -878,10 +878,6 @@ export const rampMeteringData: RampMeteringData[] = [
           {
             timestamp: '2023-08-24T07:26:49.0',
             value: 1,
-          },
-          {
-            timestamp: '2023-08-24T07:28:49.0',
-            value: 2,
           },
           {
             timestamp: '2023-08-24T07:29:49.0',
