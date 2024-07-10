@@ -115,12 +115,12 @@ function transformData(data: RawGreenTimeUtilizationData) {
       filterMode: 'none',
       minSpan: 0.2,
     },
-    {
-      type: 'inside',
-      orient: 'vertical',
-      filterMode: 'none',
-      minSpan: 0.2,
-    },
+    // {
+    //   type: 'inside',
+    //   orient: 'vertical',
+    //   filterMode: 'none',
+    //   minSpan: 0.2,
+    // },
   ]
 
   const maxStackHeight = Math.max(...bins.map((bin) => bin.y))
