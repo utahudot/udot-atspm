@@ -107,7 +107,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDecoders
                     if (_options.DeleteFile)
                         file.Delete();
                 }
-                catch (ControllerLoggerDecoderException e)
+                catch (EventLogDecoderException e)
                 {
                     logMessages.DecodeLogFileException(file.FullName, e);
                 }
