@@ -75,7 +75,7 @@ namespace ATSPM.Infrastructure.Services.DownloaderClients
             }
             catch (Exception e)
             {
-                throw new ControllerConnectionException(credentials.Domain, this, e.Message, e);
+                throw new DownloaderClientConnectionException(credentials.Domain, this, e.Message, e);
             }
         }
 
@@ -85,7 +85,7 @@ namespace ATSPM.Infrastructure.Services.DownloaderClients
             token.ThrowIfCancellationRequested();
 
             if (!IsConnected)
-                throw new ControllerConnectionException("", this, "Client not connected");
+                throw new DownloaderClientConnectionException("", this, "Client not connected");
 
             await Task.CompletedTask;
         }
@@ -96,7 +96,7 @@ namespace ATSPM.Infrastructure.Services.DownloaderClients
             token.ThrowIfCancellationRequested();
 
             if (!IsConnected)
-                throw new ControllerConnectionException("", this, "Client not connected");
+                throw new DownloaderClientConnectionException("", this, "Client not connected");
 
             try
             {
@@ -105,7 +105,7 @@ namespace ATSPM.Infrastructure.Services.DownloaderClients
             }
             catch (Exception e)
             {
-                throw new ControllerConnectionException(_client?.BaseAddress?.Host, this, e.Message, e);
+                throw new DownloaderClientConnectionException(_client?.BaseAddress?.Host, this, e.Message, e);
             }
 
             getPath = null;
@@ -119,10 +119,10 @@ namespace ATSPM.Infrastructure.Services.DownloaderClients
             token.ThrowIfCancellationRequested();
 
             if (!IsConnected)
-                throw new ControllerConnectionException("", this, "Client not connected");
+                throw new DownloaderClientConnectionException("", this, "Client not connected");
 
             //if (getPath == null)
-            //    throw new ControllerDownloadFileException(remotePath, this, "HTTP Get Path not defined");
+            //    throw new DownloaderClientDownloadFileException(remotePath, this, "HTTP Get Path not defined");
 
             HttpResponseMessage response = new HttpResponseMessage();
 
@@ -146,11 +146,11 @@ namespace ATSPM.Infrastructure.Services.DownloaderClients
                     return fileInfo;
                 }
                 else
-                    throw new ControllerDownloadFileException(remotePath, this, response.StatusCode.ToString());
+                    throw new DownloaderClientDownloadFileException(remotePath, this, response.StatusCode.ToString());
             }
             catch (Exception e)
             {
-                throw new ControllerDownloadFileException(remotePath, this, e.Message, e);
+                throw new DownloaderClientDownloadFileException(remotePath, this, e.Message, e);
             }
         }
 
@@ -160,7 +160,7 @@ namespace ATSPM.Infrastructure.Services.DownloaderClients
             token.ThrowIfCancellationRequested();
 
             if (!IsConnected)
-                throw new ControllerConnectionException("", this, "Client not connected");
+                throw new DownloaderClientConnectionException("", this, "Client not connected");
 
             try
             {
@@ -186,7 +186,7 @@ namespace ATSPM.Infrastructure.Services.DownloaderClients
             }
             catch (Exception e)
             {
-                throw new ControllerListDirectoryException(directory, this, e.Message);
+                throw new DownloaderClientListDirectoryException(directory, this, e.Message);
             }
         }
 

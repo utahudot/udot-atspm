@@ -47,7 +47,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDecoders
             var device = parameter.Item1;
             var file = parameter.Item2;
 
-            return file.Exists && (file.Extension == ".xml" || file.Extension == ".XML");
+            return base.CanExecute(parameter) && (file.Extension == ".xml" || file.Extension == ".XML");
         }
 
         /// <inheritdoc/>
@@ -58,10 +58,10 @@ namespace ATSPM.Infrastructure.Services.ControllerDecoders
             //cancelToken.ThrowIfCancellationRequested();
 
             if (string.IsNullOrEmpty(locationId))
-                throw new ControllerLoggerDecoderException("locationId can not be null", new ArgumentNullException(nameof(locationId)));
+                throw new EventLogDecoderException("locationId can not be null", new ArgumentNullException(nameof(locationId)));
 
             if (stream?.Length == 0)
-                throw new ControllerLoggerDecoderException("Stream is empty", new InvalidDataException(nameof(stream)));
+                throw new EventLogDecoderException("Stream is empty", new InvalidDataException(nameof(stream)));
 
             stream.Position = 0;
 
@@ -76,7 +76,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDecoders
             }
             catch (Exception e)
             {
-                throw new ControllerLoggerDecoderException($"Exception decoding {locationId}", e);
+                throw new EventLogDecoderException($"Exception decoding {locationId}", e);
             }
 
             foreach (var l in logs)
@@ -95,7 +95,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDecoders
                 }
                 catch (Exception e)
                 {
-                    throw new ControllerLoggerDecoderException($"Exception decoding {locationId}", e);
+                    throw new EventLogDecoderException($"Exception decoding {locationId}", e);
                 }
             }
 
