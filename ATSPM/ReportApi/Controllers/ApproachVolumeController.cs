@@ -15,6 +15,6 @@ namespace ATSPM.ReportApi.Controllers
     public class ApproachVolumeController : ReportControllerBase<ApproachVolumeOptions, IEnumerable<ApproachVolumeResult>>
     {
         /// <inheritdoc/>
-        public ApproachVolumeController(IReportService<ApproachVolumeOptions, IEnumerable<ApproachVolumeResult>> reportService) : base(reportService) { }
+        public ApproachVolumeController(IReportService<ApproachVolumeOptions, IEnumerable<ApproachVolumeResult>> reportService, ILogger<ApproachVolumeController> logger) : base(reportService, logger) { }
     }
 }
