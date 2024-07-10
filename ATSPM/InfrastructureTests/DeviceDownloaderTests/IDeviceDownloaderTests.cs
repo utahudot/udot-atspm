@@ -162,7 +162,7 @@ namespace InfrastructureTests.DeviceDownloaderTests
             Mock.Get(mockConfig).Setup(s => s.Value).Returns(new SignalControllerDownloaderConfiguration() { PingControllerToVerify = false });
 
             Mock.Get(mockClient).Setup(s => s.ConnectAsync(It.IsAny<IPEndPoint>(), It.IsAny<NetworkCredential>(), 0, 0, default))
-                .ThrowsAsync(new ControllerConnectionException(It.IsAny<string>(), mockClient, null))
+                .ThrowsAsync(new DownloaderClientConnectionException(It.IsAny<string>(), mockClient, null))
                 .Verifiable();
 
             Mock.Get(mockClient).SetupGet(s => s.IsConnected).Returns(false).Verifiable();

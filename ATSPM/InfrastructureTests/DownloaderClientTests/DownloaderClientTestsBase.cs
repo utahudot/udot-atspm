@@ -58,7 +58,7 @@ namespace InfrastructureTests.DownloaderClientTests
             var connection = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 1);
             var credentials = new NetworkCredential("user", "password", "127.0.0.1");
 
-            await Assert.ThrowsAsync<ControllerConnectionException>(async () => await Sut.ConnectAsync(connection, credentials, 2000, 2000));
+            await Assert.ThrowsAsync<DownloaderClientConnectionException>(async () => await Sut.ConnectAsync(connection, credentials, 2000, 2000));
         }
 
         [Fact]
@@ -72,14 +72,14 @@ namespace InfrastructureTests.DownloaderClientTests
         [Trait(nameof(IDownloaderClient), "DeleteFileAsync")]
         public async virtual void DeleteFileAsyncNotConnected()
         {
-            await Assert.ThrowsAsync<ControllerConnectionException>(async () => await Sut.DeleteFileAsync(""));
+            await Assert.ThrowsAsync<DownloaderClientConnectionException>(async () => await Sut.DeleteFileAsync(""));
         }
 
         [Fact]
         [Trait(nameof(IDownloaderClient), "DeleteFileAsync")]
         public async virtual void DeleteFileAsyncControllerDeleteFileException()
         {
-            await Assert.ThrowsAsync<ControllerDeleteFileException>(async () => await Sut.DeleteFileAsync(""));
+            await Assert.ThrowsAsync<DownloaderClientDeleteFileException>(async () => await Sut.DeleteFileAsync(""));
         }
 
         [Fact]
@@ -97,14 +97,14 @@ namespace InfrastructureTests.DownloaderClientTests
         [Trait(nameof(IDownloaderClient), "DisconnectAsync")]
         public async virtual void DisconnectAsyncNotConnected()
         {
-            await Assert.ThrowsAsync<ControllerConnectionException>(async () => await Sut.DisconnectAsync());
+            await Assert.ThrowsAsync<DownloaderClientConnectionException>(async () => await Sut.DisconnectAsync());
         }
 
         [Fact]
         [Trait(nameof(IDownloaderClient), "DisconnectAsync")]
         public async virtual void DisconnectAsyncControllerConnectionException()
         {
-            await Assert.ThrowsAsync<ControllerConnectionException>(async () => await Sut.DisconnectAsync());
+            await Assert.ThrowsAsync<DownloaderClientConnectionException>(async () => await Sut.DisconnectAsync());
         }
 
         [Fact]
@@ -120,14 +120,14 @@ namespace InfrastructureTests.DownloaderClientTests
         [Trait(nameof(IDownloaderClient), "DownloadFileAsync")]
         public async virtual void DownloadFileAsyncNotConnected()
         {
-            await Assert.ThrowsAsync<ControllerConnectionException>(async () => await Sut.DownloadFileAsync("", ""));
+            await Assert.ThrowsAsync<DownloaderClientConnectionException>(async () => await Sut.DownloadFileAsync("", ""));
         }
 
         [Fact]
         [Trait(nameof(IDownloaderClient), "DownloadFileAsync")]
         public async virtual void DownloadFileAsyncControllerDownloadFileException()
         {
-            await Assert.ThrowsAsync<ControllerDownloadFileException>(async () => await Sut.DownloadFileAsync(Path.GetTempFileName(), ""));
+            await Assert.ThrowsAsync<DownloaderClientDownloadFileException>(async () => await Sut.DownloadFileAsync(Path.GetTempFileName(), ""));
         }
 
         [Fact]
@@ -143,14 +143,14 @@ namespace InfrastructureTests.DownloaderClientTests
         [Trait(nameof(IDownloaderClient), "ListDirectoryAsync")]
         public async virtual void ListDirectoryAsyncNotConnected()
         {
-            await Assert.ThrowsAsync<ControllerConnectionException>(async () => await Sut.ListDirectoryAsync(""));
+            await Assert.ThrowsAsync<DownloaderClientConnectionException>(async () => await Sut.ListDirectoryAsync(""));
         }
 
         [Fact]
         [Trait(nameof(IDownloaderClient), "ListDirectoryAsync")]
         public async virtual void ListDirectoryAsyncControllerDownloadFileException()
         {
-            await Assert.ThrowsAsync<ControllerListDirectoryException>(async () => await Sut.ListDirectoryAsync(""));
+            await Assert.ThrowsAsync<DownloaderClientListDirectoryException>(async () => await Sut.ListDirectoryAsync(""));
         }
 
         [Fact]
