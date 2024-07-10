@@ -183,18 +183,8 @@ namespace ATSPM.LocationControllerLogger
             host.Services.PrintHostInformation();
 
             //await host.RunAsync();
-            //await host.StartAsync();
-            //await host.StopAsync();
-
-
-
-            using (var scope = host.Services.CreateScope())
-            {
-                var dc = scope.ServiceProvider.GetService<IDeviceConfigurationRepository>();
-
-                var all = dc.GetList().Select(s => new {s.Id,s.DataModel} ).ToList();
-            }
-
+            await host.StartAsync();
+            await host.StopAsync();
 
             Console.ReadLine();
         }
