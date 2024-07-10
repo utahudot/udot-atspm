@@ -126,7 +126,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
 
                         await _client.ConnectAsync(connection, credentials, _options.ConnectionTimeout, _options.ReadTimeout, cancelToken);
                     }
-                    catch (ControllerConnectionException e)
+                    catch (DownloaderClientConnectionException e)
                     {
                         logMessages.ConnectingToHostException(locationIdentifier, ipaddress, e);
                     }
@@ -147,11 +147,11 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
 
                             remoteFiles = await _client.ListDirectoryAsync(directory, cancelToken, searchTerms);
                         }
-                        catch (ControllerListDirectoryException e)
+                        catch (DownloaderClientListDirectoryException e)
                         {
                             logMessages.DirectoryListingException(locationIdentifier, ipaddress, directory, e);
                         }
-                        catch (ControllerConnectionException e)
+                        catch (DownloaderClientConnectionException e)
                         {
                             logMessages.NotConnectedToHostException(locationIdentifier, ipaddress, e);
                         }
@@ -173,11 +173,11 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
                                 downloadedFile = await _client.DownloadFileAsync(localFilePath, file, cancelToken);
                                 current++;
                             }
-                            catch (ControllerDownloadFileException e)
+                            catch (DownloaderClientDownloadFileException e)
                             {
                                 logMessages.DownloadFileException(file, locationIdentifier, ipaddress, e);
                             }
-                            catch (ControllerConnectionException e)
+                            catch (DownloaderClientConnectionException e)
                             {
                                 logMessages.NotConnectedToHostException(locationIdentifier, ipaddress, e);
                             }
@@ -194,7 +194,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
 
                                     await _client.DeleteFileAsync(file, cancelToken);
                                 }
-                                catch (ControllerDeleteFileException e)
+                                catch (DownloaderClientDeleteFileException e)
                                 {
                                     logMessages.DeleteFileException(file, locationIdentifier, ipaddress, e);
                                 }
@@ -229,7 +229,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
 
                             await _client.DisconnectAsync(cancelToken);
                         }
-                        catch (ControllerConnectionException e)
+                        catch (DownloaderClientConnectionException e)
                         {
                             logMessages.DisconnectingFromHostException(locationIdentifier, ipaddress);
                         }

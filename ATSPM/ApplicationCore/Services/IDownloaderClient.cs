@@ -44,7 +44,7 @@ namespace ATSPM.Application.Services
         /// <param name="operationTImeout">Timeout for operations</param>
         /// <param name="token">Cancellation token</param>
         /// <returns></returns>
-        /// <exception cref="ControllerConnectionException"></exception>
+        /// <exception cref="DownloaderClientConnectionException"></exception>
         Task ConnectAsync(IPEndPoint connection, NetworkCredential credentials, int connectionTimeout = 2000, int operationTImeout = 2000, CancellationToken token = default);
 
         /// <summary>
@@ -54,8 +54,8 @@ namespace ATSPM.Application.Services
         /// <param name="token">Cancellation token</param>
         /// <param name="filters">File type and name filters</param>
         /// <returns>List of files in directory</returns>
-        /// <exception cref="ControllerConnectionException"></exception>
-        /// <exception cref="ControllerListDirectoryException"></exception>
+        /// <exception cref="DownloaderClientConnectionException"></exception>
+        /// <exception cref="DownloaderClientListDirectoryException"></exception>
         Task<IEnumerable<string>> ListDirectoryAsync(string directory, CancellationToken token = default, params string[] filters);
 
         /// <summary>
@@ -65,8 +65,8 @@ namespace ATSPM.Application.Services
         /// <param name="remotePath">Path of directory to download from</param>
         /// <param name="token">Cancellation token</param>
         /// <returns></returns>
-        /// <exception cref="ControllerConnectionException"></exception>
-        /// <exception cref="ControllerDownloadFileException"></exception>
+        /// <exception cref="DownloaderClientConnectionException"></exception>
+        /// <exception cref="DownloaderClientDownloadFileException"></exception>
         Task<FileInfo> DownloadFileAsync(string localPath, string remotePath, CancellationToken token = default);
 
         /// <summary>
@@ -75,8 +75,8 @@ namespace ATSPM.Application.Services
         /// <param name="path">Directory of files to delete</param>
         /// <param name="token">Cancellation token</param>
         /// <returns></returns>
-        /// <exception cref="ControllerConnectionException"></exception>
-        /// <exception cref="ControllerDeleteFileException"></exception>
+        /// <exception cref="DownloaderClientConnectionException"></exception>
+        /// <exception cref="DownloaderClientDeleteFileException"></exception>
         Task DeleteFileAsync(string path, CancellationToken token = default);
 
         /// <summary>
@@ -84,7 +84,7 @@ namespace ATSPM.Application.Services
         /// </summary>
         /// <param name="token">Cancellation token</param>
         /// <returns></returns>
-        /// <exception cref="ControllerConnectionException"></exception>
+        /// <exception cref="DownloaderClientConnectionException"></exception>
         Task DisconnectAsync(CancellationToken token = default);
     }
 
