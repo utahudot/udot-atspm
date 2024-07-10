@@ -1,14 +1,15 @@
 ﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace ATSPM.Application.Enums
 {
     public enum PhaseType
     {
-        [Description("Protected Only")]
+        [Display(Name = "Protected Only")]
         ProtectedOnly,
-        [Description("Permissive Only")]
+        [Display(Name = "Permissive Only")]
         PermissiveOnly,
-        [Description("Protected/Permissive")]
+        [Display(Name = "Protected/Permissive")]
         ProtectedPermissive
     }
 }
