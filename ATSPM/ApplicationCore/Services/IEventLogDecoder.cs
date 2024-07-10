@@ -58,7 +58,7 @@ namespace ATSPM.Application.Services
         /// <param name="device">Device that generated the data stream</param>
         /// <param name="stream">Event data</param>
         /// <returns></returns>
-        /// <exception cref="ControllerLoggerDecoderException"></exception>
+        /// <exception cref="EventLogDecoderException"></exception>
         /// <exception cref="ArgumentNullException">Thrown if location is unknown</exception>
         /// <exception cref="InvalidDataException">Thrown if stream is empty</exception>
         IEnumerable<T> Decode(Device device, Stream stream);

@@ -133,7 +133,7 @@ namespace InfrastructureTests.EventLogDecoderTests
         //#region IEventLogDecoder.Decode
 
         [Fact]
-        public void IEventLogDecoderDecode()
+        public void IEventLogDecoderDecodePass()
         {
             var mockConfig = Mock.Of<IOptionsSnapshot<SignalControllerDecoderConfiguration>>();
             var file = new FileInfo(Path.Combine(TestDataPath, "4895_ECON_10.210.8.179_2024_02_21_1115.dat"));
