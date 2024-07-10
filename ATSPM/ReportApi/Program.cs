@@ -234,6 +234,7 @@ builder.Host.ConfigureServices((h, s) =>
         l.RequestBodyLogLimit = 4096;
         l.ResponseBodyLogLimit = 4096;
     });
+    s.AddLogging();
 });
 
 var app = builder.Build();
