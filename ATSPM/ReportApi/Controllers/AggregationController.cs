@@ -16,7 +16,7 @@ namespace ATSPM.ReportApi.Controllers
     public class AggregationController : ReportControllerBase<AggregationOptions, IEnumerable<AggregationResult>>
     {
         /// <inheritdoc/>
-        public AggregationController(IReportService<AggregationOptions, IEnumerable<AggregationResult>> reportService) : base(reportService) { }
+        public AggregationController(IReportService<AggregationOptions, IEnumerable<AggregationResult>> reportService, ILogger<AggregationController> logger) : base(reportService, logger) { }
 
     }
 }

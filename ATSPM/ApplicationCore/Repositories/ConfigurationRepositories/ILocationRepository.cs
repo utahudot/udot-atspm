@@ -54,11 +54,11 @@ namespace ATSPM.Application.Repositories.ConfigurationRepositories
         Location GetLatestVersionOfLocation(string LocationIdentifier, DateTime startDate);
        
         /// <summary>
-        /// Get latest version of <see cref="Location"/> and related entities that match <paramref name="LocationIdentifier"/>. This allows for cloning and editing of the  returned location. 
+        /// Get latest version of <see cref="Location"/> and related entities that match <paramref name="LocationId"/>. This allows for cloning and editing of the  returned location. 
         /// </summary>
-        /// <param name="LocationIdentifier"></param>
+        /// <param name="LocationId"></param>
         /// <returns></returns>
-        Location GetLatestVersionOfLocationDetached(string LocationIdentifier);
+        Location GetVersionByIdDetached(int LocationId);
 
         /// <summary>
         /// Get all active <see cref="Location"/> and related entities that match <paramref name="LocationIdentifier"/>

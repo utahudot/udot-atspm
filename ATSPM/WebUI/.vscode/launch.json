@@ -5,7 +5,7 @@
       "type": "chrome",
       "request": "launch",
       "name": "Launch Chrome",
-      "url": "http://localhost:3000", // Adjust the URL to match your project's development server
+      "url": "http://localhost:3000",
       "webRoot": "${workspaceFolder}"
     }
   ]

@@ -15,6 +15,6 @@ namespace ATSPM.ReportApi.Controllers
     public class YellowRedActivationsController : ReportControllerBase<YellowRedActivationsOptions, IEnumerable<YellowRedActivationsResult>>
     {
         /// <inheritdoc/>
-        public YellowRedActivationsController(IReportService<YellowRedActivationsOptions, IEnumerable<YellowRedActivationsResult>> reportService) : base(reportService) { }
+        public YellowRedActivationsController(IReportService<YellowRedActivationsOptions, IEnumerable<YellowRedActivationsResult>> reportService, ILogger<YellowRedActivationsController> logger) : base(reportService, logger) { }
     }
 }

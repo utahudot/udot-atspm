@@ -14,22 +14,39 @@ function authRequestInterceptor(config: InternalAxiosRequestConfig) {
   return config
 }
 
+function isValidTimestamp(value: string) {
+  const iso8601Regex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?Z$/
+  return iso8601Regex.test(value)
+}
+
+function removeZFromTimestamps(data: any): any {
+  if (typeof data === 'string' && isValidTimestamp(data)) {
+    return data.replace(/Z$/, '')
+  }
+  if (Array.isArray(data)) {
+    return data.map((item) => removeZFromTimestamps(item))
+  }
+  if (typeof data === 'object' && data !== null) {
+    return Object.keys(data).reduce((acc, key) => {
+      acc[key] = removeZFromTimestamps(data[key])
+      return acc
+    }, {} as any)
+  }
+  return data
+}
+
 function createAxiosInstance(baseURL: string): AxiosInstance {
   const instance = Axios.create({ baseURL })
 
   instance.interceptors.request.use(authRequestInterceptor)
   instance.interceptors.response.use(
-    (response: AxiosResponse) => response.data,
-    (error) => {
-      // const message = error.response?.data?.message || error.message
-      // useNotificationStore.getState().addNotification({
-      //   type: 'error',
-      //   title: 'Error',
-      //   message,
-      // })
-
-      return Promise.reject(error)
-    }
+    (response: AxiosResponse) => {
+      if (baseURL === CONFIG_URL) {
+        response.data = removeZFromTimestamps(response.data)
+      }
+      return response.data
+    },
+    (error) => Promise.reject(error)
   )
 
   return instance
