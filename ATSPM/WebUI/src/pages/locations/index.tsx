@@ -76,6 +76,7 @@ const Locations = () => {
             <SelectLocation
               location={location}
               setLocation={handleLocationChange}
+              chartsDisabled
             />
           </StyledPaper>
           {/* SideComponents */}

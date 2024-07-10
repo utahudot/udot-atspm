@@ -3,7 +3,7 @@ import { IDENTITY_URL } from '@/config'
 import { useLogin } from '@/features/identity/api/getLogin'
 import IdentityDto from '@/features/identity/types/identityDto'
 import { LoadingButton } from '@mui/lab'
-import { Button, Divider } from '@mui/material'
+import { Alert, Button, Divider } from '@mui/material'
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Grid from '@mui/material/Grid'
@@ -19,24 +19,66 @@ export default function Signin() {
   const [data, setData] = useState<IdentityDto>()
   const [email, setEmail] = useState<string>('')
   const [password, setPassword] = useState<string>('')
+  const [errors, setErrors] = useState<string | null>(null)
+  const [emailError, setEmailError] = useState<string | null>(null)
+  const [passwordError, setPasswordError] = useState<string | null>(null)
   const {
     refetch,
     data: queryData,
     status,
     isLoading,
+    error: queryDataError,
   } = useLogin({ email, password })
 
   useEffect(() => {
     if (queryData) {
-      console.log(queryData)
       setData(queryData as IdentityDto)
     }
   }, [data, queryData])
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    refetch()
+  const validateEmail = (email: string) => {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    return re.test(email)
   }
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    setErrors(null)
+    event.preventDefault()
+
+    let isValid = true
+
+    if (!email) {
+      setEmailError('Email is required')
+      isValid = false
+    } else if (!validateEmail(email)) {
+      setEmailError('Invalid email format')
+      isValid = false
+    } else {
+      setEmailError(null)
+    }
+
+    if (!password) {
+      setPasswordError('Password is required')
+      isValid = false
+    } else {
+      setPasswordError(null)
+    }
+
+    if (isValid) {
+      refetch()
+    }
+  }
+
+  useEffect(() => {
+    setEmailError(null)
+    if (queryDataError) {
+      setErrors(queryDataError.response.data.message)
+    }
+  }, [queryDataError, email])
+
+  useEffect(() => {
+    setPasswordError(null)
+  }, [password])
 
   if (status === 'success' && data !== undefined) {
     const oneDay = addDays(new Date(), 1)
@@ -83,6 +125,9 @@ export default function Signin() {
             autoComplete="email"
             autoFocus
             onChange={(e) => setEmail(e.target.value)}
+            error={!!emailError}
+            helperText={emailError}
+       
           />
           <TextField
             margin="normal"
@@ -94,7 +139,10 @@ export default function Signin() {
             id="password"
             autoComplete="current-password"
             onChange={(e) => setPassword(e.target.value)}
+            error={!!passwordError}
+            helperText={passwordError}
           />
+          {errors && <Alert severity="error">{errors}</Alert>}
           {/* <FormControlLabel
             control={<Checkbox value="remember" color="primary" />}
             label="Remember me"

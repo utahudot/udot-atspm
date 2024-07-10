@@ -110,13 +110,13 @@ function transformData(data: RawYellowAndRedActuationsData) {
       filterMode: 'none',
       minSpan: 0.2,
     },
-    {
-      type: 'inside',
-      orient: 'vertical',
-      filterMode: 'none',
-      yAxisIndex: 0,
-      minSpan: 0.2,
-    },
+    // {
+    //   type: 'inside',
+    //   orient: 'vertical',
+    //   filterMode: 'none',
+    //   yAxisIndex: 0,
+    //   minSpan: 0.2,
+    // },
   ]
 
   const toolbox = createToolbox(
