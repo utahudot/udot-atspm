@@ -20,6 +20,7 @@ using ATSPM.Data.Models;
 using ATSPM.Data.Models.EventLogModels;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Org.BouncyCastle.Asn1.X509.Qualified;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -43,13 +44,10 @@ namespace ATSPM.Infrastructure.Services.ControllerDecoders
         /// <inheritdoc/>
         public override bool CanExecute(Tuple<Device, FileInfo> parameter)
         {
-            if (parameter == null)
-                return false;
-            
             var device = parameter.Item1;
             var file = parameter.Item2;
 
-            return file.Exists && (file.Extension == ".dat" || file.Extension == ".datZ" || file.Extension == ".DAT");
+            return base.CanExecute(parameter) && file.Exists && (file.Extension == ".dat" || file.Extension == ".datZ" || file.Extension == ".DAT");
         }
 
         //HACK: need to use extension methods and GetFileSignatureFromMagicHeader to get compression type
