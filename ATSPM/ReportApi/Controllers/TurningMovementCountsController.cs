@@ -15,6 +15,6 @@ namespace ATSPM.ReportApi.Controllers
     public class TurningMovementCountsController : ReportControllerBase<TurningMovementCountsOptions, TurningMovementCountsResult>
     {
         /// <inheritdoc/>
-        public TurningMovementCountsController(IReportService<TurningMovementCountsOptions, TurningMovementCountsResult> reportService) : base(reportService) { }
+        public TurningMovementCountsController(IReportService<TurningMovementCountsOptions, TurningMovementCountsResult> reportService, ILogger<TurningMovementCountsController> logger) : base(reportService, logger) { }
     }
 }
