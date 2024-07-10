@@ -13,8 +13,6 @@ export default function DefaultChartResults({
 }: DefaultChartResultsProps) {
   const theme = useTheme()
 
-  console.log('chartData', chartData.data)
-
   return (
     <>
       {chartData.data.charts.map((chartWrapper, index) => (

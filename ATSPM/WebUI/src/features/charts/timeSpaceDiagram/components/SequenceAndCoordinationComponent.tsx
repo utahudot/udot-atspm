@@ -103,14 +103,15 @@ const SequenceAndCoordinationComponent = ({
 
   return (
     <Box>
-      <Box display="flex" alignItems="center">
+      <Box display="flex" alignItems="center" minWidth="320.41px">
         <InputLabel htmlFor={'location-select'}>
-          <Typography color="black" marginRight="8px" variant="subtitle1">
+          <Typography color="black" marginRight="8px" variant="subtitle1" >
             Select Location:
           </Typography>
         </InputLabel>
         <FormControl>
           <Select
+            style={{ minWidth: '83px' }}
             value={selectedLocation || ''}
             onChange={handleLocationChange}
             size="small"
@@ -156,7 +157,7 @@ const SequenceAndCoordinationComponent = ({
               </Box>
             ))}
           </Box>
-          <Box display="flex" alignItems="center" marginTop={4}>
+          <Box display="flex" alignItems="leftAlign" flexDirection="column"  marginTop={4}>
             <InputLabel htmlFor={`coordinated-phases`}>
               <Typography color="black" variant="subtitle1" flex={1}>
                 Coordinated Phases:
@@ -167,7 +168,7 @@ const SequenceAndCoordinationComponent = ({
               value={coordPhaseValue}
               onChange={handleCoordPhaseChange}
               size="small"
-              sx={{ flex: '1' }}
+              sx={{ maxWidth:'210px', marginLeft:'3.8rem' }}
               inputProps={{ id: `coordinated-phases` }}
             />
           </Box>

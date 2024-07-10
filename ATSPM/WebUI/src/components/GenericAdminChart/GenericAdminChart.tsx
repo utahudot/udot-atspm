@@ -85,7 +85,6 @@ interface EditToolbarProps {
     newModel: (oldModel: GridRowModesModel) => GridRowModesModel
   ) => void
 }
-
 function EditToolbar(props: EditToolbarProps) {
   ;<GridToolbarContainer>
     <GridToolbarColumnsButton />
@@ -454,6 +453,15 @@ function GenericAdminChart({
                   </Table>
                 </TableContainer>
               </Box>
+              <Box sx={modalButtonLocation}>
+                <Button onClick={handleClose}>No</Button>
+                <Button
+                  onClick={() => handleDeleteClick(id)}
+                  style={{ color: 'red' }}
+                >
+                  Delete {singularPageName}
+                </Button>
+              </Box>
             </>
           ) : null}
           {listOfAssociatedLocations.length < 1 ? (
@@ -495,3 +503,8 @@ function GenericAdminChart({
 }
 
 export default GenericAdminChart
+
+
+
+
+      
