@@ -70,7 +70,7 @@ export default function Signin() {
         }}
       >
         <Box width={'60%'} marginBottom={'10px'}>
-          <NextImage path="/images/new-atspm-logo.png" alt="ATSPM" />
+          <NextImage path="/images/atspm-logo-new.png" alt="ATSPM" />
         </Box>
         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
           <TextField
