@@ -2,6 +2,7 @@ import { ResponsivePageLayout } from '@/components/ResponsivePage'
 import { IDENTITY_URL } from '@/config'
 import { useLogin } from '@/features/identity/api/getLogin'
 import IdentityDto from '@/features/identity/types/identityDto'
+import { LoadingButton } from '@mui/lab'
 import {
   Alert,
   Box,
@@ -15,17 +16,22 @@ import {
 } from '@mui/material'
 import { addMinutes } from 'date-fns'
 import Cookies from 'js-cookie'
-import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 
 function Login() {
   const [data, setData] = useState<IdentityDto>()
   const [email, setEmail] = useState<string>('')
   const [password, setPassword] = useState<string>('')
-  const [error, setError] = useState<string>()
-  const router = useRouter()
+  const [errors, setErrors] = useState<string | null>(null)
+  const [emailError, setEmailError] = useState<string | null>(null)
+  const [passwordError, setPasswordError] = useState<string | null>(null)
 
-  const { refetch, data: queryData } = useLogin({ email, password })
+  const {
+    refetch,
+    data: queryData,
+    isLoading,
+    error: queryDataError,
+  } = useLogin({ email, password })
 
   useEffect(() => {
     if (queryData) {
@@ -34,23 +40,51 @@ function Login() {
     }
   }, [data, queryData])
 
+  const validateEmail = (email: string) => {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    return re.test(email)
+  }
+
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    refetch()
+    setErrors(null)
+    let isValid = true
+
+    if (!email) {
+      setEmailError('Email is required')
+      isValid = false
+    } else if (!validateEmail(email)) {
+      setEmailError('Invalid email format')
+      isValid = false
+    } else {
+      setEmailError(null)
+    }
+
+    if (!password) {
+      setPasswordError('Password is required')
+      isValid = false
+    } else {
+      setPasswordError(null)
+    }
+
+    if (isValid) {
+      refetch()
+    }
   }
 
   useEffect(() => {
-    const query = router.query
-    const { error } = query
-    if (error !== undefined || error !== null) {
-      setError(error as string)
+    setEmailError(null)
+    if (queryDataError) {
+      setErrors('Invalid email or password')
     }
-  }, [router.query])
+  }, [queryDataError, email])
+  useEffect(() => {
+    setPasswordError(null)
+  }, [password])
 
   if (data?.code === 200) {
     const inOneMinute = addMinutes(new Date(), 1)
     Cookies.set('token', data.token, {
-      // httpOnly: true,
       secure: true,
       sameSite: 'strict',
     })
@@ -87,13 +121,17 @@ function Login() {
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <TextField
+                  margin="normal"
                   required
                   fullWidth
                   id="email"
                   label="Email Address"
                   name="email"
                   autoComplete="email"
+                  autoFocus
                   onChange={(e) => setEmail(e.target.value)}
+                  error={!!emailError}
+                  helperText={emailError}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -106,17 +144,33 @@ function Login() {
                   id="password"
                   autoComplete="new-password"
                   onChange={(e) => setPassword(e.target.value)}
+                  error={!!passwordError}
+                  helperText={passwordError}
                 />
               </Grid>
             </Grid>
-            <Button
+            {errors && (
+              <Alert severity="error" sx={{ marginTop: '.5rem' }}>
+                {errors}
+              </Alert>
+            )}
+            {/* <Button
               type="submit"
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
             >
               Sign In
-            </Button>
+            </Button> */}
+            <LoadingButton
+              loading={isLoading}
+              type="submit"
+              fullWidth
+              variant="contained"
+              sx={{ mt: 3, mb: 2, p: 1 }}
+            >
+              Sign In
+            </LoadingButton>
             <Divider>
               <Typography variant="caption">or</Typography>
             </Divider>
@@ -144,11 +198,6 @@ function Login() {
                 </Link>
               </Grid>
             </Grid>
-            {error?.length && (
-              <Alert severity="error" sx={{ marginLeft: 1 }}>
-                {error}
-              </Alert>
-            )}
           </Box>
         </Box>
       </Container>

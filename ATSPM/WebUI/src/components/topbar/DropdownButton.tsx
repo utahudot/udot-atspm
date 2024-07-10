@@ -7,17 +7,21 @@ import { useState } from 'react'
 const DropDownButton = ({
   title,
   menuItems,
+  disabled,
 }: {
   title: string
   icon: JSX.Element
   menuItems: { name: string; icon: JSX.Element; link: string }[]
+  disabled: boolean
 }) => {
   const theme = useTheme()
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null)
   const open = Boolean(anchorEl)
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget)
+    if (!disabled) {
+      setAnchorEl(event.currentTarget)
+    }
   }
 
   const handleClose = () => {
@@ -45,6 +49,7 @@ const DropDownButton = ({
           textTransform: 'none',
           '& .MuiButton-endIcon': { ml: '0px' },
         }}
+        disabled={disabled} // Disable the button when needed
       >
         <Typography fontWeight={400} sx={{ textTransform: 'none' }}>
           {title}
@@ -74,5 +79,6 @@ const DropDownButton = ({
     </>
   )
 }
+
 
 export default DropDownButton

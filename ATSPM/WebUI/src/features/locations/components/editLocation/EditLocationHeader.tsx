@@ -73,8 +73,15 @@ const EditLocationHeader = ({
   const locationsVersions = versionData?.value.map((version: Location) => ({
     id: version.id,
     note: version.note,
+    startDate: version.start,
   }))
 
+  locationsVersions?.map((obj) => {
+    obj.note = ` ${new Date(obj.startDate).toLocaleDateString('en-US')} - ${
+      obj.note
+    }`
+    return obj
+  })
   useEffect(() => {
     if (location.locationIdentifier) {
       refetchAllVersionsOfLocation()
