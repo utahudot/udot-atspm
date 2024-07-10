@@ -68,7 +68,10 @@ namespace ATSPM.Infrastructure.Services.ControllerDecoders
         }
 
         /// <inheritdoc/>
-        public abstract bool CanExecute(Tuple<Device, FileInfo> parameter);
+        public override bool CanExecute(Tuple<Device, FileInfo> parameter)
+        {
+            return parameter != null && parameter.Item1.DeviceConfiguration.DataModel == typeof(T) && parameter.Item2.Exists;
+        }
 
         /// <inheritdoc/>
         /// <exception cref="ArgumentNullException"></exception>
