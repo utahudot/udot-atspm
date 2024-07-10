@@ -169,7 +169,7 @@ export const LinkPivotAdjustmentComponent = ({ data, cycleLength }: props) => {
               >
                 <TableCell sx={{ width: '160px' }}>{row.linkNumber}</TableCell>
                 <TableCell sx={{ width: '160px' }}>{row.locationIdentifier}</TableCell>
-                <TableCell>{row.location}</TableCell>
+                <TableCell sx={{ width: '300px' }}>{row.location}</TableCell>
                 <TableCell sx={{ width: '160px' }}>{row.delta}</TableCell>
                 <EditableTableCell
                   value={row.editLinkData}
@@ -177,7 +177,13 @@ export const LinkPivotAdjustmentComponent = ({ data, cycleLength }: props) => {
                     updateLinkDelta(row, value.toString())
                     adjustOffset()
                   }}
-                  sx={{ width: '160px' }}
+                  sx={{ 
+                    width: '160px',
+                    '& input': {
+                      border: '1px solid black', // Add border to the input element
+                      padding: '4px', // Optional: add padding for better appearance
+                    },
+                   }}
                 />
                 <EditableTableCell
                   value={row.adjustment}
@@ -185,7 +191,13 @@ export const LinkPivotAdjustmentComponent = ({ data, cycleLength }: props) => {
                     updateExistingOffset(row, value.toString())
                     adjustOffset()
                   }}
-                  sx={{ width: '160px' }}
+                  sx={{ 
+                    width: '160px',
+                    '& input': {
+                      border: '1px solid black', // Add border to the input element
+                      padding: '4px', // Optional: add padding for better appearance
+                    },
+                   }}
                 />
                 <TableCell sx={{ width: '160px' }}>{row.existingOffset}</TableCell>
                 <TableCell sx={{ width: '160px' }}>{row.newOffset}</TableCell>

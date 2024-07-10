@@ -12,6 +12,7 @@ import {
 import { toUTCDateWithTimeStamp } from '@/utils/dateTime'
 import { LoadingButton } from '@mui/lab'
 import { Alert, Box, Paper, Typography } from '@mui/material'
+import { AxiosError } from 'axios'
 import { startOfDay } from 'date-fns'
 import { useEffect, useState } from 'react'
 
@@ -92,7 +93,9 @@ const LinkPivot = () => {
         </LoadingButton>
         {isError && (
           <Alert severity="error" sx={{ marginLeft: 1 }}>
-            {(error as Error).message}
+            {error instanceof AxiosError
+              ? error.response?.data
+              : (error as Error).message}
           </Alert>
         )}
         {alert && (
@@ -104,7 +107,12 @@ const LinkPivot = () => {
       <Box sx={{ height: 'auto', width: '100%' }}>
         {data !== undefined && (
           <Box>
-            <Typography variant="h3" component="h2" fontWeight="bold" sx={{ mb: 2 }}>
+            <Typography
+              variant="h3"
+              component="h2"
+              fontWeight="bold"
+              sx={{ mb: 2 }}
+            >
               Adjustments
             </Typography>
             <Paper>
