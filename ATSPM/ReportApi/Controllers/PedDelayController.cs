@@ -15,6 +15,6 @@ namespace ATSPM.ReportApi.Controllers
     public class PedDelayController : ReportControllerBase<PedDelayOptions, IEnumerable<PedDelayResult>>
     {
         /// <inheritdoc/>
-        public PedDelayController(IReportService<PedDelayOptions, IEnumerable<PedDelayResult>> reportService) : base(reportService) { }
+        public PedDelayController(IReportService<PedDelayOptions, IEnumerable<PedDelayResult>> reportService, ILogger<PedDelayController> logger) : base(reportService, logger) { }
     }
 }
