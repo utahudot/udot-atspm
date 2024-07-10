@@ -229,6 +229,39 @@ namespace InfrastructureTests.EventLogDecoderTests
 
         #region ILocationControllerDecoder.ExecuteAsync
 
+
+
+
+
+        [Fact]
+        public void IEventLogDecoderCanExecutePass()
+        {
+            var mockConfig = Mock.Of<IOptionsSnapshot<SignalControllerDecoderConfiguration>>();
+            var file = new FileInfo(Path.Combine(TestDataPath, "4895_ECON_10.210.8.179_2024_02_21_1115.dat"));
+            //var data = file.ToMemoryStream();
+            
+            var device = new Device()
+            {
+                DeviceConfiguration = new DeviceConfiguration()
+                {
+                    DataModel = typeof(IndianaEvent)
+                }
+            };
+
+            IEventLogDecoder<IndianaEvent> sut = new ASCEventLogDecoder(new NullLogger<ASCEventLogDecoder>(), mockConfig);
+
+            var condition = sut.CanExecute(Tuple.Create(device, file));
+
+            Assert.True(condition);
+        }
+
+
+
+
+
+
+
+
         //[Fact]
         //public async Task ExecuteAsyncWithNullFileInfoParameter()
         //{
@@ -266,6 +299,8 @@ namespace InfrastructureTests.EventLogDecoderTests
         #region IExecuteAsyncWithProgress
 
         #region IExecuteAsyncWithProgress.CanExecute
+
+        
 
         [Fact]
         public void CanExecuteValidFromDat()
