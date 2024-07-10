@@ -109,12 +109,12 @@ function transformData(data: RawPurduePhaseTerminationData) {
       filterMode: 'none',
       minSpan: 0.2,
     },
-    {
-      type: 'inside',
-      orient: 'vertical',
-      filterMode: 'none',
-      minSpan: 0.2,
-    },
+    // {
+    //   type: 'inside',
+    //   orient: 'vertical',
+    //   filterMode: 'none',
+    //   minSpan: 0.2,
+    // },
   ]
 
   const toolbox = createToolbox(

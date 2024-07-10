@@ -70,7 +70,6 @@ const CustomSelect = ({
   })()
 
   const labelId = `${label.split(' ').join('').toLowerCase()}-select-label`
-
   const isItemSelected = (itemId: number | string) => {
     if (multiple && Array.isArray(value)) {
       return (value as Array<typeof itemId>).includes(itemId)

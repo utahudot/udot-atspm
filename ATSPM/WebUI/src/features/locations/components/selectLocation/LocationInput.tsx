@@ -31,6 +31,7 @@ const customSort = (options: Location[], value: string) => {
 interface LocationInputProps {
   location: Location | null
   locations: Location[]
+  chartsDisabled?: boolean
   handleChange: (_: React.SyntheticEvent, value: Location | null) => void
 }
 
@@ -38,9 +39,9 @@ const LocationInput = ({
   location,
   locations,
   handleChange,
+  
 }: LocationInputProps) => {
   const [inputValue, setInputValue] = useState('')
-
   return (
     <Autocomplete
       value={
