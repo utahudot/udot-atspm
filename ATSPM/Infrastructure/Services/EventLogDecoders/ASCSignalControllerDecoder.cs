@@ -74,10 +74,10 @@ namespace ATSPM.Infrastructure.Services.ControllerDecoders
             //cancelToken.ThrowIfCancellationRequested();
 
             if (string.IsNullOrEmpty(locationId))
-                throw new ControllerLoggerDecoderException("LocationIdentifier can not be null", new ArgumentNullException(nameof(locationId)));
+                throw new EventLogDecoderException("LocationIdentifier can not be null", new ArgumentNullException(nameof(locationId)));
 
             if (stream?.Length == 0)
-                throw new ControllerLoggerDecoderException("Stream is empty", new InvalidDataException(nameof(stream)));
+                throw new EventLogDecoderException("Stream is empty", new InvalidDataException(nameof(stream)));
 
             HashSet<IndianaEvent> decodedLogs = new();
 
