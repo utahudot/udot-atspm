@@ -406,11 +406,6 @@ function transformData(data: RampMeteringData): EChartsOption[] {
   )
 
   const queueActives = {
-    name: 'Queue Rate Activated',
-    data: [
-      ['2023-08-24T07:25:49', '0.00'],
-      ['2023-08-24T07:26:49', '0.00'],
-    ],
     markArea: {
       data: [
         [
@@ -451,6 +446,9 @@ function transformData(data: RampMeteringData): EChartsOption[] {
   const queueActivesTwo = {
     name: 'Queue Rate Activated',
     data: [
+      ['2023-08-24T07:25:49', '0.00'],
+      ['2023-08-24T07:26:49', '0.00'],
+      null,
       ['2023-08-24T07:28:29', '0.00'],
       ['2023-08-24T07:29:49', '0.00'],
     ],
