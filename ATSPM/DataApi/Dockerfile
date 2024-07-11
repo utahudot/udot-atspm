@@ -1,4 +1,4 @@
-#See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
+# See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
 
 FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS base
 WORKDIR /app
@@ -7,12 +7,15 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /src
+
 COPY ["DomainCore/DomainCore.csproj", "DomainCore/"]
 COPY ["ApplicationCore/ApplicationCore.csproj", "ApplicationCore/"]
 COPY ["Data/Data.csproj", "Data/"]
 COPY ["Infrastructure/Infrastructure.csproj", "Infrastructure/"]
 COPY ["DataApi/DataApi.csproj", "DataApi/"]
+
 RUN dotnet restore "DataApi/DataApi.csproj"
+
 COPY . .
 WORKDIR "/src/DataApi"
 RUN dotnet build "DataApi.csproj" -c Release -o /app/build
@@ -20,10 +23,12 @@ RUN dotnet build "DataApi.csproj" -c Release -o /app/build
 FROM build AS publish
 RUN dotnet publish "DataApi.csproj" -c Release -o /app/publish
 
-RUN groupadd -r appuser && useradd -r -g appuser appuser
-RUN chown -R appuser:appuser /app
+FROM base AS final
+WORKDIR /app
+
+RUN addgroup --system appgroup && adduser --system --ingroup appgroup appuser
+COPY --from=publish /app/publish .
+RUN chown -R appuser:appgroup /app
 USER appuser
 
-WORKDIR /app
-COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "DataApi.dll"]

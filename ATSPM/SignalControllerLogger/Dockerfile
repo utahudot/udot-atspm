@@ -23,13 +23,14 @@ RUN dotnet build "LocationControllerLogger.csproj" -c Release -o /app/build
 FROM build AS publish
 RUN dotnet publish "LocationControllerLogger.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
-RUN groupadd -r appuser && useradd -r -g appuser appuser
-RUN chown -R appuser:appuser /app
-USER appuser
-
+FROM base AS final
 WORKDIR /app
+
+RUN addgroup --system appgroup && adduser --system --ingroup appgroup appuser
+COPY --from=publish /app/publish .
+RUN chown -R appuser:appgroup /app
+USER appuser
 
 ENV DOTNET_ENVIRONMENT Development
 
-COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "LocationControllerLogger.dll"]
