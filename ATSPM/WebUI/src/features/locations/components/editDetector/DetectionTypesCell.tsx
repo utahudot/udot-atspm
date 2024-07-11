@@ -49,6 +49,18 @@ const options: Record<string, DetectionType> = {
     displayOrder: 3,
     abbreviation: 'AS',
   },
+  IQ: {
+    id: 'IQ',
+    description: 'Intermediate Queue',
+    displayOrder: 10,
+    abbreviation: 'IQ',
+  },
+  EQ: {
+    id: 'EQ',
+    description: 'Excessive Queue',
+    displayOrder: 11,
+    abbreviation: 'EQ',
+  },
 }
 
 interface DetectionTypesProps {
