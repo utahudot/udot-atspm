@@ -1,12 +1,17 @@
 #See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
 
+# Use the official image as a parent image
 FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS base
 WORKDIR /app
 EXPOSE 80
 EXPOSE 443
 
+# Use SDK image to build the project
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /src
+
+RUN ls -la
+
 COPY ["ConfigApi/ConfigApi.csproj", "ConfigApi/"]
 COPY ["Infrastructure/Infrastructure.csproj", "Infrastructure/"]
 COPY ["ApplicationCore/ApplicationCore.csproj", "ApplicationCore/"]
@@ -17,7 +22,9 @@ COPY ["OracleDatabaseProvider/OracleDatabaseProvider.csproj", "OracleDatabasePro
 COPY ["PostgreSQLDatabaseProvider/PostgreSQLDatabaseProvider.csproj", "PostgreSQLDatabaseProvider/"]
 COPY ["SqlDatabaseProvider/SqlDatabaseProvider.csproj", "SqlDatabaseProvider/"]
 COPY ["SqlLiteDatabaseProvider/SqlLiteDatabaseProvider.csproj", "SqlLiteDatabaseProvider/"]
+
 RUN dotnet restore "ConfigApi/ConfigApi.csproj"
+
 COPY . .
 WORKDIR "/src/ConfigApi"
 RUN dotnet build "ConfigApi.csproj" -c Release -o /app/build
@@ -25,12 +32,17 @@ RUN dotnet build "ConfigApi.csproj" -c Release -o /app/build
 FROM build AS publish
 RUN dotnet publish "ConfigApi.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
+# Generate runtime image
 FROM base AS final
 WORKDIR /app
+
+RUN addgroup --system appgroup && adduser --system --ingroup appgroup appuser
+
 COPY --from=publish /app/publish .
+
+RUN chown -R appuser:appgroup /app
+
+USER appuser
+
 ENTRYPOINT ["dotnet", "ConfigApi.dll"]
-
-
-
-
 
