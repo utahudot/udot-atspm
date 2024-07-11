@@ -50,7 +50,9 @@ namespace ATSPM.Application.Business.ApproachSpeed
                    detector.Approach.Description,
                    options.Start,
                    options.End,
-                   detector.DetectionTypes.IsNullOrEmpty() ? "Detection Type Not Found" : detector.DetectionTypes.FirstOrDefault(d => d.MeasureTypes.Any(m => m.Id == options.MetricTypeId)).Description,
+                   detector.DetectionTypes.IsNullOrEmpty()
+                    ? "Detection Type Not Found"
+                    : detector.DetectionTypes.FirstOrDefault(d => d.MeasureTypes.Any(m => m.Id == options.MetricTypeId))?.Description ?? "Detection Type Not Found",
                    detector.DistanceFromStopBar.Value,
                    detector.Approach.Mph.Value,
                    speedDetector.Plans,
@@ -78,7 +80,9 @@ namespace ATSPM.Application.Business.ApproachSpeed
                     detector.Approach.Description,
                     options.Start,
                     options.End,
-                    detector.DetectionTypes.IsNullOrEmpty() ? "Detection Type Not Found" : detector.DetectionTypes.FirstOrDefault(d => d.MeasureTypes.Any(m => m.Id == options.MetricTypeId)).Description,
+                    detector.DetectionTypes.IsNullOrEmpty()
+                    ? "Detection Type Not Found"
+                    : detector.DetectionTypes.FirstOrDefault(d => d.MeasureTypes.Any(m => m.Id == options.MetricTypeId))?.Description ?? "Detection Type Not Found",
                     detector.DistanceFromStopBar.Value,
                     detector.Approach.Mph.Value,
                     speedDetector.Plans,
