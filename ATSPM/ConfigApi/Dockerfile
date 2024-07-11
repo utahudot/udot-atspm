@@ -29,13 +29,11 @@ RUN dotnet build "ConfigApi.csproj" -c Release -o /app/build
 FROM build AS publish
 RUN dotnet publish "ConfigApi.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
-RUN groupadd -r appuser && useradd -r -g appuser appuser
-RUN chown -R appuser:appuser /app
-USER appuser
-
+# Generate runtime image
+FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "ConfigApi.dll"]
+ENTRYPOINT ["dotnet", "ReportApi.dll"]
 
 
 
