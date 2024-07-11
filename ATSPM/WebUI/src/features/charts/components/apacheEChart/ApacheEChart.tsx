@@ -183,7 +183,6 @@ export default function ApacheEChart({
       onClick={handleActivate}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      onCli
     >
       <div
         id={id}
