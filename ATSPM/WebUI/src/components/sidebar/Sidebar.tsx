@@ -3,10 +3,10 @@ import { useSidebarStore } from '@/stores/sidebar'
 import AddchartOutlinedIcon from '@mui/icons-material/AddchartOutlined'
 import FileDownloadIcon from '@mui/icons-material/FileDownload'
 import ForkLeftOutlinedIcon from '@mui/icons-material/ForkLeftOutlined'
+import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined'
 import MenuOpenOutlinedIcon from '@mui/icons-material/MenuOpenOutlined'
 import RouteOutlinedIcon from '@mui/icons-material/RouteOutlined'
 import ShowChartOutlinedIcon from '@mui/icons-material/ShowChartOutlined'
-import TrafficOutlinedIcon from '@mui/icons-material/TrafficOutlined'
 import {
   Box,
   Drawer,
@@ -128,7 +128,7 @@ export default function Sidebar() {
         <List>
           <SubMenu subheader={'Operations'}>
             <NavItem
-              icon={<TrafficOutlinedIcon />}
+              icon={<LocationOnOutlinedIcon />}
               text={'Locations'}
               url={'/locations'}
             />
