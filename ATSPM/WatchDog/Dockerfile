@@ -14,8 +14,6 @@ COPY ["Infrastructure/Infrastructure.csproj", "Infrastructure/"]
 COPY ["WatchDog/WatchDog.csproj", "WatchDog/"]
 RUN dotnet restore "WatchDog/WatchDog.csproj"
 COPY . .
-RUN echo "Contents of /src:"
-RUN ls /src
 WORKDIR "/src/WatchDog"
 ENV DOTNET_BUILD_SUPPRESS_WARNINGS=CS1591
 RUN dotnet build "WatchDog.csproj" -c Release -o /app/build
@@ -26,5 +24,18 @@ RUN dotnet publish "WatchDog.csproj" -c Release -o /app/publish
 # Generate runtime image
 FROM base AS final
 WORKDIR /app
+
+# Create a non-root user and group
+RUN addgroup --system appgroup && adduser --system --ingroup appgroup appuser
+
+# Copy only the necessary files from the publish stage
 COPY --from=publish /app/publish .
+
+# Change ownership of the application files to the non-root user
+RUN chown -R appuser:appgroup /app
+
+# Switch to the non-root user
+USER appuser
+
+# Start the application
 ENTRYPOINT ["dotnet", "WatchDog.dll"]

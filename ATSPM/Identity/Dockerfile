@@ -26,8 +26,10 @@ RUN dotnet build "Identity.csproj" -c Release -o /app/build
 FROM build AS publish
 RUN dotnet publish "Identity.csproj" -c Release -o /app/publish
 
-# Generate runtime image
-FROM base AS final
+RUN groupadd -r appuser && useradd -r -g appuser appuser
+RUN chown -R appuser:appuser /app
+USER appuser
+
 WORKDIR /app
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "Identity.dll"]
