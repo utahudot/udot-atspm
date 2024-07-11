@@ -29,11 +29,10 @@ RUN dotnet build "ConfigApi.csproj" -c Release -o /app/build
 FROM build AS publish
 RUN dotnet publish "ConfigApi.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
-# Generate runtime image
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "ReportApi.dll"]
+ENTRYPOINT ["dotnet", "ConfigApi.dll"]
 
 
 
