@@ -53,7 +53,6 @@ const EditLocation = ({
           handleLocationEdit={handler.handleLocationEdit}
           updateLocation={handler.updateExpandedLocation}
           location={handler.expandedLocation}
-          refetchLocation={handler.refetchLocation}
         />
       </TabPanel>
       <TabPanel value="2" sx={{ padding: '0px', marginBottom: '100px' }}>

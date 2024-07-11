@@ -8,6 +8,7 @@ import { memo } from 'react'
 interface SelectLocationProps {
   location: Location | null
   setLocation: (location: Location) => void
+  chartsDisabled?:boolean
   route?: number[][]
   center?: [number, number]
   zoom?: number
@@ -18,6 +19,7 @@ interface SelectLocationProps {
 export function SelectLocation({
   location,
   setLocation,
+  chartsDisabled,
   route,
   center,
   zoom,
@@ -26,8 +28,8 @@ export function SelectLocation({
 }: SelectLocationProps) {
   const { data } = useLatestVersionOfAllLocations()
 
-  const locations = data?.value || []
-  const filteredLocations:Location = locations.filter(loc => loc.chartEnabled === true)
+  let locations = data?.value || []
+  if(chartsDisabled)  locations = locations.filter(loc => loc.chartEnabled === true)
 
   const handleChange = (_: React.SyntheticEvent, value: Location | null) => {
     if (value) {
@@ -39,7 +41,7 @@ export function SelectLocation({
     <>
       <LocationInput
         location={location}
-        locations={filteredLocations}
+        locations={locations}
         handleChange={handleChange}
       />
       {addLocationBtn && <Button sx={{ ml: 0 }}>Add Location</Button>}
@@ -47,7 +49,7 @@ export function SelectLocation({
       <SelectLocationMap
         location={location}
         setLocation={setLocation}
-        locations={filteredLocations}
+        locations={locations}
         center={center}
         zoom={zoom}
         route={route}

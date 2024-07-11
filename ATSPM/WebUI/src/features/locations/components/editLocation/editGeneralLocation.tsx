@@ -28,18 +28,12 @@ interface EditGeneralLocationProps {
   location: LocationExpanded
   updateLocation: (location: LocationExpanded) => void
   handleLocationEdit: (name: string, value: string) => void
-  // handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void
-  // handleSelectChange: (e: SelectChangeEvent<unknown>) => void
-  refetchLocation: () => void
 }
 
 function EditGeneralLocation({
   location,
-  // handleChange,
-  // handleSelectChange,
   handleLocationEdit,
   updateLocation,
-  refetchLocation,
 }: EditGeneralLocationProps) {
   const queryClient = useQueryClient()
   const { data: areasData } = useAreas()
@@ -241,7 +235,23 @@ function EditGeneralLocation({
                 <FormControlLabel
                   control={<Checkbox onChange={handleCheckboxChange} />}
                   name="chartEnabled"
-                  label="Enable Charts"
+                  label={
+                    <Tooltip
+                      title={
+                        'Allow charts to be displayed for this location. If disabled, the location will not be visible in the charts section.'
+                      }
+                    >
+                      <Typography
+                        sx={{
+                          textDecoration: 'underline',
+                          textDecorationStyle: 'dotted',
+                          textUnderlineOffset: '5px',
+                        }}
+                      >
+                        Enable Charts
+                      </Typography>
+                    </Tooltip>
+                  }
                   checked={location.chartEnabled}
                   sx={{
                     minWidth: '226px',
@@ -253,7 +263,7 @@ function EditGeneralLocation({
                   label={
                     <Tooltip
                       title={
-                        'Pedestrian channels use the same numbers as the vehicle channels'
+                        'If enabled, peds phases will be 1 to 1 with the protected phase.'
                       }
                     >
                       <Typography

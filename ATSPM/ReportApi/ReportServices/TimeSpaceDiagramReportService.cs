@@ -6,6 +6,7 @@ using ATSPM.Application.Repositories.EventLogRepositories;
 using ATSPM.Application.TempExtensions;
 using ATSPM.Data.Models;
 using ATSPM.Data.Models.EventLogModels;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 namespace ATSPM.ReportApi.ReportServices
@@ -188,7 +189,10 @@ namespace ATSPM.ReportApi.ReportServices
 
         private List<RouteLocation> GetLocationsFromRouteId(int routeId)
         {
-            var routeLocations = routeLocationsRepository.GetList().Where(l => l.RouteId == routeId).ToList();
+            var routeLocations = routeLocationsRepository.GetList()
+                .Include(x => x.NextLocationDistance)
+                .Include(x => x.PreviousLocationDistance)
+                .Where(l => l.RouteId == routeId).ToList();
             return routeLocations ?? new List<RouteLocation>();
         }
     }
