@@ -1,5 +1,6 @@
 using Asp.Versioning;
 using ATSPM.ConfigApi;
+using ATSPM.ConfigApi.Configuration;
 using ATSPM.ConfigApi.Services;
 using ATSPM.ConfigApi.Utility;
 using ATSPM.Domain.Extensions;
