@@ -56,7 +56,7 @@ namespace ATSPM.Application.Business.TimeSpaceDiagram
 
             GreenToGreenCycle percentileSplitCycle = GetPercentileSplitCycle(options, controllerEventLogs, selectedPhase, phaseDetail.UseOverlap);
             double startOfRefPoint = 0;
-            
+
             if (isCoordPhasesMatchRoutePhases)
             {
                 startOfRefPoint = CalculateStartOfRefPointForCoordPhases(offset, programmedSplit, percentileSplitCycle);
@@ -171,7 +171,7 @@ namespace ATSPM.Application.Business.TimeSpaceDiagram
         {
             List<GreenToGreenCycle> cycles = new List<GreenToGreenCycle>();
             var events = new List<CycleEventsDto>();
-            if ( percentileSplitCycle == null)
+            if (percentileSplitCycle == null)
             {
                 return events;
             }
@@ -180,7 +180,7 @@ namespace ATSPM.Application.Business.TimeSpaceDiagram
             var yellowTime = percentileSplitCycle.TotalYellowTime;
             var redTime = cycleLength - (greenTime + yellowTime) > 0 ? cycleLength - (greenTime + yellowTime) : percentileSplitCycle.TotalRedTime;
 
-            
+
 
             while (startTime <= end.AddMinutes(2))
             {
@@ -237,6 +237,10 @@ namespace ATSPM.Application.Business.TimeSpaceDiagram
                 return null;
             }
             int medianIndex = cycles.Count / 2;
+            if (medianIndex < 0)
+            {
+                return null;
+            }
 
             return cycles[medianIndex];
         }
