@@ -25,6 +25,7 @@ export interface ApacheEChartsProps {
   settings?: SetOptionOpts
   loading?: boolean
   theme?: 'light' | 'dark'
+  hideInteractionMessage?: boolean
 }
 
 export default function ApacheEChart({
@@ -35,6 +36,7 @@ export default function ApacheEChart({
   settings,
   loading,
   theme,
+  hideInteractionMessage = false,
 }: ApacheEChartsProps) {
   const chartRef = useRef<HTMLDivElement>(null)
   const { isSidebarOpen } = useSidebarStore()
@@ -192,41 +194,45 @@ export default function ApacheEChart({
           height: '100%',
         }}
       />
-      <div
-        style={{
-          position: 'absolute',
-          top: option.grid.top,
-          left: option.grid.left,
-          right: option.grid.right,
-          bottom: option.grid.bottom,
-          background: 'rgba(0, 0, 0, 0.3)',
-          display: 'flex',
-          visibility:
-            !isActive && isHovered && isScrolling ? 'visible' : 'hidden',
-          justifyContent: 'center',
-          alignItems: 'center',
-          color: 'white',
-          fontSize: '24px',
-          zIndex: 1,
-          textShadow: '0 0 2px black',
-        }}
-      >
-        Click to enable zoom
-      </div>
-      {isActive && (
-        <div
-          style={{
-            display: isActive ? 'block' : 'none',
-            position: 'absolute',
-            top: option.grid.top,
-            left: option.grid.left,
-            right: option.grid.right,
-            bottom: option.grid.bottom,
-            outline: '2px solid #0060df80',
-            zIndex: 1,
-            pointerEvents: 'none',
-          }}
-        />
+      {!hideInteractionMessage && (
+        <>
+          <div
+            style={{
+              position: 'absolute',
+              top: option?.grid?.top || 0,
+              left: option?.grid?.left || 0,
+              right: option?.grid?.right || 0,
+              bottom: option?.grid?.bottom || 0,
+              background: 'rgba(0, 0, 0, 0.3)',
+              display: 'flex',
+              visibility:
+                !isActive && isHovered && isScrolling ? 'visible' : 'hidden',
+              justifyContent: 'center',
+              alignItems: 'center',
+              color: 'white',
+              fontSize: '24px',
+              zIndex: 1,
+              textShadow: '0 0 2px black',
+            }}
+          >
+            Click to enable zoom
+          </div>
+          {isActive && (
+            <div
+              style={{
+                display: isActive ? 'block' : 'none',
+                position: 'absolute',
+                top: option?.grid?.top || 0,
+                left: option?.grid?.left || 0,
+                right: option?.grid?.right || 0,
+                bottom: option?.grid?.bottom || 0,
+                outline: '2px solid #0060df80',
+                zIndex: 1,
+                pointerEvents: 'none',
+              }}
+            />
+          )}
+        </>
       )}
     </div>
   )
