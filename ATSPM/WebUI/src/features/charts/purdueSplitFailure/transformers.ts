@@ -274,6 +274,8 @@ function transformData(data: RawPurdueSplitFailureData) {
 
   const displayProps = createDisplayProps({
     description: data.approachDescription,
+    isPermissivePhase:
+      data.phaseType.toLowerCase() === 'permissive' ? true : false,
   })
 
   const chartOptions: EChartsOption = {
