@@ -103,6 +103,7 @@ export default function TimingAndActuationChartsToolbox({
           <IndividualChartControls
             charts={chartData.data.charts}
             chartRefs={chartRefs}
+            isDisabled={toggleConfigLabel === 'Charts'}
           />
         </Box>
       </Toolbar>
