@@ -58,7 +58,6 @@ builder.Host.ConfigureServices((h, s) =>
         o.Filters.Add(new ProducesAttribute("application/json", "application/xml"));
     })
     .AddXmlDataContractSerializerFormatters();
-
     s.AddProblemDetails();
 
     s.AddResponseCompression(o =>
