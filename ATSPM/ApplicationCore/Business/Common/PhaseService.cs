@@ -80,7 +80,7 @@ namespace ATSPM.Application.Business.Common
                 movementResult = string.Join(",", movements.Select(m => m.GetDescription()));
             }
             return $"{Approach.DirectionType.Description} "
-                + $"{movementResult} "
+                + (string.IsNullOrEmpty(movementResult) ? "" : $"{movementResult} ")
                 + (IsPermissivePhase ? "Permissive " : "Protected ")
                 + (UseOverlap ? "Overlap " : "Phase ")
                 + PhaseNumber;
