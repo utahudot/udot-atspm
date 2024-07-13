@@ -42,24 +42,18 @@ namespace ATSPM.Application.Business.Common
             IReadOnlyList<IndianaEvent> cycleEvents,
             IReadOnlyList<IndianaEvent> terminationEvents,
             int consecutiveCount,
-            Location Location
+            Location location,
+            int metricTypeId
             )
         {
             var cleanTerminationEventsForPhase = CleanTerminationEvents(terminationEvents, phasenumber);
-            if (Location.Approaches.IsNullOrEmpty())
+            if (location.Approaches.IsNullOrEmpty())
             {
                 return null;
             }
             var analysisPhaseData = new AnalysisPhaseData();
-            var phase = phaseService.GetPhases(Location).Find(p => p.PhaseNumber == phasenumber);
-            if (phase == null)
-            {
-                analysisPhaseData.PhaseDescription = "Unconfigured";
-            }
-            else
-            {
-                analysisPhaseData.PhaseDescription = phase.Approach.Description;
-            }
+            var phase = phaseService.GetPhases(location).Find(p => p.PhaseNumber == phasenumber);
+            SetPhaseDescription(analysisPhaseData, phase, metricTypeId);
             analysisPhaseData.PhaseNumber = phasenumber;
             var cycleEventCodes = new List<short> { 1, 8, 11 };
             var phaseEvents = cycleEvents.ToList().Where(p => p.EventParam == phasenumber && cycleEventCodes.Contains(p.EventCode)).ToList();
@@ -87,8 +81,20 @@ namespace ATSPM.Application.Business.Common
             analysisPhaseData.PercentMaxOuts = FindPercentageConsecutiveEvents(analysisPhaseData.TerminationEvents, 5);
             analysisPhaseData.PercentForceOffs = FindPercentageConsecutiveEvents(analysisPhaseData.TerminationEvents, 6);
             analysisPhaseData.TotalPhaseTerminations = analysisPhaseData.TerminationEvents.Count;
-            analysisPhaseData.Location = Location;
+            analysisPhaseData.Location = location;
             return analysisPhaseData;
+        }
+
+        private static void SetPhaseDescription(AnalysisPhaseData analysisPhaseData, PhaseDetail phase, int metricTypeId)
+        {
+            if (phase == null)
+            {
+                analysisPhaseData.PhaseDescription = "Unconfigured";
+            }
+            else
+            {
+                analysisPhaseData.PhaseDescription = phase.GetApproachDescription(metricTypeId);
+            }
         }
 
 
@@ -100,19 +106,19 @@ namespace ATSPM.Application.Business.Common
         /// <param name="CycleEventsTable"></param>
         //public AnalysisPhaseData GetAnalysisPhaseData(
         //    int phasenumber,
-        //    Location Location,
+        //    location location,
         //    List<IndianaEvent> CycleEventsTable)
         //{
         //    var analysisPhaseData = new AnalysisPhaseData();
         //    analysisPhaseData.PhaseNumber = phasenumber;
-        //    analysisPhaseData.LocationIdentifier = Location.LocationIdentifier;
+        //    analysisPhaseData.LocationIdentifier = location.LocationIdentifier;
         //    analysisPhaseData.IsOverlap = false;
         //    var pedEvents = FindPedEvents(CycleEventsTable, phasenumber);
         //    var phaseEvents = FindPhaseEvents(CycleEventsTable, phasenumber);
         //    analysisPhaseData.Cycles = new AnalysisPhaseCycleCollection(phasenumber, analysisPhaseData.LocationIdentifier, phaseEvents, pedEvents);
-        //    var approach = Location.Approaches.FirstOrDefault(a => a.ProtectedPhaseNumber == phasenumber);
+        //    var approach = location.Approaches.FirstOrDefault(a => a.ProtectedPhaseNumber == phasenumber);
         //    analysisPhaseData.Direction = approach != null ? approach.DirectionType.Description : "Unknown";
-        //    analysisPhaseData.Location = Location;
+        //    analysisPhaseData.location = location;
         //    return analysisPhaseData;
         //}
 
