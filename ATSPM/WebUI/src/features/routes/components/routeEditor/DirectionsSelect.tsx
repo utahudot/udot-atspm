@@ -32,13 +32,9 @@ const DirectionSelect = ({
     locationId: link.locationId,
   })
 
-  const directionTypesData = useConfigEnums(ConfigEnum.DirectionTypes)
+  const { data: directionTypes } = useConfigEnums(ConfigEnum.DirectionTypes)
 
-  if (!directionTypesData?.data?.members) {
-    return null
-  }
-
-  const directionTypes = directionTypesData.data.members
+  if (!directionTypes) return null
 
   if (typeof link.primaryDirectionId === 'number') {
     link.primaryDirectionId = directionTypes?.find(
