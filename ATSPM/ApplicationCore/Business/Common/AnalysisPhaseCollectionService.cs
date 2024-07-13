@@ -81,7 +81,8 @@ namespace ATSPM.Application.Business.Common
             IReadOnlyList<IndianaEvent> pedestrianEvents,
             IReadOnlyList<IndianaEvent> terminationEvents,
             Location Location,
-            int consecutiveCount)
+            int consecutiveCount,
+            int metricTypeId)
         {
             if (Location.Approaches.IsNullOrEmpty())
             {
@@ -99,7 +100,8 @@ namespace ATSPM.Application.Business.Common
                     cycleEvents,
                     terminationEvents,
                     consecutiveCount,
-                    Location);
+                    Location,
+                    metricTypeId);
                 analysisPhaseCollectionData.AnalysisPhases.Add(aPhase);
             }
             analysisPhaseCollectionData.AnalysisPhases = analysisPhaseCollectionData.AnalysisPhases.Where(a => a != null).OrderBy(i => i.PhaseNumber).ToList();
