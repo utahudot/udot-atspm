@@ -37,7 +37,11 @@ const DeviceConfigModal = ({
 }: ModalProps) => {
   const { data: productData } = useGetProducts()
 
-  const transportProtocols = useConfigEnums(ConfigEnum.TransportProtocols)
+  const { data: transportProtocols } = useConfigEnums(
+    ConfigEnum.TransportProtocols
+  )
+
+  console.log('data', transportProtocols)
 
   const [errors, setErrors] = useState({
     firmware: false,
@@ -164,7 +168,7 @@ const DeviceConfigModal = ({
                 label="Protocol"
                 onChange={handleChange}
               >
-                {transportProtocols?.data?.members.map((protocol) => (
+                {transportProtocols?.map((protocol) => (
                   <MenuItem key={protocol.value} value={protocol.name}>
                     {protocol.name}
                   </MenuItem>
