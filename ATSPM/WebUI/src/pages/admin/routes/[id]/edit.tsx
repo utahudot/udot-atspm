@@ -26,7 +26,7 @@ const RouteAdmin = () => {
   const { data: routeDistancesData } = useGetRouteDistances()
   const { mutate: updateRoute } = usePutRoute()
 
-  const directionTypesData = useConfigEnums(ConfigEnum.DirectionTypes)
+  const { data: directionTypes } = useConfigEnums(ConfigEnum.DirectionTypes)
 
   const [location, setLocation] = useState<Location | null>(null)
   const [routePolyline, setRoutePolyline] = useState<number[][]>([])
@@ -35,7 +35,6 @@ const RouteAdmin = () => {
   const [routeDistances, setRouteDistances] = useState<RouteDistance[]>([])
 
   const locations = locationsData?.value
-  const directionTypes = directionTypesData?.data?.members
 
   useEffect(() => {
     if (routeDistancesData) {

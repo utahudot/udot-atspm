@@ -1,22 +1,21 @@
 import { useGetRequest } from '@/hooks/useGetRequest'
 import { configAxios } from '@/lib/axios'
-import { AxiosInstance } from 'axios'
 
 export enum ConfigEnum {
-  LocationVersionActions,
-  DeviceStatus,
-  DeviceTypes,
-  TransportProtocols,
-  DirectionTypes,
-  MovementTypes,
-  LaneTypes,
-  DetectionHardwareTypes,
-  DetectionTypes,
+  LocationVersionActions = 'LocationVersionActions',
+  DeviceStatus = 'DeviceStatus',
+  DeviceTypes = 'DeviceTypes',
+  TransportProtocols = 'TransportProtocols',
+  DirectionTypes = 'DirectionTypes',
+  MovementTypes = 'MovementTypes',
+  LaneTypes = 'LaneTypes',
+  DetectionHardwareTypes = 'DetectionHardwareTypes',
+  DetectionTypes = 'DetectionTypes',
 }
 
 type EnumMember = {
   name: string
-  value: string
+  value: number
 }
 
 type EnumType = {
@@ -36,8 +35,8 @@ const parseEnumsFromXml = (
     const name = enumType.getAttribute('Name') as string
     const members = Array.from(enumType.getElementsByTagName('Member')).map(
       (member) => ({
-        name: member.getAttribute('Name') as string,
-        value: member.getAttribute('Value') as string,
+        name: member.getAttribute('Name'),
+        value: parseInt(member.getAttribute('Value')),
       })
     )
 
@@ -47,15 +46,29 @@ const parseEnumsFromXml = (
   return enums.find((e) => e.name === ConfigEnum[enumName])
 }
 
-export function useConfigEnums(
-  enumName: ConfigEnum,
-  axiosInstance: AxiosInstance = configAxios
-) {
-  return useGetRequest<EnumType>({
+export function useConfigEnums(enumName: ConfigEnum) {
+  const { data, ...rest } = useGetRequest<EnumType>({
     route: '/$metadata',
-    axiosInstance,
+    configAxios,
     config: {
       select: (xmlData: string) => parseEnumsFromXml(xmlData, enumName),
     },
   })
+
+  const findEnumByNameOrAbbreviation = (
+    nameOrAbbreviation: string | number
+  ): EnumMember | undefined => {
+    if (!data) return undefined
+    return data.members.find(
+      (member) =>
+        member.name === nameOrAbbreviation ||
+        member.value === nameOrAbbreviation
+    )
+  }
+
+  return {
+    data: data?.members,
+    findEnumByNameOrAbbreviation,
+    ...rest,
+  }
 }
