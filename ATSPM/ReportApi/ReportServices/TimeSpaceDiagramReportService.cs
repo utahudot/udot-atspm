@@ -133,7 +133,7 @@ namespace ATSPM.ReportApi.ReportServices
                     throw new Exception("Error grabbing phase details");
                 }
 
-                if(parameter.SpeedLimit == null && primaryPhaseDetail.Approach.Mph == null)
+                if (parameter.SpeedLimit == null && primaryPhaseDetail.Approach.Mph == null)
                 {
                     throw new Exception($"Speed not configured in route for all phases");
                 }
