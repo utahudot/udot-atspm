@@ -4,6 +4,8 @@ import {
   useEditApproach,
 } from '@/features/locations/api/approach'
 import EditApproachGrid from '@/features/locations/components/EditApproachGrid'
+import ApproachEditorRowHeader from '@/features/locations/components/editApproach/ApproachEditorRow'
+import DeleteApproachModal from '@/features/locations/components/editApproach/DeleteApproachModal'
 import EditDetectors from '@/features/locations/components/editDetector/EditDetectors'
 import {
   Approach,
@@ -11,22 +13,8 @@ import {
   LocationExpanded,
 } from '@/features/locations/types'
 import { ConfigEnum, useConfigEnums } from '@/hooks/useConfigEnums'
-import ContentCopyIcon from '@mui/icons-material/ContentCopy'
-import DeleteIcon from '@mui/icons-material/Delete'
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
-import SaveIcon from '@mui/icons-material/Save'
-import {
-  Box,
-  Button,
-  ButtonBase,
-  Collapse,
-  IconButton,
-  Modal,
-  Paper,
-  Tooltip,
-  Typography,
-} from '@mui/material'
-import React, { useEffect, useState } from 'react'
+import { Box, Collapse, Paper } from '@mui/material'
+import React, { useState } from 'react'
 import {
   ApproachForConfig,
   DetectorForConfig,
@@ -38,49 +26,26 @@ interface ApproachAdminProps {
   handler: LocationConfigHandler
 }
 
-const modalStyle = {
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: 400,
-  bgcolor: 'background.paper',
-  border: 'none',
-  borderRadius: '10px',
-  boxShadow: 24,
-  p: 4,
-}
-
-function EditApproach({
-  approach: locationApproach,
-  handler,
-}: ApproachAdminProps) {
-  const [approach, setApproach] = useState<ApproachForConfig>(locationApproach)
+function EditApproach({ approach, handler }: ApproachAdminProps) {
   const [open, setOpen] = useState(false)
   const [openModal, setOpenModal] = useState(false)
 
   const { mutate: editApproach } = useEditApproach()
   const { mutate: deleteApproach } = useDeleteApproach()
-  const detectionHardwareData = useConfigEnums(
-    ConfigEnum.DetectionHardwareTypes
+  const { findEnumByNameOrAbbreviation: findDetectionType } = useConfigEnums(
+    ConfigEnum.DetectionTypes
   )
-  const detectionTypesData = useConfigEnums(ConfigEnum.DetectionTypes)
-  const directionTypesData = useConfigEnums(ConfigEnum.DirectionTypes)
-  const laneTypesData = useConfigEnums(ConfigEnum.LaneTypes)
-  const movementTypesData = useConfigEnums(ConfigEnum.MovementTypes)
-
-  useEffect(() => {
-    setApproach(locationApproach)
-  }, [locationApproach])
-
-  // const deviceConfigurations = deviceConfigurationsData?.value
-  // const products = productsData?.value
-  // const deviceTypes = deviceTypesData?.data?.members.map(
-  //   (member) => member.name
-  // )
-  // const deviceStatus = deviceStatusData?.data?.members.map(
-  //   (member) => member.name
-  // )
+  const { findEnumByNameOrAbbreviation: findDirectionType } = useConfigEnums(
+    ConfigEnum.DirectionTypes
+  )
+  const { findEnumByNameOrAbbreviation: findLaneType } = useConfigEnums(
+    ConfigEnum.LaneTypes
+  )
+  const { findEnumByNameOrAbbreviation: findMovementType } = useConfigEnums(
+    ConfigEnum.MovementTypes
+  )
+  const { findEnumByNameOrAbbreviation: findDetectionHardware } =
+    useConfigEnums(ConfigEnum.DetectionHardwareTypes)
 
   const handleApproachClick = () => {
     setOpen(!open)
@@ -98,16 +63,25 @@ function EditApproach({
       })),
     }
 
-    setApproach(newApproach as ApproachForConfig)
+    handler.updateApproaches([
+      newApproach as ApproachForConfig,
+      ...handler.approaches,
+    ])
   }
 
   const handleSaveApproach = () => {
     const modifiedApproach = JSON.parse(JSON.stringify(approach)) as Approach
-    modifiedApproach.directionTypeId = parseInt(
-      directionTypesData?.data?.members.find(
-        (member) => member.name === modifiedApproach.directionTypeId
-      )?.value
-    )
+    if (modifiedApproach.isNew) {
+      delete modifiedApproach.id
+    }
+    delete modifiedApproach.directionType
+    delete modifiedApproach.index
+    delete modifiedApproach.open
+    delete modifiedApproach.isNew
+
+    modifiedApproach.directionTypeId = findDirectionType(
+      modifiedApproach.directionTypeId
+    )?.value
     modifiedApproach.detectors.forEach((detector) => {
       if (detector.isNew) {
         delete detector.id
@@ -118,46 +92,47 @@ function EditApproach({
       detector.dectectorIdentifier =
         handler.expandedLocation?.locationIdentifier + detector.detectorChannel
       detector.detectionTypes.forEach((detectionType) => {
-        detectionType.id = parseInt(
-          detectionTypesData?.data?.members.find(
-            (member) => member.name === detectionType.abbreviation
-          )?.value
-        )
+        detectionType.id = findDetectionType(detectionType.abbreviation)?.value
       })
-      detector.detectionHardware = parseInt(
-        detectionHardwareData?.data?.members.find(
-          (member) => member.name === detector.detectionHardware
-        )?.value
-      )
-      detector.movementType = parseInt(
-        movementTypesData?.data?.members.find(
-          (member) => member.name === detector.movementType
-        )?.value
-      )
-      detector.laneType = parseInt(
-        laneTypesData?.data?.members.find(
-          (member) => member.name === detector.laneType
-        )?.value
-      )
+      detector.detectionHardware = findDetectionHardware(
+        detector.detectionHardware
+      )?.value
+      detector.movementType = findMovementType(detector.movementType)?.value
+      detector.laneType = findLaneType(detector.laneType)?.value
     })
 
-    delete modifiedApproach.directionType
-    delete modifiedApproach.index
-    delete modifiedApproach.open
-    delete modifiedApproach.isNew
+    console.log('modifiedApproach', modifiedApproach)
 
     editApproach(modifiedApproach, {
-      onSuccess: () => {
-        handler.refetchLocation()
+      onSuccess: (data: ApproachForConfig) => {
+        data.directionTypeId = findDirectionType(data.directionTypeId)?.name
+        data.detectors.forEach((detector) => {
+          detector.detectionTypes.forEach((detectionType) => {
+            detectionType.abbreviation = findDetectionType(
+              detectionType.abbreviation
+            )?.name
+          })
+          detector.detectionHardware = findDetectionHardware(
+            detector.detectionHardware
+          )?.name
+          detector.movementType = findMovementType(detector.movementType)?.name
+          detector.laneType = findLaneType(detector.laneType)?.name
+        })
+
+        handler.updateApproaches(
+          handler.approaches.map((item) =>
+            item.id === approach.id ? data : item
+          )
+        )
       },
     })
   }
 
-  const handleDeleteApproach = () => {
+  const openDeleteApproachModal = () => {
     setOpenModal(true)
   }
 
-  const confirmDeleteApproach = () => {
+  const handleDeleteApproach = () => {
     const filteredApproaches = handler.approaches.filter(
       (val) => val.index !== approach.index
     )
@@ -199,89 +174,32 @@ function EditApproach({
       detectors: [newDetector as Detector, ...approach.detectors],
     }
 
-    setApproach(updatedApproach)
+    handler.updateApproaches(
+      handler.approaches.map((item) =>
+        item.id === updatedApproach.id ? updatedApproach : item
+      )
+    )
+  }
+
+  const updateApproach = (updatedApproach: ApproachForConfig) => {
+    handler.updateApproaches(
+      handler.approaches.map((item) =>
+        item.id === updatedApproach.id ? updatedApproach : item
+      )
+    )
   }
 
   return (
     <>
       <Paper sx={{ mt: 1 }}>
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: 1,
-            backgroundColor: approach.isNew
-              ? 'rgba(100, 210, 100, 0.3)'
-              : 'white',
-          }}
-        >
-          <Tooltip title="Approach Details">
-            <ButtonBase
-              onClick={handleApproachClick}
-              sx={{
-                cursor: 'pointer',
-                textTransform: 'none',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                width: '100%',
-              }}
-            >
-              <Box display="flex" alignItems="center">
-                <Box
-                  sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    transition: 'transform 0.2s ease-in-out',
-                    transform: open ? 'rotateZ(-180deg)' : 'rotateZ(0deg)',
-                  }}
-                >
-                  <ExpandMoreIcon />
-                </Box>
-                <Typography
-                  variant="h4"
-                  component={'h3'}
-                  sx={{ padding: 1, marginRight: 2 }}
-                >
-                  {approach.description}
-                </Typography>
-                <Typography variant="h5" component="p">
-                  {approach.detectors.length}{' '}
-                  {approach.detectors.length === 1 ? 'Detector' : 'Detectors'}
-                </Typography>
-              </Box>
-            </ButtonBase>
-          </Tooltip>
-          <Box display="flex" alignItems="center">
-            <Tooltip title="Copy Approach">
-              <IconButton
-                aria-label="copy approach"
-                onClick={handleCopyApproach}
-              >
-                <ContentCopyIcon />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Save Approach">
-              <IconButton
-                aria-label="save approach"
-                color="success"
-                onClick={handleSaveApproach}
-              >
-                <SaveIcon />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Delete Approach">
-              <IconButton
-                aria-label="delete approach"
-                color="error"
-                onClick={handleDeleteApproach}
-              >
-                <DeleteIcon />
-              </IconButton>
-            </Tooltip>
-          </Box>
-        </Box>
+        <ApproachEditorRowHeader
+          open={open}
+          approach={approach}
+          handleApproachClick={handleApproachClick}
+          handleCopyApproach={handleCopyApproach}
+          handleSaveApproach={handleSaveApproach}
+          openDeleteApproachModal={openDeleteApproachModal}
+        />
       </Paper>
       <Collapse in={open} unmountOnExit>
         <Box minHeight={'600px'}>
@@ -289,7 +207,7 @@ function EditApproach({
             approach={approach}
             approaches={handler.approaches}
             location={handler.expandedLocation as LocationExpanded}
-            updateApproach={setApproach}
+            updateApproach={updateApproach}
             updateApproaches={handler.updateApproaches}
           />
           <br />
@@ -303,37 +221,15 @@ function EditApproach({
           <EditDetectors
             detectors={approach.detectors}
             approach={approach}
-            updateApproach={setApproach}
+            updateApproach={updateApproach}
           />
         </Box>
       </Collapse>
-      <Modal
-        open={openModal}
-        onClose={() => setOpenModal(false)}
-        aria-labelledby="delete-confirmation"
-        aria-describedby="confirm-delete-approach"
-      >
-        <Box sx={modalStyle}>
-          <Typography id="delete-confirmation" sx={{ fontWeight: 'bold' }}>
-            Confirm Delete
-          </Typography>
-          <Typography id="confirm-delete-approach" sx={{ mt: 2 }}>
-            Are you sure you want to delete this approach?
-          </Typography>
-          <Box sx={{ mt: 4, display: 'flex', justifyContent: 'flex-end' }}>
-            <Button onClick={() => setOpenModal(false)} color="inherit">
-              Cancel
-            </Button>
-            <Button
-              onClick={confirmDeleteApproach}
-              color="error"
-              variant="contained"
-            >
-              Delete Approach
-            </Button>
-          </Box>
-        </Box>
-      </Modal>
+      <DeleteApproachModal
+        openModal={openModal}
+        setOpenModal={setOpenModal}
+        confirmDeleteApproach={handleDeleteApproach}
+      />
     </>
   )
 }
