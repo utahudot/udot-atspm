@@ -42,12 +42,13 @@ namespace ATSPM.Application.Business.SplitFail
             IReadOnlyList<IndianaEvent> planEvents,
             IReadOnlyList<IndianaEvent> terminationEvents,
             IReadOnlyList<IndianaEvent> detectorEvents,
-            Approach approach)
+            Approach approach,
+            bool isPermissive)
         {
             var splitFailPhaseData = new SplitFailPhaseData();
             splitFailPhaseData.Approach = approach;
-            splitFailPhaseData.GetPermissivePhase = options.GetPermissivePhase;
-            splitFailPhaseData.PhaseNumberSort = options.GetPermissivePhase ? approach.PermissivePhaseNumber.Value.ToString() + "-1" : approach.ProtectedPhaseNumber.ToString() + "-2";
+            splitFailPhaseData.GetPermissivePhase = isPermissive;
+            splitFailPhaseData.PhaseNumberSort = isPermissive ? approach.PermissivePhaseNumber.Value.ToString() + "-1" : approach.ProtectedPhaseNumber.ToString() + "-2";
             splitFailPhaseData.Cycles = cycleService.GetSplitFailCycles(
                 options,
                 cycleEvents,
