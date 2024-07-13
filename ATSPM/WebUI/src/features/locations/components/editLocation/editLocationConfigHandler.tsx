@@ -26,13 +26,10 @@ export interface LocationConfigHandler {
   approaches: ApproachForConfig[]
   expandedLocation: LocationExpanded | null
   updateApproaches: (approaches: ApproachForConfig[]) => void
-  updateApproach: (approach: ApproachForConfig) => void
   updateExpandedLocation: (location: LocationExpanded) => void
   handleAddNewApproach: () => void
   handleLocationEdit: (name: string, value: string) => void
   refetchLocation: () => void
-  isApproachesEditable: boolean
-  updateIsApproachesEditable: (value: boolean) => void
 }
 
 export const useLocationConfigHandler = ({
@@ -40,16 +37,15 @@ export const useLocationConfigHandler = ({
 }: LocationHandlerProps): LocationConfigHandler => {
   const [expandedLocation, setExpandedLocation] =
     useState<LocationExpanded | null>(null)
-  const [activeLocationId, setActiveLocationId] = useState<string>(location?.id)
+  const [activeLocationId, setActiveLocationId] = useState(location?.id)
   const [approaches, setApproaches] = useState<ApproachForConfig[]>([])
-  const [isApproachesEditable, setIsApproachesEditable] =
-    useState<boolean>(false)
 
-  const { data: expandedData, refetch } = useGetLocation(activeLocationId)
+  const { data: expandedData, refetch: refetchLocation } =
+    useGetLocation(activeLocationId)
 
   useEffect(() => {
-    if (activeLocationId) refetch()
-  }, [activeLocationId, refetch])
+    if (activeLocationId) refetchLocation()
+  }, [activeLocationId, refetchLocation])
 
   useEffect(() => {
     if (!location) {
@@ -57,7 +53,7 @@ export const useLocationConfigHandler = ({
     } else if (location?.id !== activeLocationId) {
       setActiveLocationId(location.id)
     }
-  }, [location, activeLocationId, refetch])
+  }, [location, activeLocationId, refetchLocation])
 
   useEffect(() => {
     if (!expandedLocation) return
@@ -84,9 +80,8 @@ export const useLocationConfigHandler = ({
 
   const addNewApproach = () => {
     const newApproach: Partial<ApproachForConfig> = {
+      id: crypto.randomUUID(),
       description: 'New Approach',
-      index: approaches.length,
-      open: false,
       isNew: true,
       detectors: [],
       isProtectedPhaseOverlap: false,
@@ -111,19 +106,9 @@ export const useLocationConfigHandler = ({
   const component: LocationConfigHandler = {
     approaches,
     expandedLocation,
-    isApproachesEditable,
-    updateIsApproachesEditable(value) {
-      setIsApproachesEditable(value)
-    },
-    updateApproach(approach) {
-      setApproaches((prev) =>
-        prev.map((val) => (val.index === approach.index ? approach : val))
-      )
-      refetch()
-    },
     updateApproaches(approaches) {
       setApproaches(approaches)
-      refetch()
+      refetchLocation()
     },
     updateExpandedLocation(location) {
       setExpandedLocation(location)
@@ -138,7 +123,7 @@ export const useLocationConfigHandler = ({
       })
     },
     refetchLocation() {
-      refetch()
+      refetchLocation()
     },
   }
 
