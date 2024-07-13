@@ -148,7 +148,7 @@ function transformData(data: RampMeteringData): EChartsOption[] {
     return {
       name: `Queue On: ${lane.description}`,
       icon: triangleSvgSymbol,
-      itemStyle: { color: 'black' },
+      itemStyle: { color: '#00C5FF' },
     }
   })
 
@@ -156,7 +156,7 @@ function transformData(data: RampMeteringData): EChartsOption[] {
     return {
       name: `Queue Off: ${lane.description}`,
       icon: 'square',
-      itemStyle: { color: 'darkgrey' },
+      itemStyle: { color: '#00C5FF' },
     }
   })
 
@@ -181,6 +181,9 @@ function transformData(data: RampMeteringData): EChartsOption[] {
       },
       {
         name: 'Shutdown Warning',
+      },
+      {
+        name: 'Queue Rate Activated',
       },
     ],
   })
@@ -258,7 +261,7 @@ function transformData(data: RampMeteringData): EChartsOption[] {
         symbol: 'triangle',
         symbolSize: 5,
         itemStyle: {
-          color: 'black',
+          color: '#00C5FF',
         },
       })
     )
@@ -278,7 +281,7 @@ function transformData(data: RampMeteringData): EChartsOption[] {
         symbol: 'square',
         symbolSize: 5,
         itemStyle: {
-          color: 'darkgrey',
+          color: '#00C5FF',
         },
       })
     )
@@ -306,31 +309,31 @@ function transformData(data: RampMeteringData): EChartsOption[] {
     )
   })
 
-  seriesTwo.push(
-    ...createSeries({
-      name: 'Start Up Warning',
-      data: transformSeriesData(data.startUpWarning),
-      type: 'line',
-      yAxisIndex: 1,
-      color: Color.Green,
-      lineStyle: {
-        width: 5,
-      },
-    })
-  )
+  // seriesTwo.push(
+  //   ...createSeries({
+  //     name: 'Start Up Warning',
+  //     data: transformSeriesData(data.startUpWarning),
+  //     type: 'line',
+  //     yAxisIndex: 1,
+  //     color: Color.Green,
+  //     lineStyle: {
+  //       width: 5,
+  //     },
+  //   })
+  // )
 
-  seriesTwo.push(
-    ...createSeries({
-      name: 'Shutdown Warning',
-      data: transformSeriesData(data.shutdownWarning),
-      type: 'line',
-      yAxisIndex: 1,
-      color: Color.Red,
-      lineStyle: {
-        width: 5,
-      },
-    })
-  )
+  // seriesTwo.push(
+  //   ...createSeries({
+  //     name: 'Shutdown Warning',
+  //     data: transformSeriesData(data.shutdownWarning),
+  //     type: 'line',
+  //     yAxisIndex: 1,
+  //     color: Color.Red,
+  //     lineStyle: {
+  //       width: 5,
+  //     },
+  //   })
+  // )
 
   const seriesThree: SeriesOption[] = []
 
@@ -401,6 +404,66 @@ function transformData(data: RampMeteringData): EChartsOption[] {
       color: Color.Blue,
     })
   )
+
+  const queueActives = {
+    markArea: {
+      data: [
+        [
+          {
+            xAxis: '2023-08-24T07:00:00',
+            itemStyle: {
+              color: 'rgba(125, 125, 125, 0.1)',
+            },
+          },
+          {
+            xAxis: '2023-08-24T07:22:22',
+          },
+        ],
+        [
+          {
+            xAxis: '2023-08-24T07:30:43',
+            itemStyle: {
+              color: 'rgba(125, 125, 125, 0.1)',
+            },
+          },
+          {
+            xAxis: '2023-08-24T07:50:00',
+          },
+        ],
+      ],
+    },
+
+    type: 'line',
+    yAxisIndex: 1,
+    color: '#00C5FF',
+    lineStyle: {
+      width: 5,
+    },
+    symbol: 'line',
+    symbolSize: 0,
+  }
+
+  const queueActivesTwo = {
+    name: 'Queue Rate Activated',
+    data: [
+      ['2023-08-24T07:25:49', '0.00'],
+      ['2023-08-24T07:26:49', '0.00'],
+      null,
+      ['2023-08-24T07:28:29', '0.00'],
+      ['2023-08-24T07:29:49', '0.00'],
+    ],
+    type: 'line',
+    yAxisIndex: 1,
+    color: '#00C5FF',
+    lineStyle: {
+      width: 5,
+    },
+    symbol: 'line',
+    symbolSize: 0,
+  }
+
+  seriesTwo.push(queueActives as any)
+  seriesTwo.push(queueActivesTwo as any)
 
   const chartOptions: EChartsOption[] = [
     {

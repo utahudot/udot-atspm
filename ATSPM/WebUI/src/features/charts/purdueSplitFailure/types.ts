@@ -32,6 +32,7 @@ export interface RawPurdueSplitFailureData extends BaseChartData {
   approachId: number
   approachDescription: string
   phaseNumber: number
+  phaseType: string
   totalSplitFails: number
   plans: PurdueSplitFailurePlan[]
   failLines: FailLine[]
