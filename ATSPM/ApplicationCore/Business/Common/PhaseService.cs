@@ -83,7 +83,7 @@ namespace ATSPM.Application.Business.Common
                 + (string.IsNullOrEmpty(movementResult) ? "" : $"{movementResult} ")
                 + (IsPermissivePhase ? "Permissive " : "Protected ")
                 + (UseOverlap ? "Overlap " : "Phase ")
-                + PhaseNumber;
+                + PhaseNumber + $" ({Approach.Description})";
         }
     }
 }
