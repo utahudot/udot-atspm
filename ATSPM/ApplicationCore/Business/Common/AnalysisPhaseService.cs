@@ -37,7 +37,7 @@ namespace ATSPM.Application.Business.Common
         }
 
         public AnalysisPhaseData GetAnalysisPhaseData(
-            int phasenumber,
+            int phaseNumber,
             IReadOnlyList<IndianaEvent> pedestrianEvents,
             IReadOnlyList<IndianaEvent> cycleEvents,
             IReadOnlyList<IndianaEvent> terminationEvents,
@@ -46,29 +46,29 @@ namespace ATSPM.Application.Business.Common
             int metricTypeId
             )
         {
-            var cleanTerminationEventsForPhase = CleanTerminationEvents(terminationEvents, phasenumber);
+            var cleanTerminationEventsForPhase = CleanTerminationEvents(terminationEvents, phaseNumber);
             if (location.Approaches.IsNullOrEmpty())
             {
                 return null;
             }
             var analysisPhaseData = new AnalysisPhaseData();
-            var phase = phaseService.GetPhases(location).Find(p => p.PhaseNumber == phasenumber);
-            SetPhaseDescription(analysisPhaseData, phase, metricTypeId);
-            analysisPhaseData.PhaseNumber = phasenumber;
+            var phase = phaseService.GetPhases(location).Find(p => p.PhaseNumber == phaseNumber);
+            SetPhaseDescription(analysisPhaseData, phase, metricTypeId, phaseNumber);
+            analysisPhaseData.PhaseNumber = phaseNumber;
             var cycleEventCodes = new List<short> { 1, 8, 11 };
-            var phaseEvents = cycleEvents.ToList().Where(p => p.EventParam == phasenumber && cycleEventCodes.Contains(p.EventCode)).ToList();
+            var phaseEvents = cycleEvents.ToList().Where(p => p.EventParam == phaseNumber && cycleEventCodes.Contains(p.EventCode)).ToList();
             if (!pedestrianEvents.IsNullOrEmpty())
             {
-                analysisPhaseData.PedestrianEvents = pedestrianEvents.Where(t => t.EventParam == phasenumber && (t.EventCode == 21 || t.EventCode == 23)).ToList();
+                analysisPhaseData.PedestrianEvents = pedestrianEvents.Where(t => t.EventParam == phaseNumber && (t.EventCode == 21 || t.EventCode == 23)).ToList();
             }
             else
             {
                 analysisPhaseData.PedestrianEvents = new List<IndianaEvent>();
             }
-            analysisPhaseData.Cycles = new AnalysisPhaseCycleCollection(phasenumber, analysisPhaseData.locationIdentifier, phaseEvents, analysisPhaseData.PedestrianEvents, cleanTerminationEventsForPhase);
+            analysisPhaseData.Cycles = new AnalysisPhaseCycleCollection(phaseNumber, analysisPhaseData.locationIdentifier, phaseEvents, analysisPhaseData.PedestrianEvents, cleanTerminationEventsForPhase);
             if (!cleanTerminationEventsForPhase.IsNullOrEmpty())
             {
-                analysisPhaseData.TerminationEvents = cleanTerminationEventsForPhase.Where(t => t.EventParam == phasenumber && (t.EventCode == 4 || t.EventCode == 5 || t.EventCode == 6)).ToList();
+                analysisPhaseData.TerminationEvents = cleanTerminationEventsForPhase.Where(t => t.EventParam == phaseNumber && (t.EventCode == 4 || t.EventCode == 5 || t.EventCode == 6)).ToList();
             }
             else
             {
@@ -77,7 +77,7 @@ namespace ATSPM.Application.Business.Common
             analysisPhaseData.ConsecutiveGapOuts = FindConsecutiveEvents(analysisPhaseData.TerminationEvents, 4, consecutiveCount) ?? new List<IndianaEvent>();
             analysisPhaseData.ConsecutiveMaxOut = FindConsecutiveEvents(analysisPhaseData.TerminationEvents, 5, consecutiveCount) ?? new List<IndianaEvent>();
             analysisPhaseData.ConsecutiveForceOff = FindConsecutiveEvents(analysisPhaseData.TerminationEvents, 6, consecutiveCount) ?? new List<IndianaEvent>();
-            analysisPhaseData.UnknownTermination = FindUnknownTerminationEvents(cleanTerminationEventsForPhase.ToList(), phasenumber) ?? new List<IndianaEvent>();
+            analysisPhaseData.UnknownTermination = FindUnknownTerminationEvents(cleanTerminationEventsForPhase.ToList(), phaseNumber) ?? new List<IndianaEvent>();
             analysisPhaseData.PercentMaxOuts = FindPercentageConsecutiveEvents(analysisPhaseData.TerminationEvents, 5);
             analysisPhaseData.PercentForceOffs = FindPercentageConsecutiveEvents(analysisPhaseData.TerminationEvents, 6);
             analysisPhaseData.TotalPhaseTerminations = analysisPhaseData.TerminationEvents.Count;
@@ -85,11 +85,11 @@ namespace ATSPM.Application.Business.Common
             return analysisPhaseData;
         }
 
-        private static void SetPhaseDescription(AnalysisPhaseData analysisPhaseData, PhaseDetail phase, int metricTypeId)
+        private static void SetPhaseDescription(AnalysisPhaseData analysisPhaseData, PhaseDetail phase, int metricTypeId, int phaseNumber)
         {
             if (phase == null)
             {
-                analysisPhaseData.PhaseDescription = "Unconfigured";
+                analysisPhaseData.PhaseDescription = $"Phase {phaseNumber} (Unconfigured)";
             }
             else
             {
@@ -105,18 +105,18 @@ namespace ATSPM.Application.Business.Common
         /// <param name="LocationId"></param>
         /// <param name="CycleEventsTable"></param>
         //public AnalysisPhaseData GetAnalysisPhaseData(
-        //    int phasenumber,
+        //    int phaseNumber,
         //    location location,
         //    List<IndianaEvent> CycleEventsTable)
         //{
         //    var analysisPhaseData = new AnalysisPhaseData();
-        //    analysisPhaseData.PhaseNumber = phasenumber;
+        //    analysisPhaseData.PhaseNumber = phaseNumber;
         //    analysisPhaseData.LocationIdentifier = location.LocationIdentifier;
         //    analysisPhaseData.IsOverlap = false;
-        //    var pedEvents = FindPedEvents(CycleEventsTable, phasenumber);
-        //    var phaseEvents = FindPhaseEvents(CycleEventsTable, phasenumber);
-        //    analysisPhaseData.Cycles = new AnalysisPhaseCycleCollection(phasenumber, analysisPhaseData.LocationIdentifier, phaseEvents, pedEvents);
-        //    var approach = location.Approaches.FirstOrDefault(a => a.ProtectedPhaseNumber == phasenumber);
+        //    var pedEvents = FindPedEvents(CycleEventsTable, phaseNumber);
+        //    var phaseEvents = FindPhaseEvents(CycleEventsTable, phaseNumber);
+        //    analysisPhaseData.Cycles = new AnalysisPhaseCycleCollection(phaseNumber, analysisPhaseData.LocationIdentifier, phaseEvents, pedEvents);
+        //    var approach = location.Approaches.FirstOrDefault(a => a.ProtectedPhaseNumber == phaseNumber);
         //    analysisPhaseData.Direction = approach != null ? approach.DirectionType.Description : "Unknown";
         //    analysisPhaseData.location = location;
         //    return analysisPhaseData;
