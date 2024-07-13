@@ -169,13 +169,18 @@ namespace ATSPM.Application.Business.TimeSpaceDiagram
             int cycleLength,
             GreenToGreenCycle percentileSplitCycle)
         {
+            List<GreenToGreenCycle> cycles = new List<GreenToGreenCycle>();
+            var events = new List<CycleEventsDto>();
+            if (percentileSplitCycle == null)
+            {
+                return events;
+            }
             var startTime = start.AddSeconds(startOfGreen);
             var greenTime = percentileSplitCycle.TotalGreenTime;
             var yellowTime = percentileSplitCycle.TotalYellowTime;
             var redTime = cycleLength - (greenTime + yellowTime) > 0 ? cycleLength - (greenTime + yellowTime) : percentileSplitCycle.TotalRedTime;
 
-            List<GreenToGreenCycle> cycles = new List<GreenToGreenCycle>();
-            var events = new List<CycleEventsDto>();
+
 
             while (startTime <= end.AddMinutes(2))
             {
@@ -227,13 +232,25 @@ namespace ATSPM.Application.Business.TimeSpaceDiagram
 
             cycles.Sort((x, y) => x.TotalGreenTime.CompareTo(y.TotalGreenTime));
 
+            if (cycles.Count <= 0)
+            {
+                return null;
+            }
             int medianIndex = cycles.Count / 2;
+            if (medianIndex < 0)
+            {
+                return null;
+            }
 
             return cycles[medianIndex];
         }
 
         private double CalculateStartOfRefPointForCoordPhases(int offset, int programmedSplit, GreenToGreenCycle percentileSplit)
         {
+            if (percentileSplit == null)
+            {
+                return offset - programmedSplit;
+            }
             return offset - ((percentileSplit.TotalGreenTime + percentileSplit.TotalYellowTime) - programmedSplit);
         }
     }
