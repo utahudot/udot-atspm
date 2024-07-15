@@ -6,6 +6,7 @@ import {
 import EditApproachGrid from '@/features/locations/components/EditApproachGrid'
 import ApproachEditorRowHeader from '@/features/locations/components/editApproach/ApproachEditorRow'
 import DeleteApproachModal from '@/features/locations/components/editApproach/DeleteApproachModal'
+import { hasUniqueDetectorChannels } from '@/features/locations/components/editApproach/utils/checkDetectors'
 import EditDetectors from '@/features/locations/components/editDetector/EditDetectors'
 import {
   Approach,
@@ -14,7 +15,7 @@ import {
 } from '@/features/locations/types'
 import { ConfigEnum, useConfigEnums } from '@/hooks/useConfigEnums'
 import { Box, Collapse, Paper } from '@mui/material'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   ApproachForConfig,
   DetectorForConfig,
@@ -29,6 +30,14 @@ interface ApproachAdminProps {
 function EditApproach({ approach, handler }: ApproachAdminProps) {
   const [open, setOpen] = useState(false)
   const [openModal, setOpenModal] = useState(false)
+  const [errors, setErrors] = useState<Record<
+    string,
+    { error: string; id: string }
+  > | null>(null)
+  const [warnings, setWarnings] = useState<Record<
+    string,
+    { warning: string; id: string }
+  > | null>(null)
 
   const { mutate: editApproach } = useEditApproach()
   const { mutate: deleteApproach } = useDeleteApproach()
@@ -46,6 +55,17 @@ function EditApproach({ approach, handler }: ApproachAdminProps) {
   )
   const { findEnumByNameOrAbbreviation: findDetectionHardware } =
     useConfigEnums(ConfigEnum.DetectionHardwareTypes)
+
+  useEffect(() => {
+    const { isValid, errors } = hasUniqueDetectorChannels(handler.approaches)
+
+    if (isValid) {
+      setWarnings(null)
+      setErrors(null)
+    } else {
+      setWarnings(errors)
+    }
+  }, [handler.approaches])
 
   const handleApproachClick = () => {
     setOpen(!open)
@@ -70,6 +90,38 @@ function EditApproach({ approach, handler }: ApproachAdminProps) {
   }
 
   const handleSaveApproach = () => {
+    // Clear previous errors
+    let newErrors: Record<string, { error: string; id: string }> = {}
+
+    const { isValid, errors: channelErrors } = hasUniqueDetectorChannels(
+      handler.approaches
+    )
+
+    if (!isValid) {
+      newErrors = { ...newErrors, ...channelErrors }
+    }
+
+    if (
+      !approach?.protectedPhaseNumber ||
+      isNaN(approach?.protectedPhaseNumber)
+    ) {
+      newErrors = {
+        ...newErrors,
+        protectedPhaseNumber: {
+          error: 'Protected Phase Number is required',
+          id: approach.id,
+        },
+      }
+    }
+
+    // Set errors and exit if any errors are found
+    if (!isEmptyObject(newErrors)) {
+      setErrors(newErrors)
+      return
+    }
+
+    setErrors(null)
+
     const modifiedApproach = JSON.parse(JSON.stringify(approach)) as Approach
     if (modifiedApproach.isNew) {
       delete modifiedApproach.id
@@ -100,8 +152,6 @@ function EditApproach({ approach, handler }: ApproachAdminProps) {
       detector.movementType = findMovementType(detector.movementType)?.value
       detector.laneType = findLaneType(detector.laneType)?.value
     })
-
-    console.log('modifiedApproach', modifiedApproach)
 
     editApproach(modifiedApproach, {
       onSuccess: (data: ApproachForConfig) => {
@@ -204,6 +254,7 @@ function EditApproach({ approach, handler }: ApproachAdminProps) {
       <Collapse in={open} unmountOnExit>
         <Box minHeight={'600px'}>
           <EditApproachGrid
+            errors={errors}
             approach={approach}
             approaches={handler.approaches}
             location={handler.expandedLocation as LocationExpanded}
@@ -222,6 +273,8 @@ function EditApproach({ approach, handler }: ApproachAdminProps) {
             detectors={approach.detectors}
             approach={approach}
             updateApproach={updateApproach}
+            errors={errors}
+            warnings={warnings}
           />
         </Box>
       </Collapse>
@@ -235,3 +288,7 @@ function EditApproach({ approach, handler }: ApproachAdminProps) {
 }
 
 export default React.memo(EditApproach)
+
+const isEmptyObject = (obj: Record<string, any>): boolean => {
+  return Object.keys(obj).length === 0
+}
