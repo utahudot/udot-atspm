@@ -24,7 +24,7 @@ import {
   TableRow,
   Typography,
 } from '@mui/material'
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { ApproachForConfig } from '../editLocation/editLocationConfigHandler'
 
 export const modalStyle = {
@@ -47,13 +47,17 @@ interface EditDetectorsProps {
   detectors: Detector[]
   approach: ApproachForConfig
   updateApproach: (approach: ApproachForConfig) => void
+  errors?: Record<string, { error: string; id: string }> | null
+  warnings?: Record<string, { warning: string; id: string }> | null
 }
 
-function EditDetectors({
+const EditDetectors = ({
   detectors,
   approach,
+  errors,
+  warnings,
   updateApproach,
-}: EditDetectorsProps) {
+}: EditDetectorsProps) => {
   const [modalOpen, setModalOpen] = useState(false)
   const [selectedDetectorId, setSelectedDetectorId] = useState<number | null>(
     null
@@ -182,8 +186,14 @@ function EditDetectors({
                 <EditableTableCell
                   value={detector.detectorChannel}
                   onUpdate={(newValue) =>
-                    updateDetector(detector.id, 'detectorChannel', newValue)
+                    updateDetector(
+                      detector.id,
+                      'detectorChannel',
+                      parseInt(newValue)
+                    )
                   }
+                  error={errors?.[detector.id]?.error}
+                  warning={warnings?.[detector.id]?.error}
                 />
                 <DetectionTypesCell
                   detector={detector}
@@ -278,4 +288,4 @@ function EditDetectors({
   )
 }
 
-export default EditDetectors
+export default React.memo(EditDetectors)
