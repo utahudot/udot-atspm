@@ -24,6 +24,7 @@ const StyledTC = ({
 }) => <TableCell sx={{ minWidth: width }}>{children}</TableCell>
 
 interface EditApproachGridProps {
+  errors: Record<string, { error: string; id: string }> | null
   approach: ApproachForConfig
   approaches: ApproachForConfig[]
   location: LocationExpanded
@@ -32,6 +33,7 @@ interface EditApproachGridProps {
 }
 
 const EditApproachGrid = ({
+  errors,
   approach,
   location,
   updateApproach,
@@ -121,8 +123,10 @@ const EditApproachGrid = ({
               onUpdate={(value) => handleUpdate('description', value)}
             />
             <EditableTableCell
+              sx={{ minWidth: '50px' }}
               value={approach.protectedPhaseNumber}
               onUpdate={(value) => handleUpdate('protectedPhaseNumber', value)}
+              error={errors?.protectedPhaseNumber?.error}
             />
             <EditableTableCell
               value={approach.permissivePhaseNumber}
