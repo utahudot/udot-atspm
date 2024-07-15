@@ -93,7 +93,8 @@ namespace ATSPM.ReportApi.ReportServices
                 pedEvents,
                 terminationEvents,
                 Location,
-                parameter.SelectedConsecutiveCount);
+                parameter.SelectedConsecutiveCount,
+                1);
             var phases = new List<Phase>();
             foreach (var phase in phaseCollectionData.AnalysisPhases)
             {
