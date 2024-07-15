@@ -38,6 +38,7 @@ function DropdownCell({ options, value, onUpdate }: SelectCellProps) {
     <TableCell
       sx={{
         minWidth: '180px',
+        backgroundColor: isOpen ? 'rgba(0, 123, 255, 0.1)' : 'none',
         boxShadow: isOpen ? '0 0 0 2px rgba(0, 123, 255, 0.5) inset' : 'none',
         cursor: 'pointer',
       }}
