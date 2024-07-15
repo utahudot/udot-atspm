@@ -1,5 +1,6 @@
 using Asp.Versioning;
 using ATSPM.ConfigApi.Services;
+using ATSPM.ConfigApi.Utility;
 using ATSPM.Domain.Extensions;
 using ATSPM.Infrastructure.Extensions;
 using Microsoft.AspNetCore.HttpLogging;
@@ -12,8 +13,6 @@ using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using ATSPM.ConfigApi.Utility;
-using static IdentityModel.ClaimComparer;
 
 var builder = WebApplication.CreateBuilder(args);
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);

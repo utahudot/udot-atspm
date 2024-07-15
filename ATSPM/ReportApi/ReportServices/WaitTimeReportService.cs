@@ -78,7 +78,7 @@ namespace ATSPM.ReportApi.ReportServices
 
             var analysisPhaseDataCollection = analysisPhaseCollectionService.GetAnalysisPhaseCollectionData(
                 Location.LocationIdentifier,
-            parameter.Start,
+                parameter.Start,
                 parameter.End,
                 planEvents,
                 events,
@@ -86,7 +86,8 @@ namespace ATSPM.ReportApi.ReportServices
                 null,
                 terminationEvents,
                 Location,
-                1);
+                1,
+                32);
             var phaseDetails = phaseService.GetPhases(Location);
             var tasks = new List<Task<WaitTimeResult>>();
             foreach (var phaseDetail in phaseDetails)
