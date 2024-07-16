@@ -16,7 +16,7 @@ export async function patchRequest<T, D>({
   data,
   axiosInstance,
   headers,
-}: patchRequestDto<D>): Promise<AxiosResponse<T, any>> {
+}: patchRequestDto<D>): Promise<AxiosResponse<T>> {
   return axiosInstance.patch<T>(url, data, { headers })
 }
 
