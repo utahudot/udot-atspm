@@ -7,6 +7,7 @@ import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined'
 import MenuOpenOutlinedIcon from '@mui/icons-material/MenuOpenOutlined'
 import RouteOutlinedIcon from '@mui/icons-material/RouteOutlined'
 import ShowChartOutlinedIcon from '@mui/icons-material/ShowChartOutlined'
+import SpeedOutlinedIcon from '@mui/icons-material/SpeedOutlined'
 import {
   Box,
   Drawer,
@@ -153,6 +154,11 @@ export default function Sidebar() {
               icon={<AddchartOutlinedIcon />}
               text={'Aggregate Charts'}
               url={'/data/aggregate'}
+            />
+            <NavItem
+              icon={<SpeedOutlinedIcon />}
+              text={'Speed Management Tool'}
+              url={'/tools/speed-management-tool'}
             />
             {hasWatchDogPermission && (
               <NavItem

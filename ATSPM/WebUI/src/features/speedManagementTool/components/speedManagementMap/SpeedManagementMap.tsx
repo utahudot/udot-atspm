@@ -1,0 +1,138 @@
+import { useRoutes } from '@/features/speedManagementTool/api/getRoutes'
+import { useUdotSpeedLimitRoutes } from '@/features/speedManagementTool/api/getUdotSpeedLimitRoutes'
+import DetailsPanel from '@/features/speedManagementTool/components/detailsPanel'
+import OptionsPanel from '@/features/speedManagementTool/components/optionsPanel'
+import useSpeedManagementStore, {
+  RouteRenderOption,
+} from '@/features/speedManagementTool/speedManagementStore'
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
+import { Box, IconButton } from '@mui/material'
+import 'leaflet/dist/leaflet.css'
+import dynamic from 'next/dynamic'
+import { memo, useRef, useState } from 'react'
+
+const SpeedManagementMap = dynamic(() => import('./Map'), { ssr: false })
+
+export enum DataSource {
+  ATSPM = 1,
+  PeMS = 2,
+  ClearGuide = 3,
+}
+
+export enum AnalysisPeriod {
+  AllDay,
+  PeekPeriod,
+  MorningPeak,
+  CustomHour,
+}
+
+const Map = () => {
+  const [leftSidebarOpen, setLeftSidebarOpen] = useState(true)
+  const [selectedRouteId, setSelectedRouteId] = useState<number>()
+  const fullScreenRef = useRef<HTMLDivElement>(null)
+
+  const { submittedRouteSpeedRequest, routeRenderOption } =
+    useSpeedManagementStore()
+
+  const { data: routeData } = useRoutes({
+    params: submittedRouteSpeedRequest,
+  })
+
+  const { data: speedLimitData } = useUdotSpeedLimitRoutes()
+
+  const speedLimitRoutes =
+    speedLimitData?.features.map((feature) => {
+      return {
+        ...feature,
+        geometry: {
+          ...feature.geometry,
+          coordinates: feature.geometry.coordinates.map((coord) => [
+            coord[1],
+            coord[0],
+          ]),
+        },
+        properties: feature.properties,
+      }
+    }) || []
+
+  const routes =
+    routeData?.features.map((feature) => ({
+      ...feature,
+      geometry: {
+        ...feature.geometry,
+        coordinates: feature.geometry.coordinates.map((coord) => [
+          coord[1],
+          coord[0],
+        ]),
+      },
+      properties: feature.properties,
+    })) || []
+
+  const toggleSidebar = () => setLeftSidebarOpen(!leftSidebarOpen)
+
+  return (
+    <Box
+      ref={fullScreenRef}
+      sx={{ display: 'flex', flex: 1, overflow: 'hidden' }}
+    >
+      <Box
+        sx={{
+          position: 'relative',
+          backgroundColor: '#fff',
+          width: leftSidebarOpen ? '370px' : '0px',
+          transition: 'width 0.3s',
+        }}
+      >
+        <Box
+          sx={{
+            width: '400px',
+            overflow: 'hidden',
+          }}
+        >
+          <OptionsPanel />
+        </Box>
+        <Box
+          sx={{
+            borderRadius: '3px',
+            backgroundColor: 'primary.main',
+            position: 'absolute',
+            top: '50%',
+            left: leftSidebarOpen ? '420px' : '50px',
+            transform: 'translate(-100%, -50%)',
+            zIndex: 100,
+            transition: 'left 0.3s',
+          }}
+        >
+          <IconButton
+            type="button"
+            onClick={toggleSidebar}
+            sx={{
+              color: '#fff',
+              p: 0.7,
+              transform: leftSidebarOpen ? 'rotateY(0deg)' : 'rotateY(180deg)',
+              transition: 'transform 0.3s',
+            }}
+          >
+            <ChevronLeftIcon />
+          </IconButton>
+        </Box>
+      </Box>
+      <Box sx={{ flex: 1, height: '100%' }}>
+        <SpeedManagementMap
+          fullScreenRef={fullScreenRef}
+          routes={
+            routeRenderOption === RouteRenderOption.Posted_Speed
+              ? speedLimitRoutes
+              : routes
+          }
+          setSelectedRouteId={setSelectedRouteId}
+        />
+      </Box>
+      <Box sx={{ width: '370px', backgroundColor: '#fff', overflow: 'auto' }}>
+        <DetailsPanel selectedRouteId={selectedRouteId} />
+      </Box>
+    </Box>
+  )
+}
+
+export default memo(Map)
