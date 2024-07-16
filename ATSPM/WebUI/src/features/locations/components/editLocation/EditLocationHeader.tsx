@@ -118,17 +118,12 @@ const EditLocationHeader = ({
   const handleDeleteCurrentVersionConfirm = () => {
     deleteVersion(location.id, {
       onSuccess: () => {
-        refetchLocation()
         refetchAllVersionsOfLocation()
         updateLocationVersion(
           versionData?.value.find(
             (version) => version.id !== location.id
           ) as Location
         )
-        addNotification({
-          type: 'error',
-          title: `Version Deleted`,
-        })
       },
     })
   }
