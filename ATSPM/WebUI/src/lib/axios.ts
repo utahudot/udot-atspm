@@ -1,4 +1,10 @@
-import { CONFIG_URL, DATA_URL, IDENTITY_URL, REPORTS_URL } from '@/config'
+import {
+  CONFIG_URL,
+  DATA_URL,
+  IDENTITY_URL,
+  REPORTS_URL,
+  SPEED_URL,
+} from '@/config'
 import storage from '@/utils/storage'
 import Axios, {
   AxiosInstance,
@@ -56,3 +62,4 @@ export const configAxios = createAxiosInstance(CONFIG_URL)
 export const reportsAxios = createAxiosInstance(REPORTS_URL)
 export const identityAxios = createAxiosInstance(IDENTITY_URL)
 export const dataAxios = createAxiosInstance(DATA_URL)
+export const speedAxios = createAxiosInstance(SPEED_URL)
