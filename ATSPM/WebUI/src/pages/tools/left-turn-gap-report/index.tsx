@@ -73,8 +73,7 @@ function LeftTurnGapReport() {
 
   const [runCheckSuccess, setRunCheckSuccess] = useState<boolean>(false)
   const [errorMessages, setErrorMessages] = useState<string[]>([])
-  const [showWarningMessageLTGR, setShowWarningMessageLTGR] =
-    useState<boolean>(true)
+
   //used obj used to to pass into component props. didnt want to do the whole cyclesWithPedCalls={cyclesWithPedCalls} 6 times
   const LeftTurnGapOptionProps = {
     cyclesWithPedCalls,
