@@ -1,5 +1,5 @@
+import Markers from '@/components/LocationMap/Markers'
 import MapFilters from '@/components/MapFilters'
-import Markers from '@/components/map/Markers'
 import { MAP_DEFAULT_LATITUDE, MAP_DEFAULT_LONGITUDE } from '@/config'
 import { Location } from '@/features/locations/types'
 import ClearIcon from '@mui/icons-material/Clear'
@@ -26,7 +26,7 @@ type MapProps = {
   mapHeight?: number | string
 }
 
-const Map = ({
+const LocationMap = ({
   location,
   setLocation,
   locations,
@@ -236,4 +236,4 @@ const Map = ({
   )
 }
 
-export default memo(Map)
+export default memo(LocationMap)

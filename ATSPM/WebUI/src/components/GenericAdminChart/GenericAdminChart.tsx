@@ -86,11 +86,13 @@ interface EditToolbarProps {
   ) => void
 }
 function EditToolbar(props: EditToolbarProps) {
-  ;<GridToolbarContainer>
-    <GridToolbarColumnsButton />
-    <GridToolbarFilterButton />
-    <GridToolbarExport />
-  </GridToolbarContainer>
+  return (
+    <GridToolbarContainer>
+      <GridToolbarColumnsButton />
+      <GridToolbarFilterButton />
+      <GridToolbarExport />
+    </GridToolbarContainer>
+  )
 }
 
 function GenericAdminChart({
@@ -503,8 +505,3 @@ function GenericAdminChart({
 }
 
 export default GenericAdminChart
-
-
-
-
-      
