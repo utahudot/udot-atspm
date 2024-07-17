@@ -35,11 +35,15 @@ export function useDeleteRequest<T, D>({
   notify = true,
 }: UseDataOptions) {
   const { addNotification } = useNotificationStore()
-  return useMutation<AxiosResponse<T>, unknown, D, unknown>({
+  return useMutation({
     onMutate: async (obj: any) => {
       await queryClient.cancelQueries([url])
 
       const previousObjs = queryClient.getQueryData<any[]>([url])
+
+      if (!Array.isArray(previousObjs)) {
+        return
+      }
 
       queryClient.setQueryData([url], [...(previousObjs || []), obj.data])
 
