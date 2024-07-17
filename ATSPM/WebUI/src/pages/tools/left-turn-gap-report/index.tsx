@@ -397,6 +397,19 @@ function LeftTurnGapReport() {
               <Alert severity="error">{errorMessage}</Alert>
             </Box>
           ))}
+
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <Alert severity="warning">
+              It is always good practice to review the Split Pattern performance
+              in conjunction with using this report
+            </Alert>
+          </Box>
         </Box>
 
         {ReportDataCheckData &&
