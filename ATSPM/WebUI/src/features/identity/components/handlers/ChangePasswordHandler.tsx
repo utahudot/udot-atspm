@@ -67,8 +67,8 @@ export const useChangePasswordHandler = (): ChangePasswordHandler => {
         }
 
         const hasUpperCase = /(?=.*[A-Z])/;
-        const hasDigit = /(?=.*\d)/;
-        const hasSpecialChar = /(?=.*[!@#$%^&*()_+\[\]{};':"\\|,.<>?])/;
+        const hasDigit = /\d/;
+        const hasSpecialChar = /[!@#$%^&*()_+\[\]{};':"\\|,.<>?]/;
 
         if (
             !hasUpperCase.test(password) || !hasDigit.test(password) || !hasSpecialChar.test(password)
