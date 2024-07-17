@@ -22,12 +22,12 @@ function SelectLocationMap({
   center,
   mapHeight,
 }: SelectLocationMapProps) {
-  const [isInteractive, setIsInteractive] = useState(false);
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const [showPopup, setShowPopup] = useState(false);
-  const Map = useMemo(
+  const [isInteractive, setIsInteractive] = useState(false)
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
+  const [showPopup, setShowPopup] = useState(false)
+  const LocationMap = useMemo(
     () =>
-      dynamic(() => import('@/components/map/Map'), {
+      dynamic(() => import('@/components/LocationMap'), {
         loading: () => (
           <Skeleton variant="rectangular" height={mapHeight ?? 400} />
         ),
@@ -50,34 +50,33 @@ function SelectLocationMap({
   )
 
   const handleMouseMove = (event) => {
-    setMousePosition({ x: event.clientX, y: event.clientY });
-  };
+    setMousePosition({ x: event.clientX, y: event.clientY })
+  }
 
   const handleMouseLeave = () => {
-    setShowPopup(false);
-    
-  };
+    setShowPopup(false)
+  }
 
   const handleActivationClick = () => {
-    setIsInteractive(true);
-    setShowPopup(false); 
-  };
+    setIsInteractive(true)
+    setShowPopup(false)
+  }
 
   useEffect(() => {
     if (!isInteractive) {
       const timer = setTimeout(() => {
-        setShowPopup(true);
-      }, 2000);
-      return () => clearTimeout(timer);
+        setShowPopup(true)
+      }, 2000)
+      return () => clearTimeout(timer)
     }
-  }, [isInteractive]);
+  }, [isInteractive])
   return (
     <div
       style={{ position: 'relative', height: mapHeight }}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
     >
-      <Map {...mapProps} />
+      <LocationMap {...mapProps} />
       {!isInteractive && (
         <div
           style={{
@@ -109,7 +108,7 @@ function SelectLocationMap({
         </div>
       )}
     </div>
-  );
+  )
 }
 
-export default memo(SelectLocationMap);
+export default memo(SelectLocationMap)
