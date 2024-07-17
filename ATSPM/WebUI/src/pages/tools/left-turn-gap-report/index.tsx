@@ -73,7 +73,8 @@ function LeftTurnGapReport() {
 
   const [runCheckSuccess, setRunCheckSuccess] = useState<boolean>(false)
   const [errorMessages, setErrorMessages] = useState<string[]>([])
-
+  const [showWarningMessageLTGR, setShowWarningMessageLTGR] =
+    useState<boolean>(true)
   //used obj used to to pass into component props. didnt want to do the whole cyclesWithPedCalls={cyclesWithPedCalls} 6 times
   const LeftTurnGapOptionProps = {
     cyclesWithPedCalls,
@@ -397,6 +398,19 @@ function LeftTurnGapReport() {
               <Alert severity="error">{errorMessage}</Alert>
             </Box>
           ))}
+
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <Alert severity="warning">
+              It is always good practice to review the Split Pattern performance
+              in conjunction with using this report
+            </Alert>
+          </Box>
         </Box>
 
         {ReportDataCheckData &&
