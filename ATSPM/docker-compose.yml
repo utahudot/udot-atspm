@@ -17,43 +17,37 @@ services:
 
   configapi:
     build:
-      context: ./ConfigApi
-      dockerfile: Dockerfile
+      dockerfile: ./ConfigApi/Dockerfile
     ports:
       - "8081:80"
 
   dataapi:
     build:
-      context: ./DataApi
-      dockerfile: Dockerfile
+      dockerfile: ./DataApi/Dockerfile
     ports:
       - "8082:80"
 
   signalcontroller:
     build:
-      context: ./SignalControllerLogger
-      dockerfile: Dockerfile
+      dockerfile: ./SignalControllerLogger/Dockerfile
     ports:
       - "8083:80"
 
   watchdog:
     build:
-      context: ./WatchDog
-      dockerfile: Dockerfile
+      dockerfile: ./WatchDog/Dockerfile
     ports:
       - "8084:80"
 
   reportapi:
     build:
-      context: ./ReportApi
-      dockerfile: Dockerfile
+      dockerfile: ./ReportApi/Dockerfile
     ports:
       - "8085:80"
 
   identityapi:
     build:
-      context: ./Identity
-      dockerfile: Dockerfile
+      dockerfile: ./Identity/Dockerfile
     ports:
       - "8086:80"
 
