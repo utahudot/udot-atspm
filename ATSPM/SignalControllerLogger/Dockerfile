@@ -31,6 +31,6 @@ COPY --from=publish /app/publish .
 RUN chown -R appuser:appgroup /app
 USER appuser
 
-ENV DOTNET_ENVIRONMENT Development
+#ENV DOTNET_ENVIRONMENT Development
 
 ENTRYPOINT ["dotnet", "LocationControllerLogger.dll"]
