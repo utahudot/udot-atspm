@@ -32,7 +32,7 @@ namespace ATSPM.ReportApi.ReportServices
         {
 
             var query = watchDogLogEventRepository.GetList()
-                .Where(w => w.Timestamp >= parameter.Start && w.Timestamp <= parameter.End);
+                .Where(w => w.Timestamp >= parameter.Start && w.Timestamp < parameter.End);
 
             if (parameter.LocationIdentifier != null)
             {
