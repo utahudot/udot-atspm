@@ -81,11 +81,6 @@ export default function Topbar() {
       >
         {!isLoading && (
           <>
-            <DropDownButton
-              title="Info"
-              icon={<InfoOutlinedIcon />}
-              menuItems={infoItems}
-            />
             {menuItems.map((item) =>
               item.parentId === null && item.link ? (
                 <Button
@@ -114,6 +109,11 @@ export default function Topbar() {
                 />
               )
             )}
+            <DropDownButton
+              title="Info"
+              icon={<InfoOutlinedIcon />}
+              menuItems={infoItems}
+            />
             {userHasAccess && (
               <DropDownButton
                 title="Admin"
