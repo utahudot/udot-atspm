@@ -1,13 +1,8 @@
-import CheckBoxIcon from '@mui/icons-material/CheckBox'
-import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank'
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline'
-import LockIcon from '@mui/icons-material/Lock'
-import LockOpenIcon from '@mui/icons-material/LockOpen'
 import WarningAmberOutlinedIcon from '@mui/icons-material/WarningAmberOutlined'
 import {
   Box,
   FormControl,
-  IconButton,
   Input,
   InputAdornment,
   TableCell,
@@ -30,21 +25,12 @@ interface EditableTableCellProps {
 const LinkPivotEditableCell = ({
   value,
   onUpdate,
-  disabled = false,
-  lockable = false,
-  isLocked = false,
   error,
   warning,
   sx,
 }: EditableTableCellProps) => {
   const theme = useTheme()
   const [isEditing, setIsEditing] = useState(false)
-
-  const toggleBoolean = () => {
-    if (typeof value === 'boolean' && !disabled && !isLocked) {
-      onUpdate(!value)
-    }
-  }
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     onUpdate(event.target.value)
@@ -60,103 +46,76 @@ const LinkPivotEditableCell = ({
     }
   }
 
-  // Red if error, yellow if warning, blue if editing, else none
-  const actionColor = (gradient = 0.5) => {
-    if (error) return `rgba(255, 0, 0, ${gradient})`
-    if (warning) return `rgba(255, 255, 0, ${gradient})`
-    if (isEditing) return `rgba(0, 123, 255, ${gradient})`
-    return 'none'
-  }
-
   return (
-    <Tooltip
-      title={
-        isLocked
-          ? 'Currently locked to protected phase. Unselect Peds are 1:1 to change.'
-          : ''
-      }
+    <TableCell
+      sx={{
+        ...sx,
+        position: 'relative',
+        overflow: 'visible',
+      }}
     >
-      <TableCell
-        onClick={typeof value === 'boolean' ? toggleBoolean : undefined}
+      <Box
         sx={{
-          ...sx,
-          // backgroundColor: `${actionColor(0.1)}`,
-          position: 'relative',
-          // boxShadow: `inset 0 0 0 1px ${actionColor()}`,
-          overflow: 'visible',
+          backgroundColor: 'background.default',
+          borderRadius: '4px',
+          outline: isEditing
+            ? `2px solid ${theme.palette.primary.main}`
+            : '1px solid rgba(0, 0, 0, 0.3)',
+          display: 'flex',
+          alignItems: 'center',
+          width: '100%',
+          ':hover': {
+            outline: isEditing ? '' : '1px solid black',
+          },
         }}
-        aria-disabled={disabled || isLocked}
       >
         <Box
           sx={{
-            backgroundColor: 'background.default',
-            borderRadius: '4px',
-            outline: isEditing
-              ? `2px solid ${theme.palette.primary.main}`
-              : '1px solid rgba(0, 0, 0, 0.3)',
-            display: 'flex',
-            alignItems: 'center',
             width: '100%',
-            ':hover': {
-              outline: isEditing ? '' : '1px solid black',
-            },
+            position: 'relative',
+            p: 1,
           }}
         >
-          {typeof value === 'boolean' ? (
-            <Box>{value ? <CheckBoxIcon /> : <CheckBoxOutlineBlankIcon />}</Box>
-          ) : (
-            <Box
-              sx={{
-                width: '100%',
-                position: 'relative',
-                p: 1,
+          <FormControl
+            variant="outlined"
+            fullWidth
+            sx={{ m: 0, minWidth: '80px' }}
+          >
+            <Input
+              inputProps={{
+                'aria-label': 'editable-cell',
               }}
-            >
-              <FormControl
-                variant="outlined"
-                fullWidth
-                sx={{ m: 0, minWidth: '80px' }}
-              >
-                <Input
-                  disableUnderline
-                  endAdornment={
-                    error ? (
-                      <InputAdornment position="end">
-                        <Tooltip title={error}>
-                          <ErrorOutlineIcon color="error" />
-                        </Tooltip>
-                      </InputAdornment>
-                    ) : warning ? (
-                      <InputAdornment position="end">
-                        <Tooltip title={warning}>
-                          <WarningAmberOutlinedIcon color="warning" />
-                        </Tooltip>
-                      </InputAdornment>
-                    ) : (
-                      <InputAdornment position="end" sx={{ width: '24px' }} />
-                    )
-                  }
-                  size="small"
-                  fullWidth
-                  value={value || ''}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  onKeyDown={handleKeyDown}
-                  disabled={disabled || isLocked}
-                  onClick={() => setIsEditing(true)}
-                  error={!!error}
-                />
-              </FormControl>
-            </Box>
-          )}
-          {lockable && (
-            <IconButton size="small" sx={{ ml: 1 }} disabled>
-              {isLocked ? <LockIcon /> : <LockOpenIcon />}
-            </IconButton>
-          )}
+              disableUnderline
+              endAdornment={
+                error ? (
+                  <InputAdornment position="end">
+                    <Tooltip title={error}>
+                      <ErrorOutlineIcon color="error" />
+                    </Tooltip>
+                  </InputAdornment>
+                ) : warning ? (
+                  <InputAdornment position="end">
+                    <Tooltip title={warning}>
+                      <WarningAmberOutlinedIcon color="warning" />
+                    </Tooltip>
+                  </InputAdornment>
+                ) : (
+                  <InputAdornment position="end" sx={{ width: '24px' }} />
+                )
+              }
+              size="small"
+              fullWidth
+              value={value || ''}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              onKeyDown={handleKeyDown}
+              onClick={() => setIsEditing(true)}
+              error={!!error}
+            />
+          </FormControl>
         </Box>
-      </TableCell>
-    </Tooltip>
+      </Box>
+    </TableCell>
   )
 }
 
