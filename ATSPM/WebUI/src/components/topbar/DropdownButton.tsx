@@ -12,7 +12,7 @@ const DropDownButton = ({
   title: string
   icon: JSX.Element
   menuItems: { name: string; icon: JSX.Element; link: string }[]
-  disabled: boolean
+  disabled?: boolean
 }) => {
   const theme = useTheme()
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null)
@@ -79,6 +79,5 @@ const DropDownButton = ({
     </>
   )
 }
-
 
 export default DropDownButton

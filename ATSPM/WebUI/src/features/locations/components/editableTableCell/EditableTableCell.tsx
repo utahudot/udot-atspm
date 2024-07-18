@@ -102,6 +102,9 @@ const EditableTableCell = ({
                 sx={{ m: 0, minWidth: '80px' }}
               >
                 <Input
+                  inputProps={{
+                    'aria-label': 'editable-cell',
+                  }}
                   disableUnderline
                   endAdornment={
                     error ? (
