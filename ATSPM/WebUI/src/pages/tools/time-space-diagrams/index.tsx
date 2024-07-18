@@ -71,15 +71,18 @@ const TimeSpaceDiagram = () => {
     toolOptions,
   })
 
-  const { data: routes, isLoading: isLoadingRoutes } = useGetRoute()
+  const { data: routesData, isLoading: isLoadingRoutes } = useGetRoute()
 
   if (isLoadingRoutes) {
-    return <Typography>Waiting to load data</Typography>
+    return <Typography>Loading...</Typography>
   }
 
-  if (routes === undefined) {
+  if (routesData === undefined) {
     return <Typography>Error retrieving routes</Typography>
   }
+
+  const routes = routesData?.value?.sort((a, b) => a.name.localeCompare(b.name))
+
   const handleGenerateCharts = () => {
     refetch()
   }
@@ -126,13 +129,13 @@ const TimeSpaceDiagram = () => {
           <TabPanel value={ToolType.TimeSpaceHistoric} sx={{ padding: '0px' }}>
             <TimeSpaceHistoricContainer
               handleToolOptions={handleToolOptions}
-              routes={routes?.value}
+              routes={routes}
             />
           </TabPanel>
           <TabPanel value={ToolType.TimeSpaceAverage} sx={{ padding: '0px' }}>
             <TimeSpaceAverageContainer
               handleToolOptions={handleToolOptions}
-              routes={routes?.value}
+              routes={routes}
             />
           </TabPanel>
           <Box>

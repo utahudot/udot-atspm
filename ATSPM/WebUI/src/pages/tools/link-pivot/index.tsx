@@ -1,7 +1,7 @@
 import { ResponsivePageLayout } from '@/components/ResponsivePage'
 import { ToolType } from '@/features/charts/common/types'
 import { useLinkPivotAdjustment } from '@/features/tools/link-pivot/api/getLinkPivotAdjustments'
-import { LinkPivotAdjustmentComponent } from '@/features/tools/link-pivot/components/LinkPivotAdjustmentComponent'
+import LinkPivotAdjustmentTable from '@/features/tools/link-pivot/components/LinkPivotAdjustmentTable'
 import { LinkPivotApproachLinkComponent } from '@/features/tools/link-pivot/components/LinkPivotApproachLinkComponent'
 import { LinkPivotOptionsComponent } from '@/features/tools/link-pivot/components/LinkPivotOptionsComponent'
 import { useLinkPivotOptionsHandler } from '@/features/tools/link-pivot/handlers/linkPivotHandlers'
@@ -111,12 +111,12 @@ const LinkPivot = () => {
               variant="h3"
               component="h2"
               fontWeight="bold"
-              sx={{ mb: 2 }}
+              sx={{ my: 2 }}
             >
               Adjustments
             </Typography>
             <Paper>
-              <LinkPivotAdjustmentComponent
+              <LinkPivotAdjustmentTable
                 data={data.adjustments}
                 cycleLength={toolOptions.cycleLength}
               />
