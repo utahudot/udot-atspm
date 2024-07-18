@@ -38,7 +38,7 @@ export const RouteSelect = ({
   return (
     <Box>
       <FormControl fullWidth sx={{ mb: 2 }}>
-        <InputLabel htmlFor="route-select">Route Id</InputLabel>
+        <InputLabel htmlFor="route-select">Route</InputLabel>
 
         <Select
           label="Route"
