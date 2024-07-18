@@ -16,6 +16,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Host.ConfigureServices((host, services) =>
 {
     services.AddIdentityDbContext(host);
+
     services.AddIdentity<ApplicationUser, IdentityRole>() // Use AddDefaultIdentity if you don't need roles
     .AddEntityFrameworkStores<IdentityContext>()
     .AddDefaultTokenProviders();

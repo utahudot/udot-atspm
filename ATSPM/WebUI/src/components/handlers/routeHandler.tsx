@@ -15,7 +15,10 @@ export const useRouteHandler = () => {
 
   useEffect(() => {
     if (data) {
-      setRoutes(data.value)
+      const sortedRoutes = data.value.sort((a, b) => {
+        return a.name.localeCompare(b.name)
+      })
+      setRoutes(sortedRoutes)
     }
   }, [data])
 

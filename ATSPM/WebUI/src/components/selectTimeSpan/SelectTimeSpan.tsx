@@ -186,31 +186,25 @@ export default function SelectDateTime({
               Time Period
             </Typography>
           </Divider>
-          <Box sx={{ display: 'flex' }}>
-            <Box>
-              <TimePicker
-                label="Start Time"
-                ampm={false}
-                closeOnSelect={true}
-                value={startTimePeriod}
-                onChange={(value: Date | null) => {
-                  if (changeStartTimePeriod)
-                    changeStartTimePeriod(value as Date)
-                }}
-              />
-            </Box>
-            <Box>
-              {/* <Typography fontWeight="bold">End Time</Typography> */}
-              <TimePicker
-                label="End Time"
-                ampm={false}
-                closeOnSelect={true}
-                value={endTimePeriod}
-                onChange={(value: Date | null) => {
-                  if (changeEndTimePeriod) changeEndTimePeriod(value as Date)
-                }}
-              />
-            </Box>
+          <Box sx={{ display: 'flex', gap: 2 }}>
+            <TimePicker
+              label="Start Time"
+              ampm={false}
+              closeOnSelect={true}
+              value={startTimePeriod}
+              onChange={(value: Date | null) => {
+                if (changeStartTimePeriod) changeStartTimePeriod(value as Date)
+              }}
+            />
+            <TimePicker
+              label="End Time"
+              ampm={false}
+              closeOnSelect={true}
+              value={endTimePeriod}
+              onChange={(value: Date | null) => {
+                if (changeEndTimePeriod) changeEndTimePeriod(value as Date)
+              }}
+            />
           </Box>
         </>
       )}

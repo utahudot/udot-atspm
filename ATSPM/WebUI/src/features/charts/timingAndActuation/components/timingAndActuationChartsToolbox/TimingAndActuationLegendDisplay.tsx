@@ -58,6 +58,7 @@ function TimingAndActuationLegendDisplay({
           <Box display={'flex'}>
             {chartData.data.legends.map((legend, index) => (
               <ApacheEChart
+                hideInteractionMessage
                 key={index}
                 id="legend"
                 option={legend}
