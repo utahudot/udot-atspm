@@ -232,6 +232,15 @@ function transformData(data: RawSplitMonitorData) {
     percentSkips: (value) => `${Math.round(value)}% Skips`,
   }
 
+  plans.forEach((plan) => {
+    if (plan.percentMaxOuts === 0) {
+      plan.percentMaxOuts = null
+    }
+    if (plan.percentForceOffs === 0) {
+      plan.percentForceOffs = null
+    }
+  })
+
   const plansSeries = createPlans(plans, yAxis.length, planOptions, 100)
 
   const displayProps = createDisplayProps({
