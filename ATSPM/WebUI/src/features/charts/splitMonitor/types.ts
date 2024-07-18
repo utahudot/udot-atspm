@@ -16,8 +16,8 @@ export interface SplitMonitorChartOptionsDefaults {
 export interface SplitMonitorPlan extends BasePlan {
   percentSkips: number
   percentGapOuts: number
-  percentMaxOuts: number
-  percentForceOffs: number
+  percentMaxOuts: number | null
+  percentForceOffs: number | null
   averageSplit: number
   percentileSplit: number
   minTime: number
@@ -29,7 +29,7 @@ export interface SplitMonitorPlan extends BasePlan {
 export interface RawSplitMonitorData extends BaseChartData {
   phaseNumber: number
   percentileSplit: number
-  phaseDescription:string
+  phaseDescription: string
   plans: SplitMonitorPlan[]
   programmedSplits: DataPoint[]
   gapOuts: DataPoint[]
