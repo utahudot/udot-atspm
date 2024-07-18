@@ -6,7 +6,7 @@ services:
       context: ./WebUI
       dockerfile: Dockerfile
     ports:
-      - "8080:80"
+      - "3000:3000"
     depends_on:
       - configapi
       - dataapi
@@ -19,7 +19,7 @@ services:
     build:
       dockerfile: ./ConfigApi/Dockerfile
     ports:
-      - "8081:80"
+      - "44313:44313"
 
   dataapi:
     build:
