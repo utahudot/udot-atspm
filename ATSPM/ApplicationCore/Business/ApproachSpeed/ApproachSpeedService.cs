@@ -54,12 +54,10 @@ namespace ATSPM.Application.Business.ApproachSpeed
                     ? "Detection Type Not Found"
                     : detector.DetectionTypes.FirstOrDefault(d => d.MeasureTypes.Any(m => m.Id == options.MetricTypeId))?.Description ?? "Detection Type Not Found",
                    detector.DistanceFromStopBar.Value,
-                   detector.Approach.Mph.Value,
-                   speedDetector.Plans,
-                   null,
-                   null,
-                   null
-                   );
+                detector.Approach.Mph.Value)
+                {
+                    Plans = speedDetector.Plans
+                };
             }
             var averageSpeeds = new List<DataPointForInt>();
             var eightyFifthSpeeds = new List<DataPointForInt>();
@@ -84,12 +82,13 @@ namespace ATSPM.Application.Business.ApproachSpeed
                     ? "Detection Type Not Found"
                     : detector.DetectionTypes.FirstOrDefault(d => d.MeasureTypes.Any(m => m.Id == options.MetricTypeId))?.Description ?? "Detection Type Not Found",
                     detector.DistanceFromStopBar.Value,
-                    detector.Approach.Mph.Value,
-                    speedDetector.Plans,
-                    averageSpeeds,
-                    eightyFifthSpeeds,
-                    fifteenthSpeeds
-                );
+                    detector.Approach.Mph.Value)
+            {
+                Plans = speedDetector.Plans,
+                AverageSpeeds = averageSpeeds,
+                EightyFifthSpeeds = eightyFifthSpeeds,
+                FifteenthSpeeds = fifteenthSpeeds
+            };
         }
 
         public SpeedDetector GetSpeedDetector(
