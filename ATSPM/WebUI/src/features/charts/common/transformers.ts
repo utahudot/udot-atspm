@@ -236,6 +236,9 @@ export function createYAxis(
     nameLocation: 'middle',
     nameGap: 40,
     alignTicks: true,
+    axisLabel: {
+      formatter: (val) => Math.round(val).toString(),
+    },
   }
 
   const yAxisConfigs: YAXisComponentOption[] = []
