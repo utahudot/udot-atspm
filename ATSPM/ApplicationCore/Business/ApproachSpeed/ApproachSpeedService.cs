@@ -3,7 +3,6 @@ using ATSPM.Data.Models;
 using ATSPM.Data.Models.EventLogModels;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -13,6 +12,7 @@ namespace ATSPM.Application.Business.ApproachSpeed
     {
         private readonly CycleService cycleService;
         private readonly PlanService planService;
+        const string DetectionNotFoundMessage = "Detection Type Not Found";
 
         public ApproachSpeedService(
             CycleService cycleService,
@@ -33,10 +33,8 @@ namespace ATSPM.Application.Business.ApproachSpeed
         {
             var speedEventsForDetector = speedEvents.Where(d => d.DetectorId == detector.DectectorIdentifier && d.Timestamp >= options.Start && d.Timestamp < options.End).ToList();
             var speedDetector = GetSpeedDetector(
+                options,
                 detector,
-                options.Start,
-                options.End,
-                options.BinSize,
                 planEvents,
                 cycleEvents,
                 speedEventsForDetector,
@@ -51,15 +49,13 @@ namespace ATSPM.Application.Business.ApproachSpeed
                    options.Start,
                    options.End,
                    detector.DetectionTypes.IsNullOrEmpty()
-                    ? "Detection Type Not Found"
-                    : detector.DetectionTypes.FirstOrDefault(d => d.MeasureTypes.Any(m => m.Id == options.MetricTypeId))?.Description ?? "Detection Type Not Found",
+                    ? DetectionNotFoundMessage
+                    : detector.DetectionTypes.FirstOrDefault(d => d.MeasureTypes.Any(m => m.Id == options.MetricTypeId))?.Description ?? DetectionNotFoundMessage,
                    detector.DistanceFromStopBar.Value,
-                   detector.Approach.Mph.Value,
-                   speedDetector.Plans,
-                   null,
-                   null,
-                   null
-                   );
+                detector.Approach.Mph.Value)
+                {
+                    Plans = speedDetector.Plans
+                };
             }
             var averageSpeeds = new List<DataPointForInt>();
             var eightyFifthSpeeds = new List<DataPointForInt>();
@@ -81,41 +77,40 @@ namespace ATSPM.Application.Business.ApproachSpeed
                     options.Start,
                     options.End,
                     detector.DetectionTypes.IsNullOrEmpty()
-                    ? "Detection Type Not Found"
-                    : detector.DetectionTypes.FirstOrDefault(d => d.MeasureTypes.Any(m => m.Id == options.MetricTypeId))?.Description ?? "Detection Type Not Found",
+                    ? DetectionNotFoundMessage
+                    : detector.DetectionTypes.FirstOrDefault(d => d.MeasureTypes.Any(m => m.Id == options.MetricTypeId))?.Description ?? DetectionNotFoundMessage,
                     detector.DistanceFromStopBar.Value,
-                    detector.Approach.Mph.Value,
-                    speedDetector.Plans,
-                    averageSpeeds,
-                    eightyFifthSpeeds,
-                    fifteenthSpeeds
-                );
+                    detector.Approach.Mph.Value)
+            {
+                Plans = speedDetector.Plans,
+                AverageSpeeds = averageSpeeds,
+                EightyFifthSpeeds = eightyFifthSpeeds,
+                FifteenthSpeeds = fifteenthSpeeds
+            };
         }
 
         public SpeedDetector GetSpeedDetector(
+            ApproachSpeedOptions options,
             Detector detector,
-            DateTime start,
-            DateTime end,
-            int binSize,
             List<IndianaEvent> planEvents,
             List<IndianaEvent> cycleEvents,
             List<SpeedEvent> speedEventsForDetector,
             ILogger logger)
         {
-            var cycles = cycleService.GetSpeedCycles(start, end, cycleEvents);
+            var cycles = cycleService.GetSpeedCycles(options.Start, options.End, cycleEvents);
             if (cycles.Any())
             {
                 foreach (var cycle in cycles)
                     cycle.FindSpeedEventsForCycle(speedEventsForDetector);
             }
-            var plans = planService.GetSpeedPlans(cycles, start, end, detector.Approach, planEvents);
+            var plans = planService.GetSpeedPlans(cycles, options.Start, options.End, detector.Approach, planEvents);
             if (speedEventsForDetector.IsNullOrEmpty())
             {
                 return new SpeedDetector(
                     plans,
                     0,
-                    start,
-                    end,
+                    options.Start,
+                    options.End,
                     cycles,
                     null,
                     null
@@ -126,12 +121,12 @@ namespace ATSPM.Application.Business.ApproachSpeed
             var movementDelay = 0;
             if (detector.MovementDelay != null)
                 movementDelay = detector.MovementDelay.Value;
-            var avgSpeedBucketCollection = new AvgSpeedBucketCollection(start, end, binSize, movementDelay, cycles, logger);
+            var avgSpeedBucketCollection = new AvgSpeedBucketCollection(options.Start, options.End, options.BinSize, movementDelay, cycles, logger);
             return new SpeedDetector(
                 plans,
                 totalDetectorHits,
-                start,
-                end,
+                options.Start,
+                options.End,
                 cycles,
                 speedEventsForDetector,
                 avgSpeedBucketCollection

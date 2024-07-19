@@ -48,6 +48,8 @@ Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "webUI", "WebUI\webUI.esproj
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConfigApi", "ConfigApi\ConfigApi.csproj", "{D73F0618-E027-4004-938A-B6D7EF884DF5}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApplicationCoreTests", "ApplicationCoreTests\ApplicationCoreTests.csproj", "{B94FC186-4DC8-48EA-B00C-CF888BDF4833}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -128,6 +130,10 @@ Global
 		{D73F0618-E027-4004-938A-B6D7EF884DF5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D73F0618-E027-4004-938A-B6D7EF884DF5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D73F0618-E027-4004-938A-B6D7EF884DF5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B94FC186-4DC8-48EA-B00C-CF888BDF4833}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B94FC186-4DC8-48EA-B00C-CF888BDF4833}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B94FC186-4DC8-48EA-B00C-CF888BDF4833}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B94FC186-4DC8-48EA-B00C-CF888BDF4833}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

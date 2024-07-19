@@ -15,6 +15,7 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import { Box, Button, TextField } from '@mui/material'
 import { useRouter } from 'next/router'
 import React, { memo, useEffect, useState } from 'react'
+
 const RouteAdmin = () => {
   const pageAccess = useViewPage(PageNames.Routes)
 
@@ -26,7 +27,7 @@ const RouteAdmin = () => {
   const { data: routeDistancesData } = useGetRouteDistances()
   const { mutate: updateRoute } = usePutRoute()
 
-  const directionTypesData = useConfigEnums(ConfigEnum.DirectionTypes)
+  const { data: directionTypes } = useConfigEnums(ConfigEnum.DirectionTypes)
 
   const [location, setLocation] = useState<Location | null>(null)
   const [routePolyline, setRoutePolyline] = useState<number[][]>([])
@@ -35,7 +36,6 @@ const RouteAdmin = () => {
   const [routeDistances, setRouteDistances] = useState<RouteDistance[]>([])
 
   const locations = locationsData?.value
-  const directionTypes = directionTypesData?.data?.members
 
   useEffect(() => {
     if (routeDistancesData) {

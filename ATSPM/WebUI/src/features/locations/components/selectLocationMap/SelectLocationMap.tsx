@@ -24,7 +24,7 @@ function SelectLocationMap({
 }: SelectLocationMapProps) {
   const Map = useMemo(
     () =>
-      dynamic(() => import('@/components/map/Map'), {
+      dynamic(() => import('@/components/LocationMap'), {
         loading: () => (
           <Skeleton variant="rectangular" height={mapHeight ?? 400} />
         ),

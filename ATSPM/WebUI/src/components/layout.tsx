@@ -30,7 +30,7 @@ export default function Layout({ children }: LayoutProps) {
         sx={{
           backgroundColor: theme.palette.background.default,
           maxWidth: isSidebarOpen ? 'calc(100% - 270px)' : '100%',
-          overflowX: 'hidden',
+          // overflowX: 'hidden',
         }}
       >
         <Topbar />

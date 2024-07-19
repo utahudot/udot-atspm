@@ -1,5 +1,6 @@
 ﻿using ATSPM.Application.Business.Common;
 using ATSPM.Data.Models;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -55,44 +56,98 @@ namespace ATSPM.Application.Business.ArrivalOnRed
                 );
         }
 
-        private static void SetDataPoints(ArrivalOnRedOptions options, LocationPhase LocationPhase, ref double totalDetectorHits, ref double totalAoR, List<DataPointForDouble> percentArrivalsOnReds, List<DataPointForDouble> totalVehicles, List<DataPointForDouble> arrivalsOnReds)
+        private static void SetDataPoints(
+            ArrivalOnRedOptions options,
+            LocationPhase LocationPhase,
+            ref double totalDetectorHits,
+            ref double totalAoR,
+            List<DataPointForDouble> percentArrivalsOnReds,
+            List<DataPointForDouble> totalVehicles,
+            List<DataPointForDouble> arrivalsOnReds)
         {
-
             var dt = LocationPhase.StartDate;
+
             while (dt < LocationPhase.EndDate)
             {
-                double binTotalStops = 0;
-                double binPercentAoR = 0;
-                double binDetectorHits = 0;
-                // Get cycles that start and end within the bin, and the cycle that starts before and ends
-                // within the bin, and the cycle that starts within and ends after the bin
-                var cycles = LocationPhase.Cycles
-                    .Where(c => c.StartTime >= dt && c.StartTime < dt.AddMinutes(options.BinSize)
-                || (c.StartTime < dt && c.EndTime >= dt)
-                || (c.EndTime >= dt.AddMinutes(options.BinSize)
-                && c.StartTime < dt.AddMinutes(options.BinSize)));
-                foreach (var cycle in cycles)
-                {
-                    // Filter cycle events to only include timestamps within the bin
-                    var binEvents = cycle.DetectorEvents.Where(e => e.TimeStamp >= dt
-                    && e.TimeStamp < dt.AddMinutes(options.BinSize));
-                    totalDetectorHits += binEvents.Count();
-                    binDetectorHits += binEvents.Count();
-                    foreach (var detectorPoint in binEvents)
-                        if (detectorPoint.YPointSeconds < cycle.GreenLineY)
-                        {
-                            binTotalStops++;
-                            totalAoR++;
-                        }
-                    if (binDetectorHits > 0)
-                        binPercentAoR = binTotalStops / binDetectorHits * 100;
-                }
-                percentArrivalsOnReds.Add(new DataPointForDouble(dt, binPercentAoR));
-                totalVehicles.Add(new DataPointForDouble(dt, binDetectorHits * (60 / options.BinSize)));
-                arrivalsOnReds.Add(new DataPointForDouble(dt, binTotalStops * (60 / options.BinSize)));
+                ProcessCycleData(options, LocationPhase, dt, ref totalDetectorHits, ref totalAoR, percentArrivalsOnReds, totalVehicles, arrivalsOnReds);
                 dt = dt.AddMinutes(options.BinSize);
             }
         }
+
+        private static void ProcessCycleData(
+            ArrivalOnRedOptions options,
+            LocationPhase LocationPhase,
+            DateTime dt,
+            ref double totalDetectorHits,
+            ref double totalAoR,
+            List<DataPointForDouble> percentArrivalsOnReds,
+            List<DataPointForDouble> totalVehicles,
+            List<DataPointForDouble> arrivalsOnReds)
+        {
+            double binTotalStops = 0;
+            double binPercentAoR = 0;
+            double binDetectorHits = 0;
+
+            var cycles = GetCyclesWithinBin(LocationPhase, dt, options.BinSize);
+            foreach (var cycle in cycles)
+            {
+                ProcessCycleEvents(cycle, dt, options.BinSize, ref binTotalStops, ref binDetectorHits, ref totalAoR, ref totalDetectorHits);
+            }
+
+            if (binDetectorHits > 0)
+            {
+                binPercentAoR = binTotalStops / binDetectorHits * 100;
+            }
+
+            AddDataPoints(dt, binPercentAoR, binDetectorHits, binTotalStops, options.BinSize, percentArrivalsOnReds, totalVehicles, arrivalsOnReds);
+        }
+
+        private static IEnumerable<CyclePcd> GetCyclesWithinBin(LocationPhase LocationPhase, DateTime dt, double binSize)
+        {
+            return LocationPhase.Cycles.Where(c =>
+                c.StartTime >= dt && c.StartTime < dt.AddMinutes(binSize) ||
+                (c.StartTime < dt && c.EndTime >= dt) ||
+                (c.EndTime >= dt.AddMinutes(binSize) && c.StartTime < dt.AddMinutes(binSize)));
+        }
+
+        private static void ProcessCycleEvents(
+            CyclePcd cycle,
+            DateTime dt,
+            double binSize,
+            ref double binTotalStops,
+            ref double binDetectorHits,
+            ref double totalAoR,
+            ref double totalDetectorHits)
+        {
+            var binEvents = cycle.DetectorEvents.Where(e => e.TimeStamp >= dt && e.TimeStamp < dt.AddMinutes(binSize));
+            totalDetectorHits += binEvents.Count();
+            binDetectorHits += binEvents.Count();
+
+            foreach (var detectorPoint in binEvents)
+            {
+                if (detectorPoint.YPointSeconds < cycle.GreenLineY)
+                {
+                    binTotalStops++;
+                    totalAoR++;
+                }
+            }
+        }
+
+        private static void AddDataPoints(
+            DateTime dt,
+            double binPercentAoR,
+            double binDetectorHits,
+            double binTotalStops,
+            double binSize,
+            List<DataPointForDouble> percentArrivalsOnReds,
+            List<DataPointForDouble> totalVehicles,
+            List<DataPointForDouble> arrivalsOnReds)
+        {
+            percentArrivalsOnReds.Add(new DataPointForDouble(dt, binPercentAoR));
+            totalVehicles.Add(new DataPointForDouble(dt, binDetectorHits * (60 / binSize)));
+            arrivalsOnReds.Add(new DataPointForDouble(dt, binTotalStops * (60 / binSize)));
+        }
+
 
         protected static ReadOnlyCollection<ArrivalOnRedPlan> GetArrivalOnRedPlans(
             List<PurdueCoordinationPlan> planCollection)

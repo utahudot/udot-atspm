@@ -9,7 +9,6 @@ import {
   MenuItem,
   Select,
   TextField,
-  useTheme,
 } from '@mui/material'
 import { LinkPivotHandler, StreamType } from '../handlers/linkPivotHandlers'
 
@@ -28,14 +27,13 @@ const daysOfWeekList: string[] = [
 ]
 
 export const LinkPivotOptionsComponent = (props: Props) => {
-  const theme = useTheme()
   const { handler } = props
 
   return (
     <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
       <StyledPaper
         sx={{
-          padding: theme.spacing(3),
+          padding: 3,
         }}
       >
         <RouteSelect
@@ -68,7 +66,7 @@ export const LinkPivotOptionsComponent = (props: Props) => {
       </Box>
       <StyledPaper
         sx={{
-          padding: theme.spacing(3),
+          padding: 3,
         }}
       >
         <Box
