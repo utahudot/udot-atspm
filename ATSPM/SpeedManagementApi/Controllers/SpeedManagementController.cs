@@ -66,6 +66,7 @@ namespace SpeedManagementApi.Controllers
                     { "estimatedViolations", routeSpeed.EstimatedViolations },
                     { "flow", routeSpeed.Flow },
                     { "speedLimit", routeSpeed.SpeedLimit },
+                    //{ "geometry", routeSpeed.Shape }
                     //{ "esri_oid", 2 },
                     //{ "SHAPE__Length", 2 }
                 };
@@ -102,10 +103,10 @@ namespace SpeedManagementApi.Controllers
             return Content(geoJson, "application/geo+json");
         }
 
-        [HttpPut("GetHistoricalSpeeds")]
-        public async Task<IActionResult> GetHistoricalData()
+        [HttpPost("GetHistoricalSpeeds")]
+        public async Task<IActionResult> GetHistoricalData([FromBody] HistoricalSpeedOptions options)
         {
-            var task = this.routeSpeedService.GetHistoricalSpeeds(1, new DateOnly(2024, 5, 1), new DateOnly(2024, 5, 31),  "0,1,2,3,4,5,6,7", 10, AnalysisPeriod.AllDay);
+            var task = this.routeSpeedService.GetHistoricalSpeeds(options);
 
             var result = await Task.Run(() => task);
 

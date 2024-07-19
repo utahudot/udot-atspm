@@ -93,25 +93,19 @@ namespace ATSPM.Application.Business.RouteSpeed
             return hourlySpeeds;
         }
 
-        public async Task<HistoricalDTO> GetHistoricalSpeeds(
-            int routeId,
-            DateOnly startDate,
-            DateOnly endDate,
-            string daysOfWeek,
-            int percentile,
-            AnalysisPeriod analysisPeriod)
+        public async Task<HistoricalDTO> GetHistoricalSpeeds(HistoricalSpeedOptions options)
         {
             var routeSpeeds = new HistoricalDTO
             {
-                RouteId = routeId
+                RouteId = options.RouteId
             };
 
-            var sources = new List<int> { 1, 2, 3 };
+            var sources = new List<int> { 1, 3 };
 
             foreach (var sourceId in sources)
             {
-                var monthlyAverages = await this.hourlySpeedRepository.GetMonthlyAveragesAsync(routeId, startDate, endDate, daysOfWeek, sourceId);
-                var dailyAverages = await this.hourlySpeedRepository.GetDailyAveragesAsync(routeId, startDate, endDate, daysOfWeek, sourceId);
+                var monthlyAverages = await this.hourlySpeedRepository.GetMonthlyAveragesAsync(options.RouteId, options.StartDate, options.EndDate, options.DaysOfWeek.ToString(), sourceId);
+                var dailyAverages = await this.hourlySpeedRepository.GetDailyAveragesAsync(options.RouteId, options.StartDate, options.EndDate, options.DaysOfWeek.ToString(), sourceId);
 
                 routeSpeeds.MonthlyHistoricalRouteData.Add(new MonthlyHistoricalRouteData
                 {
