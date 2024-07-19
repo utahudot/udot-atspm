@@ -12,6 +12,7 @@ namespace ATSPM.Application.Business.ApproachSpeed
     {
         private readonly CycleService cycleService;
         private readonly PlanService planService;
+        const string DetectionNotFoundMessage = "Detection Type Not Found";
 
         public ApproachSpeedService(
             CycleService cycleService,
@@ -21,7 +22,6 @@ namespace ATSPM.Application.Business.ApproachSpeed
             this.cycleService = cycleService;
             this.planService = planService;
         }
-        const string DetectionNotFoundMessage = "Detection Type Not Found";
 
         public ApproachSpeedResult GetChartData(
             ApproachSpeedOptions options,

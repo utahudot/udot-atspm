@@ -96,30 +96,35 @@ namespace ATSPM.Application.Business.ApproachVolume
                 detectionType.Id.GetDisplayAttribute()?.Name,
                 distanceFromStopBar,
                 primaryApproaches[0].DirectionType.Description,
-                direction1VolumesSeries,
-                opposingApproaches[0].DirectionType.Description,
-                direction2VolumesSeries,
-                combinedDirectionsVolumesSeries,
-                GetDFactorSeries(primaryDirectionVolume, combinedDirectionsVolumes),
-                GetDFactorSeries(opposingDirectionVolume, combinedDirectionsVolumes),
-                combinedPeakHourString,
-                combinedPeakHourKFactor,
-                combinedPeakHourItem.Value,
-                combinedPeakHourFactor,
-                combinedVolume,
-                primaryDirectionPeakHourString,
-                primaryKFactor,
-                primayDirectionPeakHourItem.Value,
-                primaryDirectionPeakHourFactor,
-                Convert.ToInt32(primaryDirectionTotalVolume),
-                primaryDirectionPeakHourDFactor,
-                opposingDirectionPeakHourString,
-                opposingKFactor,
-                opposingDirectionPeakHourItem.Value,
-                opposingDirectionPeakHourFactor,
-                Convert.ToInt32(opposingDirectionTotalVolume),
-                opposingDirectionPeakHourDFactor
-                );
+                opposingApproaches[0].DirectionType.Description)
+            {
+
+                OpposingDirectionVolumes = direction2VolumesSeries,
+                CombinedDirectionVolumes = combinedDirectionsVolumesSeries,
+                PrimaryDFactors = GetDFactorSeries(primaryDirectionVolume, combinedDirectionsVolumes),
+                OpposingDFactors = GetDFactorSeries(opposingDirectionVolume, combinedDirectionsVolumes),
+                SummaryData = new SummaryData
+                {
+                    PeakHour = combinedPeakHourString,
+                    KFactor = combinedPeakHourKFactor,
+                    PeakHourVolume = combinedPeakHourItem.Value,
+                    PeakHourFactor = combinedPeakHourFactor,
+                    TotalVolume = combinedVolume,
+                    PrimaryPeakHour = primaryDirectionPeakHourString,
+                    PrimaryKFactor = primaryKFactor,
+                    PrimaryPeakHourVolume = primayDirectionPeakHourItem.Value,
+                    PrimaryPeakHourFactor = primaryDirectionPeakHourFactor,
+                    PrimaryTotalVolume = Convert.ToInt32(primaryDirectionTotalVolume),
+                    PrimaryDFactor = primaryDirectionPeakHourDFactor,
+                    OpposingPeakHour = opposingDirectionPeakHourString,
+                    OpposingKFactor = opposingKFactor,
+                    OpposingPeakHourVolume = opposingDirectionPeakHourItem.Value,
+                    OpposingPeakHourFactor = opposingDirectionPeakHourFactor,
+                    OpposingTotalVolume = Convert.ToInt32(opposingDirectionTotalVolume),
+                    OpposingDFactor = opposingDirectionPeakHourDFactor
+                }
+
+            };
         }
 
         private static double GetKFactor(int primaryDirectionPeakHourVolume, int opposingVolumeForPrimaryPeakHour, double primaryDirectionTotalVolume, double opposingDirectionTotalVolume)
