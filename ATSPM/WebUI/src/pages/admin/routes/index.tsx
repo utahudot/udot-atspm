@@ -58,7 +58,7 @@ const RoutesAdmin = () => {
   const HandleDeleteRoute = async (routeData: Route) => {
     const { id } = routeData
     try {
-      deleteMutation.mutateAsync(id)
+      await deleteMutation.mutateAsync(id)
     } catch (error) {
       console.error('Mutation Error:', error)
     }
