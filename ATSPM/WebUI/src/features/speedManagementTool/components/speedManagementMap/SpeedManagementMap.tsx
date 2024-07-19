@@ -35,7 +35,7 @@ const Map = () => {
     useSpeedManagementStore()
 
   const { data: routeData } = useRoutes({
-    params: submittedRouteSpeedRequest,
+    options: submittedRouteSpeedRequest,
   })
 
   const { data: speedLimitData } = useUdotSpeedLimitRoutes()
@@ -55,8 +55,12 @@ const Map = () => {
       }
     }) || []
 
+  const filteredRoutes = routeData?.features.filter(
+    (route) => route?.geometry?.coordinates
+  )
+
   const routes =
-    routeData?.features.map((feature) => ({
+    filteredRoutes?.map((feature) => ({
       ...feature,
       geometry: {
         ...feature.geometry,

@@ -7,12 +7,17 @@ export default function DateRangeOptions() {
   const { setRouteSpeedRequest, routeSpeedRequest } = useStore()
 
   const handleStartDateChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setRouteSpeedRequest({ ...routeSpeedRequest, start: event.target.value })
+    setRouteSpeedRequest({
+      ...routeSpeedRequest,
+      startDate: event.target.value,
+    })
   }
 
   const handleEndDateChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setRouteSpeedRequest({ ...routeSpeedRequest, end: event.target.value })
+    setRouteSpeedRequest({ ...routeSpeedRequest, endDate: event.target.value })
   }
+
+  console.log('routeSpeedRequest', routeSpeedRequest)
 
   return (
     <Box padding={'10px'}>
@@ -24,7 +29,7 @@ export default function DateRangeOptions() {
           <TextField
             type="date"
             label="Start"
-            value={routeSpeedRequest.start}
+            value={routeSpeedRequest.startDate}
             onChange={handleStartDateChange}
           />
         </Box>
@@ -35,7 +40,7 @@ export default function DateRangeOptions() {
           <TextField
             type="date"
             label="End"
-            value={routeSpeedRequest.end}
+            value={routeSpeedRequest.endDate}
             onChange={handleEndDateChange}
           />
         </Box>

@@ -20,7 +20,7 @@ function OptionsPanel() {
     setSliderMax,
   } = useStore()
   const { refetch: fetchRoutes, isLoading } = useRoutes({
-    params: submittedRouteSpeedRequest,
+    options: submittedRouteSpeedRequest,
   })
   const [isRequestChanged, setIsRequestChanged] = useState(false)
 

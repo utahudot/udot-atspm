@@ -5,7 +5,7 @@ const SpeedManagementPopup = ({ route }) => {
   return (
     <Popup offset={[0, -30]}>
       <Box sx={{ fontWeight: 'bold' }}>
-        <Typography variant="h6">{route.properties.route_name}</Typography>
+        <Typography variant="h6">{route.properties.route_id}</Typography>
         <br />
         Data Source: {route.properties.dataSource}
         <br />
