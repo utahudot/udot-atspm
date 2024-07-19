@@ -29,19 +29,19 @@ interface MonthlyAverage {
 }
 
 interface Properties {
-  route_name: string
+  // route_name: string
   route_id: number
   startdate: string | null
   enddate: string | null
   avg: number
   percentilespd_85: number
   percentilespd_95: number
-  percentilespd_99: number
+  // percentilespd_99: number
   averageSpeedAboveSpeedLimit: number
   estimatedViolations: number
   flow: number
   speedLimit: number
-  dataSource: string
+  // dataSource: string
 }
 
 export interface SpeedManagementRoute {

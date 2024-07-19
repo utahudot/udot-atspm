@@ -25,9 +25,9 @@ export enum DataSource {
 
 export interface RouteSpeedRequest {
   dataSource: DataSource
-  start: string
-  end: string
-  daysOfWeek: string[]
+  startDate: string
+  endDate: string
+  daysOfWeek: number[]
   analysisPeriod: AnalysisPeriod
   violationThreshold: number
   customStartTime?: Date
@@ -65,18 +65,18 @@ const useSpeedManagementStore = create<StoreState>((set) => ({
   // Default route speed request
   routeSpeedRequest: {
     dataSource: DataSource.ClearGuide,
-    start: '2023-08-01',
-    end: '2023-08-10',
-    daysOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+    startDate: '2024-02-08',
+    endDate: '2024-02-09',
+    daysOfWeek: [1, 2, 3, 4, 5],
     analysisPeriod: AnalysisPeriod.MorningPeak,
     violationThreshold: 5,
   },
 
   submittedRouteSpeedRequest: {
     dataSource: DataSource.ClearGuide,
-    start: '2023-08-01',
-    end: '2023-08-10',
-    daysOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+    startDate: '2024-02-08',
+    endDate: '2024-02-09',
+    daysOfWeek: [1, 2, 3, 4, 5],
     analysisPeriod: AnalysisPeriod.MorningPeak,
     violationThreshold: 5,
   },

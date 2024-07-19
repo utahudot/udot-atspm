@@ -3,72 +3,42 @@ import {
   DataSource,
 } from '@/features/speedManagementTool/enums'
 import { RoutesResponse } from '@/features/speedManagementTool/types/routes'
-import { useGetRequest } from '@/hooks/useGetRequest'
 import { speedAxios } from '@/lib/axios'
-import { AxiosHeaders } from 'axios'
-import Cookies from 'js-cookie'
+import { ExtractFnReturnType, QueryConfig } from '@/lib/react-query'
+import { useQuery } from 'react-query'
 
 export interface RouteParams {
   dataSource: DataSource
-  start: string
-  end: string
-  daysOfWeek: string[]
+  startDate: string
+  endDate: string
+  daysOfWeek: number[]
   analysisPeriod: AnalysisPeriod
   violationThreshold: number
   customStartTime?: Date
   customEndTime?: Date
 }
 
-const token = Cookies.get('token')
-const headers: AxiosHeaders = new AxiosHeaders({
-  'Content-Type': 'application/json',
-  Authorization: `Bearer ${token}`,
-})
-const axiosInstance = speedAxios
+export const getRoutes = async (
+  options: RouteParams
+): Promise<RoutesResponse> => {
+  // options.startDate = dateToTimestamp(options.startDate)
+  // options.endDate = dateToTimestamp(options.endDate)
+  console.log('options', options)
+  return speedAxios.post('/SpeedManagement/GetRouteSpeeds', options)
+}
 
-export const useRoutes = ({ params }: { params: RouteParams }) => {
-  const {
-    start,
-    end,
-    analysisPeriod,
-    daysOfWeek,
-    customStartTime,
-    customEndTime,
-  } = params
+type QueryFnType = typeof getRoutes
 
-  // Extract hours and minutes from customStartTime and customEndTime
-  const customStartHour = customStartTime?.getHours()
-  const customStartMinute = customStartTime?.getMinutes()
-  const customEndHour = customEndTime?.getHours()
-  const customEndMinute = customEndTime?.getMinutes()
+type BaseOptions = {
+  options: RouteParams
+  config?: QueryConfig<QueryFnType>
+}
 
-  let url = `RouteSpeed/GetRouteSpeeds`
-  url += `?startDate=${start}`
-  url += `&endDate=${end}`
-  url += `&analysisPeriod=${
-    analysisPeriod === AnalysisPeriod.MorningPeak
-      ? AnalysisPeriod.CustomHour
-      : analysisPeriod
-  }`
-  url += `&violationThreshold=${params.violationThreshold}`
-  url += `&sourceId=${params.dataSource}`
-  url += `&daysOfWeek=${daysOfWeek}`
-  if (analysisPeriod === AnalysisPeriod.CustomHour) {
-    url += `&customStartHour=${customStartHour}`
-    url += `&customStartMinute=${customStartMinute}`
-    url += `&customEndHour=${customEndHour}`
-    url += `&customEndMinute=${customEndMinute}`
-  }
-  if (analysisPeriod === AnalysisPeriod.MorningPeak) {
-    url += `&customStartHour=10`
-    url += `&customStartMinute=0`
-    url += `&customEndHour=12`
-    url += `&customEndMinute=0`
-  }
-
-  return useGetRequest<RoutesResponse>({
-    route: url,
-    axiosInstance,
-    headers,
+export const useRoutes = ({ options, config }: BaseOptions) => {
+  return useQuery<ExtractFnReturnType<QueryFnType>>({
+    ...config,
+    enabled: true,
+    queryKey: ['speedRoutes', options],
+    queryFn: () => getRoutes(options),
   })
 }

@@ -49,7 +49,7 @@ const SpeedMap = ({
 
     switch (routeRenderOption) {
       case RouteRenderOption.Posted_Speed:
-        field = 'Speed_Limit'
+        field = 'SpeedLimit'
         break
       case RouteRenderOption.Average_Speed:
         field = 'avg'
@@ -69,8 +69,6 @@ const SpeedMap = ({
     }
 
     const speed = route.properties[field]
-
-    console.log('route', route.geometry.coordinates)
 
     if (speed < 20) return 'rgba(0, 115, 255, 1)'
     if (speed < 30) return 'rgba(0, 255, 170, 1)'
@@ -112,21 +110,30 @@ const SpeedMap = ({
         >
           <FullScreenToggleButton targetRef={fullScreenRef} />
         </Box>
-        {routes.map((route, index) => (
-          <div key={index}>
-            <Polyline
-              key={index}
-              positions={route.geometry.coordinates}
-              weight={2}
-              color={getColor(route)}
-              eventHandlers={{
-                click: () => setSelectedRouteId(route.properties.route_id),
-              }}
-            >
-              <Popup route={route} />
-            </Polyline>
-          </div>
-        ))}
+        {routes.map((route, index) => {
+          // check if any value is undefined in the coordinates array
+          if (
+            !route?.geometry?.coordinates ||
+            route.geometry.coordinates.some((coord) => coord.some((c) => !c))
+          )
+            return null
+
+          return (
+            <div key={index}>
+              <Polyline
+                key={index}
+                positions={route.geometry.coordinates}
+                weight={2}
+                color={getColor(route)}
+                eventHandlers={{
+                  click: () => setSelectedRouteId(route.properties.route_id),
+                }}
+              >
+                <Popup route={route} />
+              </Polyline>
+            </div>
+          )
+        })}
       </MapContainer>
     </Box>
   )
