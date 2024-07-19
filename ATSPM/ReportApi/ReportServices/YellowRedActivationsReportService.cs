@@ -108,7 +108,7 @@ namespace ATSPM.ReportApi.ReportServices
                 detectorEvents,
                 planEvents);
             viewModel.LocationDescription = LocationDescription;
-            viewModel.ApproachDescription = phaseDetail.GetApproachDescription(options.MetricTypeId);
+            viewModel.ApproachDescription = phaseDetail.GetApproachDescription();
             return viewModel;
         }
 

@@ -48,8 +48,7 @@ namespace ATSPM.Application.Business.SplitMonitor
                 pedEvents,
                 terminationEvents,
                 Location,
-                1,
-                35
+                1
                 );
 
             var tasks = new List<Task<SplitMonitorResult>>();

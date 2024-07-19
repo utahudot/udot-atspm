@@ -1,7 +1,5 @@
-﻿using ATSPM.Application.Extensions;
-using ATSPM.Data.Models;
+﻿using ATSPM.Data.Models;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace ATSPM.Application.Business.Common
 {
@@ -42,32 +40,4 @@ namespace ATSPM.Application.Business.Common
         }
     }
 
-    public class PhaseDetail
-    {
-        public int PhaseNumber { get; set; }
-        public bool UseOverlap { get; set; }
-        public Approach Approach { get; set; }
-        public bool IsPermissivePhase { get; set; }
-
-        public string GetApproachDescription(int metricTypeId)
-        {
-            var detectors = Approach.GetDetectorsForMetricType(metricTypeId);
-            var movements = detectors.Select(d => d.MovementType).Distinct().ToList();
-            string movementResult;
-
-            if (movements.Count == 1)
-            {
-                movementResult = movements.FirstOrDefault().GetDescription();
-            }
-            else
-            {
-                movementResult = string.Join(",", movements.Select(m => m.GetDescription()));
-            }
-            return $"{Approach.DirectionType.Description} "
-                + (string.IsNullOrEmpty(movementResult) ? "" : $"{movementResult} ")
-                + (IsPermissivePhase ? "Permissive " : "Protected ")
-                + (UseOverlap ? "Overlap " : "Phase ")
-                + PhaseNumber + $" ({Approach.Description})";
-        }
-    }
 }
