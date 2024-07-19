@@ -5,6 +5,8 @@ using ATSPM.Domain.Extensions;
 using Google.Api;
 using Google.Cloud.BigQuery.V2;
 using Microsoft.Extensions.Logging;
+using NetTopologySuite.Geometries;
+using NetTopologySuite.IO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -259,6 +261,7 @@ namespace ATSPM.Infrastructure.Repositories.ConfigurationRepositories
                                     rs.Percentilespd_95,
                                     rs.Flow,
                                     r.SpeedLimit,
+                                    ANY_VALUE(ST_AsText(r.Shape)) AS Shape,
                                     IFNULL(
                                         SAFE_CAST(
                                             ROUND(SUM
@@ -272,7 +275,7 @@ namespace ATSPM.Infrastructure.Repositories.ConfigurationRepositories
                                 FROM
                                     RouteStats AS rs
                                 JOIN
-                                    `atspm-406601.speed_dataset.route` AS r
+                                    `atspm-406601.speed_dataset.segment` AS r
                                 ON
                                     rs.RouteId = r.Id
                                 GROUP BY
@@ -288,16 +291,10 @@ namespace ATSPM.Infrastructure.Repositories.ConfigurationRepositories
                         break;
                 }
 
-                //var tempRoutes = Enumerable.Range(0, 14000).Select(x => x.ToString()).ToList(); //bigQuery .Routes.ToList();
-                //var routes = new Dictionary<string, int>();
-                //foreach (var route in tempRoutes)
-                //{
-                //    routes.Add(route, 45);
-                //}
-
                 List<RouteSpeed> results = new List<RouteSpeed>();
                 foreach (BigQueryRow row in queryResults)
                 {
+                    var reader = new WKTReader();
                     // Access row data as needed
                     var routeId = row["RouteId"];
                     var avg = row["Avg"];
@@ -307,98 +304,31 @@ namespace ATSPM.Infrastructure.Repositories.ConfigurationRepositories
                     var flow = row["Flow"];
                     var estimatedViolations = row["EstimatedViolations"];
                     var speedLimit = row["SpeedLimit"];
+                    var wkt = (string)row["Shape"];
                     // Further processing...
+                    Geometry shape = wkt != null ? reader.Read(wkt) : null;
 
                     var result = new RouteSpeed
-                     {
-                         RouteId = routeId.ToString(),
-                         Name = routeId.ToString(),
-                         Avg = Math.Round((double)avg, 2),
-                         Percentilespd_15 = (long)percentile15,
-                         Percentilespd_85 = (long)percentile85,
-                         Percentilespd_95 = (long)percentile95,
-                         Flow = (long)flow,
-                        EstimatedViolations = (long)estimatedViolations,
-                        SpeedLimit = (long)speedLimit
+                    {
+                        RouteId = routeId != null ? routeId.ToString() : "",
+                        Name = routeId != null ? routeId.ToString() : "",
+                        Avg = avg != null ? Math.Round((double)avg, 2) : null,
+                        Percentilespd_15 = percentile15 != null ? (long)percentile15 : null,
+                        Percentilespd_85 = percentile85 != null ? (long)percentile85 : null,
+                        Percentilespd_95 = percentile95 != null ? (long)percentile95 : null,
+                        Flow = flow != null ? (long)flow : null,
+                        EstimatedViolations = estimatedViolations != null ? (long)estimatedViolations : null,
+                        SpeedLimit = speedLimit != null ? (long)speedLimit : 0,
+                        Shape = shape,
                     };
                     results.Add(result);
 
                 }
 
-                //var results = queryResults
-                //.GroupBy(row => row["RouteId"].ToString())
-                //.Select(g =>
-                //{
-                //    // Look into each hour violation find its value using the formula mentioned and then average that out
-                //    var speedLimit = routes[g.Key];
-                //    long summedFlows = 0;
-                //    var summedViolations = g.Sum(row =>
-                //    {
-                //        long? fifteenthSpeed = row["FifteenthSpeed"] as long?;
-                //        long average = (long)row["Average"];
-                //        long? eightyFifthSpeed = row["EightyFifthSpeed"] as long?;
-                //        long? ninetyFifthSpeed = row["NinetyFifthSpeed"] as long?;
-                //        long? flow = row["Flow"] as long?;
-
-                //        if (speedLimit <= 0)
-                //        {
-                //            return 0;
-                //        }
-                //        if (fifteenthSpeed.HasValue && HigherThanViolationThreshold(options.ViolationThreshold, fifteenthSpeed.Value, speedLimit))
-                //        {
-                //            if (flow.HasValue)
-                //            {
-                //                summedFlows += flow.Value;
-                //            }
-                //            return flow.HasValue ? (long)(flow * 0.85) * flow : null;
-                //        }
-                //        else if (HigherThanViolationThreshold(options.ViolationThreshold, average, speedLimit))
-                //        {
-                //            if (flow.HasValue)
-                //            {
-                //                summedFlows += flow.Value;
-                //            }
-                //            return flow.HasValue ? (long)(flow * 0.5) * flow : null;
-                //        }
-                //        else if (eightyFifthSpeed.HasValue && HigherThanViolationThreshold(options.ViolationThreshold, eightyFifthSpeed.Value, speedLimit))
-                //        {
-                //            if (flow.HasValue)
-                //            {
-                //                summedFlows += flow.Value;
-                //            }
-                //            return flow.HasValue ? (long)(flow * 0.15) * flow : null;
-                //        }
-                //        else if (ninetyFifthSpeed.HasValue && HigherThanViolationThreshold(options.ViolationThreshold, ninetyFifthSpeed.Value, speedLimit))
-                //        {
-                //            if (flow.HasValue)
-                //            {
-                //                summedFlows += flow.Value;
-                //            }
-                //            return flow.HasValue ? (long)(flow * 0.05) * flow : null;
-                //        }
-                //        return 0;
-                //    });
-
-                //    return new RouteSpeed
-                //    {
-                //        RouteId = g.Key,
-                //        Name = g.Key,
-                //        Avg = (long)Math.Round(g.Average(row => (long)row["Average"])),
-                //        Percentilespd_15 = GetPercentileSpeed_15(g),
-                //        Percentilespd_85 = GetPercentileSpeed_85(g),
-                //        Percentilespd_95 = GetPercentileSpeed_95(g),
-                //        Flow = g.Sum(row => (long?)row["Flow"]),
-                //        EstimatedViolations = summedViolations > 0 ? Convert.ToInt64(Math.Round((double)summedViolations / summedFlows)) : null,
-                //        SpeedLimit = speedLimit
-                //    };
-                //})
-                //.ToList();
-
                 return results;
             }
             catch (Exception ex)
             {
-                //logger.LogError(ex.Message, $"Error getting route speeds {_dbContext.Database.GetConnectionString()}");
                 throw ex;
             }
         }
