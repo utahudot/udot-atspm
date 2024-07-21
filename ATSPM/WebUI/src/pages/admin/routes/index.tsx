@@ -46,7 +46,7 @@ const RoutesAdmin = () => {
   const HandleCreateRoute = async (routeData: Route) => {
     const { id, name } = routeData
     try {
-      createMutation.mutateAsync({
+      await createMutation.mutateAsync({
         data: { id, name },
         apiCall,
       })
@@ -58,7 +58,7 @@ const RoutesAdmin = () => {
   const HandleDeleteRoute = async (routeData: Route) => {
     const { id } = routeData
     try {
-      deleteMutation.mutateAsync(id)
+      await deleteMutation.mutateAsync(id)
     } catch (error) {
       console.error('Mutation Error:', error)
     }
@@ -67,7 +67,7 @@ const RoutesAdmin = () => {
   const HandleEditRoute = async (routeData: Route) => {
     const { id, name, body, orderNumber } = routeData
     try {
-      editMutation.mutateAsync({
+      await editMutation.mutateAsync({
         data: { id, name, body, orderNumber },
         apiCall: `${apiCall}/${id}`,
       })

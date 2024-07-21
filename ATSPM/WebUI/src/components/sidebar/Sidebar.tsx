@@ -21,7 +21,6 @@ import React, { useEffect } from 'react'
 import NavItem from './NavItem'
 import Sponsor from './Sponsor'
 import SubMenu from './SubMenu'
-import dogImg from '/public/images/dog.png'
 
 export default function Sidebar() {
   const theme = useTheme()
@@ -158,12 +157,14 @@ export default function Sidebar() {
               <NavItem
                 icon={
                   <Image
+                    alt="WatchDog Logo"
+                    src="/images/dog.png"
+                    width={0}
+                    height={0}
                     style={{
                       width: '21px',
                       height: '21px',
                     }}
-                    alt="Guard Dog"
-                    src={dogImg}
                   />
                 }
                 text={'Watchdog'}
