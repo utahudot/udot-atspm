@@ -54,7 +54,7 @@ namespace MOE.Common.Business.DataAggregation
                 }
         }
 
-        protected override void LoadBins(ApproachAggregationMetricOptions phaseSplitMonitorAggregationOptions, Location signal, AggregationOptions options)
+        protected override void LoadBins(ApproachAggregationMetricOptions? phaseSplitMonitorAggregationOptions, Location? signal, AggregationOptions options)
         {
             for (var i = 0; i < BinsContainers.Count; i++)
             {

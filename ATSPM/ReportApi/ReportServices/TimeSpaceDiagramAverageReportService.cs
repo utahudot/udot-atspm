@@ -68,7 +68,7 @@ namespace ATSPM.ReportApi.ReportServices
 
         private object GetRouteNameFromId(int routeId)
         {
-            var routeName = routeRepository.GetList().Where(r => r.Id == routeId).FirstOrDefault().Name;
+            var routeName = routeRepository.GetList().Where(r => r.Id == routeId)?.FirstOrDefault()?.Name;
             return routeName != null ? routeName : "";
         }
 
@@ -219,7 +219,7 @@ namespace ATSPM.ReportApi.ReportServices
                     var planEvents = logs.GetPlanEvents(start.AddHours(-12), end.AddHours(12));
                     var plan = planService.GetBasicPlans(start, end, routeLocation.LocationIdentifier, planEvents).FirstOrDefault();
 
-                    
+
 
                     if (currentProgrammedCycleLength == 0)
                     {

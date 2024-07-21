@@ -10,7 +10,7 @@ namespace ATSPM.Data.Configuration
         /// <inheritdoc/>
         public void Configure(EntityTypeBuilder<Faq> builder)
         {
-            builder.HasComment("Frequently Asked Questions");
+            builder.ToTable(t => t.HasComment("Frequently Asked Questions"));
 
             builder.Property(e => e.Header)
                 .IsRequired()

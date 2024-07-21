@@ -1,4 +1,7 @@
 using Asp.Versioning;
+using ATSPM.Data.Models.AggregationModels;
+using ATSPM.Data.Models.EventLogModels;
+using ATSPM.DataApi.Configuration;
 using ATSPM.DataApi.CustomOperations;
 using ATSPM.DataApi.Formatters;
 using ATSPM.Domain.Extensions;

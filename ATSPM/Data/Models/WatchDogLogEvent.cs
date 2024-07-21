@@ -48,5 +48,11 @@ namespace ATSPM.Data.Models
                    IssueType == other.IssueType;
         }
 
+        public override int GetHashCode()
+        {
+            // Use a combination of fields to generate a hash code
+            return HashCode.Combine(locationIdentifier, Timestamp, ComponentType, ComponentId, IssueType);
+        }
+
     }
 }

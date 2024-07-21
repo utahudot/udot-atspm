@@ -107,9 +107,11 @@ dkms.conf
 /ATSPM/TempReportTests/bin/
 /ATSPM/TempReportTests/obj/
 
-/ATSPM/WatchDog/bin/Debug/net7.0/ReportApi.xml
-/ATSPM/WatchDogTests/bin/Debug/net7.0/ReportApi.xml
-/ATSPM/TempReportTests/bin/Release/net7.0/CoverletSourceRootsMapping
-/ConfigApiTests/bin/Release/net7.0
-/ConfigApiTests/obj/Release/net7.0
-/ConfigApiTests/obj
+/ATSPM/WatchDog/bin/
+/ATSPM/WatchDogTests/bin/
+
+/ATSPM/WebUI/obj/
+
+/ATSPM/.sonarqube
+/ConfigApiTests/bin/
+/ConfigApiTests/obj/

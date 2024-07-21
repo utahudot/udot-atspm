@@ -7,12 +7,13 @@ namespace ATSPM.Application.Business.Common
 {
     public class VolumeCollection
     {
-        public List<Volume> Items = new List<Volume>();
+        public List<Volume> Items { get; set; }
         public int TotalDetectorCounts { get { return Items.Sum(i => i.DetectorCount); } }
         public int TotalHourlyVolume { get { return Items.Sum(i => i.HourlyVolume); } }
 
         public VolumeCollection(VolumeCollection primaryDirectionVolume, VolumeCollection opposingDirectionVolume, int binSize)
         {
+            Items = new List<Volume>();
             if (primaryDirectionVolume != null && opposingDirectionVolume != null)
             {
                 for (int i = 0; i < primaryDirectionVolume.Items.Count; i++)
@@ -29,6 +30,7 @@ namespace ATSPM.Application.Business.Common
         public VolumeCollection(DateTime startTime, DateTime endTime, List<IndianaEvent> detectorEvents,
             int binSize)
         {
+            Items = new List<Volume>();
             for (DateTime start = startTime; start < endTime; start = start.AddMinutes(binSize))
             {
                 var v = new Volume(start, start.AddMinutes(binSize), binSize);
@@ -39,6 +41,7 @@ namespace ATSPM.Application.Business.Common
 
         public VolumeCollection(List<VolumeCollection> volumeCollections, int binSize)
         {
+            Items = new List<Volume>();
             // Combine all the lists into a single list using SelectMany
             List<Volume> combinedList = volumeCollections.SelectMany(list => list.Items).ToList();
 
