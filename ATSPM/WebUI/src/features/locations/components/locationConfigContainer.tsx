@@ -44,9 +44,9 @@ function LocationsConfigContainer({
   useEffect(() => {
     if (versionData) {
       const newestVersion = versionData.reduce((newest, current) => {
-        return new Date(newest.start) > new Date(newest.start)
-          ? current
-          : newest
+        return new Date(newest.start) > new Date(current.start)
+          ? newest
+          : current
       }, versionData[0])
       setVersion({ id: newestVersion.id, note: newestVersion.note })
     }

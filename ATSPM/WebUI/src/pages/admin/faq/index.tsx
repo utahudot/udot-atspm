@@ -46,7 +46,7 @@ const FaqAdmin = () => {
   const HandleCreateFaq = async (faqData: Faq) => {
     const { header, body, displayOrder } = faqData
     try {
-      createMutation.mutateAsync({
+      await createMutation.mutateAsync({
         header,
         body,
         displayOrder
@@ -60,7 +60,7 @@ const FaqAdmin = () => {
   const HandleDeleteFaq = async (faqData: Faq) => {
     const { id } = faqData
     try {
-      deleteMutation.mutateAsync(id)
+      await deleteMutation.mutateAsync(id)
     } catch (error) {
       console.error('Mutation Error:', error)
     }
@@ -69,7 +69,7 @@ const FaqAdmin = () => {
   const HandleEditFaq = async (faqData: Faq) => {
     const { id, header, body, displayOrder } = faqData
     try {
-      editMutation.mutateAsync({
+      await editMutation.mutateAsync({
         data: { header, body, displayOrder },
         id,
       })

@@ -1,4 +1,6 @@
 ﻿using ATSPM.Data.Models.EventLogModels;
+using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,23 +9,23 @@ namespace ATSPM.Application.Business.ApproachSpeed
 {
     public class AvgSpeedBucket
     {
-        private int _binSizeMultiplier;
+        private readonly ILogger logger;
 
         public AvgSpeedBucket(DateTime startTime, DateTime endTime, int binSize, int movementdelay,
-            List<SpeedEvent> speedEvents)
+            List<SpeedEvent> speedEvents, ILogger logger)
         {
             StartTime = startTime;
             EndTime = endTime;
             XAxis = startTime;
-            _binSizeMultiplier = 60 / binSize;
             MovementDelay = movementdelay;
+            this.logger = logger;
             var speedsForBucket = new List<int>();
             speedsForBucket.AddRange(speedEvents.Where(s => s.Timestamp >= startTime && s.Timestamp < endTime).Select(s => s.Mph));
 
-            if (speedsForBucket.Count > 0)
+            if (!speedsForBucket.IsNullOrEmpty())
             {
                 speedsForBucket.Sort();
-                SpeedVolume = speedsForBucket.Count();
+                SpeedVolume = speedsForBucket.Count;
                 SummedSpeed = speedsForBucket.Sum();
                 AvgSpeed = Convert.ToInt32(Math.Round(speedsForBucket.Average()));
                 EightyFifth = GetPercentile(speedsForBucket, .85);
@@ -75,19 +77,15 @@ namespace ATSPM.Application.Business.ApproachSpeed
                 else
                 {
                     percentileIndex = Convert.ToInt32(tempPercentileIndex);
-                    var speed1 = speeds[percentileIndex];
-                    var speed2 = speeds[percentileIndex + 1];
-                    double rawPercentile = (speed1 + speed2) / 2;
+                    var speed1 = (double)speeds[percentileIndex];
+                    var speed2 = (double)speeds[percentileIndex + 1];
+                    double rawPercentile = (speed1 + speed2) / (double)2;
                     percentileValue = Convert.ToInt32(Math.Round(rawPercentile));
                 }
             }
             catch
             {
-                //TODO:
-                //var errorLog = ApplicationEventRepositoryFactory.Create();
-                //errorLog.QuickAdd(Assembly.GetExecutingAssembly().GetName().ToString(),
-                //    GetType().Name, e.TargetSite.ToString(), ApplicationEvent.SeverityLevels.High, e.Message);
-                //throw new Exception("Error creating Percentile");
+                logger.LogError("Error creating Percentile");
             }
             return percentileValue;
         }
