@@ -2,88 +2,90 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using WatchDog.Models;
-using WatchDog.Services;
 
-public class ScanHostedService : IHostedService
+namespace WatchDog.Services
 {
-    private readonly ScanService scanService;
-    private readonly ILogger<ScanHostedService> logger;
-    private readonly DateTime scanDate;
-    private readonly IHostApplicationLifetime appLifetime;
-
-    // Add other dependencies if needed, like IConfiguration
-
-    public ScanHostedService(ScanService scanService, ILogger<ScanHostedService> logger, DateTime scanDate, IHostApplicationLifetime appLifetime)
+    public class ScanHostedService : IHostedService
     {
-        this.scanService = scanService;
-        this.logger = logger;
-        this.scanDate = scanDate;
-        this.appLifetime = appLifetime;
-        // Assign other dependencies
-    }
+        private readonly ScanService scanService;
+        private readonly ILogger<ScanHostedService> logger;
+        private readonly DateTime scanDate;
+        private readonly IHostApplicationLifetime appLifetime;
 
-    public async Task StartAsync(CancellationToken cancellationToken)
-    {
+        // Add other dependencies if needed, like IConfiguration
 
-        var configuration = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.json")
-            .Build();
-        try
+        public ScanHostedService(ScanService scanService, ILogger<ScanHostedService> logger, DateTime scanDate, IHostApplicationLifetime appLifetime)
         {
-            var prviousDayPMPeakStart = Convert.ToInt32(configuration["PreviousDayPMPeakStart"]);
-            var prviousDayPMPeakEnd = Convert.ToInt32(configuration["PreviousDayPMPeakEnd"]);
-            var weekdayOnly = Convert.ToBoolean(configuration["WeekdayOnly"]);
-            var scanDayEndHour = Convert.ToInt32(configuration["ScanDayEndHour"]);
-            var scanDayStartHour = Convert.ToInt32(configuration["ScanDayStartHour"]);
-            var options = new LoggingOptions
+            this.scanService = scanService;
+            this.logger = logger;
+            this.scanDate = scanDate;
+            this.appLifetime = appLifetime;
+            // Assign other dependencies
+        }
+
+        public async Task StartAsync(CancellationToken cancellationToken)
+        {
+
+            var configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json")
+                .Build();
+            try
             {
-                ConsecutiveCount = Convert.ToInt32(configuration["ConsecutiveCount"]),
-                LowHitThreshold = Convert.ToInt32(configuration["LowHitThreshold"]),
-                MaximumPedestrianEvents = Convert.ToInt32(configuration["MaximumPedestrianEvents"]),
-                MinimumRecords = Convert.ToInt32(configuration["MinimumRecords"]),
-                MinPhaseTerminations = Convert.ToInt32(configuration["MinPhaseTerminations"]),
-                PercentThreshold = Convert.ToDouble(configuration["PercentThreshold"]),
-                PreviousDayPMPeakEnd = prviousDayPMPeakEnd,
-                PreviousDayPMPeakStart = prviousDayPMPeakStart,
-                ScanDate = scanDate,
-                ScanDayEndHour = scanDayEndHour,
-                ScanDayStartHour = scanDayStartHour,
-                WeekdayOnly = weekdayOnly
-            };
-            var emailOptions = new EmailOptions
+                var prviousDayPMPeakStart = Convert.ToInt32(configuration["PreviousDayPMPeakStart"]);
+                var prviousDayPMPeakEnd = Convert.ToInt32(configuration["PreviousDayPMPeakEnd"]);
+                var weekdayOnly = Convert.ToBoolean(configuration["WeekdayOnly"]);
+                var scanDayEndHour = Convert.ToInt32(configuration["ScanDayEndHour"]);
+                var scanDayStartHour = Convert.ToInt32(configuration["ScanDayStartHour"]);
+                var options = new LoggingOptions
+                {
+                    ConsecutiveCount = Convert.ToInt32(configuration["ConsecutiveCount"]),
+                    LowHitThreshold = Convert.ToInt32(configuration["LowHitThreshold"]),
+                    MaximumPedestrianEvents = Convert.ToInt32(configuration["MaximumPedestrianEvents"]),
+                    MinimumRecords = Convert.ToInt32(configuration["MinimumRecords"]),
+                    MinPhaseTerminations = Convert.ToInt32(configuration["MinPhaseTerminations"]),
+                    PercentThreshold = Convert.ToDouble(configuration["PercentThreshold"]),
+                    PreviousDayPMPeakEnd = prviousDayPMPeakEnd,
+                    PreviousDayPMPeakStart = prviousDayPMPeakStart,
+                    ScanDate = scanDate,
+                    ScanDayEndHour = scanDayEndHour,
+                    ScanDayStartHour = scanDayStartHour,
+                    WeekdayOnly = weekdayOnly
+                };
+                var emailOptions = new EmailOptions
+                {
+                    PreviousDayPMPeakEnd = prviousDayPMPeakEnd,
+                    PreviousDayPMPeakStart = prviousDayPMPeakStart,
+                    ScanDate = scanDate,
+                    ScanDayEndHour = scanDayStartHour,
+                    ScanDayStartHour = scanDayEndHour,
+                    WeekdayOnly = weekdayOnly,
+                    //EmailServer = configuration["EmailServer"],
+                    //UserName = configuration["UserName"],
+                    //Password = configuration["Password"],
+                    //Port = Convert.ToInt32(configuration["Port"]),
+                    //EnableSsl = Convert.ToBoolean(configuration["EnableSsl"]),
+                    DefaultEmailAddress = configuration["DefaultEmailAddress"],
+                    EmailAllErrors = Convert.ToBoolean(configuration["EmailAllErrors"]),
+                    //EmailType = configuration["EmailType"]
+                };
+                await scanService.StartScan(options, emailOptions, cancellationToken);
+            }
+            catch (Exception ex)
             {
-                PreviousDayPMPeakEnd = prviousDayPMPeakEnd,
-                PreviousDayPMPeakStart = prviousDayPMPeakStart,
-                ScanDate = scanDate,
-                ScanDayEndHour = scanDayStartHour,
-                ScanDayStartHour = scanDayEndHour,
-                WeekdayOnly = weekdayOnly,
-                //EmailServer = configuration["EmailServer"],
-                //UserName = configuration["UserName"],
-                //Password = configuration["Password"],
-                //Port = Convert.ToInt32(configuration["Port"]),
-                //EnableSsl = Convert.ToBoolean(configuration["EnableSsl"]),
-                DefaultEmailAddress = configuration["DefaultEmailAddress"],
-                EmailAllErrors = Convert.ToBoolean(configuration["EmailAllErrors"]),
-                //EmailType = configuration["EmailType"]
-            };
-            await scanService.StartScan(options, emailOptions, cancellationToken);
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "An error occurred during scanning.");
-        }
-        finally
-        {
-            appLifetime.StopApplication();
+                logger.LogError(ex, "An error occurred during scanning.");
+            }
+            finally
+            {
+                appLifetime.StopApplication();
+            }
+
         }
 
-    }
-
-    public Task StopAsync(CancellationToken cancellationToken)
-    {
-        // Perform any cleanup if necessary
-        return Task.CompletedTask;
+        public Task StopAsync(CancellationToken cancellationToken)
+        {
+            // Perform any cleanup if necessary
+            return Task.CompletedTask;
+        }
     }
 }
