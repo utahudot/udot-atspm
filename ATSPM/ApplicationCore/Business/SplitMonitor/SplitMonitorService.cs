@@ -1,4 +1,5 @@
 ﻿using ATSPM.Application.Business.Common;
+using ATSPM.Application.Extensions;
 using ATSPM.Application.TempExtensions;
 using ATSPM.Data.Models;
 using ATSPM.Data.Models.EventLogModels;
@@ -199,7 +200,7 @@ namespace ATSPM.Application.Business.SplitMonitor
             var orderedCycles = cycles.OrderBy(c => c.Duration.TotalSeconds).ToList();
 
             var percentilIndex = percentile * orderedCycles.Count;
-            if (percentilIndex % 1 == 0)
+            if ((percentilIndex % 1).AreEqual(0))
             {
                 return orderedCycles.ElementAt(Convert.ToInt16(percentilIndex) - 1).Duration
                     .TotalSeconds;
