@@ -40,7 +40,6 @@ namespace ATSPM.Application.Business.WaitTime
             Volumes = volumes;
             PlanSplits = splits;
         }
-        public string ApproachDescription { get; internal set; }
         public int PhaseNumber { get; internal set; }
         public string DetectionTypes { get; internal set; }
         public IReadOnlyList<PlanWaitTime> Plans { get; internal set; }

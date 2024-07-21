@@ -53,7 +53,7 @@ const MenuItemsAdmin = () => {
     if (link) sanitizedMenuItem.link = link
 
     try {
-      createMutation.mutateAsync(sanitizedMenuItem)
+      await createMutation.mutateAsync(sanitizedMenuItem)
     } catch (error) {
       console.error('Mutation Error:', error)
     }
@@ -62,7 +62,7 @@ const MenuItemsAdmin = () => {
   const HandleDeleteLink = async (menuItems: MenuItems) => {
     const { id } = menuItems
     try {
-      deleteMutation.mutateAsync(id)
+      await deleteMutation.mutateAsync(id)
     } catch (error) {
       console.error('Mutation Error:', error)
     }
@@ -82,7 +82,7 @@ const MenuItemsAdmin = () => {
     if (link !== undefined) sanitizedMenuItem.link = link
 
     try {
-      editMenuItemMutate(
+      await editMenuItemMutate(
         { data: sanitizedMenuItem, id },
         {
           onSuccess: () => {

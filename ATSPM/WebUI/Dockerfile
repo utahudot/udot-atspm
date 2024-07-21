@@ -1,35 +1,10 @@
-
-# # Build stage
-# FROM node:18-alpine as build-stage
-# WORKDIR /app
-# COPY package.json package-lock.json ./
-# RUN npm install
-# COPY . ./
-# RUN npm run build
-
-# # Serve stage
-# FROM nginx:alpine
-# COPY --from=build-stage /app/.next /usr/share/nginx/html
-
-# # Create a start script to modify Nginx configuration to use $PORT
-# RUN echo $'#!/bin/sh\n\
-# # Replace the listen directive with the port from the PORT environment variable\n\
-# sed -i "s/listen\\s*80;/listen $PORT;/" /etc/nginx/conf.d/default.conf\n\
-# # Start Nginx\n\
-# exec nginx -g "daemon off;"' > /start-nginx.sh
-# RUN chmod +x /start-nginx.sh
-
-# # Set the CMD to run the start script
-# CMD ["/start-nginx.sh"]
-
+# Base image
 FROM node:18-alpine AS base
 
 # Install dependencies only when needed
 FROM base AS deps
-# Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
-
 
 # Install dependencies based on the preferred package manager
 COPY package.json .
@@ -39,7 +14,6 @@ RUN \
   if [ -f package-lock.json ]; then npm ci --ignore-scripts; \
   else echo "Lockfile not found." && exit 1; \
   fi
-
 
 # Rebuild the source code only when needed
 FROM base AS builder
@@ -52,13 +26,8 @@ COPY . .
 # Uncomment the following line in case you want to disable telemetry during the build.
 # ENV NEXT_TELEMETRY_DISABLED 1
 
-
 RUN npm install --ignore-scripts
-COPY . ./
 RUN npm run build
-
-# If using npm comment out above and use below instead
-# RUN npm run build
 
 # Production image, copy all the files and run next
 FROM base AS runner
@@ -81,7 +50,9 @@ RUN chown nextjs:nodejs .next
 # https://nextjs.org/docs/advanced-features/output-file-tracing
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
-RUN chmod -R 555 ./
+
+# Ensure no write permissions are assigned to the executable files
+RUN find . -type f -executable -exec chmod 555 {} \;
 
 USER nextjs
 

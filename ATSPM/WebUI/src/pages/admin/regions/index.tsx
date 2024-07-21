@@ -43,7 +43,7 @@ const RegionsAdmin = () => {
   const HandleCreateRegion = async (regionData: Region) => {
     const { id, description } = regionData
     try {
-      createMutation.mutateAsync({ id, description })
+      await createMutation.mutateAsync({ id, description })
     } catch (error) {
       console.error('Mutation Error:', error)
     }
@@ -52,7 +52,7 @@ const RegionsAdmin = () => {
   const HandleDeleteRegion = async (regionData: regionDto) => {
     const { id } = regionData
     try {
-      deleteMutation.mutateAsync(id)
+      await deleteMutation.mutateAsync(id)
     } catch (error) {
       console.error('Mutation Error:', error)
     }
@@ -61,7 +61,7 @@ const RegionsAdmin = () => {
   const HandleEditRegion = async (regionData: Region) => {
     const { id, description } = regionData
     try {
-      editMutation.mutateAsync({
+      await editMutation.mutateAsync({
         data: { id, description },
         id,
       })
