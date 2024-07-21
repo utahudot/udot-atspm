@@ -31,10 +31,10 @@ RUN dotnet publish "ConfigApi.csproj" -c Release -o /app/publish /p:UseAppHost=f
 
 FROM base AS final
 WORKDIR /app
+
+RUN addgroup --system appgroup && adduser --system --ingroup appgroup appuser
 COPY --from=publish /app/publish .
+RUN chown -R appuser:appgroup /app
+USER appuser
+
 ENTRYPOINT ["dotnet", "ConfigApi.dll"]
-
-
-
-
-

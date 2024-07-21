@@ -163,6 +163,7 @@ namespace MOE.Common.Business.WCFServiceLibrary
                 foreach (var detector in approach.Detectors)
                 {
                     var binsContainers = GetBinsContainersByDetector(detector, options, detectorEventCountAggregation);
+                    if (binsContainers == null) continue;
                     var series = CreateSeries(detector.DectectorIdentifier);
                     if ((options.TimeOptions.SelectedBinSize == TimeOptions.BinSize.Month ||
                          options.TimeOptions.SelectedBinSize == TimeOptions.BinSize.Year) &&
