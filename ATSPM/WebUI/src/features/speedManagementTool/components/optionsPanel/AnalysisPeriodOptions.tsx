@@ -30,7 +30,8 @@ const AnalysisPeriodOptions = () => {
             const newValue = event.target.value
             setRouteSpeedRequest({
               ...routeSpeedRequest,
-              analysisPeriod: AnalysisPeriod[newValue],
+              analysisPeriod:
+                AnalysisPeriod[newValue as keyof typeof AnalysisPeriod],
             })
           }}
         >
@@ -75,7 +76,7 @@ const AnalysisPeriodOptions = () => {
             />
           </Box>
           <Box display={'flex'} alignItems={'center'}>
-            –
+            -
           </Box>
           <Box>
             <TimePicker

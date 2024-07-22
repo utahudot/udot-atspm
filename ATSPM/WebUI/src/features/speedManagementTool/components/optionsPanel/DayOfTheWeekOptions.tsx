@@ -9,13 +9,13 @@ import {
 } from '@mui/material'
 
 const daysOfWeekMapping = [
-  { key: 'Sunday', label: 'Sun' },
-  { key: 'Monday', label: 'Mon' },
-  { key: 'Tuesday', label: 'Tues' },
-  { key: 'Wednesday', label: 'Wed' },
-  { key: 'Thursday', label: 'Thur' },
-  { key: 'Friday', label: 'Fri' },
-  { key: 'Saturday', label: 'Sat' },
+  { key: 0, label: 'Sun' },
+  { key: 1, label: 'Mon' },
+  { key: 2, label: 'Tues' },
+  { key: 3, label: 'Wed' },
+  { key: 4, label: 'Thur' },
+  { key: 5, label: 'Fri' },
+  { key: 6, label: 'Sat' },
 ]
 
 export const DaysOfWeekOptions = () => {
@@ -55,7 +55,7 @@ export const DaysOfWeekOptions = () => {
     if (checked) {
       setRouteSpeedRequest({
         ...useStore.getState().routeSpeedRequest,
-        daysOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+        daysOfWeek: [1, 2, 3, 4, 5],
       })
     } else {
       setRouteSpeedRequest({
@@ -86,8 +86,8 @@ export const DaysOfWeekOptions = () => {
               <Checkbox
                 checked={
                   daysOfWeek.length === 5 &&
-                  !daysOfWeek.includes('Sunday') &&
-                  !daysOfWeek.includes('Saturday')
+                  !daysOfWeek.includes(0) &&
+                  !daysOfWeek.includes(6)
                 }
                 onChange={(e) => handleWorkWeekChange(e.target.checked)}
               />
