@@ -21,12 +21,14 @@ using ATSPM.Data.Models.EventLogModels;
 using ATSPM.Domain.Exceptions;
 using ATSPM.Domain.Extensions;
 using ATSPM.Infrastructure.Services.ControllerDecoders;
-using ATSPM.Infrastructure.Services.ControllerDownloaders;
+using ATSPM.Infrastructure.Services.DeviceDownloaders;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Moq;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Xunit;
@@ -34,6 +36,17 @@ using Xunit.Abstractions;
 
 namespace InfrastructureTests.EventLogDecoderTests
 {
+    public class EventLogDecoderTestData<T> where T : EventLogModelBase
+    {
+        
+        byte[] EventLogs { get; set; }
+        bool IsCompressed { get; set;}
+        List<T> Events { get; set; }
+
+
+
+    }
+    
     public class IEventLogDecoderTests : IDisposable
     {
         private const string TestDataPath = "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\InfrastructureTests\\EventLogDecoderTests\\TestData";
@@ -56,6 +69,21 @@ namespace InfrastructureTests.EventLogDecoderTests
         #region IEventLogDecoder
 
         //#region IEventLogDecoder.IsCompressed
+
+
+
+
+        [Fact]
+        public void JustTesting()
+        {
+            var data = File.ReadAllBytes(Path.Combine(TestDataPath, "4895_ECON_10.210.8.179_2024_02_21_1115.dat"));
+
+        }
+
+
+
+
+
 
         [Fact]
         public void IEventLogDecoderIsCompressed()

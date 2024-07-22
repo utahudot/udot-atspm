@@ -19,6 +19,7 @@ using ATSPM.Application.Repositories;
 using ATSPM.Application.Repositories.AggregationRepositories;
 using ATSPM.Application.Repositories.ConfigurationRepositories;
 using ATSPM.Application.Repositories.EventLogRepositories;
+using ATSPM.Application.Services;
 using ATSPM.Data;
 using ATSPM.Domain.Configuration;
 using ATSPM.Domain.Services;
@@ -30,8 +31,10 @@ using ATSPM.Infrastructure.Repositories.AggregationRepositories;
 using ATSPM.Infrastructure.Repositories.ConfigurationRepositories;
 using ATSPM.Infrastructure.Repositories.EventLogRepositories;
 using ATSPM.Infrastructure.Services.ControllerDecoders;
+using ATSPM.Infrastructure.Services.DownloaderClients;
 using ATSPM.Infrastructure.SqlDatabaseProvider;
 using ATSPM.Infrastructure.SqlLiteDatabaseProvider;
+using Google.Api;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
@@ -39,6 +42,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
+using Org.BouncyCastle.Asn1.X509.Qualified;
 using System;
 using System.Linq;
 using System.Security.Claims;
@@ -236,25 +240,6 @@ namespace ATSPM.Infrastructure.Extensions
             return services;
         }
 
-        public static IServiceCollection ConfigureSignalControllerDownloaders(this IServiceCollection services, HostBuilderContext host)
-        {
-            //services.Configure<SignalControllerDownloaderConfiguration>(nameof(ASC3SignalControllerDownloader), host.Configuration.GetSection($"{nameof(SignalControllerDownloaderConfiguration)}:{nameof(ASC3SignalControllerDownloader)}"));
-            //services.Configure<SignalControllerDownloaderConfiguration>(nameof(CobaltLocationControllerDownloader), host.Configuration.GetSection($"{nameof(SignalControllerDownloaderConfiguration)}:{nameof(CobaltLocationControllerDownloader)}"));
-            //services.Configure<SignalControllerDownloaderConfiguration>(nameof(MaxTimeLocationControllerDownloader), host.Configuration.GetSection($"{nameof(SignalControllerDownloaderConfiguration)}:{nameof(MaxTimeLocationControllerDownloader)}"));
-            //services.Configure<SignalControllerDownloaderConfiguration>(nameof(EOSSignalControllerDownloader), host.Configuration.GetSection($"{nameof(SignalControllerDownloaderConfiguration)}:{nameof(EOSSignalControllerDownloader)}"));
-            //services.Configure<SignalControllerDownloaderConfiguration>(nameof(NewCobaltLocationControllerDownloader), host.Configuration.GetSection($"{nameof(SignalControllerDownloaderConfiguration)}:{nameof(NewCobaltLocationControllerDownloader)}"));
-
-            return services;
-        }
-
-        public static IServiceCollection ConfigureSignalControllerDecoders(this IServiceCollection services, HostBuilderContext host)
-        {
-            services.Configure<SignalControllerDecoderConfiguration>(nameof(ASCEventLogDecoder), host.Configuration.GetSection($"{nameof(SignalControllerDecoderConfiguration)}:{nameof(ASCEventLogDecoder)}"));
-            services.Configure<SignalControllerDecoderConfiguration>(nameof(MaxTimeEventLogDecoder), host.Configuration.GetSection($"{nameof(SignalControllerDecoderConfiguration)}:{nameof(MaxTimeEventLogDecoder)}"));
-
-            return services;
-        }
-
         public static IServiceCollection AddAtspmEFConfigRepositories(this IServiceCollection services)
         {
             services.AddScoped<IApproachRepository, ApproachEFRepository>();
@@ -321,6 +306,51 @@ namespace ATSPM.Infrastructure.Extensions
         }
 
         /// <summary>
+        /// Adds all implementations of <see cref="IDownloaderClient"/>
+        /// </summary>
+        /// <param name="services"></param>
+        /// <returns></returns>
+        public static IServiceCollection AddDownloaderClients(this IServiceCollection services)
+        {
+            var types = AppDomain.CurrentDomain.GetAssemblies().SelectMany(m => m.GetTypes().Where(w => w.GetInterfaces().Contains(typeof(IDownloaderClient)))).ToList();
+            foreach (var t in types)
+            {
+                services.Add(new ServiceDescriptor(typeof(IDownloaderClient), t, ServiceLifetime.Transient));
+            }
+
+            return services;
+        }
+
+        /// <summary>
+        /// Adds all implementations of <see cref="IDeviceDownloader"/> which have corresponding <see cref="DeviceDownloaderConfiguration"/> definitions
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="host"></param>
+        /// <returns></returns>
+        public static IServiceCollection AddDeviceDownloaders(this IServiceCollection services, HostBuilderContext host)
+        {
+            var types = AppDomain.CurrentDomain.GetAssemblies().SelectMany(m => m.GetTypes().Where(w => w.GetInterfaces().Contains(typeof(IDeviceDownloader)))).ToList();
+            foreach (var t in types)
+            {
+                if (host.Configuration.GetSection($"{nameof(DeviceDownloaderConfiguration)}:{t.Name}").Exists())
+                {
+                    services.Add(new ServiceDescriptor(typeof(IDeviceDownloader), t, ServiceLifetime.Scoped));
+                    services.Configure<DeviceDownloaderConfiguration>(t.Name, host.Configuration.GetSection($"{nameof(DeviceDownloaderConfiguration)}:{t.Name}"));
+                }
+            }
+
+            return services;
+        }
+
+        //public static IServiceCollection ConfigureSignalControllerDecoders(this IServiceCollection services, HostBuilderContext host)
+        //{
+        //    services.Configure<SignalControllerDecoderConfiguration>(nameof(ASCEventLogDecoder), host.Configuration.GetSection($"{nameof(SignalControllerDecoderConfiguration)}:{nameof(ASCEventLogDecoder)}"));
+        //    services.Configure<SignalControllerDecoderConfiguration>(nameof(MaxTimeEventLogDecoder), host.Configuration.GetSection($"{nameof(SignalControllerDecoderConfiguration)}:{nameof(MaxTimeEventLogDecoder)}"));
+
+        //    return services;
+        //}
+
+        /// <summary>
         /// Adds all implementations of <see cref="IEmailService"/> which have corresponding <see cref="EmailConfiguration"/> definitions
         /// </summary>
         /// <param name="services"></param>
@@ -333,7 +363,7 @@ namespace ATSPM.Infrastructure.Extensions
             {
                 if (host.Configuration.GetSection($"{nameof(EmailConfiguration)}:{t.Name}").Exists())
                 {
-                    services.AddTransient(s => (IEmailService)ActivatorUtilities.CreateInstance(s, t));
+                    services.Add(new ServiceDescriptor(typeof(IEmailService), t, ServiceLifetime.Transient));
                     services.Configure<EmailConfiguration>(t.Name, host.Configuration.GetSection($"{nameof(EmailConfiguration)}:{t.Name}"));
                 }
             }
