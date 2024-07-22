@@ -16,6 +16,7 @@
 #endregion
 using ATSPM.Application.Exceptions;
 using ATSPM.Application.Services;
+using ATSPM.Data.Enums;
 using ATSPM.Domain.BaseClasses;
 using ATSPM.Domain.Extensions;
 using System;
@@ -32,7 +33,7 @@ namespace ATSPM.Infrastructure.Services.DownloaderClients
     /// <summary>
     /// Connect to services and interact with their file directories using <see cref="HttpClient"/>
     /// </summary>
-    public class HttpDownloaderClient : ServiceObjectBase, IHTTPDownloaderClient
+    public class HttpDownloaderClient : ServiceObjectBase, IDownloaderClient
     {
         private HttpClient _client;
         private Uri getPath;
@@ -50,7 +51,10 @@ namespace ATSPM.Infrastructure.Services.DownloaderClients
             _client = client;
         }
 
-        #region IHTTPDownloaderClient
+        #region IDownloaderClient
+
+        ///<inheritdoc/>
+        public TransportProtocols Protocol => TransportProtocols.Http;
 
         ///<inheritdoc/>
         public bool IsConnected => _client != null && _client.BaseAddress.Host.IsValidIPAddress();
@@ -58,6 +62,8 @@ namespace ATSPM.Infrastructure.Services.DownloaderClients
         ///<inheritdoc/>
         public Task ConnectAsync(IPEndPoint connection, NetworkCredential credentials, int connectionTimeout = 2000, int operationTImeout = 2000, CancellationToken token = default)
         {
+            token.ThrowIfCancellationRequested();
+
             ip = connection;
 
             try
@@ -85,7 +91,7 @@ namespace ATSPM.Infrastructure.Services.DownloaderClients
             token.ThrowIfCancellationRequested();
 
             if (!IsConnected)
-                throw new DownloaderClientConnectionException(_client.BaseAddress?.Host, this, "Client not connected");
+                throw new DownloaderClientConnectionException(_client?.BaseAddress?.Host, this, "Client not connected");
 
             await Task.CompletedTask;
         }
@@ -96,7 +102,7 @@ namespace ATSPM.Infrastructure.Services.DownloaderClients
             token.ThrowIfCancellationRequested();
 
             if (!IsConnected)
-                throw new DownloaderClientConnectionException(_client.BaseAddress?.Host, this, "Client not connected");
+                throw new DownloaderClientConnectionException(_client?.BaseAddress?.Host, this, "Client not connected");
 
             try
             {
@@ -119,7 +125,7 @@ namespace ATSPM.Infrastructure.Services.DownloaderClients
             token.ThrowIfCancellationRequested();
 
             if (!IsConnected)
-                throw new DownloaderClientConnectionException(_client.BaseAddress?.Host, this, "Client not connected");
+                throw new DownloaderClientConnectionException(_client?.BaseAddress?.Host, this, "Client not connected");
 
             //if (getPath == null)
             //    throw new DownloaderClientDownloadFileException(remotePath, this, "HTTP Get Path not defined");
@@ -160,7 +166,7 @@ namespace ATSPM.Infrastructure.Services.DownloaderClients
             token.ThrowIfCancellationRequested();
 
             if (!IsConnected)
-                throw new DownloaderClientConnectionException(_client.BaseAddress?.Host, this, "Client not connected");
+                throw new DownloaderClientConnectionException(_client?.BaseAddress?.Host, this, "Client not connected");
 
             try
             {

@@ -16,6 +16,7 @@
 #endregion
 using ATSPM.Application.Exceptions;
 using ATSPM.Application.Services;
+using ATSPM.Data.Enums;
 using ATSPM.Domain.BaseClasses;
 using FluentFTP;
 using System;
@@ -31,7 +32,7 @@ namespace ATSPM.Infrastructure.Services.DownloaderClients
     /// <summary>
     /// Connect to services and interact with their file directories using <see cref="IAsyncFtpClient"/>
     /// </summary>
-    public class FluentFTPDownloaderClient : ServiceObjectBase, IFTPDownloaderClient
+    public class FluentFTPDownloaderClient : ServiceObjectBase, IDownloaderClient
     {
         private IAsyncFtpClient _client;
 
@@ -47,7 +48,10 @@ namespace ATSPM.Infrastructure.Services.DownloaderClients
             _client = client;
         }
 
-        #region IFTPDownloaderClient
+        #region IDownloaderClient
+
+        ///<inheritdoc/>
+        public TransportProtocols Protocol => TransportProtocols.Ftp;
 
         ///<inheritdoc/>
         public bool IsConnected => _client != null && _client.IsConnected;
@@ -55,6 +59,8 @@ namespace ATSPM.Infrastructure.Services.DownloaderClients
         ///<inheritdoc/>
         public async Task ConnectAsync(IPEndPoint connection, NetworkCredential credentials, int connectionTimeout = 2000, int operationTImeout = 2000, CancellationToken token = default)
         {
+            token.ThrowIfCancellationRequested();
+
             try
             {
                 if (_client == null)
@@ -72,7 +78,7 @@ namespace ATSPM.Infrastructure.Services.DownloaderClients
                 _client.Config.DataConnectionType = FtpDataConnectionType.AutoActive;
 
                 var result = await _client.AutoConnect(token);
-                //await _client.Connect(token);
+                //await client.Connect(token);
             }
             catch (Exception e)
             {
