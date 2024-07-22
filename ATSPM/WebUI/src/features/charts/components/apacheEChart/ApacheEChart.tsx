@@ -175,16 +175,21 @@ export default function ApacheEChart({
   }
 
   return (
-    <div
+    <button
       style={{
         position: 'relative',
         width: '100%',
         height: '100%',
+        padding: 0,
+        border: 'none',
+        background: 'none',
+        cursor: 'pointer',
         ...style,
       }}
       onClick={handleActivate}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      aria-label="Activate chart"
     >
       <div
         id={id}
@@ -234,6 +239,6 @@ export default function ApacheEChart({
           )}
         </>
       )}
-    </div>
+    </button>
   )
 }
