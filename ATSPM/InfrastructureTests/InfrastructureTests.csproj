@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Attributes\DeviceDownloaderAttribute.cs" />
     <Compile Remove="Attributes\ValidSignalControllerAttribute.cs" />
     <Compile Remove="RepositoryTests\IControllerEventLogRepositoryTests.cs" />
     <Compile Remove="RepositoryTests\IRepositoryAsyncTests.cs" />
@@ -16,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="Attributes\DeviceDownloaderAttribute.cs" />
     <None Include="Attributes\ValidSignalControllerAttribute.cs" />
     <None Include="RepositoryTests\IControllerEventLogRepositoryTests.cs" />
     <None Include="RepositoryTests\IRepositoryAsyncTests.cs" />

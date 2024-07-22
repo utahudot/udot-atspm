@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for Infrastructure - ATSPM.Infrastructure.Services.ControllerDownloaders/DeviceDownloaderBase.cs
+// for Infrastructure - ATSPM.Infrastructure.Services.ControllerDownloaders/DeviceDownloader.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ using ATSPM.Application.Configuration;
 using ATSPM.Application.Exceptions;
 using ATSPM.Application.LogMessages;
 using ATSPM.Application.Services;
-using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using ATSPM.Domain.BaseClasses;
 using ATSPM.Domain.Exceptions;
@@ -34,33 +33,26 @@ using System.Net;
 using System.Runtime.CompilerServices;
 using System.Threading;
 
-namespace ATSPM.Infrastructure.Services.ControllerDownloaders
+namespace ATSPM.Infrastructure.Services.DeviceDownloaders
 {
     ///<inheritdoc cref="IDeviceDownloader"/>
-    public abstract class DeviceDownloaderBase : ExecutableServiceWithProgressAsyncBase<Device, Tuple<Device, FileInfo>, ControllerDownloadProgress>, IDeviceDownloader
+    public class DeviceDownloader : ExecutableServiceWithProgressAsyncBase<Device, Tuple<Device, FileInfo>, ControllerDownloadProgress>, IDeviceDownloader
     {
         #region Fields
 
-        private readonly IDownloaderClient _client;
+        private readonly IEnumerable<IDownloaderClient> _clients;
         protected readonly ILogger _log;
-        protected readonly SignalControllerDownloaderConfiguration _options;
+        protected readonly DeviceDownloaderConfiguration _options;
 
         #endregion
 
         ///<inheritdoc/>
-        public DeviceDownloaderBase(IDownloaderClient client, ILogger log, IOptionsSnapshot<SignalControllerDownloaderConfiguration> options) : base(true)
+        public DeviceDownloader(IEnumerable<IDownloaderClient> clients, ILogger<DeviceDownloader> log, IOptionsSnapshot<DeviceDownloaderConfiguration> options) : base(true)
         {
-            _client = client;
+            _clients = clients;
             _log = log;
             _options = options?.Get(GetType().Name) ?? options?.Value;
         }
-
-        #region Properties
-
-        ///<inheritdoc/>
-        public virtual TransportProtocols Protocol => TransportProtocols.Unknown;
-
-        #endregion
 
         #region Methods
 
@@ -89,7 +81,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
         ///<inheritdoc/>
         public override bool CanExecute(Device value)
         {
-            return value.DeviceConfiguration.Protocol == Protocol && value.LoggingEnabled;
+            return value.LoggingEnabled;
         }
 
         /// <exception cref="ArgumentNullException"></exception>
@@ -97,13 +89,15 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
         /// <exception cref="ExecuteException"></exception>
         public override async IAsyncEnumerable<Tuple<Device, FileInfo>> Execute(Device parameter, IProgress<ControllerDownloadProgress> progress = null, [EnumeratorCancellation] CancellationToken cancelToken = default)
         {
+            var client = _clients.FirstOrDefault(w => parameter.DeviceConfiguration.Protocol == w.Protocol);
+
             if (parameter == null)
                 throw new ArgumentNullException(nameof(parameter), $"Parameter can not be null");
 
             //if (CanExecute(parameter) && !cancelToken.IsCancellationRequested)
             if (CanExecute(parameter))
             {
-                if (!parameter.Ipaddress.IsValidIPAddress(_options.PingControllerToVerify))
+                if (!parameter.Ipaddress.IsValidIPAddress(_options.Ping))
                     throw new InvalidDeviceIpAddressException(parameter);
 
                 var locationIdentifier = parameter?.Location?.LocationIdentifier;
@@ -112,19 +106,21 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
                 var ipaddress = IPAddress.Parse(parameter?.Ipaddress);
                 var directory = parameter?.DeviceConfiguration?.Directory;
                 var searchTerms = parameter?.DeviceConfiguration?.SearchTerms;
+                var connectionTimeout = parameter?.DeviceConfiguration?.ConnectionTimeout ?? 2000;
+                var operationTimeout = parameter?.DeviceConfiguration?.OperationTimout ?? 2000;
 
                 var logMessages = new DeviceDownloaderLogMessages(_log, parameter);
 
-                using (_client)
+                using (client)
                 {
                     try
                     {
                         var connection = new IPEndPoint(ipaddress, parameter.DeviceConfiguration.Port);
                         var credentials = new NetworkCredential(user, password, ipaddress.ToString());
-                        
+
                         logMessages.ConnectingToHostMessage(locationIdentifier, ipaddress);
 
-                        await _client.ConnectAsync(connection, credentials, _options.ConnectionTimeout, _options.ReadTimeout, cancelToken);
+                        await client.ConnectAsync(connection, credentials, connectionTimeout, operationTimeout, cancelToken);
                     }
                     catch (DownloaderClientConnectionException e)
                     {
@@ -135,7 +131,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
                         logMessages.OperationCancelledException(locationIdentifier, ipaddress, e);
                     }
 
-                    if (_client.IsConnected)
+                    if (client.IsConnected)
                     {
                         logMessages.ConnectedToHostMessage(locationIdentifier, ipaddress);
 
@@ -145,7 +141,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
                         {
                             logMessages.GettingDirectoryListMessage(locationIdentifier, ipaddress, directory);
 
-                            remoteFiles = await _client.ListDirectoryAsync(directory, cancelToken, searchTerms);
+                            remoteFiles = await client.ListDirectoryAsync(directory, cancelToken, searchTerms);
                         }
                         catch (DownloaderClientListDirectoryException e)
                         {
@@ -170,7 +166,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
                             {
                                 logMessages.DownloadingFileMessage(file, locationIdentifier, ipaddress);
 
-                                downloadedFile = await _client.DownloadFileAsync(localFilePath, file, cancelToken);
+                                downloadedFile = await client.DownloadFileAsync(localFilePath, file, cancelToken);
                                 current++;
                             }
                             catch (DownloaderClientDownloadFileException e)
@@ -192,7 +188,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
                                 {
                                     logMessages.DeletingFileMessage(file, locationIdentifier, ipaddress);
 
-                                    await _client.DeleteFileAsync(file, cancelToken);
+                                    await client.DeleteFileAsync(file, cancelToken);
                                 }
                                 catch (DownloaderClientDeleteFileException e)
                                 {
@@ -213,7 +209,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
 
                                 progress?.Report(new ControllerDownloadProgress(downloadedFile, current, total));
 
-                                yield return Tuple.Create<Device, FileInfo>(parameter, downloadedFile);
+                                yield return Tuple.Create(parameter, downloadedFile);
                             }
                             else
                             {
@@ -227,7 +223,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
                         {
                             logMessages.DisconnectingFromHostMessage(locationIdentifier, ipaddress);
 
-                            await _client.DisconnectAsync(cancelToken);
+                            await client.DisconnectAsync(cancelToken);
                         }
                         catch (DownloaderClientConnectionException e)
                         {
@@ -251,7 +247,10 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
         ///<inheritdoc/>
         protected override void DisposeManagedCode()
         {
-            _client.Dispose();
+            foreach (var client in _clients)
+            {
+                client.Dispose();
+            }
         }
     }
 }
