@@ -16,7 +16,7 @@
 #endregion
 using ATSPM.Application.Configuration;
 using ATSPM.Application.Services;
-using ATSPM.Infrastructure.Services.ControllerDownloaders;
+using ATSPM.Infrastructure.Services.DeviceDownloaders;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Moq;
@@ -30,7 +30,7 @@ namespace InfrastructureTests.Attributes
     {
         public override IEnumerable<object[]> GetData(MethodInfo testMethod)
         {
-            var mockConfig = Mock.Of<IOptionsSnapshot<SignalControllerDownloaderConfiguration>>();
+            var mockConfig = Mock.Of<IOptionsSnapshot<DeviceDownloaderConfiguration>>();
 
             yield return new object[] { typeof(DeviceFtpDownloader), Mock.Of<IFTPDownloaderClient>(MockBehavior.Strict), new NullLogger<DeviceFtpDownloader>(), mockConfig };
             yield return new object[] { typeof(DeviceHttpDownloader), Mock.Of<IHTTPDownloaderClient>(MockBehavior.Strict), new NullLogger<DeviceHttpDownloader>(), mockConfig };

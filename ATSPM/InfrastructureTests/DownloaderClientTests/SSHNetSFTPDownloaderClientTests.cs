@@ -50,6 +50,13 @@ namespace InfrastructureTests.DownloaderClientTests
             base.ConnectAsyncControllerConnectionException();
         }
 
+        public override void ConnectAsyncOperationCanceledException()
+        {
+            Sut = new SSHNetSFTPDownloaderClient();
+
+            base.ConnectAsyncOperationCanceledException();
+        }
+
         public override void DeleteFileAsyncSucceeded()
         {
             var client = new Mock<ISftpClientWrapper>();
@@ -81,6 +88,13 @@ namespace InfrastructureTests.DownloaderClientTests
             Sut = new SSHNetSFTPDownloaderClient(client.Object);
 
             base.DeleteFileAsyncControllerDeleteFileException();
+        }
+
+        public override void DeleteFileAsyncOperationCanceledException()
+        {
+            Sut = new SSHNetSFTPDownloaderClient();
+
+            base.DeleteFileAsyncOperationCanceledException();
         }
 
         public override void DisconnectAsyncSucceeded()
@@ -120,6 +134,13 @@ namespace InfrastructureTests.DownloaderClientTests
             base.DisconnectAsyncControllerConnectionException();
         }
 
+        public override void DisconnectAsyncOperationCanceledException()
+        {
+            Sut = new SSHNetSFTPDownloaderClient();
+
+            base.DisconnectAsyncOperationCanceledException();
+        }
+
         public override void DownloadFileAsyncSucceeded()
         {
             var client = new Mock<ISftpClientWrapper>();
@@ -155,6 +176,13 @@ namespace InfrastructureTests.DownloaderClientTests
             base.DownloadFileAsyncControllerDownloadFileException();
         }
 
+        public override void DownloadFileAsyncOperationCanceledException()
+        {
+            Sut = new SSHNetSFTPDownloaderClient();
+
+            base.DownloadFileAsyncOperationCanceledException();
+        }
+
         public override void ListDirectoryAsyncSucceeded()
         {
             var client = new Mock<ISftpClientWrapper>();
@@ -186,6 +214,13 @@ namespace InfrastructureTests.DownloaderClientTests
             Sut = new SSHNetSFTPDownloaderClient(client.Object);
 
             base.ListDirectoryAsyncControllerDownloadFileException();
+        }
+
+        public override void ListDirectoryAsyncOperationCanceledException()
+        {
+            Sut = new SSHNetSFTPDownloaderClient();
+
+            base.ListDirectoryAsyncOperationCanceledException();
         }
 
         public override void ConnectAsyncConnectionProperties()
@@ -224,7 +259,7 @@ namespace InfrastructureTests.DownloaderClientTests
 
         public override bool VerifyOperationTimeout(ISftpClientWrapper client, int operationTImeout)
         {
-            //return client.Config.ReadTimeout == operationTImeout;
+            //return client.Config.OperationTimeout == operationTImeout;
             return false;
         }
     }
