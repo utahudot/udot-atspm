@@ -88,7 +88,7 @@ const SpeedMap = ({
         zoom={6}
         scrollWheelZoom={true}
         style={{
-          minHeight: '600px',
+          minHeight: '700px',
           height: '100%',
           width: '100%',
           zIndex: 0,
