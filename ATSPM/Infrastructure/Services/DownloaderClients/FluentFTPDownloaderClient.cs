@@ -86,7 +86,7 @@ namespace ATSPM.Infrastructure.Services.DownloaderClients
             token.ThrowIfCancellationRequested();
 
             if (!IsConnected)
-                throw new DownloaderClientConnectionException("", this, "Client not connected");
+                throw new DownloaderClientConnectionException(_client.Host, this, "Client not connected");
 
             try
             {
@@ -104,7 +104,7 @@ namespace ATSPM.Infrastructure.Services.DownloaderClients
             token.ThrowIfCancellationRequested();
 
             if (!IsConnected)
-                throw new DownloaderClientConnectionException("", this, "Client not connected");
+                throw new DownloaderClientConnectionException(_client.Host, this, "Client not connected");
 
             try
             {
@@ -122,7 +122,7 @@ namespace ATSPM.Infrastructure.Services.DownloaderClients
             token.ThrowIfCancellationRequested();
 
             if (!IsConnected)
-                throw new DownloaderClientConnectionException("", this, "Client not connected");
+                throw new DownloaderClientConnectionException(_client.Host, this, "Client not connected");
 
             try
             {
@@ -145,7 +145,7 @@ namespace ATSPM.Infrastructure.Services.DownloaderClients
             token.ThrowIfCancellationRequested();
 
             if (!IsConnected)
-                throw new DownloaderClientConnectionException("", this, "Client not connected");
+                throw new DownloaderClientConnectionException(_client.Host, this, "Client not connected");
 
             try
             {

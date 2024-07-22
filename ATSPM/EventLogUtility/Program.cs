@@ -203,7 +203,7 @@ var result = await test.ExecuteAsync(testData);
 
 //        //decoders
 //        s.AddScoped<IEventLogDecoder, ASCEventLogDecoder>();
-//        s.AddScoped<IEventLogDecoder, MaxTimeLocationControllerDecoder>();
+//        s.AddScoped<IEventLogDecoder, MaxTimeEventLogDecoder>();
 
 //        //LocationControllerLogger
 //        //s.AddScoped<ILocationControllerLoggerService, CompressedLocationControllerLogger>();
