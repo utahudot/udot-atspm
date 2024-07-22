@@ -20,10 +20,20 @@ using System;
 #nullable enable
 namespace ATSPM.Application.Exceptions
 {
+    /// <summary>
+    /// Exception decoding event log for <see cref="IEventLogDecoder{T}"/> implementations
+    /// </summary>
     public class EventLogDecoderException : ATSPMException
     {
-        public EventLogDecoderException(string? message) : base(message) { }
+        /// <summary>
+        /// Exception decoding event log for <see cref="IEventLogDecoder{T}"/> implementations
+        /// </summary>
+        public EventLogDecoderException() : base("Exception decoding stream") { }
 
-        public EventLogDecoderException(string? message, Exception? innerException) : base(message, innerException) { }
+        /// <summary>
+        /// Exception decoding event log for <see cref="IEventLogDecoder{T}"/> implementations
+        /// </summary>
+        /// <param name="innerException">Exception thrown by the <see cref="IEventLogDecoder{T}"/> implementation</param>
+        public EventLogDecoderException(Exception? innerException) : base("Exception decoding stream", innerException) { }
     }
 }

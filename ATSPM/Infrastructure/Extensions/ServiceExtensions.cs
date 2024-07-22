@@ -250,7 +250,7 @@ namespace ATSPM.Infrastructure.Extensions
         public static IServiceCollection ConfigureSignalControllerDecoders(this IServiceCollection services, HostBuilderContext host)
         {
             services.Configure<SignalControllerDecoderConfiguration>(nameof(ASCEventLogDecoder), host.Configuration.GetSection($"{nameof(SignalControllerDecoderConfiguration)}:{nameof(ASCEventLogDecoder)}"));
-            services.Configure<SignalControllerDecoderConfiguration>(nameof(MaxTimeLocationControllerDecoder), host.Configuration.GetSection($"{nameof(SignalControllerDecoderConfiguration)}:{nameof(MaxTimeLocationControllerDecoder)}"));
+            services.Configure<SignalControllerDecoderConfiguration>(nameof(MaxTimeEventLogDecoder), host.Configuration.GetSection($"{nameof(SignalControllerDecoderConfiguration)}:{nameof(MaxTimeEventLogDecoder)}"));
 
             return services;
         }

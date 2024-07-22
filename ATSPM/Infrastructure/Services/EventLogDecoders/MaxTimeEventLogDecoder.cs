@@ -24,16 +24,17 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Xml.Linq;
 
 namespace ATSPM.Infrastructure.Services.ControllerDecoders
 {
     /// <inheritdoc/>
-    public class MaxTimeLocationControllerDecoder : EventLogDecoderBase<IndianaEvent>
+    public class MaxTimeEventLogDecoder : EventLogDecoderBase<IndianaEvent>
     {
 
         /// <inheritdoc/>
-        public MaxTimeLocationControllerDecoder(ILogger<MaxTimeLocationControllerDecoder> log, IOptionsSnapshot<SignalControllerDecoderConfiguration> options) : base(log, options) { }
+        public MaxTimeEventLogDecoder(ILogger<MaxTimeEventLogDecoder> log, IOptionsSnapshot<SignalControllerDecoderConfiguration> options) : base(log, options) { }
 
         #region Properties
 
@@ -51,17 +52,15 @@ namespace ATSPM.Infrastructure.Services.ControllerDecoders
         }
 
         /// <inheritdoc/>
-        public override IEnumerable<IndianaEvent> Decode(Device device, Stream stream)
+        public override IEnumerable<IndianaEvent> Decode(Device device, Stream stream, CancellationToken cancelToken = default)
         {
-            var locationId = device.Location.LocationIdentifier;
-
-            //cancelToken.ThrowIfCancellationRequested();
-
-            if (string.IsNullOrEmpty(locationId))
-                throw new EventLogDecoderException("locationId can not be null", new ArgumentNullException(nameof(locationId)));
+            if (device == null)
+                throw new ArgumentNullException(nameof(device), "Device can not be null");
 
             if (stream?.Length == 0)
-                throw new EventLogDecoderException("Stream is empty", new InvalidDataException(nameof(stream)));
+                throw new InvalidDataException("Stream is empty");
+
+            var locationIdentifider = device.Location.LocationIdentifier;
 
             stream.Position = 0;
 
@@ -76,16 +75,18 @@ namespace ATSPM.Infrastructure.Services.ControllerDecoders
             }
             catch (Exception e)
             {
-                throw new EventLogDecoderException($"Exception decoding {locationId}", e);
+                throw new EventLogDecoderException(e);
             }
 
             foreach (var l in logs)
             {
+                cancelToken.ThrowIfCancellationRequested();
+
                 try
                 {
                     var log = new IndianaEvent()
                     {
-                        LocationIdentifier = locationId,
+                        LocationIdentifier = locationIdentifider,
                         EventCode = Convert.ToInt16(l.Attribute("EventTypeID").Value),
                         EventParam = Convert.ToByte(l.Attribute("Parameter").Value),
                         Timestamp = Convert.ToDateTime(l.Attribute("TimeStamp").Value)
@@ -95,7 +96,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDecoders
                 }
                 catch (Exception e)
                 {
-                    throw new EventLogDecoderException($"Exception decoding {locationId}", e);
+                    throw new EventLogDecoderException(e);
                 }
             }
 
