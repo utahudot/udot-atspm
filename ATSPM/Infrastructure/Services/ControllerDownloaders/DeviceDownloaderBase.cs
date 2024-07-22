@@ -42,8 +42,8 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
         #region Fields
 
         private readonly IDownloaderClient _client;
-        private readonly ILogger _log;
-        private readonly SignalControllerDownloaderConfiguration _options;
+        protected readonly ILogger _log;
+        protected readonly SignalControllerDownloaderConfiguration _options;
 
         #endregion
 
@@ -113,7 +113,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
                 var directory = parameter?.DeviceConfiguration?.Directory;
                 var searchTerms = parameter?.DeviceConfiguration?.SearchTerms;
 
-                var logMessages = new ControllerLoggerDownloaderLogMessages(_log, parameter);
+                var logMessages = new DeviceDownloaderLogMessages(_log, parameter);
 
                 using (_client)
                 {

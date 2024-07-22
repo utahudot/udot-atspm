@@ -16,7 +16,6 @@
 #endregion
 using ATSPM.Application.Services;
 using System;
-using System.Net;
 
 #nullable enable
 namespace ATSPM.Application.Exceptions

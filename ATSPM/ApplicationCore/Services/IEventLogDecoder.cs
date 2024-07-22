@@ -22,6 +22,7 @@ using ATSPM.Domain.Services;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 
 namespace ATSPM.Application.Services
 {
@@ -57,10 +58,12 @@ namespace ATSPM.Application.Services
         /// </summary>
         /// <param name="device">Device that generated the data stream</param>
         /// <param name="stream">Event data</param>
+        /// <param name="cancelToken">Cancellation token</param>
         /// <returns></returns>
-        /// <exception cref="EventLogDecoderException"></exception>
-        /// <exception cref="ArgumentNullException">Thrown if location is unknown</exception>
-        /// <exception cref="InvalidDataException">Thrown if stream is empty</exception>
-        IEnumerable<T> Decode(Device device, Stream stream);
+        /// <exception cref="EventLogDecoderException">Thrown when the decoding process catches an error</exception>
+        /// <exception cref="ArgumentNullException">Thrown if <paramref name="device"/> is null</exception>
+        /// <exception cref="InvalidDataException">Thrown if <paramref name="stream"/> is empty</exception>
+        /// <exception cref="OperationCanceledException">Thrown on <paramref name="cancelToken"/> cancelled</exception>
+        IEnumerable<T> Decode(Device device, Stream stream, CancellationToken cancelToken = default);
     }
 }
