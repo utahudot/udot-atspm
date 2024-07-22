@@ -18,19 +18,17 @@
 using ATSPM.Application.Configuration;
 using ATSPM.Application.Repositories.ConfigurationRepositories;
 using ATSPM.Application.Services;
-using ATSPM.Data.Models;
-using ATSPM.Data.Models.ConfigurationModels;
+using ATSPM.Data.Enums;
 using ATSPM.Data.Models.EventLogModels;
 using ATSPM.Domain.Extensions;
 using ATSPM.Infrastructure.Extensions;
 using ATSPM.Infrastructure.Services.ControllerDecoders;
-using ATSPM.Infrastructure.Services.ControllerDownloaders;
-using ATSPM.Infrastructure.Services.DownloaderClients;
 using Google.Cloud.Diagnostics.Common;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -93,20 +91,17 @@ namespace ATSPM.LocationControllerLogger
                     //s.AddTransient<IFileTranscoder, CompressedJsonFileTranscoder>();
 
                     ////downloader clients
-                    s.AddTransient<IHTTPDownloaderClient, HttpDownloaderClient>();
-                    s.AddTransient<IFTPDownloaderClient, FluentFTPDownloaderClient>();
-                    s.AddTransient<ISFTPDownloaderClient, SSHNetSFTPDownloaderClient>();
+                    s.AddDownloaderClients();
+                    //s.AddTransient<IHTTPDownloaderClient, HttpDownloaderClient>();
+                    //s.AddTransient<IFTPDownloaderClient, FluentFTPDownloaderClient>();
+                    //s.AddTransient<ISFTPDownloaderClient, SSHNetSFTPDownloaderClient>();
 
                     //downloaders
                     //s.AddScoped<IDeviceDownloader, DeviceFtpDownloader>();
-                    //s.AddScoped<IDeviceDownloader, CobaltLocationControllerDownloader>();
-                    //s.AddScoped<IDeviceDownloader, MaxTimeLocationControllerDownloader>();
-                    //s.AddScoped<IDeviceDownloader, EOSSignalControllerDownloader>();
-                    //s.AddScoped<IDeviceDownloader, NewCobaltLocationControllerDownloader>();
-                    s.AddScoped<IDeviceDownloader, DeviceFtpDownloader>();
-                    s.AddScoped<IDeviceDownloader, DeviceSftpDownloader>();
-                    s.AddScoped<IDeviceDownloader, DeviceHttpDownloader>();
-                    //s.AddScoped<IDeviceDownloader, DeviceSnmpDownloader>();
+                    //s.AddScoped<IDeviceDownloader, DeviceSftpDownloader>();
+                    //s.AddScoped<IDeviceDownloader, DeviceHttpDownloader>();
+                    ////s.AddScoped<IDeviceDownloader, DeviceSnmpDownloader>();
+                    s.AddDeviceDownloaders(h);
 
                     //decoders
                     s.AddScoped<IEventLogDecoder<IndianaEvent>, ASCEventLogDecoder>();
@@ -121,11 +116,11 @@ namespace ATSPM.LocationControllerLogger
 
                     //downloader configurations
                     //s.ConfigureSignalControllerDownloaders(h);
-                    //s.Configure<SignalControllerDownloaderConfiguration>(nameof(DeviceFtpDownloader), h.Configuration.GetSection($"{nameof(SignalControllerDownloaderConfiguration)}:{nameof(DeviceFtpDownloader)}"));
-                    //s.Configure<SignalControllerDownloaderConfiguration>(nameof(CobaltLocationControllerDownloader), h.Configuration.GetSection($"{nameof(SignalControllerDownloaderConfiguration)}:{nameof(CobaltLocationControllerDownloader)}"));
-                    //s.Configure<SignalControllerDownloaderConfiguration>(nameof(MaxTimeLocationControllerDownloader), h.Configuration.GetSection($"{nameof(SignalControllerDownloaderConfiguration)}:{nameof(MaxTimeLocationControllerDownloader)}"));
-                    //s.Configure<SignalControllerDownloaderConfiguration>(nameof(EOSSignalControllerDownloader), h.Configuration.GetSection($"{nameof(SignalControllerDownloaderConfiguration)}:{nameof(EOSSignalControllerDownloader)}"));
-                    //s.Configure<SignalControllerDownloaderConfiguration>(nameof(NewCobaltLocationControllerDownloader), h.Configuration.GetSection($"{nameof(SignalControllerDownloaderConfiguration)}:{nameof(NewCobaltLocationControllerDownloader)}"));
+                    //s.Configure<DeviceDownloaderConfiguration>(nameof(DeviceFtpDownloader), h.Configuration.GetSection($"{nameof(DeviceDownloaderConfiguration)}:{nameof(DeviceFtpDownloader)}"));
+                    //s.Configure<DeviceDownloaderConfiguration>(nameof(CobaltLocationControllerDownloader), h.Configuration.GetSection($"{nameof(DeviceDownloaderConfiguration)}:{nameof(CobaltLocationControllerDownloader)}"));
+                    //s.Configure<DeviceDownloaderConfiguration>(nameof(MaxTimeLocationControllerDownloader), h.Configuration.GetSection($"{nameof(DeviceDownloaderConfiguration)}:{nameof(MaxTimeLocationControllerDownloader)}"));
+                    //s.Configure<DeviceDownloaderConfiguration>(nameof(EOSSignalControllerDownloader), h.Configuration.GetSection($"{nameof(DeviceDownloaderConfiguration)}:{nameof(EOSSignalControllerDownloader)}"));
+                    //s.Configure<DeviceDownloaderConfiguration>(nameof(NewCobaltLocationControllerDownloader), h.Configuration.GetSection($"{nameof(DeviceDownloaderConfiguration)}:{nameof(NewCobaltLocationControllerDownloader)}"));
 
                     //decoder configurations
                     //s.Configure<SignalControllerDecoderConfiguration>(nameof(ASCEventLogDecoder), h.Configuration.GetSection($"{nameof(SignalControllerDecoderConfiguration)}:{nameof(ASCEventLogDecoder)}"));
@@ -133,13 +128,41 @@ namespace ATSPM.LocationControllerLogger
 
                     //s.Configure<FileRepositoryConfiguration>(h.Configuration.GetSection("FileRepositoryConfiguration"));
 
-                    s.AddHostedService<TestService>();
 
 
 
 
-                    //s.AddTransient<IEmailService, SendGridEmailService>();
-                    //s.AddTransient<IEmailService, SmtpEmailService>();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                    //s.AddHostedService<TestService>();
+
+
+
+
+
+                    s.AddTransient<ServiceTest>();
+
+
+
+
+
+
 
                     s.AddEmailServices(h);
                     
@@ -147,12 +170,12 @@ namespace ATSPM.LocationControllerLogger
                     
 
 
-                    s.PostConfigureAll<SignalControllerDownloaderConfiguration>(o =>
+                    s.PostConfigureAll<DeviceDownloaderConfiguration>(o =>
                     {
                         o.LocalPath = "C:\\temp3";
-                        o.PingControllerToVerify = true;
-                        o.ConnectionTimeout = 2000;
-                        o.ReadTimeout = 30000;
+                        o.Ping = true;
+                        //o.ConnectionTimeout = 2000;
+                        //o.OperationTimeout = 30000;
                         o.DeleteFile = false;
                     });
 
@@ -183,10 +206,70 @@ namespace ATSPM.LocationControllerLogger
             host.Services.PrintHostInformation();
 
             //await host.RunAsync();
-            await host.StartAsync();
-            await host.StopAsync();
+            //await host.StartAsync();
+            //await host.StopAsync();
+
+            using (var scope = host.Services.CreateScope())
+            {
+                //Console.WriteLine($"{scope.ServiceProvider.GetService<IDownloaderClient>()}");
+                //Console.WriteLine($"{scope.ServiceProvider.GetService<IFTPDownloaderClient>()}");
+                //Console.WriteLine($"{scope.ServiceProvider.GetService<ISFTPDownloaderClient>()}");
+                //Console.WriteLine($"{scope.ServiceProvider.GetService<IHTTPDownloaderClient>()}");
+
+                foreach (var s in scope.ServiceProvider.GetServices<IDownloaderClient>())
+                {
+                    Console.WriteLine($"----------------{s}");
+                }
+
+                foreach (var s in scope.ServiceProvider.GetServices<IDeviceDownloader>())
+                {
+                    Console.WriteLine($"___________________{s}");
+                }
+
+                var devices = scope.ServiceProvider.GetService<IDeviceRepository>().GetActiveDevicesByAllLatestLocations()
+                   .Where(w => w.Ipaddress.ToString() != "10.10.10.10")
+                   .Where(w => w.Ipaddress.IsValidIPAddress())
+                   .Where(w => w.DeviceConfiguration.Protocol == TransportProtocols.Http);
+                   //.OrderBy(o => o.Ipaddress)
+                   //.Take(10);
+
+                Console.WriteLine($"devices: {devices.Count()}");
+
+                foreach (var d in devices)
+                {
+                    var downloader = scope.ServiceProvider.GetService<IDeviceDownloader>();
+
+                    try
+                    {
+                        var result = downloader.Execute(d);
+
+                        await foreach (var r in result)
+                        {
+                            Console.WriteLine($"{r.Item1} - {r.Item2.FullName}");
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine($"{d} - {e}");
+                    }
+                }
+
+            }
+
+            Console.WriteLine($"------------------done-----------------------");
 
             Console.ReadLine();
+        }
+    }
+
+    public class ServiceTest
+    {
+        public ServiceTest(IEnumerable<IDownloaderClient> downloaderClients)
+        {
+            foreach (var o in downloaderClients)
+            {
+                Console.WriteLine($"------------------{o}");
+            }
         }
     }
 }

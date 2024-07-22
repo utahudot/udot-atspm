@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for ApplicationCore - ATSPM.Application.Configuration/SignalControllerDownloaderConfiguration.cs
+// for ApplicationCore - ATSPM.Application.Configuration/DeviceDownloaderConfiguration.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,23 +14,29 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
-using ATSPM.Application.Enums;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using ATSPM.Application.Services;
+using ATSPM.Data.Models;
 
 namespace ATSPM.Application.Configuration
 {
-    public class SignalControllerDownloaderConfiguration
+    /// <summary>
+    /// Options pattern model for services that implement <see cref="IDeviceDownloader"/>
+    /// </summary>
+    public class DeviceDownloaderConfiguration
     {
+        /// <summary>
+        /// Local path to store downloaded event logs
+        /// </summary>
         public string LocalPath { get; set; }
         
-        public int ConnectionTimeout { get; set; }
-        
-        public int ReadTimeout { get; set; }
-        
+        /// <summary>
+        /// Flag for deleting remote file after downloading
+        /// </summary>
         public bool DeleteFile { get; set; }
         
-        public bool PingControllerToVerify { get; set; }
+        /// <summary>
+        /// Flag to ping <see cref="Device"/> to verify <see cref="Device.Ipaddress"/>
+        /// </summary>
+        public bool Ping { get; set; }
     }
 }

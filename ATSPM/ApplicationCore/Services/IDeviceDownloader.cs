@@ -28,7 +28,5 @@ namespace ATSPM.Application.Services
     /// </summary>
     public interface IDeviceDownloader : IExecutableServiceWithProgressAsync<Device, Tuple<Device, FileInfo>, ControllerDownloadProgress>
     {
-        ///<inheritdoc cref="TransportProtocols"/>
-        TransportProtocols Protocol { get; }
     }
 }

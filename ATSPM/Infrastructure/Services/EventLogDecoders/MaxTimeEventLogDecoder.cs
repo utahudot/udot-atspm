@@ -54,6 +54,8 @@ namespace ATSPM.Infrastructure.Services.ControllerDecoders
         /// <inheritdoc/>
         public override IEnumerable<IndianaEvent> Decode(Device device, Stream stream, CancellationToken cancelToken = default)
         {
+            cancelToken.ThrowIfCancellationRequested();
+
             if (device == null)
                 throw new ArgumentNullException(nameof(device), "Device can not be null");
 
