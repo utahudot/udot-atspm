@@ -14,14 +14,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="Services\EventLogDecoders\StubSignalControllerDecoder.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="Services\EventLogDecoders\StubSignalControllerDecoder.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="FluentFTP" Version="44.0.1" />
     <PackageReference Include="Google.Cloud.Diagnostics.Common" Version="5.0.0" />
     <PackageReference Include="MailKit" Version="4.5.0" />

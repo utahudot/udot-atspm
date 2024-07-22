@@ -110,7 +110,7 @@ namespace ATSPM.LocationControllerLogger
 
                     //decoders
                     s.AddScoped<IEventLogDecoder<IndianaEvent>, ASCEventLogDecoder>();
-                    //s.AddScoped<IEventLogDecoder<IndianaEvent>, MaxTimeLocationControllerDecoder>();
+                    //s.AddScoped<IEventLogDecoder<IndianaEvent>, MaxTimeEventLogDecoder>();
 
                     //LocationControllerDataFlow
                     //s.AddScoped<ILocationControllerLoggerService, CompressedLocationControllerLogger>();
@@ -129,7 +129,7 @@ namespace ATSPM.LocationControllerLogger
 
                     //decoder configurations
                     //s.Configure<SignalControllerDecoderConfiguration>(nameof(ASCEventLogDecoder), h.Configuration.GetSection($"{nameof(SignalControllerDecoderConfiguration)}:{nameof(ASCEventLogDecoder)}"));
-                    //s.Configure<SignalControllerDecoderConfiguration>(nameof(MaxTimeLocationControllerDecoder), h.Configuration.GetSection($"{nameof(SignalControllerDecoderConfiguration)}:{nameof(MaxTimeLocationControllerDecoder)}"));
+                    //s.Configure<SignalControllerDecoderConfiguration>(nameof(MaxTimeEventLogDecoder), h.Configuration.GetSection($"{nameof(SignalControllerDecoderConfiguration)}:{nameof(MaxTimeEventLogDecoder)}"));
 
                     //s.Configure<FileRepositoryConfiguration>(h.Configuration.GetSection("FileRepositoryConfiguration"));
 
