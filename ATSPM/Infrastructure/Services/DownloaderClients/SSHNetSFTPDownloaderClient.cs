@@ -16,6 +16,7 @@
 #endregion
 using ATSPM.Application.Exceptions;
 using ATSPM.Application.Services;
+using ATSPM.Data.Enums;
 using ATSPM.Domain.BaseClasses;
 using Renci.SshNet;
 using Renci.SshNet.Common;
@@ -32,7 +33,7 @@ namespace ATSPM.Infrastructure.Services.DownloaderClients
     /// <summary>
     /// Connect to services and interact with their file directories using <see cref="ISftpClientWrapper"/>
     /// </summary>
-    public class SSHNetSFTPDownloaderClient : ServiceObjectBase, ISFTPDownloaderClient
+    public class SSHNetSFTPDownloaderClient : ServiceObjectBase, IDownloaderClient
     {
         private ISftpClientWrapper _client;
 
@@ -48,7 +49,10 @@ namespace ATSPM.Infrastructure.Services.DownloaderClients
             _client = client;
         }
 
-        #region ISFTPDownloaderClient
+        #region IDownloaderClient
+
+        ///<inheritdoc/>
+        public TransportProtocols Protocol => TransportProtocols.Sftp;
 
         ///<inheritdoc/>
         public bool IsConnected => _client != null && _client.IsConnected;
@@ -56,6 +60,8 @@ namespace ATSPM.Infrastructure.Services.DownloaderClients
         ///<inheritdoc/>
         public Task ConnectAsync(IPEndPoint connection, NetworkCredential credentials, int connectionTimeout = 2, int operationTImeout = 2, CancellationToken token = default)
         {
+            token.ThrowIfCancellationRequested();
+
             try
             {
                 var connectionInfo = new ConnectionInfo

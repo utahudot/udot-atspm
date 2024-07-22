@@ -30,6 +30,9 @@ namespace ATSPM.Application.Services
     /// </summary>
     public interface IDownloaderClient : IDisposable
     {
+        ///<inheritdoc cref="TransportProtocols"/>
+        TransportProtocols Protocol { get; }
+
         /// <summary>
         /// Tracks the connections status
         /// </summary>
@@ -88,31 +91,31 @@ namespace ATSPM.Application.Services
         Task DisconnectAsync(CancellationToken token = default);
     }
 
-    /// <summary>
-    /// Client for connecting and downloading files via FTP servers
-    /// </summary>
-    public interface IFTPDownloaderClient : IDownloaderClient
-    {
-    }
+    ///// <summary>
+    ///// Client for connecting and downloading files via FTP servers
+    ///// </summary>
+    //public interface IFTPDownloaderClient : IDownloaderClient
+    //{
+    //}
 
-    /// <summary>
-    /// Client for connecting and downloading files via SFTP servers
-    /// </summary>
-    public interface ISFTPDownloaderClient : IDownloaderClient
-    {
-    }
+    ///// <summary>
+    ///// Client for connecting and downloading files via SFTP servers
+    ///// </summary>
+    //public interface ISFTPDownloaderClient : IDownloaderClient
+    //{
+    //}
 
-    /// <summary>
-    /// Client for connecting and downloading files via HTTP servers
-    /// </summary>
-    public interface IHTTPDownloaderClient : IDownloaderClient
-    {
-    }
+    ///// <summary>
+    ///// Client for connecting and downloading files via HTTP servers
+    ///// </summary>
+    //public interface IHTTPDownloaderClient : IDownloaderClient
+    //{
+    //}
 
-    /// <summary>
-    /// Client for connecting and downloading files via SNMP servers
-    /// </summary>
-    public interface ISNMPDownloaderClient : IDownloaderClient
-    {
-    }
+    ///// <summary>
+    ///// Client for connecting and downloading files via SNMP servers
+    ///// </summary>
+    //public interface ISNMPDownloaderClient : IDownloaderClient
+    //{
+    //}
 }

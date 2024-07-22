@@ -56,6 +56,13 @@ namespace InfrastructureTests.DownloaderClientTests
             base.ConnectAsyncControllerConnectionException();
         }
 
+        public override void ConnectAsyncOperationCanceledException()
+        {
+            Sut = new FluentFTPDownloaderClient();
+
+            base.ConnectAsyncOperationCanceledException();
+        }
+
         public override void DeleteFileAsyncSucceeded()
         {
             var client = new Mock<IAsyncFtpClient>();
@@ -87,6 +94,13 @@ namespace InfrastructureTests.DownloaderClientTests
             Sut = new FluentFTPDownloaderClient(client.Object);
 
             base.DeleteFileAsyncControllerDeleteFileException();
+        }
+
+        public override void DeleteFileAsyncOperationCanceledException()
+        {
+            Sut = new FluentFTPDownloaderClient();
+
+            base.DeleteFileAsyncOperationCanceledException();
         }
 
         public override void DisconnectAsyncSucceeded()
@@ -124,6 +138,13 @@ namespace InfrastructureTests.DownloaderClientTests
             base.DisconnectAsyncControllerConnectionException();
         }
 
+        public override void DisconnectAsyncOperationCanceledException()
+        {
+            Sut = new FluentFTPDownloaderClient();
+
+            base.DisconnectAsyncOperationCanceledException();
+        }
+
         public override void DownloadFileAsyncSucceeded()
         {
             var client = new Mock<IAsyncFtpClient>();
@@ -157,6 +178,13 @@ namespace InfrastructureTests.DownloaderClientTests
             base.DownloadFileAsyncControllerDownloadFileException();
         }
 
+        public override void DownloadFileAsyncOperationCanceledException()
+        {
+            Sut = new FluentFTPDownloaderClient();
+
+            base.DownloadFileAsyncOperationCanceledException();
+        }
+
         public override void ListDirectoryAsyncSucceeded()
         {
             var client = new Mock<IAsyncFtpClient>();
@@ -188,6 +216,13 @@ namespace InfrastructureTests.DownloaderClientTests
             Sut = new FluentFTPDownloaderClient(client.Object);
 
             base.ListDirectoryAsyncControllerDownloadFileException();
+        }
+
+        public override void ListDirectoryAsyncOperationCanceledException()
+        {
+            Sut = new FluentFTPDownloaderClient();
+
+            base.ListDirectoryAsyncOperationCanceledException();
         }
 
         public override void ConnectAsyncConnectionProperties()

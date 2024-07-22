@@ -41,6 +41,13 @@ namespace InfrastructureTests.DownloaderClientTests
         {
         }
 
+        public override void ConnectAsyncOperationCanceledException()
+        {
+            Sut = new SSHNetSFTPDownloaderClient();
+
+            base.ConnectAsyncOperationCanceledException();
+        }
+
         public override void DeleteFileAsyncSucceeded()
         {
             Sut = new HttpDownloaderClient(new HttpClient() { BaseAddress = new Uri($"http://127.0.0.1") });
@@ -50,6 +57,7 @@ namespace InfrastructureTests.DownloaderClientTests
 
         public override void DeleteFileAsyncNotConnected()
         {
+
             Sut = new HttpDownloaderClient();
 
             base.DeleteFileAsyncNotConnected();
@@ -57,6 +65,13 @@ namespace InfrastructureTests.DownloaderClientTests
 
         public override void DeleteFileAsyncControllerDeleteFileException()
         {
+        }
+
+        public override void DeleteFileAsyncOperationCanceledException()
+        {
+            Sut = new HttpDownloaderClient();
+
+            base.DeleteFileAsyncOperationCanceledException();
         }
 
         public override void DisconnectAsyncSucceeded()
@@ -72,6 +87,13 @@ namespace InfrastructureTests.DownloaderClientTests
 
         public override void DisconnectAsyncControllerConnectionException()
         {
+        }
+
+        public override void DisconnectAsyncOperationCanceledException()
+        {
+            Sut = new HttpDownloaderClient();
+
+            base.DisconnectAsyncOperationCanceledException();
         }
 
         public override void DownloadFileAsyncSucceeded()
@@ -117,6 +139,13 @@ namespace InfrastructureTests.DownloaderClientTests
             base.DownloadFileAsyncControllerDownloadFileException();
         }
 
+        public override void DownloadFileAsyncOperationCanceledException()
+        {
+            Sut = new HttpDownloaderClient();
+
+            base.DownloadFileAsyncOperationCanceledException();
+        }
+
         public override void ListDirectoryAsyncSucceeded()
         {
         }
@@ -130,6 +159,13 @@ namespace InfrastructureTests.DownloaderClientTests
 
         public override void ListDirectoryAsyncControllerDownloadFileException()
         {
+        }
+
+        public override void ListDirectoryAsyncOperationCanceledException()
+        {
+            Sut = new HttpDownloaderClient();
+
+            base.ListDirectoryAsyncOperationCanceledException();
         }
 
         public override void ConnectAsyncConnectionProperties()

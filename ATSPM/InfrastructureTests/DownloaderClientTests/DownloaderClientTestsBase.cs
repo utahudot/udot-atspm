@@ -20,9 +20,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Threading;
 using Xunit;
 using Xunit.Abstractions;
 using Xunit.Sdk;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace InfrastructureTests.DownloaderClientTests
 {
@@ -62,6 +64,19 @@ namespace InfrastructureTests.DownloaderClientTests
         }
 
         [Fact]
+        [Trait(nameof(IDownloaderClient), "ConnectAsync")]
+        public async virtual void ConnectAsyncOperationCanceledException()
+        {
+            var connection = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 1);
+            var credentials = new NetworkCredential("user", "password", "127.0.0.1");
+
+            var tokenSource = new CancellationTokenSource();
+            tokenSource.Cancel();
+
+            await Assert.ThrowsAsync<OperationCanceledException>(async () => await Sut.ConnectAsync(connection, credentials, 2000, 2000, tokenSource.Token));
+        }
+
+        [Fact]
         [Trait(nameof(IDownloaderClient), "DeleteFileAsync")]
         public async virtual void DeleteFileAsyncSucceeded()
         {
@@ -80,6 +95,16 @@ namespace InfrastructureTests.DownloaderClientTests
         public async virtual void DeleteFileAsyncControllerDeleteFileException()
         {
             await Assert.ThrowsAsync<DownloaderClientDeleteFileException>(async () => await Sut.DeleteFileAsync(""));
+        }
+
+        [Fact]
+        [Trait(nameof(IDownloaderClient), "DeleteFileAsync")]
+        public async virtual void DeleteFileAsyncOperationCanceledException()
+        {
+            var tokenSource = new CancellationTokenSource();
+            tokenSource.Cancel();
+
+            await Assert.ThrowsAsync<OperationCanceledException>(async () => await Sut.DeleteFileAsync("", tokenSource.Token));
         }
 
         [Fact]
@@ -108,6 +133,16 @@ namespace InfrastructureTests.DownloaderClientTests
         }
 
         [Fact]
+        [Trait(nameof(IDownloaderClient), "DisconnectAsync")]
+        public async virtual void DisconnectAsyncOperationCanceledException()
+        {
+            var tokenSource = new CancellationTokenSource();
+            tokenSource.Cancel();
+
+            await Assert.ThrowsAsync<OperationCanceledException>(async () => await Sut.DisconnectAsync(tokenSource.Token));
+        }
+
+        [Fact]
         [Trait(nameof(IDownloaderClient), "DownloadFileAsync")]
         public async virtual void DownloadFileAsyncSucceeded()
         {
@@ -131,6 +166,16 @@ namespace InfrastructureTests.DownloaderClientTests
         }
 
         [Fact]
+        [Trait(nameof(IDownloaderClient), "DownloadFileAsync")]
+        public async virtual void DownloadFileAsyncOperationCanceledException()
+        {
+            var tokenSource = new CancellationTokenSource();
+            tokenSource.Cancel();
+
+            await Assert.ThrowsAsync<OperationCanceledException>(async () => await Sut.DownloadFileAsync(Path.GetTempFileName(), "", tokenSource.Token));
+        }
+
+        [Fact]
         [Trait(nameof(IDownloaderClient), "ListDirectoryAsync")]
         public async virtual void ListDirectoryAsyncSucceeded()
         {
@@ -151,6 +196,16 @@ namespace InfrastructureTests.DownloaderClientTests
         public async virtual void ListDirectoryAsyncControllerDownloadFileException()
         {
             await Assert.ThrowsAsync<DownloaderClientListDirectoryException>(async () => await Sut.ListDirectoryAsync(""));
+        }
+
+        [Fact]
+        [Trait(nameof(IDownloaderClient), "ListDirectoryAsync")]
+        public async virtual void ListDirectoryAsyncOperationCanceledException()
+        {
+            var tokenSource = new CancellationTokenSource();
+            tokenSource.Cancel();
+
+            await Assert.ThrowsAsync<OperationCanceledException>(async () => await Sut.ListDirectoryAsync("", tokenSource.Token));
         }
 
         [Fact]
