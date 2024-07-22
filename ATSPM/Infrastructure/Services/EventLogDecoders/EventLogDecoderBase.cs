@@ -40,7 +40,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDecoders
     {
         #region Fields
 
-        private readonly ILogger _log;
+        protected readonly ILogger _log;
         protected readonly SignalControllerDecoderConfiguration _options;
 
         #endregion
@@ -90,7 +90,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDecoders
 
             if (CanExecute(parameter))
             {
-                var logMessages = new ControllerLoggerDecoderLogMessages(_log, file);
+                var logMessages = new EventLogDecoderLogMessages(_log, file);
 
                 HashSet<T> decodedLogs = new();
 
@@ -110,6 +110,10 @@ namespace ATSPM.Infrastructure.Services.ControllerDecoders
                 catch (EventLogDecoderException e)
                 {
                     logMessages.DecodeLogFileException(file.FullName, e);
+                }
+                catch (OperationCanceledException e)
+                {
+                    logMessages.OperationCancelledException(file.FullName, e);
                 }
 
                 memoryStream.Dispose();
@@ -156,7 +160,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDecoders
         }
 
         /// <inheritdoc/>
-        public abstract IEnumerable<T> Decode(Device device, Stream stream);
+        public abstract IEnumerable<T> Decode(Device device, Stream stream, CancellationToken cancelToken = default);
 
         #endregion
     }
