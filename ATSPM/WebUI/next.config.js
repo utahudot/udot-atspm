@@ -22,6 +22,11 @@ module.exports = withBundleAnalyzer({
         destination: '/performance-measures',
         permanent: true,
       },
+      {
+        source: '/locations',
+        destination: '/performance-measures',
+        permanent: true,
+      },
     ]
   },
   typescript: {
