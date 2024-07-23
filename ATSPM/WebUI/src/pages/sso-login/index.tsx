@@ -19,7 +19,7 @@ const SsoLogin = () => {
       Cookies.set('loggedIn', 'True')
 
       // Redirect to another page after setting cookies
-      window.location.href = '/locations' // Replace '/another-page' with your desired path
+      window.location.href = '/' // Replace '/another-page' with your desired path
     } else if (callError) {
       window.location.href = `/login?error=${callError}`
     }
