@@ -1,4 +1,5 @@
-﻿using ATSPM.Identity.Business.Users;
+﻿using ATSPM.Data;
+using ATSPM.Identity.Business.Users;
 using Identity.Business.Users;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;

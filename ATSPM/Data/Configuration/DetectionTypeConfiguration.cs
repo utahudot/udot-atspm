@@ -2,8 +2,8 @@
 using ATSPM.Data.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System.Reflection;
 using System.ComponentModel.DataAnnotations;
+using System.Reflection;
 
 namespace ATSPM.Data.Configuration
 {
@@ -15,7 +15,7 @@ namespace ATSPM.Data.Configuration
         /// <inheritdoc/>
         public void Configure(EntityTypeBuilder<DetectionType> builder)
         {
-            builder.HasComment("Detector Types");
+            builder.ToTable(t => t.HasComment("Detector Types"));
 
             builder.Property(e => e.Id)
                 .ValueGeneratedNever();
