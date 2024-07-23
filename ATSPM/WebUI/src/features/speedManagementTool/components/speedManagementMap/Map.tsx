@@ -9,6 +9,7 @@ import { Box } from '@mui/material'
 import L, { Map as LeafletMap } from 'leaflet'
 import { memo, useEffect, useState } from 'react'
 import { MapContainer, Polyline, TileLayer } from 'react-leaflet'
+import SpeedLegend from './Legend'
 
 type SpeedMapProps = {
   fullScreenRef: React.RefObject<HTMLDivElement>
@@ -22,14 +23,12 @@ const SpeedMap = ({
   setSelectedRouteId,
 }: SpeedMapProps) => {
   const [mapRef, setMapRef] = useState<LeafletMap | null>(null)
-
   const { routeRenderOption } = useSpeedManagementStore()
 
   useEffect(() => {
     if (!mapRef) return
 
     const mapContainer = mapRef.getContainer()
-
     const handleResize = () => {
       mapRef.invalidateSize()
     }
@@ -42,11 +41,30 @@ const SpeedMap = ({
     }
   }, [mapRef])
 
-  const renderer = L.canvas({ tolerance: 5 }) // increase clickability of polylines
+  useEffect(() => {
+    if (mapRef) {
+      // Trigger a rerender of the routes when routeRenderOption changes
+      mapRef.eachLayer((layer) => {
+        if (layer instanceof L.Polyline) {
+          mapRef.removeLayer(layer)
+        }
+      })
+
+      routes.forEach((route) => {
+        const polyline = L.polyline(route.geometry.coordinates, {
+          color: getColor(route),
+          weight: 2,
+        }).addTo(mapRef)
+
+        polyline.on('click', () =>
+          setSelectedRouteId(route.properties.route_id)
+        )
+      })
+    }
+  }, [mapRef, routes, routeRenderOption])
 
   const getColor = (route: SpeedManagementRoute) => {
     let field
-
     switch (routeRenderOption) {
       case RouteRenderOption.Posted_Speed:
         field = 'SpeedLimit'
@@ -68,7 +86,9 @@ const SpeedMap = ({
         break
     }
 
-    const speed = route.properties[field]
+    const speed = route.properties[
+      field as keyof SpeedManagementRoute['properties']
+    ] as number
 
     if (speed < 20) return 'rgba(0, 115, 255, 1)'
     if (speed < 30) return 'rgba(0, 255, 170, 1)'
@@ -78,9 +98,10 @@ const SpeedMap = ({
     if (speed < 55) return 'rgba(245, 114, 0, 1)'
     if (speed < 65) return 'rgba(245, 57, 0, 1)'
     if (speed < 75) return 'rgba(245, 0, 0, 1)'
-    return 'rgba(115, 0, 0, 1)'
+    return '#c1c9cc'
   }
 
+  const renderer = L.canvas({ tolerance: 5 }) // Increase clickability of polylines
   return (
     <Box sx={{ height: '100%', width: '100%' }}>
       <MapContainer
@@ -111,13 +132,6 @@ const SpeedMap = ({
           <FullScreenToggleButton targetRef={fullScreenRef} />
         </Box>
         {routes.map((route, index) => {
-          // check if any value is undefined in the coordinates array
-          if (
-            !route?.geometry?.coordinates ||
-            route.geometry.coordinates.some((coord) => coord.some((c) => !c))
-          )
-            return null
-
           return (
             <div key={index}>
               <Polyline
@@ -134,6 +148,7 @@ const SpeedMap = ({
             </div>
           )
         })}
+        <SpeedLegend />
       </MapContainer>
     </Box>
   )
