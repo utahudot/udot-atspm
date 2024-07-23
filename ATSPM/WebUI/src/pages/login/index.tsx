@@ -90,7 +90,7 @@ function Login() {
     })
     Cookies.set('claims', data.claims.join(','))
     Cookies.set('loggedIn', 'True', { expires: inOneMinute })
-    window.location.href = '/locations'
+    window.location.href = '/'
   }
 
   const redirectUser = () => {
@@ -187,7 +187,7 @@ function Login() {
               <Grid item>
                 <Link
                   style={{ color: 'cornflowerblue' }}
-                  href="/forgotpassword"
+                  href="/forgot-password"
                 >
                   Forgot Password
                 </Link>
