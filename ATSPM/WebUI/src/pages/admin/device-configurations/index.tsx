@@ -77,7 +77,7 @@ const DevicesAdmin = () => {
     if (productId) sanitizedDevice.productId = parseInt(productId)
 
     try {
-      createMutation.mutateAsync(sanitizedDevice)
+      await createMutation.mutateAsync(sanitizedDevice)
     } catch (error) {
       console.error('Mutation Error:', error)
     }
@@ -86,7 +86,7 @@ const DevicesAdmin = () => {
   const HandleDeleteDevice = async (deviceData: DeviceConfiguration) => {
     const { id } = deviceData
     try {
-      deleteMutation.mutateAsync(id)
+      await deleteMutation.mutateAsync(id)
     } catch (error) {
       console.error('Mutation Error:', error)
     }
@@ -125,7 +125,7 @@ const DevicesAdmin = () => {
     if (productId) sanitizedDevice.productId = parseInt(productId)
 
     try {
-      editMutation.mutateAsync({
+      await editMutation.mutateAsync({
         data: sanitizedDevice,
         id,
       })

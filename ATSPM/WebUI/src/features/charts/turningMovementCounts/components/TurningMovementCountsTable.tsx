@@ -49,7 +49,7 @@ const TurningMovementCountsTable = ({
     ...new Set(
       table.flatMap((data) => data.volumes.map((volume) => volume.timestamp))
     ),
-  ].sort()
+  ].sort((a, b) => a.localeCompare(b))
 
   const findVolumeByTimestamp = (
     direction: string,

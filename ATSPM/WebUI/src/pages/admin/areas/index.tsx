@@ -52,7 +52,7 @@ const AreasAdmin = () => {
   const HandleCreateArea = async (areaData: Area) => {
     const { id, name } = areaData
     try {
-      createMutation.mutateAsync({ id, name })
+      await createMutation.mutateAsync({ id, name })
     } catch (error) {
       console.error('Mutation Error:', error)
     }
@@ -61,7 +61,7 @@ const AreasAdmin = () => {
   const HandleDeleteArea = async (areaData: Area) => {
     const { id } = areaData
     try {
-      deleteMutation.mutateAsync(id)
+      await deleteMutation.mutateAsync(id)
     } catch (error) {
       console.error('Mutation Error:', error)
     }
@@ -70,7 +70,7 @@ const AreasAdmin = () => {
   const HandleEditArea = async (areaData: Area) => {
     const { id, name } = areaData
     try {
-      editMutation.mutateAsync({ data: { name }, id })
+      await editMutation.mutateAsync({ data: { name }, id })
     } catch (error) {
       console.error('Mutation Error:', error)
     }

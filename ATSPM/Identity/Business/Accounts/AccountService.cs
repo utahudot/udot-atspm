@@ -1,4 +1,4 @@
-﻿using Grpc.Net.Client.Balancer;
+﻿using ATSPM.Data;
 using Identity.Business.Tokens;
 using Microsoft.AspNetCore.Identity;
 
@@ -91,6 +91,10 @@ namespace Identity.Business.Accounts
                 if (createUserResult.Succeeded)
                 {
                     var newUser = await _signInManager.UserManager.FindByEmailAsync(email);
+                    if (newUser == null)
+                    {
+                        return new AccountResult(StatusCodes.Status400BadRequest, "", new List<string>(), "Issue creating user");
+                    }
                     await _signInManager.SignInAsync(newUser, isPersistent: false);
                     token = await tokenService.GenerateJwtTokenAsync(newUser);
                     viewClaims = await GetViewClaimsForUser(newUser);
