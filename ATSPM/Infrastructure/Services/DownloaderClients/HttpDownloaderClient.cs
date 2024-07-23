@@ -40,13 +40,13 @@ namespace ATSPM.Infrastructure.Services.DownloaderClients
         private IPEndPoint ip;
 
         ///<inheritdoc/>
-        public HttpDownloaderClient() {}
+        public HttpDownloaderClient() : base(true) { }
 
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
         /// <param name="client">External client used for special settings and mocking</param>
-        public HttpDownloaderClient(HttpClient client)
+        public HttpDownloaderClient(HttpClient client) : base(true)
         {
             _client = client;
         }

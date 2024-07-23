@@ -37,13 +37,13 @@ namespace ATSPM.Infrastructure.Services.DownloaderClients
         private IAsyncFtpClient _client;
 
         ///<inheritdoc/>
-        public FluentFTPDownloaderClient() { }
+        public FluentFTPDownloaderClient() : base(true) { }
 
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
         /// <param name="client">External client used for special settings and mocking</param>
-        public FluentFTPDownloaderClient(IAsyncFtpClient client)
+        public FluentFTPDownloaderClient(IAsyncFtpClient client) : base(true)
         {
             _client = client;
         }
