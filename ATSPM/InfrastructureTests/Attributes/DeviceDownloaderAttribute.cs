@@ -16,11 +16,13 @@
 #endregion
 using ATSPM.Application.Configuration;
 using ATSPM.Application.Services;
-using ATSPM.Infrastructure.Services.DeviceDownloaders;
+using ATSPM.Data.Enums;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Moq;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Xunit.Sdk;
 
@@ -30,11 +32,19 @@ namespace InfrastructureTests.Attributes
     {
         public override IEnumerable<object[]> GetData(MethodInfo testMethod)
         {
-            var mockConfig = Mock.Of<IOptionsSnapshot<DeviceDownloaderConfiguration>>();
+            var clients = new List<IDownloaderClient>();
+            
+            foreach (var i in Enum.GetValues(typeof(TransportProtocols)))
+            {
+                clients.Add(Mock.Of<IDownloaderClient>(a => a.Protocol == (TransportProtocols)i, MockBehavior.Strict));
+            }
+            
+            var types = AppDomain.CurrentDomain.GetAssemblies().SelectMany(m => m.GetTypes().Where(w => w.GetInterfaces().Contains(typeof(IDeviceDownloader)))).ToList();
+            foreach (var t in types)
+            {
+                yield return new object[] { t, clients, new NullLogger<IDeviceDownloader>(), Mock.Of<IOptionsSnapshot<DeviceDownloaderConfiguration>>() };
 
-            yield return new object[] { typeof(DeviceFtpDownloader), Mock.Of<IFTPDownloaderClient>(MockBehavior.Strict), new NullLogger<DeviceFtpDownloader>(), mockConfig };
-            yield return new object[] { typeof(DeviceHttpDownloader), Mock.Of<IHTTPDownloaderClient>(MockBehavior.Strict), new NullLogger<DeviceHttpDownloader>(), mockConfig };
-            yield return new object[] { typeof(DeviceSftpDownloader), Mock.Of<ISFTPDownloaderClient>(MockBehavior.Strict), new NullLogger<DeviceSftpDownloader>(), mockConfig };
+            }
         }
     }
 }
