@@ -17,13 +17,18 @@
 using ATSPM.Application.Configuration;
 using ATSPM.Application.Exceptions;
 using ATSPM.Application.Services;
+using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using ATSPM.Domain.Exceptions;
+using ATSPM.Infrastructure.Services.DeviceDownloaders;
 using InfrastructureTests.Attributes;
+using MailKit.Net.Proxy;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Moq;
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using Xunit;
@@ -31,6 +36,21 @@ using Xunit.Abstractions;
 
 namespace InfrastructureTests.DeviceDownloaderTests
 {
+    //public class Startup
+    //{
+    //    public void ConfigureServices(IServiceCollection services, HostBuilderContext context) => services
+    //        .AddLogging(lb => lb.AddXunitOutput())
+    //        .PostConfigureAll<DeviceDownloaderConfiguration>(o =>
+    //                {
+    //                    o.LocalPath = "C:\\temp3";
+    //                    o.Ping = true;
+    //                    o.DeleteFile = false;
+    //                })
+    //        .AddDownloaderClients()
+    //        .AddDeviceDownloaders(context);
+    //        //.AddScoped<IDeviceDownloader, DeviceDownloader>();
+    //}
+
     public class IDeviceDownloaderTests : IDisposable
     {
         private readonly ITestOutputHelper _output;
@@ -42,146 +62,144 @@ namespace InfrastructureTests.DeviceDownloaderTests
 
         #region IDeviceDownloader
 
-        //[Theory]
-        //[DeviceDownloader]
-        //public void CanExecuteValid(Type downloader, IDownloaderClient mockClient, ILogger log, IOptionsSnapshot<DeviceDownloaderConfiguration> mockConfig)
-        //{
-        //    var sut = (IDeviceDownloader)Activator.CreateInstance(downloader, new object[] { mockClient, log, mockConfig });
+        [Theory]
+        [Trait(nameof(IDeviceDownloader), "CanExecute")]
+        [DeviceDownloader]
+        public void CanExecuteValid(Type downloader, IEnumerable<IDownloaderClient> mockClients, ILogger log, IOptionsSnapshot<DeviceDownloaderConfiguration> mockConfig)
+        {
+            var sut = (IDeviceDownloader)Activator.CreateInstance(downloader, new object[] { mockClients, log, mockConfig });
 
-        //    var device = new Device()
-        //    {
-        //        LoggingEnabled = true
-        //    };
+            var device = new Device()
+            {
+                LoggingEnabled = true
+            };
 
-        //    Mock.Get(mockClient).Setup(s => s.Dispose());
+            var condition = sut.CanExecute(device);
 
-        //    var condition = sut.CanExecute(device);
+            Assert.True(condition);
+        }
 
-        //    Assert.True(condition);
-        //}
+        [Theory]
+        [DeviceDownloader]
+        public void CanExecuteLoggingEnabledNotValid(Type downloader, IEnumerable<IDownloaderClient> mockClients, ILogger log, IOptionsSnapshot<DeviceDownloaderConfiguration> mockConfig)
+        {
+            var sut = (IDeviceDownloader)Activator.CreateInstance(downloader, new object[] { mockClients, log, mockConfig });
 
-        //[Theory]
-        //[DeviceDownloader]
-        //public void CanExecuteLoggingEnabledNotValid(Type downloader, IDownloaderClient mockClient, ILogger log, IOptionsSnapshot<DeviceDownloaderConfiguration> mockConfig)
-        //{
-        //    var sut = (IDeviceDownloader)Activator.CreateInstance(downloader, new object[] { mockClient, log, mockConfig });
+            var device = new Device()
+            {
+                LoggingEnabled = false,
+                DeviceConfiguration = new DeviceConfiguration() { Protocol = TransportProtocols.Ftp}
+            };
 
-        //    var device = new Device()
-        //    {
-        //        LoggingEnabled = false,
-        //        DeviceConfiguration = new DeviceConfiguration()
-        //    };
+            var condition = sut.CanExecute(device);
 
-        //    Mock.Get(mockClient).Setup(s => s.Dispose());
+            Assert.False(condition);
+        }
 
-        //    var condition = sut.CanExecute(device);
+        [Theory]
+        [DeviceDownloader]
+        public void CanExecuteProtocolNotValid(Type downloader, IEnumerable<IDownloaderClient> mockClients, ILogger log, IOptionsSnapshot<DeviceDownloaderConfiguration> mockConfig)
+        {
+            var sut = (IDeviceDownloader)Activator.CreateInstance(downloader, new object[] { mockClients, log, mockConfig });
 
-        //    Assert.False(condition);
-        //}
+            var device = new Device()
+            {
+                LoggingEnabled = true,
+                DeviceConfiguration = new DeviceConfiguration() { Protocol = TransportProtocols.Unknown }
+            };
 
-        //[Theory]
-        //[DeviceDownloader]
-        //public void CanExecuteProtocolNotValid(Type downloader, IDownloaderClient mockClient, ILogger log, IOptionsSnapshot<DeviceDownloaderConfiguration> mockConfig)
-        //{
-        //    Mock.Get(mockClient).Setup(s => s.Dispose());
+            foreach (var c in mockClients)
+            {
+                Mock.Get(c).Setup(s => s.Dispose());
+            }
 
-        //    var sut = (IDeviceDownloader)Activator.CreateInstance(downloader, new object[] { mockClient, log, mockConfig });
+            var condition = sut.CanExecute(device);
 
-        //    var device = new Device()
-        //    {
-        //        LoggingEnabled = true,
-        //        DeviceConfiguration = new DeviceConfiguration() { Protocol = ATSPM.Data.Enums.TransportProtocols.Unknown }
-        //    };
+            Assert.False(condition);
+        }
 
-        //    var condition = sut.CanExecute(device);
+        [Theory]
+        [DeviceDownloader]
+        public async void ExecuteWithNullParameter(Type downloader, IEnumerable<IDownloaderClient> mockClients, ILogger log, IOptionsSnapshot<DeviceDownloaderConfiguration> mockConfig)
+        {
+            var sut = (IDeviceDownloader)Activator.CreateInstance(downloader, new object[] { mockClients, log, mockConfig });
 
-        //    Assert.False(condition);
-        //}
+            await Assert.ThrowsAsync<ArgumentNullException>(async () =>
+            {
+                await foreach (var file in sut.Execute(null)) { }
+            });
+        }
 
-        //[Theory]
-        //[DeviceDownloader]
-        //public async void ExecuteWithNullParameter(Type downloader, IDownloaderClient mockClient, ILogger log, IOptionsSnapshot<DeviceDownloaderConfiguration> mockConfig)
-        //{
-        //    Mock.Get(mockClient).Setup(s => s.Dispose());
+        [Theory]
+        [DeviceDownloader]
+        public async void ExecuteWithInvalidIPAddress(Type downloader, IEnumerable<IDownloaderClient> mockClients, ILogger log, IOptionsSnapshot<DeviceDownloaderConfiguration> mockConfig)
+        {
+            Mock.Get(mockConfig).Setup(s => s.Value).Returns(new DeviceDownloaderConfiguration() { Ping = false });
 
-        //    var sut = (IDeviceDownloader)Activator.CreateInstance(downloader, new object[] { mockClient, log, mockConfig });
+            var sut = (IDeviceDownloader)Activator.CreateInstance(downloader, new object[] { mockClients, log, mockConfig });
 
-        //    await Assert.ThrowsAsync<ArgumentNullException>(async () =>
-        //    {
-        //        await foreach (var file in sut.Execute(null)) { }
-        //    });
-        //}
+            var device = new Device()
+            {
+                LoggingEnabled = true,
+                DeviceConfiguration = new DeviceConfiguration() { Protocol = TransportProtocols.Ftp}
+            };
 
-        //[Theory]
-        //[DeviceDownloader]
-        //public async void ExecuteWithInvalidIPAddress(Type downloader, IDownloaderClient mockClient, ILogger log, IOptionsSnapshot<DeviceDownloaderConfiguration> mockConfig)
-        //{
-        //    Mock.Get(mockClient).Setup(s => s.Dispose());
+            await Assert.ThrowsAsync<InvalidDeviceIpAddressException>(async () =>
+            {
+                await foreach (var file in sut.Execute(device)) { }
+            });
+        }
 
-        //    Mock.Get(mockConfig).Setup(s => s.Value).Returns(new DeviceDownloaderConfiguration() { Ping = false });
+        [Theory]
+        [DeviceDownloader]
+        public async void ExecuteWithFailedCanExecute(Type downloader, IEnumerable<IDownloaderClient> mockClients, ILogger log, IOptionsSnapshot<DeviceDownloaderConfiguration> mockConfig)
+        {
+            var sut = (IDeviceDownloader)Activator.CreateInstance(downloader, new object[] { mockClients, log, mockConfig });
 
-        //    var sut = (IDeviceDownloader)Activator.CreateInstance(downloader, new object[] { mockClient, log, mockConfig });
+            var device = new Device()
+            {
+                LoggingEnabled = false,
+                DeviceConfiguration = new DeviceConfiguration() { Protocol = TransportProtocols.Unknown }
+            };
 
-        //    var device = new Device()
-        //    {
-        //        LoggingEnabled = true,
-        //        DeviceConfiguration = new DeviceConfiguration()
-        //    };
+            await Assert.ThrowsAsync<ExecuteException>(async () =>
+            {
+                await foreach (var file in sut.Execute(device)) { }
+            });
+        }
 
-        //    await Assert.ThrowsAsync<InvalidDeviceIpAddressException>(async () =>
-        //    {
-        //        await foreach (var file in sut.Execute(device)) { }
-        //    });
-        //}
+        [Theory]
+        [DeviceDownloader]
+        public async void ExecuteWithDownloaderClientConnectionException(Type downloader, IEnumerable<IDownloaderClient> mockClients, ILogger log, IOptionsSnapshot<DeviceDownloaderConfiguration> mockConfig)
+        {
+            Mock.Get(mockConfig).Setup(s => s.Value).Returns(new DeviceDownloaderConfiguration() { Ping = false });
 
-        //[Theory]
-        //[DeviceDownloader]
-        //public async void ExecuteWithFailedCanExecute(Type downloader, IDownloaderClient mockClient, ILogger log, IOptionsSnapshot<DeviceDownloaderConfiguration> mockConfig)
-        //{
-        //    Mock.Get(mockClient).Setup(s => s.Dispose());
+            foreach (var client in mockClients)
+            {
+                Mock.Get(client).Setup(s => s.ConnectAsync(It.IsAny<IPEndPoint>(), It.IsAny<NetworkCredential>(), 0, 0, default))
+                .ThrowsAsync(new DownloaderClientConnectionException(It.IsAny<string>(), client, null))
+                .Verifiable();
 
-        //    var sut = (IDeviceDownloader)Activator.CreateInstance(downloader, new object[] { mockClient, log, mockConfig });
+                Mock.Get(client).SetupGet(s => s.IsConnected).Returns(false).Verifiable();
 
-        //    var device = new Device()
-        //    {
-        //        LoggingEnabled = true,
-        //        DeviceConfiguration = new DeviceConfiguration() { Protocol = ATSPM.Data.Enums.TransportProtocols.Unknown }
-        //    };
+                Mock.Get(client).Setup(s => s.DisconnectAsync(default)).Returns(Task.CompletedTask).Verifiable();
 
-        //    await Assert.ThrowsAsync<ExecuteException>(async () =>
-        //    {
-        //        await foreach (var file in sut.Execute(device)) { }
-        //    });
-        //}
+                Mock.Get(client).Setup(s => s.Dispose()).Verifiable();
+            }
 
-        //[Theory]
-        //[DeviceDownloader]
-        //public async void ExecuteWithControllerConnectionException(Type downloader, IDownloaderClient mockClient, ILogger log, IOptionsSnapshot<DeviceDownloaderConfiguration> mockConfig)
-        //{
-        //    Mock.Get(mockConfig).Setup(s => s.Value).Returns(new DeviceDownloaderConfiguration() { Ping = false });
+            var sut = (IDeviceDownloader)Activator.CreateInstance(downloader, new object[] { mockClients, log, mockConfig });
 
-        //    Mock.Get(mockClient).Setup(s => s.ConnectAsync(It.IsAny<IPEndPoint>(), It.IsAny<NetworkCredential>(), 0, 0, default))
-        //        .ThrowsAsync(new DownloaderClientConnectionException(It.IsAny<string>(), mockClient, null))
-        //        .Verifiable();
+            var device = new Device()
+            {
+                Ipaddress = "192.168.1.1",
+                LoggingEnabled = true,
+                DeviceConfiguration = new DeviceConfiguration() { Protocol = TransportProtocols.Ftp },
+            };
 
-        //    Mock.Get(mockClient).SetupGet(s => s.IsConnected).Returns(false).Verifiable();
+            await foreach (var file in sut.Execute(device)) { }
 
-        //    Mock.Get(mockClient).Setup(s => s.DisconnectAsync(default)).Returns(Task.CompletedTask).Verifiable();
-        //    Mock.Get(mockClient).Setup(s => s.Dispose()).Verifiable();
-
-        //    var sut = (IDeviceDownloader)Activator.CreateInstance(downloader, new object[] { mockClient, log, mockConfig });
-
-        //    var device = new Device()
-        //    {
-        //        Ipaddress = "192.168.1.1",
-        //        LoggingEnabled = true,
-        //        DeviceConfiguration = new DeviceConfiguration()
-        //    };
-
-        //    await foreach (var file in sut.Execute(device)) { }
-
-        //    Mock.Verify();
-        //}
+            Mock.Verify();
+        }
 
         //[Theory]
         //[DeviceDownloader]
@@ -192,9 +210,34 @@ namespace InfrastructureTests.DeviceDownloaderTests
 
         //[Theory]
         //[DeviceDownloader]
-        //public async void ExecuteWithControllerDownloadFileException(Type downloader, IDownloaderClient mockClient, ILogger log, IOptionsSnapshot<DeviceDownloaderConfiguration> mockConfig)
+        //public async void ExecuteWithControllerDownloadFileException(Type downloader, IEnumerable<IDownloaderClient> mockClients, ILogger log, IOptionsSnapshot<DeviceDownloaderConfiguration> mockConfig)
         //{
+        //    Mock.Get(mockConfig).Setup(s => s.Value).Returns(new DeviceDownloaderConfiguration() { Ping = false });
 
+        //    foreach (var client in mockClients)
+        //    {
+        //        Mock.Get(client).Setup(s => s.ConnectAsync(It.IsAny<IPEndPoint>(), It.IsAny<NetworkCredential>(), 0, 0, default))
+        //            .Callback(() => Mock.Get(client).SetupGet(p => p.IsConnected).Returns(true));
+
+        //        //Mock.Get(client).SetupGet(s => s.IsConnected).Returns(false).Verifiable();
+
+        //        Mock.Get(client).Setup(s => s.DisconnectAsync(default)).Returns(Task.CompletedTask).Verifiable();
+
+        //        Mock.Get(client).Setup(s => s.Dispose()).Verifiable();
+        //    }
+
+        //    var sut = (IDeviceDownloader)Activator.CreateInstance(downloader, new object[] { mockClients, log, mockConfig });
+
+        //    var device = new Device()
+        //    {
+        //        Ipaddress = "192.168.1.1",
+        //        LoggingEnabled = true,
+        //        DeviceConfiguration = new DeviceConfiguration() { Protocol = TransportProtocols.Ftp },
+        //    };
+
+        //    await foreach (var file in sut.Execute(device)) { }
+
+        //    Mock.Verify();
         //}
 
         //[Theory]
@@ -262,7 +305,7 @@ namespace InfrastructureTests.DeviceDownloaderTests
         //public void ExecuteWithControllerDownloadFileWithProgressValid(Type downloader, IDownloaderClient mockClient, ILogger log, IOptionsSnapshot<DeviceDownloaderConfiguration> mockConfig)
         //{
         //    Assert.False(true);
-            
+
         //    //var Location = new Location()
         //    //{
         //    //    Ipaddress = new IPAddress(new byte[] { 127, 0, 0, 1 }),

@@ -38,13 +38,13 @@ namespace ATSPM.Infrastructure.Services.DownloaderClients
         private ISftpClientWrapper _client;
 
         ///<inheritdoc/>
-        public SSHNetSFTPDownloaderClient() { }
+        public SSHNetSFTPDownloaderClient() : base(true) { }
 
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
         /// <param name="client">External client used for special settings and mocking</param>
-        public SSHNetSFTPDownloaderClient(ISftpClientWrapper client)
+        public SSHNetSFTPDownloaderClient(ISftpClientWrapper client) : base(true)
         {
             _client = client;
         }
