@@ -14,12 +14,12 @@ module.exports = withBundleAnalyzer({
     return [
       {
         source: '/',
-        destination: '/locations',
+        destination: '/performance-measures',
         permanent: true,
       },
       {
         source: '/signals',
-        destination: '/locations',
+        destination: '/performance-measures',
         permanent: true,
       },
     ]
