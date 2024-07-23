@@ -52,7 +52,7 @@ const ProductsAdmin = () => {
     if (notes) sanitizedProduct.notes = notes
 
     try {
-      createMutation.mutateAsync(sanitizedProduct)
+      await createMutation.mutateAsync(sanitizedProduct)
     } catch (error) {
       console.error('Mutation Error:', error)
     }
@@ -61,7 +61,7 @@ const ProductsAdmin = () => {
   const HandleDeleteProduct = async (productData: Product) => {
     const { id } = productData
     try {
-      deleteMutation.mutateAsync(id)
+      await deleteMutation.mutateAsync(id)
     } catch (error) {
       console.error('Mutation Error:', error)
     }
@@ -70,7 +70,7 @@ const ProductsAdmin = () => {
   const HandleEditProduct = async (productData: Product) => {
     const { id, manufacturer, model, webPage, notes } = productData
     try {
-      editMutation.mutateAsync({
+      await editMutation.mutateAsync({
         data: {manufacturer,model,webPage, notes},
         id,
       })

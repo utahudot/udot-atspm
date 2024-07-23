@@ -1,4 +1,5 @@
-﻿using ATSPM.Application.Repositories.ConfigurationRepositories;
+﻿using ATSPM.Application.Extensions;
+using ATSPM.Application.Repositories.ConfigurationRepositories;
 using ATSPM.ConfigApi.Models;
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
@@ -139,7 +140,7 @@ namespace ATSPM.ConfigApi.Services
                 .ThenInclude(rl => rl.PrimaryDirection)
                 .Include(r => r.RouteLocations)
                 .ThenInclude(rl => rl.OpposingDirection)
-                .FirstOrDefault() ?? new Data.Models.Route();
+                .FirstOrDefault();
 
             if (route == null)
             {
@@ -220,7 +221,7 @@ namespace ATSPM.ConfigApi.Services
                     };
                     _routeDistanceRepository.Add(distance);
                 }
-                else if (distance.Distance != distanceDto.Distance)
+                else if (distance.Distance.AreNotEqual(distanceDto.Distance))
                 {
                     distance.Distance = distanceDto.Distance;
                     _routeDistanceRepository.Update(distance);

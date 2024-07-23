@@ -6,6 +6,14 @@ namespace ATSPM.Application.Business.GreenTimeUtilization
 {
     public class GreenTimeUtilizationResult : ApproachResult
     {
+        public GreenTimeUtilizationResult()
+        {
+            Bins = new List<BarStack>();
+            AverageSplits = new List<DataPointForDouble>();
+            ProgrammedSplits = new List<DataPointForDouble>();
+            Plans = new List<PlanSplitMonitorData>();
+        }
+
         public GreenTimeUtilizationResult(
             int approachId,
             string locationIdentifier,
@@ -27,9 +35,9 @@ namespace ATSPM.Application.Business.GreenTimeUtilization
             Plans = plans;
         }
 
-        public List<BarStack> Bins { get; set; } = new List<BarStack>();
-        public List<DataPointForDouble> AverageSplits { get; set; } = new List<DataPointForDouble>();
-        public List<DataPointForDouble> ProgrammedSplits { get; set; } = new List<DataPointForDouble>();
+        public List<BarStack> Bins { get; set; }
+        public List<DataPointForDouble> AverageSplits { get; set; }
+        public List<DataPointForDouble> ProgrammedSplits { get; set; }
         public int PhaseNumber { get; set; }
         public int YAxisBinSize { get; set; }
         public int XAxisBinSize { get; set; }
