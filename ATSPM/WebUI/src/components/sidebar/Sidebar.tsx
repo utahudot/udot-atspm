@@ -3,10 +3,10 @@ import { useSidebarStore } from '@/stores/sidebar'
 import AddchartOutlinedIcon from '@mui/icons-material/AddchartOutlined'
 import FileDownloadIcon from '@mui/icons-material/FileDownload'
 import ForkLeftOutlinedIcon from '@mui/icons-material/ForkLeftOutlined'
-import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined'
 import MenuOpenOutlinedIcon from '@mui/icons-material/MenuOpenOutlined'
 import RouteOutlinedIcon from '@mui/icons-material/RouteOutlined'
 import ShowChartOutlinedIcon from '@mui/icons-material/ShowChartOutlined'
+import SignalCellularAltOutlinedIcon from '@mui/icons-material/SignalCellularAltOutlined'
 import {
   Box,
   Drawer,
@@ -128,31 +128,31 @@ export default function Sidebar() {
         <List>
           <SubMenu subheader={'Operations'}>
             <NavItem
-              icon={<LocationOnOutlinedIcon />}
-              text={'Locations'}
-              url={'/locations'}
+              icon={<SignalCellularAltOutlinedIcon />}
+              text={'Performance Measures'}
+              url={'/performance-measures'}
             />
             <NavItem
               icon={<ShowChartOutlinedIcon />}
               text={'Time-Space Diagrams'}
-              url={'/tools/time-space-diagrams'}
+              url={'/time-space-diagrams'}
             />
             <NavItem
               icon={<RouteOutlinedIcon />}
               text={'Link Pivot'}
-              url={'/tools/link-pivot'}
+              url={'/link-pivot'}
             />
             {hasLTGRPermission && (
               <NavItem
                 icon={<ForkLeftOutlinedIcon />}
                 text={'Left Turn Gap Report'}
-                url={'/tools/left-turn-gap-report'}
+                url={'/left-turn-gap-report'}
               />
             )}
             <NavItem
               icon={<AddchartOutlinedIcon />}
               text={'Aggregate Charts'}
-              url={'/data/aggregate'}
+              url={'/aggregate'}
             />
             {hasWatchDogPermission && (
               <NavItem
@@ -167,7 +167,7 @@ export default function Sidebar() {
                   />
                 }
                 text={'Watchdog'}
-                url={'/admin/watchdog'}
+                url={'/watchdog'}
               />
             )}
           </SubMenu>
@@ -176,7 +176,7 @@ export default function Sidebar() {
               <NavItem
                 icon={<FileDownloadIcon />}
                 text={'Export'}
-                url={'/data/export'}
+                url={'/export'}
               />
             </SubMenu>
           )}

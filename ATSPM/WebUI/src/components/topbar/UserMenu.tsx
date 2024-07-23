@@ -9,7 +9,6 @@ import {
   Avatar,
   Dialog,
   IconButton,
-  List,
   ListItemButton,
   ListItemIcon,
   ListItemText,
@@ -105,7 +104,7 @@ export default function UserMenu() {
   const handleSignOut = () => {
     const cookies = Cookies.get()
     Object.entries(cookies).forEach((value) => Cookies.remove(value[0]))
-    window.location.href = '/locations'
+    window.location.href = '/'
   }
 
   const handleLoginClose = () => {
@@ -169,26 +168,24 @@ export default function UserMenu() {
             role: 'menu',
           }}
         >
-
-            {isLoggedIn &&
-              userItems.map((item, index) => (
-                <ListSubMenuItem
-                  key={index}
-                  index={index}
-                  item={item}
-                  // handleClick={handleClose}
-                />
-              ))}
-            <ListItemButton
-              onClick={() => (isLoggedIn ? handleSignOut() : handleLoginOpen())}
-              role="menuitem"
-            >
-              <ListItemIcon>
-                <LoginOutlinedIcon fontSize="small" />
-              </ListItemIcon>
-              <ListItemText primary={isLoggedIn ? 'Log out' : 'Log in'} />
-            </ListItemButton>
-
+          {isLoggedIn &&
+            userItems.map((item, index) => (
+              <ListSubMenuItem
+                key={index}
+                index={index}
+                item={item}
+                // handleClick={handleClose}
+              />
+            ))}
+          <ListItemButton
+            onClick={() => (isLoggedIn ? handleSignOut() : handleLoginOpen())}
+            role="menuitem"
+          >
+            <ListItemIcon>
+              <LoginOutlinedIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText primary={isLoggedIn ? 'Log out' : 'Log in'} />
+          </ListItemButton>
         </Menu>
       )}
       {openLogin && (

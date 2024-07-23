@@ -17,7 +17,7 @@ const ChangePassword = () => {
     changePasswordHandler.submitted &&
     changePasswordHandler.responseSuccess
   ) {
-    window.location.href = '/locations'
+    window.location.href = '/'
   }
 
   return (
