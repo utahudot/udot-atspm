@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Attributes\DeviceDownloaderAttribute.cs" />
     <Compile Remove="Attributes\ValidSignalControllerAttribute.cs" />
     <Compile Remove="RepositoryTests\IControllerEventLogRepositoryTests.cs" />
     <Compile Remove="RepositoryTests\IRepositoryAsyncTests.cs" />
@@ -17,7 +16,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="Attributes\DeviceDownloaderAttribute.cs" />
     <None Include="Attributes\ValidSignalControllerAttribute.cs" />
     <None Include="RepositoryTests\IControllerEventLogRepositoryTests.cs" />
     <None Include="RepositoryTests\IRepositoryAsyncTests.cs" />
@@ -31,10 +29,10 @@
     <PackageReference Include="AutoFixture.Xunit2" Version="4.17.0" />
     <PackageReference Include="Microsoft.CodeAnalysis" Version="4.9.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.1" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.4.0" />
     <PackageReference Include="Moq" Version="4.18.2" />
-    <PackageReference Include="xunit" Version="2.4.2" />
+    <PackageReference Include="xunit" Version="2.9.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
