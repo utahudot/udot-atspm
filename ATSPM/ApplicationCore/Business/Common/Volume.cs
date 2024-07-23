@@ -6,8 +6,6 @@ namespace ATSPM.Application.Business.Common
     {
         private readonly int binSizeMultiplier;
 
-        //private int yAxis;
-
         public Volume(DateTime startTime, DateTime endTime, int binSize)
         {
             StartTime = startTime;

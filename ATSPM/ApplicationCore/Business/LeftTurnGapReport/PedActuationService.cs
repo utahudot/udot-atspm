@@ -1,4 +1,5 @@
-﻿using ATSPM.Data.Models;
+﻿using ATSPM.Application.Extensions;
+using ATSPM.Data.Models;
 using ATSPM.Data.Models.AggregationModels;
 using System;
 using System.Collections.Generic;
@@ -8,12 +9,9 @@ namespace ATSPM.Application.Business.LeftTurnGapReport
 {
     public class PedActuationService
     {
-        private readonly LeftTurnReportService leftTurnReportPreCheckService;
 
-        public PedActuationService(
-            LeftTurnReportService leftTurnReportService)
+        public PedActuationService()
         {
-            this.leftTurnReportPreCheckService = leftTurnReportService;
         }
         public PedActuationResult GetPedestrianPercentage(
             Location Location,
@@ -40,14 +38,14 @@ namespace ATSPM.Application.Business.LeftTurnGapReport
             Dictionary<DateTime, double> cycleList = new Dictionary<DateTime, double>();
             foreach (var avg in cycleAverage.CycleAverageList)
             {
-                if (avg.Value != 0)
+                if (avg.Value.AreNotEqual(0d))
                 {
                     var pedAvg = pedCycleAverage.PedCycleAverageList.FirstOrDefault(p => p.Key == avg.Key);
                     cycleList.Add(avg.Key, (pedAvg.Value / avg.Value) * 100);
                 }
             }
             var result = new PedActuationResult();
-            if (cycleAverage.CycleAverage == 0)
+            if (cycleAverage.CycleAverage.AreEqual(0d))
             {
                 result.CyclesWithPedCallsPercent = 0;
                 result.CyclesWithPedCallsNum = 0;
@@ -161,15 +159,4 @@ namespace ATSPM.Application.Business.LeftTurnGapReport
         }
     }
 
-}
-
-public class CycleAverageResult
-{
-    public double CycleAverage { get; set; }
-    public Dictionary<DateTime, double> CycleAverageList { get; set; }
-}
-public class PedCycleAverageResult
-{
-    public double PedCycleAverage { get; set; }
-    public Dictionary<DateTime, double> PedCycleAverageList { get; set; }
 }

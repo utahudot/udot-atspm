@@ -1,4 +1,5 @@
-﻿using ATSPM.Data.Models;
+﻿using ATSPM.Application.Extensions;
+using ATSPM.Data.Models;
 using ATSPM.Data.Models.EventLogModels;
 using System;
 using System.Collections.Generic;
@@ -37,7 +38,9 @@ namespace ATSPM.Application.Business.Common
         public List<CyclePcd> Cycles { get; private set; }
         private List<IndianaEvent> DetectorEvents { get; set; }
         public Approach Approach { get; }
-        public double AvgDelaySeconds => (TotalDelaySeconds == 0 || TotalVolume == 0) ? 0 : TotalDelaySeconds / TotalVolume;
+        public double AvgDelaySeconds => (TotalDelaySeconds.AreEqual(0d) || TotalVolume.AreEqual(0d))
+            ? 0d
+            : TotalDelaySeconds / TotalVolume;
 
         public double PercentArrivalOnGreen
         {
