@@ -151,7 +151,7 @@ export default function Sidebar() {
             <NavItem
               icon={<AddchartOutlinedIcon />}
               text={'Aggregate Charts'}
-              url={'/aggregate'}
+              url={'/aggregate-charts'}
             />
             {hasWatchDogPermission && (
               <NavItem
