@@ -86,8 +86,7 @@ namespace ATSPM.ReportApi.ReportServices
                 null,
                 terminationEvents,
                 Location,
-                1,
-                32);
+                1);
             var phaseDetails = phaseService.GetPhases(Location);
             var tasks = new List<Task<WaitTimeResult>>();
             foreach (var phaseDetail in phaseDetails)

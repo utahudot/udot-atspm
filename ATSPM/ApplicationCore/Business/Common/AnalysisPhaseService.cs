@@ -42,8 +42,7 @@ namespace ATSPM.Application.Business.Common
             IReadOnlyList<IndianaEvent> cycleEvents,
             IReadOnlyList<IndianaEvent> terminationEvents,
             int consecutiveCount,
-            Location location,
-            int metricTypeId
+            Location location
             )
         {
             var cleanTerminationEventsForPhase = CleanTerminationEvents(terminationEvents, phaseNumber);
@@ -53,7 +52,7 @@ namespace ATSPM.Application.Business.Common
             }
             var analysisPhaseData = new AnalysisPhaseData();
             var phase = phaseService.GetPhases(location).Find(p => p.PhaseNumber == phaseNumber);
-            SetPhaseDescription(analysisPhaseData, phase, metricTypeId, phaseNumber);
+            SetPhaseDescription(analysisPhaseData, phase, phaseNumber);
             analysisPhaseData.PhaseNumber = phaseNumber;
             var cycleEventCodes = new List<short> { 1, 8, 11 };
             var phaseEvents = cycleEvents.ToList().Where(p => p.EventParam == phaseNumber && cycleEventCodes.Contains(p.EventCode)).ToList();
@@ -85,7 +84,7 @@ namespace ATSPM.Application.Business.Common
             return analysisPhaseData;
         }
 
-        private static void SetPhaseDescription(AnalysisPhaseData analysisPhaseData, PhaseDetail phase, int metricTypeId, int phaseNumber)
+        private static void SetPhaseDescription(AnalysisPhaseData analysisPhaseData, PhaseDetail phase, int phaseNumber)
         {
             if (phase == null)
             {
@@ -93,7 +92,7 @@ namespace ATSPM.Application.Business.Common
             }
             else
             {
-                analysisPhaseData.PhaseDescription = phase.GetApproachDescription(metricTypeId);
+                analysisPhaseData.PhaseDescription = phase.GetApproachDescription();
             }
         }
 

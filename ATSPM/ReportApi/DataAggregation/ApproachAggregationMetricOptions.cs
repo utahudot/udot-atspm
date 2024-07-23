@@ -372,29 +372,37 @@ namespace MOE.Common.Business.WCFServiceLibrary
             foreach (var approach in signal.Approaches)
             {
                 var binsContainers = GetBinsContainersByApproach(approach, true, options);
-                var dataPoint = new AggregationDataPoint();
-                if (options.SelectedAggregationType == AggregationCalculationType.Sum)
-                    dataPoint.Value = binsContainers.FirstOrDefault().SumValue;
-                else
-                    dataPoint.Value = binsContainers.FirstOrDefault().AverageValue;
+                if (binsContainers != null && binsContainers.Any())
+                {
+                    var dataPoint = new AggregationDataPoint();
+                    if (options.SelectedAggregationType == AggregationCalculationType.Sum)
+                        dataPoint.Value = binsContainers.FirstOrDefault().SumValue;
+                    else
+                        dataPoint.Value = binsContainers.FirstOrDefault().AverageValue;
 
-                dataPoint.Identifier = approach.Description;
-                series.DataPoints.Add(dataPoint);
+                    dataPoint.Identifier = approach.Description;
+                    series.DataPoints.Add(dataPoint);
+                }
+
                 if (approach.PermissivePhaseNumber != null)
                 {
                     var binsContainers2 = GetBinsContainersByApproach(approach, false, options);
-                    var dataPoint2 = new AggregationDataPoint();
-                    if (options.SelectedAggregationType == AggregationCalculationType.Sum)
-                        dataPoint2.Value = binsContainers2.FirstOrDefault().SumValue;
-                    else
-                        dataPoint2.Value = binsContainers2.FirstOrDefault().AverageValue;
-                    dataPoint2.Identifier = approach.Description;
-                    series.DataPoints.Add(dataPoint2);
+                    if (binsContainers2 != null && binsContainers2.Any())
+                    {
+                        var dataPoint2 = new AggregationDataPoint();
+                        if (options.SelectedAggregationType == AggregationCalculationType.Sum)
+                            dataPoint2.Value = binsContainers2.FirstOrDefault().SumValue;
+                        else
+                            dataPoint2.Value = binsContainers2.FirstOrDefault().AverageValue;
+                        dataPoint2.Identifier = approach.Description;
+                        series.DataPoints.Add(dataPoint2);
+                    }
                 }
             }
 
             return series;
         }
+
 
         protected void GetPhaseXAxisChart(Location signal, AggregationResult chart, AggregationOptions options)
         {
