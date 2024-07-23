@@ -24,12 +24,10 @@ interface HistoricalDataParams {
 const ChartsContainer = ({ selectedRouteId }: { selectedRouteId: number }) => {
   const { submittedRouteSpeedRequest, routeRenderOption } = useStore()
 
-  console.log('selectedRouteId', selectedRouteId)
-
   const params: HistoricalDataParams = {
     routeId: selectedRouteId,
-    startDate: submittedRouteSpeedRequest.start,
-    endDate: submittedRouteSpeedRequest.end,
+    startDate: submittedRouteSpeedRequest.startDate,
+    endDate: submittedRouteSpeedRequest.endDate,
     startTime: '00:00',
     endTime: '23:00',
     daysOfWeek: submittedRouteSpeedRequest.daysOfWeek.join(','),
@@ -52,15 +50,15 @@ const ChartsContainer = ({ selectedRouteId }: { selectedRouteId: number }) => {
 
   const monthlyOptions = createMonthlyAverageChart(
     data.monthlyHistoricalRouteData,
-    getPriorDate(submittedRouteSpeedRequest.start),
-    submittedRouteSpeedRequest.end,
+    getPriorDate(submittedRouteSpeedRequest.startDate),
+    submittedRouteSpeedRequest.endDate,
     routeRenderOption
   )
 
   const yearlyOptions = createDailyAverageChart(
     data.dailyHistoricalRouteData,
-    getPriorDate(submittedRouteSpeedRequest.start),
-    submittedRouteSpeedRequest.end,
+    getPriorDate(submittedRouteSpeedRequest.startDate),
+    submittedRouteSpeedRequest.endDate,
     routeRenderOption
   )
 

@@ -5,6 +5,7 @@ import useSpeedManagementStore, {
   RouteRenderOption,
 } from '@/features/speedManagementTool/speedManagementStore'
 import { SpeedManagementRoute } from '@/features/speedManagementTool/types/routes'
+import { ViolationColors } from '@/features/speedManagementTool/utils/colors'
 import { Box } from '@mui/material'
 import L, { Map as LeafletMap } from 'leaflet'
 import { memo, useEffect, useState } from 'react'
@@ -23,7 +24,7 @@ const SpeedMap = ({
   setSelectedRouteId,
 }: SpeedMapProps) => {
   const [mapRef, setMapRef] = useState<LeafletMap | null>(null)
-  const { routeRenderOption } = useSpeedManagementStore()
+  const { routeRenderOption, mediumMin, mediumMax } = useSpeedManagementStore()
 
   useEffect(() => {
     if (!mapRef) return
@@ -41,33 +42,14 @@ const SpeedMap = ({
     }
   }, [mapRef])
 
-  useEffect(() => {
-    if (mapRef) {
-      // Trigger a rerender of the routes when routeRenderOption changes
-      mapRef.eachLayer((layer) => {
-        if (layer instanceof L.Polyline) {
-          mapRef.removeLayer(layer)
-        }
-      })
-
-      routes.forEach((route) => {
-        const polyline = L.polyline(route.geometry.coordinates, {
-          color: getColor(route),
-          weight: 2,
-        }).addTo(mapRef)
-
-        polyline.on('click', () =>
-          setSelectedRouteId(route.properties.route_id)
-        )
-      })
-    }
-  }, [mapRef, routes, routeRenderOption])
-
   const getColor = (route: SpeedManagementRoute) => {
     let field
     switch (routeRenderOption) {
+      case RouteRenderOption.Violations:
+        field = 'estimatedViolations'
+        break
       case RouteRenderOption.Posted_Speed:
-        field = 'SpeedLimit'
+        field = 'Speed_Limit'
         break
       case RouteRenderOption.Average_Speed:
         field = 'avg'
@@ -86,22 +68,29 @@ const SpeedMap = ({
         break
     }
 
-    const speed = route.properties[
+    const val = route.properties[
       field as keyof SpeedManagementRoute['properties']
     ] as number
 
-    if (speed < 20) return 'rgba(0, 115, 255, 1)'
-    if (speed < 30) return 'rgba(0, 255, 170, 1)'
-    if (speed < 35) return 'rgba(55, 255, 0, 1)'
-    if (speed < 40) return 'rgba(175, 250, 0, 1)'
-    if (speed < 45) return 'rgba(247, 214, 0, 1)'
-    if (speed < 55) return 'rgba(245, 114, 0, 1)'
-    if (speed < 65) return 'rgba(245, 57, 0, 1)'
-    if (speed < 75) return 'rgba(245, 0, 0, 1)'
+    if (routeRenderOption === RouteRenderOption.Violations) {
+      if (val <= mediumMin) return ViolationColors.Low
+      if (val < mediumMax) return ViolationColors.Medium
+      return ViolationColors.High
+    }
+
+    if (val < 20) return 'rgba(0, 115, 255, 1)'
+    if (val < 30) return 'rgba(0, 255, 170, 1)'
+    if (val < 35) return 'rgba(55, 255, 0, 1)'
+    if (val < 40) return 'rgba(175, 250, 0, 1)'
+    if (val < 45) return 'rgba(247, 214, 0, 1)'
+    if (val < 55) return 'rgba(245, 114, 0, 1)'
+    if (val < 65) return 'rgba(245, 57, 0, 1)'
+    if (val < 75) return 'rgba(245, 0, 0, 1)'
     return '#c1c9cc'
   }
 
   const renderer = L.canvas({ tolerance: 5 }) // Increase clickability of polylines
+
   return (
     <Box sx={{ height: '100%', width: '100%' }}>
       <MapContainer
@@ -135,10 +124,10 @@ const SpeedMap = ({
           return (
             <div key={index}>
               <Polyline
+                pathOptions={{ color: getColor(route) }}
                 key={index}
                 positions={route.geometry.coordinates}
-                weight={2}
-                color={getColor(route)}
+                weight={2.5}
                 eventHandlers={{
                   click: () => setSelectedRouteId(route.properties.route_id),
                 }}
