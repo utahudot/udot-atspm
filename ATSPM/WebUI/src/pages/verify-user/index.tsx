@@ -23,8 +23,8 @@ const VerifyUser = () => {
   return (
     <Box>
       <Container component="main" maxWidth="xs">
-        <Typography variant="h1" fontWeight="bold" sx={{ textAlign: 'center' }}>
-          Please verify be entering your password
+        <Typography variant="h5" fontWeight="bold" sx={{ textAlign: 'center' }}>
+          Please verify by your password
         </Typography>
         <VerifyUserOptionsComponent handler={handler} />
       </Container>

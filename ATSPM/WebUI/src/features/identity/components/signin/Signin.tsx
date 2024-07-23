@@ -90,7 +90,7 @@ export default function Signin() {
     })
     Cookies.set('claims', data.claims.join(','), { expires: oneDay })
     Cookies.set('loggedIn', 'True', { expires: oneDay })
-    window.location.href = '/locations'
+    window.location.href = '/performance-measures'
   }
 
   const redirectUser = () => {
@@ -127,7 +127,6 @@ export default function Signin() {
             onChange={(e) => setEmail(e.target.value)}
             error={!!emailError}
             helperText={emailError}
-       
           />
           <TextField
             margin="normal"
@@ -183,7 +182,7 @@ export default function Signin() {
           </Button> */}
           <Grid container>
             <Grid item xs>
-              <Link href="/forgotpassword" variant="body2">
+              <Link href="/forgot-password" variant="body2">
                 Forgot password?
               </Link>
             </Grid>

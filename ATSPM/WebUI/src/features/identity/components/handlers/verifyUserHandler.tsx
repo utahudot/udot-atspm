@@ -47,7 +47,7 @@ export const useVerifyUserHandler = (): VerifyUserHandler => {
       Cookies.set('username', data.username, {
         expires: addMinutes(new Date(), 5),
       })
-      window.location.href = '/changePassword'
+      window.location.href = '/change-password'
     }
   }, [data, status])
 
