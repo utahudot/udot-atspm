@@ -67,7 +67,7 @@ function TimingAndActuationLegendDisplay({
                 style={{
                   width: '100%',
                   minWidth: '350px',
-                  minHeight: '200px',
+                  height: '210px',
                 }}
               />
             ))}
