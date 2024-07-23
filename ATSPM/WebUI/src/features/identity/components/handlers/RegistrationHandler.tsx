@@ -60,7 +60,7 @@ export const useRegistrationHandler = (): RegistrationHandler => {
       Cookies.set('token', data.token)
       Cookies.set('claims', data.claims.join(','))
       Cookies.set('loggedIn', 'True')
-      window.location.href = '/locations'
+      window.location.href = '/'
     }
   }, [data, status])
 

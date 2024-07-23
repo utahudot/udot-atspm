@@ -25,7 +25,7 @@ const ForgotPassword = () => {
   useEffect(() => {
     if (data) {
       setShowSnackbar(true)
-      window.location.href = '/locations'
+      window.location.href = '/'
     }
   }, [data])
 
