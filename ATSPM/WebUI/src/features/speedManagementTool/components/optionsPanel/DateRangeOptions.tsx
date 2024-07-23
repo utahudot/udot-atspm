@@ -17,8 +17,6 @@ export default function DateRangeOptions() {
     setRouteSpeedRequest({ ...routeSpeedRequest, endDate: event.target.value })
   }
 
-  console.log('routeSpeedRequest', routeSpeedRequest)
-
   return (
     <Box padding={'10px'}>
       <Box>
