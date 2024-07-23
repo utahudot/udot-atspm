@@ -182,6 +182,8 @@ export default function ApacheEChart({
         height: '100%',
         ...style,
       }}
+      role="presentation"
+      aria-hidden="true"
       onClick={handleActivate}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
