@@ -332,9 +332,10 @@ namespace ATSPM.Infrastructure.Extensions
             var types = AppDomain.CurrentDomain.GetAssemblies().SelectMany(m => m.GetTypes().Where(w => w.GetInterfaces().Contains(typeof(IDeviceDownloader)))).ToList();
             foreach (var t in types)
             {
+                services.Add(new ServiceDescriptor(typeof(IDeviceDownloader), t, ServiceLifetime.Scoped));
+
                 if (host.Configuration.GetSection($"{nameof(DeviceDownloaderConfiguration)}:{t.Name}").Exists())
                 {
-                    services.Add(new ServiceDescriptor(typeof(IDeviceDownloader), t, ServiceLifetime.Scoped));
                     services.Configure<DeviceDownloaderConfiguration>(t.Name, host.Configuration.GetSection($"{nameof(DeviceDownloaderConfiguration)}:{t.Name}"));
                 }
             }

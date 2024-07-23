@@ -19,6 +19,7 @@ using ATSPM.Application.Configuration;
 using ATSPM.Application.Exceptions;
 using ATSPM.Application.LogMessages;
 using ATSPM.Application.Services;
+using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using ATSPM.Domain.BaseClasses;
 using ATSPM.Domain.Exceptions;
@@ -47,7 +48,7 @@ namespace ATSPM.Infrastructure.Services.DeviceDownloaders
         #endregion
 
         ///<inheritdoc/>
-        public DeviceDownloader(IEnumerable<IDownloaderClient> clients, ILogger<DeviceDownloader> log, IOptionsSnapshot<DeviceDownloaderConfiguration> options) : base(true)
+        public DeviceDownloader(IEnumerable<IDownloaderClient> clients, ILogger<IDeviceDownloader> log, IOptionsSnapshot<DeviceDownloaderConfiguration> options) : base(true)
         {
             _clients = clients;
             _log = log;
@@ -81,7 +82,7 @@ namespace ATSPM.Infrastructure.Services.DeviceDownloaders
         ///<inheritdoc/>
         public override bool CanExecute(Device value)
         {
-            return value.LoggingEnabled;
+            return value.LoggingEnabled && value?.DeviceConfiguration?.Protocol != TransportProtocols.Unknown;
         }
 
         /// <exception cref="ArgumentNullException"></exception>
@@ -89,10 +90,10 @@ namespace ATSPM.Infrastructure.Services.DeviceDownloaders
         /// <exception cref="ExecuteException"></exception>
         public override async IAsyncEnumerable<Tuple<Device, FileInfo>> Execute(Device parameter, IProgress<ControllerDownloadProgress> progress = null, [EnumeratorCancellation] CancellationToken cancelToken = default)
         {
-            var client = _clients.FirstOrDefault(w => parameter.DeviceConfiguration.Protocol == w.Protocol);
-
             if (parameter == null)
                 throw new ArgumentNullException(nameof(parameter), $"Parameter can not be null");
+
+            var client = _clients.FirstOrDefault(w => parameter.DeviceConfiguration.Protocol == w.Protocol);
 
             //if (CanExecute(parameter) && !cancelToken.IsCancellationRequested)
             if (CanExecute(parameter))
