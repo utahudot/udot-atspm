@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using WatchDog.Models;
 using ATSPM.Application.Extensions;
 using System.Net.Mail;
+using ATSPM.Data;
 
 namespace WatchDog.Services
 {

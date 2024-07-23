@@ -121,7 +121,9 @@ const SelectChart = ({
       {} as Record<ChartType, React.ComponentType<any>>
     )
 
-    const sortedKeys = Object.keys(unsortedCharts).sort()
+    const sortedKeys = Object.keys(unsortedCharts).sort((a, b) =>
+      a.localeCompare(b)
+    )
     const sortedCharts = sortedKeys.reduce(
       (acc, key) => {
         const chartType = key as ChartType

@@ -1,4 +1,3 @@
-import { ChangeEvent } from 'react'
 import { StyledPaper } from '@/components/StyledPaper'
 import CustomSelect from '@/components/customSelect'
 import { SingularListDataItems } from '@/components/customSelect/CustomSelect'
@@ -24,10 +23,7 @@ import {
   chartTypeOptions,
   xAxisOptions,
 } from '../types/aggregateOptionsData'
-import {
-  AggregateTypeSelect,
-  GroupedListDataItems,
-} from './aggregateTypeSelect'
+import { AggregateTypeSelect } from './aggregateTypeSelect'
 
 interface props {
   handler: AggregateOptionsHandler
@@ -129,11 +125,13 @@ export const AggregateDataOptions = ({ handler }: props) => {
       <Box sx={{ paddingLeft: '5%', paddingRight: '20%', minWidth: '250px' }}>
         <label
           id="bin-size-slider-label"
-          sx={{ fontWeight: 'bold', marginBottom: '6px' }}
+          htmlFor="bin-size-slider"
+          style={{ fontWeight: 'bold', marginBottom: '6px' }}
         >
           Bin Size
         </label>
         <Slider
+          id="bin-size-slider"
           aria-labelledby="bin-size-slider-label"
           value={handler.binSize}
           onChange={(e, val) => handler.changeBinSize(val as number)}
@@ -180,7 +178,7 @@ export const AggregateDataOptions = ({ handler }: props) => {
               displayProperty="label"
               onChange={handleAggregateChange}
               value={handler.metricType}
-      />
+            />
           </Grid>
           <Grid item md={4} lg={4} xl={4}>
             {renderSelect(
