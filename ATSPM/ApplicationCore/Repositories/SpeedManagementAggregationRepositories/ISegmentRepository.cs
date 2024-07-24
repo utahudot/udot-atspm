@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 
 namespace ATSPM.Application.Repositories.SpeedManagementAggregationRepositories
 {
-    public interface IRouteRepository : IAsyncRepository<Route>
+    public interface ISegmentRepository : IAsyncRepository<Segment>
     {
-        public Task AddRoutesAsync(IEnumerable<Route> routes);
-        public Task AddRouteAsync(Route route);
+        public Task AddRoutesAsync(IEnumerable<Segment> routes);
+        public Task AddRouteAsync(Segment route);
     }
 }

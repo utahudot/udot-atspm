@@ -10,13 +10,13 @@ namespace ATSPM.Application.Business.RouteSpeed
 {
     public class RouteService
     {
-        private readonly IRouteRepository _routeRepository;
+        private readonly ISegmentRepository _routeRepository;
         private double[] centerUtah = new double[2] { 39.419220, -111.950684 };
         private int maxRadius = 300; // 300 miles radius
         private int maxLinkDistance = 5; // Each link no longer than 5 miles
         private int numRoutes = 14000;
 
-        public RouteService(IRouteRepository routeRepository)
+        public RouteService(ISegmentRepository routeRepository)
         {
             _routeRepository = routeRepository;
         }
@@ -27,9 +27,9 @@ namespace ATSPM.Application.Business.RouteSpeed
             await _routeRepository.AddRoutesAsync(routes);
         }
 
-        private List<Route> GenerateRandomRoutes(int numRoutes, double[] center, int maxRadius, int maxLinkDistance)
+        private List<Segment> GenerateRandomRoutes(int numRoutes, double[] center, int maxRadius, int maxLinkDistance)
         {
-            var routes = new List<Route>();
+            var routes = new List<Segment>();
             var rand = new Random();
             var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
 
@@ -42,7 +42,7 @@ namespace ATSPM.Application.Business.RouteSpeed
                 var endPoint = geometryFactory.CreatePoint(endCoord);
                 var lineString = geometryFactory.CreateLineString(new[] { startCoord, endCoord });
 
-                var route = new Route
+                var route = new Segment
                 {
                     Id = i,
                     UdotRouteNumber = rand.Next(1000, 9999),

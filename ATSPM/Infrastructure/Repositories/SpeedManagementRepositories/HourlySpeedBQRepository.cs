@@ -1,8 +1,8 @@
 ﻿using ATSPM.Application.Business.RouteSpeed;
 using ATSPM.Application.Repositories.SpeedManagementAggregationRepositories;
+using ATSPM.Data.Models.SpeedManagement.CongestionTracking;
 using ATSPM.Data.Models.SpeedManagementAggregation;
 using ATSPM.Domain.Extensions;
-using Google.Api;
 using Google.Cloud.BigQuery.V2;
 using Microsoft.Extensions.Logging;
 using NetTopologySuite.Geometries;
@@ -145,7 +145,7 @@ namespace ATSPM.Infrastructure.Repositories.ConfigurationRepositories
             }).ToList();
         }
 
-        public async Task<List<DailyAverage>> GetDailyAveragesAsync(int routeId, DateOnly startDate, DateOnly endDate, string daysOfWeek, int sourceId)
+        public async Task<List<DailyAverage>> GetDailyAveragesAsync(int routeId, DateOnly startDate, DateOnly endDate, string daysOfWeek)
         {
             string query = $@"
             SELECT 
@@ -160,7 +160,6 @@ namespace ATSPM.Infrastructure.Repositories.ConfigurationRepositories
             FROM `atspm-406601.speed_dataset.hourly_speed`
             WHERE 
                 RouteId = @routeId AND
-                SourceId = @sourceId AND
                 date BETWEEN @startDate AND @endDate AND
                 EXTRACT(DAYOFWEEK FROM date) IN ({daysOfWeek})
             GROUP BY Date
@@ -171,7 +170,6 @@ namespace ATSPM.Infrastructure.Repositories.ConfigurationRepositories
             new BigQueryParameter("routeId", BigQueryDbType.Int64, routeId),
             new BigQueryParameter("startDate", BigQueryDbType.Date, startDate.ToDateTime(new TimeOnly(0,0))),
             new BigQueryParameter("endDate", BigQueryDbType.Date, endDate.ToDateTime(new TimeOnly(0, 0))),
-            new BigQueryParameter("sourceId", BigQueryDbType.Int64, sourceId)
         };
 
             var queryResults = await _client.ExecuteQueryAsync(query, parameters);
@@ -186,6 +184,45 @@ namespace ATSPM.Infrastructure.Repositories.ConfigurationRepositories
                 Violation = Convert.ToDouble(row["Violation"]),
                 Flow = Convert.ToDouble(row["Flow"])
             }).ToList();
+        }
+
+        public async Task<List<HourlySpeed>> GetHourlySpeeds(CongestionTrackingOptions options)
+        {
+            var daysOfWeek = new List<DayOfWeek>() { DayOfWeek.Sunday, DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Friday, DayOfWeek.Saturday };
+
+            string query = $@"
+            SELECT *
+            FROM `atspm-406601.speed_dataset.hourly_speed`
+            WHERE 
+                RouteId = @routeId AND
+                date BETWEEN @startDate AND @endDate 
+            ORDER BY Date ASC, BinStartTime ASC;";
+
+            var parameters = new[]
+            {
+            new BigQueryParameter("routeId", BigQueryDbType.Int64, options.SegmentId),
+            new BigQueryParameter("startDate", BigQueryDbType.Date, options.StartDate.ToDateTime(new TimeOnly(0,0))),
+            new BigQueryParameter("endDate", BigQueryDbType.Date, options.EndDate.ToDateTime(new TimeOnly(0, 0))),
+        };
+
+            var queryResults = await _client.ExecuteQueryAsync(query, parameters);
+            return queryResults.Select(row => {
+                var date = DateOnly.Parse(row["Date"].ToString());
+                var time = TimeOnly.Parse(row["BinStartTime"].ToString());
+
+                return new HourlySpeed
+                {
+                    Date = date.ToDateTime(new TimeOnly(0, 0)),
+                    BinStartTime = date.ToDateTime(time),
+                    Average = Convert.ToInt32(row["Average"]),
+                    FifteenthSpeed = Convert.ToInt32(row["FifteenthSpeed"]),
+                    EightyFifthSpeed = Convert.ToInt32(row["EightyFifthSpeed"]),
+                    NinetyFifthSpeed = Convert.ToInt32(row["NinetyFifthSpeed"]),
+                    NinetyNinthSpeed = Convert.ToInt32(row["NinetyNinthSpeed"]),
+                    Violation = Convert.ToInt32(row["Violation"]),
+                    Flow = Convert.ToInt32(row["Flow"])
+                };
+                }).ToList();
         }
 
         public async Task<List<RouteSpeed>> GetRoutesSpeeds(RouteSpeedOptions options)

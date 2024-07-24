@@ -109,13 +109,13 @@ builder.Host.ConfigureServices((h, s) =>
         var logger = provider.GetRequiredService<ILogger<HourlySpeedBQRepository>>();
         return new HourlySpeedBQRepository(client, datasetId, tableId, logger);
     });
-    s.AddScoped<IRouteRepository, RouteBQRepository>(provider =>
+    s.AddScoped<ISegmentRepository, SegmentBQRepository>(provider =>
     {
         var client = provider.GetRequiredService<BigQueryClient>();
         var datasetId = builder.Configuration["BigQuery:DatasetId"];
         var tableId = builder.Configuration["BigQuery:RouteTableId"];
-        var logger = provider.GetRequiredService<ILogger<RouteBQRepository>>();
-        return new RouteBQRepository(client, datasetId, tableId, logger);
+        var logger = provider.GetRequiredService<ILogger<SegmentBQRepository>>();
+        return new SegmentBQRepository(client, datasetId, tableId, logger);
     });
     s.AddScoped<IImpactRepository, ImpactBQRepository>(provider =>
     {
