@@ -5,11 +5,11 @@ import Link from 'next/link'
 
 import { useUserInfo } from '@/features/identity/api/getUserInfo'
 import Login from '@/features/identity/components/signin'
+import { useSidebarStore } from '@/stores/sidebar'
 import {
   Avatar,
   Dialog,
   IconButton,
-  List,
   ListItemButton,
   ListItemIcon,
   ListItemText,
@@ -65,12 +65,7 @@ function getColorFromName(firstName, lastName) {
 
 const ListSubMenuItem = ({ index, item }: ItemProps) => {
   return (
-    <ListItemButton
-      key={index}
-      // onClick={handleClick}
-      component={Link}
-      href={item.link}
-    >
+    <ListItemButton key={index} component={Link} href={item.link}>
       <ListItemIcon>{item.icon}</ListItemIcon>
       <ListItemText primary={item.name} />
     </ListItemButton>
@@ -88,6 +83,7 @@ const userItems = [
 export default function UserMenu() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const { data: userData, refetch } = useUserInfo({})
+  const { closeSideBar } = useSidebarStore()
 
   useEffect(() => {
     if (isLoggedIn) {
@@ -105,7 +101,7 @@ export default function UserMenu() {
   const handleSignOut = () => {
     const cookies = Cookies.get()
     Object.entries(cookies).forEach((value) => Cookies.remove(value[0]))
-    window.location.href = '/locations'
+    window.location.href = '/'
   }
 
   const handleLoginClose = () => {
@@ -118,12 +114,7 @@ export default function UserMenu() {
 
   const handleClose = () => {
     setAnchorElement(null)
-  }
-
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
-    if (event.key === 'Enter') {
-      isLoggedIn ? handleSignOut() : handleLoginOpen()
-    }
+    closeSideBar()
   }
 
   useEffect(() => {
@@ -169,26 +160,24 @@ export default function UserMenu() {
             role: 'menu',
           }}
         >
-
-            {isLoggedIn &&
-              userItems.map((item, index) => (
-                <ListSubMenuItem
-                  key={index}
-                  index={index}
-                  item={item}
-                  // handleClick={handleClose}
-                />
-              ))}
-            <ListItemButton
-              onClick={() => (isLoggedIn ? handleSignOut() : handleLoginOpen())}
-              role="menuitem"
-            >
-              <ListItemIcon>
-                <LoginOutlinedIcon fontSize="small" />
-              </ListItemIcon>
-              <ListItemText primary={isLoggedIn ? 'Log out' : 'Log in'} />
-            </ListItemButton>
-
+          {isLoggedIn &&
+            userItems.map((item, index) => (
+              <ListSubMenuItem
+                key={index}
+                index={index}
+                item={item}
+                // handleClick={handleClose}
+              />
+            ))}
+          <ListItemButton
+            onClick={() => (isLoggedIn ? handleSignOut() : handleLoginOpen())}
+            role="menuitem"
+          >
+            <ListItemIcon>
+              <LoginOutlinedIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText primary={isLoggedIn ? 'Log out' : 'Log in'} />
+          </ListItemButton>
         </Menu>
       )}
       {openLogin && (

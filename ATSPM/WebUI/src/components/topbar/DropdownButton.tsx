@@ -1,3 +1,4 @@
+import { useSidebarStore } from '@/stores/sidebar'
 import { navigateToPage } from '@/utils/routes'
 import { useTheme } from '@emotion/react'
 import { Button, Menu, MenuItem, Typography } from '@mui/material'
@@ -16,6 +17,7 @@ const DropDownButton = ({
 }) => {
   const theme = useTheme()
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null)
+  const { closeSideBar } = useSidebarStore()
   const open = Boolean(anchorEl)
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -29,6 +31,7 @@ const DropDownButton = ({
   }
 
   const handleNavigation = (path: string) => {
+    closeSideBar()
     navigateToPage(path)
     setAnchorEl(null)
   }

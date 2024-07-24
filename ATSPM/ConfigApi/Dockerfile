@@ -2,13 +2,10 @@
 
 FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS base
 WORKDIR /app
-EXPOSE 80
-EXPOSE 443
+EXPOSE 44313
 
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /src
-
-RUN ls -la
 
 COPY ["ConfigApi/ConfigApi.csproj", "ConfigApi/"]
 COPY ["Infrastructure/Infrastructure.csproj", "Infrastructure/"]

@@ -219,11 +219,13 @@ const PhaseTable = ({ phases }: PhaseTableProps) => {
     return `${startTimeFormatted} - ${endTimeFormatted}`
   }
 
-  const maxPhase = phases.reduce((acc, current) =>
-    current.chart.displayProps.plans.length >
-    acc.chart.displayProps.plans.length
-      ? current
-      : acc
+  const maxPhase = phases.reduce(
+    (acc, current) =>
+      current.chart.displayProps.plans.length >
+      acc.chart.displayProps.plans.length
+        ? current
+        : acc,
+    phases[0]
   )
 
   const syncedPhases = phases.map((phase) => {
