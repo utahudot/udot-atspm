@@ -36,7 +36,7 @@ namespace ATSPM.Application.Business.LinkPivot
             linkPivotPair.LinkNumber = linkNumber;
             if (IsApproachNull(linkPivotPair))
             {
-                throw new Exception("Route approaches is misconfigured");
+                throw new Exception("Route approaches are misconfigured");
             }
             await SetPcds(options.StartTime, options.EndTime, daysToInclude, options.CycleLength, linkPivotPair);
             //Check to see if both directions have detection if so analyze both
