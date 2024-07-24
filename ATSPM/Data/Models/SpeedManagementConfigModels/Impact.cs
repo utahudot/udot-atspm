@@ -8,8 +8,8 @@ namespace ATSPM.Data.Models.SpeedManagementConfigModels
         public string? Description { get; set; }
         public DateTime Start { get; set; }
         public DateTime? End { get; set; }
-        public string StartMile { get; set; }
-        public string EndMile { get; set; }
+        public double StartMile { get; set; }
+        public double EndMile { get; set; }
         public Geometry Shape { get; set; }
         public Guid ImpactTypeId { get; set; }
         public ImpactType? ImpactType { get; set; }

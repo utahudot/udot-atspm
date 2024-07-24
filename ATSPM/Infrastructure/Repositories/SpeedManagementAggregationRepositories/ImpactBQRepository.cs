@@ -383,8 +383,8 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementAggregationRepositori
                 Description = row.GetPropertyValue<string>("Description"),
                 Start = row.GetPropertyValue<DateTime>("Start"),
                 End = row.GetPropertyValue<DateTime?>("End"),
-                StartMile = row.GetPropertyValue<string>("StartMile"),
-                EndMile = row.GetPropertyValue<string>("EndMile"),
+                StartMile = row.GetPropertyValue<double>("StartMile"),
+                EndMile = row.GetPropertyValue<double>("EndMile"),
                 Shape = wktReader.Read(row.GetPropertyValue<string>("Shape")),  // Assuming a FromString method in Geometry class
                 ImpactTypeId = row.GetPropertyValue<Guid>("ImpactTypeId"),
                 CreatedOn = row.GetPropertyValue<DateTime>("CreatedOn"),
