@@ -24,7 +24,7 @@ namespace SpeedManagementApi.Controllers
 
         // GET: /ImpactType/{id}
         [HttpGet("{id}")]
-        public async Task<ActionResult<ImpactType>> GetImpactTypeById(int id)
+        public async Task<ActionResult<ImpactType>> GetImpactTypeById(Guid id)
         {
             var impactType = await impactTypeService.GetImpactTypeById(id);
             if (impactType == null)
@@ -49,7 +49,7 @@ namespace SpeedManagementApi.Controllers
 
         // PUT: /ImpactType/{id}
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateImpactType(int id, [FromBody] ImpactType impactType)
+        public async Task<IActionResult> UpdateImpactType(Guid id, [FromBody] ImpactType impactType)
         {
             if (impactType == null || id != impactType.Id)
             {
@@ -68,7 +68,7 @@ namespace SpeedManagementApi.Controllers
 
         // DELETE: /ImpactType/{id}
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteImpactType(int id)
+        public async Task<IActionResult> DeleteImpactType(Guid id)
         {
             var existingImpactType = await impactTypeService.GetImpactTypeById(id);
             if (existingImpactType == null)

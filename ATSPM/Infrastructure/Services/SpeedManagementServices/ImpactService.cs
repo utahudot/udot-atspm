@@ -1,5 +1,6 @@
 ﻿using ATSPM.Application.Repositories.SpeedManagementAggregationRepositories;
 using ATSPM.Data.Models.SpeedManagementConfigModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -35,7 +36,7 @@ namespace ATSPM.Infrastructure.Services.SpeedManagementServices
             return impacts;
         }
 
-        public async Task<Impact> GetImpactById(int id)
+        public async Task<Impact> GetImpactById(Guid id)
         {
             var impact = await impactRepository.LookupAsync(id);
             return await PopulateImpactAsync(impact);
@@ -49,7 +50,7 @@ namespace ATSPM.Infrastructure.Services.SpeedManagementServices
             {
                 return null;
             }
-            var impactId = (int)updatedImpact.Id;
+            var impactId = (Guid)updatedImpact.Id;
             //Add the impacted segments
             var segmentImpactList = impact.SegmentIds
             .Select(segmentId => new SegmentImpact
@@ -63,7 +64,7 @@ namespace ATSPM.Infrastructure.Services.SpeedManagementServices
             return await GetImpactById(impactId);
         }
 
-        public async Task<Impact> UpsertImpactedSegment(int impactId, int segmentId)
+        public async Task<Impact> UpsertImpactedSegment(Guid impactId, Guid segmentId)
         {
             await segmentImpactRepository.UpdateAsync(new SegmentImpact { ImpactId = impactId, SegmentId = segmentId });
             return await GetImpactById(impactId);
@@ -79,7 +80,7 @@ namespace ATSPM.Infrastructure.Services.SpeedManagementServices
             await impactRepository.RemoveAsync(existingImpact);
         }
 
-        public async Task<Impact> DeleteImpactedSegment(int impactId, int segmentId)
+        public async Task<Impact> DeleteImpactedSegment(Guid impactId, Guid segmentId)
         {
             await segmentImpactRepository.RemoveAsync(new SegmentImpact { ImpactId = impactId, SegmentId = segmentId });
             return await GetImpactById(impactId);
@@ -89,7 +90,7 @@ namespace ATSPM.Infrastructure.Services.SpeedManagementServices
         //PRIVATE FUNCTIONS//
         /////////////////////
 
-        private async Task<List<Route>> GetImpactTypesAsync(List<int> ids)
+        private async Task<List<Route>> GetImpactTypesAsync(List<Guid> ids)
         {
             var tasks = ids.Select(id => segmentRepository.LookupAsync(id));
             Route[] routes = await Task.WhenAll(tasks);
@@ -102,8 +103,8 @@ namespace ATSPM.Infrastructure.Services.SpeedManagementServices
             {
                 return null;
             }
-            IReadOnlyList<SegmentImpact> segmentImpacts = await segmentImpactRepository.GetSegmentsForImpactAsync((int)impact.Id);
-            List<int> segmentIds = segmentImpacts.Select(i => i.SegmentId).ToList();
+            IReadOnlyList<SegmentImpact> segmentImpacts = await segmentImpactRepository.GetSegmentsForImpactAsync((Guid)impact.Id);
+            List<Guid> segmentIds = segmentImpacts.Select(i => i.SegmentId).ToList();
             List<Route> segments = await GetImpactTypesAsync(segmentIds);
             ImpactType impactType = await impactTypeRepository.LookupAsync(impact.Id);
             Impact impactCopy = new Impact

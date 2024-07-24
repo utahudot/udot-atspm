@@ -2,8 +2,8 @@
 {
     public class SegmentImpact
     {
-        public int ImpactId { get; set; }
-        public int SegmentId { get; set; }
+        public Guid ImpactId { get; set; }
+        public Guid SegmentId { get; set; }
 
     }
 }
