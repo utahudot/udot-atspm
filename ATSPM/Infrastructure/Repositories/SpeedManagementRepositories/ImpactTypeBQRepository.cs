@@ -127,7 +127,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             var query = $"DELETE FROM `{_datasetId}.{_tableId}` WHERE Id = @key";
             var parameters = new List<BigQueryParameter>
              {
-                 new BigQueryParameter("key", BigQueryDbType.String, item)
+                 new BigQueryParameter("key", BigQueryDbType.String, item.Id)
              };
             _client.ExecuteQueryAsync(query, parameters);
         }
@@ -141,14 +141,14 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             var query = $"DELETE FROM `{_datasetId}.{_tableId}` WHERE Id = @key";
             var parameters = new List<BigQueryParameter>
              {
-                 new BigQueryParameter("key", BigQueryDbType.String, item)
+                 new BigQueryParameter("key", BigQueryDbType.String, item.Id)
              };
             await _client.ExecuteQueryAsync(query, parameters);
         }
 
         public override void RemoveRange(IEnumerable<ImpactType> items)
         {
-            var ids = string.Join(", ", items);
+            var ids = string.Join(", ", items.Select(i => i.Id));
             var query = $"DELETE FROM `{_datasetId}.{_tableId}` WHERE Id IN ({ids})";
             var parameters = new List<BigQueryParameter>();
 
@@ -157,7 +157,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
 
         public override async Task RemoveRangeAsync(IEnumerable<ImpactType> items)
         {
-            var ids = string.Join(", ", items);
+            var ids = string.Join(", ", items.Select(i => i.Id));
             var query = $"DELETE FROM `{_datasetId}.{_tableId}` WHERE Id IN ({ids})";
             var parameters = new List<BigQueryParameter>();
 

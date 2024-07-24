@@ -10,6 +10,7 @@ using NetTopologySuite.IO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
@@ -206,7 +207,8 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
         };
 
             var queryResults = await _client.ExecuteQueryAsync(query, parameters);
-            return queryResults.Select(row => {
+            return queryResults.Select(row =>
+            {
                 var date = DateOnly.Parse(row["Date"].ToString());
                 var time = TimeOnly.Parse(row["BinStartTime"].ToString());
 
@@ -222,7 +224,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
                     Violation = Convert.ToInt32(row["Violation"]),
                     Flow = Convert.ToInt32(row["Flow"])
                 };
-                }).ToList();
+            }).ToList();
         }
 
         public async Task<List<RouteSpeed>> GetRoutesSpeeds(RouteSpeedOptions options)
@@ -424,62 +426,321 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
 
         public override IQueryable<HourlySpeed> GetList()
         {
-            throw new NotImplementedException();
+            var query = $"SELECT * FROM `{_datasetId}.{_tableId}`";
+            var parameters = new List<BigQueryParameter>();
+
+            var result = _client.ExecuteQuery(query, parameters).ToList();
+
+            // Map the result to a list of ImpactType objects
+            return result.Select(row => MapRowToEntity(row)).ToList().AsQueryable();
         }
 
         public override HourlySpeed Lookup(object key)
         {
-            throw new NotImplementedException();
+            if (key == null) return null;
+            var query = $"SELECT * FROM `{_datasetId}.{_tableId}` WHERE Id = @key";
+            var parameters = new List<BigQueryParameter>
+            {
+                    new BigQueryParameter("key", BigQueryDbType.String, key)
+                };
+            var results = _client.ExecuteQuery(query, parameters);
+            Task<HourlySpeed> task = Task.FromResult(results.Select(row => MapRowToEntity(row)).FirstOrDefault());
+            return task.Result;
         }
 
         public override HourlySpeed Lookup(HourlySpeed item)
         {
-            throw new NotImplementedException();
+            if (item == null) return null;
+            var query = $"SELECT * FROM `{_datasetId}.{_tableId}` WHERE Id = @key";
+            var parameters = new List<BigQueryParameter>
+                {
+                    new BigQueryParameter("key", BigQueryDbType.String, item)
+                };
+
+            var results = _client.ExecuteQuery(query, parameters);
+            Task<HourlySpeed> task = Task.FromResult(results.Select(row => MapRowToEntity(row)).FirstOrDefault());
+            return task.Result;
         }
 
-        public override Task<HourlySpeed> LookupAsync(object key)
+        public override async Task<HourlySpeed> LookupAsync(object key)
         {
-            throw new NotImplementedException();
+            if (key == null) return null;
+            var query = $"SELECT * FROM `{_datasetId}.{_tableId}` WHERE Id = @key";
+            var parameters = new List<BigQueryParameter>
+            {
+                    new BigQueryParameter("key", BigQueryDbType.String, key)
+                };
+            var results = await _client.ExecuteQueryAsync(query, parameters);
+            return results.Select(row => MapRowToEntity(row)).FirstOrDefault();
         }
 
-        public override Task<HourlySpeed> LookupAsync(HourlySpeed item)
+        public override async Task<HourlySpeed> LookupAsync(HourlySpeed item)
         {
-            throw new NotImplementedException();
+            if (item == null) return null;
+            var query = $"SELECT * FROM `{_datasetId}.{_tableId}` WHERE Id = @key";
+            var parameters = new List<BigQueryParameter>
+                {
+                    new BigQueryParameter("key", BigQueryDbType.String, item)
+                };
+            var results = await _client.ExecuteQueryAsync(query, parameters);
+            return results.Select(row => MapRowToEntity(row)).FirstOrDefault();
         }
 
         public override void Remove(HourlySpeed item)
         {
-            throw new NotImplementedException();
+            if (item == null) return;
+            var query = $"DELETE FROM `{_datasetId}.{_tableId}` WHERE Id = @key";
+            var parameters = new List<BigQueryParameter>
+             {
+                 new BigQueryParameter("key", BigQueryDbType.String, item)
+             };
+            _client.ExecuteQueryAsync(query, parameters);
         }
 
         public override void RemoveRange(IEnumerable<HourlySpeed> items)
         {
-            throw new NotImplementedException();
+            var ids = string.Join(", ", items);
+            var query = $"DELETE FROM `{_datasetId}.{_tableId}` WHERE Id IN ({ids})";
+            var parameters = new List<BigQueryParameter>();
+
+            _client.ExecuteQuery(query, parameters);
         }
 
-        public override Task RemoveRangeAsync(IEnumerable<HourlySpeed> items)
+        public override async Task RemoveRangeAsync(IEnumerable<HourlySpeed> items)
         {
-            throw new NotImplementedException();
+            var ids = string.Join(", ", items);
+            var query = $"DELETE FROM `{_datasetId}.{_tableId}` WHERE Id IN ({ids})";
+            var parameters = new List<BigQueryParameter>();
+
+            await _client.ExecuteQueryAsync(query, parameters);
         }
 
-        public override void Update(HourlySpeed item)
+        public override async void Update(HourlySpeed item)
         {
-            throw new NotImplementedException();
+            var oldRow = await LookupAsync(new { item.Date, item.BinStartTime, item.RouteId });
+            if (oldRow != null)
+            {
+                var queryBuilder = new StringBuilder();
+                queryBuilder.Append($"UPDATE `{_datasetId}.{_tableId}` SET ");
+
+                queryBuilder.Append($"SourceId = {item.SourceId}, ");
+                queryBuilder.Append($"ConfidenceId = {item.ConfidenceId}, ");
+                queryBuilder.Append($"Average = {item.Average}, ");
+
+                if (item.FifteenthSpeed.HasValue)
+                {
+                    queryBuilder.Append($"FifteenthSpeed = {item.FifteenthSpeed}, ");
+                }
+                else
+                {
+                    queryBuilder.Append($"FifteenthSpeed = NULL, ");
+                }
+
+                if (item.EightyFifthSpeed.HasValue)
+                {
+                    queryBuilder.Append($"EightyFifthSpeed = {item.EightyFifthSpeed}, ");
+                }
+                else
+                {
+                    queryBuilder.Append($"EightyFifthSpeed = NULL, ");
+                }
+
+                if (item.NinetyFifthSpeed.HasValue)
+                {
+                    queryBuilder.Append($"NinetyFifthSpeed = {item.NinetyFifthSpeed}, ");
+                }
+                else
+                {
+                    queryBuilder.Append($"NinetyFifthSpeed = NULL, ");
+                }
+
+                if (item.NinetyNinthSpeed.HasValue)
+                {
+                    queryBuilder.Append($"NinetyNinthSpeed = {item.NinetyNinthSpeed}, ");
+                }
+                else
+                {
+                    queryBuilder.Append($"NinetyNinthSpeed = NULL, ");
+                }
+
+                if (item.Violation.HasValue)
+                {
+                    queryBuilder.Append($"Violation = {item.Violation}, ");
+                }
+                else
+                {
+                    queryBuilder.Append($"Violation = NULL, ");
+                }
+
+                if (item.Flow.HasValue)
+                {
+                    queryBuilder.Append($"Flow = {item.Flow}, ");
+                }
+                else
+                {
+                    queryBuilder.Append($"Flow = NULL, ");
+                }
+
+                // Remove the last comma and space
+                queryBuilder.Length -= 2;
+
+                queryBuilder.Append($" WHERE Date = @Date AND BinStartTime = @BinStartTime AND RouteId = @RouteId");
+
+                var query = queryBuilder.ToString();
+
+                var parameters = new List<BigQueryParameter>
+        {
+            new BigQueryParameter("@Date", BigQueryDbType.DateTime, item.Date),
+            new BigQueryParameter("@BinStartTime", BigQueryDbType.DateTime, item.BinStartTime),
+            new BigQueryParameter("@RouteId", BigQueryDbType.Int64, item.RouteId)
+        };
+
+                _client.ExecuteQuery(query, parameters);
+            }
+            else
+            {
+                var query = $"INSERT INTO `{_datasetId}.{_tableId}` " +
+                    $"(Date, BinStartTime, RouteId, SourceId, ConfidenceId, Average, FifteenthSpeed, EightyFifthSpeed, NinetyFifthSpeed, NinetyNinthSpeed, Violation, Flow) " +
+                    $"VALUES (" +
+                    $"'{item.Date:O}', " +
+                    $"'{item.BinStartTime:O}', " +
+                    $"{item.RouteId}, " +
+                    $"{item.SourceId}, " +
+                    $"{item.ConfidenceId}, " +
+                    $"{item.Average}, " +
+                    $"{(item.FifteenthSpeed.HasValue ? item.FifteenthSpeed.Value.ToString() : "NULL")}, " +
+                    $"{(item.EightyFifthSpeed.HasValue ? item.EightyFifthSpeed.Value.ToString() : "NULL")}, " +
+                    $"{(item.NinetyFifthSpeed.HasValue ? item.NinetyFifthSpeed.Value.ToString() : "NULL")}, " +
+                    $"{(item.NinetyNinthSpeed.HasValue ? item.NinetyNinthSpeed.Value.ToString() : "NULL")}, " +
+                    $"{(item.Violation.HasValue ? item.Violation.Value.ToString() : "NULL")}, " +
+                    $"{(item.Flow.HasValue ? item.Flow.Value.ToString() : "NULL")})";
+
+                var parameters = new List<BigQueryParameter>();
+
+                _client.ExecuteQuery(query, parameters);
+            }
         }
 
-        public override Task UpdateAsync(HourlySpeed item)
+        public override async Task UpdateAsync(HourlySpeed item)
         {
-            throw new NotImplementedException();
+            var oldRow = await LookupAsync(new { item.Date, item.BinStartTime, item.RouteId });
+            if (oldRow != null)
+            {
+                var queryBuilder = new StringBuilder();
+                queryBuilder.Append($"UPDATE `{_datasetId}.{_tableId}` SET ");
+
+                queryBuilder.Append($"SourceId = {item.SourceId}, ");
+                queryBuilder.Append($"ConfidenceId = {item.ConfidenceId}, ");
+                queryBuilder.Append($"Average = {item.Average}, ");
+
+                if (item.FifteenthSpeed.HasValue)
+                {
+                    queryBuilder.Append($"FifteenthSpeed = {item.FifteenthSpeed}, ");
+                }
+                else
+                {
+                    queryBuilder.Append($"FifteenthSpeed = NULL, ");
+                }
+
+                if (item.EightyFifthSpeed.HasValue)
+                {
+                    queryBuilder.Append($"EightyFifthSpeed = {item.EightyFifthSpeed}, ");
+                }
+                else
+                {
+                    queryBuilder.Append($"EightyFifthSpeed = NULL, ");
+                }
+
+                if (item.NinetyFifthSpeed.HasValue)
+                {
+                    queryBuilder.Append($"NinetyFifthSpeed = {item.NinetyFifthSpeed}, ");
+                }
+                else
+                {
+                    queryBuilder.Append($"NinetyFifthSpeed = NULL, ");
+                }
+
+                if (item.NinetyNinthSpeed.HasValue)
+                {
+                    queryBuilder.Append($"NinetyNinthSpeed = {item.NinetyNinthSpeed}, ");
+                }
+                else
+                {
+                    queryBuilder.Append($"NinetyNinthSpeed = NULL, ");
+                }
+
+                if (item.Violation.HasValue)
+                {
+                    queryBuilder.Append($"Violation = {item.Violation}, ");
+                }
+                else
+                {
+                    queryBuilder.Append($"Violation = NULL, ");
+                }
+
+                if (item.Flow.HasValue)
+                {
+                    queryBuilder.Append($"Flow = {item.Flow}, ");
+                }
+                else
+                {
+                    queryBuilder.Append($"Flow = NULL, ");
+                }
+
+                // Remove the last comma and space
+                queryBuilder.Length -= 2;
+
+                queryBuilder.Append($" WHERE Date = @Date AND BinStartTime = @BinStartTime AND RouteId = @RouteId");
+
+                var query = queryBuilder.ToString();
+
+                var parameters = new List<BigQueryParameter>
+        {
+            new BigQueryParameter("@Date", BigQueryDbType.DateTime, item.Date),
+            new BigQueryParameter("@BinStartTime", BigQueryDbType.DateTime, item.BinStartTime),
+            new BigQueryParameter("@RouteId", BigQueryDbType.Int64, item.RouteId)
+        };
+
+                _client.ExecuteQueryAsync(query, parameters);
+            }
+            else
+            {
+                var query = $"INSERT INTO `{_datasetId}.{_tableId}` " +
+                    $"(Date, BinStartTime, RouteId, SourceId, ConfidenceId, Average, FifteenthSpeed, EightyFifthSpeed, NinetyFifthSpeed, NinetyNinthSpeed, Violation, Flow) " +
+                    $"VALUES (" +
+                    $"'{item.Date:O}', " +
+                    $"'{item.BinStartTime:O}', " +
+                    $"{item.RouteId}, " +
+                    $"{item.SourceId}, " +
+                    $"{item.ConfidenceId}, " +
+                    $"{item.Average}, " +
+                    $"{(item.FifteenthSpeed.HasValue ? item.FifteenthSpeed.Value.ToString() : "NULL")}, " +
+                    $"{(item.EightyFifthSpeed.HasValue ? item.EightyFifthSpeed.Value.ToString() : "NULL")}, " +
+                    $"{(item.NinetyFifthSpeed.HasValue ? item.NinetyFifthSpeed.Value.ToString() : "NULL")}, " +
+                    $"{(item.NinetyNinthSpeed.HasValue ? item.NinetyNinthSpeed.Value.ToString() : "NULL")}, " +
+                    $"{(item.Violation.HasValue ? item.Violation.Value.ToString() : "NULL")}, " +
+                    $"{(item.Flow.HasValue ? item.Flow.Value.ToString() : "NULL")})";
+
+                var parameters = new List<BigQueryParameter>();
+
+                _client.ExecuteQueryAsync(query, parameters);
+            }
         }
 
         public override void UpdateRange(IEnumerable<HourlySpeed> items)
         {
-            throw new NotImplementedException();
+            foreach (var item in items)
+            {
+                Update(item);
+            }
         }
 
-        public override Task UpdateRangeAsync(IEnumerable<HourlySpeed> items)
+        public override async Task UpdateRangeAsync(IEnumerable<HourlySpeed> items)
         {
-            throw new NotImplementedException();
+            foreach (var item in items)
+            {
+                await UpdateAsync(item);
+            }
         }
 
 
