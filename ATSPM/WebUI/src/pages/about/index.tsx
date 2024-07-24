@@ -1,7 +1,7 @@
 import Header from '@/components/header'
+import { ResponsivePageLayout } from '@/components/ResponsivePage'
 import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight'
 import { Box, Button, Grid, Typography } from '@mui/material'
-import Head from 'next/head'
 import Image from 'next/image'
 import Link from 'next/link'
 const About = () => {
@@ -85,11 +85,7 @@ const About = () => {
   ]
 
   return (
-    <>
-      <Head>
-        <title>About</title>
-      </Head>
-
+    <ResponsivePageLayout title={'About'} hideTitle>
       <Box>
         <Header title="About ATSPM" />
         <Box marginBottom={2}>
@@ -145,7 +141,7 @@ const About = () => {
           ))}
         </Grid>
       </Box>
-    </>
+    </ResponsivePageLayout>
   )
 }
 
