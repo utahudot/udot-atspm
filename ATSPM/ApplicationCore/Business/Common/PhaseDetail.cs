@@ -20,7 +20,7 @@ namespace ATSPM.Application.Business.Common
             string movementResult = GetMovementResult(movements);
 
             var descriptionResult = new StringBuilder($"{Approach.DirectionType.Description} ");
-            if (!string.IsNullOrEmpty(movementResult))
+            if (!string.IsNullOrEmpty(movementResult) && movementResult.Contains("Left"))
             {
                 descriptionResult.Append($"{movementResult} ");
                 descriptionResult.Append(IsPermissivePhase ? "Permissive " : "Protected ");
