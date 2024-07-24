@@ -1,11 +1,10 @@
 using Asp.Versioning;
 using ATSPM.Application.Business.RouteSpeed;
 using ATSPM.Application.Repositories;
-using ATSPM.Application.Repositories.SpeedManagementAggregationRepositories;
+using ATSPM.Application.Repositories.SpeedManagementRepositories;
 using ATSPM.Infrastructure.Extensions;
 using ATSPM.Infrastructure.Repositories;
-using ATSPM.Infrastructure.Repositories.ConfigurationRepositories;
-using ATSPM.Infrastructure.Repositories.SpeedManagementAggregationRepositories;
+using ATSPM.Infrastructure.Repositories.SpeedManagementRepositories;
 using ATSPM.Infrastructure.Services.SpeedManagementServices;
 using Google.Cloud.BigQuery.V2;
 using Microsoft.AspNetCore.HttpLogging;
@@ -109,13 +108,13 @@ builder.Host.ConfigureServices((h, s) =>
         var logger = provider.GetRequiredService<ILogger<HourlySpeedBQRepository>>();
         return new HourlySpeedBQRepository(client, datasetId, tableId, logger);
     });
-    s.AddScoped<IRouteRepository, RouteBQRepository>(provider =>
+    s.AddScoped<ISegmentRepository, SegmentBQRepository>(provider =>
     {
         var client = provider.GetRequiredService<BigQueryClient>();
         var datasetId = builder.Configuration["BigQuery:DatasetId"];
         var tableId = builder.Configuration["BigQuery:RouteTableId"];
-        var logger = provider.GetRequiredService<ILogger<RouteBQRepository>>();
-        return new RouteBQRepository(client, datasetId, tableId, logger);
+        var logger = provider.GetRequiredService<ILogger<SegmentBQRepository>>();
+        return new SegmentBQRepository(client, datasetId, tableId, logger);
     });
     s.AddScoped<IImpactRepository, ImpactBQRepository>(provider =>
     {

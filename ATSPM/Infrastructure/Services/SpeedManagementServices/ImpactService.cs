@@ -1,4 +1,4 @@
-﻿using ATSPM.Application.Repositories.SpeedManagementAggregationRepositories;
+﻿using ATSPM.Application.Repositories.SpeedManagementRepositories;
 using ATSPM.Data.Models.SpeedManagementConfigModels;
 using System;
 using System.Collections.Generic;
@@ -12,9 +12,9 @@ namespace ATSPM.Infrastructure.Services.SpeedManagementServices
         private readonly IImpactRepository impactRepository;
         private readonly ISegmentImpactRepository segmentImpactRepository;
         private readonly IImpactTypeRepository impactTypeRepository;
-        private readonly IRouteRepository segmentRepository;
+        private readonly ISegmentRepository segmentRepository;
 
-        public ImpactService(IImpactRepository impactRepository, ISegmentImpactRepository segmentImpactRepository, IImpactTypeRepository impactTypeRepository, IRouteRepository segmentRepository)
+        public ImpactService(IImpactRepository impactRepository, ISegmentImpactRepository segmentImpactRepository, IImpactTypeRepository impactTypeRepository, ISegmentRepository segmentRepository)
         {
             this.impactRepository = impactRepository;
             this.segmentImpactRepository = segmentImpactRepository;
@@ -90,10 +90,10 @@ namespace ATSPM.Infrastructure.Services.SpeedManagementServices
         //PRIVATE FUNCTIONS//
         /////////////////////
 
-        private async Task<List<Route>> GetImpactTypesAsync(List<Guid> ids)
+        private async Task<List<Segment>> GetImpactTypesAsync(List<Guid> ids)
         {
             var tasks = ids.Select(id => segmentRepository.LookupAsync(id));
-            Route[] routes = await Task.WhenAll(tasks);
+            Segment[] routes = await Task.WhenAll(tasks);
             return routes.ToList();
         }
 
@@ -105,7 +105,7 @@ namespace ATSPM.Infrastructure.Services.SpeedManagementServices
             }
             IReadOnlyList<SegmentImpact> segmentImpacts = await segmentImpactRepository.GetSegmentsForImpactAsync((Guid)impact.Id);
             List<Guid> segmentIds = segmentImpacts.Select(i => i.SegmentId).ToList();
-            List<Route> segments = await GetImpactTypesAsync(segmentIds);
+            List<Segment> segments = await GetImpactTypesAsync(segmentIds);
             ImpactType impactType = await impactTypeRepository.LookupAsync(impact.Id);
             Impact impactCopy = new Impact
             {

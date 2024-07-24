@@ -23,7 +23,7 @@ namespace ATSPM.Data
 
         public virtual DbSet<Source> Sources { get; set; }
         public virtual DbSet<Confidence> Confidences { get; set; }
-        public virtual DbSet<Route> Routes { get; set; }
+        public virtual DbSet<Segment> Routes { get; set; }
         //public virtual DbSet<HourlySpeed> Speeds { get; set; }
 
         /// <inheritdoc/>
