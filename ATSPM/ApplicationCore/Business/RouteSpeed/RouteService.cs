@@ -1,10 +1,10 @@
-﻿using ATSPM.Application.Repositories.SpeedManagementAggregationRepositories;
-using ATSPM.Data.Models.SpeedManagementConfigModels;
+﻿using ATSPM.Data.Models.SpeedManagementConfigModels;
 using NetTopologySuite.Geometries;
 using NetTopologySuite;
 using System.Collections.Generic;
 using System;
 using System.Threading.Tasks;
+using ATSPM.Application.Repositories.SpeedManagementRepositories;
 
 namespace ATSPM.Application.Business.RouteSpeed
 {
