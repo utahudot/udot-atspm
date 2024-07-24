@@ -53,10 +53,10 @@ export const LinkPivotApproachLinkComponent = ({
   ) => {
     return (
       <>
-        <TableCell>
+        <TableCell sx={{maxWidth:'50px'}}>
           {totalAogBefore} ({totalPaogBefore}%)
         </TableCell>
-        <TableCell>
+        <TableCell sx={{ maxWdith:'50px'}}>
           {totalAogPredicted} ({totalPaogPredicted}%)
         </TableCell>
         <TableCell width="fit-content">

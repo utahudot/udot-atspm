@@ -219,6 +219,8 @@ export const useAggregateOptionsHandler = (): AggregateOptionsHandler => {
   useEffect(() => {
     if (routeHandler.routeId) {
       console.log('Route is present')
+      setSelectedLocations([])
+      setRouteExpandedLocations([])
       refectRouteExpanded()
     }
   }, [refectRouteExpanded, routeHandler.routeId])
