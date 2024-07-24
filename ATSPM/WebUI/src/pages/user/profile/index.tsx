@@ -111,7 +111,7 @@ const ProfilePage = () => {
         <Paper elevation={3} sx={{ p: 3, m: 3 }}>
           <Typography variant="h2">Settings</Typography>
           <Box sx={{ mb: '20px' }}>
-            <Link href="/verifyUser" underline="none">
+            <Link href="/verify-user" underline="none">
               <Box
                 sx={{
                   p: '10px',
@@ -152,7 +152,7 @@ const ProfilePage = () => {
           Error Saving Profile
         </Alert>
       </Snackbar>
-  </ResponsivePageLayout>
+    </ResponsivePageLayout>
   )
 }
 

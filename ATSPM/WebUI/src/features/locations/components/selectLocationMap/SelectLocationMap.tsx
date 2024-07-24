@@ -22,7 +22,7 @@ function SelectLocationMap({
   center,
   mapHeight,
 }: SelectLocationMapProps) {
-  const Map = useMemo(
+  const LocationMap = useMemo(
     () =>
       dynamic(() => import('@/components/LocationMap'), {
         loading: () => (
@@ -46,7 +46,7 @@ function SelectLocationMap({
     [location, setLocation, locations, route, zoom, center, mapHeight]
   )
 
-  return <Map {...mapProps} />
+  return <LocationMap {...mapProps} />
 }
 
 export default memo(SelectLocationMap)
