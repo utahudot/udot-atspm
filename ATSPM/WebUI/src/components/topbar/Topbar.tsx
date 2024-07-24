@@ -92,19 +92,20 @@ export default function Topbar() {
         <NextLink href="/" passHref>
           <Box
             sx={{
-              width: '165px',
-              m: 2,
-              mb: 1,
+              width: '160px',
+              height: '50px',
+              m: 1,
+              ml: 2,
+              position: 'relative',
             }}
           >
             <Image
               alt="ATSPM Logo"
               src="/images/atspm-logo-new.png"
               priority
-              width={0}
-              height={0}
-              sizes="20vw"
-              style={{ width: '100%', height: 'auto', cursor: 'pointer' }}
+              layout="fill"
+              objectFit="contain"
+              style={{ cursor: 'pointer' }}
             />
           </Box>
         </NextLink>
