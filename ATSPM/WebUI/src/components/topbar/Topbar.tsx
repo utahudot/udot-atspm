@@ -74,7 +74,11 @@ export default function Topbar() {
       }}
     >
       <Paper>
-        <IconButton onClick={handleMenuCollapseClick} sx={{ p: 1 }}>
+        <IconButton
+          aria-label="Open navigation menu"
+          onClick={handleMenuCollapseClick}
+          sx={{ p: 1 }}
+        >
           <MenuIcon />
         </IconButton>
       </Paper>
