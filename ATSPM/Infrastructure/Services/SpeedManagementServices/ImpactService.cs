@@ -90,10 +90,10 @@ namespace ATSPM.Infrastructure.Services.SpeedManagementServices
         //PRIVATE FUNCTIONS//
         /////////////////////
 
-        private async Task<List<Segment>> GetImpactTypesAsync(List<Guid> ids)
+        private async Task<List<Data.Models.SpeedManagementConfigModels.Segment>> GetImpactTypesAsync(List<Guid> ids)
         {
             var tasks = ids.Select(id => segmentRepository.LookupAsync(id));
-            Segment[] routes = await Task.WhenAll(tasks);
+            Data.Models.SpeedManagementConfigModels.Segment[] routes = await Task.WhenAll(tasks);
             return routes.ToList();
         }
 
@@ -105,7 +105,7 @@ namespace ATSPM.Infrastructure.Services.SpeedManagementServices
             }
             IReadOnlyList<SegmentImpact> segmentImpacts = await segmentImpactRepository.GetSegmentsForImpactAsync((Guid)impact.Id);
             List<Guid> segmentIds = segmentImpacts.Select(i => i.SegmentId).ToList();
-            List<Segment> segments = await GetImpactTypesAsync(segmentIds);
+            List<Data.Models.SpeedManagementConfigModels.Segment> segments = await GetImpactTypesAsync(segmentIds);
             ImpactType impactType = await impactTypeRepository.LookupAsync(impact.Id);
             Impact impactCopy = new Impact
             {
