@@ -36,6 +36,19 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementAggregationRepositori
             return result.Select(row => MapRowToEntity(row)).ToList().AsQueryable();
         }
 
+        public async Task<IReadOnlyList<SegmentImpact>> GetSegmentsForImpactAsync(int impactId)
+        {
+            var query = $"SELECT * FROM `{_datasetId}.{_tableId}` WHERE ImpactId = @impactId";
+            var parameters = new List<BigQueryParameter>
+            {
+                new BigQueryParameter("impactId", BigQueryDbType.Int64, impactId)
+            };
+
+            var result = await _client.ExecuteQueryAsync(query, parameters);
+
+            return result.Select(row => MapRowToEntity(row)).ToList().AsReadOnly();
+        }
+
         public override SegmentImpact Lookup(object key)
         {
             var impactId = (long)key.GetType().GetProperty("ImpactId").GetValue(key);
@@ -119,6 +132,36 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementAggregationRepositori
             var parameters = new List<BigQueryParameter>
             {
                 new BigQueryParameter("impactId", BigQueryDbType.Int64, impactId),
+                new BigQueryParameter("segmentId", BigQueryDbType.Int64, segmentId)
+            };
+
+            await _client.ExecuteQueryAsync(query, parameters);
+        }
+
+        /// <inheritdoc/>
+
+        public async Task RemoveAllSegmentsFromImpactIdAsync(int? impactId)
+        {
+            if (impactId == null)
+            {
+                return;
+            }
+            var query = $"DELETE FROM `{_datasetId}.{_tableId}` WHERE ImpactId = @impactId";
+            var parameters = new List<BigQueryParameter>
+            {
+                new BigQueryParameter("impactId", BigQueryDbType.Int64, impactId)
+            };
+
+            await _client.ExecuteQueryAsync(query, parameters);
+        }
+
+        /// <inheritdoc/>
+
+        public async Task RemoveAllImpactsFromSegmentAsync(int segmentId)
+        {
+            var query = $"DELETE FROM `{_datasetId}.{_tableId}` WHERE SegmentId = @segmentId";
+            var parameters = new List<BigQueryParameter>
+            {
                 new BigQueryParameter("segmentId", BigQueryDbType.Int64, segmentId)
             };
 

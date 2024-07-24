@@ -14,7 +14,7 @@ namespace ATSPM.Infrastructure.Services.SpeedManagementServices
             impactTypeRepository = _impactTypeRepository;
         }
 
-        public async Task UpdateAsync(ImpactType impactType)
+        public async Task UpsertAsync(ImpactType impactType)
         {
             await impactTypeRepository.UpdateAsync(impactType);
         }

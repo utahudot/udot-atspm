@@ -41,6 +41,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementAggregationRepositori
 
         public override Impact Lookup(object key)
         {
+            if (key == null) return null;
             var query = $"SELECT * FROM `{_datasetId}.{_tableId}` WHERE Id = @key";
             var parameters = new List<BigQueryParameter>
             {
@@ -53,6 +54,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementAggregationRepositori
 
         public override Impact Lookup(Impact item)
         {
+            if (item.Id == null) return null;
             var query = $"SELECT * FROM `{_datasetId}.{_tableId}` WHERE Id = @key";
             var parameters = new List<BigQueryParameter>
                 {
@@ -66,6 +68,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementAggregationRepositori
 
         public override async Task<Impact> LookupAsync(object key)
         {
+            if (key == null) return null;
             var query = $"SELECT * FROM `{_datasetId}.{_tableId}` WHERE Id = @key";
             var parameters = new List<BigQueryParameter>
             {
@@ -77,6 +80,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementAggregationRepositori
 
         public override async Task<Impact> LookupAsync(Impact item)
         {
+            if (item.Id == null) return null;
             var query = $"SELECT * FROM `{_datasetId}.{_tableId}` WHERE Id = @key";
             var parameters = new List<BigQueryParameter>
                 {
@@ -88,6 +92,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementAggregationRepositori
 
         public override void Remove(Impact item)
         {
+            if (item.Id == null) return;
             var query = $"DELETE FROM `{_datasetId}.{_tableId}` WHERE Id = @key";
             var parameters = new List<BigQueryParameter>
              {
@@ -98,6 +103,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementAggregationRepositori
 
         public override async Task RemoveAsync(Impact item)
         {
+            if (item.Id == null) return;
             var query = $"DELETE FROM `{_datasetId}.{_tableId}` WHERE Id = @key";
             var parameters = new List<BigQueryParameter>
              {
@@ -165,7 +171,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementAggregationRepositori
 
                 var parameters = new List<BigQueryParameter>();
 
-                _client.ExecuteQueryAsync(query, parameters);
+                _client.ExecuteQuery(query, parameters);
             }
             else
             {
@@ -187,7 +193,76 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementAggregationRepositori
                     $"NULL)";    // DeletedBy is set to NULL
                 var parameters = new List<BigQueryParameter>();
 
-                _client.ExecuteQueryAsync(query, parameters);
+                _client.ExecuteQuery(query, parameters);
+            }
+        }
+
+        public async Task<Impact> UpdateImpactAsync(Impact item)
+        {
+            var oldRow = await LookupAsync(item.Id);
+            if (oldRow != null)
+            {
+
+                var queryBuilder = new StringBuilder();
+                queryBuilder.Append($"UPDATE `{_datasetId}.{_tableId}` SET ");
+
+                if (!string.IsNullOrEmpty(item.Description))
+                {
+                    queryBuilder.Append($"Description = '{item.Description}', ");
+                }
+
+                if (item.Start != DateTime.MinValue)
+                {
+                    queryBuilder.Append($"Start = '{item.Start:O}', ");
+                }
+
+                if (item.End.HasValue)
+                {
+                    queryBuilder.Append($"End = '{item.End:O}', ");
+                }
+
+                queryBuilder.Append($"StartMile = '{item.StartMile}', ");
+                queryBuilder.Append($"EndMile = '{item.EndMile}', ");
+                queryBuilder.Append($"Shape = '{item.Shape.AsText()}', ");
+                queryBuilder.Append($"ImpactTypeId = {item.ImpactTypeId}, ");
+                queryBuilder.Append($"UpdatedOn = '{DateTime.UtcNow:O}', ");
+                queryBuilder.Append($"UpdatedBy = {(item.UpdatedBy.HasValue ? $"'{item.UpdatedBy}'" : "NULL")}, ");
+                queryBuilder.Append($"DeletedOn = {(item.DeletedOn.HasValue ? $"'{item.DeletedOn:O}'" : "NULL")}, ");
+                queryBuilder.Append($"DeletedBy = {(item.DeletedBy.HasValue ? $"'{item.DeletedBy}'" : "NULL")}, ");
+                // Remove the last comma and space
+                queryBuilder.Length -= 2;
+
+                queryBuilder.Append($" WHERE Id = @key");
+
+                var query = queryBuilder.ToString();
+
+                var parameters = new List<BigQueryParameter>();
+
+                var result = await _client.ExecuteQueryAsync(query, parameters);
+                return MapRowToEntity(result.FirstOrDefault());
+            }
+            else
+            {
+                var query = $"INSERT INTO `{_datasetId}.{_tableId}` " +
+                    $"(Description, Start, End, StartMile, EndMile, Shape, ImpactTypeId, CreatedOn, CreatedBy, UpdatedOn, UpdatedBy, DeletedOn, DeletedBy) " +
+                    $"VALUES (" +
+                    $"'{item.Description}', " +
+                    $"'{item.Start:O}', " +
+                    $"{(item.End.HasValue ? $"'{item.End:O}'" : "NULL")}, " +
+                    $"'{item.StartMile}', " +
+                    $"'{item.EndMile}', " +
+                    $"'{item.Shape.AsText()}', " +
+                    $"{item.ImpactTypeId}, " +
+                    $"'{item.CreatedOn:O}', " +
+                    $"'{item.CreatedBy}', " +
+                    $"NULL, " +  // UpdatedOn is set to NULL
+                    $"NULL, " +  // UpdatedBy is set to NULL
+                    $"NULL, " +  // DeletedOn is set to NULL
+                    $"NULL)";    // DeletedBy is set to NULL
+                var parameters = new List<BigQueryParameter>();
+
+                var result = await _client.ExecuteQueryAsync(query, parameters);
+                return MapRowToEntity(result.FirstOrDefault());
             }
         }
 
@@ -232,7 +307,8 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementAggregationRepositori
 
                 var parameters = new List<BigQueryParameter>();
 
-                await _client.ExecuteQueryAsync(query, parameters);
+                var result = await _client.ExecuteQueryAsync(query, parameters);
+                return MapRowToEntity(result.FirstOrDefault());
             }
             else
             {
@@ -254,7 +330,8 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementAggregationRepositori
                     $"NULL)";    // DeletedBy is set to NULL
                 var parameters = new List<BigQueryParameter>();
 
-                await _client.ExecuteQueryAsync(query, parameters);
+                var result = await _client.ExecuteQueryAsync(query, parameters);
+                return MapRowToEntity(result.FirstOrDefault());
             }
         }
 

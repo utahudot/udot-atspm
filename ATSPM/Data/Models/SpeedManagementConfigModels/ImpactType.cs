@@ -1,10 +1,27 @@
 ﻿namespace ATSPM.Data.Models.SpeedManagementConfigModels
 {
-    public class ImpactType
+    using System;
+
+    public class ImpactType : IEquatable<ImpactType>
     {
         public int? Id { get; set; }
         public string Name { get; set; }
         public string? Description { get; set; }
 
+        public override bool Equals(object? obj)
+        {
+            return Equals(obj as ImpactType);
+        }
+
+        public bool Equals(ImpactType? other)
+        {
+            if (other == null)
+                return false;
+
+            return Id == other.Id &&
+                   Name == other.Name &&
+                   Description == other.Description;
+        }
     }
+
 }

@@ -184,7 +184,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementAggregationRepositori
             }
         }
 
-        public override async Task UpdateAsync(ImpactType item)
+        public override async Task<ImpactType> UpdateAsync(ImpactType item)
         {
             var oldRow = await LookupAsync(item.Id);
             if (oldRow != null)
@@ -193,14 +193,16 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementAggregationRepositori
                 var query = $"UPDATE `{_datasetId}.{_tableId}` SET Name = '{item.Name}', Description = '{item.Description}' WHERE Id = @key";
                 var parameters = new List<BigQueryParameter>();
 
-                await _client.ExecuteQueryAsync(query, parameters);
+                var result = await _client.ExecuteQueryAsync(query, parameters);
+                return MapRowToEntity(result.FirstOrDefault());
             }
             else
             {
                 var query = $"INSERT INTO `{_datasetId}.{_tableId}` (Name, Description) VALUES ( '{item.Name}', '{item.Description}')";
                 var parameters = new List<BigQueryParameter>();
 
-                await _client.ExecuteQueryAsync(query, parameters);
+                var result = await _client.ExecuteQueryAsync(query, parameters);
+                return MapRowToEntity(result.FirstOrDefault());
             }
         }
 

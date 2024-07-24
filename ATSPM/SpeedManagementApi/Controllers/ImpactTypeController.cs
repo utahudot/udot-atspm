@@ -43,7 +43,7 @@ namespace SpeedManagementApi.Controllers
                 return BadRequest();
             }
 
-            await impactTypeService.UpdateAsync(impactType);
+            await impactTypeService.UpsertAsync(impactType);
             return NoContent();
         }
 
@@ -62,7 +62,7 @@ namespace SpeedManagementApi.Controllers
                 return NotFound();
             }
 
-            await impactTypeService.UpdateAsync(impactType);
+            await impactTypeService.UpsertAsync(impactType);
             return NoContent();
         }
 
