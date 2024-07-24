@@ -18,7 +18,7 @@ namespace SpeedManagementApi.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Impact>>> ListImpacts()
         {
-            var Impacts = await impactService.ListImpacts();
+            IReadOnlyList<Impact> Impacts = await impactService.ListImpacts();
             return Ok(Impacts);
         }
 
@@ -26,12 +26,12 @@ namespace SpeedManagementApi.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Impact>> GetImpactById(int id)
         {
-            var Impact = await impactService.GetByIdAsync(id);
-            if (Impact == null)
+            Impact impact = await impactService.GetImpactById(id);
+            if (impact == null)
             {
                 return NotFound();
             }
-            return Ok(Impact);
+            return Ok(impact);
         }
 
         // POST: /Impact
@@ -43,8 +43,8 @@ namespace SpeedManagementApi.Controllers
                 return BadRequest();
             }
 
-            await impactService.UpdateAsync(Impact);
-            return NoContent();
+            Impact impact = await impactService.UpsertImpact(Impact);
+            return Ok(impact);
         }
 
         // PUT: /Impact/{id}
@@ -56,41 +56,64 @@ namespace SpeedManagementApi.Controllers
                 return BadRequest();
             }
 
-            var existingImpact = await impactService.GetByIdAsync(id);
+            var existingImpact = await impactService.GetImpactById(id);
             if (existingImpact == null)
             {
                 return NotFound();
             }
 
-            await impactService.UpdateAsync(Impact);
-            return NoContent();
+            Impact impact = await impactService.UpsertImpact(Impact);
+            return Ok(impact);
+        }
+
+        // PUT: /Impact/{id/segment/{segment}
+        [HttpPut("{id}/segments/{segmentId}")]
+        public async Task<IActionResult> AddImpactedSegment(int id, int segmentId, [FromBody] Impact Impact)
+        {
+            if (Impact == null || id != Impact.Id)
+            {
+                return BadRequest();
+            }
+
+            var existingImpact = await impactService.GetImpactById(id);
+            if (existingImpact == null)
+            {
+                return NotFound();
+            }
+
+            Impact impact = await impactService.UpsertImpactedSegment(id, segmentId);
+            return Ok(impact);
         }
 
         // DELETE: /Impact/{id}
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteImpact(int id)
         {
-            var existingImpact = await impactService.GetByIdAsync(id);
+            var existingImpact = await impactService.GetImpactById(id);
             if (existingImpact == null)
             {
                 return NotFound();
             }
 
-            await impactService.DeleteAsync(existingImpact);
+            await impactService.DeleteImpact(existingImpact);
             return NoContent();
         }
 
-        // DELETE: /Impact/{id}
-        [HttpDelete("{id}/{segment}")]
-        public async Task<IActionResult> DeleteImpactedSegment(int id, int segment)
+        // DELETE: /Impact/{id}/segment/{segment}
+        [HttpDelete("{id}/segments/{segmentId}")]
+        public async Task<IActionResult> DeleteImpactedSegment(int id, int segmentId)
         {
-            var existingImpact = await impactService.GetByIdAsync(id);
+            Impact existingImpact = await impactService.GetImpactById(id);
             if (existingImpact == null)
             {
                 return NotFound();
             }
-
-            await impactService.DeleteAsync(existingImpact);
+            bool contains = existingImpact.Segments.Select(i => i.Id == segmentId).Any();
+            if (!contains)
+            {
+                return NotFound();
+            }
+            await impactService.DeleteImpactedSegment(id, segmentId);
             return NoContent();
         }
 

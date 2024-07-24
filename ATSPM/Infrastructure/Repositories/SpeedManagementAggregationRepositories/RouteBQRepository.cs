@@ -1,11 +1,11 @@
 ﻿using ATSPM.Application.Repositories.SpeedManagementAggregationRepositories;
 using ATSPM.Data.Models.SpeedManagementConfigModels;
-using System;
 using Google.Cloud.BigQuery.V2;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 
 namespace ATSPM.Infrastructure.Repositories.SpeedManagementAggregationRepositories
 {
@@ -71,22 +71,65 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementAggregationRepositori
 
         public override Route Lookup(object key)
         {
-            throw new NotImplementedException();
+            if (key == null)
+            {
+                return null;
+            }
+            var query = $"SELECT * FROM `{_datasetId}.{_tableId}` WHERE Id = @key";
+            var parameters = new List<BigQueryParameter>
+            {
+                    new BigQueryParameter("key", BigQueryDbType.Int64, key)
+                };
+            var results = _client.ExecuteQuery(query, parameters);
+            Task<Route> task = Task.FromResult(results.Select(row => MapRowToEntity(row)).FirstOrDefault());
+            return task.Result;
         }
 
         public override Route Lookup(Route item)
         {
-            throw new NotImplementedException();
+            if (item.Id == null)
+            {
+                return null;
+            }
+            var query = $"SELECT * FROM `{_datasetId}.{_tableId}` WHERE Id = @key";
+            var parameters = new List<BigQueryParameter>
+                {
+                    new BigQueryParameter("key", BigQueryDbType.Int64, item.Id)
+                };
+
+            var results = _client.ExecuteQuery(query, parameters);
+            Task<Route> task = Task.FromResult(results.Select(row => MapRowToEntity(row)).FirstOrDefault());
+            return task.Result;
         }
 
-        public override Task<Route> LookupAsync(object key)
+        public override async Task<Route> LookupAsync(object key)
         {
-            throw new NotImplementedException();
+            if (key == null)
+            {
+                return null;
+            }
+            var query = $"SELECT * FROM `{_datasetId}.{_tableId}` WHERE Id = @key";
+            var parameters = new List<BigQueryParameter>
+            {
+                    new BigQueryParameter("key", BigQueryDbType.Int64, key)
+                };
+            var results = await _client.ExecuteQueryAsync(query, parameters);
+            return results.Select(row => MapRowToEntity(row)).FirstOrDefault();
         }
 
-        public override Task<Route> LookupAsync(Route item)
+        public override async Task<Route> LookupAsync(Route item)
         {
-            throw new NotImplementedException();
+            if (item.Id == null)
+            {
+                return null;
+            }
+            var query = $"SELECT * FROM `{_datasetId}.{_tableId}` WHERE Id = @key";
+            var parameters = new List<BigQueryParameter>
+                {
+                    new BigQueryParameter("key", BigQueryDbType.Int64, item.Id)
+                };
+            var results = await _client.ExecuteQueryAsync(query, parameters);
+            return results.Select(row => MapRowToEntity(row)).FirstOrDefault();
         }
 
         public override void Remove(Route item)
