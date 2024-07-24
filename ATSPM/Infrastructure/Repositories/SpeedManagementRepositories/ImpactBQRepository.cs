@@ -176,7 +176,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             else
             {
                 var query = $"INSERT INTO `{_datasetId}.{_tableId}` " +
-                    $"(ID, Description, Start, End, StartMile, EndMile, Shape, ImpactTypeId, CreatedOn, CreatedBy, UpdatedOn, UpdatedBy, DeletedOn, DeletedBy) " +
+                    $"(Id, Description, Start, End, StartMile, EndMile, Shape, ImpactTypeId, CreatedOn, CreatedBy, UpdatedOn, UpdatedBy, DeletedOn, DeletedBy) " +
                     $"VALUES (" +
                     $"GENERATE_UUID(), " + // No quotes for the function
                     $"'{item.Description}', " +
