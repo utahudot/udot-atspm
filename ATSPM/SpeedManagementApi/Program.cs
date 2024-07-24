@@ -1,11 +1,10 @@
 using Asp.Versioning;
 using ATSPM.Application.Business.RouteSpeed;
 using ATSPM.Application.Repositories;
-using ATSPM.Application.Repositories.SpeedManagementAggregationRepositories;
+using ATSPM.Application.Repositories.SpeedManagementRepositories;
 using ATSPM.Infrastructure.Extensions;
 using ATSPM.Infrastructure.Repositories;
-using ATSPM.Infrastructure.Repositories.ConfigurationRepositories;
-using ATSPM.Infrastructure.Repositories.SpeedManagementAggregationRepositories;
+using ATSPM.Infrastructure.Repositories.SpeedManagementRepositories;
 using ATSPM.Infrastructure.Services.SpeedManagementServices;
 using Google.Cloud.BigQuery.V2;
 using Microsoft.AspNetCore.HttpLogging;

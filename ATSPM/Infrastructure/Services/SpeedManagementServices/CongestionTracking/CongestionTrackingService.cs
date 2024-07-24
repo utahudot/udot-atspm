@@ -1,11 +1,9 @@
 ﻿
-using ATSPM.Application.Business.RouteSpeed;
-using ATSPM.Application.Repositories.SpeedManagementAggregationRepositories;
+using ATSPM.Application.Repositories.SpeedManagementRepositories;
 using ATSPM.Data.Models.SpeedManagement;
 using ATSPM.Data.Models.SpeedManagement.CongestionTracking;
 using ATSPM.Data.Models.SpeedManagementAggregation;
 using ATSPM.Data.Models.SpeedManagementConfigModels;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;

@@ -1,5 +1,5 @@
 ﻿using ATSPM.Application.Business.RouteSpeed;
-using ATSPM.Application.Repositories.SpeedManagementAggregationRepositories;
+using ATSPM.Application.Repositories.SpeedManagementRepositories;
 using ATSPM.Data.Models.SpeedManagement.CongestionTracking;
 using ATSPM.Data.Models.SpeedManagementAggregation;
 using ATSPM.Domain.Extensions;
@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ATSPM.Infrastructure.Repositories.ConfigurationRepositories
+namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
 {
     ///<inheritdoc cref="IHourlySpeedRepository"/>
     public class HourlySpeedBQRepository : ATSPMRepositoryBQBase<HourlySpeed>, IHourlySpeedRepository

@@ -1,4 +1,4 @@
-﻿using ATSPM.Application.Repositories.SpeedManagementAggregationRepositories;
+﻿using ATSPM.Application.Repositories.SpeedManagementRepositories;
 using ATSPM.Data.Models.SpeedManagementConfigModels;
 using Google.Cloud.BigQuery.V2;
 using Microsoft.Extensions.Logging;
@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ATSPM.Infrastructure.Repositories.SpeedManagementAggregationRepositories
+namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
 {
     ///<inheritdoc cref="ISegmentRepository"/>
     public class SegmentBQRepository : ATSPMRepositoryBQBase<Segment>, ISegmentRepository
