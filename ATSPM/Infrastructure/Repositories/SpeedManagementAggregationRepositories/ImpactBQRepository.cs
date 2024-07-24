@@ -45,7 +45,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementAggregationRepositori
             var query = $"SELECT * FROM `{_datasetId}.{_tableId}` WHERE Id = @key";
             var parameters = new List<BigQueryParameter>
             {
-                    new BigQueryParameter("key", BigQueryDbType.Int64, key)
+                    new BigQueryParameter("key", BigQueryDbType.String, key)
                 };
             var results = _client.ExecuteQuery(query, parameters);
             Task<Impact> task = Task.FromResult(results.Select(row => MapRowToEntity(row)).FirstOrDefault());
@@ -58,7 +58,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementAggregationRepositori
             var query = $"SELECT * FROM `{_datasetId}.{_tableId}` WHERE Id = @key";
             var parameters = new List<BigQueryParameter>
                 {
-                    new BigQueryParameter("key", BigQueryDbType.Int64, item.Id)
+                    new BigQueryParameter("key", BigQueryDbType.String, item.Id)
                 };
 
             var results = _client.ExecuteQuery(query, parameters);
@@ -72,7 +72,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementAggregationRepositori
             var query = $"SELECT * FROM `{_datasetId}.{_tableId}` WHERE Id = @key";
             var parameters = new List<BigQueryParameter>
             {
-                    new BigQueryParameter("key", BigQueryDbType.Int64, key)
+                    new BigQueryParameter("key", BigQueryDbType.String, key)
                 };
             var results = await _client.ExecuteQueryAsync(query, parameters);
             return results.Select(row => MapRowToEntity(row)).FirstOrDefault();
@@ -84,7 +84,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementAggregationRepositori
             var query = $"SELECT * FROM `{_datasetId}.{_tableId}` WHERE Id = @key";
             var parameters = new List<BigQueryParameter>
                 {
-                    new BigQueryParameter("key", BigQueryDbType.Int64, item.Id)
+                    new BigQueryParameter("key", BigQueryDbType.String, item.Id)
                 };
             var results = await _client.ExecuteQueryAsync(query, parameters);
             return results.Select(row => MapRowToEntity(row)).FirstOrDefault();
@@ -96,7 +96,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementAggregationRepositori
             var query = $"DELETE FROM `{_datasetId}.{_tableId}` WHERE Id = @key";
             var parameters = new List<BigQueryParameter>
              {
-                 new BigQueryParameter("key", BigQueryDbType.Int64, item)
+                 new BigQueryParameter("key", BigQueryDbType.String, item)
              };
             _client.ExecuteQueryAsync(query, parameters);
         }
@@ -107,7 +107,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementAggregationRepositori
             var query = $"DELETE FROM `{_datasetId}.{_tableId}` WHERE Id = @key";
             var parameters = new List<BigQueryParameter>
              {
-                 new BigQueryParameter("key", BigQueryDbType.Int64, item)
+                 new BigQueryParameter("key", BigQueryDbType.String, item)
              };
             await _client.ExecuteQueryAsync(query, parameters);
         }
@@ -176,8 +176,9 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementAggregationRepositori
             else
             {
                 var query = $"INSERT INTO `{_datasetId}.{_tableId}` " +
-                    $"(Description, Start, End, StartMile, EndMile, Shape, ImpactTypeId, CreatedOn, CreatedBy, UpdatedOn, UpdatedBy, DeletedOn, DeletedBy) " +
+                    $"(Id, Description, Start, End, StartMile, EndMile, Shape, ImpactTypeId, CreatedOn, CreatedBy, UpdatedOn, UpdatedBy, DeletedOn, DeletedBy) " +
                     $"VALUES (" +
+                    $"GENERATE_UUID(), " +  // No quotes for the function
                     $"'{item.Description}', " +
                     $"'{item.Start:O}', " +
                     $"{(item.End.HasValue ? $"'{item.End:O}'" : "NULL")}, " +
@@ -244,8 +245,9 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementAggregationRepositori
             else
             {
                 var query = $"INSERT INTO `{_datasetId}.{_tableId}` " +
-                    $"(Description, Start, End, StartMile, EndMile, Shape, ImpactTypeId, CreatedOn, CreatedBy, UpdatedOn, UpdatedBy, DeletedOn, DeletedBy) " +
+                    $"(Id, Description, Start, End, StartMile, EndMile, Shape, ImpactTypeId, CreatedOn, CreatedBy, UpdatedOn, UpdatedBy, DeletedOn, DeletedBy) " +
                     $"VALUES (" +
+                    $"GENERATE_UUID(), " +  // No quotes for the function
                     $"'{item.Description}', " +
                     $"'{item.Start:O}', " +
                     $"{(item.End.HasValue ? $"'{item.End:O}'" : "NULL")}, " +
@@ -312,8 +314,9 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementAggregationRepositori
             else
             {
                 var query = $"INSERT INTO `{_datasetId}.{_tableId}` " +
-                    $"(Description, Start, End, StartMile, EndMile, Shape, ImpactTypeId, CreatedOn, CreatedBy, UpdatedOn, UpdatedBy, DeletedOn, DeletedBy) " +
+                    $"(Id, Description, Start, End, StartMile, EndMile, Shape, ImpactTypeId, CreatedOn, CreatedBy, UpdatedOn, UpdatedBy, DeletedOn, DeletedBy) " +
                     $"VALUES (" +
+                    $"GENERATE_UUID(), " +  // No quotes for the function
                     $"'{item.Description}', " +
                     $"'{item.Start:O}', " +
                     $"{(item.End.HasValue ? $"'{item.End:O}'" : "NULL")}, " +
@@ -376,14 +379,14 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementAggregationRepositori
 
             return new Impact
             {
-                Id = row.GetPropertyValue<int>("Id"),
+                Id = row.GetPropertyValue<Guid>("Id"),
                 Description = row.GetPropertyValue<string>("Description"),
                 Start = row.GetPropertyValue<DateTime>("Start"),
                 End = row.GetPropertyValue<DateTime?>("End"),
                 StartMile = row.GetPropertyValue<string>("StartMile"),
                 EndMile = row.GetPropertyValue<string>("EndMile"),
                 Shape = wktReader.Read(row.GetPropertyValue<string>("Shape")),  // Assuming a FromString method in Geometry class
-                ImpactTypeId = row.GetPropertyValue<int>("ImpactTypeId"),
+                ImpactTypeId = row.GetPropertyValue<Guid>("ImpactTypeId"),
                 CreatedOn = row.GetPropertyValue<DateTime>("CreatedOn"),
                 CreatedBy = row.GetPropertyValue<string>("CreatedBy"),
                 UpdatedOn = row.GetPropertyValue<DateTime?>("UpdatedOn"),

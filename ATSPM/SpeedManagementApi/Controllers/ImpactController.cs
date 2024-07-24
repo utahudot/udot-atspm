@@ -27,7 +27,7 @@ namespace SpeedManagementApi.Controllers
 
         // GET: /Impact/{id}
         [HttpGet("{id}")]
-        public async Task<ActionResult<Impact>> GetImpactById(int id)
+        public async Task<ActionResult<Impact>> GetImpactById(Guid id)
         {
             Impact impact = await impactService.GetImpactById(id);
             if (impact == null)
@@ -64,7 +64,7 @@ namespace SpeedManagementApi.Controllers
 
         // PUT: /Impact/{id}
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateImpact(int id, [FromBody] Impact Impact)
+        public async Task<IActionResult> UpdateImpact(Guid id, [FromBody] Impact Impact)
         {
             if (Impact == null || id != Impact.Id)
             {
@@ -95,7 +95,7 @@ namespace SpeedManagementApi.Controllers
 
         // PUT: /Impact/{id/segment/{segment}
         [HttpPut("{id}/segments/{segmentId}")]
-        public async Task<IActionResult> AddImpactedSegment(int id, int segmentId, [FromBody] Impact Impact)
+        public async Task<IActionResult> AddImpactedSegment(Guid id, Guid segmentId, [FromBody] Impact Impact)
         {
             if (Impact == null || id != Impact.Id)
             {
@@ -114,7 +114,7 @@ namespace SpeedManagementApi.Controllers
 
         // DELETE: /Impact/{id}
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteImpact(int id)
+        public async Task<IActionResult> DeleteImpact(Guid id)
         {
             var existingImpact = await impactService.GetImpactById(id);
             if (existingImpact == null)
@@ -144,14 +144,14 @@ namespace SpeedManagementApi.Controllers
 
         // DELETE: /Impact/{id}/segment/{segment}
         [HttpDelete("{id}/segments/{segmentId}")]
-        public async Task<IActionResult> DeleteImpactedSegment(int id, int segmentId)
+        public async Task<IActionResult> DeleteImpactedSegment(Guid id, Guid segmentId)
         {
             Impact existingImpact = await impactService.GetImpactById(id);
             if (existingImpact == null)
             {
                 return NotFound();
             }
-            bool contains = existingImpact.Segments.Select(i => i.Id == segmentId).Any();
+            bool contains = existingImpact.Segments.Select(i => i.Id.Equals(segmentId)).Any();
             if (!contains)
             {
                 return NotFound();
