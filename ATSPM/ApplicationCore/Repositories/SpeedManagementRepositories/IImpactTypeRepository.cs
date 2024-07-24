@@ -3,7 +3,7 @@ using ATSPM.Domain.Services;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace ATSPM.Application.Repositories.SpeedManagementAggregationRepositories
+namespace ATSPM.Application.Repositories.SpeedManagementRepositories
 {
     public interface IImpactTypeRepository : IAsyncRepository<ImpactType>
     {

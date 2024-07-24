@@ -1,7 +1,7 @@
 ﻿using ATSPM.Data.Models.SpeedConfigModels;
 using ATSPM.Domain.Services;
 
-namespace ATSPM.Application.Repositories.SpeedManagementAggregationRepositories
+namespace ATSPM.Application.Repositories.SpeedManagementRepositories
 {
     public interface IMonthlySpeedRepository : IAsyncRepository<MonthlySpeed>
     {

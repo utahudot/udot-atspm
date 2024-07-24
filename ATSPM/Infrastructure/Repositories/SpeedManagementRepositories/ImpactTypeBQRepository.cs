@@ -1,4 +1,4 @@
-﻿using ATSPM.Application.Repositories.SpeedManagementAggregationRepositories;
+﻿using ATSPM.Application.Repositories.SpeedManagementRepositories;
 using ATSPM.Data.Models.SpeedManagementConfigModels;
 using ATSPM.Domain.Extensions;
 using Google.Cloud.BigQuery.V2;
@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ATSPM.Infrastructure.Repositories.SpeedManagementAggregationRepositories
+namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
 {
     ///<inheritdoc cref="IImpactTypeRepository"/>
     public class ImpactTypeBQRepository : ATSPMRepositoryBQBase<ImpactType>, IImpactTypeRepository

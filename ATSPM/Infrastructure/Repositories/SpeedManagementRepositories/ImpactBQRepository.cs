@@ -1,4 +1,4 @@
-﻿using ATSPM.Application.Repositories.SpeedManagementAggregationRepositories;
+﻿using ATSPM.Application.Repositories.SpeedManagementRepositories;
 using ATSPM.Data.Models.SpeedManagementConfigModels;
 using ATSPM.Domain.Extensions;
 using Google.Cloud.BigQuery.V2;
@@ -10,9 +10,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ATSPM.Infrastructure.Repositories.SpeedManagementAggregationRepositories
+namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
 {
-    ///<inheritdoc cref="IRouteRepository"/>
+    ///<inheritdoc cref="ISegmentRepository"/>
     public class ImpactBQRepository : ATSPMRepositoryBQBase<Impact>, IImpactRepository
     {
         private readonly BigQueryClient _client;
@@ -178,7 +178,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementAggregationRepositori
                 var query = $"INSERT INTO `{_datasetId}.{_tableId}` " +
                     $"(Id, Description, Start, End, StartMile, EndMile, Shape, ImpactTypeId, CreatedOn, CreatedBy, UpdatedOn, UpdatedBy, DeletedOn, DeletedBy) " +
                     $"VALUES (" +
-                    $"GENERATE_UUID(), " +  // No quotes for the function
+                    $"GENERATE_UUID(), " + // No quotes for the function
                     $"'{item.Description}', " +
                     $"'{item.Start:O}', " +
                     $"{(item.End.HasValue ? $"'{item.End:O}'" : "NULL")}, " +
@@ -247,7 +247,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementAggregationRepositori
                 var query = $"INSERT INTO `{_datasetId}.{_tableId}` " +
                     $"(Id, Description, Start, End, StartMile, EndMile, Shape, ImpactTypeId, CreatedOn, CreatedBy, UpdatedOn, UpdatedBy, DeletedOn, DeletedBy) " +
                     $"VALUES (" +
-                    $"GENERATE_UUID(), " +  // No quotes for the function
+                    $"GENERATE_UUID(), " + // No quotes for the function
                     $"'{item.Description}', " +
                     $"'{item.Start:O}', " +
                     $"{(item.End.HasValue ? $"'{item.End:O}'" : "NULL")}, " +
@@ -316,7 +316,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementAggregationRepositori
                 var query = $"INSERT INTO `{_datasetId}.{_tableId}` " +
                     $"(Id, Description, Start, End, StartMile, EndMile, Shape, ImpactTypeId, CreatedOn, CreatedBy, UpdatedOn, UpdatedBy, DeletedOn, DeletedBy) " +
                     $"VALUES (" +
-                    $"GENERATE_UUID(), " +  // No quotes for the function
+                    $"GENERATE_UUID(), " + // No quotes for the function
                     $"'{item.Description}', " +
                     $"'{item.Start:O}', " +
                     $"{(item.End.HasValue ? $"'{item.End:O}'" : "NULL")}, " +
