@@ -1,4 +1,4 @@
-﻿using ATSPM.Application.Repositories.SpeedManagementAggregationRepositories;
+﻿using ATSPM.Application.Repositories.SpeedManagementRepositories;
 using ATSPM.Data.Models.SpeedManagementAggregation;
 using System;
 using System.Collections.Generic;
@@ -105,7 +105,7 @@ namespace ATSPM.Application.Business.RouteSpeed
             foreach (var sourceId in sources)
             {
                 var monthlyAverages = await this.hourlySpeedRepository.GetMonthlyAveragesAsync(options.RouteId, options.StartDate, options.EndDate, options.DaysOfWeek.ToString(), sourceId);
-                var dailyAverages = await this.hourlySpeedRepository.GetDailyAveragesAsync(options.RouteId, options.StartDate, options.EndDate, options.DaysOfWeek.ToString(), sourceId);
+                var dailyAverages = await this.hourlySpeedRepository.GetDailyAveragesAsync(options.RouteId, options.StartDate, options.EndDate, options.DaysOfWeek.ToString());
 
                 routeSpeeds.MonthlyHistoricalRouteData.Add(new MonthlyHistoricalRouteData
                 {

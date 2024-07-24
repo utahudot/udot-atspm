@@ -1,7 +1,7 @@
 ﻿using ATSPM.Data;
 using ATSPM.Domain.Services;
 using ATSPM.Domain.Specifications;
-using ATSPM.Infrastructure.Repositories.ConfigurationRepositories;
+using ATSPM.Infrastructure.Repositories.SpeedManagementRepositories;
 using Google.Cloud.BigQuery.V2;
 using Microsoft.Extensions.Logging;
 using System;
