@@ -20,6 +20,6 @@ namespace ATSPM.Data.Models.SpeedManagementConfigModels
         public DateTime? DeletedOn { get; set; }
         public string? DeletedBy { get; set; }
         public List<Guid>? SegmentIds { get; set; }
-        public List<Route>? Segments { get; set; }
+        public List<Segment>? Segments { get; set; }
     }
 }

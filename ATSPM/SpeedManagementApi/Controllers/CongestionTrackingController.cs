@@ -1,4 +1,4 @@
-﻿using ATSPM.Application.SpeedManagement.Business.CongestionTracking;
+﻿using ATSPM.Application.Repositories.SpeedManagementAggregationRepositories;
 using ATSPM.Data.Models.SpeedManagement.CongestionTracking;
 using Microsoft.AspNetCore.Mvc;
 

@@ -52,7 +52,6 @@
     <Folder Include="Analysis\SplitMonitor\" />
     <Folder Include="Attributes\" />
     <Folder Include="Events\" />
-    <Folder Include="SpeedManagement\Repositories\" />
   </ItemGroup>
 
   <ItemGroup>

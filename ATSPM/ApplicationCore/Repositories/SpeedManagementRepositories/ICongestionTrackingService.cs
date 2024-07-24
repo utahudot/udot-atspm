@@ -1,8 +1,7 @@
-﻿
-using ATSPM.Data.Models.SpeedManagement.CongestionTracking;
+﻿using ATSPM.Data.Models.SpeedManagement.CongestionTracking;
 using System.Threading.Tasks;
 
-namespace ATSPM.Application.SpeedManagement.Business.CongestionTracking
+namespace ATSPM.Application.Repositories.SpeedManagementRepositories
 {
     public interface ICongestionTrackingService
     {

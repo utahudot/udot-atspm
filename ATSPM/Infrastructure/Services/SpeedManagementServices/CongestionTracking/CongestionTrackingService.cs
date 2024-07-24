@@ -1,7 +1,6 @@
 ﻿
 using ATSPM.Application.Business.RouteSpeed;
 using ATSPM.Application.Repositories.SpeedManagementAggregationRepositories;
-using ATSPM.Application.SpeedManagement.Business.CongestionTracking;
 using ATSPM.Data.Models.SpeedManagement;
 using ATSPM.Data.Models.SpeedManagement.CongestionTracking;
 using ATSPM.Data.Models.SpeedManagementAggregation;
