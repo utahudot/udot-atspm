@@ -159,9 +159,9 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementAggregationRepositori
                 queryBuilder.Append($"Shape = '{item.Shape.AsText()}', ");
                 queryBuilder.Append($"ImpactTypeId = {item.ImpactTypeId}, ");
                 queryBuilder.Append($"UpdatedOn = '{DateTime.UtcNow:O}', ");
-                queryBuilder.Append($"UpdatedBy = {(item.UpdatedBy.HasValue ? $"'{item.UpdatedBy}'" : "NULL")}, ");
+                queryBuilder.Append($"UpdatedBy = {(string.IsNullOrEmpty(item.UpdatedBy) ? "NULL" : $"'{item.UpdatedBy}'")}, ");
                 queryBuilder.Append($"DeletedOn = {(item.DeletedOn.HasValue ? $"'{item.DeletedOn:O}'" : "NULL")}, ");
-                queryBuilder.Append($"DeletedBy = {(item.DeletedBy.HasValue ? $"'{item.DeletedBy}'" : "NULL")}, ");
+                queryBuilder.Append($"DeletedBy = {(string.IsNullOrEmpty(item.DeletedBy) ? "NULL" : $"'{item.DeletedBy}'")}, ");
                 // Remove the last comma and space
                 queryBuilder.Length -= 2;
 
@@ -226,9 +226,9 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementAggregationRepositori
                 queryBuilder.Append($"Shape = '{item.Shape.AsText()}', ");
                 queryBuilder.Append($"ImpactTypeId = {item.ImpactTypeId}, ");
                 queryBuilder.Append($"UpdatedOn = '{DateTime.UtcNow:O}', ");
-                queryBuilder.Append($"UpdatedBy = {(item.UpdatedBy.HasValue ? $"'{item.UpdatedBy}'" : "NULL")}, ");
+                queryBuilder.Append($"UpdatedBy = {(string.IsNullOrEmpty(item.UpdatedBy) ? "NULL" : $"'{item.UpdatedBy}'")}, ");
                 queryBuilder.Append($"DeletedOn = {(item.DeletedOn.HasValue ? $"'{item.DeletedOn:O}'" : "NULL")}, ");
-                queryBuilder.Append($"DeletedBy = {(item.DeletedBy.HasValue ? $"'{item.DeletedBy}'" : "NULL")}, ");
+                queryBuilder.Append($"DeletedBy = {(string.IsNullOrEmpty(item.DeletedBy) ? "NULL" : $"'{item.DeletedBy}'")}, ");
                 // Remove the last comma and space
                 queryBuilder.Length -= 2;
 
@@ -295,9 +295,9 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementAggregationRepositori
                 queryBuilder.Append($"Shape = '{item.Shape.AsText()}', ");
                 queryBuilder.Append($"ImpactTypeId = {item.ImpactTypeId}, ");
                 queryBuilder.Append($"UpdatedOn = '{DateTime.UtcNow:O}', ");
-                queryBuilder.Append($"UpdatedBy = {(item.UpdatedBy.HasValue ? $"'{item.UpdatedBy}'" : "NULL")}, ");
+                queryBuilder.Append($"UpdatedBy = {(string.IsNullOrEmpty(item.UpdatedBy) ? "NULL" : $"'{item.UpdatedBy}'")}, ");
                 queryBuilder.Append($"DeletedOn = {(item.DeletedOn.HasValue ? $"'{item.DeletedOn:O}'" : "NULL")}, ");
-                queryBuilder.Append($"DeletedBy = {(item.DeletedBy.HasValue ? $"'{item.DeletedBy}'" : "NULL")}, ");
+                queryBuilder.Append($"DeletedBy = {(string.IsNullOrEmpty(item.DeletedBy) ? "NULL" : $"'{item.DeletedBy}'")}, ");
                 // Remove the last comma and space
                 queryBuilder.Length -= 2;
 
@@ -307,8 +307,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementAggregationRepositori
 
                 var parameters = new List<BigQueryParameter>();
 
-                var result = await _client.ExecuteQueryAsync(query, parameters);
-                return MapRowToEntity(result.FirstOrDefault());
+                await _client.ExecuteQueryAsync(query, parameters);
             }
             else
             {
@@ -330,8 +329,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementAggregationRepositori
                     $"NULL)";    // DeletedBy is set to NULL
                 var parameters = new List<BigQueryParameter>();
 
-                var result = await _client.ExecuteQueryAsync(query, parameters);
-                return MapRowToEntity(result.FirstOrDefault());
+                await _client.ExecuteQueryAsync(query, parameters);
             }
         }
 
@@ -387,11 +385,11 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementAggregationRepositori
                 Shape = wktReader.Read(row.GetPropertyValue<string>("Shape")),  // Assuming a FromString method in Geometry class
                 ImpactTypeId = row.GetPropertyValue<int>("ImpactTypeId"),
                 CreatedOn = row.GetPropertyValue<DateTime>("CreatedOn"),
-                CreatedBy = row.GetPropertyValue<Guid>("CreatedBy"),
+                CreatedBy = row.GetPropertyValue<string>("CreatedBy"),
                 UpdatedOn = row.GetPropertyValue<DateTime?>("UpdatedOn"),
-                UpdatedBy = row.GetPropertyValue<Guid>("UpdatedBy"),
+                UpdatedBy = row.GetPropertyValue<string>("UpdatedBy"),
                 DeletedOn = row.GetPropertyValue<DateTime?>("DeletedOn"),
-                DeletedBy = row.GetPropertyValue<Guid>("DeletedBy")
+                DeletedBy = row.GetPropertyValue<string>("DeletedBy")
             };
         }
     }

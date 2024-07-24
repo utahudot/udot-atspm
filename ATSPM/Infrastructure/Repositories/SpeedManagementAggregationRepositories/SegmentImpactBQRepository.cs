@@ -203,7 +203,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementAggregationRepositori
 
         public override async Task UpdateAsync(SegmentImpact item)
         {
-            var oldRow = await LookupAsync(item.Id);
+            var oldRow = await LookupAsync(item);
             if (oldRow != null)
             {
                 return;
