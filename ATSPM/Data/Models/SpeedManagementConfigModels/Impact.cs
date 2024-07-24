@@ -14,11 +14,11 @@ namespace ATSPM.Data.Models.SpeedManagementConfigModels
         public int ImpactTypeId { get; set; }
         public ImpactType? ImpactType { get; set; }
         public DateTime CreatedOn { get; set; }
-        public Guid CreatedBy { get; set; }
+        public string CreatedBy { get; set; }
         public DateTime? UpdatedOn { get; set; }
-        public Guid? UpdatedBy { get; set; }
+        public string? UpdatedBy { get; set; }
         public DateTime? DeletedOn { get; set; }
-        public Guid? DeletedBy { get; set; }
+        public string? DeletedBy { get; set; }
         public List<int>? SegmentIds { get; set; }
         public List<Route>? Segments { get; set; }
     }

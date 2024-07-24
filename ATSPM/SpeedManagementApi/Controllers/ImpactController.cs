@@ -1,9 +1,12 @@
 ﻿using ATSPM.Data.Models.SpeedManagementConfigModels;
 using ATSPM.Infrastructure.Services.SpeedManagementServices;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace SpeedManagementApi.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class ImpactController : ControllerBase
@@ -42,6 +45,18 @@ namespace SpeedManagementApi.Controllers
             {
                 return BadRequest();
             }
+            // Extract the user ID from the claims
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (userId != null)
+            {
+                Impact.CreatedBy = userId;
+                Impact.CreatedOn = DateTime.UtcNow;
+            }
+            else
+            {
+                return BadRequest();
+            }
 
             Impact impact = await impactService.UpsertImpact(Impact);
             return Ok(impact);
@@ -52,6 +67,18 @@ namespace SpeedManagementApi.Controllers
         public async Task<IActionResult> UpdateImpact(int id, [FromBody] Impact Impact)
         {
             if (Impact == null || id != Impact.Id)
+            {
+                return BadRequest();
+            }
+            // Extract the user ID from the claims
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (userId != null)
+            {
+                Impact.UpdatedBy = userId;
+                Impact.UpdatedOn = DateTime.UtcNow;
+            }
+            else
             {
                 return BadRequest();
             }
@@ -93,6 +120,22 @@ namespace SpeedManagementApi.Controllers
             if (existingImpact == null)
             {
                 return NotFound();
+            }
+
+            // Extract the user ID from the claims
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (userId != null)
+            {
+                var timeNow = DateTime.UtcNow;
+                existingImpact.DeletedBy = userId;
+                existingImpact.DeletedOn = timeNow;
+                existingImpact.UpdatedBy = userId;
+                existingImpact.UpdatedOn = timeNow;
+            }
+            else
+            {
+                return BadRequest();
             }
 
             await impactService.DeleteImpact(existingImpact);

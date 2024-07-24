@@ -98,7 +98,11 @@ namespace ATSPM.Infrastructure.Services.SpeedManagementServices
 
         private async Task<Impact> PopulateImpactAsync(Impact impact)
         {
-            IReadOnlyList<SegmentImpact> segmentImpacts = await segmentImpactRepository.GetSegmentsForImpactAsync(impact.Id);
+            if (impact == null || impact.Id == null)
+            {
+                return null;
+            }
+            IReadOnlyList<SegmentImpact> segmentImpacts = await segmentImpactRepository.GetSegmentsForImpactAsync((int)impact.Id);
             List<int> segmentIds = segmentImpacts.Select(i => i.SegmentId).ToList();
             List<Route> segments = await GetImpactTypesAsync(segmentIds);
             ImpactType impactType = await impactTypeRepository.LookupAsync(impact.Id);
