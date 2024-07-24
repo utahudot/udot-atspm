@@ -4,6 +4,7 @@ using ATSPM.Domain.Extensions;
 using Google.Cloud.BigQuery.V2;
 using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -63,7 +64,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             var query = $"SELECT * FROM `{_datasetId}.{_tableId}` WHERE Id = @key";
             var parameters = new List<BigQueryParameter>
             {
-                    new BigQueryParameter("key", BigQueryDbType.Int64, key)
+                    new BigQueryParameter("key", BigQueryDbType.String, key)
                 };
             var results = _client.ExecuteQuery(query, parameters);
             Task<ImpactType> task = Task.FromResult(results.Select(row => MapRowToEntity(row)).FirstOrDefault());
@@ -79,7 +80,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             var query = $"SELECT * FROM `{_datasetId}.{_tableId}` WHERE Id = @key";
             var parameters = new List<BigQueryParameter>
                 {
-                    new BigQueryParameter("key", BigQueryDbType.Int64, item.Id)
+                    new BigQueryParameter("key", BigQueryDbType.String, item.Id)
                 };
 
             var results = _client.ExecuteQuery(query, parameters);
@@ -96,7 +97,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             var query = $"SELECT * FROM `{_datasetId}.{_tableId}` WHERE Id = @key";
             var parameters = new List<BigQueryParameter>
             {
-                    new BigQueryParameter("key", BigQueryDbType.Int64, key)
+                    new BigQueryParameter("key", BigQueryDbType.String, key)
                 };
             var results = await _client.ExecuteQueryAsync(query, parameters);
             return results.Select(row => MapRowToEntity(row)).FirstOrDefault();
@@ -111,7 +112,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             var query = $"SELECT * FROM `{_datasetId}.{_tableId}` WHERE Id = @key";
             var parameters = new List<BigQueryParameter>
                 {
-                    new BigQueryParameter("key", BigQueryDbType.Int64, item.Id)
+                    new BigQueryParameter("key", BigQueryDbType.String, item.Id)
                 };
             var results = await _client.ExecuteQueryAsync(query, parameters);
             return results.Select(row => MapRowToEntity(row)).FirstOrDefault();
@@ -126,7 +127,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             var query = $"DELETE FROM `{_datasetId}.{_tableId}` WHERE Id = @key";
             var parameters = new List<BigQueryParameter>
              {
-                 new BigQueryParameter("key", BigQueryDbType.Int64, item)
+                 new BigQueryParameter("key", BigQueryDbType.String, item)
              };
             _client.ExecuteQueryAsync(query, parameters);
         }
@@ -140,7 +141,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             var query = $"DELETE FROM `{_datasetId}.{_tableId}` WHERE Id = @key";
             var parameters = new List<BigQueryParameter>
              {
-                 new BigQueryParameter("key", BigQueryDbType.Int64, item)
+                 new BigQueryParameter("key", BigQueryDbType.String, item)
              };
             await _client.ExecuteQueryAsync(query, parameters);
         }
@@ -177,7 +178,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             }
             else
             {
-                var query = $"INSERT INTO `{_datasetId}.{_tableId}` (Name, Description) VALUES ( '{item.Name}', '{item.Description}')";
+                var query = $"INSERT INTO `{_datasetId}.{_tableId}` (Id, Name, Description) VALUES (GENERATE_UUID(), '{item.Name}', '{item.Description}')";
                 var parameters = new List<BigQueryParameter>();
 
                 _client.ExecuteQuery(query, parameters);
@@ -198,7 +199,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             }
             else
             {
-                var query = $"INSERT INTO `{_datasetId}.{_tableId}` (Name, Description) VALUES ( '{item.Name}', '{item.Description}')";
+                var query = $"INSERT INTO `{_datasetId}.{_tableId}` (Id, Name, Description) VALUES (GENERATE_UUID(), '{item.Name}', '{item.Description}')";
                 var parameters = new List<BigQueryParameter>();
 
                 var result = await _client.ExecuteQueryAsync(query, parameters);
@@ -236,7 +237,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
         {
             return new ImpactType
             {
-                Id = row.GetPropertyValue<int>("Id"),
+                Id = row.GetPropertyValue<Guid>("Id"),
                 Name = row.GetPropertyValue<string>("Name"),
                 Description = row.GetPropertyValue<string>("Description")
             };

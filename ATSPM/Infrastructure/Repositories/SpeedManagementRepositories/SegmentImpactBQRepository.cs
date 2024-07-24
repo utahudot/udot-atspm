@@ -4,6 +4,7 @@ using ATSPM.Domain.Extensions;
 using Google.Cloud.BigQuery.V2;
 using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -36,12 +37,12 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             return result.Select(row => MapRowToEntity(row)).ToList().AsQueryable();
         }
 
-        public async Task<IReadOnlyList<SegmentImpact>> GetSegmentsForImpactAsync(int impactId)
+        public async Task<IReadOnlyList<SegmentImpact>> GetSegmentsForImpactAsync(Guid impactId)
         {
             var query = $"SELECT * FROM `{_datasetId}.{_tableId}` WHERE ImpactId = @impactId";
             var parameters = new List<BigQueryParameter>
             {
-                new BigQueryParameter("impactId", BigQueryDbType.Int64, impactId)
+                new BigQueryParameter("impactId", BigQueryDbType.String, impactId)
             };
 
             var result = await _client.ExecuteQueryAsync(query, parameters);
@@ -56,8 +57,8 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             var query = $"SELECT * FROM `{_datasetId}.{_tableId}` WHERE ImpactId = @impactId AND SegmentId = @segmentId";
             var parameters = new List<BigQueryParameter>
             {
-                new BigQueryParameter("impactId", BigQueryDbType.Int64, impactId),
-                new BigQueryParameter("segmentId", BigQueryDbType.Int64, segmentId)
+                new BigQueryParameter("impactId", BigQueryDbType.String, impactId),
+                new BigQueryParameter("segmentId", BigQueryDbType.String, segmentId)
             };
 
             var results = _client.ExecuteQuery(query, parameters);
@@ -72,8 +73,8 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             var query = $"SELECT * FROM `{_datasetId}.{_tableId}` WHERE ImpactId = @impactId AND SegmentId = @segmentId";
             var parameters = new List<BigQueryParameter>
             {
-                new BigQueryParameter("impactId", BigQueryDbType.Int64, impactId),
-                new BigQueryParameter("segmentId", BigQueryDbType.Int64, segmentId)
+                new BigQueryParameter("impactId", BigQueryDbType.String, impactId),
+                new BigQueryParameter("segmentId", BigQueryDbType.String, segmentId)
             };
 
             var results = _client.ExecuteQuery(query, parameters);
@@ -88,8 +89,8 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             var query = $"SELECT * FROM `{_datasetId}.{_tableId}` WHERE ImpactId = @impactId AND SegmentId = @segmentId";
             var parameters = new List<BigQueryParameter>
             {
-                new BigQueryParameter("impactId", BigQueryDbType.Int64, impactId),
-                new BigQueryParameter("segmentId", BigQueryDbType.Int64, segmentId)
+                new BigQueryParameter("impactId", BigQueryDbType.String, impactId),
+                new BigQueryParameter("segmentId", BigQueryDbType.String, segmentId)
             };
 
             var results = await _client.ExecuteQueryAsync(query, parameters);
@@ -103,8 +104,8 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             var query = $"SELECT * FROM `{_datasetId}.{_tableId}` WHERE ImpactId = @impactId AND SegmentId = @segmentId";
             var parameters = new List<BigQueryParameter>
             {
-                new BigQueryParameter("impactId", BigQueryDbType.Int64, impactId),
-                new BigQueryParameter("segmentId", BigQueryDbType.Int64, segmentId)
+                new BigQueryParameter("impactId", BigQueryDbType.String, impactId),
+                new BigQueryParameter("segmentId", BigQueryDbType.String, segmentId)
             };
 
             var results = await _client.ExecuteQueryAsync(query, parameters);
@@ -118,8 +119,8 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             var query = $"DELETE FROM `{_datasetId}.{_tableId}` WHERE ImpactId = @impactId AND SegmentId = @segmentId";
             var parameters = new List<BigQueryParameter>
             {
-                new BigQueryParameter("impactId", BigQueryDbType.Int64, impactId),
-                new BigQueryParameter("segmentId", BigQueryDbType.Int64, segmentId)
+                new BigQueryParameter("impactId", BigQueryDbType.String, impactId),
+                new BigQueryParameter("segmentId", BigQueryDbType.String, segmentId)
             };
             _client.ExecuteQueryAsync(query, parameters);
         }
@@ -131,8 +132,8 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             var query = $"DELETE FROM `{_datasetId}.{_tableId}` WHERE ImpactId = @impactId AND SegmentId = @segmentId";
             var parameters = new List<BigQueryParameter>
             {
-                new BigQueryParameter("impactId", BigQueryDbType.Int64, impactId),
-                new BigQueryParameter("segmentId", BigQueryDbType.Int64, segmentId)
+                new BigQueryParameter("impactId", BigQueryDbType.String, impactId),
+                new BigQueryParameter("segmentId", BigQueryDbType.String, segmentId)
             };
 
             await _client.ExecuteQueryAsync(query, parameters);
@@ -140,7 +141,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
 
         /// <inheritdoc/>
 
-        public async Task RemoveAllSegmentsFromImpactIdAsync(int? impactId)
+        public async Task RemoveAllSegmentsFromImpactIdAsync(Guid? impactId)
         {
             if (impactId == null)
             {
@@ -149,7 +150,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             var query = $"DELETE FROM `{_datasetId}.{_tableId}` WHERE ImpactId = @impactId";
             var parameters = new List<BigQueryParameter>
             {
-                new BigQueryParameter("impactId", BigQueryDbType.Int64, impactId)
+                new BigQueryParameter("impactId", BigQueryDbType.String, impactId)
             };
 
             await _client.ExecuteQueryAsync(query, parameters);
@@ -157,12 +158,12 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
 
         /// <inheritdoc/>
 
-        public async Task RemoveAllImpactsFromSegmentAsync(int segmentId)
+        public async Task RemoveAllImpactsFromSegmentAsync(Guid segmentId)
         {
             var query = $"DELETE FROM `{_datasetId}.{_tableId}` WHERE SegmentId = @segmentId";
             var parameters = new List<BigQueryParameter>
             {
-                new BigQueryParameter("segmentId", BigQueryDbType.Int64, segmentId)
+                new BigQueryParameter("segmentId", BigQueryDbType.String, segmentId)
             };
 
             await _client.ExecuteQueryAsync(query, parameters);
@@ -203,7 +204,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
 
         public override async Task UpdateAsync(SegmentImpact item)
         {
-            var oldRow = await LookupAsync(item.Id);
+            var oldRow = await LookupAsync(item);
             if (oldRow != null)
             {
                 return;
@@ -246,8 +247,8 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
         {
             return new SegmentImpact
             {
-                ImpactId = row.GetPropertyValue<int>("ImpactId"),
-                SegmentId = row.GetPropertyValue<int>("SegmentId")
+                ImpactId = row.GetPropertyValue<Guid>("ImpactId"),
+                SegmentId = row.GetPropertyValue<Guid>("SegmentId")
             };
         }
     }
