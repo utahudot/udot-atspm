@@ -6,6 +6,7 @@ using ATSPM.Infrastructure.Extensions;
 using ATSPM.Infrastructure.Repositories;
 using ATSPM.Infrastructure.Repositories.ConfigurationRepositories;
 using ATSPM.Infrastructure.Repositories.SpeedManagementAggregationRepositories;
+using ATSPM.Infrastructure.Services.SpeedManagementServices;
 using Google.Cloud.BigQuery.V2;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Mvc;
@@ -116,12 +117,38 @@ builder.Host.ConfigureServices((h, s) =>
         var logger = provider.GetRequiredService<ILogger<RouteBQRepository>>();
         return new RouteBQRepository(client, datasetId, tableId, logger);
     });
+    s.AddScoped<IImpactRepository, ImpactBQRepository>(provider =>
+    {
+        var client = provider.GetRequiredService<BigQueryClient>();
+        var datasetId = builder.Configuration["BigQuery:DatasetId"];
+        var tableId = builder.Configuration["BigQuery:ImpactTableId"];
+        var logger = provider.GetRequiredService<ILogger<ImpactBQRepository>>();
+        return new ImpactBQRepository(client, datasetId, tableId, logger);
+    });
+    s.AddScoped<IImpactTypeRepository, ImpactTypeBQRepository>(provider =>
+    {
+        var client = provider.GetRequiredService<BigQueryClient>();
+        var datasetId = builder.Configuration["BigQuery:DatasetId"];
+        var tableId = builder.Configuration["BigQuery:ImpactTypeTableId"];
+        var logger = provider.GetRequiredService<ILogger<ImpactTypeBQRepository>>();
+        return new ImpactTypeBQRepository(client, datasetId, tableId, logger);
+    });
+    s.AddScoped<ISegmentImpactRepository, SegmentImpactBQRepository>(provider =>
+    {
+        var client = provider.GetRequiredService<BigQueryClient>();
+        var datasetId = builder.Configuration["BigQuery:DatasetId"];
+        var tableId = builder.Configuration["BigQuery:SegmentImpactTableId"];
+        var logger = provider.GetRequiredService<ILogger<SegmentImpactBQRepository>>();
+        return new SegmentImpactBQRepository(client, datasetId, tableId, logger);
+    });
 
     Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", builder.Configuration["GoogleApplicationCredentials"]);
 
     s.AddScoped<RouteSpeedService>();
     s.AddScoped<RouteService>();
-    
+    s.AddScoped<ImpactService>();
+    s.AddScoped<ImpactTypeService>();
+
 
 
 

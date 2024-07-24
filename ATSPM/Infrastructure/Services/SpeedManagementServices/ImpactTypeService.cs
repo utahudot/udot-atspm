@@ -1,5 +1,6 @@
 ﻿using ATSPM.Application.Repositories.SpeedManagementAggregationRepositories;
 using ATSPM.Data.Models.SpeedManagementConfigModels;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -24,7 +25,7 @@ namespace ATSPM.Infrastructure.Services.SpeedManagementServices
             await impactTypeRepository.RemoveAsync(existingImpactType);
         }
 
-        public async Task<ImpactType> GetImpactTypeById(int id)
+        public async Task<ImpactType> GetImpactTypeById(Guid id)
         {
             return await impactTypeRepository.LookupAsync(id);
         }
