@@ -1,6 +1,5 @@
 import Sidebar from '@/components/sidebar/Sidebar'
 import Toast from '@/components/toast'
-import { useSidebarStore } from '@/stores/sidebar'
 import { Box, useTheme } from '@mui/material'
 import React from 'react'
 import Topbar from './topbar'
@@ -11,7 +10,6 @@ interface LayoutProps {
 
 export default function Layout({ children }: LayoutProps) {
   const theme = useTheme()
-  const { isSidebarOpen } = useSidebarStore()
 
   return (
     <Box className="app" sx={{ display: 'flex' }}>
