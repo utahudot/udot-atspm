@@ -140,7 +140,7 @@ export default function Sidebar() {
             left: 0,
             right: 0,
             bottom: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.2)',
+            backgroundColor: 'rgba(0, 0, 0, 0.3)',
             zIndex: theme.zIndex.drawer - 1,
           }}
           onClick={toggleDrawer()}
