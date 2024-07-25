@@ -50,7 +50,7 @@ namespace ATSPM.Application.Business.Common
         {
             if (Location.Approaches.IsNullOrEmpty())
             {
-                return null;
+                throw new Exception("Approaches cannot be empty");
             }
             var analysisPhaseCollectionData = new AnalysisPhaseCollectionData();
             analysisPhaseCollectionData.locationId = locationIdentifier;
