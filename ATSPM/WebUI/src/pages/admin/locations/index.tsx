@@ -7,7 +7,6 @@ import NewLocationModal from '@/features/locations/components/editLocation/NewLo
 import { useLocationConfigHandler } from '@/features/locations/components/editLocation/editLocationConfigHandler'
 import SelectLocation from '@/features/locations/components/selectLocation/SelectLocation'
 import { Location } from '@/features/locations/types/Location'
-import { Dialog, DialogContent } from '@mui/material'
 import { useState } from 'react'
 
 const LocationsAdmin = () => {
@@ -21,6 +20,10 @@ const LocationsAdmin = () => {
 
   if (pageAccess.isLoading) {
     return
+  }
+
+  const handleLocationChange = (location: Location) => {
+    setLocation(location)
   }
 
   return (
@@ -43,23 +46,12 @@ const LocationsAdmin = () => {
           updateLocationVersion={setLocation}
         />
       ) : null}
-
-      <Dialog
-        open={isModalOpen}
-        onClose={() => setModalOpen(false)}
-        maxWidth="lg"
-        fullWidth
-      >
-        <h2 style={{ marginTop: '1.5rem', marginLeft: '1.5rem' }}>
-          Add Location
-        </h2>
-        <DialogContent>
-          <NewLocationModal
-            closeModal={() => setModalOpen(false)}
-            setLocation={setLocation}
-          />
-        </DialogContent>
-      </Dialog>
+      {isModalOpen && (
+        <NewLocationModal
+          closeModal={() => setModalOpen(false)}
+          setLocation={handleLocationChange}
+        />
+      )}
     </ResponsivePageLayout>
   )
 }

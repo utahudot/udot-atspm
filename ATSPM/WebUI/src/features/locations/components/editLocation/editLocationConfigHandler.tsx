@@ -13,9 +13,9 @@ interface LocationHandlerProps {
 }
 
 export interface ApproachForConfig extends Approach {
-  index: number
-  open: boolean
-  isNew: boolean
+  index?: number
+  open?: boolean
+  isNew?: boolean
 }
 
 export interface DetectorForConfig extends Detector {
