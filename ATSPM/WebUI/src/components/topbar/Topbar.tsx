@@ -1,30 +1,18 @@
 import { useGetAdminPagesList } from '@/features/identity/pagesCheck'
+import { doesUserHaveAccess } from '@/features/identity/utils'
 import { useSidebarStore } from '@/stores/sidebar'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import MenuIcon from '@mui/icons-material/Menu'
 import PublishedWithChangesOutlinedIcon from '@mui/icons-material/PublishedWithChangesOutlined'
 import QuestionAnswerOutlinedIcon from '@mui/icons-material/QuestionAnswerOutlined'
 import { Box, IconButton, Paper } from '@mui/material'
-import Cookies from 'js-cookie'
 import Image from 'next/image'
 import NextLink from 'next/link'
 import { useEffect, useState } from 'react'
 import DropDownButton from './DropdownButton'
 import UserMenu from './UserMenu'
 
-const doesUserHaveAccess = () => {
-  if (typeof window === 'undefined') {
-    return false
-  }
-
-  const loggedIn = Cookies.get('loggedIn')
-  if (!loggedIn) {
-    return false
-  }
-
-  const claims = Cookies.get('claims')
-  return !!claims
-}
+export const topbarHeight = 60
 
 export default function Topbar() {
   const { toggleSidebar } = useSidebarStore()
@@ -71,6 +59,7 @@ export default function Topbar() {
         paddingX: 2,
         borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
         width: '100%',
+        height: topbarHeight,
       }}
     >
       <Paper>
@@ -103,9 +92,8 @@ export default function Topbar() {
               alt="ATSPM Logo"
               src="/images/atspm-logo-new.png"
               priority
-              layout="fill"
-              objectFit="contain"
-              style={{ cursor: 'pointer' }}
+              fill
+              style={{ cursor: 'pointer', objectFit: 'contain' }}
             />
           </Box>
         </NextLink>
