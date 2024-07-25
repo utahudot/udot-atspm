@@ -81,9 +81,12 @@ const ProfilePage = () => {
               label="Phone Number"
               disabled={!handler.isEditing}
               defaultValue={handler.profileData.phoneNumber}
+              error={handler.phoneNumberError != null && handler.isEditing}
               onChange={(e) =>
                 handler.handleInputChange('phoneNumber', e.target.value)
               }
+              helperText={handler.isEditing ? handler.phoneNumberError : ''}
+              required
             />
           </Box>
           <Box sx={{ mb: '20px' }}>
@@ -102,9 +105,19 @@ const ProfilePage = () => {
                 ? handler.handleSaveClick()
                 : handler.handleEditClick()
             }
+            disabled={handler.isEditing && !!handler.phoneNumberError}
           >
             {handler.isEditing ? 'Save' : 'Edit'}
           </Button>
+          {handler.isEditing && (
+            <Button
+              onClick={() => {
+                handler.handleEditClick()
+              }}
+            >
+              cancel
+            </Button>
+          )}
         </Paper>
       )}
       {activeTab === 1 && (
