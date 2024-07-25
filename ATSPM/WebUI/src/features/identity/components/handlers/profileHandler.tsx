@@ -9,9 +9,11 @@ export interface ProfileHandler extends ResponseHandler {
   submitted: boolean
   isEditing: boolean
   isLoading: boolean
+  phoneNumberError: string | null
   handleInputChange(field: string, value: string): void
   handleSaveClick(): void
   handleEditClick(): void
+  validatePhoneNumber(phoneNumber: string): void
 }
 
 export const useProfileHandler = (): ProfileHandler => {
@@ -20,6 +22,7 @@ export const useProfileHandler = (): ProfileHandler => {
   const [isLoading, setIsLoading] = useState(true)
   const [responseSuccess, setResponseSuccess] = useState(false)
   const [responseError, setResponseError] = useState(false)
+  const [phoneNumberError, setPhoneNumberError] = useState<string | null>(null)
   const profileData = useUserInfo({})
   const [formData, setFormData] = useState<UserDto>({
     firstName: '',
@@ -50,6 +53,7 @@ export const useProfileHandler = (): ProfileHandler => {
         roles: profileData.data.roles,
       })
       setIsLoading(false)
+      validatePhoneNumber(profileData.data?.phoneNumber || '')
     }
   }, [profileData.data])
 
@@ -64,6 +68,34 @@ export const useProfileHandler = (): ProfileHandler => {
     }
   }, [error, isSuccess, saveUser])
 
+  const validatePhoneNumber = (phoneNumber: string) => {
+    const phoneRegex = /^(\+1|1)?[-.\s]?\(?[2-9]\d{2}\)?[-.\s]?\d{3}[-.\s]?\d{4}$/
+    
+    if (!phoneNumber) {
+      setPhoneNumberError("Phone number is required")
+    } else if (!phoneRegex.test(phoneNumber)) {
+      setPhoneNumberError("Must be a valid phone number")
+    } else {
+      setPhoneNumberError(null)
+    }
+  }
+
+  const handleInputChange = (field: string, value: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      [field]: value,
+    }))
+    if (field === 'phoneNumber') {
+      validatePhoneNumber(value)
+    }
+  }
+
+  const handleSaveClick = () => {
+    if (!phoneNumberError) {
+      refetch()
+    }
+  }
+
   const component: ProfileHandler = {
     profileData: formData,
     submitted,
@@ -71,24 +103,19 @@ export const useProfileHandler = (): ProfileHandler => {
     responseSuccess,
     isEditing,
     isLoading,
+    phoneNumberError,
     handleResponseError: (val: boolean) => {
       setResponseError(val)
     },
     handleResponseSuccess: (val: boolean) => {
       setResponseSuccess(val)
     },
-    handleInputChange: (field: string, value: string) => {
-      setFormData((prev) => ({
-        ...prev,
-        [field]: value,
-      }))
-    },
-    handleSaveClick: () => {
-      refetch()
-    },
+    handleInputChange,
+    handleSaveClick,
     handleEditClick: () => {
-      setIsEditing(true)
+      setIsEditing(!isEditing)
     },
+    validatePhoneNumber,
   }
 
   return component
