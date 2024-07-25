@@ -52,6 +52,11 @@ namespace ATSPM.Application.Business.SplitMonitor
                 1
                 );
 
+            if (phaseCollection == null)
+            {
+                return null;
+            }
+
             var tasks = new List<Task<SplitMonitorResult>>();
             foreach (var phase in phaseCollection.AnalysisPhases)
             {

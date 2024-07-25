@@ -45,7 +45,7 @@ const Locations = () => {
   const locationIdentifier = location?.locationIdentifier
 
   return (
-    <ResponsivePageLayout title={'Locations'} noBottomMargin>
+    <ResponsivePageLayout title={'Performance Measures'} noBottomMargin>
       <TabContext value={currentTab}>
         <TabList
           onChange={handleChange}
