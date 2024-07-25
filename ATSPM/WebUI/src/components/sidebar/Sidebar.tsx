@@ -1,3 +1,4 @@
+import { topbarHeight } from '@/components/topbar'
 import { useSideBarPermission } from '@/features/identity/pagesCheck'
 import { useSidebarStore } from '@/stores/sidebar'
 import AddchartOutlinedIcon from '@mui/icons-material/AddchartOutlined'
@@ -12,6 +13,8 @@ import React from 'react'
 import NavItem from './NavItem'
 import Sponsor from './Sponsor'
 import SubMenu from './SubMenu'
+
+export const sidebarWidth = 300
 
 export default function Sidebar() {
   const theme = useTheme()
@@ -35,7 +38,7 @@ export default function Sidebar() {
   return (
     <Box
       sx={{
-        width: isSidebarOpen ? '300px' : '0px',
+        width: isSidebarOpen ? sidebarWidth : '0px',
         transition: 'width 0.2s ease-out',
         overflow: 'hidden',
       }}
@@ -46,14 +49,16 @@ export default function Sidebar() {
         onClose={toggleDrawer()}
         PaperProps={{
           sx: {
-            height: 'calc(100% - 70px)',
-            top: '70px',
-            transform: isSidebarOpen ? 'translateX(0)' : 'translateX(-300px)',
+            height: `calc(100% - ${topbarHeight}px)`,
+            top: topbarHeight,
+            transform: isSidebarOpen
+              ? 'translateX(0)'
+              : `translateX(-${sidebarWidth}px)`,
             transition: 'transform 0.2s ease-out',
             backgroundColor: theme.palette.background.paper,
             border: 'none',
             boxShadow: '2',
-            width: '300px',
+            width: sidebarWidth,
           },
         }}
       >
@@ -131,7 +136,7 @@ export default function Sidebar() {
         <Box
           sx={{
             position: 'fixed',
-            top: 70,
+            top: topbarHeight,
             left: 0,
             right: 0,
             bottom: 0,
