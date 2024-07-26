@@ -237,11 +237,8 @@ export function createYAxis(
     nameGap: 40,
     alignTicks: true,
     axisLabel: {
-      formatter: (val: string | number) => {
-        if (typeof val === 'number') {
-          return Math.round(val).toString()
-        }
-        return val
+      formatter: (val) => {
+        return typeof val === 'number' ? Math.round(val).toString() : val
       },
     },
   }
