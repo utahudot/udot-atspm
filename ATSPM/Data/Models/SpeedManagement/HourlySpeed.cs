@@ -13,6 +13,7 @@ public class HourlySpeed
     public int? NinetyFifthSpeed { get; set; }
     public int? NinetyNinthSpeed { get; set; }
     public int? Violation { get; set; }
+    public int? ExtremeViolation { get; set; }
     public int? Flow { get; set; }
 
 }
