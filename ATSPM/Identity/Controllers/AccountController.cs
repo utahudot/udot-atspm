@@ -199,8 +199,8 @@ namespace Identity.Controllers
             {
                 return Unauthorized("User not found");
             }
-
-            var result = await userManager.ResetPasswordAsync(user, model.ResetToken, model.NewPassword);
+            var resetToken = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(model.ResetToken));
+            var result = await userManager.ResetPasswordAsync(user, resetToken, model.NewPassword);
 
             if (result != null && result.Succeeded)
             {
