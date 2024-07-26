@@ -9,7 +9,6 @@ import {
   getWatchdogLogs,
 } from '@/features/watchdog/api/getWatchdogLogs'
 import Authorization from '@/lib/Authorization'
-import { useSidebarStore } from '@/stores/sidebar'
 import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined'
 import { LoadingButton } from '@mui/lab'
 import {
@@ -54,7 +53,6 @@ const WatchDog = () => {
   )
   const [startDateTime, setStartDateTime] = useState(startOfToday())
   const [endDateTime, setEndDateTime] = useState(startOfTomorrow())
-  const { isSidebarOpen } = useSidebarStore();
 
   const [areaId, setAreaId] = useState<number | null>(null)
   const [regionId, setRegionId] = useState<number | null>(null)
@@ -358,86 +356,84 @@ const WatchDog = () => {
               )}
             </Box>
           }
-    <Box
-    sx={{
-      display: 'flex',
-      flexDirection: 'column',
-      minWidth: '375px',
-      padding:'1px',
-      [theme.breakpoints.up('md')]: {
-        maxWidth: isSidebarOpen ? 'calc(100vw - 340px)' : '100%',
-        
-
-      }
-    }}
-  >
-          {filteredData.length > 0 && (
-            <Paper>
-              <DataGrid
-                getRowHeight={() => 'auto'}
-                rows={filteredData}
-                columns={columns}
-                disableDensitySelector
-                slots={{ toolbar: GridToolbar }}
-                components={{ Toolbar: GridToolbarExport }}
-                componentsProps={{
-                  toolbar: {
-                    csvOptions: {
-                      fileName: `WatchDogData-${start.toLocaleDateString(
-                        'en-US',
-                        {
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              minWidth: '375px',
+              padding: '1px',
+              [theme.breakpoints.up('md')]: {
+                maxWidth: '100%',
+              },
+            }}
+          >
+            {filteredData.length > 0 && (
+              <Paper>
+                <DataGrid
+                  getRowHeight={() => 'auto'}
+                  rows={filteredData}
+                  columns={columns}
+                  disableDensitySelector
+                  slots={{ toolbar: GridToolbar }}
+                  components={{ Toolbar: GridToolbarExport }}
+                  componentsProps={{
+                    toolbar: {
+                      csvOptions: {
+                        fileName: `WatchDogData-${start.toLocaleDateString(
+                          'en-US',
+                          {
+                            year: 'numeric',
+                            month: '2-digit',
+                            day: '2-digit',
+                          }
+                        )}-${end.toLocaleDateString('en-US', {
                           year: 'numeric',
                           month: '2-digit',
                           day: '2-digit',
-                        }
-                      )}-${end.toLocaleDateString('en-US', {
-                        year: 'numeric',
-                        month: '2-digit',
-                        day: '2-digit',
-                      })}`,
-                    },
-                    printOptions: {
-                      fileName: `WatchDogData-${start.toLocaleDateString(
-                        'en-US',
-                        {
+                        })}`,
+                      },
+                      printOptions: {
+                        fileName: `WatchDogData-${start.toLocaleDateString(
+                          'en-US',
+                          {
+                            year: 'numeric',
+                            month: '2-digit',
+                            day: '2-digit',
+                          }
+                        )}-${end.toLocaleDateString('en-US', {
                           year: 'numeric',
                           month: '2-digit',
                           day: '2-digit',
-                        }
-                      )}-${end.toLocaleDateString('en-US', {
-                        year: 'numeric',
-                        month: '2-digit',
-                        day: '2-digit',
-                      })}`,
+                        })}`,
+                      },
                     },
-                  },
-                }}
-                pageSizeOptions={[{ value: 100, label: '100' }]}
-                sx={{
-                  [`& .${gridClasses.cell}`]: {
-                    paddingTop: '20px',
-                    paddingBottom: '20px',
-                    ...tableCellStyle, 
-                  },
-                  [`& .${gridClasses.columnHeaders}`]: {
-                    position: 'sticky',
-                    top: '30px',
-                    backgroundColor: mode === 'light' ? 'white' : '#1F2A40',
-                    zIndex: '1',
-                  },
-                  [`& .${gridClasses.toolbarContainer}`]: {
-                    position: 'sticky',
-                    top: '0',
-                    backgroundColor: mode === 'light' ? 'white' : '#1F2A40',
-                    zIndex: '1',
-                  },
-                  [`& .${gridClasses.main}`]: {
-                    overflow: 'inherit',
-                  },
-                }}
-              />
-            </Paper>
-          )}
+                  }}
+                  pageSizeOptions={[{ value: 100, label: '100' }]}
+                  sx={{
+                    [`& .${gridClasses.cell}`]: {
+                      paddingTop: '20px',
+                      paddingBottom: '20px',
+                      ...tableCellStyle,
+                    },
+                    [`& .${gridClasses.columnHeaders}`]: {
+                      position: 'sticky',
+                      top: '30px',
+                      backgroundColor: mode === 'light' ? 'white' : '#1F2A40',
+                      zIndex: '1',
+                    },
+                    [`& .${gridClasses.toolbarContainer}`]: {
+                      position: 'sticky',
+                      top: '0',
+                      backgroundColor: mode === 'light' ? 'white' : '#1F2A40',
+                      zIndex: '1',
+                    },
+                    [`& .${gridClasses.main}`]: {
+                      overflow: 'inherit',
+                    },
+                  }}
+                />
+              </Paper>
+            )}
           </Box>
         </ResponsivePageLayout>
       </Authorization>
