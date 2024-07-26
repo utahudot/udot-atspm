@@ -117,7 +117,7 @@ namespace ATSPM.Application.Extensions
 
                         return new RouteSpeed
                         {
-                            RouteId = g.Key,
+                            SegmentId = g.Key,
                             Name = g.Key, //route.Name,
                             Avg = (int)Math.Round(g.Average(s => s.Average)),
                             //AverageSpeedAboveSpeedLimit = (int)Math.Round(g.Average(s => (s.Average - route.SpeedLimit) / route.SpeedLimit)),
