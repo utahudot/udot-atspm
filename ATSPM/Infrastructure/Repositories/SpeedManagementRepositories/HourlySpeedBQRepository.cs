@@ -189,8 +189,6 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
 
         public async Task<List<HourlySpeed>> GetHourlySpeeds(CongestionTrackingOptions options)
         {
-            var daysOfWeek = new List<DayOfWeek>() { DayOfWeek.Sunday, DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Friday, DayOfWeek.Saturday };
-
             string query = $@"
             SELECT *
             FROM `atspm-406601.speed_dataset.hourly_speed`
@@ -201,7 +199,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
 
             var parameters = new[]
             {
-            new BigQueryParameter("segmentId", BigQueryDbType.Int64, options.SegmentId),
+            new BigQueryParameter("segmentId", BigQueryDbType.String, options.SegmentId),
             new BigQueryParameter("startDate", BigQueryDbType.Date, options.StartDate.ToDateTime(new TimeOnly(0,0))),
             new BigQueryParameter("endDate", BigQueryDbType.Date, options.EndDate.ToDateTime(new TimeOnly(0, 0))),
         };
@@ -209,20 +207,28 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             var queryResults = await _client.ExecuteQueryAsync(query, parameters);
             return queryResults.Select(row =>
             {
-                var date = DateOnly.Parse(row["Date"].ToString());
+                string format = "M/d/yyyy h:mm:ss tt";
+                var date = DateOnly.ParseExact(row["Date"].ToString(), format);
                 var time = TimeOnly.Parse(row["BinStartTime"].ToString());
+                var avg = row["Average"];
+                var fifteenthSpeed = row["FifteenthSpeed"];
+                var eightyFifthSpeed = row["EightyFifthSpeed"];
+                var ninetyFifthSpeed = row["NinetyFifthSpeed"];
+                var ninetyNinthSpeed = row["NinetyNinthSpeed"];
+                var violation = row["Violation"];
+                var flow = row["Flow"];
 
                 return new HourlySpeed
                 {
                     Date = date.ToDateTime(new TimeOnly(0, 0)),
                     BinStartTime = date.ToDateTime(time),
-                    Average = Convert.ToInt32(row["Average"]),
-                    FifteenthSpeed = Convert.ToInt32(row["FifteenthSpeed"]),
-                    EightyFifthSpeed = Convert.ToInt32(row["EightyFifthSpeed"]),
-                    NinetyFifthSpeed = Convert.ToInt32(row["NinetyFifthSpeed"]),
-                    NinetyNinthSpeed = Convert.ToInt32(row["NinetyNinthSpeed"]),
-                    Violation = Convert.ToInt32(row["Violation"]),
-                    Flow = Convert.ToInt32(row["Flow"])
+                    Average = avg != null ? (long)avg : 0,
+                    FifteenthSpeed = fifteenthSpeed != null ? (long)fifteenthSpeed : null,
+                    EightyFifthSpeed = eightyFifthSpeed != null ? (long)eightyFifthSpeed : null,
+                    NinetyFifthSpeed = ninetyFifthSpeed != null ? (long)ninetyFifthSpeed : null,
+                    NinetyNinthSpeed = ninetyNinthSpeed != null ? (long)ninetyNinthSpeed : null,
+                    Violation = violation != null ? (long)violation : null,
+                    Flow = flow != null ? (long)flow : null 
                 };
             }).ToList();
         }
@@ -519,7 +525,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
 
         public override async void Update(HourlySpeed item)
         {
-            var oldRow = await LookupAsync(new { item.Date, item.BinStartTime, item.RouteId });
+            var oldRow = await LookupAsync(new { item.Date, item.BinStartTime, item.SegmentId });
             if (oldRow != null)
             {
                 var queryBuilder = new StringBuilder();
@@ -586,7 +592,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
                 // Remove the last comma and space
                 queryBuilder.Length -= 2;
 
-                queryBuilder.Append($" WHERE Date = @Date AND BinStartTime = @BinStartTime AND RouteId = @RouteId");
+                queryBuilder.Append($" WHERE Date = @Date AND BinStartTime = @BinStartTime AND SegmentId = @SegmentId");
 
                 var query = queryBuilder.ToString();
 
@@ -594,7 +600,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
         {
             new BigQueryParameter("@Date", BigQueryDbType.DateTime, item.Date),
             new BigQueryParameter("@BinStartTime", BigQueryDbType.DateTime, item.BinStartTime),
-            new BigQueryParameter("@RouteId", BigQueryDbType.Int64, item.RouteId)
+            new BigQueryParameter("@SegmentId", BigQueryDbType.Int64, item.SegmentId)
         };
 
                 _client.ExecuteQuery(query, parameters);
@@ -602,11 +608,11 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             else
             {
                 var query = $"INSERT INTO `{_datasetId}.{_tableId}` " +
-                    $"(Date, BinStartTime, RouteId, SourceId, ConfidenceId, Average, FifteenthSpeed, EightyFifthSpeed, NinetyFifthSpeed, NinetyNinthSpeed, Violation, Flow) " +
+                    $"(Date, BinStartTime, SegmentId, SourceId, ConfidenceId, Average, FifteenthSpeed, EightyFifthSpeed, NinetyFifthSpeed, NinetyNinthSpeed, Violation, Flow) " +
                     $"VALUES (" +
                     $"'{item.Date:O}', " +
                     $"'{item.BinStartTime:O}', " +
-                    $"{item.RouteId}, " +
+                    $"{item.SegmentId}, " +
                     $"{item.SourceId}, " +
                     $"{item.ConfidenceId}, " +
                     $"{item.Average}, " +
@@ -625,7 +631,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
 
         public override async Task UpdateAsync(HourlySpeed item)
         {
-            var oldRow = await LookupAsync(new { item.Date, item.BinStartTime, item.RouteId });
+            var oldRow = await LookupAsync(new { item.Date, item.BinStartTime, item.SegmentId });
             if (oldRow != null)
             {
                 var queryBuilder = new StringBuilder();
@@ -692,7 +698,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
                 // Remove the last comma and space
                 queryBuilder.Length -= 2;
 
-                queryBuilder.Append($" WHERE Date = @Date AND BinStartTime = @BinStartTime AND RouteId = @RouteId");
+                queryBuilder.Append($" WHERE Date = @Date AND BinStartTime = @BinStartTime AND SegmentId = @SegmentId");
 
                 var query = queryBuilder.ToString();
 
@@ -700,7 +706,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
         {
             new BigQueryParameter("@Date", BigQueryDbType.DateTime, item.Date),
             new BigQueryParameter("@BinStartTime", BigQueryDbType.DateTime, item.BinStartTime),
-            new BigQueryParameter("@RouteId", BigQueryDbType.Int64, item.RouteId)
+            new BigQueryParameter("@SegmentId", BigQueryDbType.Int64, item.SegmentId)
         };
 
                 _client.ExecuteQueryAsync(query, parameters);
@@ -708,11 +714,11 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             else
             {
                 var query = $"INSERT INTO `{_datasetId}.{_tableId}` " +
-                    $"(Date, BinStartTime, RouteId, SourceId, ConfidenceId, Average, FifteenthSpeed, EightyFifthSpeed, NinetyFifthSpeed, NinetyNinthSpeed, Violation, Flow) " +
+                    $"(Date, BinStartTime, SegmentId, SourceId, ConfidenceId, Average, FifteenthSpeed, EightyFifthSpeed, NinetyFifthSpeed, NinetyNinthSpeed, Violation, Flow) " +
                     $"VALUES (" +
                     $"'{item.Date:O}', " +
                     $"'{item.BinStartTime:O}', " +
-                    $"{item.RouteId}, " +
+                    $"{item.SegmentId}, " +
                     $"{item.SourceId}, " +
                     $"{item.ConfidenceId}, " +
                     $"{item.Average}, " +

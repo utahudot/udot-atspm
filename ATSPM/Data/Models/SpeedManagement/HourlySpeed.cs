@@ -5,15 +5,15 @@ public class HourlySpeed
     public DateTime Date { get; set; }
     public DateTime BinStartTime { get; set; }
     public string SegmentId { get; set; }
-    public int SourceId { get; set; }
-    public int ConfidenceId { get; set; }
-    public int Average { get; set; }
-    public int? FifteenthSpeed { get; set; }
-    public int? EightyFifthSpeed { get; set; }
-    public int? NinetyFifthSpeed { get; set; }
-    public int? NinetyNinthSpeed { get; set; }
-    public int? Violation { get; set; }
-    public int? ExtremeViolation { get; set; }
-    public int? Flow { get; set; }
+    public long SourceId { get; set; }
+    public long ConfidenceId { get; set; }
+    public long Average { get; set; }
+    public long? FifteenthSpeed { get; set; }
+    public long? EightyFifthSpeed { get; set; }
+    public long? NinetyFifthSpeed { get; set; }
+    public long? NinetyNinthSpeed { get; set; }
+    public long? Violation { get; set; }
+    public long? ExtremeViolation { get; set; }
+    public long? Flow { get; set; }
 
 }

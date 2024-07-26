@@ -34,27 +34,36 @@ namespace ATSPM.Infrastructure.Services.SpeedManagementServices.CongestionTracki
         {
             var grouping = hourlyResult.GroupBy(h => h.Date);
             var data = new List<CongestionDailyDataDto>();
+
             foreach (var group in grouping)
             {
+                var averageData = group.Select(h => new DataPoint<double>(h.BinStartTime, h.Average)).ToList();
+                var eightyFifthData = group.Select(h => h.EightyFifthSpeed).All(speed => speed == null)
+                    ? null
+                    : group.Select(h => new DataPoint<long>(h.BinStartTime, (long)(h.EightyFifthSpeed ?? 0))).ToList();
+
                 var series = new CongestionSeriesData()
                 {
-                    Average = group.Select(h => new DataPoint<double>(h.BinStartTime, h.Average)).ToList(),
-                    EightyFifth = group.Select(h => new DataPoint<int>(h.BinStartTime, h.EightyFifthSpeed.Value)).ToList(),
+                    Average = averageData,
+                    EightyFifth = eightyFifthData,
                 };
+
                 var dailyData = new CongestionDailyDataDto()
                 {
                     Date = group.Key,
                     Series = series,
                 };
+
                 data.Add(dailyData);
             }
 
-            return new CongestionTrackingDto() { 
+            return new CongestionTrackingDto()
+            {
                 SegmentId = segment.Id,
                 SegmentName = segment.Name,
                 SpeedLimit = segment.SpeedLimit,
                 StartingMilePoint = segment.StartMilePoint,
-                EndingMilePoint= segment.EndMilePoint,
+                EndingMilePoint = segment.EndMilePoint,
                 Data = data,
             };
         }
