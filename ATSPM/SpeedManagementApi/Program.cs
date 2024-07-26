@@ -6,6 +6,7 @@ using ATSPM.Infrastructure.Extensions;
 using ATSPM.Infrastructure.Repositories;
 using ATSPM.Infrastructure.Repositories.SpeedManagementRepositories;
 using ATSPM.Infrastructure.Services.SpeedManagementServices;
+using ATSPM.Infrastructure.Services.SpeedManagementServices.CongestionTracking;
 using Google.Cloud.BigQuery.V2;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Mvc;
@@ -113,8 +114,9 @@ builder.Host.ConfigureServices((h, s) =>
         var client = provider.GetRequiredService<BigQueryClient>();
         var datasetId = builder.Configuration["BigQuery:DatasetId"];
         var tableId = builder.Configuration["BigQuery:RouteTableId"];
+        var projectId = builder.Configuration["BigQuery:ProjectId"];
         var logger = provider.GetRequiredService<ILogger<SegmentBQRepository>>();
-        return new SegmentBQRepository(client, datasetId, tableId, logger);
+        return new SegmentBQRepository(client, datasetId, tableId, projectId, logger);
     });
     s.AddScoped<IImpactRepository, ImpactBQRepository>(provider =>
     {
@@ -147,6 +149,7 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddScoped<RouteService>();
     s.AddScoped<ImpactService>();
     s.AddScoped<ImpactTypeService>();
+    s.AddScoped<ICongestionTrackingService, CongestionTrackingService>();
 
 
 

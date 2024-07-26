@@ -3,7 +3,9 @@ using ATSPM.Data.Models.SpeedManagementConfigModels;
 using ATSPM.Domain.Extensions;
 using Google.Cloud.BigQuery.V2;
 using Microsoft.Extensions.Logging;
+using NetTopologySuite.Geometries;
 using NetTopologySuite.IO;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,13 +19,15 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
         private readonly BigQueryClient _client;
         private readonly string _datasetId;
         private readonly string _tableId;
+        private readonly string _projectId;
         private readonly ILogger<ATSPMRepositoryBQBase<Segment>> _logger;
 
-        public SegmentBQRepository(BigQueryClient client, string datasetId, string tableId, ILogger<ATSPMRepositoryBQBase<Segment>> log) : base(client, datasetId, tableId, log)
+        public SegmentBQRepository(BigQueryClient client, string datasetId, string tableId, string projectId, ILogger<ATSPMRepositoryBQBase<Segment>> log) : base(client, datasetId, tableId, log)
         {
             _client = client;
             _datasetId = datasetId;
             _tableId = tableId;
+            _projectId = projectId;
             _logger = log;
         }
 
@@ -72,7 +76,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             {
                 return null;
             }
-            var query = $"SELECT * FROM `{_datasetId}.{_tableId}` WHERE Id = @key";
+            var query = $"SELECT * FROM `{_projectId}.{_datasetId}.{_tableId}` WHERE Id = @key";
             var parameters = new List<BigQueryParameter>
             {
                     new BigQueryParameter("key", BigQueryDbType.Int64, key)
@@ -88,7 +92,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             {
                 return null;
             }
-            var query = $"SELECT * FROM `{_datasetId}.{_tableId}` WHERE Id = @key";
+            var query = $"SELECT * FROM `{_projectId}.{_datasetId}.{_tableId}` WHERE Id = @key";
             var parameters = new List<BigQueryParameter>
                 {
                     new BigQueryParameter("key", BigQueryDbType.Int64, item.Id)
@@ -105,10 +109,10 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             {
                 return null;
             }
-            var query = $"SELECT * FROM `{_datasetId}.{_tableId}` WHERE Id = @key";
+            var query = $"SELECT * FROM `{_projectId}.{_datasetId}.{_tableId}` WHERE Id = @key";
             var parameters = new List<BigQueryParameter>
             {
-                    new BigQueryParameter("key", BigQueryDbType.Int64, key)
+                    new BigQueryParameter("key", BigQueryDbType.String, key)
                 };
             var results = await _client.ExecuteQueryAsync(query, parameters);
             return results.Select(row => MapRowToEntity(row)).FirstOrDefault();
@@ -120,7 +124,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             {
                 return null;
             }
-            var query = $"SELECT * FROM `{_datasetId}.{_tableId}` WHERE Id = @key";
+            var query = $"SELECT * FROM `{_projectId}.{_datasetId}.{_tableId}` WHERE Id = @key";
             var parameters = new List<BigQueryParameter>
                 {
                     new BigQueryParameter("key", BigQueryDbType.Int64, item.Id)
@@ -377,24 +381,27 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
 
         protected override Segment MapRowToEntity(BigQueryRow row)
         {
-            var wktReader = new WKTReader();
-
-            return new Segment
+            var reader = new WKTReader();
+            var wkt = row["Shape"].ToString();
+            Geometry shape = wkt != null ? reader.Read(wkt) : null;
+            return new Segment()
             {
-                Id = row.GetPropertyValue<int>("Id"),
-                UdotRouteNumber = row.GetPropertyValue<int>("UdotRouteNumber"),
-                StartMilePoint = row.GetPropertyValue<double>("StartMilePoint"),
-                EndMilePoint = row.GetPropertyValue<double>("EndMilePoint"),
-                FunctionalType = row.GetPropertyValue<string>("FunctionalType"),
-                Name = row.GetPropertyValue<string>("Name"),
-                Direction = row.GetPropertyValue<string>("Direction"),
-                SpeedLimit = row.GetPropertyValue<int>("SpeedLimit"),
-                Region = row.GetPropertyValue<string>("Region"),
-                City = row.GetPropertyValue<string>("City"),
-                County = row.GetPropertyValue<string>("County"),
-                Shape = wktReader.Read(row.GetPropertyValue<string>("ShapeWKT")), // Converting WKT to Geometry
-                ShapeWKT = row.GetPropertyValue<string>("ShapeWKT"), // Storing the WKT string as well
-                AlternateIdentifier = row.GetPropertyValue<string?>("AlternateIdentifier")
+                Id = row["Id"].ToString(),
+                UdotRouteNumber = row["UdotRouteNumber"].ToString(),
+                StartMilePoint = (double)row["StartMilePoint"],
+                EndMilePoint = (double)row["EndMilePoint"],
+                FunctionalType = row["FunctionalType"].ToString(),
+                Name = row["Name"].ToString(),
+                Direction = row["Direction"]?.ToString(),
+                SpeedLimit = (long)row["SpeedLimit"],
+                Region = row["Region"]?.ToString(),
+                City = row["City"]?.ToString(),
+                County = row["County"]?.ToString(),
+                Shape = shape,
+                ShapeWKT = row["ShapeWKT"]?.ToString(),
+                AlternateIdentifier = row["AlternateIdentifier"]?.ToString(),
+                AccessCategory = row["Category"]?.ToString(),
+                Offset = (int)row["Offset"]
             };
         }
 

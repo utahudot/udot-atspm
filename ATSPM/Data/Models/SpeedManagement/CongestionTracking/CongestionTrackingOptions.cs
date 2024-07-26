@@ -10,7 +10,7 @@ namespace ATSPM.Data.Models.SpeedManagement.CongestionTracking
     {
         public DateOnly StartDate { get; set; }
         public DateOnly EndDate { get; set; }
-        public int SegmentId { get; set; }
+        public string SegmentId { get; set; }
 
     }
 }

@@ -5,7 +5,7 @@ namespace ATSPM.Application.Business.RouteSpeed
 {
     public class RouteSpeed
     {
-        public string RouteId { get; set; }
+        public string SegmentId { get; set; }
         public string Name { get; set; }
         public DateTime? Startdate { get; set; }
         public DateTime? Enddate { get; set; }
