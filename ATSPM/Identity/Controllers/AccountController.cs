@@ -3,15 +3,11 @@ using FluentFTP.Helpers;
 using Identity.Business.Accounts;
 using Identity.Business.EmailSender;
 using Identity.Models.Account;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
-using System.Security.Claims;
 using System.Text;
 
 namespace Identity.Controllers
@@ -204,7 +200,7 @@ namespace Identity.Controllers
                 return Unauthorized("User not found");
             }
 
-            var result = await userManager.ChangePasswordAsync(user, model.CurrentPassword, model.NewPassword);
+            var result = await userManager.ResetPasswordAsync(user, model.resetToken, model.NewPassword);
 
             if (result != null && result.Succeeded)
             {
@@ -231,12 +227,7 @@ namespace Identity.Controllers
             var token = await userManager.GeneratePasswordResetTokenAsync(user);
             var uriEncodedToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
 
-            //var callbackUrl = Url.Action(
-            //    "ResetPassword", // Action method to reset password in your web application
-            //    "Account",
-            //    new { email = user.Email, token },
-            //    protocol: HttpContext.Request.Scheme);
-            var callbackUrl = $"{configuration["AtspmSite"]}/changePassword?username=" + user.UserName + "&token=" + uriEncodedToken;
+            var callbackUrl = $"{configuration["AtspmSite"]}/change-password?username=" + user.UserName + "&token=" + uriEncodedToken;
 
             await emailService.SendEmailAsync(
                 model.Email,
@@ -262,7 +253,8 @@ namespace Identity.Controllers
             if (isUserVerified)
             {
                 var token = await userManager.GeneratePasswordResetTokenAsync(user);
-                return Ok(new { token, Username = user.UserName });
+                var uriEncodedToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
+                return Ok(new { Token = uriEncodedToken, Username = user.UserName });
             }
 
             return BadRequest(new { Message = "Password provided doesn't match" });
