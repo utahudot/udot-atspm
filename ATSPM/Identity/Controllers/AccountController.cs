@@ -200,7 +200,7 @@ namespace Identity.Controllers
                 return Unauthorized("User not found");
             }
 
-            var result = await userManager.ResetPasswordAsync(user, model.resetToken, model.NewPassword);
+            var result = await userManager.ResetPasswordAsync(user, model.ResetToken, model.NewPassword);
 
             if (result != null && result.Succeeded)
             {
