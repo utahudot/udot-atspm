@@ -184,6 +184,7 @@ namespace Identity.Controllers
             return Ok(new { Message = "Successfully logged out." });
         }
 
+        [Authorize]
         [HttpPost("changepassword")]
         public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
         {
