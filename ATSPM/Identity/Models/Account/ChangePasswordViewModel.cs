@@ -10,7 +10,7 @@ namespace Identity.Models.Account
         public string NewPassword { get; set; }
 
         [Required]
-        public string resetToken { get; set; }
+        public string ResetToken { get; set; }
 
         [Compare("NewPassword")]
         [DataType(DataType.Password)]
