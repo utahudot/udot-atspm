@@ -1,5 +1,6 @@
 ﻿using ATSPM.Application.Repositories.SpeedManagementRepositories;
 using ATSPM.Data.Models.SpeedManagementConfigModels;
+using ATSPM.Domain.Extensions;
 using Google.Cloud.BigQuery.V2;
 using Microsoft.Extensions.Logging;
 using NetTopologySuite.Geometries;
@@ -7,6 +8,7 @@ using NetTopologySuite.IO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
@@ -133,42 +135,248 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
 
         public override void Remove(Segment item)
         {
-            throw new NotImplementedException();
+            if (item.Id == null)
+            {
+                return;
+            }
+            var query = $"DELETE FROM `{_datasetId}.{_tableId}` WHERE Id = @key";
+            var parameters = new List<BigQueryParameter>
+             {
+                 new BigQueryParameter("key", BigQueryDbType.Int64, item)
+             };
+            _client.ExecuteQueryAsync(query, parameters);
         }
 
-        public override Task RemoveAsync(Segment item)
+        public override async Task RemoveAsync(Segment item)
         {
-            throw new NotImplementedException();
+            if (item.Id == null)
+            {
+                return;
+            }
+            var query = $"DELETE FROM `{_datasetId}.{_tableId}` WHERE Id = @key";
+            var parameters = new List<BigQueryParameter>
+             {
+                 new BigQueryParameter("key", BigQueryDbType.Int64, item)
+             };
+            await _client.ExecuteQueryAsync(query, parameters);
         }
 
         public override void RemoveRange(IEnumerable<Segment> items)
         {
-            throw new NotImplementedException();
+            var ids = string.Join(", ", items);
+            var query = $"DELETE FROM `{_datasetId}.{_tableId}` WHERE Id IN ({ids})";
+            var parameters = new List<BigQueryParameter>();
+
+            _client.ExecuteQuery(query, parameters);
         }
 
-        public override Task RemoveRangeAsync(IEnumerable<Segment> items)
+        public override async Task RemoveRangeAsync(IEnumerable<Segment> items)
         {
-            throw new NotImplementedException();
+            var ids = string.Join(", ", items);
+            var query = $"DELETE FROM `{_datasetId}.{_tableId}` WHERE Id IN ({ids})";
+            var parameters = new List<BigQueryParameter>();
+
+            await _client.ExecuteQueryAsync(query, parameters);
         }
 
-        public override void Update(Segment item)
+        public override async void Update(Segment item)
         {
-            throw new NotImplementedException();
+            var oldRow = await LookupAsync(item.Id);
+            if (oldRow != null)
+            {
+                var queryBuilder = new StringBuilder();
+                queryBuilder.Append($"UPDATE `{_datasetId}.{_tableId}` SET ");
+
+                queryBuilder.Append($"UdotRouteNumber = {item.UdotRouteNumber}, ");
+                queryBuilder.Append($"StartMilePoint = {item.StartMilePoint}, ");
+                queryBuilder.Append($"EndMilePoint = {item.EndMilePoint}, ");
+
+                if (!string.IsNullOrEmpty(item.FunctionalType))
+                {
+                    queryBuilder.Append($"FunctionalType = '{item.FunctionalType}', ");
+                }
+
+                if (!string.IsNullOrEmpty(item.Name))
+                {
+                    queryBuilder.Append($"Name = '{item.Name}', ");
+                }
+
+                if (!string.IsNullOrEmpty(item.Direction))
+                {
+                    queryBuilder.Append($"Direction = '{item.Direction}', ");
+                }
+
+                queryBuilder.Append($"SpeedLimit = {item.SpeedLimit}, ");
+
+                if (!string.IsNullOrEmpty(item.Region))
+                {
+                    queryBuilder.Append($"Region = '{item.Region}', ");
+                }
+
+                if (!string.IsNullOrEmpty(item.City))
+                {
+                    queryBuilder.Append($"City = '{item.City}', ");
+                }
+
+                if (!string.IsNullOrEmpty(item.County))
+                {
+                    queryBuilder.Append($"County = '{item.County}', ");
+                }
+
+                queryBuilder.Append($"Shape = '{item.Shape.AsText()}', ");
+                queryBuilder.Append($"ShapeWKT = '{item.ShapeWKT}', ");
+
+                if (!string.IsNullOrEmpty(item.AlternateIdentifier))
+                {
+                    queryBuilder.Append($"AlternateIdentifier = '{item.AlternateIdentifier}', ");
+                }
+
+                // Remove the last comma and space
+                queryBuilder.Length -= 2;
+
+                queryBuilder.Append($" WHERE Id = @key");
+
+                var query = queryBuilder.ToString();
+
+                var parameters = new List<BigQueryParameter>
+        {
+            new BigQueryParameter("@key", BigQueryDbType.Int64, item.Id)
+        };
+
+                _client.ExecuteQuery(query, parameters);
+            }
+            else
+            {
+                var query = $"INSERT INTO `{_datasetId}.{_tableId}` " +
+                    $"(Id, UdotRouteNumber, StartMilePoint, EndMilePoint, FunctionalType, Name, Direction, SpeedLimit, Region, City, County, Shape, ShapeWKT, AlternateIdentifier) " +
+                    $"VALUES (" +
+                    $"{item.Id}, " +
+                    $"{item.UdotRouteNumber}, " +
+                    $"{item.StartMilePoint}, " +
+                    $"{item.EndMilePoint}, " +
+                    $"'{item.FunctionalType}', " +
+                    $"'{item.Name}', " +
+                    $"'{item.Direction}', " +
+                    $"{item.SpeedLimit}, " +
+                    $"'{item.Region}', " +
+                    $"'{item.City}', " +
+                    $"'{item.County}', " +
+                    $"'{item.Shape.AsText()}', " +
+                    $"'{item.ShapeWKT}', " +
+                    $"{(string.IsNullOrEmpty(item.AlternateIdentifier) ? "NULL" : $"'{item.AlternateIdentifier}'")})";
+
+                var parameters = new List<BigQueryParameter>();
+
+                _client.ExecuteQuery(query, parameters);
+            }
         }
 
-        public override Task UpdateAsync(Segment item)
+        public override async Task UpdateAsync(Segment item)
         {
-            throw new NotImplementedException();
+            var oldRow = await LookupAsync(item.Id);
+            if (oldRow != null)
+            {
+                var queryBuilder = new StringBuilder();
+                queryBuilder.Append($"UPDATE `{_datasetId}.{_tableId}` SET ");
+
+                queryBuilder.Append($"UdotRouteNumber = {item.UdotRouteNumber}, ");
+                queryBuilder.Append($"StartMilePoint = {item.StartMilePoint}, ");
+                queryBuilder.Append($"EndMilePoint = {item.EndMilePoint}, ");
+
+                if (!string.IsNullOrEmpty(item.FunctionalType))
+                {
+                    queryBuilder.Append($"FunctionalType = '{item.FunctionalType}', ");
+                }
+
+                if (!string.IsNullOrEmpty(item.Name))
+                {
+                    queryBuilder.Append($"Name = '{item.Name}', ");
+                }
+
+                if (!string.IsNullOrEmpty(item.Direction))
+                {
+                    queryBuilder.Append($"Direction = '{item.Direction}', ");
+                }
+
+                queryBuilder.Append($"SpeedLimit = {item.SpeedLimit}, ");
+
+                if (!string.IsNullOrEmpty(item.Region))
+                {
+                    queryBuilder.Append($"Region = '{item.Region}', ");
+                }
+
+                if (!string.IsNullOrEmpty(item.City))
+                {
+                    queryBuilder.Append($"City = '{item.City}', ");
+                }
+
+                if (!string.IsNullOrEmpty(item.County))
+                {
+                    queryBuilder.Append($"County = '{item.County}', ");
+                }
+
+                queryBuilder.Append($"Shape = '{item.Shape.AsText()}', ");
+                queryBuilder.Append($"ShapeWKT = '{item.ShapeWKT}', ");
+
+                if (!string.IsNullOrEmpty(item.AlternateIdentifier))
+                {
+                    queryBuilder.Append($"AlternateIdentifier = '{item.AlternateIdentifier}', ");
+                }
+
+                // Remove the last comma and space
+                queryBuilder.Length -= 2;
+
+                queryBuilder.Append($" WHERE Id = @key");
+
+                var query = queryBuilder.ToString();
+
+                var parameters = new List<BigQueryParameter>
+        {
+            new BigQueryParameter("@key", BigQueryDbType.Int64, item.Id)
+        };
+
+                await _client.ExecuteQueryAsync(query, parameters);
+            }
+            else
+            {
+                var query = $"INSERT INTO `{_datasetId}.{_tableId}` " +
+                    $"(Id, UdotRouteNumber, StartMilePoint, EndMilePoint, FunctionalType, Name, Direction, SpeedLimit, Region, City, County, Shape, ShapeWKT, AlternateIdentifier) " +
+                    $"VALUES (" +
+                    $"{item.Id}, " +
+                    $"{item.UdotRouteNumber}, " +
+                    $"{item.StartMilePoint}, " +
+                    $"{item.EndMilePoint}, " +
+                    $"'{item.FunctionalType}', " +
+                    $"'{item.Name}', " +
+                    $"'{item.Direction}', " +
+                    $"{item.SpeedLimit}, " +
+                    $"'{item.Region}', " +
+                    $"'{item.City}', " +
+                    $"'{item.County}', " +
+                    $"'{item.Shape.AsText()}', " +
+                    $"'{item.ShapeWKT}', " +
+                    $"{(string.IsNullOrEmpty(item.AlternateIdentifier) ? "NULL" : $"'{item.AlternateIdentifier}'")})";
+
+                var parameters = new List<BigQueryParameter>();
+
+                await _client.ExecuteQueryAsync(query, parameters);
+            }
         }
 
         public override void UpdateRange(IEnumerable<Segment> items)
         {
-            throw new NotImplementedException();
+            foreach (var item in items)
+            {
+                Update(item);
+            }
         }
 
-        public override Task UpdateRangeAsync(IEnumerable<Segment> items)
+        public override async Task UpdateRangeAsync(IEnumerable<Segment> items)
         {
-            throw new NotImplementedException();
+            foreach (var item in items)
+            {
+                await UpdateAsync(item);
+            }
         }
 
         protected override Segment MapRowToEntity(BigQueryRow row)
@@ -199,7 +407,13 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
 
         public override IQueryable<Segment> GetList()
         {
-            throw new NotImplementedException();
+            var query = $"SELECT * FROM `{_datasetId}.{_tableId}`";
+            var parameters = new List<BigQueryParameter>();
+
+            var result = _client.ExecuteQuery(query, parameters).ToList();
+
+            // Map the result to a list of ImpactType objects
+            return result.Select(row => MapRowToEntity(row)).ToList().AsQueryable();
         }
     }
 }
