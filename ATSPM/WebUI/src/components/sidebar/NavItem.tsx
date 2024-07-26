@@ -48,7 +48,7 @@ const NavItem = ({ icon, text, url }: MenuItemProps) => {
             color: theme.palette.text.primary,
             '&.Mui-selected': {
               backgroundColor: `${baseColor}30`,
-              borderRight: `2px solid ${baseColor}`,
+              borderRight: `4px solid ${baseColor}`,
             },
           }}
         >
