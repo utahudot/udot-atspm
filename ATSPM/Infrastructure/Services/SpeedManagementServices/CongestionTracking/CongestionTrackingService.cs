@@ -14,17 +14,17 @@ namespace ATSPM.Infrastructure.Services.SpeedManagementServices.CongestionTracki
     {
 
         private readonly IHourlySpeedRepository hourlySpeedRepository;
-        private readonly ISegmentRepository routeRepository;
+        private readonly ISegmentRepository segmentRepository;
 
         public CongestionTrackingService(IHourlySpeedRepository hourlySpeedRepository, ISegmentRepository routeRepository)
         {
             this.hourlySpeedRepository = hourlySpeedRepository;
-            this.routeRepository = routeRepository;
+            this.segmentRepository = routeRepository;
         }
 
         public async Task<CongestionTrackingDto> GetReportData(CongestionTrackingOptions options)
         {
-            var segment = await routeRepository.LookupAsync(options.SegmentId);
+            var segment = await segmentRepository.LookupAsync(options.SegmentId);
             var hourlyResult = await hourlySpeedRepository.GetHourlySpeeds(options);
             var result = ConvertToCongestionResult(hourlyResult, segment);
             return result;

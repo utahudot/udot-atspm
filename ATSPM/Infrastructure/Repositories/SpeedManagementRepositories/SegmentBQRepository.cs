@@ -2,6 +2,8 @@
 using ATSPM.Data.Models.SpeedManagementConfigModels;
 using Google.Cloud.BigQuery.V2;
 using Microsoft.Extensions.Logging;
+using NetTopologySuite.Geometries;
+using NetTopologySuite.IO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,13 +17,15 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
         private readonly BigQueryClient _client;
         private readonly string _datasetId;
         private readonly string _tableId;
+        private readonly string _projectId;
         private readonly ILogger<ATSPMRepositoryBQBase<Segment>> _logger;
 
-        public SegmentBQRepository(BigQueryClient client, string datasetId, string tableId, ILogger<ATSPMRepositoryBQBase<Segment>> log) : base(client, datasetId, tableId, log)
+        public SegmentBQRepository(BigQueryClient client, string datasetId, string tableId, string projectId, ILogger<ATSPMRepositoryBQBase<Segment>> log) : base(client, datasetId, tableId, log)
         {
             _client = client;
             _datasetId = datasetId;
             _tableId = tableId;
+            _projectId = projectId;
             _logger = log;
         }
 
@@ -70,7 +74,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             {
                 return null;
             }
-            var query = $"SELECT * FROM `{_datasetId}.{_tableId}` WHERE Id = @key";
+            var query = $"SELECT * FROM `{_projectId}.{_datasetId}.{_tableId}` WHERE Id = @key";
             var parameters = new List<BigQueryParameter>
             {
                     new BigQueryParameter("key", BigQueryDbType.Int64, key)
@@ -86,7 +90,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             {
                 return null;
             }
-            var query = $"SELECT * FROM `{_datasetId}.{_tableId}` WHERE Id = @key";
+            var query = $"SELECT * FROM `{_projectId}.{_datasetId}.{_tableId}` WHERE Id = @key";
             var parameters = new List<BigQueryParameter>
                 {
                     new BigQueryParameter("key", BigQueryDbType.Int64, item.Id)
@@ -103,10 +107,10 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             {
                 return null;
             }
-            var query = $"SELECT * FROM `{_datasetId}.{_tableId}` WHERE Id = @key";
+            var query = $"SELECT * FROM `{_projectId}.{_datasetId}.{_tableId}` WHERE Id = @key";
             var parameters = new List<BigQueryParameter>
             {
-                    new BigQueryParameter("key", BigQueryDbType.Int64, key)
+                    new BigQueryParameter("key", BigQueryDbType.String, key)
                 };
             var results = await _client.ExecuteQueryAsync(query, parameters);
             return results.Select(row => MapRowToEntity(row)).FirstOrDefault();
@@ -118,7 +122,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             {
                 return null;
             }
-            var query = $"SELECT * FROM `{_datasetId}.{_tableId}` WHERE Id = @key";
+            var query = $"SELECT * FROM `{_projectId}.{_datasetId}.{_tableId}` WHERE Id = @key";
             var parameters = new List<BigQueryParameter>
                 {
                     new BigQueryParameter("key", BigQueryDbType.Int64, item.Id)
@@ -169,7 +173,28 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
 
         protected override Segment MapRowToEntity(BigQueryRow row)
         {
-            throw new NotImplementedException();
+            var reader = new WKTReader();
+            var wkt = row["Shape"].ToString();
+            Geometry shape = wkt != null ? reader.Read(wkt) : null;
+            return new Segment()
+            {
+                Id = row["Id"].ToString(),
+                UdotRouteNumber = row["UdotRouteNumber"].ToString(),
+                StartMilePoint = (double)row["StartMilePoint"],
+                EndMilePoint = (double)row["EndMilePoint"],
+                FunctionalType = row["FunctionalType"].ToString(),
+                Name = row["Name"].ToString(),
+                Direction = row["Direction"]?.ToString(),
+                SpeedLimit = (long)row["SpeedLimit"],
+                Region = row["Region"]?.ToString(),
+                City = row["City"]?.ToString(),
+                County = row["County"]?.ToString(),
+                Shape = shape,
+                ShapeWKT = row["ShapeWKT"]?.ToString(),
+                AlternateIdentifier = row["AlternateIdentifier"]?.ToString(),
+                AccessCategory = row["Category"]?.ToString(),
+                Offset = (int)row["Offset"]
+            };
         }
 
         public override IQueryable<Segment> GetList()

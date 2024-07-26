@@ -4,7 +4,7 @@ public class MonthlySpeed
 {
     public DateOnly Date { get; set; }
     public TimeOnly BinStartTime { get; set; }
-    public int RouteId { get; set; }
+    public string SegmentId { get; set; }
     public int SourceId { get; set; }
     public int ConfidenceId { get; set; }
     public int Average { get; set; }

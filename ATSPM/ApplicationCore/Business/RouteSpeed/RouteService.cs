@@ -21,51 +21,51 @@ namespace ATSPM.Application.Business.RouteSpeed
             _routeRepository = routeRepository;
         }
 
-        public async Task AddRandomRoutes()
-        {
-            var routes = GenerateRandomRoutes(numRoutes, centerUtah, maxRadius, maxLinkDistance);
-            await _routeRepository.AddRoutesAsync(routes);
-        }
+        //public async Task AddRandomRoutes()
+        //{
+        //    var routes = GenerateRandomRoutes(numRoutes, centerUtah, maxRadius, maxLinkDistance);
+        //    await _routeRepository.AddRoutesAsync(routes);
+        //}
 
-        private List<Segment> GenerateRandomRoutes(int numRoutes, double[] center, int maxRadius, int maxLinkDistance)
-        {
-            var routes = new List<Segment>();
-            var rand = new Random();
-            var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
+        //private List<Segment> GenerateRandomRoutes(int numRoutes, double[] center, int maxRadius, int maxLinkDistance)
+        //{
+        //    var routes = new List<Segment>();
+        //    var rand = new Random();
+        //    var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
 
-            for (int i = 0; i < numRoutes; i++)
-            {
-                Coordinate startCoord = GetRandomCoordinate(center, maxRadius, rand);
-                Coordinate endCoord = GetRandomCoordinate(new double[] { startCoord.Y, startCoord.X }, maxLinkDistance, rand);
+        //    for (int i = 0; i < numRoutes; i++)
+        //    {
+        //        Coordinate startCoord = GetRandomCoordinate(center, maxRadius, rand);
+        //        Coordinate endCoord = GetRandomCoordinate(new double[] { startCoord.Y, startCoord.X }, maxLinkDistance, rand);
 
-                var startPoint = geometryFactory.CreatePoint(startCoord);
-                var endPoint = geometryFactory.CreatePoint(endCoord);
-                var lineString = geometryFactory.CreateLineString(new[] { startCoord, endCoord });
+        //        var startPoint = geometryFactory.CreatePoint(startCoord);
+        //        var endPoint = geometryFactory.CreatePoint(endCoord);
+        //        var lineString = geometryFactory.CreateLineString(new[] { startCoord, endCoord });
 
-                var route = new Segment
-                {
-                    Id = i,
-                    UdotRouteNumber = rand.Next(1000, 9999),
-                    StartMilePoint = 0,
-                    EndMilePoint = rand.NextDouble() * maxLinkDistance,
-                    FunctionalType = GetRandomFunctionalType(rand),
-                    Name = $"Route {i + 1}",
-                    Direction = GetRandomDirection(rand),
-                    SpeedLimit = rand.Next(25, 75),
-                    Region = "Region " + rand.Next(1, 5),
-                    City = "City " + rand.Next(1, 100),
-                    County = "County " + rand.Next(1, 30),
-                    Shape = lineString,
-                    ShapeWKT = lineString.AsText(),
-                    AlternateIdentifier = null,
-                    RouteEntities = new List<RouteEntity>()
-                };
+        //        var route = new Segment
+        //        {
+        //            Id = i,
+        //            UdotRouteNumber = rand.Next(1000, 9999),
+        //            StartMilePoint = 0,
+        //            EndMilePoint = rand.NextDouble() * maxLinkDistance,
+        //            FunctionalType = GetRandomFunctionalType(rand),
+        //            Name = $"Route {i + 1}",
+        //            Direction = GetRandomDirection(rand),
+        //            SpeedLimit = rand.Next(25, 75),
+        //            Region = "Region " + rand.Next(1, 5),
+        //            City = "City " + rand.Next(1, 100),
+        //            County = "County " + rand.Next(1, 30),
+        //            Shape = lineString,
+        //            ShapeWKT = lineString.AsText(),
+        //            AlternateIdentifier = null,
+        //            RouteEntities = new List<SegmentEntity>()
+        //        };
 
-                routes.Add(route);
-            }
+        //        routes.Add(route);
+        //    }
 
-            return routes;
-        }
+        //    return routes;
+        //}
 
         private Coordinate GetRandomCoordinate(double[] center, int maxDistance, Random rand)
         {

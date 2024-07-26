@@ -18,30 +18,6 @@ namespace SpeedManagementApi.Controllers
             this.routeService = routeService;
         }
 
-        [HttpPut]
-        public async Task<IActionResult> PutAsync([FromBody] RouteSpeedOptions item)
-        {
-            await this.routeSpeedService.AddPemsSpeed(item);
-
-            return Ok();
-        }
-
-        [HttpPut("PutSpeedRoutes")]
-        public async Task<IActionResult> PutSpeedAsync([FromBody] RouteSpeedOptions item)
-        {
-            await this.routeSpeedService.AddTestSpeedsPerRoute();
-
-            return Ok();
-        }
-
-        [HttpPut("PutTestRoutes")]
-        public async Task<IActionResult> Put([FromBody] RouteSpeedOptions item)
-        {
-            await this.routeService.AddRandomRoutes();
-
-            return Ok();
-        }
-
         [HttpPost("GetRouteSpeeds", Name = "GetRouteSpeeds")]
         public async Task<IActionResult> GetRoutesSpeeds([FromBody] RouteSpeedOptions options)
         {
@@ -54,7 +30,8 @@ namespace SpeedManagementApi.Controllers
                 var geometry = routeSpeed.Shape;
                 var properties = new AttributesTable
                 {
-                    { "route_id", routeSpeed.RouteId },
+                    { "name", routeSpeed.Name },
+                    { "route_id", routeSpeed.SegmentId },
                     { "startdate", routeSpeed.Startdate?.ToString("M/d/yyyy, h:mm tt") },
                     { "enddate", routeSpeed.Enddate?.ToString("M/d/yyyy, h:mm tt") },
                     { "percentilespd_15", routeSpeed.Percentilespd_15 },

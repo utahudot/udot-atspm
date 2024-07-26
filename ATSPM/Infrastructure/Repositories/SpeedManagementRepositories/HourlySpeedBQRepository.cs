@@ -70,7 +70,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             {
                 { "Date", item.Date.AsBigQueryDate() },
                 {"BinStartTime", item.BinStartTime.TimeOfDay },
-                {"RouteId", item.RouteId },
+                {"SegmentId", item.SegmentId },
                 {"SourceId", item.SourceId },
                 {"ConfidenceId", item.ConfidenceId },
                 {"Average", item.Average },
@@ -89,7 +89,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             {
                 Date = row.GetPropertyValue<DateTime>("Id"),
                 BinStartTime = row.GetPropertyValue<DateTime>("BinStartTime"),
-                RouteId = row.GetPropertyValue<int>("RouteId"),
+                SegmentId = row.GetPropertyValue<string>("SegmentId"),
                 SourceId = row.GetPropertyValue<int>("SourceId"),
                 ConfidenceId = row.GetPropertyValue<int>("ConfidenceId"),
                 Average = row.GetPropertyValue<int>("Average"),
@@ -102,7 +102,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             };
         }
 
-        public async Task<List<MonthlyAverage>> GetMonthlyAveragesAsync(int routeId, DateOnly startDate, DateOnly endDate, string daysOfWeek, int sourceId)
+        public async Task<List<MonthlyAverage>> GetMonthlyAveragesAsync(int segmentId, DateOnly startDate, DateOnly endDate, string daysOfWeek, int sourceId)
         {
             string query = $@"
             SELECT 
@@ -116,7 +116,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
                 AVG(Flow) AS Flow
             FROM `atspm-406601.speed_dataset.hourly_speed`
             WHERE 
-                RouteId = @routeId AND
+                SegmentId = @segmentId AND
                 SourceId = @sourceId AND
                 date BETWEEN @startDate AND @endDate AND
                 EXTRACT(DAYOFWEEK FROM date) IN ({daysOfWeek})
@@ -125,7 +125,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
 
             var parameters = new[]
             {
-            new BigQueryParameter("routeId", BigQueryDbType.Int64, routeId),
+            new BigQueryParameter("segmentId", BigQueryDbType.Int64, segmentId),
             new BigQueryParameter("startDate", BigQueryDbType.Date, startDate.ToDateTime(new TimeOnly(0,0))),
             new BigQueryParameter("endDate", BigQueryDbType.Date, endDate.ToDateTime(new TimeOnly(0,0))),
             new BigQueryParameter("sourceId", BigQueryDbType.Int64, sourceId)
@@ -145,7 +145,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             }).ToList();
         }
 
-        public async Task<List<DailyAverage>> GetDailyAveragesAsync(int routeId, DateOnly startDate, DateOnly endDate, string daysOfWeek)
+        public async Task<List<DailyAverage>> GetDailyAveragesAsync(int segmentId, DateOnly startDate, DateOnly endDate, string daysOfWeek)
         {
             string query = $@"
             SELECT 
@@ -159,7 +159,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
                 AVG(Flow) AS Flow
             FROM `atspm-406601.speed_dataset.hourly_speed`
             WHERE 
-                RouteId = @routeId AND
+                SegmentId = @segmentId AND
                 date BETWEEN @startDate AND @endDate AND
                 EXTRACT(DAYOFWEEK FROM date) IN ({daysOfWeek})
             GROUP BY Date
@@ -167,7 +167,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
 
             var parameters = new[]
             {
-            new BigQueryParameter("routeId", BigQueryDbType.Int64, routeId),
+            new BigQueryParameter("segmentId", BigQueryDbType.Int64, segmentId),
             new BigQueryParameter("startDate", BigQueryDbType.Date, startDate.ToDateTime(new TimeOnly(0,0))),
             new BigQueryParameter("endDate", BigQueryDbType.Date, endDate.ToDateTime(new TimeOnly(0, 0))),
         };
@@ -194,13 +194,13 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             SELECT *
             FROM `atspm-406601.speed_dataset.hourly_speed`
             WHERE 
-                RouteId = @routeId AND
+                SegmentId = @segmentId AND
                 date BETWEEN @startDate AND @endDate 
             ORDER BY Date ASC, BinStartTime ASC;";
 
             var parameters = new[]
             {
-            new BigQueryParameter("routeId", BigQueryDbType.Int64, options.SegmentId),
+            new BigQueryParameter("segmentId", BigQueryDbType.Int64, options.SegmentId),
             new BigQueryParameter("startDate", BigQueryDbType.Date, options.StartDate.ToDateTime(new TimeOnly(0,0))),
             new BigQueryParameter("endDate", BigQueryDbType.Date, options.EndDate.ToDateTime(new TimeOnly(0, 0))),
         };
@@ -275,7 +275,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
                         query = $@"
                                 WITH RouteStats AS (
                                     SELECT
-                                        hs.RouteId,
+                                        hs.SegmentId,
                                         AVG(hs.Average) AS Avg,
                                         APPROX_QUANTILES(hs.FifteenthSpeed, 100)[ORDINAL(85)] AS Percentilespd_15,
                                         APPROX_QUANTILES(hs.EightyFifthSpeed, 100)[ORDINAL(85)] AS Percentilespd_85,
@@ -288,16 +288,17 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
                                         AND TIME(hs.BinStartTime) BETWEEN @startTime AND @endTime
                                         AND EXTRACT(DAYOFWEEK FROM DATE) IN (1,2,3,4,5,6,7)
                                     GROUP BY
-                                        hs.RouteId
+                                        hs.SegmentId
                                 )
                                 SELECT
-                                    rs.RouteId,
+                                    rs.SegmentId,
                                     rs.Avg,
                                     rs.Percentilespd_15,
                                     rs.Percentilespd_85,
                                     rs.Percentilespd_95,
                                     rs.Flow,
                                     r.SpeedLimit,
+                                    r.Name,
                                     ANY_VALUE(ST_AsText(r.Shape)) AS Shape,
                                     IFNULL(
                                         SAFE_CAST(
@@ -314,9 +315,9 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
                                 JOIN
                                     `atspm-406601.speed_dataset.segment` AS r
                                 ON
-                                    rs.RouteId = r.Id
+                                    rs.SegmentId = r.Id
                                 GROUP BY
-                                    rs.RouteId, rs.Avg, rs.Percentilespd_15, rs.Percentilespd_85, rs.Percentilespd_95, rs.Flow, r.SpeedLimit";
+                                    rs.SegmentId, rs.Avg, rs.Percentilespd_15, rs.Percentilespd_85, rs.Percentilespd_95, rs.Flow, r.SpeedLimit, r.Name;";
                         parameters = new[]
                         {
                             new BigQueryParameter("startDate", BigQueryDbType.Date, convertedStartDate.ToDateTime(new TimeOnly(0, 0))),
@@ -333,7 +334,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
                 {
                     var reader = new WKTReader();
                     // Access row data as needed
-                    var routeId = row["RouteId"];
+                    var segmentId = row["SegmentId"];
                     var avg = row["Avg"];
                     var percentile15 = row["Percentilespd_15"];
                     var percentile85 = row["Percentilespd_85"];
@@ -341,14 +342,15 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
                     var flow = row["Flow"];
                     var estimatedViolations = row["EstimatedViolations"];
                     var speedLimit = row["SpeedLimit"];
+                    var name = row["Name"];
                     var wkt = (string)row["Shape"];
                     // Further processing...
                     Geometry shape = wkt != null ? reader.Read(wkt) : null;
 
                     var result = new RouteSpeed
                     {
-                        RouteId = routeId != null ? routeId.ToString() : "",
-                        Name = routeId != null ? routeId.ToString() : "",
+                        SegmentId = segmentId != null ? segmentId.ToString() : "",
+                        Name = name != null ? name.ToString() : "",
                         Avg = avg != null ? Math.Round((double)avg, 2) : null,
                         Percentilespd_15 = percentile15 != null ? (long)percentile15 : null,
                         Percentilespd_85 = percentile85 != null ? (long)percentile85 : null,
