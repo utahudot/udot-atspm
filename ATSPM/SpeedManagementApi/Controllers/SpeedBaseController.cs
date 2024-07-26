@@ -14,27 +14,27 @@ namespace SpeedManagementApi.Controllers
         /// </summary>
         /// <param name="options">Reporting options</param>
         /// <returns></returns>
-        [HttpPost("getReportData")]
-        //[Produces("application/json", "application/xml")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public virtual async Task<ActionResult<Tout>> GetReportData([FromBody] Tin options)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+        //[HttpPost("getReportData")]
+        ////[Produces("application/json", "application/xml")]
+        //[ProducesResponseType(StatusCodes.Status200OK)]
+        //[ProducesResponseType(StatusCodes.Status400BadRequest)]
+        //public virtual async Task<ActionResult<Tout>> GetReportData([FromBody] Tin options)
+        //{
+        //    if (!ModelState.IsValid)
+        //    {
+        //        return BadRequest(ModelState);
+        //    }
 
-            try
-            {
-                var result = await _reportService.ExecuteAsync(options, null, HttpContext.RequestAborted);
+        //    try
+        //    {
+        //        var result = await _reportService.ExecuteAsync(options, null, HttpContext.RequestAborted);
 
-                return Ok(result);
-            }
-            catch (Exception e)
-            {
-                return BadRequest(e.Message);
-            }
-        }
+        //        return Ok(result);
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        return BadRequest(e.Message);
+        //    }
+        //}
     }
 }

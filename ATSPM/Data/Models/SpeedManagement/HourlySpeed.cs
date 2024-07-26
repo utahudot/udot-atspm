@@ -4,7 +4,7 @@ public class HourlySpeed
 {
     public DateTime Date { get; set; }
     public DateTime BinStartTime { get; set; }
-    public int RouteId { get; set; }
+    public string SegmentId { get; set; }
     public int SourceId { get; set; }
     public int ConfidenceId { get; set; }
     public int Average { get; set; }
