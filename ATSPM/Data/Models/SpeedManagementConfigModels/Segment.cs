@@ -19,7 +19,7 @@ namespace ATSPM.Data.Models.SpeedManagementConfigModels
         public string? ShapeWKT { get; set; }
         public string? AlternateIdentifier { get; set; }
         public string? AccessCategory { get; set; }
-        public int? Offset { get; set; }
+        public long? Offset { get; set; }
         public virtual List<SegmentEntity>? RouteEntities { get; set; }
 
     }

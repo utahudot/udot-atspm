@@ -400,8 +400,8 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
                 Shape = shape,
                 ShapeWKT = row["ShapeWKT"]?.ToString(),
                 AlternateIdentifier = row["AlternateIdentifier"]?.ToString(),
-                AccessCategory = row["Category"]?.ToString(),
-                Offset = (int)row["Offset"]
+                AccessCategory = row["AccessCategory"]?.ToString(),
+                Offset = (long)row["Offset"]
             };
         }
 
