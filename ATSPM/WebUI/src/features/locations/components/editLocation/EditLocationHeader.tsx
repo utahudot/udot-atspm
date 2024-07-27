@@ -118,17 +118,12 @@ const EditLocationHeader = ({
   const handleDeleteCurrentVersionConfirm = () => {
     deleteVersion(location.id, {
       onSuccess: () => {
-        refetchLocation()
         refetchAllVersionsOfLocation()
         updateLocationVersion(
           versionData?.value.find(
             (version) => version.id !== location.id
           ) as Location
         )
-        addNotification({
-          type: 'error',
-          title: `Version Deleted`,
-        })
       },
     })
   }
@@ -180,6 +175,16 @@ const EditLocationHeader = ({
         ? 'Delete Version'
         : 'Delete Location'
 
+  const { locationIdentifier, primaryName, secondaryName } = location || {}
+
+  let displayName = locationIdentifier || ''
+  if (primaryName) {
+    displayName += ` - ${primaryName}`
+  }
+  if (primaryName && secondaryName) {
+    displayName += ` & ${secondaryName}`
+  }
+
   return (
     <Paper sx={{ mt: 2, p: 2 }}>
       <Box
@@ -215,8 +220,7 @@ const EditLocationHeader = ({
         </Box>
       </Box>
       <Typography variant="h2" marginBottom={'10px'}>
-        {location?.locationIdentifier} - {location?.primaryName} &{' '}
-        {location?.secondaryName}
+        {displayName}
       </Typography>
       <Box sx={{ display: 'flex', alignItems: 'center', mt: '10px' }}>
         <InputLabel sx={{ marginRight: '10px' }} htmlFor="version-select-label">

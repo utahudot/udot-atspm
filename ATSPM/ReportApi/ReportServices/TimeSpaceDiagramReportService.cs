@@ -103,7 +103,7 @@ namespace ATSPM.ReportApi.ReportServices
 
         private string GetRouteNameFromId(int routeId)
         {
-            var routeName = routeRepository.GetList().Where(r => r.Id == routeId).FirstOrDefault().Name;
+            var routeName = routeRepository.GetList().Where(r => r.Id == routeId)?.FirstOrDefault()?.Name;
             return routeName != null ? routeName : "";
         }
 

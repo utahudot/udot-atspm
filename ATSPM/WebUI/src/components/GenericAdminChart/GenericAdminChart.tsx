@@ -1,5 +1,4 @@
 import { Location } from '@/features/locations/types'
-import { useSidebarStore } from '@/stores/sidebar'
 import AddIcon from '@mui/icons-material/Add'
 import CancelIcon from '@mui/icons-material/Close'
 import DeleteIcon from '@mui/icons-material/DeleteOutlined'
@@ -86,11 +85,13 @@ interface EditToolbarProps {
   ) => void
 }
 function EditToolbar(props: EditToolbarProps) {
-  ;<GridToolbarContainer>
-    <GridToolbarColumnsButton />
-    <GridToolbarFilterButton />
-    <GridToolbarExport />
-  </GridToolbarContainer>
+  return (
+    <GridToolbarContainer>
+      <GridToolbarColumnsButton />
+      <GridToolbarFilterButton />
+      <GridToolbarExport />
+    </GridToolbarContainer>
+  )
 }
 
 function GenericAdminChart({
@@ -116,7 +117,6 @@ function GenericAdminChart({
   const theme = useTheme()
   const mode = theme.palette.mode
   const apiRef = useGridApiRef()
-  const { isSidebarOpen } = useSidebarStore()
   const singularPageName = pageName.endsWith('s')
     ? pageName.slice(0, -1).charAt(0).toUpperCase() + pageName.slice(1, -1)
     : pageName
@@ -321,7 +321,7 @@ function GenericAdminChart({
         minWidth: '375px',
         padding: '1px',
         [theme.breakpoints.up('md')]: {
-          maxWidth: isSidebarOpen ? 'calc(100vw - 340px)' : '100%',
+          maxWidth: '100%',
         },
       }}
     >
@@ -503,8 +503,3 @@ function GenericAdminChart({
 }
 
 export default GenericAdminChart
-
-
-
-
-      

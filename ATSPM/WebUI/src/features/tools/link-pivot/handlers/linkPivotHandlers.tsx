@@ -36,8 +36,12 @@ export const useLinkPivotOptionsHandler = ({
 }: LPContainerPresenterProps) => {
   const [startDate, setStartDate] = useState(startOfDay(new Date()))
   const [endDate, setEndDate] = useState(startOfDay(new Date()))
-  const [startTime, setStartTime] = useState(startOfDay(new Date()))
-  const [endTime, setEndTime] = useState(startOfDay(new Date()))
+  const [startTime, setStartTime] = useState(
+    new Date(new Date().setHours(8, 0, 0, 0))
+  )
+  const [endTime, setEndTime] = useState(
+    new Date(new Date().setHours(9, 0, 0, 0))
+  )
   const [routeId, setRouteId] = useState<string>('')
   const [selectedDays, setSelectedDays] = useState<number[]>([1, 2, 3, 4, 5])
   const [cycleLength, setCycleLength] = useState(90)

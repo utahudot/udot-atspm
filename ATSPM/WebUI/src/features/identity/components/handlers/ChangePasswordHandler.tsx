@@ -12,10 +12,8 @@ export interface ChangePasswordHandler
     ResponseHandler {
   data: ResponseDto
   submitted: boolean
-  oldPassword: string
   confirmPassword: string
   validateConfirmPassword(): string | null
-  saveOldPassword(pass: string): void
   saveConfirmPassword(pass: string): void
   handleSubmit(event: FormEvent<HTMLFormElement>): void
 }
@@ -24,12 +22,19 @@ export interface VerifyTokenHandler {
   data: ResponseDto
   isLoadingValidity: boolean
   isValidToken: boolean
+  resetToken: string
 }
 
-export const useChangePasswordHandler = (): ChangePasswordHandler => {
+interface changePasswordProp {
+  resetToken: string
+}
+
+export const useChangePasswordHandler = ({
+  resetToken,
+}: changePasswordProp): ChangePasswordHandler => {
   const [submitted, setSubmitted] = useState(false)
   const [password, setPassword] = useState<string>('')
-  const [oldPassword, setOldPassword] = useState<string>('')
+  // const [oldPassword, setOldPassword] = useState<string>('')
   const [confirmPassword, setConfirmPassword] = useState<string>('')
   const [responseSuccess, setResponseSuccess] = useState(false)
   const [responseError, setResponseError] = useState(false)
@@ -40,7 +45,7 @@ export const useChangePasswordHandler = (): ChangePasswordHandler => {
     data: changePasswordData,
     status,
   } = useChangePassword({
-    currentPassword: oldPassword,
+    resetToken,
     newPassword: password,
     confirmPassword,
   })
@@ -66,10 +71,14 @@ export const useChangePasswordHandler = (): ChangePasswordHandler => {
       return 'Password should be at least 8 characters long.'
     }
 
+    const hasUpperCase = /(?=.*[A-Z])/
+    const hasDigit = /\d/
+    const hasSpecialChar = /[!@#$%^&*()_+\[\]{};':"\\|,.<>?]/
+
     if (
-      !/(?=.*[A-Z])/.test(password) ||
-      !/(?=.*\d)/.test(password) ||
-      !/(?=.*[!@#$%^&*()_+[\]{};':"\\|,.<>?])/.test(password)
+      !hasUpperCase.test(password) ||
+      !hasDigit.test(password) ||
+      !hasSpecialChar.test(password)
     ) {
       return 'Password should contain at least one uppercase letter, one digit, and one symbol.'
     }
@@ -101,7 +110,6 @@ export const useChangePasswordHandler = (): ChangePasswordHandler => {
   const component: ChangePasswordHandler = {
     data: data as ResponseDto,
     password,
-    oldPassword,
     confirmPassword,
     responseError,
     responseSuccess,
@@ -127,9 +135,6 @@ export const useChangePasswordHandler = (): ChangePasswordHandler => {
     saveConfirmPassword: (pass: string) => {
       setConfirmPassword(pass)
     },
-    saveOldPassword: (pass: string) => {
-      setOldPassword(pass)
-    },
   }
 
   return component
@@ -139,7 +144,7 @@ export const useVerifyTokenHandler = (): VerifyTokenHandler => {
   const router = useRouter()
   const [isLoadingValidity, setIsLoadingValidity] = useState(true)
   const [username, setUsername] = useState('')
-  const [token, setToken] = useState('')
+  const [resetToken, setResetToken] = useState('')
   const [isValidToken, setIsValidToken] = useState(false)
   const [data, setData] = useState<VerifyToken>()
 
@@ -148,7 +153,7 @@ export const useVerifyTokenHandler = (): VerifyTokenHandler => {
     refetch,
     status,
   } = useVerifyResetToken({
-    token,
+    token: resetToken,
     username,
   })
 
@@ -169,7 +174,7 @@ export const useVerifyTokenHandler = (): VerifyTokenHandler => {
     console.log(name, code)
     if (name && code) {
       setUsername(name)
-      setToken(code)
+      setResetToken(code)
     }
   }, [router.asPath])
 
@@ -179,15 +184,15 @@ export const useVerifyTokenHandler = (): VerifyTokenHandler => {
     console.log(name, code)
     if (name && code) {
       setUsername(name)
-      setToken(code)
+      setResetToken(code)
     }
   }, [])
 
   useEffect(() => {
-    if (token && username && isLoadingValidity) {
+    if (resetToken && username && isLoadingValidity) {
       refetch()
     }
-  }, [isLoadingValidity, refetch, token, username])
+  }, [isLoadingValidity, refetch, resetToken, username])
 
   useEffect(() => {
     if (status === 'success') {
@@ -202,6 +207,7 @@ export const useVerifyTokenHandler = (): VerifyTokenHandler => {
     data: data as any,
     isLoadingValidity,
     isValidToken,
+    resetToken,
   }
 
   return component

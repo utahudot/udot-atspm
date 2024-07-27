@@ -8,7 +8,7 @@ type QueryFnType = typeof changePassword
 
 type UseLoginOptions = {
   config?: QueryConfig<QueryFnType>
-  currentPassword: string
+  resetToken: string
   newPassword: string
   confirmPassword: string
 }
@@ -20,14 +20,14 @@ const headers: AxiosHeaders = new AxiosHeaders({
 })
 
 const changePassword = async (
-  currentPassword: string,
+  resetToken: string,
   newPassword: string,
   confirmPassword: string
 ) => {
   const response: any = await identityAxios.post(
     'Account/changePassword',
     {
-      currentPassword,
+      resetToken,
       newPassword,
       confirmPassword,
     },
@@ -38,14 +38,13 @@ const changePassword = async (
 
 export const useChangePassword = ({
   config,
-  currentPassword,
+  resetToken,
   newPassword,
   confirmPassword,
 }: UseLoginOptions) => {
   return useQuery<ExtractFnReturnType<QueryFnType>>({
     ...config,
     enabled: false,
-    queryFn: () =>
-      changePassword(currentPassword, newPassword, confirmPassword),
+    queryFn: () => changePassword(resetToken, newPassword, confirmPassword),
   })
 }
