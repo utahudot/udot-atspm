@@ -6,7 +6,6 @@ import {
   ListItemIcon,
   ListItemText,
   Typography,
-  useMediaQuery,
   useTheme,
 } from '@mui/material'
 import Link from 'next/link'
@@ -22,12 +21,9 @@ interface MenuItemProps {
 const NavItem = ({ icon, text, url }: MenuItemProps) => {
   const router = useRouter()
   const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'))
-  const { closeSideBar } = useSidebarStore()
+  const { toggleSidebar } = useSidebarStore()
   const handleClick = () => {
-    if (isMobile) {
-      closeSideBar()
-    }
+    toggleSidebar()
   }
 
   const isSelected = router.pathname === url
@@ -37,7 +33,7 @@ const NavItem = ({ icon, text, url }: MenuItemProps) => {
     <ListItem
       key={text}
       sx={{
-        padding: '0px',
+        padding: 0,
         width: '100%',
         '&:hover': { backgroundColor: baseColor + '30' },
       }}
@@ -48,14 +44,15 @@ const NavItem = ({ icon, text, url }: MenuItemProps) => {
           selected={isSelected}
           LinkComponent={'a'}
           sx={{
+            py: 0.5,
             color: theme.palette.text.primary,
             '&.Mui-selected': {
               backgroundColor: `${baseColor}30`,
-              borderRight: `2px solid ${baseColor}`,
+              borderRight: `4px solid ${baseColor}`,
             },
           }}
         >
-          <ListItemIcon>{icon}</ListItemIcon>
+          <ListItemIcon sx={{ minWidth: '40px' }}>{icon}</ListItemIcon>
           <ListItemText>
             <Typography fontWeight={400}>{text}</Typography>
           </ListItemText>

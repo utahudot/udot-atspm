@@ -21,7 +21,6 @@ import {
 import ApproachesInfo from '@/features/locations/components/ApproachesInfo/approachesInfo'
 import DetectorsInfo from '@/features/locations/components/DetectorsInfo/detectorsInfo'
 import LocationInfo from '@/features/locations/components/LocationInfo/locationInfo'
-import { useSidebarStore } from '@/stores/sidebar'
 import { formatTimestampToDDMMYYYY } from '@/utils/dateTime'
 
 interface LocationsConfigContainerProps {
@@ -31,7 +30,6 @@ interface LocationsConfigContainerProps {
 function LocationsConfigContainer({
   locationIdentifier,
 }: LocationsConfigContainerProps) {
-  const { isSidebarOpen } = useSidebarStore()
   const [version, setVersion] = useState({ id: '', note: '' })
   const [isLocationInfoExpanded, setIsLocationInfoExpanded] = useState(true)
   const [isApproachesExpanded, setIsApproachesExpanded] = useState(true)
@@ -44,9 +42,9 @@ function LocationsConfigContainer({
   useEffect(() => {
     if (versionData) {
       const newestVersion = versionData.reduce((newest, current) => {
-        return new Date(newest.start) > new Date(newest.start)
-          ? current
-          : newest
+        return new Date(newest.start) > new Date(current.start)
+          ? newest
+          : current
       }, versionData[0])
       setVersion({ id: newestVersion.id, note: newestVersion.note })
     }

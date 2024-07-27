@@ -41,8 +41,8 @@ function Login() {
   }, [data, queryData])
 
   const validateEmail = (email: string) => {
-    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    return re.test(email)
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+    return emailRegex.test(email)
   }
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -90,7 +90,7 @@ function Login() {
     })
     Cookies.set('claims', data.claims.join(','))
     Cookies.set('loggedIn', 'True', { expires: inOneMinute })
-    window.location.href = '/locations'
+    window.location.href = '/'
   }
 
   const redirectUser = () => {
@@ -187,7 +187,7 @@ function Login() {
               <Grid item>
                 <Link
                   style={{ color: 'cornflowerblue' }}
-                  href="/forgotpassword"
+                  href="/password-reset"
                 >
                   Forgot Password
                 </Link>

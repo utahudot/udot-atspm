@@ -4,7 +4,6 @@ import {
   handleGreenTimeUtilizationDataZoom,
 } from '@/features/charts/utils'
 import { useChartsStore } from '@/stores/charts'
-import { useSidebarStore } from '@/stores/sidebar'
 import type {
   DataZoomComponentOption,
   DatasetComponentOption,
@@ -39,7 +38,6 @@ export default function ApacheEChart({
   hideInteractionMessage = false,
 }: ApacheEChartsProps) {
   const chartRef = useRef<HTMLDivElement>(null)
-  const { isSidebarOpen } = useSidebarStore()
   const { activeChart, setActiveChart } = useChartsStore()
   const [isHovered, setIsHovered] = useState(false)
   const [isScrolling, setIsScrolling] = useState(false)
@@ -98,12 +96,6 @@ export default function ApacheEChart({
       window.removeEventListener('resize', resizeChart)
     }
   }, [theme, chartType])
-
-  useEffect(() => {
-    setTimeout(() => {
-      chartInstance.current?.resize()
-    }, 500)
-  }, [isSidebarOpen])
 
   useEffect(() => {
     if (chartInstance.current) {
@@ -182,6 +174,8 @@ export default function ApacheEChart({
         height: '100%',
         ...style,
       }}
+      role="presentation"
+      aria-hidden="true"
       onClick={handleActivate}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}

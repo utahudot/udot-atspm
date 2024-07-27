@@ -154,8 +154,6 @@ export const useUserHasClaim = (claim: string) => {
         return
       }
 
-      userClaims
-
       if (userClaims.includes(claim) || userClaims.includes('Admin')) {
         setHasPermission(true)
       } else {

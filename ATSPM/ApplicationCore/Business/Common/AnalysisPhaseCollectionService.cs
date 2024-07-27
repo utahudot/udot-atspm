@@ -26,50 +26,15 @@ namespace ATSPM.Application.Business.Common
     {
         private readonly PlanService planService;
         private readonly AnalysisPhaseService analysisPhaseService;
-        private readonly PhaseService phaseService;
 
         public AnalysisPhaseCollectionService(
             PlanService planService,
-            AnalysisPhaseService analysisPhaseService,
-            PhaseService phaseService
+            AnalysisPhaseService analysisPhaseService
             )
         {
             this.planService = planService;
             this.analysisPhaseService = analysisPhaseService;
-            this.phaseService = phaseService;
         }
-
-        //public AnalysisPhaseCollectionData GetAnalysisPhaseCollectionData(
-        //    string locationId,
-        //    DateTime startTime,
-        //    DateTime endTime,
-        //    int consecutivecount)
-        //{
-        //    var Location = _LocationRepository.GetLatestVersionOfLocation(locationId, startTime);
-        //    var analysisPhaseCollectionData = new AnalysisPhaseCollectionData();
-        //    analysisPhaseCollectionData.LocationId = locationId;
-        //    var ptedt = controllerEventLogRepository.GetLocationEventsByEventCodes(
-        //        analysisPhaseCollectionData.LocationId,
-        //        startTime,
-        //        endTime,
-        //        new List<int> { 1, 11, 4, 5, 6, 7, 21, 23 });
-        //    var dapta = controllerEventLogRepository.GetLocationEventsByEventCodes(
-        //        analysisPhaseCollectionData.LocationId,
-        //        startTime,
-        //        endTime,
-        //        new List<int> { 1 });
-        //    ptedt = ptedt.OrderByDescending(i => i.TimeStamp).ToList();
-        //    var phasesInUse = dapta.Where(r => r.EventCode == 1).Select(r => r.EventParam).Distinct();
-        //    analysisPhaseCollectionData.Plans = planService.GetSplitMonitorPlans(startTime, endTime, analysisPhaseCollectionData.LocationId);
-        //    foreach (var row in phasesInUse)
-        //    {
-        //        var aPhase = analysisPhaseService.GetAnalysisPhaseData(row, ptedt, consecutivecount, Location);
-        //        analysisPhaseCollectionData.AnalysisPhases.Add(aPhase);
-        //    }
-        //    analysisPhaseCollectionData.AnalysisPhases = analysisPhaseCollectionData.AnalysisPhases.OrderBy(i => i.PhaseNumber).ToList();
-        //    analysisPhaseCollectionData.MaxPhaseInUse = FindMaxPhase(analysisPhaseCollectionData.AnalysisPhases);
-        //    return analysisPhaseCollectionData;
-        //}
 
         public AnalysisPhaseCollectionData GetAnalysisPhaseCollectionData(
             string locationIdentifier,
@@ -81,12 +46,11 @@ namespace ATSPM.Application.Business.Common
             IReadOnlyList<IndianaEvent> pedestrianEvents,
             IReadOnlyList<IndianaEvent> terminationEvents,
             Location Location,
-            int consecutiveCount,
-            int metricTypeId)
+            int consecutiveCount)
         {
             if (Location.Approaches.IsNullOrEmpty())
             {
-                return null;
+                throw new Exception("Approaches cannot be empty");
             }
             var analysisPhaseCollectionData = new AnalysisPhaseCollectionData();
             analysisPhaseCollectionData.locationId = locationIdentifier;
@@ -100,8 +64,7 @@ namespace ATSPM.Application.Business.Common
                     cycleEvents,
                     terminationEvents,
                     consecutiveCount,
-                    Location,
-                    metricTypeId);
+                    Location);
                 analysisPhaseCollectionData.AnalysisPhases.Add(aPhase);
             }
             analysisPhaseCollectionData.AnalysisPhases = analysisPhaseCollectionData.AnalysisPhases.Where(a => a != null).OrderBy(i => i.PhaseNumber).ToList();
@@ -125,31 +88,6 @@ namespace ATSPM.Application.Business.Common
             }
             return analysisPhaseCollectionData;
         }
-
-        //public AnalysisPhaseCollectionData GetAnalysisPhaseCollection(
-        //    string locationId,
-        //    DateTime startTime,
-        //    DateTime endTime,
-        //    IReadOnlyList<IndianaEvent> terminationEvents,
-        //    IReadOnlyList<IndianaEvent> planEvents,
-        //    IReadOnlyList<IndianaEvent> phaseEvents,
-        //    IReadOnlyList<IndianaEvent> pedEvents)
-        //{
-        //    var analysisPhaseCollectionData = new AnalysisPhaseCollectionData();
-        //    var cel = ControllerEventLogRepositoryFactory.Create();
-        //    var ptedt = cel.GetLocationEventsByEventCodes(locationId, startTime, endTime,
-        //        new List<int> { 1, 11, 4, 5, 6, 7, 21, 23 });
-        //    var dapta = cel.GetLocationEventsByEventCodes(locationId, startTime, endTime, new List<int> { 1 });
-        //    var phasesInUse = dapta.Where(d => d.EventCode == 1).Select(d => d.EventParam).Distinct();
-        //    Plans = PlanFactory.GetSplitMonitorPlans(startTime, endTime, locationId);
-        //    foreach (var row in phasesInUse)
-        //    {
-        //        var aPhase = new AnalysisPhase(row, locationId, ptedt);
-        //        Cycles.Add(aPhase);
-        //    }
-        //    OrderPhases();
-        //    return analysisPhaseCollectionData;
-        //}
 
         private int FindMaxPhase(List<AnalysisPhaseData> analysisPhases)
         {

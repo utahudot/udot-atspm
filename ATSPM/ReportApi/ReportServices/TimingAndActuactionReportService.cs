@@ -61,7 +61,8 @@ namespace ATSPM.ReportApi.ReportServices
             foreach (var phase in phaseDetails)
             {
                 var eventCodes = new List<short> { };
-                eventCodes.AddRange(new List<short> { 81, 82, 89, 90 });
+                var globalEventCodes = parameter.GlobalEventCodesList?.Any() != true ? new List<short> { 81, 82, 89, 90 } : parameter.GlobalEventCodesList;
+                eventCodes.AddRange(globalEventCodes);
                 eventCodes.AddRange(timingAndActuationsForPhaseService.GetPedestrianIntervalEventCodes(phase.Approach.IsPedestrianPhaseOverlap));
                 if (parameter.PhaseEventCodesList != null)
                     eventCodes.AddRange(parameter.PhaseEventCodesList);
@@ -111,7 +112,8 @@ namespace ATSPM.ReportApi.ReportServices
                 MovementTypes movementType = filteredDetectors.ToList()[0].MovementType;
                 string movementTypeName = movementType.GetAttributeOfType<DisplayAttribute>().Name;
                 approachDescription = $"{directionTypeName} {movementTypeName} Ph{phaseDetail.PhaseNumber}";
-            } else
+            }
+            else
             {
                 approachDescription = $"{directionTypeName} Ph{phaseDetail.PhaseNumber}";
             }

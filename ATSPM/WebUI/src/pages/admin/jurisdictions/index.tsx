@@ -48,7 +48,7 @@ const JurisdictionsAdmin = () => {
   const HandleCreateJurisdiction = async (jurisdictionData: Jurisdiction) => {
     const { id, otherPartners, countyParish, name, mpo } = jurisdictionData
     try {
-      createMutation.mutateAsync({
+      await createMutation.mutateAsync({
         id,
         otherPartners,
         countyParish,
@@ -65,7 +65,7 @@ const JurisdictionsAdmin = () => {
   ) => {
     const { id } = jurisdictionData
     try {
-      deleteMutation.mutateAsync(id)
+      await deleteMutation.mutateAsync(id)
     } catch (error) {
       console.error('Mutation Error:', error)
     }
@@ -74,7 +74,7 @@ const JurisdictionsAdmin = () => {
   const HandleEditJurisdiction = async (jurisdictionData: Jurisdiction) => {
     const { id, otherPartners, countyParish, name, mpo } = jurisdictionData
     try {
-      editMutation.mutateAsync({
+      await editMutation.mutateAsync({
         data: { otherPartners, countyParish, name, mpo },
         id,
       })

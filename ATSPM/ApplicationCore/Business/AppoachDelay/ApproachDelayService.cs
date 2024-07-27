@@ -24,9 +24,7 @@ namespace ATSPM.Application.Business.AppoachDelay
             {
                 var endDt = dt.AddMinutes(options.BinSize);
                 var detectorEvents = LocationPhase.Cycles.SelectMany(c => c.DetectorEvents.Where(d => d.TimeStamp >= dt && d.TimeStamp < endDt)).ToList();
-                //var pcdsInBin = LocationPhase.Cycles.Where(c => c.StartTime >= dt && c.StartTime < endDt).ToList();
                 var binDelay = detectorEvents.Where(d => d.ArrivalType == ArrivalType.ArrivalOnRed).Sum(d => d.DelaySeconds);
-                //var binVolume = pcdsInBin.Sum(d => d.TotalVolume);
                 double bindDelaypervehicle = 0;
                 double bindDelayperhour = 0;
 
@@ -54,13 +52,13 @@ namespace ATSPM.Application.Business.AppoachDelay
         }
 
 
-        protected List<ApproachDelayPlan> GetPlans(List<PurdueCoordinationPlan> planCollection)
+        protected static List<ApproachDelayPlan> GetPlans(List<PurdueCoordinationPlan> planCollection)
         {
             var plans = new List<ApproachDelayPlan>();
             foreach (var plan in planCollection)
             {
 
-                var planDescription = "Unknown";
+                string planDescription;
                 switch (plan.PlanNumber)
                 {
                     case "254":
@@ -74,7 +72,6 @@ namespace ATSPM.Application.Business.AppoachDelay
                         break;
                     default:
                         planDescription = "Plan " + plan.PlanNumber;
-
                         break;
                 }
 
