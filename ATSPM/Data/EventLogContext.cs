@@ -100,20 +100,7 @@ namespace ATSPM.Data
                 .AddCompressedTableDiscriminators(typeof(EventLogModelBase), typeof(CompressedEventLogs<>));
 
                 builder.Property(e => e.Data)
-                .HasConversion<CompressedListConverter<EventLogModelBase>, CompressedListComparer<EventLogModelBase>>();
-
-                //builder.Property(e => e.Data)
-                //    .HasConversion<byte[]>(
-                //    v => Newtonsoft.Json.JsonConvert.SerializeObject(v, new JsonSerializerSettings()
-                //    {
-                //        TypeNameHandling = TypeNameHandling.Arrays
-                //    }).GZipCompressToByte(),
-                //    v => JsonConvert.DeserializeObject<IEnumerable<EventLogModelBase>>(v.GZipDecompressToString(), new JsonSerializerSettings()
-                //    {
-                //        TypeNameHandling = TypeNameHandling.Arrays
-                //    }),null);
-
-
+                .HasConversion<CompressedListConverter<EventLogModelBase>, ListComparer<EventLogModelBase>>();
             });
 
             OnModelCreatingPartial(modelBuilder);
@@ -121,8 +108,4 @@ namespace ATSPM.Data
 
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
     }
-
-    //add-migration -name V5Upgrade -context EventLogContext
-    //update-database -context EventLogContext
-    //drop-database -context EventLogContext
 }

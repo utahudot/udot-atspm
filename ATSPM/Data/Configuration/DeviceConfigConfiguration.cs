@@ -16,9 +16,9 @@
 #endregion
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
-using ATSPM.Data.Models.EventLogModels;
 using ATSPM.Data.Utility;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Newtonsoft.Json;
 
@@ -56,6 +56,7 @@ namespace ATSPM.Data.Configuration
 
             builder.Property(e => e.SearchTerms)
                 .IsRequired(false)
+                .HasDefaultValueSql("('[]')")
                 .HasMaxLength(512)
                 .HasConversion(
                 v => JsonConvert.SerializeObject(v),
@@ -67,10 +68,13 @@ namespace ATSPM.Data.Configuration
             builder.Property(e => e.OperationTimout)
                 .HasDefaultValueSql("((2000))");
 
-            builder.Property(e => e.DataModel)
+            builder.Property(e => e.Decoders)
                 .IsRequired(false)
-                .HasMaxLength(32)
-                .HasConversion(new CompressionTypeConverter(typeof(EventLogModelBase).Namespace.ToString(), typeof(EventLogModelBase).Assembly.ToString()));
+                .HasDefaultValueSql("('[]')")
+                .HasMaxLength(512)
+                .HasConversion(
+                v => JsonConvert.SerializeObject(v),
+                v => JsonConvert.DeserializeObject<string[]>(v));
 
             builder.Property(e => e.UserName)
                 .IsRequired(false)
