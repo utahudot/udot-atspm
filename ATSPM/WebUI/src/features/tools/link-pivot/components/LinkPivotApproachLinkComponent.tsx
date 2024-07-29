@@ -53,10 +53,22 @@ export const LinkPivotApproachLinkComponent = ({
   ) => {
     return (
       <>
-        <TableCell>
+        <TableCell
+          style={{
+            maxWidth: '3.125rem',
+            wordWrap: 'break-word',
+            overflowWrap: 'break-word',
+          }}
+        >
           {totalAogBefore} ({totalPaogBefore}%)
         </TableCell>
-        <TableCell>
+        <TableCell
+          style={{
+            maxWidth: '3.125rem',
+            wordWrap: 'break-word',
+            overflowWrap: 'break-word',
+          }}
+        >
           {totalAogPredicted} ({totalPaogPredicted}%)
         </TableCell>
         <TableCell width="fit-content">
@@ -78,6 +90,7 @@ export const LinkPivotApproachLinkComponent = ({
         <Table>
           <TableHead>
             <TableRow>
+              <TableCell rowSpan={2}>PCD Options</TableCell>
               <TableCell rowSpan={2}>Link</TableCell>
               <TableCell align="center" colSpan={2}>
                 Approaches
@@ -116,6 +129,31 @@ export const LinkPivotApproachLinkComponent = ({
                   key={index}
                   sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                 >
+                  <TableCell>
+                    <Box
+                      display="flex"
+                      alignItems="center"
+                      flexDirection="column"
+                    >
+                      <Box>
+                        <IconButton
+                          aria-label={
+                            expanded[index]
+                              ? 'Collapse PCD Options'
+                              : 'Expand PCD Options'
+                          }
+                          onClick={(event) => handleIconClick(event, index)}
+                          sx={{ cursor: 'pointer' }}
+                        >
+                          {expanded[index] ? (
+                            <ExpandLessIcon />
+                          ) : (
+                            <ExpandMoreIcon />
+                          )}
+                        </IconButton>
+                      </Box>
+                    </Box>
+                  </TableCell>
                   <TableCell>{row.linkNumber}</TableCell>
                   <TableCell>{row.location}</TableCell>
                   <TableCell>{row.downstreamLocation}</TableCell>
@@ -150,32 +188,13 @@ export const LinkPivotApproachLinkComponent = ({
                     row.totalChartRemaining
                   )}
                   <TableCell align="center">{row.delta}</TableCell>
-                  <TableCell>
-                    <Box display="flex" alignItems="center">
-                      <span>View PCD Options</span>
-                      <IconButton
-                        aria-label={
-                          expanded[index]
-                            ? 'Collapse PCD Options'
-                            : 'Expand PCD Options'
-                        }
-                        onClick={(event) => handleIconClick(event, index)}
-                        sx={{ cursor: 'pointer' }}
-                      >
-                        {expanded[index] ? (
-                          <ExpandMoreIcon />
-                        ) : (
-                          <ExpandLessIcon />
-                        )}
-                      </IconButton>
-                    </Box>
-                  </TableCell>
                 </TableRow>
+
                 {expanded[index] && (
                   <TableRow key={`pcdChart ${index}`}>
                     <TableCell
                       align="center"
-                      colSpan={14}
+                      colSpan={15}
                       sx={{ backgroundColor: theme.palette.background.default }}
                     >
                       <LinkPivotPcdComponent
@@ -188,6 +207,7 @@ export const LinkPivotApproachLinkComponent = ({
               </Fragment>
             ))}
             <TableRow>
+              <TableCell></TableCell>
               <TableCell colSpan={3} align="center">
                 Corridor Summary
               </TableCell>
