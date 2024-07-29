@@ -70,9 +70,9 @@ namespace ATSPM.Data.Models
         public int OperationTimout { get; set; }
 
         /// <summary>
-        /// The object and assembly used to model the event data
+        /// Decoders used to decode events logs
         /// </summary>
-        public Type DataModel { get; set; }
+        public string[] Decoders { get; set; }
 
         /// <summary>
         /// Username
