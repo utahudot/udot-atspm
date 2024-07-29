@@ -318,7 +318,7 @@ namespace ATSPM.Domain.Extensions
             { new FileSignature(new byte[] { 0xFF, 0xF3 }, 0, ".xxx", "", false)},
             { new FileSignature(new byte[] { 0x18, 0x95 }, 0, ".eos", "EOS Location Controller File", true)}
         };
-
+        
         //TODO: this has not been tested
         /// <summary>
         /// Gets the <see cref="FileSignature"/> from <see cref="FileInfo"/>
@@ -349,6 +349,18 @@ namespace ATSPM.Domain.Extensions
         public static FileSignature GetFileSignatureFromMagicHeader(this byte[] bytes)
         {
             return FileSignatures.Where(f => f.MagicHeader.SequenceEqual(bytes.Skip(f.Offset).Take(f.MagicHeader.Length))).FirstOrDefault();
+        }
+
+        /// <summary>
+        /// Gets the <see cref="FileSignature"/> info from Magic Header byte array
+        /// </summary>
+        /// <param name="stream"> data representing Magic Header</param>
+        /// <returns><see cref="FileSignature"/> info that matches Magic Header bytes</returns>
+        public static FileSignature GetFileSignatureFromMagicHeader(this Stream stream)
+        {
+            var memoryStream = (MemoryStream)stream;
+
+            return FileSignatures.Where(f => f.MagicHeader.SequenceEqual(memoryStream.ToArray().Skip(f.Offset).Take(f.MagicHeader.Length))).FirstOrDefault();
         }
     }
 }

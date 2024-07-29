@@ -146,7 +146,7 @@ namespace ATSPM.Data
                 .AddCompressedTableDiscriminators(typeof(AggregationModelBase), typeof(CompressedAggregations<>));
 
                 builder.Property(e => e.Data)
-                .HasConversion<CompressedListConverter<AggregationModelBase>, CompressedListComparer<AggregationModelBase>>();
+                .HasConversion<CompressedListConverter<AggregationModelBase>, ListComparer<AggregationModelBase>>();
             });
 
             OnModelCreatingPartial(modelBuilder);
@@ -154,35 +154,4 @@ namespace ATSPM.Data
 
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
     }
-
-    //add-migration -name V5Upgrade -context AggregationContext
-    //update-database -context AggregationContext
-    //drop-database -context AggregationContext
-
-//    DELETE FROM dbo.CompressedAggregations
-//SELECT* FROM dbo.CompressedAggregations
-
-//SELECT CAST(DECOMPRESS(Data) AS varchar(MAX))
-//FROM dbo.CompressedAggregations
-
-//--SELECT*
-//--FROM CompressedAggregations CROSS APPLY OPENJSON(CAST(DECOMPRESS(Data) AS varchar(MAX)), '$."$values"')
-
-
-
-
-//--SELECT LocationIdentifier, Timestamp, EventCode, EventParam
-//--FROM CompressedAggregations CROSS APPLY OPENJSON(CAST(DECOMPRESS(Data) AS varchar(MAX)), '$."$values"') WITH(Timestamp DateTime2(7), EventCode int, EventParam int)
-
-//--{
-//--  "$type": "System.Collections.Generic.List`1[[ATSPM.Data.EventModels.IndianaEvent, ATSPM.Data]], System.Private.CoreLib",
-//--  "$values": [
-//--    {
-//--      "EventCode": 1,
-//--      "EventParam": 1,
-//--      "LocationIdentifier": "1234",
-//--      "Timestamp": "2024-01-22T13:41:43.587733-07:00"
-//--    }
-//--  ]
-//--}
 }
