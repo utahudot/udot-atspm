@@ -9,7 +9,6 @@ namespace ATSPM.Application.Business.YellowRedActivations
     {
         protected int cycleCount;
         protected DateTime endTime;
-        private readonly string planNumber;
         protected List<YellowRedActivationsCycle> rlmCycleCollection = new List<YellowRedActivationsCycle>();
         public SortedDictionary<int, int> Splits = new SortedDictionary<int, int>();
         protected DateTime startTime;

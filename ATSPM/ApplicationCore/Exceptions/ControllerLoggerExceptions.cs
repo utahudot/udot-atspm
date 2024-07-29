@@ -1,9 +1,6 @@
-﻿using ATSPM.Data.Models;
+﻿using ATSPM.Application.Services;
+using ATSPM.Data.Models;
 using System;
-using System.Collections.Generic;
-using System.Text;
-using ATSPM.Application.Services;
-using System.Threading.Tasks.Dataflow;
 
 #nullable enable
 namespace ATSPM.Application.Exceptions
@@ -29,11 +26,11 @@ namespace ATSPM.Application.Exceptions
 
     public class ControllerLoggerExecutionException : ControllerLoggerException
     {
-        public ControllerLoggerExecutionException(ILocationControllerLoggerService LocationControllerLoggerService, string? message, Exception? innerException) 
-            : base(message ?? $"Exception running Location Controller Logger Service", 
+        public ControllerLoggerExecutionException(ILocationControllerLoggerService locationControllerLoggerService, string? message, Exception? innerException)
+            : base(message ?? $"Exception running Location Controller Logger Service",
                   innerException)
         {
-            LocationControllerLoggerService = LocationControllerLoggerService;
+            LocationControllerLoggerService = locationControllerLoggerService;
         }
 
         public ILocationControllerLoggerService LocationControllerLoggerService { get; private set; }
@@ -42,10 +39,10 @@ namespace ATSPM.Application.Exceptions
     public class ControllerLoggerStepExecutionException<T> : ControllerLoggerExecutionException
     {
         public ControllerLoggerStepExecutionException(ILocationControllerLoggerService LocationControllerLoggerService,
-            string step, 
+            string step,
             T item,
             string? message, Exception? innerException) : base(LocationControllerLoggerService,
-                message ?? $"Exception running Location Controller Logger Service Step {step} on item {item}", 
+                message ?? $"Exception running Location Controller Logger Service Step {step} on item {item}",
                 innerException)
         {
             Step = step;

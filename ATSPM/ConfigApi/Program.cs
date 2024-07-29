@@ -1,13 +1,15 @@
 using Asp.Versioning;
+using ATSPM.ConfigApi;
+using ATSPM.ConfigApi.Configuration;
+using ATSPM.ConfigApi.Services;
+using ATSPM.ConfigApi.Utility;
 using ATSPM.Domain.Extensions;
 using ATSPM.Infrastructure.Extensions;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.AspNetCore.OData;
 using Microsoft.Extensions.Options;
-using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -25,6 +27,7 @@ builder.Host.ConfigureServices((h, s) =>
     .AddJsonOptions(o =>
     {
         o.JsonSerializerOptions.DictionaryKeyPolicy = JsonNamingPolicy.CamelCase;
+        o.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
         //o.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
     })
     .AddOData(o =>
@@ -35,6 +38,11 @@ builder.Host.ConfigureServices((h, s) =>
         o.RouteOptions.EnablePropertyNameCaseInsensitive = true;
         o.RouteOptions.EnableQualifiedOperationCall = false;
         o.RouteOptions.EnableUnqualifiedOperationCall = true;
+    })
+    // Configure JSON options to use custom DateTime converter
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new CustomDateTimeConverter());
     });
 
     s.AddProblemDetails();
@@ -66,23 +74,29 @@ builder.Host.ConfigureServices((h, s) =>
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
     builder.Services.AddSwaggerGen(o =>
-        {
-            // add a custom operation filter which sets default values
-            o.OperationFilter<SwaggerDefaultValues>();
+    {
+        // add a custom operation filter which sets default values
+        o.OperationFilter<SwaggerDefaultValues>();
 
-            var fileName = typeof(Program).Assembly.GetName().Name + ".xml";
-            var filePath = Path.Combine(AppContext.BaseDirectory, fileName);
+        var fileName = typeof(Program).Assembly.GetName().Name + ".xml";
+        var filePath = Path.Combine(AppContext.BaseDirectory, fileName);
 
-            // integrate xml comments
-            o.IncludeXmlComments(filePath);
-        });
+        // integrate xml comments
+        o.IncludeXmlComments(filePath);
+
+        // Use the full name to avoid schema ID conflicts
+        o.CustomSchemaIds(type => type.FullName);
+    });
 
     s.AddAtspmDbContext(h);
     s.AddAtspmEFConfigRepositories();
 
+    s.AddScoped<IRouteService, RouteService>();
+    s.AddScoped<IApproachService, ApproachService>();
+    s.AddScoped<ILocationService, LocationService>();
+
     s.AddAtspmAuthentication(h, builder);
     s.AddAtspmAuthorization(h);
-
 
     //https://learn.microsoft.com/en-us/aspnet/core/fundamentals/http-logging/?view=aspnetcore-7.0
     s.AddHttpLogging(l =>
@@ -121,17 +135,17 @@ app.UseHttpLogging();
 
 app.UseSwagger();
 app.UseSwaggerUI(o =>
-    {
-        var descriptions = app.DescribeApiVersions();
+{
+    var descriptions = app.DescribeApiVersions();
 
-        // build a swagger endpoint for each discovered API version
-        foreach (var description in descriptions)
-        {
-            var url = $"/swagger/{description.GroupName}/swagger.json";
-            var name = description.GroupName.ToUpperInvariant();
-            o.SwaggerEndpoint(url, name);
-        }
-    });
+    // build a swagger endpoint for each discovered API version
+    foreach (var description in descriptions)
+    {
+        var url = $"/swagger/{description.GroupName}/swagger.json";
+        var name = description.GroupName.ToUpperInvariant();
+        o.SwaggerEndpoint(url, name);
+    }
+});
 app.UseCors("CorsPolicy");
 app.UseHttpsRedirection();
 app.UseRouting();
@@ -140,75 +154,3 @@ app.UseAuthorization();
 app.UseVersionedODataBatching();
 app.MapControllers();
 app.Run();
-
-
-
-
-/// <summary>
-/// Represents the OpenAPI/Swashbuckle operation filter used to document the implicit API version parameter.
-/// </summary>
-/// <remarks>This <see cref="IOperationFilter"/> is only required due to bugs in the <see cref="SwaggerGenerator"/>.
-/// Once they are fixed and published, this class can be removed.</remarks>
-public class SwaggerDefaultValues : IOperationFilter
-{
-    /// <summary>
-    /// Applies the filter to the specified operation using the given context.
-    /// </summary>
-    /// <param name="operation">The operation to apply the filter to.</param>
-    /// <param name="context">The current operation filter context.</param>
-    public void Apply(OpenApiOperation operation, OperationFilterContext context)
-    {
-        var apiDescription = context.ApiDescription;
-
-        operation.Deprecated |= apiDescription.IsDeprecated();
-
-        // REF: https://github.com/domaindrivendev/Swashbuckle.AspNetCore/issues/1752#issue-663991077
-        foreach (var responseType in context.ApiDescription.SupportedResponseTypes)
-        {
-            // REF: https://github.com/domaindrivendev/Swashbuckle.AspNetCore/blob/b7cf75e7905050305b115dd96640ddd6e74c7ac9/src/Swashbuckle.AspNetCore.SwaggerGen/SwaggerGenerator/SwaggerGenerator.cs#L383-L387
-            var responseKey = responseType.IsDefaultResponse ? "default" : responseType.StatusCode.ToString();
-            var response = operation.Responses[responseKey];
-
-            foreach (var contentType in response.Content.Keys)
-            {
-                //Console.WriteLine($"contentType: {contentType}");
-
-                if (contentType != "application/json" && contentType != "application/xml")
-                    response.Content.Remove(contentType);
-
-                //if (!contentType.Contains("json") && !contentType.Contains("xml"))
-                //    response.Content.Remove(contentType);
-
-                //if (!responseType.ApiResponseFormats.Any(x => x.MediaType == contentType))
-                //{
-                //    Console.WriteLine($"remove: {contentType}");
-
-                //    response.Content.Remove(contentType);
-                //}
-            }
-        }
-
-        if (operation.Parameters == null)
-        {
-            return;
-        }
-
-        // REF: https://github.com/domaindrivendev/Swashbuckle.AspNetCore/issues/412
-        // REF: https://github.com/domaindrivendev/Swashbuckle.AspNetCore/pull/413
-        foreach (var parameter in operation.Parameters)
-        {
-            var description = apiDescription.ParameterDescriptions.First(p => p.Name == parameter.Name);
-
-            parameter.Description ??= description.ModelMetadata?.Description;
-
-            if (parameter.Schema.Default == null && description.DefaultValue != null)
-            {
-                // REF: https://github.com/Microsoft/aspnet-api-versioning/issues/429#issuecomment-605402330
-                var json = JsonSerializer.Serialize(description.DefaultValue, description.ModelMetadata.ModelType);
-                parameter.Schema.Default = OpenApiAnyFactory.CreateFromJson(json);
-            }
-
-            parameter.Required |= description.IsRequired;
-        }
-    }
-}

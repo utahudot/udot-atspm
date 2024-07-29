@@ -1,4 +1,6 @@
+using ATSPM.Data;
 using ATSPM.Identity.Business.Claims;
+using ATSPM.Identity.Business.Users;
 using ATSPM.Infrastructure.Extensions;
 using Identity.Business.Accounts;
 using Identity.Business.Agency;
@@ -6,8 +8,6 @@ using Identity.Business.EmailSender;
 using Identity.Business.Tokens;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi.Models;
-using ATSPM.Identity.Business.Users;
-
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
@@ -16,6 +16,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Host.ConfigureServices((host, services) =>
 {
     services.AddIdentityDbContext(host);
+
     services.AddIdentity<ApplicationUser, IdentityRole>() // Use AddDefaultIdentity if you don't need roles
     .AddEntityFrameworkStores<IdentityContext>()
     .AddDefaultTokenProviders();
@@ -23,9 +24,11 @@ builder.Host.ConfigureServices((host, services) =>
     services.AddAtspmAuthentication(host, builder);
     services.AddAtspmAuthorization(host);
 
+    services.AddEmailServices(host);
+    services.AddScoped<EmailService>();
+
     services.AddScoped<IAgencyService, AgencyService>();
     services.AddScoped<IAccountService, AccountService>();
-    services.AddScoped<IEmailService, EmailService>();
     services.AddScoped<ClaimsService, ClaimsService>();
     services.AddScoped<TokenService, TokenService>();
     services.AddScoped<RoleManager<IdentityRole>>();
@@ -95,9 +98,17 @@ if (app.Environment.IsDevelopment())
         app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Your API v1"));
     }
 }
+else
+{
+    app.UseExceptionHandler("/Home/Error");
+    app.UseHsts();
+}
 app.UseHttpsRedirection();
+app.UseStaticFiles();
 
+app.UseCookiePolicy();
 app.UseRouting();
+
 
 app.UseAuthentication();
 app.UseAuthorization();

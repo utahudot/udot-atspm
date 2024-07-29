@@ -63,6 +63,8 @@ dkms.conf
 /ATSPM/ArchiveLogs/bin
 /ATSPM/ConfigApi/obj
 /ATSPM/ConfigApi/bin
+/ATSPM/ConfigApiTests/obj
+/ATSPM/ConfigApiTests/bin
 /ATSPM/Data/obj
 /ATSPM/Data/bin
 /ATSPM/DataApi/obj
@@ -95,6 +97,8 @@ dkms.conf
 /ATSPM/ReportAPI/bin
 /ATSPM/SignalControllerLogger/obj
 /ATSPM/SignalControllerLogger/bin
+/ATSPM/SpeedManagementApi/obj
+/ATSPM/SpeedManagementApi/bin
 /ATSPM/WatchDog/obj/
 /ATSPM/WatchDog/bin/
 /ATSPM/WatchDogTests/obj/
@@ -103,5 +107,11 @@ dkms.conf
 /ATSPM/TempReportTests/bin/
 /ATSPM/TempReportTests/obj/
 
-/ATSPM/WatchDog/bin/Debug/net7.0/ReportApi.xml
-/ATSPM/WatchDogTests/bin/Debug/net7.0/ReportApi.xml
+/ATSPM/WatchDog/bin/
+/ATSPM/WatchDogTests/bin/
+
+/ATSPM/WebUI/obj/
+
+/ATSPM/.sonarqube
+/ConfigApiTests/bin/
+/ConfigApiTests/obj/
