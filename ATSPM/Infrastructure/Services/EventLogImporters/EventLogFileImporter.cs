@@ -14,56 +14,138 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+using ATSPM.Application.Common;
+using ATSPM.Application.Configuration;
+using ATSPM.Application.Exceptions;
+using ATSPM.Application.LogMessages;
 using ATSPM.Application.Services;
 using ATSPM.Data.Models;
 using ATSPM.Data.Models.EventLogModels;
+using ATSPM.Domain.BaseClasses;
+using ATSPM.Domain.Exceptions;
 using ATSPM.Domain.Extensions;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
 
-namespace ATSPM.Infrastructure.Services.EventLogDecoders
+namespace ATSPM.Infrastructure.Services.EventLogImporters
 {
-    ///<inheritdoc cref="IEventLogDecoder{T}"/>
-    public abstract class EventLogDecoderBase<T> : IEventLogDecoder<T> where T : EventLogModelBase
+    ///<inheritdoc cref="IEventLogImporter"/>
+    public class EventLogFileImporter : ExecutableServiceWithProgressAsyncBase<Tuple<Device, FileInfo>, Tuple<Device, EventLogModelBase>, ControllerDecodeProgress>, IEventLogImporter
     {
-        ///// <inheritdoc/>
-        //public bool CanDecode(Device device, Stream stream)
+        #region Fields
+
+        private readonly IEnumerable<IEventLogDecoder> _decoders;
+        protected readonly ILogger _log;
+        protected readonly EventLogImporterConfiguration _options;
+
+        #endregion
+
+        ///<inheritdoc cref="IEventLogImporter"/>
+        public EventLogFileImporter(IEnumerable<IEventLogDecoder> decoders, ILogger<IEventLogImporter> log, IOptionsSnapshot<EventLogImporterConfiguration> options) : base(true)
+        {
+            _decoders = decoders;
+            _log = log;
+            _options = options?.Get(GetType().Name) ?? options?.Value;
+        }
+
+        #region Properties
+
+        #endregion
+
+        #region Methods
+
+        //public override void Initialize()
         //{
-        //    return device?.DeviceConfiguration?.SearchTerms.Any(a => a == stream.GetFileSignatureFromMagicHeader().Extension) ?? false;
         //}
 
-        /// <inheritdoc/>
-        public virtual bool IsCompressed(Stream stream)
+        private bool IsAcceptableDateRange(EventLogModelBase log)
         {
-            return stream.IsCompressed();
+            return log.Timestamp <= DateTime.Now && log.Timestamp > _options.EarliestAcceptableDate;
         }
 
         /// <inheritdoc/>
-        public virtual bool IsEncoded(Stream stream)
+        public override bool CanExecute(Tuple<Device, FileInfo> parameter)
         {
-            MemoryStream memoryStream = (MemoryStream)stream;
-            var bytes = memoryStream.ToArray();
-
-            //ASCII doesn't have anything above 0x80
-            return bytes.Any(b => b >= 0x80);
+            return parameter != null && parameter.Item2.Exists;
         }
 
         /// <inheritdoc/>
-        public virtual Stream Decompress(Stream stream)
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="FileNotFoundException"></exception>
+        /// <exception cref="ExecuteException"></exception>
+        public override async IAsyncEnumerable<Tuple<Device, EventLogModelBase>> Execute(Tuple<Device, FileInfo> parameter, IProgress<ControllerDecodeProgress> progress = null, [EnumeratorCancellation] CancellationToken cancelToken = default)
         {
-            return stream.GZipDecompressToStream();
+            var device = parameter.Item1;
+            var file = parameter.Item2;
+            var decoders = parameter.Item1.DeviceConfiguration.Decoders.ToList();
+
+            if (file == null)
+                throw new ArgumentNullException(nameof(file), $"FileInfo file can not be null");
+
+            if (!file.Exists)
+                throw new FileNotFoundException($"File not found {file.FullName}", file.FullName);
+
+            if (CanExecute(parameter))
+            {
+                var logMessages = new EventLogDecoderLogMessages(_log, file);
+
+                foreach (IEventLogDecoder decoder in _decoders.Where(w => decoders.Contains(w.GetType().Name)))
+                {
+                    List<EventLogModelBase> decodedLogs = new();
+
+                    var memoryStream = file.ToMemoryStream();
+
+                    memoryStream = decoder.IsCompressed(memoryStream) ? (MemoryStream)decoder.Decompress(memoryStream) : memoryStream;
+
+                    try
+                    {
+                        logMessages.DecodeLogFileMessage(file.FullName);
+
+                        decodedLogs = decoder.Decode(device, memoryStream).ToList();
+
+                        if (_options.DeleteFile)
+                            file.Delete();
+                    }
+                    catch (EventLogDecoderException e)
+                    {
+                        logMessages.DecodeLogFileException(file.FullName, e);
+                    }
+                    catch (OperationCanceledException e)
+                    {
+                        logMessages.OperationCancelledException(file.FullName, e);
+                    }
+
+                    memoryStream.Dispose();
+
+                    logMessages.DecodedLogsMessage(file.FullName, decodedLogs.Count);
+
+                    foreach (var log in decodedLogs)
+                    {
+                        if (IsAcceptableDateRange(log))
+                        {
+                            //TODO: add this back in
+                            //progress?.Report(new ControllerDecodeProgress(log, decodedLogs.Count - 1, decodedLogs.Count));
+
+                            yield return Tuple.Create(device, log);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                throw new ExecuteException();
+            }
         }
 
-        /// <inheritdoc/>
-        public abstract IEnumerable<T> Decode(Device device, Stream stream, CancellationToken cancelToken = default);
 
-        /// <inheritdoc/>
-        IEnumerable<EventLogModelBase> IEventLogDecoder.Decode(Device device, Stream stream, CancellationToken cancelToken)
-        {
-            return Decode(device, stream, cancelToken);
-        }
+
+        #endregion
     }
 
     /////<inheritdoc cref="IEventLogImporter{T}"/>

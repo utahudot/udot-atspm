@@ -30,6 +30,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Runtime.InteropServices;
+using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -42,11 +45,14 @@ namespace InfrastructureTests.EventLogDecoderTests
         byte[] EventLogs { get; set; }
         bool IsCompressed { get; set;}
         List<T> Events { get; set; }
-
-
-
     }
-    
+
+    public readonly struct AtspmFileSignatures
+    {
+        public static FileSignature ASC3 => new FileSignature(null, 0, ".dat", "Data file of Indianna Events", false);
+        public static FileSignature ASC3Compressed => new FileSignature(null, 0, ".datZ", "Data file of Indianna Events", true);
+    }
+
     public class IEventLogDecoderTests : IDisposable
     {
         private const string TestDataPath = "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\InfrastructureTests\\EventLogDecoderTests\\TestData";
@@ -76,7 +82,24 @@ namespace InfrastructureTests.EventLogDecoderTests
         [Fact]
         public void JustTesting()
         {
-            var data = File.ReadAllBytes(Path.Combine(TestDataPath, "4895_ECON_10.210.8.179_2024_02_21_1115.dat"));
+            var data = File.ReadAllBytes(Path.Combine(TestDataPath, "638548149067839806.xml"));
+
+            _output.WriteLine(Encoding.UTF8.GetString(data.Take(100).ToArray()));
+            _output.WriteLine(BitConverter.ToString(data.Take(100).ToArray()));
+
+            //var file = new FileInfo(Path.Combine(TestDataPath, "638548149067839806.xml"));
+            //var device = new Device()
+            //{
+            //    Location = new Location() { LocationIdentifier = "1234" }
+            //};
+
+            //var s = file.ToMemoryStream();
+
+            //IEventLogDecoder sut = new MaxTimeEventLogDecoder();
+
+            //var iscompress = sut.IsCompressed(s);
+
+            //var result = sut.Decode(device, s);
 
         }
 
@@ -85,57 +108,57 @@ namespace InfrastructureTests.EventLogDecoderTests
 
 
 
-        [Fact]
-        public void IEventLogDecoderIsCompressed()
-        {
-            var mockConfig = Mock.Of<IOptionsSnapshot<SignalControllerDecoderConfiguration>>();
-            var file = new FileInfo(Path.Combine(TestDataPath, "4895_ECON_10.210.8.179_2024_02_21_1115.dat"));
-            var data = file.ToMemoryStream();
+        //[Fact]
+        //public void IEventLogDecoderIsCompressed()
+        //{
+        //    var mockConfig = Mock.Of<IOptionsSnapshot<SignalControllerDecoderConfiguration>>();
+        //    var file = new FileInfo(Path.Combine(TestDataPath, "4895_ECON_10.210.8.179_2024_02_21_1115.dat"));
+        //    var data = file.ToMemoryStream();
 
-            IEventLogDecoder<IndianaEvent> sut = new ASCEventLogDecoder(new NullLogger<ASCEventLogDecoder>(), mockConfig);
+        //    IEventLogDecoder<IndianaEvent> sut = new ASCEventLogDecoder(new NullLogger<ASCEventLogDecoder>(), mockConfig);
 
-            var condition = sut.IsCompressed(data);
+        //    var condition = sut.IsCompressed(data);
 
-            Assert.False(condition);
-        }
+        //    Assert.False(condition);
+        //}
 
         //#endregion
 
         //#region IEventLogDecoder.IsEncoded
 
-        [Fact]
-        public void IEventLogDecoderIsEncoded()
-        {
-            var mockConfig = Mock.Of<IOptionsSnapshot<SignalControllerDecoderConfiguration>>();
-            var file = new FileInfo(Path.Combine(TestDataPath, "4895_ECON_10.210.8.179_2024_02_21_1115.dat"));
-            var data = file.ToMemoryStream();
+        //[Fact]
+        //public void IEventLogDecoderIsEncoded()
+        //{
+        //    var mockConfig = Mock.Of<IOptionsSnapshot<SignalControllerDecoderConfiguration>>();
+        //    var file = new FileInfo(Path.Combine(TestDataPath, "4895_ECON_10.210.8.179_2024_02_21_1115.dat"));
+        //    var data = file.ToMemoryStream();
 
-            IEventLogDecoder<IndianaEvent> sut = new ASCEventLogDecoder(new NullLogger<ASCEventLogDecoder>(), mockConfig);
+        //    IEventLogDecoder<IndianaEvent> sut = new ASCEventLogDecoder(new NullLogger<ASCEventLogDecoder>(), mockConfig);
 
-            var condition = sut.IsEncoded(data);
+        //    var condition = sut.IsEncoded(data);
 
-            Assert.True(condition);
-        }
+        //    Assert.True(condition);
+        //}
 
         //#endregion
 
         //#region IEventLogDecoder.Decompress
 
-        [Fact]
-        public void IEventLogDecoderDecompress()
-        {
-            var mockConfig = Mock.Of<IOptionsSnapshot<SignalControllerDecoderConfiguration>>();
-            var file = new FileInfo(Path.Combine(TestDataPath, "1210_ECON_10.204.7.239_2021_08_09_1841.datZ"));
-            var data = file.ToMemoryStream();
+        //[Fact]
+        //public void IEventLogDecoderDecompress()
+        //{
+        //    var mockConfig = Mock.Of<IOptionsSnapshot<SignalControllerDecoderConfiguration>>();
+        //    var file = new FileInfo(Path.Combine(TestDataPath, "1210_ECON_10.204.7.239_2021_08_09_1841.datZ"));
+        //    var data = file.ToMemoryStream();
 
-            IEventLogDecoder<IndianaEvent> sut = new ASCEventLogDecoder(new NullLogger<ASCEventLogDecoder>(), mockConfig);
+        //    IEventLogDecoder<IndianaEvent> sut = new ASCEventLogDecoder(new NullLogger<ASCEventLogDecoder>(), mockConfig);
 
-            var d = sut.Decompress(data);
+        //    var d = sut.Decompress(data);
 
-            var condition = d.IsCompressed();
+        //    var condition = d.IsCompressed();
 
-            Assert.False(condition);
-        }
+        //    Assert.False(condition);
+        //}
 
         //[Theory]
         //[EncodedControllerTestFiles]
@@ -160,26 +183,26 @@ namespace InfrastructureTests.EventLogDecoderTests
 
         //#region IEventLogDecoder.Decode
 
-        [Fact]
-        public void IEventLogDecoderDecodePass()
-        {
-            var mockConfig = Mock.Of<IOptionsSnapshot<SignalControllerDecoderConfiguration>>();
-            var file = new FileInfo(Path.Combine(TestDataPath, "4895_ECON_10.210.8.179_2024_02_21_1115.dat"));
-            var data = file.ToMemoryStream();
-            var device = new Device()
-            {
-                Location = new Location()
-                {
-                    LocationIdentifier = "1001"
-                }
-            };
+        //[Fact]
+        //public void IEventLogDecoderDecodePass()
+        //{
+        //    var mockConfig = Mock.Of<IOptionsSnapshot<SignalControllerDecoderConfiguration>>();
+        //    var file = new FileInfo(Path.Combine(TestDataPath, "4895_ECON_10.210.8.179_2024_02_21_1115.dat"));
+        //    var data = file.ToMemoryStream();
+        //    var device = new Device()
+        //    {
+        //        Location = new Location()
+        //        {
+        //            LocationIdentifier = "1001"
+        //        }
+        //    };
 
-            IEventLogDecoder<IndianaEvent> sut = new ASCEventLogDecoder(new NullLogger<ASCEventLogDecoder>(), mockConfig);
+        //    IEventLogDecoder<IndianaEvent> sut = new ASCEventLogDecoder(new NullLogger<ASCEventLogDecoder>(), mockConfig);
 
-            var stuff = sut.Decode(device, data);
+        //    var stuff = sut.Decode(device, data);
 
 
-        }
+        //}
 
         //[Theory]
         //[EncodedControllerTestFiles]
@@ -261,27 +284,27 @@ namespace InfrastructureTests.EventLogDecoderTests
 
 
 
-        [Fact]
-        public void IEventLogDecoderCanExecutePass()
-        {
-            var mockConfig = Mock.Of<IOptionsSnapshot<SignalControllerDecoderConfiguration>>();
-            var file = new FileInfo(Path.Combine(TestDataPath, "4895_ECON_10.210.8.179_2024_02_21_1115.dat"));
-            //var data = file.ToMemoryStream();
+        //[Fact]
+        //public void IEventLogDecoderCanExecutePass()
+        //{
+        //    var mockConfig = Mock.Of<IOptionsSnapshot<SignalControllerDecoderConfiguration>>();
+        //    var file = new FileInfo(Path.Combine(TestDataPath, "4895_ECON_10.210.8.179_2024_02_21_1115.dat"));
+        //    //var data = file.ToMemoryStream();
             
-            var device = new Device()
-            {
-                DeviceConfiguration = new DeviceConfiguration()
-                {
-                    DataModel = typeof(IndianaEvent)
-                }
-            };
+        //    var device = new Device()
+        //    {
+        //        DeviceConfiguration = new DeviceConfiguration()
+        //        {
+        //            Decoders = typeof(IndianaEvent)
+        //        }
+        //    };
 
-            IEventLogDecoder<IndianaEvent> sut = new ASCEventLogDecoder(new NullLogger<ASCEventLogDecoder>(), mockConfig);
+        //    IEventLogDecoder<IndianaEvent> sut = new ASCEventLogDecoder(new NullLogger<ASCEventLogDecoder>(), mockConfig);
 
-            var condition = sut.CanExecute(Tuple.Create(device, file));
+        //    var condition = sut.CanExecute(Tuple.Create(device, file));
 
-            Assert.True(condition);
-        }
+        //    Assert.True(condition);
+        //}
 
 
 

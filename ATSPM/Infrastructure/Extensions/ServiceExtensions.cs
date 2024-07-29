@@ -22,6 +22,7 @@ using ATSPM.Application.Repositories.EventLogRepositories;
 using ATSPM.Application.Services;
 using ATSPM.Data;
 using ATSPM.Domain.Configuration;
+using ATSPM.Domain.Extensions;
 using ATSPM.Domain.Services;
 using ATSPM.Infrastructure.MySqlDatabaseProvider;
 using ATSPM.Infrastructure.OracleDatabaseProvider;
@@ -30,11 +31,8 @@ using ATSPM.Infrastructure.Repositories;
 using ATSPM.Infrastructure.Repositories.AggregationRepositories;
 using ATSPM.Infrastructure.Repositories.ConfigurationRepositories;
 using ATSPM.Infrastructure.Repositories.EventLogRepositories;
-using ATSPM.Infrastructure.Services.ControllerDecoders;
-using ATSPM.Infrastructure.Services.DownloaderClients;
 using ATSPM.Infrastructure.SqlDatabaseProvider;
 using ATSPM.Infrastructure.SqlLiteDatabaseProvider;
-using Google.Api;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
@@ -42,21 +40,23 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
-using Org.BouncyCastle.Asn1.X509.Qualified;
-using System;
-using System.Linq;
 using System.Security.Claims;
 using System.Text;
 
 namespace ATSPM.Infrastructure.Extensions
 {
+    /// <summary>
+    /// Specifies database provider and connection string
+    /// </summary>
     public class DatabaseOption
     {
         public string Provider { get; set; }
         public string ConnectionString { get; set; }
     }
 
-
+    /// <summary>
+    /// Extensions for <see cref="Microsoft.Extensions.Hosting"/> environment
+    /// </summary>
     public static class ServiceExtensions
     {
         internal static DbContextOptionsBuilder GetDbProviderInfo<T>(this DbContextOptionsBuilder builder, HostBuilderContext host)
@@ -114,12 +114,14 @@ namespace ATSPM.Infrastructure.Extensions
 
             return services;
         }
+
         public static IServiceCollection AddIdentityDbContext(this IServiceCollection services, HostBuilderContext host)
         {
             services.AddDbContext<IdentityContext>(db => db.GetDbProviderInfo<IdentityContext>(host).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking).EnableSensitiveDataLogging(host.HostingEnvironment.IsDevelopment()));
 
             return services;
         }
+
         public static IServiceCollection AddAtspmAuthentication(this IServiceCollection services, HostBuilderContext host, WebApplicationBuilder builder)
         {
             services.AddAuthentication(options =>
@@ -237,9 +239,15 @@ namespace ATSPM.Infrastructure.Extensions
                            (c.Type == ClaimTypes.Role && c.Value == "Watchdog:View") ||
                            (c.Type == ClaimTypes.Role && c.Value == "Admin"))));
             });
+
             return services;
         }
 
+        /// <summary>
+        /// Adds all repositories that belong to <see cref="ConfigContext"/>
+        /// </summary>
+        /// <param name="services"></param>
+        /// <returns></returns>
         public static IServiceCollection AddAtspmEFConfigRepositories(this IServiceCollection services)
         {
             services.AddScoped<IApproachRepository, ApproachEFRepository>();
@@ -273,6 +281,11 @@ namespace ATSPM.Infrastructure.Extensions
             return services;
         }
 
+        /// <summary>
+        /// Adds all repositories that belong to <see cref="EventLogContext"/>
+        /// </summary>
+        /// <param name="services"></param>
+        /// <returns></returns>
         public static IServiceCollection AddAtspmEFEventLogRepositories(this IServiceCollection services)
         {
             services.AddScoped<IEventLogRepository, EventLogEFRepository>();
@@ -283,6 +296,11 @@ namespace ATSPM.Infrastructure.Extensions
             return services;
         }
 
+        /// <summary>
+        /// Adds all repositories that belong to <see cref="AggregationContext"/>
+        /// </summary>
+        /// <param name="services"></param>
+        /// <returns></returns>
         public static IServiceCollection AddAtspmEFAggregationRepositories(this IServiceCollection services)
         {
             services.AddScoped<IAggregationRepository, AggregationEFRepository>();
@@ -312,13 +330,7 @@ namespace ATSPM.Infrastructure.Extensions
         /// <returns></returns>
         public static IServiceCollection AddDownloaderClients(this IServiceCollection services)
         {
-            var types = AppDomain.CurrentDomain.GetAssemblies().SelectMany(m => m.GetTypes().Where(w => w.GetInterfaces().Contains(typeof(IDownloaderClient)))).ToList();
-            foreach (var t in types)
-            {
-                services.Add(new ServiceDescriptor(typeof(IDownloaderClient), t, ServiceLifetime.Transient));
-            }
-
-            return services;
+            return services.RegisterServicesByInterface<IDownloaderClient>();
         }
 
         /// <summary>
@@ -329,27 +341,29 @@ namespace ATSPM.Infrastructure.Extensions
         /// <returns></returns>
         public static IServiceCollection AddDeviceDownloaders(this IServiceCollection services, HostBuilderContext host)
         {
-            var types = AppDomain.CurrentDomain.GetAssemblies().SelectMany(m => m.GetTypes().Where(w => w.GetInterfaces().Contains(typeof(IDeviceDownloader)))).ToList();
-            foreach (var t in types)
-            {
-                services.Add(new ServiceDescriptor(typeof(IDeviceDownloader), t, ServiceLifetime.Scoped));
-
-                if (host.Configuration.GetSection($"{nameof(DeviceDownloaderConfiguration)}:{t.Name}").Exists())
-                {
-                    services.Configure<DeviceDownloaderConfiguration>(t.Name, host.Configuration.GetSection($"{nameof(DeviceDownloaderConfiguration)}:{t.Name}"));
-                }
-            }
-
-            return services;
+            return services.RegisterServicesByInterfaceAndConfiguration<IDeviceDownloader, DeviceDownloaderConfiguration>(host, ServiceLifetime.Scoped);
         }
 
-        //public static IServiceCollection ConfigureSignalControllerDecoders(this IServiceCollection services, HostBuilderContext host)
-        //{
-        //    services.Configure<SignalControllerDecoderConfiguration>(nameof(ASCEventLogDecoder), host.Configuration.GetSection($"{nameof(SignalControllerDecoderConfiguration)}:{nameof(ASCEventLogDecoder)}"));
-        //    services.Configure<SignalControllerDecoderConfiguration>(nameof(MaxTimeEventLogDecoder), host.Configuration.GetSection($"{nameof(SignalControllerDecoderConfiguration)}:{nameof(MaxTimeEventLogDecoder)}"));
+        /// <summary>
+        /// Adds all implementations of <see cref="IEventLogDecoder"/>
+        /// </summary>
+        /// <param name="services"></param>
+        /// <returns></returns>
+        public static IServiceCollection AddEventLogDecoders(this IServiceCollection services)
+        {
+            return services.RegisterServicesByInterface<IEventLogDecoder>();
+        }
 
-        //    return services;
-        //}
+        /// <summary>
+        /// Adds all implementations of <see cref="IEventLogImporter"/> which have corresponding <see cref="EventLogImporterConfiguration"/> definitions
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="host"></param>
+        /// <returns></returns>
+        public static IServiceCollection AddEventLogImporters(this IServiceCollection services, HostBuilderContext host)
+        {
+            return services.RegisterServicesByInterfaceAndConfiguration<IEventLogImporter, EventLogImporterConfiguration>(host, ServiceLifetime.Scoped);
+        }
 
         /// <summary>
         /// Adds all implementations of <see cref="IEmailService"/> which have corresponding <see cref="EmailConfiguration"/> definitions
@@ -359,17 +373,19 @@ namespace ATSPM.Infrastructure.Extensions
         /// <returns></returns>
         public static IServiceCollection AddEmailServices(this IServiceCollection services, HostBuilderContext host)
         {
-            var types = AppDomain.CurrentDomain.GetAssemblies().SelectMany(m => m.GetTypes().Where(w => w.GetInterfaces().Contains(typeof(IEmailService)))).ToList();
-            foreach (var t in types)
-            {
-                if (host.Configuration.GetSection($"{nameof(EmailConfiguration)}:{t.Name}").Exists())
-                {
-                    services.Add(new ServiceDescriptor(typeof(IEmailService), t, ServiceLifetime.Transient));
-                    services.Configure<EmailConfiguration>(t.Name, host.Configuration.GetSection($"{nameof(EmailConfiguration)}:{t.Name}"));
-                }
-            }
+            return services.RegisterServicesByInterfaceAndConfiguration<IEmailService, EmailConfiguration>(host);
 
-            return services;
+            //var types = AppDomain.CurrentDomain.GetAssemblies().SelectMany(m => m.GetTypes().Where(w => w.GetInterfaces().Contains(typeof(IEmailService)))).ToList();
+            //foreach (var t in types)
+            //{
+            //    if (host.Configuration.GetSection($"{nameof(EmailConfiguration)}:{t.Name}").Exists())
+            //    {
+            //        services.Add(new ServiceDescriptor(typeof(IEmailService), t, ServiceLifetime.Transient));
+            //        services.Configure<EmailConfiguration>(t.Name, host.Configuration.GetSection($"{nameof(EmailConfiguration)}:{t.Name}"));
+            //    }
+            //}
+
+            //return services;
         }
     }
 }
