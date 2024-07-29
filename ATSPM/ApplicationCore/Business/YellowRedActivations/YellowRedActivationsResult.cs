@@ -48,17 +48,17 @@ namespace ATSPM.Application.Business.YellowRedActivations
 
         public string Direction { get; set; }
         public string MovementType { get; set; }
-        public int ProtectedPhaseNumber { get; internal set; }
-        public int? PermissivePhaseNumber { get; internal set; }
+        public int ProtectedPhaseNumber { get; set; }
+        public int? PermissivePhaseNumber { get; set; }
         public bool IsPermissivePhase { get; }
-        public string PhaseType { get; internal set; }
-        public int TotalViolations { get; internal set; }
-        public int SevereViolations { get; internal set; }
-        public int YellowLightOccurences { get; internal set; }
-        public ICollection<YellowRedActivationsPlan> Plans { get; internal set; }
-        public ICollection<DataPointForDouble> RedEvents { get; internal set; }
-        public ICollection<DataPointForDouble> YellowEvents { get; internal set; }
-        public ICollection<DataPointForDouble> RedClearanceEvents { get; internal set; }
-        public ICollection<DataPointForDouble> DetectorEvents { get; internal set; }
+        public string PhaseType { get; set; }
+        public int TotalViolations { get; set; }
+        public int SevereViolations { get; set; }
+        public int YellowLightOccurences { get; set; }
+        public ICollection<YellowRedActivationsPlan> Plans { get; set; }
+        public ICollection<DataPointForDouble> RedEvents { get; set; }
+        public ICollection<DataPointForDouble> YellowEvents { get; set; }
+        public ICollection<DataPointForDouble> RedClearanceEvents { get; set; }
+        public ICollection<DataPointForDouble> DetectorEvents { get; set; }
     }
 }
