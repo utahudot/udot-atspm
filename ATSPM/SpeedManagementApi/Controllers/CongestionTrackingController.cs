@@ -17,8 +17,6 @@ namespace SpeedManagementApi.Controllers
         }
 
         [HttpPost("GetReportData")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetReportData([FromBody] CongestionTrackingOptions options)
         {
             if (!ModelState.IsValid)
@@ -35,7 +33,7 @@ namespace SpeedManagementApi.Controllers
             {
                 BadRequest(ex.Message);
             }
-            return BadRequest(ModelState);
+            return Unauthorized("I am here");
         }
     }
 }

@@ -143,7 +143,6 @@ builder.Host.ConfigureServices((h, s) =>
         return new SegmentImpactBQRepository(client, datasetId, tableId, logger);
     });
 
-    Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", builder.Configuration["GoogleApplicationCredentials"]);
 
     s.AddScoped<RouteSpeedService>();
     s.AddScoped<RouteService>();
