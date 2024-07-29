@@ -1,20 +1,16 @@
 version: '3.8'
 
 x-environment: &default-environment
-    ASPNETCORE_ENVIRONMENT: Development
-    ASPNETCORE_Kestrel__Certificates__Default__Password: password
-    ASPNETCORE_Kestrel__Certificates__Default__Path: /root/.aspnet/https/aspnetapp.pfx
-    ConnectionStrings__ConfigContext__ConnectionString: "Host=/cloudsql/atspm-406601:us-west3:atspm;Port=5432;Username=admin;Password=Avenue.2006;Database=ATSPM-Config-V2;Pooling=true;"
-    ConnectionStrings__AggregationContext__ConnectionString: "Host=/cloudsql/atspm-406601:us-west3:atspm;Port=5432;Username=admin;Password=Avenue.2006;Database=ATSPM-Aggregation-V1;Pooling=true;"
-    ConnectionStrings__EventLogContext__ConnectionString: "Host=/cloudsql/atspm-406601:us-west3:atspm;Port=5432;Username=admin;Password=Avenue.2006;Database=ATSPM-EventLogs-V1;Pooling=true;"
-    ConnectionStrings__IdentityContext__ConnectionString: "Host=/cloudsql/atspm-406601:us-west3:atspm;Port=5432;Username=admin;Password=Avenue.2006;Database=ATSPM-Identity;Pooling=true;"
-    ConnectionStrings__ConfigContext__Provider: "PostgreSQL"
-    ConnectionStrings__AggregationContext__Provider: "PostgreSQL"
-    ConnectionStrings__EventLogContext__Provider: "PostgreSQL"
-    ConnectionStrings__IdentityContext__Provider: "PostgreSQL"
-    Jwt__ExpireDays: "1"
-    Jwt__Key: "ATSPMProductionIdentityOpenSource2024"
-    Jwt__Issuer: "AvenueConsultants"
+  ASPNETCORE_ENVIRONMENT: Development
+  ASPNETCORE_Kestrel__Certificates__Default__Password: password
+  ASPNETCORE_Kestrel__Certificates__Default__Path: /root/.aspnet/https/aspnetapp.pfx
+  ConnectionStrings__ConfigContext__Provider: "PostgreSQL"
+  ConnectionStrings__AggregationContext__Provider: "PostgreSQL"
+  ConnectionStrings__EventLogContext__Provider: "PostgreSQL"
+  ConnectionStrings__IdentityContext__Provider: "PostgreSQL"
+  Jwt__ExpireDays: "1"
+  Jwt__Key: "ATSPMProductionIdentityOpenSource2024"
+  Jwt__Issuer: "AvenueConsultants"
 
 services:
   webui:
@@ -35,16 +31,13 @@ services:
     build:
       dockerfile: ./ConfigApi/Dockerfile
     ports:
-        - "44313:44313"
+      - "44313:44313"
     environment:
       <<: *default-environment
       ASPNETCORE_URLS: https://+:44313
-
-
     volumes:
-      - C:/Users/jbhatia/.aspnet/https:/root/.aspnet/https:ro
+      - ./certs:/root/.aspnet/https:ro
     user: root
-
 
   dataapi:
     build:
