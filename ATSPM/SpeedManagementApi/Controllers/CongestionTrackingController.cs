@@ -1,9 +1,13 @@
-﻿using ATSPM.Application.Repositories.SpeedManagementRepositories;
+﻿using Asp.Versioning;
+using ATSPM.Application.Repositories.SpeedManagementRepositories;
 using ATSPM.Data.Models.SpeedManagement.CongestionTracking;
 using Microsoft.AspNetCore.Mvc;
 
 namespace SpeedManagementApi.Controllers
 {
+    [ApiVersion(1.0)]
+    [ApiController]
+    [Route("v{version:apiVersion}/[controller]")]
     public class CongestionTrackingController : ControllerBase
     {
         private ICongestionTrackingService _congestionTrackingService;
