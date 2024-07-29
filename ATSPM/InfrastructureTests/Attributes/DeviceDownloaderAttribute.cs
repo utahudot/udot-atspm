@@ -43,7 +43,6 @@ namespace InfrastructureTests.Attributes
             foreach (var t in types)
             {
                 yield return new object[] { t, clients, new NullLogger<IDeviceDownloader>(), Mock.Of<IOptionsSnapshot<DeviceDownloaderConfiguration>>() };
-
             }
         }
     }

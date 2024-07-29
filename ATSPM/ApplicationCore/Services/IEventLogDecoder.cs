@@ -14,11 +14,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
-using ATSPM.Application.Common;
 using ATSPM.Application.Exceptions;
 using ATSPM.Data.Models;
 using ATSPM.Data.Models.EventLogModels;
-using ATSPM.Domain.Services;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -27,11 +25,18 @@ using System.Threading;
 namespace ATSPM.Application.Services
 {
     /// <summary>
-    /// When executed, decodes event log files to their corresponding <see cref="EventLogModelBase"/> data model
+    /// Decodes event log files to their corresponding <see cref="EventLogModelBase"/> data model
     /// </summary>
-    /// <typeparam name="T"><see cref="EventLogModelBase"/> data model</typeparam>
-    public interface IEventLogDecoder<T> : IExecutableServiceWithProgressAsync<Tuple<Device, FileInfo>, Tuple<Device, T>, ControllerDecodeProgress> where T : EventLogModelBase
+    public interface IEventLogDecoder
     {
+        ///// <summary>
+        ///// Checks to see if stream can be decoded by this deocder
+        ///// </summary>
+        ///// <param name="device"></param>
+        ///// <param name="stream"></param>
+        ///// <returns></returns>
+        //bool CanDecode(Device device, Stream stream);
+        
         /// <summary>
         /// Checks to see if the data stream is compressed
         /// </summary>
@@ -54,6 +59,30 @@ namespace ATSPM.Application.Services
         Stream Decompress(Stream stream);
 
         /// <summary>
+        /// Decodes the data stream to an <see cref="IEnumerable{EventLogModelBase}"/>
+        /// </summary>
+        /// <param name="device">Device that generated the data stream</param>
+        /// <param name="stream">Event data</param>
+        /// <param name="cancelToken">Cancellation token</param>
+        /// <returns></returns>
+        /// <exception cref="EventLogDecoderException">Thrown when the decoding process catches an error</exception>
+        /// <exception cref="ArgumentNullException">Thrown if <paramref name="device"/> is null</exception>
+        /// <exception cref="InvalidDataException">Thrown if <paramref name="stream"/> is empty</exception>
+        /// <exception cref="OperationCanceledException">Thrown on <paramref name="cancelToken"/> cancelled</exception>
+        IEnumerable<EventLogModelBase> Decode(Device device, Stream stream, CancellationToken cancelToken = default);
+    }
+
+    /// <summary>
+    /// Decodes event log files to their corresponding <see cref="EventLogModelBase"/> data model
+    /// </summary>
+    /// <typeparam name="T"><see cref="EventLogModelBase"/> data model</typeparam>
+    /// <exception cref="EventLogDecoderException">Thrown when the decoding process catches an error</exception>
+    /// <exception cref="ArgumentNullException">Thrown if <paramref name="device"/> is null</exception>
+    /// <exception cref="InvalidDataException">Thrown if <paramref name="stream"/> is empty</exception>
+    /// <exception cref="OperationCanceledException">Thrown on <paramref name="cancelToken"/> cancelled</exception>
+    public interface IEventLogDecoder<T> : IEventLogDecoder where T : EventLogModelBase
+    {
+        /// <summary>
         /// Decodes the data stream to an <see cref="IEnumerable{T}"/>
         /// </summary>
         /// <param name="device">Device that generated the data stream</param>
@@ -64,6 +93,6 @@ namespace ATSPM.Application.Services
         /// <exception cref="ArgumentNullException">Thrown if <paramref name="device"/> is null</exception>
         /// <exception cref="InvalidDataException">Thrown if <paramref name="stream"/> is empty</exception>
         /// <exception cref="OperationCanceledException">Thrown on <paramref name="cancelToken"/> cancelled</exception>
-        IEnumerable<T> Decode(Device device, Stream stream, CancellationToken cancelToken = default);
+        new IEnumerable<T> Decode(Device device, Stream stream, CancellationToken cancelToken = default);
     }
 }

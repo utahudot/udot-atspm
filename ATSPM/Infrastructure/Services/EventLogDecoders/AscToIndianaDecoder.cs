@@ -14,13 +14,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
-using ATSPM.Application.Configuration;
 using ATSPM.Application.Exceptions;
 using ATSPM.Data.Models;
 using ATSPM.Data.Models.EventLogModels;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Org.BouncyCastle.Asn1.X509.Qualified;
+using ATSPM.Infrastructure.Services.EventLogDecoders;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -31,10 +28,10 @@ using System.Threading;
 namespace ATSPM.Infrastructure.Services.ControllerDecoders
 {
     /// <inheritdoc/>
-    public class ASCEventLogDecoder : EventLogDecoderBase<IndianaEvent>
+    public class AscToIndianaDecoder : EventLogDecoderBase<IndianaEvent>
     {
         /// <inheritdoc/>
-        public ASCEventLogDecoder(ILogger<ASCEventLogDecoder> log, IOptionsSnapshot<SignalControllerDecoderConfiguration> options) : base(log, options) { }
+        //public ASCEventLogDecoder(ILogger<ASCEventLogDecoder> log, IOptionsSnapshot<SignalControllerDecoderConfiguration> options) : base(log, options) { }
 
         #region Properties
 
@@ -43,13 +40,13 @@ namespace ATSPM.Infrastructure.Services.ControllerDecoders
         #region Methods
 
         /// <inheritdoc/>
-        public override bool CanExecute(Tuple<Device, FileInfo> parameter)
-        {
-            var device = parameter.Item1;
-            var file = parameter.Item2;
+        //public override bool CanExecute(Tuple<Device, FileInfo> parameter)
+        //{
+        //    var device = parameter.Item1;
+        //    var file = parameter.Item2;
 
-            return base.CanExecute(parameter) && file.Exists && (file.Extension == ".dat" || file.Extension == ".datZ" || file.Extension == ".DAT");
-        }
+        //    return base.CanExecute(parameter) && file.Exists && (file.Extension == ".dat" || file.Extension == ".datZ" || file.Extension == ".DAT");
+        //}
 
         //HACK: need to use extension methods and GetFileSignatureFromMagicHeader to get compression type
         /// <inheritdoc/>
