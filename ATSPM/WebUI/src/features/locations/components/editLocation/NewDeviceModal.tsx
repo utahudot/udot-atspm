@@ -40,7 +40,7 @@ export const modalStyle = {
 
 interface NewDeviceModalProps {
   onClose: () => void
-  device?: Device
+  device?: Device | null
   locationId: string
   refetchDevices: () => void
 }
@@ -248,8 +248,8 @@ const DeviceModal = ({
             onChange={handleChange}
           >
             {deviceTypes?.map((type) => (
-              <MenuItem key={type} value={type}>
-                {type}
+              <MenuItem key={type.name} value={type.name}>
+                {type.name}
               </MenuItem>
             ))}
           </Select>
@@ -263,8 +263,8 @@ const DeviceModal = ({
             onChange={handleChange}
           >
             {deviceStatus?.map((type) => (
-              <MenuItem key={type} value={type}>
-                {type}
+              <MenuItem key={type.name} value={type.name}>
+                {type.name}
               </MenuItem>
             ))}
           </Select>
