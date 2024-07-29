@@ -349,19 +349,26 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             var baseQuery = $@"
                             WITH RouteStats AS (
                                 SELECT
-                                    hs.SegmentId,
+                                    r.Id AS SegmentId,
                                     hs.SourceId,
                                     AVG(hs.Average) AS Avg,
                                     APPROX_QUANTILES(hs.FifteenthSpeed, 100)[ORDINAL(85)] AS Percentilespd_15,
                                     APPROX_QUANTILES(hs.EightyFifthSpeed, 100)[ORDINAL(85)] AS Percentilespd_85,
                                     APPROX_QUANTILES(hs.NinetyFifthSpeed, 100)[ORDINAL(85)] AS Percentilespd_95,
-                                    SUM(hs.Flow) AS Flow
+                                    SUM(hs.Flow) AS Flow,
+                                    r.SpeedLimit,
+                                    r.Name,
+                                    ANY_VALUE(ST_AsText(r.Shape)) AS Shape
                                 FROM
-                                    `atspm-406601.speed_dataset.hourly_speed` AS hs";
+                                    `atspm-406601.speed_dataset.segment` AS r
+                                LEFT JOIN
+                                    `atspm-406601.speed_dataset.hourly_speed` AS hs
+                                ON
+                                     r.Id = hs.SegmentId";
 
             var groupByClause = @"
                                 GROUP BY
-                                    hs.SegmentId, hs.SourceId
+                                    r.Id, hs.SourceId, r.SpeedLimit, r.Name
                                 )";
 
             var selectClause = $@"SELECT
@@ -372,27 +379,24 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
                                     rs.Percentilespd_85,
                                     rs.Percentilespd_95,
                                     rs.Flow,
-                                    r.SpeedLimit,
-                                    r.Name,
-                                    ANY_VALUE(ST_AsText(r.Shape)) AS Shape,
+                                    rs.SpeedLimit,
+                                    rs.Name,
+                                    rs.Shape,
                                     IFNULL(
                                         SAFE_CAST(
-                                            ROUND(SUM
-                                            (CASE 
-                                              WHEN rs.Percentilespd_15 >= r.SpeedLimit THEN 0.85 * rs.Flow
-                                              WHEN rs.Avg >= r.SpeedLimit THEN 0.5 * rs.Flow
-                                              WHEN rs.Percentilespd_85 >= r.SpeedLimit THEN 0.15 * rs.Flow
-                                              WHEN rs.Percentilespd_95 >= r.SpeedLimit THEN 0.05 * rs.Flow
-                                              ELSE 0
-                                              END) / NULLIF(SUM(rs.Flow), 0)) AS INT64), 0) AS EstimatedViolations
+                                            ROUND(SUM(
+                                                CASE 
+                                                    WHEN rs.Percentilespd_15 >= rs.SpeedLimit THEN 0.85 * rs.Flow
+                                                    WHEN rs.Avg >= rs.SpeedLimit THEN 0.5 * rs.Flow
+                                                    WHEN rs.Percentilespd_85 >= rs.SpeedLimit THEN 0.15 * rs.Flow
+                                                    WHEN rs.Percentilespd_95 >= rs.SpeedLimit THEN 0.05 * rs.Flow
+                                                    ELSE 0
+                                                END
+                                            ) / NULLIF(SUM(rs.Flow), 0)) AS INT64), 0) AS EstimatedViolations
                                 FROM
                                     RouteStats AS rs
-                                JOIN
-                                    `atspm-406601.speed_dataset.segment` AS r
-                                ON
-                                    rs.SegmentId = r.Id
                                 GROUP BY
-                                    rs.SegmentId, rs.SourceId, rs.Avg, rs.Percentilespd_15, rs.Percentilespd_85, rs.Percentilespd_95, rs.Flow, r.SpeedLimit, r.Name;";
+                                    rs.SegmentId, rs.SourceId, rs.Avg, rs.Percentilespd_15, rs.Percentilespd_85, rs.Percentilespd_95, rs.Flow, rs.SpeedLimit, rs.Name, rs.Shape;";
 
             string whereClause = "";
 
@@ -400,15 +404,13 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             {
                 case AnalysisPeriod.AllDay:
                     whereClause = $@"
-                                WHERE
-                                    DATE BETWEEN @startDate AND @endDate
+                                    AND DATE BETWEEN @startDate AND @endDate
                                     AND EXTRACT(DAYOFWEEK FROM DATE) IN ({daysOfWeekCondition})
                                     AND SourceId = @sourceId";
                     break;
                 case AnalysisPeriod.PeekPeriod:
                     whereClause = $@"
-                                WHERE 
-                                    DATE BETWEEN @startDate AND @endDate AND
+                                    AND DATE BETWEEN @startDate AND @endDate AND
                                     (
                                         (TIME(BinStartTime) BETWEEN TIME '06:00:00' AND TIME '09:00:00') OR
                                         (TIME(BinStartTime) BETWEEN TIME '15:00:00' AND TIME '18:00:00')
@@ -418,8 +420,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
                     break;
                 case AnalysisPeriod.CustomHour:
                     whereClause = $@"
-                                WHERE
-                                    DATE BETWEEN @startDate AND @endDate
+                                    AND DATE BETWEEN @startDate AND @endDate
                                     AND TIME(hs.BinStartTime) BETWEEN @startTime AND @endTime
                                     AND EXTRACT(DAYOFWEEK FROM DATE) IN ({daysOfWeekCondition})
                                     AND SourceId = @sourceId";
