@@ -2,9 +2,9 @@
 
 public class MonthlyAggregation
 {
-    public Guid Id { get; set; }
-    public DateTime CreatedDate { get; set; }
-    public DateTime BinStartTime { get; set; }
+    public Guid? Id { get; set; }
+    public DateTime CreatedDate { get; set; } //This is the timestamp of when this entry was created.
+    public DateTime BinStartTime { get; set; } // This is the 
     public Guid SegmentId { get; set; }
     public int SourceId { get; set; }
     public int? AllDayAverageSpeed { get; set; } //All Day 12:00AM - 11:59PM
