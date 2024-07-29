@@ -1,4 +1,5 @@
 ﻿using ATSPM.Application.Business.Common;
+using ATSPM.Application.Extensions;
 using ATSPM.Application.TempExtensions;
 using ATSPM.Data.Models;
 using ATSPM.Data.Models.EventLogModels;
@@ -19,19 +20,13 @@ namespace ATSPM.Application.Business.SplitMonitor
 
     public class SplitMonitorService
     {
-        private readonly AnalysisPhaseService analysisPhaseService;
         private readonly AnalysisPhaseCollectionService analysisPhaseCollectionService;
-        private readonly PlanService planService;
 
         public SplitMonitorService(
-            AnalysisPhaseService analysisPhaseService,
-            AnalysisPhaseCollectionService analysisPhaseCollectionService,
-            PlanService planService
+            AnalysisPhaseCollectionService analysisPhaseCollectionService
             )
         {
-            this.analysisPhaseService = analysisPhaseService;
             this.analysisPhaseCollectionService = analysisPhaseCollectionService;
-            this.planService = planService;
         }
 
 
@@ -56,6 +51,11 @@ namespace ATSPM.Application.Business.SplitMonitor
                 Location,
                 1
                 );
+
+            if (phaseCollection == null)
+            {
+                return null;
+            }
 
             var tasks = new List<Task<SplitMonitorResult>>();
             foreach (var phase in phaseCollection.AnalysisPhases)
@@ -205,7 +205,7 @@ namespace ATSPM.Application.Business.SplitMonitor
             var orderedCycles = cycles.OrderBy(c => c.Duration.TotalSeconds).ToList();
 
             var percentilIndex = percentile * orderedCycles.Count;
-            if (percentilIndex % 1 == 0)
+            if ((percentilIndex % 1).AreEqual(0))
             {
                 return orderedCycles.ElementAt(Convert.ToInt16(percentilIndex) - 1).Duration
                     .TotalSeconds;

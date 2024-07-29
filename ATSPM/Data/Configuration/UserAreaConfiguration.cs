@@ -1,6 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
+﻿using ATSPM.Data.Models.ConfigurationModels;
 using Microsoft.EntityFrameworkCore;
-using ATSPM.Data.Models.ConfigurationModels;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ATSPM.Data.Configuration
 {
@@ -8,7 +8,7 @@ namespace ATSPM.Data.Configuration
     {
         public void Configure(EntityTypeBuilder<UserArea> builder)
         {
-            builder.HasComment("UserAreas");
+            builder.ToTable(t => t.HasComment("UserAreas"));
 
             builder
             .HasKey(ur => new { ur.UserId, ur.AreaId });

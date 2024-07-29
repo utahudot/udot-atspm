@@ -12,12 +12,12 @@ namespace ATSPM.Data.Configuration
         /// <inheritdoc/>
         public void Configure(EntityTypeBuilder<LocationType> builder)
         {
-            builder.HasComment("Location Types");
+            builder.ToTable(t => t.HasComment("Location Types"));
 
             builder.Property(e => e.Name)
                 .IsRequired()
                 .HasMaxLength(50);
-            
+
             builder.Property(e => e.Icon)
                 .IsUnicode(true);
 

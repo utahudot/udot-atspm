@@ -1,8 +1,11 @@
 ﻿using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using ATSPM.Data.Models.ConfigurationModels;
+using ATSPM.Domain.Configuration;
+using ATSPM.Infrastructure.Services.EmailServices;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Moq;
 using WatchDog.Models;
 using Xunit;
@@ -15,9 +18,9 @@ namespace WatchDog.Services.Tests
         public async void CreateAndSendEmailTest()
         {
             var loggerMock = new Mock<ILogger<EmailService>>();
-            var smtpLoggerMock = new Mock<ILogger<SMTPMailService>>();
-            var configurationMock = new Mock<IConfiguration>();
-            var mailMock = new SMTPMailService(configurationMock.Object, smtpLoggerMock.Object);
+            var smtpLoggerMock = new Mock<ILogger<SmtpEmailService>>();
+            var configurationMock = new Mock<IOptionsSnapshot<EmailConfiguration>>();
+            var mailMock = new SmtpEmailService(configurationMock.Object, smtpLoggerMock.Object);
             var emailService = new EmailService(loggerMock.Object, mailMock);
             var emailOptions = new EmailOptions
             {

@@ -26,23 +26,6 @@ namespace ATSPM.Application.Business.Bins
         }
 
 
-        //public TimeOptions(DateTime start, DateTime end, int? timeOfDayStartHour, int? timeOfDayStartMinute,
-        //    int? timeOfDayEndHour, int? timeOfDayEndMinute, List<DayOfWeek> daysOfWeek, BinSize binSize,
-        //    TimePeriodOptions timeOption)
-        //{
-        //    DaysOfWeek = new List<DayOfWeek>();
-        //    Start = start;
-        //    End = end;
-        //    TimeOfDayStartHour = timeOfDayStartHour;
-        //    TimeOfDayStartMinute = timeOfDayStartMinute;
-        //    TimeOfDayEndHour = timeOfDayEndHour;
-        //    TimeOfDayEndMinute = timeOfDayEndMinute;
-        //    DaysOfWeek = daysOfWeek;
-        //    SelectedBinSize = binSize;
-        //    TimeOption = timeOption;
-        //}
-
-
         public DateTime Start { get; set; }
 
 
@@ -79,7 +62,7 @@ namespace ATSPM.Application.Business.Bins
             return tempDateList;
         }
 
-        private List<DateTime> GetDateList(DateTime startDate, DateTime endDate, List<DayOfWeek> daysOfWeek)
+        private static List<DateTime> GetDateList(DateTime startDate, DateTime endDate, List<DayOfWeek> daysOfWeek)
         {
             var dates = new List<DateTime>();
 
@@ -101,11 +84,6 @@ namespace ATSPM.Application.Business.Bins
         public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
         {
             return destinationType.Equals(typeof(string));
-        }
-
-        public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
-        {
-            return base.ConvertFrom(context, culture, value);
         }
 
         public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value,
