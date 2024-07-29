@@ -198,12 +198,15 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
                 date BETWEEN @startDate AND @endDate 
             ORDER BY Date ASC, BinStartTime ASC;";
 
+            DateTime startDateTime = options.StartDate.ToDateTime(TimeOnly.MinValue);
+            DateTime endDateTime = options.EndDate.ToDateTime(TimeOnly.MinValue);
+
             var parameters = new[]
             {
-            new BigQueryParameter("segmentId", BigQueryDbType.String, options.SegmentId),
-            new BigQueryParameter("startDate", BigQueryDbType.Date, options.StartDate.ToDateTime(new TimeOnly(0,0))),
-            new BigQueryParameter("endDate", BigQueryDbType.Date, options.EndDate.ToDateTime(new TimeOnly(0, 0))),
-        };
+                new BigQueryParameter("segmentId", BigQueryDbType.String, options.SegmentId),
+                new BigQueryParameter("startDate", BigQueryDbType.Date, startDateTime.Date ),
+                new BigQueryParameter("endDate", BigQueryDbType.Date, endDateTime.Date),
+            };
 
             var queryResults = await _client.ExecuteQueryAsync(query, parameters);
             return queryResults.Select(row =>
