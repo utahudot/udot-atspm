@@ -78,6 +78,8 @@ const SpeedMap = ({
       return ViolationColors.High
     }
 
+    if (val === null) return '#c1c9cc'
+
     if (val < 20) return 'rgba(0, 115, 255, 1)'
     if (val < 30) return 'rgba(0, 255, 170, 1)'
     if (val < 35) return 'rgba(55, 255, 0, 1)'
