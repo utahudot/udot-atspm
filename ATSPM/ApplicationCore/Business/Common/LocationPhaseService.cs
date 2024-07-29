@@ -43,12 +43,9 @@ namespace ATSPM.Application.Business.Common
         /// </summary>
         /// <param name="start"></param>
         /// <param name="end"></param>
-        /// <param name="getPermissivePhase"></param>
         /// <param name="showVolume"></param>
         /// <param name="pcdCycleTime"></param>
         /// <param name="binSize"></param>
-        /// <param name="approach"></param>
-        /// <param name="events"></param>
         /// <returns></returns>
         public async Task<LocationPhase> GetLocationPhaseData(
             PhaseDetail phaseDetail,
@@ -80,6 +77,49 @@ namespace ATSPM.Application.Business.Common
                 start,
                 end
                 );
+        }
+
+        public async Task<LocationPhase> GetLocationPhaseData(
+            PhaseDetail phaseDetail,
+            DateTime start,
+            DateTime end,
+            int binSize,
+            DetectionType detectionType,
+            List<IndianaEvent> controllerEventLogs,
+            List<IndianaEvent> planEvents,
+            bool getVolume)
+        {
+            var detectorEvents = controllerEventLogs.GetDetectorEvents(
+                8,
+                phaseDetail.Approach,
+                start,
+                end,
+                true,
+                false,
+                detectionType);
+            if (detectorEvents == null)
+            {
+                return null;
+            }
+
+            var cycleEvents = controllerEventLogs.GetCycleEventsWithTimeExtension(
+                phaseDetail.PhaseNumber,
+                phaseDetail.UseOverlap,
+                start,
+                end);
+            if (cycleEvents.IsNullOrEmpty())
+                return null;
+            var LocationPhase = await GetLocationPhaseData(
+                phaseDetail,
+                start,
+                end,
+                getVolume,
+                null,
+                binSize,
+                cycleEvents.ToList(),
+                planEvents.ToList(),
+                detectorEvents.ToList());
+            return LocationPhase;
         }
 
         public async Task<LocationPhase> GetLocationPhaseDataWithApporach(
@@ -152,49 +192,6 @@ namespace ATSPM.Application.Business.Common
                 end,
                 getVolume,
                 cycleTime ?? null,
-                binSize,
-                cycleEvents.ToList(),
-                planEvents.ToList(),
-                detectorEvents.ToList());
-            return LocationPhase;
-        }
-
-        public async Task<LocationPhase> GetLocationPhaseData(
-            PhaseDetail phaseDetail,
-            DateTime start,
-            DateTime end,
-            int binSize,
-            DetectionType detectionType,
-            List<IndianaEvent> controllerEventLogs,
-            List<IndianaEvent> planEvents,
-            bool getVolume)
-        {
-            var detectorEvents = controllerEventLogs.GetDetectorEvents(
-                8,
-                phaseDetail.Approach,
-                start,
-                end,
-                true,
-                false,
-                detectionType);
-            if (detectorEvents == null)
-            {
-                return null;
-            }
-
-            var cycleEvents = controllerEventLogs.GetCycleEventsWithTimeExtension(
-                phaseDetail.PhaseNumber,
-                phaseDetail.UseOverlap,
-                start,
-                end);
-            if (cycleEvents.IsNullOrEmpty())
-                return null;
-            var LocationPhase = await GetLocationPhaseData(
-                phaseDetail,
-                start,
-                end,
-                getVolume,
-                null,
                 binSize,
                 cycleEvents.ToList(),
                 planEvents.ToList(),

@@ -12,7 +12,7 @@ namespace ATSPM.Data.Configuration
         /// <inheritdoc/>
         public void Configure(EntityTypeBuilder<MeasureComment> builder)
         {
-            builder.HasComment("Measure Comments");
+            builder.ToTable(t => t.HasComment("Measure Comments"));
 
             builder.HasIndex(e => e.LocationIdentifier);
 

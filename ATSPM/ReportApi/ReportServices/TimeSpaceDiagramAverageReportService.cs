@@ -6,6 +6,7 @@ using ATSPM.Application.Repositories.EventLogRepositories;
 using ATSPM.Application.TempExtensions;
 using ATSPM.Data.Models;
 using ATSPM.Data.Models.EventLogModels;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 namespace ATSPM.ReportApi.ReportServices
@@ -18,13 +19,15 @@ namespace ATSPM.ReportApi.ReportServices
         private readonly IRouteLocationsRepository routeLocationsRepository;
         private readonly PlanService planService;
         private readonly TimeSpaceAverageService timeSpaceAverageService;
+        private readonly IRouteRepository routeRepository;
 
         public TimeSpaceDiagramAverageReportService(IIndianaEventLogRepository controllerEventLogRepository,
             ILocationRepository locationRepository,
             PhaseService phaseService,
             IRouteLocationsRepository routeLocationsRepository,
             PlanService planService,
-            TimeSpaceAverageService timeSpaceAverageService)
+            TimeSpaceAverageService timeSpaceAverageService,
+            IRouteRepository routeRepository)
         {
             this.controllerEventLogRepository = controllerEventLogRepository;
             this.locationRepository = locationRepository;
@@ -32,11 +35,13 @@ namespace ATSPM.ReportApi.ReportServices
             this.routeLocationsRepository = routeLocationsRepository;
             this.planService = planService;
             this.timeSpaceAverageService = timeSpaceAverageService;
+            this.routeRepository = routeRepository;
         }
 
         public override async Task<IEnumerable<TimeSpaceDiagramAverageResult>> ExecuteAsync(TimeSpaceDiagramAverageOptions parameter, IProgress<int> progress = null, CancellationToken cancelToken = default)
         {
             var routeLocations = GetLocationsFromRouteId(parameter.RouteId);
+            var routeName = GetRouteNameFromId(parameter.RouteId);
             if (routeLocations.Count == 0)
             {
                 throw new Exception($"No locations present for route");
@@ -51,14 +56,20 @@ namespace ATSPM.ReportApi.ReportServices
             {
                 if (routeLocation.NextLocationDistance == null && routeLocation.PreviousLocationDistance == null)
                 {
-                    throw new Exception($"Distance not configured for route: {parameter.RouteId}");
+                    throw new Exception($"Distance not configured for route: {routeName}");
                 }
             }
 
             var averageParamsBase = ProcessRouteLocations(routeLocations, parameter);
 
-            var results = await Task.WhenAll(GetChartData(parameter, routeLocations, averageParamsBase, eventCodes));
+         var results = await Task.WhenAll(GetChartData(parameter, routeLocations, averageParamsBase, eventCodes));
             return results;
+        }
+
+        private object GetRouteNameFromId(int routeId)
+        {
+            var routeName = routeRepository.GetList().Where(r => r.Id == routeId)?.FirstOrDefault()?.Name;
+            return routeName != null ? routeName : "";
         }
 
         private async Task<TimeSpaceDiagramAverageResult> GetChartDataForPhase(
@@ -172,13 +183,33 @@ namespace ATSPM.ReportApi.ReportServices
 
                 if (location == null)
                 {
-                    throw new NullReferenceException("Issue fetching location from route");
+                    throw new Exception("Issue fetching location from route");
                 }
 
                 var controllerEventLogs = new List<IndianaEvent>();
                 int currentProgrammedCycleLength = 0;
                 int currentOffset = 0;
                 var currentProgrammedSplitsForTimePeriod = new List<IndianaEvent>();
+
+                var primaryPhaseDetail = phaseService.GetPhases(location).Find(p => p.PhaseNumber == routeLocation.PrimaryPhase);
+                var opposingPhaseDetail = phaseService.GetPhases(location).Find(p => p.PhaseNumber == routeLocation.OpposingPhase);
+                //var phaseToSearch = routeLocation.PrimaryPhase;
+                //var phaseDetail = _phaseService.GetPhases(location).Find(p => p.PhaseNumber == phaseToSearch);
+
+                if (primaryPhaseDetail == null || opposingPhaseDetail == null)
+                {
+                    throw new Exception("Error grabbing phase details");
+                }
+
+                if (parameter.SpeedLimit == null && primaryPhaseDetail.Approach.Mph == null)
+                {
+                    throw new Exception($"Speed not configured in route for all phases");
+                }
+
+                if (parameter.SpeedLimit == null && opposingPhaseDetail.Approach.Mph == null)
+                {
+                    throw new Exception($"Speed not configured in route for all phases");
+                }
 
                 foreach (DateOnly date in daysToProcess)
                 {
@@ -187,6 +218,8 @@ namespace ATSPM.ReportApi.ReportServices
                     var logs = controllerEventLogRepository.GetEventsBetweenDates(location.LocationIdentifier, start.AddHours(-12), end.AddHours(12)).ToList();
                     var planEvents = logs.GetPlanEvents(start.AddHours(-12), end.AddHours(12));
                     var plan = planService.GetBasicPlans(start, end, routeLocation.LocationIdentifier, planEvents).FirstOrDefault();
+
+
 
                     if (currentProgrammedCycleLength == 0)
                     {
@@ -230,15 +263,7 @@ namespace ATSPM.ReportApi.ReportServices
                     throw new NullReferenceException("Select different time period since plans dont match for each day");
                 }
 
-                var primaryPhaseDetail = phaseService.GetPhases(location).Find(p => p.PhaseNumber == routeLocation.PrimaryPhase);
-                var opposingPhaseDetail = phaseService.GetPhases(location).Find(p => p.PhaseNumber == routeLocation.OpposingPhase);
-                //var phaseToSearch = routeLocation.PrimaryPhase;
-                //var phaseDetail = _phaseService.GetPhases(location).Find(p => p.PhaseNumber == phaseToSearch);
 
-                if (primaryPhaseDetail == null || opposingPhaseDetail == null)
-                {
-                    throw new NullReferenceException("Error grabbing phase details");
-                }
 
                 controllerEventLogsList.Add(controllerEventLogs);
                 primaryPhaseDetails.Add(primaryPhaseDetail);
@@ -315,7 +340,10 @@ namespace ATSPM.ReportApi.ReportServices
 
         private List<RouteLocation> GetLocationsFromRouteId(int routeId)
         {
-            var routeLocations = routeLocationsRepository.GetList().Where(l => l.RouteId == routeId).ToList();
+            var routeLocations = routeLocationsRepository.GetList()
+                .Include(x => x.NextLocationDistance)
+                .Include(x => x.PreviousLocationDistance)
+                .Where(l => l.RouteId == routeId).ToList();
             return routeLocations ?? new List<RouteLocation>();
         }
     }

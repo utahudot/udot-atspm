@@ -12,7 +12,7 @@ namespace ATSPM.Data.Configuration
         /// <inheritdoc/>
         public void Configure(EntityTypeBuilder<Location> builder)
         {
-            builder.HasComment("Locations");
+            builder.ToTable(t => t.HasComment("Locations"));
 
             builder.HasIndex(e => e.JurisdictionId);
 

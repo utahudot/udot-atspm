@@ -1,9 +1,4 @@
 ﻿using ATSPM.Data.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ATSPM.Application.Common
 {
@@ -38,7 +33,7 @@ namespace ATSPM.Application.Common
         /// Used when converting <see cref="OpposingDirection"/> to <see cref="DirectionTypes"/>
         /// and returns the opposing phase
         /// </summary>
-        /// <param name="o"></param>
+        /// <param name="d"></param>
         public static explicit operator OpposingDirection(DirectionTypes d) => d switch
         {
             DirectionTypes.EB => new OpposingDirection(DirectionTypes.WB),

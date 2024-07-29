@@ -15,6 +15,6 @@ namespace ATSPM.ReportApi.Controllers
     public class SplitFailController : ReportControllerBase<SplitFailOptions, IEnumerable<SplitFailsResult>>
     {
         /// <inheritdoc/>
-        public SplitFailController(IReportService<SplitFailOptions, IEnumerable<SplitFailsResult>> reportService) : base(reportService) { }
+        public SplitFailController(IReportService<SplitFailOptions, IEnumerable<SplitFailsResult>> reportService, ILogger<SplitFailController> logger) : base(reportService, logger) { }
     }
 }
