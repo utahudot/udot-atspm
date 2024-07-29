@@ -43,7 +43,7 @@ export default function ViolationRangeSlider() {
 
   const isViolation = routeRenderOption === RouteRenderOption.Violations
   const isNotClearGuide =
-    submittedRouteSpeedRequest.dataSource !== DataSource.ClearGuide
+    submittedRouteSpeedRequest.sourceId !== DataSource.ClearGuide
 
   return (
     <Box

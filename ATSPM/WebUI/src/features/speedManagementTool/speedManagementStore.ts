@@ -13,7 +13,6 @@ export enum RouteRenderOption {
 export enum AnalysisPeriod {
   AllDay,
   PeekPeriod,
-  MorningPeak,
   CustomHour,
 }
 
@@ -24,7 +23,7 @@ export enum DataSource {
 }
 
 export interface RouteSpeedRequest {
-  dataSource: DataSource
+  sourceId: DataSource
   startDate: string
   endDate: string
   daysOfWeek: number[]
@@ -64,20 +63,20 @@ const useSpeedManagementStore = create<StoreState>((set) => ({
 
   // Default route speed request
   routeSpeedRequest: {
-    dataSource: DataSource.ClearGuide,
+    sourceId: DataSource.ClearGuide,
     startDate: '2024-02-08',
     endDate: '2024-02-09',
     daysOfWeek: [1, 2, 3, 4, 5],
-    analysisPeriod: AnalysisPeriod.MorningPeak,
+    analysisPeriod: AnalysisPeriod.AllDay,
     violationThreshold: 5,
   },
 
   submittedRouteSpeedRequest: {
-    dataSource: DataSource.ClearGuide,
+    sourceId: DataSource.ClearGuide,
     startDate: '2024-02-08',
     endDate: '2024-02-09',
     daysOfWeek: [1, 2, 3, 4, 5],
-    analysisPeriod: AnalysisPeriod.MorningPeak,
+    analysisPeriod: AnalysisPeriod.AllDay,
     violationThreshold: 5,
   },
 

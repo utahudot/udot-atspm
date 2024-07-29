@@ -54,7 +54,7 @@ function RenderOptionSelector() {
             Current Data Source:
           </Typography>
           <Typography fontSize="11px" color="primary" ml={0.5}>
-            {DataSource[submittedRouteSpeedRequest.dataSource]}
+            {DataSource[submittedRouteSpeedRequest.sourceId]}
           </Typography>
         </Box>
       </Box>
@@ -89,7 +89,7 @@ function RenderOptionSelector() {
                 />
               }
               disabled={
-                submittedRouteSpeedRequest.dataSource === DataSource.ClearGuide
+                submittedRouteSpeedRequest.sourceId === DataSource.ClearGuide
               }
             />
             <FormControlLabel
@@ -101,9 +101,7 @@ function RenderOptionSelector() {
                   tooltip="Available on PeMS"
                 />
               }
-              disabled={
-                submittedRouteSpeedRequest.dataSource !== DataSource.PeMS
-              }
+              disabled={submittedRouteSpeedRequest.sourceId !== DataSource.PeMS}
             />
             <FormControlLabel
               value={RouteRenderOption.Violations}
@@ -115,7 +113,7 @@ function RenderOptionSelector() {
                 />
               }
               disabled={
-                submittedRouteSpeedRequest.dataSource === DataSource.ClearGuide
+                submittedRouteSpeedRequest.sourceId === DataSource.ClearGuide
               }
             />
           </RadioGroup>
