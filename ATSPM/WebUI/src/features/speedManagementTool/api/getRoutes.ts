@@ -8,7 +8,7 @@ import { ExtractFnReturnType, QueryConfig } from '@/lib/react-query'
 import { useQuery } from 'react-query'
 
 export interface RouteParams {
-  dataSource: DataSource
+  sourceId: DataSource
   startDate: string
   endDate: string
   daysOfWeek: number[]

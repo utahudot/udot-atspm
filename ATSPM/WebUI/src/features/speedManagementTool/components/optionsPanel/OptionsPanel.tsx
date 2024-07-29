@@ -34,11 +34,11 @@ function OptionsPanel() {
   const handleOptionClick = () => {
     fetchRoutes()
     setSubmittedRouteSpeedRequest(routeSpeedRequest)
-    if (routeSpeedRequest.dataSource === DataSource.ATSPM) {
+    if (routeSpeedRequest.sourceId === DataSource.ATSPM) {
       setMediumMin(80)
       setMediumMax(300)
       setSliderMax(500)
-    } else if (routeSpeedRequest.dataSource === DataSource.PeMS) {
+    } else if (routeSpeedRequest.sourceId === DataSource.PeMS) {
       setMediumMin(150)
       setMediumMax(400)
       setSliderMax(600)

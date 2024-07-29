@@ -35,11 +35,11 @@ const AnalysisPeriodOptions = () => {
             })
           }}
         >
-          <FormControlLabel
+          {/* <FormControlLabel
             value="MorningPeak"
             control={<Radio />}
             label="Morning Post Peak (10AM - 12PM)"
-          />
+          /> */}
           <FormControlLabel
             value="AllDay"
             control={<Radio />}

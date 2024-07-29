@@ -20,7 +20,7 @@ export default function GeneralOptions() {
     if (newDataSource !== null) {
       setRouteSpeedRequest({
         ...routeSpeedRequest,
-        dataSource: newDataSource,
+        sourceId: newDataSource,
       })
     }
   }
@@ -41,7 +41,7 @@ export default function GeneralOptions() {
       </Box>
       <Box display="flex" alignItems={'center'}>
         <ToggleButtonGroup
-          value={routeSpeedRequest.dataSource}
+          value={routeSpeedRequest.sourceId}
           size="small"
           exclusive
           onChange={handleDataSourceChange}
