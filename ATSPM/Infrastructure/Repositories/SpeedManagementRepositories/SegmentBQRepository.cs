@@ -113,7 +113,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             var parameters = new List<BigQueryParameter>
             {
                     new BigQueryParameter("key", BigQueryDbType.String, key)
-                };
+            };
             var results = await _client.ExecuteQueryAsync(query, parameters);
             return results.Select(row => MapRowToEntity(row)).FirstOrDefault();
         }
