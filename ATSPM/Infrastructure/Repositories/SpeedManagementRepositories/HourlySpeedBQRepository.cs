@@ -211,8 +211,8 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             var queryResults = await _client.ExecuteQueryAsync(query, parameters);
             return queryResults.Select(row =>
             {
-                string format = "M/d/yyyy h:mm:ss tt";
-                var date = DateOnly.ParseExact(row["Date"].ToString(), format);
+                string[] formats = { "MM/dd/yyyy HH:mm:ss", "M/d/yyyy h:mm:ss tt", "yyyy-MM-ddTHH:mm:ss.fffZ" };
+                var date = DateOnly.ParseExact(row["Date"].ToString(), formats);
                 var time = TimeOnly.Parse(row["BinStartTime"].ToString());
                 var avg = row["Average"];
                 var fifteenthSpeed = row["FifteenthSpeed"];
