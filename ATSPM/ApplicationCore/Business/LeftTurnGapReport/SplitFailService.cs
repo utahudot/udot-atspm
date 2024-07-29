@@ -18,7 +18,11 @@ namespace ATSPM.Application.Business.LeftTurnGapReport
         public LeftTurnSplitFailResult GetSplitFailPercent(LeftTurnSplitFailOptions options, List<ApproachSplitFailAggregation> splitFailsAggregates)
         {
             var location = locationRepository.GetLatestVersionOfLocation(options.LocationIdentifier, options.Start);
-            var approach = location.Approaches.Where(a => a.Id == options.ApproachId).FirstOrDefault();
+            if (location == null)
+                throw new ArgumentNullException("Location not found");
+            var approach = location.Approaches.Where(a => a.Id == options.ApproachId)?.FirstOrDefault();
+            if (approach == null)
+                throw new ArgumentNullException("Approach not found");
             var phaseNumber = approach.PermissivePhaseNumber.HasValue ? approach.PermissivePhaseNumber.Value : approach.ProtectedPhaseNumber;
             Dictionary<DateTime, double> percentCyclesWithSplitFail = GetPercentCyclesWithSplitFails(options, splitFailsAggregates);
             int cycles = splitFailsAggregates.Sum(s => s.Cycles);

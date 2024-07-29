@@ -15,6 +15,6 @@ namespace ATSPM.ReportApi.Controllers
     public class TimingAndActuationController : ReportControllerBase<TimingAndActuationsOptions, IEnumerable<TimingAndActuationsForPhaseResult>>
     {
         /// <inheritdoc/>
-        public TimingAndActuationController(IReportService<TimingAndActuationsOptions, IEnumerable<TimingAndActuationsForPhaseResult>> reportService) : base(reportService) { }
+        public TimingAndActuationController(IReportService<TimingAndActuationsOptions, IEnumerable<TimingAndActuationsForPhaseResult>> reportService, ILogger<TimingAndActuationController> logger) : base(reportService, logger) { }
     }
 }

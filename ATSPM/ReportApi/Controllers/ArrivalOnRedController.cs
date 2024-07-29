@@ -15,6 +15,6 @@ namespace ATSPM.ReportApi.Controllers
     public class ArrivalOnRedController : ReportControllerBase<ArrivalOnRedOptions, IEnumerable<ArrivalOnRedResult>>
     {
         /// <inheritdoc/>
-        public ArrivalOnRedController(IReportService<ArrivalOnRedOptions, IEnumerable<ArrivalOnRedResult>> reportService) : base(reportService) { }
+        public ArrivalOnRedController(IReportService<ArrivalOnRedOptions, IEnumerable<ArrivalOnRedResult>> reportService, ILogger<ArrivalOnRedController> logger) : base(reportService, logger) { }
     }
 }

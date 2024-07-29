@@ -48,7 +48,7 @@ namespace ATSPM.Infrastructure.Repositories.ConfigurationRepositories
 
                         foreach (var a in add)
                         {
-                            oldItem.DetectionTypes.Add(a);
+                            oldItem.DetectionTypes.Add(_db.Find<DetectionType>(a.Id));
                         }
 
                         break;
