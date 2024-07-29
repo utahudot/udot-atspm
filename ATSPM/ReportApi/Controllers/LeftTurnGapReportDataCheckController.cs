@@ -15,6 +15,6 @@ namespace ATSPM.ReportApi.Controllers
     public class LeftTurnGapReportDataCheckController : ReportControllerBase<LeftTurnGapDataCheckOptions, LeftTurnGapDataCheckResult>
     {
         /// <inheritdoc/>
-        public LeftTurnGapReportDataCheckController(IReportService<LeftTurnGapDataCheckOptions, LeftTurnGapDataCheckResult> reportService) : base(reportService) { }
+        public LeftTurnGapReportDataCheckController(IReportService<LeftTurnGapDataCheckOptions, LeftTurnGapDataCheckResult> reportService, ILogger<LeftTurnGapReportDataCheckController> logger) : base(reportService, logger) { }
     }
 }

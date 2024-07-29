@@ -30,7 +30,7 @@ namespace ATSPM.Data
             {
                 builder.ToTable("Controller_Event_Log");
 
-                builder.HasComment("Old Log Data Table");
+                builder.ToTable(t => t.HasComment("Old Log Data Table"));
 
                 builder.HasKey(e => new { e.SignalIdentifier, e.Timestamp, e.EventCode, e.EventParam });
 

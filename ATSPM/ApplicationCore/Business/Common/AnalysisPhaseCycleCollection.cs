@@ -25,7 +25,7 @@ namespace ATSPM.Application.Business.Common
             )
         {
             AnalysisPhaseCycle cycle = null;
-            locationId = locationId;
+            LocationId = locationId;
             PhaseNumber = phasenumber;
             var combinedEvents = cycleEvents.Concat(terminationEvents).OrderBy(e => e.Timestamp).ToList();
 
@@ -64,7 +64,7 @@ namespace ATSPM.Application.Business.Common
             }
         }
 
-        public string locationId { get; set; }
+        public string LocationId { get; set; }
         public int PhaseNumber { get; set; }
 
 

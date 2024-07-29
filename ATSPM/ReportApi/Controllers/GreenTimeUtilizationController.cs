@@ -15,6 +15,6 @@ namespace ATSPM.ReportApi.Controllers
     public class GreenTimeUtilizationController : ReportControllerBase<GreenTimeUtilizationOptions, IEnumerable<GreenTimeUtilizationResult>>
     {
         /// <inheritdoc/>
-        public GreenTimeUtilizationController(IReportService<GreenTimeUtilizationOptions, IEnumerable<GreenTimeUtilizationResult>> reportService) : base(reportService) { }
+        public GreenTimeUtilizationController(IReportService<GreenTimeUtilizationOptions, IEnumerable<GreenTimeUtilizationResult>> reportService, ILogger<GreenTimeUtilizationController> logger) : base(reportService, logger) { }
     }
 }

@@ -78,7 +78,7 @@ namespace ATSPM.ReportApi.ReportServices
 
             var analysisPhaseDataCollection = analysisPhaseCollectionService.GetAnalysisPhaseCollectionData(
                 Location.LocationIdentifier,
-            parameter.Start,
+                parameter.Start,
                 parameter.End,
                 planEvents,
                 events,
