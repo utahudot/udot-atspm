@@ -14,12 +14,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
-using ATSPM.Application.Configuration;
 using ATSPM.Application.Exceptions;
 using ATSPM.Data.Models;
 using ATSPM.Data.Models.EventLogModels;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
+using ATSPM.Infrastructure.Services.EventLogDecoders;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -30,11 +28,11 @@ using System.Xml.Linq;
 namespace ATSPM.Infrastructure.Services.ControllerDecoders
 {
     /// <inheritdoc/>
-    public class MaxTimeEventLogDecoder : EventLogDecoderBase<IndianaEvent>
+    public class MaxtimeToIndianaDecoder : EventLogDecoderBase<IndianaEvent>
     {
 
         /// <inheritdoc/>
-        public MaxTimeEventLogDecoder(ILogger<MaxTimeEventLogDecoder> log, IOptionsSnapshot<SignalControllerDecoderConfiguration> options) : base(log, options) { }
+        //public MaxTimeEventLogDecoder(ILogger<MaxTimeEventLogDecoder> log, IOptionsSnapshot<SignalControllerDecoderConfiguration> options) : base(log, options) { }
 
         #region Properties
 
@@ -43,13 +41,13 @@ namespace ATSPM.Infrastructure.Services.ControllerDecoders
         #region Methods
 
         /// <inheritdoc/>
-        public override bool CanExecute(Tuple<Device, FileInfo> parameter)
-        {
-            var device = parameter.Item1;
-            var file = parameter.Item2;
+        //public override bool CanExecute(Tuple<Device, FileInfo> parameter)
+        //{
+        //    var device = parameter.Item1;
+        //    var file = parameter.Item2;
 
-            return base.CanExecute(parameter) && (file.Extension == ".xml" || file.Extension == ".XML");
-        }
+        //    return base.CanExecute(parameter) && (file.Extension == ".xml" || file.Extension == ".XML");
+        //}
 
         /// <inheritdoc/>
         public override IEnumerable<IndianaEvent> Decode(Device device, Stream stream, CancellationToken cancelToken = default)
@@ -90,7 +88,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDecoders
                     {
                         LocationIdentifier = locationIdentifider,
                         EventCode = Convert.ToInt16(l.Attribute("EventTypeID").Value),
-                        EventParam = Convert.ToByte(l.Attribute("Parameter").Value),
+                        EventParam = Convert.ToInt16(l.Attribute("Parameter").Value),
                         Timestamp = Convert.ToDateTime(l.Attribute("TimeStamp").Value)
                     };
 

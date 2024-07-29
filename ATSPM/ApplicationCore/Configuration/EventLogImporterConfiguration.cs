@@ -22,7 +22,7 @@ using System.Threading.Tasks;
 
 namespace ATSPM.Application.Configuration
 {
-    public class SignalControllerDecoderConfiguration
+    public class EventLogImporterConfiguration
     {
         public DateTime EarliestAcceptableDate { get; set; }
 
