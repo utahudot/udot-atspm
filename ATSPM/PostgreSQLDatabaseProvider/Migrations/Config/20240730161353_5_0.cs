@@ -1,20 +1,4 @@
-﻿#region license
-// Copyright 2024 Utah Departement of Transportation
-// for PostgreSQLDatabaseProvider - ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Config/20240516151436_V5_Initial.cs
-// 
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-// 
-// http://www.apache.org/licenses/LICENSE-2.
-// 
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-#endregion
-using System;
+﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -22,10 +6,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
 
-namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Config
+namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
 {
     /// <inheritdoc />
-    public partial class V5_Initial : Migration
+    public partial class _50 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -36,7 +20,7 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Config
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "character varying(50)", unicode: false, maxLength: 50, nullable: true)
+                    Name = table.Column<string>(type: "character varying(50)", unicode: false, maxLength: 50, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -112,7 +96,7 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Config
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "character varying(50)", unicode: false, maxLength: 50, nullable: true),
+                    Name = table.Column<string>(type: "character varying(50)", unicode: false, maxLength: 50, nullable: false),
                     Mpo = table.Column<string>(type: "character varying(50)", unicode: false, maxLength: 50, nullable: true),
                     CountyParish = table.Column<string>(type: "character varying(50)", unicode: false, maxLength: 50, nullable: true),
                     OtherPartners = table.Column<string>(type: "character varying(50)", unicode: false, maxLength: 50, nullable: true)
@@ -220,7 +204,7 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Config
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Description = table.Column<string>(type: "character varying(50)", unicode: false, maxLength: 50, nullable: true)
+                    Description = table.Column<string>(type: "character varying(50)", unicode: false, maxLength: 50, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -266,7 +250,7 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Config
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "character varying(64)", unicode: false, maxLength: 64, nullable: false),
                     Notes = table.Column<string>(type: "character varying(512)", unicode: false, maxLength: 512, nullable: true),
-                    Date = table.Column<DateTime>(type: "timestamp", nullable: false, defaultValue: new DateTime(2024, 5, 16, 9, 14, 36, 448, DateTimeKind.Local).AddTicks(4908)),
+                    Date = table.Column<DateTime>(type: "timestamp", nullable: false, defaultValue: new DateTime(2024, 7, 30, 10, 13, 52, 989, DateTimeKind.Local).AddTicks(3988)),
                     Version = table.Column<int>(type: "integer", nullable: false),
                     ParentId = table.Column<int>(type: "integer", nullable: true)
                 },
@@ -418,12 +402,12 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Config
                     Firmware = table.Column<string>(type: "character varying(16)", unicode: false, maxLength: 16, nullable: false),
                     Notes = table.Column<string>(type: "character varying(512)", unicode: false, maxLength: 512, nullable: true),
                     Protocol = table.Column<string>(type: "character varying(7)", maxLength: 7, nullable: false, defaultValue: "Unknown"),
-                    Port = table.Column<long>(type: "bigint", nullable: false, defaultValueSql: "((0))"),
+                    Port = table.Column<int>(type: "integer", nullable: false, defaultValueSql: "((0))"),
                     Directory = table.Column<string>(type: "character varying(512)", unicode: false, maxLength: 512, nullable: true),
-                    SearchTerms = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: true),
+                    SearchTerms = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: true, defaultValueSql: "('[]')"),
                     ConnectionTimeout = table.Column<int>(type: "integer", nullable: false, defaultValueSql: "((2000))"),
-                    OperationTimout = table.Column<int>(type: "integer", nullable: false, defaultValueSql: "((2000))"),
-                    DataModel = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: true),
+                    OperationTimeout = table.Column<int>(type: "integer", nullable: false, defaultValueSql: "((2000))"),
+                    Decoders = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: true, defaultValueSql: "('[]')"),
                     UserName = table.Column<string>(type: "character varying(50)", unicode: false, maxLength: 50, nullable: true),
                     Password = table.Column<string>(type: "character varying(50)", unicode: false, maxLength: 50, nullable: true),
                     ProductId = table.Column<int>(type: "integer", nullable: true)
@@ -735,7 +719,11 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Config
                     { 4, "LLC", "Lane-by-lane Count", 4 },
                     { 5, "LLS", "Lane-by-lane with Speed Restriction", 5 },
                     { 6, "SBP", "Stop Bar Presence", 6 },
-                    { 7, "AP", "Advanced Presence", 7 }
+                    { 7, "AP", "Advanced Presence", 7 },
+                    { 8, "P", "Passage", 8 },
+                    { 9, "D", "Demand", 9 },
+                    { 10, "IQ", "Intermediate Queue", 10 },
+                    { 11, "EQ", "Excessive Queue", 11 }
                 });
 
             migrationBuilder.InsertData(
@@ -752,24 +740,6 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Config
                     { 6, "NW", "Northwest", 6 },
                     { 7, "SE", "Southeast", 7 },
                     { 8, "SW", "Southwest", 8 }
-                });
-
-            migrationBuilder.InsertData(
-                table: "ExternalLinks",
-                columns: new[] { "Id", "DisplayOrder", "Name", "Url" },
-                values: new object[,]
-                {
-                    { 1, 1, "Indiana Hi Resolution Data Logger Enumerations", " https://docs.lib.purdue.edu/jtrpdata/3/" },
-                    { 2, 2, "Florida ATSPM", "https://atspm.cflsmartroads.com/ATSPM" },
-                    { 3, 3, "FAST (Southern Nevada)", "http://challenger.nvfast.org/spm" },
-                    { 4, 4, "Georgia ATSPM", "https://traffic.dot.ga.gov/atspm" },
-                    { 5, 5, "Arizona ATSPM", "http://spmapp01.mcdot-its.com/ATSPM" },
-                    { 6, 6, "Alabama ATSPM", "http://Locationmetrics.ua.edu" },
-                    { 7, 7, "ATSPM Workshop 2016 SLC", "http://docs.lib.purdue.edu/atspmw/2016" },
-                    { 8, 8, "Train The Trainer Webinar Day 1 - Morning", "https://connectdot.connectsolutions.com/p75dwqefphk   " },
-                    { 9, 9, "Train The Trainer Webinar Day 1 - Afternoon", "https://connectdot.connectsolutions.com/p6l6jaoy3gj" },
-                    { 10, 10, "Train The Trainer Webinar Day 2 - Morning", "https://connectdot.connectsolutions.com/p6mlkvekogo/" },
-                    { 11, 11, "Train The Trainer Webinar Day 2 - Mid Morning", "https://connectdot.connectsolutions.com/p3ua8gtj09r/" }
                 });
 
             migrationBuilder.InsertData(
@@ -838,7 +808,8 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Config
                     { 33, "GVD", 115, "Gap Vs Demand", false, false },
                     { 34, "LTG", 114, "Left Turn Gap", true, false },
                     { 35, "SM", 120, "Split Monitor", true, false },
-                    { 36, "GTU", 130, "Green Time Utilization", false, true }
+                    { 36, "GTU", 130, "Green Time Utilization", false, true },
+                    { 37, "RM", 131, "Ramp Metering", false, true }
                 });
 
             migrationBuilder.InsertData(
