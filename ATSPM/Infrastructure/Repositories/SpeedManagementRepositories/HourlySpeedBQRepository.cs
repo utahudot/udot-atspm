@@ -103,7 +103,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             };
         }
 
-        public async Task<List<MonthlyAverage>> GetMonthlyAveragesAsync(int segmentId, DateOnly startDate, DateOnly endDate, string daysOfWeek, int sourceId)
+        public async Task<List<MonthlyAverage>> GetMonthlyAveragesAsync(string segmentId, DateOnly startDate, DateOnly endDate, string daysOfWeek, int sourceId)
         {
             string query = $@"
             SELECT 
@@ -126,7 +126,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
 
             var parameters = new[]
             {
-            new BigQueryParameter("segmentId", BigQueryDbType.Int64, segmentId),
+            new BigQueryParameter("segmentId", BigQueryDbType.String, segmentId.ToString()),
             new BigQueryParameter("startDate", BigQueryDbType.Date, startDate.ToDateTime(new TimeOnly(0,0))),
             new BigQueryParameter("endDate", BigQueryDbType.Date, endDate.ToDateTime(new TimeOnly(0,0))),
             new BigQueryParameter("sourceId", BigQueryDbType.Int64, sourceId)
@@ -146,7 +146,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             }).ToList();
         }
 
-        public async Task<List<DailyAverage>> GetDailyAveragesAsync(int segmentId, DateOnly startDate, DateOnly endDate, string daysOfWeek)
+        public async Task<List<DailyAverage>> GetDailyAveragesAsync(string segmentId, DateOnly startDate, DateOnly endDate, string daysOfWeek)
         {
             string query = $@"
             SELECT 
@@ -168,7 +168,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
 
             var parameters = new[]
             {
-            new BigQueryParameter("segmentId", BigQueryDbType.Int64, segmentId),
+            new BigQueryParameter("segmentId", BigQueryDbType.String, segmentId.ToString()),
             new BigQueryParameter("startDate", BigQueryDbType.Date, startDate.ToDateTime(new TimeOnly(0,0))),
             new BigQueryParameter("endDate", BigQueryDbType.Date, endDate.ToDateTime(new TimeOnly(0, 0))),
         };
@@ -228,7 +228,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
                     NinetyFifthSpeed = ninetyFifthSpeed != null ? (long)ninetyFifthSpeed : null,
                     NinetyNinthSpeed = ninetyNinthSpeed != null ? (long)ninetyNinthSpeed : null,
                     Violation = violation != null ? (long)violation : null,
-                    Flow = flow != null ? (long)flow : null 
+                    Flow = flow != null ? (long)flow : null
                 };
             }).ToList();
         }
