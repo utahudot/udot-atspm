@@ -21,6 +21,7 @@ import { RefObject, useRef, useState } from 'react'
 const TimeSpaceDiagram = () => {
   const [currentTab, setCurrentTab] = useState(ToolType.TimeSpaceHistoric)
   const chartRefs = useRef<RefObject<HTMLDivElement>[]>([])
+  const [hasAttemptedGenerate, setHasAttemptedGenerate] = useState(false)
 
   // Dynamic default options generation based on selected tab
   const getDefaultChartOptions = (tab: ToolType): TimeSpaceOptions => {
@@ -84,12 +85,16 @@ const TimeSpaceDiagram = () => {
   const routes = routesData?.value?.sort((a, b) => a.name.localeCompare(b.name))
 
   const handleGenerateCharts = () => {
-    refetch()
+    setHasAttemptedGenerate(true)
+    if (toolOptions.routeId) {
+      refetch()
+    }
   }
 
   const handleChange = (_: React.SyntheticEvent, newValue: ToolType) => {
     setCurrentTab(newValue)
     setToolOptions(getDefaultChartOptions(newValue))
+    setHasAttemptedGenerate(false)
   }
 
   const handleToolOptions = (value: Partial<TimeSpaceOptions>) => {
@@ -139,7 +144,12 @@ const TimeSpaceDiagram = () => {
             />
           </TabPanel>
           <Box>
-            <Box display={'flex'} alignItems={'center'} height={'50px'}>
+            <Box
+              display={'flex'}
+              alignItems={'center'}
+              height={'50px'}
+              marginTop={2}
+            >
               <LoadingButton
                 loading={isLoading}
                 loadingPosition="start"
@@ -157,7 +167,7 @@ const TimeSpaceDiagram = () => {
                     : (error as Error).message}
                 </Alert>
               )}
-              {toolOptions.routeId === '' && (
+              {hasAttemptedGenerate && toolOptions.routeId === '' && (
                 <Alert severity="error" sx={{ marginLeft: 1 }}>
                   Please Select a route
                 </Alert>
