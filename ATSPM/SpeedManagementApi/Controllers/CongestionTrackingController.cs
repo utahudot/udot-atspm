@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace SpeedManagementApi.Controllers
 {
+    [ApiController]
+    [Route("[controller]")]
     public class CongestionTrackingController : ControllerBase
     {
         private ICongestionTrackingService _congestionTrackingService;
@@ -13,8 +15,6 @@ namespace SpeedManagementApi.Controllers
         }
 
         [HttpPost("GetReportData")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetReportData([FromBody] CongestionTrackingOptions options)
         {
             if (!ModelState.IsValid)
@@ -22,16 +22,8 @@ namespace SpeedManagementApi.Controllers
                 return BadRequest(ModelState);
             }
 
-            try
-            {
-                var result = await _congestionTrackingService.GetReportData(options);
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                BadRequest(ex.Message);
-            }
-            return BadRequest(ModelState);
+            var result = await _congestionTrackingService.GetReportData(options);
+            return Ok(result);
         }
     }
 }
