@@ -67,7 +67,7 @@ namespace ATSPM.Data.Models
         /// <summary>
         /// Device operation timeout in milliseconds
         /// </summary>
-        public int OperationTimout { get; set; }
+        public int OperationTimeout { get; set; }
 
         /// <summary>
         /// Decoders used to decode events logs

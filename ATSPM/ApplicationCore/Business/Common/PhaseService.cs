@@ -53,30 +53,7 @@ namespace ATSPM.Application.Business.Common
                 }
             }
             return phaseDetails;
-
-            //This compbines the phases and removes permissive phases. Not sure this is what we want in all scenarios.
-            //var groupedPhaseDetails = phaseDetails
-            //    .GroupBy(p => new { p.PhaseNumber, p.UseOverlap });
-
-            //// Create a new list to store combined phase details
-            //var combinedPhaseDetails = new List<PhaseDetail>();
-
-            //foreach (var group in groupedPhaseDetails)
-            //{
-            //    //first item from each group. 
-            //    var representative = group.First();
-            //    combinedPhaseDetails.Add(representative);
-            //}
-
-            //return combinedPhaseDetails;
         }
     }
 
-    public class PhaseDetail
-    {
-        public int PhaseNumber { get; set; }
-        public bool UseOverlap { get; set; }
-        public Approach Approach { get; set; }
-        public bool IsPermissivePhase { get; set; }
-    }
 }

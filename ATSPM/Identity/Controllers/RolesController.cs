@@ -1,19 +1,4 @@
-﻿#region license
-// Copyright 2024 Utah Departement of Transportation
-// for Identity - Identity.Controllers/RolesController.cs
-// 
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-// 
-// http://www.apache.org/licenses/LICENSE-2.
-// 
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-#endregion
+﻿using ATSPM.Data;
 using ATSPM.Identity.Business.Claims;
 using Identity.Business.NewFolder;
 using Identity.Models.Role;
@@ -132,6 +117,10 @@ namespace Identity.Controllers
         public async Task<IActionResult> SetupClaims()
         {
             var userAdminRole = roleManager.FindByNameAsync("UserAdmin").Result;
+            if (userAdminRole == null)
+            {
+                return BadRequest("UserAdmin role not found.");
+            }
             await roleManager.AddClaimAsync(userAdminRole, new Claim("http://schemas.microsoft.com/ws/2008/06/identity/claims/role", "User:View"));
             await roleManager.AddClaimAsync(userAdminRole, new Claim("http://schemas.microsoft.com/ws/2008/06/identity/claims/role", "User:Edit"));
             await roleManager.AddClaimAsync(userAdminRole, new Claim("http://schemas.microsoft.com/ws/2008/06/identity/claims/role", "User:Delete"));

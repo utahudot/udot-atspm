@@ -15,18 +15,19 @@
 // limitations under the License.
 #endregion
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace ATSPM.Application.Enums
 {
     public enum SignalHeadType
     {
-        [Description("Protected Only")]
+        [Display(Name = "Protected Only")]
         ProtectedOnly,
-        [Description("Permissive Only")]
+        [Display(Name = "Permissive Only")]
         PermissiveOnly,
-        [Description("5-Head")]
+        [Display(Name = "5-Head")]
         FiveHead,
-        [Description("Flashing Yellow Arrow")]
+        [Display(Name = "Flashing Yellow Arrow")]
         FYA
     }
 }

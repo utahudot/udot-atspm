@@ -31,6 +31,6 @@ namespace ATSPM.ReportApi.Controllers
     public class WaitTimeController : ReportControllerBase<WaitTimeOptions, IEnumerable<WaitTimeResult>>
     {
         /// <inheritdoc/>
-        public WaitTimeController(IReportService<WaitTimeOptions, IEnumerable<WaitTimeResult>> reportService) : base(reportService) { }
+        public WaitTimeController(IReportService<WaitTimeOptions, IEnumerable<WaitTimeResult>> reportService, ILogger<WaitTimeController> logger) : base(reportService, logger) { }
     }
 }
