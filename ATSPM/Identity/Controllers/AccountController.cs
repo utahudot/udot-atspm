@@ -1,13 +1,14 @@
 ﻿using ATSPM.Data;
+using ATSPM.Domain.Services;
 using FluentFTP.Helpers;
 using Identity.Business.Accounts;
-using Identity.Business.EmailSender;
 using Identity.Models.Account;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
+using System.Net.Mail;
 using System.Text;
 
 namespace Identity.Controllers
@@ -18,7 +19,7 @@ namespace Identity.Controllers
     {
         private readonly UserManager<ApplicationUser> userManager;
         private readonly SignInManager<ApplicationUser> signInManager;
-        private readonly EmailService emailService;
+        private readonly IEmailService emailService;
         private readonly IAccountService accountService;
         private readonly IConfiguration configuration;
 
@@ -27,7 +28,7 @@ namespace Identity.Controllers
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             IAccountService accountService,
-            EmailService emailService,
+            IEmailService emailService,
             IConfiguration configuration)
         {
             this.userManager = userManager;
@@ -229,10 +230,11 @@ namespace Identity.Controllers
 
             var callbackUrl = $"{configuration["AtspmSite"]}/change-password?username=" + user.UserName + "&token=" + uriEncodedToken;
 
-            await emailService.SendEmailAsync(
-                model.Email,
-                "Reset Password",
-                $"<p>Please reset your password by clicking <a href=\"{callbackUrl}\">here</a>.</p>");
+            //HACK: FIX THIS
+            //await emailService.SendEmailAsync(
+            //    model.Email,
+            //    "Reset Password",
+            //    $"<p>Please reset your password by clicking <a href=\"{callbackUrl}\">here</a>.</p>");
 
             // You can return a success message or any other relevant information
             return Ok();
