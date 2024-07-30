@@ -18,9 +18,8 @@ using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System.Reflection;
 using System.ComponentModel.DataAnnotations;
-using System.Reflection.Emit;
+using System.Reflection;
 
 namespace ATSPM.Data.Configuration
 {
@@ -32,8 +31,8 @@ namespace ATSPM.Data.Configuration
         /// <inheritdoc/>
         public void Configure(EntityTypeBuilder<DirectionType> builder)
         {
-            builder.HasComment("Direction Types");
-            
+            builder.ToTable(t => t.HasComment("Direction Types"));
+
             builder.Property(e => e.Id)
                 .ValueGeneratedNever();
 

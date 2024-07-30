@@ -31,21 +31,13 @@ namespace ATSPM.Application.Business.ApproachSpeed
             DateTime end,
             string detectionType,
             int distanceFromStopBar,
-            double postedSpeed,
-            ICollection<SpeedPlan> plans,
-            ICollection<DataPointForInt> averageSpeeds,
-            ICollection<DataPointForInt> eightyFifthSpeeds,
-            ICollection<DataPointForInt> fifteenthSpeeds) : base(approachId, locationId, start, end)
+            double postedSpeed) : base(approachId, locationId, start, end)
         {
             PhaseNumber = phaseNumber;
             PhaseDescription = phaseDescription;
             DetectionType = detectionType;
             DistanceFromStopBar = distanceFromStopBar;
             PostedSpeed = postedSpeed;
-            Plans = plans;
-            AverageSpeeds = averageSpeeds;
-            EightyFifthSpeeds = eightyFifthSpeeds;
-            FifteenthSpeeds = fifteenthSpeeds;
         }
         public int PhaseNumber { get; set; }
         public string PhaseDescription { get; set; }

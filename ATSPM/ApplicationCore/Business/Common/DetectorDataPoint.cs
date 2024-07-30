@@ -42,7 +42,6 @@ namespace ATSPM.Application.Business.Common
             //if the detector hit is before greenEvent
             if (TimeStamp < GreenEvent)
             {
-                var test = GreenEvent - TimeStamp;
                 DelaySeconds = (GreenEvent - TimeStamp).TotalSeconds;
                 ArrivalType = ArrivalType.ArrivalOnRed;
             }

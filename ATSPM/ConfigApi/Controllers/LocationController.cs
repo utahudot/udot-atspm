@@ -19,6 +19,7 @@ using ATSPM.Application.Extensions;
 using ATSPM.Application.Repositories.ConfigurationRepositories;
 using ATSPM.Application.Specifications;
 using ATSPM.ConfigApi.Models;
+using ATSPM.ConfigApi.Services;
 using ATSPM.Data.Models;
 using ATSPM.Domain.Extensions;
 using Microsoft.AspNetCore.Authorization;
@@ -37,11 +38,13 @@ namespace ATSPM.ConfigApi.Controllers
     public class LocationController : AtspmConfigControllerBase<Location, int>
     {
         private readonly ILocationRepository _repository;
+        private readonly ILocationService locationService;
 
         /// <inheritdoc/>
-        public LocationController(ILocationRepository repository) : base(repository)
+        public LocationController(ILocationRepository repository, ILocationService locationService) : base(repository)
         {
             _repository = repository;
+            this.locationService = locationService;
         }
 
         #region NavigationProperties
@@ -109,7 +112,7 @@ namespace ATSPM.ConfigApi.Controllers
         {
             try
             {
-                return Ok(await _repository.CopyLocationToNewVersion(key));
+                return Ok(await locationService.CopyLocationToNewVersion(key));
             }
             catch (ArgumentException e)
             {

@@ -31,6 +31,6 @@ namespace ATSPM.ReportApi.Controllers
     public class TimeSpaceDiagramController : ReportControllerBase<TimeSpaceDiagramOptions, IEnumerable<TimeSpaceDiagramResultForPhase>>
     {
         /// <inheritdoc/>
-        public TimeSpaceDiagramController(IReportService<TimeSpaceDiagramOptions, IEnumerable<TimeSpaceDiagramResultForPhase>> reportService) : base(reportService) { }
+        public TimeSpaceDiagramController(IReportService<TimeSpaceDiagramOptions, IEnumerable<TimeSpaceDiagramResultForPhase>> reportService, ILogger<TimeSpaceDiagramController> logger) : base(reportService, logger) { }
     }
 }

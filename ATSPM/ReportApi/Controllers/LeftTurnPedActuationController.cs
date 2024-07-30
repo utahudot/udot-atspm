@@ -31,6 +31,6 @@ namespace ATSPM.ReportApi.Controllers
     public class LeftTurnPedActuationController : ReportControllerBase<PedActuationOptions, PedActuationResult>
     {
         /// <inheritdoc/>
-        public LeftTurnPedActuationController(IReportService<PedActuationOptions, PedActuationResult> reportService) : base(reportService) { }
+        public LeftTurnPedActuationController(IReportService<PedActuationOptions, PedActuationResult> reportService, ILogger<LeftTurnPedActuationController> logger) : base(reportService, logger) { }
     }
 }

@@ -2,11 +2,11 @@
 
 FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS base
 WORKDIR /app
-EXPOSE 80
-EXPOSE 443
+EXPOSE 44313
 
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /src
+
 COPY ["ConfigApi/ConfigApi.csproj", "ConfigApi/"]
 COPY ["Infrastructure/Infrastructure.csproj", "Infrastructure/"]
 COPY ["ApplicationCore/ApplicationCore.csproj", "ApplicationCore/"]
@@ -17,6 +17,7 @@ COPY ["OracleDatabaseProvider/OracleDatabaseProvider.csproj", "OracleDatabasePro
 COPY ["PostgreSQLDatabaseProvider/PostgreSQLDatabaseProvider.csproj", "PostgreSQLDatabaseProvider/"]
 COPY ["SqlDatabaseProvider/SqlDatabaseProvider.csproj", "SqlDatabaseProvider/"]
 COPY ["SqlLiteDatabaseProvider/SqlLiteDatabaseProvider.csproj", "SqlLiteDatabaseProvider/"]
+
 RUN dotnet restore "ConfigApi/ConfigApi.csproj"
 COPY . .
 WORKDIR "/src/ConfigApi"
@@ -27,10 +28,10 @@ RUN dotnet publish "ConfigApi.csproj" -c Release -o /app/publish /p:UseAppHost=f
 
 FROM base AS final
 WORKDIR /app
+
+RUN addgroup --system appgroup && adduser --system --ingroup appgroup appuser
 COPY --from=publish /app/publish .
+RUN chown -R appuser:appgroup /app
+USER appuser
+
 ENTRYPOINT ["dotnet", "ConfigApi.dll"]
-
-
-
-
-
