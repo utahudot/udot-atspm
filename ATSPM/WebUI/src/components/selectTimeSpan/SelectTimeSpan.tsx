@@ -30,6 +30,7 @@ export interface SelectDateTimeProps {
   chartType?: ChartType | ToolType
   dateFormat?: string
   noCalendar?: boolean
+  calendarLocation?: 'bottom' | 'right'
   timePeriod?: boolean
   startTimePeriod?: Date
   endTimePeriod?: Date
@@ -44,8 +45,9 @@ export default function SelectDateTime({
   changeEndDate,
   views,
   chartType,
-  dateFormat,
+  dateFormat = 'MMM dd, yyyy @ HH:mm',
   noCalendar,
+  calendarLocation = 'bottom',
   timePeriod,
   startTimePeriod,
   endTimePeriod,
@@ -56,10 +58,6 @@ export default function SelectDateTime({
   const [showWarningForTimeSpace, setShowWarningForTimeSpace] = useState(false)
   // Todo: further investigate why calendar is loading wrong date. Until then, forcing it to wait a second seems to fix it.
   const [showCalendar, setShowCalendar] = useState(false)
-
-  if (!dateFormat) {
-    dateFormat = 'MMM dd, yyyy @ HH:mm'
-  }
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -150,69 +148,98 @@ export default function SelectDateTime({
     changeEndDate(newEndDate)
   }
 
+  const sideBySideStyleOuterBoxStyle = {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 2,
+  }
+
+  const sideBySideStyleInnerBoxStyle = {
+    display: 'flex',
+    flexDirection: 'column',
+    flex: 1,
+    gap: 2,
+    mt: 1,
+  }
+
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-      }}
-    >
-      <DateTimePicker
-        value={startDateTime}
-        onChange={handleStartDateTimeChange}
-        views={views !== undefined ? views : undefined}
-        label="Start"
-        format={dateFormat}
-        ampm={false}
-        disableFuture={true}
-        minutesStep={1}
-      />
-      <DateTimePicker
-        value={endDateTime}
-        onChange={handleEndDateTimeChange}
-        views={views !== undefined ? views : undefined}
-        label="End"
-        format={dateFormat}
-        ampm={false}
-        sx={{ marginTop: 3 }}
-      />
-      {timePeriod && (
-        <>
-          {/* <Typography fontSize="12px" margin="15px">
-            
-          </Typography> */}
-          <Divider sx={{ mb: 2, margin: '15px' }}>
-            <Typography sx={{ fontSize: '13px' }} variant="caption">
-              Time Period
-            </Typography>
-          </Divider>
-          <Box sx={{ display: 'flex', gap: 2 }}>
-            <TimePicker
-              label="Start Time"
-              ampm={false}
-              closeOnSelect={true}
-              value={startTimePeriod}
-              onChange={(value: Date | null) => {
-                if (changeStartTimePeriod) changeStartTimePeriod(value as Date)
-              }}
-            />
-            <TimePicker
-              label="End Time"
-              ampm={false}
-              closeOnSelect={true}
-              value={endTimePeriod}
-              onChange={(value: Date | null) => {
-                if (changeEndTimePeriod) changeEndTimePeriod(value as Date)
-              }}
-            />
+    <>
+      <Box
+        sx={calendarLocation === 'right' ? sideBySideStyleOuterBoxStyle : {}}
+      >
+        <Box
+          sx={
+            calendarLocation === 'right'
+              ? sideBySideStyleInnerBoxStyle
+              : {
+                  display: 'flex',
+                  flexDirection: 'column',
+                }
+          }
+        >
+          <DateTimePicker
+            sx={{ width: '100%' }}
+            value={startDateTime}
+            onChange={handleStartDateTimeChange}
+            views={views !== undefined ? views : undefined}
+            label="Start"
+            format={dateFormat}
+            ampm={false}
+            disableFuture={true}
+            minutesStep={1}
+          />
+          <DateTimePicker
+            sx={{ width: '100%', mt: calendarLocation === 'right' ? 0 : 3 }}
+            value={endDateTime}
+            onChange={handleEndDateTimeChange}
+            views={views !== undefined ? views : undefined}
+            label="End"
+            format={dateFormat}
+            ampm={false}
+          />
+          {timePeriod && (
+            <>
+              <Divider sx={{ mb: 2, margin: '15px' }}>
+                <Typography sx={{ fontSize: '13px' }} variant="caption">
+                  Time Period
+                </Typography>
+              </Divider>
+              <Box sx={{ display: 'flex', gap: 2 }}>
+                <TimePicker
+                  label="Start Time"
+                  ampm={false}
+                  closeOnSelect={true}
+                  value={startTimePeriod}
+                  onChange={(value: Date | null) => {
+                    if (changeStartTimePeriod)
+                      changeStartTimePeriod(value as Date)
+                  }}
+                />
+                <TimePicker
+                  label="End Time"
+                  ampm={false}
+                  closeOnSelect={true}
+                  value={endTimePeriod}
+                  onChange={(value: Date | null) => {
+                    if (changeEndTimePeriod) changeEndTimePeriod(value as Date)
+                  }}
+                />
+              </Box>
+            </>
+          )}
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+            <Button onClick={handleSameDay}>Same Day</Button>
+            <Button onClick={handleResetDate}>Reset</Button>
           </Box>
-        </>
-      )}
-      <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-        <Button onClick={handleSameDay}>Same Day</Button>
-        <Button onClick={handleResetDate}>Reset</Button>
+          {!noCalendar && calendarLocation === 'bottom' && (
+            <Box mx={-3}>{displayCalendarContainer()}</Box>
+          )}
+        </Box>
+        {!noCalendar && calendarLocation === 'right' && (
+          <Box sx={{ mt: -2 }}>{displayCalendarContainer()}</Box>
+        )}
       </Box>
-      {!noCalendar && <Box mx={'-16px'}>{displayCalendarContainer()}</Box>}
       {showWarning && (
         <Alert severity="warning" sx={{ marginTop: 2 }}>
           We generally recommend a time span of 2 hours or less for this chart.
@@ -224,6 +251,6 @@ export default function SelectDateTime({
           Time-Space.
         </Alert>
       )}
-    </Box>
+    </>
   )
 }

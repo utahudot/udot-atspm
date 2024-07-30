@@ -83,7 +83,7 @@ export const LinkPivotPcdComponent = ({ pcdDto, lpHandler }: props) => {
   }, [chartData])
 
   return (
-    <Box padding={theme.spacing(1)}>
+    <Box padding={theme.spacing(0)}>
       <Box
         component={Paper}
         width="fit-content"
@@ -104,17 +104,21 @@ export const LinkPivotPcdComponent = ({ pcdDto, lpHandler }: props) => {
             loading={isLoading}
             variant="contained"
             onClick={runPcdCharts}
-            sx={{ margin: '20px 0', padding: '10px' }}
+            sx={{ margin: '15px 0', padding: '10px' }}
           >
             Run Analysis
           </LoadingButton>
         </Box>
       </Box>
       {data && (
-        <LinkPivotPcdCharts
-          existingPcd={existingPcd as RawExistingPcdData}
-          predictedPcd={predictedPcd as RawPredictedPcdData}
-        />
+        <Box sx={{ overflowX: 'auto', width: '100%' }}>
+          <Box sx={{  minWidth: '200px' }}> 
+            <LinkPivotPcdCharts
+              existingPcd={existingPcd as RawExistingPcdData}
+              predictedPcd={predictedPcd as RawPredictedPcdData}
+            />
+          </Box>
+        </Box>
       )}
     </Box>
   )
