@@ -31,6 +31,6 @@ namespace ATSPM.ReportApi.Controllers
     public class SplitMonitorController : ReportControllerBase<SplitMonitorOptions, IEnumerable<SplitMonitorResult>>
     {
         /// <inheritdoc/>
-        public SplitMonitorController(IReportService<SplitMonitorOptions, IEnumerable<SplitMonitorResult>> reportService) : base(reportService) { }
+        public SplitMonitorController(IReportService<SplitMonitorOptions, IEnumerable<SplitMonitorResult>> reportService, ILogger<SplitMonitorController> logger) : base(reportService, logger) { }
     }
 }

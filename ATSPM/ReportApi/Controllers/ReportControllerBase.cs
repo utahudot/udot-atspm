@@ -16,6 +16,7 @@
 #endregion
 
 using ATSPM.Application.Business;
+using ATSPM.Application.LogMessages;
 using AutoFixture;
 using Microsoft.AspNetCore.Mvc;
 
@@ -29,11 +30,13 @@ namespace ATSPM.ReportApi.Controllers
     public abstract class ReportControllerBase<Tin, Tout> : ControllerBase
     {
         private IReportService<Tin, Tout> _reportService;
+        private ReportsLoggerLogMessages _reportsLogMessages;
 
         /// <inheritdoc/>
-        public ReportControllerBase(IReportService<Tin, Tout> reportService)
+        public ReportControllerBase(IReportService<Tin, Tout> reportService, ILogger logger)
         {
             _reportService = reportService;
+            _reportsLogMessages = new ReportsLoggerLogMessages(logger);
         }
 
         /// <summary>
@@ -68,12 +71,15 @@ namespace ATSPM.ReportApi.Controllers
 
             try
             {
+                var controllerName = ControllerContext.RouteData.Values["controller"].ToString();
+                _reportsLogMessages.ReportStartedMessage(DateTime.Now, controllerName);
                 var result = await _reportService.ExecuteAsync(options, null, HttpContext.RequestAborted);
-
+                _reportsLogMessages.ReportCompletedMessage(DateTime.Now, controllerName);
                 return Ok(result);
             }
             catch (Exception e)
             {
+                _reportsLogMessages.ReportExecutionException(e);
                 return BadRequest(e.Message);
             }
         }

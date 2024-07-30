@@ -45,7 +45,7 @@ namespace ATSPM.Application.Business.Common
         /// <param name="starttime"></param>
         public AnalysisPhaseCycle(string locationId, int phasenumber, DateTime starttime)
         {
-            locationId = locationId;
+            LocationId = locationId;
             PhaseNumber = phasenumber;
             StartTime = starttime;
             HasPed = false;
@@ -54,7 +54,7 @@ namespace ATSPM.Application.Business.Common
 
         public int PhaseNumber { get; }
 
-        public string locationId { get; }
+        public string LocationId { get; }
 
         public DateTime StartTime { get; }
 

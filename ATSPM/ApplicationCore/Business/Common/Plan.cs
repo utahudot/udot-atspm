@@ -31,7 +31,7 @@ namespace ATSPM.Application.Business.Common
 
         private string getPlanDescription()
         {
-            var planDescription = "Unknown";
+            string planDescription;
             switch (PlanNumber)
             {
                 case "254":
@@ -45,7 +45,6 @@ namespace ATSPM.Application.Business.Common
                     break;
                 default:
                     planDescription = "Plan " + PlanNumber;
-
                     break;
             }
 

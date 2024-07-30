@@ -53,7 +53,7 @@ namespace ATSPM.Application.Business.LeftTurnGapReport
                 Direction = approach.DirectionType.Abbreviation + approach.Detectors.FirstOrDefault()?.MovementType,
                 OpposingDirection = GetOpposingPhaseDirection(Location, opposingPhase)
             };
-            if (gapDurationResult.Capacity == 0)
+            if (gapDurationResult.Capacity.AreEqual(0d))
                 throw new ArithmeticException("Gap Count cannot be zero");
             gapDurationResult.GapDurationPercent = (gapDurationResult.Demand / gapDurationResult.Capacity) * 100;
             return gapDurationResult;

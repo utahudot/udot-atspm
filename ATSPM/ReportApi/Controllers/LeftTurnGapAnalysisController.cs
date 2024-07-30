@@ -31,6 +31,6 @@ namespace ATSPM.ReportApi.Controllers
     public class LeftTurnGapAnalysisController : ReportControllerBase<LeftTurnGapAnalysisOptions, IEnumerable<LeftTurnGapAnalysisResult>>
     {
         /// <inheritdoc/>
-        public LeftTurnGapAnalysisController(IReportService<LeftTurnGapAnalysisOptions, IEnumerable<LeftTurnGapAnalysisResult>> reportService) : base(reportService) { }
+        public LeftTurnGapAnalysisController(IReportService<LeftTurnGapAnalysisOptions, IEnumerable<LeftTurnGapAnalysisResult>> reportService, ILogger<LeftTurnGapAnalysisController> logger) : base(reportService, logger) { }
     }
 }

@@ -37,10 +37,8 @@ namespace ATSPM.Application.Business.TurningMovementCounts
     }
     public class TurningMovementCountsService
     {
-        private readonly PlanService planService;
-        public TurningMovementCountsService(PlanService planService)
+        public TurningMovementCountsService()
         {
-            this.planService = planService;
         }
 
         public async Task<TurningMovementCountsLanesResult> GetChartData(

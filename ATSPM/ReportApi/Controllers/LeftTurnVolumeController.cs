@@ -31,6 +31,6 @@ namespace ATSPM.ReportApi.Controllers
     public class LeftTurnVolumeController : ReportControllerBase<VolumeOptions, VolumeResult>
     {
         /// <inheritdoc/>
-        public LeftTurnVolumeController(IReportService<VolumeOptions, VolumeResult> reportService) : base(reportService) { }
+        public LeftTurnVolumeController(IReportService<VolumeOptions, VolumeResult> reportService, ILogger<LeftTurnVolumeController> logger) : base(reportService, logger) { }
     }
 }

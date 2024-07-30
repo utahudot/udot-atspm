@@ -1,24 +1,10 @@
-﻿#region license
-// Copyright 2024 Utah Departement of Transportation
-// for Identity - Identity.Controllers/TokenController.cs
-// 
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-// 
-// http://www.apache.org/licenses/LICENSE-2.
-// 
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-#endregion
+﻿using ATSPM.Data;
 using Identity.Business.Tokens;
 using Identity.Models.Token;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
+using System.Text;
 
 namespace Identity.Controllers
 {
@@ -50,8 +36,9 @@ namespace Identity.Controllers
                 return Unauthorized(new { Message = "User not found." });
             }
 
+            var resetToken = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(model.Token));
             // Verify the reset token
-            var result = await _userManager.VerifyUserTokenAsync(user, TokenOptions.DefaultProvider, UserManager<ApplicationUser>.ResetPasswordTokenPurpose, model.Token);
+            var result = await _userManager.VerifyUserTokenAsync(user, _userManager.Options.Tokens.PasswordResetTokenProvider, UserManager<ApplicationUser>.ResetPasswordTokenPurpose, resetToken);
 
             if (result)
             {
@@ -73,6 +60,10 @@ namespace Identity.Controllers
             }
 
             var user = await _userManager.FindByEmailAsync(model.Username);
+            if (user == null)
+            {
+                return Unauthorized(new { Message = "User not found." });
+            }
             var roles = await _userManager.GetRolesAsync(user);
 
             if (user != null && roles.Contains("Admin"))
