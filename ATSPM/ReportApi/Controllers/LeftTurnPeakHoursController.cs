@@ -31,6 +31,6 @@ namespace ATSPM.ReportApi.Controllers
     public class LeftTurnPeakHoursController : ReportControllerBase<PeakHourOptions, PeakHourResult>
     {
         /// <inheritdoc/>
-        public LeftTurnPeakHoursController(IReportService<PeakHourOptions, PeakHourResult> reportService) : base(reportService) { }
+        public LeftTurnPeakHoursController(IReportService<PeakHourOptions, PeakHourResult> reportService, ILogger<LeftTurnPeakHoursController> logger) : base(reportService, logger) { }
     }
 }

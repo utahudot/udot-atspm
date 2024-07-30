@@ -31,6 +31,6 @@ namespace ATSPM.ReportApi.Controllers
     public class ApproachDelayController : ReportControllerBase<ApproachDelayOptions, IEnumerable<ApproachDelayResult>>
     {
         /// <inheritdoc/>
-        public ApproachDelayController(IReportService<ApproachDelayOptions, IEnumerable<ApproachDelayResult>> reportService) : base(reportService) { }
+        public ApproachDelayController(IReportService<ApproachDelayOptions, IEnumerable<ApproachDelayResult>> reportService, ILogger<ApproachDelayController> logger) : base(reportService, logger) { }
     }
 }

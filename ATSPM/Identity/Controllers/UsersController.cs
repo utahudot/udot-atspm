@@ -1,22 +1,6 @@
-﻿#region license
-// Copyright 2024 Utah Departement of Transportation
-// for Identity - Identity.Controllers/UsersController.cs
-// 
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-// 
-// http://www.apache.org/licenses/LICENSE-2.
-// 
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-#endregion
+﻿using ATSPM.Data;
 using ATSPM.Identity.Business.Users;
 using Identity.Business.Users;
-using Identity.Models.Role;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -56,8 +40,8 @@ namespace Identity.Controllers
                         FirstName = user.FirstName,
                         LastName = user.LastName,
                         Agency = user.Agency,
-                        Email = user.Email,
-                        UserName = user.UserName,
+                        Email = user.Email ?? string.Empty,
+                        UserName = user.UserName ?? string.Empty,
                         Roles = await scopedUserManager.GetRolesAsync(user)
                     };
                     usersDto.Add(userDto);

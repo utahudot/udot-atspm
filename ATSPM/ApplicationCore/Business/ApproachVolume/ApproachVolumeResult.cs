@@ -42,57 +42,12 @@ public class ApproachVolumeResult : LocationResult
         string detectorType,
         int distanceFromStopBar,
         string primaryDirectionName,
-        ICollection<DataPointForInt> primaryDirectionVolumes,
-        string opposingDirectionName,
-        ICollection<DataPointForInt> opposingDirectionVolumes,
-        ICollection<DataPointForInt> combinedDirectionVolumes,
-        ICollection<DataPointForDouble> primaryDFactors,
-        ICollection<DataPointForDouble> opposingDFactors,
-        string peakHour,
-        double kFactor,
-        int peakHourVolume,
-        double peakHourFactor,
-        int totalVolume,
-        string primaryPeakHour,
-        double primaryKFactor,
-        int primaryPeakHourVolume,
-        double primaryPeakHourFactor,
-        int primaryTotalVolume,
-        double primaryPeakHourDFactor,
-        string opposingPeakHour,
-        double opposingKFactor,
-        int opposingPeakHourVolume,
-        double opposingPeakHourFactor,
-        int opposingTotalVolume,
-        double opposingPeakHourDFactor) : base(locationIdentifier, start, end)
+        string opposingDirectionName) : base(locationIdentifier, start, end)
     {
         DetectorType = detectorType;
         DistanceFromStopBar = distanceFromStopBar;
         PrimaryDirectionName = primaryDirectionName;
-        PrimaryDirectionVolumes = primaryDirectionVolumes;
         OpposingDirectionName = opposingDirectionName;
-        OpposingDirectionVolumes = opposingDirectionVolumes;
-        CombinedDirectionVolumes = combinedDirectionVolumes;
-        PrimaryDFactors = primaryDFactors;
-        OpposingDFactors = opposingDFactors;
-        SummaryData = new SummaryData(
-        peakHour,
-        kFactor,
-        peakHourVolume,
-        peakHourFactor,
-        totalVolume,
-        primaryPeakHour,
-        primaryKFactor,
-        primaryPeakHourVolume,
-        primaryPeakHourFactor,
-        primaryTotalVolume,
-        primaryPeakHourDFactor,
-        opposingPeakHour,
-        opposingKFactor,
-        opposingPeakHourVolume,
-        opposingPeakHourFactor,
-        opposingTotalVolume,
-        opposingPeakHourDFactor);
     }
 
     public string PrimaryDirectionName { get; set; }
@@ -110,43 +65,6 @@ public class ApproachVolumeResult : LocationResult
 
 public class SummaryData
 {
-    public SummaryData(
-        string peakHour,
-        double kFactor,
-        int peakHourVolume,
-        double peakHourFactor,
-        int totalVolume,
-        string primaryPeakHour,
-        double primaryKFactor,
-        int primaryPeakHourVolume,
-        double primaryPeakHourFactor,
-        int primaryTotalVolume,
-        double primaryPeakHourDFactor,
-        string opposingPeakHour,
-        double opposingKFactor,
-        int opposingPeakHourVolume,
-        double opposingPeakHourFactor,
-        int opposingTotalVolume,
-        double opposingPeakHourDFactor)
-    {
-        PeakHour = peakHour;
-        KFactor = kFactor;
-        PeakHourVolume = peakHourVolume;
-        PeakHourFactor = peakHourFactor;
-        TotalVolume = totalVolume;
-        PrimaryPeakHour = primaryPeakHour;
-        PrimaryKFactor = primaryKFactor;
-        PrimaryPeakHourVolume = primaryPeakHourVolume;
-        PrimaryPeakHourFactor = primaryPeakHourFactor;
-        PrimaryTotalVolume = primaryTotalVolume;
-        PrimaryDFactor = primaryPeakHourDFactor;
-        OpposingPeakHour = opposingPeakHour;
-        OpposingKFactor = opposingKFactor;
-        OpposingPeakHourVolume = opposingPeakHourVolume;
-        OpposingPeakHourFactor = opposingPeakHourFactor;
-        OpposingTotalVolume = opposingTotalVolume;
-        OpposingDFactor = opposingPeakHourDFactor;
-    }
 
     public string PeakHour { get; set; }
     public double KFactor { get; set; }
@@ -158,11 +76,11 @@ public class SummaryData
     public int PrimaryPeakHourVolume { get; set; }
     public double PrimaryPeakHourFactor { get; set; }
     public int PrimaryTotalVolume { get; set; }
-    public double PrimaryDFactor { get; }
+    public double PrimaryDFactor { get; set; }
     public string OpposingPeakHour { get; set; }
     public double OpposingKFactor { get; set; }
     public int OpposingPeakHourVolume { get; set; }
     public double OpposingPeakHourFactor { get; set; }
     public int OpposingTotalVolume { get; set; }
-    public double OpposingDFactor { get; }
+    public double OpposingDFactor { get; set; }
 }

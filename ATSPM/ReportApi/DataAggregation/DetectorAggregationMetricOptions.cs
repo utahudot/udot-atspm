@@ -119,6 +119,11 @@ namespace MOE.Common.Business.WCFServiceLibrary
                 foreach (var detector in approach.Detectors)
                 {
                     var binsContainers = GetBinsContainersByDetector(detector, options, detectorEventCountAggregation);
+                    if (binsContainers == null)
+                    {
+                        throw new NullReferenceException("BinsContainers cannot be null");
+                    }
+
                     var dataPoint = new AggregationDataPoint();
                     if (options.SelectedAggregationType == AggregationCalculationType.Sum)
                         dataPoint.Value = binsContainers.FirstOrDefault().SumValue;
@@ -174,6 +179,7 @@ namespace MOE.Common.Business.WCFServiceLibrary
                 foreach (var detector in approach.Detectors)
                 {
                     var binsContainers = GetBinsContainersByDetector(detector, options, detectorEventCountAggregation);
+                    if (binsContainers == null) continue;
                     var series = CreateSeries(detector.DectectorIdentifier);
                     if ((options.TimeOptions.SelectedBinSize == TimeOptions.BinSize.Month ||
                          options.TimeOptions.SelectedBinSize == TimeOptions.BinSize.Year) &&

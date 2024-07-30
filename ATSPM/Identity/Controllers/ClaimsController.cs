@@ -1,110 +1,82 @@
-﻿#region license
-// Copyright 2024 Utah Departement of Transportation
-// for Identity - %Namespace%/ClaimsController.cs
-// 
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-// 
-// http://www.apache.org/licenses/LICENSE-2.
-// 
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-#endregion
-
-using ATSPM.Application.Enums;
+﻿using ATSPM.Application.Enums;
 using ATSPM.Application.Extensions;
 using ATSPM.Identity.Business.Claims;
+using Identity.Models.Claims;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
-[Authorize()]
-[Route("api/[controller]")]
-[ApiController]
-public class ClaimsController : ControllerBase
+namespace Identity.Controllers
 {
-    private readonly ClaimsService claimsService;
-    private readonly RoleManager<IdentityRole> _roleManager;
-
-    public ClaimsController(ClaimsService claimsService, RoleManager<IdentityRole> roleManager)
+    [Authorize()]
+    [Route("api/[controller]")]
+    [ApiController]
+    public class ClaimsController : ControllerBase
     {
-        this.claimsService = claimsService;
-        _roleManager = roleManager;
-    }
+        private readonly ClaimsService claimsService;
 
-    // GET: api/claims
-    [HttpGet]
-    [Authorize(Policy = "CanViewRoles")]
-    public async Task<IActionResult> GetClaims()
-    {
-        var descriptions = Enum.GetValues(typeof(ClaimTypes))
-                               .Cast<Enum>()
-                               .Select(e => e.GetDescription())
-                               .ToList();
-
-        return Ok(descriptions);
-    }
-
-    // GET: api/claims/roleName
-    [HttpGet("{roleName}")]
-    [Authorize(Policy = "CanViewRoles")]
-    public async Task<IActionResult> GetClaimsForRole(string roleName)
-    {
-        return Ok(await claimsService.GetAllClaimsForRole(roleName));
-    }
-
-    // POST: api/claims/roleName
-    [HttpPost("{roleName}")]
-    [Authorize(Policy = "CanEditRoles")]
-    public async Task<IActionResult> AddClaimToRole(string roleName, [FromBody] ClaimModel claim)
-    {
-        if (await claimsService.AddClaimToRole(roleName, claim.Type, claim.Value))
-            return Ok();
-        return BadRequest("Could not add claim to role.");
-    }
-
-    // POST: api/claims/addClaims/roleName
-    [HttpPost("add/{roleName}")]
-    [Authorize(Policy = "CanEditRoles")]
-    public async Task<IActionResult> AddClaimsToRole(string roleName, [FromBody] ClaimsModel model)
-    {
-        try
+        public ClaimsController(ClaimsService claimsService)
         {
-            await claimsService.AddClaimsToRole(roleName, model.Claims);
-            return Ok();
-
+            this.claimsService = claimsService;
         }
-        catch (Exception ex)
+
+        // GET: api/claims
+        [HttpGet]
+        [Authorize(Policy = "CanViewRoles")]
+        public async Task<IActionResult> GetClaims()
         {
-            return BadRequest(ex.Message);
+            var descriptions = Enum.GetValues(typeof(ClaimTypes))
+                                   .Cast<Enum>()
+                                   .Select(e => e.GetDescription())
+                                   .ToList();
+
+            return Ok(descriptions);
+        }
+
+        // GET: api/claims/roleName
+        [HttpGet("{roleName}")]
+        [Authorize(Policy = "CanViewRoles")]
+        public async Task<IActionResult> GetClaimsForRole(string roleName)
+        {
+            return Ok(await claimsService.GetAllClaimsForRole(roleName));
+        }
+
+        // POST: api/claims/roleName
+        [HttpPost("{roleName}")]
+        [Authorize(Policy = "CanEditRoles")]
+        public async Task<IActionResult> AddClaimToRole(string roleName, [FromBody] ClaimModel claim)
+        {
+            if (await claimsService.AddClaimToRole(roleName, claim.Type, claim.Value))
+                return Ok();
+            return BadRequest("Could not add claim to role.");
+        }
+
+        // POST: api/claims/addClaims/roleName
+        [HttpPost("add/{roleName}")]
+        [Authorize(Policy = "CanEditRoles")]
+        public async Task<IActionResult> AddClaimsToRole(string roleName, [FromBody] ClaimsModel model)
+        {
+            try
+            {
+                await claimsService.AddClaimsToRole(roleName, model.Claims);
+                return Ok();
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+
+
+        // DELETE: api/claims/roleName
+        [HttpDelete("{roleName}")]
+        [Authorize(Policy = "CanEditRoles")]
+        public async Task<IActionResult> RemoveClaimFromRole(string roleName, [FromBody] ClaimModel claim)
+        {
+            if (await claimsService.RemoveClaimFromRole(roleName, claim.Type, claim.Value))
+                return Ok();
+            return BadRequest("Could not remove claim from role.");
         }
     }
-
-
-
-    // DELETE: api/claims/roleName
-    [HttpDelete("{roleName}")]
-    [Authorize(Policy = "CanEditRoles")]
-    public async Task<IActionResult> RemoveClaimFromRole(string roleName, [FromBody] ClaimModel claim)
-    {
-        if (await claimsService.RemoveClaimFromRole(roleName, claim.Type, claim.Value))
-            return Ok();
-        return BadRequest("Could not remove claim from role.");
-    }
-}
-
-public class ClaimModel
-{
-    public string Type { get; set; }
-    public string Value { get; set; }
-}
-
-
-public class ClaimsModel
-{
-    public List<string> Claims { get; set; }
 }

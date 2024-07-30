@@ -33,7 +33,7 @@ namespace ATSPM.ReportApi.Controllers
     public class WatchdogController : ReportControllerBase<WatchDogOptions, WatchDogResult>
     {
         /// <inheritdoc/>
-        public WatchdogController(IReportService<WatchDogOptions, WatchDogResult> reportService) : base(reportService) { }
+        public WatchdogController(IReportService<WatchDogOptions, WatchDogResult> reportService, ILogger<WatchdogController> logger) : base(reportService, logger) { }
         [HttpGet("GetIssueTypes")]
         public IEnumerable<WatchDogIssueTypeDTO> GetIssueTypes()
         {
