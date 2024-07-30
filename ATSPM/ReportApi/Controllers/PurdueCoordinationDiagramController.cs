@@ -31,6 +31,6 @@ namespace ATSPM.ReportApi.Controllers
     public class PurdueCoordinationDiagramController : ReportControllerBase<PurdueCoordinationDiagramOptions, IEnumerable<PurdueCoordinationDiagramResult>>
     {
         /// <inheritdoc/>
-        public PurdueCoordinationDiagramController(IReportService<PurdueCoordinationDiagramOptions, IEnumerable<PurdueCoordinationDiagramResult>> reportService) : base(reportService) { }
+        public PurdueCoordinationDiagramController(IReportService<PurdueCoordinationDiagramOptions, IEnumerable<PurdueCoordinationDiagramResult>> reportService, ILogger<PurdueCoordinationDiagramController> logger) : base(reportService, logger) { }
     }
 }

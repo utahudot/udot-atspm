@@ -65,7 +65,7 @@ namespace ATSPM.Data.Configuration
             builder.Property(e => e.ConnectionTimeout)
                 .HasDefaultValueSql("((2000))");
 
-            builder.Property(e => e.OperationTimout)
+            builder.Property(e => e.OperationTimeout)
                 .HasDefaultValueSql("((2000))");
 
             builder.Property(e => e.Decoders)

@@ -31,6 +31,6 @@ namespace ATSPM.ReportApi.Controllers
     public class ApproachSpeedController : ReportControllerBase<ApproachSpeedOptions, IEnumerable<ApproachSpeedResult>>
     {
         /// <inheritdoc/>
-        public ApproachSpeedController(IReportService<ApproachSpeedOptions, IEnumerable<ApproachSpeedResult>> reportService) : base(reportService) { }
+        public ApproachSpeedController(IReportService<ApproachSpeedOptions, IEnumerable<ApproachSpeedResult>> reportService, ILogger<ApproachSpeedController> logger) : base(reportService, logger) { }
     }
 }

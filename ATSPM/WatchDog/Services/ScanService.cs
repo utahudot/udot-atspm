@@ -16,6 +16,7 @@
 #endregion
 using ATSPM.Application.Repositories;
 using ATSPM.Application.Repositories.ConfigurationRepositories;
+using ATSPM.Data;
 using ATSPM.Data.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;

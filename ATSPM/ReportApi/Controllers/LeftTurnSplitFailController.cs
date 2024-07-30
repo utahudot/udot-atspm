@@ -31,6 +31,6 @@ namespace ATSPM.ReportApi.Controllers
     public class LeftTurnSplitFailController : ReportControllerBase<LeftTurnSplitFailOptions, LeftTurnSplitFailResult>
     {
         /// <inheritdoc/>
-        public LeftTurnSplitFailController(IReportService<LeftTurnSplitFailOptions, LeftTurnSplitFailResult> reportService) : base(reportService) { }
+        public LeftTurnSplitFailController(IReportService<LeftTurnSplitFailOptions, LeftTurnSplitFailResult> reportService, ILogger<LeftTurnSplitFailController> logger) : base(reportService, logger) { }
     }
 }

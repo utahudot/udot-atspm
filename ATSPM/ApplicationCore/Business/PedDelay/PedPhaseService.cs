@@ -126,6 +126,8 @@ namespace ATSPM.Application.Business.PedDelay
 
             mainEvents = Remove45s(mainEvents);
 
+            mainEvents = CombineSequential90s(mainEvents);
+
             pedPhaseData.PedBeginWalkCount = mainEvents.Count(e => e.EventCode == pedPhaseData.BeginWalkEvent);
             pedPhaseData.ImputedPedCallsRegistered = CountImputedPedCalls(mainEvents, previousEvents, pedPhaseData);
 

@@ -26,6 +26,7 @@ namespace ATSPM.Application.Business.SplitFail
             string locationId,
             int approachId,
             int phaseNumber,
+            string phaseType,
             DateTime start,
             DateTime end,
             int totalSplitFails,
@@ -40,6 +41,7 @@ namespace ATSPM.Application.Business.SplitFail
             ICollection<DataPointForDouble> percentFails) : base(approachId, locationId, start, end)
         {
             PhaseNumber = phaseNumber;
+            PhaseType = phaseType;
             TotalSplitFails = totalSplitFails;
             Plans = plans;
             FailLines = failLines;
@@ -52,6 +54,7 @@ namespace ATSPM.Application.Business.SplitFail
             PercentFails = percentFails;
         }
         public int PhaseNumber { get; set; }
+        public string PhaseType { get; set; }
         public int TotalSplitFails { get; set; }
         public ICollection<PlanSplitFail> Plans { get; set; }
         public ICollection<DataPointBase> FailLines { get; set; }

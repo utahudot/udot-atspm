@@ -28,8 +28,8 @@ namespace ATSPM.Data.Configuration
         /// <inheritdoc/>
         public void Configure(EntityTypeBuilder<Approach> builder)
         {
-            builder.HasComment("Approaches");
-            
+            builder.ToTable(t => t.HasComment("Approaches"));
+
             builder.HasIndex(e => e.DirectionTypeId);
 
             builder.HasIndex(e => e.LocationId);

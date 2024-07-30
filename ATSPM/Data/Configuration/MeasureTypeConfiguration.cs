@@ -28,7 +28,7 @@ namespace ATSPM.Data.Configuration
         /// <inheritdoc/>
         public void Configure(EntityTypeBuilder<MeasureType> builder)
         {
-            builder.HasComment("Measure Types");
+            builder.ToTable(t => t.HasComment("Measure Types"));
 
             //builder.Property(e => e.Id)
             //    .ValueGeneratedNever();
@@ -344,7 +344,16 @@ namespace ATSPM.Data.Configuration
                     ShowOnWebsite = true,
                     ShowOnAggregationSite = false,
                     DisplayOrder = 130
-                });
+                },
+                 new MeasureType
+                 {
+                     Id = 37,
+                     Name = "Ramp Metering",
+                     Abbreviation = "RM",
+                     ShowOnWebsite = true,
+                     ShowOnAggregationSite = false,
+                     DisplayOrder = 131
+                 });
         }
     }
 }
