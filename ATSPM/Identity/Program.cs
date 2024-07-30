@@ -4,7 +4,6 @@ using ATSPM.Identity.Business.Users;
 using ATSPM.Infrastructure.Extensions;
 using Identity.Business.Accounts;
 using Identity.Business.Agency;
-using Identity.Business.EmailSender;
 using Identity.Business.Tokens;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi.Models;
@@ -25,7 +24,6 @@ builder.Host.ConfigureServices((host, services) =>
     services.AddAtspmAuthorization(host);
 
     services.AddEmailServices(host);
-    services.AddScoped<EmailService>();
 
     services.AddScoped<IAgencyService, AgencyService>();
     services.AddScoped<IAccountService, AccountService>();
