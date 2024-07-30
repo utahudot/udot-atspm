@@ -1,4 +1,5 @@
-﻿using ATSPM.Application.Repositories.ConfigurationRepositories;
+﻿using ATSPM.Application.Extensions;
+using ATSPM.Application.Repositories.ConfigurationRepositories;
 using ATSPM.Data.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -58,14 +59,14 @@ namespace ATSPM.Application.Business.LinkPivot
 
             //Get the totals
             linkPivotResult.TotalAogDownstreamBefore = linkPivot.Adjustments.Sum(a => a.AOGDownstreamBefore);
-            linkPivotResult.TotalPaogDownstreamBefore = (int)Math.Round((linkPivot.Adjustments.Sum(a => a.AOGDownstreamBefore) / totalDownstreamVolume) * 100);
+            linkPivotResult.TotalPaogDownstreamBefore = totalDownstreamVolume.AreEqual(0d) ? 0 : (int)Math.Round((linkPivot.Adjustments.Sum(a => a.AOGDownstreamBefore) / totalDownstreamVolume) * 100);
             if (double.IsNaN(linkPivotResult.TotalPaogDownstreamBefore))
             {
                 // If result is NaN, set it to 0
                 linkPivotResult.TotalPaogDownstreamBefore = 0;
             }
             linkPivotResult.TotalAogDownstreamPredicted = linkPivot.Adjustments.Sum(a => a.AOGDownstreamPredicted);
-            linkPivotResult.TotalPaogDownstreamPredicted = (int)Math.Round((linkPivot.Adjustments.Sum(a => a.AOGDownstreamPredicted) / totalDownstreamVolume) * 100);
+            linkPivotResult.TotalPaogDownstreamPredicted = totalDownstreamVolume.AreEqual(0d) ? 0 : (int)Math.Round((linkPivot.Adjustments.Sum(a => a.AOGDownstreamPredicted) / totalDownstreamVolume) * 100);
             if (double.IsNaN(linkPivotResult.TotalPaogDownstreamPredicted))
             {
                 // If result is NaN, set it to 0
@@ -73,14 +74,14 @@ namespace ATSPM.Application.Business.LinkPivot
             }
 
             linkPivotResult.TotalAogUpstreamBefore = linkPivot.Adjustments.Sum(a => a.AOGUpstreamBefore);
-            linkPivotResult.TotalPaogUpstreamBefore = (int)Math.Round((linkPivot.Adjustments.Sum(a => a.AOGUpstreamBefore) / totalUpstreamVolume) * 100);
+            linkPivotResult.TotalPaogUpstreamBefore = totalUpstreamVolume.AreEqual(0d) ? 0 : (int)Math.Round((linkPivot.Adjustments.Sum(a => a.AOGUpstreamBefore) / totalUpstreamVolume) * 100);
             if (double.IsNaN(linkPivotResult.TotalPaogUpstreamBefore))
             {
                 // If result is NaN, set it to 0
                 linkPivotResult.TotalPaogUpstreamBefore = 0;
             }
             linkPivotResult.TotalAogUpstreamPredicted = linkPivot.Adjustments.Sum(a => a.AOGUpstreamPredicted);
-            linkPivotResult.TotalPaogUpstreamPredicted = (int)Math.Round((linkPivot.Adjustments.Sum(a => a.AOGUpstreamPredicted) / totalUpstreamVolume) * 100);
+            linkPivotResult.TotalPaogUpstreamPredicted = totalUpstreamVolume.AreEqual(0d) ? 0 : (int)Math.Round((linkPivot.Adjustments.Sum(a => a.AOGUpstreamPredicted) / totalUpstreamVolume) * 100);
             if (double.IsNaN(linkPivotResult.TotalPaogUpstreamPredicted))
             {
                 // If result is NaN, set it to 0
@@ -88,7 +89,7 @@ namespace ATSPM.Application.Business.LinkPivot
             }
 
             linkPivotResult.TotalAogBefore = linkPivotResult.TotalAogUpstreamBefore + linkPivotResult.TotalAogDownstreamBefore;
-            linkPivotResult.TotalPaogBefore = (int)Math.Round((linkPivotResult.TotalAogBefore / totalVolume) * 100);
+            linkPivotResult.TotalPaogBefore = totalVolume.AreEqual(0d) ? 0 : (int)Math.Round((linkPivotResult.TotalAogBefore / totalVolume) * 100);
             if (double.IsNaN(linkPivotResult.TotalPaogBefore))
             {
                 // If result is NaN, set it to 0
@@ -96,7 +97,7 @@ namespace ATSPM.Application.Business.LinkPivot
             }
 
             linkPivotResult.TotalAogPredicted = linkPivotResult.TotalAogUpstreamPredicted + linkPivotResult.TotalAogDownstreamPredicted;
-            linkPivotResult.TotalPaogPredicted = (int)Math.Round((linkPivotResult.TotalAogPredicted / totalVolume) * 100);
+            linkPivotResult.TotalPaogPredicted = totalVolume.AreEqual(0d) ? 0 : (int)Math.Round((linkPivotResult.TotalAogPredicted / totalVolume) * 100);
             if (double.IsNaN(linkPivotResult.TotalPaogPredicted))
             {
                 // If result is NaN, set it to 0
