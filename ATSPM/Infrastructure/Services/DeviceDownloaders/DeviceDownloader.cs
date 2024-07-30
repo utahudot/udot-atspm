@@ -108,7 +108,7 @@ namespace ATSPM.Infrastructure.Services.DeviceDownloaders
                 var directory = parameter?.DeviceConfiguration?.Directory;
                 var searchTerms = parameter?.DeviceConfiguration?.SearchTerms;
                 var connectionTimeout = parameter?.DeviceConfiguration?.ConnectionTimeout ?? 2000;
-                var operationTimeout = parameter?.DeviceConfiguration?.OperationTimout ?? 2000;
+                var operationTimeout = parameter?.DeviceConfiguration?.OperationTimeout ?? 2000;
 
                 var logMessages = new DeviceDownloaderLogMessages(_log, parameter);
 
