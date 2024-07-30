@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
 {
@@ -197,18 +198,21 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
                 date BETWEEN @startDate AND @endDate 
             ORDER BY Date ASC, BinStartTime ASC;";
 
+            DateTime startDateTime = options.StartDate.ToDateTime(TimeOnly.MinValue);
+            DateTime endDateTime = options.EndDate.ToDateTime(TimeOnly.MinValue);
+
             var parameters = new[]
             {
-            new BigQueryParameter("segmentId", BigQueryDbType.String, options.SegmentId),
-            new BigQueryParameter("startDate", BigQueryDbType.Date, options.StartDate.ToDateTime(new TimeOnly(0,0))),
-            new BigQueryParameter("endDate", BigQueryDbType.Date, options.EndDate.ToDateTime(new TimeOnly(0, 0))),
-        };
+                new BigQueryParameter("segmentId", BigQueryDbType.String, options.SegmentId),
+                new BigQueryParameter("startDate", BigQueryDbType.Date, startDateTime.Date ),
+                new BigQueryParameter("endDate", BigQueryDbType.Date, endDateTime.Date),
+            };
 
             var queryResults = await _client.ExecuteQueryAsync(query, parameters);
             return queryResults.Select(row =>
             {
-                string format = "M/d/yyyy h:mm:ss tt";
-                var date = DateOnly.ParseExact(row["Date"].ToString(), format);
+                string[] formats = { "MM/dd/yyyy HH:mm:ss", "M/d/yyyy h:mm:ss tt", "yyyy-MM-ddTHH:mm:ss.fffZ" };
+                var date = DateOnly.ParseExact(row["Date"].ToString(), formats);
                 var time = TimeOnly.Parse(row["BinStartTime"].ToString());
                 var avg = row["Average"];
                 var fifteenthSpeed = row["FifteenthSpeed"];
@@ -237,139 +241,61 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
         {
             var convertedStartDate = DateOnly.FromDateTime(options.StartDate);
             var convertedEndDate = DateOnly.FromDateTime(options.EndDate);
-            var convertedStartTime = TimeOnly.FromDateTime(options.StartTime);
-            var convertedEndTime = TimeOnly.FromDateTime(options.EndTime);
+            TimeOnly convertedStartTime = new(0,0);
+            TimeOnly convertedEndTime = new(0, 0);
+
+            if (options.StartTime.HasValue && options.EndTime.HasValue)
+            {
+                convertedStartTime = TimeOnly.FromDateTime(options.StartTime.Value);
+                convertedEndTime = TimeOnly.FromDateTime(options.EndTime.Value);
+            }
 
             try
             {
                 var startDateTime = new DateTime(convertedStartDate.Year, convertedStartDate.Month, convertedStartDate.Day, convertedStartTime.Hour, convertedStartTime.Minute, convertedStartTime.Second);
                 var endDateTime = new DateTime(convertedEndDate.Year, convertedEndDate.Month, convertedEndDate.Day, convertedEndTime.Hour, convertedEndTime.Minute, convertedEndTime.Second);
-                var query = "";
+                var query = CreateQuery(options);
                 BigQueryResults queryResults;
                 BigQueryParameter[] parameters;
-                var daysOfWeekCondition = string.Join(", ", options.DaysOfWeek.Select(day => ((int)day + 1).ToString()));
                 switch (options.AnalysisPeriod)
                 {
-                    //case AnalysisPeriod.AllDay:
-                    //    var startDateTime = new DateTime(startDate.Year, startDate.Month, startDate.Day, startTime.Hour, startTime.Minute, startTime.Second);
-                    //    var endDateTime = new DateTime(endDate.Year, endDate.Month, endDate.Day, endTime.Hour, endTime.Minute, endTime.Second);
-
-                    //    query
-                    //        .Where(record =>
-                    //           record.Start.Date.ToDateTime(new TimeOnly(0, 0)) + record.BinStartTime.ToTimeSpan() >= startDateTime &&
-                    //           record.Date.ToDateTime(new TimeOnly(0, 0)) + record.BinStartTime.ToTimeSpan() <= endDateTime);
-                    //    break;
-                    case AnalysisPeriod.PeekPeriod:
-                        query = $@"
-                            SELECT *
-                            FROM `atspm-406601.speed_dataset.hourly_speed`
-                            WHERE 
-                                DATE BETWEEN @startDate AND @endDate AND
-                                (
-                                    (TIME(BinStartTime) BETWEEN TIME '06:00:00' AND TIME '09:00:00') OR
-                                    (TIME(BinStartTime) BETWEEN TIME '15:00:00' AND TIME '18:00:00')
-                                ) AND
-                                EXTRACT(DAYOFWEEK FROM DATE) IN ({daysOfWeekCondition})";
-
+                    case AnalysisPeriod.AllDay:
                         parameters = new[]
                         {
                             new BigQueryParameter("startDate", BigQueryDbType.Date, convertedStartDate.ToDateTime(new TimeOnly(0, 0))),
-                            new BigQueryParameter("endDate", BigQueryDbType.Date, convertedEndDate.ToDateTime(new TimeOnly(0, 0)))
+                            new BigQueryParameter("endDate", BigQueryDbType.Date, convertedEndDate.ToDateTime(new TimeOnly(0, 0))),
+                            new BigQueryParameter("sourceId", BigQueryDbType.Int64, options.SourceId)
+                        };
+                        queryResults = await _client.ExecuteQueryAsync(query, parameters);
+                        break;
+                    case AnalysisPeriod.PeekPeriod:
+                        parameters = new[]
+                        {
+                            new BigQueryParameter("startDate", BigQueryDbType.Date, convertedStartDate.ToDateTime(new TimeOnly(0, 0))),
+                            new BigQueryParameter("endDate", BigQueryDbType.Date, convertedEndDate.ToDateTime(new TimeOnly(0, 0))),
+                            new BigQueryParameter("sourceId", BigQueryDbType.Int64, options.SourceId)
                         };
 
                         queryResults = await _client.ExecuteQueryAsync(query, parameters);
                         break;
-                    default:
-                        query = $@"
-                                WITH RouteStats AS (
-                                    SELECT
-                                        hs.SegmentId,
-                                        AVG(hs.Average) AS Avg,
-                                        APPROX_QUANTILES(hs.FifteenthSpeed, 100)[ORDINAL(85)] AS Percentilespd_15,
-                                        APPROX_QUANTILES(hs.EightyFifthSpeed, 100)[ORDINAL(85)] AS Percentilespd_85,
-                                        APPROX_QUANTILES(hs.NinetyFifthSpeed, 100)[ORDINAL(85)] AS Percentilespd_95,
-                                        SUM(hs.Flow) AS Flow
-                                    FROM
-                                        `atspm-406601.speed_dataset.hourly_speed` AS hs
-                                    WHERE
-                                        DATE BETWEEN @startDate AND @endDate
-                                        AND TIME(hs.BinStartTime) BETWEEN @startTime AND @endTime
-                                        AND EXTRACT(DAYOFWEEK FROM DATE) IN (1,2,3,4,5,6,7)
-                                    GROUP BY
-                                        hs.SegmentId
-                                )
-                                SELECT
-                                    rs.SegmentId,
-                                    rs.Avg,
-                                    rs.Percentilespd_15,
-                                    rs.Percentilespd_85,
-                                    rs.Percentilespd_95,
-                                    rs.Flow,
-                                    r.SpeedLimit,
-                                    r.Name,
-                                    ANY_VALUE(ST_AsText(r.Shape)) AS Shape,
-                                    IFNULL(
-                                        SAFE_CAST(
-                                            ROUND(SUM
-                                            (CASE 
-                                              WHEN rs.Percentilespd_15 >= r.SpeedLimit THEN 0.85 * rs.Flow
-                                              WHEN rs.Avg >= r.SpeedLimit THEN 0.5 * rs.Flow
-                                              WHEN rs.Percentilespd_85 >= r.SpeedLimit THEN 0.15 * rs.Flow
-                                              WHEN rs.Percentilespd_95 >= r.SpeedLimit THEN 0.05 * rs.Flow
-                                              ELSE 0
-                                              END) / NULLIF(SUM(rs.Flow), 0)) AS INT64), 0) AS EstimatedViolations
-                                FROM
-                                    RouteStats AS rs
-                                JOIN
-                                    `atspm-406601.speed_dataset.segment` AS r
-                                ON
-                                    rs.SegmentId = r.Id
-                                GROUP BY
-                                    rs.SegmentId, rs.Avg, rs.Percentilespd_15, rs.Percentilespd_85, rs.Percentilespd_95, rs.Flow, r.SpeedLimit, r.Name;";
+                    case AnalysisPeriod.CustomHour:
                         parameters = new[]
                         {
                             new BigQueryParameter("startDate", BigQueryDbType.Date, convertedStartDate.ToDateTime(new TimeOnly(0, 0))),
                             new BigQueryParameter("endDate", BigQueryDbType.Date, convertedEndDate.ToDateTime(new TimeOnly(0, 0))),
                             new BigQueryParameter("startTime", BigQueryDbType.Time, convertedStartTime.ToTimeSpan()),
-                            new BigQueryParameter("endTime", BigQueryDbType.Time, convertedEndTime.ToTimeSpan())
+                            new BigQueryParameter("endTime", BigQueryDbType.Time, convertedEndTime.ToTimeSpan()),
+                            new BigQueryParameter("sourceId", BigQueryDbType.Int64, options.SourceId)
                         };
                         queryResults = await _client.ExecuteQueryAsync(query, parameters);
                         break;
+                    default: throw new NotSupportedException();
                 }
 
                 List<RouteSpeed> results = new List<RouteSpeed>();
                 foreach (BigQueryRow row in queryResults)
                 {
-                    var reader = new WKTReader();
-                    // Access row data as needed
-                    var segmentId = row["SegmentId"];
-                    var avg = row["Avg"];
-                    var percentile15 = row["Percentilespd_15"];
-                    var percentile85 = row["Percentilespd_85"];
-                    var percentile95 = row["Percentilespd_95"];
-                    var flow = row["Flow"];
-                    var estimatedViolations = row["EstimatedViolations"];
-                    var speedLimit = row["SpeedLimit"];
-                    var name = row["Name"];
-                    var wkt = (string)row["Shape"];
-                    // Further processing...
-                    Geometry shape = wkt != null ? reader.Read(wkt) : null;
-
-                    var result = new RouteSpeed
-                    {
-                        SegmentId = segmentId != null ? segmentId.ToString() : "",
-                        Name = name != null ? name.ToString() : "",
-                        Avg = avg != null ? Math.Round((double)avg, 2) : null,
-                        Percentilespd_15 = percentile15 != null ? (long)percentile15 : null,
-                        Percentilespd_85 = percentile85 != null ? (long)percentile85 : null,
-                        Percentilespd_95 = percentile95 != null ? (long)percentile95 : null,
-                        Flow = flow != null ? (long)flow : null,
-                        EstimatedViolations = estimatedViolations != null ? (long)estimatedViolations : null,
-                        SpeedLimit = speedLimit != null ? (long)speedLimit : 0,
-                        Shape = shape,
-                    };
-                    results.Add(result);
-
+                    results.Add(TransformRowToRouteSpeed(row));
                 }
 
                 return results;
@@ -378,47 +304,179 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             {
                 throw ex;
             }
+
+           
         }
 
-        private static long? GetPercentileSpeed_15(IGrouping<string, BigQueryRow> g)
+        private static RouteSpeed TransformRowToRouteSpeed(BigQueryRow row)
         {
-            var speedList = g
-            .Select(row => row["FifteenthSpeed"])
-            .Where(speed => speed != null && speed is long)
-            .Select(speed => (long)speed)
-            .ToList();
+            var reader = new WKTReader();
+            // Access row data as needed
+            var segmentId = row["SegmentId"];
+            var sourceId = row["SourceId"];
+            var avg = row["Avg"];
+            var percentile15 = row["Percentilespd_15"];
+            var percentile85 = row["Percentilespd_85"];
+            var percentile95 = row["Percentilespd_95"];
+            var flow = row["Flow"];
+            var estimatedViolations = row["EstimatedViolations"];
+            var speedLimit = row["SpeedLimit"];
+            var name = row["Name"];
+            var wkt = (string)row["Shape"];
+            // Further processing...
+            Geometry shape = wkt != null ? reader.Read(wkt) : null;
 
-            return speedList.Count > 0 ? (int?)Math.Round(speedList.Average()) : null;
+            return new RouteSpeed
+            {
+                SegmentId = segmentId != null ? segmentId.ToString() : "",
+                SourceId = sourceId != null ? (long)sourceId : 0,
+                Name = name != null ? name.ToString() : "",
+                Avg = avg != null ? Math.Round((double)avg, 2) : null,
+                Percentilespd_15 = percentile15 != null ? (long)percentile15 : null,
+                Percentilespd_85 = percentile85 != null ? (long)percentile85 : null,
+                Percentilespd_95 = percentile95 != null ? (long)percentile95 : null,
+                Flow = flow != null ? (long)flow : null,
+                EstimatedViolations = estimatedViolations != null ? (long)estimatedViolations : null,
+                SpeedLimit = speedLimit != null ? (long)speedLimit : 0,
+                Shape = shape,
+            };
         }
 
-        private static long? GetPercentileSpeed_85(IGrouping<string, BigQueryRow> g)
+        private static string CreateQuery(RouteSpeedOptions options)
         {
-            // Safely retrieve EightyFifthSpeed and ensure it's an integer
-            var speedList = g
-                .Select(row => row["EightyFifthSpeed"])
-                .Where(speed => speed != null && speed is long)
-                .Select(speed => (long)speed)
-                .ToList();
+            var daysOfWeekCondition = string.Join(", ", options.DaysOfWeek.Select(day => ((int)day + 1).ToString()));
 
-            return speedList.Count > 0 ? (long?)Math.Round(speedList.Average()) : null;
-        }
+            var baseQuery = $@"
+                            WITH RouteStats AS (
+                                SELECT
+                                    r.Id AS SegmentId,
+                                    hs.SourceId,
+                                    AVG(hs.Average) AS Avg,
+                                    APPROX_QUANTILES(hs.FifteenthSpeed, 100)[ORDINAL(85)] AS Percentilespd_15,
+                                    APPROX_QUANTILES(hs.EightyFifthSpeed, 100)[ORDINAL(85)] AS Percentilespd_85,
+                                    APPROX_QUANTILES(hs.NinetyFifthSpeed, 100)[ORDINAL(85)] AS Percentilespd_95,
+                                    SUM(hs.Flow) AS Flow,
+                                    r.SpeedLimit,
+                                    r.Name,
+                                    ANY_VALUE(ST_AsText(r.Shape)) AS Shape
+                                FROM
+                                    `atspm-406601.speed_dataset.segment` AS r
+                                LEFT JOIN
+                                    `atspm-406601.speed_dataset.hourly_speed` AS hs
+                                ON
+                                     r.Id = hs.SegmentId";
 
-        private static long? GetPercentileSpeed_95(IGrouping<string, BigQueryRow> g)
-        {
-            // Safely retrieve NinetyFifthSpeed and ensure it's an integer
-            var speedList = g
-                .Select(row => row["NinetyFifthSpeed"])
-                .Where(speed => speed != null && speed is long)
-                .Select(speed => (long)speed)
-                .ToList();
+            var groupByClause = @"
+                                GROUP BY
+                                    r.Id, hs.SourceId, r.SpeedLimit, r.Name
+                                )";
 
-            return speedList.Count > 0 ? (long?)Math.Round(speedList.Average()) : null;
-        }
+            var selectClause = $@"SELECT
+                                    rs.SegmentId,
+                                    rs.SourceId,
+                                    rs.Avg,
+                                    rs.Percentilespd_15,
+                                    rs.Percentilespd_85,
+                                    rs.Percentilespd_95,
+                                    rs.Flow,
+                                    rs.SpeedLimit,
+                                    rs.Name,
+                                    rs.Shape,
+                                    IFNULL(
+                                        SAFE_CAST(
+                                            ROUND(SUM(
+                                                CASE 
+                                                    WHEN rs.Percentilespd_15 >= rs.SpeedLimit THEN 0.85 * rs.Flow
+                                                    WHEN rs.Avg >= rs.SpeedLimit THEN 0.5 * rs.Flow
+                                                    WHEN rs.Percentilespd_85 >= rs.SpeedLimit THEN 0.15 * rs.Flow
+                                                    WHEN rs.Percentilespd_95 >= rs.SpeedLimit THEN 0.05 * rs.Flow
+                                                    ELSE 0
+                                                END
+                                            ) / NULLIF(SUM(rs.Flow), 0)) AS INT64), 0) AS EstimatedViolations
+                                FROM
+                                    RouteStats AS rs
+                                GROUP BY
+                                    rs.SegmentId, rs.SourceId, rs.Avg, rs.Percentilespd_15, rs.Percentilespd_85, rs.Percentilespd_95, rs.Flow, rs.SpeedLimit, rs.Name, rs.Shape;";
 
-        private bool HigherThanViolationThreshold(int violationThreshold, long speed, int speedLimit)
-        {
-            var test = (speed - speedLimit) / (double)speedLimit * 100;
-            return speed > speedLimit && (speed - speedLimit) / (double)speedLimit * 100 >= violationThreshold;
+            string onClause = "";
+
+            switch (options.AnalysisPeriod)
+            {
+                case AnalysisPeriod.AllDay:
+                    onClause = $@"
+                                    AND DATE BETWEEN @startDate AND @endDate
+                                    AND EXTRACT(DAYOFWEEK FROM DATE) IN ({daysOfWeekCondition})
+                                    WHERE hs.SourceId = @sourceId";
+                    break;
+                case AnalysisPeriod.PeekPeriod:
+                    onClause = $@"
+                                    AND DATE BETWEEN @startDate AND @endDate AND
+                                    (
+                                        (TIME(BinStartTime) BETWEEN TIME '06:00:00' AND TIME '09:00:00') OR
+                                        (TIME(BinStartTime) BETWEEN TIME '15:00:00' AND TIME '18:00:00')
+                                    ) AND
+                                    EXTRACT(DAYOFWEEK FROM DATE) IN ({daysOfWeekCondition})
+                                    WHERE hs.SourceId = @sourceId";
+                    break;
+                case AnalysisPeriod.CustomHour:
+                    onClause = $@"
+                                    AND DATE BETWEEN @startDate AND @endDate
+                                    AND TIME(hs.BinStartTime) BETWEEN @startTime AND @endTime
+                                    AND EXTRACT(DAYOFWEEK FROM DATE) IN ({daysOfWeekCondition})
+                                    WHERE hs.SourceId = @sourceId";
+                    break;
+                default:
+                    break;
+            }
+            var finalQuery = baseQuery + onClause + groupByClause + selectClause;
+            return finalQuery;
+
+            //query = $@"
+            //                    WITH RouteStats AS (
+            //                        SELECT
+            //                            hs.SegmentId,
+            //                            AVG(hs.Average) AS Avg,
+            //                            APPROX_QUANTILES(hs.FifteenthSpeed, 100)[ORDINAL(85)] AS Percentilespd_15,
+            //                            APPROX_QUANTILES(hs.EightyFifthSpeed, 100)[ORDINAL(85)] AS Percentilespd_85,
+            //                            APPROX_QUANTILES(hs.NinetyFifthSpeed, 100)[ORDINAL(85)] AS Percentilespd_95,
+            //                            SUM(hs.Flow) AS Flow
+            //                        FROM
+            //                            `atspm-406601.speed_dataset.hourly_speed` AS hs
+            //                        WHERE
+            //                            DATE BETWEEN @startDate AND @endDate
+            //                            AND TIME(hs.BinStartTime) BETWEEN @startTime AND @endTime
+            //                            AND EXTRACT(DAYOFWEEK FROM DATE) IN (1,2,3,4,5,6,7)
+            //                        GROUP BY
+            //                            hs.SegmentId
+            //                    )
+            //                    SELECT
+            //                        rs.SegmentId,
+            //                        rs.Avg,
+            //                        rs.Percentilespd_15,
+            //                        rs.Percentilespd_85,
+            //                        rs.Percentilespd_95,
+            //                        rs.Flow,
+            //                        r.SpeedLimit,
+            //                        r.Name,
+            //                        ANY_VALUE(ST_AsText(r.Shape)) AS Shape,
+            //                        IFNULL(
+            //                            SAFE_CAST(
+            //                                ROUND(SUM
+            //                                (CASE 
+            //                                  WHEN rs.Percentilespd_15 >= r.SpeedLimit THEN 0.85 * rs.Flow
+            //                                  WHEN rs.Avg >= r.SpeedLimit THEN 0.5 * rs.Flow
+            //                                  WHEN rs.Percentilespd_85 >= r.SpeedLimit THEN 0.15 * rs.Flow
+            //                                  WHEN rs.Percentilespd_95 >= r.SpeedLimit THEN 0.05 * rs.Flow
+            //                                  ELSE 0
+            //                                  END) / NULLIF(SUM(rs.Flow), 0)) AS INT64), 0) AS EstimatedViolations
+            //                    FROM
+            //                        RouteStats AS rs
+            //                    JOIN
+            //                        `atspm-406601.speed_dataset.segment` AS r
+            //                    ON
+            //                        rs.SegmentId = r.Id
+            //                    GROUP BY
+            //                        rs.SegmentId, rs.Avg, rs.Percentilespd_15, rs.Percentilespd_85, rs.Percentilespd_95, rs.Flow, r.SpeedLimit, r.Name;";
         }
 
         public override async Task RemoveAsync(HourlySpeed key)
