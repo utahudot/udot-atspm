@@ -1,20 +1,6 @@
-#region license
-// Copyright 2024 Utah Departement of Transportation
-// for Identity - %Namespace%/Program.cs
-// 
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-// 
-// http://www.apache.org/licenses/LICENSE-2.
-// 
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-#endregion
+using ATSPM.Data;
 using ATSPM.Identity.Business.Claims;
+using ATSPM.Identity.Business.Users;
 using ATSPM.Infrastructure.Extensions;
 using Identity.Business.Accounts;
 using Identity.Business.Agency;
@@ -22,8 +8,6 @@ using Identity.Business.EmailSender;
 using Identity.Business.Tokens;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi.Models;
-using ATSPM.Identity.Business.Users;
-
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
@@ -32,6 +16,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Host.ConfigureServices((host, services) =>
 {
     services.AddIdentityDbContext(host);
+
     services.AddIdentity<ApplicationUser, IdentityRole>() // Use AddDefaultIdentity if you don't need roles
     .AddEntityFrameworkStores<IdentityContext>()
     .AddDefaultTokenProviders();
@@ -39,9 +24,11 @@ builder.Host.ConfigureServices((host, services) =>
     services.AddAtspmAuthentication(host, builder);
     services.AddAtspmAuthorization(host);
 
+    services.AddEmailServices(host);
+    services.AddScoped<EmailService>();
+
     services.AddScoped<IAgencyService, AgencyService>();
     services.AddScoped<IAccountService, AccountService>();
-    services.AddScoped<IEmailService, EmailService>();
     services.AddScoped<ClaimsService, ClaimsService>();
     services.AddScoped<TokenService, TokenService>();
     services.AddScoped<RoleManager<IdentityRole>>();
@@ -111,9 +98,17 @@ if (app.Environment.IsDevelopment())
         app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Your API v1"));
     }
 }
+else
+{
+    app.UseExceptionHandler("/Home/Error");
+    app.UseHsts();
+}
 app.UseHttpsRedirection();
+app.UseStaticFiles();
 
+app.UseCookiePolicy();
 app.UseRouting();
+
 
 app.UseAuthentication();
 app.UseAuthorization();

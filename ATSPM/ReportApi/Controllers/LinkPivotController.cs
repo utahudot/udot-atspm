@@ -32,7 +32,7 @@ namespace ATSPM.ReportApi.Controllers
     {
         private readonly LinkPivotReportService linkPivotReportService;
         /// <inheritdoc/>
-        public LinkPivotController(IReportService<LinkPivotOptions, LinkPivotResult> reportService, LinkPivotReportService linkPivotReportService) : base(reportService) {
+        public LinkPivotController(IReportService<LinkPivotOptions, LinkPivotResult> reportService, LinkPivotReportService linkPivotReportService, ILogger<LinkPivotController> logger) : base(reportService, logger) {
             this.linkPivotReportService = linkPivotReportService;
         }
 

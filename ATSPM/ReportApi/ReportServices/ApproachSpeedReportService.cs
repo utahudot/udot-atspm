@@ -38,6 +38,7 @@ namespace ATSPM.ReportApi.ReportServices
         private readonly ISpeedEventLogRepository speedEventRepository;
         private readonly ILocationRepository LocationRepository;
         private readonly PhaseService phaseService;
+        private readonly ILogger<ApproachSpeedReportService> logger;
 
         /// <inheritdoc/>
         public ApproachSpeedReportService(
@@ -46,7 +47,8 @@ namespace ATSPM.ReportApi.ReportServices
             IApproachRepository approachRepository,
             ISpeedEventLogRepository speedEventRepository,
             ILocationRepository LocationRepository,
-            PhaseService phaseService)
+            PhaseService phaseService,
+            ILogger<ApproachSpeedReportService> logger)
         {
             this.approachSpeedService = approachSpeedService;
             this.controllerEventLogRepository = controllerEventLogRepository;
@@ -54,6 +56,7 @@ namespace ATSPM.ReportApi.ReportServices
             this.speedEventRepository = speedEventRepository;
             this.LocationRepository = LocationRepository;
             this.phaseService = phaseService;
+            this.logger = logger;
         }
 
         /// <inheritdoc/>
@@ -126,7 +129,8 @@ namespace ATSPM.ReportApi.ReportServices
                 cycleEvents.ToList(),
                 planEvents,
                 speedEvents,
-                detector);
+                detector,
+                logger);
             viewModel.LocationDescription = LocationDescription;
             viewModel.ApproachDescription = phaseDetail.Approach.Description;
             return viewModel;

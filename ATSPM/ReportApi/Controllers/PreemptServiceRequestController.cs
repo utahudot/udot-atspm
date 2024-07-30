@@ -31,6 +31,6 @@ namespace ATSPM.ReportApi.Controllers
     public class PreemptServiceRequestController : ReportControllerBase<PreemptServiceRequestOptions, PreemptServiceRequestResult>
     {
         /// <inheritdoc/>
-        public PreemptServiceRequestController(IReportService<PreemptServiceRequestOptions, PreemptServiceRequestResult> reportService) : base(reportService) { }
+        public PreemptServiceRequestController(IReportService<PreemptServiceRequestOptions, PreemptServiceRequestResult> reportService, ILogger<PreemptServiceRequestController> logger) : base(reportService, logger) { }
     }
 }

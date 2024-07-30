@@ -137,7 +137,7 @@ namespace ATSPM.ReportApi.ReportServices
             List<Approach> opposingApproaches,
             DetectionType detectionType)
         {
-            if (!primaryApproaches.Any() || !opposingApproaches.Any())
+            if (primaryApproaches.IsNullOrEmpty() || opposingApproaches.IsNullOrEmpty())
             {
                 return null;
             }
@@ -145,7 +145,8 @@ namespace ATSPM.ReportApi.ReportServices
             int opposingDistanceFromStopBar = 0;
             List<IndianaEvent> primaryDetectorEvents = GetDetectorEvents(options, out primaryDistanceFromStopBar, controllerEventLogs, primaryApproaches, detectionType);
             List<IndianaEvent> opposingDetectorEvents = GetDetectorEvents(options, out opposingDistanceFromStopBar, controllerEventLogs, opposingApproaches, detectionType);
-            if (primaryDetectorEvents.Count == 0 && opposingDetectorEvents.Count == 0)
+            if (primaryDetectorEvents.Count == 0 &&
+                opposingDetectorEvents.Count == 0)
             {
                 return new ApproachVolumeResult(Location.LocationIdentifier, options.Start, options.End, primaryApproaches.FirstOrDefault().DirectionTypeId);
             }

@@ -31,6 +31,6 @@ namespace ATSPM.ReportApi.Controllers
     public class LeftTurnGapDurationController : ReportControllerBase<GapDurationOptions, GapDurationResult>
     {
         /// <inheritdoc/>
-        public LeftTurnGapDurationController(IReportService<GapDurationOptions, GapDurationResult> reportService) : base(reportService) { }
+        public LeftTurnGapDurationController(IReportService<GapDurationOptions, GapDurationResult> reportService, ILogger<LeftTurnGapDurationController> logger) : base(reportService, logger) { }
     }
 }

@@ -27,6 +27,6 @@ namespace ATSPM.ReportApi.Controllers
     public class TimeSpaceDiagramAverageController : ReportControllerBase<TimeSpaceDiagramAverageOptions, IEnumerable<TimeSpaceDiagramAverageResult>>
     {
         /// <inheritdoc/>
-        public TimeSpaceDiagramAverageController(IReportService<TimeSpaceDiagramAverageOptions, IEnumerable<TimeSpaceDiagramAverageResult>> reportService) : base(reportService) { }
+        public TimeSpaceDiagramAverageController(IReportService<TimeSpaceDiagramAverageOptions, IEnumerable<TimeSpaceDiagramAverageResult>> reportService, ILogger<TimeSpaceDiagramAverageController> logger) : base(reportService, logger) { }
     }
 }
