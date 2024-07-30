@@ -398,37 +398,37 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
                                 GROUP BY
                                     rs.SegmentId, rs.SourceId, rs.Avg, rs.Percentilespd_15, rs.Percentilespd_85, rs.Percentilespd_95, rs.Flow, rs.SpeedLimit, rs.Name, rs.Shape;";
 
-            string whereClause = "";
+            string onClause = "";
 
             switch (options.AnalysisPeriod)
             {
                 case AnalysisPeriod.AllDay:
-                    whereClause = $@"
+                    onClause = $@"
                                     AND DATE BETWEEN @startDate AND @endDate
                                     AND EXTRACT(DAYOFWEEK FROM DATE) IN ({daysOfWeekCondition})
-                                    AND SourceId = @sourceId";
+                                    WHERE hs.SourceId = @sourceId";
                     break;
                 case AnalysisPeriod.PeekPeriod:
-                    whereClause = $@"
+                    onClause = $@"
                                     AND DATE BETWEEN @startDate AND @endDate AND
                                     (
                                         (TIME(BinStartTime) BETWEEN TIME '06:00:00' AND TIME '09:00:00') OR
                                         (TIME(BinStartTime) BETWEEN TIME '15:00:00' AND TIME '18:00:00')
                                     ) AND
                                     EXTRACT(DAYOFWEEK FROM DATE) IN ({daysOfWeekCondition})
-                                    AND SourceId = @sourceId";
+                                    WHERE hs.SourceId = @sourceId";
                     break;
                 case AnalysisPeriod.CustomHour:
-                    whereClause = $@"
+                    onClause = $@"
                                     AND DATE BETWEEN @startDate AND @endDate
                                     AND TIME(hs.BinStartTime) BETWEEN @startTime AND @endTime
                                     AND EXTRACT(DAYOFWEEK FROM DATE) IN ({daysOfWeekCondition})
-                                    AND SourceId = @sourceId";
+                                    WHERE hs.SourceId = @sourceId";
                     break;
                 default:
                     break;
             }
-            var finalQuery = baseQuery + whereClause + groupByClause + selectClause;
+            var finalQuery = baseQuery + onClause + groupByClause + selectClause;
             return finalQuery;
 
             //query = $@"
