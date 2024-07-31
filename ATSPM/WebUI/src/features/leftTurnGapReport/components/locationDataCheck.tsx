@@ -2,7 +2,7 @@ import {
   StyledComponentHeader,
   commonPaperStyle,
 } from '@/components/HeaderStyling/StyledComponentHeader'
-import { Box, Paper, TextField, Typography } from '@mui/material'
+import { Box, Paper, TextField } from '@mui/material'
 
 const textFieldStyle = {
   width: '40px', // Set the width to 60px
@@ -80,8 +80,8 @@ export const LocationDataCheck = ({
             }
             sx={{ ...textFieldStyle }}
           />
-          <label htmlFor="cycles-with-ped-outs">% Cycles with Ped Calls</label>
-          <Typography>% Cycles with Ped Calls</Typography>
+          <label>% Cycles with Ped Calls</label>
+          {/* <Typography htmlFor="cycles-with-ped-outs">% Cycles with Ped Calls</Typography> */}
         </Box>
 
         <Box sx={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
