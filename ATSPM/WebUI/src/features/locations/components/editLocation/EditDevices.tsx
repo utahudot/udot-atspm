@@ -99,9 +99,6 @@ const EditDevices = ({ locationId }: EditDevicesProps) => {
           refetchDevices={refetchDevices}
         />
       )}
-
-      
-
       <Modal
         open={openDeleteModal}
         onClose={() => setOpenDeleteModal(false)}
