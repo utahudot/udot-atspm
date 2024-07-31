@@ -17,13 +17,9 @@
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using ATSPM.Data.Relationships;
-using ATSPM.Domain.Specifications;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ATSPM.Application.Extensions
 {
@@ -52,7 +48,6 @@ namespace ATSPM.Application.Extensions
 
         public static IReadOnlyList<Detector> GetDetectorsForMetricType(this IRelatedDetectors item, int metricTypeId)
         {
-            //TODO: parts of this are resuable, consider moving to specification or extension method
             return item.Detectors.Where(d => d.SupportsMetricType(metricTypeId)).ToList();
         }
     }
@@ -84,7 +79,6 @@ namespace ATSPM.Application.Extensions
 
             if (detector.Approach.Mph.HasValue && detector.Approach.Mph > 0)
             {
-                //TODO: see if this is duplicated anywhere else
                 return Convert.ToDouble((detector.DistanceFromStopBar / (detector.Approach.Mph * 1.467) - detector.DecisionPoint) * 1000);
             }
 

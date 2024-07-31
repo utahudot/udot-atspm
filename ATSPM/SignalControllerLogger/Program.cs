@@ -23,6 +23,7 @@ using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using ATSPM.Data.Models.EventLogModels;
 using ATSPM.Domain.Extensions;
+using ATSPM.Domain.Services;
 using ATSPM.Infrastructure.Extensions;
 using ATSPM.Infrastructure.Services.ControllerDecoders;
 using ATSPM.Infrastructure.Services.EventLogImporters;
@@ -36,6 +37,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Net.Mail;
 using System.Reflection;
 using System.Text;
 using System.Threading;
@@ -222,34 +224,43 @@ namespace ATSPM.LocationControllerLogger
 
             //}
 
-
-            var files = new DirectoryInfo("C:\\temp\\4006 - 5600 South \\SignalController\\10.202.19.143");
-            var device = new Device()
+            using (var scope = host.Services.CreateScope())
             {
-                Location = new Location() { LocationIdentifier = "4006"},
-                DeviceConfiguration = new DeviceConfiguration() { Decoders = new[] { nameof(AscToIndianaDecoder)}}
-            };
+                var email = scope.ServiceProvider.GetService<IEmailService>();
 
+                var msg = new MailMessage("AtspmWatchdog@utah.gov", "christianbaker@utah.gov", "test email", "this is a test");
 
-            foreach (var f in files.GetFiles())
-            {
-                using (var scope = host.Services.CreateScope())
-                {
-                    var importer = scope.ServiceProvider.GetService<IEventLogImporter>();
-
-                    var results = importer.Execute(Tuple.Create(device, f));
-
-                    await foreach (var r in results)
-                    {
-                        Console.WriteLine($"{r.Item2.GetType().Name} -- {r.Item2}");
-                    }
-                }
+                await email.SendEmailAsync(msg);
             }
 
 
-            
+                //var files = new DirectoryInfo("C:\\temp\\4006 - 5600 South \\SignalController\\10.202.19.143");
+                //var device = new Device()
+                //{
+                //    Location = new Location() { LocationIdentifier = "4006"},
+                //    DeviceConfiguration = new DeviceConfiguration() { Decoders = new[] { nameof(AscToIndianaDecoder)}}
+                //};
 
-            Console.WriteLine($"------------------done-----------------------");
+
+                //foreach (var f in files.GetFiles())
+                //{
+                //    using (var scope = host.Services.CreateScope())
+                //    {
+                //        var importer = scope.ServiceProvider.GetService<IEventLogImporter>();
+
+                //        var results = importer.Execute(Tuple.Create(device, f));
+
+                //        await foreach (var r in results)
+                //        {
+                //            Console.WriteLine($"{r.Item2.GetType().Name} -- {r.Item2}");
+                //        }
+                //    }
+                //}
+
+
+
+
+                Console.WriteLine($"------------------done-----------------------");
 
             Console.ReadLine();
         }

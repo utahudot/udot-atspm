@@ -22,8 +22,6 @@ using ATSPM.Data.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace ATSPM.Infrastructure.Repositories.ConfigurationRepositories
@@ -82,25 +80,6 @@ namespace ATSPM.Infrastructure.Repositories.ConfigurationRepositories
         #endregion
 
         #region IDetectorRepository
-
-        //TODO: this needs to be moved out of this repo
-        public IReadOnlyList<Detector> GetDetectorsBylocationIdMovementTypeIdDirectionTypeId(string locationId, DirectionTypes directionType, List<MovementTypes> movementTypeIds)
-        {
-            return _db.Set<Approach>()
-                .Where(a => a.DirectionTypeId == directionType)
-                .SelectMany(a => a.Detectors)
-                .Where(d => movementTypeIds.Contains(d.MovementType))
-                .ToList();
-        }
-
-        //TODO: this needs to be moved out of this repo
-        public int GetMaximumDetectorChannel(int id)
-        {
-            return _db.Set<Approach>()
-                .Where(a => a.LocationId == id)
-                .SelectMany(a => a.Detectors)
-                .Max(m => m.DetectorChannel);
-        }
 
         #endregion
     }

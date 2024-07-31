@@ -27,10 +27,6 @@ namespace ATSPM.Infrastructure.Repositories.ConfigurationRepositories
     {
         /// <inheritdoc/>
         public RouteEFRepository(ConfigContext db, ILogger<RouteEFRepository> log) : base(db, log) { }
-        public IDbContextTransaction BeginTransaction()
-        {
-            return _db.Database.BeginTransaction();
-        }
 
         #region Overrides
 

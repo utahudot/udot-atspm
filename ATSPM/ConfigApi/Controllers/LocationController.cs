@@ -258,14 +258,14 @@ namespace ATSPM.ConfigApi.Controllers
                 .GroupBy(r => r.locationIdentifier)
                 .Select(g => g.OrderByDescending(r => r.Start).FirstOrDefault())
                 .ToList();
-            //TODO: This is a hack to add basic charts to all locations.  Need to discuss with Christian and see if this is the best way to do this.
+
+            //HACK: This is a hack to add basic charts to all locations.  Need to discuss with Christian and see if this is the best way to do this.
             foreach (var location in result)
             {
                 if (location != null && location.Charts != null)
                 {
                     location.Charts = location.Charts.Concat(basicCharts).Order();
                 }
-
             }
 
             return Ok(result);

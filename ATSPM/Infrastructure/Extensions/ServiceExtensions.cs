@@ -37,7 +37,6 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -45,6 +44,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
+using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
@@ -440,19 +440,19 @@ namespace ATSPM.Infrastructure.Extensions
         /// <returns></returns>
         public static IServiceCollection AddEmailServices(this IServiceCollection services, HostBuilderContext host)
         {
-            return services.RegisterServicesByInterfaceAndConfiguration<IEmailService, EmailConfiguration>(host);
+            //return services.RegisterServicesByInterfaceAndConfiguration<IEmailService, EmailConfiguration>(host);
 
-            //var types = AppDomain.CurrentDomain.GetAssemblies().SelectMany(m => m.GetTypes().Where(w => w.GetInterfaces().Contains(typeof(IEmailService)))).ToList();
-            //foreach (var t in types)
-            //{
-            //    if (host.Configuration.GetSection($"{nameof(EmailConfiguration)}:{t.Name}").Exists())
-            //    {
-            //        services.Add(new ServiceDescriptor(typeof(IEmailService), t, ServiceLifetime.Transient));
-            //        services.Configure<EmailConfiguration>(t.Name, host.Configuration.GetSection($"{nameof(EmailConfiguration)}:{t.Name}"));
-            //    }
-            //}
+            var types = AppDomain.CurrentDomain.GetAssemblies().SelectMany(m => m.GetTypes().Where(w => w.GetInterfaces().Contains(typeof(IEmailService)))).ToList();
+            foreach (var t in types)
+            {
+                if (host.Configuration.GetSection($"{nameof(EmailConfiguration)}:{t.Name}").Exists())
+                {
+                    services.Add(new ServiceDescriptor(typeof(IEmailService), t, ServiceLifetime.Transient));
+                    services.Configure<EmailConfiguration>(t.Name, host.Configuration.GetSection($"{nameof(EmailConfiguration)}:{t.Name}"));
+                }
+            }
 
-            //return services;
+            return services;
         }
     }
 }
