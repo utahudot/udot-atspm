@@ -23,7 +23,6 @@ export const getRoutes = async (
 ): Promise<RoutesResponse> => {
   // options.startDate = dateToTimestamp(options.startDate)
   // options.endDate = dateToTimestamp(options.endDate)
-  console.log('options', options)
   return speedAxios.post('/SpeedManagement/GetRouteSpeeds', options)
 }
 
