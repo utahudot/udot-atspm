@@ -59,7 +59,7 @@ namespace ATSPM.Infrastructure.Services.EmailServices
 
                     var response = await client.SendEmailAsync(msg);
 
-                    _logger.LogInformation("SendEmail response: {response}", response);
+                    _logger.LogInformation("SendEmail response: {response}", response.StatusCode);
 
                     return response.IsSuccessStatusCode;
                 }

@@ -24,7 +24,6 @@ namespace ATSPM.Data.Models.EventLogModels
     /// </summary>
     public class SpeedEvent : EventLogModelBase
     {
-        //TODO: is this the database id or the detector channel?
         /// <summary>
         /// Detector id
         /// </summary>

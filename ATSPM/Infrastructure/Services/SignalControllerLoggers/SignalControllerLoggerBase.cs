@@ -38,7 +38,6 @@ namespace ATSPM.Infrastructure.Services.LocationControllerLoggers
         protected LocationControllerLoggerLogMessages logMessages;
         protected CancellationToken token;
 
-        //TODO: pass in logger class instead
         public LocationControllerLoggerBase(ILogger log)
         {
             logMessages = new LocationControllerLoggerLogMessages(log);
