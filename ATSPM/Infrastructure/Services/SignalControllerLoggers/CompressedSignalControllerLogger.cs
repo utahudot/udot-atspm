@@ -117,7 +117,6 @@ namespace ATSPM.Infrastructure.Services.LocationControllerLoggers
             return logList;
         }
 
-        //TODO: Move into extension method
         protected virtual IEnumerable<ControllerLogArchive> ArchiveLogs(ControllerEventLog[] logs)
         {
             HashSet<ControllerEventLog> uniqueLogs = new HashSet<ControllerEventLog>(logs, new ControllerEventLogEqualityComparer());

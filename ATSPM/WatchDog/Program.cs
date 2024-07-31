@@ -81,7 +81,7 @@ namespace WatchDog
                        //);
 
                        s.AddEmailServices(h);
-                       s.AddScoped<EmailService>();
+                       s.AddScoped<WatchdogEmailService>();
 
                        s.AddAtspmDbContext(h);
                        s.AddScoped<ILocationRepository, LocationEFRepository>();

@@ -231,7 +231,6 @@ namespace ATSPM.Data
             }
 
             OnModelCreatingPartial(modelBuilder);
-            //TODO: call based class when using IdentityContext
         }
 
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);

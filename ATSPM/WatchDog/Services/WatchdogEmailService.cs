@@ -26,13 +26,13 @@ using ATSPM.Data;
 
 namespace WatchDog.Services
 {
-    public class EmailService
+    public class WatchdogEmailService
     {
-        private readonly ILogger<EmailService> logger;
+        private readonly ILogger<WatchdogEmailService> logger;
         private readonly IEmailService mailService;
 
-        public EmailService(
-            ILogger<EmailService> logger,
+        public WatchdogEmailService(
+            ILogger<WatchdogEmailService> logger,
             IEmailService mailService)
         {
             this.logger = logger;

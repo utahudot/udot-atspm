@@ -37,24 +37,23 @@ namespace ATSPM.Data.Configuration
             builder.Property(e => e.Icon)
                 .IsUnicode(true);
 
-            //TODO: add this back in later
-            //builder.HasData(
-            //    new LocationType()
-            //    {
-            //        Name = "Intersection",
-            //    },
-            //    new LocationType()
-            //    {
-            //        Name = "Ramp",
-            //    },
-            //    new LocationType()
-            //    {
-            //        Name = "Side Walk",
-            //    },
-            //    new LocationType()
-            //    {
-            //        Name = "Trail",
-            //    });
+            builder.HasData(
+                new LocationType()
+                {
+                    Name = "Intersection",
+                },
+                new LocationType()
+                {
+                    Name = "Ramp",
+                },
+                new LocationType()
+                {
+                    Name = "Side Walk",
+                },
+                new LocationType()
+                {
+                    Name = "Trail",
+                });
         }
     }
 }

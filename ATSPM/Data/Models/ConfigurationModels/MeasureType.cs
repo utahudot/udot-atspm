@@ -40,13 +40,13 @@ namespace ATSPM.Data.Models
 
         //TODO: update
         /// <summary>
-        /// Not sure what this does
+        /// 
         /// </summary>
         public bool ShowOnWebsite { get; set; }
 
         //TODO: update
         /// <summary>
-        /// Not sure what this does
+        /// 
         /// </summary>
         public bool ShowOnAggregationSite { get; set; }
 

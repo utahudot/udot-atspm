@@ -237,7 +237,6 @@ namespace ATSPM.Infrastructure.Services.EventLogImporters
     //            {
     //                if (IsAcceptableDateRange(log))
     //                {
-    //                    //TODO: add this back in
     //                    //progress?.Report(new ControllerDecodeProgress(log, decodedLogs.Count - 1, decodedLogs.Count));
 
     //                    yield return Tuple.Create(device, log);
