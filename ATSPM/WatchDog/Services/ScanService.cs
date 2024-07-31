@@ -38,7 +38,7 @@ namespace WatchDog.Services
         private readonly UserManager<ApplicationUser> userManager;
         private readonly RoleManager<IdentityRole> roleManager;
         private readonly WatchDogLogService logService;
-        private readonly EmailService emailService;
+        private readonly WatchdogEmailService emailService;
         private readonly ILogger<ScanService> logger;
 
         public ScanService(
@@ -53,7 +53,7 @@ namespace WatchDog.Services
             UserManager<ApplicationUser> userManager,
             RoleManager<IdentityRole> roleManager,
             WatchDogLogService logService,
-            EmailService emailService,
+            WatchdogEmailService emailService,
             ILogger<ScanService> logger)
         {
             this.LocationRepository = LocationRepository;

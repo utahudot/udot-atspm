@@ -14,10 +14,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
-using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using ATSPM.Domain.Services;
-using System.Collections.Generic;
 
 namespace ATSPM.Application.Repositories.ConfigurationRepositories
 {
@@ -26,25 +24,6 @@ namespace ATSPM.Application.Repositories.ConfigurationRepositories
     /// </summary>
     public interface IDetectorRepository : IAsyncRepository<Detector>
     {
-        //TODO: this needs to be moved out of this repo
-        //TODO: Figure out why LocationId isn't being used in the implmentation
-        /// <summary>
-        /// Gets a list of <see cref="Detector"/> that match <paramref name="directionType"/> and <paramref name="movementTypeIds"/>
-        /// </summary>
-        /// <param name="locationId">Don't know why but this isn't being used???</param>
-        /// <param name="directionType">Direction type to match to <see cref="Detector"/></param>
-        /// <param name="movementTypeIds">Movement type to match to <see cref="Detector"/></param>
-        /// <returns></returns>
-        IReadOnlyList<Detector> GetDetectorsBylocationIdMovementTypeIdDirectionTypeId(string locationId, DirectionTypes directionType, List<MovementTypes> movementTypeIds);
-
-        //TODO: this needs to be moved out of this repo
-        /// <summary>
-        /// Get maximum detector channel from Location controller
-        /// </summary>
-        /// <param name="id">Location controller id</param>
-        /// <returns></returns>
-        int GetMaximumDetectorChannel(int id);
-
         #region ExtensionMethods
 
         #endregion
