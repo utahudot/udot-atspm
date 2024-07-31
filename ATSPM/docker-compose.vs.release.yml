@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  configapi:
+    environment:
+      <<: *default-environment
+      ConnectionStrings__ConfigContext__ConnectionString: "Host=/cloudsql/atspm-406601:us-west3:atspm;Port=5432;Username=admin;Password=Avenue.2006;Database=ATSPM-Config-V2;Pooling=true;"
+      ConnectionStrings__AggregationContext__ConnectionString: "Host=/cloudsql/atspm-406601:us-west3:atspm;Port=5432;Username=admin;Password=Avenue.2006;Database=ATSPM-Aggregation-V1;Pooling=true;"
+      ConnectionStrings__EventLogContext__ConnectionString: "Host=/cloudsql/atspm-406601:us-west3:atspm;Port=5432;Username=admin;Password=Avenue.2006;Database=ATSPM-EventLogs-V1;Pooling=true;"
+      ConnectionStrings__IdentityContext__ConnectionString: "Host=/cloudsql/atspm-406601:us-west3:atspm;Port=5432;Username=admin;Password=Avenue.2006;Database=ATSPM-Identity;Pooling=true;"
+      
+  # Similarly add for other services if required
