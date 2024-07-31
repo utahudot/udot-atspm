@@ -158,7 +158,6 @@ var result = await test.ExecuteAsync(testData);
 //    .UseConsoleLifetime()
 //    .ConfigureLogging((h, l) =>
 //    {
-//        //TODO: add a GoogleLogger section
 //        //LoggingServiceOptions GoogleOptions = h.Configuration.GetSection("GoogleLogging").Get<LoggingServiceOptions>();
 //        //TODO: remove this to an extension method
 //        //DOTNET_ENVIRONMENT = Development,GOOGLE_APPLICATION_CREDENTIALS = M:\My Drive\ut-udot-atspm-dev-023438451801.json

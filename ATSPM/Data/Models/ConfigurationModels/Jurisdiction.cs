@@ -33,7 +33,6 @@ namespace ATSPM.Data.Models
         /// </summary>
         public string Name { get; set; }
         
-        //TODO: What is this?
         /// <summary>
         /// Mpo
         /// </summary>
