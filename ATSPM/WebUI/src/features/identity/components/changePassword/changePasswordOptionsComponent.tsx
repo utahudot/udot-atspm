@@ -26,29 +26,6 @@ export const ChangePasswordOptionsComponent = ({ handler }: props) => {
           <TextField
             required
             fullWidth
-            id="currentPassword"
-            label="Current Password"
-            name="currentPassword"
-            type={showCurrentPassword ? 'text' : 'password'}
-            onChange={(e) => handler.saveOldPassword(e.target.value)}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton
-                    edge="end"
-                    onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                  >
-                    {showCurrentPassword ? <VisibilityOff /> : <Visibility />}
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }}
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <TextField
-            required
-            fullWidth
             id="password"
             label="New Password"
             name="password"
