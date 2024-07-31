@@ -187,7 +187,7 @@ function Login() {
               <Grid item>
                 <Link
                   style={{ color: 'cornflowerblue' }}
-                  href="/forgot-password"
+                  href="/password-reset"
                 >
                   Forgot Password
                 </Link>
