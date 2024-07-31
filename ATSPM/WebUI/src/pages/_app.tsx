@@ -32,6 +32,7 @@ export default function App({ Component, pageProps }: AppProps) {
                 <div>
                   <CssBaseline />
                   <Head>
+                    <script async src="/__ENV.js" />
                     <meta
                       name="viewport"
                       content="width=device-width, minimum-scale=1, maximum-scale=5"
