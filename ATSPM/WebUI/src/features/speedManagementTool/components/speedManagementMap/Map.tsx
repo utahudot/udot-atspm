@@ -78,7 +78,7 @@ const SpeedMap = ({
       return ViolationColors.High
     }
 
-    if (val === null) return '#c1c9cc'
+    if (val === null) return '#000'
 
     if (val < 20) return 'rgba(0, 115, 255, 1)'
     if (val < 30) return 'rgba(0, 255, 170, 1)'
@@ -88,7 +88,7 @@ const SpeedMap = ({
     if (val < 55) return 'rgba(245, 114, 0, 1)'
     if (val < 65) return 'rgba(245, 57, 0, 1)'
     if (val < 75) return 'rgba(245, 0, 0, 1)'
-    return '#c1c9cc'
+    return '#000'
   }
 
   const renderer = L.canvas({ tolerance: 5 }) // Increase clickability of polylines
