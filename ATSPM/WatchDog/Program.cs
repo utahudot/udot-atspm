@@ -24,6 +24,7 @@ namespace WatchDog
             AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
             var host = Host.CreateDefaultBuilder()
+
                    //.ConfigureWebHostDefaults(webBuilder =>
                    //{
                    //    webBuilder.UseEnvironment("Development"); // Setting the environment
