@@ -24,29 +24,6 @@ namespace ATSPM.Application.Repositories.ConfigurationRepositories
     /// </summary>
     public interface IRouteLocationsRepository : IAsyncRepository<RouteLocation>
     {
-        //TODO: make sure these are still being used
-
-        /// <summary>
-        /// Get route from Location id
-        /// </summary>
-        /// <param name="id">id of Location</param>
-        /// <returns></returns>
-        RouteLocation GetByRoutelocationId(int id);
-
-        /// <summary>
-        /// Moves Location up in route order
-        /// </summary>
-        /// <param name="routeId">id of route</param>
-        /// <param name="routelocationId">id of Location route</param>
-        void MoveRouteLocationUp(int routeId, int routelocationId);
-
-        /// <summary>
-        /// Moves Location down in route order
-        /// </summary>
-        /// <param name="routeId">id of route</param>
-        /// <param name="routelocationId">id of Location route</param>
-        void MoveRouteLocationDown(int routeId, int routelocationId);
-
         #region Obsolete
 
         //[Obsolete("Use GetList instead")]

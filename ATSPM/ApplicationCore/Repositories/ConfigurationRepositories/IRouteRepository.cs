@@ -16,7 +16,6 @@
 #endregion
 using ATSPM.Data.Models;
 using ATSPM.Domain.Services;
-using Microsoft.EntityFrameworkCore.Storage;
 
 namespace ATSPM.Application.Repositories.ConfigurationRepositories
 {
@@ -25,10 +24,6 @@ namespace ATSPM.Application.Repositories.ConfigurationRepositories
     /// </summary>
     public interface IRouteRepository : IAsyncRepository<Route>
     {
-        IDbContextTransaction BeginTransaction();
-        //TODO: verify if this is needed or not
-        //Route GetRouteByIdAndDate(int routeId, DateTime startDate);
-
         #region Obsolete
 
         //[Obsolete("Use GetList instead")]

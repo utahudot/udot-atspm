@@ -298,7 +298,6 @@
 //            percentages.Add(amPeak, averageGapOuts[amPeak] / maxCycles[amPeak]);
 //            percentages.Add(pmPeak, averageGapOuts[pmPeak] / maxCycles[pmPeak]);
 
-//            //TODO: Change from average terminations to max cycles sum cycles for all phases separately for an hour take the max volume
 //            return percentages;
 //        }
 
