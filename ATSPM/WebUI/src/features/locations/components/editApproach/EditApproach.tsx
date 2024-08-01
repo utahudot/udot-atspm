@@ -8,11 +8,7 @@ import ApproachEditorRowHeader from '@/features/locations/components/editApproac
 import DeleteApproachModal from '@/features/locations/components/editApproach/DeleteApproachModal'
 import { hasUniqueDetectorChannels } from '@/features/locations/components/editApproach/utils/checkDetectors'
 import EditDetectors from '@/features/locations/components/editDetector/EditDetectors'
-import {
-  Approach,
-  Detector,
-  LocationExpanded,
-} from '@/features/locations/types'
+import { Detector, LocationExpanded } from '@/features/locations/types'
 import { ConfigEnum, useConfigEnums } from '@/hooks/useConfigEnums'
 import { Box, Collapse, Paper } from '@mui/material'
 import React, { useEffect, useState } from 'react'
@@ -114,6 +110,19 @@ function EditApproach({ approach, handler }: ApproachAdminProps) {
       }
     }
 
+    // Make sure all detectors have a channel
+    approach.detectors.forEach((detector) => {
+      if (!detector.detectorChannel) {
+        newErrors = {
+          ...newErrors,
+          [detector.id]: {
+            error: 'Detector Channel is required',
+            id: detector.id,
+          },
+        }
+      }
+    })
+
     // Set errors and exit if any errors are found
     if (!isEmptyObject(newErrors)) {
       setErrors(newErrors)
@@ -122,9 +131,14 @@ function EditApproach({ approach, handler }: ApproachAdminProps) {
 
     setErrors(null)
 
-    const modifiedApproach = JSON.parse(JSON.stringify(approach)) as Approach
+    const modifiedApproach = JSON.parse(
+      JSON.stringify(approach)
+    ) as ApproachForConfig
     if (modifiedApproach.isNew) {
       delete modifiedApproach.id
+      modifiedApproach.detectors.forEach((detector) => {
+        delete detector.approachId
+      })
     }
     delete modifiedApproach.directionType
     delete modifiedApproach.index

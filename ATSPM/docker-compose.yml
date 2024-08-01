@@ -1,5 +1,17 @@
 version: '3.8'
 
+x-environment: &default-environment
+  ASPNETCORE_ENVIRONMENT: Development
+  ASPNETCORE_Kestrel__Certificates__Default__Password: password
+  ASPNETCORE_Kestrel__Certificates__Default__Path: /root/.aspnet/https/aspnetapp.pfx
+  ConnectionStrings__ConfigContext__Provider: "PostgreSQL"
+  ConnectionStrings__AggregationContext__Provider: "PostgreSQL"
+  ConnectionStrings__EventLogContext__Provider: "PostgreSQL"
+  ConnectionStrings__IdentityContext__Provider: "PostgreSQL"
+  Jwt__ExpireDays: "1"
+  Jwt__Key: "ATSPMProductionIdentityOpenSource2024"
+  Jwt__Issuer: "AvenueConsultants"
+
 services:
   webui:
     build:
@@ -20,6 +32,12 @@ services:
       dockerfile: ./ConfigApi/Dockerfile
     ports:
       - "44313:44313"
+    environment:
+      <<: *default-environment
+      ASPNETCORE_URLS: https://+:44313
+    volumes:
+      - ./certs:/root/.aspnet/https:ro
+    user: root
 
   dataapi:
     build:

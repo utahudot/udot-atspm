@@ -1,5 +1,5 @@
+import { useSidebarStore } from '@/stores/sidebar'
 import { navigateToPage } from '@/utils/routes'
-import { useTheme } from '@emotion/react'
 import { Button, Menu, MenuItem, Typography } from '@mui/material'
 import { ArrowDropDownIcon } from '@mui/x-date-pickers'
 import { useState } from 'react'
@@ -11,11 +11,11 @@ const DropDownButton = ({
 }: {
   title: string
   icon: JSX.Element
-  menuItems: { name: string; icon: JSX.Element; link: string }[]
+  menuItems: { name: string; icon?: JSX.Element; link: string }[]
   disabled?: boolean
 }) => {
-  const theme = useTheme()
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null)
+  const { closeSideBar } = useSidebarStore()
   const open = Boolean(anchorEl)
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -29,6 +29,7 @@ const DropDownButton = ({
   }
 
   const handleNavigation = (path: string) => {
+    closeSideBar()
     navigateToPage(path)
     setAnchorEl(null)
   }
@@ -45,11 +46,11 @@ const DropDownButton = ({
         endIcon={<ArrowDropDownIcon />}
         sx={{
           mx: '2px',
-          color: theme.palette.text.primary,
+          color: 'black',
           textTransform: 'none',
           '& .MuiButton-endIcon': { ml: '0px' },
         }}
-        disabled={disabled} // Disable the button when needed
+        disabled={disabled}
       >
         <Typography fontWeight={400} sx={{ textTransform: 'none' }}>
           {title}
@@ -68,7 +69,6 @@ const DropDownButton = ({
                 display: 'flex',
                 alignItems: 'center',
                 textDecoration: 'none',
-                color: theme.palette.text.primary,
               }}
             >
               {item.name}

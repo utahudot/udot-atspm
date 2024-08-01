@@ -44,6 +44,10 @@ function Login() {
         const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
         return emailRegex.test(email)
     }
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+    return emailRegex.test(email)
+  }
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
@@ -82,16 +86,16 @@ function Login() {
         setPasswordError(null)
     }, [password])
 
-    if (data?.code === 200) {
-        const inOneMinute = addMinutes(new Date(), 1)
-        Cookies.set('token', data.token, {
-            secure: true,
-            sameSite: 'strict',
-        })
-        Cookies.set('claims', data.claims.join(','))
-        Cookies.set('loggedIn', 'True', { expires: inOneMinute })
-        window.location.href = '/locations'
-    }
+  if (data?.code === 200) {
+    const inOneMinute = addMinutes(new Date(), 1)
+    Cookies.set('token', data.token, {
+      secure: true,
+      sameSite: 'strict',
+    })
+    Cookies.set('claims', data.claims.join(','))
+    Cookies.set('loggedIn', 'True', { expires: inOneMinute })
+    window.location.href = '/'
+  }
 
     const redirectUser = () => {
         const externalLoginUrl = `${IDENTITY_URL}Account/external-login`
@@ -162,47 +166,47 @@ function Login() {
             >
               Sign In
             </Button> */}
-                        <LoadingButton
-                            loading={isLoading}
-                            type="submit"
-                            fullWidth
-                            variant="contained"
-                            sx={{ mt: 3, mb: 2, p: 1 }}
-                        >
-                            Sign In
-                        </LoadingButton>
-                        <Divider>
-                            <Typography variant="caption">or</Typography>
-                        </Divider>
-                        <Button
-                            variant="outlined"
-                            sx={{ p: 1, mb: 1, mt: 1 }}
-                            fullWidth
-                            onClick={() => redirectUser()}
-                        >
-                            <Box sx={{ width: '20px', height: '20px', mr: 1 }}></Box>
-                            Sign in with Utah Id
-                        </Button>
-                        <Grid container justifyContent="space-between">
-                            <Grid item>
-                                <Link
-                                    style={{ color: 'cornflowerblue' }}
-                                    href="/forgotpassword"
-                                >
-                                    Forgot Password
-                                </Link>
-                            </Grid>
-                            <Grid item>
-                                <Link style={{ color: 'cornflowerblue' }} href="/register">
-                                    Dont have a Account? Sign Up
-                                </Link>
-                            </Grid>
-                        </Grid>
-                    </Box>
-                </Box>
-            </Container>
-        </ResponsivePageLayout>
-    )
+            <LoadingButton
+              loading={isLoading}
+              type="submit"
+              fullWidth
+              variant="contained"
+              sx={{ mt: 3, mb: 2, p: 1 }}
+            >
+              Sign In
+            </LoadingButton>
+            <Divider>
+              <Typography variant="caption">or</Typography>
+            </Divider>
+            <Button
+              variant="outlined"
+              sx={{ p: 1, mb: 1, mt: 1 }}
+              fullWidth
+              onClick={() => redirectUser()}
+            >
+              <Box sx={{ width: '20px', height: '20px', mr: 1 }}></Box>
+              Sign in with Utah Id
+            </Button>
+            <Grid container justifyContent="space-between">
+              <Grid item>
+                <Link
+                  style={{ color: 'cornflowerblue' }}
+                  href="/password-reset"
+                >
+                  Forgot Password
+                </Link>
+              </Grid>
+              <Grid item>
+                <Link style={{ color: 'cornflowerblue' }} href="/register">
+                  Dont have a Account? Sign Up
+                </Link>
+              </Grid>
+            </Grid>
+          </Box>
+        </Box>
+      </Container>
+    </ResponsivePageLayout>
+  )
 }
 
 export default Login

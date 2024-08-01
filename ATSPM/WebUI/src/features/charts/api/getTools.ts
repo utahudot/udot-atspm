@@ -1,5 +1,6 @@
 import { reportsAxios } from '@/lib/axios'
 import { ExtractFnReturnType, QueryConfig } from '@/lib/react-query'
+import { dateToTimestamp } from '@/utils/dateTime'
 import { useQuery } from 'react-query'
 import { RawToolResponse, ToolOptions, ToolType } from '../common/types'
 import { TransformedToolResponse } from '../types'
@@ -23,7 +24,7 @@ type UseToolsOptions = BaseOptions & {
   toolOptions: ToolOptions
 }
 
-type StringBooleanMap = Record<string, boolean | string>
+type StringBooleanMap = Record<string, boolean | string | Date>
 
 export const mapStringBooleansToBoolean = (obj: ToolOptions) => {
   return Object.entries(obj).reduce<StringBooleanMap>((acc, [key, value]) => {
@@ -52,6 +53,12 @@ export const getTools = async (
   const endpoint = toolTypeApiMap[type]
 
   const transformedOptions = mapStringBooleansToBoolean(options)
+
+  if (type === ToolType.TimeSpaceHistoric) {
+    transformedOptions.start = dateToTimestamp(transformedOptions.start as Date)
+    transformedOptions.end = dateToTimestamp(transformedOptions.end as Date)
+  }
+
   const response = await reportsAxios.post(endpoint, transformedOptions)
 
   return transformToolData({

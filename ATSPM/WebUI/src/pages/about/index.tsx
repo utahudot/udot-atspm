@@ -1,7 +1,7 @@
 import Header from '@/components/header'
+import { ResponsivePageLayout } from '@/components/ResponsivePage'
 import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight'
 import { Box, Button, Grid, Typography } from '@mui/material'
-import Head from 'next/head'
 import Image from 'next/image'
 import Link from 'next/link'
 const About = () => {
@@ -85,19 +85,15 @@ const About = () => {
   ]
 
   return (
-    <>
-      <Head>
-        <title>About</title>
-      </Head>
-
+    <ResponsivePageLayout title={'About'} hideTitle>
       <Box>
         <Header title="About ATSPM" />
         <Box marginBottom={2}>
           <Typography variant="h4" component={'p'}>
-            Automated Traffic Location Performance Measures&apos;s show
-            real-time and historical functionality at locationized
-            intersections. This allows traffic engineers to directly measure
-            what previously could only be estimated and modeled.
+            Automated Traffic Signal Performance Measures&apos;s show real-time
+            and historical functionality at locationized intersections. This
+            allows traffic engineers to directly measure what previously could
+            only be estimated and modeled.
           </Typography>
         </Box>
         <Box marginBottom={10}>
@@ -145,7 +141,7 @@ const About = () => {
           ))}
         </Grid>
       </Box>
-    </>
+    </ResponsivePageLayout>
   )
 }
 

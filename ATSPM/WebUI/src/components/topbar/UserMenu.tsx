@@ -5,11 +5,11 @@ import Link from 'next/link'
 
 import { useUserInfo } from '@/features/identity/api/getUserInfo'
 import Login from '@/features/identity/components/signin'
+import { useSidebarStore } from '@/stores/sidebar'
 import {
   Avatar,
   Dialog,
   IconButton,
-  List,
   ListItemButton,
   ListItemIcon,
   ListItemText,
@@ -18,19 +18,27 @@ import {
 import Cookies from 'js-cookie'
 import React, { useEffect, useState } from 'react'
 
-interface ItemProps {
-  index: number
-  item: {
-    name: string
-    icon: JSX.Element
-    link: string
-  }
-  // handleClick: (
-  //   event: (event: MouseEvent<HTMLButtonElement, MouseEvent>) => void
-  // )
-}
+function getColorFromName(firstName: string, lastName: string): string {
+  const colors = [
+    '#1e824c',
+    '#007a7c',
+    '#00552a',
+    '#2574a9',
+    '#406098',
+    '#1460aa',
+    '#0a3055',
+    '#000060',
+    '#8859b6',
+    '#a74165',
+    '#8a2be2',
+    '#8d6708',
+    '#d43900',
+    '#802200',
+    '#dc2a2a',
+    '#aa0000',
+    '#5c0819',
+  ]
 
-function getColorFromName(firstName, lastName) {
   // Extract the first two letters of the first and last name
   const firstTwoFirstName = firstName.slice(0, 2).toUpperCase()
   const firstTwoLastName = lastName.slice(0, 2).toUpperCase()
@@ -39,7 +47,7 @@ function getColorFromName(firstName, lastName) {
   const combinedLetters = firstTwoFirstName + firstTwoLastName
 
   // Hash the combined letters
-  function hashString(str) {
+  function hashString(str: string): number {
     let hash = 0
     for (let i = 0; i < str.length; i++) {
       const char = str.charCodeAt(i)
@@ -51,43 +59,15 @@ function getColorFromName(firstName, lastName) {
 
   const hash = hashString(combinedLetters)
 
-  // Generate a random color from the hash integer
-  function intToRGB(i) {
-    const c = (i & 0x00ffffff).toString(16).toUpperCase()
-
-    return '00000'.substring(0, 6 - c.length) + c
-  }
-
-  const color = `#${intToRGB(hash)}`
-
-  return color
+  // Use the hash to select a color from the array
+  const colorIndex = Math.abs(hash) % colors.length
+  return colors[colorIndex]
 }
-
-const ListSubMenuItem = ({ index, item }: ItemProps) => {
-  return (
-    <ListItemButton
-      key={index}
-      // onClick={handleClick}
-      component={Link}
-      href={item.link}
-    >
-      <ListItemIcon>{item.icon}</ListItemIcon>
-      <ListItemText primary={item.name} />
-    </ListItemButton>
-  )
-}
-
-const userItems = [
-  {
-    name: 'Profile',
-    icon: <PersonOutlineOutlinedIcon fontSize="small" />,
-    link: '/user/profile',
-  },
-]
 
 export default function UserMenu() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const { data: userData, refetch } = useUserInfo({})
+  const { closeSideBar } = useSidebarStore()
 
   useEffect(() => {
     if (isLoggedIn) {
@@ -105,7 +85,7 @@ export default function UserMenu() {
   const handleSignOut = () => {
     const cookies = Cookies.get()
     Object.entries(cookies).forEach((value) => Cookies.remove(value[0]))
-    window.location.href = '/locations'
+    window.location.href = '/'
   }
 
   const handleLoginClose = () => {
@@ -118,12 +98,7 @@ export default function UserMenu() {
 
   const handleClose = () => {
     setAnchorElement(null)
-  }
-
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
-    if (event.key === 'Enter') {
-      isLoggedIn ? handleSignOut() : handleLoginOpen()
-    }
+    closeSideBar()
   }
 
   useEffect(() => {
@@ -169,26 +144,23 @@ export default function UserMenu() {
             role: 'menu',
           }}
         >
-
-            {isLoggedIn &&
-              userItems.map((item, index) => (
-                <ListSubMenuItem
-                  key={index}
-                  index={index}
-                  item={item}
-                  // handleClick={handleClose}
-                />
-              ))}
-            <ListItemButton
-              onClick={() => (isLoggedIn ? handleSignOut() : handleLoginOpen())}
-              role="menuitem"
-            >
+          {isLoggedIn && (
+            <ListItemButton component={Link} href={'/user/profile'}>
               <ListItemIcon>
-                <LoginOutlinedIcon fontSize="small" />
+                <PersonOutlineOutlinedIcon fontSize="small" />
               </ListItemIcon>
-              <ListItemText primary={isLoggedIn ? 'Log out' : 'Log in'} />
+              <ListItemText primary={'Profile'} />
             </ListItemButton>
-
+          )}
+          <ListItemButton
+            onClick={() => (isLoggedIn ? handleSignOut() : handleLoginOpen())}
+            role="menuitem"
+          >
+            <ListItemIcon>
+              <LoginOutlinedIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText primary={isLoggedIn ? 'Log out' : 'Log in'} />
+          </ListItemButton>
         </Menu>
       )}
       {openLogin && (

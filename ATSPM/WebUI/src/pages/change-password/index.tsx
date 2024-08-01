@@ -7,17 +7,17 @@ import { Alert, Box, Container, Snackbar, Typography } from '@mui/material'
 
 const ChangePassword = () => {
   const validTokenHandler = useVerifyTokenHandler()
-  const changePasswordHandler = useChangePasswordHandler()
+  const changePasswordHandler = useChangePasswordHandler({resetToken:validTokenHandler.resetToken})
 
   if (validTokenHandler.isLoadingValidity || !validTokenHandler.isValidToken) {
-    return
+    return 
   }
 
   if (
     changePasswordHandler.submitted &&
     changePasswordHandler.responseSuccess
   ) {
-    window.location.href = '/locations'
+    window.location.href = '/'
   }
 
   return (

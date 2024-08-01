@@ -36,10 +36,10 @@ export default function Signin() {
         }
     }, [data, queryData])
 
-    const validateEmail = (email: string) => {
-        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
-        return emailRegex.test(email)
-    }
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+    return emailRegex.test(email)
+  }
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         setErrors(null)
@@ -80,18 +80,18 @@ export default function Signin() {
         setPasswordError(null)
     }, [password])
 
-    if (status === 'success' && data !== undefined) {
-        const oneDay = addDays(new Date(), 1)
-        Cookies.set('token', data.token, {
-            expires: oneDay,
-            // httpOnly: true,
-            secure: true,
-            sameSite: 'strict',
-        })
-        Cookies.set('claims', data.claims.join(','), { expires: oneDay })
-        Cookies.set('loggedIn', 'True', { expires: oneDay })
-        window.location.href = '/locations'
-    }
+  if (status === 'success' && data !== undefined) {
+    const oneDay = addDays(new Date(), 1)
+    Cookies.set('token', data.token, {
+      expires: oneDay,
+      // httpOnly: true,
+      secure: true,
+      sameSite: 'strict',
+    })
+    Cookies.set('claims', data.claims.join(','), { expires: oneDay })
+    Cookies.set('loggedIn', 'True', { expires: oneDay })
+    window.location.href = '/performance-measures'
+  }
 
     const redirectUser = () => {
         const externalLoginUrl = `${IDENTITY_URL}Account/external-login`
@@ -100,50 +100,49 @@ export default function Signin() {
         window.open(externalLoginUrl, '_self')
     }
 
-    return (
-        <Container component="main" maxWidth="xs">
-            <Box
-                sx={{
-                    marginY: 6,
-                    marginX: 1,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                }}
-            >
-                <Box width={'60%'} marginBottom={'10px'}>
-                    <NextImage path="/images/atspm-logo-new.png" alt="ATSPM" />
-                </Box>
-                <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-                    <TextField
-                        margin="normal"
-                        required
-                        fullWidth
-                        id="email"
-                        label="Email Address"
-                        name="email"
-                        autoComplete="email"
-                        autoFocus
-                        onChange={(e) => setEmail(e.target.value)}
-                        error={!!emailError}
-                        helperText={emailError}
-
-                    />
-                    <TextField
-                        margin="normal"
-                        required
-                        fullWidth
-                        name="password"
-                        label="Password"
-                        type="password"
-                        id="password"
-                        autoComplete="current-password"
-                        onChange={(e) => setPassword(e.target.value)}
-                        error={!!passwordError}
-                        helperText={passwordError}
-                    />
-                    {errors && <Alert severity="error">{errors}</Alert>}
-                    {/* <FormControlLabel
+  return (
+    <Container component="main" maxWidth="xs">
+      <Box
+        sx={{
+          marginY: 6,
+          marginX: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}
+      >
+        <Box width={'60%'} marginBottom={'10px'}>
+          <NextImage path="/images/atspm-logo-new.png" alt="ATSPM" />
+        </Box>
+        <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            id="email"
+            label="Email Address"
+            name="email"
+            autoComplete="email"
+            autoFocus
+            onChange={(e) => setEmail(e.target.value)}
+            error={!!emailError}
+            helperText={emailError}
+          />
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            name="password"
+            label="Password"
+            type="password"
+            id="password"
+            autoComplete="current-password"
+            onChange={(e) => setPassword(e.target.value)}
+            error={!!passwordError}
+            helperText={passwordError}
+          />
+          {errors && <Alert severity="error">{errors}</Alert>}
+          {/* <FormControlLabel
             control={<Checkbox value="remember" color="primary" />}
             label="Remember me"
           /> */}
@@ -181,20 +180,20 @@ export default function Signin() {
             </Box>
             Sign in with Github
           </Button> */}
-                    <Grid container>
-                        <Grid item xs>
-                            <Link href="/forgotpassword" variant="body2">
-                                Forgot password?
-                            </Link>
-                        </Grid>
-                        <Grid item>
-                            <Link href="/register" variant="body2">
-                                {"Don't have an account? Sign Up"}
-                            </Link>
-                        </Grid>
-                    </Grid>
-                </Box>
-            </Box>
-        </Container>
-    )
+          <Grid container>
+            <Grid item xs>
+              <Link href="/password-reset" variant="body2">
+                Forgot password?
+              </Link>
+            </Grid>
+            <Grid item>
+              <Link href="/register" variant="body2">
+                {"Don't have an account? Sign Up"}
+              </Link>
+            </Grid>
+          </Grid>
+        </Box>
+      </Box>
+    </Container>
+  )
 }

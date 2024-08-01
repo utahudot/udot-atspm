@@ -55,14 +55,14 @@ export const useRegistrationHandler = (): RegistrationHandler => {
         }
     }, [error, queryData, status])
 
-    useEffect(() => {
-        if (status === 'success' && data !== undefined) {
-            Cookies.set('token', data.token)
-            Cookies.set('claims', data.claims.join(','))
-            Cookies.set('loggedIn', 'True')
-            window.location.href = '/locations'
-        }
-    }, [data, status])
+  useEffect(() => {
+    if (status === 'success' && data !== undefined) {
+      Cookies.set('token', data.token)
+      Cookies.set('claims', data.claims.join(','))
+      Cookies.set('loggedIn', 'True')
+      window.location.href = '/'
+    }
+  }, [data, status])
 
     useEffect(() => {
         if (status === 'success') {
@@ -79,15 +79,17 @@ export const useRegistrationHandler = (): RegistrationHandler => {
             return 'Password should be at least 8 characters long.'
         }
 
-        const hasUpperCase = /[A-Z]/;
-        const hasDigit = /\d/;
-        const hasSpecialChar = /[!@#$%^&*()_+\[\]{};':"\\|,.<>?]/;
+    const hasUpperCase = /(?=.*[A-Z])/
+    const hasDigit = /\d/
+    const hasSpecialChar = /[!@#$%^&*()_+\[\]{};':"\\|,.<>?]/
 
-        if (
-            !hasUpperCase.test(password) || !hasDigit.test(password) || !hasSpecialChar.test(password)
-        ) {
-            return 'Password should contain at least one uppercase letter, one digit, and one symbol.'
-        }
+    if (
+      !hasUpperCase.test(password) ||
+      !hasDigit.test(password) ||
+      !hasSpecialChar.test(password)
+    ) {
+      return 'Password should contain at least one uppercase letter, one digit, and one symbol.'
+    }
 
         return null
     }
@@ -97,11 +99,11 @@ export const useRegistrationHandler = (): RegistrationHandler => {
             return 'Email is required.'
         }
 
-        // Regular expression for validating email addresses
-        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
-        if (!emailRegex.test(email)) {
-            return 'Please enter a valid email address.'
-        }
+    // Regular expression for validating email addresses
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+    if (!emailRegex.test(email)) {
+      return 'Please enter a valid email address.'
+    }
 
         return null
     }

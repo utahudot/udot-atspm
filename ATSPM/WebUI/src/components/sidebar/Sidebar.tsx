@@ -1,51 +1,29 @@
+import { topbarHeight } from '@/components/topbar'
 import { useSideBarPermission } from '@/features/identity/pagesCheck'
 import { useSidebarStore } from '@/stores/sidebar'
 import AddchartOutlinedIcon from '@mui/icons-material/AddchartOutlined'
 import FileDownloadIcon from '@mui/icons-material/FileDownload'
 import ForkLeftOutlinedIcon from '@mui/icons-material/ForkLeftOutlined'
-import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined'
-import MenuOpenOutlinedIcon from '@mui/icons-material/MenuOpenOutlined'
 import RouteOutlinedIcon from '@mui/icons-material/RouteOutlined'
 import ShowChartOutlinedIcon from '@mui/icons-material/ShowChartOutlined'
-import {
-  Box,
-  Drawer,
-  IconButton,
-  List,
-  Paper,
-  useMediaQuery,
-  useTheme,
-} from '@mui/material'
+import SignalCellularAltOutlinedIcon from '@mui/icons-material/SignalCellularAltOutlined'
+import { Box, Drawer, List, useTheme } from '@mui/material'
 import Image from 'next/image'
-import React, { useEffect } from 'react'
+import React from 'react'
 import NavItem from './NavItem'
 import Sponsor from './Sponsor'
 import SubMenu from './SubMenu'
 
+export const sidebarWidth = 300
+
 export default function Sidebar() {
   const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'))
-  const { isSidebarOpen, toggleSidebar, closeSideBar, openSideBar } =
-    useSidebarStore()
-  const drawerVariant = isMobile ? 'temporary' : 'permanent'
+  const { isSidebarOpen, toggleSidebar } = useSidebarStore()
   const hasDataViewPermission = useSideBarPermission('data:view')
   const hasWatchDogPermission = useSideBarPermission('watchdog:view')
   const hasLTGRPermission = useSideBarPermission('Report:view')
 
-  useEffect(() => {
-    // TODO: fix mobile sidebar. set to auto false if page loads in mobile
-    let timer: NodeJS.Timeout
-    if (isMobile) {
-      timer = setTimeout(() => {
-        closeSideBar()
-      }, 0)
-    } else {
-      openSideBar()
-    }
-    return () => clearTimeout(timer)
-  }, [isMobile, closeSideBar, openSideBar])
-
-  const toggleMobileDrawer =
+  const toggleDrawer =
     () => (event: React.KeyboardEvent | React.MouseEvent) => {
       if (
         (event.type === 'keydown' &&
@@ -60,98 +38,58 @@ export default function Sidebar() {
   return (
     <Box
       sx={{
-        height: '100vh',
-        width: isMobile ? 'auto' : isSidebarOpen ? '270px' : '10px',
+        width: isSidebarOpen ? sidebarWidth : '0px',
         transition: 'width 0.2s ease-out',
         overflow: 'hidden',
       }}
     >
-      <Box
-        sx={{
-          position: 'fixed',
-          top: '23px',
-          left: isSidebarOpen ? '250px' : '10px',
-          transition: 'left 0.2s ease-out',
-          zIndex: 1_300,
-        }}
-      >
-        <Paper>
-          <IconButton
-            type="button"
-            sx={{
-              p: 1,
-              transform: isSidebarOpen ? 'rotateY(0deg)' : 'rotateY(180deg)',
-              transition: 'transform 0.5s',
-            }}
-            aria-label={isSidebarOpen ? 'Collapse menu' : 'Expand menu'}
-            onClick={toggleSidebar}
-          >
-            <MenuOpenOutlinedIcon fontSize="small" />
-          </IconButton>
-        </Paper>
-      </Box>
       <Drawer
-        variant={drawerVariant}
+        variant="permanent"
         open={isSidebarOpen}
-        onClose={toggleMobileDrawer()}
-        anchor="left"
+        onClose={toggleDrawer()}
         PaperProps={{
           sx: {
-            transform: isSidebarOpen ? 'translateX(0)' : 'translateX(-270px)',
+            height: `calc(100% - ${topbarHeight}px)`,
+            top: topbarHeight,
+            transform: isSidebarOpen
+              ? 'translateX(0)'
+              : `translateX(-${sidebarWidth}px)`,
             transition: 'transform 0.2s ease-out',
             backgroundColor: theme.palette.background.paper,
             border: 'none',
             boxShadow: '2',
-            width: '270px',
+            width: sidebarWidth,
           },
         }}
       >
-        <Box
-          sx={{
-            width: '185px',
-            margin: '20px',
-            marginBottom: '10px',
-            marginX: 'auto',
-          }}
-        >
-          <Image
-            alt="ATSPM Logo"
-            src="/images/atspm-logo-new.png"
-            priority
-            width={0}
-            height={0}
-            sizes="100vw"
-            style={{ width: '100%', height: 'auto', cursor: 'pointer' }}
-          />
-        </Box>
         <List>
           <SubMenu subheader={'Operations'}>
             <NavItem
-              icon={<LocationOnOutlinedIcon />}
-              text={'Locations'}
-              url={'/locations'}
+              icon={<SignalCellularAltOutlinedIcon />}
+              text={'Performance Measures'}
+              url={'/performance-measures'}
             />
             <NavItem
               icon={<ShowChartOutlinedIcon />}
               text={'Time-Space Diagrams'}
-              url={'/tools/time-space-diagrams'}
+              url={'/time-space-diagrams'}
             />
             <NavItem
               icon={<RouteOutlinedIcon />}
               text={'Link Pivot'}
-              url={'/tools/link-pivot'}
+              url={'/link-pivot'}
             />
             {hasLTGRPermission && (
               <NavItem
                 icon={<ForkLeftOutlinedIcon />}
                 text={'Left Turn Gap Report'}
-                url={'/tools/left-turn-gap-report'}
+                url={'/left-turn-gap-report'}
               />
             )}
             <NavItem
               icon={<AddchartOutlinedIcon />}
               text={'Aggregate Charts'}
-              url={'/data/aggregate'}
+              url={'/aggregate-charts'}
             />
             {hasWatchDogPermission && (
               <NavItem
@@ -168,7 +106,7 @@ export default function Sidebar() {
                   />
                 }
                 text={'Watchdog'}
-                url={'/admin/watchdog'}
+                url={'/watchdog'}
               />
             )}
           </SubMenu>
@@ -177,7 +115,7 @@ export default function Sidebar() {
               <NavItem
                 icon={<FileDownloadIcon />}
                 text={'Export'}
-                url={'/data/export'}
+                url={'/export'}
               />
             </SubMenu>
           )}
@@ -194,6 +132,20 @@ export default function Sidebar() {
           <Sponsor />
         </Box>
       </Drawer>
+      {isSidebarOpen && (
+        <Box
+          sx={{
+            position: 'fixed',
+            top: topbarHeight,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.3)',
+            zIndex: theme.zIndex.drawer - 1,
+          }}
+          onClick={toggleDrawer()}
+        />
+      )}
     </Box>
   )
 }
