@@ -12,7 +12,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
 {
@@ -347,27 +346,43 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             var daysOfWeekCondition = string.Join(", ", options.DaysOfWeek.Select(day => ((int)day + 1).ToString()));
 
             var baseQuery = $@"
-                            WITH RouteStats AS (
+                            WITH FilteredSegments AS (
                                 SELECT
-                                    r.Id AS SegmentId,
-                                    hs.SourceId,
+                                    s.Id,
+                                    se.SourceId,
+                                    s.SpeedLimit,
+                                    s.Name,
+                                    ST_AsText(s.Shape) AS Shape
+                                FROM
+                                    `atspm-406601.speed_dataset.segment` AS s
+                                JOIN
+                                    `atspm-406601.speed_dataset.segment_entity` AS se
+                                ON
+                                    s.Id = se.SegmentId
+                                WHERE
+                                    se.SourceId = @sourceId
+                            ),
+                            RouteStats AS (
+                                SELECT
+                                    fs.Id AS SegmentId,
+                                    fs.SourceId,
                                     AVG(hs.Average) AS Avg,
                                     APPROX_QUANTILES(hs.FifteenthSpeed, 100)[ORDINAL(85)] AS Percentilespd_15,
                                     APPROX_QUANTILES(hs.EightyFifthSpeed, 100)[ORDINAL(85)] AS Percentilespd_85,
                                     APPROX_QUANTILES(hs.NinetyFifthSpeed, 100)[ORDINAL(85)] AS Percentilespd_95,
                                     SUM(hs.Flow) AS Flow,
-                                    r.SpeedLimit,
-                                    r.Name,
-                                    ANY_VALUE(ST_AsText(r.Shape)) AS Shape
+                                    fs.SpeedLimit,
+                                    fs.Name,
+                                    fs.Shape
                                 FROM
-                                    `atspm-406601.speed_dataset.segment` AS r
+                                    FilteredSegments AS fs
                                 LEFT JOIN (
                                     SELECT *
                                     FROM `atspm-406601.speed_dataset.hourly_speed`";
 
             var groupByClause = @"
                                 GROUP BY
-                                    r.Id, hs.SourceId, r.SpeedLimit, r.Name
+                                    fs.Id, fs.SourceId, fs.SpeedLimit, fs.Name, fs.Shape
                                 )";
 
             var selectClause = $@"SELECT
@@ -397,7 +412,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
                                 GROUP BY
                                     rs.SegmentId, rs.SourceId, rs.Avg, rs.Percentilespd_15, rs.Percentilespd_85, rs.Percentilespd_95, rs.Flow, rs.SpeedLimit, rs.Name, rs.Shape;";
 
-            string onClause = "ON r.Id = hs.SegmentId";
+            string onClause = "ON fs.Id = hs.SegmentId";
 
             string whereClause = "";
 
@@ -437,6 +452,73 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             }
             var finalQuery = baseQuery + whereClause + onClause + groupByClause + selectClause;
             return finalQuery;
+//            WITH FilteredSegments AS(
+//    SELECT
+//        s.Id,
+//            se.SourceId,
+//            s.SpeedLimit,
+//        s.Name,
+//        ST_AsText(s.Shape) AS Shape
+//    FROM
+//        `atspm - 406601.speed_dataset.segment` AS s
+//    JOIN
+//        `atspm - 406601.speed_dataset.segment_entity` AS se
+//    ON
+//        s.Id = se.SegmentId
+//    WHERE
+//        se.SourceId = @sourceId
+//),
+//RouteStats AS(
+//    SELECT
+//        fs.Id AS SegmentId,
+//        fs.SourceId,
+//        AVG(hs.Average) AS Avg,
+//        APPROX_QUANTILES(hs.FifteenthSpeed, 100)[ORDINAL(85)] AS Percentilespd_15,
+//        APPROX_QUANTILES(hs.EightyFifthSpeed, 100)[ORDINAL(85)] AS Percentilespd_85,
+//        APPROX_QUANTILES(hs.NinetyFifthSpeed, 100)[ORDINAL(85)] AS Percentilespd_95,
+//            SUM(hs.Flow) AS Flow,
+//        fs.SpeedLimit,
+//        fs.Name,
+//        fs.Shape
+//    FROM
+//        FilteredSegments AS fs
+//    LEFT JOIN(
+//            SELECT *
+//        FROM `atspm - 406601.speed_dataset.hourly_speed`
+//        WHERE DATE BETWEEN @startDate AND @endDate
+//          AND TIME(BinStartTime) BETWEEN @startTime AND @endTime
+//          AND EXTRACT(DAYOFWEEK FROM DATE) IN(1, 2, 3, 4, 5, 6, 7)
+//    ) AS hs
+//    ON fs.Id = hs.SegmentId
+//    GROUP BY
+//        fs.Id, fs.SourceId, fs.SpeedLimit, fs.Name, fs.Shape
+//)
+//SELECT
+//    rs.SegmentId,
+//    rs.SourceId,
+//    rs.Avg,
+//    rs.Percentilespd_15,
+//    rs.Percentilespd_85,
+//    rs.Percentilespd_95,
+//    rs.Flow,
+//    rs.SpeedLimit,
+//    rs.Name,
+//    rs.Shape,
+//    IFNULL(
+//        SAFE_CAST(
+//            ROUND(SUM(
+//                CASE
+//                    WHEN rs.Percentilespd_15 >= rs.SpeedLimit THEN 0.85 * rs.Flow
+//                    WHEN rs.Avg >= rs.SpeedLimit THEN 0.5 * rs.Flow
+//                    WHEN rs.Percentilespd_85 >= rs.SpeedLimit THEN 0.15 * rs.Flow
+//                    WHEN rs.Percentilespd_95 >= rs.SpeedLimit THEN 0.05 * rs.Flow
+//                    ELSE 0
+//                END
+//            ) / NULLIF(SUM(rs.Flow), 0)) AS INT64), 0) AS EstimatedViolations
+//FROM
+//    RouteStats AS rs
+//GROUP BY
+//    rs.SegmentId, rs.SourceId, rs.Avg, rs.Percentilespd_15, rs.Percentilespd_85, rs.Percentilespd_95, rs.Flow, rs.SpeedLimit, rs.Name, rs.Shape;
 
             //query = $@"
             //                    WITH RouteStats AS (
