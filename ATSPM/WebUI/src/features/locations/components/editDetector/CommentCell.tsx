@@ -29,9 +29,10 @@ import DeleteConfirmationModal from './DeleteCommentConfirmationModal'
 
 interface CommentCellProps {
   detector: Detector
+  disabled?: boolean
 }
 
-const CommentCell = ({ detector }: CommentCellProps) => {
+const CommentCell = ({ detector, disabled }: CommentCellProps) => {
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null)
   const [modalOpen, setModalOpen] = useState(false)
   const [deleteModalOpen, setDeleteModalOpen] = useState(false)
@@ -118,7 +119,7 @@ const CommentCell = ({ detector }: CommentCellProps) => {
   return (
     <TableCell>
       {detector.id ? (
-        <IconButton onClick={handleOpenPopover}>
+        <IconButton onClick={handleOpenPopover} disabled={disabled}>
           <Badge badgeContent={comments.length} color="primary">
             <ChatBubbleIcon />
           </Badge>
