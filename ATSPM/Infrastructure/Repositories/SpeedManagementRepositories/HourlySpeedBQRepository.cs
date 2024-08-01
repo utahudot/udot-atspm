@@ -253,7 +253,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             try
             {
                 var startDateTime = new DateTime(convertedStartDate.Year, convertedStartDate.Month, convertedStartDate.Day, convertedStartTime.Hour, convertedStartTime.Minute, convertedStartTime.Second);
-                var endDateTime = new DateTime(convertedEndDate.Year, convertedEndDate.Month, convertedEndDate.Day, convertedEndTime.Hour, convertedEndTime.Minute, convertedEndTime.Second);
+                var end0DateTime = new DateTime(convertedEndDate.Year, convertedEndDate.Month, convertedEndDate.Day, convertedEndTime.Hour, convertedEndTime.Minute, convertedEndTime.Second);
                 var query = CreateQuery(options);
                 BigQueryResults queryResults;
                 BigQueryParameter[] parameters;
@@ -361,10 +361,9 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
                                     ANY_VALUE(ST_AsText(r.Shape)) AS Shape
                                 FROM
                                     `atspm-406601.speed_dataset.segment` AS r
-                                LEFT JOIN
-                                    `atspm-406601.speed_dataset.hourly_speed` AS hs
-                                ON
-                                     r.Id = hs.SegmentId";
+                                LEFT JOIN (
+                                    SELECT *
+                                    FROM `atspm-406601.speed_dataset.hourly_speed`";
 
             var groupByClause = @"
                                 GROUP BY
@@ -398,37 +397,45 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
                                 GROUP BY
                                     rs.SegmentId, rs.SourceId, rs.Avg, rs.Percentilespd_15, rs.Percentilespd_85, rs.Percentilespd_95, rs.Flow, rs.SpeedLimit, rs.Name, rs.Shape;";
 
-            string onClause = "";
+            string onClause = "ON r.Id = hs.SegmentId";
+
+            string whereClause = "";
 
             switch (options.AnalysisPeriod)
             {
                 case AnalysisPeriod.AllDay:
-                    onClause = $@"
-                                    AND DATE BETWEEN @startDate AND @endDate
+                    whereClause = $@"
+                                    WHERE DATE BETWEEN @startDate AND @endDate
                                     AND EXTRACT(DAYOFWEEK FROM DATE) IN ({daysOfWeekCondition})
-                                    WHERE hs.SourceId = @sourceId";
+                                    AND SourceId = @sourceId
+                                ) AS hs
+                                ";
                     break;
                 case AnalysisPeriod.PeekPeriod:
-                    onClause = $@"
-                                    AND DATE BETWEEN @startDate AND @endDate AND
+                    whereClause = $@"
+                                    WHERE DATE BETWEEN @startDate AND @endDate AND
                                     (
                                         (TIME(BinStartTime) BETWEEN TIME '06:00:00' AND TIME '09:00:00') OR
                                         (TIME(BinStartTime) BETWEEN TIME '15:00:00' AND TIME '18:00:00')
                                     ) AND
                                     EXTRACT(DAYOFWEEK FROM DATE) IN ({daysOfWeekCondition})
-                                    WHERE hs.SourceId = @sourceId";
+                                    AND SourceId = @sourceId
+                                ) AS hs
+                                ";
                     break;
                 case AnalysisPeriod.CustomHour:
-                    onClause = $@"
-                                    AND DATE BETWEEN @startDate AND @endDate
-                                    AND TIME(hs.BinStartTime) BETWEEN @startTime AND @endTime
+                    whereClause = $@"
+                                    WHERE DATE BETWEEN @startDate AND @endDate
+                                    AND TIME(BinStartTime) BETWEEN @startTime AND @endTime
                                     AND EXTRACT(DAYOFWEEK FROM DATE) IN ({daysOfWeekCondition})
-                                    WHERE hs.SourceId = @sourceId";
+                                    AND SourceId = @sourceId
+                                ) AS hs
+                                ";
                     break;
                 default:
                     break;
             }
-            var finalQuery = baseQuery + onClause + groupByClause + selectClause;
+            var finalQuery = baseQuery + whereClause + onClause + groupByClause + selectClause;
             return finalQuery;
 
             //query = $@"
