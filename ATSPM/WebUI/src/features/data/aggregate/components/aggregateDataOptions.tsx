@@ -39,7 +39,7 @@ const movementList = [
 ]
 
 const directionFilter = [
-  'EastBound',
+  'Eastbound',
   'Westbound',
   'Northbound',
   'Southbound',
@@ -54,7 +54,7 @@ const daysOfWeekList: string[] = [
   'Monday',
   'Tuesday',
   'Wednesday',
-  'Thrusday',
+  'Thursday',
   'Friday',
   'Saturday',
 ]
