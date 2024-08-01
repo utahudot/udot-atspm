@@ -36,9 +36,7 @@ export const getCongestionTrackings = async (
     'CongestionTracking/GetReportData',
     options
   )
-  const x = transformCongestionTrackerData(response)
-  console.log('x', x)
-  return x
+  return transformCongestionTrackerData(response)
 }
 
 type QueryFnType = typeof getCongestionTrackings
