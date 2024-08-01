@@ -64,6 +64,36 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             }
         }
 
+        public async Task<List<HourlySpeed>> GetHourlySpeedsForTimePeriod(Guid segmentId, DateTime startDate, DateTime endDate, DateTime startTime, DateTime endTime)
+        {
+            string query = $@"
+                SELECT *
+                FROM `{_datasetId}.{_tableId}`
+                WHERE 
+                    SegmentId = @segmentId AND
+                    Date BETWEEN @startDate AND @endDate AND
+                    BinStartTime BETWEEN @startTime AND @endTime
+                ORDER BY Date ASC, BinStartTime ASC;";
+
+            var parameters = new List<BigQueryParameter>
+            {
+                new BigQueryParameter("segmentId", BigQueryDbType.String, segmentId),
+                new BigQueryParameter("startDate", BigQueryDbType.Date, startDate.Date),
+                new BigQueryParameter("endDate", BigQueryDbType.Date, endDate.Date),
+                new BigQueryParameter("startTime", BigQueryDbType.Time, startTime.TimeOfDay),
+                new BigQueryParameter("endTime", BigQueryDbType.Time, endTime.TimeOfDay)
+            };
+
+            var result = await _client.ExecuteQueryAsync(query, parameters);
+            var monthlyAggregations = new List<HourlySpeed>();
+            foreach (var row in result)
+            {
+                monthlyAggregations.Add(MapRowToEntity(row));
+            }
+
+            return monthlyAggregations;
+        }
+
         #region Overrides
         protected override BigQueryInsertRow CreateRow(HourlySpeed item)
         {
@@ -240,7 +270,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
         {
             var convertedStartDate = DateOnly.FromDateTime(options.StartDate);
             var convertedEndDate = DateOnly.FromDateTime(options.EndDate);
-            TimeOnly convertedStartTime = new(0,0);
+            TimeOnly convertedStartTime = new(0, 0);
             TimeOnly convertedEndTime = new(0, 0);
 
             if (options.StartTime.HasValue && options.EndTime.HasValue)
@@ -304,7 +334,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
                 throw ex;
             }
 
-           
+
         }
 
         private static RouteSpeed TransformRowToRouteSpeed(BigQueryRow row)

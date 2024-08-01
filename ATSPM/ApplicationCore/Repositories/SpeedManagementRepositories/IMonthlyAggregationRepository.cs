@@ -1,4 +1,4 @@
-﻿using ATSPM.Data.Models.SpeedManagementAggregation;
+﻿using ATSPM.Data.Models.SpeedManagement.MonthlyAggregation;
 using ATSPM.Domain.Services;
 using System;
 using System.Collections.Generic;
@@ -8,6 +8,7 @@ namespace ATSPM.Application.Repositories.SpeedManagementRepositories
 {
     public interface IMonthlyAggregationRepository : IAsyncRepository<MonthlyAggregation>
     {
+        Task<List<MonthlyAggregation>> AllAggregationsOverTimePeriod();
         Task<List<MonthlyAggregation>> SelectBinStartTimesInRange(DateTime startTime, DateTime endTime, MonthlyAggregation monthlyAggregation);
         Task<List<MonthlyAggregation>> SelectBinStartTimesInRangeFromSource(DateTime startTime, DateTime endTime, MonthlyAggregation monthlyAggregation);
         Task<MonthlyAggregation> SelectByBinTimeSegment(DateTime binStartTime, MonthlyAggregation monthlyAggregation);

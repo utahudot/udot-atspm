@@ -1,4 +1,4 @@
-﻿using ATSPM.Data.Models.SpeedManagementAggregation;
+﻿using ATSPM.Data.Models.SpeedManagement.MonthlyAggregation;
 using ATSPM.Infrastructure.Services.SpeedManagementServices;
 using Microsoft.AspNetCore.Mvc;
 
