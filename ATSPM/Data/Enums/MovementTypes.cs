@@ -23,5 +23,7 @@ namespace ATSPM.Data.Enums
         TL = 5,
         [Display(Name = "Northwest", Order = 6)]
         NW = 6,
+        [Display(Name = "left-thru-right", Order = 7)]
+        LTR = 7,
     }
 }
