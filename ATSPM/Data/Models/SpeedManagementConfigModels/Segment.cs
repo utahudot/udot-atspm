@@ -4,7 +4,7 @@ namespace ATSPM.Data.Models.SpeedManagementConfigModels
 {
     public class Segment
     {
-        public string Id { get; set; }
+        public Guid Id { get; set; }
         public string UdotRouteNumber { get; set; }
         public double StartMilePoint { get; set; }
         public double EndMilePoint { get; set; }

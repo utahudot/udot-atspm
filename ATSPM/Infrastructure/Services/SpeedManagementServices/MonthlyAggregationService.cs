@@ -1,5 +1,5 @@
 ﻿using ATSPM.Application.Repositories.SpeedManagementRepositories;
-using ATSPM.Data.Models.SpeedManagementAggregation;
+using ATSPM.Data.Models.SpeedManagement.MonthlyAggregation;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -36,6 +36,7 @@ namespace ATSPM.Infrastructure.Services.SpeedManagementServices
             return await GetMonthlyAggregationById(monthlyAggregationId);
         }
 
+        //For the DeleteOldEvents
         public async Task DeleteMonthlyAggregation(MonthlyAggregation existingMonthlyAggregation)
         {
             if (existingMonthlyAggregation.Id == null)
@@ -43,6 +44,13 @@ namespace ATSPM.Infrastructure.Services.SpeedManagementServices
                 return;
             }
             await monthlyAggregationRepository.RemoveAsync(existingMonthlyAggregation);
+        }
+
+        //For the DeleteOldEvents
+        public async Task<List<MonthlyAggregation>> AllAggregationsOverTimePeriodAsync()
+        {
+            var other = await monthlyAggregationRepository.AllAggregationsOverTimePeriod();
+            return other;
         }
 
         ///////////////////// 

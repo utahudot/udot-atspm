@@ -1,5 +1,5 @@
 ﻿using ATSPM.Application.Repositories.SpeedManagementRepositories;
-using ATSPM.Data.Models.SpeedManagementAggregation;
+using ATSPM.Data.Models.SpeedManagement.MonthlyAggregation;
 using ATSPM.Domain.Extensions;
 using Google.Cloud.BigQuery.V2;
 using Microsoft.Extensions.Logging;
@@ -134,130 +134,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             var oldRow = await LookupAsync(item.Id);
             if (oldRow != null)
             {
-                var queryBuilder = new StringBuilder();
-                queryBuilder.Append($"UPDATE `{_datasetId}.{_tableId}` SET ");
-
-                queryBuilder.Append($"CreatedDate = '{item.CreatedDate:O}', ");
-                queryBuilder.Append($"BinStartTime = '{item.BinStartTime:O}', ");
-                queryBuilder.Append($"SegmentId = '{item.SegmentId}', ");
-                queryBuilder.Append($"SourceId = {item.SourceId}, ");
-
-                if (item.AllDayAverageSpeed.HasValue)
-                {
-                    queryBuilder.Append($"AllDayAverageSpeed = {item.AllDayAverageSpeed.Value}, ");
-                }
-
-                if (item.AllDayViolations.HasValue)
-                {
-                    queryBuilder.Append($"AllDayViolations = {item.AllDayViolations.Value}, ");
-                }
-
-                if (item.AllDayExtremeViolations.HasValue)
-                {
-                    queryBuilder.Append($"AllDayExtremeViolations = {item.AllDayExtremeViolations.Value}, ");
-                }
-
-                if (item.OffPeakAverageSpeed.HasValue)
-                {
-                    queryBuilder.Append($"OffPeakAverageSpeed = {item.OffPeakAverageSpeed.Value}, ");
-                }
-
-                if (item.OffPeakViolations.HasValue)
-                {
-                    queryBuilder.Append($"OffPeakViolations = {item.OffPeakViolations.Value}, ");
-                }
-
-                if (item.OffPeakExtremeViolations.HasValue)
-                {
-                    queryBuilder.Append($"OffPeakExtremeViolations = {item.OffPeakExtremeViolations.Value}, ");
-                }
-
-                if (item.AmPeakAverageSpeed.HasValue)
-                {
-                    queryBuilder.Append($"AmPeakAverageSpeed = {item.AmPeakAverageSpeed.Value}, ");
-                }
-
-                if (item.AmPeakViolations.HasValue)
-                {
-                    queryBuilder.Append($"AmPeakViolations = {item.AmPeakViolations.Value}, ");
-                }
-
-                if (item.AmPeakExtremeViolations.HasValue)
-                {
-                    queryBuilder.Append($"AmPeakExtremeViolations = {item.AmPeakExtremeViolations.Value}, ");
-                }
-
-                if (item.PmPeakAverageSpeed.HasValue)
-                {
-                    queryBuilder.Append($"PmPeakAverageSpeed = {item.PmPeakAverageSpeed.Value}, ");
-                }
-
-                if (item.PmPeakViolations.HasValue)
-                {
-                    queryBuilder.Append($"PmPeakViolations = {item.PmPeakViolations.Value}, ");
-                }
-
-                if (item.PmPeakExtremeViolations.HasValue)
-                {
-                    queryBuilder.Append($"PmPeakExtremeViolations = {item.PmPeakExtremeViolations.Value}, ");
-                }
-
-                if (item.MidDayAverageSpeed.HasValue)
-                {
-                    queryBuilder.Append($"MidDayAverageSpeed = {item.MidDayAverageSpeed.Value}, ");
-                }
-
-                if (item.MidDayViolations.HasValue)
-                {
-                    queryBuilder.Append($"MidDayViolations = {item.MidDayViolations.Value}, ");
-                }
-
-                if (item.MidDayExtremeViolations.HasValue)
-                {
-                    queryBuilder.Append($"MidDayExtremeViolations = {item.MidDayExtremeViolations.Value}, ");
-                }
-
-                if (item.EveningAverageSpeed.HasValue)
-                {
-                    queryBuilder.Append($"EveningAverageSpeed = {item.EveningAverageSpeed.Value}, ");
-                }
-
-                if (item.EveningViolations.HasValue)
-                {
-                    queryBuilder.Append($"EveningViolations = {item.EveningViolations.Value}, ");
-                }
-
-                if (item.EveningExtremeViolations.HasValue)
-                {
-                    queryBuilder.Append($"EveningExtremeViolations = {item.EveningExtremeViolations.Value}, ");
-                }
-
-                if (item.EarlyMorningAverageSpeed.HasValue)
-                {
-                    queryBuilder.Append($"EarlyMorningAverageSpeed = {item.EarlyMorningAverageSpeed.Value}, ");
-                }
-
-                if (item.EarlyMorningViolations.HasValue)
-                {
-                    queryBuilder.Append($"EarlyMorningViolations = {item.EarlyMorningViolations.Value}, ");
-                }
-
-                if (item.EarlyMorningExtremeViolations.HasValue)
-                {
-                    queryBuilder.Append($"EarlyMorningExtremeViolations = {item.EarlyMorningExtremeViolations.Value}, ");
-                }
-
-                queryBuilder.Append($"DataQuality = {item.DataQuality}");
-
-                // Remove the last comma and space if present
-                if (queryBuilder[queryBuilder.Length - 2] == ',')
-                {
-                    queryBuilder.Length -= 2;
-                }
-
-                queryBuilder.Append($" WHERE Id = @key");
-
-                var query = queryBuilder.ToString();
+                string query = updateQuery(item);
 
                 var parameters = new List<BigQueryParameter>
         {
@@ -268,36 +145,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             }
             else
             {
-                var query = $"INSERT INTO `{_datasetId}.{_tableId}` " +
-                    $"(Id, CreatedDate, BinStartTime, SegmentId, SourceId, AllDayAverageSpeed, AllDayViolations, AllDayExtremeViolations, OffPeakAverageSpeed, OffPeakViolations, OffPeakExtremeViolations, AmPeakAverageSpeed, AmPeakViolations, AmPeakExtremeViolations, PmPeakAverageSpeed, PmPeakViolations, PmPeakExtremeViolations, MidDayAverageSpeed, MidDayViolations, MidDayExtremeViolations, EveningAverageSpeed, EveningViolations, EveningExtremeViolations, EarlyMorningAverageSpeed, EarlyMorningViolations, EarlyMorningExtremeViolations, DataQuality) " +
-                    $"VALUES (" +
-                    $"GENERATE_UUID(), " +
-                    $"'{item.CreatedDate:O}', " +
-                    $"'{item.BinStartTime:O}', " +
-                    $"'{item.SegmentId}', " +
-                    $"{item.SourceId}, " +
-                    $"{(item.AllDayAverageSpeed.HasValue ? item.AllDayAverageSpeed.Value.ToString() : "NULL")}, " +
-                    $"{(item.AllDayViolations.HasValue ? item.AllDayViolations.Value.ToString() : "NULL")}, " +
-                    $"{(item.AllDayExtremeViolations.HasValue ? item.AllDayExtremeViolations.Value.ToString() : "NULL")}, " +
-                    $"{(item.OffPeakAverageSpeed.HasValue ? item.OffPeakAverageSpeed.Value.ToString() : "NULL")}, " +
-                    $"{(item.OffPeakViolations.HasValue ? item.OffPeakViolations.Value.ToString() : "NULL")}, " +
-                    $"{(item.OffPeakExtremeViolations.HasValue ? item.OffPeakExtremeViolations.Value.ToString() : "NULL")}, " +
-                    $"{(item.AmPeakAverageSpeed.HasValue ? item.AmPeakAverageSpeed.Value.ToString() : "NULL")}, " +
-                    $"{(item.AmPeakViolations.HasValue ? item.AmPeakViolations.Value.ToString() : "NULL")}, " +
-                    $"{(item.AmPeakExtremeViolations.HasValue ? item.AmPeakExtremeViolations.Value.ToString() : "NULL")}, " +
-                    $"{(item.PmPeakAverageSpeed.HasValue ? item.PmPeakAverageSpeed.Value.ToString() : "NULL")}, " +
-                    $"{(item.PmPeakViolations.HasValue ? item.PmPeakViolations.Value.ToString() : "NULL")}, " +
-                    $"{(item.PmPeakExtremeViolations.HasValue ? item.PmPeakExtremeViolations.Value.ToString() : "NULL")}, " +
-                    $"{(item.MidDayAverageSpeed.HasValue ? item.MidDayAverageSpeed.Value.ToString() : "NULL")}, " +
-                    $"{(item.MidDayViolations.HasValue ? item.MidDayViolations.Value.ToString() : "NULL")}, " +
-                    $"{(item.MidDayExtremeViolations.HasValue ? item.MidDayExtremeViolations.Value.ToString() : "NULL")}, " +
-                    $"{(item.EveningAverageSpeed.HasValue ? item.EveningAverageSpeed.Value.ToString() : "NULL")}, " +
-                    $"{(item.EveningViolations.HasValue ? item.EveningViolations.Value.ToString() : "NULL")}, " +
-                    $"{(item.EveningExtremeViolations.HasValue ? item.EveningExtremeViolations.Value.ToString() : "NULL")}, " +
-                    $"{(item.EarlyMorningAverageSpeed.HasValue ? item.EarlyMorningAverageSpeed.Value.ToString() : "NULL")}, " +
-                    $"{(item.EarlyMorningViolations.HasValue ? item.EarlyMorningViolations.Value.ToString() : "NULL")}, " +
-                    $"{(item.EarlyMorningExtremeViolations.HasValue ? item.EarlyMorningExtremeViolations.Value.ToString() : "NULL")}, " +
-                    $"{item.DataQuality})";
+                string query = InsertQueryStatement(item);
 
                 var parameters = new List<BigQueryParameter>();
 
@@ -312,130 +160,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             var oldRow = await LookupAsync(item.Id);
             if (oldRow != null)
             {
-                var queryBuilder = new StringBuilder();
-                queryBuilder.Append($"UPDATE `{_datasetId}.{_tableId}` SET ");
-
-                queryBuilder.Append($"CreatedDate = '{item.CreatedDate:O}', ");
-                queryBuilder.Append($"BinStartTime = '{item.BinStartTime:O}', ");
-                queryBuilder.Append($"SegmentId = '{item.SegmentId}', ");
-                queryBuilder.Append($"SourceId = {item.SourceId}, ");
-
-                if (item.AllDayAverageSpeed.HasValue)
-                {
-                    queryBuilder.Append($"AllDayAverageSpeed = {item.AllDayAverageSpeed.Value}, ");
-                }
-
-                if (item.AllDayViolations.HasValue)
-                {
-                    queryBuilder.Append($"AllDayViolations = {item.AllDayViolations.Value}, ");
-                }
-
-                if (item.AllDayExtremeViolations.HasValue)
-                {
-                    queryBuilder.Append($"AllDayExtremeViolations = {item.AllDayExtremeViolations.Value}, ");
-                }
-
-                if (item.OffPeakAverageSpeed.HasValue)
-                {
-                    queryBuilder.Append($"OffPeakAverageSpeed = {item.OffPeakAverageSpeed.Value}, ");
-                }
-
-                if (item.OffPeakViolations.HasValue)
-                {
-                    queryBuilder.Append($"OffPeakViolations = {item.OffPeakViolations.Value}, ");
-                }
-
-                if (item.OffPeakExtremeViolations.HasValue)
-                {
-                    queryBuilder.Append($"OffPeakExtremeViolations = {item.OffPeakExtremeViolations.Value}, ");
-                }
-
-                if (item.AmPeakAverageSpeed.HasValue)
-                {
-                    queryBuilder.Append($"AmPeakAverageSpeed = {item.AmPeakAverageSpeed.Value}, ");
-                }
-
-                if (item.AmPeakViolations.HasValue)
-                {
-                    queryBuilder.Append($"AmPeakViolations = {item.AmPeakViolations.Value}, ");
-                }
-
-                if (item.AmPeakExtremeViolations.HasValue)
-                {
-                    queryBuilder.Append($"AmPeakExtremeViolations = {item.AmPeakExtremeViolations.Value}, ");
-                }
-
-                if (item.PmPeakAverageSpeed.HasValue)
-                {
-                    queryBuilder.Append($"PmPeakAverageSpeed = {item.PmPeakAverageSpeed.Value}, ");
-                }
-
-                if (item.PmPeakViolations.HasValue)
-                {
-                    queryBuilder.Append($"PmPeakViolations = {item.PmPeakViolations.Value}, ");
-                }
-
-                if (item.PmPeakExtremeViolations.HasValue)
-                {
-                    queryBuilder.Append($"PmPeakExtremeViolations = {item.PmPeakExtremeViolations.Value}, ");
-                }
-
-                if (item.MidDayAverageSpeed.HasValue)
-                {
-                    queryBuilder.Append($"MidDayAverageSpeed = {item.MidDayAverageSpeed.Value}, ");
-                }
-
-                if (item.MidDayViolations.HasValue)
-                {
-                    queryBuilder.Append($"MidDayViolations = {item.MidDayViolations.Value}, ");
-                }
-
-                if (item.MidDayExtremeViolations.HasValue)
-                {
-                    queryBuilder.Append($"MidDayExtremeViolations = {item.MidDayExtremeViolations.Value}, ");
-                }
-
-                if (item.EveningAverageSpeed.HasValue)
-                {
-                    queryBuilder.Append($"EveningAverageSpeed = {item.EveningAverageSpeed.Value}, ");
-                }
-
-                if (item.EveningViolations.HasValue)
-                {
-                    queryBuilder.Append($"EveningViolations = {item.EveningViolations.Value}, ");
-                }
-
-                if (item.EveningExtremeViolations.HasValue)
-                {
-                    queryBuilder.Append($"EveningExtremeViolations = {item.EveningExtremeViolations.Value}, ");
-                }
-
-                if (item.EarlyMorningAverageSpeed.HasValue)
-                {
-                    queryBuilder.Append($"EarlyMorningAverageSpeed = {item.EarlyMorningAverageSpeed.Value}, ");
-                }
-
-                if (item.EarlyMorningViolations.HasValue)
-                {
-                    queryBuilder.Append($"EarlyMorningViolations = {item.EarlyMorningViolations.Value}, ");
-                }
-
-                if (item.EarlyMorningExtremeViolations.HasValue)
-                {
-                    queryBuilder.Append($"EarlyMorningExtremeViolations = {item.EarlyMorningExtremeViolations.Value}, ");
-                }
-
-                queryBuilder.Append($"DataQuality = {item.DataQuality}");
-
-                // Remove the last comma and space if present
-                if (queryBuilder[queryBuilder.Length - 2] == ',')
-                {
-                    queryBuilder.Length -= 2;
-                }
-
-                queryBuilder.Append($" WHERE Id = @key");
-
-                var query = queryBuilder.ToString();
+                string query = updateQuery(item);
 
                 var parameters = new List<BigQueryParameter>
                 {
@@ -447,36 +172,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             }
             else
             {
-                var query = $"INSERT INTO `{_datasetId}.{_tableId}` " +
-                    $"(Id, CreatedDate, BinStartTime, SegmentId, SourceId, AllDayAverageSpeed, AllDayViolations, AllDayExtremeViolations, OffPeakAverageSpeed, OffPeakViolations, OffPeakExtremeViolations, AmPeakAverageSpeed, AmPeakViolations, AmPeakExtremeViolations, PmPeakAverageSpeed, PmPeakViolations, PmPeakExtremeViolations, MidDayAverageSpeed, MidDayViolations, MidDayExtremeViolations, EveningAverageSpeed, EveningViolations, EveningExtremeViolations, EarlyMorningAverageSpeed, EarlyMorningViolations, EarlyMorningExtremeViolations, DataQuality) " +
-                    $"VALUES (" +
-                    $"GENERATE_UUID(), " +
-                    $"'{item.CreatedDate:O}', " +
-                    $"'{item.BinStartTime:O}', " +
-                    $"'{item.SegmentId}', " +
-                    $"{item.SourceId}, " +
-                    $"{(item.AllDayAverageSpeed.HasValue ? item.AllDayAverageSpeed.Value.ToString() : "NULL")}, " +
-                    $"{(item.AllDayViolations.HasValue ? item.AllDayViolations.Value.ToString() : "NULL")}, " +
-                    $"{(item.AllDayExtremeViolations.HasValue ? item.AllDayExtremeViolations.Value.ToString() : "NULL")}, " +
-                    $"{(item.OffPeakAverageSpeed.HasValue ? item.OffPeakAverageSpeed.Value.ToString() : "NULL")}, " +
-                    $"{(item.OffPeakViolations.HasValue ? item.OffPeakViolations.Value.ToString() : "NULL")}, " +
-                    $"{(item.OffPeakExtremeViolations.HasValue ? item.OffPeakExtremeViolations.Value.ToString() : "NULL")}, " +
-                    $"{(item.AmPeakAverageSpeed.HasValue ? item.AmPeakAverageSpeed.Value.ToString() : "NULL")}, " +
-                    $"{(item.AmPeakViolations.HasValue ? item.AmPeakViolations.Value.ToString() : "NULL")}, " +
-                    $"{(item.AmPeakExtremeViolations.HasValue ? item.AmPeakExtremeViolations.Value.ToString() : "NULL")}, " +
-                    $"{(item.PmPeakAverageSpeed.HasValue ? item.PmPeakAverageSpeed.Value.ToString() : "NULL")}, " +
-                    $"{(item.PmPeakViolations.HasValue ? item.PmPeakViolations.Value.ToString() : "NULL")}, " +
-                    $"{(item.PmPeakExtremeViolations.HasValue ? item.PmPeakExtremeViolations.Value.ToString() : "NULL")}, " +
-                    $"{(item.MidDayAverageSpeed.HasValue ? item.MidDayAverageSpeed.Value.ToString() : "NULL")}, " +
-                    $"{(item.MidDayViolations.HasValue ? item.MidDayViolations.Value.ToString() : "NULL")}, " +
-                    $"{(item.MidDayExtremeViolations.HasValue ? item.MidDayExtremeViolations.Value.ToString() : "NULL")}, " +
-                    $"{(item.EveningAverageSpeed.HasValue ? item.EveningAverageSpeed.Value.ToString() : "NULL")}, " +
-                    $"{(item.EveningViolations.HasValue ? item.EveningViolations.Value.ToString() : "NULL")}, " +
-                    $"{(item.EveningExtremeViolations.HasValue ? item.EveningExtremeViolations.Value.ToString() : "NULL")}, " +
-                    $"{(item.EarlyMorningAverageSpeed.HasValue ? item.EarlyMorningAverageSpeed.Value.ToString() : "NULL")}, " +
-                    $"{(item.EarlyMorningViolations.HasValue ? item.EarlyMorningViolations.Value.ToString() : "NULL")}, " +
-                    $"{(item.EarlyMorningExtremeViolations.HasValue ? item.EarlyMorningExtremeViolations.Value.ToString() : "NULL")}, " +
-                    $"{item.DataQuality})";
+                string query = InsertQueryStatement(item);
 
                 var parameters = new List<BigQueryParameter>();
 
@@ -485,135 +181,13 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             }
         }
 
+
         public override async Task UpdateAsync(MonthlyAggregation item)
         {
             var oldRow = await LookupAsync(item.Id);
             if (oldRow != null)
             {
-                var queryBuilder = new StringBuilder();
-                queryBuilder.Append($"UPDATE `{_datasetId}.{_tableId}` SET ");
-
-                queryBuilder.Append($"CreatedDate = '{item.CreatedDate:O}', ");
-                queryBuilder.Append($"BinStartTime = '{item.BinStartTime:O}', ");
-                queryBuilder.Append($"SegmentId = '{item.SegmentId}', ");
-                queryBuilder.Append($"SourceId = {item.SourceId}, ");
-
-                if (item.AllDayAverageSpeed.HasValue)
-                {
-                    queryBuilder.Append($"AllDayAverageSpeed = {item.AllDayAverageSpeed.Value}, ");
-                }
-
-                if (item.AllDayViolations.HasValue)
-                {
-                    queryBuilder.Append($"AllDayViolations = {item.AllDayViolations.Value}, ");
-                }
-
-                if (item.AllDayExtremeViolations.HasValue)
-                {
-                    queryBuilder.Append($"AllDayExtremeViolations = {item.AllDayExtremeViolations.Value}, ");
-                }
-
-                if (item.OffPeakAverageSpeed.HasValue)
-                {
-                    queryBuilder.Append($"OffPeakAverageSpeed = {item.OffPeakAverageSpeed.Value}, ");
-                }
-
-                if (item.OffPeakViolations.HasValue)
-                {
-                    queryBuilder.Append($"OffPeakViolations = {item.OffPeakViolations.Value}, ");
-                }
-
-                if (item.OffPeakExtremeViolations.HasValue)
-                {
-                    queryBuilder.Append($"OffPeakExtremeViolations = {item.OffPeakExtremeViolations.Value}, ");
-                }
-
-                if (item.AmPeakAverageSpeed.HasValue)
-                {
-                    queryBuilder.Append($"AmPeakAverageSpeed = {item.AmPeakAverageSpeed.Value}, ");
-                }
-
-                if (item.AmPeakViolations.HasValue)
-                {
-                    queryBuilder.Append($"AmPeakViolations = {item.AmPeakViolations.Value}, ");
-                }
-
-                if (item.AmPeakExtremeViolations.HasValue)
-                {
-                    queryBuilder.Append($"AmPeakExtremeViolations = {item.AmPeakExtremeViolations.Value}, ");
-                }
-
-                if (item.PmPeakAverageSpeed.HasValue)
-                {
-                    queryBuilder.Append($"PmPeakAverageSpeed = {item.PmPeakAverageSpeed.Value}, ");
-                }
-
-                if (item.PmPeakViolations.HasValue)
-                {
-                    queryBuilder.Append($"PmPeakViolations = {item.PmPeakViolations.Value}, ");
-                }
-
-                if (item.PmPeakExtremeViolations.HasValue)
-                {
-                    queryBuilder.Append($"PmPeakExtremeViolations = {item.PmPeakExtremeViolations.Value}, ");
-                }
-
-                if (item.MidDayAverageSpeed.HasValue)
-                {
-                    queryBuilder.Append($"MidDayAverageSpeed = {item.MidDayAverageSpeed.Value}, ");
-                }
-
-                if (item.MidDayViolations.HasValue)
-                {
-                    queryBuilder.Append($"MidDayViolations = {item.MidDayViolations.Value}, ");
-                }
-
-                if (item.MidDayExtremeViolations.HasValue)
-                {
-                    queryBuilder.Append($"MidDayExtremeViolations = {item.MidDayExtremeViolations.Value}, ");
-                }
-
-                if (item.EveningAverageSpeed.HasValue)
-                {
-                    queryBuilder.Append($"EveningAverageSpeed = {item.EveningAverageSpeed.Value}, ");
-                }
-
-                if (item.EveningViolations.HasValue)
-                {
-                    queryBuilder.Append($"EveningViolations = {item.EveningViolations.Value}, ");
-                }
-
-                if (item.EveningExtremeViolations.HasValue)
-                {
-                    queryBuilder.Append($"EveningExtremeViolations = {item.EveningExtremeViolations.Value}, ");
-                }
-
-                if (item.EarlyMorningAverageSpeed.HasValue)
-                {
-                    queryBuilder.Append($"EarlyMorningAverageSpeed = {item.EarlyMorningAverageSpeed.Value}, ");
-                }
-
-                if (item.EarlyMorningViolations.HasValue)
-                {
-                    queryBuilder.Append($"EarlyMorningViolations = {item.EarlyMorningViolations.Value}, ");
-                }
-
-                if (item.EarlyMorningExtremeViolations.HasValue)
-                {
-                    queryBuilder.Append($"EarlyMorningExtremeViolations = {item.EarlyMorningExtremeViolations.Value}, ");
-                }
-
-                queryBuilder.Append($"DataQuality = {item.DataQuality}");
-
-                // Remove the last comma and space if present
-                if (queryBuilder[queryBuilder.Length - 2] == ',')
-                {
-                    queryBuilder.Length -= 2;
-                }
-
-                queryBuilder.Append($" WHERE Id = @key");
-
-                var query = queryBuilder.ToString();
+                string query = updateQuery(item);
 
                 var parameters = new List<BigQueryParameter>
         {
@@ -624,36 +198,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             }
             else
             {
-                var query = $"INSERT INTO `{_datasetId}.{_tableId}` " +
-                    $"(Id, CreatedDate, BinStartTime, SegmentId, SourceId, AllDayAverageSpeed, AllDayViolations, AllDayExtremeViolations, OffPeakAverageSpeed, OffPeakViolations, OffPeakExtremeViolations, AmPeakAverageSpeed, AmPeakViolations, AmPeakExtremeViolations, PmPeakAverageSpeed, PmPeakViolations, PmPeakExtremeViolations, MidDayAverageSpeed, MidDayViolations, MidDayExtremeViolations, EveningAverageSpeed, EveningViolations, EveningExtremeViolations, EarlyMorningAverageSpeed, EarlyMorningViolations, EarlyMorningExtremeViolations, DataQuality) " +
-                    $"VALUES (" +
-                    $"GENERATE_UUID(), " +
-                    $"'{item.CreatedDate:O}', " +
-                    $"'{item.BinStartTime:O}', " +
-                    $"'{item.SegmentId}', " +
-                    $"{item.SourceId}, " +
-                    $"{(item.AllDayAverageSpeed.HasValue ? item.AllDayAverageSpeed.Value.ToString() : "NULL")}, " +
-                    $"{(item.AllDayViolations.HasValue ? item.AllDayViolations.Value.ToString() : "NULL")}, " +
-                    $"{(item.AllDayExtremeViolations.HasValue ? item.AllDayExtremeViolations.Value.ToString() : "NULL")}, " +
-                    $"{(item.OffPeakAverageSpeed.HasValue ? item.OffPeakAverageSpeed.Value.ToString() : "NULL")}, " +
-                    $"{(item.OffPeakViolations.HasValue ? item.OffPeakViolations.Value.ToString() : "NULL")}, " +
-                    $"{(item.OffPeakExtremeViolations.HasValue ? item.OffPeakExtremeViolations.Value.ToString() : "NULL")}, " +
-                    $"{(item.AmPeakAverageSpeed.HasValue ? item.AmPeakAverageSpeed.Value.ToString() : "NULL")}, " +
-                    $"{(item.AmPeakViolations.HasValue ? item.AmPeakViolations.Value.ToString() : "NULL")}, " +
-                    $"{(item.AmPeakExtremeViolations.HasValue ? item.AmPeakExtremeViolations.Value.ToString() : "NULL")}, " +
-                    $"{(item.PmPeakAverageSpeed.HasValue ? item.PmPeakAverageSpeed.Value.ToString() : "NULL")}, " +
-                    $"{(item.PmPeakViolations.HasValue ? item.PmPeakViolations.Value.ToString() : "NULL")}, " +
-                    $"{(item.PmPeakExtremeViolations.HasValue ? item.PmPeakExtremeViolations.Value.ToString() : "NULL")}, " +
-                    $"{(item.MidDayAverageSpeed.HasValue ? item.MidDayAverageSpeed.Value.ToString() : "NULL")}, " +
-                    $"{(item.MidDayViolations.HasValue ? item.MidDayViolations.Value.ToString() : "NULL")}, " +
-                    $"{(item.MidDayExtremeViolations.HasValue ? item.MidDayExtremeViolations.Value.ToString() : "NULL")}, " +
-                    $"{(item.EveningAverageSpeed.HasValue ? item.EveningAverageSpeed.Value.ToString() : "NULL")}, " +
-                    $"{(item.EveningViolations.HasValue ? item.EveningViolations.Value.ToString() : "NULL")}, " +
-                    $"{(item.EveningExtremeViolations.HasValue ? item.EveningExtremeViolations.Value.ToString() : "NULL")}, " +
-                    $"{(item.EarlyMorningAverageSpeed.HasValue ? item.EarlyMorningAverageSpeed.Value.ToString() : "NULL")}, " +
-                    $"{(item.EarlyMorningViolations.HasValue ? item.EarlyMorningViolations.Value.ToString() : "NULL")}, " +
-                    $"{(item.EarlyMorningExtremeViolations.HasValue ? item.EarlyMorningExtremeViolations.Value.ToString() : "NULL")}, " +
-                    $"{item.DataQuality})";
+                string query = InsertQueryStatement(item);
 
                 var parameters = new List<BigQueryParameter>();
 
@@ -758,11 +303,11 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
               AND SourceId = @sourceId";
 
             var parameters = new List<BigQueryParameter>
-        {
-            new BigQueryParameter("binStartTime", BigQueryDbType.DateTime, binStartTime),
-            new BigQueryParameter("segmentId", BigQueryDbType.String, segmentId.ToString()),
-            new BigQueryParameter("sourceId", BigQueryDbType.Int64, sourceId)
-        };
+            {
+                new BigQueryParameter("binStartTime", BigQueryDbType.DateTime, binStartTime),
+                new BigQueryParameter("segmentId", BigQueryDbType.String, segmentId.ToString()),
+                new BigQueryParameter("sourceId", BigQueryDbType.Int64, sourceId)
+            };
 
             var result = await _client.ExecuteQueryAsync(query, parameters);
             return MapRowToEntity(result.FirstOrDefault());
@@ -779,10 +324,10 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
               AND SegmentId = @segmentId";
 
             var parameters = new List<BigQueryParameter>
-        {
-            new BigQueryParameter("binStartTime", BigQueryDbType.DateTime, binStartTime),
-            new BigQueryParameter("segmentId", BigQueryDbType.String, segmentId.ToString())
-        };
+            {
+                new BigQueryParameter("binStartTime", BigQueryDbType.DateTime, binStartTime),
+                new BigQueryParameter("segmentId", BigQueryDbType.String, segmentId.ToString())
+            };
 
             var result = await _client.ExecuteQueryAsync(query, parameters);
             return MapRowToEntity(result.FirstOrDefault());
@@ -798,9 +343,9 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             WHERE SegmentId = @segmentId";
 
             var parameters = new List<BigQueryParameter>
-        {
-            new BigQueryParameter("segmentId", BigQueryDbType.String, segmentId.ToString())
-        };
+            {
+                new BigQueryParameter("segmentId", BigQueryDbType.String, segmentId.ToString())
+            };
 
             var result = await _client.ExecuteQueryAsync(query, parameters);
             var monthlyAggregations = new List<MonthlyAggregation>();
@@ -825,12 +370,12 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
                   AND SourceId = @sourceId";
 
             var parameters = new List<BigQueryParameter>
-        {
-            new BigQueryParameter("startTime", BigQueryDbType.DateTime, startTime),
-            new BigQueryParameter("endTime", BigQueryDbType.DateTime, endTime),
-            new BigQueryParameter("segmentId", BigQueryDbType.String, segmentId.ToString()),
-            new BigQueryParameter("sourceId", BigQueryDbType.Int64, sourceId)
-        };
+            {
+                new BigQueryParameter("startTime", BigQueryDbType.DateTime, startTime),
+                new BigQueryParameter("endTime", BigQueryDbType.DateTime, endTime),
+                new BigQueryParameter("segmentId", BigQueryDbType.String, segmentId.ToString()),
+                new BigQueryParameter("sourceId", BigQueryDbType.Int64, sourceId)
+            };
 
             var result = await _client.ExecuteQueryAsync(query, parameters);
             var monthlyAggregations = new List<MonthlyAggregation>();
@@ -853,11 +398,11 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
                   AND SegmentId = @segmentId";
 
             var parameters = new List<BigQueryParameter>
-        {
-            new BigQueryParameter("startTime", BigQueryDbType.DateTime, startTime),
-            new BigQueryParameter("endTime", BigQueryDbType.DateTime, endTime),
-            new BigQueryParameter("segmentId", BigQueryDbType.String, segmentId.ToString())
-        };
+            {
+                new BigQueryParameter("startTime", BigQueryDbType.DateTime, startTime),
+                new BigQueryParameter("endTime", BigQueryDbType.DateTime, endTime),
+                new BigQueryParameter("segmentId", BigQueryDbType.String, segmentId.ToString())
+            };
 
             var result = await _client.ExecuteQueryAsync(query, parameters);
             var monthlyAggregations = new List<MonthlyAggregation>();
@@ -868,6 +413,197 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
 
             return monthlyAggregations;
         }
+
+        public async Task<List<MonthlyAggregation>> AllAggregationsOverTimePeriod()
+        {
+            var thresholdDate = DateTime.UtcNow.AddYears(-2);
+
+            var query = $@"
+                SELECT *
+                FROM `{_datasetId}.{_tableId}`
+                WHERE BinStartTime < @thresholdDate";
+
+            var parameters = new List<BigQueryParameter>
+            {
+                new BigQueryParameter("thresholdDate", BigQueryDbType.DateTime, thresholdDate)
+            };
+
+            var result = await _client.ExecuteQueryAsync(query, parameters);
+            var monthlyAggregations = new List<MonthlyAggregation>();
+            foreach (var row in result)
+            {
+                monthlyAggregations.Add(MapRowToEntity(row));
+            }
+
+            return monthlyAggregations;
+        }
+
+        ///////////////////// 
+        //PRIVATE FUNCTIONS//
+        /////////////////////
+
+        private string InsertQueryStatement(MonthlyAggregation item)
+        {
+            return $"INSERT INTO `{_datasetId}.{_tableId}` " +
+                $"(Id, CreatedDate, BinStartTime, SegmentId, SourceId, AllDayAverageSpeed, AllDayViolations, AllDayExtremeViolations, OffPeakAverageSpeed, OffPeakViolations, OffPeakExtremeViolations, AmPeakAverageSpeed, AmPeakViolations, AmPeakExtremeViolations, PmPeakAverageSpeed, PmPeakViolations, PmPeakExtremeViolations, MidDayAverageSpeed, MidDayViolations, MidDayExtremeViolations, EveningAverageSpeed, EveningViolations, EveningExtremeViolations, EarlyMorningAverageSpeed, EarlyMorningViolations, EarlyMorningExtremeViolations, DataQuality) " +
+                $"VALUES (" +
+                $"GENERATE_UUID(), " +
+                $"CURRENT_TIMESTAMP(), " +
+                $"'{item.BinStartTime:O}', " +
+                $"'{item.SegmentId}', " +
+                $"{item.SourceId}, " +
+                $"{(item.AllDayAverageSpeed.HasValue ? item.AllDayAverageSpeed.Value.ToString() : "NULL")}, " +
+                $"{(item.AllDayViolations.HasValue ? item.AllDayViolations.Value.ToString() : "NULL")}, " +
+                $"{(item.AllDayExtremeViolations.HasValue ? item.AllDayExtremeViolations.Value.ToString() : "NULL")}, " +
+                $"{(item.OffPeakAverageSpeed.HasValue ? item.OffPeakAverageSpeed.Value.ToString() : "NULL")}, " +
+                $"{(item.OffPeakViolations.HasValue ? item.OffPeakViolations.Value.ToString() : "NULL")}, " +
+                $"{(item.OffPeakExtremeViolations.HasValue ? item.OffPeakExtremeViolations.Value.ToString() : "NULL")}, " +
+                $"{(item.AmPeakAverageSpeed.HasValue ? item.AmPeakAverageSpeed.Value.ToString() : "NULL")}, " +
+                $"{(item.AmPeakViolations.HasValue ? item.AmPeakViolations.Value.ToString() : "NULL")}, " +
+                $"{(item.AmPeakExtremeViolations.HasValue ? item.AmPeakExtremeViolations.Value.ToString() : "NULL")}, " +
+                $"{(item.PmPeakAverageSpeed.HasValue ? item.PmPeakAverageSpeed.Value.ToString() : "NULL")}, " +
+                $"{(item.PmPeakViolations.HasValue ? item.PmPeakViolations.Value.ToString() : "NULL")}, " +
+                $"{(item.PmPeakExtremeViolations.HasValue ? item.PmPeakExtremeViolations.Value.ToString() : "NULL")}, " +
+                $"{(item.MidDayAverageSpeed.HasValue ? item.MidDayAverageSpeed.Value.ToString() : "NULL")}, " +
+                $"{(item.MidDayViolations.HasValue ? item.MidDayViolations.Value.ToString() : "NULL")}, " +
+                $"{(item.MidDayExtremeViolations.HasValue ? item.MidDayExtremeViolations.Value.ToString() : "NULL")}, " +
+                $"{(item.EveningAverageSpeed.HasValue ? item.EveningAverageSpeed.Value.ToString() : "NULL")}, " +
+                $"{(item.EveningViolations.HasValue ? item.EveningViolations.Value.ToString() : "NULL")}, " +
+                $"{(item.EveningExtremeViolations.HasValue ? item.EveningExtremeViolations.Value.ToString() : "NULL")}, " +
+                $"{(item.EarlyMorningAverageSpeed.HasValue ? item.EarlyMorningAverageSpeed.Value.ToString() : "NULL")}, " +
+                $"{(item.EarlyMorningViolations.HasValue ? item.EarlyMorningViolations.Value.ToString() : "NULL")}, " +
+                $"{(item.EarlyMorningExtremeViolations.HasValue ? item.EarlyMorningExtremeViolations.Value.ToString() : "NULL")}, " +
+                $"{item.DataQuality})";
+        }
+
+        private string updateQuery(MonthlyAggregation item)
+        {
+            var queryBuilder = new StringBuilder();
+            queryBuilder.Append($"UPDATE `{_datasetId}.{_tableId}` SET ");
+            queryBuilder.Append($"BinStartTime = '{item.BinStartTime:O}', ");
+            queryBuilder.Append($"SegmentId = '{item.SegmentId}', ");
+            queryBuilder.Append($"SourceId = {item.SourceId}, ");
+
+            if (item.AllDayAverageSpeed.HasValue)
+            {
+                queryBuilder.Append($"AllDayAverageSpeed = {item.AllDayAverageSpeed.Value}, ");
+            }
+
+            if (item.AllDayViolations.HasValue)
+            {
+                queryBuilder.Append($"AllDayViolations = {item.AllDayViolations.Value}, ");
+            }
+
+            if (item.AllDayExtremeViolations.HasValue)
+            {
+                queryBuilder.Append($"AllDayExtremeViolations = {item.AllDayExtremeViolations.Value}, ");
+            }
+
+            if (item.OffPeakAverageSpeed.HasValue)
+            {
+                queryBuilder.Append($"OffPeakAverageSpeed = {item.OffPeakAverageSpeed.Value}, ");
+            }
+
+            if (item.OffPeakViolations.HasValue)
+            {
+                queryBuilder.Append($"OffPeakViolations = {item.OffPeakViolations.Value}, ");
+            }
+
+            if (item.OffPeakExtremeViolations.HasValue)
+            {
+                queryBuilder.Append($"OffPeakExtremeViolations = {item.OffPeakExtremeViolations.Value}, ");
+            }
+
+            if (item.AmPeakAverageSpeed.HasValue)
+            {
+                queryBuilder.Append($"AmPeakAverageSpeed = {item.AmPeakAverageSpeed.Value}, ");
+            }
+
+            if (item.AmPeakViolations.HasValue)
+            {
+                queryBuilder.Append($"AmPeakViolations = {item.AmPeakViolations.Value}, ");
+            }
+
+            if (item.AmPeakExtremeViolations.HasValue)
+            {
+                queryBuilder.Append($"AmPeakExtremeViolations = {item.AmPeakExtremeViolations.Value}, ");
+            }
+
+            if (item.PmPeakAverageSpeed.HasValue)
+            {
+                queryBuilder.Append($"PmPeakAverageSpeed = {item.PmPeakAverageSpeed.Value}, ");
+            }
+
+            if (item.PmPeakViolations.HasValue)
+            {
+                queryBuilder.Append($"PmPeakViolations = {item.PmPeakViolations.Value}, ");
+            }
+
+            if (item.PmPeakExtremeViolations.HasValue)
+            {
+                queryBuilder.Append($"PmPeakExtremeViolations = {item.PmPeakExtremeViolations.Value}, ");
+            }
+
+            if (item.MidDayAverageSpeed.HasValue)
+            {
+                queryBuilder.Append($"MidDayAverageSpeed = {item.MidDayAverageSpeed.Value}, ");
+            }
+
+            if (item.MidDayViolations.HasValue)
+            {
+                queryBuilder.Append($"MidDayViolations = {item.MidDayViolations.Value}, ");
+            }
+
+            if (item.MidDayExtremeViolations.HasValue)
+            {
+                queryBuilder.Append($"MidDayExtremeViolations = {item.MidDayExtremeViolations.Value}, ");
+            }
+
+            if (item.EveningAverageSpeed.HasValue)
+            {
+                queryBuilder.Append($"EveningAverageSpeed = {item.EveningAverageSpeed.Value}, ");
+            }
+
+            if (item.EveningViolations.HasValue)
+            {
+                queryBuilder.Append($"EveningViolations = {item.EveningViolations.Value}, ");
+            }
+
+            if (item.EveningExtremeViolations.HasValue)
+            {
+                queryBuilder.Append($"EveningExtremeViolations = {item.EveningExtremeViolations.Value}, ");
+            }
+
+            if (item.EarlyMorningAverageSpeed.HasValue)
+            {
+                queryBuilder.Append($"EarlyMorningAverageSpeed = {item.EarlyMorningAverageSpeed.Value}, ");
+            }
+
+            if (item.EarlyMorningViolations.HasValue)
+            {
+                queryBuilder.Append($"EarlyMorningViolations = {item.EarlyMorningViolations.Value}, ");
+            }
+
+            if (item.EarlyMorningExtremeViolations.HasValue)
+            {
+                queryBuilder.Append($"EarlyMorningExtremeViolations = {item.EarlyMorningExtremeViolations.Value}, ");
+            }
+
+            queryBuilder.Append($"DataQuality = {item.DataQuality}");
+
+            // Remove the last comma and space if present
+            if (queryBuilder[queryBuilder.Length - 2] == ',')
+            {
+                queryBuilder.Length -= 2;
+            }
+
+            queryBuilder.Append($" WHERE Id = @key");
+
+            var query = queryBuilder.ToString();
+            return query;
+        }
+
+
 
     }
 }

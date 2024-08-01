@@ -1,6 +1,5 @@
 ﻿using ATSPM.Application.Repositories.SpeedManagementRepositories;
 using ATSPM.Data.Models.SpeedManagementConfigModels;
-using ATSPM.Domain.Extensions;
 using Google.Cloud.BigQuery.V2;
 using Microsoft.Extensions.Logging;
 using NetTopologySuite.Geometries;
@@ -386,7 +385,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             Geometry shape = wkt != null ? reader.Read(wkt) : null;
             return new Segment()
             {
-                Id = row["Id"].ToString(),
+                Id = (Guid)row["Id"],
                 UdotRouteNumber = row["UdotRouteNumber"].ToString(),
                 StartMilePoint = (double)row["StartMilePoint"],
                 EndMilePoint = (double)row["EndMilePoint"],
@@ -415,5 +414,94 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             // Map the result to a list of ImpactType objects
             return result.Select(row => MapRowToEntity(row)).ToList().AsQueryable();
         }
+
+        public List<Segment> AllSegmentsWithEntity()
+        {
+            {
+                string query = $@"
+                SELECT 
+                    s.Id,
+                    s.UdotRouteNumber,
+                    s.StartMilePoint,
+                    s.EndMilePoint,
+                    s.FunctionalType,
+                    s.Name,
+                    s.Direction,
+                    s.SpeedLimit,
+                    s.Region,
+                    s.City,
+                    s.County,
+                    s.Shape,
+                    s.ShapeWKT,
+                    s.AlternateIdentifier,
+                    s.AccessCategory,
+                    s.Offset,
+                    se.EntityId,
+                    se.SourceId,
+                    se.SegmentId
+                FROM 
+                    `{_datasetId}.{_tableId}` s
+                LEFT JOIN 
+                    `{_datasetId}.segment_entity` se 
+                ON 
+                    s.Id = se.SegmentId
+                ORDER BY 
+                    s.Id, se.EntityId;";
+
+                var parameters = new List<BigQueryParameter>();
+                var result = _client.ExecuteQuery(query, parameters).ToList();
+
+                var segments = new Dictionary<Guid, Segment>();
+
+                foreach (var row in result)
+                {
+                    var segmentId = (Guid)row["Id"];
+
+                    if (!segments.TryGetValue(segmentId, out var segment))
+                    {
+                        var reader = new WKTReader();
+                        var wkt = row["Shape"].ToString();
+                        Geometry shape = wkt != null ? reader.Read(wkt) : null;
+
+                        segment = new Segment
+                        {
+                            Id = segmentId,
+                            UdotRouteNumber = row["UdotRouteNumber"].ToString(),
+                            StartMilePoint = (double)row["StartMilePoint"],
+                            EndMilePoint = (double)row["EndMilePoint"],
+                            FunctionalType = row["FunctionalType"].ToString(),
+                            Name = row["Name"].ToString(),
+                            Direction = row["Direction"]?.ToString(),
+                            SpeedLimit = (long)row["SpeedLimit"],
+                            Region = row["Region"]?.ToString(),
+                            City = row["City"]?.ToString(),
+                            County = row["County"]?.ToString(),
+                            Shape = shape,
+                            ShapeWKT = row["ShapeWKT"]?.ToString(),
+                            AlternateIdentifier = row["AlternateIdentifier"]?.ToString(),
+                            AccessCategory = row["AccessCategory"]?.ToString(),
+                            Offset = (long?)row["Offset"],
+                            RouteEntities = new List<SegmentEntity>()
+                        };
+
+                        segments.Add(segmentId, segment);
+                    }
+
+                    if (row["EntityId"] != DBNull.Value)
+                    {
+                        segment.RouteEntities.Add(new SegmentEntity
+                        {
+                            EntityId = (int)row["EntityId"],
+                            SourceId = (int)row["SourceId"],
+                            SegmentId = row["SegmentId"].ToString()
+                        });
+                    }
+                }
+
+                return segments.Values.ToList();
+            }
+        }
+
+
     }
 }

@@ -16,6 +16,7 @@ namespace ATSPM.Application.Repositories.SpeedManagementRepositories
         public Task<List<DailyAverage>> GetDailyAveragesAsync(String segmentId, DateOnly startDate, DateOnly endDate, string daysOfWeek);
         public Task<List<RouteSpeed>> GetRoutesSpeeds(RouteSpeedOptions options);
         public Task<List<HourlySpeed>> GetHourlySpeeds(CongestionTrackingOptions options);
+        Task<List<HourlySpeed>> GetHourlySpeedsForTimePeriod(Guid segmentId, DateTime startDate, DateTime endDate, DateTime startTime, DateTime endTime);
         #region ExtensionMethods
 
 
