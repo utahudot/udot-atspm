@@ -90,7 +90,7 @@ const About = () => {
         <Header title="About ATSPM" />
         <Box marginBottom={2}>
           <Typography variant="h4" component={'p'}>
-            Automated Traffic System Performance Measures&apos;s show real-time
+            Automated Traffic Signal Performance Measures&apos;s show real-time
             and historical functionality at locationized intersections. This
             allows traffic engineers to directly measure what previously could
             only be estimated and modeled.
