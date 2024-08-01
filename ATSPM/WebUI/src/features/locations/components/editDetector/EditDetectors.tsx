@@ -241,7 +241,7 @@ const EditDetectors = ({
                     )
                   }
                 />
-                <CommentCell detector={detector} />
+                <CommentCell disabled={approach.isNew} detector={detector} />
                 <EditableTableCell
                   value={detector.distanceFromStopBar}
                   onUpdate={(newValue) =>
