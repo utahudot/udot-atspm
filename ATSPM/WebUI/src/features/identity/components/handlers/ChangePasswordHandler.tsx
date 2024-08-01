@@ -8,7 +8,7 @@ import { ResponseDto } from '../../types/responseDto'
 import { PasswordHandler, ResponseHandler } from './baseHandler'
 
 export interface ChangePasswordHandler
-    extends PasswordHandler,
+  extends PasswordHandler,
     ResponseHandler {
   data: ResponseDto
   submitted: boolean
@@ -50,26 +50,26 @@ export const useChangePasswordHandler = ({
     confirmPassword,
   })
 
-    useEffect(() => {
-        if (status !== 'loading' && status === 'success') {
-            setResponseSuccess(true)
-        }
+  useEffect(() => {
+    if (status !== 'loading' && status === 'success') {
+      setResponseSuccess(true)
+    }
 
-        if (status === 'error') {
-            setResponseError(true)
-        }
-    }, [status])
+    if (status === 'error') {
+      setResponseError(true)
+    }
+  }, [status])
 
-    useEffect(() => {
-        if (changePasswordData) {
-            setData(changePasswordData)
-        }
-    }, [changePasswordData])
+  useEffect(() => {
+    if (changePasswordData) {
+      setData(changePasswordData)
+    }
+  }, [changePasswordData])
 
-    const passwordCheck = () => {
-        if (password.length < 8) {
-            return 'Password should be at least 8 characters long.'
-        }
+  const passwordCheck = () => {
+    if (password.length < 8) {
+      return 'Password should be at least 8 characters long.'
+    }
 
     const hasUpperCase = /(?=.*[A-Z])/
     const hasDigit = /\d/
@@ -83,29 +83,29 @@ export const useChangePasswordHandler = ({
       return 'Password should contain at least one uppercase letter, one digit, and one symbol.'
     }
 
-        return null
+    return null
+  }
+
+  const confirmPasswordCheck = () => {
+    if (password !== confirmPassword) {
+      return 'Passwords do not match.'
     }
 
-    const confirmPasswordCheck = () => {
-        if (password !== confirmPassword) {
-            return 'Passwords do not match.'
-        }
+    return null
+  }
 
-        return null
+  const handleSubmitForm = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+
+    const passwordError = passwordCheck()
+    const confirmPasswordError = confirmPasswordCheck()
+
+    if (passwordError || confirmPasswordError) {
+      return
     }
-
-    const handleSubmitForm = (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault()
-
-        const passwordError = passwordCheck()
-        const confirmPasswordError = confirmPasswordCheck()
-
-        if (passwordError || confirmPasswordError) {
-            return
-        }
-        setSubmitted(true)
-        refetch()
-    }
+    setSubmitted(true)
+    refetch()
+  }
 
   const component: ChangePasswordHandler = {
     data: data as ResponseDto,
@@ -137,7 +137,7 @@ export const useChangePasswordHandler = ({
     },
   }
 
-    return component
+  return component
 }
 
 export const useVerifyTokenHandler = (): VerifyTokenHandler => {
@@ -157,15 +157,15 @@ export const useVerifyTokenHandler = (): VerifyTokenHandler => {
     username,
   })
 
-    useEffect(() => {
-        if (verifyResetTokenData) {
-            setData(verifyResetTokenData)
-            setIsValidToken(true)
-            Cookies.set('token', verifyResetTokenData.token, {
-                expires: addDays(new Date(), 1),
-            })
-        }
-    }, [verifyResetTokenData])
+  useEffect(() => {
+    if (verifyResetTokenData) {
+      setData(verifyResetTokenData)
+      setIsValidToken(true)
+      Cookies.set('token', verifyResetTokenData.token, {
+        expires: addDays(new Date(), 1),
+      })
+    }
+  }, [verifyResetTokenData])
 
   useEffect(() => {
     const queryParams = new URLSearchParams(router.asPath.split('?')[1])
@@ -194,14 +194,14 @@ export const useVerifyTokenHandler = (): VerifyTokenHandler => {
     }
   }, [isLoadingValidity, refetch, resetToken, username])
 
-    useEffect(() => {
-        if (status === 'success') {
-            setIsLoadingValidity(false)
-        }
-        if (status === 'error') {
-            window.location.href = '/unauthorized'
-        }
-    }, [status])
+  useEffect(() => {
+    if (status === 'success') {
+      setIsLoadingValidity(false)
+    }
+    if (status === 'error') {
+      window.location.href = '/unauthorized'
+    }
+  }, [status])
 
   const component: VerifyTokenHandler = {
     data: data as any,
@@ -210,5 +210,5 @@ export const useVerifyTokenHandler = (): VerifyTokenHandler => {
     resetToken,
   }
 
-    return component
+  return component
 }

@@ -16,69 +16,69 @@ import * as React from 'react'
 import { useEffect, useState } from 'react'
 
 export default function Signin() {
-    const [data, setData] = useState<IdentityDto>()
-    const [email, setEmail] = useState<string>('')
-    const [password, setPassword] = useState<string>('')
-    const [errors, setErrors] = useState<string | null>(null)
-    const [emailError, setEmailError] = useState<string | null>(null)
-    const [passwordError, setPasswordError] = useState<string | null>(null)
-    const {
-        refetch,
-        data: queryData,
-        status,
-        isLoading,
-        error: queryDataError,
-    } = useLogin({ email, password })
+  const [data, setData] = useState<IdentityDto>()
+  const [email, setEmail] = useState<string>('')
+  const [password, setPassword] = useState<string>('')
+  const [errors, setErrors] = useState<string | null>(null)
+  const [emailError, setEmailError] = useState<string | null>(null)
+  const [passwordError, setPasswordError] = useState<string | null>(null)
+  const {
+    refetch,
+    data: queryData,
+    status,
+    isLoading,
+    error: queryDataError,
+  } = useLogin({ email, password })
 
-    useEffect(() => {
-        if (queryData) {
-            setData(queryData as IdentityDto)
-        }
-    }, [data, queryData])
+  useEffect(() => {
+    if (queryData) {
+      setData(queryData as IdentityDto)
+    }
+  }, [data, queryData])
 
   const validateEmail = (email: string) => {
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
     return emailRegex.test(email)
   }
 
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-        setErrors(null)
-        event.preventDefault()
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    setErrors(null)
+    event.preventDefault()
 
-        let isValid = true
+    let isValid = true
 
-        if (!email) {
-            setEmailError('Email is required')
-            isValid = false
-        } else if (!validateEmail(email)) {
-            setEmailError('Invalid email format')
-            isValid = false
-        } else {
-            setEmailError(null)
-        }
-
-        if (!password) {
-            setPasswordError('Password is required')
-            isValid = false
-        } else {
-            setPasswordError(null)
-        }
-
-        if (isValid) {
-            refetch()
-        }
+    if (!email) {
+      setEmailError('Email is required')
+      isValid = false
+    } else if (!validateEmail(email)) {
+      setEmailError('Invalid email format')
+      isValid = false
+    } else {
+      setEmailError(null)
     }
 
-    useEffect(() => {
-        setEmailError(null)
-        if (queryDataError) {
-            setErrors(queryDataError.response.data.message)
-        }
-    }, [queryDataError, email])
+    if (!password) {
+      setPasswordError('Password is required')
+      isValid = false
+    } else {
+      setPasswordError(null)
+    }
 
-    useEffect(() => {
-        setPasswordError(null)
-    }, [password])
+    if (isValid) {
+      refetch()
+    }
+  }
+
+  useEffect(() => {
+    setEmailError(null)
+    if (queryDataError) {
+      setErrors(queryDataError.response.data.message)
+    }
+  }, [queryDataError, email])
+
+  useEffect(() => {
+    setPasswordError(null)
+  }, [password])
 
   if (status === 'success' && data !== undefined) {
     const oneDay = addDays(new Date(), 1)
@@ -93,12 +93,12 @@ export default function Signin() {
     window.location.href = '/performance-measures'
   }
 
-    const redirectUser = () => {
-        const externalLoginUrl = `${IDENTITY_URL}Account/external-login`
+  const redirectUser = () => {
+    const externalLoginUrl = `${IDENTITY_URL}Account/external-login`
 
-        // Open the external login endpoint in a new tab
-        window.open(externalLoginUrl, '_self')
-    }
+    // Open the external login endpoint in a new tab
+    window.open(externalLoginUrl, '_self')
+  }
 
   return (
     <Container component="main" maxWidth="xs">
@@ -146,28 +146,28 @@ export default function Signin() {
             control={<Checkbox value="remember" color="primary" />}
             label="Remember me"
           /> */}
-                    <LoadingButton
-                        loading={isLoading}
-                        type="submit"
-                        fullWidth
-                        variant="contained"
-                        sx={{ mt: 3, mb: 2, p: 1 }}
-                    >
-                        Sign In
-                    </LoadingButton>
-                    <Divider>
-                        <Typography variant="caption">or</Typography>
-                    </Divider>
-                    <Button
-                        variant="outlined"
-                        sx={{ p: 1, mb: 1, mt: 1 }}
-                        fullWidth
-                        onClick={() => redirectUser()}
-                    >
-                        <Box sx={{ width: '20px', height: '20px', mr: 1 }}></Box>
-                        Sign in with Utah Id
-                    </Button>
-                    {/* <Button
+          <LoadingButton
+            loading={isLoading}
+            type="submit"
+            fullWidth
+            variant="contained"
+            sx={{ mt: 3, mb: 2, p: 1 }}
+          >
+            Sign In
+          </LoadingButton>
+          <Divider>
+            <Typography variant="caption">or</Typography>
+          </Divider>
+          <Button
+            variant="outlined"
+            sx={{ p: 1, mb: 1, mt: 1 }}
+            fullWidth
+            onClick={() => redirectUser()}
+          >
+            <Box sx={{ width: '20px', height: '20px', mr: 1 }}></Box>
+            Sign in with Utah Id
+          </Button>
+          {/* <Button
             variant="outlined"
             sx={{ padding: '10px', marginBottom: '40px' }}
             fullWidth
