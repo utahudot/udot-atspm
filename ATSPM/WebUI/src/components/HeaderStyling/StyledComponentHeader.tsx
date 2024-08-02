@@ -1,4 +1,4 @@
-import { Typography } from '@mui/material'
+import { Box, Typography } from '@mui/material'
 
 interface styleComponentHeaderType {
   header: string
@@ -12,17 +12,17 @@ export const commonPaperStyle = {
 
 export const StyledComponentHeader = ({ header }: styleComponentHeaderType) => {
   return (
-    <Typography
+    <Box
       sx={{
-        padding: '15px',
-        fontSize: '16px',
-        fontWeight: 'bold',
-        borderRadius: '5px 5px 0 0',
+        p: 1,
+        pl: 2,
+        mb: 1,
+        backgroundColor: '#f5f5f5',
         width: '100%',
-        textAlign: 'center',
+        textAlign: 'left',
       }}
     >
-      {header}
-    </Typography>
+      <Typography variant="subtitle2">{header}</Typography>
+    </Box>
   )
 }
