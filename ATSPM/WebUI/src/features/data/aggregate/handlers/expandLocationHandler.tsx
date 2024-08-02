@@ -61,42 +61,57 @@ export const useExpandLocationHandler = ({
   locations,
   setSelectedLocations,
   changeLocation,
-}: props): ExpandLocationHandler => {
+}: {
+  locations: Location[];
+  setSelectedLocations: Dispatch<SetStateAction<Location[]>>;
+  changeLocation: (location: Location | null) => void;
+}): ExpandLocationHandler => {
   const [updatedLocations, setUpdatedLocations] = useState<
     ExpandLocationForAggregation[]
   >([])
 
   useEffect(() => {
-    const tranformedExpandedLocation: ExpandLocationForAggregation[] =
-      locations.map((location) => {
+    setUpdatedLocations((prevLocations) => {
+      return locations.map((location) => {
+        const existingLocation = prevLocations.find(
+          (l) => l.locationIdentifier === location.locationIdentifier
+        );
+
         return {
           locationIdentifier: location.locationIdentifier,
           primaryName: location.primaryName,
           secondaryName: location.secondaryName,
-          exclude: false,
-          open: false,
+          exclude: existingLocation?.exclude ?? false,
+          open: existingLocation?.open ?? false,
           approaches: location.approaches.map((approach) => {
+            const existingApproach = existingLocation?.approaches.find(
+              (a) => a.approachId === approach.id
+            );
+
             return {
               approachId: approach.id,
               description: approach.description,
-              exclude: false,
-              open: false,
+              exclude: existingApproach?.exclude ?? false,
+              open: existingApproach?.open ?? false,
               detectors: approach.detectors.map((detector) => {
+                const existingDetector = existingApproach?.detectors.find(
+                  (d) => d.id === detector.id
+                );
+
                 return {
                   id: detector.id,
                   dectectorIdentifier: detector.dectectorIdentifier,
                   detChannel: detector.detectorChannel,
                   laneNumber: detector.laneNumber as number,
-                  laneType: {},
-                  exclude: false,
+                  laneType: detector.laneType as LaneType,
+                  exclude: existingDetector?.exclude ?? false,
                 }
               }),
-            } as ExpandApproachForAggregation
+            };
           }),
-        }
-      })
-
-    setUpdatedLocations(tranformedExpandedLocation)
+        };
+      });
+    });
   }, [locations])
 
   const component: ExpandLocationHandler = {
@@ -105,9 +120,9 @@ export const useExpandLocationHandler = ({
       setUpdatedLocations((prevArr) =>
         prevArr.map((oldLocation) => {
           if (oldLocation.locationIdentifier === location.locationIdentifier) {
-            oldLocation.open = !oldLocation.open
+            return { ...oldLocation, open: !oldLocation.open };
           }
-          return oldLocation
+          return oldLocation;
         })
       )
     },
@@ -124,9 +139,9 @@ export const useExpandLocationHandler = ({
       setUpdatedLocations((prevArr) =>
         prevArr.map((oldLocation) => {
           if (oldLocation.locationIdentifier === location.locationIdentifier) {
-            oldLocation.exclude = !oldLocation.exclude
+            return { ...oldLocation, exclude: !oldLocation.exclude };
           }
-          return oldLocation
+          return oldLocation;
         })
       )
     },
@@ -134,13 +149,17 @@ export const useExpandLocationHandler = ({
       setUpdatedLocations((prevArr) =>
         prevArr.map((oldLocation) => {
           if (oldLocation.locationIdentifier === location.locationIdentifier) {
-            oldLocation.approaches.forEach((oldApproach) => {
-              if (oldApproach.description === approach.description) {
-                oldApproach.open = !oldApproach.open
-              }
-            })
+            return {
+              ...oldLocation,
+              approaches: oldLocation.approaches.map((oldApproach) => {
+                if (oldApproach.description === approach.description) {
+                  return { ...oldApproach, open: !oldApproach.open };
+                }
+                return oldApproach;
+              }),
+            };
           }
-          return oldLocation
+          return oldLocation;
         })
       )
     },
@@ -148,13 +167,17 @@ export const useExpandLocationHandler = ({
       setUpdatedLocations((prevArr) =>
         prevArr.map((oldLocation) => {
           if (oldLocation.locationIdentifier === location.locationIdentifier) {
-            oldLocation.approaches.forEach((oldApproach) => {
-              if (oldApproach.description === approach.description) {
-                oldApproach.exclude = !oldApproach.exclude
-              }
-            })
+            return {
+              ...oldLocation,
+              approaches: oldLocation.approaches.map((oldApproach) => {
+                if (oldApproach.description === approach.description) {
+                  return { ...oldApproach, exclude: !oldApproach.exclude };
+                }
+                return oldApproach;
+              }),
+            };
           }
-          return oldLocation
+          return oldLocation;
         })
       )
     },
@@ -162,17 +185,25 @@ export const useExpandLocationHandler = ({
       setUpdatedLocations((prevArr) =>
         prevArr.map((oldLocation) => {
           if (oldLocation.locationIdentifier === location.locationIdentifier) {
-            oldLocation.approaches.forEach((oldApproach) => {
-              if (oldApproach.description === approach.description) {
-                oldApproach.detectors.forEach((oldDetector) => {
-                  if (oldDetector.id === detector.id) {
-                    oldDetector.exclude = !oldDetector.exclude
-                  }
-                })
-              }
-            })
+            return {
+              ...oldLocation,
+              approaches: oldLocation.approaches.map((oldApproach) => {
+                if (oldApproach.description === approach.description) {
+                  return {
+                    ...oldApproach,
+                    detectors: oldApproach.detectors.map((oldDetector) => {
+                      if (oldDetector.id === detector.id) {
+                        return { ...oldDetector, exclude: !oldDetector.exclude };
+                      }
+                      return oldDetector;
+                    }),
+                  };
+                }
+                return oldApproach;
+              }),
+            };
           }
-          return oldLocation
+          return oldLocation;
         })
       )
     },
