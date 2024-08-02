@@ -4,7 +4,6 @@ import {
   FormControlLabel,
   Paper,
   TextField,
-  Typography,
 } from '@mui/material'
 
 import {
@@ -96,9 +95,7 @@ export const ReportInformation = ({
         },
       }}
     >
-      <Box>
-        <StyledComponentHeader header={'Location Data Check'} />
-      </Box>
+      <StyledComponentHeader header={'Report Information'} />
       <Box
         sx={{
           display: 'flex',
@@ -170,7 +167,9 @@ export const ReportInformation = ({
               }}
               sx={{ ...textFieldStyle }}
             />
-            <label htmlFor="accetable-split-fail">Acceptable Split Fail %</label>
+            <label htmlFor="accetable-split-fail">
+              Acceptable Split Fail %
+            </label>
           </Box>
         )}
 
