@@ -26,11 +26,15 @@ using ATSPM.Application.Business.WaitTime;
 using ATSPM.Application.Business.Watchdog;
 using ATSPM.Application.Business.YellowRedActivations;
 using ATSPM.Application.Repositories;
+using ATSPM.Application.Repositories.SpeedManagementRepositories;
+using ATSPM.Data.Models.SpeedManagementAggregation;
 using ATSPM.Infrastructure.Extensions;
 using ATSPM.Infrastructure.Repositories;
+using ATSPM.Infrastructure.Repositories.SpeedManagementRepositories;
 using ATSPM.ReportApi.DataAggregation;
 using ATSPM.ReportApi.ReportServices;
 using AutoFixture;
+using Google.Cloud.BigQuery.V2;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
@@ -122,7 +126,21 @@ builder.Host.ConfigureServices((h, s) =>
 
     s.AddScoped<IControllerEventLogRepository, ControllerEventLogEFRepository>();
 
+    // Add user secrets to the configuration
+    builder.Configuration.AddUserSecrets<Program>();
 
+    var projectId = builder.Configuration["BigQuery:ProjectId"]; // Read the projectId from user secrets
+
+    // Register the BigQueryClient
+    s.AddSingleton(provider => BigQueryClient.Create(projectId));
+
+    // Register the repository with the additional string parameter
+    s.AddScoped<IHourlySpeedRepository>(provider =>
+    {
+        var bigQueryClient = provider.GetRequiredService<BigQueryClient>();
+        var logger = provider.GetRequiredService<ILogger<ATSPMRepositoryBQBase<HourlySpeed>>>();
+        return new HourlySpeedBQRepository(bigQueryClient, projectId, "hourly_speed", logger);
+    });
 
     //report services
     s.AddScoped<IReportService<AggregationOptions, IEnumerable<AggregationResult>>, AggregationReportService>();
