@@ -26,7 +26,7 @@ const ErrorPage: NextPage<ErrorProps> = ({ statusCode }) => {
       }}
     >
       <Typography variant="h1" component="h1" gutterBottom>
-        Error {statusCode}
+        Error {statusCode} 
       </Typography>
       <Typography variant="body1" gutterBottom>
         {message}
