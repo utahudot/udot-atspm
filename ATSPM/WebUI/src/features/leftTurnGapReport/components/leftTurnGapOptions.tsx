@@ -62,9 +62,7 @@ export const LeftTurnGapOptions = ({
         },
       }}
     >
-      <Box>
-        <StyledComponentHeader header={'Left Turn Gap Options'} />
-      </Box>
+      <StyledComponentHeader header={'Left Turn Gap Options'} />
       {approaches && approaches.length > 0 ? (
         <>
           {approaches.map((approach, i) => (
