@@ -216,6 +216,10 @@ namespace ATSPM.ReportApi.ReportServices
                     var start = date.ToDateTime(parameter.StartTime);
                     var end = date.ToDateTime(parameter.EndTime);
                     var logs = controllerEventLogRepository.GetEventsBetweenDates(location.LocationIdentifier, start.AddHours(-12), end.AddHours(12)).ToList();
+                    if (controllerEventLogs.IsNullOrEmpty())
+                    {
+                        throw new NullReferenceException("No Controller Event Logs found for Location");
+                    }
                     var planEvents = logs.GetPlanEvents(start.AddHours(-12), end.AddHours(12));
                     var plan = planService.GetBasicPlans(start, end, routeLocation.LocationIdentifier, planEvents).FirstOrDefault();
 
@@ -251,11 +255,6 @@ namespace ATSPM.ReportApi.ReportServices
 
                     planEventsForPeriod.Add(plan);
                     controllerEventLogs.AddRange(logs);
-                }
-
-                if (controllerEventLogs.IsNullOrEmpty())
-                {
-                    throw new NullReferenceException("No Controller Event Logs found for Location");
                 }
 
                 if (!IsPlanSameForTimePeriod(planEventsForPeriod))
