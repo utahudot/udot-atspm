@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for ApplicationCore - ATSPM.Application.Extensions/EnumExtensions.cs
+// for ApplicationCore - ATSPM.Application.Analysis.ReportServices/IReportService.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,17 +14,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
-using Microsoft.OpenApi.Extensions;
-using System;
-using System.ComponentModel.DataAnnotations;
+using ATSPM.Domain.Common;
 
-namespace ATSPM.Application.Extensions
+namespace ATSPM.Application.Services
 {
-    public static class EnumExtensions
-    {
-        public static string GetDescription(this Enum value)
-        {
-            return value.GetAttributeOfType<DisplayAttribute>().Name;
-        }
-    }
+    /// <summary>
+    /// Report service
+    /// </summary>
+    /// <typeparam name="Tin"></typeparam>
+    /// <typeparam name="Tout"></typeparam>
+    public interface IReportService<Tin, Tout> : IExecuteAsyncWithProgress<Tin, Tout, int> { }
 }

@@ -1,6 +1,7 @@
 ﻿using ATSPM.Application.Extensions;
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
+using Microsoft.OpenApi.Extensions;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -39,8 +40,8 @@ namespace ATSPM.Application.Business.Common
             }
 
             return movements.Count == 1
-                ? movements.First().GetDescription()
-                : string.Join(",", movements.Select(m => m.GetDescription()));
+                ? movements.First().GetDisplayName()
+                : string.Join(",", movements.Select(m => m.GetDisplayName()));
         }
 
 

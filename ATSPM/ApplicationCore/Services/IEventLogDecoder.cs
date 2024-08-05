@@ -75,11 +75,6 @@ namespace ATSPM.Application.Services
     /// <summary>
     /// Decodes event log files to their corresponding <see cref="EventLogModelBase"/> data model
     /// </summary>
-    /// <typeparam name="T"><see cref="EventLogModelBase"/> data model</typeparam>
-    /// <exception cref="EventLogDecoderException">Thrown when the decoding process catches an error</exception>
-    /// <exception cref="ArgumentNullException">Thrown if <paramref name="device"/> is null</exception>
-    /// <exception cref="InvalidDataException">Thrown if <paramref name="stream"/> is empty</exception>
-    /// <exception cref="OperationCanceledException">Thrown on <paramref name="cancelToken"/> cancelled</exception>
     public interface IEventLogDecoder<T> : IEventLogDecoder where T : EventLogModelBase
     {
         /// <summary>

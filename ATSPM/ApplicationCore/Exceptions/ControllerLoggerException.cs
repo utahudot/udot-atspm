@@ -20,7 +20,7 @@ using System;
 #nullable enable
 namespace ATSPM.Application.Exceptions
 {
-    public abstract class ControllerLoggerException : ATSPMException
+    public abstract class ControllerLoggerException : AtspmException
     {
         public ControllerLoggerException(string? message) : base(message) { }
 

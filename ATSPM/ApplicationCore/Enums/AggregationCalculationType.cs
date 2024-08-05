@@ -16,9 +16,19 @@
 #endregion
 namespace ATSPM.Application.Enums
 {
+    /// <summary>
+    /// Aggregation type (for charts)
+    /// </summary>
     public enum AggregationCalculationType
     {
+        /// <summary>
+        /// Sum
+        /// </summary>
         Sum,
+        
+        /// <summary>
+        /// Average
+        /// </summary>
         Average
     }
 }

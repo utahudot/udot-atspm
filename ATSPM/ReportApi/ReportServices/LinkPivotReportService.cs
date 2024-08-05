@@ -14,9 +14,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
-using ATSPM.Application.Business;
 using ATSPM.Application.Business.LinkPivot;
 using ATSPM.Application.Repositories.ConfigurationRepositories;
+using ATSPM.Application.Services;
 using ATSPM.Data.Models;
 
 namespace ATSPM.ReportApi.ReportServices

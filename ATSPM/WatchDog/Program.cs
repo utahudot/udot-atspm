@@ -86,7 +86,7 @@ namespace WatchDog
                        s.AddAtspmDbContext(h);
                        s.AddScoped<ILocationRepository, LocationEFRepository>();
                        s.AddScoped<IIndianaEventLogRepository, IndianaEventLogEFRepository>();
-                       s.AddScoped<IWatchDogLogEventRepository, WatchDogLogEventEFRepository>();
+                       s.AddScoped<IWatchDogEventLogRepository, WatchDogLogEventEFRepository>();
                        s.AddScoped<IRegionsRepository, RegionEFRepository>();
                        s.AddScoped<IJurisdictionRepository, JurisdictionEFRepository>();
                        s.AddScoped<IAreaRepository, AreaEFRepository>();

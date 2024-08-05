@@ -23,7 +23,7 @@ namespace ATSPM.Application.Exceptions
     /// <summary>
     /// Exceptions for implementing <see cref="IDownloaderClient"/>
     /// </summary>
-    public abstract class DownloaderClientException : ATSPMException
+    public abstract class DownloaderClientException : AtspmException
     {
         /// <summary>
         /// Exceptions for implementing <see cref="IDownloaderClient"/>

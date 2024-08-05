@@ -107,38 +107,42 @@ namespace ATSPM.Infrastructure.Services.LocationControllerLoggers
 
         protected async virtual Task<IEnumerable<ControllerEventLog>> CreateEventLogs(FileInfo file, CancellationToken cancellationToken = default)
         {
-            HashSet<ControllerEventLog> logList = new HashSet<ControllerEventLog>(new ControllerEventLogEqualityComparer());
+            //HashSet<ControllerEventLog> logList = new HashSet<ControllerEventLog>(new IndianaEventEqualityComparer());
 
-            using (var scope = _serviceProvider.CreateScope())
-            {
-                //var decoder = scope.ServiceProvider.GetServices<IEventLogDecoder<IndianaEvent>>().First(c => c.CanExecute(file));
-                //logList = await decoder.ExecuteAsync(file, cancellationToken);
-            }
+            //using (var scope = _serviceProvider.CreateScope())
+            //{
+            //    //var decoder = scope.ServiceProvider.GetServices<IEventLogDecoder<IndianaEvent>>().First(c => c.CanExecute(file));
+            //    //logList = await decoder.ExecuteAsync(file, cancellationToken);
+            //}
 
-            return logList;
+            //return logList;
+
+            return default;
         }
 
         protected async virtual Task<IEnumerable<ControllerEventLog>> SaveToRepo(ControllerEventLog[] logs, CancellationToken cancellationToken = default)
         {
-            HashSet<ControllerEventLog> result = new HashSet<ControllerEventLog>(logs, new ControllerEventLogEqualityComparer());
+            //HashSet<ControllerEventLog> result = new HashSet<ControllerEventLog>(logs, new IndianaEventEqualityComparer());
 
-            using (var scope = _serviceProvider.CreateScope())
-            {
-                var db = scope.ServiceProvider.GetService<LegacyEventLogContext>();
+            //using (var scope = _serviceProvider.CreateScope())
+            //{
+            //    var db = scope.ServiceProvider.GetService<LegacyEventLogContext>();
 
-                await db.BulkInsertOrUpdateAsync(result.ToList(),
-                    new BulkConfig()
-                    {
-                        SqlBulkCopyOptions = Microsoft.Data.SqlClient.SqlBulkCopyOptions.CheckConstraints,
-                        OmitClauseExistsExcept = true,
-                        BulkCopyTimeout = _options.Value.BulkCopyTimeout
-                    },
-                    null,
-                    null,
-                    cancellationToken);
-            }
+            //    await db.BulkInsertOrUpdateAsync(result.ToList(),
+            //        new BulkConfig()
+            //        {
+            //            SqlBulkCopyOptions = Microsoft.Data.SqlClient.SqlBulkCopyOptions.CheckConstraints,
+            //            OmitClauseExistsExcept = true,
+            //            BulkCopyTimeout = _options.Value.BulkCopyTimeout
+            //        },
+            //        null,
+            //        null,
+            //        cancellationToken);
+            //}
 
-            return result;
+            //return result;
+
+            return default;
         }
     }
 }

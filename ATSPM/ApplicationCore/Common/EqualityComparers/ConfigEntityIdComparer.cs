@@ -15,19 +15,25 @@
 // limitations under the License.
 #endregion
 using ATSPM.Data.Models.ConfigurationModels;
-using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
 namespace ATSPM.Application.Common.EqualityComparers
 {
+    /// <summary>
+    /// Compares the <typeparamref name="Tid"/> of models derived from <see cref="AtspmConfigModelBase{T}"/>
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="Tid"></typeparam>
     public class ConfigEntityIdComparer<T, Tid> : EqualityComparer<T> where T : AtspmConfigModelBase<Tid>
     {
+        /// <inheritdoc/>
         public override bool Equals(T x, T y)
         {
             return x.Id.Equals(y.Id);
         }
 
+        /// <inheritdoc/>
         public override int GetHashCode([DisallowNull] T obj)
         {
             return obj.Id.GetHashCode();
