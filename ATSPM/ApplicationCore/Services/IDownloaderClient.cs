@@ -90,32 +90,4 @@ namespace ATSPM.Application.Services
         /// <exception cref="DownloaderClientConnectionException"></exception>
         Task DisconnectAsync(CancellationToken token = default);
     }
-
-    ///// <summary>
-    ///// Client for connecting and downloading files via FTP servers
-    ///// </summary>
-    //public interface IFTPDownloaderClient : IDownloaderClient
-    //{
-    //}
-
-    ///// <summary>
-    ///// Client for connecting and downloading files via SFTP servers
-    ///// </summary>
-    //public interface ISFTPDownloaderClient : IDownloaderClient
-    //{
-    //}
-
-    ///// <summary>
-    ///// Client for connecting and downloading files via HTTP servers
-    ///// </summary>
-    //public interface IHTTPDownloaderClient : IDownloaderClient
-    //{
-    //}
-
-    ///// <summary>
-    ///// Client for connecting and downloading files via SNMP servers
-    ///// </summary>
-    //public interface ISNMPDownloaderClient : IDownloaderClient
-    //{
-    //}
 }

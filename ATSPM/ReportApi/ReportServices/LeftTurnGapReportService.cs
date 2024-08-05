@@ -14,13 +14,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
-using ATSPM.Application.Business;
 using ATSPM.Application.Business.LeftTurnGapReport;
 using ATSPM.Application.Extensions;
 using ATSPM.Application.Repositories.AggregationRepositories;
 using ATSPM.Application.Repositories.ConfigurationRepositories;
+using ATSPM.Application.Services;
 using ATSPM.Application.TempExtensions;
 using ATSPM.Data.Models;
+using Microsoft.OpenApi.Extensions;
 
 namespace ATSPM.ReportApi.ReportServices
 {
@@ -166,8 +167,8 @@ namespace ATSPM.ReportApi.ReportServices
                 ApproachDescription = approach.Description,
                 SpeedLimit = approach.Mph,
                 Location = approach.Location.PrimaryName + " & " + approach.Location.SecondaryName,
-                PhaseType = approach.GetPhaseType().GetDescription(),
-                SignalType = approach.GetSignalHeadType().GetDescription()
+                PhaseType = approach.GetPhaseType().GetDisplayName(),
+                SignalType = approach.GetSignalHeadType().GetDisplayName()
             };
 
             if (options.GetGapReport)

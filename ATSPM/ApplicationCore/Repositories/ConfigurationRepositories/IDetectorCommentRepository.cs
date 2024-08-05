@@ -26,8 +26,6 @@ namespace ATSPM.Application.Repositories.ConfigurationRepositories
     {
         #region ExtensionMethods
 
-        //DetectorComment GetMostRecentDetectorCommentByDetectorID(int ID);
-
         #endregion
 
         #region Obsolete

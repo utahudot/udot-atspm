@@ -20,7 +20,7 @@ using ATSPM.Domain.Services;
 namespace ATSPM.Application.Repositories.ConfigurationRepositories
 {
     /// <summary>
-    /// Route distance repository
+    /// Device configuration repository
     /// </summary>
     public interface IDeviceConfigurationRepository : IAsyncRepository<DeviceConfiguration>
     {

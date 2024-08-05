@@ -116,7 +116,7 @@ namespace ATSPM.Application.Business.Common
             var eventCodes = new List<short>();
             for (short i = 130; i <= 151; i++)
                 eventCodes.Add(i);
-            var splitsDt = LocationEvents.Where(s => s.Timestamp >= plan.Start && s.Timestamp < plan.Start.AddSeconds(2) && eventCodes.Contains(s.EventCode)).OrderBy(s => s.Timestamp); // controllerEventLogRepository.GetLocationEventsByEventCodes(locationId, plan.StartTime, plan.StartTime.AddSeconds(2), l);
+            var splitsDt = LocationEvents.Where(s => s.Timestamp >= plan.Start && s.Timestamp < plan.Start.AddSeconds(2) && eventCodes.Contains(s.EventCode)).OrderBy(s => s.Timestamp); // controllerEventLogRepository.GetEventsByEventCodes(locationId, plan.StartTime, plan.StartTime.AddSeconds(2), l);
             foreach (var row in splitsDt)
             {
                 if (row.EventCode == 132)

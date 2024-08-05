@@ -21,7 +21,7 @@ using Microsoft.Extensions.Logging;
 
 namespace ATSPM.Infrastructure.Repositories
 {
-    public class WatchDogLogEventEFRepository : ATSPMRepositoryEFBase<WatchDogLogEvent>, IWatchDogLogEventRepository
+    public class WatchDogLogEventEFRepository : ATSPMRepositoryEFBase<WatchDogLogEvent>, IWatchDogEventLogRepository
     {
         public WatchDogLogEventEFRepository(ConfigContext db, ILogger<WatchDogLogEventEFRepository> log) : base(db, log) { }
     }
