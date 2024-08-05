@@ -4,6 +4,10 @@ x-environment: &default-environment
   ASPNETCORE_ENVIRONMENT: Development
   ASPNETCORE_Kestrel__Certificates__Default__Password: password
   ASPNETCORE_Kestrel__Certificates__Default__Path: /root/.aspnet/https/aspnetapp.pfx
+  ConnectionStrings__ConfigContext__ConnectionString: "Host=postgres;Port=5432;Username=admin;Password=Avenue.2006;Database=ATSPM-Config-V2;Pooling=true;"
+  ConnectionStrings__AggregationContext__ConnectionString: "Host=postgres;Port=5432;Username=admin;Password=Avenue.2006;Database=ATSPM-Aggregation-V1;Pooling=true;"
+  ConnectionStrings__EventLogContext__ConnectionString: "Host=postgres;Port=5432;Username=admin;Password=Avenue.2006;Database=ATSPM-EventLogs-V1;Pooling=true;"
+  ConnectionStrings__IdentityContext__ConnectionString: "Host=postgres;Port=5432;Username=admin;Password=Avenue.2006;Database=ATSPM-Identity;Pooling=true;"
   ConnectionStrings__ConfigContext__Provider: "PostgreSQL"
   ConnectionStrings__AggregationContext__Provider: "PostgreSQL"
   ConnectionStrings__EventLogContext__Provider: "PostgreSQL"
@@ -13,6 +17,16 @@ x-environment: &default-environment
   Jwt__Issuer: "AvenueConsultants"
 
 services:
+  postgres:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: Avenue.2006
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
   webui:
     build:
       context: ./WebUI
@@ -36,7 +50,7 @@ services:
       <<: *default-environment
       ASPNETCORE_URLS: https://+:44313
     volumes:
-      - ./certs:/root/.aspnet/https:ro
+      - aspnet_https:/root/.aspnet/https:ro
     user: root
 
   dataapi:
@@ -44,31 +58,41 @@ services:
       dockerfile: ./DataApi/Dockerfile
     ports:
       - "8082:80"
+    environment:
+      <<: *default-environment
 
   signalcontroller:
     build:
       dockerfile: ./SignalControllerLogger/Dockerfile
     ports:
       - "8083:80"
+    environment:
+      <<: *default-environment
 
   watchdog:
     build:
       dockerfile: ./WatchDog/Dockerfile
     ports:
       - "8084:80"
+    environment:
+      <<: *default-environment
 
   reportapi:
     build:
       dockerfile: ./ReportApi/Dockerfile
     ports:
       - "8085:80"
+    environment:
+      <<: *default-environment
 
   identityapi:
     build:
       dockerfile: ./Identity/Dockerfile
     ports:
       - "8086:80"
+    environment:
+      <<: *default-environment
 
-networks:
-  default:
-    driver: bridge
+volumes:
+  postgres_data:
+  aspnet_https:
