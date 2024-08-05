@@ -16,13 +16,9 @@
 #endregion
 using ATSPM.Application.Analysis.Common;
 using ATSPM.Data.Models;
-using ATSPM.Domain.Common;
-using ATSPM.Domain.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ATSPM.Application.Extensions
 {
@@ -41,18 +37,5 @@ namespace ATSPM.Application.Extensions
                 .Contains(w.DetectorChannel))
                 .ToList();
         }
-
-        //public static IReadOnlyList<Volumes> FilterCorrectedDetectorEvents(this Tuple<Tuple<Approach, Volumes>, Tuple<Approach, Volumes>> input)
-        //{
-        //    var 
-
-
-
-        //    return input.Item2?
-        //        .Where(w => w.LocationIdentifier == input.Item1?.Location.LocationIdentifier && input.Item1.Detectors
-        //        .Select(s => s.DetectorChannel)
-        //        .Contains(w.DetectorChannel))
-        //        .ToList();
-        //}
     }
 }

@@ -16,6 +16,7 @@
 #endregion
 using ATSPM.Application.Configuration;
 using ATSPM.Application.Repositories;
+using ATSPM.Application.Repositories.EventLogRepositories;
 using ATSPM.Data.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -50,61 +51,61 @@ namespace ATSPM.Infrastructure.Services.HostedServices
                 _log.LogInformation("Extraction Path: {path}", _options.Value.Path);
                 _log.LogInformation("Extraction File Formate: {format}", _options.Value.FileFormat);
 
-                using (var scope = _serviceProvider.CreateAsyncScope())
-                {
-                    var eventRepository = scope.ServiceProvider.GetService<IControllerEventLogRepository>();
+                //using (var scope = _serviceProvider.CreateAsyncScope())
+                //{
+                //    var eventRepository = scope.ServiceProvider.GetService<IIndianaEventLogRepository>();
 
-                    foreach (var s in _options.Value.Dates)
-                    {
-                        _log.LogInformation("Extracting Event Logs for Date(s): {date}", s.ToString("dd/MM/yyyy"));
-                    }
+                //    foreach (var s in _options.Value.Dates)
+                //    {
+                //        _log.LogInformation("Extracting Event Logs for Date(s): {date}", s.ToString("dd/MM/yyyy"));
+                //    }
 
-                    var archiveQuery = eventRepository.GetList().Where(i => _options.Value.Dates.Any(d => i.ArchiveDate == d));
+                //    var archiveQuery = eventRepository.GetList().Where(i => _options.Value.Dates.Any(d => i.ArchiveDate == d));
 
-                    if (_options.Value.Included != null)
-                    {
-                        foreach (var s in _options.Value.Included)
-                        {
-                            _log.LogInformation("Including Event Logs for Location(s): {Location}", s);
-                        }
+                //    if (_options.Value.Included != null)
+                //    {
+                //        foreach (var s in _options.Value.Included)
+                //        {
+                //            _log.LogInformation("Including Event Logs for Location(s): {Location}", s);
+                //        }
 
-                        archiveQuery = archiveQuery.Where(i => _options.Value.Included.Any(d => i.SignalIdentifier == d));
-                    }
+                //        archiveQuery = archiveQuery.Where(i => _options.Value.Included.Any(d => i.SignalIdentifier == d));
+                //    }
 
-                    if (_options.Value.Excluded != null)
-                    {
-                        foreach (var s in _options.Value.Excluded)
-                        {
-                            _log.LogInformation("Excluding Event Logs for Location(s): {Location}", s);
-                        }
+                //    if (_options.Value.Excluded != null)
+                //    {
+                //        foreach (var s in _options.Value.Excluded)
+                //        {
+                //            _log.LogInformation("Excluding Event Logs for Location(s): {Location}", s);
+                //        }
 
-                        archiveQuery = archiveQuery.Where(i => !_options.Value.Excluded.Contains(i.SignalIdentifier));
-                    }
+                //        archiveQuery = archiveQuery.Where(i => !_options.Value.Excluded.Contains(i.SignalIdentifier));
+                //    }
 
-                    int processedCount = 0;
+                //    int processedCount = 0;
 
-                    var archives = await archiveQuery.Select(s => new ControllerLogArchive() { SignalIdentifier = s.SignalIdentifier, ArchiveDate = s.ArchiveDate }).ToListAsync(cancellationToken);
+                //    var archives = await archiveQuery.Select(s => new ControllerLogArchive() { SignalIdentifier = s.SignalIdentifier, ArchiveDate = s.ArchiveDate }).ToListAsync(cancellationToken);
 
-                    _log.LogInformation("Number of Event Log Archives to Process: {count}", archives.Count);
+                //    _log.LogInformation("Number of Event Log Archives to Process: {count}", archives.Count);
 
-                    foreach (var archive in archives)
-                    {
-                        if (cancellationToken.IsCancellationRequested) break;
+                //    foreach (var archive in archives)
+                //    {
+                //        if (cancellationToken.IsCancellationRequested) break;
 
-                        Console.Write($"Writing... {archive.SignalIdentifier} ({archives.IndexOf(archive) + 1} of {archives.Count})");
+                //        Console.Write($"Writing... {archive.SignalIdentifier} ({archives.IndexOf(archive) + 1} of {archives.Count})");
 
-                        var log = await eventRepository.LookupAsync(archive);
+                //        var log = await eventRepository.LookupAsync(archive);
 
-                        var file = await WriteLog(log);
+                //        var file = await WriteLog(log);
 
-                        do { Console.Write("\b \b"); } while (Console.CursorLeft > 0);
-                        Console.WriteLine($"Completed {file.FullName} ({archives.IndexOf(archive) + 1} of {archives.Count})");
+                //        do { Console.Write("\b \b"); } while (Console.CursorLeft > 0);
+                //        Console.WriteLine($"Completed {file.FullName} ({archives.IndexOf(archive) + 1} of {archives.Count})");
 
-                        processedCount++;
-                    }
+                //        processedCount++;
+                //    }
 
-                    _log.LogInformation("Log Archives Processed: {count}", processedCount);
-                }
+                //    _log.LogInformation("Log Archives Processed: {count}", processedCount);
+                //}
             }
             catch (Exception e)
             {

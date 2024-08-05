@@ -14,10 +14,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
-using ATSPM.Application.Business;
 using ATSPM.Application.Business.LeftTurnGapReport;
 using ATSPM.Application.Repositories.AggregationRepositories;
 using ATSPM.Application.Repositories.ConfigurationRepositories;
+using ATSPM.Application.Services;
 using ATSPM.Data.Models;
 
 namespace ATSPM.ReportApi.ReportServices

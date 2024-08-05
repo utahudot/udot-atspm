@@ -15,7 +15,6 @@
 // limitations under the License.
 #endregion
 using Asp.Versioning;
-using ATSPM.Application.Business;
 using ATSPM.Application.Business.Aggregation;
 using ATSPM.Application.Business.AppoachDelay;
 using ATSPM.Application.Business.ApproachSpeed;
@@ -41,6 +40,7 @@ using ATSPM.Application.Business.WaitTime;
 using ATSPM.Application.Business.Watchdog;
 using ATSPM.Application.Business.YellowRedActivations;
 using ATSPM.Application.Repositories;
+using ATSPM.Application.Services;
 using ATSPM.Infrastructure.Extensions;
 using ATSPM.Infrastructure.Repositories;
 using ATSPM.ReportApi.DataAggregation;
@@ -140,7 +140,7 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddAtspmAuthentication(h, builder);
     s.AddAtspmAuthorization(h);
 
-    s.AddScoped<IControllerEventLogRepository, ControllerEventLogEFRepository>();
+    //s.AddScoped<IControllerEventLogRepository, ControllerEventLogEFRepository>();
 
 
 

@@ -23,7 +23,7 @@ namespace ATSPM.Application.Exceptions
     /// <summary>
     /// Exception decoding event log for <see cref="IEventLogDecoder{T}"/> implementations
     /// </summary>
-    public class EventLogDecoderException : ATSPMException
+    public class EventLogDecoderException : AtspmException
     {
         /// <summary>
         /// Exception decoding event log for <see cref="IEventLogDecoder{T}"/> implementations

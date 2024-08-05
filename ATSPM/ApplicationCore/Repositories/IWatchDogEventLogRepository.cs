@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for ApplicationCore - ATSPM.Application.Specifications/MenuSpecifications.cs
+// for ApplicationCore - ATSPM.Application.Repositories/IWatchDogEventLogRepository.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,21 +14,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
-using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
-using ATSPM.Domain.Specifications;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace ATSPM.Application.Specifications
+using ATSPM.Domain.Services;
+namespace ATSPM.Application.Repositories
 {
-    public class MenuTopLevelSpecification : BaseSpecification<MenuItem>
+    /// <summary>
+    /// Watchdog event log repository
+    /// </summary>
+    public interface IWatchDogEventLogRepository : IAsyncRepository<WatchDogLogEvent>
     {
-        public MenuTopLevelSpecification(string application) : base(s => s.ParentId == 0) 
-        {
-            ApplyOrderBy(o => o.DisplayOrder);
-        }
     }
 }

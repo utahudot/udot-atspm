@@ -122,18 +122,6 @@ namespace ATSPM.Infrastructure.Repositories.ConfigurationRepositories
             return result;
         }
 
-        //public IReadOnlyList<Location> GetLatestVersionOfAllLocations(int controllerTypeId)
-        //{
-        //    var result = BaseQuery()
-        //        .Where(w => w.ControllerTypeId == controllerTypeId)
-        //        .FromSpecification(new ActiveLocationSpecification())
-        //        .GroupBy(r => r.SignalIdentifier)
-        //        .Select(g => g.OrderByDescending(r => r.Start).FirstOrDefault())
-        //        .ToList();
-
-        //    return result;
-        //}
-
         /// <inheritdoc/>
         public Location GetLatestVersionOfLocation(string LocationIdentifier)
         {
