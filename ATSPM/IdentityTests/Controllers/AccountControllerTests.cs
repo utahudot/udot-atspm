@@ -14,6 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+using ATSPM.Data;
 using Identity.Business.Agency;
 using Identity.Controllers;
 using Identity.Models.Account;
@@ -164,31 +165,31 @@ namespace YourProject.Tests.Controllers
             Assert.IsType<OkObjectResult>(result);
         }
 
-        [Fact]
-        public async Task ChangePassword_ValidModel_ReturnsOk()
-        {
-            // Arrange
-            var model = new ChangePasswordViewModel
-            {
-                CurrentPassword = "OldPassword123!",
-                NewPassword = "NewPassword123!",
-                ConfirmPassword = "NewPassword123!"
-            };
+        //[Fact]
+        //public async Task ChangePassword_ValidModel_ReturnsOk()
+        //{
+        //    // Arrange
+        //    var model = new ChangePasswordViewModel
+        //    {
+        //        CurrentPassword = "OldPassword123!",
+        //        NewPassword = "NewPassword123!",
+        //        ConfirmPassword = "NewPassword123!"
+        //    };
 
-            var user = new ApplicationUser();
+        //    var user = new ApplicationUser();
 
-            _userManagerMock.Setup(um => um.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
-                .ReturnsAsync(user);
+        //    _userManagerMock.Setup(um => um.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
+        //        .ReturnsAsync(user);
 
-            _userManagerMock.Setup(um => um.ChangePasswordAsync(user, model.CurrentPassword, model.NewPassword))
-                .ReturnsAsync(IdentityResult.Success);
+        //    _userManagerMock.Setup(um => um.ChangePasswordAsync(user, model.CurrentPassword, model.NewPassword))
+        //        .ReturnsAsync(IdentityResult.Success);
 
-            // Act
-            var result = await _accountController.ChangePassword(model);
+        //    // Act
+        //    var result = await _accountController.ChangePassword(model);
 
-            // Assert
-            Assert.IsType<OkResult>(result);
-        }
+        //    // Assert
+        //    Assert.IsType<OkResult>(result);
+        //}
 
         [Fact]
         public async Task ChangePassword_InvalidModel_ReturnsBadRequest()

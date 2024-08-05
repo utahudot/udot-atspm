@@ -19,6 +19,7 @@ using ATSPM.Application.Business.Bins;
 using ATSPM.Application.Repositories.AggregationRepositories;
 using ATSPM.Data.Models;
 using ATSPM.Data.Models.AggregationModels;
+using ATSPM.ReportApi.DataAggregation;
 using MOE.Common.Business.WCFServiceLibrary;
 using System.Collections.Concurrent;
 

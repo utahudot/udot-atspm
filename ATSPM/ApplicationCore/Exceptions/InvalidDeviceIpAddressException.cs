@@ -22,7 +22,7 @@ namespace ATSPM.Application.Exceptions
     /// <summary>
     /// Thrown when a <see cref="Device.Ipaddress"/> is either invalid or can't be reached 
     /// </summary>
-    public class InvalidDeviceIpAddressException : ATSPMException
+    public class InvalidDeviceIpAddressException : AtspmException
     {
         /// <inheritdoc/>
         public InvalidDeviceIpAddressException(Device device) : base($"{device.Ipaddress} is either invalid or can't be reached")

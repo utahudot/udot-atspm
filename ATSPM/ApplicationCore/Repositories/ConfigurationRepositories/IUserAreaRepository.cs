@@ -19,6 +19,9 @@ using ATSPM.Domain.Services;
 
 namespace ATSPM.Application.Repositories.ConfigurationRepositories
 {
+    /// <summary>
+    /// User area repository
+    /// </summary>
     public interface IUserAreaRepository : IAsyncRepository<UserArea>
     {
     }

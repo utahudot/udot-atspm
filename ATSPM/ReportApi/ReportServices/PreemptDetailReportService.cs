@@ -14,11 +14,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
-using ATSPM.Application.Business;
 using ATSPM.Application.Business.PreempDetail;
 using ATSPM.Application.Extensions;
 using ATSPM.Application.Repositories.ConfigurationRepositories;
 using ATSPM.Application.Repositories.EventLogRepositories;
+using ATSPM.Application.Services;
 using ATSPM.Application.TempExtensions;
 using Microsoft.IdentityModel.Tokens;
 
@@ -58,7 +58,7 @@ namespace ATSPM.ReportApi.ReportServices
             for (short i = 101; i <= 111; i++)
                 codes.Add(i);
 
-            var events = controllerEventLogRepository.GetLocationEventsByEventCodes(
+            var events = controllerEventLogRepository.GetEventsByEventCodes(
                 parameter.LocationIdentifier,
                 parameter.Start,
                 parameter.End,

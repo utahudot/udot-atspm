@@ -17,6 +17,7 @@
 using ATSPM.Application.Business.Aggregation;
 using ATSPM.Application.Repositories.AggregationRepositories;
 using ATSPM.Data.Models;
+using ATSPM.ReportApi.DataAggregation;
 using MOE.Common.Business.WCFServiceLibrary;
 
 namespace MOE.Common.Business.DataAggregation

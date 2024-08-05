@@ -15,8 +15,8 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Application.Business;
 using ATSPM.Application.LogMessages;
+using ATSPM.Application.Services;
 using AutoFixture;
 using Microsoft.AspNetCore.Mvc;
 
@@ -29,14 +29,14 @@ namespace ATSPM.ReportApi.Controllers
     /// <typeparam name="Tout">Output results</typeparam>
     public abstract class ReportControllerBase<Tin, Tout> : ControllerBase
     {
-        private IReportService<Tin, Tout> _reportService;
-        private ReportsLoggerLogMessages _reportsLogMessages;
+        private readonly IReportService<Tin, Tout> _reportService;
+        private readonly ReportsLoggerLogMessages<Tin, Tout> _reportsLogMessages;
 
         /// <inheritdoc/>
         public ReportControllerBase(IReportService<Tin, Tout> reportService, ILogger logger)
         {
             _reportService = reportService;
-            _reportsLogMessages = new ReportsLoggerLogMessages(logger);
+            _reportsLogMessages = new ReportsLoggerLogMessages<Tin, Tout>(logger, _reportService);
         }
 
         /// <summary>

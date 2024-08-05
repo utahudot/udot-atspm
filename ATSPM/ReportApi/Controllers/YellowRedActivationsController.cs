@@ -16,9 +16,9 @@
 #endregion
 using Asp.Versioning;
 using ATSPM.Data.Models;
-using ATSPM.Application.Business;
 using ATSPM.Application.Business.YellowRedActivations;
 using Microsoft.AspNetCore.Mvc;
+using ATSPM.Application.Services;
 
 namespace ATSPM.ReportApi.Controllers
 {

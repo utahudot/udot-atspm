@@ -15,8 +15,8 @@
 // limitations under the License.
 #endregion
 using Asp.Versioning;
-using ATSPM.Application.Business;
 using ATSPM.Application.Business.TimeSpaceDiagram;
+using ATSPM.Application.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ATSPM.ReportApi.Controllers

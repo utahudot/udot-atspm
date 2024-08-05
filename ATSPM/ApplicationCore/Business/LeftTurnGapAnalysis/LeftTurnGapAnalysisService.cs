@@ -20,6 +20,7 @@ using ATSPM.Application.TempExtensions;
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using ATSPM.Data.Models.EventLogModels;
+using Microsoft.OpenApi.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -73,7 +74,7 @@ namespace ATSPM.Application.Business.LeftTurnGapAnalysis
             if (detectorEvents.Any() && cycleEventsByPhase.Any())
             {
                 var result = GetData(cycleEventsByPhase, detectorEvents, options, detectionTypeStr, approach);
-                result.PhaseDescription = $"{leftTurnPhase.DirectionType.Description} Left Phase {leftTurnPhase.ProtectedPhaseNumber} crossing {approach.DirectionType.Description} {string.Join(',', detectorsToUse.Select(d => d.MovementType.GetDescription()))} Phase {approach.ProtectedPhaseNumber}";
+                result.PhaseDescription = $"{leftTurnPhase.DirectionType.Description} Left Phase {leftTurnPhase.ProtectedPhaseNumber} crossing {approach.DirectionType.Description} {string.Join(',', detectorsToUse.Select(d => d.MovementType.GetDisplayName()))} Phase {approach.ProtectedPhaseNumber}";
                 result.ApproachDescription = approach.Description;
                 result.LocationDescription = approach.Location.LocationDescription();
                 return result;

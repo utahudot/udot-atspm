@@ -33,7 +33,5 @@ namespace ATSPM.Application.Enums
         SignalEventCount,
         signalPlan
     }
-
-
 }
 

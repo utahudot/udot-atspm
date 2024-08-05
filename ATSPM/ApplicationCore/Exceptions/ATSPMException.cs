@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for ApplicationCore - ATSPM.Application.Exceptions/ATSPMException.cs
+// for ApplicationCore - ATSPM.Application.Exceptions/AtspmException.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,20 +20,16 @@ using System;
 #nullable enable
 namespace ATSPM.Application.Exceptions
 {
-    public abstract class ATSPMException : UdotExceptionBase
+    /// <summary>
+    /// Base for all Atspm exceptions.
+    /// Use this base to help with tracking exceptions in external logging services
+    /// </summary>
+    public abstract class AtspmException : UdotExceptionBase
     {
-        /// <summary>
-        /// Initializes a new instance of the System.Exception class with a specified error message.
-        /// </summary>
-        /// <param name="message">The message that describes the error.</param>
-        public ATSPMException(string? message) : base(message) { }
+        /// <inheritdoc/>
+        public AtspmException(string? message) : base(message) { }
 
-        /// <summary>
-        /// Initializes a new instance of the System.Exception class with a specified error
-        /// message and a reference to the inner exception that is the cause of this exception.
-        /// </summary>
-        /// <param name="message">The error message that explains the reason for the exception.</param>
-        /// <param name="innerException">The exception that is the cause of the current exception, or a null reference</param>
-        public ATSPMException(string? message, Exception? innerException) : base(message, innerException) { }
+        /// <inheritdoc/>
+        public AtspmException(string? message, Exception? innerException) : base(message, innerException) { }
     }
 }
