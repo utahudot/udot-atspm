@@ -23,8 +23,21 @@ using System.Linq;
 
 namespace ATSPM.Application.Extensions
 {
+    /// <summary>
+    /// Extensions for <see cref="ISpeedEventLogRepository"/>
+    /// </summary>
     public static class SpeedEventRepositoryExtensions
     {
+        /// <summary> 
+        /// Gets <see cref="SpeedEvent"/> events by <paramref name="locationIdentifier"/> and <paramref name="detector"/>
+        /// </summary>
+        /// <param name="repo"></param>
+        /// <param name="locationIdentifier"></param>
+        /// <param name="detector"></param>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <param name="minSpeedFilter">Minimum speed to include</param>
+        /// <returns></returns>
         public static IReadOnlyList<SpeedEvent> GetSpeedEventsByDetector(this ISpeedEventLogRepository repo, string locationIdentifier, Detector detector, DateTime start, DateTime end, int minSpeedFilter = 5)
         {
             return repo.GetEventsBetweenDates(locationIdentifier, start, end)
@@ -33,13 +46,14 @@ namespace ATSPM.Application.Extensions
                 ).ToList();
 
         }
+
         #region Obsolete
 
-        [Obsolete("This method isn't currently being used")]
-        public static IReadOnlyList<SpeedEvent> GetSpeedEventsByLocation(this ISpeedEventLogRepository repo, DateTime startDate, DateTime endDate, Approach approach)
-        {
-            throw new NotImplementedException();
-        }
+        //[Obsolete("This method isn't currently being used")]
+        //public static IReadOnlyList<SpeedEvent> GetSpeedEventsByLocation(this ISpeedEventLogRepository repo, DateTime startDate, DateTime endDate, Approach approach)
+        //{
+        //    throw new NotImplementedException();
+        //}
 
         #endregion
     }

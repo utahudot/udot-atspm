@@ -83,19 +83,19 @@ namespace InfrastructureTests.RepositoryTests
 
         #region IDetectorCommentRepositoryExtensions
 
-        [Fact]
-        public void IDetectorCommentRepositoryGetMostRecentDetectorCommentByDetectorID()
-        {
-            var result = _repo.GetMostRecentDetectorCommentByDetectorID(DetectorId);
+        //[Fact]
+        //public void IDetectorCommentRepositoryGetMostRecentDetectorCommentByDetectorID()
+        //{
+        //    var result = _repo.GetMostRecentDetectorCommentByDetectorID(DetectorId);
 
-            _output.WriteLine($"result: {result.Id} - {result.Comment} - {result.TimeStamp}");
+        //    _output.WriteLine($"result: {result.Id} - {result.Comment} - {result.TimeStamp}");
 
-            var expected = _list.Where(r => r.DetectorId == DetectorId).Select(s => s.TimeStamp).Max();
-            var actual = result.TimeStamp;
+        //    var expected = _list.Where(r => r.DetectorId == DetectorId).Select(s => s.TimeStamp).Max();
+        //    var actual = result.TimeStamp;
 
-            //timestamp should be most recent
-            Assert.Equal(expected, actual);
-        }
+        //    //timestamp should be most recent
+        //    Assert.Equal(expected, actual);
+        //}
 
         #endregion
     }

@@ -16,9 +16,6 @@
 #endregion
 using ATSPM.Data.Models;
 using ATSPM.Domain.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace ATSPM.Application.Repositories.ConfigurationRepositories
 {

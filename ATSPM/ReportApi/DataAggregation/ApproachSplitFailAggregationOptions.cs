@@ -20,6 +20,7 @@ using ATSPM.Application.Repositories.AggregationRepositories;
 using ATSPM.Application.Repositories.ConfigurationRepositories;
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
+using ATSPM.ReportApi.DataAggregation;
 using MOE.Common.Business.DataAggregation;
 using System.Collections.Concurrent;
 

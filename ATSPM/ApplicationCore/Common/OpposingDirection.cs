@@ -25,6 +25,7 @@ namespace ATSPM.Application.Common
     {
         private readonly DirectionTypes _direction;
 
+        /// <inheritdoc/>
         public OpposingDirection(DirectionTypes direction) => _direction = direction;
 
         /// <summary>

@@ -1,4 +1,5 @@
-﻿using ATSPM.Data.Enums;
+﻿using ATSPM.Data;
+using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using ATSPM.Data.Models.ConfigurationModels;
 using ATSPM.Domain.Configuration;
@@ -17,11 +18,11 @@ namespace WatchDog.Services.Tests
         [Fact()]
         public async void CreateAndSendEmailTest()
         {
-            var loggerMock = new Mock<ILogger<EmailService>>();
+            var loggerMock = new Mock<ILogger<WatchdogEmailService>>();
             var smtpLoggerMock = new Mock<ILogger<SmtpEmailService>>();
             var configurationMock = new Mock<IOptionsSnapshot<EmailConfiguration>>();
             var mailMock = new SmtpEmailService(configurationMock.Object, smtpLoggerMock.Object);
-            var emailService = new EmailService(loggerMock.Object, mailMock);
+            var emailService = new WatchdogEmailService(loggerMock.Object, mailMock);
             var emailOptions = new EmailOptions
             {
                 PreviousDayPMPeakEnd = 17,

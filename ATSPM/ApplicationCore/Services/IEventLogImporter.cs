@@ -29,7 +29,4 @@ namespace ATSPM.Application.Services
     public interface IEventLogImporter : IExecutableServiceWithProgressAsync<Tuple<Device, FileInfo>, Tuple<Device, EventLogModelBase>, ControllerDecodeProgress>
     {
     }
-    //public interface IEventLogImporter<T> : IExecutableServiceWithProgressAsync<Tuple<Device, FileInfo>, Tuple<Device, T>, ControllerDecodeProgress> where T : EventLogModelBase
-    //{
-    //}
 }

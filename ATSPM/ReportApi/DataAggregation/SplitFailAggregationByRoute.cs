@@ -15,7 +15,7 @@
 // limitations under the License.
 #endregion
 using ATSPM.Data.Models.AggregationModels;
-using MOE.Common.Business.WCFServiceLibrary;
+using ATSPM.ReportApi.DataAggregation;
 
 namespace MOE.Common.Business.DataAggregation
 {
