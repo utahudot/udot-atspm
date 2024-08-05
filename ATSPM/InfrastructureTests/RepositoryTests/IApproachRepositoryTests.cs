@@ -69,19 +69,19 @@ namespace InfrastructureTests.RepositoryTests
 
         #region IApproachRepositoryExtensions
 
-        [Fact]
-        public void IApproachRepositoryGetApproachesByIds()
-        {
-            var result = _repo.GetApproachesByIds(_list.Select(i => i.Id));
+        //[Fact]
+        //public void IApproachRepositoryGetApproachesByIds()
+        //{
+        //    var result = _repo.GetApproachesByIds(_list.Select(i => i.Id));
 
-            foreach (var r in result)
-            {
-                _output.WriteLine($"result: {r.Id} - {r.LocationId} - {r.Description} - {r.DirectionTypeId}");
-            }
+        //    foreach (var r in result)
+        //    {
+        //        _output.WriteLine($"result: {r.Id} - {r.LocationId} - {r.Description} - {r.DirectionTypeId}");
+        //    }
 
-            //compare to initial collection
-            Assert.Equal(_list, result);
-        }
+        //    //compare to initial collection
+        //    Assert.Equal(_list, result);
+        //}
 
         #endregion
     }

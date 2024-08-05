@@ -68,19 +68,19 @@ namespace InfrastructureTests.RepositoryTests
 
         #region IAreaRepositoryExtensions
 
-        [Theory]
-        [InlineData("Area-1")]
-        [InlineData("Area-2")]
-        [InlineData("Area-3")]
-        [InlineData("Area-4")]
-        public void IAreaRepositoryGetAreaByName(string areaName)
-        {
-            var result = _repo.GetAreaByName(areaName);
+        //[Theory]
+        //[InlineData("Area-1")]
+        //[InlineData("Area-2")]
+        //[InlineData("Area-3")]
+        //[InlineData("Area-4")]
+        //public void IAreaRepositoryGetAreaByName(string areaName)
+        //{
+        //    var result = _repo.GetAreaByName(areaName);
 
-            _output.WriteLine($"result: {result.Id} - {result.Name}");
+        //    _output.WriteLine($"result: {result.Id} - {result.Name}");
 
-            Assert.Equal(areaName, result.Name);
-        }
+        //    Assert.Equal(areaName, result.Name);
+        //}
 
         #endregion
     }

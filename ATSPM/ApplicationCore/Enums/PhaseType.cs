@@ -14,17 +14,30 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
-using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace ATSPM.Application.Enums
 {
+    /// <summary>
+    /// Phase type
+    /// </summary>
     public enum PhaseType
     {
+        /// <summary>
+        /// Protected only
+        /// </summary>
         [Display(Name = "Protected Only")]
         ProtectedOnly,
+
+        /// <summary>
+        /// Permissive only
+        /// </summary>
         [Display(Name = "Permissive Only")]
         PermissiveOnly,
+
+        /// <summary>
+        /// Protected/Permissive
+        /// </summary>
         [Display(Name = "Protected/Permissive")]
         ProtectedPermissive
     }

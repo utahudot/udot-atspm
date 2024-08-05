@@ -4,6 +4,7 @@ using ATSPM.Identity.Business.Claims;
 using Identity.Models.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.OpenApi.Extensions;
 
 namespace Identity.Controllers
 {
@@ -26,7 +27,7 @@ namespace Identity.Controllers
         {
             var descriptions = Enum.GetValues(typeof(ClaimTypes))
                                    .Cast<Enum>()
-                                   .Select(e => e.GetDescription())
+                                   .Select(e => e.GetDisplayName())
                                    .ToList();
 
             return Ok(descriptions);

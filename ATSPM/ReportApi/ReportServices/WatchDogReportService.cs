@@ -14,10 +14,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
-using ATSPM.Application.Business;
 using ATSPM.Application.Business.Watchdog;
 using ATSPM.Application.Repositories;
 using ATSPM.Application.Repositories.ConfigurationRepositories;
+using ATSPM.Application.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace ATSPM.ReportApi.ReportServices
@@ -27,14 +27,14 @@ namespace ATSPM.ReportApi.ReportServices
     /// </summary>
     public class WatchDogReportService : ReportServiceBase<WatchDogOptions, WatchDogResult>
     {
-        private readonly IWatchDogLogEventRepository watchDogLogEventRepository;
+        private readonly IWatchDogEventLogRepository watchDogLogEventRepository;
         private readonly ILocationRepository locationRepository;
         private readonly IJurisdictionRepository jurisdictionRepository;
         private readonly IRegionsRepository regionsRepository;
 
 
         /// <inheritdoc/>
-        public WatchDogReportService(IWatchDogLogEventRepository watchDogLogEventRepository, ILocationRepository locationRepository, IJurisdictionRepository jurisdictionRepository, IRegionsRepository regionsRepository)
+        public WatchDogReportService(IWatchDogEventLogRepository watchDogLogEventRepository, ILocationRepository locationRepository, IJurisdictionRepository jurisdictionRepository, IRegionsRepository regionsRepository)
 
         {
             this.watchDogLogEventRepository = watchDogLogEventRepository;

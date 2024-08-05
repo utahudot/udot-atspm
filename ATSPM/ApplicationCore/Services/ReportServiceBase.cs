@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for ApplicationCore - ATSPM.Application.Analysis.ReportServices/ReportServiceBase.cs
+// for ApplicationCore - ATSPM.Application.Business/ReportServiceBase.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace ATSPM.Application.Analysis.ReportServices
+namespace ATSPM.Application.Services
 {
     /// <summary>
     /// Base for report services

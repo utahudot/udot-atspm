@@ -305,7 +305,7 @@ namespace ATSPM.Application.Business.LinkPivot
             }
             //Get the link totals
             linkPivotPair.AogTotalPredicted = linkPivotPair.MaxArrivalOnGreen;
-            linkPivotPair.PaogTotalPredicted = (linkPivotPair.TotalVolumeUpstream + linkPivotPair.TotalVolumeDownstream) < Constants.Tolerance ? 0 : (int)(Math.Round(linkPivotPair.AogTotalPredicted / (linkPivotPair.TotalVolumeUpstream + linkPivotPair.TotalVolumeDownstream), 2) * 100);
+            linkPivotPair.PaogTotalPredicted = (linkPivotPair.TotalVolumeUpstream + linkPivotPair.TotalVolumeDownstream) < AtspmConstants.Tolerance ? 0 : (int)(Math.Round(linkPivotPair.AogTotalPredicted / (linkPivotPair.TotalVolumeUpstream + linkPivotPair.TotalVolumeDownstream), 2) * 100);
         }
 
         private void GetBiasedLinkPivot(int cycleTime, double bias, string biasDirection, List<DateOnly> dates, LinkPivotPair linkPivotPair)

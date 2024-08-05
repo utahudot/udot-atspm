@@ -259,7 +259,6 @@ namespace ATSPM.ConfigApi.Controllers
                 .Select(g => g.OrderByDescending(r => r.Start).FirstOrDefault())
                 .ToList();
 
-            //HACK: This is a hack to add basic charts to all locations.  Need to discuss with Christian and see if this is the best way to do this.
             foreach (var location in result)
             {
                 if (location != null && location.Charts != null)

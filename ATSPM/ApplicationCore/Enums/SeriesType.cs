@@ -16,12 +16,34 @@
 #endregion
 namespace ATSPM.Application.Enums
 {
+    /// <summary>
+    /// Series type (for charting)
+    /// </summary>
     public enum SeriesType
     {
+        /// <summary>
+        /// Signal
+        /// </summary>
         Signal,
+
+        /// <summary>
+        /// Phase number
+        /// </summary>
         PhaseNumber,
+        
+        /// <summary>
+        /// Direction
+        /// </summary>
         Direction,
+        
+        /// <summary>
+        /// Route
+        /// </summary>
         Route,
+        
+        /// <summary>
+        /// Detector
+        /// </summary>
         Detector
     }
 }

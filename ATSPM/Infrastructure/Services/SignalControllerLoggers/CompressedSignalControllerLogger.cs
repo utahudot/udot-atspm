@@ -106,50 +106,56 @@ namespace ATSPM.Infrastructure.Services.LocationControllerLoggers
 
         protected async virtual Task<IEnumerable<ControllerEventLog>> CreateEventLogs(FileInfo file, CancellationToken cancellationToken = default)
         {
-            HashSet<ControllerEventLog> logList = new HashSet<ControllerEventLog>(new ControllerEventLogEqualityComparer());
+            //HashSet<ControllerEventLog> logList = new HashSet<ControllerEventLog>(new IndianaEventEqualityComparer());
 
-            using (var scope = _serviceProvider.CreateScope())
-            {
-                //var decoder = scope.ServiceProvider.GetServices<IEventLogDecoder<IndianaEvent>>().First(c => c.CanExecute(file));
-                //logList = await decoder.ExecuteAsync(file, cancellationToken);
-            }
+            //using (var scope = _serviceProvider.CreateScope())
+            //{
+            //    //var decoder = scope.ServiceProvider.GetServices<IEventLogDecoder<IndianaEvent>>().First(c => c.CanExecute(file));
+            //    //logList = await decoder.ExecuteAsync(file, cancellationToken);
+            //}
 
-            return logList;
+            //return logList;
+
+            return default;
         }
 
         protected virtual IEnumerable<ControllerLogArchive> ArchiveLogs(ControllerEventLog[] logs)
         {
-            HashSet<ControllerEventLog> uniqueLogs = new HashSet<ControllerEventLog>(logs, new ControllerEventLogEqualityComparer());
+            //    HashSet<ControllerEventLog> uniqueLogs = new HashSet<ControllerEventLog>(logs, new IndianaEventEqualityComparer());
 
-            return uniqueLogs.GroupBy(g => (g.Timestamp.Date, g.SignalIdentifier)).Select(s => new ControllerLogArchive() { SignalIdentifier = s.Key.SignalIdentifier, ArchiveDate = s.Key.Date, LogData = s.ToList() });
+            //    return uniqueLogs.GroupBy(g => (g.Timestamp.Date, g.SignalIdentifier)).Select(s => new ControllerLogArchive() { SignalIdentifier = s.Key.SignalIdentifier, ArchiveDate = s.Key.Date, LogData = s.ToList() });
+
+            return default;
         }
 
         protected async virtual Task<IEnumerable<ControllerLogArchive>> SaveToRepo(ControllerLogArchive archive, CancellationToken cancellationToken = default)
         {
-            List<ControllerLogArchive> result = new List<ControllerLogArchive>();
+            //List<ControllerLogArchive> result = new List<ControllerLogArchive>();
 
-            using (var scope = _serviceProvider.CreateScope())
-            {
-                IControllerEventLogRepository EventLogArchive = scope.ServiceProvider.GetService<IControllerEventLogRepository>();
-                var searchLog = await EventLogArchive.LookupAsync(archive);
+            //using (var scope = _serviceProvider.CreateScope())
+            //{
+            //    IControllerEventLogRepository EventLogArchive = scope.ServiceProvider.GetService<IControllerEventLogRepository>();
+            //    var searchLog = await EventLogArchive.LookupAsync(archive);
 
-                if (searchLog != null)
-                {
-                    var eventLogs = new HashSet<ControllerEventLog>(Enumerable.Union(searchLog.LogData, archive.LogData), new ControllerEventLogEqualityComparer());
-                    searchLog.LogData = eventLogs.ToList();
+            //    if (searchLog != null)
+            //    {
+            //        var eventLogs = new HashSet<ControllerEventLog>(Enumerable.Union(searchLog.LogData, archive.LogData), new IndianaEventEqualityComparer());
+            //        searchLog.LogData = eventLogs.ToList();
 
-                    await EventLogArchive.UpdateAsync(searchLog);
+            //        await EventLogArchive.UpdateAsync(searchLog);
 
-                    result.Add(searchLog);
-                }
-                else
-                {
-                    await EventLogArchive.AddAsync(archive);
-                    result.Add(archive);
-                }
-            }
+            //        result.Add(searchLog);
+            //    }
+            //    else
+            //    {
+            //        await EventLogArchive.AddAsync(archive);
+            //        result.Add(archive);
+            //    }
+            //}
 
-            return result;
+            //return result;
+
+            return default;
         }
     }
 }
