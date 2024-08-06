@@ -18,9 +18,11 @@
             if (other == null)
                 return false;
 
-            return Id == other.Id &&
-                   Name == other.Name &&
-                   Description == other.Description;
+            return Id == other.Id;
+
+            //return Id == other.Id &&
+            //       Name == other.Name &&
+            //       Description == other.Description;
         }
     }
 
