@@ -1,9 +1,8 @@
-import useStore, {
-  DataSource,
-  RouteRenderOption,
-} from '@/features/speedManagementTool/speedManagementStore'
+import useStore from '@/features/speedManagementTool/speedManagementStore'
 import { Box, Slider } from '@mui/material'
 import { useEffect, useState } from 'react'
+import { RouteRenderOption } from '@/features/speedManagementTool/enums'
+import { DataSource } from '@/features/speedManagementTool/enums'
 
 export const ViolationColors = {
   Low: '#abc746',

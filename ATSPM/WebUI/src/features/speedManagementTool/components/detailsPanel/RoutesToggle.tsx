@@ -1,8 +1,9 @@
 import Subtitle from '@/features/speedManagementTool/components/subtitle'
-import useStore, {
+import {
   DataSource,
   RouteRenderOption,
-} from '@/features/speedManagementTool/speedManagementStore'
+} from '@/features/speedManagementTool/enums'
+import useStore from '@/features/speedManagementTool/speedManagementStore'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import {
   Box,
@@ -13,6 +14,7 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material'
+
 const TooltipContent = ({
   label,
   tooltip,
