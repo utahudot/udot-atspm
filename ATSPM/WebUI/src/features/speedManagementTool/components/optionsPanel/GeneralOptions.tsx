@@ -1,7 +1,6 @@
 import Subtitle from '@/features/speedManagementTool/components/subtitle'
-import useStore, {
-  DataSource,
-} from '@/features/speedManagementTool/speedManagementStore'
+import { DataSource } from '@/features/speedManagementTool/enums'
+import useStore from '@/features/speedManagementTool/speedManagementStore'
 import {
   Box,
   InputAdornment,

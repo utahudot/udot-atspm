@@ -1,9 +1,8 @@
 import FullScreenToggleButton from '@/components/fullScreenLayoutButton'
 import { MAP_DEFAULT_LATITUDE, MAP_DEFAULT_LONGITUDE } from '@/config'
 import Popup from '@/features/speedManagementTool/components/speedManagementMap/Popup'
-import useSpeedManagementStore, {
-  RouteRenderOption,
-} from '@/features/speedManagementTool/speedManagementStore'
+import { RouteRenderOption } from '@/features/speedManagementTool/enums'
+import useSpeedManagementStore from '@/features/speedManagementTool/speedManagementStore'
 import { SpeedManagementRoute } from '@/features/speedManagementTool/types/routes'
 import { ViolationColors } from '@/features/speedManagementTool/utils/colors'
 import { Box } from '@mui/material'
