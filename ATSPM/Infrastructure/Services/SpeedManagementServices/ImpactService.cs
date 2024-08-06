@@ -60,8 +60,9 @@ namespace ATSPM.Infrastructure.Services.SpeedManagementServices
             })
             .ToList();
             await segmentImpactRepository.UpdateRangeAsync(segmentImpactList);
+            Impact currentImpact = await GetImpactById(impactId);
 
-            return await GetImpactById(impactId);
+            return currentImpact;
         }
 
         public async Task<Impact> UpsertImpactedSegment(Guid impactId, Guid segmentId)
@@ -105,7 +106,7 @@ namespace ATSPM.Infrastructure.Services.SpeedManagementServices
             }
             IReadOnlyList<SegmentImpact> segmentImpacts = await segmentImpactRepository.GetSegmentsForImpactAsync((Guid)impact.Id);
             List<Guid> segmentIds = segmentImpacts.Select(i => i.SegmentId).ToList();
-            List<Data.Models.SpeedManagementConfigModels.Segment> segments = await GetImpactTypesAsync(segmentIds);
+            //List<Data.Models.SpeedManagementConfigModels.Segment> segments = await GetImpactTypesAsync(segmentIds);
             ImpactType impactType = await impactTypeRepository.LookupAsync(impact.Id);
             Impact impactCopy = new Impact
             {
@@ -115,7 +116,6 @@ namespace ATSPM.Infrastructure.Services.SpeedManagementServices
                 End = impact.End,
                 StartMile = impact.StartMile,
                 EndMile = impact.EndMile,
-                Shape = impact.Shape,
                 ImpactTypeId = impact.ImpactTypeId,
                 ImpactType = impactType,
                 CreatedOn = impact.CreatedOn,
@@ -124,8 +124,7 @@ namespace ATSPM.Infrastructure.Services.SpeedManagementServices
                 UpdatedBy = impact.UpdatedBy,
                 DeletedOn = impact.DeletedOn,
                 DeletedBy = impact.DeletedBy,
-                SegmentIds = segmentIds,
-                Segments = segments
+                SegmentIds = segmentIds
             };
             return impactCopy;
         }

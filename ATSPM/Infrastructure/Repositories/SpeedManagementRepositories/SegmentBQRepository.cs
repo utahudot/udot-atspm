@@ -78,7 +78,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             var query = $"SELECT * FROM `{_projectId}.{_datasetId}.{_tableId}` WHERE Id = @key";
             var parameters = new List<BigQueryParameter>
             {
-                    new BigQueryParameter("key", BigQueryDbType.Int64, key)
+                    new BigQueryParameter("key", BigQueryDbType.String, key.ToString())
                 };
             var results = _client.ExecuteQuery(query, parameters);
             Task<Segment> task = Task.FromResult(results.Select(row => MapRowToEntity(row)).FirstOrDefault());
@@ -94,7 +94,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             var query = $"SELECT * FROM `{_projectId}.{_datasetId}.{_tableId}` WHERE Id = @key";
             var parameters = new List<BigQueryParameter>
                 {
-                    new BigQueryParameter("key", BigQueryDbType.Int64, item.Id)
+                    new BigQueryParameter("key", BigQueryDbType.String, item.Id.ToString())
                 };
 
             var results = _client.ExecuteQuery(query, parameters);
@@ -111,7 +111,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             var query = $"SELECT * FROM `{_projectId}.{_datasetId}.{_tableId}` WHERE Id = @key";
             var parameters = new List<BigQueryParameter>
             {
-                    new BigQueryParameter("key", BigQueryDbType.String, key)
+                    new BigQueryParameter("key", BigQueryDbType.String, key.ToString())
             };
             var results = await _client.ExecuteQueryAsync(query, parameters);
             return results.Select(row => MapRowToEntity(row)).FirstOrDefault();
@@ -126,7 +126,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             var query = $"SELECT * FROM `{_projectId}.{_datasetId}.{_tableId}` WHERE Id = @key";
             var parameters = new List<BigQueryParameter>
                 {
-                    new BigQueryParameter("key", BigQueryDbType.Int64, item.Id)
+                    new BigQueryParameter("key", BigQueryDbType.String, item.Id.ToString())
                 };
             var results = await _client.ExecuteQueryAsync(query, parameters);
             return results.Select(row => MapRowToEntity(row)).FirstOrDefault();
@@ -141,7 +141,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             var query = $"DELETE FROM `{_datasetId}.{_tableId}` WHERE Id = @key";
             var parameters = new List<BigQueryParameter>
              {
-                 new BigQueryParameter("key", BigQueryDbType.Int64, item)
+                 new BigQueryParameter("key", BigQueryDbType.String, item.ToString())
              };
             _client.ExecuteQueryAsync(query, parameters);
         }
@@ -155,7 +155,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             var query = $"DELETE FROM `{_datasetId}.{_tableId}` WHERE Id = @key";
             var parameters = new List<BigQueryParameter>
              {
-                 new BigQueryParameter("key", BigQueryDbType.Int64, item)
+                 new BigQueryParameter("key", BigQueryDbType.String, item.ToString())
              };
             await _client.ExecuteQueryAsync(query, parameters);
         }
@@ -164,7 +164,10 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
         {
             var ids = string.Join(", ", items);
             var query = $"DELETE FROM `{_datasetId}.{_tableId}` WHERE Id IN ({ids})";
-            var parameters = new List<BigQueryParameter>();
+            var parameters = new List<BigQueryParameter>
+            {
+                 new BigQueryParameter("ids", BigQueryDbType.String, ids)
+             };
 
             _client.ExecuteQuery(query, parameters);
         }
@@ -173,7 +176,10 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
         {
             var ids = string.Join(", ", items);
             var query = $"DELETE FROM `{_datasetId}.{_tableId}` WHERE Id IN ({ids})";
-            var parameters = new List<BigQueryParameter>();
+            var parameters = new List<BigQueryParameter>
+            {
+                 new BigQueryParameter("ids", BigQueryDbType.String, ids)
+             };
 
             await _client.ExecuteQueryAsync(query, parameters);
         }
@@ -239,7 +245,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
 
                 var parameters = new List<BigQueryParameter>
         {
-            new BigQueryParameter("@key", BigQueryDbType.Int64, item.Id)
+            new BigQueryParameter("@key", BigQueryDbType.String, item.Id.ToString())
         };
 
                 _client.ExecuteQuery(query, parameters);
@@ -331,7 +337,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
 
                 var parameters = new List<BigQueryParameter>
         {
-            new BigQueryParameter("@key", BigQueryDbType.Int64, item.Id)
+            new BigQueryParameter("@key", BigQueryDbType.String, item.Id.ToString())
         };
 
                 await _client.ExecuteQueryAsync(query, parameters);
@@ -385,7 +391,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             Geometry shape = wkt != null ? reader.Read(wkt) : null;
             return new Segment()
             {
-                Id = (Guid)row["Id"],
+                Id = Guid.Parse(row["Id"].ToString()),
                 UdotRouteNumber = row["UdotRouteNumber"].ToString(),
                 StartMilePoint = (double)row["StartMilePoint"],
                 EndMilePoint = (double)row["EndMilePoint"],
