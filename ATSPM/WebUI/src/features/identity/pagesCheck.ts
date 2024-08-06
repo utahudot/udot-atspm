@@ -6,6 +6,7 @@ export enum PageNames {
   Areas = 'Areas',
   DeviceConfigurations = 'Device Configurations',
   FAQs = 'FAQs',
+  Impacts = 'Impacts',
   Jurisdiction = 'Jurisdictions',
   MenuItems = 'Menu Items',
   Location = 'Locations',
@@ -31,6 +32,7 @@ const locationConfigListToLink: Map<string, string> = new Map([
   [PageNames.Routes, '/admin/routes'],
   [PageNames.Products, '/admin/products'],
   [PageNames.DeviceConfigurations, '/admin/device-configurations'],
+  [PageNames.Impacts, '/admin/impact'],
 ])
 
 const userConfigToLink: Map<string, string> = new Map([
