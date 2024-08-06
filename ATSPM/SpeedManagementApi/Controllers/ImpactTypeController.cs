@@ -36,22 +36,22 @@ namespace SpeedManagementApi.Controllers
 
         // POST: /ImpactType
         [HttpPost]
-        public async Task<IActionResult> CreateImpactType([FromBody] ImpactType impactType)
+        public async Task<ActionResult<ImpactType>> CreateImpactType([FromBody] ImpactType impactType)
         {
             if (impactType == null)
             {
                 return BadRequest();
             }
-
-            await impactTypeService.UpsertAsync(impactType);
-            return NoContent();
+            impactType.Id = null;
+            var newImpactType = await impactTypeService.UpsertAsync(impactType);
+            return Ok(newImpactType);
         }
 
         // PUT: /ImpactType/{id}
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateImpactType(Guid id, [FromBody] ImpactType impactType)
+        public async Task<ActionResult<ImpactType>> UpdateImpactType(Guid id, [FromBody] ImpactType impactType)
         {
-            if (impactType == null || id != impactType.Id)
+            if (id == null || (impactType.Id != null && id != impactType.Id))
             {
                 return BadRequest();
             }
@@ -61,9 +61,9 @@ namespace SpeedManagementApi.Controllers
             {
                 return NotFound();
             }
-
-            await impactTypeService.UpsertAsync(impactType);
-            return NoContent();
+            impactType.Id = existingImpactType.Id;
+            var newImpactType = await impactTypeService.UpsertAsync(impactType);
+            return Ok(newImpactType);
         }
 
         // DELETE: /ImpactType/{id}

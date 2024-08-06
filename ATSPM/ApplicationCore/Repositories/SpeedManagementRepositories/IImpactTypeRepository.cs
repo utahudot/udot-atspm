@@ -8,5 +8,6 @@ namespace ATSPM.Application.Repositories.SpeedManagementRepositories
     public interface IImpactTypeRepository : IAsyncRepository<ImpactType>
     {
         Task<IReadOnlyList<ImpactType>> GetListImpactTypeAsync();
+        Task<ImpactType> UpsertImpactType(ImpactType item);
     }
 }

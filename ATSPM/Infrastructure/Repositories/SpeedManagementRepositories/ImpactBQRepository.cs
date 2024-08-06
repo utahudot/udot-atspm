@@ -175,10 +175,11 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             }
             else
             {
+                Guid id = Guid.NewGuid();
                 var query = $"INSERT INTO `{_datasetId}.{_tableId}` " +
                     $"(Id, Description, Start, End, StartMile, EndMile, Shape, ImpactTypeId, CreatedOn, CreatedBy, UpdatedOn, UpdatedBy, DeletedOn, DeletedBy) " +
                     $"VALUES (" +
-                    $"GENERATE_UUID(), " + // No quotes for the function
+                    $"'{id}', " +
                     $"'{item.Description}', " +
                     $"'{item.Start:O}', " +
                     $"{(item.End.HasValue ? $"'{item.End:O}'" : "NULL")}, " +
@@ -240,14 +241,15 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
                 var parameters = new List<BigQueryParameter>();
 
                 var result = await _client.ExecuteQueryAsync(query, parameters);
-                return MapRowToEntity(result.FirstOrDefault());
+                return await LookupAsync(item.Id);
             }
             else
             {
+                Guid id = Guid.NewGuid();
                 var query = $"INSERT INTO `{_datasetId}.{_tableId}` " +
                     $"(Id, Description, Start, End, StartMile, EndMile, Shape, ImpactTypeId, CreatedOn, CreatedBy, UpdatedOn, UpdatedBy, DeletedOn, DeletedBy) " +
                     $"VALUES (" +
-                    $"GENERATE_UUID(), " + // No quotes for the function
+                    $"'{id}', " +
                     $"'{item.Description}', " +
                     $"'{item.Start:O}', " +
                     $"{(item.End.HasValue ? $"'{item.End:O}'" : "NULL")}, " +
@@ -264,7 +266,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
                 var parameters = new List<BigQueryParameter>();
 
                 var result = await _client.ExecuteQueryAsync(query, parameters);
-                return MapRowToEntity(result.FirstOrDefault());
+                return await LookupAsync(id);
             }
         }
 

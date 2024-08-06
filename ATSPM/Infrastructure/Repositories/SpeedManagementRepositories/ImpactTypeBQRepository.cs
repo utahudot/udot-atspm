@@ -1,6 +1,5 @@
 ﻿using ATSPM.Application.Repositories.SpeedManagementRepositories;
 using ATSPM.Data.Models.SpeedManagementConfigModels;
-using ATSPM.Domain.Extensions;
 using Google.Cloud.BigQuery.V2;
 using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.Logging;
@@ -97,7 +96,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             var query = $"SELECT * FROM `{_datasetId}.{_tableId}` WHERE Id = @key";
             var parameters = new List<BigQueryParameter>
             {
-                    new BigQueryParameter("key", BigQueryDbType.String, key)
+                    new BigQueryParameter("key", BigQueryDbType.String, key.ToString())
                 };
             var results = await _client.ExecuteQueryAsync(query, parameters);
             return results.Select(row => MapRowToEntity(row)).FirstOrDefault();
@@ -111,9 +110,9 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             }
             var query = $"SELECT * FROM `{_datasetId}.{_tableId}` WHERE Id = @key";
             var parameters = new List<BigQueryParameter>
-                {
-                    new BigQueryParameter("key", BigQueryDbType.String, item.Id)
-                };
+             {
+                 new BigQueryParameter("key", BigQueryDbType.String, item.Id.ToString())
+             };
             var results = await _client.ExecuteQueryAsync(query, parameters);
             return results.Select(row => MapRowToEntity(row)).FirstOrDefault();
         }
@@ -127,7 +126,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             var query = $"DELETE FROM `{_datasetId}.{_tableId}` WHERE Id = @key";
             var parameters = new List<BigQueryParameter>
              {
-                 new BigQueryParameter("key", BigQueryDbType.String, item.Id)
+                 new BigQueryParameter("key", BigQueryDbType.String, item.Id.ToString())
              };
             _client.ExecuteQueryAsync(query, parameters);
         }
@@ -141,7 +140,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             var query = $"DELETE FROM `{_datasetId}.{_tableId}` WHERE Id = @key";
             var parameters = new List<BigQueryParameter>
              {
-                 new BigQueryParameter("key", BigQueryDbType.String, item.Id)
+                 new BigQueryParameter("key", BigQueryDbType.String, item.Id.ToString())
              };
             await _client.ExecuteQueryAsync(query, parameters);
         }
@@ -159,7 +158,10 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
         {
             var ids = string.Join(", ", items.Select(i => i.Id));
             var query = $"DELETE FROM `{_datasetId}.{_tableId}` WHERE Id IN ({ids})";
-            var parameters = new List<BigQueryParameter>();
+            var parameters = new List<BigQueryParameter>
+            {
+                 new BigQueryParameter("ids", BigQueryDbType.String, ids)
+             };
 
             await _client.ExecuteQueryAsync(query, parameters);
         }
@@ -170,15 +172,13 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             var oldRow = await LookupAsync(item.Id);
             if (oldRow != null)
             {
-                // Create a new row with updated values
-                var query = $"UPDATE `{_datasetId}.{_tableId}` SET Name = '{item.Name}', Description = '{item.Description}' WHERE Id = @key";
-                var parameters = new List<BigQueryParameter>();
+                var (query, parameters) = UpdateQuery(item);
 
                 _client.ExecuteQuery(query, parameters);
             }
             else
             {
-                var query = $"INSERT INTO `{_datasetId}.{_tableId}` (Id, Name, Description) VALUES (GENERATE_UUID(), '{item.Name}', '{item.Description}')";
+                var (query, id) = InsertQuery(item);
                 var parameters = new List<BigQueryParameter>();
 
                 _client.ExecuteQuery(query, parameters);
@@ -190,20 +190,38 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             var oldRow = await LookupAsync(item.Id);
             if (oldRow != null)
             {
-                // Create a new row with updated values
-                var query = $"UPDATE `{_datasetId}.{_tableId}` SET Name = '{item.Name}', Description = '{item.Description}' WHERE Id = @key";
-                var parameters = new List<BigQueryParameter>();
+                var (query, parameters) = UpdateQuery(item);
 
-                var result = await _client.ExecuteQueryAsync(query, parameters);
-                return MapRowToEntity(result.FirstOrDefault());
+                await _client.ExecuteQueryAsync(query, parameters);
+                return await LookupAsync(item.Id);
             }
             else
             {
-                var query = $"INSERT INTO `{_datasetId}.{_tableId}` (Id, Name, Description) VALUES (GENERATE_UUID(), '{item.Name}', '{item.Description}')";
+                var (query, id) = InsertQuery(item);
                 var parameters = new List<BigQueryParameter>();
 
-                var result = await _client.ExecuteQueryAsync(query, parameters);
-                return MapRowToEntity(result.FirstOrDefault());
+                await _client.ExecuteQueryAsync(query, parameters);
+                return await LookupAsync(id);
+            }
+        }
+
+        public async Task<ImpactType> UpsertImpactType(ImpactType item)
+        {
+            var oldRow = await LookupAsync(item.Id);
+            if (oldRow != null)
+            {
+                var (query, parameters) = UpdateQuery(item);
+
+                await _client.ExecuteQueryAsync(query, parameters);
+                return await LookupAsync(item.Id);
+            }
+            else
+            {
+                var (query, id) = InsertQuery(item);
+                var parameters = new List<BigQueryParameter>();
+
+                await _client.ExecuteQueryAsync(query, parameters);
+                return await LookupAsync(id);
             }
         }
 
@@ -235,12 +253,38 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
 
         protected override ImpactType MapRowToEntity(BigQueryRow row)
         {
+            var bigQueryName = row["Name"].ToString();
+            var bigQueryDescription = row["Description"].ToString();
+            var bigQueryId = Guid.Parse(row["Id"].ToString());
+
             return new ImpactType
             {
-                Id = row.GetPropertyValue<Guid>("Id"),
-                Name = row.GetPropertyValue<string>("Name"),
-                Description = row.GetPropertyValue<string>("Description")
+                Id = bigQueryId,
+                Name = bigQueryName,
+                Description = bigQueryDescription
             };
+        }
+
+        ///////////////////// 
+        //PRIVATE FUNCTIONS//
+        /////////////////////
+
+        private Tuple<string, List<BigQueryParameter>> UpdateQuery(ImpactType item)
+        {
+            // Create a new row with updated values
+            var query = $"UPDATE `{_datasetId}.{_tableId}` SET Name = '{item.Name}', Description = '{item.Description}' WHERE Id = @key";
+            var parameters = new List<BigQueryParameter>
+             {
+                 new BigQueryParameter("key", BigQueryDbType.String, item.Id.ToString())
+             };
+            return new Tuple<string, List<BigQueryParameter>>(query, parameters);
+        }
+
+        private Tuple<string, Guid> InsertQuery(ImpactType item)
+        {
+            Guid id = Guid.NewGuid();
+            var query = $"INSERT INTO `{_datasetId}.{_tableId}` (Id, Name, Description) VALUES ('{id}', '{item.Name}', '{item.Description}')";
+            return new Tuple<string, Guid>(query, id);
         }
     }
 }
