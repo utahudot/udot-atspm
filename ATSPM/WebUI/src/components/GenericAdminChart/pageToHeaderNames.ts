@@ -258,6 +258,45 @@ const deviceHeaders: GridColDef[] = [
   },
 ]
 
+const impactHeaders: GridColDef[] = [
+  {
+    field: 'description',
+    headerName: 'Description',
+    editable: true,
+    flex: 1,
+  },
+  {
+    field: 'start',
+    headerName: 'Start',
+    editable: true,
+    flex: 1,
+  },
+  {
+    field: 'end',
+    headerName: 'End',
+    editable: true,
+    flex: 1,
+  },
+  {
+    field: 'startMile',
+    headerName: 'Start Mile',
+    editable: true,
+    flex: 1,
+  },
+  {
+    field: 'endMile',
+    headerName: 'End Mile',
+    editable: true,
+    flex: 1,
+  },
+  {
+    field: 'impactTypeId',
+    headerName: 'Impact Type',
+    editable: true,
+    flex: 1,
+  },
+]
+
 export const pageNameToHeaders: Map<string, GridColDef[]> = new Map()
   .set(PageNames.Areas, areaHeaders)
   .set(PageNames.Jurisdiction, jurisdictionHeaders)
@@ -269,3 +308,4 @@ export const pageNameToHeaders: Map<string, GridColDef[]> = new Map()
   .set(PageNames.Users, usersHeaders)
   .set(PageNames.Products, productHeaders)
   .set(PageNames.DeviceConfigurations, deviceHeaders)
+  .set(PageNames.Impacts, impactHeaders)
