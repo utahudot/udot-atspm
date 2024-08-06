@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace SpeedManagementApi.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class ImpactTypeController : ControllerBase
     {
         private ImpactTypeService impactTypeService;
