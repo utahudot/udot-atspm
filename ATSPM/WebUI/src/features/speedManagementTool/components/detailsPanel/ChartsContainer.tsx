@@ -7,9 +7,8 @@ import {
   getPriorDate,
   useHistoricalData,
 } from '@/features/speedManagementTool/api/getHistoricalData'
-import useStore, {
-  RouteRenderOption,
-} from '@/features/speedManagementTool/speedManagementStore'
+import { RouteRenderOption } from '@/features/speedManagementTool/enums'
+import useStore from '@/features/speedManagementTool/speedManagementStore'
 
 interface HistoricalDataParams {
   routeId: string

@@ -4,9 +4,8 @@ import { useRoutes } from '@/features/speedManagementTool/api/getRoutes'
 import { useUdotSpeedLimitRoutes } from '@/features/speedManagementTool/api/getUdotSpeedLimitRoutes'
 import DetailsPanel from '@/features/speedManagementTool/components/detailsPanel'
 import OptionsPanel from '@/features/speedManagementTool/components/optionsPanel'
-import useSpeedManagementStore, {
-  RouteRenderOption,
-} from '@/features/speedManagementTool/speedManagementStore'
+import { RouteRenderOption } from '@/features/speedManagementTool/enums'
+import useSpeedManagementStore from '@/features/speedManagementTool/speedManagementStore'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import { Box, IconButton, Paper } from '@mui/material'
 import 'leaflet/dist/leaflet.css'
@@ -14,19 +13,6 @@ import dynamic from 'next/dynamic'
 import { memo, useRef, useState } from 'react'
 
 const SpeedManagementMap = dynamic(() => import('./Map'), { ssr: false })
-
-export enum DataSource {
-  ATSPM = 1,
-  PeMS = 2,
-  ClearGuide = 3,
-}
-
-export enum AnalysisPeriod {
-  AllDay,
-  PeekPeriod,
-  MorningPeak,
-  CustomHour,
-}
 
 const Map = () => {
   const [leftSidebarOpen, setLeftSidebarOpen] = useState(true)
@@ -86,7 +72,7 @@ const Map = () => {
           sx={{
             position: 'relative',
             backgroundColor: '#fff',
-            width: leftSidebarOpen ? '370px' : '0px',
+            width: leftSidebarOpen ? '400px' : '0px',
             transition: 'width 0.3s',
           }}
         >

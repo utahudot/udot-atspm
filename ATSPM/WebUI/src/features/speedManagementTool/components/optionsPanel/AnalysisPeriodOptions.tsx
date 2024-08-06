@@ -1,7 +1,7 @@
 import Subtitle from '@/features/speedManagementTool/components/subtitle'
-import useStore, {
-  AnalysisPeriod,
-} from '@/features/speedManagementTool/speedManagementStore'
+import useStore from '@/features/speedManagementTool/speedManagementStore'
+
+import { AnalysisPeriod } from '@/features/speedManagementTool/enums'
 import {
   Box,
   FormControl,
