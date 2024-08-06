@@ -1,10 +1,9 @@
 import { ViolationColors } from '@/features/speedManagementTool/components/detailsPanel'
-import useSpeedManagementStore, {
-  RouteRenderOption,
-} from '@/features/speedManagementTool/speedManagementStore'
+import useSpeedManagementStore from '@/features/speedManagementTool/speedManagementStore'
 import L from 'leaflet'
 import { useCallback, useEffect } from 'react'
 import { useMap } from 'react-leaflet'
+import {RouteRenderOption } from '@/features/speedManagementTool/enums'
 
 const SpeedLegend = () => {
   const map = useMap()

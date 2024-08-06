@@ -3,9 +3,8 @@ import AnalysisPeriodOptions from '@/features/speedManagementTool/components/opt
 import DateRangeOptions from '@/features/speedManagementTool/components/optionsPanel/DateRangeOptions'
 import { DaysOfWeekOptions } from '@/features/speedManagementTool/components/optionsPanel/DayOfTheWeekOptions'
 import GeneralOptions from '@/features/speedManagementTool/components/optionsPanel/GeneralOptions'
-import useStore, {
-  DataSource,
-} from '@/features/speedManagementTool/speedManagementStore'
+import { DataSource } from '@/features/speedManagementTool/enums'
+import useStore from '@/features/speedManagementTool/speedManagementStore'
 import { LoadingButton } from '@mui/lab'
 import { Box, Divider } from '@mui/material'
 import { useEffect, useState } from 'react'
