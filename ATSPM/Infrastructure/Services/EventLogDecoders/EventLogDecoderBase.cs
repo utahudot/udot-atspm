@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for Infrastructure - ATSPM.Infrastructure.Services.ControllerDecoders/EventLogFileImporter.cs
+// for Infrastructure - ATSPM.Infrastructure.Services.EventLogDecoders/EventLogDecoderBase.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,6 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using ATSPM.Application.Services;
 using ATSPM.Data.Models;
 using ATSPM.Data.Models.EventLogModels;

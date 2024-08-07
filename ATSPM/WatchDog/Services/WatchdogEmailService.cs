@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for WatchDog - WatchDog.Services/EmailService.cs
+// for WatchDog - WatchDog.Services/WatchdogEmailService.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,15 +14,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
+using ATSPM.Application.Extensions;
+using ATSPM.Data;
 using ATSPM.Data.Models;
 using ATSPM.Data.Models.ConfigurationModels;
 using ATSPM.Domain.Services;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
-using WatchDog.Models;
-using ATSPM.Application.Extensions;
 using System.Net.Mail;
-using ATSPM.Data;
+using WatchDog.Models;
 
 namespace WatchDog.Services
 {

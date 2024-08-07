@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for Identity - ATSPM.Identity.Business.Claims/ClaimsService.cs
+// for Identity - Identity.Business.Claims/ClaimsService.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,11 +14,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using Microsoft.AspNetCore.Identity;
 using System.Data;
 using System.Security.Claims;
 
-namespace ATSPM.Identity.Business.Claims
+namespace Identity.Business.Claims
 {
     public class ClaimsService
     {

@@ -14,6 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using ATSPM.Domain.Extensions;
 using System;
 using System.Collections;
@@ -29,9 +30,9 @@ namespace ATSPM.Domain.Common
 {
     public interface ITimestamp
     {
-        DateTime Timestamp { get; set;}
+        DateTime Timestamp { get; set; }
     }
-    
+
     /// <summary>
     /// A date/time range object
     /// </summary>
@@ -41,7 +42,7 @@ namespace ATSPM.Domain.Common
         /// End of range
         /// </summary>
         DateTime End { get; set; }
-        
+
         /// <summary>
         /// Start of range
         /// </summary>
@@ -115,83 +116,83 @@ namespace ATSPM.Domain.Common
 
     //public static class Timeline
     //{
-        //public static TimeSpan ToTimeSpan(TimelineType tlTYpe, int size) => tlTYpe switch
-        //{
-        //    TimelineType.Hours => TimeSpan.FromHours(size),
-        //    TimelineType.Minutes => TimeSpan.FromMinutes(size),
-        //    TimelineType.Seconds => TimeSpan.FromSeconds(size),
-        //    TimelineType.Unknown => TimeSpan.Zero,
-        //    _ => TimeSpan.Zero,
-        //};
+    //public static TimeSpan ToTimeSpan(TimelineType tlTYpe, int size) => tlTYpe switch
+    //{
+    //    TimelineType.Hours => TimeSpan.FromHours(size),
+    //    TimelineType.Minutes => TimeSpan.FromMinutes(size),
+    //    TimelineType.Seconds => TimeSpan.FromSeconds(size),
+    //    TimelineType.Unknown => TimeSpan.Zero,
+    //    _ => TimeSpan.Zero,
+    //};
 
-        //public static Timeline<T> CreateTimeline<T>(this IEnumerable<IStartEndRange> ranges, TimelineType tlTYpe, int size) where T : IStartEndRange, new()
-        //{
-        //    var start = ranges.Min(m => m.Start).RoundDown(ToTimeSpan(tlTYpe, size));
-        //    var end = ranges.Max(m => m.End).RoundUp(ToTimeSpan(tlTYpe, size));
+    //public static Timeline<T> CreateTimeline<T>(this IEnumerable<IStartEndRange> ranges, TimelineType tlTYpe, int size) where T : IStartEndRange, new()
+    //{
+    //    var start = ranges.Min(m => m.Start).RoundDown(ToTimeSpan(tlTYpe, size));
+    //    var end = ranges.Max(m => m.End).RoundUp(ToTimeSpan(tlTYpe, size));
 
-        //    return CreateTimeline<T>(tlTYpe, start, end, size);
-        //}
+    //    return CreateTimeline<T>(tlTYpe, start, end, size);
+    //}
 
-        //public static Timeline<T> CreateTimeline<T>(this IEnumerable<ITimestamp> Timestamps, TimelineType tlTYpe, int size) where T : IStartEndRange, new()
-        //{
-        //    var start = Timestamps.Min(m => m.Timestamp).RoundDown(ToTimeSpan(tlTYpe, size));
-        //    var end = Timestamps.Max(m => m.Timestamp).RoundUp(ToTimeSpan(tlTYpe, size));
+    //public static Timeline<T> CreateTimeline<T>(this IEnumerable<ITimestamp> Timestamps, TimelineType tlTYpe, int size) where T : IStartEndRange, new()
+    //{
+    //    var start = Timestamps.Min(m => m.Timestamp).RoundDown(ToTimeSpan(tlTYpe, size));
+    //    var end = Timestamps.Max(m => m.Timestamp).RoundUp(ToTimeSpan(tlTYpe, size));
 
-        //    return CreateTimeline<T>(tlTYpe, start, end, size);
-        //}
+    //    return CreateTimeline<T>(tlTYpe, start, end, size);
+    //}
 
-        //public static Timeline<T> CreateTimeline<T>(TimelineType tlTYpe, DateTime start, DateTime end, int size) where T : IStartEndRange, new()
-        //{
-        //    switch (tlTYpe)
-        //    {
-        //        case TimelineType.Hours:
-        //            return FromHours<T>(start, end, size);
-        //        case TimelineType.Minutes:
-        //            return FromMinutes<T>(start, end, size);
-        //        case TimelineType.Seconds:
-        //            return FromSeconds<T>(start, end, size);
-        //    }
+    //public static Timeline<T> CreateTimeline<T>(TimelineType tlTYpe, DateTime start, DateTime end, int size) where T : IStartEndRange, new()
+    //{
+    //    switch (tlTYpe)
+    //    {
+    //        case TimelineType.Hours:
+    //            return FromHours<T>(start, end, size);
+    //        case TimelineType.Minutes:
+    //            return FromMinutes<T>(start, end, size);
+    //        case TimelineType.Seconds:
+    //            return FromSeconds<T>(start, end, size);
+    //    }
 
-        //    return null;
-        //}
+    //    return null;
+    //}
 
-        //public static Timeline<T> FromHours<T>(DateTime start, DateTime end, int size) where T : IStartEndRange, new()
-        //{
-        //    var values = Enumerable
-        //        .Range(0, Convert.ToInt32((end.TimeOfDay.TotalHours - start.TimeOfDay.TotalHours) / size + 1))
-        //        .Select((s, i) => start.AddHours(i * size)).ToList();
+    //public static Timeline<T> FromHours<T>(DateTime start, DateTime end, int size) where T : IStartEndRange, new()
+    //{
+    //    var values = Enumerable
+    //        .Range(0, Convert.ToInt32((end.TimeOfDay.TotalHours - start.TimeOfDay.TotalHours) / size + 1))
+    //        .Select((s, i) => start.AddHours(i * size)).ToList();
 
-        //    var result = new Timeline<T>(ReturnDateTimeRangeList<T>(values), TimelineType.Hours, size);
+    //    var result = new Timeline<T>(ReturnDateTimeRangeList<T>(values), TimelineType.Hours, size);
 
-        //    return result;
-        //}
+    //    return result;
+    //}
 
-        //public static Timeline<T> FromMinutes<T>(DateTime start, DateTime end, int size) where T : IStartEndRange, new()
-        //{
-        //    var values = Enumerable
-        //        .Range(0, Convert.ToInt32((end.TimeOfDay.TotalMinutes - start.TimeOfDay.TotalMinutes) / size + 1))
-        //        .Select((s, i) => start.AddMinutes(i * size)).ToList();
+    //public static Timeline<T> FromMinutes<T>(DateTime start, DateTime end, int size) where T : IStartEndRange, new()
+    //{
+    //    var values = Enumerable
+    //        .Range(0, Convert.ToInt32((end.TimeOfDay.TotalMinutes - start.TimeOfDay.TotalMinutes) / size + 1))
+    //        .Select((s, i) => start.AddMinutes(i * size)).ToList();
 
-        //    var result = new Timeline<T>(ReturnDateTimeRangeList<T>(values), TimelineType.Minutes, size);
+    //    var result = new Timeline<T>(ReturnDateTimeRangeList<T>(values), TimelineType.Minutes, size);
 
-        //    return result;
-        //}
+    //    return result;
+    //}
 
-        //public static Timeline<T> FromSeconds<T>(DateTime start, DateTime end, int size) where T : IStartEndRange, new()
-        //{
-        //    var values = Enumerable
-        //        .Range(0, Convert.ToInt32((end.TimeOfDay.TotalSeconds - start.TimeOfDay.TotalSeconds) / size + 1))
-        //        .Select((s, i) => start.AddSeconds(i * size)).ToList();
+    //public static Timeline<T> FromSeconds<T>(DateTime start, DateTime end, int size) where T : IStartEndRange, new()
+    //{
+    //    var values = Enumerable
+    //        .Range(0, Convert.ToInt32((end.TimeOfDay.TotalSeconds - start.TimeOfDay.TotalSeconds) / size + 1))
+    //        .Select((s, i) => start.AddSeconds(i * size)).ToList();
 
-        //    var result = new Timeline<T>(ReturnDateTimeRangeList<T>(values), TimelineType.Seconds, size);
+    //    var result = new Timeline<T>(ReturnDateTimeRangeList<T>(values), TimelineType.Seconds, size);
 
-        //    return result;
-        //}
+    //    return result;
+    //}
 
-        //private static List<T> ReturnDateTimeRangeList<T>(List<DateTime> values) where T : IStartEndRange, new()
-        //{
-        //    return new List<T>(values.Take(values.Count() - 1).Select((s, i) => new T() { Start = values[i], End = values[i + 1] }));
-        //}
+    //private static List<T> ReturnDateTimeRangeList<T>(List<DateTime> values) where T : IStartEndRange, new()
+    //{
+    //    return new List<T>(values.Take(values.Count() - 1).Select((s, i) => new T() { Start = values[i], End = values[i + 1] }));
+    //}
     //}
 
     public class Timeline<T> : StartEndRange where T : IStartEndRange, new()

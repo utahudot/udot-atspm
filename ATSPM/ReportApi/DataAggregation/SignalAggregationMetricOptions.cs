@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for ReportApi - MOE.Common.Business.WCFServiceLibrary/SignalAggregationMetricOptions.cs
+// for ReportApi - ATSPM.ReportApi.DataAggregation/SignalAggregationMetricOptions.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,6 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using ATSPM.Application.Business.Aggregation;
 using ATSPM.Application.Business.Aggregation.FilterExtensions;
 using ATSPM.Application.Business.Bins;
@@ -23,12 +24,10 @@ using ATSPM.Application.Repositories.ConfigurationRepositories;
 using ATSPM.Application.TempExtensions;
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
-using ATSPM.ReportApi.DataAggregation;
 using Microsoft.EntityFrameworkCore;
-using MOE.Common.Business.DataAggregation;
 using System.Collections.Concurrent;
 
-namespace MOE.Common.Business.WCFServiceLibrary
+namespace ATSPM.ReportApi.DataAggregation
 {
 
 
@@ -214,7 +213,7 @@ namespace MOE.Common.Business.WCFServiceLibrary
                     Identifier = signal.LocationDescription(),
                     Value = options.SelectedAggregationType == AggregationCalculationType.Sum
                         ? binsContainers.Sum(b => b.SumValue)
-                        : Convert.ToInt32(Math.Round(binsContainers.Sum(b => b.SumValue) / (double)signals.Count))
+                        : Convert.ToInt32(Math.Round(binsContainers.Sum(b => b.SumValue) / signals.Count))
                 };
                 series.DataPoints.Add(dataPoint);
             }

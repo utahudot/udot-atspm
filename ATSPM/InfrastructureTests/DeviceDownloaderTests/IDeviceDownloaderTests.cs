@@ -1,6 +1,6 @@
 #region license
 // Copyright 2024 Utah Departement of Transportation
-// for InfrastructureTests - %Namespace%/ISignalControllerDownloaderTests.cs
+// for InfrastructureTests - InfrastructureTests.DeviceDownloaderTests/IDeviceDownloaderTests.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,6 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using ATSPM.Application.Configuration;
 using ATSPM.Application.Exceptions;
 using ATSPM.Application.Services;
@@ -88,7 +89,7 @@ namespace InfrastructureTests.DeviceDownloaderTests
             var device = new Device()
             {
                 LoggingEnabled = false,
-                DeviceConfiguration = new DeviceConfiguration() { Protocol = TransportProtocols.Ftp}
+                DeviceConfiguration = new DeviceConfiguration() { Protocol = TransportProtocols.Ftp }
             };
 
             var condition = sut.CanExecute(device);
@@ -141,7 +142,7 @@ namespace InfrastructureTests.DeviceDownloaderTests
             var device = new Device()
             {
                 LoggingEnabled = true,
-                DeviceConfiguration = new DeviceConfiguration() { Protocol = TransportProtocols.Ftp}
+                DeviceConfiguration = new DeviceConfiguration() { Protocol = TransportProtocols.Ftp }
             };
 
             await Assert.ThrowsAsync<InvalidDeviceIpAddressException>(async () =>

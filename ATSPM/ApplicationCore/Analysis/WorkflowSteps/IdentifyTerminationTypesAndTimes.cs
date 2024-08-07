@@ -14,6 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using ATSPM.Application.Analysis.Common;
 using ATSPM.Data.Enums;
 using ATSPM.Data.Interfaces;
@@ -33,7 +34,7 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
     {
         private readonly int _consecutiveCounts;
 
-        public IdentifyTerminationTypesAndTimes(int consecutiveCounts = 3, ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) 
+        public IdentifyTerminationTypesAndTimes(int consecutiveCounts = 3, ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
         {
             _consecutiveCounts = consecutiveCounts;
         }
@@ -47,7 +48,7 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
                 (int)6,
                 (int)IndianaEnumerations.PhaseGreenTermination
             };
-            
+
             var approach = input.Item1;
             var phase = input.Item2;
             var logs = input.Item3

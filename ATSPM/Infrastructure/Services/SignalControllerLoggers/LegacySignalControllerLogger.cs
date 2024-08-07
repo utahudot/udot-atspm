@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for Infrastructure - ATSPM.Infrastructure.Services.LocationControllerLoggers/LegacySignalControllerLogger.cs
+// for Infrastructure - ATSPM.Infrastructure.Services.SignalControllerLoggers/LegacySignalControllerLogger.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,6 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using ATSPM.Application.Common.EqualityComparers;
 using ATSPM.Application.Configuration;
 using ATSPM.Application.Services;
@@ -33,7 +34,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 
-namespace ATSPM.Infrastructure.Services.LocationControllerLoggers
+namespace ATSPM.Infrastructure.Services.SignalControllerLoggers
 {
     public class LegacyLocationControllerLogger : LocationControllerLoggerBase
     {

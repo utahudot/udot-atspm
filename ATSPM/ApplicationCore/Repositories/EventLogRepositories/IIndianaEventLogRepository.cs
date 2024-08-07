@@ -14,6 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using ATSPM.Data.Models.EventLogModels;
 
 namespace ATSPM.Application.Repositories.EventLogRepositories
@@ -21,5 +22,5 @@ namespace ATSPM.Application.Repositories.EventLogRepositories
     /// <summary>
     /// Indianna event log repository
     /// </summary>
-    public interface IIndianaEventLogRepository : IEventLogRepository<IndianaEvent>{}
+    public interface IIndianaEventLogRepository : IEventLogRepository<IndianaEvent> { }
 }

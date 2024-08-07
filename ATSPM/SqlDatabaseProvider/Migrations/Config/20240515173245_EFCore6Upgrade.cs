@@ -14,6 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -71,22 +72,6 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.Config
                     table.PrimaryKey("PK_DirectionTypes", x => x.Id);
                 },
                 comment: "Direction Types");
-
-            migrationBuilder.CreateTable(
-                name: "ExternalLinks",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "varchar(64)", unicode: false, maxLength: 64, nullable: false),
-                    Url = table.Column<string>(type: "varchar(512)", unicode: false, maxLength: 512, nullable: false),
-                    DisplayOrder = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ExternalLinks", x => x.Id);
-                },
-                comment: "External Links");
 
             migrationBuilder.CreateTable(
                 name: "Faqs",
@@ -753,24 +738,6 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.Config
                 });
 
             migrationBuilder.InsertData(
-                table: "ExternalLinks",
-                columns: new[] { "Id", "DisplayOrder", "Name", "Url" },
-                values: new object[,]
-                {
-                    { 1, 1, "Indiana Hi Resolution Data Logger Enumerations", " https://docs.lib.purdue.edu/jtrpdata/3/" },
-                    { 2, 2, "Florida ATSPM", "https://atspm.cflsmartroads.com/ATSPM" },
-                    { 3, 3, "FAST (Southern Nevada)", "http://challenger.nvfast.org/spm" },
-                    { 4, 4, "Georgia ATSPM", "https://traffic.dot.ga.gov/atspm" },
-                    { 5, 5, "Arizona ATSPM", "http://spmapp01.mcdot-its.com/ATSPM" },
-                    { 6, 6, "Alabama ATSPM", "http://Locationmetrics.ua.edu" },
-                    { 7, 7, "ATSPM Workshop 2016 SLC", "http://docs.lib.purdue.edu/atspmw/2016" },
-                    { 8, 8, "Train The Trainer Webinar Day 1 - Morning", "https://connectdot.connectsolutions.com/p75dwqefphk   " },
-                    { 9, 9, "Train The Trainer Webinar Day 1 - Afternoon", "https://connectdot.connectsolutions.com/p6l6jaoy3gj" },
-                    { 10, 10, "Train The Trainer Webinar Day 2 - Morning", "https://connectdot.connectsolutions.com/p6mlkvekogo/" },
-                    { 11, 11, "Train The Trainer Webinar Day 2 - Mid Morning", "https://connectdot.connectsolutions.com/p3ua8gtj09r/" }
-                });
-
-            migrationBuilder.InsertData(
                 table: "Faqs",
                 columns: new[] { "Id", "Body", "DisplayOrder", "Header" },
                 values: new object[,]
@@ -1058,9 +1025,6 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.Config
 
             migrationBuilder.DropTable(
                 name: "Devices");
-
-            migrationBuilder.DropTable(
-                name: "ExternalLinks");
 
             migrationBuilder.DropTable(
                 name: "Faqs");

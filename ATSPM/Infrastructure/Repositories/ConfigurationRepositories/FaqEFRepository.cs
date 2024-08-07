@@ -14,6 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using ATSPM.Application.Repositories.ConfigurationRepositories;
 using ATSPM.Data;
 using ATSPM.Data.Models;
@@ -25,6 +26,7 @@ namespace ATSPM.Infrastructure.Repositories.ConfigurationRepositories
     ///<inheritdoc cref="IFaqRepository"/>
     public class FaqEFRepository : ATSPMRepositoryEFBase<Faq>, IFaqRepository
     {
+        /// <inheritdoc/>
         public FaqEFRepository(ConfigContext db, ILogger<FaqEFRepository> log) : base(db, log) { }
 
         #region Overrides

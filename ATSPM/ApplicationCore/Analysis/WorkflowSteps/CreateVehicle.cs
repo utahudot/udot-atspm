@@ -14,6 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using ATSPM.Application.Analysis.Common;
 using ATSPM.Data.Models;
 using ATSPM.Domain.Workflows;
@@ -32,8 +33,8 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
 
         protected override Task<Tuple<Approach, IEnumerable<Vehicle>>> Process(Tuple<Tuple<Approach, IEnumerable<CorrectedDetectorEvent>>, Tuple<Approach, IEnumerable<RedToRedCycle>>> input, CancellationToken cancelToken = default)
         {
-            var result = input.Item2.Item2?.GroupJoin(input.Item1.Item2, 
-                o => new { o.LocationIdentifier, o.PhaseNumber }, 
+            var result = input.Item2.Item2?.GroupJoin(input.Item1.Item2,
+                o => new { o.LocationIdentifier, o.PhaseNumber },
                 i => new { i.LocationIdentifier, i.PhaseNumber },
                 (o, i) => i.Where(w => o.InRange(w.Timestamp))
                 .Select(s => new Vehicle(s, o)))
