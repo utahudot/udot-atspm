@@ -17,7 +17,7 @@ namespace SpeedManagementApi.Processors
         {
             var settings = new ExecutionDataflowBlockOptions()
             {
-                MaxDegreeOfParallelism = 1,
+                MaxDegreeOfParallelism = 10,
             };
 
             //Here is the list of tasks
