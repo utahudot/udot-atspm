@@ -389,9 +389,10 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             var reader = new WKTReader();
             var wkt = row["Shape"].ToString();
             Geometry shape = wkt != null ? reader.Read(wkt) : null;
+            var id = Guid.Parse(row["Id"].ToString());
             return new Segment()
             {
-                Id = Guid.Parse(row["Id"].ToString()),
+                Id = id,
                 UdotRouteNumber = row["UdotRouteNumber"].ToString(),
                 StartMilePoint = (double)row["StartMilePoint"],
                 EndMilePoint = (double)row["EndMilePoint"],
