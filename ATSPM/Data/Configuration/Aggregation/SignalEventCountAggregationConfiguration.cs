@@ -15,15 +15,14 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Data.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace ATSPM.Data.Configuration.Aggregation
+namespace Utah.Udot.Atspm.Data.Configuration
 {
-    public class LocationEventCountAggregationConfiguration : IEntityTypeConfiguration<LocationEventCountAggregation>
+    public class LocationEventCountAggregationConfiguration : IEntityTypeConfiguration<SignalEventCountAggregation>
     {
-        public void Configure(EntityTypeBuilder<LocationEventCountAggregation> builder)
+        public void Configure(EntityTypeBuilder<SignalEventCountAggregation> builder)
         {
             builder.HasComment("Location Event Count Aggregation");
 

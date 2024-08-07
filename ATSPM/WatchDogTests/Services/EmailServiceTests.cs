@@ -15,16 +15,13 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Data;
-using ATSPM.Data.Enums;
-using ATSPM.Data.Models;
-using ATSPM.Data.Models.ConfigurationModels;
-using ATSPM.Domain.Configuration;
-using ATSPM.Infrastructure.Services.EmailServices;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
+using Utah.Udot.Atspm.Data;
+using Utah.Udot.Atspm.Data.Enums;
+using Utah.Udot.Atspm.Data.Models;
+using Utah.Udot.Atspm.Data.Models;
 using WatchDog.Models;
 using WatchDog.Services;
 using Xunit;

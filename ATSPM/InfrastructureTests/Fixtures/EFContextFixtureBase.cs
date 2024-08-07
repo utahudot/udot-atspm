@@ -15,20 +15,10 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Data;
-using ATSPM.Data.Models;
-using ATSPM.Domain.Services;
-using ATSPM.Infrastructure.Repositories;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualStudio.TestPlatform.Utilities;
 using System;
-using System.Collections.Generic;
 using System.Data.Common;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace InfrastructureTests.Fixtures
 {

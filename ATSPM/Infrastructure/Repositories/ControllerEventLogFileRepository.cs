@@ -15,12 +15,12 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Application.Configuration;
-using ATSPM.Application.Repositories;
-using ATSPM.Application.Specifications;
-using ATSPM.Data.Models;
-using ATSPM.Domain.Common;
-using ATSPM.Domain.Extensions;
+using Utah.Udot.Atspm.Configuration;
+using Utah.Udot.Atspm.Repositories;
+using Utah.Udot.Atspm.Specifications;
+using Utah.Udot.Atspm.Data.Models;
+using Utah.Udot.NetStandardToolkit.Common;
+using Utah.Udot.NetStandardToolkit.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
@@ -28,7 +28,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace ATSPM.Infrastructure.Repositories
+namespace Utah.Udot.Atspm.Infrastructure.Repositories
 {
     public class ControllerEventLogFileRepository : ATSPMFileRepositoryBase<ControllerLogArchive>, IControllerEventLogRepository
     {

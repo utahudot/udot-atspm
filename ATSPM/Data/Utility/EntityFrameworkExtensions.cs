@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for Data - ATSPM.Data.Utility/EntityFrameworkExtensions.cs
+// for Data - Utah.Udot.Atspm.Data.Utility/EntityFrameworkExtensions.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 #nullable disable
 
-namespace ATSPM.Data.Utility
+namespace Utah.Udot.Atspm.Data.Utility
 {
     /// <summary>
     /// Entity framework extensions specific to Atspm

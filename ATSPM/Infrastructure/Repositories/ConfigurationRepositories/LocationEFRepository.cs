@@ -15,21 +15,13 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Application.Common.EqualityComparers;
-using ATSPM.Application.Extensions;
-using ATSPM.Application.Repositories.ConfigurationRepositories;
-using ATSPM.Application.Specifications;
-using ATSPM.Data;
-using ATSPM.Data.Models;
-using ATSPM.Domain.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using Utah.Udot.Atspm.Common.EqualityComparers;
+using Utah.Udot.Atspm.Data;
 
-namespace ATSPM.Infrastructure.Repositories.ConfigurationRepositories
+namespace Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories
 {
     ///<inheritdoc cref="ILocationRepository"/>
     public class LocationEFRepository : ATSPMRepositoryEFBase<Location>, ILocationRepository
@@ -136,6 +128,9 @@ namespace ATSPM.Infrastructure.Repositories.ConfigurationRepositories
             return result;
         }
 
+        //HACK: This should not be in the repo, needs to be done a different way
+
+        /// <inheritdoc/>
         public Location GetVersionByIdDetached(int LocationId)
         {
             var result = BaseQuery()

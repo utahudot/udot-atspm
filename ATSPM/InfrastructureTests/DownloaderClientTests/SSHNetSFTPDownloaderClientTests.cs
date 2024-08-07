@@ -15,12 +15,9 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Infrastructure.Services.DownloaderClients;
-using FluentFTP;
 using Moq;
 using System;
 using System.IO;
-using System.Net;
 using Xunit.Abstractions;
 
 namespace InfrastructureTests.DownloaderClientTests

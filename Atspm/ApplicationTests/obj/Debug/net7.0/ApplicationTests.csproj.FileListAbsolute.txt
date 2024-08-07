@@ -1,0 +1,5 @@
+C:\Users\christianbaker\source\repos\udot-atspm\Atspm\ApplicationTests\obj\Debug\net7.0\ApplicationTests.csproj.AssemblyReference.cache
+C:\Users\christianbaker\source\repos\udot-atspm\Atspm\ApplicationTests\obj\Debug\net7.0\ApplicationTests.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\christianbaker\source\repos\udot-atspm\Atspm\ApplicationTests\obj\Debug\net7.0\ApplicationTests.AssemblyInfoInputs.cache
+C:\Users\christianbaker\source\repos\udot-atspm\Atspm\ApplicationTests\obj\Debug\net7.0\ApplicationTests.AssemblyInfo.cs
+C:\Users\christianbaker\source\repos\udot-atspm\Atspm\ApplicationTests\obj\Debug\net7.0\ApplicationTests.csproj.CoreCompileInputs.cache

@@ -15,25 +15,12 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Application.Common.EqualityComparers;
-using ATSPM.Application.Configuration;
-using ATSPM.Application.Repositories;
-using ATSPM.Application.Services;
-using ATSPM.Data.Models;
-using ATSPM.Data.Models.EventLogModels;
-using ATSPM.Domain.Common;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 
-namespace ATSPM.Infrastructure.Services.SignalControllerLoggers
+namespace Utah.Udot.Atspm.Infrastructure.Services.SignalControllerLoggers
 {
     public class CompressedLocationControllerLogger : LocationControllerLoggerBase
     {

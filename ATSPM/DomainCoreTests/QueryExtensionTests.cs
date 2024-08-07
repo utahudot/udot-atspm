@@ -15,8 +15,8 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Domain.Extensions;
-using ATSPM.Domain.Specifications;
+using Utah.Udot.NetStandardToolkit.Extensions;
+using Utah.Udot.NetStandardToolkit.Specifications;
 using System;
 using System.Collections.Generic;
 using System.Linq;

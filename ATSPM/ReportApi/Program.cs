@@ -16,36 +16,6 @@
 #endregion
 
 using Asp.Versioning;
-using ATSPM.Application.Business.Aggregation;
-using ATSPM.Application.Business.AppoachDelay;
-using ATSPM.Application.Business.ApproachSpeed;
-using ATSPM.Application.Business.ApproachVolume;
-using ATSPM.Application.Business.ArrivalOnRed;
-using ATSPM.Application.Business.Common;
-using ATSPM.Application.Business.GreenTimeUtilization;
-using ATSPM.Application.Business.LeftTurnGapAnalysis;
-using ATSPM.Application.Business.LeftTurnGapReport;
-using ATSPM.Application.Business.LinkPivot;
-using ATSPM.Application.Business.PedDelay;
-using ATSPM.Application.Business.PhaseTermination;
-using ATSPM.Application.Business.PreempDetail;
-using ATSPM.Application.Business.PreemptService;
-using ATSPM.Application.Business.PreemptServiceRequest;
-using ATSPM.Application.Business.PurdueCoordinationDiagram;
-using ATSPM.Application.Business.SplitFail;
-using ATSPM.Application.Business.SplitMonitor;
-using ATSPM.Application.Business.TimeSpaceDiagram;
-using ATSPM.Application.Business.TimingAndActuation;
-using ATSPM.Application.Business.TurningMovementCounts;
-using ATSPM.Application.Business.WaitTime;
-using ATSPM.Application.Business.Watchdog;
-using ATSPM.Application.Business.YellowRedActivations;
-using ATSPM.Application.Repositories;
-using ATSPM.Application.Services;
-using ATSPM.Infrastructure.Extensions;
-using ATSPM.Infrastructure.Repositories;
-using ATSPM.ReportApi.DataAggregation;
-using ATSPM.ReportApi.ReportServices;
 using AutoFixture;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Mvc;

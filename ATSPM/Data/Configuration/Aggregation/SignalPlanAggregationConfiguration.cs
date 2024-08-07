@@ -15,15 +15,14 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Data.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace ATSPM.Data.Configuration.Aggregation
+namespace Utah.Udot.Atspm.Data.Configuration
 {
-    public class LocationPlanAggregationConfiguration : IEntityTypeConfiguration<LocationPlanAggregation>
+    public class LocationPlanAggregationConfiguration : IEntityTypeConfiguration<SignalPlanAggregation>
     {
-        public void Configure(EntityTypeBuilder<LocationPlanAggregation> builder)
+        public void Configure(EntityTypeBuilder<SignalPlanAggregation> builder)
         {
             builder.HasComment("Location Plan Aggregation");
 

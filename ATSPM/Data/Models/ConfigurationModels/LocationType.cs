@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for Data - ATSPM.Data.Models.ConfigurationModels/LocationType.cs
+// for Data - Utah.Udot.Atspm.Data.Models/LocationType.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,16 +16,13 @@
 #endregion
 
 #nullable disable
-using ATSPM;
-using ATSPM.Data.Relationships;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Utah.Udot.Atspm.Data.Relationships;
 
-namespace ATSPM.Data.Models.ConfigurationModels
+namespace Utah.Udot.Atspm.Data.Models
 {
+    /// <summary>
+    /// Location type configuration
+    /// </summary>
     public class LocationType : AtspmConfigModelBase<int>, IRelatedLocations
     {
         /// <summary>

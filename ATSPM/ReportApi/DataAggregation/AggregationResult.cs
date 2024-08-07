@@ -15,7 +15,6 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Application.Business.Common;
 using System.Runtime.Serialization;
 
 namespace ATSPM.ReportApi.DataAggregation

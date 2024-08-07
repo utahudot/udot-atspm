@@ -15,21 +15,11 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Application.Exceptions;
-using ATSPM.Application.Services;
-using ATSPM.Data.Enums;
-using ATSPM.Domain.BaseClasses;
-using ATSPM.Domain.Extensions;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Net;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
+using Utah.Udot.Atspm.Data.Enums;
 
-namespace ATSPM.Infrastructure.Services.DownloaderClients
+namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
 {
     /// <summary>
     /// Connect to services and interact with their file directories using <see cref="HttpClient"/>

@@ -15,12 +15,11 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Application.Repositories;
-using ATSPM.Data;
-using ATSPM.Data.Models;
 using Microsoft.Extensions.Logging;
+using Utah.Udot.Atspm.Data;
+using Utah.Udot.Atspm.Repositories;
 
-namespace ATSPM.Infrastructure.Repositories
+namespace Utah.Udot.Atspm.Infrastructure.Repositories
 {
     public class WatchDogLogEventEFRepository : ATSPMRepositoryEFBase<WatchDogLogEvent>, IWatchDogEventLogRepository
     {

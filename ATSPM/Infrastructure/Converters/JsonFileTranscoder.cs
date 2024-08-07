@@ -15,10 +15,8 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Domain.Common;
-using ATSPM.Domain.Extensions;
 
-namespace ATSPM.Infrastructure.Converters
+namespace Utah.Udot.Atspm.Infrastructure.Converters
 {
     /// <summary>
     /// Transcodes binary data to json format

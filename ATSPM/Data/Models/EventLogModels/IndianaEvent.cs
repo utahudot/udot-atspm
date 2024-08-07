@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for Data - ATSPM.Data.Models.EventLogModels/IndianaEvent.cs
+// for Data - Utah.Udot.Atspm.Data.Models.EventLogModels/IndianaEvent.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,9 +17,9 @@
 
 #nullable disable
 
-using ATSPM.Data.Enums;
+using Utah.Udot.Atspm.Data.Enums;
 
-namespace ATSPM.Data.Models.EventLogModels
+namespace Utah.Udot.Atspm.Data.Models.EventLogModels
 {
     /// <summary>
     /// Indiana Traffic Signal Hi Resolution Data Logger Enumerations

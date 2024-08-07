@@ -15,24 +15,11 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Application.Configuration;
-using ATSPM.Application.Repositories;
-using ATSPM.Application.Repositories.EventLogRepositories;
-using ATSPM.Data.Models;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
-namespace ATSPM.Infrastructure.Services.HostedServices
+namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
 {
     public class ExportUtilityService : IHostedService
     {

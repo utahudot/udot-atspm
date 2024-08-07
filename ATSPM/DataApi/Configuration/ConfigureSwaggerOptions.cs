@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for DataApi - ATSPM.DataApi.Configuration/ConfigureSwaggerOptions.cs
+// for DataApi - Utah.Udot.Atspm.DataApi.Configuration/ConfigureSwaggerOptions.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Text;
 
-namespace ATSPM.DataApi.Configuration
+namespace Utah.Udot.Atspm.DataApi.Configuration
 {
     /// <summary>
     /// Configures the Swagger generation options.

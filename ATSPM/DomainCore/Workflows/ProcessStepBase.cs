@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for DomainCore - ATSPM.Domain.Workflows/ProcessStepBase.cs
+// for DomainCore - Utah.Udot.NetStandardToolkit.Workflows/ProcessStepBase.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 
-namespace ATSPM.Domain.Workflows
+namespace Utah.Udot.NetStandardToolkit.Workflows
 {
     /// <summary>
     /// Base class for workflow process steps

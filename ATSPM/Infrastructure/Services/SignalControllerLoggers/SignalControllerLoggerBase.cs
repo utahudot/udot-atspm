@@ -15,22 +15,11 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Application.Exceptions;
-using ATSPM.Application.LogMessages;
-using ATSPM.Application.Services;
-using ATSPM.Data.Models;
-using ATSPM.Domain.BaseClasses;
-using ATSPM.Domain.Exceptions;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using System.Windows.Input;
 
-namespace ATSPM.Infrastructure.Services.SignalControllerLoggers
+namespace Utah.Udot.Atspm.Infrastructure.Services.SignalControllerLoggers
 {
     public abstract class LocationControllerLoggerBase : ServiceObjectBase, ILocationControllerLoggerService
     {

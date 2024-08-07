@@ -16,18 +16,18 @@
 #endregion
 
 using Asp.Versioning;
-using ATSPM.Application.Repositories.ConfigurationRepositories;
-using ATSPM.ConfigApi.Models;
-using ATSPM.ConfigApi.Services;
-using ATSPM.Data.Models;
+using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
+using Utah.Udot.Atspm.Data.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Deltas;
 using Microsoft.AspNetCore.OData.Query;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 using static Microsoft.AspNetCore.OData.Query.AllowedQueryOptions;
+using Utah.Udot.Atspm.ConfigApi.Models;
+using Utah.Udot.Atspm.ConfigApi.Services;
 
-namespace ATSPM.ConfigApi.Controllers
+namespace Utah.Udot.Atspm.ConfigApi.Controllers
 {
     /// <summary>
     /// Approaches Controller
@@ -84,13 +84,13 @@ namespace ATSPM.ConfigApi.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+                return StatusCode(Status500InternalServerError, ex.Message);
             }
         }
 
         [HttpGet("api/v1/GetApproachDto/{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(Status200OK)]
+        [ProducesResponseType(Status400BadRequest)]
         public async Task<IActionResult> GetApproachDto(int id)
         {
             if (!ModelState.IsValid)
@@ -104,7 +104,7 @@ namespace ATSPM.ConfigApi.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+                return StatusCode(Status500InternalServerError, ex.Message);
             }
         }
         #endregion

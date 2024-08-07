@@ -15,15 +15,12 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Application.Business.Common;
-using ATSPM.Application.Repositories.EventLogRepositories;
-using ATSPM.Application.TempExtensions;
-using ATSPM.Data.Enums;
-using ATSPM.Data.Models;
-using ATSPM.Data.Models.EventLogModels;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using System.Collections.Concurrent;
+using Utah.Udot.Atspm.Data.Enums;
+using Utah.Udot.Atspm.Data.Models;
+using Utah.Udot.Atspm.Data.Models.EventLogModels;
 using WatchDog.Models;
 
 namespace WatchDog.Services
@@ -99,7 +96,7 @@ namespace WatchDog.Services
             foreach (var detector in detectors)
                 try
                 {
-                    if (detector.DetectionTypes != null && detector.DetectionTypes.Any(d => d.Id == ATSPM.Data.Enums.DetectionTypes.AC))
+                    if (detector.DetectionTypes != null && detector.DetectionTypes.Any(d => d.Id == Utah.Udot.Atspm.Data.Enums.DetectionTypes.AC))
                     {
                         var channel = detector.DetectorChannel;
                         var direction = detector.Approach.DirectionType.Description;
