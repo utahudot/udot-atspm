@@ -158,8 +158,6 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddScoped<ImpactTypeService>();
     s.AddScoped<IReportService<CongestionTrackingOptions, CongestionTrackingDto>, CongestionTrackingService>();
 
-
-
     //report services
 
 
