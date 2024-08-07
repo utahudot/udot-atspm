@@ -29,6 +29,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             _datasetId = datasetId;
             _tableId = tableId;
             _logger = log;
+
         }
 
 
@@ -119,7 +120,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             {
                 Date = row.GetPropertyValue<DateTime>("Id"),
                 BinStartTime = row.GetPropertyValue<DateTime>("BinStartTime"),
-                SegmentId = row.GetPropertyValue<string>("SegmentId"),
+                SegmentId = row.GetPropertyValue<Guid>("SegmentId"),
                 SourceId = row.GetPropertyValue<int>("SourceId"),
                 ConfidenceId = row.GetPropertyValue<int>("ConfidenceId"),
                 Average = row.GetPropertyValue<int>("Average"),
