@@ -165,6 +165,10 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddScoped<RouteService>();
     s.AddScoped<ImpactService>();
     s.AddScoped<ImpactTypeService>();
+    s.AddScoped<MonthlyAggregationService>();
+    s.AddScoped<HourlySpeedService>();
+    s.AddScoped<AggregateMonthlyEventsProcessor>();
+    s.AddScoped<DeleteOldEventsProcessor>();
     s.AddScoped<IReportService<CongestionTrackingOptions, CongestionTrackingDto>, CongestionTrackingService>();
 
 
