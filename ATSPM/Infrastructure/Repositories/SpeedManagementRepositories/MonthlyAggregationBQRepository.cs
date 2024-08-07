@@ -1,6 +1,5 @@
 ﻿using ATSPM.Application.Repositories.SpeedManagementRepositories;
 using ATSPM.Data.Models.SpeedManagement.MonthlyAggregation;
-using ATSPM.Domain.Extensions;
 using Google.Cloud.BigQuery.V2;
 using Microsoft.Extensions.Logging;
 using System;
@@ -44,7 +43,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             var query = $"SELECT * FROM `{_datasetId}.{_tableId}` WHERE Id = @key";
             var parameters = new List<BigQueryParameter>
             {
-                    new BigQueryParameter("key", BigQueryDbType.String, key)
+                    new BigQueryParameter("key", BigQueryDbType.String, key.ToString())
                 };
             var results = _client.ExecuteQuery(query, parameters);
             Task<MonthlyAggregation> task = Task.FromResult(results.Select(row => MapRowToEntity(row)).FirstOrDefault());
@@ -57,7 +56,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             var query = $"SELECT * FROM `{_datasetId}.{_tableId}` WHERE Id = @key";
             var parameters = new List<BigQueryParameter>
                 {
-                    new BigQueryParameter("key", BigQueryDbType.String, item.Id)
+                    new BigQueryParameter("key", BigQueryDbType.String, item.Id.ToString())
                 };
 
             var results = _client.ExecuteQuery(query, parameters);
@@ -71,7 +70,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             var query = $"SELECT * FROM `{_datasetId}.{_tableId}` WHERE Id = @key";
             var parameters = new List<BigQueryParameter>
             {
-                    new BigQueryParameter("key", BigQueryDbType.String, key)
+                    new BigQueryParameter("key", BigQueryDbType.String, key.ToString())
                 };
             var results = await _client.ExecuteQueryAsync(query, parameters);
             return results.Select(row => MapRowToEntity(row)).FirstOrDefault();
@@ -83,7 +82,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             var query = $"SELECT * FROM `{_datasetId}.{_tableId}` WHERE Id = @key";
             var parameters = new List<BigQueryParameter>
                 {
-                    new BigQueryParameter("key", BigQueryDbType.String, item.Id)
+                    new BigQueryParameter("key", BigQueryDbType.String, item.Id.ToString())
                 };
             var results = await _client.ExecuteQueryAsync(query, parameters);
             return results.Select(row => MapRowToEntity(row)).FirstOrDefault();
@@ -95,7 +94,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             var query = $"DELETE FROM `{_datasetId}.{_tableId}` WHERE Id = @key";
             var parameters = new List<BigQueryParameter>
              {
-                 new BigQueryParameter("key", BigQueryDbType.String, item.Id)
+                 new BigQueryParameter("key", BigQueryDbType.String, item.Id.ToString())
              };
             _client.ExecuteQueryAsync(query, parameters);
         }
@@ -106,7 +105,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             var query = $"DELETE FROM `{_datasetId}.{_tableId}` WHERE Id = @key";
             var parameters = new List<BigQueryParameter>
              {
-                 new BigQueryParameter("key", BigQueryDbType.String, item.Id)
+                 new BigQueryParameter("key", BigQueryDbType.String, item.Id.ToString())
              };
             await _client.ExecuteQueryAsync(query, parameters);
         }
@@ -115,7 +114,10 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
         {
             var ids = string.Join(", ", items.Select(i => i.Id));
             var query = $"DELETE FROM `{_datasetId}.{_tableId}` WHERE Id IN ({ids})";
-            var parameters = new List<BigQueryParameter>();
+            var parameters = new List<BigQueryParameter>
+                {
+                    new BigQueryParameter("ids", BigQueryDbType.String, ids)
+                };
 
             _client.ExecuteQuery(query, parameters);
         }
@@ -124,7 +126,10 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
         {
             var ids = string.Join(", ", items.Select(i => i.Id));
             var query = $"DELETE FROM `{_datasetId}.{_tableId}` WHERE Id IN ({ids})";
-            var parameters = new List<BigQueryParameter>();
+            var parameters = new List<BigQueryParameter>
+                {
+                    new BigQueryParameter("ids", BigQueryDbType.String, ids)
+                };
 
             await _client.ExecuteQueryAsync(query, parameters);
         }
@@ -155,7 +160,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
         }
         /// <inheritdoc/>
 
-        public async Task<MonthlyAggregation> UpsertMonthlyAggregationAsync(MonthlyAggregation item)
+        public async Task UpsertMonthlyAggregationAsync(MonthlyAggregation item)
         {
             var oldRow = await LookupAsync(item.Id);
             if (oldRow != null)
@@ -168,7 +173,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
                 };
 
                 var result = await _client.ExecuteQueryAsync(query, parameters);
-                return MapRowToEntity(result.FirstOrDefault());
+                return;
             }
             else
             {
@@ -177,7 +182,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
                 var parameters = new List<BigQueryParameter>();
 
                 var result = await _client.ExecuteQueryAsync(query, parameters);
-                return MapRowToEntity(result.FirstOrDefault());
+                return;
             }
         }
 
@@ -258,37 +263,66 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
 
         protected override MonthlyAggregation MapRowToEntity(BigQueryRow row)
         {
+            var bigQueryId = Guid.Parse(row["Id"].ToString());
+            var bigQueryCreatedDate = DateTime.Parse(row["CreatedDate"].ToString());
+            var bigQueryBinStartTime = DateTime.Parse(row["BinStartTime"].ToString());
+            var bigQuerySegmentId = Guid.Parse(row["SegmentId"].ToString());
+            var bigQuerySourceId = int.Parse(row["SourceId"].ToString());
+            var bigQueryAllDayAverageSpeed = row["AllDayAverageSpeed"] != null ? int.Parse(row["AllDayAverageSpeed"].ToString()) : (int?)null;
+            var bigQueryAllDayViolations = row["AllDayViolations"] != null ? int.Parse(row["AllDayViolations"].ToString()) : (int?)null;
+            var bigQueryAllDayExtremeViolations = row["AllDayExtremeViolations"] != null ? int.Parse(row["AllDayExtremeViolations"].ToString()) : (int?)null;
+            var bigQueryOffPeakAverageSpeed = row["OffPeakAverageSpeed"] != null ? int.Parse(row["OffPeakAverageSpeed"].ToString()) : (int?)null;
+            var bigQueryOffPeakViolations = row["OffPeakViolations"] != null ? int.Parse(row["OffPeakViolations"].ToString()) : (int?)null;
+            var bigQueryOffPeakExtremeViolations = row["OffPeakExtremeViolations"] != null ? int.Parse(row["OffPeakExtremeViolations"].ToString()) : (int?)null;
+            var bigQueryAmPeakAverageSpeed = row["AmPeakAverageSpeed"] != null ? int.Parse(row["AmPeakAverageSpeed"].ToString()) : (int?)null;
+            var bigQueryAmPeakViolations = row["AmPeakViolations"] != null ? int.Parse(row["AmPeakViolations"].ToString()) : (int?)null;
+            var bigQueryAmPeakExtremeViolations = row["AmPeakExtremeViolations"] != null ? int.Parse(row["AmPeakExtremeViolations"].ToString()) : (int?)null;
+            var bigQueryPmPeakAverageSpeed = row["PmPeakAverageSpeed"] != null ? int.Parse(row["PmPeakAverageSpeed"].ToString()) : (int?)null;
+            var bigQueryPmPeakViolations = row["PmPeakViolations"] != null ? int.Parse(row["PmPeakViolations"].ToString()) : (int?)null;
+            var bigQueryPmPeakExtremeViolations = row["PmPeakExtremeViolations"] != null ? int.Parse(row["PmPeakExtremeViolations"].ToString()) : (int?)null;
+            var bigQueryMidDayAverageSpeed = row["MidDayAverageSpeed"] != null ? int.Parse(row["MidDayAverageSpeed"].ToString()) : (int?)null;
+            var bigQueryMidDayViolations = row["MidDayViolations"] != null ? int.Parse(row["MidDayViolations"].ToString()) : (int?)null;
+            var bigQueryMidDayExtremeViolations = row["MidDayExtremeViolations"] != null ? int.Parse(row["MidDayExtremeViolations"].ToString()) : (int?)null;
+            var bigQueryEveningAverageSpeed = row["EveningAverageSpeed"] != null ? int.Parse(row["EveningAverageSpeed"].ToString()) : (int?)null;
+            var bigQueryEveningViolations = row["EveningViolations"] != null ? int.Parse(row["EveningViolations"].ToString()) : (int?)null;
+            var bigQueryEveningExtremeViolations = row["EveningExtremeViolations"] != null ? int.Parse(row["EveningExtremeViolations"].ToString()) : (int?)null;
+            var bigQueryEarlyMorningAverageSpeed = row["EarlyMorningAverageSpeed"] != null ? int.Parse(row["EarlyMorningAverageSpeed"].ToString()) : (int?)null;
+            var bigQueryEarlyMorningViolations = row["EarlyMorningViolations"] != null ? int.Parse(row["EarlyMorningViolations"].ToString()) : (int?)null;
+            var bigQueryEarlyMorningExtremeViolations = row["EarlyMorningExtremeViolations"] != null ? int.Parse(row["EarlyMorningExtremeViolations"].ToString()) : (int?)null;
+            var bigQueryDataQuality = bool.Parse(row["DataQuality"].ToString());
+
             return new MonthlyAggregation
             {
-                Id = row.GetPropertyValue<Guid>("Id"),
-                CreatedDate = row.GetPropertyValue<DateTime>("CreatedDate"),
-                BinStartTime = row.GetPropertyValue<DateTime>("BinStartTime"),
-                SegmentId = row.GetPropertyValue<Guid>("SegmentId"),
-                SourceId = row.GetPropertyValue<int>("SourceId"),
-                AllDayAverageSpeed = row.GetPropertyValue<int?>("AllDayAverageSpeed"),
-                AllDayViolations = row.GetPropertyValue<int?>("AllDayViolations"),
-                AllDayExtremeViolations = row.GetPropertyValue<int?>("AllDayExtremeViolations"),
-                OffPeakAverageSpeed = row.GetPropertyValue<int?>("OffPeakAverageSpeed"),
-                OffPeakViolations = row.GetPropertyValue<int?>("OffPeakViolations"),
-                OffPeakExtremeViolations = row.GetPropertyValue<int?>("OffPeakExtremeViolations"),
-                AmPeakAverageSpeed = row.GetPropertyValue<int?>("AmPeakAverageSpeed"),
-                AmPeakViolations = row.GetPropertyValue<int?>("AmPeakViolations"),
-                AmPeakExtremeViolations = row.GetPropertyValue<int?>("AmPeakExtremeViolations"),
-                PmPeakAverageSpeed = row.GetPropertyValue<int?>("PmPeakAverageSpeed"),
-                PmPeakViolations = row.GetPropertyValue<int?>("PmPeakViolations"),
-                PmPeakExtremeViolations = row.GetPropertyValue<int?>("PmPeakExtremeViolations"),
-                MidDayAverageSpeed = row.GetPropertyValue<int?>("MidDayAverageSpeed"),
-                MidDayViolations = row.GetPropertyValue<int?>("MidDayViolations"),
-                MidDayExtremeViolations = row.GetPropertyValue<int?>("MidDayExtremeViolations"),
-                EveningAverageSpeed = row.GetPropertyValue<int?>("EveningAverageSpeed"),
-                EveningViolations = row.GetPropertyValue<int?>("EveningViolations"),
-                EveningExtremeViolations = row.GetPropertyValue<int?>("EveningExtremeViolations"),
-                EarlyMorningAverageSpeed = row.GetPropertyValue<int?>("EarlyMorningAverageSpeed"),
-                EarlyMorningViolations = row.GetPropertyValue<int?>("EarlyMorningViolations"),
-                EarlyMorningExtremeViolations = row.GetPropertyValue<int?>("EarlyMorningExtremeViolations"),
-                DataQuality = row.GetPropertyValue<bool>("DataQuality")
+                Id = bigQueryId,
+                CreatedDate = bigQueryCreatedDate,
+                BinStartTime = bigQueryBinStartTime,
+                SegmentId = bigQuerySegmentId,
+                SourceId = bigQuerySourceId,
+                AllDayAverageSpeed = bigQueryAllDayAverageSpeed,
+                AllDayViolations = bigQueryAllDayViolations,
+                AllDayExtremeViolations = bigQueryAllDayExtremeViolations,
+                OffPeakAverageSpeed = bigQueryOffPeakAverageSpeed,
+                OffPeakViolations = bigQueryOffPeakViolations,
+                OffPeakExtremeViolations = bigQueryOffPeakExtremeViolations,
+                AmPeakAverageSpeed = bigQueryAmPeakAverageSpeed,
+                AmPeakViolations = bigQueryAmPeakViolations,
+                AmPeakExtremeViolations = bigQueryAmPeakExtremeViolations,
+                PmPeakAverageSpeed = bigQueryPmPeakAverageSpeed,
+                PmPeakViolations = bigQueryPmPeakViolations,
+                PmPeakExtremeViolations = bigQueryPmPeakExtremeViolations,
+                MidDayAverageSpeed = bigQueryMidDayAverageSpeed,
+                MidDayViolations = bigQueryMidDayViolations,
+                MidDayExtremeViolations = bigQueryMidDayExtremeViolations,
+                EveningAverageSpeed = bigQueryEveningAverageSpeed,
+                EveningViolations = bigQueryEveningViolations,
+                EveningExtremeViolations = bigQueryEveningExtremeViolations,
+                EarlyMorningAverageSpeed = bigQueryEarlyMorningAverageSpeed,
+                EarlyMorningViolations = bigQueryEarlyMorningViolations,
+                EarlyMorningExtremeViolations = bigQueryEarlyMorningExtremeViolations,
+                DataQuality = bigQueryDataQuality
             };
         }
+
         /// <inheritdoc/>
 
         public async Task<MonthlyAggregation> SelectByBinTimeSegmentAndSource(DateTime binStartTime, MonthlyAggregation monthlyAggregation)
@@ -424,9 +458,9 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
                 WHERE BinStartTime < @thresholdDate";
 
             var parameters = new List<BigQueryParameter>
-            {
-                new BigQueryParameter("thresholdDate", BigQueryDbType.DateTime, thresholdDate)
-            };
+                {
+                    new BigQueryParameter("thresholdDate", BigQueryDbType.Timestamp, thresholdDate.ToUniversalTime())
+                };
 
             var result = await _client.ExecuteQueryAsync(query, parameters);
             var monthlyAggregations = new List<MonthlyAggregation>();
@@ -449,7 +483,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
                 $"VALUES (" +
                 $"GENERATE_UUID(), " +
                 $"CURRENT_TIMESTAMP(), " +
-                $"'{item.BinStartTime:O}', " +
+                $"TIMESTAMP('{item.BinStartTime:yyyy-MM-dd HH:mm:ss}'), " +
                 $"'{item.SegmentId}', " +
                 $"{item.SourceId}, " +
                 $"{(item.AllDayAverageSpeed.HasValue ? item.AllDayAverageSpeed.Value.ToString() : "NULL")}, " +
@@ -473,7 +507,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
                 $"{(item.EarlyMorningAverageSpeed.HasValue ? item.EarlyMorningAverageSpeed.Value.ToString() : "NULL")}, " +
                 $"{(item.EarlyMorningViolations.HasValue ? item.EarlyMorningViolations.Value.ToString() : "NULL")}, " +
                 $"{(item.EarlyMorningExtremeViolations.HasValue ? item.EarlyMorningExtremeViolations.Value.ToString() : "NULL")}, " +
-                $"{item.DataQuality})";
+            $"{item.DataQuality})";
         }
 
         private string updateQuery(MonthlyAggregation item)

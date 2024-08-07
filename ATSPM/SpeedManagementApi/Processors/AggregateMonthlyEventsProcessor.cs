@@ -23,7 +23,7 @@ namespace SpeedManagementApi.Processors
         {
             var settings = new ExecutionDataflowBlockOptions()
             {
-                MaxDegreeOfParallelism = 10,
+                MaxDegreeOfParallelism = 1,
             };
             var startDate = DateTime.Now;
             var endDate = DateTime.Now;
@@ -46,10 +46,7 @@ namespace SpeedManagementApi.Processors
 
 
             //Save the information
-            var saveBlock = new ActionBlock<MonthlyAggregationProcessorDto>(async monthlyAggregationProcess =>
-            {
-                await UpsertMonthlyAggregation(monthlyAggregationProcess);
-            }, settings);
+            var saveBlock = new ActionBlock<MonthlyAggregationProcessorDto>(UpsertMonthlyAggregation, settings);
 
             //This is very important for batching
             DataflowLinkOptions linkOptions = new DataflowLinkOptions() { PropagateCompletion = true };
@@ -78,7 +75,7 @@ namespace SpeedManagementApi.Processors
         {
             var settings = new ExecutionDataflowBlockOptions()
             {
-                MaxDegreeOfParallelism = 10,
+                MaxDegreeOfParallelism = 1,
             };
             var startDate = DateTime.Now;
             var endDate = DateTime.Now;
@@ -86,11 +83,7 @@ namespace SpeedManagementApi.Processors
             //List out the steps 
             var expiredEvents = new TransformManyBlock<MonthlyAggregation, MonthlyAggregationProcessorDto>(GenerateTwoYearsForASegment);
             //Set up monthlyAggregationProcessor DTO
-            var allTimeData = new TransformBlock<MonthlyAggregationProcessorDto, MonthlyAggregationProcessorDto>(async monthlyAggregationProcessor =>
-            {
-                var result = await PullOutAllMonthlyDataForSegment(monthlyAggregationProcessor);
-                return result;
-            }, settings);
+            var allTimeData = new TransformBlock<MonthlyAggregationProcessorDto, MonthlyAggregationProcessorDto>(PullOutAllMonthlyDataForSegment, settings);
             var allDay = new TransformBlock<MonthlyAggregationProcessorDto, MonthlyAggregationProcessorDto>(GetHourlySpeedsForAllDay, settings);
             var offPeak = new TransformBlock<MonthlyAggregationProcessorDto, MonthlyAggregationProcessorDto>(GetHourlySpeedsForOffPeak, settings);
             var amPeak = new TransformBlock<MonthlyAggregationProcessorDto, MonthlyAggregationProcessorDto>(GetHourlySpeedsForAmPeak, settings);
@@ -101,10 +94,7 @@ namespace SpeedManagementApi.Processors
 
 
             //Save the information
-            var saveBlock = new ActionBlock<MonthlyAggregationProcessorDto>(async monthlyAggregationProcess =>
-            {
-                await UpsertMonthlyAggregation(monthlyAggregationProcess);
-            }, settings);
+            var saveBlock = new ActionBlock<MonthlyAggregationProcessorDto>(UpsertMonthlyAggregation, settings);
 
             //This is very important for batching
             DataflowLinkOptions linkOptions = new DataflowLinkOptions() { PropagateCompletion = true };
@@ -189,9 +179,9 @@ namespace SpeedManagementApi.Processors
                 firstDayOfPreviousMonth = firstDayOfPreviousMonth.AddMonths(-1);
             }
         }
-        private async Task<MonthlyAggregation> UpsertMonthlyAggregation(MonthlyAggregationProcessorDto monthlyAggregationProcess)
+        private async Task UpsertMonthlyAggregation(MonthlyAggregationProcessorDto monthlyAggregationProcess)
         {
-            return await monthlyAggregationService.UpsertMonthlyAggregation(monthlyAggregationProcess.monthlyAggregation);
+            await monthlyAggregationService.UpsertMonthlyAggregation(monthlyAggregationProcess.monthlyAggregation);
         }
 
         private async Task<MonthlyAggregationProcessorDto> PullOutAllMonthlyDataForSegment(MonthlyAggregationProcessorDto monthlyAggregationProcessor)
@@ -227,9 +217,9 @@ namespace SpeedManagementApi.Processors
 
             var (averageSpeed, totalViolations, totalExtremeViolations) = GetAveragesOfTimePeriodWithOvernightMetric(monthlyAggregationProcessor.hourlySpeeds, startTime, endTime);
 
-            monthlyAggregationProcessor.monthlyAggregation.AllDayAverageSpeed = averageSpeed;
-            monthlyAggregationProcessor.monthlyAggregation.AllDayViolations = totalViolations;
-            monthlyAggregationProcessor.monthlyAggregation.AllDayExtremeViolations = totalExtremeViolations;
+            monthlyAggregationProcessor.monthlyAggregation.OffPeakAverageSpeed = averageSpeed;
+            monthlyAggregationProcessor.monthlyAggregation.OffPeakViolations = totalViolations;
+            monthlyAggregationProcessor.monthlyAggregation.OffPeakExtremeViolations = totalExtremeViolations;
             return monthlyAggregationProcessor;
         }
 
@@ -240,9 +230,9 @@ namespace SpeedManagementApi.Processors
 
             var (averageSpeed, totalViolations, totalExtremeViolations) = GetAveragesOfTimePeriod(monthlyAggregationProcessor.hourlySpeeds, startTime, endTime);
 
-            monthlyAggregationProcessor.monthlyAggregation.AllDayAverageSpeed = averageSpeed;
-            monthlyAggregationProcessor.monthlyAggregation.AllDayViolations = totalViolations;
-            monthlyAggregationProcessor.monthlyAggregation.AllDayExtremeViolations = totalExtremeViolations;
+            monthlyAggregationProcessor.monthlyAggregation.AmPeakAverageSpeed = averageSpeed;
+            monthlyAggregationProcessor.monthlyAggregation.AmPeakViolations = totalViolations;
+            monthlyAggregationProcessor.monthlyAggregation.AmPeakExtremeViolations = totalExtremeViolations;
             return monthlyAggregationProcessor;
         }
 
@@ -253,9 +243,9 @@ namespace SpeedManagementApi.Processors
 
             var (averageSpeed, totalViolations, totalExtremeViolations) = GetAveragesOfTimePeriod(monthlyAggregationProcessor.hourlySpeeds, startTime, endTime);
 
-            monthlyAggregationProcessor.monthlyAggregation.AllDayAverageSpeed = averageSpeed;
-            monthlyAggregationProcessor.monthlyAggregation.AllDayViolations = totalViolations;
-            monthlyAggregationProcessor.monthlyAggregation.AllDayExtremeViolations = totalExtremeViolations;
+            monthlyAggregationProcessor.monthlyAggregation.PmPeakAverageSpeed = averageSpeed;
+            monthlyAggregationProcessor.monthlyAggregation.PmPeakViolations = totalViolations;
+            monthlyAggregationProcessor.monthlyAggregation.PmPeakExtremeViolations = totalExtremeViolations;
             return monthlyAggregationProcessor;
         }
 
@@ -266,9 +256,9 @@ namespace SpeedManagementApi.Processors
 
             var (averageSpeed, totalViolations, totalExtremeViolations) = GetAveragesOfTimePeriod(monthlyAggregationProcessor.hourlySpeeds, startTime, endTime);
 
-            monthlyAggregationProcessor.monthlyAggregation.AllDayAverageSpeed = averageSpeed;
-            monthlyAggregationProcessor.monthlyAggregation.AllDayViolations = totalViolations;
-            monthlyAggregationProcessor.monthlyAggregation.AllDayExtremeViolations = totalExtremeViolations;
+            monthlyAggregationProcessor.monthlyAggregation.MidDayAverageSpeed = averageSpeed;
+            monthlyAggregationProcessor.monthlyAggregation.MidDayViolations = totalViolations;
+            monthlyAggregationProcessor.monthlyAggregation.MidDayExtremeViolations = totalExtremeViolations;
             return monthlyAggregationProcessor;
         }
 
@@ -279,9 +269,9 @@ namespace SpeedManagementApi.Processors
 
             var (averageSpeed, totalViolations, totalExtremeViolations) = GetAveragesOfTimePeriod(monthlyAggregationProcessor.hourlySpeeds, startTime, endTime);
 
-            monthlyAggregationProcessor.monthlyAggregation.AllDayAverageSpeed = averageSpeed;
-            monthlyAggregationProcessor.monthlyAggregation.AllDayViolations = totalViolations;
-            monthlyAggregationProcessor.monthlyAggregation.AllDayExtremeViolations = totalExtremeViolations;
+            monthlyAggregationProcessor.monthlyAggregation.EveningAverageSpeed = averageSpeed;
+            monthlyAggregationProcessor.monthlyAggregation.EveningViolations = totalViolations;
+            monthlyAggregationProcessor.monthlyAggregation.EveningExtremeViolations = totalExtremeViolations;
             return monthlyAggregationProcessor;
         }
 
@@ -292,9 +282,9 @@ namespace SpeedManagementApi.Processors
 
             var (averageSpeed, totalViolations, totalExtremeViolations) = GetAveragesOfTimePeriod(monthlyAggregationProcessor.hourlySpeeds, startTime, endTime);
 
-            monthlyAggregationProcessor.monthlyAggregation.AllDayAverageSpeed = averageSpeed;
-            monthlyAggregationProcessor.monthlyAggregation.AllDayViolations = totalViolations;
-            monthlyAggregationProcessor.monthlyAggregation.AllDayExtremeViolations = totalExtremeViolations;
+            monthlyAggregationProcessor.monthlyAggregation.EarlyMorningAverageSpeed = averageSpeed;
+            monthlyAggregationProcessor.monthlyAggregation.EarlyMorningViolations = totalViolations;
+            monthlyAggregationProcessor.monthlyAggregation.EarlyMorningExtremeViolations = totalExtremeViolations;
             return monthlyAggregationProcessor;
         }
 
@@ -320,9 +310,17 @@ namespace SpeedManagementApi.Processors
 
         private (long averageSpeed, long totalViolations, long totalExtremeViolations) GetAveragesOfTimePeriod(List<HourlySpeed> hourlySpeeds, TimeSpan startTime, TimeSpan endTime)
         {
+            if (hourlySpeeds.Count == 0)
+            {
+                return (1, 1, 1);
+            }
             var filteredByTime = hourlySpeeds
                 .Where(hs => hs.BinStartTime.TimeOfDay >= startTime && hs.BinStartTime.TimeOfDay <= endTime)
                 .ToList();
+            if (filteredByTime.Count == 0)
+            {
+                return (1, 1, 1);
+            }
 
             // Find the minimum and maximum dates in the filtered list
             var minDate = filteredByTime.Min(hs => hs.Date);
@@ -343,8 +341,11 @@ namespace SpeedManagementApi.Processors
         {
             var flow = hourlySpeeds.Sum(hs => hs.Flow ?? 1);
             var totalAverage = hourlySpeeds.Sum(hs => hs.Average);
-
-            return (flow * totalAverage) / flow;
+            try
+            {
+                return (flow * totalAverage) / flow;
+            }
+            catch { return 0; }
         }
 
     }
