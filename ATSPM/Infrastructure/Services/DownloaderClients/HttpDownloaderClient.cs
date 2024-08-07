@@ -14,6 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using ATSPM.Application.Exceptions;
 using ATSPM.Application.Services;
 using ATSPM.Data.Enums;
@@ -133,7 +134,7 @@ namespace ATSPM.Infrastructure.Services.DownloaderClients
             HttpResponseMessage response = new HttpResponseMessage();
 
             var sw = new Stopwatch();
-            
+
             try
             {
                 response = await _client.GetAsync(getPath, token);

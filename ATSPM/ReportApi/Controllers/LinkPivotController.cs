@@ -14,6 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using Asp.Versioning;
 using ATSPM.Application.Business.LinkPivot;
 using ATSPM.Application.Services;
@@ -32,7 +33,8 @@ namespace ATSPM.ReportApi.Controllers
     {
         private readonly LinkPivotReportService linkPivotReportService;
         /// <inheritdoc/>
-        public LinkPivotController(IReportService<LinkPivotOptions, LinkPivotResult> reportService, LinkPivotReportService linkPivotReportService, ILogger<LinkPivotController> logger) : base(reportService, logger) {
+        public LinkPivotController(IReportService<LinkPivotOptions, LinkPivotResult> reportService, LinkPivotReportService linkPivotReportService, ILogger<LinkPivotController> logger) : base(reportService, logger)
+        {
             this.linkPivotReportService = linkPivotReportService;
         }
 

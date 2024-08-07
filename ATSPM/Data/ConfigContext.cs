@@ -78,11 +78,6 @@ namespace ATSPM.Data
         public virtual DbSet<DirectionType> DirectionTypes { get; set; }
 
         /// <summary>
-        /// External links table
-        /// </summary>
-        public virtual DbSet<ExternalLink> ExternalLinks { get; set; }
-
-        /// <summary>
         /// Faqs table
         /// </summary>
         public virtual DbSet<Faq> Faqs { get; set; }
@@ -201,7 +196,6 @@ namespace ATSPM.Data
             modelBuilder.ApplyConfiguration(new DevicesConfiguration());
             modelBuilder.ApplyConfiguration(new DeviceConfigConfiguration());
             modelBuilder.ApplyConfiguration(new DirectionTypeConfiguration());
-            modelBuilder.ApplyConfiguration(new ExternalLinkConfiguration());
             modelBuilder.ApplyConfiguration(new FaqConfiguration());
             modelBuilder.ApplyConfiguration(new LocationConfiguration());
             modelBuilder.ApplyConfiguration(new LocationTypeConfiguration());

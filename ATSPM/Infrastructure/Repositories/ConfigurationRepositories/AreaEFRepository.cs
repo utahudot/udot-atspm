@@ -14,6 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using ATSPM.Application.Repositories.ConfigurationRepositories;
 using ATSPM.Data;
 using ATSPM.Data.Models;
@@ -25,6 +26,7 @@ namespace ATSPM.Infrastructure.Repositories.ConfigurationRepositories
     ///<inheritdoc cref="IAreaRepository"/>
     public class AreaEFRepository : ATSPMRepositoryEFBase<Area>, IAreaRepository
     {
+        /// <inheritdoc/>
         public AreaEFRepository(ConfigContext db, ILogger<AreaEFRepository> log) : base(db, log) { }
 
         #region Overrides

@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for IdentityTests - YourProject.Tests.Controllers/AccountControllerTests.cs
+// for IdentityTests - IdentityTests.Controllers/AccountControllerTests.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,6 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using ATSPM.Data;
 using Identity.Business.Agency;
 using Identity.Controllers;
@@ -26,7 +27,7 @@ using Moq;
 using System.Security.Claims;
 using Xunit;
 
-namespace YourProject.Tests.Controllers
+namespace IdentityTests.Controllers
 {
     public class AccountControllerTests
     {

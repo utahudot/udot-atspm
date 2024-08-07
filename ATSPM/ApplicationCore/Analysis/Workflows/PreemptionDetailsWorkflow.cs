@@ -14,6 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using ATSPM.Application.Analysis.Plans;
 using ATSPM.Application.Analysis.PreemptionDetails;
 using ATSPM.Application.Analysis.WorkflowFilters;
@@ -26,12 +27,12 @@ using ATSPM.Domain.Workflows;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
-using static System.Reflection.Metadata.BlobBuilder;
-using System.Text.Json;
 using static ATSPM.Application.Analysis.Workflows.PreemptiveStuff;
+using static System.Reflection.Metadata.BlobBuilder;
 
 namespace ATSPM.Application.Analysis.Workflows
 {

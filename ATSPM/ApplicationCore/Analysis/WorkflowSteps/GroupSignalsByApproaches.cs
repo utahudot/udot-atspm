@@ -14,6 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using ATSPM.Application.Specifications;
 using ATSPM.Data.Models;
 using ATSPM.Domain.Extensions;
@@ -42,7 +43,7 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
         {
             var Location = input.Item1;
             var logs = input.Item2;
-            
+
             var result = Location.Approaches.Select(s => Tuple.Create(s, logs.FromSpecification(new ControllerLogLocationFilterSpecification(Location))));
 
             return Task.FromResult(result);

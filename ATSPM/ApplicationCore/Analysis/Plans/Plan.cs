@@ -14,11 +14,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
-using ATSPM.Domain.Common;
+
 using ATSPM.Data.Enums;
-using System.Text.Json;
+using ATSPM.Domain.Common;
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
 
 namespace ATSPM.Application.Analysis.Plans
 {

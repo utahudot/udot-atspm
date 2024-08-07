@@ -14,21 +14,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using ATSPM.Domain.Common;
-using ATSPM.Domain.Extensions;
 using Parquet;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 
 namespace ATSPM.Infrastructure.Converters
 {
+    /// <summary>
+    /// Transcodes binary data to parquet format
+    /// </summary>
     public class ParquetFileTranscoder : IFileTranscoder
     {
+        /// <inheritdoc/>
         public string FileExtension => ".parquet";
 
+        /// <inheritdoc/>
         public T DecodeItem<T>(byte[] data) where T : new()
         {
             using (MemoryStream stream = new MemoryStream(data))
@@ -37,6 +40,7 @@ namespace ATSPM.Infrastructure.Converters
             }
         }
 
+        /// <inheritdoc/>
         public byte[] EncodeItem<T>(T item) where T : new()
         {
             List<T> items = new List<T>();

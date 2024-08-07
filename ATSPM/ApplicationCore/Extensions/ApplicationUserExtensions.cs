@@ -14,6 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using ATSPM.Data;
 using System.Collections.Generic;
 using System.Linq;
@@ -43,7 +44,7 @@ namespace ATSPM.Application.Extensions
         /// <returns></returns>
         public static IReadOnlyList<MailAddress> GetMailingAddresses(this IEnumerable<ApplicationUser> users)
         {
-            return users.Select(s => new MailAddress(s.Email, s.FullName)).ToList();    
+            return users.Select(s => new MailAddress(s.Email, s.FullName)).ToList();
         }
     }
 }

@@ -14,6 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using ATSPM.Application.Repositories.ConfigurationRepositories;
 using ATSPM.Data.Models;
 using Microsoft.EntityFrameworkCore;
@@ -268,10 +269,11 @@ namespace ATSPM.Application.Business.LinkPivot
 
         private Approach getDownstreamApproach(Location location, Location downstreamLocation, int primaryPhase, int downstreamPrimaryPhase, string direction)
         {
-            if(direction == "Upstream")
+            if (direction == "Upstream")
             {
                 return location.Approaches.FirstOrDefault(a => a.ProtectedPhaseNumber == primaryPhase);
-            } else
+            }
+            else
             {
                 return downstreamLocation.Approaches.FirstOrDefault(a => a.ProtectedPhaseNumber == downstreamPrimaryPhase);
             }
@@ -281,7 +283,7 @@ namespace ATSPM.Application.Business.LinkPivot
         {
             if (direction == "Upstream")
             {
-                return downstreamLocation.Approaches.FirstOrDefault(a => a.ProtectedPhaseNumber == downstreamPrimaryPhase); 
+                return downstreamLocation.Approaches.FirstOrDefault(a => a.ProtectedPhaseNumber == downstreamPrimaryPhase);
             }
             else
             {

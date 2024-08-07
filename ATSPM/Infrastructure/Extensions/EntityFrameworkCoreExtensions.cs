@@ -14,17 +14,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
-using ATSPM.Data.Models;
+
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace ATSPM.Infrastructure.Extensions
 {
+    /// <summary>
+    /// Extensions for entity framework
+    /// </summary>
     public static class EntityFrameworkCoreExtensions
     {
+        /// <summary>
+        /// Generates the key value name of an entity type from <paramref name="db"/>
+        /// </summary>
+        /// <param name="db"></param>
+        /// <param name="item"></param>
+        /// <returns></returns>
         public static string CreateKeyValueName(this DbContext db, object item)
         {
             return item.GetType().Name + "_" + string.Join("_", db.Model.FindEntityType(item.GetType()).FindPrimaryKey().Properties.Select(p => string.Format(p.FindAnnotation("KeyNameFormat") != null ? "{0:" + p.FindAnnotation("KeyNameFormat")?.Value.ToString() + "}" : "{0}", p.PropertyInfo.GetValue(item, null))));

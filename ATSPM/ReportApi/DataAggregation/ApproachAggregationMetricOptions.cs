@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for ReportApi - MOE.Common.Business.WCFServiceLibrary/ApproachAggregationMetricOptions.cs
+// for ReportApi - ATSPM.ReportApi.DataAggregation/ApproachAggregationMetricOptions.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,6 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using ATSPM.Application.Business.Aggregation;
 using ATSPM.Application.Business.Bins;
 using ATSPM.Application.Business.Common;
@@ -23,8 +24,7 @@ using ATSPM.Application.Repositories.ConfigurationRepositories;
 using ATSPM.Application.TempExtensions;
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
-using Microsoft.OpenApi.Extensions;
-using MOE.Common.Business.WCFServiceLibrary;
+using ATSPM.Domain.Extensions;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 

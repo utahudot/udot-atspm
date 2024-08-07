@@ -14,6 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using ATSPM.Application.Configuration;
 using ATSPM.Infrastructure.Services.HostedServices;
 using Microsoft.Extensions.DependencyInjection;

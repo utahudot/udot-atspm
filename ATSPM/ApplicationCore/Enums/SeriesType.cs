@@ -14,6 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 namespace ATSPM.Application.Enums
 {
     /// <summary>
@@ -30,17 +31,17 @@ namespace ATSPM.Application.Enums
         /// Phase number
         /// </summary>
         PhaseNumber,
-        
+
         /// <summary>
         /// Direction
         /// </summary>
         Direction,
-        
+
         /// <summary>
         /// Route
         /// </summary>
         Route,
-        
+
         /// <summary>
         /// Detector
         /// </summary>

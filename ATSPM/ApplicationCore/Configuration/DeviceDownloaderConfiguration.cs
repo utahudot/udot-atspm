@@ -14,6 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using ATSPM.Application.Services;
 using ATSPM.Data.Models;
 
@@ -28,12 +29,12 @@ namespace ATSPM.Application.Configuration
         /// Local path to store downloaded event logs
         /// </summary>
         public string LocalPath { get; set; }
-        
+
         /// <summary>
         /// Flag for deleting remote file after downloading
         /// </summary>
         public bool DeleteFile { get; set; }
-        
+
         /// <summary>
         /// Flag to ping <see cref="Device"/> to verify <see cref="Device.Ipaddress"/>
         /// </summary>

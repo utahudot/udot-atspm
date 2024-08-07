@@ -14,6 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using ATSPM.Application.Specifications;
 using ATSPM.Data.Models;
 using ATSPM.Domain.Extensions;
@@ -40,9 +41,9 @@ namespace ATSPM.Application.Analysis.WorkflowFilters
         {
             workflowProcess = new BroadcastBlock<Tuple<Location, IEnumerable<ControllerEventLog>>>(f =>
             {
-               return Tuple.Create(f.Item1, f.Item2
-                    .FromSpecification(new ControllerLogLocationFilterSpecification(f.Item1))
-                    .Where(w => filteredList.Contains(w.EventCode)));
+                return Tuple.Create(f.Item1, f.Item2
+                     .FromSpecification(new ControllerLogLocationFilterSpecification(f.Item1))
+                     .Where(w => filteredList.Contains(w.EventCode)));
             }, options);
             workflowProcess.Completion.ContinueWith(t => Console.WriteLine($"!!!Task {options.NameFormat} is complete!!!"));
         }

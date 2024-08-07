@@ -14,8 +14,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
-using ATSPM.Data.Models;
+
 using ATSPM.Application.Business.Common;
+using ATSPM.Data.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;

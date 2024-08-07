@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for Infrastructure - ATSPM.Infrastructure.Services.ControllerDecoders/ASCSignalControllerDecoder.cs
+// for Infrastructure - ATSPM.Infrastructure.Services.EventLogDecoders/AscToIndianaDecoder.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,10 +14,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using ATSPM.Application.Exceptions;
 using ATSPM.Data.Models;
 using ATSPM.Data.Models.EventLogModels;
-using ATSPM.Infrastructure.Services.EventLogDecoders;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -25,7 +25,7 @@ using System.IO.Compression;
 using System.Text;
 using System.Threading;
 
-namespace ATSPM.Infrastructure.Services.ControllerDecoders
+namespace ATSPM.Infrastructure.Services.EventLogDecoders
 {
     /// <inheritdoc/>
     public class AscToIndianaDecoder : EventLogDecoderBase<IndianaEvent>

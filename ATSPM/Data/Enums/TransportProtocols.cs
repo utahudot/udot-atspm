@@ -14,6 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 namespace ATSPM.Data.Enums
 {
     /// <summary>
@@ -25,22 +26,22 @@ namespace ATSPM.Data.Enums
         /// Unknown protocol
         /// </summary>
         Unknown,
-        
+
         /// <summary>
         /// Supports FTP protocol
         /// </summary>
         Ftp,
-        
+
         /// <summary>
         /// Supports SFTP Protocol
         /// </summary>
         Sftp,
-        
+
         /// <summary>
         /// Supports SNMP Protocol
         /// </summary>
         Snmp,
-        
+
         /// <summary>
         /// Supports HTTP Protocol
         /// </summary>

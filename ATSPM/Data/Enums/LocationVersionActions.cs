@@ -14,6 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,12 +32,12 @@ namespace ATSPM.Data.Enums
         /// Version is unknown
         /// </summary>
         Unknown = 0,
-       
+
         /// <summary>
         /// Version is new
         /// </summary>
         New = 1,
-        
+
         /// <summary>
         /// Version is in edit mode
         /// </summary>
@@ -46,7 +47,7 @@ namespace ATSPM.Data.Enums
         /// Version has been deleted
         /// </summary>
         Delete = 3,
-        
+
         /// <summary>
         /// New version has been copied
         /// </summary>
