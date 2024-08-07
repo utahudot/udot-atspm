@@ -15,21 +15,14 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Application;
-using ATSPM.Application.Configuration;
-using ATSPM.Application.Repositories.ConfigurationRepositories;
-using ATSPM.Application.Services;
-using ATSPM.Data.Models;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Utah.Udot.Atspm.Data.Models;
 
 namespace ATSPM.LocationControllerLogger
 {

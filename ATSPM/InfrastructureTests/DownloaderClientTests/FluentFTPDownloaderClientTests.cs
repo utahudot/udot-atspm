@@ -15,13 +15,10 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Infrastructure.Services.DownloaderClients;
 using FluentFTP;
 using Moq;
 using System;
-using System.Net;
 using Xunit.Abstractions;
-using IPAddress = System.Net.IPAddress;
 
 namespace InfrastructureTests.DownloaderClientTests
 {

@@ -15,13 +15,9 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Domain.Common;
 using Parquet;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 
-namespace ATSPM.Infrastructure.Converters
+namespace Utah.Udot.Atspm.Infrastructure.Converters
 {
     /// <summary>
     /// Transcodes binary data to parquet format

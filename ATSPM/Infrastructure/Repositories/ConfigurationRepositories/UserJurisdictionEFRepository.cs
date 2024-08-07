@@ -15,12 +15,10 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Application.Repositories.ConfigurationRepositories;
-using ATSPM.Data;
-using ATSPM.Data.Models.ConfigurationModels;
 using Microsoft.Extensions.Logging;
+using Utah.Udot.Atspm.Data;
 
-namespace ATSPM.Infrastructure.Repositories.ConfigurationRepositories
+namespace Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories
 {
     ///<inheritdoc cref="IUserJurisdictionRepository"/>
     public class UserJurisdictionEFRepository : ATSPMRepositoryEFBase<UserJurisdiction>, IUserJurisdictionRepository

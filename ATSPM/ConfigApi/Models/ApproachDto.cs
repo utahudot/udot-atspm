@@ -15,9 +15,9 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Data.Enums;
+using Utah.Udot.Atspm.Data.Enums;
 
-namespace ATSPM.ConfigApi.Models
+namespace Utah.Udot.Atspm.ConfigApi.Models
 {
     public class ApproachDto
     {

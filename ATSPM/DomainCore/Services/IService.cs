@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for DomainCore - ATSPM.Domain.Services/IService.cs
+// for DomainCore - Utah.Udot.NetStandardToolkit.Services/IService.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,12 +15,12 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Domain.Common;
+using Utah.Udot.NetStandardToolkit.Common;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 
-namespace ATSPM.Domain.Services
+namespace Utah.Udot.NetStandardToolkit.Services
 {
     /// <summary>
     /// <c>Service Definition</c> For services implementing:

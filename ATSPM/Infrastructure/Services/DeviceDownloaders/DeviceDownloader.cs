@@ -15,27 +15,14 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Application.Common;
-using ATSPM.Application.Configuration;
-using ATSPM.Application.Exceptions;
-using ATSPM.Application.LogMessages;
-using ATSPM.Application.Services;
-using ATSPM.Data.Enums;
-using ATSPM.Data.Models;
-using ATSPM.Domain.BaseClasses;
-using ATSPM.Domain.Exceptions;
-using ATSPM.Domain.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Net;
 using System.Runtime.CompilerServices;
-using System.Threading;
+using Utah.Udot.Atspm.Common;
+using Utah.Udot.Atspm.Data.Enums;
 
-namespace ATSPM.Infrastructure.Services.DeviceDownloaders
+namespace Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders
 {
     ///<inheritdoc cref="IDeviceDownloader"/>
     public class DeviceDownloader : ExecutableServiceWithProgressAsyncBase<Device, Tuple<Device, FileInfo>, ControllerDownloadProgress>, IDeviceDownloader

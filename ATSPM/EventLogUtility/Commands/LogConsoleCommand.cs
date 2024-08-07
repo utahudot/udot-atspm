@@ -15,24 +15,10 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Application.Configuration;
-using ATSPM.Infrastructure.Services.HostedServices;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
-using System;
-using System.Collections.Generic;
 using System.CommandLine;
-using System.CommandLine.Binding;
-using System.CommandLine.Builder;
 using System.CommandLine.Hosting;
-using System.CommandLine.Invocation;
 using System.CommandLine.NamingConventionBinder;
-using System.CommandLine.Parsing;
-using System.Linq;
-using System.Reflection.Metadata;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ATSPM.EventLogUtility.Commands
 {

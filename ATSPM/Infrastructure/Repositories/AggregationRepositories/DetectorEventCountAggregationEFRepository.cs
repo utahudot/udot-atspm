@@ -15,11 +15,10 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Application.Repositories.AggregationRepositories;
-using ATSPM.Data;
-using ATSPM.Data.Models.AggregationModels;
 using Microsoft.Extensions.Logging;
-namespace ATSPM.Infrastructure.Repositories.AggregationRepositories
+using Utah.Udot.Atspm.Data;
+
+namespace Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories
 {
     ///<inheritdoc cref="IDetectorEventCountAggregationRepository"/>
     public class DetectorEventCountAggregationEFRepository : AggregationEFRepositoryBase<DetectorEventCountAggregation>, IDetectorEventCountAggregationRepository

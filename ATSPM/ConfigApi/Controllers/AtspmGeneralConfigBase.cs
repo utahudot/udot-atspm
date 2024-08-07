@@ -15,13 +15,13 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Data.Models.ConfigurationModels;
-using ATSPM.Domain.Services;
+using Utah.Udot.NetStandardToolkit.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Deltas;
+using Utah.Udot.Atspm.Data.Models;
 
-namespace ATSPM.ConfigApi.Controllers
+namespace Utah.Udot.Atspm.ConfigApi.Controllers
 {
     /// <inheritdoc/>
     public class AtspmGeneralConfigBase<T, TKey> : AtspmConfigControllerBase<T, TKey> where T : AtspmConfigModelBase<TKey>

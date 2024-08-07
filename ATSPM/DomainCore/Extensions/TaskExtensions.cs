@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for DomainCore - ATSPM.Domain.Extensions/TaskExtensions.cs
+// for DomainCore - Utah.Udot.NetStandardToolkit.Extensions/TaskExtensions.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace ATSPM.Domain.Extensions
+namespace Utah.Udot.NetStandardToolkit.Extensions
 {
     public static class TaskExtensions
     {

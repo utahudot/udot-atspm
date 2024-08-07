@@ -15,7 +15,6 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Data;
 using Identity.Business.Agency;
 using Identity.Controllers;
 using Identity.Models.Account;
@@ -25,6 +24,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Moq;
 using System.Security.Claims;
+using Utah.Udot.Atspm.Data;
 using Xunit;
 
 namespace IdentityTests.Controllers

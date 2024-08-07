@@ -17,10 +17,10 @@
 
 using Asp.Versioning;
 using Asp.Versioning.OData;
-using ATSPM.Data.Models;
+using Utah.Udot.Atspm.Data.Models;
 using Microsoft.OData.ModelBuilder;
 
-namespace ATSPM.ConfigApi.Configuration
+namespace Utah.Udot.Atspm.ConfigApi.Configuration
 {
     /// <summary>
     /// Direction type oData configuration

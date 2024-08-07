@@ -15,18 +15,12 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Domain.Services;
-using ATSPM.Domain.Specifications;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Threading.Tasks;
 
-namespace ATSPM.Infrastructure.Repositories
+namespace Utah.Udot.Atspm.Infrastructure.Repositories
 {
     /// <summary>
     /// Base repository for working with entity framework contexts

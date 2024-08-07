@@ -15,13 +15,8 @@
 // limitations under the License.
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace ATSPM.Infrastructure.MySqlDatabaseProvider
+namespace Utah.Udot.Atspm.MySqlDatabaseProvider
 {
     public class MySqlProvider
     {

@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for Data - ATSPM.Data.Utility/CompressionTypeConverter.cs
+// for Data - Utah.Udot.Atspm.Data.Utility/CompressionTypeConverter.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace ATSPM.Data.Utility
+namespace Utah.Udot.Atspm.Data.Utility
 {
     /// <summary>
     /// <see cref="ValueConverter"/> used to convert a database string to an assembly type

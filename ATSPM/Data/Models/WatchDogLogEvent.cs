@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for Data - ATSPM.Data.Models/WatchDogLogEvent.cs
+// for Data - Utah.Udot.Atspm.Data.Models/WatchDogLogEvent.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,9 +15,9 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Data.Enums;
+using Utah.Udot.Atspm.Data.Enums;
 
-namespace ATSPM.Data.Models
+namespace Utah.Udot.Atspm.Data.Models
 {
     public class WatchDogLogEvent
     {

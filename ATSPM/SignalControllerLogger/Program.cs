@@ -15,17 +15,12 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Application.Configuration;
-using ATSPM.Domain.Extensions;
-using ATSPM.Domain.Services;
-using ATSPM.Infrastructure.Extensions;
 using Google.Cloud.Diagnostics.Common;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Configuration;
 using System;
-using System.Net.Mail;
 using System.Reflection;
 using System.Threading.Tasks;
 
@@ -139,7 +134,7 @@ namespace ATSPM.LocationControllerLogger
                     //},
                 })
                 .ConfigureAppConfiguration((h, c) => c.AddCommandLine(args))
-               
+
                 //.UseConsoleLifetime()
                 .Build();
 

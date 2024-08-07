@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for DomainCore - ATSPM.Domain.Common/GenericLogger.cs
+// for DomainCore - Utah.Udot.NetStandardToolkit.Common/GenericLogger.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace ATSPM.Domain.Common
+namespace Utah.Udot.NetStandardToolkit.Common
 {
     // TODO: remove events since they can't be accessed. Instead add an action callback
 

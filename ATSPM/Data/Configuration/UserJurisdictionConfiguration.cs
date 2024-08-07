@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for Data - ATSPM.Data.Configuration/UserJurisdictionConfiguration.cs
+// for Data - Utah.Udot.Atspm.Data.Configuration/UserJurisdictionConfiguration.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,16 +15,10 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Data.Models.ConfigurationModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace ATSPM.Data.Configuration
+namespace Utah.Udot.Atspm.Data.Configuration
 {
     public class UserJurisdictionConfiguration : IEntityTypeConfiguration<UserJurisdiction>
     {

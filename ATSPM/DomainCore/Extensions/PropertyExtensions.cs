@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for DomainCore - ATSPM.Domain.Extensions/PropertyExtensions.cs
+// for DomainCore - Utah.Udot.NetStandardToolkit.Extensions/PropertyExtensions.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ATSPM.Domain.Extensions
+namespace Utah.Udot.NetStandardToolkit.Extensions
 {
     /// <summary>
     /// Extensions for working with class properties using <see cref="System.Reflection"/>

@@ -16,9 +16,6 @@
 #endregion
 
 using Asp.Versioning;
-using ATSPM.Application.Business.LinkPivot;
-using ATSPM.Application.Services;
-using ATSPM.ReportApi.ReportServices;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ATSPM.ReportApi.Controllers

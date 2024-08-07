@@ -15,7 +15,8 @@
 // limitations under the License.
 #endregion
 
-namespace ATSPM.Infrastructure.SqlDatabaseProvider
+
+namespace Utah.Udot.Atspm.SqlDatabaseProvider
 {
     public class SqlServerProvider
     {

@@ -15,11 +15,11 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Application.Extensions;
-using ATSPM.Application.Repositories;
-using ATSPM.Data;
-using ATSPM.Data.Enums;
-using ATSPM.Data.Models;
+using Utah.Udot.Atspm.Extensions;
+using Utah.Udot.Atspm.Repositories;
+using Utah.Udot.Atspm.Data;
+using Utah.Udot.Atspm.Data.Enums;
+using Utah.Udot.Atspm.Data.Models;
 using AutoFixture;
 using InfrastructureTests.Fixtures;
 using Microsoft.EntityFrameworkCore;

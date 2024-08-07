@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for DomainCore - ATSPM.Domain.Extensions/FileSignatureExtensions.cs
+// for DomainCore - Utah.Udot.NetStandardToolkit.Extensions/FileSignatureExtensions.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace ATSPM.Domain.Extensions
+namespace Utah.Udot.NetStandardToolkit.Extensions
 {
     /// <summary>
     /// Filesignature structure

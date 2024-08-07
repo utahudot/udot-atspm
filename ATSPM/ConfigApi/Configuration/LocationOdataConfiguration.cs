@@ -17,12 +17,12 @@
 
 using Asp.Versioning;
 using Asp.Versioning.OData;
-using ATSPM.ConfigApi.Models;
-using ATSPM.Data.Models;
+using Utah.Udot.Atspm.Data.Models;
 using Microsoft.OData.ModelBuilder;
 using System.Net;
+using Utah.Udot.Atspm.ConfigApi.Models;
 
-namespace ATSPM.ConfigApi.Configuration
+namespace Utah.Udot.Atspm.ConfigApi.Configuration
 {
     /// <summary>
     /// Location oData configuration
