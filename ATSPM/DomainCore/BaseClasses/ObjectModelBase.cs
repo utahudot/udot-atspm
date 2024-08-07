@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for DomainCore - ATSPM.Domain.BaseClasses/ObjectModelBase.cs
+// for DomainCore - Utah.Udot.NetStandardToolkit.BaseClasses/ObjectModelBase.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json.Serialization;
 
-namespace ATSPM.Domain.BaseClasses
+namespace Utah.Udot.NetStandardToolkit.BaseClasses
 {
     /// <summary>
     /// <c>ObjectModelBase</c> for data object models implementing:

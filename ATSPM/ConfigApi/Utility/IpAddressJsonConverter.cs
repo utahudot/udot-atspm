@@ -21,7 +21,7 @@ using System.Text.Json.Serialization;
 
 #nullable disable
 
-namespace ATSPM.ConfigApi.Utility
+namespace Utah.Udot.Atspm.ConfigApi.Utility
 {
     /// <summary>
     /// Json converter for <see cref="IPAddress"/>

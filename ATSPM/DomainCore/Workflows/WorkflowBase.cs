@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for DomainCore - ATSPM.Domain.Workflows/WorkflowBase.cs
+// for DomainCore - Utah.Udot.NetStandardToolkit.Workflows/WorkflowBase.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,8 +15,8 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Domain.BaseClasses;
-using ATSPM.Domain.Exceptions;
+using Utah.Udot.NetStandardToolkit.BaseClasses;
+using Utah.Udot.NetStandardToolkit.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,7 +25,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 
-namespace ATSPM.Domain.Workflows
+namespace Utah.Udot.NetStandardToolkit.Workflows
 {
     /// <summary>
     /// Used as a base to create complex, inter-linkable, parallel workflows

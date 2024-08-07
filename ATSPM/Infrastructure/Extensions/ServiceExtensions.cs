@@ -15,25 +15,6 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Application.Configuration;
-using ATSPM.Application.Repositories;
-using ATSPM.Application.Repositories.AggregationRepositories;
-using ATSPM.Application.Repositories.ConfigurationRepositories;
-using ATSPM.Application.Repositories.EventLogRepositories;
-using ATSPM.Application.Services;
-using ATSPM.Data;
-using ATSPM.Domain.Configuration;
-using ATSPM.Domain.Extensions;
-using ATSPM.Domain.Services;
-using ATSPM.Infrastructure.MySqlDatabaseProvider;
-using ATSPM.Infrastructure.OracleDatabaseProvider;
-using ATSPM.Infrastructure.PostgreSQLDatabaseProvider;
-using ATSPM.Infrastructure.Repositories;
-using ATSPM.Infrastructure.Repositories.AggregationRepositories;
-using ATSPM.Infrastructure.Repositories.ConfigurationRepositories;
-using ATSPM.Infrastructure.Repositories.EventLogRepositories;
-using ATSPM.Infrastructure.SqlDatabaseProvider;
-using ATSPM.Infrastructure.SqlLiteDatabaseProvider;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
@@ -45,13 +26,21 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Linq;
 using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
+using Utah.Udot.Atspm.Data;
+using Utah.Udot.Atspm.Infrastructure.Repositories;
+using Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories;
+using Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories;
+using Utah.Udot.Atspm.Infrastructure.Repositories.EventLogRepositories;
+using Utah.Udot.Atspm.MySqlDatabaseProvider;
+using Utah.Udot.Atspm.OracleDatabaseProvider;
+using Utah.Udot.Atspm.PostgreSQLDatabaseProvider;
+using Utah.Udot.Atspm.Repositories;
+using Utah.Udot.Atspm.SqlDatabaseProvider;
+using Utah.Udot.Atspm.SqlLiteDatabaseProvider;
 
-namespace ATSPM.Infrastructure.Extensions
+namespace Utah.Udot.Atspm.Infrastructure.Extensions
 {
     /// <summary>
     /// Specifies database provider and connection string
@@ -71,7 +60,7 @@ namespace ATSPM.Infrastructure.Extensions
         public string Provider { get; set; }
 
         /// <summary>
-        /// Database connection string for given <see cref="DatabaseOption.Provider"/>
+        /// Database connection string for given <see cref="Provider"/>
         /// </summary>
         public string ConnectionString { get; set; }
     }
@@ -237,88 +226,88 @@ namespace ATSPM.Infrastructure.Extensions
                 options.AddPolicy("CanViewUsers", policy =>
                     policy.RequireAssertion(context =>
                         context.User.HasClaim(c =>
-                            (c.Type == ClaimTypes.Role && c.Value == "User:View") ||
-                            (c.Type == ClaimTypes.Role && c.Value == "Admin"))));
+                            c.Type == ClaimTypes.Role && c.Value == "User:View" ||
+                            c.Type == ClaimTypes.Role && c.Value == "Admin")));
                 options.AddPolicy("CanEditUsers", policy =>
                     policy.RequireAssertion(context =>
                         context.User.HasClaim(c =>
-                            (c.Type == ClaimTypes.Role && c.Value == "User:Edit") ||
-                            (c.Type == ClaimTypes.Role && c.Value == "Admin"))));
+                            c.Type == ClaimTypes.Role && c.Value == "User:Edit" ||
+                            c.Type == ClaimTypes.Role && c.Value == "Admin")));
                 options.AddPolicy("CanDeleteUsers", policy =>
                     policy.RequireAssertion(context =>
                         context.User.HasClaim(c =>
-                            (c.Type == ClaimTypes.Role && c.Value == "User:Delete") ||
-                            (c.Type == ClaimTypes.Role && c.Value == "Admin"))));
+                            c.Type == ClaimTypes.Role && c.Value == "User:Delete" ||
+                            c.Type == ClaimTypes.Role && c.Value == "Admin")));
 
 
                 options.AddPolicy("CanViewRoles", policy =>
                    policy.RequireAssertion(context =>
                        context.User.HasClaim(c =>
-                           (c.Type == ClaimTypes.Role && c.Value == "Role:View") ||
-                           (c.Type == ClaimTypes.Role && c.Value == "Admin"))));
+                           c.Type == ClaimTypes.Role && c.Value == "Role:View" ||
+                           c.Type == ClaimTypes.Role && c.Value == "Admin")));
                 options.AddPolicy("CanEditRoles", policy =>
                    policy.RequireAssertion(context =>
                        context.User.HasClaim(c =>
-                           (c.Type == ClaimTypes.Role && c.Value == "Role:Edit") ||
-                           (c.Type == ClaimTypes.Role && c.Value == "Admin"))));
+                           c.Type == ClaimTypes.Role && c.Value == "Role:Edit" ||
+                           c.Type == ClaimTypes.Role && c.Value == "Admin")));
                 options.AddPolicy("CanDeleteRoles", policy =>
                    policy.RequireAssertion(context =>
                        context.User.HasClaim(c =>
-                           (c.Type == ClaimTypes.Role && c.Value == "Role:Delete") ||
-                           (c.Type == ClaimTypes.Role && c.Value == "Admin"))));
+                           c.Type == ClaimTypes.Role && c.Value == "Role:Delete" ||
+                           c.Type == ClaimTypes.Role && c.Value == "Admin")));
 
 
                 options.AddPolicy("CanViewLocationConfigurations", policy =>
                    policy.RequireAssertion(context =>
                        context.User.HasClaim(c =>
-                           (c.Type == ClaimTypes.Role && c.Value == "LocationConfiguration:View") ||
-                           (c.Type == ClaimTypes.Role && c.Value == "Admin"))));
+                           c.Type == ClaimTypes.Role && c.Value == "LocationConfiguration:View" ||
+                           c.Type == ClaimTypes.Role && c.Value == "Admin")));
                 options.AddPolicy("CanEditLocationConfigurations", policy =>
                    policy.RequireAssertion(context =>
                        context.User.HasClaim(c =>
-                           (c.Type == ClaimTypes.Role && c.Value == "LocationConfiguration:Edit") ||
-                           (c.Type == ClaimTypes.Role && c.Value == "Admin"))));
+                           c.Type == ClaimTypes.Role && c.Value == "LocationConfiguration:Edit" ||
+                           c.Type == ClaimTypes.Role && c.Value == "Admin")));
                 options.AddPolicy("CanDeleteLocationConfigurations", policy =>
                    policy.RequireAssertion(context =>
                        context.User.HasClaim(c =>
-                           (c.Type == ClaimTypes.Role && c.Value == "LocationConfiguration:Delete") ||
-                           (c.Type == ClaimTypes.Role && c.Value == "Admin"))));
+                           c.Type == ClaimTypes.Role && c.Value == "LocationConfiguration:Delete" ||
+                           c.Type == ClaimTypes.Role && c.Value == "Admin")));
 
 
                 options.AddPolicy("CanViewGeneralConfigurations", policy =>
                    policy.RequireAssertion(context =>
                        context.User.HasClaim(c =>
-                           (c.Type == ClaimTypes.Role && c.Value == "GeneralConfiguration:View") ||
-                           (c.Type == ClaimTypes.Role && c.Value == "Admin"))));
+                           c.Type == ClaimTypes.Role && c.Value == "GeneralConfiguration:View" ||
+                           c.Type == ClaimTypes.Role && c.Value == "Admin")));
                 options.AddPolicy("CanEditGeneralConfigurations", policy =>
                    policy.RequireAssertion(context =>
                        context.User.HasClaim(c =>
-                           (c.Type == ClaimTypes.Role && c.Value == "GeneralConfiguration:Edit") ||
-                           (c.Type == ClaimTypes.Role && c.Value == "Admin"))));
+                           c.Type == ClaimTypes.Role && c.Value == "GeneralConfiguration:Edit" ||
+                           c.Type == ClaimTypes.Role && c.Value == "Admin")));
                 options.AddPolicy("CanDeleteGeneralConfigurations", policy =>
                    policy.RequireAssertion(context =>
                        context.User.HasClaim(c =>
-                           (c.Type == ClaimTypes.Role && c.Value == "GeneralConfiguration:Delete") ||
-                           (c.Type == ClaimTypes.Role && c.Value == "Admin"))));
+                           c.Type == ClaimTypes.Role && c.Value == "GeneralConfiguration:Delete" ||
+                           c.Type == ClaimTypes.Role && c.Value == "Admin")));
 
 
                 options.AddPolicy("CanViewData", policy =>
                    policy.RequireAssertion(context =>
                        context.User.HasClaim(c =>
-                           (c.Type == ClaimTypes.Role && c.Value == "Data:View") ||
-                           (c.Type == ClaimTypes.Role && c.Value == "Admin"))));
+                           c.Type == ClaimTypes.Role && c.Value == "Data:View" ||
+                           c.Type == ClaimTypes.Role && c.Value == "Admin")));
                 options.AddPolicy("CanEditData", policy =>
                    policy.RequireAssertion(context =>
                        context.User.HasClaim(c =>
-                           (c.Type == ClaimTypes.Role && c.Value == "Data:Edit") ||
-                           (c.Type == ClaimTypes.Role && c.Value == "Admin"))));
+                           c.Type == ClaimTypes.Role && c.Value == "Data:Edit" ||
+                           c.Type == ClaimTypes.Role && c.Value == "Admin")));
 
 
                 options.AddPolicy("CanViewWatchDog", policy =>
                    policy.RequireAssertion(context =>
                        context.User.HasClaim(c =>
-                           (c.Type == ClaimTypes.Role && c.Value == "Watchdog:View") ||
-                           (c.Type == ClaimTypes.Role && c.Value == "Admin"))));
+                           c.Type == ClaimTypes.Role && c.Value == "Watchdog:View" ||
+                           c.Type == ClaimTypes.Role && c.Value == "Admin")));
             });
 
             return services;

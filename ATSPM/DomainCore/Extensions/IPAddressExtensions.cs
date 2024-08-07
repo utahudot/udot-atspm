@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for DomainCore - ATSPM.Domain.Extensions/IPAddressExtensions.cs
+// for DomainCore - Utah.Udot.NetStandardToolkit.Extensions/IPAddressExtensions.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@
 using System.Net;
 using System.Net.NetworkInformation;
 
-namespace ATSPM.Domain.Extensions
+namespace Utah.Udot.NetStandardToolkit.Extensions
 {
     /// <summary>
     /// <see cref="IPAddress"/> extension helpers

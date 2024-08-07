@@ -15,11 +15,11 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Application.Common.EqualityComparers;
-using ATSPM.Application.Configuration;
-using ATSPM.Application.Repositories;
-using ATSPM.Application.Services.LocationControllerProtocols;
-using ATSPM.Data.Models;
+using Utah.Udot.Atspm.Common.EqualityComparers;
+using Utah.Udot.Atspm.Configuration;
+using Utah.Udot.Atspm.Repositories;
+using Utah.Udot.Atspm.Services.LocationControllerProtocols;
+using Utah.Udot.Atspm.Data.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;

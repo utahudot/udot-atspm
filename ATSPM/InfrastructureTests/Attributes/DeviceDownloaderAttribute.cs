@@ -15,9 +15,6 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Application.Configuration;
-using ATSPM.Application.Services;
-using ATSPM.Data.Enums;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Moq;
@@ -25,6 +22,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Utah.Udot.Atspm.Data.Enums;
 using Xunit.Sdk;
 
 namespace InfrastructureTests.Attributes

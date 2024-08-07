@@ -15,9 +15,6 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Application.Business.Aggregation;
-using ATSPM.Application.Repositories.AggregationRepositories;
-using ATSPM.Data.Models;
 
 namespace ATSPM.ReportApi.DataAggregation
 {

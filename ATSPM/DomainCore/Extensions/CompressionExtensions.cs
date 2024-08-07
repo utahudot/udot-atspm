@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for DomainCore - ATSPM.Domain.Extensions/CompressionExtensions.cs
+// for DomainCore - Utah.Udot.NetStandardToolkit.Extensions/CompressionExtensions.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ using System.Linq;
 using System.Text;
 using static System.Net.Mime.MediaTypeNames;
 
-namespace ATSPM.Domain.Extensions
+namespace Utah.Udot.NetStandardToolkit.Extensions
 {
     /// <summary>
     /// Data compression extension helpers

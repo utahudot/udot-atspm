@@ -15,18 +15,12 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Application.Repositories.ConfigurationRepositories;
-using ATSPM.Application.Specifications;
-using ATSPM.Data;
-using ATSPM.Data.Enums;
-using ATSPM.Data.Models;
-using ATSPM.Domain.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
-using System.Linq;
+using Utah.Udot.Atspm.Data;
+using Utah.Udot.Atspm.Data.Enums;
 
-namespace ATSPM.Infrastructure.Repositories.ConfigurationRepositories
+namespace Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories
 {
     ///<inheritdoc cref="IDeviceRepository"/>
     public class DeviceEFRepository : ATSPMRepositoryEFBase<Device>, IDeviceRepository

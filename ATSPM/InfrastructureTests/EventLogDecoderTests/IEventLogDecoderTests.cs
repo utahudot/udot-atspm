@@ -15,13 +15,12 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Data.Models.EventLogModels;
-using ATSPM.Domain.Extensions;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Utah.Udot.Atspm.Data.Models.EventLogModels;
 using Xunit;
 using Xunit.Abstractions;
 

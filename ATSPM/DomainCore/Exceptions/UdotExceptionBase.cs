@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for DomainCore - ATSPM.Domain.Exceptions/UdotExceptionBase.cs
+// for DomainCore - Utah.Udot.NetStandardToolkit.Exceptions/UdotExceptionBase.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ using System;
 
 #nullable enable
 
-namespace ATSPM.Domain.Exceptions
+namespace Utah.Udot.NetStandardToolkit.Exceptions
 {
     /// <summary>
     /// Base class for all domain exceptions

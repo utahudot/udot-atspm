@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for DomainCore - ATSPM.Domain.BaseClasses/ObservableObjectBase.cs
+// for DomainCore - Utah.Udot.NetStandardToolkit.BaseClasses/ObservableObjectBase.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Domain.Common;
+using Utah.Udot.NetStandardToolkit.Common;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -23,7 +23,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Text;
 
-namespace ATSPM.Domain.BaseClasses
+namespace Utah.Udot.NetStandardToolkit.BaseClasses
 {
     /// <summary>
     /// <c>ObservableObjectBase</c> for observable objects implementing:
