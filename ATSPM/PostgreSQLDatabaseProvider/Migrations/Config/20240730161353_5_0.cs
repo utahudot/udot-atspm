@@ -1,6 +1,23 @@
-﻿using System;
+﻿#region license
+// Copyright 2024 Utah Departement of Transportation
+// for PostgreSQLDatabaseProvider - ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations/20240730161353_5_0.cs
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+// http://www.apache.org/licenses/LICENSE-2.
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+#endregion
+
 using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
+using System;
 
 #nullable disable
 
@@ -57,22 +74,6 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
                     table.PrimaryKey("PK_DirectionTypes", x => x.Id);
                 },
                 comment: "Direction Types");
-
-            migrationBuilder.CreateTable(
-                name: "ExternalLinks",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "character varying(64)", unicode: false, maxLength: 64, nullable: false),
-                    Url = table.Column<string>(type: "character varying(512)", unicode: false, maxLength: 512, nullable: false),
-                    DisplayOrder = table.Column<int>(type: "integer", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ExternalLinks", x => x.Id);
-                },
-                comment: "External Links");
 
             migrationBuilder.CreateTable(
                 name: "Faqs",
@@ -1031,9 +1032,6 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
 
             migrationBuilder.DropTable(
                 name: "Devices");
-
-            migrationBuilder.DropTable(
-                name: "ExternalLinks");
 
             migrationBuilder.DropTable(
                 name: "Faqs");

@@ -14,6 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -318,7 +319,7 @@ namespace ATSPM.Domain.Extensions
             { new FileSignature(new byte[] { 0xFF, 0xF3 }, 0, ".xxx", "", false)},
             { new FileSignature(new byte[] { 0x18, 0x95 }, 0, ".eos", "EOS Location Controller File", true)}
         };
-        
+
         //TODO: this has not been tested
         /// <summary>
         /// Gets the <see cref="FileSignature"/> from <see cref="FileInfo"/>

@@ -14,6 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
@@ -21,7 +22,7 @@ using System.Linq.Expressions;
 namespace ATSPM.Domain.Specifications
 {
     public interface ISpecification<T>
-    { 
+    {
         Expression<Func<T, bool>> Criteria { get; }
 
         List<Expression<Func<T, object>>> Includes { get; }

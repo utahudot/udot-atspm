@@ -14,6 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 #nullable disable
 
 
@@ -28,7 +29,7 @@ namespace ATSPM.Data.Models.EventLogModels
         /// Input count
         /// </summary>
         public ushort In { get; set; }
-        
+
         /// <summary>
         /// Output count
         /// </summary>

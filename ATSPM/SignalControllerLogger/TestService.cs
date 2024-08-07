@@ -126,8 +126,8 @@ namespace ATSPM.LocationControllerLogger
                     .Where(w => w.Ipaddress != "10.204.8.216" && w.Ipaddress != "10.233.8.191")
 
                     .OrderBy(o => o.Ipaddress);
-                    //.Skip(2)
-                    //.Take(1);
+                //.Skip(2)
+                //.Take(1);
 
                 //var devices = sftpDevices.Where(w => w.Ipaddress.IsValidIPAddress(true));
                 var devices = sftpDevices;

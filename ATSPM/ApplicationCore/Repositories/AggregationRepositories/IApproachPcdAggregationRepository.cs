@@ -14,6 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using ATSPM.Data.Models.AggregationModels;
 
 namespace ATSPM.Application.Repositories.AggregationRepositories
@@ -21,5 +22,5 @@ namespace ATSPM.Application.Repositories.AggregationRepositories
     /// <summary>
     /// Approach purdue coordination diagram aggregation repository
     /// </summary>
-    public interface IApproachPcdAggregationRepository : IAggregationRepository<ApproachPcdAggregation>{}
+    public interface IApproachPcdAggregationRepository : IAggregationRepository<ApproachPcdAggregation> { }
 }

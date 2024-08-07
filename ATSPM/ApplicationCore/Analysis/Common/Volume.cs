@@ -14,9 +14,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using ATSPM.Data.Enums;
 using ATSPM.Data.Interfaces;
 using ATSPM.Domain.Common;
+using ATSPM.Domain.Extensions;
 using Newtonsoft.Json;
 using System;
 using System.Collections;
@@ -25,7 +27,6 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using ATSPM.Domain.Extensions;
 
 namespace ATSPM.Application.Analysis.Common
 {

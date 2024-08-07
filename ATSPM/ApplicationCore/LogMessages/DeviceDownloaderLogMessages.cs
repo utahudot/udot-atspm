@@ -14,6 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using ATSPM.Application.Services;
 using ATSPM.Data.Models;
 using Google.Cloud.Diagnostics.Common;
@@ -74,7 +75,7 @@ namespace ATSPM.Application.LogMessages
         /// <param name="ex"></param>
         [LoggerMessage(EventId = 1002, EventName = "Host Connection Exception", Level = LogLevel.Warning, Message = "Exception connecting to {locationId} at {ip}")]
         public partial void ConnectingToHostException(string locationId, IPAddress ip, Exception ex = null);
-        
+
         /// <summary>
         /// Not connected to host exception
         /// </summary>
@@ -205,7 +206,7 @@ namespace ATSPM.Application.LogMessages
         /// <param name="ip"></param>
         /// <param name="ex"></param>
         [LoggerMessage(EventId = 1032, EventName = "Delete File Exception", Level = LogLevel.Warning, Message = "Exception deleting file {file} from {locationId} at {ip}")]
-        public partial void DeleteFileException (string file, string locationId, IPAddress ip, Exception ex = null);
+        public partial void DeleteFileException(string file, string locationId, IPAddress ip, Exception ex = null);
 
         #endregion
 

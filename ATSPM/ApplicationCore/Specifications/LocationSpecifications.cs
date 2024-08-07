@@ -14,6 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using ATSPM.Domain.Specifications;
@@ -26,7 +27,7 @@ namespace ATSPM.Application.Specifications
 {
     public class ActiveLocationSpecification : BaseSpecification<Location>
     {
-        public ActiveLocationSpecification() : base(s => s.VersionAction != LocationVersionActions.Delete) 
+        public ActiveLocationSpecification() : base(s => s.VersionAction != LocationVersionActions.Delete)
         {
             ApplyOrderByDescending(o => o.Start);
         }

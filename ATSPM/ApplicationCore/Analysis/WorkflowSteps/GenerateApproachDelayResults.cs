@@ -14,6 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using ATSPM.Application.Analysis.ApproachDelay;
 using ATSPM.Application.Analysis.Common;
 using ATSPM.Application.Analysis.Plans;
@@ -39,7 +40,7 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
         protected override Task<Tuple<Approach, ApproachDelayResult>> Process(Tuple<Approach, IEnumerable<Vehicle>> input, CancellationToken cancelToken = default)
         {
             var result = Tuple.Create(input.Item1, new ApproachDelayResult());
-            
+
             //var result = input.Item2.GroupBy(g => g.LocationIdentifier, (Location, x) =>
             //x.GroupBy(g => g.PhaseNumber, (phase, y) =>
             //y.GroupBy(g => g.DetectorChannel, (det, z) => new ApproachDelayResult()

@@ -14,6 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using ATSPM.Data.Relationships;
@@ -34,7 +35,7 @@ namespace ATSPM.Application.Extensions
         {
             var detChannel = item.Detectors.ToList()[0].DetectorChannel + 1;
 
-            foreach(var detector in item.Detectors)
+            foreach (var detector in item.Detectors)
             {
                 detector.DetectorChannel = detChannel;
                 if (item is IRelatedLocation s)
@@ -68,7 +69,7 @@ namespace ATSPM.Application.Extensions
         /// <param name="detector"><see cref="Detector"/> whos <see cref="DetectionType"/> collection to check</param>
         /// <param name="metricId"><see cref="MeasureType"/> id to match within <see cref="DetectionType"/> collection</param>
         /// <returns></returns>
-        public static bool CheckReportAvialbility (this Detector detector, int metricId)
+        public static bool CheckReportAvialbility(this Detector detector, int metricId)
         {
             return detector.DetectionTypes.SelectMany(s => s.MeasureTypes).Any(a => a.Id == metricId);
         }

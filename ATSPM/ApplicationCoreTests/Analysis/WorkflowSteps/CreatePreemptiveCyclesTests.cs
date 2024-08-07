@@ -14,6 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using ATSPM.Application.Analysis.Common;
 using ATSPM.Application.Analysis.Plans;
 using ATSPM.Application.Analysis.PreemptionDetails;
@@ -101,7 +102,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
                 new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:01:01.1"), EventCode = 102, EventParam = 1},
                 new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:04:01.1"), EventCode = 111, EventParam = 1},
                 new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:03:01.1"), EventCode = 104, EventParam = 1},
-                
+
             };
 
             var result = await sut.ExecuteAsync(testData);
