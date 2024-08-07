@@ -22,7 +22,7 @@ using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Text;
 
-namespace ATSPM.ConfigApi.Configuration
+namespace Utah.Udot.Atspm.ConfigApi.Configuration
 {
     /// <summary>
     /// Configures the Swagger generation options.

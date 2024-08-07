@@ -15,9 +15,9 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.ConfigApi.Models;
+using Utah.Udot.Atspm.ConfigApi.Models;
 
-namespace ATSPM.ConfigApi.Services
+namespace Utah.Udot.Atspm.ConfigApi.Services
 {
     public interface IRouteService
     {

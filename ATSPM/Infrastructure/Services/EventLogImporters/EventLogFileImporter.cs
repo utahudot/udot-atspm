@@ -15,26 +15,13 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Application.Common;
-using ATSPM.Application.Configuration;
-using ATSPM.Application.Exceptions;
-using ATSPM.Application.LogMessages;
-using ATSPM.Application.Services;
-using ATSPM.Data.Models;
-using ATSPM.Data.Models.EventLogModels;
-using ATSPM.Domain.BaseClasses;
-using ATSPM.Domain.Exceptions;
-using ATSPM.Domain.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Threading;
+using Utah.Udot.Atspm.Common;
+using Utah.Udot.Atspm.Data.Models.EventLogModels;
 
-namespace ATSPM.Infrastructure.Services.EventLogImporters
+namespace Utah.Udot.Atspm.Infrastructure.Services.EventLogImporters
 {
     ///<inheritdoc cref="IEventLogImporter"/>
     public class EventLogFileImporter : ExecutableServiceWithProgressAsyncBase<Tuple<Device, FileInfo>, Tuple<Device, EventLogModelBase>, ControllerDecodeProgress>, IEventLogImporter

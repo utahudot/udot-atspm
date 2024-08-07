@@ -15,16 +15,9 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Application.Services;
-using ATSPM.Data.Models;
-using ATSPM.Data.Models.EventLogModels;
-using ATSPM.Domain.Extensions;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading;
+using Utah.Udot.Atspm.Data.Models.EventLogModels;
 
-namespace ATSPM.Infrastructure.Services.EventLogDecoders
+namespace Utah.Udot.Atspm.Infrastructure.Services.EventLogDecoders
 {
     ///<inheritdoc cref="IEventLogDecoder{T}"/>
     public abstract class EventLogDecoderBase<T> : IEventLogDecoder<T> where T : EventLogModelBase

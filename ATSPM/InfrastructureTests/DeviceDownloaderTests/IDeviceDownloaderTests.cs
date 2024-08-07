@@ -15,23 +15,16 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Application.Configuration;
-using ATSPM.Application.Exceptions;
-using ATSPM.Application.Services;
-using ATSPM.Data.Enums;
-using ATSPM.Data.Models;
-using ATSPM.Domain.Exceptions;
-using ATSPM.Infrastructure.Services.DeviceDownloaders;
 using InfrastructureTests.Attributes;
-using MailKit.Net.Proxy;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Moq;
 using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using Utah.Udot.Atspm.Data.Enums;
+using Utah.Udot.Atspm.Data.Models;
 using Xunit;
 using Xunit.Abstractions;
 

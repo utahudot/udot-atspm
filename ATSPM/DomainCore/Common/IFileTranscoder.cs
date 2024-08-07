@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for DomainCore - ATSPM.Domain.Common/IFileTranscoder.cs
+// for DomainCore - Utah.Udot.NetStandardToolkit.Common/IFileTranscoder.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,12 +15,12 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Domain.Extensions;
+using Utah.Udot.NetStandardToolkit.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace ATSPM.Domain.Common
+namespace Utah.Udot.NetStandardToolkit.Common
 {
     /// <summary>
     /// Provides an abrstraction when working with different file types

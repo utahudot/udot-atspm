@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for Data - ATSPM.Data.Models.ConfigurationModels/AtspmConfigModelBase.cs
+// for Data - Utah.Udot.Atspm.Data.Models/AtspmConfigModelBase.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,15 +15,9 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Domain.BaseClasses;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Utah.Udot.NetStandardToolkit.BaseClasses;
 
-namespace ATSPM.Data.Models.ConfigurationModels
+namespace Utah.Udot.Atspm.Data.Models
 {
     /// <summary>
     /// Base class for configuration context models.

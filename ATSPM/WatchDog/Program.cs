@@ -15,21 +15,11 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Application.Business.Common;
-using ATSPM.Application.Repositories;
-using ATSPM.Application.Repositories.ConfigurationRepositories;
-using ATSPM.Application.Repositories.EventLogRepositories;
-using ATSPM.Data;
-using ATSPM.Infrastructure.Extensions;
-using ATSPM.Infrastructure.Repositories;
-using ATSPM.Infrastructure.Repositories.ConfigurationRepositories;
-using ATSPM.Infrastructure.Repositories.EventLogRepositories;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+using Utah.Udot.Atspm.Data;
 using WatchDog.Services;
 
 namespace WatchDog

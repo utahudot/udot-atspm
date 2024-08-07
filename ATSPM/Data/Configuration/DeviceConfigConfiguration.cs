@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for Data - ATSPM.Data.Configuration/DeviceConfigConfiguration.cs
+// for Data - Utah.Udot.Atspm.Data.Configuration/DeviceConfigConfiguration.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,17 +15,14 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Data.Enums;
-using ATSPM.Data.Models;
-using ATSPM.Data.Utility;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Newtonsoft.Json;
+using Utah.Udot.Atspm.Data.Enums;
 
 #nullable disable
 
-namespace ATSPM.Data.Configuration
+namespace Utah.Udot.Atspm.Data.Configuration
 {
     /// <summary>
     /// Device configuration configuration

@@ -16,10 +16,8 @@
 #endregion
 
 using Asp.Versioning;
-using ATSPM.Application.Business.SplitMonitor;
-using ATSPM.Application.Services;
-using ATSPM.Data.Models;
 using Microsoft.AspNetCore.Mvc;
+using Utah.Udot.Atspm.Data.Models;
 
 namespace ATSPM.ReportApi.Controllers
 {

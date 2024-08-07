@@ -15,10 +15,6 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Application.Business.Aggregation;
-using ATSPM.Application.Business.Bins;
-using ATSPM.Application.Repositories.AggregationRepositories;
-using ATSPM.Data.Models;
 using System.Collections.Concurrent;
 
 namespace ATSPM.ReportApi.DataAggregation

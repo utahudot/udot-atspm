@@ -15,20 +15,14 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Domain.BaseClasses;
-using ATSPM.Domain.Configuration;
-using ATSPM.Domain.Services;
 using MailKit.Security;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MimeKit;
 using MimeKit.Text;
-using System;
-using System.Linq;
 using System.Net.Mail;
-using System.Threading.Tasks;
 
-namespace ATSPM.Infrastructure.Services.EmailServices
+namespace Utah.Udot.Atspm.Infrastructure.Services.EmailServices
 {
     public class SmtpEmailService : ServiceObjectBase, IEmailService
     {
@@ -37,7 +31,7 @@ namespace ATSPM.Infrastructure.Services.EmailServices
 
         public SmtpEmailService(IOptionsSnapshot<EmailConfiguration> options, ILogger<SmtpEmailService> logger) : base(true)
         {
-            _options = options?.Get(this.GetType().Name) ?? options?.Value;
+            _options = options?.Get(GetType().Name) ?? options?.Value;
             _logger = logger;
         }
 

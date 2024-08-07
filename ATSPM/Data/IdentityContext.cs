@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for Data - ATSPM.Data/IdentityContext.cs
+// for Data - Utah.Udot.Atspm.Data/IdentityContext.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace ATSPM.Data
+namespace Utah.Udot.Atspm.Data
 {
     public class IdentityContext : IdentityDbContext<ApplicationUser>
     {

@@ -16,20 +16,19 @@
 #endregion
 
 using Asp.Versioning;
-using ATSPM.Application.Extensions;
-using ATSPM.Application.Repositories.ConfigurationRepositories;
-using ATSPM.Application.Specifications;
-using ATSPM.ConfigApi.Models;
-using ATSPM.ConfigApi.Services;
-using ATSPM.Data.Models;
-using ATSPM.Domain.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
+using Utah.Udot.Atspm.ConfigApi.Models;
+using Utah.Udot.Atspm.Data.Models;
+using Utah.Udot.Atspm.Extensions;
+using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
+using Utah.Udot.Atspm.Specifications;
+using Utah.Udot.NetStandardToolkit.Extensions;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 using static Microsoft.AspNetCore.OData.Query.AllowedQueryOptions;
 
-namespace ATSPM.ConfigApi.Controllers
+namespace Utah.Udot.Atspm.ConfigApi.Controllers
 {
     /// <summary>
     /// Location Controller
@@ -39,13 +38,11 @@ namespace ATSPM.ConfigApi.Controllers
     public class LocationController : AtspmConfigControllerBase<Location, int>
     {
         private readonly ILocationRepository _repository;
-        private readonly ILocationService locationService;
 
         /// <inheritdoc/>
-        public LocationController(ILocationRepository repository, ILocationService locationService) : base(repository)
+        public LocationController(ILocationRepository repository) : base(repository)
         {
             _repository = repository;
-            this.locationService = locationService;
         }
 
         #region NavigationProperties
@@ -113,7 +110,7 @@ namespace ATSPM.ConfigApi.Controllers
         {
             try
             {
-                return Ok(await locationService.CopyLocationToNewVersion(key));
+                return Ok(await _repository.CopyLocationToNewVersion(key));
             }
             catch (ArgumentException e)
             {
@@ -130,7 +127,7 @@ namespace ATSPM.ConfigApi.Controllers
         [Authorize(Policy = "CanDeleteLocationConfigurations")]
         [HttpPost]
         [ProducesResponseType(Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(Status404NotFound)]
         public async Task<IActionResult> SetLocationToDeleted(int key)
         {
             try

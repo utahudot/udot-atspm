@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for Data - ATSPM.Data.Models.EventLogModels/EventLogModelBase.cs
+// for Data - Utah.Udot.Atspm.Data.Models.EventLogModels/EventLogModelBase.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,13 +15,13 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Data.Interfaces;
-using ATSPM.Domain.Common;
 using Newtonsoft.Json;
+using Utah.Udot.Atspm.Data.Interfaces;
+using Utah.Udot.NetStandardToolkit.Common;
 
 #nullable disable
 
-namespace ATSPM.Data.Models.EventLogModels
+namespace Utah.Udot.Atspm.Data.Models.EventLogModels
 {
     /// <summary>
     /// Event log model base for models used in logging Atspm device data

@@ -19,7 +19,7 @@ using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace ATSPM.ConfigApi.Utility
+namespace Utah.Udot.Atspm.ConfigApi.Utility
 {
 
     public class CustomDateTimeConverter : JsonConverter<DateTime>

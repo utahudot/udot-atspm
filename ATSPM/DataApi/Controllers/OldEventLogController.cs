@@ -16,15 +16,15 @@
 #endregion
 
 using Asp.Versioning;
-using ATSPM.Application.Extensions;
-using ATSPM.Application.Repositories;
-using ATSPM.Application.Repositories.EventLogRepositories;
-using ATSPM.Data.Models;
+using Utah.Udot.Atspm.Extensions;
+using Utah.Udot.Atspm.Repositories;
+using Utah.Udot.Atspm.Repositories.EventLogRepositories;
+using Utah.Udot.Atspm.Data.Models;
 using Google.Api;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
 
-namespace ATSPM.DataApi.Controllers
+namespace Utah.Udot.Atspm.DataApi.Controllers
 {
     /// <summary>
     /// Location controller event log data

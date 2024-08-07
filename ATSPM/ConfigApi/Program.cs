@@ -16,12 +16,6 @@
 #endregion
 
 using Asp.Versioning;
-using ATSPM.ConfigApi;
-using ATSPM.ConfigApi.Configuration;
-using ATSPM.ConfigApi.Services;
-using ATSPM.ConfigApi.Utility;
-using ATSPM.Domain.Extensions;
-using ATSPM.Infrastructure.Extensions;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
@@ -30,9 +24,16 @@ using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Utah.Udot.Atspm.ConfigApi;
+using Utah.Udot.Atspm.ConfigApi.Configuration;
+using Utah.Udot.Atspm.ConfigApi.Services;
+using Utah.Udot.Atspm.ConfigApi.Utility;
+using Utah.Udot.Atspm.Infrastructure.Extensions;
+using Utah.Udot.NetStandardToolkit.Extensions;
+
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 var builder = WebApplication.CreateBuilder(args);
-AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 builder.Host.ConfigureServices((h, s) =>
 {
     s.AddControllers(o =>
@@ -110,7 +111,6 @@ builder.Host.ConfigureServices((h, s) =>
 
     s.AddScoped<IRouteService, RouteService>();
     s.AddScoped<IApproachService, ApproachService>();
-    s.AddScoped<ILocationService, LocationService>();
 
     s.AddAtspmAuthentication(h, builder);
     s.AddAtspmAuthorization(h);

@@ -15,12 +15,10 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Application.Repositories;
-using ATSPM.Application.Repositories.ConfigurationRepositories;
-using ATSPM.Data;
-using ATSPM.Data.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
+using Utah.Udot.Atspm.Data;
+using Utah.Udot.Atspm.Data.Models;
 using WatchDog.Models;
 
 namespace WatchDog.Services

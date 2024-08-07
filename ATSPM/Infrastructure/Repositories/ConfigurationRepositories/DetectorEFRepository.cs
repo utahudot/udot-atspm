@@ -15,17 +15,14 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Application.Common.EqualityComparers;
-using ATSPM.Application.Repositories.ConfigurationRepositories;
-using ATSPM.Data;
-using ATSPM.Data.Enums;
-using ATSPM.Data.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.Extensions.Logging;
-using System.Linq;
+using Utah.Udot.Atspm.Common.EqualityComparers;
+using Utah.Udot.Atspm.Data;
+using Utah.Udot.Atspm.Data.Enums;
 
-namespace ATSPM.Infrastructure.Repositories.ConfigurationRepositories
+namespace Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories
 {
     ///<inheritdoc cref="IDetectorRepository"/>
     public class DetectorEFRepository : ATSPMRepositoryEFBase<Detector>, IDetectorRepository

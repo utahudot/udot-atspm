@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for Data - ATSPM.Data.Models/OldSpeedEvent.cs
+// for Data - Utah.Udot.Atspm.Data.Models/OldSpeedEvent.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace ATSPM.Data.Models
+namespace Utah.Udot.Atspm.Data.Models
 {
     public partial class OldSpeedEvent
     {

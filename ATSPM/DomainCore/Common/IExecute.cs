@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for DomainCore - ATSPM.Domain.Common/IExecute.cs
+// for DomainCore - Utah.Udot.NetStandardToolkit.Common/IExecute.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace ATSPM.Domain.Common
+namespace Utah.Udot.NetStandardToolkit.Common
 {
     /// <summary>
     /// Defines an async command or process which can conditionally be executed.

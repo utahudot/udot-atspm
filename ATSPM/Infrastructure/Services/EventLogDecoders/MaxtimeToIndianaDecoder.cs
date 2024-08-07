@@ -15,17 +15,10 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Application.Exceptions;
-using ATSPM.Data.Models;
-using ATSPM.Data.Models.EventLogModels;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading;
 using System.Xml.Linq;
+using Utah.Udot.Atspm.Data.Models.EventLogModels;
 
-namespace ATSPM.Infrastructure.Services.EventLogDecoders
+namespace Utah.Udot.Atspm.Infrastructure.Services.EventLogDecoders
 {
     /// <inheritdoc/>
     public class MaxtimeToIndianaDecoder : EventLogDecoderBase<IndianaEvent>
