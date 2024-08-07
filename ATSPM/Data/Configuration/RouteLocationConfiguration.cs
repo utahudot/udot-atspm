@@ -12,7 +12,7 @@ namespace ATSPM.Data.Configuration
         /// <inheritdoc/>
         public void Configure(EntityTypeBuilder<RouteLocation> builder)
         {
-            builder.HasComment("Route Locations");
+            builder.ToTable(t => t.HasComment("Route Locations"));
 
             builder.HasIndex(e => e.RouteId);
 

@@ -61,7 +61,8 @@ namespace ATSPM.ReportApi.ReportServices
             foreach (var phase in phaseDetails)
             {
                 var eventCodes = new List<short> { };
-                eventCodes.AddRange(new List<short> { 81, 82, 89, 90 });
+                var globalEventCodes = parameter.GlobalEventCodesList?.Any() != true ? new List<short> { 81, 82, 89, 90 } : parameter.GlobalEventCodesList;
+                eventCodes.AddRange(globalEventCodes);
                 eventCodes.AddRange(timingAndActuationsForPhaseService.GetPedestrianIntervalEventCodes(phase.Approach.IsPedestrianPhaseOverlap));
                 if (parameter.PhaseEventCodesList != null)
                     eventCodes.AddRange(parameter.PhaseEventCodesList);
@@ -103,9 +104,19 @@ namespace ATSPM.ReportApi.ReportServices
         {
             DirectionTypes direction = phaseDetail.Approach.DirectionTypeId;
             string directionTypeName = direction.GetAttributeOfType<DisplayAttribute>().Name;
-            MovementTypes movementType = phaseDetail.Approach.Detectors.ToList()[0].MovementType;
-            string movementTypeName = movementType.GetAttributeOfType<DisplayAttribute>().Name;
-            string approachDescription = $"{directionTypeName} {movementTypeName} Ph{phaseDetail.PhaseNumber}";
+            var ignoreDetectionTypes = new List<DetectionTypes> { DetectionTypes.AC, DetectionTypes.AS, DetectionTypes.AP };
+            var filteredDetectors = phaseDetail.Approach.Detectors.Where(d => d.DetectionTypes.Any(t => !ignoreDetectionTypes.Contains(t.Id)));
+            string approachDescription = "";
+            if (filteredDetectors.Any())
+            {
+                MovementTypes movementType = filteredDetectors.ToList()[0].MovementType;
+                string movementTypeName = movementType.GetAttributeOfType<DisplayAttribute>().Name;
+                approachDescription = $"{directionTypeName} {movementTypeName} Ph{phaseDetail.PhaseNumber}";
+            }
+            else
+            {
+                approachDescription = $"{directionTypeName} Ph{phaseDetail.PhaseNumber}";
+            }
             return approachDescription;
         }
     }

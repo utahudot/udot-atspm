@@ -1,4 +1,5 @@
-﻿using Identity.Models.Profile;
+﻿using ATSPM.Data;
+using Identity.Models.Profile;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -32,8 +33,8 @@ namespace Identity.Controllers
             {
                 FirstName = user.FirstName,
                 LastName = user.LastName,
-                Email = user.Email,
-                PhoneNumber = user.PhoneNumber,
+                Email = user.Email ?? string.Empty,
+                PhoneNumber = user.PhoneNumber ?? string.Empty,
                 Agency = user.Agency,
                 Roles = string.Join(",", roles)
             };
@@ -60,7 +61,7 @@ namespace Identity.Controllers
             user.LastName = model.LastName;
             user.Email = model.Email;
             user.Agency = model.Agency;
-            if(model.PhoneNumber != null)
+            if (model.PhoneNumber != null)
             {
                 user.PhoneNumber = model.PhoneNumber;
             }

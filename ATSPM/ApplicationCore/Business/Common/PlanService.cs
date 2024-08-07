@@ -54,7 +54,7 @@ namespace ATSPM.Application.Business.Common
         {
             startDate = DateTime.SpecifyKind(startDate, DateTimeKind.Unspecified);
             endDate = DateTime.SpecifyKind(endDate, DateTimeKind.Unspecified);
-            if (tempPlanEvents.Any() && tempPlanEvents.First().Timestamp != startDate)
+            if (!tempPlanEvents.IsNullOrEmpty() && tempPlanEvents[0].Timestamp != startDate)
             {
                 SetFirstPlan(startDate, locationId, tempPlanEvents);
             }
@@ -67,12 +67,6 @@ namespace ATSPM.Application.Business.Common
             {
                 tempPlanEvents.Add(new IndianaEvent { LocationIdentifier = locationId, EventCode = 131, EventParam = 254, Timestamp = endDate });
             }
-
-            //var planEvents = tempPlanEvents
-            //    .Select((x, i) => new { Log = x, Index = i })
-            //    .Where(x => x.Index == 0 || x.Index + 1 == tempPlanEvents.Count || x.Log.EventParam != tempPlanEvents[x.Index + 1].EventParam)
-            //    .Select(x => x.Log)
-            //    .ToList();
 
             return tempPlanEvents;
         }
@@ -95,10 +89,10 @@ namespace ATSPM.Application.Business.Common
             }
         }
 
-        private void SetFirstPlan(DateTime startDate, string locationId, List<IndianaEvent> planEvents)
+        private static void SetFirstPlan(DateTime startDate, string locationId, List<IndianaEvent> planEvents)
         {
             // Check if first plan has exact startDate as value in planEvents
-            var firstPlanEvent = planEvents.Where(e => e.Timestamp == startDate).FirstOrDefault();
+            var firstPlanEvent = planEvents.Find(e => e.Timestamp == startDate);
             firstPlanEvent ??= planEvents.Where(e => e.Timestamp < startDate).OrderByDescending(e => e.Timestamp).FirstOrDefault();
 
             if (firstPlanEvent != null)
@@ -126,26 +120,6 @@ namespace ATSPM.Application.Business.Common
                 planEvents.Insert(0, firstPlanEvent);
             }
         }
-        //private void SetFirstPlan(DateTime startDate, string locationId, List<IndianaEvent> planEvents)
-        //{
-        //    var firstPlanEvent = controllerEventLogRepository.GetFirstEventBeforeDate(locationId, 131, startDate);
-        //    if (firstPlanEvent != null)
-        //    {
-        //        firstPlanEvent.TimeStamp = startDate;
-        //        planEvents.Add(firstPlanEvent);
-        //    }
-        //    else
-        //    {
-        //        firstPlanEvent = new ControllerEventLog
-        //        {
-        //            Timestamp = startDate,
-        //            EventCode = 131,
-        //            EventParam = 0,
-        //            LocationId = locationId
-        //        };
-        //        planEvents.Insert(0, firstPlanEvent);
-        //    }
-        //}
 
         public IReadOnlyList<Plan> GetBasicPlans(
             DateTime startDate,
@@ -239,7 +213,7 @@ namespace ATSPM.Application.Business.Common
                     List<int> speedEvents = null;
                     if (cycles
                         .SelectMany(c => c.SpeedEvents)
-                        .Where(c => c.Timestamp >= planEvents[i].Timestamp && c.Timestamp < endDate).Any())
+                        .Any(c => c.Timestamp >= planEvents[i].Timestamp && c.Timestamp < endDate))
                     {
                         speedEvents = cycles
                             .SelectMany(c => c.SpeedEvents)
@@ -318,7 +292,7 @@ namespace ATSPM.Application.Business.Common
             }
         }
 
-        private int? GetPercentile(IReadOnlyList<int> speeds, double percentile)
+        private static int? GetPercentile(IReadOnlyList<int> speeds, double percentile)
         {
             if (speeds.IsNullOrEmpty())
                 return null;
@@ -334,8 +308,8 @@ namespace ATSPM.Application.Business.Common
             else
             {
                 percentileIndex = Convert.ToInt32(tempPercentileIndex);
-                var speed1 = speeds[percentileIndex];
-                var speed2 = speeds[percentileIndex + 1];
+                var speed1 = (double)speeds[percentileIndex];
+                var speed2 = (double)speeds[percentileIndex + 1];
                 double rawPercentile = (speed1 + speed2) / 2;
                 percentileValue = Convert.ToInt32(Math.Round(rawPercentile));
 

@@ -12,7 +12,7 @@ namespace ATSPM.Data.Configuration
         /// <inheritdoc/>
         public void Configure(EntityTypeBuilder<MeasureOption> builder)
         {
-            builder.HasComment("Measure Options");
+            builder.ToTable(t => t.HasComment("Measure Options"));
 
             builder.Property(e => e.Option).HasMaxLength(128);
 

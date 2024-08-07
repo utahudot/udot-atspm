@@ -1,5 +1,5 @@
 ﻿using ATSPM.Data.Models;
-
+using ATSPM.Data.Models.AggregationModels;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
@@ -31,7 +31,7 @@ namespace ATSPM.DataApi.Formatters
 
             //    return context.HttpContext.Response.WriteAsync(string.Join("\n", csv), selectedEncoding);
             //}
-            
+
             if (context.Object is IEnumerable<ControllerEventLog> result)
             {
                 context.HttpContext.Request.Headers.TryGetValue("X-Timestamp-Format", out StringValues timestampFormat);
@@ -48,7 +48,7 @@ namespace ATSPM.DataApi.Formatters
 
         protected override bool CanWriteType(Type type)
         {
-            return typeof(IEnumerable<ControllerEventLog>).IsAssignableFrom(type); //|| typeof(IEnumerable<EventLogModelBase>).IsAssignableFrom(type);
+            return typeof(IEnumerable<ControllerEventLog>).IsAssignableFrom(type);// || typeof(IEnumerable<CompressedAggregationBase>).IsAssignableFrom(type);
         }
     }
 }
