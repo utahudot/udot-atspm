@@ -14,6 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using ATSPM.Application.Business.Common;
 
 namespace ATSPM.Application.Business.TimeSpaceDiagram
@@ -21,6 +22,6 @@ namespace ATSPM.Application.Business.TimeSpaceDiagram
     public class TimeSpaceDiagramOptions : BasePhaseOptions
     {
         public int RouteId { get; set; }
-        public int ?SpeedLimit { get; set; }
+        public int? SpeedLimit { get; set; }
     }
 }

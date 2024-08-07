@@ -15,32 +15,18 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Application.Common;
 using ATSPM.Application.Configuration;
-using ATSPM.Application.Repositories.ConfigurationRepositories;
-using ATSPM.Application.Services;
-using ATSPM.Data.Enums;
-using ATSPM.Data.Models;
-using ATSPM.Data.Models.EventLogModels;
 using ATSPM.Domain.Extensions;
 using ATSPM.Domain.Services;
 using ATSPM.Infrastructure.Extensions;
-using ATSPM.Infrastructure.Services.ControllerDecoders;
-using ATSPM.Infrastructure.Services.EventLogImporters;
 using Google.Cloud.Diagnostics.Common;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
+using Microsoft.Extensions.Configuration;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.IO;
-using System.Linq;
 using System.Net.Mail;
 using System.Reflection;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace ATSPM.LocationControllerLogger
@@ -117,10 +103,10 @@ namespace ATSPM.LocationControllerLogger
 
 
 
-                    
-                    
 
-                    
+
+
+
 
 
                     s.PostConfigureAll<DeviceDownloaderConfiguration>(o =>
@@ -152,7 +138,8 @@ namespace ATSPM.LocationControllerLogger
                     //  "Password": "Bb1SkPtsE5hLQYn4"
                     //},
                 })
-
+                .ConfigureAppConfiguration((h, c) => c.AddCommandLine(args))
+               
                 //.UseConsoleLifetime()
                 .Build();
 
@@ -224,43 +211,43 @@ namespace ATSPM.LocationControllerLogger
 
             //}
 
-            using (var scope = host.Services.CreateScope())
-            {
-                var email = scope.ServiceProvider.GetService<IEmailService>();
+            //using (var scope = host.Services.CreateScope())
+            //{
+            //    var email = scope.ServiceProvider.GetService<IEmailService>();
 
-                var msg = new MailMessage("AtspmWatchdog@utah.gov", "christianbaker@utah.gov", "test email", "this is a test");
+            //    var msg = new MailMessage("AtspmWatchdog@utah.gov", "christianbaker@utah.gov", "test email", "this is a test");
 
-                await email.SendEmailAsync(msg);
-            }
-
-
-                //var files = new DirectoryInfo("C:\\temp\\4006 - 5600 South \\SignalController\\10.202.19.143");
-                //var device = new Device()
-                //{
-                //    Location = new Location() { LocationIdentifier = "4006"},
-                //    DeviceConfiguration = new DeviceConfiguration() { Decoders = new[] { nameof(AscToIndianaDecoder)}}
-                //};
+            //    await email.SendEmailAsync(msg);
+            //}
 
 
-                //foreach (var f in files.GetFiles())
-                //{
-                //    using (var scope = host.Services.CreateScope())
-                //    {
-                //        var importer = scope.ServiceProvider.GetService<IEventLogImporter>();
-
-                //        var results = importer.Execute(Tuple.Create(device, f));
-
-                //        await foreach (var r in results)
-                //        {
-                //            Console.WriteLine($"{r.Item2.GetType().Name} -- {r.Item2}");
-                //        }
-                //    }
-                //}
+            //var files = new DirectoryInfo("C:\\temp\\4006 - 5600 South \\SignalController\\10.202.19.143");
+            //var device = new Device()
+            //{
+            //    Location = new Location() { LocationIdentifier = "4006"},
+            //    DeviceConfiguration = new DeviceConfiguration() { Decoders = new[] { nameof(AscToIndianaDecoder)}}
+            //};
 
 
+            //foreach (var f in files.GetFiles())
+            //{
+            //    using (var scope = host.Services.CreateScope())
+            //    {
+            //        var importer = scope.ServiceProvider.GetService<IEventLogImporter>();
+
+            //        var results = importer.Execute(Tuple.Create(device, f));
+
+            //        await foreach (var r in results)
+            //        {
+            //            Console.WriteLine($"{r.Item2.GetType().Name} -- {r.Item2}");
+            //        }
+            //    }
+            //}
 
 
-                Console.WriteLine($"------------------done-----------------------");
+
+
+            Console.WriteLine($"------------------done-----------------------");
 
             Console.ReadLine();
         }

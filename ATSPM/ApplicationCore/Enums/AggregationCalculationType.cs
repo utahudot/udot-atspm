@@ -14,6 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 namespace ATSPM.Application.Enums
 {
     /// <summary>
@@ -25,7 +26,7 @@ namespace ATSPM.Application.Enums
         /// Sum
         /// </summary>
         Sum,
-        
+
         /// <summary>
         /// Average
         /// </summary>

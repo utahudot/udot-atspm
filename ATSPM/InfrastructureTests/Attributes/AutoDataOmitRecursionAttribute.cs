@@ -14,6 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using AutoFixture;
 using AutoFixture.Xunit2;
 using System;
@@ -26,7 +27,7 @@ using System.Threading.Tasks;
 namespace InfrastructureTests.Attributes
 {
     //https://github.com/AutoFixture/AutoFixture/wiki/Examples-of-using-behaviors
-    
+
     public class AutoDataOmitRecursionAttribute : AutoDataAttribute
     {
         public AutoDataOmitRecursionAttribute() : base(() =>

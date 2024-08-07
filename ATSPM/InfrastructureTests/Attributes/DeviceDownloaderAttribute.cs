@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for InfrastructureTests - InfrastructureTests.Attributes/SignalControllerDownloadersAttribute.cs
+// for InfrastructureTests - InfrastructureTests.Attributes/DeviceDownloaderAttribute.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,6 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using ATSPM.Application.Configuration;
 using ATSPM.Application.Services;
 using ATSPM.Data.Enums;
@@ -33,12 +34,12 @@ namespace InfrastructureTests.Attributes
         public override IEnumerable<object[]> GetData(MethodInfo testMethod)
         {
             var clients = new List<IDownloaderClient>();
-            
+
             foreach (var i in Enum.GetValues(typeof(TransportProtocols)))
             {
                 clients.Add(Mock.Of<IDownloaderClient>(a => a.Protocol == (TransportProtocols)i, MockBehavior.Strict));
             }
-            
+
             var types = AppDomain.CurrentDomain.GetAssemblies().SelectMany(m => m.GetTypes().Where(w => w.GetInterfaces().Contains(typeof(IDeviceDownloader)))).ToList();
             foreach (var t in types)
             {

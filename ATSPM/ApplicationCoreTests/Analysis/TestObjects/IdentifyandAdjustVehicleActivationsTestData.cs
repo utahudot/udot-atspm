@@ -14,6 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using ATSPM.Application.Analysis.Common;
 using ATSPM.Application.Analysis.PreemptionDetails;
 using ATSPM.Data.Models;
@@ -26,7 +27,7 @@ namespace ApplicationCoreTests.Analysis.TestObjects
     {
         public object Configuration { get; set; }
         public object Input { get; set; }
-        public object Output { get; set;}
+        public object Output { get; set; }
     }
 
     public class DetectorEventCountAggregationTestData : AnalysisTestDataBase { }

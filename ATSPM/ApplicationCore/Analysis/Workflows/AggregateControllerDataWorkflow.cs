@@ -14,6 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using ATSPM.Application.Analysis.ApproachVolume;
 using ATSPM.Application.Analysis.Common;
 using ATSPM.Application.Analysis.Plans;
@@ -37,18 +38,18 @@ namespace ATSPM.Application.Analysis.Workflows
         public int MaxDegreeOfParallelism { get; set; } = 1;
         public CancellationToken CancellationToken { get; set; }
     }
-    
+
     public abstract class AggregationWorkflowBase<T> : WorkflowBase<Tuple<Location, IEnumerable<ControllerEventLog>>, IEnumerable<T>> where T : AggregationModelBase
     {
         protected AggregationWorkflowOptions workflowOptions;
         protected ExecutionDataflowBlockOptions executionBlockOptions;
 
         /// <inheritdoc/>
-        public AggregationWorkflowBase(AggregationWorkflowOptions options = default) : base(new DataflowBlockOptions() { CancellationToken = options.CancellationToken})
+        public AggregationWorkflowBase(AggregationWorkflowOptions options = default) : base(new DataflowBlockOptions() { CancellationToken = options.CancellationToken })
         {
             workflowOptions = options;
             executionBlockOptions = new ExecutionDataflowBlockOptions()
-            { 
+            {
                 CancellationToken = options.CancellationToken,
                 MaxDegreeOfParallelism = options.MaxDegreeOfParallelism,
             };
@@ -59,7 +60,7 @@ namespace ATSPM.Application.Analysis.Workflows
     {
         /// <inheritdoc/>
         public DetectorEventCountAggregationWorkflow(AggregationWorkflowOptions options = default) : base(options)
-        {   
+        {
         }
 
         public FilteredDetectorData FilteredDetectorData { get; private set; }

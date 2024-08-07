@@ -14,6 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using ATSPM.Application.Configuration;
 using ATSPM.Domain.Common;
 using ATSPM.Domain.Services;
@@ -54,7 +55,7 @@ namespace ATSPM.Infrastructure.Repositories
 
         #endregion
 
-        public ATSPMFileRepositoryBase(IFileTranscoder fileTranscoder, IOptions<FileRepositoryConfiguration> options, ILogger<ATSPMFileRepositoryBase<T>> log) => 
+        public ATSPMFileRepositoryBase(IFileTranscoder fileTranscoder, IOptions<FileRepositoryConfiguration> options, ILogger<ATSPMFileRepositoryBase<T>> log) =>
             (_fileTranscoder, _options, _log) = (fileTranscoder, options, log);
 
         public void Add(T item)

@@ -14,6 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 namespace ATSPM.Application.Enums
 {
     /// <summary>
@@ -25,27 +26,27 @@ namespace ATSPM.Application.Enums
         /// Time
         /// </summary>
         Time,
-        
+
         /// <summary>
         /// Time of day
         /// </summary>
         TimeOfDay,
-        
+
         /// <summary>
         /// Direction
         /// </summary>
         Direction,
-        
+
         /// <summary>
         /// Approach
         /// </summary>
         Approach,
-        
+
         /// <summary>
         /// Signal
         /// </summary>
         Signal,
-        
+
         /// <summary>
         /// Detector
         /// </summary>

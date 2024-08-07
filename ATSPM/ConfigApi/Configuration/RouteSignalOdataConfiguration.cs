@@ -14,6 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using Asp.Versioning;
 using Asp.Versioning.OData;
 using ATSPM.Data.Models;
@@ -32,13 +33,13 @@ namespace ATSPM.ConfigApi.Configuration
             var model = builder.EntitySet<RouteLocation>("RouteLocation")
                 .EntityType
                 .Page(default, default)
-                .Expand(1, SelectExpandType.Automatic, new string[] 
-                { 
-                    "primaryDirection", 
-                    "opposingDirection", 
-                    "route", 
-                    "previousLocationDistance", 
-                    "nextLocationDistance" 
+                .Expand(1, SelectExpandType.Automatic, new string[]
+                {
+                    "primaryDirection",
+                    "opposingDirection",
+                    "route",
+                    "previousLocationDistance",
+                    "nextLocationDistance"
                 });
 
             switch (apiVersion.MajorVersion)

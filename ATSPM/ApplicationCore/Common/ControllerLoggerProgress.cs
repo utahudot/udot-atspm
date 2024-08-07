@@ -14,6 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using ATSPM.Data.Models;
 using ATSPM.Domain.Extensions;
 using System;
@@ -32,7 +33,7 @@ namespace ATSPM.Application.Common
             Current = current;
             Total = total;
         }
-        
+
         public Exception Exception { get; protected set; }
 
         public bool HasException => Exception != null;

@@ -14,8 +14,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
-using ATSPM.Data.Enums;
+
 using ATSPM.Application.Business.Common;
+using ATSPM.Data.Enums;
 using System.Collections.Generic;
 
 namespace ATSPM.Application.Business.TurningMovementCounts

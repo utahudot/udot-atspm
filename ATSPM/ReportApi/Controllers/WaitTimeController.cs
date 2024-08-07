@@ -14,11 +14,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using Asp.Versioning;
-using ATSPM.Data.Models;
 using ATSPM.Application.Business.WaitTime;
-using Microsoft.AspNetCore.Mvc;
 using ATSPM.Application.Services;
+using ATSPM.Data.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ATSPM.ReportApi.Controllers
 {

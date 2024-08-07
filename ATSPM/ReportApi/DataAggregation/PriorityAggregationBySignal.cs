@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for ReportApi - MOE.Common.Business.DataAggregation/PriorityAggregationBySignal.cs
+// for ReportApi - ATSPM.ReportApi.DataAggregation/PriorityAggregationBySignal.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,15 +14,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using ATSPM.Application.Business.Aggregation;
 using ATSPM.Application.Business.Bins;
 using ATSPM.Application.Repositories.AggregationRepositories;
 using ATSPM.Data.Models;
-using ATSPM.ReportApi.DataAggregation;
-using MOE.Common.Business.WCFServiceLibrary;
 using System.Collections.Concurrent;
 
-namespace MOE.Common.Business.DataAggregation
+namespace ATSPM.ReportApi.DataAggregation
 {
     public class PriorityAggregationBySignal : AggregationBySignal
     {

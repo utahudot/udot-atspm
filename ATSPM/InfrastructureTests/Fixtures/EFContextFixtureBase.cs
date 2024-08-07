@@ -14,6 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using ATSPM.Data;
 using ATSPM.Data.Models;
 using ATSPM.Domain.Services;
@@ -34,7 +35,7 @@ namespace InfrastructureTests.Fixtures
     public class EFContextFixture<T> : IDisposable where T : DbContext, new()
     {
         private DbConnection _connection;
-        
+
         public EFContextFixture()
         {
             _connection = new SqliteConnection("Datasource=:memory:");

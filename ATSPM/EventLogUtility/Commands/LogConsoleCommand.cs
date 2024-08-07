@@ -14,24 +14,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.CommandLine.Invocation;
-using System.CommandLine;
-using System.CommandLine.Hosting;
-using System.CommandLine.Builder;
-using System.CommandLine.Parsing;
+
 using ATSPM.Application.Configuration;
-using System.CommandLine.Binding;
+using ATSPM.Infrastructure.Services.HostedServices;
 using Microsoft.Extensions.DependencyInjection;
-using System.CommandLine.NamingConventionBinder;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using System;
+using System.Collections.Generic;
+using System.CommandLine;
+using System.CommandLine.Binding;
+using System.CommandLine.Builder;
+using System.CommandLine.Hosting;
+using System.CommandLine.Invocation;
+using System.CommandLine.NamingConventionBinder;
+using System.CommandLine.Parsing;
+using System.Linq;
 using System.Reflection.Metadata;
-using ATSPM.Infrastructure.Services.HostedServices;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace ATSPM.EventLogUtility.Commands
 {

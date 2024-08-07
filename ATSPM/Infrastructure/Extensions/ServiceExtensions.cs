@@ -14,6 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using ATSPM.Application.Configuration;
 using ATSPM.Application.Repositories;
 using ATSPM.Application.Repositories.AggregationRepositories;
@@ -57,7 +58,21 @@ namespace ATSPM.Infrastructure.Extensions
     /// </summary>
     public class DatabaseOption
     {
+        /// <summary>
+        /// Provider Type
+        /// <list type="bullet">
+        /// <item><see cref="SqlServerProvider.ProviderName"/></item>
+        /// <item><see cref="PostgreSQLProvider.ProviderName"/></item>
+        /// <item><see cref="SqlLiteProvider.ProviderName"/></item>
+        /// <item><see cref="MySqlProvider.ProviderName"/></item>
+        /// <item><see cref="OracleProvider.ProviderName"/></item>
+        /// </list>
+        /// </summary>
         public string Provider { get; set; }
+
+        /// <summary>
+        /// Database connection string for given <see cref="DatabaseOption.Provider"/>
+        /// </summary>
         public string ConnectionString { get; set; }
     }
 
@@ -215,7 +230,6 @@ namespace ATSPM.Infrastructure.Extensions
             return services;
         }
 
-
         public static IServiceCollection AddAtspmAuthorization(this IServiceCollection services, HostBuilderContext host)
         {
             services.AddAuthorization(options =>
@@ -325,7 +339,6 @@ namespace ATSPM.Infrastructure.Extensions
             services.AddScoped<IDeviceConfigurationRepository, DeviceConfigurationEFRepository>();
             services.AddScoped<IDeviceRepository, DeviceEFRepository>();
             services.AddScoped<IDirectionTypeRepository, DirectionTypeEFRepository>();
-            services.AddScoped<IExternalLinksRepository, ExternalLinsEFRepository>();
             services.AddScoped<IFaqRepository, FaqEFRepository>();
             services.AddScoped<IJurisdictionRepository, JurisdictionEFRepository>();
             services.AddScoped<ILocationRepository, LocationEFRepository>();

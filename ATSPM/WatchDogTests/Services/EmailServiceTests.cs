@@ -1,4 +1,21 @@
-﻿using ATSPM.Data;
+﻿#region license
+// Copyright 2024 Utah Departement of Transportation
+// for WatchDogTests - WatchDogTests.Services/EmailServiceTests.cs
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+// http://www.apache.org/licenses/LICENSE-2.
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+#endregion
+
+using ATSPM.Data;
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using ATSPM.Data.Models.ConfigurationModels;
@@ -9,9 +26,10 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 using WatchDog.Models;
+using WatchDog.Services;
 using Xunit;
 
-namespace WatchDog.Services.Tests
+namespace WatchDogTests.Services
 {
     public class EmailServiceTests
     {
@@ -51,7 +69,7 @@ namespace WatchDog.Services.Tests
             region1MockLocation.Object.ChartEnabled = true;
             region1MockLocation.Object.VersionAction = LocationVersionActions.Initial;
             region1MockLocation.Object.Note = "Initial - WAS #6500";
-            region1MockLocation.Object.Start = new System.DateTime(1900, 1, 1);
+            region1MockLocation.Object.Start = new DateTime(1900, 1, 1);
             region1MockLocation.Object.PedsAre1to1 = true;
 
             region1MockLocation.Setup(s => s.Jurisdiction).Returns(new Jurisdiction { Id = 1, Name = "Jurisdiction 1" });
@@ -79,7 +97,7 @@ namespace WatchDog.Services.Tests
 
             var mockDetector1 = new Mock<Detector>();
             mockDetector1.Object.ApproachId = 11;
-            mockDetector1.Object.DateAdded = new System.DateTime(2019, 12, 16);
+            mockDetector1.Object.DateAdded = new DateTime(2019, 12, 16);
             mockDetector1.Object.DateDisabled = null;
             mockDetector1.Object.DecisionPoint = null;
             mockDetector1.Object.DetectorChannel = 22;

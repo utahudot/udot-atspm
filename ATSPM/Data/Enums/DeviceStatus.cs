@@ -14,6 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using ATSPM.Data.Models;
 
 namespace ATSPM.Data.Enums
@@ -27,27 +28,27 @@ namespace ATSPM.Data.Enums
         /// Unknown device status
         /// </summary>
         Unknown,
-        
+
         /// <summary>
         /// Device has been decommissioned
         /// </summary>
         Decommissioned,
-        
+
         /// <summary>
         /// Device is inactive
         /// </summary>
         Inactive,
-        
+
         /// <summary>
         /// Device is active
         /// </summary>
         Active,
-        
+
         /// <summary>
         /// Device is being tested
         /// </summary>
         Testing,
-        
+
         /// <summary>
         /// Device is being staged
         /// </summary>

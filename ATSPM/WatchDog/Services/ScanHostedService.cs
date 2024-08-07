@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for WatchDog - %Namespace%/ScanHostedService.cs
+// for WatchDog - WatchDog.Services/ScanHostedService.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,6 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -23,47 +24,37 @@ namespace WatchDog.Services
 {
     public class ScanHostedService : IHostedService
     {
-        private readonly ScanService scanService;
-        private readonly ILogger<ScanHostedService> logger;
-        private readonly DateTime scanDate;
-        private readonly IHostApplicationLifetime appLifetime;
+        private readonly ScanService _scanService;
+        private readonly ILogger<ScanHostedService> _log;
+        private readonly IConfiguration _config;
 
-        // Add other dependencies if needed, like IConfiguration
-
-        public ScanHostedService(ScanService scanService, ILogger<ScanHostedService> logger, DateTime scanDate, IHostApplicationLifetime appLifetime)
+        public ScanHostedService(ScanService scanService, ILogger<ScanHostedService> logger, IConfiguration config)
         {
-            this.scanService = scanService;
-            this.logger = logger;
-            this.scanDate = scanDate;
-            this.appLifetime = appLifetime;
-            // Assign other dependencies
+            _scanService = scanService;
+            _log = logger;
+            _config = config;
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-
-            var configuration = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json")
-                .Build();
             try
             {
-                var prviousDayPMPeakStart = Convert.ToInt32(configuration["PreviousDayPMPeakStart"]);
-                var prviousDayPMPeakEnd = Convert.ToInt32(configuration["PreviousDayPMPeakEnd"]);
-                var weekdayOnly = Convert.ToBoolean(configuration["WeekdayOnly"]);
-                var scanDayEndHour = Convert.ToInt32(configuration["ScanDayEndHour"]);
-                var scanDayStartHour = Convert.ToInt32(configuration["ScanDayStartHour"]);
+                var prviousDayPMPeakStart = Convert.ToInt32(_config["PreviousDayPMPeakStart"]);
+                var prviousDayPMPeakEnd = Convert.ToInt32(_config["PreviousDayPMPeakEnd"]);
+                var weekdayOnly = Convert.ToBoolean(_config["WeekdayOnly"]);
+                var scanDayEndHour = Convert.ToInt32(_config["ScanDayEndHour"]);
+                var scanDayStartHour = Convert.ToInt32(_config["ScanDayStartHour"]);
                 var options = new LoggingOptions
                 {
-                    ConsecutiveCount = Convert.ToInt32(configuration["ConsecutiveCount"]),
-                    LowHitThreshold = Convert.ToInt32(configuration["LowHitThreshold"]),
-                    MaximumPedestrianEvents = Convert.ToInt32(configuration["MaximumPedestrianEvents"]),
-                    MinimumRecords = Convert.ToInt32(configuration["MinimumRecords"]),
-                    MinPhaseTerminations = Convert.ToInt32(configuration["MinPhaseTerminations"]),
-                    PercentThreshold = Convert.ToDouble(configuration["PercentThreshold"]),
+                    ConsecutiveCount = Convert.ToInt32(_config["ConsecutiveCount"]),
+                    LowHitThreshold = Convert.ToInt32(_config["LowHitThreshold"]),
+                    MaximumPedestrianEvents = Convert.ToInt32(_config["MaximumPedestrianEvents"]),
+                    MinimumRecords = Convert.ToInt32(_config["MinimumRecords"]),
+                    MinPhaseTerminations = Convert.ToInt32(_config["MinPhaseTerminations"]),
+                    PercentThreshold = Convert.ToDouble(_config["PercentThreshold"]),
                     PreviousDayPMPeakEnd = prviousDayPMPeakEnd,
                     PreviousDayPMPeakStart = prviousDayPMPeakStart,
-                    ScanDate = scanDate,
+                    ScanDate = DateTime.TryParse(_config["ScanDate"], out DateTime date1) ? DateTime.Parse(_config["ScanDate"]) : DateTime.Today.AddDays(-1),
                     ScanDayEndHour = scanDayEndHour,
                     ScanDayStartHour = scanDayStartHour,
                     WeekdayOnly = weekdayOnly
@@ -72,35 +63,23 @@ namespace WatchDog.Services
                 {
                     PreviousDayPMPeakEnd = prviousDayPMPeakEnd,
                     PreviousDayPMPeakStart = prviousDayPMPeakStart,
-                    ScanDate = scanDate,
+                    ScanDate = DateTime.TryParse(_config["ScanDate"], out DateTime date2) ? DateTime.Parse(_config["ScanDate"]) : DateTime.Today.AddDays(-1),
                     ScanDayEndHour = scanDayStartHour,
                     ScanDayStartHour = scanDayEndHour,
                     WeekdayOnly = weekdayOnly,
-                    //EmailServer = configuration["EmailServer"],
-                    //UserName = configuration["UserName"],
-                    //Password = configuration["Password"],
-                    //Port = Convert.ToInt32(configuration["Port"]),
-                    //EnableSsl = Convert.ToBoolean(configuration["EnableSsl"]),
-                    DefaultEmailAddress = configuration["DefaultEmailAddress"],
-                    EmailAllErrors = Convert.ToBoolean(configuration["EmailAllErrors"]),
-                    //EmailType = configuration["EmailType"]
+                    DefaultEmailAddress = _config["DefaultEmailAddress"],
+                    EmailAllErrors = Convert.ToBoolean(_config["EmailAllErrors"]),
                 };
-                await scanService.StartScan(options, emailOptions, cancellationToken);
+                await _scanService.StartScan(options, emailOptions, cancellationToken);
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "An error occurred during scanning.");
+                _log.LogError(ex, "An error occurred during scanning.");
             }
-            finally
-            {
-                appLifetime.StopApplication();
-            }
-
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            // Perform any cleanup if necessary
             return Task.CompletedTask;
         }
     }

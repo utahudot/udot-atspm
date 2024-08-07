@@ -14,6 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using ATSPM.Application.Extensions;
 using ATSPM.Application.Repositories.ConfigurationRepositories;
 using ATSPM.Data;
@@ -46,7 +47,7 @@ namespace InfrastructureTests.RepositoryTests
                 {
                     var s = ModelFixture.Create<Location>();
                     s.Id = x + 1000;
-                    
+
                     var f = ModelFixture.Create<Approach>();
                     f.LocationId = s.Id;
                     f.Location = s;
