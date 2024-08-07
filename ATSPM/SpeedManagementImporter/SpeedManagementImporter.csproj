@@ -20,6 +20,8 @@
   <ItemGroup>
     <ProjectReference Include="..\..\udot-atspm\ATSPM\ApplicationCore\ApplicationCore.csproj" />
     <ProjectReference Include="..\..\udot-atspm\ATSPM\Infrastructure\Infrastructure.csproj" />
+    <ProjectReference Include="..\ApplicationCore\ApplicationCore.csproj" />
+    <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>

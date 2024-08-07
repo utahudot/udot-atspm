@@ -1,97 +1,9 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\jbhatia\\source\\repos\\SafetyDashboardAPI\\SpeedManagementImporter\\SpeedManagementImporter.csproj": {}
+    "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\SpeedManagementImporter\\SpeedManagementImporter.csproj": {}
   },
   "projects": {
-    "C:\\Users\\jbhatia\\source\\repos\\SafetyDashboardAPI\\SpeedManagementImporter\\SpeedManagementImporter.csproj": {
-      "version": "1.0.0",
-      "restore": {
-        "projectUniqueName": "C:\\Users\\jbhatia\\source\\repos\\SafetyDashboardAPI\\SpeedManagementImporter\\SpeedManagementImporter.csproj",
-        "projectName": "SpeedManagementImporter",
-        "projectPath": "C:\\Users\\jbhatia\\source\\repos\\SafetyDashboardAPI\\SpeedManagementImporter\\SpeedManagementImporter.csproj",
-        "packagesPath": "C:\\Users\\jbhatia\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\jbhatia\\source\\repos\\SafetyDashboardAPI\\SpeedManagementImporter\\obj\\",
-        "projectStyle": "PackageReference",
-        "configFilePaths": [
-          "C:\\Users\\jbhatia\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
-        ],
-        "originalTargetFrameworks": [
-          "net7.0"
-        ],
-        "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "https://api.nuget.org/v3/index.json": {}
-        },
-        "frameworks": {
-          "net7.0": {
-            "targetAlias": "net7.0",
-            "projectReferences": {
-              "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\ApplicationCore\\ApplicationCore.csproj": {
-                "projectPath": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\ApplicationCore\\ApplicationCore.csproj"
-              },
-              "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\Infrastructure\\Infrastructure.csproj": {
-                "projectPath": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\Infrastructure\\Infrastructure.csproj"
-              }
-            }
-          }
-        },
-        "warningProperties": {
-          "warnAsError": [
-            "NU1605"
-          ]
-        }
-      },
-      "frameworks": {
-        "net7.0": {
-          "targetAlias": "net7.0",
-          "dependencies": {
-            "Google.Cloud.BigQuery.V2": {
-              "target": "Package",
-              "version": "[3.10.0, )"
-            },
-            "Microsoft.Extensions.Configuration": {
-              "target": "Package",
-              "version": "[8.0.0, )"
-            },
-            "Microsoft.Extensions.Configuration.Json": {
-              "target": "Package",
-              "version": "[8.0.0, )"
-            },
-            "Microsoft.Extensions.Configuration.UserSecrets": {
-              "target": "Package",
-              "version": "[6.0.1, )"
-            },
-            "System.CommandLine": {
-              "target": "Package",
-              "version": "[2.0.0-beta4.22272.1, )"
-            },
-            "System.CommandLine.Hosting": {
-              "target": "Package",
-              "version": "[0.4.0-alpha.22272.1, )"
-            }
-          },
-          "imports": [
-            "net461",
-            "net462",
-            "net47",
-            "net471",
-            "net472",
-            "net48",
-            "net481"
-          ],
-          "assetTargetFallback": true,
-          "warn": true,
-          "frameworkReferences": {
-            "Microsoft.NETCore.App": {
-              "privateAssets": "all"
-            }
-          },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.400\\RuntimeIdentifierGraph.json"
-        }
-      }
-    },
     "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\ApplicationCore\\ApplicationCore.csproj": {
       "version": "1.0.0",
       "restore": {
@@ -693,6 +605,100 @@
             "Npgsql.EntityFrameworkCore.PostgreSQL": {
               "target": "Package",
               "version": "[7.0.11, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.400\\RuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\SpeedManagementImporter\\SpeedManagementImporter.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\SpeedManagementImporter\\SpeedManagementImporter.csproj",
+        "projectName": "SpeedManagementImporter",
+        "projectPath": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\SpeedManagementImporter\\SpeedManagementImporter.csproj",
+        "packagesPath": "C:\\Users\\jbhatia\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\SpeedManagementImporter\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\jbhatia\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net7.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net7.0": {
+            "targetAlias": "net7.0",
+            "projectReferences": {
+              "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\ApplicationCore\\ApplicationCore.csproj": {
+                "projectPath": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\ApplicationCore\\ApplicationCore.csproj"
+              },
+              "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\Infrastructure\\Infrastructure.csproj": {
+                "projectPath": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\Infrastructure\\Infrastructure.csproj"
+              },
+              "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\udot-atspm\\ATSPM\\ApplicationCore\\ApplicationCore.csproj": {
+                "projectPath": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\udot-atspm\\ATSPM\\ApplicationCore\\ApplicationCore.csproj"
+              },
+              "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\udot-atspm\\ATSPM\\Infrastructure\\Infrastructure.csproj": {
+                "projectPath": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\udot-atspm\\ATSPM\\Infrastructure\\Infrastructure.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net7.0": {
+          "targetAlias": "net7.0",
+          "dependencies": {
+            "Google.Cloud.BigQuery.V2": {
+              "target": "Package",
+              "version": "[3.10.0, )"
+            },
+            "Microsoft.Extensions.Configuration": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
+            "Microsoft.Extensions.Configuration.Json": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
+            "Microsoft.Extensions.Configuration.UserSecrets": {
+              "target": "Package",
+              "version": "[6.0.1, )"
+            },
+            "System.CommandLine": {
+              "target": "Package",
+              "version": "[2.0.0-beta4.22272.1, )"
+            },
+            "System.CommandLine.Hosting": {
+              "target": "Package",
+              "version": "[0.4.0-alpha.22272.1, )"
             }
           },
           "imports": [

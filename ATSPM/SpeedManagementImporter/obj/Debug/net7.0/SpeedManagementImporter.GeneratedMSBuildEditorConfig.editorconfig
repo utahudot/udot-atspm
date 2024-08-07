@@ -16,4 +16,4 @@ build_property.EnforceExtendedAnalyzerRules =
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = SpeedManagementImporter
-build_property.ProjectDir = C:\Users\jbhatia\source\repos\SafetyDashboardAPI\SpeedManagementImporter\
+build_property.ProjectDir = C:\Users\jbhatia\source\repos\udot-atspm\ATSPM\SpeedManagementImporter\

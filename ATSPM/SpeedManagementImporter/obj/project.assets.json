@@ -10003,54 +10003,56 @@
     },
     "ApplicationCore/1.0.0": {
       "type": "project",
-      "path": "../../udot-atspm/ATSPM/ApplicationCore/ApplicationCore.csproj",
-      "msbuildProject": "../../udot-atspm/ATSPM/ApplicationCore/ApplicationCore.csproj"
+      "path": "../ApplicationCore/ApplicationCore.csproj",
+      "msbuildProject": "../ApplicationCore/ApplicationCore.csproj"
     },
     "ATSPM.Data/1.0.0": {
       "type": "project",
-      "path": "../../udot-atspm/ATSPM/Data/Data.csproj",
-      "msbuildProject": "../../udot-atspm/ATSPM/Data/Data.csproj"
+      "path": "../Data/Data.csproj",
+      "msbuildProject": "../Data/Data.csproj"
     },
     "ATSPM.Infrastructure/1.0.0": {
       "type": "project",
-      "path": "../../udot-atspm/ATSPM/Infrastructure/Infrastructure.csproj",
-      "msbuildProject": "../../udot-atspm/ATSPM/Infrastructure/Infrastructure.csproj"
+      "path": "../Infrastructure/Infrastructure.csproj",
+      "msbuildProject": "../Infrastructure/Infrastructure.csproj"
     },
     "ATSPM.Infrastructure.MySqlDatabaseProvider/1.0.0": {
       "type": "project",
-      "path": "../../udot-atspm/ATSPM/MySqlDatabaseProvider/MySqlDatabaseProvider.csproj",
-      "msbuildProject": "../../udot-atspm/ATSPM/MySqlDatabaseProvider/MySqlDatabaseProvider.csproj"
+      "path": "../MySqlDatabaseProvider/MySqlDatabaseProvider.csproj",
+      "msbuildProject": "../MySqlDatabaseProvider/MySqlDatabaseProvider.csproj"
     },
     "ATSPM.Infrastructure.OracleDatabaseProvider/1.0.0": {
       "type": "project",
-      "path": "../../udot-atspm/ATSPM/OracleDatabaseProvider/OracleDatabaseProvider.csproj",
-      "msbuildProject": "../../udot-atspm/ATSPM/OracleDatabaseProvider/OracleDatabaseProvider.csproj"
+      "path": "../OracleDatabaseProvider/OracleDatabaseProvider.csproj",
+      "msbuildProject": "../OracleDatabaseProvider/OracleDatabaseProvider.csproj"
     },
     "ATSPM.Infrastructure.PostgreSQLDatabaseProvider/1.0.0": {
       "type": "project",
-      "path": "../../udot-atspm/ATSPM/PostgreSQLDatabaseProvider/PostgreSQLDatabaseProvider.csproj",
-      "msbuildProject": "../../udot-atspm/ATSPM/PostgreSQLDatabaseProvider/PostgreSQLDatabaseProvider.csproj"
+      "path": "../PostgreSQLDatabaseProvider/PostgreSQLDatabaseProvider.csproj",
+      "msbuildProject": "../PostgreSQLDatabaseProvider/PostgreSQLDatabaseProvider.csproj"
     },
     "ATSPM.Infrastructure.SqlDatabaseProvider/1.0.0": {
       "type": "project",
-      "path": "../../udot-atspm/ATSPM/SqlDatabaseProvider/SqlDatabaseProvider.csproj",
-      "msbuildProject": "../../udot-atspm/ATSPM/SqlDatabaseProvider/SqlDatabaseProvider.csproj"
+      "path": "../SqlDatabaseProvider/SqlDatabaseProvider.csproj",
+      "msbuildProject": "../SqlDatabaseProvider/SqlDatabaseProvider.csproj"
     },
     "ATSPM.Infrastructure.SqlLiteDatabaseProvider/1.0.0": {
       "type": "project",
-      "path": "../../udot-atspm/ATSPM/SqlLiteDatabaseProvider/SqlLiteDatabaseProvider.csproj",
-      "msbuildProject": "../../udot-atspm/ATSPM/SqlLiteDatabaseProvider/SqlLiteDatabaseProvider.csproj"
+      "path": "../SqlLiteDatabaseProvider/SqlLiteDatabaseProvider.csproj",
+      "msbuildProject": "../SqlLiteDatabaseProvider/SqlLiteDatabaseProvider.csproj"
     },
     "DomainCore/1.0.0": {
       "type": "project",
-      "path": "../../udot-atspm/ATSPM/DomainCore/DomainCore.csproj",
-      "msbuildProject": "../../udot-atspm/ATSPM/DomainCore/DomainCore.csproj"
+      "path": "../DomainCore/DomainCore.csproj",
+      "msbuildProject": "../DomainCore/DomainCore.csproj"
     }
   },
   "projectFileDependencyGroups": {
     "net7.0": [
       "ATSPM.Infrastructure >= 1.0.0",
       "ApplicationCore >= 1.0.0",
+      "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\udot-atspm\\ATSPM\\ApplicationCore\\ApplicationCore.csproj",
+      "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\udot-atspm\\ATSPM\\Infrastructure\\Infrastructure.csproj",
       "Google.Cloud.BigQuery.V2 >= 3.10.0",
       "Microsoft.Extensions.Configuration >= 8.0.0",
       "Microsoft.Extensions.Configuration.Json >= 8.0.0",
@@ -10065,11 +10067,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\jbhatia\\source\\repos\\SafetyDashboardAPI\\SpeedManagementImporter\\SpeedManagementImporter.csproj",
+      "projectUniqueName": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\SpeedManagementImporter\\SpeedManagementImporter.csproj",
       "projectName": "SpeedManagementImporter",
-      "projectPath": "C:\\Users\\jbhatia\\source\\repos\\SafetyDashboardAPI\\SpeedManagementImporter\\SpeedManagementImporter.csproj",
+      "projectPath": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\SpeedManagementImporter\\SpeedManagementImporter.csproj",
       "packagesPath": "C:\\Users\\jbhatia\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\jbhatia\\source\\repos\\SafetyDashboardAPI\\SpeedManagementImporter\\obj\\",
+      "outputPath": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\SpeedManagementImporter\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\jbhatia\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -10091,6 +10093,12 @@
             },
             "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\Infrastructure\\Infrastructure.csproj": {
               "projectPath": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\Infrastructure\\Infrastructure.csproj"
+            },
+            "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\udot-atspm\\ATSPM\\ApplicationCore\\ApplicationCore.csproj": {
+              "projectPath": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\udot-atspm\\ATSPM\\ApplicationCore\\ApplicationCore.csproj"
+            },
+            "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\udot-atspm\\ATSPM\\Infrastructure\\Infrastructure.csproj": {
+              "projectPath": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\udot-atspm\\ATSPM\\Infrastructure\\Infrastructure.csproj"
             }
           }
         }
@@ -10149,5 +10157,25 @@
         "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.400\\RuntimeIdentifierGraph.json"
       }
     }
-  }
+  },
+  "logs": [
+    {
+      "code": "NU1104",
+      "level": "Error",
+      "message": "Unable to find project 'C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\udot-atspm\\ATSPM\\ApplicationCore\\ApplicationCore.csproj'. Check that the project reference is valid and that the project file exists.",
+      "libraryId": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\udot-atspm\\ATSPM\\ApplicationCore\\ApplicationCore.csproj",
+      "targetGraphs": [
+        "net7.0"
+      ]
+    },
+    {
+      "code": "NU1104",
+      "level": "Error",
+      "message": "Unable to find project 'C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\udot-atspm\\ATSPM\\Infrastructure\\Infrastructure.csproj'. Check that the project reference is valid and that the project file exists.",
+      "libraryId": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\udot-atspm\\ATSPM\\Infrastructure\\Infrastructure.csproj",
+      "targetGraphs": [
+        "net7.0"
+      ]
+    }
+  ]
 }
