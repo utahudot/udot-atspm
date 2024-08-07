@@ -6,9 +6,9 @@ using System.Security.Claims;
 
 namespace SpeedManagementApi.Controllers
 {
-    [Authorize]
+    [Authorize()]
+    [Route("api/[controller]")]
     [ApiController]
-    [Route("[controller]")]
     public class ImpactController : ControllerBase
     {
         private ImpactService impactService;
@@ -21,8 +21,8 @@ namespace SpeedManagementApi.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Impact>>> ListImpacts()
         {
-            IReadOnlyList<Impact> Impacts = await impactService.ListImpacts();
-            return Ok(Impacts);
+            var impacts = await impactService.ListImpacts();
+            return Ok(impacts);
         }
 
         // GET: /Impact/{id}
@@ -39,34 +39,40 @@ namespace SpeedManagementApi.Controllers
 
         // POST: /Impact
         [HttpPost]
-        public async Task<IActionResult> CreateImpact([FromBody] Impact Impact)
+        public async Task<ActionResult<Impact>> CreateImpact([FromBody] Impact impactObject)
         {
-            if (Impact == null)
+            if (impactObject == null)
             {
                 return BadRequest();
             }
+            impactObject.Id = null;
             // Extract the user ID from the claims
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (userId != null)
             {
-                Impact.CreatedBy = userId;
-                Impact.CreatedOn = DateTime.UtcNow;
+                impactObject.CreatedBy = userId;
+                impactObject.CreatedOn = DateTime.UtcNow;
             }
             else
             {
                 return BadRequest();
             }
 
-            Impact impact = await impactService.UpsertImpact(Impact);
+            Impact impact = await impactService.UpsertImpact(impactObject);
             return Ok(impact);
         }
 
         // PUT: /Impact/{id}
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateImpact(Guid id, [FromBody] Impact Impact)
+        public async Task<ActionResult<Impact>> UpdateImpact(Guid id, [FromBody] Impact impactObject)
         {
-            if (Impact == null || id != Impact.Id)
+            if (impactObject == null)
+            {
+                return BadRequest();
+            }
+
+            if (id == null || (impactObject.Id != null && id != impactObject.Id))
             {
                 return BadRequest();
             }
@@ -75,8 +81,8 @@ namespace SpeedManagementApi.Controllers
 
             if (userId != null)
             {
-                Impact.UpdatedBy = userId;
-                Impact.UpdatedOn = DateTime.UtcNow;
+                impactObject.UpdatedBy = userId;
+                impactObject.UpdatedOn = DateTime.UtcNow;
             }
             else
             {
@@ -88,26 +94,24 @@ namespace SpeedManagementApi.Controllers
             {
                 return NotFound();
             }
-
-            Impact impact = await impactService.UpsertImpact(Impact);
+            impactObject.Id = existingImpact.Id;
+            Impact impact = await impactService.UpsertImpact(impactObject);
             return Ok(impact);
         }
 
         // PUT: /Impact/{id/segment/{segment}
         [HttpPut("{id}/segments/{segmentId}")]
-        public async Task<IActionResult> AddImpactedSegment(Guid id, Guid segmentId, [FromBody] Impact Impact)
+        public async Task<ActionResult<Impact>> AddImpactedSegment(Guid id, Guid segmentId)
         {
-            if (Impact == null || id != Impact.Id)
+            if (id == null)
             {
                 return BadRequest();
             }
-
             var existingImpact = await impactService.GetImpactById(id);
             if (existingImpact == null)
             {
                 return NotFound();
             }
-
             Impact impact = await impactService.UpsertImpactedSegment(id, segmentId);
             return Ok(impact);
         }
@@ -151,7 +155,7 @@ namespace SpeedManagementApi.Controllers
             {
                 return NotFound();
             }
-            bool contains = existingImpact.Segments.Select(i => i.Id.Equals(segmentId)).Any();
+            bool contains = existingImpact.SegmentIds.Select(i => i.Equals(segmentId)).Any();
             if (!contains)
             {
                 return NotFound();

@@ -1,9 +1,7 @@
 ﻿using ATSPM.Application.Repositories.SpeedManagementRepositories;
 using ATSPM.Data.Models.SpeedManagementConfigModels;
-using ATSPM.Domain.Extensions;
 using Google.Cloud.BigQuery.V2;
 using Microsoft.Extensions.Logging;
-using NetTopologySuite.IO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -45,7 +43,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             var query = $"SELECT * FROM `{_datasetId}.{_tableId}` WHERE Id = @key";
             var parameters = new List<BigQueryParameter>
             {
-                    new BigQueryParameter("key", BigQueryDbType.String, key)
+                    new BigQueryParameter("key", BigQueryDbType.String, key.ToString())
                 };
             var results = _client.ExecuteQuery(query, parameters);
             Task<Impact> task = Task.FromResult(results.Select(row => MapRowToEntity(row)).FirstOrDefault());
@@ -58,7 +56,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             var query = $"SELECT * FROM `{_datasetId}.{_tableId}` WHERE Id = @key";
             var parameters = new List<BigQueryParameter>
                 {
-                    new BigQueryParameter("key", BigQueryDbType.String, item.Id)
+                    new BigQueryParameter("key", BigQueryDbType.String, item.Id.ToString())
                 };
 
             var results = _client.ExecuteQuery(query, parameters);
@@ -72,7 +70,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             var query = $"SELECT * FROM `{_datasetId}.{_tableId}` WHERE Id = @key";
             var parameters = new List<BigQueryParameter>
             {
-                    new BigQueryParameter("key", BigQueryDbType.String, key)
+                    new BigQueryParameter("key", BigQueryDbType.String, key.ToString())
                 };
             var results = await _client.ExecuteQueryAsync(query, parameters);
             return results.Select(row => MapRowToEntity(row)).FirstOrDefault();
@@ -84,7 +82,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             var query = $"SELECT * FROM `{_datasetId}.{_tableId}` WHERE Id = @key";
             var parameters = new List<BigQueryParameter>
                 {
-                    new BigQueryParameter("key", BigQueryDbType.String, item.Id)
+                    new BigQueryParameter("key", BigQueryDbType.String, item.Id.ToString())
                 };
             var results = await _client.ExecuteQueryAsync(query, parameters);
             return results.Select(row => MapRowToEntity(row)).FirstOrDefault();
@@ -96,7 +94,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             var query = $"DELETE FROM `{_datasetId}.{_tableId}` WHERE Id = @key";
             var parameters = new List<BigQueryParameter>
              {
-                 new BigQueryParameter("key", BigQueryDbType.String, item.Id)
+                 new BigQueryParameter("key", BigQueryDbType.String, item.Id.ToString())
              };
             _client.ExecuteQueryAsync(query, parameters);
         }
@@ -107,7 +105,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             var query = $"DELETE FROM `{_datasetId}.{_tableId}` WHERE Id = @key";
             var parameters = new List<BigQueryParameter>
              {
-                 new BigQueryParameter("key", BigQueryDbType.String, item.Id)
+                 new BigQueryParameter("key", BigQueryDbType.String, item.Id.ToString())
              };
             await _client.ExecuteQueryAsync(query, parameters);
         }
@@ -116,7 +114,10 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
         {
             var ids = string.Join(", ", items.Select(i => i.Id));
             var query = $"DELETE FROM `{_datasetId}.{_tableId}` WHERE Id IN ({ids})";
-            var parameters = new List<BigQueryParameter>();
+            var parameters = new List<BigQueryParameter>
+            {
+                 new BigQueryParameter("ids", BigQueryDbType.String, ids)
+             };
 
             _client.ExecuteQuery(query, parameters);
         }
@@ -125,7 +126,10 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
         {
             var ids = string.Join(", ", items.Select(i => i.Id));
             var query = $"DELETE FROM `{_datasetId}.{_tableId}` WHERE Id IN ({ids})";
-            var parameters = new List<BigQueryParameter>();
+            var parameters = new List<BigQueryParameter>
+             {
+                 new BigQueryParameter("ids", BigQueryDbType.String, ids)
+             };
 
             await _client.ExecuteQueryAsync(query, parameters);
         }
@@ -136,68 +140,21 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             if (oldRow != null)
             {
 
-                var queryBuilder = new StringBuilder();
-                queryBuilder.Append($"UPDATE `{_datasetId}.{_tableId}` SET ");
-
-                if (!string.IsNullOrEmpty(item.Description))
-                {
-                    queryBuilder.Append($"Description = '{item.Description}', ");
-                }
-
-                if (item.Start != DateTime.MinValue)
-                {
-                    queryBuilder.Append($"Start = '{item.Start:O}', ");
-                }
-
-                if (item.End.HasValue)
-                {
-                    queryBuilder.Append($"End = '{item.End:O}', ");
-                }
-
-                queryBuilder.Append($"StartMile = '{item.StartMile}', ");
-                queryBuilder.Append($"EndMile = '{item.EndMile}', ");
-                queryBuilder.Append($"Shape = '{item.Shape.AsText()}', ");
-                queryBuilder.Append($"ImpactTypeId = {item.ImpactTypeId}, ");
-                queryBuilder.Append($"UpdatedOn = '{DateTime.UtcNow:O}', ");
-                queryBuilder.Append($"UpdatedBy = {(string.IsNullOrEmpty(item.UpdatedBy) ? "NULL" : $"'{item.UpdatedBy}'")}, ");
-                queryBuilder.Append($"DeletedOn = {(item.DeletedOn.HasValue ? $"'{item.DeletedOn:O}'" : "NULL")}, ");
-                queryBuilder.Append($"DeletedBy = {(string.IsNullOrEmpty(item.DeletedBy) ? "NULL" : $"'{item.DeletedBy}'")}, ");
-                // Remove the last comma and space
-                queryBuilder.Length -= 2;
-
-                queryBuilder.Append($" WHERE Id = @key");
-
-                var query = queryBuilder.ToString();
-
-                var parameters = new List<BigQueryParameter>();
+                var (query, parameters) = UpdateQuery(item);
 
                 _client.ExecuteQuery(query, parameters);
             }
             else
             {
-                Guid id = Guid.NewGuid();
-                var query = $"INSERT INTO `{_datasetId}.{_tableId}` " +
-                    $"(Id, Description, Start, End, StartMile, EndMile, Shape, ImpactTypeId, CreatedOn, CreatedBy, UpdatedOn, UpdatedBy, DeletedOn, DeletedBy) " +
-                    $"VALUES (" +
-                    $"'{id}', " +
-                    $"'{item.Description}', " +
-                    $"'{item.Start:O}', " +
-                    $"{(item.End.HasValue ? $"'{item.End:O}'" : "NULL")}, " +
-                    $"'{item.StartMile}', " +
-                    $"'{item.EndMile}', " +
-                    $"'{item.Shape.AsText()}', " +
-                    $"{item.ImpactTypeId}, " +
-                    $"'{item.CreatedOn:O}', " +
-                    $"'{item.CreatedBy}', " +
-                    $"NULL, " +  // UpdatedOn is set to NULL
-                    $"NULL, " +  // UpdatedBy is set to NULL
-                    $"NULL, " +  // DeletedOn is set to NULL
-                    $"NULL)";    // DeletedBy is set to NULL
+                var (query, id) = InsertQuery(item);
+
                 var parameters = new List<BigQueryParameter>();
 
                 _client.ExecuteQuery(query, parameters);
             }
         }
+
+
 
         public async Task<Impact> UpdateImpactAsync(Impact item)
         {
@@ -205,64 +162,15 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             if (oldRow != null)
             {
 
-                var queryBuilder = new StringBuilder();
-                queryBuilder.Append($"UPDATE `{_datasetId}.{_tableId}` SET ");
-
-                if (!string.IsNullOrEmpty(item.Description))
-                {
-                    queryBuilder.Append($"Description = '{item.Description}', ");
-                }
-
-                if (item.Start != DateTime.MinValue)
-                {
-                    queryBuilder.Append($"Start = '{item.Start:O}', ");
-                }
-
-                if (item.End.HasValue)
-                {
-                    queryBuilder.Append($"End = '{item.End:O}', ");
-                }
-
-                queryBuilder.Append($"StartMile = '{item.StartMile}', ");
-                queryBuilder.Append($"EndMile = '{item.EndMile}', ");
-                queryBuilder.Append($"Shape = '{item.Shape.AsText()}', ");
-                queryBuilder.Append($"ImpactTypeId = {item.ImpactTypeId}, ");
-                queryBuilder.Append($"UpdatedOn = '{DateTime.UtcNow:O}', ");
-                queryBuilder.Append($"UpdatedBy = {(string.IsNullOrEmpty(item.UpdatedBy) ? "NULL" : $"'{item.UpdatedBy}'")}, ");
-                queryBuilder.Append($"DeletedOn = {(item.DeletedOn.HasValue ? $"'{item.DeletedOn:O}'" : "NULL")}, ");
-                queryBuilder.Append($"DeletedBy = {(string.IsNullOrEmpty(item.DeletedBy) ? "NULL" : $"'{item.DeletedBy}'")}, ");
-                // Remove the last comma and space
-                queryBuilder.Length -= 2;
-
-                queryBuilder.Append($" WHERE Id = @key");
-
-                var query = queryBuilder.ToString();
-
-                var parameters = new List<BigQueryParameter>();
+                var (query, parameters) = UpdateQuery(item);
 
                 var result = await _client.ExecuteQueryAsync(query, parameters);
                 return await LookupAsync(item.Id);
             }
             else
             {
-                Guid id = Guid.NewGuid();
-                var query = $"INSERT INTO `{_datasetId}.{_tableId}` " +
-                    $"(Id, Description, Start, End, StartMile, EndMile, Shape, ImpactTypeId, CreatedOn, CreatedBy, UpdatedOn, UpdatedBy, DeletedOn, DeletedBy) " +
-                    $"VALUES (" +
-                    $"'{id}', " +
-                    $"'{item.Description}', " +
-                    $"'{item.Start:O}', " +
-                    $"{(item.End.HasValue ? $"'{item.End:O}'" : "NULL")}, " +
-                    $"'{item.StartMile}', " +
-                    $"'{item.EndMile}', " +
-                    $"'{item.Shape.AsText()}', " +
-                    $"{item.ImpactTypeId}, " +
-                    $"'{item.CreatedOn:O}', " +
-                    $"'{item.CreatedBy}', " +
-                    $"NULL, " +  // UpdatedOn is set to NULL
-                    $"NULL, " +  // UpdatedBy is set to NULL
-                    $"NULL, " +  // DeletedOn is set to NULL
-                    $"NULL)";    // DeletedBy is set to NULL
+                var (query, id) = InsertQuery(item);
+
                 var parameters = new List<BigQueryParameter>();
 
                 var result = await _client.ExecuteQueryAsync(query, parameters);
@@ -275,63 +183,14 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             var oldRow = await LookupAsync(item.Id);
             if (oldRow != null)
             {
-
-                var queryBuilder = new StringBuilder();
-                queryBuilder.Append($"UPDATE `{_datasetId}.{_tableId}` SET ");
-
-                if (!string.IsNullOrEmpty(item.Description))
-                {
-                    queryBuilder.Append($"Description = '{item.Description}', ");
-                }
-
-                if (item.Start != DateTime.MinValue)
-                {
-                    queryBuilder.Append($"Start = '{item.Start:O}', ");
-                }
-
-                if (item.End.HasValue)
-                {
-                    queryBuilder.Append($"End = '{item.End:O}', ");
-                }
-
-                queryBuilder.Append($"StartMile = '{item.StartMile}', ");
-                queryBuilder.Append($"EndMile = '{item.EndMile}', ");
-                queryBuilder.Append($"Shape = '{item.Shape.AsText()}', ");
-                queryBuilder.Append($"ImpactTypeId = {item.ImpactTypeId}, ");
-                queryBuilder.Append($"UpdatedOn = '{DateTime.UtcNow:O}', ");
-                queryBuilder.Append($"UpdatedBy = {(string.IsNullOrEmpty(item.UpdatedBy) ? "NULL" : $"'{item.UpdatedBy}'")}, ");
-                queryBuilder.Append($"DeletedOn = {(item.DeletedOn.HasValue ? $"'{item.DeletedOn:O}'" : "NULL")}, ");
-                queryBuilder.Append($"DeletedBy = {(string.IsNullOrEmpty(item.DeletedBy) ? "NULL" : $"'{item.DeletedBy}'")}, ");
-                // Remove the last comma and space
-                queryBuilder.Length -= 2;
-
-                queryBuilder.Append($" WHERE Id = @key");
-
-                var query = queryBuilder.ToString();
-
-                var parameters = new List<BigQueryParameter>();
+                var (query, parameters) = UpdateQuery(item);
 
                 await _client.ExecuteQueryAsync(query, parameters);
             }
             else
             {
-                var query = $"INSERT INTO `{_datasetId}.{_tableId}` " +
-                    $"(Id, Description, Start, End, StartMile, EndMile, Shape, ImpactTypeId, CreatedOn, CreatedBy, UpdatedOn, UpdatedBy, DeletedOn, DeletedBy) " +
-                    $"VALUES (" +
-                    $"GENERATE_UUID(), " + // No quotes for the function
-                    $"'{item.Description}', " +
-                    $"'{item.Start:O}', " +
-                    $"{(item.End.HasValue ? $"'{item.End:O}'" : "NULL")}, " +
-                    $"'{item.StartMile}', " +
-                    $"'{item.EndMile}', " +
-                    $"'{item.Shape.AsText()}', " +
-                    $"{item.ImpactTypeId}, " +
-                    $"'{item.CreatedOn:O}', " +
-                    $"'{item.CreatedBy}', " +
-                    $"NULL, " +  // UpdatedOn is set to NULL
-                    $"NULL, " +  // UpdatedBy is set to NULL
-                    $"NULL, " +  // DeletedOn is set to NULL
-                    $"NULL)";    // DeletedBy is set to NULL
+                var (query, id) = InsertQuery(item);
+
                 var parameters = new List<BigQueryParameter>();
 
                 await _client.ExecuteQueryAsync(query, parameters);
@@ -364,7 +223,6 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
                 { "End", item.End },
                 { "StartMile", item.StartMile },
                 { "EndMile", item.EndMile },
-                { "Shape", item.Shape },  // Assuming you have a proper string representation for Geometry
                 { "ImpactTypeId", item.ImpactTypeId },
                 { "CreatedOn", item.CreatedOn },
                 { "CreatedBy", item.CreatedBy.ToString() },
@@ -377,25 +235,115 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
 
         protected override Impact MapRowToEntity(BigQueryRow row)
         {
-            var wktReader = new WKTReader();
+
+            var bigQueryId = Guid.Parse(row["Id"].ToString());
+            var bigQueryDescription = row["Description"].ToString();
+            var bigQueryStart = DateTime.Parse(row["Start"].ToString());
+            var bigQueryEnd = row["End"] != null ? DateTime.Parse(row["End"].ToString()) : (DateTime?)null;
+            double bigQueryStartMile = double.Parse(row["StartMile"].ToString());
+            var bigQueryEndMile = double.Parse(row["EndMile"].ToString());
+            var bigQueryImpactTypeId = Guid.Parse(row["ImpactTypeId"].ToString());
+            var bigQueryCreatedOn = DateTime.Parse(row["CreatedOn"].ToString()); //DateTime
+            var bigQueryCreatedBy = row["CreatedBy"].ToString();
+            var bigQueryUpdatedOn = row["UpdatedOn"] != null ? DateTime.Parse(row["UpdatedOn"].ToString()) : (DateTime?)null; //DateTime?
+            var bigQueryUpdatedBy = row["UpdatedBy"]?.ToString();
+            var bigQueryDeletedOn = row["DeletedOn"] != null ? DateTime.Parse(row["DeletedOn"].ToString()) : (DateTime?)null; //DateTime?
+            var bigQueryDeletedBy = row["DeletedBy"]?.ToString();
 
             return new Impact
             {
-                Id = row.GetPropertyValue<Guid>("Id"),
-                Description = row.GetPropertyValue<string>("Description"),
-                Start = row.GetPropertyValue<DateTime>("Start"),
-                End = row.GetPropertyValue<DateTime?>("End"),
-                StartMile = row.GetPropertyValue<double>("StartMile"),
-                EndMile = row.GetPropertyValue<double>("EndMile"),
-                Shape = wktReader.Read(row.GetPropertyValue<string>("Shape")),  // Assuming a FromString method in Geometry class
-                ImpactTypeId = row.GetPropertyValue<Guid>("ImpactTypeId"),
-                CreatedOn = row.GetPropertyValue<DateTime>("CreatedOn"),
-                CreatedBy = row.GetPropertyValue<string>("CreatedBy"),
-                UpdatedOn = row.GetPropertyValue<DateTime?>("UpdatedOn"),
-                UpdatedBy = row.GetPropertyValue<string>("UpdatedBy"),
-                DeletedOn = row.GetPropertyValue<DateTime?>("DeletedOn"),
-                DeletedBy = row.GetPropertyValue<string>("DeletedBy")
+                Id = bigQueryId,
+                Description = bigQueryDescription,
+                Start = bigQueryStart,
+                End = bigQueryEnd,
+                StartMile = bigQueryStartMile,
+                EndMile = bigQueryEndMile,
+                ImpactTypeId = bigQueryImpactTypeId,
+                CreatedOn = bigQueryCreatedOn,
+                CreatedBy = bigQueryCreatedBy,
+                UpdatedOn = bigQueryUpdatedOn,
+                UpdatedBy = bigQueryUpdatedBy,
+                DeletedOn = bigQueryDeletedOn,
+                DeletedBy = bigQueryDeletedBy
             };
         }
+
+
+
+
+        ///////////////////// 
+        //PRIVATE FUNCTIONS//
+        /////////////////////
+
+        private Tuple<string, List<BigQueryParameter>> UpdateQuery(Impact item)
+        {
+            var queryBuilder = new StringBuilder();
+            queryBuilder.Append($"UPDATE `{_datasetId}.{_tableId}` SET ");
+
+            if (!string.IsNullOrEmpty(item.Description))
+            {
+                queryBuilder.Append($"Description = '{item.Description}', ");
+            }
+
+            if (item.Start != DateTime.MinValue)
+            {
+                queryBuilder.Append($"Start = DATETIME('{item.Start:yyyy-MM-dd HH:mm:ss}'), ");
+            }
+
+            if (item.End.HasValue)
+            {
+                queryBuilder.Append($"`End` = DATETIME('{item.End.Value:yyyy-MM-dd HH:mm:ss}'), ");
+            }
+            else
+            {
+                queryBuilder.Append($"`End` = NULL, ");
+            }
+
+            queryBuilder.Append($"StartMile = {item.StartMile}, ");
+            queryBuilder.Append($"EndMile = {item.EndMile}, ");
+            queryBuilder.Append($"ImpactTypeId = '{item.ImpactTypeId}', ");
+            queryBuilder.Append($"UpdatedOn = DATETIME('{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}'), ");
+            queryBuilder.Append($"UpdatedBy = {(string.IsNullOrEmpty(item.UpdatedBy) ? "NULL" : $"'{item.UpdatedBy}'")}, ");
+            queryBuilder.Append($"DeletedOn = {(item.DeletedOn.HasValue ? $"DATETIME('{item.DeletedOn.Value:yyyy-MM-dd HH:mm:ss}')" : "NULL")}, ");
+            queryBuilder.Append($"DeletedBy = {(string.IsNullOrEmpty(item.DeletedBy) ? "NULL" : $"'{item.DeletedBy}'")}, ");
+
+            // Remove the last comma and space
+            queryBuilder.Length -= 2;
+
+            queryBuilder.Append(" WHERE Id = @key");
+
+            var query = queryBuilder.ToString();
+            var parameters = new List<BigQueryParameter>
+                {
+                    new BigQueryParameter("key", BigQueryDbType.String, item.Id.ToString())
+                };
+
+            return new Tuple<string, List<BigQueryParameter>>(query, parameters);
+        }
+
+
+        private Tuple<string, Guid> InsertQuery(Impact item)
+        {
+            Guid id = Guid.NewGuid();
+            var query = $"INSERT INTO `{_datasetId}.{_tableId}` " +
+                "(Id, Description, Start, `End`, StartMile, EndMile, ImpactTypeId, CreatedOn, CreatedBy, UpdatedOn, UpdatedBy, DeletedOn, DeletedBy) " +
+                "VALUES (" +
+                $"'{id}', " +
+                $"'{item.Description}', " +
+                $"DATETIME('{item.Start:yyyy-MM-dd HH:mm:ss}'), " +
+                $"{(item.End.HasValue ? $"DATETIME('{item.End.Value:yyyy-MM-dd HH:mm:ss}')" : "NULL")}, " +
+                $"{item.StartMile}, " +
+                $"{item.EndMile}, " +
+                $"'{item.ImpactTypeId}', " +
+                $"DATETIME('{item.CreatedOn:yyyy-MM-dd HH:mm:ss}'), " +
+                $"'{item.CreatedBy}', " +
+                "NULL, " +  // UpdatedOn is set to NULL
+                "NULL, " +  // UpdatedBy is set to NULL
+                "NULL, " +  // DeletedOn is set to NULL
+                "NULL)";  // DeletedBy is set to NULL
+
+            return new Tuple<string, Guid>(query, id);
+        }
+
     }
 }
