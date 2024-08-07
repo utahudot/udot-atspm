@@ -23,7 +23,7 @@ namespace SpeedManagementApi.Processors
         {
             var settings = new ExecutionDataflowBlockOptions()
             {
-                MaxDegreeOfParallelism = 1,
+                MaxDegreeOfParallelism = 10,
             };
             var startDate = DateTime.Now;
             var endDate = DateTime.Now;
@@ -75,7 +75,7 @@ namespace SpeedManagementApi.Processors
         {
             var settings = new ExecutionDataflowBlockOptions()
             {
-                MaxDegreeOfParallelism = 1,
+                MaxDegreeOfParallelism = 10,
             };
             var startDate = DateTime.Now;
             var endDate = DateTime.Now;
