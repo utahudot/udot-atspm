@@ -3,7 +3,7 @@ import { Popup } from 'react-leaflet'
 
 const SpeedManagementPopup = ({ route }) => {
   return (
-    <Popup offset={[0, -30]}>
+    <Popup>
       <Box sx={{ fontWeight: 'bold' }}>
         <Typography variant="h6">{route.properties.name}</Typography>
         <br />

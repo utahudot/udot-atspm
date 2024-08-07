@@ -60,14 +60,18 @@ export const transformCongestionTrackerData = (
           ).padStart(2, '0')}`
         : ''
 
-    const cellWidth = 80
+    const cellWidth = 78
+    const gapBetweenCells = 110
+    const paddingLeft = 5
+    const paddingTop = 20
+    const cellHeightPercent = 95
 
     grids.push({
       show: true,
-      left: `${(colIndex / 7) * cellWidth + 5}%`,
-      top: `${(rowIndex / 7) * 100 + 20}%`,
+      left: `${(colIndex / 7) * cellWidth + paddingLeft}%`,
+      top: `${(rowIndex / 7) * gapBetweenCells + paddingTop}%`,
       width: `${(1 / 7) * cellWidth}%`,
-      height: `${(1 / 7) * 85}%`,
+      height: `${(1 / 7) * cellHeightPercent}%`,
       borderWidth: 1,
     })
 
@@ -145,7 +149,7 @@ export const transformCongestionTrackerData = (
           parseFloat(`${(colIndex / 7) * cellWidth + 5.3}%`) +
           parseFloat(`${(1 / 7) * 10 - 1}%`) / 2 +
           '%',
-        top: `${(rowIndex / 7) * 100 + 20}%`,
+        top: `${(rowIndex / 7) * gapBetweenCells + paddingTop}%`,
         textAlign: 'center',
         text: String(dayCounter),
         textStyle: {
@@ -167,8 +171,8 @@ export const transformCongestionTrackerData = (
 
     if (i < 7) {
       titles.push({
-        left: `${(colIndex / 7) * cellWidth + 10}%`,
-        top: `${(rowIndex / 7) * 100 + 16}%`,
+        left: `${(colIndex / 7) * cellWidth + paddingLeft + 5}%`,
+        top: `${(rowIndex / 7) * gapBetweenCells + 16}%`,
         textAlign: 'center',
         text: daysOfTheWeek[i],
         textStyle: {
@@ -213,6 +217,8 @@ export const transformCongestionTrackerData = (
     yAxis: yAxes,
     series: series,
   }
+
+  console.log('option', option)
 
   return option
 }
