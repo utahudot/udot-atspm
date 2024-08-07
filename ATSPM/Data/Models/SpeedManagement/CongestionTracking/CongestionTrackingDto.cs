@@ -1,4 +1,6 @@
 ﻿
+using ATSPM.Data.Models.SpeedManagement.Common;
+
 namespace ATSPM.Data.Models.SpeedManagement.CongestionTracking
 {
     public class CongestionTrackingDto
@@ -8,6 +10,6 @@ namespace ATSPM.Data.Models.SpeedManagement.CongestionTracking
         public double StartingMilePoint { get; set; }
         public double EndingMilePoint { get; set; }
         public long SpeedLimit { get; set; }
-        public List<CongestionDailyDataDto> Data { get; set; }
+        public List<SpeedDataDto> Data { get; set; }
     }
 }

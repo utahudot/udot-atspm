@@ -1,7 +1,9 @@
 using Asp.Versioning;
+using ATSPM.Application.Business;
 using ATSPM.Application.Business.RouteSpeed;
 using ATSPM.Application.Repositories;
 using ATSPM.Application.Repositories.SpeedManagementRepositories;
+using ATSPM.Data.Models.SpeedManagement.CongestionTracking;
 using ATSPM.Infrastructure.Extensions;
 using ATSPM.Infrastructure.Repositories;
 using ATSPM.Infrastructure.Repositories.SpeedManagementRepositories;
@@ -154,7 +156,7 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddScoped<RouteService>();
     s.AddScoped<ImpactService>();
     s.AddScoped<ImpactTypeService>();
-    s.AddScoped<ICongestionTrackingService, CongestionTrackingService>();
+    s.AddScoped<IReportService<CongestionTrackingOptions, CongestionTrackingDto>, CongestionTrackingService>();
 
 
 

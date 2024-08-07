@@ -52,6 +52,7 @@
     <Folder Include="Analysis\SplitMonitor\" />
     <Folder Include="Attributes\" />
     <Folder Include="Events\" />
+    <Folder Include="SpeedManagement\Business\" />
   </ItemGroup>
 
   <ItemGroup>

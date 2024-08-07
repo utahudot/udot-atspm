@@ -1,6 +1,5 @@
 ﻿using ATSPM.Application.Business.RouteSpeed;
 using ATSPM.Application.Repositories.SpeedManagementRepositories;
-using ATSPM.Data.Models.SpeedManagement.CongestionTracking;
 using ATSPM.Data.Models.SpeedManagementAggregation;
 using ATSPM.Domain.Extensions;
 using Google.Cloud.BigQuery.V2;
@@ -217,7 +216,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             }).ToList();
         }
 
-        public async Task<List<HourlySpeed>> GetHourlySpeeds(CongestionTrackingOptions options)
+        public async Task<List<HourlySpeed>> GetHourlySpeeds(DateOnly startDate, DateOnly endDate, Guid segmentId)
         {
             string query = $@"
             SELECT *
@@ -227,12 +226,12 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
                 date BETWEEN @startDate AND @endDate 
             ORDER BY Date ASC, BinStartTime ASC;";
 
-            DateTime startDateTime = options.StartDate.ToDateTime(TimeOnly.MinValue);
-            DateTime endDateTime = options.EndDate.ToDateTime(TimeOnly.MinValue);
+            DateTime startDateTime =startDate.ToDateTime(TimeOnly.MinValue);
+            DateTime endDateTime = endDate.ToDateTime(TimeOnly.MinValue);
 
             var parameters = new[]
             {
-                new BigQueryParameter("segmentId", BigQueryDbType.String, options.SegmentId),
+                new BigQueryParameter("segmentId", BigQueryDbType.String, segmentId),
                 new BigQueryParameter("startDate", BigQueryDbType.Date, startDateTime.Date ),
                 new BigQueryParameter("endDate", BigQueryDbType.Date, endDateTime.Date),
             };
@@ -260,6 +259,81 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
                     EightyFifthSpeed = eightyFifthSpeed != null ? (long)eightyFifthSpeed : null,
                     NinetyFifthSpeed = ninetyFifthSpeed != null ? (long)ninetyFifthSpeed : null,
                     NinetyNinthSpeed = ninetyNinthSpeed != null ? (long)ninetyNinthSpeed : null,
+                    Violation = violation != null ? (long)violation : null,
+                    Flow = flow != null ? (long)flow : null
+                };
+            }).ToList();
+        }
+
+        public async Task<List<HourlySpeed>> GetWeeklySpeeds(DateOnly startDate, DateOnly endDate, Guid segmentId, long? sourceId)
+        {
+            string query = $@"
+            WITH data_with_datetime AS (
+              SELECT 
+                *,
+                TIMESTAMP(DATETIME(Date, BinStartTime)) AS datetime,
+              FROM `atspm-406601.speed_dataset.hourly_speed`
+              WHERE 
+                SourceId = @sourceId
+                AND SegmentId = @segment
+                AND Date BETWEEN @startDate AND @endDate
+            ),
+            data_with_custom_week_start AS (
+              SELECT 
+                *,
+              CASE
+                WHEN EXTRACT(DAYOFWEEK FROM Date) = 2 THEN Date
+                ELSE DATE_SUB(Date, INTERVAL EXTRACT(DAYOFWEEK FROM Date) - 2 DAY)
+                END AS custom_week_start
+              FROM
+                  data_with_datetime
+            )
+            SELECT 
+              custom_week_start as Date,
+              COUNT(DISTINCT datetime) AS distinct_datetime_count,
+              AVG(Average) AS Average,
+              AVG(FifteenthSpeed) as FifteenthSpeed,
+              AVG(EightyFifthSpeed) as EightyFifthSpeed,
+              AVG(NinetyFifthSpeed) as NinetyFifthSpeed,
+              SUM(Flow) as Flow
+            FROM
+                data_with_custom_week_start
+            GROUP BY
+                Date
+            ORDER BY
+                Date;";
+
+            DateTime startDateTime = startDate.ToDateTime(TimeOnly.MinValue);
+            DateTime endDateTime = endDate.ToDateTime(TimeOnly.MinValue);
+
+            var parameters = new[]
+            {
+                new BigQueryParameter("segmentId", BigQueryDbType.String, segmentId),
+                new BigQueryParameter("startDate", BigQueryDbType.Date, startDateTime.Date ),
+                new BigQueryParameter("endDate", BigQueryDbType.Date, endDateTime.Date),
+                new BigQueryParameter("sourceId", BigQueryDbType.Int64, sourceId)
+            };
+
+            var queryResults = await _client.ExecuteQueryAsync(query, parameters);
+            return queryResults.Select(row =>
+            {
+                string[] formats = { "MM/dd/yyyy HH:mm:ss", "M/d/yyyy h:mm:ss tt", "yyyy-MM-ddTHH:mm:ss.fffZ", "yyyy/MM/dd" };
+                var date = DateOnly.ParseExact(row["Date"].ToString(), formats);
+                var avg = row["Average"];
+                var fifteenthSpeed = row["FifteenthSpeed"];
+                var eightyFifthSpeed = row["EightyFifthSpeed"];
+                var ninetyFifthSpeed = row["NinetyFifthSpeed"];
+                var violation = row["Violation"];
+                var flow = row["Flow"];
+
+                return new HourlySpeed
+                {
+                    Date = date.ToDateTime(new TimeOnly(0, 0)),
+                    BinStartTime = date.ToDateTime(new TimeOnly(0, 0)),
+                    Average = avg != null ? (long)avg : 0,
+                    FifteenthSpeed = fifteenthSpeed != null ? (long)fifteenthSpeed : null,
+                    EightyFifthSpeed = eightyFifthSpeed != null ? (long)eightyFifthSpeed : null,
+                    NinetyFifthSpeed = ninetyFifthSpeed != null ? (long)ninetyFifthSpeed : null,
                     Violation = violation != null ? (long)violation : null,
                     Flow = flow != null ? (long)flow : null
                 };
