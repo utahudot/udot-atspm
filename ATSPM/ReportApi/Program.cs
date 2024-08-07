@@ -63,6 +63,7 @@ builder.Host.ConfigureServices((h, s) =>
         o.Filters.Add(new ProducesAttribute("application/json", "application/xml"));
     })
     .AddXmlDataContractSerializerFormatters();
+
     s.AddProblemDetails();
 
     s.AddResponseCompression(o =>
@@ -105,6 +106,10 @@ builder.Host.ConfigureServices((h, s) =>
         o.IncludeXmlComments(filePath);
     });
     var allowedHosts = builder.Configuration.GetSection("AllowedHosts").Get<string>();
+    if (allowedHosts == null)
+    {
+        throw new Exception("AllowedHosts configuration is missing");
+    }
     s.AddCors(options =>
     {
         options.AddPolicy("CorsPolicy",
@@ -168,6 +173,7 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddScoped<IReportService<SplitFailOptions, IEnumerable<SplitFailsResult>>, SplitFailReportService>();
     s.AddScoped<IReportService<SplitMonitorOptions, IEnumerable<SplitMonitorResult>>, SplitMonitorReportService>();
     s.AddScoped<IReportService<TimeSpaceDiagramOptions, IEnumerable<TimeSpaceDiagramResultForPhase>>, TimeSpaceDiagramReportService>();
+    s.AddScoped<IReportService<TimeSpaceDiagramAverageOptions, IEnumerable<TimeSpaceDiagramAverageResult>>, TimeSpaceDiagramAverageReportService>();
     s.AddScoped<IReportService<TimingAndActuationsOptions, IEnumerable<TimingAndActuationsForPhaseResult>>, TimingAndActuactionReportService>();
     s.AddScoped<IReportService<TurningMovementCountsOptions, TurningMovementCountsResult>, TurningMovementCountReportService>();
     s.AddScoped<IReportService<YellowRedActivationsOptions, IEnumerable<YellowRedActivationsResult>>, YellowRedActivationsReportService>();
@@ -198,6 +204,7 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddScoped<SplitFailPhaseService>();
     s.AddScoped<SplitMonitorService>();
     s.AddScoped<TimeSpaceDiagramForPhaseService>();
+    s.AddScoped<TimeSpaceAverageService>();
     s.AddScoped<TimingAndActuationsForPhaseService>();
     s.AddScoped<TurningMovementCountsService>();
     s.AddScoped<WaitTimeService>();
@@ -248,6 +255,7 @@ builder.Host.ConfigureServices((h, s) =>
         l.RequestBodyLogLimit = 4096;
         l.ResponseBodyLogLimit = 4096;
     });
+    s.AddLogging();
 });
 
 var app = builder.Build();

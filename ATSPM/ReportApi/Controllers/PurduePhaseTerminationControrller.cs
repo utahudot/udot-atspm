@@ -15,6 +15,6 @@ namespace ATSPM.ReportApi.Controllers
     public class PurduePhaseTerminationController : ReportControllerBase<PurduePhaseTerminationOptions, PhaseTerminationResult>
     {
         /// <inheritdoc/>
-        public PurduePhaseTerminationController(IReportService<PurduePhaseTerminationOptions, PhaseTerminationResult> reportService) : base(reportService) { }
+        public PurduePhaseTerminationController(IReportService<PurduePhaseTerminationOptions, PhaseTerminationResult> reportService, ILogger<PurduePhaseTerminationController> logger) : base(reportService, logger) { }
     }
 }

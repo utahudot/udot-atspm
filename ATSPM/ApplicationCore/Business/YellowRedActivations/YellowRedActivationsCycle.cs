@@ -1,4 +1,5 @@
-﻿using ATSPM.Data.Models.EventLogModels;
+﻿using ATSPM.Application.Extensions;
+using ATSPM.Data.Models.EventLogModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -76,7 +77,6 @@ namespace ATSPM.Application.Business.YellowRedActivations
         /// <summary>
         ///     Constructor for the PCDDataPointGroup
         /// </summary>
-        /// <param name="cycleStartTime"></param>
         public YellowRedActivationsCycle(
             DateTime yellowClearance,
             DateTime redClearance,
@@ -93,9 +93,16 @@ namespace ATSPM.Application.Business.YellowRedActivations
             redEvent = red;
             redEndEvent = redEnd;
             endTime = redEnd;
-            DetectorActivations = detectorEvents
-                .Where(d => d.Timestamp >= yellowClearance && d.Timestamp < redEnd)
-                .Select(d => new YellowRedActivation(yellowClearance, d.Timestamp)).ToList();
+            if (detectorEvents == null)
+            {
+                DetectorActivations = new List<YellowRedActivation>();
+            }
+            else
+            {
+                DetectorActivations = detectorEvents
+                    .Where(d => d.Timestamp >= yellowClearance && d.Timestamp < redEnd)
+                    .Select(d => new YellowRedActivation(yellowClearance, d.Timestamp)).ToList();
+            }
         }
 
         public DateTime StartTime => startTime;
@@ -112,7 +119,8 @@ namespace ATSPM.Application.Business.YellowRedActivations
         {
             get
             {
-                if (violations == -1)
+                //check for -1 within tolerance level
+                if (violations.AreEqual(-1))
                 {
                     violations = 0;
                     foreach (var d in DetectorActivations)
@@ -130,7 +138,8 @@ namespace ATSPM.Application.Business.YellowRedActivations
         {
             get
             {
-                if (yellowOccurrences == -1)
+                //check for -1 within tolerance level
+                if (yellowOccurrences.AreEqual(-1))
                 {
                     yellowOccurrences = 0;
                     foreach (var d in DetectorActivations)
@@ -148,9 +157,8 @@ namespace ATSPM.Application.Business.YellowRedActivations
         {
             get
             {
-                //because YellowActivations is lazy loaded make sure it is set which also
-                //sets YellowActivations
-                if (totalYellowTime == -1)
+                //check for -1 within tolerance level
+                if (totalYellowTime.AreEqual(-1))
                 {
                     var temp = YellowOccurrences;
                 }
@@ -162,9 +170,8 @@ namespace ATSPM.Application.Business.YellowRedActivations
         {
             get
             {
-                //because violations is lazy loaded make sure it is set which also
-                //sets totalViolationTime
-                if (violations == -1)
+                //check for -1 within tolerance level
+                if (violations.AreEqual(-1))
                 {
                     var temp = Violations;
                 }
@@ -178,7 +185,8 @@ namespace ATSPM.Application.Business.YellowRedActivations
         {
             get
             {
-                if (srlv == -1)
+                //check for -1 within tolerance level
+                if (srlv.AreEqual(-1))
                 {
                     srlv = 0;
                     foreach (var d in DetectorActivations)

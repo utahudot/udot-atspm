@@ -17,11 +17,11 @@ namespace WatchDog.Services.Tests
         [Fact()]
         public async void CreateAndSendEmailTest()
         {
-            var loggerMock = new Mock<ILogger<SmtpEmailService>>();
+            var loggerMock = new Mock<ILogger<EmailService>>();
             var smtpLoggerMock = new Mock<ILogger<SmtpEmailService>>();
             var configurationMock = new Mock<IOptionsSnapshot<EmailConfiguration>>();
-            var emailService = new SmtpEmailService(configurationMock.Object, loggerMock.Object);
-            //var emailService = new EmailService(loggerMock.Object, mailMock);
+            var mailMock = new SmtpEmailService(configurationMock.Object, smtpLoggerMock.Object);
+            var emailService = new EmailService(loggerMock.Object, mailMock);
             var emailOptions = new EmailOptions
             {
                 PreviousDayPMPeakEnd = 17,

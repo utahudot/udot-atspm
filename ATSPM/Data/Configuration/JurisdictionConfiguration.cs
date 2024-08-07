@@ -12,11 +12,13 @@ namespace ATSPM.Data.Configuration
         /// <inheritdoc/>
         public void Configure(EntityTypeBuilder<Jurisdiction> builder)
         {
-            builder.HasComment("Jurisdictions");
+            builder.ToTable(t => t.HasComment("Jurisdictions"));
 
             builder.Property(e => e.CountyParish).HasMaxLength(50);
 
             builder.Property(e => e.Name).HasMaxLength(50);
+            builder.Property(e => e.Name).IsRequired();
+
 
             builder.Property(e => e.Mpo).HasMaxLength(50);
 

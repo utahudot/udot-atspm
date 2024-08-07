@@ -54,12 +54,14 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
 
         public virtual string GenerateLocalFilePath(Device value, string file)
         {
-            return Path.Combine
+            var result = Path.Combine
                 (_options.LocalPath,
                 $"{value.Location?.LocationIdentifier} - {value.Location?.PrimaryName}",
                 value.DeviceType.ToString(),
                 value.Ipaddress.ToString(),
                 Path.GetFileName(file));
+
+            return result;
         }
 
         ///<inheritdoc/>

@@ -1,4 +1,5 @@
 using ATSPM.Application.Business.Common;
+using ATSPM.Application.TempExtensions;
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using ATSPM.Data.Models.EventLogModels;
@@ -262,11 +263,13 @@ namespace ATSPM.Application.Business.TimingAndActuation
                 || !approach.Location.PedsAre1to1 && approach.PedestrianPhaseNumber.HasValue)
                 return pedestrianEvents;
             var pedEventCodes = new List<short> { 89, 90 };
-            foreach (var pedDetector in approach.Detectors)
+            var pedDedectors = approach.GetPedDetectorsFromApproach();
+            var pedEvents = controllerEventLogs.GetPedEvents(options.Start, options.End, approach).ToList();
+            foreach (var pedDetector in pedDedectors)
             {
-                var lableName = $"Ped Det. Actuations, ph {approach.ProtectedPhaseNumber}, ch {pedDetector.DetectorChannel}";
-                var pedEvents = controllerEventLogs.Where(c => pedEventCodes.Contains(c.EventCode)
-                                                                && c.EventParam == pedDetector.DetectorChannel
+                var lableName = $"Ped Det. Actuations, ph {approach.ProtectedPhaseNumber}, ch {pedDetector} ";
+                var pedEventsForDetector = pedEvents.Where(c => pedEventCodes.Contains(c.EventCode)
+                                                                && c.EventParam == pedDetector
                                                                 && c.Timestamp >= options.Start
                                                                 && c.Timestamp <= options.End)
                                                    .ToList();
