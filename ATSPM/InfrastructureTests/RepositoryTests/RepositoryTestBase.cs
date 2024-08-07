@@ -14,6 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using ATSPM.Application.Repositories;
 using ATSPM.Data;
 using ATSPM.Data.Models;
@@ -40,7 +41,7 @@ namespace InfrastructureTests.RepositoryTests
     /// <typeparam name="T1"></typeparam>
     /// <typeparam name="T2"></typeparam>
     /// <typeparam name="T3"></typeparam>
-    public abstract class RepositoryTestBase<T1, T2, T3, T4> : IClassFixture<EFContextFixture<T3>> 
+    public abstract class RepositoryTestBase<T1, T2, T3, T4> : IClassFixture<EFContextFixture<T3>>
         where T1 : AtspmConfigModelBase<T4>, new()
         where T3 : DbContext, new()
     {
@@ -76,7 +77,7 @@ namespace InfrastructureTests.RepositoryTests
         //{
         //    var expected = ModelFixture.Create<T1>();
         //    T1 actual = null;
-            
+
         //    if (_repo is IAsyncRepository<T1> repo)
         //    {
         //        repo.Add(expected);
@@ -120,7 +121,7 @@ namespace InfrastructureTests.RepositoryTests
 
     public class CustomFixture : Fixture
     {
-        public CustomFixture() 
+        public CustomFixture()
         {
             this.Behaviors.OfType<ThrowingRecursionBehavior>().ToList().ForEach(b => this.Behaviors.Remove(b));
             this.Behaviors.Add(new OmitOnRecursionBehavior());
@@ -174,7 +175,7 @@ namespace InfrastructureTests.RepositoryTests
                     .Without(w => w.VersionAction)
                     .Without(w => w.Approaches)
                     .Without(w => w.Areas)
-                    //.Without(w => w.MetricComments)
+                //.Without(w => w.MetricComments)
                 );
         }
     }

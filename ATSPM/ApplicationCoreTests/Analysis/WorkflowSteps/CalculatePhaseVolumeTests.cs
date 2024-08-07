@@ -14,12 +14,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using ApplicationCoreTests.Analysis.TestObjects;
 using ApplicationCoreTests.Fixtures;
+using ATSPM.Application;
 using ATSPM.Application.Analysis.Common;
 using ATSPM.Application.Analysis.WorkflowSteps;
 using ATSPM.Data.Models;
 using ATSPM.Domain.Common;
+using ATSPM.Domain.Extensions;
 using AutoFixture;
 using Newtonsoft.Json;
 using System;
@@ -28,8 +31,6 @@ using System.IO;
 using System.Linq;
 using Xunit;
 using Xunit.Abstractions;
-using ATSPM.Domain.Extensions;
-using ATSPM.Application;
 
 namespace ApplicationCoreTests.Analysis.WorkflowSteps
 {
@@ -318,7 +319,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
                 _output.WriteLine($"volume: {v}");
             }
 
-            Assert.Collection(result.Item2.Segments, 
+            Assert.Collection(result.Item2.Segments,
                 a => Assert.True(a.DetectorCount == 2),
                 a => Assert.True(a.DetectorCount == 3),
                 a => Assert.True(a.DetectorCount == 0),

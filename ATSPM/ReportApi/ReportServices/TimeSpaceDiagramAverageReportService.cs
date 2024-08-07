@@ -14,6 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using ATSPM.Application.Business.Common;
 using ATSPM.Application.Business.TimeSpaceDiagram;
 using ATSPM.Application.Repositories.ConfigurationRepositories;
@@ -78,7 +79,7 @@ namespace ATSPM.ReportApi.ReportServices
 
             var averageParamsBase = ProcessRouteLocations(routeLocations, parameter);
 
-         var results = await Task.WhenAll(GetChartData(parameter, routeLocations, averageParamsBase, eventCodes));
+            var results = await Task.WhenAll(GetChartData(parameter, routeLocations, averageParamsBase, eventCodes));
             return results;
         }
 

@@ -14,14 +14,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
+using ATSPM.Data.Models.ConfigurationModels;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ATSPM.Data.Models.ConfigurationModels;
 
 namespace ATSPM.Data.Configuration
 {

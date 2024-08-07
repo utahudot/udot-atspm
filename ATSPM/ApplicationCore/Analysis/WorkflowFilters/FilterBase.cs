@@ -14,6 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using ATSPM.Data.Models;
 using ATSPM.Domain.Workflows;
 using System;
@@ -29,6 +30,6 @@ namespace ATSPM.Application.Analysis.WorkflowFilters
     public abstract class FilterBase : ProcessStepBase<IEnumerable<ControllerEventLog>, IEnumerable<ControllerEventLog>>
     {
         /// <inheritdoc/>
-        public FilterBase(DataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions){}
+        public FilterBase(DataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
     }
 }

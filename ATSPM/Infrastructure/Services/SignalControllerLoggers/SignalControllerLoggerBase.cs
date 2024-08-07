@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for Infrastructure - ATSPM.Infrastructure.Services.LocationControllerLoggers/SignalControllerLoggerBase.cs
+// for Infrastructure - ATSPM.Infrastructure.Services.SignalControllerLoggers/SignalControllerLoggerBase.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,6 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using ATSPM.Application.Exceptions;
 using ATSPM.Application.LogMessages;
 using ATSPM.Application.Services;
@@ -29,7 +30,7 @@ using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using System.Windows.Input;
 
-namespace ATSPM.Infrastructure.Services.LocationControllerLoggers
+namespace ATSPM.Infrastructure.Services.SignalControllerLoggers
 {
     public abstract class LocationControllerLoggerBase : ServiceObjectBase, ILocationControllerLoggerService
     {
@@ -53,7 +54,7 @@ namespace ATSPM.Infrastructure.Services.LocationControllerLoggers
 
             if (!IsInitialized)
                 BeginInit();
-            
+
             if (CanExecute(parameter))
             {
                 var sw = new System.Diagnostics.Stopwatch();
@@ -62,7 +63,7 @@ namespace ATSPM.Infrastructure.Services.LocationControllerLoggers
                 logMessages.LoggerStartedMessage(DateTime.Now, parameter.Count);
 
                 var LocationSender = new BufferBlock<Location>(new DataflowBlockOptions() { CancellationToken = cancelToken, NameFormat = "Location Buffer" });
-                
+
                 foreach (ITargetBlock<Location> step in Steps.Where(f => f is ITargetBlock<Location>))
                 {
                     LocationSender.LinkTo(step, new DataflowLinkOptions() { PropagateCompletion = true });
@@ -103,7 +104,7 @@ namespace ATSPM.Infrastructure.Services.LocationControllerLoggers
 
         public virtual bool CanExecute(IList<Location> parameter)
         {
-            return this.IsInitialized && parameter?.Count > 0;
+            return IsInitialized && parameter?.Count > 0;
         }
 
         public async Task<bool> ExecuteAsync(IList<Location> parameter, CancellationToken cancelToken = default)
@@ -150,7 +151,7 @@ namespace ATSPM.Infrastructure.Services.LocationControllerLoggers
                 {
                     logMessages.StepExecutionException(processName, new ControllerLoggerStepExecutionException<T>(this, processName, p, null, e));
                 }
-            },options);
+            }, options);
 
             block.Completion.ContinueWith(t => logMessages.StepCompletedMessage(block.ToString(), t.Status), options.CancellationToken);
 
@@ -174,7 +175,7 @@ namespace ATSPM.Infrastructure.Services.LocationControllerLoggers
                 {
                     logMessages.StepExecutionException(processName, new ControllerLoggerStepExecutionException<T>(this, processName, p, null, e));
                 }
-            },options);
+            }, options);
 
             block.Completion.ContinueWith(t => logMessages.StepCompletedMessage(block.ToString(), t.Status), options.CancellationToken);
 

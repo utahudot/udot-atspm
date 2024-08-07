@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for InfrastructureTests - InfrastructureTests.LogDownloaderClientTests/HttpDownloaderClientTests.cs
+// for InfrastructureTests - InfrastructureTests.DownloaderClientTests/HttpDownloaderClientTests.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,6 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using ATSPM.Infrastructure.Services.DownloaderClients;
 using Moq;
 using Moq.Protected;
@@ -112,7 +113,7 @@ namespace InfrastructureTests.DownloaderClientTests
                 ItExpr.IsAny<CancellationToken>())
                 .ReturnsAsync(mockResponse);
 
-            Sut = new HttpDownloaderClient(new HttpClient(client.Object) { BaseAddress = new Uri("http://192.168.1.1")});
+            Sut = new HttpDownloaderClient(new HttpClient(client.Object) { BaseAddress = new Uri("http://192.168.1.1") });
 
             base.DownloadFileAsyncSucceeded();
         }

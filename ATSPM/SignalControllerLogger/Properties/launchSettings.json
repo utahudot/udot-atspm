@@ -2,6 +2,7 @@
   "profiles": {
     "LocationControllerLogger": {
       "commandName": "Project",
+      "commandLineArgs": "--ScanDate 07/29/1979",
       "environmentVariables": {
         "PUBSUB_EMULATOR_HOST": "localhost:8085",
         "DOTNET_ENVIRONMENT": "Development",

@@ -1,6 +1,6 @@
 #region license
 // Copyright 2024 Utah Departement of Transportation
-// for LocationControllerLogger - LocationControllerLogger/LoggerBackgroundService.cs
+// for LocationControllerLogger - ATSPM.LocationControllerLogger/LoggerBackgroundService.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,7 +17,10 @@
 
 using ATSPM.Application;
 using ATSPM.Application.Configuration;
+using ATSPM.Application.Repositories.ConfigurationRepositories;
+using ATSPM.Application.Services;
 using ATSPM.Data.Models;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -27,11 +30,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using ATSPM.Application.Services;
-using ATSPM.Application.Repositories.ConfigurationRepositories;
 
-namespace LocationControllerLogger
+namespace ATSPM.LocationControllerLogger
 {
     public class LoggerBackgroundService : BackgroundService
     {

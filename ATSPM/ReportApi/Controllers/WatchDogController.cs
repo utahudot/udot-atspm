@@ -14,13 +14,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using Asp.Versioning;
+using ATSPM.Application.Business.Watchdog;
+using ATSPM.Application.Services;
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
-using ATSPM.Application.Business.Watchdog;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
-using ATSPM.Application.Services;
 
 namespace ATSPM.ReportApi.Controllers
 {

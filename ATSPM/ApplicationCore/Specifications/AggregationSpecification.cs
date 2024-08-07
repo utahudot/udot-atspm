@@ -14,6 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using ATSPM.Data.Models;
 using ATSPM.Data.Models.AggregationModels;
 using ATSPM.Domain.Specifications;
@@ -107,7 +108,7 @@ namespace ATSPM.Application.Specifications
     //    }
     //}
 
-    
+
 
     //public class ControllerLogCodeAndParamSpecification : BaseSpecification<ControllerEventLog>
     //{
@@ -147,5 +148,5 @@ namespace ATSPM.Application.Specifications
     //    }
     //}
 
-    
+
 }

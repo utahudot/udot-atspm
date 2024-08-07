@@ -14,6 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using ATSPM.Application.Business.Common;
 using ATSPM.Data.Models;
 using System;
@@ -57,7 +58,7 @@ namespace ATSPM.Application.Business.LinkPivot
         public DateOnly StartDate { get; set; }
         public int LinkNumber { get; set; }
 
-        
+
 
         //private void GetNewResultsChart()
         //{
