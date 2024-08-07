@@ -54,7 +54,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApplicationCoreTests", "App
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpeedManagementApi", "SpeedManagementApi\SpeedManagementApi.csproj", "{ADF34587-2573-4BFB-A5FF-529FBBDFF921}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpeedManagementImporter", "..\..\SafetyDashboardAPI\SpeedManagementImporter\SpeedManagementImporter.csproj", "{BF7E4579-BF04-4931-877F-E805B39E7393}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpeedManagementImporter", "SpeedManagementImporter\SpeedManagementImporter.csproj", "{68707DDC-328F-493C-AC0D-5ECD9F583AA4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -144,10 +144,10 @@ Global
 		{ADF34587-2573-4BFB-A5FF-529FBBDFF921}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ADF34587-2573-4BFB-A5FF-529FBBDFF921}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ADF34587-2573-4BFB-A5FF-529FBBDFF921}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BF7E4579-BF04-4931-877F-E805B39E7393}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BF7E4579-BF04-4931-877F-E805B39E7393}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BF7E4579-BF04-4931-877F-E805B39E7393}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BF7E4579-BF04-4931-877F-E805B39E7393}.Release|Any CPU.Build.0 = Release|Any CPU
+		{68707DDC-328F-493C-AC0D-5ECD9F583AA4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{68707DDC-328F-493C-AC0D-5ECD9F583AA4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{68707DDC-328F-493C-AC0D-5ECD9F583AA4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{68707DDC-328F-493C-AC0D-5ECD9F583AA4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
