@@ -1,5 +1,4 @@
-﻿
-using ATSPM.Application.Business;
+﻿using ATSPM.Application.Business;
 using ATSPM.Application.Repositories.SpeedManagementRepositories;
 using ATSPM.Data.Models.SpeedManagement;
 using ATSPM.Data.Models.SpeedManagement.Common;

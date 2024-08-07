@@ -17,15 +17,11 @@ namespace SpeedManagementApi.Processors
         {
             var settings = new ExecutionDataflowBlockOptions()
             {
-                MaxDegreeOfParallelism = 10,
+                MaxDegreeOfParallelism = 1,
             };
 
             //Here is the list of tasks
-            var expiredEvents = new TransformManyBlock<object, MonthlyAggregation>(async _ =>
-            {
-                var result = await monthlyAggregationService.AllAggregationsOverTimePeriodAsync();
-                return result;
-            }, settings);
+            var expiredEvents = new TransformManyBlock<object, MonthlyAggregation>(input => AllAggregationsOverTimePeriodAsync(), settings);
             var deleteBlock = new ActionBlock<MonthlyAggregation>(monthlyAggregationService.DeleteMonthlyAggregation, settings);
 
             DataflowLinkOptions linkOptions = new DataflowLinkOptions() { PropagateCompletion = true };
@@ -38,6 +34,15 @@ namespace SpeedManagementApi.Processors
             expiredEvents.Complete();
 
             await deleteBlock.Completion;
+        }
+
+        private IEnumerable<MonthlyAggregation> AllAggregationsOverTimePeriodAsync()
+        {
+            var list = monthlyAggregationService.AllAggregationsOverTimePeriodAsync().Result;
+            foreach (var item in list)
+            {
+                yield return item;
+            }
         }
 
 

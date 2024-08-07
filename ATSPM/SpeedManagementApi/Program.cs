@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
+using SpeedManagementApi.Processors;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Text.Json.Serialization;
 
@@ -148,6 +149,14 @@ builder.Host.ConfigureServices((h, s) =>
         var tableId = builder.Configuration["BigQuery:SegmentImpactTableId"];
         var logger = provider.GetRequiredService<ILogger<SegmentImpactBQRepository>>();
         return new SegmentImpactBQRepository(client, datasetId, tableId, logger);
+    });
+    s.AddScoped<IMonthlyAggregationRepository, MonthlyAggregationBQRepository>(provider =>
+    {
+        var client = provider.GetRequiredService<BigQueryClient>();
+        var datasetId = builder.Configuration["BigQuery:DatasetId"];
+        var tableId = builder.Configuration["BigQuery:MonthlyAggregationTableId"];
+        var logger = provider.GetRequiredService<ILogger<MonthlyAggregationBQRepository>>();
+        return new MonthlyAggregationBQRepository(client, datasetId, tableId, logger);
     });
 
     Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", builder.Configuration["GoogleApplicationCredentials"]);

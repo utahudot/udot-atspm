@@ -1,30 +1,44 @@
 ﻿using ATSPM.Data.Models.SpeedManagement.MonthlyAggregation;
 using ATSPM.Infrastructure.Services.SpeedManagementServices;
 using Microsoft.AspNetCore.Mvc;
+using SpeedManagementApi.Processors;
 
 namespace SpeedManagementApi.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class MonthlyAggregationController : ControllerBase
     {
         private MonthlyAggregationService monthlyAggregationService;
+        private DeleteOldEventsProcessor deleteOldEventsProcessor;
+        private AggregateMonthlyEventsProcessor aggregateMonthlyEventsProcessor;
 
-        public MonthlyAggregationController(MonthlyAggregationService monthlyAggrectionService)
+        public MonthlyAggregationController(MonthlyAggregationService monthlyAggrectionService, DeleteOldEventsProcessor deleteOldEventsProcessor, AggregateMonthlyEventsProcessor aggregateMonthlyEventsProcessor)
         {
             this.monthlyAggregationService = monthlyAggrectionService;
+            this.deleteOldEventsProcessor = deleteOldEventsProcessor;
+            this.aggregateMonthlyEventsProcessor = aggregateMonthlyEventsProcessor;
         }
 
-        // GET: /ImpactType/{segmentId}
-        [HttpGet("{segmentId}")]
-        public async Task<ActionResult<List<MonthlyAggregation>>> GetImpactTypeById(Guid segmentId)
+        [HttpPost("")]
+        public async Task AggregateMonthlyEventsAsync()
         {
-            var impactType = await monthlyAggregationService.ListMonthlyAggregationsForSegment(segmentId);
-            if (impactType == null)
-            {
-                return NotFound();
-            }
-            return Ok(impactType);
+            await aggregateMonthlyEventsProcessor.AggregateMonthlyEvents();
+            return;
+        }
+
+        [HttpPost("segment")]
+        public async Task AggregateMonthlyEventsForSingleSegmentAsync([FromBody] MonthlyAggregation monthlyAggregation)
+        {
+            await aggregateMonthlyEventsProcessor.AggregateMonthlyEventsForSingleSegment(monthlyAggregation);
+            return;
+        }
+
+        [HttpDelete("")]
+        public async Task DeleteOldEventsAsync()
+        {
+            await deleteOldEventsProcessor.DeleteOldEvents();
+            return;
         }
 
     }

@@ -462,7 +462,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
 
                 foreach (var row in result)
                 {
-                    var segmentId = (Guid)row["Id"];
+                    var segmentId = Guid.Parse(row["Id"].ToString());
 
                     if (!segments.TryGetValue(segmentId, out var segment))
                     {
@@ -494,12 +494,12 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
                         segments.Add(segmentId, segment);
                     }
 
-                    if (row["EntityId"] != DBNull.Value)
+                    if (row["EntityId"] != null && row["SourceId"] != null && row["SegmentId"] != null)
                     {
                         segment.RouteEntities.Add(new SegmentEntity
                         {
-                            EntityId = (int)row["EntityId"],
-                            SourceId = (int)row["SourceId"],
+                            EntityId = Convert.ToInt32((long)row["EntityId"]),
+                            SourceId = Convert.ToInt32((long)row["SourceId"]),
                             SegmentId = row["SegmentId"].ToString()
                         });
                     }

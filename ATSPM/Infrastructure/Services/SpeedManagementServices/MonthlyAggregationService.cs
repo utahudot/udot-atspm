@@ -23,17 +23,17 @@ namespace ATSPM.Infrastructure.Services.SpeedManagementServices
             return monthlyAggregations;
         }
 
-        public async Task<MonthlyAggregation> UpsertMonthlyAggregation(MonthlyAggregation monthlyAggregation)
+        public async Task UpsertMonthlyAggregation(MonthlyAggregation monthlyAggregation)
         {
             //Add the monthlyAggregation
-            var updatedMonthlyAggregation = await monthlyAggregationRepository.UpsertMonthlyAggregationAsync(monthlyAggregation);
-            if (updatedMonthlyAggregation.Id == null)
-            {
-                return null;
-            }
-            var monthlyAggregationId = (Guid)updatedMonthlyAggregation.Id;
+            await monthlyAggregationRepository.UpsertMonthlyAggregationAsync(monthlyAggregation);
+            //if (updatedMonthlyAggregation.Id == null)
+            //{
+            //    return null;
+            //}
+            //var monthlyAggregationId = (Guid)updatedMonthlyAggregation.Id;
 
-            return await GetMonthlyAggregationById(monthlyAggregationId);
+            //return await GetMonthlyAggregationById(monthlyAggregationId);
         }
 
         //For the DeleteOldEvents

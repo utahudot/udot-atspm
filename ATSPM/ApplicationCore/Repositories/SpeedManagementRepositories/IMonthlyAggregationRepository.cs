@@ -14,6 +14,6 @@ namespace ATSPM.Application.Repositories.SpeedManagementRepositories
         Task<MonthlyAggregation> SelectByBinTimeSegment(DateTime binStartTime, MonthlyAggregation monthlyAggregation);
         Task<MonthlyAggregation> SelectByBinTimeSegmentAndSource(DateTime binStartTime, MonthlyAggregation monthlyAggregation);
         Task<List<MonthlyAggregation>> SelectMonthlyAggregationBySegment(Guid SegmentId);
-        Task<MonthlyAggregation> UpsertMonthlyAggregationAsync(MonthlyAggregation item);
+        Task UpsertMonthlyAggregationAsync(MonthlyAggregation item);
     }
 }

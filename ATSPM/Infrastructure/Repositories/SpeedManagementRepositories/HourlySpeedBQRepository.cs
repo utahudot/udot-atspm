@@ -1,7 +1,6 @@
 ﻿using ATSPM.Application.Business.RouteSpeed;
 using ATSPM.Application.Repositories.SpeedManagementRepositories;
 using ATSPM.Data.Models.SpeedManagementAggregation;
-using ATSPM.Domain.Extensions;
 using Google.Cloud.BigQuery.V2;
 using Microsoft.Extensions.Logging;
 using NetTopologySuite.Geometries;
@@ -76,7 +75,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
 
             var parameters = new List<BigQueryParameter>
             {
-                new BigQueryParameter("segmentId", BigQueryDbType.String, segmentId),
+                new BigQueryParameter("segmentId", BigQueryDbType.String, segmentId.ToString()),
                 new BigQueryParameter("startDate", BigQueryDbType.Date, startDate.Date),
                 new BigQueryParameter("endDate", BigQueryDbType.Date, endDate.Date),
                 new BigQueryParameter("startTime", BigQueryDbType.Time, startTime.TimeOfDay),
@@ -115,22 +114,36 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
 
         protected override HourlySpeed MapRowToEntity(BigQueryRow row)
         {
+            var bigQueryDate = DateTime.Parse(row["Date"].ToString());
+            var bigQueryBinStartTime = DateTime.Parse(row["BinStartTime"].ToString());
+            var bigQuerySegmentId = row["SegmentId"].ToString();
+            var bigQuerySourceId = int.Parse(row["SourceId"].ToString());
+            var bigQueryConfidenceId = int.Parse(row["ConfidenceId"].ToString());
+            var bigQueryAverage = int.Parse(row["Average"].ToString());
+            var bigQueryFifteenthSpeed = row["FifteenthSpeed"] != null ? int.Parse(row["FifteenthSpeed"].ToString()) : (int?)null;
+            var bigQueryEightyFifthSpeed = row["EightyFifthSpeed"] != null ? int.Parse(row["EightyFifthSpeed"].ToString()) : (int?)null;
+            var bigQueryNinetyFifthSpeed = row["NinetyFifthSpeed"] != null ? int.Parse(row["NinetyFifthSpeed"].ToString()) : (int?)null;
+            var bigQueryNinetyNinthSpeed = row["NinetyNinthSpeed"] != null ? int.Parse(row["NinetyNinthSpeed"].ToString()) : (int?)null;
+            var bigQueryViolation = row["Violation"] != null ? int.Parse(row["Violation"].ToString()) : (int?)null;
+            var bigQueryFlow = row["Flow"] != null ? int.Parse(row["Flow"].ToString()) : (int?)null;
+
             return new HourlySpeed
             {
-                Date = row.GetPropertyValue<DateTime>("Id"),
-                BinStartTime = row.GetPropertyValue<DateTime>("BinStartTime"),
-                SegmentId = row.GetPropertyValue<string>("SegmentId"),
-                SourceId = row.GetPropertyValue<int>("SourceId"),
-                ConfidenceId = row.GetPropertyValue<int>("ConfidenceId"),
-                Average = row.GetPropertyValue<int>("Average"),
-                FifteenthSpeed = row.GetPropertyValue<int?>("FifteenthSpeed"),
-                EightyFifthSpeed = row.GetPropertyValue<int?>("EightyFifthSpeed"),
-                NinetyFifthSpeed = row.GetPropertyValue<int?>("NinetyFifthSpeed"),
-                NinetyNinthSpeed = row.GetPropertyValue<int?>("NinetyNinthSpeed"),
-                Violation = row.GetPropertyValue<int?>("Violation"),
-                Flow = row.GetPropertyValue<int?>("Flow")
+                Date = bigQueryDate,
+                BinStartTime = bigQueryBinStartTime,
+                SegmentId = bigQuerySegmentId,
+                SourceId = bigQuerySourceId,
+                ConfidenceId = bigQueryConfidenceId,
+                Average = bigQueryAverage,
+                FifteenthSpeed = bigQueryFifteenthSpeed,
+                EightyFifthSpeed = bigQueryEightyFifthSpeed,
+                NinetyFifthSpeed = bigQueryNinetyFifthSpeed,
+                NinetyNinthSpeed = bigQueryNinetyNinthSpeed,
+                Violation = bigQueryViolation,
+                Flow = bigQueryFlow
             };
         }
+
 
         public async Task<List<MonthlyAverage>> GetMonthlyAveragesAsync(Guid segmentId, DateOnly startDate, DateOnly endDate, string daysOfWeek, int sourceId)
         {
@@ -226,7 +239,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
                 date BETWEEN @startDate AND @endDate 
             ORDER BY Date ASC, BinStartTime ASC;";
 
-            DateTime startDateTime =startDate.ToDateTime(TimeOnly.MinValue);
+            DateTime startDateTime = startDate.ToDateTime(TimeOnly.MinValue);
             DateTime endDateTime = endDate.ToDateTime(TimeOnly.MinValue);
 
             var parameters = new[]
