@@ -14,6 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using ATSPM.Application.Analysis.ApproachDelay;
 using ATSPM.Application.Analysis.Common;
 using ATSPM.Application.Analysis.WorkflowFilters;
@@ -47,7 +48,7 @@ namespace ATSPM.Application.Analysis.Workflows
             _stepOptions.MaxDegreeOfParallelism = maxDegreeOfParallelism;
         }
 
-        protected JoinBlock<Tuple<Approach,IEnumerable<CorrectedDetectorEvent>>, Tuple<Approach, IEnumerable<RedToRedCycle>>> mergeCyclesAndVehicles;
+        protected JoinBlock<Tuple<Approach, IEnumerable<CorrectedDetectorEvent>>, Tuple<Approach, IEnumerable<RedToRedCycle>>> mergeCyclesAndVehicles;
 
         public FilteredPhaseIntervalChanges FilteredPhaseIntervalChanges { get; private set; }
         public FilteredDetectorData FilteredDetectorData { get; private set; }

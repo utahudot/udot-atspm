@@ -14,6 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using ATSPM.Application.Analysis.Plans;
 using ATSPM.Data.Models;
 using ATSPM.Domain.Workflows;
@@ -33,7 +34,7 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
         protected override Task<Tuple<Location, int, IEnumerable<T>>> Process(Tuple<Location, int, IEnumerable<ControllerEventLog>> input, CancellationToken cancelToken = default)
         {
             var result = Tuple.Create(input.Item1, input.Item2, input.Item3
-                .GroupBy(g => g.EventCode, (k, l) => 
+                .GroupBy(g => g.EventCode, (k, l) =>
                 l.Select((s, i) => new T()
                 {
                     LocationIdentifier = input.Item1.LocationIdentifier,

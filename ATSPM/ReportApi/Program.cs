@@ -14,6 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using Asp.Versioning;
 using ATSPM.Application.Business.Aggregation;
 using ATSPM.Application.Business.AppoachDelay;
@@ -52,7 +53,6 @@ using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
-using MOE.Common.Business.WCFServiceLibrary;
 using Moq;
 using Swashbuckle.AspNetCore.SwaggerGen;
 

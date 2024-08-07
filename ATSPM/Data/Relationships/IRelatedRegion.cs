@@ -14,6 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using ATSPM.Data.Models;
 
 namespace ATSPM.Data.Relationships
@@ -27,7 +28,7 @@ namespace ATSPM.Data.Relationships
         /// Related region
         /// </summary>
         int? RegionId { get; set; }
-        
+
         /// <summary>
         /// Region
         /// </summary>

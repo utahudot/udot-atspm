@@ -14,6 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using ApplicationCoreTests.Analysis.TestObjects;
 using ATSPM.Application;
 using ATSPM.Application.Analysis.Common;
@@ -462,6 +463,6 @@ namespace ApplicationCoreTests.Analysis
         //}
     }
 
-    
+
 
 }

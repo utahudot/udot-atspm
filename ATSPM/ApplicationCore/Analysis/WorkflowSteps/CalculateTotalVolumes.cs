@@ -14,8 +14,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using ATSPM.Application.Analysis.Common;
 using ATSPM.Application.Common;
+using ATSPM.Application.Extensions;
 using ATSPM.Data.Models;
 using ATSPM.Domain.Common;
 using ATSPM.Domain.Extensions;
@@ -24,7 +26,6 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using ATSPM.Application.Extensions;
 
 namespace ATSPM.Application.Analysis.WorkflowSteps
 {

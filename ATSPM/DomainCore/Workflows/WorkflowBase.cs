@@ -14,6 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using ATSPM.Domain.BaseClasses;
 using ATSPM.Domain.Exceptions;
 using System;
@@ -38,7 +39,7 @@ namespace ATSPM.Domain.Workflows
         protected DataflowBlockOptions blockOptions;
 
         /// <inheritdoc/>
-        public WorkflowBase(DataflowBlockOptions dataflowBlockOptions = default) :base(true)
+        public WorkflowBase(DataflowBlockOptions dataflowBlockOptions = default) : base(true)
         {
             blockOptions = dataflowBlockOptions ?? new();
             blockOptions.NameFormat = GetType().Name;

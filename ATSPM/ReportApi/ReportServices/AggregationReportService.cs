@@ -14,12 +14,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using ATSPM.Application.Business.Aggregation;
 using ATSPM.Application.Repositories.AggregationRepositories;
 using ATSPM.Application.Repositories.ConfigurationRepositories;
 using ATSPM.Application.Services;
 using ATSPM.ReportApi.DataAggregation;
-using MOE.Common.Business.WCFServiceLibrary;
 
 namespace ATSPM.ReportApi.ReportServices
 {

@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for ReportApi - MOE.Common.Business.DataAggregation/SplitFailAggregationByRoute.cs
+// for ReportApi - ATSPM.ReportApi.DataAggregation/SplitFailAggregationByRoute.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,10 +14,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
-using ATSPM.Data.Models.AggregationModels;
-using ATSPM.ReportApi.DataAggregation;
 
-namespace MOE.Common.Business.DataAggregation
+using ATSPM.Data.Models.AggregationModels;
+
+namespace ATSPM.ReportApi.DataAggregation
 {
     class SplitFailAggregationByRoute
     {

@@ -14,6 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 #nullable disable
 
 
@@ -33,7 +34,7 @@ namespace ATSPM.Data.Models.EventLogModels
         /// Miles per hour
         /// </summary>
         public int Mph { get; set; }
-        
+
         /// <summary>
         /// Kilometers per hour
         /// </summary>

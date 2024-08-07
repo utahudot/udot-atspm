@@ -1,6 +1,6 @@
 #region license
 // Copyright 2024 Utah Departement of Transportation
-// for InfrastructureTests - InfrastructureTests.LocationControllerDecoderTests/ISignalControllerDecoderTests.cs
+// for InfrastructureTests - InfrastructureTests.EventLogDecoderTests/IEventLogDecoderTests.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,26 +14,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
-using ATSPM.Application.Configuration;
-using ATSPM.Application.Services;
-using ATSPM.Data.Models;
+
 using ATSPM.Data.Models.EventLogModels;
-using ATSPM.Domain.Exceptions;
 using ATSPM.Domain.Extensions;
-using ATSPM.Infrastructure.Services.ControllerDecoders;
-using ATSPM.Infrastructure.Services.DeviceDownloaders;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Extensions.Options;
-using Moq;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -41,9 +29,9 @@ namespace InfrastructureTests.EventLogDecoderTests
 {
     public class EventLogDecoderTestData<T> where T : EventLogModelBase
     {
-        
+
         byte[] EventLogs { get; set; }
-        bool IsCompressed { get; set;}
+        bool IsCompressed { get; set; }
         List<T> Events { get; set; }
     }
 
@@ -290,7 +278,7 @@ namespace InfrastructureTests.EventLogDecoderTests
         //    var mockConfig = Mock.Of<IOptionsSnapshot<SignalControllerDecoderConfiguration>>();
         //    var file = new FileInfo(Path.Combine(TestDataPath, "4895_ECON_10.210.8.179_2024_02_21_1115.dat"));
         //    //var data = file.ToMemoryStream();
-            
+
         //    var device = new Device()
         //    {
         //        DeviceConfiguration = new DeviceConfiguration()

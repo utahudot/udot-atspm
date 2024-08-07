@@ -14,6 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using ATSPM.Data.Models;
 using ATSPM.Domain.Services;
 using System;
@@ -68,7 +69,7 @@ namespace ATSPM.Application.Repositories.ConfigurationRepositories
         /// <param name="startDate">Starting date of Location controllers</param>
         /// <returns>Lastest <see cref="Location"/> version</returns>
         Location GetLatestVersionOfLocation(string LocationIdentifier, DateTime startDate);
-       
+
         /// <summary>
         /// Get latest version of <see cref="Location"/> and related entities that match <paramref name="LocationId"/>. This allows for cloning and editing of the  returned location. 
         /// </summary>

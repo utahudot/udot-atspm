@@ -14,12 +14,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
+using ATSPM.Domain.Extensions;
 using System;
+using System.IO;
+using System.Linq;
 using Xunit;
 using Xunit.Extensions;
-using ATSPM.Domain.Extensions;
-using System.Linq;
-using System.IO;
 
 namespace DomainCoreTests
 {

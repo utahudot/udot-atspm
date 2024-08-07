@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for ReportApi - MOE.Common.Business.DataAggregation/AggregationByPhase.cs
+// for ReportApi - ATSPM.ReportApi.DataAggregation/AggregationByPhase.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,12 +14,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using ATSPM.Application.Business.Aggregation;
 using ATSPM.Application.Business.Bins;
 using ATSPM.Data.Models;
-using MOE.Common.Business.WCFServiceLibrary;
 
-namespace MOE.Common.Business.DataAggregation
+namespace ATSPM.ReportApi.DataAggregation
 {
     public abstract class AggregationByPhase
     {
