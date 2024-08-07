@@ -15,7 +15,7 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Domain.BaseClasses;
+using Utah.Udot.NetStandardToolkit.BaseClasses;
 using System;
 using System.Threading.Tasks;
 using Xunit;

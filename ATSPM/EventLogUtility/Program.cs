@@ -15,34 +15,11 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Application;
-using ATSPM.Application.Analysis.ApproachDelay;
-using ATSPM.Application.Analysis.Common;
-using ATSPM.Application.Analysis.Plans;
-using ATSPM.Application.Analysis.PreemptionDetails;
-using ATSPM.Application.Analysis.PurdueCoordination;
-using ATSPM.Application.Analysis.WorkflowFilters;
-using ATSPM.Application.Analysis.Workflows;
-using ATSPM.Application.Analysis.WorkflowSteps;
-using ATSPM.Application.Configuration;
-using ATSPM.Data.Enums;
-using ATSPM.Data.Models;
-using ATSPM.Domain.Common;
-using ATSPM.Domain.Extensions;
-using Google.Protobuf.WellKnownTypes;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Query.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System.Collections;
-using System.Collections.Generic;
-using System.CommandLine;
-using System.Diagnostics.CodeAnalysis;
-using System.Security.Cryptography.X509Certificates;
-using System.Text.Json;
-using System.Threading.Tasks.Dataflow;
+using Utah.Udot.Atspm.Data.Models;
 
 
 //var path1 = "C:\\temp\\TestData\\7115_Approach_Delay.csv";

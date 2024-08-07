@@ -15,20 +15,11 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Application.Exceptions;
-using ATSPM.Application.Services;
-using ATSPM.Data.Enums;
-using ATSPM.Domain.BaseClasses;
 using FluentFTP;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Net;
-using System.Threading;
-using System.Threading.Tasks;
+using Utah.Udot.Atspm.Data.Enums;
 
-namespace ATSPM.Infrastructure.Services.DownloaderClients
+namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
 {
     /// <summary>
     /// Connect to services and interact with their file directories using <see cref="IAsyncFtpClient"/>

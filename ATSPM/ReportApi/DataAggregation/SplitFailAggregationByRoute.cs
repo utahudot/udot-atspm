@@ -15,7 +15,7 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Data.Models.AggregationModels;
+using Utah.Udot.Atspm.Data.Models;
 
 namespace ATSPM.ReportApi.DataAggregation
 {

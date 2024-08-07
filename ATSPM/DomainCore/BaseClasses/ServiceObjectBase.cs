@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for DomainCore - ATSPM.Domain.BaseClasses/ServiceObjectBase.cs
+// for DomainCore - Utah.Udot.NetStandardToolkit.BaseClasses/ServiceObjectBase.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,8 +15,8 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Domain.Common;
-using ATSPM.Domain.Services;
+using Utah.Udot.NetStandardToolkit.Common;
+using Utah.Udot.NetStandardToolkit.Services;
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -24,7 +24,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace ATSPM.Domain.BaseClasses
+namespace Utah.Udot.NetStandardToolkit.BaseClasses
 {
 
     /// <inheritdoc cref="IExecutableServiceWithProgress{Tin, Tout, Tp}"/>

@@ -16,16 +16,14 @@
 #endregion
 
 using Asp.Versioning;
-using ATSPM.DataApi.Configuration;
-using ATSPM.DataApi.CustomOperations;
-using ATSPM.DataApi.Formatters;
-using ATSPM.Domain.Extensions;
-using ATSPM.Infrastructure.Extensions;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using Utah.Udot.Atspm.DataApi.Configuration;
+using Utah.Udot.Atspm.DataApi.CustomOperations;
+using Utah.Udot.Atspm.DataApi.Formatters;
 
 var builder = WebApplication.CreateBuilder(args);
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);

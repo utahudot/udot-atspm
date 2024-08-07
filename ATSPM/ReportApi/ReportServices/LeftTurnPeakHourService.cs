@@ -15,10 +15,6 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Application.Business.LeftTurnGapReport;
-using ATSPM.Application.Repositories.AggregationRepositories;
-using ATSPM.Application.Repositories.ConfigurationRepositories;
-using ATSPM.Application.Services;
 
 namespace ATSPM.ReportApi.ReportServices
 {

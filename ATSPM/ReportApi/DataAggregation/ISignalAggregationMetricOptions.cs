@@ -15,10 +15,8 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Application.Business.Aggregation;
-using ATSPM.Application.Business.Bins;
-using ATSPM.Data.Enums;
-using ATSPM.Data.Models;
+using Utah.Udot.Atspm.Data.Enums;
+using Utah.Udot.Atspm.Data.Models;
 
 namespace ATSPM.ReportApi.DataAggregation
 {

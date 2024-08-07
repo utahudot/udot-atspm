@@ -15,20 +15,11 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Application.Business.Common;
-using ATSPM.Application.Business.TurningMovementCounts;
-using ATSPM.Application.Business.TurningMovementCounts.MOE.Common.Business.TMC;
-using ATSPM.Application.Extensions;
-using ATSPM.Application.Repositories.ConfigurationRepositories;
-using ATSPM.Application.Repositories.EventLogRepositories;
-using ATSPM.Application.Services;
-using ATSPM.Application.TempExtensions;
-using ATSPM.Data.Enums;
-using ATSPM.Data.Models;
-using ATSPM.Data.Models.EventLogModels;
-using ATSPM.Domain.Extensions;
 using Microsoft.IdentityModel.Tokens;
 using System.ComponentModel.DataAnnotations;
+using Utah.Udot.Atspm.Data.Enums;
+using Utah.Udot.Atspm.Data.Models;
+using Utah.Udot.Atspm.Data.Models.EventLogModels;
 
 namespace ATSPM.ReportApi.ReportServices
 {

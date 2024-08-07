@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for DataApi - ATSPM.DataApi.Formatters/EventLogCsvFormatter.cs
+// for DataApi - Utah.Udot.Atspm.DataApi.Formatters/EventLogCsvFormatter.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,14 +15,12 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Data.Models;
-using ATSPM.Data.Models.AggregationModels;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Primitives;
-using Newtonsoft.Json;
 using System.Text;
+using Utah.Udot.Atspm.Data.Models;
 
-namespace ATSPM.DataApi.Formatters
+namespace Utah.Udot.Atspm.DataApi.Formatters
 {
     public class EventLogCsvFormatter : TextOutputFormatter
     {

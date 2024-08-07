@@ -15,7 +15,6 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Infrastructure.Services.DownloaderClients;
 using Moq;
 using Moq.Protected;
 using System;

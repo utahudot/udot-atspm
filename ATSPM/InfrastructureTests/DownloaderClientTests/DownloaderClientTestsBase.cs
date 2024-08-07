@@ -15,8 +15,6 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Application.Exceptions;
-using ATSPM.Application.Services;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -24,8 +22,6 @@ using System.Net;
 using System.Threading;
 using Xunit;
 using Xunit.Abstractions;
-using Xunit.Sdk;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace InfrastructureTests.DownloaderClientTests
 {

@@ -15,8 +15,6 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Application.LogMessages;
-using ATSPM.Application.Services;
 using AutoFixture;
 using Microsoft.AspNetCore.Mvc;
 

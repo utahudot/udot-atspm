@@ -15,19 +15,12 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Application.Repositories.EventLogRepositories;
-using ATSPM.Application.Specifications;
-using ATSPM.Data;
-using ATSPM.Data.Models;
-using ATSPM.Data.Models.EventLogModels;
-using ATSPM.Domain.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using Utah.Udot.Atspm.Data;
+using Utah.Udot.Atspm.Data.Models.EventLogModels;
 
-namespace ATSPM.Infrastructure.Repositories.EventLogRepositories
+namespace Utah.Udot.Atspm.Infrastructure.Repositories.EventLogRepositories
 {
     /// <summary>
     /// Generic base for accessing device event logs

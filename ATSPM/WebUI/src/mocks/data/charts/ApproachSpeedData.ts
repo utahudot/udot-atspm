@@ -19,7 +19,7 @@ export const approachSpeedData = [
     phaseNumber: 2,
     phaseDescription: 'WBT Ph2',
     detectionType:
-      'System.Collections.Generic.HashSet`1[ATSPM.Data.Models.DetectionType]',
+      'System.Collections.Generic.HashSet`1[Utah.Udot.Atspm.Data.Models.DetectionType]',
     distanceFromStopBar: 255,
     postedSpeed: 45,
     plans: [
@@ -1263,7 +1263,7 @@ export const approachSpeedData = [
     phaseNumber: 6,
     phaseDescription: 'EBT Ph6',
     detectionType:
-      'System.Collections.Generic.HashSet`1[ATSPM.Data.Models.DetectionType]',
+      'System.Collections.Generic.HashSet`1[Utah.Udot.Atspm.Data.Models.DetectionType]',
     distanceFromStopBar: 280,
     postedSpeed: 45,
     plans: [

@@ -16,11 +16,8 @@
 #endregion
 
 using Asp.Versioning;
-using ATSPM.Application.Business.Aggregation;
-using ATSPM.Application.Services;
-using ATSPM.Data.Models;
-using ATSPM.ReportApi.DataAggregation;
 using Microsoft.AspNetCore.Mvc;
+using Utah.Udot.Atspm.Data.Models;
 
 namespace ATSPM.ReportApi.Controllers
 {

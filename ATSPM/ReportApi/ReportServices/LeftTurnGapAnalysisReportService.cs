@@ -15,10 +15,6 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Application.Business.LeftTurnGapAnalysis;
-using ATSPM.Application.Repositories.ConfigurationRepositories;
-using ATSPM.Application.Repositories.EventLogRepositories;
-using ATSPM.Application.Services;
 using Microsoft.IdentityModel.Tokens;
 
 namespace ATSPM.ReportApi.ReportServices

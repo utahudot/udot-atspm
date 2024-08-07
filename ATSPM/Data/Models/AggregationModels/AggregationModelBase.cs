@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for Data - ATSPM.Data.Models.AggregationModels/AggregationModelBase.cs
+// for Data - Utah.Udot.Atspm.Data.Models/AggregationModelBase.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,14 +15,14 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Data.Enums;
-using ATSPM.Data.Interfaces;
-using ATSPM.Domain.Common;
 using Newtonsoft.Json;
+using Utah.Udot.Atspm.Data.Enums;
+using Utah.Udot.Atspm.Data.Interfaces;
+using Utah.Udot.NetStandardToolkit.Common;
 
 #nullable disable
 
-namespace ATSPM.Data.Models.AggregationModels
+namespace Utah.Udot.Atspm.Data.Models
 {
     /// <summary>
     /// Aggregation model base for models used in Atspm data aggregations

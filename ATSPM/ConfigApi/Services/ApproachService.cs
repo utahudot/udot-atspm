@@ -15,16 +15,16 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Application.Business.PedDelay;
-using ATSPM.Application.Repositories.ConfigurationRepositories;
-using ATSPM.ConfigApi.Models;
-using ATSPM.Data.Models;
+using Utah.Udot.Atspm.Business.PedDelay;
+using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
+using Utah.Udot.Atspm.Data.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Utah.Udot.Atspm.ConfigApi.Models;
 
-namespace ATSPM.ConfigApi.Services
+namespace Utah.Udot.Atspm.ConfigApi.Services
 {
     public class ApproachService : IApproachService
     {

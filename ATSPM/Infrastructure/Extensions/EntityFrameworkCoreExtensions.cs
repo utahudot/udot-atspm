@@ -16,9 +16,8 @@
 #endregion
 
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
 
-namespace ATSPM.Infrastructure.Extensions
+namespace Utah.Udot.Atspm.Infrastructure.Extensions
 {
     /// <summary>
     /// Extensions for entity framework
