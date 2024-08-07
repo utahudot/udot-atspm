@@ -1,16 +1,21 @@
 ﻿
+using ATSPM.Application.Business;
 using ATSPM.Application.Repositories.SpeedManagementRepositories;
 using ATSPM.Data.Models.SpeedManagement;
+using ATSPM.Data.Models.SpeedManagement.Common;
 using ATSPM.Data.Models.SpeedManagement.CongestionTracking;
 using ATSPM.Data.Models.SpeedManagementAggregation;
 using ATSPM.Data.Models.SpeedManagementConfigModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
+
 
 namespace ATSPM.Infrastructure.Services.SpeedManagementServices.CongestionTracking
 {
-    public class CongestionTrackingService : ICongestionTrackingService
+    public class CongestionTrackingService : ReportServiceBase<CongestionTrackingOptions, CongestionTrackingDto>
     {
 
         private readonly IHourlySpeedRepository hourlySpeedRepository;
@@ -21,11 +26,10 @@ namespace ATSPM.Infrastructure.Services.SpeedManagementServices.CongestionTracki
             this.hourlySpeedRepository = hourlySpeedRepository;
             this.segmentRepository = routeRepository;
         }
-
-        public async Task<CongestionTrackingDto> GetReportData(CongestionTrackingOptions options)
+        public override async Task<CongestionTrackingDto> ExecuteAsync(CongestionTrackingOptions parameter, IProgress<int> progress = null, CancellationToken cancelToken = default)
         {
-            var segment = await segmentRepository.LookupAsync(options.SegmentId);
-            var hourlyResult = await hourlySpeedRepository.GetHourlySpeeds(options);
+            var segment = await segmentRepository.LookupAsync(parameter.SegmentId);
+            var hourlyResult = await hourlySpeedRepository.GetHourlySpeeds(parameter.StartDate, parameter.EndDate, Guid.Parse(parameter.SegmentId));
             var result = ConvertToCongestionResult(hourlyResult, segment);
             return result;
         }
@@ -33,7 +37,7 @@ namespace ATSPM.Infrastructure.Services.SpeedManagementServices.CongestionTracki
         private static CongestionTrackingDto ConvertToCongestionResult(List<HourlySpeed> hourlyResult, Segment segment)
         {
             var grouping = hourlyResult.GroupBy(h => h.Date);
-            var data = new List<CongestionDailyDataDto>();
+            var data = new List<SpeedDataDto>();
 
             foreach (var group in grouping)
             {
@@ -42,13 +46,13 @@ namespace ATSPM.Infrastructure.Services.SpeedManagementServices.CongestionTracki
                     ? null
                     : group.Select(h => new DataPoint<long>(h.BinStartTime, (long)(h.EightyFifthSpeed ?? 0))).ToList();
 
-                var series = new CongestionSeriesData()
+                var series = new AverageAndEightyFifthSeriesData()
                 {
                     Average = averageData,
                     EightyFifth = eightyFifthData,
                 };
 
-                var dailyData = new CongestionDailyDataDto()
+                var dailyData = new SpeedDataDto()
                 {
                     Date = group.Key,
                     Series = series,
