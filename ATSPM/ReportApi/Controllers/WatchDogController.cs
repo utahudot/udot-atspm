@@ -16,12 +16,9 @@
 #endregion
 
 using Asp.Versioning;
-using ATSPM.Application.Business.Watchdog;
-using ATSPM.Application.Services;
-using ATSPM.Data.Enums;
-using ATSPM.Data.Models;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
+using Utah.Udot.Atspm.Data.Enums;
+using Utah.Udot.Atspm.Data.Models;
 
 namespace ATSPM.ReportApi.Controllers
 {

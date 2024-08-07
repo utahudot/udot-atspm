@@ -15,21 +15,13 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Application.Repositories;
-using ATSPM.Data;
-using ATSPM.Data.Models;
-using ATSPM.Data.Models.ConfigurationModels;
-using ATSPM.Domain.Services;
-using ATSPM.Infrastructure.Repositories;
 using AutoFixture;
-using Google.Api;
 using InfrastructureTests.Fixtures;
 using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Utah.Udot.Atspm.Data.Models;
+using Utah.Udot.Atspm.Data.Models;
 using Xunit;
 using Xunit.Abstractions;
 

@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for DomainCore - ATSPM.Domain.Extensions/StreamExtensions.cs
+// for DomainCore - Utah.Udot.NetStandardToolkit.Extensions/StreamExtensions.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 
-namespace ATSPM.Domain.Extensions
+namespace Utah.Udot.NetStandardToolkit.Extensions
 {
     /// <summary>
     /// Stream extensions

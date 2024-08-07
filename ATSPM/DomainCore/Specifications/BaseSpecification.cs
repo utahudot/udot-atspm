@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for DomainCore - ATSPM.Domain.Specifications/BaseSpecification.cs
+// for DomainCore - Utah.Udot.NetStandardToolkit.Specifications/BaseSpecification.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Text;
 
-namespace ATSPM.Domain.Specifications
+namespace Utah.Udot.NetStandardToolkit.Specifications
 {
     public abstract class BaseSpecification<T> : ISpecification<T>
     {

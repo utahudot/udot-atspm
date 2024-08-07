@@ -15,10 +15,7 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Application.Business.LinkPivot;
-using ATSPM.Application.Repositories.ConfigurationRepositories;
-using ATSPM.Application.Services;
-using ATSPM.Data.Models;
+using Utah.Udot.Atspm.Data.Models;
 
 namespace ATSPM.ReportApi.ReportServices
 {

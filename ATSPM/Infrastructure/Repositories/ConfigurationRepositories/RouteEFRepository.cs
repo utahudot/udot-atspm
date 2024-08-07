@@ -15,13 +15,10 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Application.Repositories.ConfigurationRepositories;
-using ATSPM.Data;
-using ATSPM.Data.Models;
-using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Logging;
+using Utah.Udot.Atspm.Data;
 
-namespace ATSPM.Infrastructure.Repositories.ConfigurationRepositories
+namespace Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories
 {
     ///<inheritdoc cref="IRouteRepository"/>
     public class RouteEFRepository : ATSPMRepositoryEFBase<Route>, IRouteRepository

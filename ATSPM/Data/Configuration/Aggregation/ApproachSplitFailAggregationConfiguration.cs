@@ -15,11 +15,10 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Data.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace ATSPM.Data.Configuration.Aggregation
+namespace Utah.Udot.Atspm.Data.Configuration
 {
     public class ApproachSplitFailAggregationConfiguration : IEntityTypeConfiguration<ApproachSplitFailAggregation>
     {

@@ -15,12 +15,6 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Application.Business.Common;
-using ATSPM.Application.Business.PhaseTermination;
-using ATSPM.Application.Repositories.ConfigurationRepositories;
-using ATSPM.Application.Repositories.EventLogRepositories;
-using ATSPM.Application.Services;
-using ATSPM.Application.TempExtensions;
 using Microsoft.IdentityModel.Tokens;
 
 namespace ATSPM.ReportApi.ReportServices

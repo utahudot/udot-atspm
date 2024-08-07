@@ -15,14 +15,8 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Application.Business.ArrivalOnRed;
-using ATSPM.Application.Business.Common;
-using ATSPM.Application.Repositories.ConfigurationRepositories;
-using ATSPM.Application.Repositories.EventLogRepositories;
-using ATSPM.Application.Services;
-using ATSPM.Application.TempExtensions;
-using ATSPM.Data.Models.EventLogModels;
 using Microsoft.IdentityModel.Tokens;
+using Utah.Udot.Atspm.Data.Models.EventLogModels;
 
 namespace ATSPM.ReportApi.ReportServices
 {

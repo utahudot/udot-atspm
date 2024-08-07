@@ -16,10 +16,10 @@
 #endregion
 
 using Asp.Versioning;
-using ATSPM.Application.Repositories.ConfigurationRepositories;
-using ATSPM.Data.Models;
+using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
+using Utah.Udot.Atspm.Data.Models;
 
-namespace ATSPM.ConfigApi.Controllers
+namespace Utah.Udot.Atspm.ConfigApi.Controllers
 {
     /// <summary>
     /// Route Location controller

@@ -15,7 +15,8 @@
 // limitations under the License.
 #endregion
 
-namespace ATSPM.ConfigApi.Models
+
+namespace Utah.Udot.Atspm.ConfigApi.Models
 {
     public class SearchLocation
     {

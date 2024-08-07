@@ -1,59 +1,122 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
-    <RootNamespace>$(SolutionName).$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
-    <AssemblyName>$(SolutionName).$(MSBuildProjectName)</AssemblyName>
-    <GenerateDocumentationFile>True</GenerateDocumentationFile>
-  </PropertyGroup>
+	<PropertyGroup>
+		<NameSpacePrefix>Utah.Udot</NameSpacePrefix>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <Compile Remove="Migrations\**" />
-    <EmbeddedResource Remove="Migrations\**" />
-    <None Remove="Migrations\**" />
-  </ItemGroup>
+	<PropertyGroup>
+		<TargetFramework>net7.0</TargetFramework>
+		<RootNamespace>$(NameSpacePrefix).$(SolutionName).$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
+		<AssemblyName>$(NameSpacePrefix).$(SolutionName).$(MSBuildProjectName)</AssemblyName>
+		<GenerateDocumentationFile>True</GenerateDocumentationFile>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+		<Title>Udot Automated Traffic Performance Measure Application</Title>
+		<Authors>utah.udot.gov</Authors>
+		<Description>Library that defines services and workflows for the Automated Traffic Performance Measures platform</Description>
+		<Copyright>Copyright $(Authors)</Copyright>
+		<PackageProjectUrl>https://github.com/utahudot/udot-atspm</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/utahudot/udot-atspm</RepositoryUrl>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageTags>C#; .net standard; .net core</PackageTags>
+		<Version>5.0-rc.1</Version>
+		<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+		<PackageLicenseFile>LICENSE</PackageLicenseFile>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <Compile Remove="Repositories\ControllerEventLogFileRepository.cs" />
-  </ItemGroup>
+	<ItemGroup>
+		<Compile Remove="Migrations\**" />
+		<EmbeddedResource Remove="Migrations\**" />
+		<None Remove="Migrations\**" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <None Include="Repositories\ControllerEventLogFileRepository.cs" />
-  </ItemGroup>
+	<ItemGroup>
+	  <Compile Remove="Repositories\ControllerEventLogFileRepository.cs" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="FluentFTP" Version="44.0.1" />
-    <PackageReference Include="Google.Cloud.Diagnostics.Common" Version="5.0.0" />
-    <PackageReference Include="MailKit" Version="4.5.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.14" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="7.0.20" />
-    <PackageReference Include="Microsoft.CodeAnalysis" Version="4.9.2" />
-    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="7.0.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="7.0.14" />
-    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="7.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0" />
-    <PackageReference Include="OData.Swagger" Version="1.0.0" />
-    <PackageReference Include="Parquet.Net" Version="3.10.0" />
-    <PackageReference Include="SendGrid" Version="9.29.3" />
-    <PackageReference Include="SSH.NET" Version="2020.0.2" />
-  </ItemGroup>
+	<ItemGroup>
+	  <None Include="..\..\LICENSE">
+	    <Pack>True</Pack>
+	    <PackagePath>\</PackagePath>
+	  </None>
+	  <None Include="..\..\README.md">
+	    <Pack>True</Pack>
+	    <PackagePath>\</PackagePath>
+	  </None>
+	  <None Include="Repositories\ControllerEventLogFileRepository.cs" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\ApplicationCore\ApplicationCore.csproj" />
-    <ProjectReference Include="..\MySqlDatabaseProvider\MySqlDatabaseProvider.csproj" />
-    <ProjectReference Include="..\OracleDatabaseProvider\OracleDatabaseProvider.csproj" />
-    <ProjectReference Include="..\PostgreSQLDatabaseProvider\PostgreSQLDatabaseProvider.csproj" />
-    <ProjectReference Include="..\SqlDatabaseProvider\SqlDatabaseProvider.csproj" />
-    <ProjectReference Include="..\SqlLiteDatabaseProvider\SqlLiteDatabaseProvider.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="FluentFTP" Version="44.0.1" />
+		<PackageReference Include="Google.Cloud.Diagnostics.Common" Version="5.0.0" />
+		<PackageReference Include="MailKit" Version="4.5.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.14" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="7.0.20" />
+		<PackageReference Include="Microsoft.CodeAnalysis" Version="4.9.2" />
+		<PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="7.0.0">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="7.0.14" />
+		<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="7.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0" />
+		<PackageReference Include="OData.Swagger" Version="1.0.0" />
+		<PackageReference Include="Parquet.Net" Version="3.10.0" />
+		<PackageReference Include="SendGrid" Version="9.29.3" />
+		<PackageReference Include="SSH.NET" Version="2020.0.2" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Reference Include="PipelineManagerLibrary">
-      <HintPath>..\..\..\udot-pipelinemanager\PipelineManager\PipelineManagerLibrary\bin\Debug\netcoreapp3.1\PipelineManagerLibrary.dll</HintPath>
-    </Reference>
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\Application\Application.csproj" />
+		<ProjectReference Include="..\MySqlDatabaseProvider\MySqlDatabaseProvider.csproj" />
+		<ProjectReference Include="..\OracleDatabaseProvider\OracleDatabaseProvider.csproj" />
+		<ProjectReference Include="..\PostgreSQLDatabaseProvider\PostgreSQLDatabaseProvider.csproj" />
+		<ProjectReference Include="..\SqlDatabaseProvider\SqlDatabaseProvider.csproj" />
+		<ProjectReference Include="..\SqlLiteDatabaseProvider\SqlLiteDatabaseProvider.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Reference Include="PipelineManagerLibrary">
+			<HintPath>..\..\..\udot-pipelinemanager\PipelineManager\PipelineManagerLibrary\bin\Debug\netcoreapp3.1\PipelineManagerLibrary.dll</HintPath>
+		</Reference>
+		<Reference Include="Utah.Udot.NetStandardToolkit">
+		  <HintPath>..\..\..\udot-netstandard-toolkit\NetStandardToolkit\bin\Release\net7.0\Utah.Udot.NetStandardToolkit.dll</HintPath>
+		</Reference>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Using Include=" Utah.Udot.Atspm.Services" />
+	  <Using Include="Utah.Udot.Atspm.Configuration" />
+	  <Using Include="Utah.Udot.Atspm.Data.Models" />
+	  <Using Include="Utah.Udot.Atspm.Exceptions" />
+	  <Using Include="Utah.Udot.Atspm.Extensions" />
+	  <Using Include="Utah.Udot.Atspm.LogMessages" />
+	  <Using Include="Utah.Udot.Atspm.Repositories.AggregationRepositories" />
+	  <Using Include="Utah.Udot.Atspm.Repositories.ConfigurationRepositories" />
+	  <Using Include="Utah.Udot.Atspm.Repositories.EventLogRepositories" />
+	  <Using Include="Utah.Udot.Atspm.Specifications" />
+	  <Using Include="Utah.Udot.NetStandardToolkit.BaseClasses" />
+	  <Using Include="Utah.Udot.NetStandardToolkit.Common" />
+	  <Using Include="Utah.Udot.NetStandardToolkit.Configuration" />
+	  <Using Include="Utah.Udot.NetStandardToolkit.Exceptions" />
+	  <Using Include="Utah.Udot.NetStandardToolkit.Extensions" />
+	  <Using Include="Utah.Udot.NetStandardToolkit.Services" />
+	  <Using Include="Utah.Udot.NetStandardToolkit.Specifications" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Compile Update="Properties\Resources.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>Resources.resx</DependentUpon>
+	  </Compile>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <EmbeddedResource Update="Properties\Resources.resx">
+	    <Generator>ResXFileCodeGenerator</Generator>
+	    <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
+	</ItemGroup>
 
 </Project>

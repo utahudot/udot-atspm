@@ -15,10 +15,6 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Application.Business.Watchdog;
-using ATSPM.Application.Repositories;
-using ATSPM.Application.Repositories.ConfigurationRepositories;
-using ATSPM.Application.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace ATSPM.ReportApi.ReportServices

@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for Data - ATSPM.Data.Models/CompressedDataBase.cs
+// for Data - Utah.Udot.Atspm.Data.Models/CompressedDataBase.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,13 +15,12 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Data.Interfaces;
-using ATSPM.Data.Models.AggregationModels;
-using ATSPM.Data.Models.EventLogModels;
+using Utah.Udot.Atspm.Data.Interfaces;
+using Utah.Udot.Atspm.Data.Models.EventLogModels;
 
 #nullable disable
 
-namespace ATSPM.Data.Models
+namespace Utah.Udot.Atspm.Data.Models
 {
     /// <summary>
     /// Base for compressed database table models
@@ -87,8 +86,8 @@ namespace ATSPM.Data.Models
         ///<inheritdoc cref="CompressedDataBase.Data"/>
         public new ICollection<T> Data
         {
-            get => Enumerable.ToHashSet(base.Data.Cast<T>()).ToList();
-            set => base.Data = Enumerable.ToHashSet(value.Cast<T>()).ToList();
+            get => base.Data.Cast<T>().ToHashSet().ToList();
+            set => base.Data = value.Cast<T>().ToHashSet().ToList();
         }
     }
 
@@ -114,8 +113,8 @@ namespace ATSPM.Data.Models
         ///<inheritdoc cref="CompressedDataBase.Data"/>
         public new ICollection<T> Data
         {
-            get => Enumerable.ToHashSet(base.Data.Cast<T>()).ToList();
-            set => base.Data = Enumerable.ToHashSet(value.Cast<T>()).ToList();
+            get => base.Data.Cast<T>().ToHashSet().ToList();
+            set => base.Data = value.Cast<T>().ToHashSet().ToList();
         }
     }
 }

@@ -15,11 +15,11 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Data.Enums;
-using ATSPM.Data.Models;
-using ATSPM.Data.Relationships;
+using Utah.Udot.Atspm.Data.Enums;
+using Utah.Udot.Atspm.Data.Models;
+using Utah.Udot.Atspm.Data.Relationships;
 
-namespace ATSPM.ConfigApi.Models
+namespace Utah.Udot.Atspm.ConfigApi.Models
 {
     public class DetectionTypeDto
     {

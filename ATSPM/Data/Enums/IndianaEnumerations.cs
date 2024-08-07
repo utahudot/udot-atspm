@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for Data - ATSPM.Data.Enums/IndianaEnumerations.cs
+// for Data - Utah.Udot.Atspm.Data.Enums/IndianaEnumerations.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 
 using System.ComponentModel.DataAnnotations;
 
-namespace ATSPM.Data.Enums
+namespace Utah.Udot.Atspm.Data.Enums
 {
     /// <summary>
     /// Traffic Location Hi Resolution Data Logger Enumerations

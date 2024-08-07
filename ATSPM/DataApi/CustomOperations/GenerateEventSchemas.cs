@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for DataApi - ATSPM.DataApi.CustomOperations/GenerateEventSchemas.cs
+// for DataApi - Utah.Udot.Atspm.DataApi.CustomOperations/GenerateEventSchemas.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,11 +15,11 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Data.Models.EventLogModels;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using Utah.Udot.Atspm.Data.Models.EventLogModels;
 
-namespace ATSPM.DataApi.CustomOperations
+namespace Utah.Udot.Atspm.DataApi.CustomOperations
 {
     public class GenerateEventSchemas : IDocumentFilter
     {

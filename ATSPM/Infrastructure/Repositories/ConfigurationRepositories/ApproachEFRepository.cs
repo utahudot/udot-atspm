@@ -15,14 +15,11 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Application.Repositories.ConfigurationRepositories;
-using ATSPM.Data;
-using ATSPM.Data.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System.Linq;
+using Utah.Udot.Atspm.Data;
 
-namespace ATSPM.Infrastructure.Repositories.ConfigurationRepositories
+namespace Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories
 {
     ///<inheritdoc cref="IApproachRepository"/>
     public class ApproachEFRepository : ATSPMRepositoryEFBase<Approach>, IApproachRepository

@@ -15,11 +15,11 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Data.Models
-using ATSPM.Application.Repositories;
-using ATSPM.Domain.Services;
-using ATSPM.Infrastructure.Data;
-using ATSPM.Infrastructure.Repositories;
+using Utah.Udot.Atspm.Data.Models
+using Utah.Udot.Atspm.Repositories;
+using Utah.Udot.NetStandardToolkit.Services;
+using Atspm.Infrastructure.Data;
+using Atspm.Infrastructure.Repositories;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Logging;
 using System;
@@ -29,11 +29,11 @@ using Xunit.Abstractions;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Collections.Generic;
-using ATSPM.Domain.Extensions;
-using ATSPM.Application.Specifications;
+using Utah.Udot.NetStandardToolkit.Extensions;
+using Utah.Udot.Atspm.Specifications;
 using System.Threading.Tasks;
-using ATSPM.Application.Extensions;
-using ATSPM.Application.ValueObjects;
+using Utah.Udot.Atspm.Extensions;
+using Utah.Udot.Atspm.ValueObjects;
 
 namespace InfrastructureTests
 {

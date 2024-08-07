@@ -18,7 +18,7 @@
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace ATSPM.ConfigApi
+namespace Utah.Udot.Atspm.ConfigApi
 {
     public class IgnoreTypeSchemaFilter : ISchemaFilter
     {

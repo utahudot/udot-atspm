@@ -17,13 +17,13 @@
 
 using Asp.Versioning;
 using Asp.Versioning.OData;
-using ATSPM.Data.Models;
+using Utah.Udot.Atspm.Data.Models;
 using Microsoft.AspNetCore.OData.Formatter.Serialization;
 using Microsoft.OData.Edm;
 using Microsoft.OData.ModelBuilder;
 using System.Net;
 
-namespace ATSPM.ConfigApi.Configuration
+namespace Utah.Udot.Atspm.ConfigApi.Configuration
 {
     /// <summary>
     /// Device oData configuration

@@ -15,20 +15,11 @@
 // limitations under the License.
 #endregion
 
-using ATSPM.Application.Configuration;
-using ATSPM.Domain.Common;
-using ATSPM.Domain.Services;
-using ATSPM.Domain.Specifications;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Threading.Tasks;
 
-namespace ATSPM.Infrastructure.Repositories
+namespace Utah.Udot.Atspm.Infrastructure.Repositories
 {
     public abstract class ATSPMFileRepositoryBase<T> : IAsyncRepository<T> where T : class, new()
     {
