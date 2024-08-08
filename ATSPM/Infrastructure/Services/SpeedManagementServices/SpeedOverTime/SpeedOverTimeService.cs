@@ -33,7 +33,7 @@ namespace ATSPM.Infrastructure.Services.SpeedManagementServices.SpeedOverTime
             switch (parameter.TimeOptions)
             {
                 case TimeOptionsEnum.Day:
-                    var hourlyResult = await hourlySpeedRepository.GetHourlySpeeds(parameter.StartDate, parameter.EndDate, Guid.Parse(parameter.SegmentId));
+                    var hourlyResult = await hourlySpeedRepository.GetHourlySpeeds(parameter.StartDate, parameter.EndDate, Guid.Parse(parameter.SegmentId), parameter.SourceId);
                     speedResult = ConvertHourlyToSpeedData(hourlyResult);
                     break;
                 case TimeOptionsEnum.Week:
