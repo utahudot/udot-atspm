@@ -117,7 +117,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
         {
             var bigQueryDate = DateTime.Parse(row["Date"].ToString());
             var bigQueryBinStartTime = DateTime.Parse(row["BinStartTime"].ToString());
-            var bigQuerySegmentId = row["SegmentId"].ToString();
+            var bigQuerySegmentId = Guid.Parse(row["SegmentId"].ToString());
             var bigQuerySourceId = int.Parse(row["SourceId"].ToString());
             var bigQueryConfidenceId = int.Parse(row["ConfidenceId"].ToString());
             var bigQueryAverage = int.Parse(row["Average"].ToString());
