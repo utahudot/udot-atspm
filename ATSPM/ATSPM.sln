@@ -54,6 +54,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApplicationCoreTests", "App
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpeedManagementApi", "SpeedManagementApi\SpeedManagementApi.csproj", "{ADF34587-2573-4BFB-A5FF-529FBBDFF921}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpeedManagementImporter", "SpeedManagementImporter\SpeedManagementImporter.csproj", "{ABC3F319-5A03-43B2-9AFD-D6E99B62A1E4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -142,6 +144,10 @@ Global
 		{ADF34587-2573-4BFB-A5FF-529FBBDFF921}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ADF34587-2573-4BFB-A5FF-529FBBDFF921}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ADF34587-2573-4BFB-A5FF-529FBBDFF921}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ABC3F319-5A03-43B2-9AFD-D6E99B62A1E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ABC3F319-5A03-43B2-9AFD-D6E99B62A1E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ABC3F319-5A03-43B2-9AFD-D6E99B62A1E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ABC3F319-5A03-43B2-9AFD-D6E99B62A1E4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
