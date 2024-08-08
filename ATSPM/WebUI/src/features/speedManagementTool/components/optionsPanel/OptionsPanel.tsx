@@ -45,7 +45,7 @@ function OptionsPanel() {
   }
 
   return (
-    <Box sx={{ height: '100%', overflowY: 'auto' }}>
+    <Box>
       <Box padding={'0px'}>
         <GeneralOptions />
         <Divider />
