@@ -33,7 +33,6 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
 
             var result = _client.ExecuteQuery(query, parameters).ToList();
 
-            // Map the result to a list of ImpactType objects
             return result.Select(row => MapRowToEntity(row)).ToList().AsQueryable();
         }
 
@@ -223,7 +222,6 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
                 { "End", item.End },
                 { "StartMile", item.StartMile },
                 { "EndMile", item.EndMile },
-                { "ImpactTypeId", item.ImpactTypeId },
                 { "CreatedOn", item.CreatedOn },
                 { "CreatedBy", item.CreatedBy.ToString() },
                 { "UpdatedOn", item.UpdatedOn },
@@ -242,7 +240,6 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             var bigQueryEnd = row["End"] != null ? DateTime.Parse(row["End"].ToString()) : (DateTime?)null;
             double bigQueryStartMile = double.Parse(row["StartMile"].ToString());
             var bigQueryEndMile = double.Parse(row["EndMile"].ToString());
-            var bigQueryImpactTypeId = Guid.Parse(row["ImpactTypeId"].ToString());
             var bigQueryCreatedOn = DateTime.Parse(row["CreatedOn"].ToString()); //DateTime
             var bigQueryCreatedBy = row["CreatedBy"].ToString();
             var bigQueryUpdatedOn = row["UpdatedOn"] != null ? DateTime.Parse(row["UpdatedOn"].ToString()) : (DateTime?)null; //DateTime?
@@ -258,7 +255,6 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
                 End = bigQueryEnd,
                 StartMile = bigQueryStartMile,
                 EndMile = bigQueryEndMile,
-                ImpactTypeId = bigQueryImpactTypeId,
                 CreatedOn = bigQueryCreatedOn,
                 CreatedBy = bigQueryCreatedBy,
                 UpdatedOn = bigQueryUpdatedOn,
@@ -301,7 +297,6 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
 
             queryBuilder.Append($"StartMile = {item.StartMile}, ");
             queryBuilder.Append($"EndMile = {item.EndMile}, ");
-            queryBuilder.Append($"ImpactTypeId = '{item.ImpactTypeId}', ");
             queryBuilder.Append($"UpdatedOn = DATETIME('{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}'), ");
             queryBuilder.Append($"UpdatedBy = {(string.IsNullOrEmpty(item.UpdatedBy) ? "NULL" : $"'{item.UpdatedBy}'")}, ");
             queryBuilder.Append($"DeletedOn = {(item.DeletedOn.HasValue ? $"DATETIME('{item.DeletedOn.Value:yyyy-MM-dd HH:mm:ss}')" : "NULL")}, ");
@@ -326,7 +321,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
         {
             Guid id = Guid.NewGuid();
             var query = $"INSERT INTO `{_datasetId}.{_tableId}` " +
-                "(Id, Description, Start, `End`, StartMile, EndMile, ImpactTypeId, CreatedOn, CreatedBy, UpdatedOn, UpdatedBy, DeletedOn, DeletedBy) " +
+                "(Id, Description, Start, `End`, StartMile, EndMile, CreatedOn, CreatedBy, UpdatedOn, UpdatedBy, DeletedOn, DeletedBy) " +
                 "VALUES (" +
                 $"'{id}', " +
                 $"'{item.Description}', " +
@@ -334,7 +329,6 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
                 $"{(item.End.HasValue ? $"DATETIME('{item.End.Value:yyyy-MM-dd HH:mm:ss}')" : "NULL")}, " +
                 $"{item.StartMile}, " +
                 $"{item.EndMile}, " +
-                $"'{item.ImpactTypeId}', " +
                 $"DATETIME('{item.CreatedOn:yyyy-MM-dd HH:mm:ss}'), " +
                 $"'{item.CreatedBy}', " +
                 "NULL, " +  // UpdatedOn is set to NULL

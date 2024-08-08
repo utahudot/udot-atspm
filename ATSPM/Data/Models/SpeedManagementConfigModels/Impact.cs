@@ -8,8 +8,8 @@
         public DateTime? End { get; set; }
         public double StartMile { get; set; }
         public double EndMile { get; set; }
-        public Guid ImpactTypeId { get; set; }
-        public ImpactType? ImpactType { get; set; }
+        public List<Guid>? ImpactTypeIds { get; set; }
+        public List<ImpactType>? ImpactTypes { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? UpdatedOn { get; set; }
