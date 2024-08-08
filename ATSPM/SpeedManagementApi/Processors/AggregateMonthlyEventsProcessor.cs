@@ -309,10 +309,10 @@ namespace SpeedManagementApi.Processors
                 .ToList();
 
             filteredSpeeds.AddRange(filteredSpeedsPost);
-            var averageSpeed = GetWeigthtedAverageSpeed(hourlySpeeds);
-            var eightyFifthSpeed = GetWeigthtedEightyFifthAverageSpeed(hourlySpeeds);
-            var totalViolations = hourlySpeeds.Sum(hs => hs.Violation.GetValueOrDefault());
-            var totalExtremeViolations = hourlySpeeds.Sum(hs => hs.ExtremeViolation.GetValueOrDefault());
+            var averageSpeed = GetWeigthtedAverageSpeed(filteredSpeeds);
+            var eightyFifthSpeed = GetWeigthtedEightyFifthAverageSpeed(filteredSpeeds);
+            var totalViolations = filteredSpeeds.Sum(hs => hs.Violation.GetValueOrDefault());
+            var totalExtremeViolations = filteredSpeeds.Sum(hs => hs.ExtremeViolation.GetValueOrDefault());
             return (averageSpeed, totalViolations, totalExtremeViolations, eightyFifthSpeed);
         }
 
@@ -339,10 +339,10 @@ namespace SpeedManagementApi.Processors
                 .Where(hs => hs.Date != minDate && hs.Date != maxDate)
                 .ToList();
 
-            var averageSpeed = GetWeigthtedAverageSpeed(hourlySpeeds);
-            var eightyFifthSpeed = GetWeigthtedEightyFifthAverageSpeed(hourlySpeeds);
-            var totalViolations = hourlySpeeds.Sum(hs => hs.Violation.GetValueOrDefault());
-            var totalExtremeViolations = hourlySpeeds.Sum(hs => hs.ExtremeViolation.GetValueOrDefault());
+            var averageSpeed = GetWeigthtedAverageSpeed(filteredSpeeds);
+            var eightyFifthSpeed = GetWeigthtedEightyFifthAverageSpeed(filteredSpeeds);
+            var totalViolations = filteredSpeeds.Sum(hs => hs.Violation.GetValueOrDefault());
+            var totalExtremeViolations = filteredSpeeds.Sum(hs => hs.ExtremeViolation.GetValueOrDefault());
             return (averageSpeed, totalViolations, totalExtremeViolations, eightyFifthSpeed);
         }
 
