@@ -283,3 +283,11 @@ C:\Users\jbhatia\source\repos\SafetyDashboardAPI\SpeedManagementImporter\bin\Deb
 C:\Users\jbhatia\source\repos\SafetyDashboardAPI\SpeedManagementImporter\bin\Debug\net7.0\runtimes\win\lib\net6.0\Microsoft.Win32.SystemEvents.dll
 C:\Users\jbhatia\source\repos\SafetyDashboardAPI\SpeedManagementImporter\bin\Debug\net7.0\runtimes\unix\lib\net6.0\System.Drawing.Common.dll
 C:\Users\jbhatia\source\repos\SafetyDashboardAPI\SpeedManagementImporter\bin\Debug\net7.0\runtimes\win\lib\net6.0\System.Drawing.Common.dll
+C:\Users\jbhatia\source\repos\udot-atspm\ATSPM\SpeedManagementImporter\obj\Debug\net7.0\SpeedManagementImporter.dll
+C:\Users\jbhatia\source\repos\udot-atspm\ATSPM\SpeedManagementImporter\obj\Debug\net7.0\refint\SpeedManagementImporter.dll
+C:\Users\jbhatia\source\repos\udot-atspm\ATSPM\SpeedManagementImporter\obj\Debug\net7.0\SpeedManagementImporter.pdb
+C:\Users\jbhatia\source\repos\udot-atspm\ATSPM\SpeedManagementImporter\obj\Debug\net7.0\SpeedManagementImporter.csproj.AssemblyReference.cache
+C:\Users\jbhatia\source\repos\udot-atspm\ATSPM\SpeedManagementImporter\obj\Debug\net7.0\SpeedManagementImporter.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\jbhatia\source\repos\udot-atspm\ATSPM\SpeedManagementImporter\obj\Debug\net7.0\SpeedManagementImporter.AssemblyInfoInputs.cache
+C:\Users\jbhatia\source\repos\udot-atspm\ATSPM\SpeedManagementImporter\obj\Debug\net7.0\SpeedManagementImporter.AssemblyInfo.cs
+C:\Users\jbhatia\source\repos\udot-atspm\ATSPM\SpeedManagementImporter\obj\Debug\net7.0\SpeedManagementImporter.csproj.CoreCompileInputs.cache

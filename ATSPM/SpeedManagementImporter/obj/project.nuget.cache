@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "dgSpecHash": "RtcxhR3odBEN6BHmNpFouNWce99jLbx8yGA0fNoq30k2OqkMa3uw51RKZsCP9rDIfCkwApGJDjAFuftnv7bcew==",
-  "success": false,
+  "dgSpecHash": "Gt6rq45wmoPokv+R0M7avl+6i4a4qSvr/boRvcfIVxv91cdqo520slIHurka5TGWYIU/CID2q2vev1wTTH4ykg==",
+  "success": true,
   "projectFilePath": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\SpeedManagementImporter\\SpeedManagementImporter.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\jbhatia\\.nuget\\packages\\auth0.aspnetcore.authentication\\1.4.1\\auth0.aspnetcore.authentication.1.4.1.nupkg.sha512",
@@ -207,24 +207,5 @@
     "C:\\Users\\jbhatia\\.nuget\\packages\\system.threading.tasks.extensions\\4.5.4\\system.threading.tasks.extensions.4.5.4.nupkg.sha512",
     "C:\\Users\\jbhatia\\.nuget\\packages\\system.windows.extensions\\6.0.0\\system.windows.extensions.6.0.0.nupkg.sha512"
   ],
-  "logs": [
-    {
-      "code": "NU1104",
-      "level": "Error",
-      "message": "Unable to find project 'C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\udot-atspm\\ATSPM\\ApplicationCore\\ApplicationCore.csproj'. Check that the project reference is valid and that the project file exists.",
-      "libraryId": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\udot-atspm\\ATSPM\\ApplicationCore\\ApplicationCore.csproj",
-      "targetGraphs": [
-        "net7.0"
-      ]
-    },
-    {
-      "code": "NU1104",
-      "level": "Error",
-      "message": "Unable to find project 'C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\udot-atspm\\ATSPM\\Infrastructure\\Infrastructure.csproj'. Check that the project reference is valid and that the project file exists.",
-      "libraryId": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\udot-atspm\\ATSPM\\Infrastructure\\Infrastructure.csproj",
-      "targetGraphs": [
-        "net7.0"
-      ]
-    }
-  ]
+  "logs": []
 }
