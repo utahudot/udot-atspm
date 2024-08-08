@@ -2,10 +2,13 @@
 {
     public class SegmentEntity
     {
-        public int EntityId { get; set; }
-        public int SourceId { get; set; }
-        public string SegmentId { get; set; }
-        public Segment Segment { get; set; }
+        public long EntityId { get; set; }
+        public long SourceId { get; set; }
+        public Guid SegmentId { get; set; }
+        public string EntityType { get; set; }
+        public double Length { get; set; }
+
+        public Segment? Segment { get; set; }
     }
 }
 
