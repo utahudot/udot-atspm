@@ -298,7 +298,7 @@ namespace SpeedManagementApi.Processors
             return monthlyAggregationProcessor;
         }
 
-        private (long averageSpeed, long totalViolations, long totalExtremeViolations) GetAveragesOfTimePeriodWithOvernightMetric(List<HourlySpeed> hourlySpeeds, TimeSpan startTime, TimeSpan endTime)
+        private (double averageSpeed, long totalViolations, long totalExtremeViolations) GetAveragesOfTimePeriodWithOvernightMetric(List<HourlySpeed> hourlySpeeds, TimeSpan startTime, TimeSpan endTime)
         {
             TimeSpan midnight = new TimeSpan(0, 0, 0); // 12:00 AM
             TimeSpan almostMidnight = new TimeSpan(23, 59, 59); // 11:59 PM
@@ -318,7 +318,7 @@ namespace SpeedManagementApi.Processors
             return (averageSpeed, totalViolations, totalExtremeViolations);
         }
 
-        private (long averageSpeed, long totalViolations, long totalExtremeViolations) GetAveragesOfTimePeriod(List<HourlySpeed> hourlySpeeds, TimeSpan startTime, TimeSpan endTime)
+        private (double averageSpeed, long totalViolations, long totalExtremeViolations) GetAveragesOfTimePeriod(List<HourlySpeed> hourlySpeeds, TimeSpan startTime, TimeSpan endTime)
         {
             var filteredByTime = hourlySpeeds
                 .Where(hs => hs.BinStartTime.TimeOfDay >= startTime && hs.BinStartTime.TimeOfDay <= endTime)
@@ -339,7 +339,7 @@ namespace SpeedManagementApi.Processors
             return (averageSpeed, totalViolations, totalExtremeViolations);
         }
 
-        private long GetWeigthtedAverageSpeed(List<HourlySpeed> hourlySpeeds)
+        private double GetWeigthtedAverageSpeed(List<HourlySpeed> hourlySpeeds)
         {
             var flow = hourlySpeeds.Sum(hs => hs.Flow ?? 1);
             var totalAverage = hourlySpeeds.Sum(hs => hs.Average);

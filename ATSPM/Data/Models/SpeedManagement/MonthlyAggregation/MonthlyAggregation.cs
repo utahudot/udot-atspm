@@ -7,7 +7,7 @@ public class MonthlyAggregation
     public DateTime BinStartTime { get; set; } // This is the 
     public Guid SegmentId { get; set; }
     public long SourceId { get; set; }
-    public long? AllDayAverageSpeed { get; set; } //All Day 12:00AM - 11:59PM
+    public double? AllDayAverageSpeed { get; set; } //All Day 12:00AM - 11:59PM
     public long? AllDayViolations { get; set; }
     public long? AllDayExtremeViolations { get; set; }
     public long? OffPeakAverageSpeed { get; set; } //Off Peak 10:00PM - 4:00AM

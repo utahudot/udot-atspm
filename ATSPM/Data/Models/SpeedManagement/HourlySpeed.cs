@@ -7,11 +7,11 @@ public class HourlySpeed
     public Guid SegmentId { get; set; }
     public long SourceId { get; set; }
     public long ConfidenceId { get; set; }
-    public long Average { get; set; }
-    public long? FifteenthSpeed { get; set; }
-    public long? EightyFifthSpeed { get; set; }
-    public long? NinetyFifthSpeed { get; set; }
-    public long? NinetyNinthSpeed { get; set; }
+    public double Average { get; set; }
+    public double? FifteenthSpeed { get; set; }
+    public double? EightyFifthSpeed { get; set; }
+    public double? NinetyFifthSpeed { get; set; }
+    public double? NinetyNinthSpeed { get; set; }
     public long? Violation { get; set; }
     public long? ExtremeViolation { get; set; }
     public long? Flow { get; set; }
