@@ -232,7 +232,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
 
             var parameters = new[]
             {
-                new BigQueryParameter("segmentId", BigQueryDbType.String, segmentId),
+                new BigQueryParameter("segmentId", BigQueryDbType.String, segmentId.ToString()),
                 new BigQueryParameter("startDate", BigQueryDbType.Date, startDateTime.Date ),
                 new BigQueryParameter("endDate", BigQueryDbType.Date, endDateTime.Date),
             };
@@ -255,11 +255,11 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
                 {
                     Date = date.ToDateTime(new TimeOnly(0, 0)),
                     BinStartTime = date.ToDateTime(time),
-                    Average = avg != null ? (long)avg : 0,
-                    FifteenthSpeed = fifteenthSpeed != null ? (long)fifteenthSpeed : null,
-                    EightyFifthSpeed = eightyFifthSpeed != null ? (long)eightyFifthSpeed : null,
-                    NinetyFifthSpeed = ninetyFifthSpeed != null ? (long)ninetyFifthSpeed : null,
-                    NinetyNinthSpeed = ninetyNinthSpeed != null ? (long)ninetyNinthSpeed : null,
+                    Average = avg != null ? (double)avg : 0,
+                    FifteenthSpeed = fifteenthSpeed != null ? (double)fifteenthSpeed : null,
+                    EightyFifthSpeed = eightyFifthSpeed != null ? (double)eightyFifthSpeed : null,
+                    NinetyFifthSpeed = ninetyFifthSpeed != null ? (double)ninetyFifthSpeed : null,
+                    NinetyNinthSpeed = ninetyNinthSpeed != null ? (double)ninetyNinthSpeed : null,
                     Violation = violation != null ? (long)violation : null,
                     Flow = flow != null ? (long)flow : null
                 };
@@ -276,7 +276,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
               FROM `atspm-406601.speed_dataset.hourly_speed`
               WHERE 
                 SourceId = @sourceId
-                AND SegmentId = @segment
+                AND SegmentId = @segmentId
                 AND Date BETWEEN @startDate AND @endDate
             ),
             data_with_custom_week_start AS (
@@ -296,7 +296,8 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
               AVG(FifteenthSpeed) as FifteenthSpeed,
               AVG(EightyFifthSpeed) as EightyFifthSpeed,
               AVG(NinetyFifthSpeed) as NinetyFifthSpeed,
-              SUM(Flow) as Flow
+              SUM(Flow) as Flow,
+              SUM(Violation) as Violation
             FROM
                 data_with_custom_week_start
             GROUP BY
@@ -309,7 +310,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
 
             var parameters = new[]
             {
-                new BigQueryParameter("segmentId", BigQueryDbType.String, segmentId),
+                new BigQueryParameter("segmentId", BigQueryDbType.String, segmentId.ToString()),
                 new BigQueryParameter("startDate", BigQueryDbType.Date, startDateTime.Date ),
                 new BigQueryParameter("endDate", BigQueryDbType.Date, endDateTime.Date),
                 new BigQueryParameter("sourceId", BigQueryDbType.Int64, sourceId)
@@ -331,10 +332,10 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
                 {
                     Date = date.ToDateTime(new TimeOnly(0, 0)),
                     BinStartTime = date.ToDateTime(new TimeOnly(0, 0)),
-                    Average = avg != null ? (long)avg : 0,
-                    FifteenthSpeed = fifteenthSpeed != null ? (long)fifteenthSpeed : null,
-                    EightyFifthSpeed = eightyFifthSpeed != null ? (long)eightyFifthSpeed : null,
-                    NinetyFifthSpeed = ninetyFifthSpeed != null ? (long)ninetyFifthSpeed : null,
+                    Average = avg != null ? (double)avg : 0,
+                    FifteenthSpeed = fifteenthSpeed != null ? (double)fifteenthSpeed : null,
+                    EightyFifthSpeed = eightyFifthSpeed != null ? (double)eightyFifthSpeed : null,
+                    NinetyFifthSpeed = ninetyFifthSpeed != null ? (double)ninetyFifthSpeed : null,
                     Violation = violation != null ? (long)violation : null,
                     Flow = flow != null ? (long)flow : null
                 };
@@ -436,9 +437,9 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
                 SourceId = sourceId != null ? (long)sourceId : 0,
                 Name = name != null ? name.ToString() : "",
                 Avg = avg != null ? Math.Round((double)avg, 2) : null,
-                Percentilespd_15 = percentile15 != null ? (long)percentile15 : null,
-                Percentilespd_85 = percentile85 != null ? (long)percentile85 : null,
-                Percentilespd_95 = percentile95 != null ? (long)percentile95 : null,
+                Percentilespd_15 = percentile15 != null ? (double)percentile15 : null,
+                Percentilespd_85 = percentile85 != null ? (double)percentile85 : null,
+                Percentilespd_95 = percentile95 != null ? (double)percentile95 : null,
                 Flow = flow != null ? (long)flow : null,
                 EstimatedViolations = estimatedViolations != null ? (long)estimatedViolations : null,
                 SpeedLimit = speedLimit != null ? (long)speedLimit : 0,

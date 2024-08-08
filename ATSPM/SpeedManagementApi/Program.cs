@@ -4,11 +4,13 @@ using ATSPM.Application.Business.RouteSpeed;
 using ATSPM.Application.Repositories;
 using ATSPM.Application.Repositories.SpeedManagementRepositories;
 using ATSPM.Data.Models.SpeedManagement.CongestionTracking;
+using ATSPM.Data.Models.SpeedManagement.SpeedOverTime;
 using ATSPM.Infrastructure.Extensions;
 using ATSPM.Infrastructure.Repositories;
 using ATSPM.Infrastructure.Repositories.SpeedManagementRepositories;
 using ATSPM.Infrastructure.Services.SpeedManagementServices;
 using ATSPM.Infrastructure.Services.SpeedManagementServices.CongestionTracking;
+using ATSPM.Infrastructure.Services.SpeedManagementServices.SpeedOverTime;
 using Google.Cloud.BigQuery.V2;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Mvc;
@@ -149,6 +151,14 @@ builder.Host.ConfigureServices((h, s) =>
         var logger = provider.GetRequiredService<ILogger<SegmentImpactBQRepository>>();
         return new SegmentImpactBQRepository(client, datasetId, tableId, logger);
     });
+    s.AddScoped<IMonthlyAggregationRepository, MonthlyAggregationBQRepository>(provider =>
+    {
+        var client = provider.GetRequiredService<BigQueryClient>();
+        var datasetId = builder.Configuration["BigQuery:DatasetId"];
+        var tableId = builder.Configuration["BigQuery:SegmentImpactTableId"];
+        var logger = provider.GetRequiredService<ILogger<MonthlyAggregationBQRepository>>();
+        return new MonthlyAggregationBQRepository(client, datasetId, tableId, logger);
+    });
 
     Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", builder.Configuration["GoogleApplicationCredentials"]);
 
@@ -157,6 +167,7 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddScoped<ImpactService>();
     s.AddScoped<ImpactTypeService>();
     s.AddScoped<IReportService<CongestionTrackingOptions, CongestionTrackingDto>, CongestionTrackingService>();
+    s.AddScoped<IReportService<SpeedOverTimeOptions, SpeedOverTimeDto>, SpeedOverTimeService>();
 
     //report services
 
