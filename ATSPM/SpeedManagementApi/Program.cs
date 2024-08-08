@@ -142,6 +142,14 @@ builder.Host.ConfigureServices((h, s) =>
         var logger = provider.GetRequiredService<ILogger<ImpactTypeBQRepository>>();
         return new ImpactTypeBQRepository(client, datasetId, tableId, logger);
     });
+    s.AddScoped<IImpactImpactTypeRepository, ImpactImpactTypeBQRepository>(provider =>
+    {
+        var client = provider.GetRequiredService<BigQueryClient>();
+        var datasetId = builder.Configuration["BigQuery:DatasetId"];
+        var tableId = builder.Configuration["BigQuery:ImpactImpactTypeTableId"];
+        var logger = provider.GetRequiredService<ILogger<ImpactImpactTypeBQRepository>>();
+        return new ImpactImpactTypeBQRepository(client, datasetId, tableId, logger);
+    });
     s.AddScoped<ISegmentImpactRepository, SegmentImpactBQRepository>(provider =>
     {
         var client = provider.GetRequiredService<BigQueryClient>();
