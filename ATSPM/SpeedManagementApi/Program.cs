@@ -4,11 +4,13 @@ using ATSPM.Application.Business.RouteSpeed;
 using ATSPM.Application.Repositories;
 using ATSPM.Application.Repositories.SpeedManagementRepositories;
 using ATSPM.Data.Models.SpeedManagement.CongestionTracking;
+using ATSPM.Data.Models.SpeedManagement.SpeedOverTime;
 using ATSPM.Infrastructure.Extensions;
 using ATSPM.Infrastructure.Repositories;
 using ATSPM.Infrastructure.Repositories.SpeedManagementRepositories;
 using ATSPM.Infrastructure.Services.SpeedManagementServices;
 using ATSPM.Infrastructure.Services.SpeedManagementServices.CongestionTracking;
+using ATSPM.Infrastructure.Services.SpeedManagementServices.SpeedOverTime;
 using Google.Cloud.BigQuery.V2;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Mvc;
@@ -178,8 +180,7 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddScoped<AggregateMonthlyEventsProcessor>();
     s.AddScoped<DeleteOldEventsProcessor>();
     s.AddScoped<IReportService<CongestionTrackingOptions, CongestionTrackingDto>, CongestionTrackingService>();
-
-
+    s.AddScoped<IReportService<SpeedOverTimeOptions, SpeedOverTimeDto>, SpeedOverTimeService>();
 
     //report services
 

@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace ATSPM.Infrastructure.Services.SpeedManagementServices.SpeedOverTime
 {
-    internal class SpeedOverTimeService : ReportServiceBase<SpeedOverTimeOptions, SpeedOverTimeDto>
+    public class SpeedOverTimeService : ReportServiceBase<SpeedOverTimeOptions, SpeedOverTimeDto>
     {
         private readonly IHourlySpeedRepository hourlySpeedRepository;
         private readonly ISegmentRepository segmentRepository;
@@ -37,7 +37,7 @@ namespace ATSPM.Infrastructure.Services.SpeedManagementServices.SpeedOverTime
                     speedResult = ConvertHourlyToSpeedData(hourlyResult);
                     break;
                 case TimeOptionsEnum.Week:
-                    var weeklyResult = await hourlySpeedRepository.GetWeeklySpeeds(parameter.StartDate, parameter.EndDate, Guid.Parse(parameter.SegmentId), null);
+                    var weeklyResult = await hourlySpeedRepository.GetWeeklySpeeds(parameter.StartDate, parameter.EndDate, Guid.Parse(parameter.SegmentId), parameter.SourceId);
                     speedResult = ConvertWeeklyToSpeedData(weeklyResult, parameter.StartDate);
                     break;
                 case TimeOptionsEnum.Month:
