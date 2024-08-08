@@ -116,6 +116,23 @@ namespace SpeedManagementApi.Controllers
             return Ok(impact);
         }
 
+        // PUT: /Impact/{id/impactType/{impactTypeId}
+        [HttpPut("{id}/impactType/{impactTypeId}")]
+        public async Task<ActionResult<Impact>> AddImpactedImpactTypeId(Guid id, Guid impactTypeId)
+        {
+            if (id == null)
+            {
+                return BadRequest();
+            }
+            var existingImpact = await impactService.GetImpactById(id);
+            if (existingImpact == null)
+            {
+                return NotFound();
+            }
+            Impact impact = await impactService.UpsertImpactedImpactType(id, impactTypeId);
+            return Ok(impact);
+        }
+
         // DELETE: /Impact/{id}
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteImpact(Guid id)
@@ -161,6 +178,24 @@ namespace SpeedManagementApi.Controllers
                 return NotFound();
             }
             await impactService.DeleteImpactedSegment(id, segmentId);
+            return NoContent();
+        }
+
+        // DELETE: /Impact/{id}/impactType/{impactTypeId}
+        [HttpDelete("{id}/impactType/{impactTypeId}")]
+        public async Task<IActionResult> DeleteImpactedImpactTypes(Guid id, Guid impactTypeId)
+        {
+            Impact existingImpact = await impactService.GetImpactById(id);
+            if (existingImpact == null)
+            {
+                return NotFound();
+            }
+            bool contains = existingImpact.ImpactTypeIds.Select(i => i.Equals(impactTypeId)).Any();
+            if (!contains)
+            {
+                return NotFound();
+            }
+            await impactService.DeleteImpactedImpactType(id, impactTypeId);
             return NoContent();
         }
 
