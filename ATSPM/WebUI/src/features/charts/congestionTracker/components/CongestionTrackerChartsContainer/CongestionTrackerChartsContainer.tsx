@@ -18,7 +18,7 @@ const CongestionTrackingChartsContainer = ({
 
   return (
     // align in center
-    <Paper sx={{ display: 'flex', justifyContent: 'center' }}>
+    <Paper sx={{ display: 'flex', justifyContent: 'center', pt: 2 }}>
       <ApacheEChart
         id="congestion-chart"
         option={congestionTrackingData}

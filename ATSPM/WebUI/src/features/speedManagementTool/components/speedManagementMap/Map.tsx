@@ -1,13 +1,16 @@
 import FullScreenToggleButton from '@/components/fullScreenLayoutButton'
 import { MAP_DEFAULT_LATITUDE, MAP_DEFAULT_LONGITUDE } from '@/config'
-import Popup from '@/features/speedManagementTool/components/speedManagementMap/Popup'
+import RoutesToggle from '@/features/speedManagementTool/components/detailsPanel/RoutesToggle'
+import ViolationRangeSlider from '@/features/speedManagementTool/components/detailsPanel/ViolationRangeSlider'
+import MapPopup from '@/features/speedManagementTool/components/speedManagementMap/Popup'
 import { RouteRenderOption } from '@/features/speedManagementTool/enums'
 import useSpeedManagementStore from '@/features/speedManagementTool/speedManagementStore'
 import { SpeedManagementRoute } from '@/features/speedManagementTool/types/routes'
 import { ViolationColors } from '@/features/speedManagementTool/utils/colors'
-import { Box } from '@mui/material'
+import DisplaySettingsOutlinedIcon from '@mui/icons-material/DisplaySettingsOutlined'
+import { Box, Button, Paper, Popper } from '@mui/material'
 import L, { Map as LeafletMap } from 'leaflet'
-import { memo, useEffect, useState } from 'react'
+import React, { memo, useState } from 'react'
 import { MapContainer, Polyline, TileLayer } from 'react-leaflet'
 import SpeedLegend from './Legend'
 
@@ -23,23 +26,8 @@ const SpeedMap = ({
   setSelectedRouteId,
 }: SpeedMapProps) => {
   const [mapRef, setMapRef] = useState<LeafletMap | null>(null)
+  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null)
   const { routeRenderOption, mediumMin, mediumMax } = useSpeedManagementStore()
-
-  useEffect(() => {
-    if (!mapRef) return
-
-    const mapContainer = mapRef.getContainer()
-    const handleResize = () => {
-      mapRef.invalidateSize()
-    }
-
-    const resizeObserver = new ResizeObserver(handleResize)
-    resizeObserver.observe(mapContainer)
-
-    return () => {
-      resizeObserver.disconnect()
-    }
-  }, [mapRef])
 
   const getColor = (route: SpeedManagementRoute) => {
     let field
@@ -92,6 +80,15 @@ const SpeedMap = ({
 
   const renderer = L.canvas({ tolerance: 5 }) // Increase clickability of polylines
 
+  const handleDisplaySettingsClick = (
+    event: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    setAnchorEl(anchorEl ? null : event.currentTarget)
+  }
+
+  const open = Boolean(anchorEl)
+  const id = open ? 'settings-popover' : undefined
+
   return (
     <Box sx={{ height: '100%', width: '100%' }}>
       <MapContainer
@@ -106,6 +103,7 @@ const SpeedMap = ({
         }}
         renderer={renderer}
         ref={setMapRef}
+        doubleClickZoom={false}
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openaip.net/">openAIP Data</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-NC-SA</a>)'
@@ -121,6 +119,37 @@ const SpeedMap = ({
         >
           <FullScreenToggleButton targetRef={fullScreenRef} />
         </Box>
+        <Box
+          sx={{
+            position: 'absolute',
+            right: '10px',
+            top: '50px',
+            zIndex: 1000,
+          }}
+        >
+          <Button
+            sx={{
+              px: 1,
+              minWidth: 0,
+            }}
+            variant="contained"
+            onClick={handleDisplaySettingsClick}
+          >
+            <DisplaySettingsOutlinedIcon fontSize="small" />
+          </Button>
+          <Popper
+            id={id}
+            open={open}
+            anchorEl={anchorEl}
+            placement="bottom-start"
+            disablePortal
+          >
+            <Paper sx={{ width: '300px' }}>
+              <RoutesToggle />
+              <ViolationRangeSlider />
+            </Paper>
+          </Popper>
+        </Box>
         {routes.map((route, index) => {
           return (
             <div key={index}>
@@ -133,7 +162,7 @@ const SpeedMap = ({
                   click: () => setSelectedRouteId(route.properties.route_id),
                 }}
               >
-                <Popup route={route} />
+                <MapPopup route={route} />
               </Polyline>
             </div>
           )

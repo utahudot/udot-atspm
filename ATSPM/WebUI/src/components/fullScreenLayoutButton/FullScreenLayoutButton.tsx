@@ -16,7 +16,8 @@ const FullScreenToggleButton: React.FC<FullScreenToggleButtonProps> = ({
     setIsFullscreen(!!document.fullscreenElement)
   }, [])
 
-  const handleFullscreenToggle = () => {
+  const handleFullscreenToggle = (e: MouseEvent) => {
+    e.stopPropagation()
     if (!isFullscreen) {
       if (targetRef.current?.requestFullscreen) {
         targetRef.current.requestFullscreen()
@@ -44,7 +45,11 @@ const FullScreenToggleButton: React.FC<FullScreenToggleButtonProps> = ({
       }}
       variant="contained"
     >
-      {isFullscreen ? <FullscreenExitIcon /> : <FullscreenIcon />}
+      {isFullscreen ? (
+        <FullscreenExitIcon fontSize="small" />
+      ) : (
+        <FullscreenIcon fontSize="small" />
+      )}
     </Button>
   )
 }
