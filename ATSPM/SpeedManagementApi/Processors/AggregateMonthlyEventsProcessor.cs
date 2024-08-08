@@ -202,9 +202,10 @@ namespace SpeedManagementApi.Processors
             TimeSpan startTime = new TimeSpan(0, 0, 0); // 12:00 AM
             TimeSpan endTime = new TimeSpan(23, 59, 59); // 11:59 PM
 
-            var (averageSpeed, totalViolations, totalExtremeViolations) = GetAveragesOfTimePeriod(monthlyAggregationProcessor.hourlySpeeds, startTime, endTime);
+            var (averageSpeed, totalViolations, totalExtremeViolations, eightyFifthAverage) = GetAveragesOfTimePeriod(monthlyAggregationProcessor.hourlySpeeds, startTime, endTime);
 
             monthlyAggregationProcessor.monthlyAggregation.AllDayAverageSpeed = averageSpeed;
+            monthlyAggregationProcessor.monthlyAggregation.AllDayAverageEightyFifthSpeed = eightyFifthAverage;
             monthlyAggregationProcessor.monthlyAggregation.AllDayViolations = totalViolations;
             monthlyAggregationProcessor.monthlyAggregation.AllDayExtremeViolations = totalExtremeViolations;
             return monthlyAggregationProcessor;
@@ -215,9 +216,10 @@ namespace SpeedManagementApi.Processors
             TimeSpan startTime = new TimeSpan(22, 0, 0); // 10:00 PM
             TimeSpan endTime = new TimeSpan(4, 0, 0); // 4:00 AM
 
-            var (averageSpeed, totalViolations, totalExtremeViolations) = GetAveragesOfTimePeriodWithOvernightMetric(monthlyAggregationProcessor.hourlySpeeds, startTime, endTime);
+            var (averageSpeed, totalViolations, totalExtremeViolations, eightyFifthAverage) = GetAveragesOfTimePeriodWithOvernightMetric(monthlyAggregationProcessor.hourlySpeeds, startTime, endTime);
 
             monthlyAggregationProcessor.monthlyAggregation.OffPeakAverageSpeed = averageSpeed;
+            monthlyAggregationProcessor.monthlyAggregation.OffPeakAverageEightyFifthSpeed = eightyFifthAverage;
             monthlyAggregationProcessor.monthlyAggregation.OffPeakViolations = totalViolations;
             monthlyAggregationProcessor.monthlyAggregation.OffPeakExtremeViolations = totalExtremeViolations;
             return monthlyAggregationProcessor;
@@ -228,9 +230,10 @@ namespace SpeedManagementApi.Processors
             TimeSpan startTime = new TimeSpan(6, 0, 0); // 6:00 AM
             TimeSpan endTime = new TimeSpan(9, 0, 0);   // 9:00 AM
 
-            var (averageSpeed, totalViolations, totalExtremeViolations) = GetAveragesOfTimePeriod(monthlyAggregationProcessor.hourlySpeeds, startTime, endTime);
+            var (averageSpeed, totalViolations, totalExtremeViolations, eightyFifthAverage) = GetAveragesOfTimePeriod(monthlyAggregationProcessor.hourlySpeeds, startTime, endTime);
 
             monthlyAggregationProcessor.monthlyAggregation.AmPeakAverageSpeed = averageSpeed;
+            monthlyAggregationProcessor.monthlyAggregation.AmPeakAverageEightyFifthSpeed = eightyFifthAverage;
             monthlyAggregationProcessor.monthlyAggregation.AmPeakViolations = totalViolations;
             monthlyAggregationProcessor.monthlyAggregation.AmPeakExtremeViolations = totalExtremeViolations;
             return monthlyAggregationProcessor;
@@ -241,9 +244,10 @@ namespace SpeedManagementApi.Processors
             TimeSpan startTime = new TimeSpan(16, 0, 0); // 4:00 PM
             TimeSpan endTime = new TimeSpan(18, 0, 0);   // 6:00 PM
 
-            var (averageSpeed, totalViolations, totalExtremeViolations) = GetAveragesOfTimePeriod(monthlyAggregationProcessor.hourlySpeeds, startTime, endTime);
+            var (averageSpeed, totalViolations, totalExtremeViolations, eightyFifthAverage) = GetAveragesOfTimePeriod(monthlyAggregationProcessor.hourlySpeeds, startTime, endTime);
 
             monthlyAggregationProcessor.monthlyAggregation.PmPeakAverageSpeed = averageSpeed;
+            monthlyAggregationProcessor.monthlyAggregation.PmPeakAverageEightyFifthSpeed = eightyFifthAverage;
             monthlyAggregationProcessor.monthlyAggregation.PmPeakViolations = totalViolations;
             monthlyAggregationProcessor.monthlyAggregation.PmPeakExtremeViolations = totalExtremeViolations;
             return monthlyAggregationProcessor;
@@ -254,9 +258,10 @@ namespace SpeedManagementApi.Processors
             TimeSpan startTime = new TimeSpan(9, 0, 0); // 9:00 AM
             TimeSpan endTime = new TimeSpan(16, 0, 0);   // 4:00 PM
 
-            var (averageSpeed, totalViolations, totalExtremeViolations) = GetAveragesOfTimePeriod(monthlyAggregationProcessor.hourlySpeeds, startTime, endTime);
+            var (averageSpeed, totalViolations, totalExtremeViolations, eightyFifthAverage) = GetAveragesOfTimePeriod(monthlyAggregationProcessor.hourlySpeeds, startTime, endTime);
 
             monthlyAggregationProcessor.monthlyAggregation.MidDayAverageSpeed = averageSpeed;
+            monthlyAggregationProcessor.monthlyAggregation.MidDayAverageEightyFifthSpeed = eightyFifthAverage;
             monthlyAggregationProcessor.monthlyAggregation.MidDayViolations = totalViolations;
             monthlyAggregationProcessor.monthlyAggregation.MidDayExtremeViolations = totalExtremeViolations;
             return monthlyAggregationProcessor;
@@ -267,9 +272,10 @@ namespace SpeedManagementApi.Processors
             TimeSpan startTime = new TimeSpan(18, 0, 0); // 6:00 PM
             TimeSpan endTime = new TimeSpan(22, 0, 0);   // 10:00 PM
 
-            var (averageSpeed, totalViolations, totalExtremeViolations) = GetAveragesOfTimePeriod(monthlyAggregationProcessor.hourlySpeeds, startTime, endTime);
+            var (averageSpeed, totalViolations, totalExtremeViolations, eightyFifthAverage) = GetAveragesOfTimePeriod(monthlyAggregationProcessor.hourlySpeeds, startTime, endTime);
 
             monthlyAggregationProcessor.monthlyAggregation.EveningAverageSpeed = averageSpeed;
+            monthlyAggregationProcessor.monthlyAggregation.EveningAverageEightyFifthSpeed = eightyFifthAverage;
             monthlyAggregationProcessor.monthlyAggregation.EveningViolations = totalViolations;
             monthlyAggregationProcessor.monthlyAggregation.EveningExtremeViolations = totalExtremeViolations;
             return monthlyAggregationProcessor;
@@ -280,15 +286,16 @@ namespace SpeedManagementApi.Processors
             TimeSpan startTime = new TimeSpan(4, 0, 0); // 4:00 AM
             TimeSpan endTime = new TimeSpan(6, 0, 0);   // 6:00 AM
 
-            var (averageSpeed, totalViolations, totalExtremeViolations) = GetAveragesOfTimePeriod(monthlyAggregationProcessor.hourlySpeeds, startTime, endTime);
+            var (averageSpeed, totalViolations, totalExtremeViolations, eightyFifthAverage) = GetAveragesOfTimePeriod(monthlyAggregationProcessor.hourlySpeeds, startTime, endTime);
 
             monthlyAggregationProcessor.monthlyAggregation.EarlyMorningAverageSpeed = averageSpeed;
+            monthlyAggregationProcessor.monthlyAggregation.EarlyMorningAverageEightyFifthSpeed = eightyFifthAverage;
             monthlyAggregationProcessor.monthlyAggregation.EarlyMorningViolations = totalViolations;
             monthlyAggregationProcessor.monthlyAggregation.EarlyMorningExtremeViolations = totalExtremeViolations;
             return monthlyAggregationProcessor;
         }
 
-        private (double averageSpeed, long totalViolations, long totalExtremeViolations) GetAveragesOfTimePeriodWithOvernightMetric(List<HourlySpeed> hourlySpeeds, TimeSpan startTime, TimeSpan endTime)
+        private (double averageSpeed, long totalViolations, long totalExtremeViolations, double EightyFifthAverage) GetAveragesOfTimePeriodWithOvernightMetric(List<HourlySpeed> hourlySpeeds, TimeSpan startTime, TimeSpan endTime)
         {
             TimeSpan midnight = new TimeSpan(0, 0, 0); // 12:00 AM
             TimeSpan almostMidnight = new TimeSpan(23, 59, 59); // 11:59 PM
@@ -303,23 +310,24 @@ namespace SpeedManagementApi.Processors
 
             filteredSpeeds.AddRange(filteredSpeedsPost);
             var averageSpeed = GetWeigthtedAverageSpeed(hourlySpeeds);
+            var eightyFifthSpeed = GetWeigthtedEightyFifthAverageSpeed(hourlySpeeds);
             var totalViolations = hourlySpeeds.Sum(hs => hs.Violation.GetValueOrDefault());
             var totalExtremeViolations = hourlySpeeds.Sum(hs => hs.ExtremeViolation.GetValueOrDefault());
-            return (averageSpeed, totalViolations, totalExtremeViolations);
+            return (averageSpeed, totalViolations, totalExtremeViolations, eightyFifthSpeed);
         }
 
-        private (double averageSpeed, long totalViolations, long totalExtremeViolations) GetAveragesOfTimePeriod(List<HourlySpeed> hourlySpeeds, TimeSpan startTime, TimeSpan endTime)
+        private (double averageSpeed, long totalViolations, long totalExtremeViolations, double EightyFifthAverage) GetAveragesOfTimePeriod(List<HourlySpeed> hourlySpeeds, TimeSpan startTime, TimeSpan endTime)
         {
             if (hourlySpeeds.Count == 0)
             {
-                return (1, 1, 1);
+                return (0, 0, 0, 0);
             }
             var filteredByTime = hourlySpeeds
                 .Where(hs => hs.BinStartTime.TimeOfDay >= startTime && hs.BinStartTime.TimeOfDay <= endTime)
                 .ToList();
             if (filteredByTime.Count == 0)
             {
-                return (1, 1, 1);
+                return (0, 0, 0, 0);
             }
 
             // Find the minimum and maximum dates in the filtered list
@@ -332,20 +340,63 @@ namespace SpeedManagementApi.Processors
                 .ToList();
 
             var averageSpeed = GetWeigthtedAverageSpeed(hourlySpeeds);
+            var eightyFifthSpeed = GetWeigthtedEightyFifthAverageSpeed(hourlySpeeds);
             var totalViolations = hourlySpeeds.Sum(hs => hs.Violation.GetValueOrDefault());
             var totalExtremeViolations = hourlySpeeds.Sum(hs => hs.ExtremeViolation.GetValueOrDefault());
-            return (averageSpeed, totalViolations, totalExtremeViolations);
+            return (averageSpeed, totalViolations, totalExtremeViolations, eightyFifthSpeed);
         }
 
-        private double GetWeigthtedAverageSpeed(List<HourlySpeed> hourlySpeeds)
+        private int GetWeigthtedAverageSpeed(List<HourlySpeed> hourlySpeeds)
         {
-            var flow = hourlySpeeds.Sum(hs => hs.Flow ?? 1);
-            var totalAverage = hourlySpeeds.Sum(hs => hs.Average);
-            try
+            if (hourlySpeeds == null || hourlySpeeds.Count() == 0)
             {
-                return (flow * totalAverage) / flow;
+                return 0;
             }
-            catch { return 0; }
+            double sumFlow = hourlySpeeds.Sum(hs => hs.Flow ?? 0);
+            //if flow is all zero do normal average
+            if (sumFlow <= 0)
+            {
+                double totalAverage = hourlySpeeds.Sum(hs => hs.Average);
+                return (int)Math.Round(totalAverage / hourlySpeeds.Count());
+            }
+            var flowSpeed = new List<double>();
+            foreach (var hourlySpeed in hourlySpeeds)
+            {
+                double flow = hourlySpeed.Flow ?? 0;
+                double speed = hourlySpeed.Average;
+                var flowAndSpeed = flow * speed;
+                flowSpeed.Add(flowAndSpeed);
+            }
+            var totalFlowAndSpeed = flowSpeed.Sum();
+            return (int)Math.Round(totalFlowAndSpeed / sumFlow);
+        }
+
+        private int GetWeigthtedEightyFifthAverageSpeed(List<HourlySpeed> hourlySpeeds)
+        {
+            if (hourlySpeeds == null || hourlySpeeds.Count() == 0)
+            {
+                return 0;
+            }
+            //IF we are doing 85th%ile AND source is ATSPM AND the flow is < 4 THEN ignore that row
+            var filteredFlow = hourlySpeeds.Where(hourlySpeed => (!(hourlySpeed.Flow < 4 && hourlySpeed.SourceId == 1)));
+            double sumFlow = filteredFlow.Sum(hs => hs.Flow ?? 0);
+            //if flow is all zero do normal average
+            if (sumFlow <= 0)
+            {
+                //var filteredEightyFifth = hourlySpeeds.Where(n => (!(n.EightyFifthSpeed == 0 || n.EightyFifthSpeed == null)));
+                double totalAverage = hourlySpeeds.Sum(hs => hs.EightyFifthSpeed ?? 0);
+                return (int)Math.Round(totalAverage / hourlySpeeds.Count());
+            }
+            var flowSpeed = new List<double>();
+            foreach (var hourlySpeed in filteredFlow)
+            {
+                double flow = hourlySpeed.Flow ?? 0;
+                double speed = hourlySpeed.EightyFifthSpeed ?? 0;
+                var flowAndSpeed = flow * speed;
+                flowSpeed.Add(flowAndSpeed);
+            }
+            var totalFlowAndSpeed = flowSpeed.Sum();
+            return (int)Math.Round(totalFlowAndSpeed / sumFlow);
         }
 
     }
