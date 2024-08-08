@@ -38,57 +38,54 @@ namespace SpeedManagementImporter.Services.Clearguide
             var speeds = new ConcurrentBag<HourlySpeedWithEntityId>();
             var tasks = new List<Task>();
 
-            try
-            {
-                using (var throttle = new SemaphoreSlim(3)) // Limit the number of concurrent tasks
-                {
-                    foreach (SegmentEntityWithSpeed routeEntity in routeWithEntities)
-                    {
+                //using (var throttle = new SemaphoreSlim(3)) // Limit the number of concurrent tasks
+                //{
+                //    foreach (SegmentEntityWithSpeed routeEntity in routeWithEntities)
+                //    {
 
-                        try
-                        {
-                            JObject json = JObject.Parse(response);
-                            JToken speedData = json["series"]["all"]["avg_speed"]["data"];
+                //        try
+                //        {
+                //            JObject json = JObject.Parse(response);
+                //            JToken speedData = json["series"]["all"]["avg_speed"]["data"];
 
-                            foreach (var data in speedData)
-                            {
-                                DateTime date = DateTimeOffset.FromUnixTimeSeconds((long)data[0]).DateTime;
-                                int avg = (int)Math.Round((double)data[1]);
-                                HourlySpeedWithEntityId speed = new()
-                                {
-                                    EntityId = routeEntity.EntityId,
-                                    Date = date,
-                                    BinStartTime = date,
-                                    SegmentId = routeEntity.SegmentId,
-                                    SourceId = sourceId,
-                                    ConfidenceId = confidenceId,
-                                    Average = avg,
-                                    Violation = routeEntity.SpeedLimit > 0 && avg > routeEntity.SpeedLimit ? (long)(avg - routeEntity.SpeedLimit) : 0,
-                                    Length = routeEntity.Length
-                                };
-                                speeds.Add(speed);
-                            }
+                //            foreach (var data in speedData)
+                //            {
+                //                DateTime date = DateTimeOffset.FromUnixTimeSeconds((long)data[0]).DateTime;
+                //                int avg = (int)Math.Round((double)data[1]);
+                //                HourlySpeedWithEntityId speed = new()
+                //                {
+                //                    EntityId = routeEntity.EntityId,
+                //                    Date = date,
+                //                    BinStartTime = date,
+                //                    SegmentId = routeEntity.SegmentId,
+                //                    SourceId = sourceId,
+                //                    ConfidenceId = confidenceId,
+                //                    Average = avg,
+                //                    Violation = routeEntity.SpeedLimit > 0 && avg > routeEntity.SpeedLimit ? (long)(avg - routeEntity.SpeedLimit) : 0,
+                //                    Length = routeEntity.Length
+                //                };
+                //                speeds.Add(speed);
+                //            }
 
-                            Console.WriteLine($"Finished processing data for route: {routeEntity.EntityId}");
-                        }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine($"Error processing route: {routeEntity.EntityId} with URL: {query}. Exception: {ex.Message}");
-                        }
-                        finally
-                        {
-                            throttle.Release();
-                        }
-                    }
+                //            Console.WriteLine($"Finished processing data for route: {routeEntity.EntityId}");
+                //        }
+                //        catch (Exception ex)
+                //        {
+                //            Console.WriteLine($"Error processing route: {routeEntity.EntityId} with URL: {query}. Exception: {ex.Message}");
+                //        }
+                //        finally
+                //        {
+                //            throttle.Release();
+                //        }
+                //    }
 
-                    await Task.WhenAll(tasks);
-                }
+                //    await Task.WhenAll(tasks);
+                //}
 
                 var aggregatedSpeeds = AggregateSpeedsByTimeBin(speeds);
 
                 await hourlySpeedRepository.AddHourlySpeedsAsync(aggregatedSpeeds.ToList());
                 Console.WriteLine($"Finished adding aggregated data to Speed Table for routes in group.");
-            }
         }
 
         private IEnumerable<HourlySpeed> AggregateSpeedsByTimeBin(ConcurrentBag<HourlySpeedWithEntityId> speeds)

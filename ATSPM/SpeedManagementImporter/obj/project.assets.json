@@ -10051,8 +10051,6 @@
     "net7.0": [
       "ATSPM.Infrastructure >= 1.0.0",
       "ApplicationCore >= 1.0.0",
-      "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\udot-atspm\\ATSPM\\ApplicationCore\\ApplicationCore.csproj",
-      "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\udot-atspm\\ATSPM\\Infrastructure\\Infrastructure.csproj",
       "Google.Cloud.BigQuery.V2 >= 3.10.0",
       "Microsoft.Extensions.Configuration >= 8.0.0",
       "Microsoft.Extensions.Configuration.Json >= 8.0.0",
@@ -10093,12 +10091,6 @@
             },
             "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\Infrastructure\\Infrastructure.csproj": {
               "projectPath": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\Infrastructure\\Infrastructure.csproj"
-            },
-            "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\udot-atspm\\ATSPM\\ApplicationCore\\ApplicationCore.csproj": {
-              "projectPath": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\udot-atspm\\ATSPM\\ApplicationCore\\ApplicationCore.csproj"
-            },
-            "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\udot-atspm\\ATSPM\\Infrastructure\\Infrastructure.csproj": {
-              "projectPath": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\udot-atspm\\ATSPM\\Infrastructure\\Infrastructure.csproj"
             }
           }
         }
@@ -10157,25 +10149,5 @@
         "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.400\\RuntimeIdentifierGraph.json"
       }
     }
-  },
-  "logs": [
-    {
-      "code": "NU1104",
-      "level": "Error",
-      "message": "Unable to find project 'C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\udot-atspm\\ATSPM\\ApplicationCore\\ApplicationCore.csproj'. Check that the project reference is valid and that the project file exists.",
-      "libraryId": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\udot-atspm\\ATSPM\\ApplicationCore\\ApplicationCore.csproj",
-      "targetGraphs": [
-        "net7.0"
-      ]
-    },
-    {
-      "code": "NU1104",
-      "level": "Error",
-      "message": "Unable to find project 'C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\udot-atspm\\ATSPM\\Infrastructure\\Infrastructure.csproj'. Check that the project reference is valid and that the project file exists.",
-      "libraryId": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\udot-atspm\\ATSPM\\Infrastructure\\Infrastructure.csproj",
-      "targetGraphs": [
-        "net7.0"
-      ]
-    }
-  ]
+  }
 }
