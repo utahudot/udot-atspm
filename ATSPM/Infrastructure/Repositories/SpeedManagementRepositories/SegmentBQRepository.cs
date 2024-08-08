@@ -500,7 +500,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
                         {
                             EntityId = Convert.ToInt32((long)row["EntityId"]),
                             SourceId = Convert.ToInt32((long)row["SourceId"]),
-                            SegmentId = row["SegmentId"].ToString()
+                            SegmentId = Guid.Parse(row["SegmentId"].ToString())
                         });
                     }
                 }
