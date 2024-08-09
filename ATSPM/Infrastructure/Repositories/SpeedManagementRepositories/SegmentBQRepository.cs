@@ -509,6 +509,22 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             }
         }
 
+        public async Task<List<Segment>> GetSegmentDetails(List<Guid> segmentIds)
+        {
+            // Construct a comma-separated list of IDs for the IN clause
+            string ids = string.Join(",", segmentIds.Select(id => $"'{id}'"));
+
+            // Query with IN clause
+            string query = $@"
+                SELECT * 
+                FROM `{_projectId}.{_datasetId}.{_tableId}` 
+                WHERE Id IN ({ids});";
+
+            var parameters = new List<BigQueryParameter>();
+
+            var results = await _client.ExecuteQueryAsync(query, parameters);
+            return results.Select(row => MapRowToEntity(row)).ToList();
+        }
 
     }
 }

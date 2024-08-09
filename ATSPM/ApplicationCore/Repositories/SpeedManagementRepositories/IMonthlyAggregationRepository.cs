@@ -10,6 +10,7 @@ namespace ATSPM.Application.Repositories.SpeedManagementRepositories
     {
         Task<List<MonthlyAggregation>> AllAggregationsOverTimePeriod();
         Task<MonthlyAggregation> CheckExistanceAsync(MonthlyAggregation item);
+        Task<List<MonthlyAggregation>> MonthlyAggregationsForSegmentInTimePeriod(List<Guid> segmentId, DateTime startTime, DateTime endTime);
         Task<List<MonthlyAggregation>> SelectBinStartTimesInRange(DateTime startTime, DateTime endTime, MonthlyAggregation monthlyAggregation);
         Task<List<MonthlyAggregation>> SelectBinStartTimesInRangeFromSource(DateTime startTime, DateTime endTime, MonthlyAggregation monthlyAggregation);
         Task<MonthlyAggregation> SelectByBinTimeSegment(DateTime binStartTime, MonthlyAggregation monthlyAggregation);

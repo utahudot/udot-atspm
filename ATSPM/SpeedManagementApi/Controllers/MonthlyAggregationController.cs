@@ -20,6 +20,7 @@ namespace SpeedManagementApi.Controllers
             this.aggregateMonthlyEventsProcessor = aggregateMonthlyEventsProcessor;
         }
 
+        // POST: /MonthlyAggregation
         [HttpPost("")]
         public async Task AggregateMonthlyEventsAsync()
         {
@@ -27,6 +28,7 @@ namespace SpeedManagementApi.Controllers
             return;
         }
 
+        // POST: /MonthlyAggregation/segment
         [HttpPost("segment")]
         public async Task AggregateMonthlyEventsForSingleSegmentAsync([FromBody] MonthlyAggregation monthlyAggregation)
         {
@@ -34,11 +36,34 @@ namespace SpeedManagementApi.Controllers
             return;
         }
 
+        // Delete: /MonthlyAggregation
         [HttpDelete("")]
         public async Task DeleteOldEventsAsync()
         {
             await deleteOldEventsProcessor.DeleteOldEvents();
             return;
+        }
+
+        // GET: /MonthlyAggregation/segments/{id}
+        [HttpGet("segments/{segmentId}")]
+        public async Task<ActionResult<IReadOnlyList<MonthlyAggregation>>> GetMonthlyAggregationForSegment(Guid segmentId)
+        {
+            IReadOnlyList<MonthlyAggregation> monthlyAggregationsForSegment = await monthlyAggregationService.ListMonthlyAggregationsForSegment(segmentId);
+            return Ok(monthlyAggregationsForSegment);
+        }
+
+        // POST: /MonthlyAggregation/segments
+        [HttpPost("segments")]
+        public async Task<ActionResult<List<SpeedOverDistanceDto>>> GetSegmentsMonthlyAggregations([FromBody] SpeedOverDistanceRequestDto speedOverDistanceRequest)
+        {
+            var thresholdDate = DateTime.UtcNow.AddYears(-2).AddMonths(-1);
+            if (speedOverDistanceRequest == null || speedOverDistanceRequest.StartDate < thresholdDate || speedOverDistanceRequest.StartDate > speedOverDistanceRequest.EndDate)
+            {
+                return BadRequest();
+            }
+            List<SpeedOverDistanceDto> speedOverDistances = await monthlyAggregationService.MonthlyAggregationsForSegmentInTimePeriod(speedOverDistanceRequest.SegmentIds, speedOverDistanceRequest.StartDate, speedOverDistanceRequest.EndDate);
+
+            return Ok(speedOverDistances);
         }
 
     }

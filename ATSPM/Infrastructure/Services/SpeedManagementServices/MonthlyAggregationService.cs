@@ -1,7 +1,9 @@
 ﻿using ATSPM.Application.Repositories.SpeedManagementRepositories;
 using ATSPM.Data.Models.SpeedManagement.MonthlyAggregation;
+using ATSPM.Data.Models.SpeedManagementConfigModels;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace ATSPM.Infrastructure.Services.SpeedManagementServices
@@ -21,6 +23,47 @@ namespace ATSPM.Infrastructure.Services.SpeedManagementServices
         {
             var monthlyAggregations = await monthlyAggregationRepository.SelectMonthlyAggregationBySegment(segmentId);
             return monthlyAggregations;
+        }
+
+        public async Task<List<SpeedOverDistanceDto>> MonthlyAggregationsForSegmentInTimePeriod(List<Guid> segmentIds, DateTime startDate, DateTime endDate)
+        {
+            var thresholdDate = DateTime.UtcNow.AddYears(-2).AddMonths(-1);
+            if (startDate < thresholdDate || startDate > endDate)
+            {
+                return null;
+            }
+            var monthlyAggregations = await monthlyAggregationRepository.MonthlyAggregationsForSegmentInTimePeriod(segmentIds, startDate, endDate);
+            List<Segment> segments = await segmentRepository.GetSegmentDetails(segmentIds);
+            List<SpeedOverDistanceDto> speedOverDistanceDtoList = new List<SpeedOverDistanceDto>();
+            foreach (var monthlyAggregation in monthlyAggregations)
+            {
+                var segment = segments.Where(segment => segment.Id == monthlyAggregation.SegmentId).FirstOrDefault();
+                SpeedOverDistanceDto speedOverDistanceDto = new SpeedOverDistanceDto
+                {
+                    BinStartTime = monthlyAggregation.BinStartTime,
+                    SegmentId = monthlyAggregation.SegmentId,
+                    SourceId = monthlyAggregation.SourceId,
+                    SpeedLimit = segment.SpeedLimit,
+                    StartMilePoint = segment.StartMilePoint,
+                    EndMilePoint = segment.EndMilePoint,
+                    AllDayAverageSpeed = monthlyAggregation.AllDayAverageSpeed,
+                    AllDayAverageEightyFifthSpeed = monthlyAggregation.AllDayAverageEightyFifthSpeed,
+                    OffPeakAverageSpeed = monthlyAggregation.OffPeakAverageSpeed,
+                    OffPeakAverageEightyFifthSpeed = monthlyAggregation.OffPeakAverageEightyFifthSpeed,
+                    AmPeakAverageSpeed = monthlyAggregation.AmPeakAverageSpeed,
+                    AmPeakAverageEightyFifthSpeed = monthlyAggregation.AmPeakAverageEightyFifthSpeed,
+                    PmPeakAverageSpeed = monthlyAggregation.PmPeakAverageSpeed,
+                    PmPeakAverageEightyFifthSpeed = monthlyAggregation.PmPeakAverageEightyFifthSpeed,
+                    MidDayAverageSpeed = monthlyAggregation.MidDayAverageSpeed,
+                    MidDayAverageEightyFifthSpeed = monthlyAggregation.MidDayAverageEightyFifthSpeed,
+                    EveningAverageSpeed = monthlyAggregation.EveningAverageSpeed,
+                    EveningAverageEightyFifthSpeed = monthlyAggregation.EveningAverageEightyFifthSpeed,
+                    EarlyMorningAverageSpeed = monthlyAggregation.EarlyMorningAverageSpeed,
+                    EarlyMorningAverageEightyFifthSpeed = monthlyAggregation.EarlyMorningAverageEightyFifthSpeed
+                };
+                speedOverDistanceDtoList.Add(speedOverDistanceDto);
+            }
+            return speedOverDistanceDtoList;
         }
 
         public async Task UpsertMonthlyAggregation(MonthlyAggregation monthlyAggregation)

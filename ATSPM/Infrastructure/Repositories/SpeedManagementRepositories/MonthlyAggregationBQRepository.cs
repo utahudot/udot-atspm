@@ -412,6 +412,28 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
 
             return monthlyAggregations;
         }
+
+        public async Task<List<MonthlyAggregation>> MonthlyAggregationsForSegmentInTimePeriod(List<Guid> segmentIds, DateTime startTime, DateTime endTime)
+        {
+            // Construct a comma-separated list of IDs for the IN clause
+            string ids = string.Join(",", segmentIds.Select(id => $"'{id}'"));
+            //TIMESTAMP('{item.BinStartTime:yyyy-MM-dd HH:mm:ss}')
+            var query = $@"
+            SELECT * FROM `{_datasetId}.{_tableId}` 
+                WHERE BinStartTime BETWEEN TIMESTAMP('{startTime:yyyy-MM-dd HH:mm:ss}') AND TIMESTAMP('{endTime:yyyy-MM-dd HH:mm:ss}') 
+                AND SegmentId IN ({ids})";
+
+            var parameters = new List<BigQueryParameter>();
+
+            var result = await _client.ExecuteQueryAsync(query, parameters);
+            var monthlyAggregations = new List<MonthlyAggregation>();
+            foreach (var row in result)
+            {
+                monthlyAggregations.Add(MapRowToEntity(row));
+            }
+
+            return monthlyAggregations;
+        }
         /// <inheritdoc/>
 
         public async Task<List<MonthlyAggregation>> SelectBinStartTimesInRangeFromSource(DateTime startTime, DateTime endTime, MonthlyAggregation monthlyAggregation)
@@ -472,7 +494,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
 
         public async Task<List<MonthlyAggregation>> AllAggregationsOverTimePeriod()
         {
-            var thresholdDate = DateTime.UtcNow.AddYears(-2);
+            var thresholdDate = DateTime.UtcNow.AddYears(-2).AddMonths(-1);
 
             var query = $@"
                 SELECT *
