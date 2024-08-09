@@ -52,19 +52,5 @@ namespace SpeedManagementApi.Controllers
             return Ok(monthlyAggregationsForSegment);
         }
 
-        // POST: /MonthlyAggregation/segments
-        [HttpPost("segments")]
-        public async Task<ActionResult<List<SpeedOverDistanceDto>>> GetSegmentsMonthlyAggregations([FromBody] SpeedOverDistanceRequestDto speedOverDistanceRequest)
-        {
-            var thresholdDate = DateTime.UtcNow.AddYears(-2).AddMonths(-1);
-            if (speedOverDistanceRequest == null || speedOverDistanceRequest.StartDate < thresholdDate || speedOverDistanceRequest.StartDate > speedOverDistanceRequest.EndDate)
-            {
-                return BadRequest();
-            }
-            List<SpeedOverDistanceDto> speedOverDistances = await monthlyAggregationService.MonthlyAggregationsForSegmentInTimePeriod(speedOverDistanceRequest.SegmentIds, speedOverDistanceRequest.StartDate, speedOverDistanceRequest.EndDate);
-
-            return Ok(speedOverDistances);
-        }
-
     }
 }
