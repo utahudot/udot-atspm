@@ -42,4 +42,19 @@
 		<None Include="Controllers\OldEventLogController.cs" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Reference Include="Utah.Udot.NetStandardToolkit">
+	    <HintPath>..\..\..\udot-netstandard-toolkit\NetStandardToolkit\bin\Release\net7.0\Utah.Udot.NetStandardToolkit.dll</HintPath>
+	  </Reference>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Using Include="Utah.Udot.Atspm.Data.Models" />
+	  <Using Include="Utah.Udot.Atspm.Data.Models.EventLogModels" />
+	  <Using Include="Utah.Udot.Atspm.Infrastructure.Extensions" />
+	  <Using Include="Utah.Udot.Atspm.Repositories.AggregationRepositories" />
+	  <Using Include="Utah.Udot.Atspm.Repositories.EventLogRepositories" />
+	  <Using Include="Utah.Udot.NetStandardToolkit.Extensions" />
+	</ItemGroup>
+
 </Project>

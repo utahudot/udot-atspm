@@ -18,8 +18,6 @@
 using Asp.Versioning;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Utah.Udot.Atspm.Data.Models;
-using Utah.Udot.Atspm.Data.Models;
 
 namespace Utah.Udot.Atspm.DataApi.Controllers
 {

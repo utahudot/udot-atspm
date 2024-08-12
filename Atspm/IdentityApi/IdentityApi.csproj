@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
 	<PropertyGroup>
 		<NameSpacePrefix>Utah.Udot</NameSpacePrefix>
@@ -27,6 +27,18 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Reference Include="Utah.Udot.NetStandardToolkit">
+	    <HintPath>..\..\..\udot-netstandard-toolkit\NetStandardToolkit\bin\Release\net7.0\Utah.Udot.NetStandardToolkit.dll</HintPath>
+	  </Reference>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Using Include="Utah.Udot.Atspm.Infrastructure.Extensions" />
+	  <Using Include="Utah.Udot.NetStandardToolkit.Extensions" />
+	  <Using Include="Utah.Udot.NetStandardToolkit.Services" />
 	</ItemGroup>
 
 </Project>
