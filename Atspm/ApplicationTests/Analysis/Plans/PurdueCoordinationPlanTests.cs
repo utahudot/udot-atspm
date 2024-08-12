@@ -47,7 +47,7 @@ namespace ApplicationCoreTests.Analysis.Plans
         {
             //var sut = new GeneratePurdueCoordinationResult();
 
-            //var testEvents = Enumerable.Range(1, 10).Select(s => new ControllerEventLog()
+            //var testEvents = Enumerable.Range(1, 10).Select(s => new IndianaEvent()
             //{
             //    locationId = "1001",
             //    EventCode = (int)DataLoggerEnum.CoordPatternChange,

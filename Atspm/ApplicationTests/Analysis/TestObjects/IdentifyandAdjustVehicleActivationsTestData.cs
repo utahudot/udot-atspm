@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using Utah.Udot.Atspm.Analysis.Common;
 using Utah.Udot.Atspm.Analysis.PreemptionDetails;
 using Utah.Udot.Atspm.Data.Models;
+using Utah.Udot.Atspm.Data.Models.EventLogModels;
 
 namespace Utah.Udot.Atspm.ApplicationTests.Analysis.TestObjects
 {
@@ -42,7 +43,7 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.TestObjects
     public class IdentifyandAdjustVehicleActivationsTestData
     {
         public Approach Configuration { get; set; }
-        public List<ControllerEventLog> Input { get; set; }
+        public List<IndianaEvent> Input { get; set; }
         public List<CorrectedDetectorEvent> Output { get; set; }
     }
 
@@ -63,28 +64,28 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.TestObjects
     public class RedToRedCyclesTestData
     {
         public Approach Configuration { get; set; }
-        public List<ControllerEventLog> Input { get; set; }
+        public List<IndianaEvent> Input { get; set; }
         public List<RedToRedCycle> Output { get; set; }
     }
 
     public class PreemptiveProcessTestData
     {
         public Location Configuration { get; set; }
-        public List<ControllerEventLog> Input { get; set; }
+        public List<IndianaEvent> Input { get; set; }
         public List<PreempDetailValueBase> Output { get; set; }
     }
 
     public class AggregatePriorityCodesTestData
     {
         public Location Configuration { get; set; }
-        public List<ControllerEventLog> Input { get; set; }
+        public List<IndianaEvent> Input { get; set; }
         public List<PriorityAggregation> Output { get; set; }
     }
 
     public class AggregatePreemptCodesTestData
     {
         public Location Configuration { get; set; }
-        public List<ControllerEventLog> Input { get; set; }
+        public List<IndianaEvent> Input { get; set; }
         public List<PreemptionAggregation> Output { get; set; }
     }
 }

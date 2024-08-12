@@ -25,6 +25,7 @@ using Utah.Udot.Atspm.Analysis.WorkflowSteps;
 using Utah.Udot.Atspm.ApplicationTests.Analysis.TestObjects;
 using Utah.Udot.Atspm.ApplicationTests.Fixtures;
 using Utah.Udot.Atspm.Data.Models;
+using Utah.Udot.Atspm.Data.Models.EventLogModels;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -45,20 +46,20 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
         [Trait(nameof(CreateRedToRedCycles), "Location Filter")]
         public async void CreateRedToRedCyclesLocationFilterTest()
         {
-            var correct = new List<ControllerEventLog>
+            var correct = new List<IndianaEvent>
             {
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = _testApproach.ProtectedPhaseNumber},
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = _testApproach.ProtectedPhaseNumber},
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
+                new IndianaEvent() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = Convert.ToInt16(_testApproach.ProtectedPhaseNumber)},
+                new IndianaEvent() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = Convert.ToInt16(_testApproach.ProtectedPhaseNumber)},
+                new IndianaEvent() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = Convert.ToInt16(_testApproach.ProtectedPhaseNumber)},
+                new IndianaEvent() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = Convert.ToInt16(_testApproach.ProtectedPhaseNumber)},
             };
 
-            var incorrect = new List<ControllerEventLog>
+            var incorrect = new List<IndianaEvent>
             {
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = _testApproach.ProtectedPhaseNumber},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = _testApproach.ProtectedPhaseNumber},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
+                new IndianaEvent() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = Convert.ToInt16(_testApproach.ProtectedPhaseNumber)},
+                new IndianaEvent() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = Convert.ToInt16(_testApproach.ProtectedPhaseNumber)},
+                new IndianaEvent() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = Convert.ToInt16(_testApproach.ProtectedPhaseNumber)},
+                new IndianaEvent() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = Convert.ToInt16(_testApproach.ProtectedPhaseNumber)},
             };
 
             var testLogs = correct.Union(incorrect);
@@ -81,7 +82,7 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
                 _output.WriteLine($"cycle: {l}");
             }
 
-            var expected = correct.Select(s => s.SignalIdentifier).Distinct().OrderBy(o => o);
+            var expected = correct.Select(s => s.LocationIdentifier).Distinct().OrderBy(o => o);
             var actual = result.Item2.Select(s => s.LocationIdentifier).Distinct().OrderBy(o => o);
 
             _output.WriteLine($"expected: {expected}");
@@ -94,20 +95,20 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
         [Trait(nameof(CreateRedToRedCycles), "Approach Filter")]
         public async void CreateRedToRedCyclesApproachFilterTest()
         {
-            var correct = new List<ControllerEventLog>
+            var correct = new List<IndianaEvent>
             {
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = _testApproach.ProtectedPhaseNumber},
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = _testApproach.ProtectedPhaseNumber},
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
+                new IndianaEvent() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = Convert.ToInt16(_testApproach.ProtectedPhaseNumber)},
+                new IndianaEvent() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = Convert.ToInt16(_testApproach.ProtectedPhaseNumber)},
+                new IndianaEvent() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = Convert.ToInt16(_testApproach.ProtectedPhaseNumber)},
+                new IndianaEvent() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = Convert.ToInt16(_testApproach.ProtectedPhaseNumber)},
             };
 
-            var incorrect = new List<ControllerEventLog>
+            var incorrect = new List<IndianaEvent>
             {
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = 5 },
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = 5 },
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = 5 },
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = 5 },
+                new IndianaEvent() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = 5 },
+                new IndianaEvent() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = 5 },
+                new IndianaEvent() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = 5 },
+                new IndianaEvent() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = 5 },
             };
 
             var testLogs = correct.Union(incorrect);
@@ -131,7 +132,7 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
             }
 
             var expected = correct.Select(s => s.EventParam).Distinct().OrderBy(o => o);
-            var actual = result.Item2.Select(s => s.PhaseNumber).Distinct().OrderBy(o => o);
+            var actual = result.Item2.Select(s => Convert.ToInt16(s.PhaseNumber)).Distinct().OrderBy(o => o);
 
             _output.WriteLine($"expected: {expected}");
             _output.WriteLine($"actual: {actual}");
@@ -143,20 +144,20 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
         [Trait(nameof(CreateRedToRedCycles), "Code Filter")]
         public async void CreateRedToRedCyclesCodeFilterTest()
         {
-            var correct = new List<ControllerEventLog>
+            var correct = new List<IndianaEvent>
             {
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = _testApproach.ProtectedPhaseNumber},
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = _testApproach.ProtectedPhaseNumber},
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
+                new IndianaEvent() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = Convert.ToInt16(_testApproach.ProtectedPhaseNumber)},
+                new IndianaEvent() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = Convert.ToInt16(_testApproach.ProtectedPhaseNumber)},
+                new IndianaEvent() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = Convert.ToInt16(_testApproach.ProtectedPhaseNumber)},
+                new IndianaEvent() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = Convert.ToInt16(_testApproach.ProtectedPhaseNumber)},
             };
 
-            var incorrect = new List<ControllerEventLog>
+            var incorrect = new List<IndianaEvent>
             {
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 101, EventParam = _testApproach.ProtectedPhaseNumber},
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 102, EventParam = _testApproach.ProtectedPhaseNumber},
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 103, EventParam = _testApproach.ProtectedPhaseNumber},
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 104, EventParam = _testApproach.ProtectedPhaseNumber},
+                new IndianaEvent() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 101, EventParam = Convert.ToInt16(_testApproach.ProtectedPhaseNumber)},
+                new IndianaEvent() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 102, EventParam = Convert.ToInt16(_testApproach.ProtectedPhaseNumber)},
+                new IndianaEvent() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 103, EventParam = Convert.ToInt16(_testApproach.ProtectedPhaseNumber)},
+                new IndianaEvent() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 104, EventParam = Convert.ToInt16(_testApproach.ProtectedPhaseNumber)},
             };
 
             var testLogs = correct.Union(incorrect);
@@ -202,12 +203,12 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
         [Trait(nameof(CreateRedToRedCycles), "Data Check")]
         public async void CreateRedToRedCyclesDataCheckTest()
         {
-            var testLogs = new List<ControllerEventLog>
+            var testLogs = new List<IndianaEvent>
             {
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = _testApproach.ProtectedPhaseNumber},
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = _testApproach.ProtectedPhaseNumber},
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
+                new IndianaEvent() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = Convert.ToInt16(_testApproach.ProtectedPhaseNumber)},
+                new IndianaEvent() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = Convert.ToInt16(_testApproach.ProtectedPhaseNumber)},
+                new IndianaEvent() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = Convert.ToInt16(_testApproach.ProtectedPhaseNumber)},
+                new IndianaEvent() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = Convert.ToInt16(_testApproach.ProtectedPhaseNumber)},
             }.AsEnumerable();
 
             var testData = Tuple.Create(_testApproach, testLogs);
@@ -244,12 +245,12 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
         [Trait(nameof(CreateRedToRedCycles), "Timestamp Order")]
         public async void CreateRedToRedCyclesOrderTest()
         {
-            var testLogs = new List<ControllerEventLog>
+            var testLogs = new List<IndianaEvent>
             {
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = _testApproach.ProtectedPhaseNumber},
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = _testApproach.ProtectedPhaseNumber},
+                new IndianaEvent() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = Convert.ToInt16(_testApproach.ProtectedPhaseNumber)},
+                new IndianaEvent() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = Convert.ToInt16(_testApproach.ProtectedPhaseNumber)},
+                new IndianaEvent() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = Convert.ToInt16(_testApproach.ProtectedPhaseNumber)},
+                new IndianaEvent() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = Convert.ToInt16(_testApproach.ProtectedPhaseNumber)},
             }.AsEnumerable();
 
             var testData = Tuple.Create(_testApproach, testLogs);
@@ -287,12 +288,12 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
         [Trait(nameof(CreateRedToRedCycles), "No Start Event")]
         public async void CreateRedToRedCyclesNoStartTest()
         {
-            var testLogs = new List<ControllerEventLog>
+            var testLogs = new List<IndianaEvent>
             {
-                //new ControllerEventLog() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = _testApproach.ProtectedPhaseNumber},
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = _testApproach.ProtectedPhaseNumber},
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
+                //new IndianaEvent() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = Convert.ToInt16(_testApproach.ProtectedPhaseNumber)},
+                new IndianaEvent() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = Convert.ToInt16(_testApproach.ProtectedPhaseNumber)},
+                new IndianaEvent() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = Convert.ToInt16(_testApproach.ProtectedPhaseNumber)},
+                new IndianaEvent() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = Convert.ToInt16(_testApproach.ProtectedPhaseNumber)},
             }.AsEnumerable();
 
             var testData = Tuple.Create(_testApproach, testLogs);
@@ -321,12 +322,12 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
         [Trait(nameof(CreateRedToRedCycles), "No End Event")]
         public async void CreateRedToRedCyclesNoEndTest()
         {
-            var testLogs = new List<ControllerEventLog>
+            var testLogs = new List<IndianaEvent>
             {
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = _testApproach.ProtectedPhaseNumber},
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = _testApproach.ProtectedPhaseNumber},
-                //new ControllerEventLog() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
+                new IndianaEvent() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = Convert.ToInt16(_testApproach.ProtectedPhaseNumber)},
+                new IndianaEvent() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = Convert.ToInt16(_testApproach.ProtectedPhaseNumber)},
+                new IndianaEvent() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = Convert.ToInt16(_testApproach.ProtectedPhaseNumber)},
+                //new IndianaEvent() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = Convert.ToInt16(_testApproach.ProtectedPhaseNumber)},
             }.AsEnumerable();
 
             var testData = Tuple.Create(_testApproach, testLogs);
@@ -355,12 +356,12 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
         [Trait(nameof(CreateRedToRedCycles), "No Green Event")]
         public async void CreateRedToRedCyclesNoGreenTest()
         {
-            var testLogs = new List<ControllerEventLog>
+            var testLogs = new List<IndianaEvent>
             {
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
-                //new ControllerEventLog() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = _testApproach.ProtectedPhaseNumber},
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = _testApproach.ProtectedPhaseNumber},
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
+                new IndianaEvent() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = Convert.ToInt16(_testApproach.ProtectedPhaseNumber)},
+                //new IndianaEvent() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = Convert.ToInt16(_testApproach.ProtectedPhaseNumber)},
+                new IndianaEvent() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = Convert.ToInt16(_testApproach.ProtectedPhaseNumber)},
+                new IndianaEvent() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = Convert.ToInt16(_testApproach.ProtectedPhaseNumber)},
             }.AsEnumerable();
 
             var testData = Tuple.Create(_testApproach, testLogs);
@@ -389,12 +390,12 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
         [Trait(nameof(CreateRedToRedCycles), "No Yellow Event")]
         public async void CreateRedToRedCyclesNoYellowTest()
         {
-            var testLogs = new List<ControllerEventLog>
+            var testLogs = new List<IndianaEvent>
             {
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = _testApproach.ProtectedPhaseNumber},
-                //new ControllerEventLog() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = _testApproach.ProtectedPhaseNumber},
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
+                new IndianaEvent() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = Convert.ToInt16(_testApproach.ProtectedPhaseNumber)},
+                new IndianaEvent() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = Convert.ToInt16(_testApproach.ProtectedPhaseNumber)},
+                //new IndianaEvent() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = Convert.ToInt16(_testApproach.ProtectedPhaseNumber)},
+                new IndianaEvent() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = Convert.ToInt16(_testApproach.ProtectedPhaseNumber)},
             }.AsEnumerable();
 
             var testData = Tuple.Create(_testApproach, testLogs);
@@ -423,12 +424,12 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
         [Trait(nameof(CreateRedToRedCycles), "Event Order")]
         public async void CreateRedToRedCyclesEventOrderTest()
         {
-            var testLogs = new List<ControllerEventLog>
+            var testLogs = new List<IndianaEvent>
             {
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = _testApproach.ProtectedPhaseNumber},
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = _testApproach.ProtectedPhaseNumber},
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
+                new IndianaEvent() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = Convert.ToInt16(_testApproach.ProtectedPhaseNumber)},
+                new IndianaEvent() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = Convert.ToInt16(_testApproach.ProtectedPhaseNumber)},
+                new IndianaEvent() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = Convert.ToInt16(_testApproach.ProtectedPhaseNumber)},
+                new IndianaEvent() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = Convert.ToInt16(_testApproach.ProtectedPhaseNumber)},
             }.AsEnumerable();
 
             var testData = Tuple.Create(_testApproach, testLogs);
@@ -455,7 +456,7 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
         [Trait(nameof(CreateRedToRedCycles), "Null Input")]
         public async void CreateRedToRedCyclesNullInputTest()
         {
-            var testData = Tuple.Create<Approach, IEnumerable<ControllerEventLog>>(null, null);
+            var testData = Tuple.Create<Approach, IEnumerable<IndianaEvent>>(null, null);
 
             var sut = new CreateRedToRedCycles();
 
@@ -476,11 +477,11 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
         [Trait(nameof(CreateRedToRedCycles), "No Data")]
         public async void CreateRedToRedCyclesNoDataTest()
         {
-            var testLogs = Enumerable.Range(1, 5).Select(s => new ControllerEventLog()
+            var testLogs = Enumerable.Range(1, 5).Select(s => new IndianaEvent()
             {
-                SignalIdentifier = "1001",
+                LocationIdentifier = "1001",
                 Timestamp = DateTime.Now.AddMilliseconds(Random.Shared.Next(1, 1000)),
-                EventCode = Random.Shared.Next(1, 50),
+                EventCode = Convert.ToInt16(Random.Shared.Next(1, 50)),
                 EventParam = 5
             });
 

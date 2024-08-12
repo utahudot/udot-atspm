@@ -21,6 +21,7 @@ using System.Linq;
 using System.Threading.Tasks.Dataflow;
 using Utah.Udot.Atspm.Analysis.WorkflowFilters;
 using Utah.Udot.Atspm.Data.Models;
+using Utah.Udot.Atspm.Data.Models.EventLogModels;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -33,7 +34,7 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowFilterTests
         protected List<int> filteredList = new();
         protected FilterEventCodeLocationBase sut;
 
-        protected Tuple<Location, IEnumerable<ControllerEventLog>> testData;
+        protected Tuple<Location, IEnumerable<IndianaEvent>> testData;
 
         public WorkflowFilterTestsBase(ITestOutputHelper output)
         {
@@ -44,11 +45,11 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowFilterTests
         public void CheckFilterPass()
         {
             var testLocation = new Location() { LocationIdentifier = "1001" };
-            var testLogs = Enumerable.Range(0, 1000).Select(s => new ControllerEventLog()
+            var testLogs = Enumerable.Range(0, 1000).Select(s => new IndianaEvent()
             {
-                SignalIdentifier = testLocation.LocationIdentifier,
+                LocationIdentifier = testLocation.LocationIdentifier,
                 Timestamp = DateTime.Now.AddSeconds(s),
-                EventCode = s,
+                EventCode = Convert.ToInt16(s),
                 EventParam = 1
             }).ToList();
 
