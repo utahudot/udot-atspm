@@ -95,7 +95,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.EventLogImporters
                     {
                         logMessages.DecodeLogFileMessage(file.FullName);
 
-                        decodedLogs = decoder.Decode(device, memoryStream).ToList();
+                        decodedLogs = decoder.Decode(device, memoryStream, cancelToken).ToList();
 
                         if (_options.DeleteFile)
                             file.Delete();

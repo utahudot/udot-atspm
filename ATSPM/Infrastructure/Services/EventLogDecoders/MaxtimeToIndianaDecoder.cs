@@ -23,17 +23,12 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.EventLogDecoders
     /// <inheritdoc/>
     public class MaxtimeToIndianaDecoder : EventLogDecoderBase<IndianaEvent>
     {
-
-        /// <inheritdoc/>
-        //public MaxTimeEventLogDecoder(ILogger<MaxTimeEventLogDecoder> log, IOptionsSnapshot<SignalControllerDecoderConfiguration> options) : base(log, options) { }
-
         #region Properties
 
         #endregion
 
         #region Methods
 
-        /// <inheritdoc/>
         //public override bool CanExecute(Tuple<Device, FileInfo> parameter)
         //{
         //    var device = parameter.Item1;
