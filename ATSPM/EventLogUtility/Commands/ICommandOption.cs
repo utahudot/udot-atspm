@@ -18,7 +18,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using System.CommandLine.NamingConventionBinder;
 
-namespace ATSPM.EventLogUtility.Commands
+namespace Utah.Udot.Atspm.EventLogUtility.Commands
 {
     public interface ICommandOption<T> : ICommandOption
     {

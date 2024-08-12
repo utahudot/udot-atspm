@@ -37,6 +37,12 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Reference Include="Utah.Udot.NetStandardToolkit">
+	    <HintPath>..\..\..\udot-netstandard-toolkit\NetStandardToolkit\bin\Release\net7.0\Utah.Udot.NetStandardToolkit.dll</HintPath>
+	  </Reference>
+	</ItemGroup>
+
+	<ItemGroup>
 		<None Update="appsettings.json">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
@@ -55,6 +61,14 @@
 			<DependentUpon>appsettings.json</DependentUpon>
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Using Include="Utah.Udot.Atspm.Configuration" />
+	  <Using Include="Utah.Udot.Atspm.Data.Models" />
+	  <Using Include="Utah.Udot.Atspm.Repositories.ConfigurationRepositories" />
+	  <Using Include="Utah.Udot.Atspm.Services" />
+	  <Using Include="Utah.Udot.NetStandardToolkit.Extensions" />
 	</ItemGroup>
 
 </Project>

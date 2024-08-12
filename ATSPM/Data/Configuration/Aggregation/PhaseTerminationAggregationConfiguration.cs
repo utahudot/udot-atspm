@@ -22,6 +22,7 @@ namespace Utah.Udot.Atspm.Data.Configuration
 {
     public class PhaseTerminationAggregationConfiguration : IEntityTypeConfiguration<PhaseTerminationAggregation>
     {
+        /// <inheritdoc/>
         public void Configure(EntityTypeBuilder<PhaseTerminationAggregation> builder)
         {
             builder.HasComment("Phase Termination Aggregation");

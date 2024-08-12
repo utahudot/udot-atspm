@@ -19,7 +19,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Utah.Udot.Atspm.Data.Models;
 
 
 //var path1 = "C:\\temp\\TestData\\7115_Approach_Delay.csv";
@@ -89,28 +88,6 @@ var list = File.ReadAllLines(path1)
 //    }
 //};
 
-var testData = new List<ControllerEventLog>
-            {
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:01:01.1"), EventCode = 102, EventParam = 1},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:02:01.1"), EventCode = 105, EventParam = 1},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:03:01.1"), EventCode = 104, EventParam = 1},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:04:01.1"), EventCode = 111, EventParam = 1},
-
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 7:01:01.1"), EventCode = 102, EventParam = 1},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 7:02:01.1"), EventCode = 105, EventParam = 1},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 7:03:01.1"), EventCode = 104, EventParam = 1},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 7:04:01.1"), EventCode = 111, EventParam = 1},
-
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 5:01:01.1"), EventCode = 102, EventParam = 1},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 5:02:01.1"), EventCode = 105, EventParam = 1},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 5:03:01.1"), EventCode = 104, EventParam = 1},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 5:04:01.1"), EventCode = 111, EventParam = 1},
-            };
-
-
-PreemptiveStuff test = new PreemptiveStuff();
-
-var result = await test.ExecuteAsync(testData);
 
 
 //public class VolumeByHour : TotalVolume

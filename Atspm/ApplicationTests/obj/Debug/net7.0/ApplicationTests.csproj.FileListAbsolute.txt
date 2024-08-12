@@ -1,11 +1,6 @@
-C:\Users\christianbaker\source\repos\udot-atspm\Atspm\ApplicationTests\obj\Debug\net7.0\ApplicationTests.csproj.AssemblyReference.cache
-C:\Users\christianbaker\source\repos\udot-atspm\Atspm\ApplicationTests\obj\Debug\net7.0\ApplicationTests.GeneratedMSBuildEditorConfig.editorconfig
-C:\Users\christianbaker\source\repos\udot-atspm\Atspm\ApplicationTests\obj\Debug\net7.0\ApplicationTests.AssemblyInfoInputs.cache
-C:\Users\christianbaker\source\repos\udot-atspm\Atspm\ApplicationTests\obj\Debug\net7.0\ApplicationTests.AssemblyInfo.cs
-C:\Users\christianbaker\source\repos\udot-atspm\Atspm\ApplicationTests\obj\Debug\net7.0\ApplicationTests.csproj.CoreCompileInputs.cache
 C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationTests\bin\Debug\net7.0\CoverletSourceRootsMapping
-C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationTests\bin\Debug\net7.0\testhost.exe
 C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationTests\bin\Debug\net7.0\testhost.dll
+C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationTests\bin\Debug\net7.0\testhost.exe
 C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationTests\bin\Debug\net7.0\xunit.runner.visualstudio.dotnetcore.testadapter.dll
 C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationTests\bin\Debug\net7.0\xunit.runner.reporters.netcoreapp10.dll
 C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationTests\bin\Debug\net7.0\xunit.runner.utility.netcoreapp10.dll
@@ -304,6 +299,11 @@ C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationTests\bin\Debug
 C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationTests\bin\Debug\net7.0\Utah.Udot.Atspm.Data.pdb
 C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationTests\bin\Debug\net7.0\Utah.Udot.Atspm.Data.xml
 C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationTests\bin\Debug\net7.0\Utah.Udot.NetStandardToolkit.pdb
+C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationTests\obj\Debug\net7.0\ApplicationTests.csproj.AssemblyReference.cache
+C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationTests\obj\Debug\net7.0\ApplicationTests.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationTests\obj\Debug\net7.0\ApplicationTests.AssemblyInfoInputs.cache
+C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationTests\obj\Debug\net7.0\ApplicationTests.AssemblyInfo.cs
+C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationTests\obj\Debug\net7.0\ApplicationTests.csproj.CoreCompileInputs.cache
 C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationTests\obj\Debug\net7.0\ApplicationTests.csproj.CopyComplete
 C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationTests\obj\Debug\net7.0\Utah.Udot.Atspm.ApplicationTests.dll
 C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationTests\obj\Debug\net7.0\refint\Utah.Udot.Atspm.ApplicationTests.dll
