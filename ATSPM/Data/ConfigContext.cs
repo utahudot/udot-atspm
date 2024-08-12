@@ -162,6 +162,9 @@ namespace Utah.Udot.Atspm.Data
         /// </summary>
         public virtual DbSet<VersionHistory> VersionHistory { get; set; }
 
+        /// <summary>
+        /// Watchdog log events
+        /// </summary>
         public virtual DbSet<WatchDogLogEvent> WatchDogLogEvents { get; set; }
 
         /// <inheritdoc/>

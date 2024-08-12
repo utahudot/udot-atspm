@@ -22,6 +22,7 @@ namespace Utah.Udot.Atspm.Data.Configuration
 {
     public class PhaseLeftTurnGapAggregationConfiguration : IEntityTypeConfiguration<PhaseLeftTurnGapAggregation>
     {
+        /// <inheritdoc/>
         public void Configure(EntityTypeBuilder<PhaseLeftTurnGapAggregation> builder)
         {
             builder.HasComment("Phase Left Turn Gap Aggregation");

@@ -20,11 +20,15 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Utah.Udot.Atspm.Data.Configuration
 {
+    /// <summary>
+    /// Location plan aggregation configuration
+    /// </summary>
     public class LocationPlanAggregationConfiguration : IEntityTypeConfiguration<SignalPlanAggregation>
     {
+        /// <inheritdoc/>
         public void Configure(EntityTypeBuilder<SignalPlanAggregation> builder)
         {
-            builder.HasComment("Location Plan Aggregation");
+            builder.ToTable(t => t.HasComment("Location Plan Aggregation"));
 
             builder.HasKey(e => new { e.LocationIdentifier, e.Start, e.End });
 

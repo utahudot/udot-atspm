@@ -22,6 +22,7 @@ namespace Utah.Udot.Atspm.Data.Configuration
 {
     public class PreemptionAggregationConfiguration : IEntityTypeConfiguration<PreemptionAggregation>
     {
+        /// <inheritdoc/>
         public void Configure(EntityTypeBuilder<PreemptionAggregation> builder)
         {
             builder.HasComment("Preemption Aggregation");
