@@ -16,15 +16,16 @@
 #endregion
 
 using AutoFixture;
-using InfrastructureTests.Fixtures;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using Utah.Udot.Atspm.Data;
 using Utah.Udot.Atspm.Data.Models;
+using Utah.Udot.Atspm.InfrastructureTests.Fixtures;
+using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
 using Xunit.Abstractions;
 
-namespace InfrastructureTests.RepositoryTests
+namespace Utah.Udot.Atspm.InfrastructureTests.RepositoryTests
 {
     //[TestCaseOrderer("InfrastructureTests.Orderers.TraitValueTestCaseOrderer", "InfrastructureTests")]
     public class IDetectorCommentRepositoryTests : RepositoryTestBase<DetectorComment, IDetectorCommentRepository, ConfigContext, int>
@@ -55,7 +56,7 @@ namespace InfrastructureTests.RepositoryTests
                     {
                         var f = ModelFixture.Create<DetectorComment>();
                         //f.Id = x;
-                        f.TimeStamp = DateTime.Today.AddDays((y - (y * 2)) - 1);
+                        f.TimeStamp = DateTime.Today.AddDays(y - y * 2 - 1);
                         f.DetectorId = d.Id;
                         f.Detector = d;
 

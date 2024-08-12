@@ -16,8 +16,11 @@
 #endregion
 
 using System.Collections.Generic;
+using Utah.Udot.Atspm.Analysis.Common;
+using Utah.Udot.Atspm.Analysis.PreemptionDetails;
+using Utah.Udot.Atspm.Data.Models;
 
-namespace ApplicationCoreTests.Analysis.TestObjects
+namespace Utah.Udot.Atspm.ApplicationTests.Analysis.TestObjects
 {
     public abstract class AnalysisTestDataBase
     {

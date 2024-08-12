@@ -18,10 +18,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Utah.Udot.Atspm.Analysis.Workflows;
+using Utah.Udot.Atspm.Data.Models;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace ApplicationCoreTests.Analysis.WorkflowSteps
+namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
 {
     public class CreatePreemptiveCyclesTests : IDisposable
     {

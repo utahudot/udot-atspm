@@ -21,12 +21,10 @@ using Moq;
 using Utah.Udot.Atspm.Data;
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models;
-using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.WatchDog.Services;
-using WatchDog.Models;
 using Xunit;
 
-namespace WatchDogTests.Services
+namespace Utah.Udot.Atspm.WatchDogTests.Services
 {
     public class EmailServiceTests
     {

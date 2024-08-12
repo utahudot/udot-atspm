@@ -23,7 +23,7 @@
             <summary>
             Events that coorelate to <see cref="F:Utah.Udot.Atspm.Data.Enums.IndianaEnumerations.VehicleDetectorOn"/>
             and that have been timestamp corrected for detector distances and latency
-            using the <see cref="!:Application.AtspmMath.AdjustTimeStamp"/> calculation.
+            using the <see cref="M:Utah.Udot.Atspm.AtspmMath.AdjustTimeStamp(System.DateTime,System.Int32,System.Int32,System.Double)"/> calculation.
             </summary>
         </member>
         <member name="P:Utah.Udot.Atspm.Analysis.Common.CorrectedDetectorEvent.LocationIdentifier">
