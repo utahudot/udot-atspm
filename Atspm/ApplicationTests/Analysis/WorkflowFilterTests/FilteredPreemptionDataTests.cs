@@ -15,9 +15,11 @@
 // limitations under the License.
 #endregion
 
+using Utah.Udot.Atspm.Analysis.WorkflowFilters;
+using Utah.Udot.Atspm.Data.Enums;
 using Xunit.Abstractions;
 
-namespace ApplicationCoreTests.Analysis.WorkflowFilterTests
+namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowFilterTests
 {
     public class FilteredPreemptionDataTests : WorkflowFilterTestsBase
     {
@@ -29,7 +31,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowFilterTests
             filteredList.Add((int)IndianaEnumerations.PreemptEntryStarted);
             filteredList.Add((int)IndianaEnumerations.PreemptionBeginTrackClearance);
             filteredList.Add((int)IndianaEnumerations.PreemptionBeginDwellService);
-            filteredList.Add((int)110);
+            filteredList.Add(110);
             filteredList.Add((int)IndianaEnumerations.PreemptionBeginExitInterval);
 
             sut = new FilteredPreemptionData();

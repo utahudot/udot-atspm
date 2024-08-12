@@ -18,8 +18,9 @@
 using Newtonsoft.Json;
 using System;
 using System.IO;
+using Utah.Udot.Atspm.Data.Models;
 
-namespace ApplicationCoreTests.Fixtures
+namespace Utah.Udot.Atspm.ApplicationTests.Fixtures
 {
     public class TextDetectorFixture : IDisposable
     {

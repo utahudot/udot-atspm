@@ -19,7 +19,7 @@ using System;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace ApplicationCoreTests.Analysis.Workflows
+namespace Utah.Udot.Atspm.ApplicationTests.Analysis.Workflows
 {
     public class ApproachDelayWorkflowTests : IDisposable
     {

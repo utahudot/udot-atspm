@@ -16,9 +16,12 @@
 #endregion
 
 using System.Collections.Generic;
+using Utah.Udot.Atspm.Business.Common;
+using Utah.Udot.Atspm.Data.Enums;
+using Utah.Udot.Atspm.Data.Models;
 using Xunit;
 
-namespace ApplicationCoreTests.Business.Common
+namespace Utah.Udot.Atspm.ApplicationTests.Business.Common
 {
     public class PhaseDetailTests
     {
