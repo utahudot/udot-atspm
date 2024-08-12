@@ -15,3 +15,6 @@ global using global::System.Net.Http;
 global using global::System.Net.Http.Json;
 global using global::System.Threading;
 global using global::System.Threading.Tasks;
+global using global::Utah.Udot.Atspm.Infrastructure.Extensions;
+global using global::Utah.Udot.NetStandardToolkit.Extensions;
+global using global::Utah.Udot.NetStandardToolkit.Services;

@@ -1,8 +1,8 @@
 {
   "Version": 1,
-  "Hash": "9FYTX8V0TWnRvMqXxhHIonMNkBzBZxg5Qxu0NPcB8T0=",
-  "Source": "Identity",
-  "BasePath": "_content/Identity",
+  "Hash": "DRBSVsatQ+DwzKkyWtAkMkPlAiAM4dyJKUO8Yy7+nt8=",
+  "Source": "Utah.Udot.Atspm.IdentityApi",
+  "BasePath": "_content/Utah.Udot.Atspm.IdentityApi",
   "Mode": "Default",
   "ManifestType": "Build",
   "ReferencedProjectsConfiguration": [],

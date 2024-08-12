@@ -17,7 +17,6 @@
 
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
-using Utah.Udot.Atspm.Data.Models;
 
 namespace Utah.Udot.Atspm.DataApi.CustomOperations
 {
