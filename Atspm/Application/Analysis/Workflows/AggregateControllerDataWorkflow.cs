@@ -17,6 +17,7 @@
 
 using System.Threading.Tasks.Dataflow;
 using Utah.Udot.Atspm.Analysis.Plans;
+using Utah.Udot.Atspm.Data.Models.EventLogModels;
 
 namespace Utah.Udot.Atspm.Analysis.Workflows
 {
@@ -27,7 +28,7 @@ namespace Utah.Udot.Atspm.Analysis.Workflows
         public CancellationToken CancellationToken { get; set; }
     }
 
-    public abstract class AggregationWorkflowBase<T> : WorkflowBase<Tuple<Location, IEnumerable<ControllerEventLog>>, IEnumerable<T>> where T : AggregationModelBase
+    public abstract class AggregationWorkflowBase<T> : WorkflowBase<Tuple<Location, IEnumerable<IndianaEvent>>, IEnumerable<T>> where T : AggregationModelBase
     {
         protected AggregationWorkflowOptions workflowOptions;
         protected ExecutionDataflowBlockOptions executionBlockOptions;
@@ -258,7 +259,7 @@ namespace Utah.Udot.Atspm.Analysis.Workflows
         }
     }
 
-    public class AggregateControllerDataWorkflow : WorkflowBase<Tuple<Location, IEnumerable<ControllerEventLog>>, IEnumerable<AggregationModelBase>>
+    public class AggregateControllerDataWorkflow : WorkflowBase<Tuple<Location, IEnumerable<IndianaEvent>>, IEnumerable<AggregationModelBase>>
     {
         //aggregate detector events
         //public FilteredDetectorData FilteredDetectorData { get; private set; }

@@ -17,6 +17,7 @@
 
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Interfaces;
+using Utah.Udot.Atspm.Data.Models.EventLogModels;
 
 namespace Utah.Udot.Atspm.Analysis.Common
 {
@@ -24,7 +25,7 @@ namespace Utah.Udot.Atspm.Analysis.Common
     {
         public PhaseTerminations() { }
 
-        public PhaseTerminations(IEnumerable<ControllerEventLog> terminationEvents)
+        public PhaseTerminations(IEnumerable<IndianaEvent> terminationEvents)
         {
             TerminationEvents.AddRange(terminationEvents);
         }
@@ -33,7 +34,7 @@ namespace Utah.Udot.Atspm.Analysis.Common
 
         public int PhaseNumber { get; set; }
 
-        public List<ControllerEventLog> TerminationEvents { get; set; } = new List<ControllerEventLog>();
+        public List<IndianaEvent> TerminationEvents { get; set; } = new List<IndianaEvent>();
 
         public IReadOnlyList<ITimestamp> GapOuts => TerminationEvents.Where(w => w.EventCode == 4).Cast<ITimestamp>().ToList();
         public IReadOnlyList<ITimestamp> MaxOuts => TerminationEvents.Where(w => w.EventCode == 5).Cast<ITimestamp>().ToList();
