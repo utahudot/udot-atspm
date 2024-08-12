@@ -17,7 +17,7 @@
 
 using System.CommandLine;
 
-namespace ATSPM.EventLogUtility.Commands
+namespace Utah.Udot.Atspm.EventLogUtility.Commands
 {
     public class LocationExcludeCommandOption : Option<IEnumerable<string>>
     {
