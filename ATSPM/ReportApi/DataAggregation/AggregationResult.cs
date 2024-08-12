@@ -17,7 +17,7 @@
 
 using System.Runtime.Serialization;
 
-namespace ATSPM.ReportApi.DataAggregation
+namespace Utah.Udot.Atspm.ReportApi.DataAggregation
 {
     public class AggregationResult
     {

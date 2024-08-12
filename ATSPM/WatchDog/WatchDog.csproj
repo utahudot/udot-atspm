@@ -37,4 +37,19 @@
 		<ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Reference Include="Utah.Udot.NetStandardToolkit">
+	    <HintPath>..\..\..\udot-netstandard-toolkit\NetStandardToolkit\bin\Release\net7.0\Utah.Udot.NetStandardToolkit.dll</HintPath>
+	  </Reference>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Using Include="Utah.Udot.Atspm.Business.Common" />
+	  <Using Include="Utah.Udot.Atspm.Extensions" />
+	  <Using Include="Utah.Udot.Atspm.Repositories" />
+	  <Using Include="Utah.Udot.Atspm.Repositories.ConfigurationRepositories" />
+	  <Using Include="Utah.Udot.Atspm.Repositories.EventLogRepositories" />
+	  <Using Include="Utah.Udot.NetStandardToolkit.Services" />
+	</ItemGroup>
+
 </Project>

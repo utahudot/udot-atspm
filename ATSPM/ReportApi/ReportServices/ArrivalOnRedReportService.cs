@@ -16,9 +16,10 @@
 #endregion
 
 using Microsoft.IdentityModel.Tokens;
+using Utah.Udot.Atspm.Business.ArrivalOnRed;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
 
-namespace ATSPM.ReportApi.ReportServices
+namespace Utah.Udot.Atspm.ReportApi.ReportServices
 {
     /// <summary>
     /// Arrival on red report service
@@ -72,7 +73,7 @@ namespace ATSPM.ReportApi.ReportServices
             var tasks = new List<Task<ArrivalOnRedResult>>();
             foreach (var phase in phaseDetails)
             {
-                if ((phase.IsPermissivePhase && parameter.GetPermissivePhase) || !phase.IsPermissivePhase)
+                if (phase.IsPermissivePhase && parameter.GetPermissivePhase || !phase.IsPermissivePhase)
                 {
                     tasks.Add(
                    GetChartDataByApproach(parameter, phase, controllerEventLogs, planEvents, Location.LocationDescription()));
