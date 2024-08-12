@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "JB0r3pR3uACCHh8hE514wSeJSwqh2vESgy+pqaPq/SFd1i3/gHf7d0VIa9Bw5JJsorkDTxT5NPJQK8fuZENOAw==",
+  "dgSpecHash": "cwc+nqqdEFlpFE3OcfjHigSgk+BqmTnaS4E1ACfGVAeKU4SKIx9WpFIVUITB6xLuXYw+Nu+X/WVo0GGXKRpgag==",
   "success": true,
-  "projectFilePath": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\Atspm\\Application\\Application.csproj",
+  "projectFilePath": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\Application\\Application.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\christianbaker\\.nuget\\packages\\automapper\\12.0.0\\automapper.12.0.0.nupkg.sha512",
     "C:\\Users\\christianbaker\\.nuget\\packages\\azure.core\\1.25.0\\azure.core.1.25.0.nupkg.sha512",

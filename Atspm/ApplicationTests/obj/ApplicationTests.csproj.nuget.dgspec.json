@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\Atspm\\ApplicationTests\\ApplicationTests.csproj": {}
+    "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\ApplicationTests\\ApplicationTests.csproj": {}
   },
   "projects": {
-    "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\Atspm\\ApplicationTests\\ApplicationTests.csproj": {
+    "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\ApplicationTests\\ApplicationTests.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\Atspm\\ApplicationTests\\ApplicationTests.csproj",
+        "projectUniqueName": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\ApplicationTests\\ApplicationTests.csproj",
         "projectName": "ApplicationTests",
-        "projectPath": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\Atspm\\ApplicationTests\\ApplicationTests.csproj",
+        "projectPath": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\ApplicationTests\\ApplicationTests.csproj",
         "packagesPath": "C:\\Users\\christianbaker\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\Atspm\\ApplicationTests\\obj\\",
+        "outputPath": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\ApplicationTests\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\christianbaker\\AppData\\Roaming\\NuGet\\NuGet.Config",
