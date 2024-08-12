@@ -19,7 +19,7 @@ using System;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace ApplicationCoreTests.Analysis.WorkflowSteps
+namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
 {
     public class GeneratePurdueCoordinationResultTests : IDisposable
     {

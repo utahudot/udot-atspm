@@ -20,7 +20,7 @@ using System.IO;
 using System.Reflection;
 using Xunit.Sdk;
 
-namespace InfrastructureTests.Attributes
+namespace Utah.Udot.Atspm.InfrastructureTests.Attributes
 {
     public class EncodedControllerTestFilesAttribute : DataAttribute
     {

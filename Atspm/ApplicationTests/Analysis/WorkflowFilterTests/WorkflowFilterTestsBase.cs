@@ -19,10 +19,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks.Dataflow;
+using Utah.Udot.Atspm.Analysis.WorkflowFilters;
+using Utah.Udot.Atspm.Data.Models;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace ApplicationCoreTests.Analysis.WorkflowFilterTests
+namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowFilterTests
 {
     public abstract class WorkflowFilterTestsBase : IDisposable
     {

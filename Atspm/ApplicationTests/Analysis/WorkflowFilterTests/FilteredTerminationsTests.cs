@@ -15,17 +15,19 @@
 // limitations under the License.
 #endregion
 
+using Utah.Udot.Atspm.Analysis.WorkflowFilters;
+using Utah.Udot.Atspm.Data.Enums;
 using Xunit.Abstractions;
 
-namespace ApplicationCoreTests.Analysis.WorkflowFilterTests
+namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowFilterTests
 {
     public class FilteredTerminationsTests : WorkflowFilterTestsBase
     {
         public FilteredTerminationsTests(ITestOutputHelper output) : base(output)
         {
-            filteredList.Add((int)4);
-            filteredList.Add((int)5);
-            filteredList.Add((int)6);
+            filteredList.Add(4);
+            filteredList.Add(5);
+            filteredList.Add(6);
             filteredList.Add((int)IndianaEnumerations.PhaseGreenTermination);
 
             sut = new FilteredTerminations();

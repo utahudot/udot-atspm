@@ -20,7 +20,7 @@ using System.Linq;
 using Xunit.Abstractions;
 using Xunit.Sdk;
 
-namespace InfrastructureTests.Orderers
+namespace Utah.Udot.Atspm.InfrastructureTests.Orderers
 {
     public class TraitValueTestCaseOrderer : ITestCaseOrderer
     {

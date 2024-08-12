@@ -16,16 +16,17 @@
 #endregion
 
 using AutoFixture;
-using InfrastructureTests.Fixtures;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using Utah.Udot.Atspm.Data;
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models;
+using Utah.Udot.Atspm.InfrastructureTests.Fixtures;
+using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
 using Xunit.Abstractions;
 
-namespace InfrastructureTests.RepositoryTests
+namespace Utah.Udot.Atspm.InfrastructureTests.RepositoryTests
 {
     //[TestCaseOrderer("InfrastructureTests.Orderers.TraitValueTestCaseOrderer", "InfrastructureTests")]
     public class IApproachRepositoryTests : RepositoryTestBase<Approach, IApproachRepository, ConfigContext, int>

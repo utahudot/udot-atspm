@@ -16,16 +16,16 @@
 #endregion
 
 using AutoFixture;
-using InfrastructureTests.Fixtures;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
 using Utah.Udot.Atspm.Data.Models;
-using Utah.Udot.Atspm.Data.Models;
+using Utah.Udot.Atspm.Infrastructure.Repositories;
+using Utah.Udot.Atspm.InfrastructureTests.Fixtures;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace InfrastructureTests.RepositoryTests
+namespace Utah.Udot.Atspm.InfrastructureTests.RepositoryTests
 {
     /// <summary>
     /// https://learn.microsoft.com/en-us/ef/core/testing/testing-without-the-database#repository-pattern
@@ -115,10 +115,10 @@ namespace InfrastructureTests.RepositoryTests
     {
         public CustomFixture()
         {
-            this.Behaviors.OfType<ThrowingRecursionBehavior>().ToList().ForEach(b => this.Behaviors.Remove(b));
-            this.Behaviors.Add(new OmitOnRecursionBehavior());
+            Behaviors.OfType<ThrowingRecursionBehavior>().ToList().ForEach(b => Behaviors.Remove(b));
+            Behaviors.Add(new OmitOnRecursionBehavior());
 
-            this.Customize<Approach>(c => c
+            Customize<Approach>(c => c
             .Without(w => w.Id)
             .Without(w => w.LocationId)
             .Without(w => w.DirectionType)
@@ -126,7 +126,7 @@ namespace InfrastructureTests.RepositoryTests
             .Without(w => w.Detectors)
             );
 
-            this.Customize<Area>(c => c
+            Customize<Area>(c => c
             .Without(w => w.Id)
             .Without(w => w.Locations)
             );
@@ -139,13 +139,13 @@ namespace InfrastructureTests.RepositoryTests
             //.Without(w => w.Locations)
             //);
 
-            this.Customize<DetectorComment>(c => c
+            Customize<DetectorComment>(c => c
             .Without(w => w.Id)
             .Without(w => w.DetectorId)
             .Without(w => w.Detector)
             );
 
-            this.Customize<Detector>(c => c
+            Customize<Detector>(c => c
             .Without(w => w.Id)
             .Without(w => w.ApproachId)
             .Without(w => w.Approach)
@@ -156,7 +156,7 @@ namespace InfrastructureTests.RepositoryTests
             .Without(w => w.DetectionTypes)
             );
 
-            this.Customize<Location>(c => c
+            Customize<Location>(c => c
                     .Without(w => w.Id)
                     .With(w => w.RegionId, 0)
                     .Without(w => w.Region)
