@@ -131,8 +131,8 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddAtspmEFConfigRepositories();
     s.AddAtspmEFAggregationRepositories();
 
-    s.AddAtspmAuthentication(h, builder);
-    s.AddAtspmAuthorization(h);
+    s.AddAtspmAuthentication(h);
+    s.AddAtspmAuthorization();
 
     //s.AddScoped<IControllerEventLogRepository, ControllerEventLogEFRepository>();
 

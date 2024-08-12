@@ -24,11 +24,19 @@ using System.Net.Mail;
 
 namespace Utah.Udot.Atspm.Infrastructure.Services.EmailServices
 {
+    /// <summary>
+    /// Smtp email service
+    /// </summary>
     public class SmtpEmailService : ServiceObjectBase, IEmailService
     {
         private readonly EmailConfiguration _options;
         private readonly ILogger _logger;
 
+        /// <summary>
+        /// Smtp email service
+        /// </summary>
+        /// <param name="options"></param>
+        /// <param name="logger"></param>
         public SmtpEmailService(IOptionsSnapshot<EmailConfiguration> options, ILogger<SmtpEmailService> logger) : base(true)
         {
             _options = options?.Get(GetType().Name) ?? options?.Value;

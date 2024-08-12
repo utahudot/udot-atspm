@@ -109,31 +109,44 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
         }
 
         /// <summary>
+        /// Registers the given context as a service in the <see cref="IServiceCollection"/> using the database provider specified in configuration
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="services"></param>
+        /// <param name="host"></param>
+        /// <param name="tracking"></param>
+        /// <returns></returns>
+        public static IServiceCollection AddDbContext<T>(this IServiceCollection services, HostBuilderContext host, QueryTrackingBehavior tracking = QueryTrackingBehavior.TrackAll) where T : DbContext
+        {
+            services.AddDbContext<T>(db => db.GetDbProviderInfo<T>(host).UseQueryTrackingBehavior(tracking).EnableSensitiveDataLogging(host.HostingEnvironment.IsDevelopment()));
+
+            return services;
+        }
+
+        /// <summary>
         /// Adds database contexts based connection strings and assigns database provider
-        /// <seealso cref="https://learn.microsoft.com/en-us/ef/core/providers/?tabs=dotnet-core-cli"/>
+        /// <seealso href="https://learn.microsoft.com/en-us/ef/core/providers/?tabs=dotnet-core-cli"/>
         /// </summary>
         /// <param name="services"></param>
         /// <param name="host"></param>
         /// <returns></returns>
         public static IServiceCollection AddAtspmDbContext(this IServiceCollection services, HostBuilderContext host)
         {
-            services.AddDbContext<ConfigContext>(db => db.GetDbProviderInfo<ConfigContext>(host).EnableSensitiveDataLogging(host.HostingEnvironment.IsDevelopment()));
-            services.AddDbContext<AggregationContext>(db => db.GetDbProviderInfo<AggregationContext>(host).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking).EnableSensitiveDataLogging(host.HostingEnvironment.IsDevelopment()));
-            services.AddDbContext<EventLogContext>(db => db.GetDbProviderInfo<EventLogContext>(host).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking).EnableSensitiveDataLogging(host.HostingEnvironment.IsDevelopment()));
-            //services.AddDbContext<SpeedContext>(db => db.GetDbProviderInfo<SpeedContext>(host).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking).EnableSensitiveDataLogging(host.HostingEnvironment.IsDevelopment()));
-            services.AddDbContext<IdentityContext>(db => db.GetDbProviderInfo<IdentityContext>(host).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking).EnableSensitiveDataLogging(host.HostingEnvironment.IsDevelopment()));
+            services.AddDbContext<ConfigContext>(host);
+            services.AddDbContext<AggregationContext>(host, QueryTrackingBehavior.NoTracking);
+            services.AddDbContext<EventLogContext>(host, QueryTrackingBehavior.NoTracking);
+            services.AddDbContext<IdentityContext>(host, QueryTrackingBehavior.NoTracking);
 
             return services;
         }
 
-        public static IServiceCollection AddIdentityDbContext(this IServiceCollection services, HostBuilderContext host)
-        {
-            services.AddDbContext<IdentityContext>(db => db.GetDbProviderInfo<IdentityContext>(host).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking).EnableSensitiveDataLogging(host.HostingEnvironment.IsDevelopment()));
-
-            return services;
-        }
-
-        public static IServiceCollection AddAtspmAuthentication(this IServiceCollection services, HostBuilderContext host, WebApplicationBuilder builder)
+        /// <summary>
+        /// Add atspm authentication
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="host"></param>
+        /// <returns></returns>
+        public static IServiceCollection AddAtspmAuthentication(this IServiceCollection services, HostBuilderContext host)
         {
             services.Configure<CookiePolicyOptions>(options =>
             {
@@ -155,14 +168,14 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
                     ValidateAudience = false,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
-                    ValidIssuer = builder.Configuration["Jwt:Issuer"],
-                    ValidAudience = builder.Configuration["Jwt:Audience"],
+                    ValidIssuer = host.Configuration["Jwt:Issuer"],
+                    ValidAudience = host.Configuration["Jwt:Audience"],
                     IssuerSigningKey = new SymmetricSecurityKey(
-                        Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+                        Encoding.UTF8.GetBytes(host.Configuration["Jwt:Key"]))
                 };
             });
 
-            var oidc = builder.Configuration.GetSection("Oidc");
+            var oidc = host.Configuration.GetSection("Oidc");
             if (oidc.Exists() && oidc.GetChildren().Any())
             {
                 services.AddAuthentication()
@@ -219,7 +232,12 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
             return services;
         }
 
-        public static IServiceCollection AddAtspmAuthorization(this IServiceCollection services, HostBuilderContext host)
+        /// <summary>
+        /// Add atspm authorization
+        /// </summary>
+        /// <param name="services"></param>
+        /// <returns></returns>
+        public static IServiceCollection AddAtspmAuthorization(this IServiceCollection services)
         {
             services.AddAuthorization(options =>
             {

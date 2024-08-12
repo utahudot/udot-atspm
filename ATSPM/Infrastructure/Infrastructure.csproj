@@ -31,6 +31,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Compile Remove="Repositories\ATSPMFileRepositoryBase.cs" />
 	  <Compile Remove="Repositories\ControllerEventLogFileRepository.cs" />
 	  <Compile Remove="Services\SignalControllerLoggers\CompressedSignalControllerLogger.cs" />
 	  <Compile Remove="Services\SignalControllerLoggers\LegacySignalControllerLogger.cs" />
@@ -46,6 +47,7 @@
 	    <Pack>True</Pack>
 	    <PackagePath>\</PackagePath>
 	  </None>
+	  <None Include="Repositories\ATSPMFileRepositoryBase.cs" />
 	  <None Include="Repositories\ControllerEventLogFileRepository.cs" />
 	  <None Include="Services\SignalControllerLoggers\CompressedSignalControllerLogger.cs" />
 	  <None Include="Services\SignalControllerLoggers\LegacySignalControllerLogger.cs" />

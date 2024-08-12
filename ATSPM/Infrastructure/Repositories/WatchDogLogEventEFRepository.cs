@@ -21,9 +21,10 @@ using Utah.Udot.Atspm.Repositories;
 
 namespace Utah.Udot.Atspm.Infrastructure.Repositories
 {
+    ///<inheritdoc cref="IWatchDogEventLogRepository"/>
     public class WatchDogLogEventEFRepository : ATSPMRepositoryEFBase<WatchDogLogEvent>, IWatchDogEventLogRepository
     {
+        ///<inheritdoc/>
         public WatchDogLogEventEFRepository(ConfigContext db, ILogger<WatchDogLogEventEFRepository> log) : base(db, log) { }
     }
-
 }
