@@ -24,6 +24,7 @@ using Utah.Udot.Atspm.Analysis.Workflows;
 using Utah.Udot.Atspm.ApplicationTests.Analysis.TestObjects;
 using Utah.Udot.Atspm.ApplicationTests.Attributes;
 using Utah.Udot.Atspm.Data.Models;
+using Utah.Udot.Atspm.Data.Models.EventLogModels;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -42,7 +43,7 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.Workflows
         [AnalysisTestData<DetectorEventCountAggregationTestData>]
         [Trait(nameof(DetectorEventCountAggregationWorkflow), "From File")]
         //public void DetectorEventCountAggregationWorkflowTestsFromFile(object stuff)
-        public void DetectorEventCountAggregationWorkflowTestsFromFile(Location config, List<ControllerEventLog> input, List<DetectorEventCountAggregation> output)
+        public void DetectorEventCountAggregationWorkflowTestsFromFile(Location config, List<IndianaEvent> input, List<DetectorEventCountAggregation> output)
         {
             _output.WriteLine($"{config} - {input} - {output}");
         }
@@ -56,7 +57,7 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.Workflows
             var test = new DetectorEventCountAggregationTestData()
             {
                 Configuration = Location,
-                Input = new List<ControllerEventLog>(),
+                Input = new List<IndianaEvent>(),
                 Output = new List<DetectorEventCountAggregation>()
             };
 

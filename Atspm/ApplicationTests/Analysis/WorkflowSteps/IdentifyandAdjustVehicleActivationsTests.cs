@@ -26,6 +26,7 @@ using Utah.Udot.Atspm.ApplicationTests.Analysis.TestObjects;
 using Utah.Udot.Atspm.ApplicationTests.Fixtures;
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models;
+using Utah.Udot.Atspm.Data.Models.EventLogModels;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -46,17 +47,17 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
         [Trait(nameof(IdentifyandAdjustVehicleActivations), "Location Filter")]
         public async void IdentifyandAdjustVehicleActivationsLocationFilterTest()
         {
-            var correct = Enumerable.Range(1, 5).Select(s => new ControllerEventLog()
+            var correct = Enumerable.Range(1, 5).Select(s => new IndianaEvent()
             {
-                SignalIdentifier = _testApproach.Location.LocationIdentifier,
+                LocationIdentifier = _testApproach.Location.LocationIdentifier,
                 Timestamp = DateTime.Now.AddMilliseconds(Random.Shared.Next(1, 1000)),
                 EventCode = (int)IndianaEnumerations.VehicleDetectorOn,
                 EventParam = 2
             });
 
-            var incorrect = Enumerable.Range(1, 5).Select(s => new ControllerEventLog()
+            var incorrect = Enumerable.Range(1, 5).Select(s => new IndianaEvent()
             {
-                SignalIdentifier = "1001",
+                LocationIdentifier = "1001",
                 Timestamp = DateTime.Now.AddMilliseconds(Random.Shared.Next(1, 1000)),
                 EventCode = (int)IndianaEnumerations.VehicleDetectorOn,
                 EventParam = 2
@@ -82,7 +83,7 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
                 _output.WriteLine($"corrected event: {l}");
             }
 
-            var expected = correct.Select(s => s.SignalIdentifier).Distinct().OrderBy(o => o);
+            var expected = correct.Select(s => s.LocationIdentifier).Distinct().OrderBy(o => o);
             var actual = result.Item2.Select(s => s.LocationIdentifier).Distinct().OrderBy(o => o);
 
             _output.WriteLine($"expected: {expected}");
@@ -95,17 +96,17 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
         [Trait(nameof(IdentifyandAdjustVehicleActivations), "Detector Filter")]
         public async void IdentifyandAdjustVehicleActivationsDetectorFilterTest()
         {
-            var correct = Enumerable.Range(1, 5).Select(s => new ControllerEventLog()
+            var correct = Enumerable.Range(1, 5).Select(s => new IndianaEvent()
             {
-                SignalIdentifier = _testApproach.Location.LocationIdentifier,
+                LocationIdentifier = _testApproach.Location.LocationIdentifier,
                 Timestamp = DateTime.Now.AddMilliseconds(Random.Shared.Next(1, 1000)),
                 EventCode = (int)IndianaEnumerations.VehicleDetectorOn,
                 EventParam = 2
             });
 
-            var incorrect = Enumerable.Range(1, 5).Select(s => new ControllerEventLog()
+            var incorrect = Enumerable.Range(1, 5).Select(s => new IndianaEvent()
             {
-                SignalIdentifier = _testApproach.Location.LocationIdentifier,
+                LocationIdentifier = _testApproach.Location.LocationIdentifier,
                 Timestamp = DateTime.Now.AddMilliseconds(Random.Shared.Next(1, 1000)),
                 EventCode = (int)IndianaEnumerations.VehicleDetectorOn,
                 EventParam = 100
@@ -132,7 +133,7 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
             }
 
             var expected = correct.Select(s => s.EventParam).Distinct().OrderBy(o => o);
-            var actual = result.Item2.Select(s => s.DetectorChannel).Distinct().OrderBy(o => o);
+            var actual = result.Item2.Select(s => Convert.ToInt16(s.DetectorChannel)).Distinct().OrderBy(o => o);
 
             _output.WriteLine($"expected: {expected}");
             _output.WriteLine($"actual: {actual}");
@@ -144,19 +145,19 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
         [Trait(nameof(IdentifyandAdjustVehicleActivations), "Code Filter")]
         public async void IdentifyandAdjustVehicleActivationsCodeFilterTest()
         {
-            var correct = Enumerable.Range(1, 5).Select(s => new ControllerEventLog()
+            var correct = Enumerable.Range(1, 5).Select(s => new IndianaEvent()
             {
-                SignalIdentifier = _testApproach.Location.LocationIdentifier,
+                LocationIdentifier = _testApproach.Location.LocationIdentifier,
                 Timestamp = DateTime.Now.AddMilliseconds(Random.Shared.Next(1, 1000)),
                 EventCode = (int)IndianaEnumerations.VehicleDetectorOn,
                 EventParam = 2
             });
 
-            var incorrect = Enumerable.Range(1, 5).Select(s => new ControllerEventLog()
+            var incorrect = Enumerable.Range(1, 5).Select(s => new IndianaEvent()
             {
-                SignalIdentifier = _testApproach.Location.LocationIdentifier,
+                LocationIdentifier = _testApproach.Location.LocationIdentifier,
                 Timestamp = DateTime.Now.AddMilliseconds(Random.Shared.Next(1, 1000)),
-                EventCode = Random.Shared.Next(1, 50),
+                EventCode = Convert.ToInt16(Random.Shared.Next(1, 50)),
                 EventParam = 2
             });
 
@@ -195,9 +196,9 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
         {
             var testDetector = _testApproach.Detectors.FirstOrDefault(f => f.DetectorChannel == 2);
 
-            var testLog = new ControllerEventLog()
+            var testLog = new IndianaEvent()
             {
-                SignalIdentifier = _testApproach.Location.LocationIdentifier,
+                LocationIdentifier = _testApproach.Location.LocationIdentifier,
                 Timestamp = DateTime.Now.AddMilliseconds(Random.Shared.Next(1, 1000)),
                 EventCode = (int)IndianaEnumerations.VehicleDetectorOn,
                 EventParam = 2
@@ -205,7 +206,7 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
 
             _output.WriteLine($"log: {testLog}");
 
-            var testData = Tuple.Create<Approach, IEnumerable<ControllerEventLog>>(_testApproach, new List<ControllerEventLog>() { testLog });
+            var testData = Tuple.Create<Approach, IEnumerable<IndianaEvent>>(_testApproach, new List<IndianaEvent>() { testLog });
 
             var sut = new IdentifyandAdjustVehicleActivations();
 
@@ -239,7 +240,7 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
         [Trait(nameof(IdentifyandAdjustVehicleActivations), "Null Input")]
         public async void IdentifyandAdjustVehicleActivationsNullInputTest()
         {
-            var testData = Tuple.Create<Approach, IEnumerable<ControllerEventLog>>(null, null);
+            var testData = Tuple.Create<Approach, IEnumerable<IndianaEvent>>(null, null);
 
             var sut = new IdentifyandAdjustVehicleActivations();
 
@@ -254,11 +255,11 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
         [Trait(nameof(IdentifyandAdjustVehicleActivations), "No Data")]
         public async void IdentifyandAdjustVehicleActivationsNoDataTest()
         {
-            var testLogs = Enumerable.Range(1, 5).Select(s => new ControllerEventLog()
+            var testLogs = Enumerable.Range(1, 5).Select(s => new IndianaEvent()
             {
-                SignalIdentifier = "1001",
+                LocationIdentifier = "1001",
                 Timestamp = DateTime.Now.AddMilliseconds(Random.Shared.Next(1, 1000)),
-                EventCode = Random.Shared.Next(1, 50),
+                EventCode = Convert.ToInt16(Random.Shared.Next(1, 50)),
                 EventParam = 5
             });
 
