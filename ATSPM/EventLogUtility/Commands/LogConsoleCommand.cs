@@ -19,8 +19,9 @@ using Microsoft.Extensions.DependencyInjection;
 using System.CommandLine;
 using System.CommandLine.Hosting;
 using System.CommandLine.NamingConventionBinder;
+using Utah.Udot.Atspm.Infrastructure.Services.HostedServices;
 
-namespace ATSPM.EventLogUtility.Commands
+namespace Utah.Udot.Atspm.EventLogUtility.Commands
 {
     public class LogConsoleCommand : Command, ICommandOption<EventLogLoggingConfiguration>
     {

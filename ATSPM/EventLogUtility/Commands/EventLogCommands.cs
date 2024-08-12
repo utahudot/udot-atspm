@@ -17,16 +17,16 @@
 
 using System.CommandLine;
 
-namespace ATSPM.EventLogUtility.Commands
+namespace Utah.Udot.Atspm.EventLogUtility.Commands
 {
     public class EventLogCommands : RootCommand
     {
         public EventLogCommands()
         {
-            this.AddCommand(AggregationCommand);
-            this.AddCommand(LogCommand);
-            this.AddCommand(ExtractCommand);
-            this.AddCommand(LocationInfoCommand);
+            AddCommand(AggregationCommand);
+            AddCommand(LogCommand);
+            AddCommand(ExtractCommand);
+            AddCommand(LocationInfoCommand);
         }
 
         public AggregationCommand AggregationCommand { get; set; } = new AggregationCommand();

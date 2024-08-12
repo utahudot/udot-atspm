@@ -20,8 +20,12 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Utah.Udot.Atspm.Data.Configuration
 {
+    /// <summary>
+    /// Location event count aggregation configuration
+    /// </summary>
     public class LocationEventCountAggregationConfiguration : IEntityTypeConfiguration<SignalEventCountAggregation>
     {
+        /// <inheritdoc/>
         public void Configure(EntityTypeBuilder<SignalEventCountAggregation> builder)
         {
             builder.HasComment("Location Event Count Aggregation");

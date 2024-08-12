@@ -22,6 +22,7 @@ namespace Utah.Udot.Atspm.Data.Configuration
 {
     public class PriorityAggregationConfiguration : IEntityTypeConfiguration<PriorityAggregation>
     {
+        /// <inheritdoc/>
         public void Configure(EntityTypeBuilder<PriorityAggregation> builder)
         {
             builder.HasComment("Priority Aggregation");
