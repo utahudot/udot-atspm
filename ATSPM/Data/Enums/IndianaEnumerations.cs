@@ -20,8 +20,8 @@ using System.ComponentModel.DataAnnotations;
 namespace Utah.Udot.Atspm.Data.Enums
 {
     /// <summary>
-    /// Traffic Location Hi Resolution Data Logger Enumerations
-    /// <seealso cref="Reference" href="https://docs.lib.purdue.edu/cgi/viewcontent.cgi?article=1002&context=jtrpdata"/>
+    /// Traffic Location Hi Resolution Data Logger Enumerations.
+    /// <seealso href="https://docs.lib.purdue.edu/jtrpdata/4/"/>
     /// </summary>
     public enum IndianaEnumerations : ushort
     {

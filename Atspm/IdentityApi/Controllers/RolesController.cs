@@ -24,7 +24,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
 using System.Security.Claims;
-using Utah.Udot.Atspm.Data;
+using Utah.Udot.Atspm.Data.Models;
 
 namespace Identity.Controllers
 {

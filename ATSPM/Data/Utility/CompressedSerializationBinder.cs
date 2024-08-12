@@ -23,7 +23,7 @@ namespace Utah.Udot.Atspm.Data.Utility
     /// <summary>
     /// Custom <see cref="ISerializationBinder"/> for marking compressed lists with type
     /// for serializing/deserializing compressed data.
-    /// <seealso cref="https://www.newtonsoft.com/json/help/html/SerializeSerializationBinder.htm"/>
+    /// <seealso href="https://www.newtonsoft.com/json/help/html/SerializeSerializationBinder.htm"/>
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public class CompressedSerializationBinder<T> : DefaultSerializationBinder

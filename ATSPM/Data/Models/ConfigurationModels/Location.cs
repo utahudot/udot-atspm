@@ -19,7 +19,6 @@
 
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Interfaces;
-using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Data.Relationships;
 
 namespace Utah.Udot.Atspm.Data.Models
@@ -96,7 +95,7 @@ namespace Utah.Udot.Atspm.Data.Models
         public int? JurisdictionId { get; set; }
 
         /// <inheritdoc/>
-        public virtual Jurisdiction? Jurisdiction { get; set; }
+        public virtual Jurisdiction Jurisdiction { get; set; }
 
         #endregion
 
@@ -116,7 +115,7 @@ namespace Utah.Udot.Atspm.Data.Models
         public int? RegionId { get; set; }
 
         /// <inheritdoc/>
-        public virtual Region? Region { get; set; }
+        public virtual Region Region { get; set; }
 
         #endregion
 

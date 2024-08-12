@@ -32,6 +32,9 @@
 
 	<ItemGroup>
 	  <Compile Remove="Repositories\ControllerEventLogFileRepository.cs" />
+	  <Compile Remove="Services\SignalControllerLoggers\CompressedSignalControllerLogger.cs" />
+	  <Compile Remove="Services\SignalControllerLoggers\LegacySignalControllerLogger.cs" />
+	  <Compile Remove="Services\SignalControllerLoggers\SignalControllerLoggerBase.cs" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -44,6 +47,9 @@
 	    <PackagePath>\</PackagePath>
 	  </None>
 	  <None Include="Repositories\ControllerEventLogFileRepository.cs" />
+	  <None Include="Services\SignalControllerLoggers\CompressedSignalControllerLogger.cs" />
+	  <None Include="Services\SignalControllerLoggers\LegacySignalControllerLogger.cs" />
+	  <None Include="Services\SignalControllerLoggers\SignalControllerLoggerBase.cs" />
 	</ItemGroup>
 
 	<ItemGroup>

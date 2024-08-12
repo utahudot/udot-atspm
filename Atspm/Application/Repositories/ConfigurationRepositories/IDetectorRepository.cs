@@ -31,7 +31,7 @@ namespace Utah.Udot.Atspm.Repositories.ConfigurationRepositories
         #region Obsolete
 
         //[Obsolete("This method is not used", true)]
-        //IReadOnlyList<Detector> GetDetectorsBylocationIdAndMetricType(string locationId, int metricId);
+        //IReadOnlyList<Detector> GetDetectorsBylocationIdAndMetricType(string LocationId, int metricId);
 
         //[Obsolete("User CheckReportAvialbility(Detector detector, int metricId) instead", true)]
         //bool CheckReportAvialbility(string detectorID, int metricId);
@@ -40,7 +40,7 @@ namespace Utah.Udot.Atspm.Repositories.ConfigurationRepositories
         //Detector GetDetectorByDetectorID(string DetectorID);
 
         //[Obsolete("User GetList() instead", true)]
-        //IReadOnlyList<Detector> GetDetectorsBylocationId(string locationId);
+        //IReadOnlyList<Detector> GetDetectorsBylocationId(string LocationId);
 
         //[Obsolete("Use Lookup instead", true)]
         //Detector GetDetectorByID(int ID);

@@ -110,29 +110,29 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
             return Task.CompletedTask;
         }
 
-        public async Task<FileInfo> WriteLog(ControllerLogArchive archive)
-        {
-            try
-            {
-                DirectoryInfo dir = new DirectoryInfo(Path.Combine(_options.Value.Path.FullName, archive.ArchiveDate.ToString("MM-dd-yyyy")));
+        //public async Task<FileInfo> WriteLog(ControllerLogArchive archive)
+        //{
+        //    try
+        //    {
+        //        DirectoryInfo dir = new DirectoryInfo(Path.Combine(_options.Value.Path.FullName, archive.ArchiveDate.ToString("MM-dd-yyyy")));
 
-                dir.Create();
+        //        dir.Create();
 
-                var path = Path.Combine(dir.FullName, $"{archive.SignalIdentifier}-{archive.ArchiveDate:MM-dd-yyyy}.csv");
+        //        var path = Path.Combine(dir.FullName, $"{archive.SignalIdentifier}-{archive.ArchiveDate:MM-dd-yyyy}.csv");
 
-                await File.WriteAllLinesAsync(path, new string[] { "locationId, Timestamp, EventCode, EventParam" });
+        //        await File.WriteAllLinesAsync(path, new string[] { "LocationId, Timestamp, EventCode, EventParam" });
 
-                var csv = archive.LogData.Select(x => $"{archive.SignalIdentifier},{x.Timestamp.ToString(_options.Value.DateTimeFormat)},{x.EventCode},{x.EventParam}");
+        //        var csv = archive.LogData.Select(x => $"{archive.SignalIdentifier},{x.Timestamp.ToString(_options.Value.DateTimeFormat)},{x.EventCode},{x.EventParam}");
 
-                await File.AppendAllLinesAsync(path, csv);
+        //        await File.AppendAllLinesAsync(path, csv);
 
-                return new FileInfo(path);
-            }
-            catch (Exception e)
-            {
-                _log.LogError("WriteLog Exception: {e}", e);
-                return await Task.FromException<FileInfo>(e);
-            }
-        }
+        //        return new FileInfo(path);
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        _log.LogError("WriteLog Exception: {e}", e);
+        //        return await Task.FromException<FileInfo>(e);
+        //    }
+        //}
     }
 }
