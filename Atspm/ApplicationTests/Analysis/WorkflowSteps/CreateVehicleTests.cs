@@ -15,14 +15,18 @@
 // limitations under the License.
 #endregion
 
-using ApplicationCoreTests.Fixtures;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Utah.Udot.Atspm.Analysis.Common;
+using Utah.Udot.Atspm.Analysis.WorkflowSteps;
+using Utah.Udot.Atspm.ApplicationTests.Fixtures;
+using Utah.Udot.Atspm.Data.Models;
+using Utah.Udot.Atspm.Enums;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace ApplicationCoreTests.Analysis.WorkflowSteps
+namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
 {
     //internal class DetectorFixture : Fixture
     //{

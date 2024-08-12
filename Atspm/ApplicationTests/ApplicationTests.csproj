@@ -1,46 +1,64 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+	<PropertyGroup>
+		<NameSpacePrefix>Utah.Udot</NameSpacePrefix>
+	</PropertyGroup>
 
-    <IsPackable>false</IsPackable>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net7.0</TargetFramework>
 
-  <ItemGroup>
-    <Compile Remove="Analysis\Plans\PurdueCoordinationPlanTests.cs" />
-    <Compile Remove="Analysis\WorkflowSteps\CalculateDwellTimeTests.cs" />
-    <Compile Remove="Analysis\WorkflowSteps\CalculateTimingPlansTests.cs" />
-    <Compile Remove="Analysis\WorkflowSteps\CalculateVehicleArrivalsTests.cs" />
-    <Compile Remove="Analysis\WorkflowSteps\GenerateApproachDelayResultsTests.cs" />
-  </ItemGroup>
+		<IsPackable>false</IsPackable>
 
-  <ItemGroup>
-    <PackageReference Include="AutoFixture" Version="4.17.0" />
-    <PackageReference Include="Microsoft.CodeAnalysis" Version="4.9.2" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.4.0" />
-    <PackageReference Include="Moq" Version="4.18.2" />
-    <PackageReference Include="xunit" Version="2.4.2" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-    <PackageReference Include="coverlet.collector" Version="3.2.0">
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-  </ItemGroup>
+		<AssemblyName>$(NameSpacePrefix).$(SolutionName).$(MSBuildProjectName)</AssemblyName>
 
-  <ItemGroup>
-    <Folder Include="Analysis\TestData\" />
-    <Folder Include="Analysis\ReportTests\" />
-  </ItemGroup>
+		<RootNamespace>$(NameSpacePrefix).$(SolutionName).$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <None Include="Analysis\Plans\PurdueCoordinationPlanTests.cs" />
-    <None Include="Analysis\WorkflowSteps\CalculateDwellTimeTests.cs" />
-    <None Include="Analysis\WorkflowSteps\CalculateTimingPlansTests.cs" />
-    <None Include="Analysis\WorkflowSteps\CalculateVehicleArrivalsTests.cs" />
-    <None Include="Analysis\WorkflowSteps\GenerateApproachDelayResultsTests.cs" />
-  </ItemGroup>
+	<ItemGroup>
+		<Compile Remove="Analysis\Plans\PurdueCoordinationPlanTests.cs" />
+		<Compile Remove="Analysis\WorkflowSteps\CalculateDwellTimeTests.cs" />
+		<Compile Remove="Analysis\WorkflowSteps\CalculateTimingPlansTests.cs" />
+		<Compile Remove="Analysis\WorkflowSteps\CalculateVehicleArrivalsTests.cs" />
+		<Compile Remove="Analysis\WorkflowSteps\GenerateApproachDelayResultsTests.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="AutoFixture" Version="4.17.0" />
+		<PackageReference Include="Microsoft.CodeAnalysis" Version="4.9.2" />
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.4.0" />
+		<PackageReference Include="Moq" Version="4.18.2" />
+		<PackageReference Include="xunit" Version="2.4.2" />
+		<PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+			<PrivateAssets>all</PrivateAssets>
+		</PackageReference>
+		<PackageReference Include="coverlet.collector" Version="3.2.0">
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+			<PrivateAssets>all</PrivateAssets>
+		</PackageReference>
+	</ItemGroup>
+
+	<ItemGroup>
+		<Folder Include="Analysis\TestData\" />
+		<Folder Include="Analysis\ReportTests\" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Include="Analysis\Plans\PurdueCoordinationPlanTests.cs" />
+		<None Include="Analysis\WorkflowSteps\CalculateDwellTimeTests.cs" />
+		<None Include="Analysis\WorkflowSteps\CalculateTimingPlansTests.cs" />
+		<None Include="Analysis\WorkflowSteps\CalculateVehicleArrivalsTests.cs" />
+		<None Include="Analysis\WorkflowSteps\GenerateApproachDelayResultsTests.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\Application\Application.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Reference Include="Utah.Udot.NetStandardToolkit">
+	    <HintPath>..\..\..\udot-netstandard-toolkit\NetStandardToolkit\bin\Release\net7.0\Utah.Udot.NetStandardToolkit.dll</HintPath>
+	  </Reference>
+	</ItemGroup>
 
 </Project>

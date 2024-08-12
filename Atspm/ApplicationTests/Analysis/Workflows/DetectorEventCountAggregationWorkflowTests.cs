@@ -15,17 +15,19 @@
 // limitations under the License.
 #endregion
 
-using ApplicationCoreTests.Analysis.TestObjects;
-using ApplicationCoreTests.Attributes;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Utah.Udot.Atspm.Analysis.Workflows;
+using Utah.Udot.Atspm.ApplicationTests.Analysis.TestObjects;
+using Utah.Udot.Atspm.ApplicationTests.Attributes;
+using Utah.Udot.Atspm.Data.Models;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace ApplicationCoreTests.Analysis.Workflows
+namespace Utah.Udot.Atspm.ApplicationTests.Analysis.Workflows
 {
     public class DetectorEventCountAggregationWorkflowTests : IDisposable
     {

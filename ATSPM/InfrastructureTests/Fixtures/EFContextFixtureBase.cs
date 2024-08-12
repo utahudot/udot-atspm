@@ -20,7 +20,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Data.Common;
 
-namespace InfrastructureTests.Fixtures
+namespace Utah.Udot.Atspm.InfrastructureTests.Fixtures
 {
     public class EFContextFixture<T> : IDisposable where T : DbContext, new()
     {

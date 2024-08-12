@@ -15,10 +15,11 @@
 // limitations under the License.
 #endregion
 
+using Utah.Udot.Atspm.Analysis.PreemptionDetails;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace ApplicationCoreTests.Analysis
+namespace Utah.Udot.Atspm.ApplicationTests.Analysis
 {
     public class PreemptCycle1 : PreempDetailValueBase
     {

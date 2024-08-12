@@ -15,17 +15,20 @@
 // limitations under the License.
 #endregion
 
-using ApplicationCoreTests.Analysis.TestObjects;
-using ApplicationCoreTests.Fixtures;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Utah.Udot.Atspm.Analysis.Common;
+using Utah.Udot.Atspm.Analysis.WorkflowSteps;
+using Utah.Udot.Atspm.ApplicationTests.Analysis.TestObjects;
+using Utah.Udot.Atspm.ApplicationTests.Fixtures;
+using Utah.Udot.Atspm.Data.Models;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace ApplicationCoreTests.Analysis.WorkflowSteps
+namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
 {
     public class CalculatePhaseVolumeTests : IClassFixture<TestApproachFixture>, IDisposable
     {

@@ -27,7 +27,7 @@ using System.Security.Claims;
 using Utah.Udot.Atspm.Data;
 using Xunit;
 
-namespace IdentityTests.Controllers
+namespace Utah.Udot.Atspm.IdentityTests.Controllers
 {
     public class AccountControllerTests
     {

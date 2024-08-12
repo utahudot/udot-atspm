@@ -15,17 +15,18 @@
 // limitations under the License.
 #endregion
 
+using Utah.Udot.Atspm.Analysis.WorkflowFilters;
 using Xunit.Abstractions;
 
-namespace ApplicationCoreTests.Analysis.WorkflowFilterTests
+namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowFilterTests
 {
     public class FilterPriorityDataTests : WorkflowFilterTestsBase
     {
         public FilterPriorityDataTests(ITestOutputHelper output) : base(output)
         {
-            filteredList.Add((int)112);
-            filteredList.Add((int)113);
-            filteredList.Add((int)114);
+            filteredList.Add(112);
+            filteredList.Add(113);
+            filteredList.Add(114);
 
             sut = new FilterPriorityData();
         }

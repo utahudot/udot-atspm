@@ -15,7 +15,6 @@
 // limitations under the License.
 #endregion
 
-using InfrastructureTests.Attributes;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
@@ -23,12 +22,17 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using Utah.Udot.Atspm.Configuration;
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models;
+using Utah.Udot.Atspm.Exceptions;
+using Utah.Udot.Atspm.InfrastructureTests.Attributes;
+using Utah.Udot.Atspm.Services;
+using Utah.Udot.NetStandardToolkit.Exceptions;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace InfrastructureTests.DeviceDownloaderTests
+namespace Utah.Udot.Atspm.InfrastructureTests.DeviceDownloaderTests
 {
     //public class Startup
     //{

@@ -21,10 +21,11 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
+using Utah.Udot.NetStandardToolkit.Extensions;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace InfrastructureTests.EventLogDecoderTests
+namespace Utah.Udot.Atspm.InfrastructureTests.EventLogDecoderTests
 {
     public class EventLogDecoderTestData<T> where T : EventLogModelBase
     {

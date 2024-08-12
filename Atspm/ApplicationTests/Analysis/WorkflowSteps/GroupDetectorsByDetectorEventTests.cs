@@ -15,16 +15,19 @@
 // limitations under the License.
 #endregion
 
-using ApplicationCoreTests.Fixtures;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Utah.Udot.Atspm.Analysis.WorkflowSteps;
+using Utah.Udot.Atspm.ApplicationTests.Fixtures;
+using Utah.Udot.Atspm.Data.Enums;
+using Utah.Udot.Atspm.Data.Models;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace ApplicationCoreTests.Analysis.WorkflowSteps
+namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
 {
     public class GroupDetectorsByDetectorEventTests : IClassFixture<TestApproachFixture>, IDisposable
     {
