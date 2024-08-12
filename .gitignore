@@ -67,8 +67,8 @@ dkms.conf
 /ATSPM/DataApi/bin
 /ATSPM/EventLogUtility/obj
 /ATSPM/EventLogUtility/bin
-/ATSPM/Identity/obj/
-/ATSPM/Identity/bin/
+/ATSPM/IdentityApi/obj/
+/ATSPM/IdentityApi/bin/
 /ATSPM/IdentityTests/obj/
 /ATSPM/IdentityTests/bin/
 /ATSPM/Infrastructure/obj
