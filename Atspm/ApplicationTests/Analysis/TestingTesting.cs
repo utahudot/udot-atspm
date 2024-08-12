@@ -44,7 +44,7 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis
             _output = output;
         }
 
-        //IEnumerable<T> PreemptDetailRange<T>(IEnumerable<ControllerEventLog> items, IndianaEnumerations first, IndianaEnumerations second) where T : PreempDetailValueBase, new()
+        //IEnumerable<T> PreemptDetailRange<T>(IEnumerable<IndianaEvent> items, IndianaEnumerations first, IndianaEnumerations second) where T : PreempDetailValueBase, new()
         //{
         //    var result = items.GroupBy(g => g.LocationIdentifier, (Location, l1) =>
         //    l1.GroupBy(g => g.EventParam, (preempt, l2) =>
@@ -66,8 +66,8 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis
         {
             //var filePath = @"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData";
 
-            //var logs1 = ControllerEventLogHelper.ImportLogsFromCsvFile(Path.Combine(filePath, "7115TerminationData.csv"));
-            ////var logs2 = ControllerEventLogHelper.ImportLogsFromCsvFile(Path.Combine(filePath, "7706PreemptData.csv"));
+            //var logs1 = IndianaEventHelper.ImportLogsFromCsvFile(Path.Combine(filePath, "7115TerminationData.csv"));
+            ////var logs2 = IndianaEventHelper.ImportLogsFromCsvFile(Path.Combine(filePath, "7706PreemptData.csv"));
 
             //var json = File.ReadAllText(new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\Location7115TestData.json").FullName);
             //var Location = JsonConvert.DeserializeObject<Location>(json);
@@ -103,17 +103,17 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis
 
 
 
-            //var logs = new List<ControllerEventLog>
+            //var logs = new List<IndianaEvent>
             //{
-            //    new ControllerEventLog() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:01:01.1"), EventCode = 102, EventParam = 1},
-            //    new ControllerEventLog() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:02:01.1"), EventCode = 105, EventParam = 1},
-            //    new ControllerEventLog() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:03:01.1"), EventCode = 104, EventParam = 1},
-            //    new ControllerEventLog() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:23:01.2"), EventCode = 111, EventParam = 1},
+            //    new IndianaEvent() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:01:01.1"), EventCode = 102, EventParam = 1},
+            //    new IndianaEvent() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:02:01.1"), EventCode = 105, EventParam = 1},
+            //    new IndianaEvent() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:03:01.1"), EventCode = 104, EventParam = 1},
+            //    new IndianaEvent() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:23:01.2"), EventCode = 111, EventParam = 1},
 
-            //    new ControllerEventLog() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 13:01:01.1"), EventCode = 102, EventParam = 1},
-            //    new ControllerEventLog() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 13:02:01.1"), EventCode = 105, EventParam = 1},
-            //    new ControllerEventLog() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 13:03:01.1"), EventCode = 104, EventParam = 1},
-            //    new ControllerEventLog() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 13:23:01.2"), EventCode = 111, EventParam = 1},
+            //    new IndianaEvent() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 13:01:01.1"), EventCode = 102, EventParam = 1},
+            //    new IndianaEvent() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 13:02:01.1"), EventCode = 105, EventParam = 1},
+            //    new IndianaEvent() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 13:03:01.1"), EventCode = 104, EventParam = 1},
+            //    new IndianaEvent() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 13:23:01.2"), EventCode = 111, EventParam = 1},
             //};
 
 
@@ -253,7 +253,7 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis
 
             //var filteredPreemptionData = new FilteredPreemptionData();
             //var groupEventLogsByParameter = new GroupEventLogsByParameter();
-            //var filterLogsByLocationAndParamter = new BroadcastBlock<Tuple<Location, IEnumerable<ControllerEventLog>, int>>(f =>
+            //var filterLogsByLocationAndParamter = new BroadcastBlock<Tuple<Location, IEnumerable<IndianaEvent>, int>>(f =>
             //{
             //    return Tuple.Create(f.Item1, f.Item2.FromSpecification(new ControllerLogLocationAndParamterFilterSpecification(f.Item1, f.Item3)), f.Item3);
             //});
@@ -371,7 +371,7 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis
             //var json1 = File.ReadAllText(new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\RawCycleData.json").FullName);
             //var json2 = File.ReadAllText(new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\CalculatePhaseVolumeTestData2.json").FullName);
 
-            //var data1 = JsonConvert.DeserializeObject<List<ControllerEventLog>>(json1);
+            //var data1 = JsonConvert.DeserializeObject<List<IndianaEvent>>(json1);
             //var data2 = JsonConvert.DeserializeObject<CalculatePhaseVolumeTestData>(json2);
 
             ////Location.Approaches.Clear();
@@ -396,7 +396,7 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis
         //    var logs = File.ReadAllLines(file1.FullName)
         //           .Skip(1)
         //           .Select(x => x.Split(','))
-        //           .Select(x => new ControllerEventLog
+        //           .Select(x => new IndianaEvent
         //           {
         //               LocationIdentifier = x[0],
         //               Timestamp = DateTime.Parse(x[1]),

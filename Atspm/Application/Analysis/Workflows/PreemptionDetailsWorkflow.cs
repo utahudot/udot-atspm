@@ -19,6 +19,7 @@ using System.Text.Json;
 using System.Threading.Tasks.Dataflow;
 using Utah.Udot.Atspm.Analysis.PreemptionDetails;
 using Utah.Udot.Atspm.Data.Enums;
+using Utah.Udot.Atspm.Data.Models.EventLogModels;
 
 namespace Utah.Udot.Atspm.Analysis.Workflows
 {
@@ -114,14 +115,14 @@ namespace Utah.Udot.Atspm.Analysis.Workflows
     //}
 
 
-    public class PreemptiveStuff : TransformProcessStepBase<IEnumerable<ControllerEventLog>, IReadOnlyList<PreemptCycle>>
+    public class PreemptiveStuff : TransformProcessStepBase<IEnumerable<IndianaEvent>, IReadOnlyList<PreemptCycle>>
     {
         public PreemptiveStuff(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
 
-        protected override Task<IReadOnlyList<PreemptCycle>> Process(IEnumerable<ControllerEventLog> input, CancellationToken cancelToken = default)
+        protected override Task<IReadOnlyList<PreemptCycle>> Process(IEnumerable<IndianaEvent> input, CancellationToken cancelToken = default)
         {
             var result = input
-                .GroupBy(g => g.SignalIdentifier, (Location, l1) => l1
+                .GroupBy(g => g.LocationIdentifier, (Location, l1) => l1
                 .GroupBy(g => g.EventParam, (preempt, l2) =>
                 CreatePreemptCycle(l2.OrderBy(o => o.Timestamp).ToList())))
                 .SelectMany(m => m)
@@ -130,7 +131,7 @@ namespace Utah.Udot.Atspm.Analysis.Workflows
             return Task.FromResult<IReadOnlyList<PreemptCycle>>(result);
         }
 
-        public List<PreemptCycle> CreatePreemptCycle(List<ControllerEventLog> preemptEvents)
+        public List<PreemptCycle> CreatePreemptCycle(List<IndianaEvent> preemptEvents)
         {
             var CycleCollection = new List<PreemptCycle>();
             PreemptCycle cycle = null;
@@ -274,7 +275,7 @@ namespace Utah.Udot.Atspm.Analysis.Workflows
             return CycleCollection;
         }
 
-        private DateTime FindNext111Event(List<ControllerEventLog> DTTB, int counter)
+        private DateTime FindNext111Event(List<IndianaEvent> DTTB, int counter)
         {
             var Next111Event = new DateTime();
             for (var x = counter; x < DTTB.Count; x++)
@@ -286,7 +287,7 @@ namespace Utah.Udot.Atspm.Analysis.Workflows
             return Next111Event;
         }
 
-        private bool DoesTheCycleEndNormal(List<ControllerEventLog> DTTB, int counter)
+        private bool DoesTheCycleEndNormal(List<IndianaEvent> DTTB, int counter)
         {
             var foundEvent111 = false;
 
@@ -311,7 +312,7 @@ namespace Utah.Udot.Atspm.Analysis.Workflows
             return foundEvent111;
         }
 
-        private bool DoesTrackClearEndNormal(List<ControllerEventLog> DTTB, int counter)
+        private bool DoesTrackClearEndNormal(List<IndianaEvent> DTTB, int counter)
         {
             var foundEvent107 = false;
 
@@ -332,7 +333,7 @@ namespace Utah.Udot.Atspm.Analysis.Workflows
             return foundEvent107;
         }
 
-        private void EndCycle(PreemptCycle cycle, ControllerEventLog controller_Event_Log,
+        private void EndCycle(PreemptCycle cycle, IndianaEvent controller_Event_Log,
             List<PreemptCycle> CycleCollection)
         {
             cycle.End = controller_Event_Log.Timestamp;
@@ -425,7 +426,7 @@ namespace Utah.Udot.Atspm.Analysis.Workflows
         }
 
 
-        private PreemptCycle StartCycle(ControllerEventLog controller_Event_Log)
+        private PreemptCycle StartCycle(IndianaEvent controller_Event_Log)
         {
             var cycle = new PreemptCycle();
 
@@ -540,7 +541,7 @@ namespace Utah.Udot.Atspm.Analysis.Workflows
     /// tracked include entry delay, track clearance, gate down, dwell, time to service, 
     /// max-out, and preempt input on/off (1).
     /// </summary>
-    public class PreemptionDetailsWorkflow : WorkflowBase<IEnumerable<ControllerEventLog>, PreemptDetailResult>
+    public class PreemptionDetailsWorkflow : WorkflowBase<IEnumerable<IndianaEvent>, PreemptDetailResult>
     {
         protected JoinBlock<IEnumerable<PreempDetailValueBase>, IEnumerable<PreempDetailValueBase>, IEnumerable<PreempDetailValueBase>> joinOne;
         protected JoinBlock<IEnumerable<PreempDetailValueBase>, IEnumerable<PreempDetailValueBase>, IEnumerable<PreempDetailValueBase>> joinTwo;

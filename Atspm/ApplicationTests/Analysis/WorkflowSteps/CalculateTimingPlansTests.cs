@@ -46,7 +46,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         {
             var sut = new CalculateTimingPlans<TestPlan>();
 
-            var testEvents = Enumerable.Range(1, 10).Select(s => new ControllerEventLog()
+            var testEvents = Enumerable.Range(1, 10).Select(s => new IndianaEvent()
             {
                 locationIdentifier = "1001",
                 EventCode = (int)DataLoggerEnum.CoordPatternChange,
@@ -68,7 +68,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         {
             var sut = new CalculateTimingPlans<TestPlan>();
 
-            var testEvents = Enumerable.Range(1, 10).Select(s => new ControllerEventLog()
+            var testEvents = Enumerable.Range(1, 10).Select(s => new IndianaEvent()
             {
                 locationIdentifier = s % 2 == 0 ? "1001" : "1002",
                 EventCode = (int)DataLoggerEnum.CoordPatternChange,
@@ -89,7 +89,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         {
             var sut = new CalculateTimingPlans<TestPlan>();
 
-            var testEvents = Enumerable.Range(1, 10).Select(s => new ControllerEventLog()
+            var testEvents = Enumerable.Range(1, 10).Select(s => new IndianaEvent()
             {
                 locationIdentifier = "1001",
                 EventCode = (int)DataLoggerEnum.CoordPatternChange,
@@ -110,7 +110,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         {
             var sut = new CalculateTimingPlans<TestPlan>();
 
-            var testEvents = Enumerable.Range(1, 10).Select(s => new ControllerEventLog()
+            var testEvents = Enumerable.Range(1, 10).Select(s => new IndianaEvent()
             {
                 locationIdentifier = "1001",
                 EventCode = s % 2 == 0 ? s : (int)DataLoggerEnum.CoordPatternChange,
@@ -132,7 +132,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         {
             var sut = new CalculateTimingPlans<TestPlan>();
 
-            var testEvents = Enumerable.Range(1, 10).Select(s => new ControllerEventLog()
+            var testEvents = Enumerable.Range(1, 10).Select(s => new IndianaEvent()
             {
                 locationIdentifier = "1001",
                 EventCode = (int)DataLoggerEnum.CoordPatternChange,

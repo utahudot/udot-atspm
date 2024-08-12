@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Utah.Udot.Atspm.Analysis.Workflows;
 using Utah.Udot.Atspm.Data.Models;
+using Utah.Udot.Atspm.Data.Models.EventLogModels;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -54,12 +55,12 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
         {
             var sut = new PreemptiveStuff();
 
-            var testData = new List<ControllerEventLog>
+            var testData = new List<IndianaEvent>
             {
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:01:01.1"), EventCode = 102, EventParam = 1},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:02:01.1"), EventCode = 105, EventParam = 1},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:03:01.1"), EventCode = 104, EventParam = 1},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:04:01.1"), EventCode = 111, EventParam = 1},
+                new IndianaEvent() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:01:01.1"), EventCode = 102, EventParam = 1},
+                new IndianaEvent() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:02:01.1"), EventCode = 105, EventParam = 1},
+                new IndianaEvent() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:03:01.1"), EventCode = 104, EventParam = 1},
+                new IndianaEvent() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:04:01.1"), EventCode = 111, EventParam = 1},
             };
 
             var result = await sut.ExecuteAsync(testData);
@@ -87,12 +88,12 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
         {
             var sut = new PreemptiveStuff();
 
-            var testData = new List<ControllerEventLog>
+            var testData = new List<IndianaEvent>
             {
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:02:01.1"), EventCode = 105, EventParam = 1},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:01:01.1"), EventCode = 102, EventParam = 1},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:04:01.1"), EventCode = 111, EventParam = 1},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:03:01.1"), EventCode = 104, EventParam = 1},
+                new IndianaEvent() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:02:01.1"), EventCode = 105, EventParam = 1},
+                new IndianaEvent() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:01:01.1"), EventCode = 102, EventParam = 1},
+                new IndianaEvent() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:04:01.1"), EventCode = 111, EventParam = 1},
+                new IndianaEvent() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:03:01.1"), EventCode = 104, EventParam = 1},
 
             };
 
@@ -121,13 +122,13 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
         {
             var sut = new PreemptiveStuff();
 
-            var testData = new List<ControllerEventLog>
+            var testData = new List<IndianaEvent>
             {
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:01:01.1"), EventCode = 102, EventParam = 1},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:01:30.1"), EventCode = 102, EventParam = 1},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:02:01.1"), EventCode = 105, EventParam = 1},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:03:01.1"), EventCode = 104, EventParam = 1},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:04:01.1"), EventCode = 111, EventParam = 1},
+                new IndianaEvent() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:01:01.1"), EventCode = 102, EventParam = 1},
+                new IndianaEvent() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:01:30.1"), EventCode = 102, EventParam = 1},
+                new IndianaEvent() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:02:01.1"), EventCode = 105, EventParam = 1},
+                new IndianaEvent() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:03:01.1"), EventCode = 104, EventParam = 1},
+                new IndianaEvent() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:04:01.1"), EventCode = 111, EventParam = 1},
             };
 
             var result = await sut.ExecuteAsync(testData);
@@ -155,13 +156,13 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
         {
             var sut = new PreemptiveStuff();
 
-            var testData = new List<ControllerEventLog>
+            var testData = new List<IndianaEvent>
             {
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:01:01.1"), EventCode = 102, EventParam = 1},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:02:01.1"), EventCode = 105, EventParam = 1},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:02:30.1"), EventCode = 102, EventParam = 1},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:03:01.1"), EventCode = 104, EventParam = 1},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:04:01.1"), EventCode = 111, EventParam = 1},
+                new IndianaEvent() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:01:01.1"), EventCode = 102, EventParam = 1},
+                new IndianaEvent() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:02:01.1"), EventCode = 105, EventParam = 1},
+                new IndianaEvent() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:02:30.1"), EventCode = 102, EventParam = 1},
+                new IndianaEvent() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:03:01.1"), EventCode = 104, EventParam = 1},
+                new IndianaEvent() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:04:01.1"), EventCode = 111, EventParam = 1},
             };
 
             var result = await sut.ExecuteAsync(testData);
@@ -189,12 +190,12 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
         {
             var sut = new PreemptiveStuff();
 
-            var testData = new List<ControllerEventLog>
+            var testData = new List<IndianaEvent>
             {
-                //new ControllerEventLog() { LocationId = "1001", Timestamp = DateTime.Parse("4/17/2023 12:01:01.1"), EventCode = 102, EventParam = 1},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:02:01.1"), EventCode = 105, EventParam = 1},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:03:01.1"), EventCode = 104, EventParam = 1},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:04:01.1"), EventCode = 111, EventParam = 1},
+                //new IndianaEvent() { LocationId = "1001", Timestamp = DateTime.Parse("4/17/2023 12:01:01.1"), EventCode = 102, EventParam = 1},
+                new IndianaEvent() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:02:01.1"), EventCode = 105, EventParam = 1},
+                new IndianaEvent() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:03:01.1"), EventCode = 104, EventParam = 1},
+                new IndianaEvent() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:04:01.1"), EventCode = 111, EventParam = 1},
             };
 
             var result = await sut.ExecuteAsync(testData);
@@ -222,12 +223,12 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
         {
             var sut = new PreemptiveStuff();
 
-            var testData = new List<ControllerEventLog>
+            var testData = new List<IndianaEvent>
             {
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:01:01.1"), EventCode = 102, EventParam = 1},
-                //new ControllerEventLog() { LocationId = "1001", Timestamp = DateTime.Parse("4/17/2023 12:02:01.1"), EventCode = 105, EventParam = 1},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:03:01.1"), EventCode = 104, EventParam = 1},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:04:01.1"), EventCode = 111, EventParam = 1},
+                new IndianaEvent() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:01:01.1"), EventCode = 102, EventParam = 1},
+                //new IndianaEvent() { LocationId = "1001", Timestamp = DateTime.Parse("4/17/2023 12:02:01.1"), EventCode = 105, EventParam = 1},
+                new IndianaEvent() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:03:01.1"), EventCode = 104, EventParam = 1},
+                new IndianaEvent() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:04:01.1"), EventCode = 111, EventParam = 1},
             };
 
             var result = await sut.ExecuteAsync(testData);
@@ -243,12 +244,12 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
         {
             var sut = new PreemptiveStuff();
 
-            var testData = new List<ControllerEventLog>
+            var testData = new List<IndianaEvent>
             {
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:01:01.1"), EventCode = 102, EventParam = 1},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:02:01.1"), EventCode = 105, EventParam = 1},
-                //new ControllerEventLog() { LocationId = "1001", Timestamp = DateTime.Parse("4/17/2023 12:03:01.1"), EventCode = 104, EventParam = 1},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:04:01.1"), EventCode = 111, EventParam = 1},
+                new IndianaEvent() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:01:01.1"), EventCode = 102, EventParam = 1},
+                new IndianaEvent() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:02:01.1"), EventCode = 105, EventParam = 1},
+                //new IndianaEvent() { LocationId = "1001", Timestamp = DateTime.Parse("4/17/2023 12:03:01.1"), EventCode = 104, EventParam = 1},
+                new IndianaEvent() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:04:01.1"), EventCode = 111, EventParam = 1},
             };
 
             var result = await sut.ExecuteAsync(testData);
@@ -276,12 +277,12 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
         {
             var sut = new PreemptiveStuff();
 
-            var testData = new List<ControllerEventLog>
+            var testData = new List<IndianaEvent>
             {
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:01:01.1"), EventCode = 102, EventParam = 1},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:02:01.1"), EventCode = 105, EventParam = 1},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:03:01.1"), EventCode = 104, EventParam = 1},
-                //new ControllerEventLog() { LocationId = "1001", Timestamp = DateTime.Parse("4/17/2023 12:04:01.1"), EventCode = 111, EventParam = 1},
+                new IndianaEvent() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:01:01.1"), EventCode = 102, EventParam = 1},
+                new IndianaEvent() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:02:01.1"), EventCode = 105, EventParam = 1},
+                new IndianaEvent() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:03:01.1"), EventCode = 104, EventParam = 1},
+                //new IndianaEvent() { LocationId = "1001", Timestamp = DateTime.Parse("4/17/2023 12:04:01.1"), EventCode = 111, EventParam = 1},
             };
 
             var result = await sut.ExecuteAsync(testData);
@@ -309,12 +310,12 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
         {
             var sut = new PreemptiveStuff();
 
-            var testData = new List<ControllerEventLog>
+            var testData = new List<IndianaEvent>
             {
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:01:01.1"), EventCode = 102, EventParam = 1},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:02:01.1"), EventCode = 105, EventParam = 1},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:03:01.1"), EventCode = 104, EventParam = 1},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:23:01.2"), EventCode = 111, EventParam = 1},
+                new IndianaEvent() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:01:01.1"), EventCode = 102, EventParam = 1},
+                new IndianaEvent() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:02:01.1"), EventCode = 105, EventParam = 1},
+                new IndianaEvent() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:03:01.1"), EventCode = 104, EventParam = 1},
+                new IndianaEvent() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:23:01.2"), EventCode = 111, EventParam = 1},
             };
 
             var result = await sut.ExecuteAsync(testData);
@@ -342,12 +343,12 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
         {
             var sut = new PreemptiveStuff();
 
-            var testData = new List<ControllerEventLog>
+            var testData = new List<IndianaEvent>
             {
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:01:01.1"), EventCode = 102, EventParam = 1},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:02:01.1"), EventCode = 105, EventParam = 1},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:03:01.1"), EventCode = 104, EventParam = 1},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:04:01.1"), EventCode = 111, EventParam = 1},
+                new IndianaEvent() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:01:01.1"), EventCode = 102, EventParam = 1},
+                new IndianaEvent() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:02:01.1"), EventCode = 105, EventParam = 1},
+                new IndianaEvent() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:03:01.1"), EventCode = 104, EventParam = 1},
+                new IndianaEvent() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:04:01.1"), EventCode = 111, EventParam = 1},
             };
 
             var result = await sut.ExecuteAsync(testData);
@@ -363,12 +364,12 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
         {
             var sut = new PreemptiveStuff();
 
-            var testData = new List<ControllerEventLog>
+            var testData = new List<IndianaEvent>
             {
-                //new ControllerEventLog() { LocationId = "1001", Timestamp = DateTime.Parse("4/17/2023 12:01:01.1"), EventCode = 102, EventParam = 1},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:02:01.1"), EventCode = 105, EventParam = 1},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:03:01.1"), EventCode = 104, EventParam = 1},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:04:01.1"), EventCode = 111, EventParam = 1},
+                //new IndianaEvent() { LocationId = "1001", Timestamp = DateTime.Parse("4/17/2023 12:01:01.1"), EventCode = 102, EventParam = 1},
+                new IndianaEvent() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:02:01.1"), EventCode = 105, EventParam = 1},
+                new IndianaEvent() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:03:01.1"), EventCode = 104, EventParam = 1},
+                new IndianaEvent() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:04:01.1"), EventCode = 111, EventParam = 1},
             };
 
             var result = await sut.ExecuteAsync(testData);
@@ -384,16 +385,16 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
         {
             var sut = new PreemptiveStuff();
 
-            var testData = new List<ControllerEventLog>
+            var testData = new List<IndianaEvent>
             {
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:01:01.1"), EventCode = 102, EventParam = 1},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:02:01.1"), EventCode = 105, EventParam = 1},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:03:01.1"), EventCode = 103, EventParam = 1},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:04:01.1"), EventCode = 106, EventParam = 1},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:05:01.1"), EventCode = 107, EventParam = 1},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:06:01.1"), EventCode = 110, EventParam = 1},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:07:01.1"), EventCode = 104, EventParam = 1},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:08:01.1"), EventCode = 111, EventParam = 1}
+                new IndianaEvent() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:01:01.1"), EventCode = 102, EventParam = 1},
+                new IndianaEvent() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:02:01.1"), EventCode = 105, EventParam = 1},
+                new IndianaEvent() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:03:01.1"), EventCode = 103, EventParam = 1},
+                new IndianaEvent() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:04:01.1"), EventCode = 106, EventParam = 1},
+                new IndianaEvent() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:05:01.1"), EventCode = 107, EventParam = 1},
+                new IndianaEvent() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:06:01.1"), EventCode = 110, EventParam = 1},
+                new IndianaEvent() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:07:01.1"), EventCode = 104, EventParam = 1},
+                new IndianaEvent() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:08:01.1"), EventCode = 111, EventParam = 1}
             };
 
             var result = await sut.ExecuteAsync(testData);
