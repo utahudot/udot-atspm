@@ -20,7 +20,7 @@ using System.CommandLine;
 using System.CommandLine.Hosting;
 using System.CommandLine.NamingConventionBinder;
 
-namespace ATSPM.EventLogUtility.Commands
+namespace Utah.Udot.Atspm.EventLogUtility.Commands
 {
     public class AggregationCommand : Command, ICommandOption<EventLogAggregateConfiguration>
     {

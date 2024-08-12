@@ -22,9 +22,8 @@ using Microsoft.Extensions.Options;
 using System.CommandLine;
 using System.CommandLine.Hosting;
 using System.CommandLine.NamingConventionBinder;
-using Utah.Udot.Atspm.Data.Models;
 
-namespace ATSPM.EventLogUtility.Commands
+namespace Utah.Udot.Atspm.EventLogUtility.Commands
 {
     public class LocationInfoCommand : Command, ICommandOption<EventLogLocationInfoConfiguration>
     {

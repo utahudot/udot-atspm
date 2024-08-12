@@ -98,7 +98,7 @@
         "projectName": "Utah.Udot.Atspm.Data",
         "projectPath": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\Data\\Data.csproj",
         "packagesPath": "C:\\Users\\christianbaker\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\Atspm\\Data\\obj\\",
+        "outputPath": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\Data\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\christianbaker\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -193,7 +193,7 @@
         "projectName": "Utah.Udot.Atspm.IdentityApi",
         "projectPath": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\IdentityApi\\IdentityApi.csproj",
         "packagesPath": "C:\\Users\\christianbaker\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\Atspm\\IdentityApi\\obj\\",
+        "outputPath": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\IdentityApi\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\christianbaker\\AppData\\Roaming\\NuGet\\NuGet.Config",
