@@ -17,10 +17,10 @@
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Utah.Udot.Atspm.Data.Models;
+using Utah.Udot.Atspm.Business.TimeSpaceDiagram;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
 
-namespace ATSPM.ReportApi.ReportServices
+namespace Utah.Udot.Atspm.ReportApi.ReportServices
 {
     public class TimeSpaceDiagramAverageReportService : ReportServiceBase<TimeSpaceDiagramAverageOptions, IEnumerable<TimeSpaceDiagramAverageResult>>
     {
@@ -303,7 +303,7 @@ namespace ATSPM.ReportApi.ReportServices
             for (int i = 0; i <= days; i++)
             {
                 var date = startDate.AddDays(i);
-                if (daysOfWeek.Contains(((int)date.DayOfWeek)))
+                if (daysOfWeek.Contains((int)date.DayOfWeek))
                 {
                     datesToInclude.Add(date);
                 }

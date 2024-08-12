@@ -16,7 +16,7 @@
 #endregion
 
 
-namespace ATSPM.ReportApi.DataAggregation
+namespace Utah.Udot.Atspm.ReportApi.DataAggregation
 {
     public abstract class AggregationByApproach
     {

@@ -16,9 +16,10 @@
 #endregion
 
 using Microsoft.IdentityModel.Tokens;
+using Utah.Udot.Atspm.Business.PedDelay;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
 
-namespace ATSPM.ReportApi.ReportServices
+namespace Utah.Udot.Atspm.ReportApi.ReportServices
 {
     /// <summary>
     /// Ped delay report service

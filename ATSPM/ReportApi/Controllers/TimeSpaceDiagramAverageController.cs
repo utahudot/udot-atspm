@@ -17,8 +17,9 @@
 
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
+using Utah.Udot.Atspm.Business.TimeSpaceDiagram;
 
-namespace ATSPM.ReportApi.Controllers
+namespace Utah.Udot.Atspm.ReportApi.Controllers
 {
     [ApiVersion(1.0)]
     [ApiController]

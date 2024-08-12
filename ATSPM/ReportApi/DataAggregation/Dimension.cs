@@ -15,7 +15,8 @@
 // limitations under the License.
 #endregion
 
-namespace ATSPM.ReportApi.DataAggregation
+
+namespace Utah.Udot.Atspm.ReportApi.DataAggregation
 {
     public enum Dimension
     {

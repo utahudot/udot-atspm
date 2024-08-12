@@ -16,9 +16,8 @@
 #endregion
 
 using Utah.Udot.Atspm.Data.Enums;
-using Utah.Udot.Atspm.Data.Models;
 
-namespace ATSPM.ReportApi.DataAggregation
+namespace Utah.Udot.Atspm.ReportApi.DataAggregation
 {
     public interface ISignalAggregationMetricOptions
     {

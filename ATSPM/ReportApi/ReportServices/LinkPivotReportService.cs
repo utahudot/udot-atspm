@@ -15,9 +15,9 @@
 // limitations under the License.
 #endregion
 
-using Utah.Udot.Atspm.Data.Models;
+using Utah.Udot.Atspm.Business.LinkPivot;
 
-namespace ATSPM.ReportApi.ReportServices
+namespace Utah.Udot.Atspm.ReportApi.ReportServices
 {
     public class LinkPivotReportService : ReportServiceBase<LinkPivotOptions, LinkPivotResult>
     {

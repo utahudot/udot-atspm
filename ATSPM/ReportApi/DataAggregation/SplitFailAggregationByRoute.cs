@@ -15,9 +15,8 @@
 // limitations under the License.
 #endregion
 
-using Utah.Udot.Atspm.Data.Models;
 
-namespace ATSPM.ReportApi.DataAggregation
+namespace Utah.Udot.Atspm.ReportApi.DataAggregation
 {
     class SplitFailAggregationByRoute
     {
@@ -46,7 +45,7 @@ namespace ATSPM.ReportApi.DataAggregation
 
     public class RouteSplitFailAggregationContainer
     {
-        public Route Route { get; set; }
+        public Data.Models.Route Route { get; set; }
         public List<ApproachSplitFailAggregation> SplitFails { get; }
 
         public RouteSplitFailAggregationContainer(ApproachAggregationMetricOptions options)

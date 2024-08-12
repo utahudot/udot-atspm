@@ -17,9 +17,9 @@
 
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
-using Utah.Udot.Atspm.Data.Models;
+using Utah.Udot.Atspm.Business.TimingAndActuation;
 
-namespace ATSPM.ReportApi.Controllers
+namespace Utah.Udot.Atspm.ReportApi.Controllers
 {
     /// <summary>
     /// Timing and actuation report controller

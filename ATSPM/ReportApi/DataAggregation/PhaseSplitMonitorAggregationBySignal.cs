@@ -15,9 +15,8 @@
 // limitations under the License.
 #endregion
 
-using Utah.Udot.Atspm.Data.Models;
 
-namespace ATSPM.ReportApi.DataAggregation
+namespace Utah.Udot.Atspm.ReportApi.DataAggregation
 {
     public class PhaseSplitMonitorAggregationBySignal : AggregationBySignal
     {

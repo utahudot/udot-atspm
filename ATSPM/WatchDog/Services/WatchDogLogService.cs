@@ -21,9 +21,10 @@ using System.Collections.Concurrent;
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
-using WatchDog.Models;
+using Utah.Udot.Atspm.TempExtensions;
+using Utah.Udot.Atspm.WatchDog.Models;
 
-namespace WatchDog.Services
+namespace Utah.Udot.Atspm.WatchDog.Services
 {
     public partial class WatchDogLogService
     {
@@ -96,7 +97,7 @@ namespace WatchDog.Services
             foreach (var detector in detectors)
                 try
                 {
-                    if (detector.DetectionTypes != null && detector.DetectionTypes.Any(d => d.Id == Utah.Udot.Atspm.Data.Enums.DetectionTypes.AC))
+                    if (detector.DetectionTypes != null && detector.DetectionTypes.Any(d => d.Id == DetectionTypes.AC))
                     {
                         var channel = detector.DetectorChannel;
                         var direction = detector.Approach.DirectionType.Description;

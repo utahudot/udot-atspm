@@ -16,8 +16,10 @@
 #endregion
 
 using Microsoft.EntityFrameworkCore;
+using Utah.Udot.Atspm.Business.Watchdog;
+using Utah.Udot.Atspm.Repositories;
 
-namespace ATSPM.ReportApi.ReportServices
+namespace Utah.Udot.Atspm.ReportApi.ReportServices
 {
     /// <summary>
     /// Preempt request report service
