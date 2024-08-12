@@ -7509,11 +7509,11 @@
   "project": {
     "version": "5.0.0-rc.1",
     "restore": {
-      "projectUniqueName": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\Atspm\\Application\\Application.csproj",
+      "projectUniqueName": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\Application\\Application.csproj",
       "projectName": "Utah.Udot.Atspm",
-      "projectPath": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\Atspm\\Application\\Application.csproj",
+      "projectPath": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\Application\\Application.csproj",
       "packagesPath": "C:\\Users\\christianbaker\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\Atspm\\Application\\obj\\",
+      "outputPath": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\Application\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\christianbaker\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -7530,8 +7530,8 @@
         "net7.0": {
           "targetAlias": "net7.0",
           "projectReferences": {
-            "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\Atspm\\Data\\Data.csproj": {
-              "projectPath": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\Atspm\\Data\\Data.csproj"
+            "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\Data\\Data.csproj": {
+              "projectPath": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\Data\\Data.csproj"
             }
           }
         }
