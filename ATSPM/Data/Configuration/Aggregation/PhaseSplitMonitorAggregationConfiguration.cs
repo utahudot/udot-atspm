@@ -22,6 +22,7 @@ namespace Utah.Udot.Atspm.Data.Configuration
 {
     public class PhaseSplitMonitorAggregationConfiguration : IEntityTypeConfiguration<PhaseSplitMonitorAggregation>
     {
+        /// <inheritdoc/>
         public void Configure(EntityTypeBuilder<PhaseSplitMonitorAggregation> builder)
         {
             builder.HasComment("Phase Split Monitor Aggregation");
