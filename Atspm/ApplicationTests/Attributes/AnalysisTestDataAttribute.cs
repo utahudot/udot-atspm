@@ -15,15 +15,15 @@
 // limitations under the License.
 #endregion
 
-using ApplicationCoreTests.Analysis.TestObjects;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Utah.Udot.Atspm.ApplicationTests.Analysis.TestObjects;
 using Xunit.Sdk;
 
-namespace ApplicationCoreTests.Attributes
+namespace Utah.Udot.Atspm.ApplicationTests.Attributes
 {
     public class AnalysisTestDataAttribute<T> : DataAttribute where T : AnalysisTestDataBase
     {

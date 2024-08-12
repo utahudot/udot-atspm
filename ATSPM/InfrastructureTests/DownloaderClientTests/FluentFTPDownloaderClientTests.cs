@@ -18,9 +18,10 @@
 using FluentFTP;
 using Moq;
 using System;
+using Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients;
 using Xunit.Abstractions;
 
-namespace InfrastructureTests.DownloaderClientTests
+namespace Utah.Udot.Atspm.InfrastructureTests.DownloaderClientTests
 {
     public class FluentFTPDownloaderClientTests : DownloaderClientTestsBase<IAsyncFtpClient>
     {

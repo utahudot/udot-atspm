@@ -15,9 +15,11 @@
 // limitations under the License.
 #endregion
 
+using Utah.Udot.Atspm.Analysis.WorkflowFilters;
+using Utah.Udot.Atspm.Data.Enums;
 using Xunit.Abstractions;
 
-namespace ApplicationCoreTests.Analysis.WorkflowFilterTests
+namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowFilterTests
 {
     public class FilteredDetectorDataTests : WorkflowFilterTestsBase
     {

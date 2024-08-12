@@ -22,9 +22,10 @@ using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients;
 using Xunit.Abstractions;
 
-namespace InfrastructureTests.DownloaderClientTests
+namespace Utah.Udot.Atspm.InfrastructureTests.DownloaderClientTests
 {
     public class HttpDownloaderClientTests : DownloaderClientTestsBase<HttpClient>
     {

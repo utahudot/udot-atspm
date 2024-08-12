@@ -20,10 +20,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Threading;
+using Utah.Udot.Atspm.Exceptions;
+using Utah.Udot.Atspm.Services;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace InfrastructureTests.DownloaderClientTests
+namespace Utah.Udot.Atspm.InfrastructureTests.DownloaderClientTests
 {
     public abstract class DownloaderClientTestsBase<T> : IDisposable where T : class
     {
