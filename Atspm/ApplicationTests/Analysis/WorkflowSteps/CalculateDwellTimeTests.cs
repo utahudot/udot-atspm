@@ -49,13 +49,13 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         [Trait(nameof(CalculateDwellTime), "Data Check")]
         public async void CalculateDwellTimeTestsDataCheck()
         {
-            var testLogs = new List<ControllerEventLog>
+            var testLogs = new List<IndianaEvent>
             {
-                new ControllerEventLog() { locationIdentifier = _testLocation.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:14.5"), EventCode = 102, EventParam = param},
-                new ControllerEventLog() { locationIdentifier = _testLocation.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:20.5"), EventCode = 105, EventParam = param},
-                new ControllerEventLog() { locationIdentifier = _testLocation.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:25.5"), EventCode = 107, EventParam = param},
-                new ControllerEventLog() { locationIdentifier = _testLocation.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:03:01.3"), EventCode = 104, EventParam = param},
-                new ControllerEventLog() { locationIdentifier = _testLocation.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:03:07.5"), EventCode = 111, EventParam = param},
+                new IndianaEvent() { locationIdentifier = _testLocation.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:14.5"), EventCode = 102, EventParam = param},
+                new IndianaEvent() { locationIdentifier = _testLocation.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:20.5"), EventCode = 105, EventParam = param},
+                new IndianaEvent() { locationIdentifier = _testLocation.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:25.5"), EventCode = 107, EventParam = param},
+                new IndianaEvent() { locationIdentifier = _testLocation.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:03:01.3"), EventCode = 104, EventParam = param},
+                new IndianaEvent() { locationIdentifier = _testLocation.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:03:07.5"), EventCode = 111, EventParam = param},
             }.AsEnumerable();
 
             var sut = new CalculateDwellTime();
@@ -82,13 +82,13 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         [Trait(nameof(CalculateDwellTime), "Sort Order")]
         public async void CalculateDwellTimeTestsSortOrder()
         {
-            var testLogs = new List<ControllerEventLog>
+            var testLogs = new List<IndianaEvent>
             {
-                new ControllerEventLog() { locationIdentifier = _testLocation.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:25.5"), EventCode = 107, EventParam = param},
-                new ControllerEventLog() { locationIdentifier = _testLocation.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:14.5"), EventCode = 102, EventParam = param},
-                new ControllerEventLog() { locationIdentifier = _testLocation.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:03:01.3"), EventCode = 104, EventParam = param},
-                new ControllerEventLog() { locationIdentifier = _testLocation.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:20.5"), EventCode = 105, EventParam = param},
-                new ControllerEventLog() { locationIdentifier = _testLocation.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:03:07.5"), EventCode = 111, EventParam = param},
+                new IndianaEvent() { locationIdentifier = _testLocation.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:25.5"), EventCode = 107, EventParam = param},
+                new IndianaEvent() { locationIdentifier = _testLocation.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:14.5"), EventCode = 102, EventParam = param},
+                new IndianaEvent() { locationIdentifier = _testLocation.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:03:01.3"), EventCode = 104, EventParam = param},
+                new IndianaEvent() { locationIdentifier = _testLocation.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:20.5"), EventCode = 105, EventParam = param},
+                new IndianaEvent() { locationIdentifier = _testLocation.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:03:07.5"), EventCode = 111, EventParam = param},
             }.AsEnumerable();
 
             var sut = new CalculateDwellTime();
@@ -115,18 +115,18 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         [Trait(nameof(CalculateDwellTime), "Preempt Number Filter")]
         public async void CalculateDwellTimeTestsPreemptNumberFilter()
         {
-            var testLogs = new List<ControllerEventLog>
+            var testLogs = new List<IndianaEvent>
             {
-                new ControllerEventLog() { locationIdentifier = _testLocation.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:14.5"), EventCode = 102, EventParam = param},
-                new ControllerEventLog() { locationIdentifier = _testLocation.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:20.5"), EventCode = 105, EventParam = param},
-                new ControllerEventLog() { locationIdentifier = _testLocation.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:25.5"), EventCode = 107, EventParam = param},
-                new ControllerEventLog() { locationIdentifier = _testLocation.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:03:01.3"), EventCode = 104, EventParam = param},
-                new ControllerEventLog() { locationIdentifier = _testLocation.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:03:07.5"), EventCode = 111, EventParam = param},
-                new ControllerEventLog() { locationIdentifier = _testLocation.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 01:02:14.5"), EventCode = 102, EventParam = 2},
-                new ControllerEventLog() { locationIdentifier = _testLocation.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 01:02:20.5"), EventCode = 105, EventParam = 2},
-                new ControllerEventLog() { locationIdentifier = _testLocation.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 01:02:25.5"), EventCode = 107, EventParam = 2},
-                new ControllerEventLog() { locationIdentifier = _testLocation.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 01:03:01.3"), EventCode = 104, EventParam = 2},
-                new ControllerEventLog() { locationIdentifier = _testLocation.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 01:03:07.5"), EventCode = 111, EventParam = 2},
+                new IndianaEvent() { locationIdentifier = _testLocation.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:14.5"), EventCode = 102, EventParam = param},
+                new IndianaEvent() { locationIdentifier = _testLocation.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:20.5"), EventCode = 105, EventParam = param},
+                new IndianaEvent() { locationIdentifier = _testLocation.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:25.5"), EventCode = 107, EventParam = param},
+                new IndianaEvent() { locationIdentifier = _testLocation.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:03:01.3"), EventCode = 104, EventParam = param},
+                new IndianaEvent() { locationIdentifier = _testLocation.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:03:07.5"), EventCode = 111, EventParam = param},
+                new IndianaEvent() { locationIdentifier = _testLocation.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 01:02:14.5"), EventCode = 102, EventParam = 2},
+                new IndianaEvent() { locationIdentifier = _testLocation.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 01:02:20.5"), EventCode = 105, EventParam = 2},
+                new IndianaEvent() { locationIdentifier = _testLocation.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 01:02:25.5"), EventCode = 107, EventParam = 2},
+                new IndianaEvent() { locationIdentifier = _testLocation.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 01:03:01.3"), EventCode = 104, EventParam = 2},
+                new IndianaEvent() { locationIdentifier = _testLocation.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 01:03:07.5"), EventCode = 111, EventParam = 2},
             }.AsEnumerable();
 
             var sut = new CalculateDwellTime();
@@ -144,18 +144,18 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         [Trait(nameof(CalculateDwellTime), "Location Filter")]
         public async void CalculateDwellTimeTestsLocationFilter()
         {
-            var testLogs = new List<ControllerEventLog>
+            var testLogs = new List<IndianaEvent>
             {
-                new ControllerEventLog() { locationIdentifier = _testLocation.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:14.5"), EventCode = 102, EventParam = param},
-                new ControllerEventLog() { locationIdentifier = _testLocation.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:20.5"), EventCode = 105, EventParam = param},
-                new ControllerEventLog() { locationIdentifier = _testLocation.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:25.5"), EventCode = 107, EventParam = param},
-                new ControllerEventLog() { locationIdentifier = _testLocation.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:03:01.3"), EventCode = 104, EventParam = param},
-                new ControllerEventLog() { locationIdentifier = _testLocation.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:03:07.5"), EventCode = 111, EventParam = param},
-                new ControllerEventLog() { locationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 10:02:14.5"), EventCode = 102, EventParam = param},
-                new ControllerEventLog() { locationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 10:02:20.5"), EventCode = 105, EventParam = param},
-                new ControllerEventLog() { locationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 10:02:25.5"), EventCode = 107, EventParam = param},
-                new ControllerEventLog() { locationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 10:03:01.3"), EventCode = 104, EventParam = param},
-                new ControllerEventLog() { locationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 10:03:07.5"), EventCode = 111, EventParam = param},
+                new IndianaEvent() { locationIdentifier = _testLocation.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:14.5"), EventCode = 102, EventParam = param},
+                new IndianaEvent() { locationIdentifier = _testLocation.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:20.5"), EventCode = 105, EventParam = param},
+                new IndianaEvent() { locationIdentifier = _testLocation.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:25.5"), EventCode = 107, EventParam = param},
+                new IndianaEvent() { locationIdentifier = _testLocation.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:03:01.3"), EventCode = 104, EventParam = param},
+                new IndianaEvent() { locationIdentifier = _testLocation.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:03:07.5"), EventCode = 111, EventParam = param},
+                new IndianaEvent() { locationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 10:02:14.5"), EventCode = 102, EventParam = param},
+                new IndianaEvent() { locationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 10:02:20.5"), EventCode = 105, EventParam = param},
+                new IndianaEvent() { locationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 10:02:25.5"), EventCode = 107, EventParam = param},
+                new IndianaEvent() { locationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 10:03:01.3"), EventCode = 104, EventParam = param},
+                new IndianaEvent() { locationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 10:03:07.5"), EventCode = 111, EventParam = param},
             }.AsEnumerable();
 
             var sut = new CalculateDwellTime();
@@ -177,13 +177,13 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         [Trait(nameof(CalculateDwellTime), "Missing 107 Event")]
         public async void CalculateDwellTimeTestsMissing107Event()
         {
-            var testLogs = new List<ControllerEventLog>
+            var testLogs = new List<IndianaEvent>
             {
-                new ControllerEventLog() { locationIdentifier = _testLocation.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:14.5"), EventCode = 102, EventParam = param},
-                new ControllerEventLog() { locationIdentifier = _testLocation.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:20.5"), EventCode = 105, EventParam = param},
-                //new ControllerEventLog() { locationIdentifier = _testLocation.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:25.5"), EventCode = 107, EventParam = param},
-                new ControllerEventLog() { locationIdentifier = _testLocation.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:03:01.3"), EventCode = 104, EventParam = param},
-                new ControllerEventLog() { locationIdentifier = _testLocation.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:03:07.5"), EventCode = 111, EventParam = param},
+                new IndianaEvent() { locationIdentifier = _testLocation.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:14.5"), EventCode = 102, EventParam = param},
+                new IndianaEvent() { locationIdentifier = _testLocation.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:20.5"), EventCode = 105, EventParam = param},
+                //new IndianaEvent() { locationIdentifier = _testLocation.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:25.5"), EventCode = 107, EventParam = param},
+                new IndianaEvent() { locationIdentifier = _testLocation.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:03:01.3"), EventCode = 104, EventParam = param},
+                new IndianaEvent() { locationIdentifier = _testLocation.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:03:07.5"), EventCode = 111, EventParam = param},
             }.AsEnumerable();
 
             var sut = new CalculateDwellTime();
@@ -203,13 +203,13 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         [Trait(nameof(CalculateDwellTime), "Missing 111 Event")]
         public async void CalculateDwellTimeTestsMissing111Event()
         {
-            var testLogs = new List<ControllerEventLog>
+            var testLogs = new List<IndianaEvent>
             {
-                new ControllerEventLog() { locationIdentifier = _testLocation.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:14.5"), EventCode = 102, EventParam = param},
-                new ControllerEventLog() { locationIdentifier = _testLocation.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:20.5"), EventCode = 105, EventParam = param},
-                new ControllerEventLog() { locationIdentifier = _testLocation.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:25.5"), EventCode = 107, EventParam = param},
-                new ControllerEventLog() { locationIdentifier = _testLocation.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:03:01.3"), EventCode = 104, EventParam = param},
-                //new ControllerEventLog() { locationIdentifier = _testLocation.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:03:07.5"), EventCode = 111, EventParam = param},
+                new IndianaEvent() { locationIdentifier = _testLocation.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:14.5"), EventCode = 102, EventParam = param},
+                new IndianaEvent() { locationIdentifier = _testLocation.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:20.5"), EventCode = 105, EventParam = param},
+                new IndianaEvent() { locationIdentifier = _testLocation.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:25.5"), EventCode = 107, EventParam = param},
+                new IndianaEvent() { locationIdentifier = _testLocation.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:03:01.3"), EventCode = 104, EventParam = param},
+                //new IndianaEvent() { locationIdentifier = _testLocation.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:03:07.5"), EventCode = 111, EventParam = param},
             }.AsEnumerable();
 
             var sut = new CalculateDwellTime();
@@ -240,7 +240,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
             _output.WriteLine($"Input: {testFile.Input.Count}");
             _output.WriteLine($"Output: {testFile.Output.Count}");
 
-            var testData = Tuple.Create<Location, IEnumerable<ControllerEventLog>, int>(testFile.Configuration, testFile.Input, 1);
+            var testData = Tuple.Create<Location, IEnumerable<IndianaEvent>, int>(testFile.Configuration, testFile.Input, 1);
 
             var sut = new CalculateDwellTime();
 
