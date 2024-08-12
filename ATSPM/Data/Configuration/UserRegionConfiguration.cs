@@ -20,8 +20,12 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Utah.Udot.Atspm.Data.Configuration
 {
+    /// <summary>
+    /// User region configuration
+    /// </summary>
     public class UserRegionConfiguration : IEntityTypeConfiguration<UserRegion>
     {
+        /// <inheritdoc/>
         public void Configure(EntityTypeBuilder<UserRegion> builder)
         {
             builder

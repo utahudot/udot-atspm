@@ -17,7 +17,7 @@
 
 using Identity.Business.Tokens;
 using Microsoft.AspNetCore.Identity;
-using Utah.Udot.Atspm.Data;
+using Utah.Udot.Atspm.Data.Models;
 
 namespace Identity.Business.Accounts
 {

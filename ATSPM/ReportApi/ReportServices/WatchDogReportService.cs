@@ -51,7 +51,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
 
             if (parameter.LocationIdentifier != null)
             {
-                query = query.Where(w => w.locationIdentifier == parameter.LocationIdentifier);
+                query = query.Where(w => w.LocationIdentifier == parameter.LocationIdentifier);
             }
             if (parameter.IssueType != null)
             {
@@ -61,7 +61,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
 
             var events = query.ToList();
 
-            var distinctLocationIds = events.Select(e => e.locationId).Distinct();
+            var distinctLocationIds = events.Select(e => e.LocationId).Distinct();
             var locations = locationRepository.GetList()
                 .Include(a => a.Areas)
                 .Where(l => distinctLocationIds.Contains(l.Id))
@@ -69,19 +69,19 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             if (parameter.AreaId != null)
             {
                 var locationById = locations.Where(s => s.Areas.Select(a => a.Id).ToList().Contains(parameter.AreaId.Value)).Select(l => l.Id).ToList();
-                events = events.Where(e => locationById.Contains(e.locationId)).ToList();
+                events = events.Where(e => locationById.Contains(e.LocationId)).ToList();
             }
             if (parameter.JurisdictionId != null)
             {
                 locations = locations.Where(l => l.JurisdictionId == parameter.JurisdictionId).ToList();
                 var locationIdsWithMatchingJurisdiction = new HashSet<int>(locations.Select(l => l.Id));
-                events = events.Where(e => locationIdsWithMatchingJurisdiction.Contains(e.locationId)).ToList();
+                events = events.Where(e => locationIdsWithMatchingJurisdiction.Contains(e.LocationId)).ToList();
             }
             if (parameter.RegionId != null)
             {
                 locations = locations.Where(l => l.RegionId == parameter.RegionId).ToList();
                 var locationIdsWithMatchingRegion = new HashSet<int>(locations.Select(l => l.Id));
-                events = events.Where(e => locationIdsWithMatchingRegion.Contains(e.locationId)).ToList();
+                events = events.Where(e => locationIdsWithMatchingRegion.Contains(e.LocationId)).ToList();
             }
 
             var jurisdictions = jurisdictionRepository.GetList();
@@ -98,7 +98,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
 
             foreach (var e in events)
             {
-                var location = locations.Where(l => l.Id == e.locationId).FirstOrDefault();
+                var location = locations.Where(l => l.Id == e.LocationId).FirstOrDefault();
                 string jurisdictionName = jurisdictionDict.ContainsKey(location.JurisdictionId ?? 0)
                                               ? jurisdictionDict[location.JurisdictionId ?? 0]
                                               : "NA";
@@ -108,8 +108,8 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
 
                 result.LogEvents.Add(
                     new WatchDogLogEventDTO(
-                        e.locationId,
-                        e.locationIdentifier,
+                        e.LocationId,
+                        e.LocationIdentifier,
                         e.Timestamp,
                         e.ComponentType,
                         e.ComponentId,

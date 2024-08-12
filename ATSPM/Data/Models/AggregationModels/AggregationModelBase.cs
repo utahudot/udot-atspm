@@ -22,6 +22,8 @@ using Utah.Udot.NetStandardToolkit.Common;
 
 #nullable disable
 
+#pragma warning disable 
+
 namespace Utah.Udot.Atspm.Data.Models
 {
     /// <summary>
@@ -182,6 +184,7 @@ namespace Utah.Udot.Atspm.Data.Models
         public int PedCallsRegisteredCount { get; set; }
         public int PedRequests { get; set; }
     }
+
     public partial class PhaseSplitMonitorAggregation : AggregationModelBase, ILocationPhaseLayer
     {
         //public string LocationIdentifier { get; set; }
@@ -198,7 +201,6 @@ namespace Utah.Udot.Atspm.Data.Models
     /// </summary>
     public partial class PhaseTerminationAggregation : AggregationModelBase, ILocationPhaseLayer
     {
-        /// <inheritdoc/>
         //public string LocationIdentifier { get; set; }
 
         /// <inheritdoc/>
@@ -210,7 +212,7 @@ namespace Utah.Udot.Atspm.Data.Models
         public int GapOuts { get; set; }
 
         /// <summary>
-        /// Sum of consecutive <see cref="5"/> events
+        /// Sum of consecutive <see cref="IndianaEnumerations.PhaseMaxOut"/> events
         /// </summary>
         public int ForceOffs { get; set; }
 

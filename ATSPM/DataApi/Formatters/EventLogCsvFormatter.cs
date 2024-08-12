@@ -41,7 +41,7 @@ namespace Utah.Udot.Atspm.DataApi.Formatters
 
             //    var csv = stuff.Select(x => $"{x.LocationIdentifier},{x.Timestamp.ToString(timestampFormat)}").ToList();
 
-            //    csv.Insert(0, "locationId,Timestamp");
+            //    csv.Insert(0, "LocationId,Timestamp");
 
             //    return context.HttpContext.Response.WriteAsync(string.Join("\n", csv), selectedEncoding);
             //}

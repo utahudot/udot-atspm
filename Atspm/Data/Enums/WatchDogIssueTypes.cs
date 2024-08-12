@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for Data - Utah.Udot.Atspm.Data.Enums/WatchDogIssueType.cs
+// for Data - Utah.Udot.Atspm.Data.Enums/WatchDogIssueTypes.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,23 +18,44 @@
 
 namespace Utah.Udot.Atspm.Data.Enums
 {
-    public enum WatchDogIssueType
+    /// <summary>
+    /// Watchdog issue types
+    /// </summary>
+    public enum WatchDogIssueTypes
     {
+        /// <summary>
+        /// Record count
+        /// </summary>
         RecordCount = 1,
+
+        /// <summary>
+        /// Low detector hits
+        /// </summary>
         LowDetectorHits = 2,
+
+        /// <summary>
+        /// Stuck ped
+        /// </summary>
         StuckPed = 3,
+
+        /// <summary>
+        /// Forceoff threshold
+        /// </summary>
         ForceOffThreshold = 4,
+
+        /// <summary>
+        /// Max out threshold
+        /// </summary>
         MaxOutThreshold = 5,
+
+        /// <summary>
+        /// Unconfigured approach
+        /// </summary>
         UnconfiguredApproach = 6,
+
+        /// <summary>
+        /// Unconfigured detector
+        /// </summary>
         UnconfiguredDetector = 7,
-
-    }
-
-    [Flags]
-    public enum WatchDogComponentType
-    {
-        Location,
-        Approach,
-        Detector
     }
 }

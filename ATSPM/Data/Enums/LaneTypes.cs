@@ -19,22 +19,56 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Utah.Udot.Atspm.Data.Enums
 {
+    /// <summary>
+    /// Lane types
+    /// </summary>
     public enum LaneTypes
     {
+        /// <summary>
+        /// Not applicable
+        /// </summary>
         [Display(Name = "Unknown", Order = 0)]
         NA = 0,
+
+        /// <summary>
+        /// Vehicle
+        /// </summary>
         [Display(Name = "Vehicle")]
         V = 1,
+
+        /// <summary>
+        /// Bike
+        /// </summary>
         [Display(Name = "Bike")]
         Bike = 2,
+
+        /// <summary>
+        /// Pedestrian
+        /// </summary>
         [Display(Name = "Pedestrian")]
         Ped = 3,
+
+        /// <summary>
+        /// Exit
+        /// </summary>
         [Display(Name = "Exit")]
         E = 4,
+
+        /// <summary>
+        /// Light rail transit
+        /// </summary>
         [Display(Name = "Light Rail Transit")]
         LRT = 5,
+
+        /// <summary>
+        /// Bus
+        /// </summary>
         [Display(Name = "Bus")]
         Bus = 6,
+
+        /// <summary>
+        /// High occupancy vechile
+        /// </summary>
         [Display(Name = "High Occupancy Vehicle")]
         HDV = 7,
     }

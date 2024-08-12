@@ -15,13 +15,27 @@
 // limitations under the License.
 #endregion
 
-
+#nullable disable
 namespace Utah.Udot.Atspm.Data.Models
 {
+    /// <summary>
+    /// Users for region
+    /// </summary>
     public class UserRegion
     {
+        /// <summary>
+        /// User id
+        /// </summary>
         public string UserId { get; set; }
+        
+        /// <summary>
+        /// Region id
+        /// </summary>
         public int RegionId { get; set; }
+        
+        /// <summary>
+        /// Region
+        /// </summary>
         public virtual Region Region { get; set; }
     }
 }

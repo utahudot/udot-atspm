@@ -121,9 +121,9 @@ namespace Utah.Udot.Atspm.WatchDog.Services
                                 location.Id,
                                 location.LocationIdentifier,
                                 options.ScanDate,
-                                WatchDogComponentType.Detector,
+                                WatchDogComponentTypes.Detector,
                                 detector.Id,
-                                WatchDogIssueType.LowDetectorHits,
+                                WatchDogIssueTypes.LowDetectorHits,
                                 $"CH: {channel} - Count: {currentVolume.ToString().ToLowerInvariant()}",
                                 null);
                             if (!errors.Contains(error))
@@ -149,9 +149,9 @@ namespace Utah.Udot.Atspm.WatchDog.Services
                                 Location.Id,
                                 Location.LocationIdentifier,
                                 options.ScanDate,
-                                WatchDogComponentType.Detector,
+                                WatchDogComponentTypes.Detector,
                                 -1,
-                                WatchDogIssueType.UnconfiguredDetector,
+                                WatchDogIssueTypes.UnconfiguredDetector,
                                 $"Unconfigured detector channel-{channel}",
                                 null);
                     if (!errors.Contains(error))
@@ -284,9 +284,9 @@ namespace Utah.Udot.Atspm.WatchDog.Services
                         Location.Id,
                         Location.LocationIdentifier,
                         options.ScanDate,
-                        WatchDogComponentType.Approach,
+                        WatchDogComponentTypes.Approach,
                         -1,
-                        WatchDogIssueType.UnconfiguredApproach,
+                        WatchDogIssueTypes.UnconfiguredApproach,
                         $"No corresponding approach configured",
                         phaseNumber
                     );
@@ -308,9 +308,9 @@ namespace Utah.Udot.Atspm.WatchDog.Services
                     approach.Location.Id,
                     approach.Location.LocationIdentifier,
                     options.ScanDate,
-                    WatchDogComponentType.Approach,
+                    WatchDogComponentTypes.Approach,
                     approach.Id,
-                    WatchDogIssueType.StuckPed,
+                    WatchDogIssueTypes.StuckPed,
                     phase.PedestrianEvents.Count + " Pedestrian Activations",
                     phase.PhaseNumber
                 );
@@ -332,9 +332,9 @@ namespace Utah.Udot.Atspm.WatchDog.Services
                     approach.Location.Id,
                     approach.Location.LocationIdentifier,
                     options.ScanDate,
-                    WatchDogComponentType.Approach,
+                    WatchDogComponentTypes.Approach,
                     approach.Id,
-                    WatchDogIssueType.ForceOffThreshold,
+                    WatchDogIssueTypes.ForceOffThreshold,
                     "Force Offs " + Math.Round(phase.PercentForceOffs * 100, 1) + "%",
                     phase.PhaseNumber
                 );
@@ -356,9 +356,9 @@ namespace Utah.Udot.Atspm.WatchDog.Services
                     approach.Location.Id,
                     approach.Location.LocationIdentifier,
                     options.ScanDate,
-                    WatchDogComponentType.Approach,
+                    WatchDogComponentTypes.Approach,
                     approach.Id,
-                    WatchDogIssueType.MaxOutThreshold,
+                    WatchDogIssueTypes.MaxOutThreshold,
                     "Max Outs " + Math.Round(phase.PercentMaxOuts * 100, 1) + "%",
                     phase.PhaseNumber
                 );
@@ -384,9 +384,9 @@ namespace Utah.Udot.Atspm.WatchDog.Services
                     Location.Id,
                     Location.LocationIdentifier,
                     options.ScanDate,
-                    WatchDogComponentType.Location,
+                    WatchDogComponentTypes.Location,
                     Location.Id,
-                    WatchDogIssueType.RecordCount,
+                    WatchDogIssueTypes.RecordCount,
                     "Missing Records - IP: " + string.Join(",", Location.Devices.Select(d => d.Ipaddress.ToString()).ToList()),
                     null
                 );

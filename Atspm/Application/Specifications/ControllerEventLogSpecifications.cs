@@ -39,15 +39,15 @@ namespace Utah.Udot.Atspm.Specifications
         }
     }
 
-    public class ControllerLogDateRangeSpecification : BaseSpecification<ControllerLogArchive>
-    {
-        public ControllerLogDateRangeSpecification(string locationId, DateTime startDate, DateTime endDate) : base()
-        {
-            Criteria = c => c.SignalIdentifier == locationId && c.ArchiveDate.Date >= startDate.Date && c.ArchiveDate.Date <= endDate.Date;
+    //public class ControllerLogDateRangeSpecification : BaseSpecification<ControllerLogArchive>
+    //{
+    //    public ControllerLogDateRangeSpecification(string LocationId, DateTime startDate, DateTime endDate) : base()
+    //    {
+    //        Criteria = c => c.SignalIdentifier == LocationId && c.ArchiveDate.Date >= startDate.Date && c.ArchiveDate.Date <= endDate.Date;
 
-            ApplyOrderBy(o => o.ArchiveDate);
-        }
-    }
+    //        ApplyOrderBy(o => o.ArchiveDate);
+    //    }
+    //}
 
     public class ControllerLogCodeAndParamSpecification : BaseSpecification<ControllerEventLog>
     {
