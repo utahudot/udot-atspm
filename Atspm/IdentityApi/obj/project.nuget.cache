@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "jc98JeV7Poq5sYiZZAjpqJfF2F2ZLl6fCXixk4XBxsSVIfta3JNBRC06LEwOS2bUWkI9OTOuwNLZw9ZsYHAtwQ==",
+  "dgSpecHash": "cwIJ4NwAfjJ5nSZJv6Ov8AxYLNFof8iy9efU6GwJy5dL/PDSJTTfcCrv0tVR4M+I3R25WeF99Rv7hj75/Cv68A==",
   "success": true,
-  "projectFilePath": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\Atspm\\IdentityApi\\IdentityApi.csproj",
+  "projectFilePath": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\IdentityApi\\IdentityApi.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\christianbaker\\.nuget\\packages\\auth0.aspnetcore.authentication\\1.4.1\\auth0.aspnetcore.authentication.1.4.1.nupkg.sha512",
     "C:\\Users\\christianbaker\\.nuget\\packages\\automapper\\12.0.0\\automapper.12.0.0.nupkg.sha512",

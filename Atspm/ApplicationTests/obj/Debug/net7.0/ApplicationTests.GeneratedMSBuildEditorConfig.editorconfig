@@ -16,4 +16,4 @@ build_property.EnforceExtendedAnalyzerRules =
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = ApplicationTests
-build_property.ProjectDir = C:\Users\christianbaker\source\repos\udot-atspm\Atspm\ApplicationTests\
+build_property.ProjectDir = C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationTests\
