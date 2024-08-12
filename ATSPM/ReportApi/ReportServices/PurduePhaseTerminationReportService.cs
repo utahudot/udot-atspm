@@ -16,8 +16,9 @@
 #endregion
 
 using Microsoft.IdentityModel.Tokens;
+using Utah.Udot.Atspm.Business.PhaseTermination;
 
-namespace ATSPM.ReportApi.ReportServices
+namespace Utah.Udot.Atspm.ReportApi.ReportServices
 {
     /// <summary>
     /// Purdue phase termination report service

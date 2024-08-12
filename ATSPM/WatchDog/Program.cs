@@ -20,9 +20,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Utah.Udot.Atspm.Data;
-using WatchDog.Services;
+using Utah.Udot.Atspm.Infrastructure.Extensions;
+using Utah.Udot.Atspm.Infrastructure.Repositories;
+using Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories;
+using Utah.Udot.Atspm.Infrastructure.Repositories.EventLogRepositories;
+using Utah.Udot.Atspm.WatchDog.Services;
 
-namespace WatchDog
+namespace Utah.Udot.Atspm.WatchDog
 {
     class Program
     {

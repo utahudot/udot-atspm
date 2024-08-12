@@ -20,10 +20,9 @@ using Microsoft.IdentityModel.Tokens;
 using System.Net.Mail;
 using Utah.Udot.Atspm.Data;
 using Utah.Udot.Atspm.Data.Models;
-using Utah.Udot.Atspm.Data.Models;
-using WatchDog.Models;
+using Utah.Udot.Atspm.WatchDog.Models;
 
-namespace WatchDog.Services
+namespace Utah.Udot.Atspm.WatchDog.Services
 {
     public class WatchdogEmailService
     {
@@ -140,7 +139,7 @@ namespace WatchDog.Services
             List<WatchDogLogEvent> eventsContainer,
             List<Location> Locations,
             List<ApplicationUser> users,
-            List<Utah.Udot.Atspm.Data.Models.Region> regions,
+            List<Region> regions,
             List<UserRegion> userRegions,
             List<WatchDogLogEvent> logsFromPreviousDay)
         {
@@ -320,13 +319,13 @@ namespace WatchDog.Services
             out List<WatchDogLogEvent> unconfiguredDetectorErrorsLogs
             )
         {
-            missingErrorsLogs = eventsContainer.Where(e => e.IssueType == Utah.Udot.Atspm.Data.Enums.WatchDogIssueType.RecordCount).ToList();
-            forceErrorsLogs = eventsContainer.Where(e => e.IssueType == Utah.Udot.Atspm.Data.Enums.WatchDogIssueType.ForceOffThreshold).ToList();
-            maxErrorsLogs = eventsContainer.Where(e => e.IssueType == Utah.Udot.Atspm.Data.Enums.WatchDogIssueType.MaxOutThreshold).ToList();
-            countErrorsLogs = eventsContainer.Where(e => e.IssueType == Utah.Udot.Atspm.Data.Enums.WatchDogIssueType.LowDetectorHits).ToList();
-            stuckpedErrorsLogs = eventsContainer.Where(e => e.IssueType == Utah.Udot.Atspm.Data.Enums.WatchDogIssueType.StuckPed).ToList();
-            configurationErrorsLogs = eventsContainer.Where(e => e.IssueType == Utah.Udot.Atspm.Data.Enums.WatchDogIssueType.UnconfiguredApproach).ToList();
-            unconfiguredDetectorErrorsLogs = eventsContainer.Where(e => e.IssueType == Utah.Udot.Atspm.Data.Enums.WatchDogIssueType.UnconfiguredDetector).ToList();
+            missingErrorsLogs = eventsContainer.Where(e => e.IssueType == Data.Enums.WatchDogIssueType.RecordCount).ToList();
+            forceErrorsLogs = eventsContainer.Where(e => e.IssueType == Data.Enums.WatchDogIssueType.ForceOffThreshold).ToList();
+            maxErrorsLogs = eventsContainer.Where(e => e.IssueType == Data.Enums.WatchDogIssueType.MaxOutThreshold).ToList();
+            countErrorsLogs = eventsContainer.Where(e => e.IssueType == Data.Enums.WatchDogIssueType.LowDetectorHits).ToList();
+            stuckpedErrorsLogs = eventsContainer.Where(e => e.IssueType == Data.Enums.WatchDogIssueType.StuckPed).ToList();
+            configurationErrorsLogs = eventsContainer.Where(e => e.IssueType == Data.Enums.WatchDogIssueType.UnconfiguredApproach).ToList();
+            unconfiguredDetectorErrorsLogs = eventsContainer.Where(e => e.IssueType == Data.Enums.WatchDogIssueType.UnconfiguredDetector).ToList();
         }
 
 
@@ -339,7 +338,7 @@ namespace WatchDog.Services
             if (Locations is null || issues is null || options is null || logsFromPreviousDay is null)
             {
                 logger.LogError("Null parameter passed to SortAndAddToMessage");
-                return String.Empty;
+                return string.Empty;
             }
             var sortedLocations = Locations.OrderBy(x => x.LocationIdentifier).ToList();
             var errorMessage = "";
@@ -356,7 +355,7 @@ namespace WatchDog.Services
                         {
                             errorMessage += $"<td>{error.Phase}</td>";
                         }
-                        if (error.ComponentType == Utah.Udot.Atspm.Data.Enums.WatchDogComponentType.Detector)
+                        if (error.ComponentType == Data.Enums.WatchDogComponentType.Detector)
                         {
                             errorMessage += $"<td>{error.ComponentId}</td>";
                         }

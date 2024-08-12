@@ -15,9 +15,10 @@
 // limitations under the License.
 #endregion
 
-using Utah.Udot.Atspm.Data.Models;
+using Utah.Udot.Atspm.Business.LeftTurnGapReport;
+using Utah.Udot.Atspm.Data.Enums;
 
-namespace ATSPM.ReportApi.ReportServices
+namespace Utah.Udot.Atspm.ReportApi.ReportServices
 {
     /// <summary>
     /// Left turn gap analysis report service
@@ -57,7 +58,7 @@ namespace ATSPM.ReportApi.ReportServices
             var endTime = new TimeSpan(options.EndHour, options.EndMinute, 0);
             var opposingPhase = leftTurnReportService.GetOpposingPhase(approach);
             var leftTurnAggregations = phaseLeftTurnGapAggregationRepository.GetAggregationsBetweenDates(options.LocationIdentifier, options.Start, options.End).ToList();
-            var leftTurnDetectors = approach.Detectors.Where(d => d.MovementType == Data.Enums.MovementTypes.L && d.DetectionTypes.Select(dt => dt.Id).Contains(Data.Enums.DetectionTypes.LLC));
+            var leftTurnDetectors = approach.Detectors.Where(d => d.MovementType == MovementTypes.L && d.DetectionTypes.Select(dt => dt.Id).Contains(DetectionTypes.LLC));
             int totalActivations = GetLeftTurnActivations(options, startTime, endTime, leftTurnDetectors);
             GapDurationResult gapDurationResult = leftTurnGapDurationService.GetPercentOfGapDuration(approach, options.Start, options.End,
             startTime, endTime, options.DaysOfWeek, location, totalActivations, leftTurnAggregations, opposingPhase);
