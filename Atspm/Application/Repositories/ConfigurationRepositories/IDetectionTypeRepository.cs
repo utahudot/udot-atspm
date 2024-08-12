@@ -24,11 +24,6 @@ namespace Utah.Udot.Atspm.Repositories.ConfigurationRepositories
     /// </summary>
     public interface IDetectionTypeRepository : IAsyncRepository<DetectionType>
     {
-        /// <summary>
-        /// don't know what this does or if it's needed
-        /// </summary>
-        /// <returns></returns>
-        IReadOnlyList<DetectionType> GetAllDetectionTypesNoBasic();
 
         #region Obsolete
 

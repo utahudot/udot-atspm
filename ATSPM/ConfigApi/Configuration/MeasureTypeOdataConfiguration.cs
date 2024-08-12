@@ -28,7 +28,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Configuration
     public class MeasureTypeOdataConfiguration : IModelConfiguration
     {
         ///<inheritdoc/>
-        public void Apply(ODataModelBuilder builder, ApiVersion apiVersion, string routePrefix)
+        public void Apply(ODataModelBuilder builder, ApiVersion apiVersion, string? routePrefix)
         {
             var model = builder.EntitySet<MeasureType>("MeasureType").EntityType;
             model.Page(default, default);

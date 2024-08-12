@@ -28,7 +28,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Configuration
     public class RouteDistanceOdataConfiguration : IModelConfiguration
     {
         ///<inheritdoc/>
-        public void Apply(ODataModelBuilder builder, ApiVersion apiVersion, string routePrefix)
+        public void Apply(ODataModelBuilder builder, ApiVersion apiVersion, string? routePrefix)
         {
             var model = builder.EntitySet<RouteDistance>("RouteDistance").EntityType;
             model.Page(default, default);

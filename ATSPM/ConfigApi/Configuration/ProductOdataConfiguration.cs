@@ -28,7 +28,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Configuration
     public class ProductOdataConfiguration : IModelConfiguration
     {
         ///<inheritdoc/>
-        public void Apply(ODataModelBuilder builder, ApiVersion apiVersion, string routePrefix)
+        public void Apply(ODataModelBuilder builder, ApiVersion apiVersion, string? routePrefix)
         {
             var model = builder.EntitySet<Product>("Product").EntityType;
             model.Page(default, default);

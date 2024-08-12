@@ -29,7 +29,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Configuration
     public class LocationOdataConfiguration : IModelConfiguration
     {
         ///<inheritdoc/>
-        public void Apply(ODataModelBuilder builder, ApiVersion apiVersion, string routePrefix)
+        public void Apply(ODataModelBuilder builder, ApiVersion apiVersion, string? routePrefix)
         {
             var model = builder.EntitySet<Location>("Location").EntityType;
             model.Page(default, default);
