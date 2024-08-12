@@ -16,8 +16,6 @@
 #endregion
 
 using Utah.Udot.Atspm.Data.Enums;
-using Utah.Udot.Atspm.Data.Models;
-using Utah.Udot.Atspm.Data.Relationships;
 
 namespace Utah.Udot.Atspm.ConfigApi.Models
 {

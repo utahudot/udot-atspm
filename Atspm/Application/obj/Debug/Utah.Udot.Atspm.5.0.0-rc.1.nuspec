@@ -26,8 +26,8 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="C:\Users\christianbaker\source\repos\udot-atspm\Atspm\Application\bin\Debug\net7.0\Utah.Udot.Atspm.dll" target="lib\net7.0\Utah.Udot.Atspm.dll" />
-    <file src="C:\Users\christianbaker\source\repos\udot-atspm\Atspm\Application\bin\Debug\net7.0\Utah.Udot.Atspm.xml" target="lib\net7.0\Utah.Udot.Atspm.xml" />
+    <file src="C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\Application\bin\Debug\net7.0\Utah.Udot.Atspm.dll" target="lib\net7.0\Utah.Udot.Atspm.dll" />
+    <file src="C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\Application\bin\Debug\net7.0\Utah.Udot.Atspm.xml" target="lib\net7.0\Utah.Udot.Atspm.xml" />
     <file src="C:\Users\christianbaker\source\repos\udot-atspm\LICENSE" target="\LICENSE" />
     <file src="C:\Users\christianbaker\source\repos\udot-atspm\README.md" target="\README.md" />
   </files>

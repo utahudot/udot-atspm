@@ -15,8 +15,6 @@
 // limitations under the License.
 #endregion
 
-using Utah.Udot.NetStandardToolkit.Extensions;
-using Utah.Udot.NetStandardToolkit.Services;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Deltas;
@@ -25,6 +23,8 @@ using Microsoft.AspNetCore.OData.Results;
 using Microsoft.AspNetCore.OData.Routing.Controllers;
 using Microsoft.EntityFrameworkCore;
 using Utah.Udot.Atspm.Data.Models;
+using Utah.Udot.NetStandardToolkit.Extensions;
+using Utah.Udot.NetStandardToolkit.Services;
 
 namespace Utah.Udot.Atspm.ConfigApi.Controllers
 {
