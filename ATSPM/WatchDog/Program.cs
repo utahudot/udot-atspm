@@ -20,6 +20,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Utah.Udot.Atspm.Data;
+using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Infrastructure.Extensions;
 using Utah.Udot.Atspm.Infrastructure.Repositories;
 using Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories;

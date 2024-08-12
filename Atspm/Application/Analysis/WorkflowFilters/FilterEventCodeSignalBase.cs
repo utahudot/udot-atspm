@@ -16,6 +16,7 @@
 #endregion
 
 using System.Threading.Tasks.Dataflow;
+using Utah.Udot.Atspm.Data.Models.EventLogModels;
 using Utah.Udot.Atspm.Specifications;
 using Utah.Udot.NetStandardToolkit.Extensions;
 
@@ -24,7 +25,7 @@ namespace Utah.Udot.Atspm.Analysis.WorkflowFilters
     /// <summary>
     /// Base class for filter controller event log data used in process workflows
     /// </summary>
-    public abstract class FilterEventCodeLocationBase : ProcessStepBase<Tuple<Location, IEnumerable<ControllerEventLog>>, Tuple<Location, IEnumerable<ControllerEventLog>>>
+    public abstract class FilterEventCodeLocationBase : ProcessStepBase<Tuple<Location, IEnumerable<IndianaEvent>>, Tuple<Location, IEnumerable<IndianaEvent>>>
     {
         /// <summary>
         /// List of filtered event codes
@@ -34,10 +35,10 @@ namespace Utah.Udot.Atspm.Analysis.WorkflowFilters
         /// <inheritdoc/>
         public FilterEventCodeLocationBase(DataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
         {
-            workflowProcess = new BroadcastBlock<Tuple<Location, IEnumerable<ControllerEventLog>>>(f =>
+            workflowProcess = new BroadcastBlock<Tuple<Location, IEnumerable<IndianaEvent>>>(f =>
             {
                 return Tuple.Create(f.Item1, f.Item2
-                     .FromSpecification(new ControllerLogLocationFilterSpecification(f.Item1))
+                     .FromSpecification(new IndianaLogLocationFilterSpecification(f.Item1))
                      .Where(w => filteredList.Contains(w.EventCode)));
             }, options);
             workflowProcess.Completion.ContinueWith(t => Console.WriteLine($"!!!Task {options.NameFormat} is complete!!!"));

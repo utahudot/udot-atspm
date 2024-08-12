@@ -19,16 +19,38 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Utah.Udot.Atspm.Data.Enums
 {
+    /// <summary>
+    /// Metric filter types
+    /// </summary>
     public enum MetricFilterTypes
     {
+        /// <summary>
+        /// Unknown
+        /// </summary>
         [Display(Name = "Unknown", Order = 0)]
         Unknown,
+
+        /// <summary>
+        /// Location id
+        /// </summary>
         [Display(Name = "Location Id", Order = 1)]
         locationId,
+
+        /// <summary>
+        /// Primary name
+        /// </summary>
         [Display(Name = "Primary Name", Order = 2)]
         PrimaryName,
+
+        /// <summary>
+        /// Secondary name
+        /// </summary>
         [Display(Name = "Secondary Name", Order = 3)]
         SecondaryName,
+
+        /// <summary>
+        /// Agency
+        /// </summary>
         [Display(Name = "Agency", Order = 4)]
         Agency
     }

@@ -17,7 +17,6 @@
 
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
-using Utah.Udot.Atspm.Data;
 using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.WatchDog.Models;
 

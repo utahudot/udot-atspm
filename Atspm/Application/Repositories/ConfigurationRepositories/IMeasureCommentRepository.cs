@@ -26,7 +26,7 @@ namespace Utah.Udot.Atspm.Repositories.ConfigurationRepositories
     {
         #region ExtensionMethods
 
-        //MetricComment GetLatestCommentForReport(string locationId, int metricId);
+        //MetricComment GetLatestCommentForReport(string LocationId, int metricId);
 
         #endregion
 

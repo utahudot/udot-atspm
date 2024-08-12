@@ -110,7 +110,7 @@
 //        }
 
 //        private Dictionary<TimeSpan, double> GetAveragePedCycles(
-//            string locationId,
+//            string LocationId,
 //            int phase,
 //            DateTime startDate,
 //            DateTime endDate,
@@ -123,11 +123,11 @@
 //            for (var tempDate = startDate.Date; tempDate <= endDate; tempDate = tempDate.AddDays(1))
 //            {
 //                amAggregations.Add(phasePedAggregations.Where(p =>
-//                p.locationId == locationId
+//                p.LocationId == LocationId
 //                && p.PhaseNumber == phase
 //                && p.BinStartTime >= tempDate.Date.Add(amPeak)
 //                && p.BinStartTime < tempDate.Date.Add(amPeak).AddHours(1)).Sum(a => a.PedCycles));
-//                //amAggregations.Add(_phasePedAggregationRepository.GetPhasePedsAggregationBylocationIdPhaseNumberAndDateRange(locationId, phase, tempDate.Date.Add(amPeak), tempDate.Date.Add(amPeak).AddHours(1)).Sum(a => a.PedCycles));
+//                //amAggregations.Add(_phasePedAggregationRepository.GetPhasePedsAggregationBylocationIdPhaseNumberAndDateRange(LocationId, phase, tempDate.Date.Add(amPeak), tempDate.Date.Add(amPeak).AddHours(1)).Sum(a => a.PedCycles));
 //            }
 //            if (amAggregations.Count > 0)
 //                averagePedCycles.Add(amPeak, amAggregations.Average(a => a));
@@ -139,11 +139,11 @@
 //            {
 
 //                amAggregations.Add(phasePedAggregations.Where(p =>
-//                p.locationId == locationId
+//                p.LocationId == LocationId
 //                && p.PhaseNumber == phase
 //                && p.BinStartTime >= tempDate.Date.Add(pmPeak)
 //                && p.BinStartTime < tempDate.Date.Add(pmPeak).AddHours(1)).Sum(a => a.PedCycles));
-//                //pmAggregations.Add(_phasePedAggregationRepository.GetPhasePedsAggregationBylocationIdPhaseNumberAndDateRange(locationId, phase, tempDate.Date.Add(pmPeak), tempDate.Date.Add(pmPeak).AddHours(1)).Sum(a => a.PedCycles));
+//                //pmAggregations.Add(_phasePedAggregationRepository.GetPhasePedsAggregationBylocationIdPhaseNumberAndDateRange(LocationId, phase, tempDate.Date.Add(pmPeak), tempDate.Date.Add(pmPeak).AddHours(1)).Sum(a => a.PedCycles));
 //            }
 //            if (pmAggregations.Count > 0)
 //                averagePedCycles.Add(pmPeak, pmAggregations.Average(a => a));
@@ -153,7 +153,7 @@
 //        }
 
 //        private Dictionary<TimeSpan, double> GetAverageCycles(
-//            string locationId,
+//            string LocationId,
 //            int phase,
 //            DateTime startDate,
 //            DateTime endDate,
@@ -166,16 +166,16 @@
 //            var amPeak = peaks.Min(p => p.Key);
 //            for (var tempDate = startDate.Date; tempDate <= endDate; tempDate = tempDate.AddDays(1))
 //            {
-//                amAggregations.AddRange(approachCycleAggregations.Where(a => a.LocationIdentifier == locationId && a.PhaseNumber == phase && a.BinStartTime >= tempDate.Date.Add(amPeak) && a.BinStartTime < tempDate.Date.Add(amPeak).AddHours(1)));
-//                //amAggregations.AddRange(_approachCycleAggregationRepository.GetApproachCyclesAggregationBylocationIdPhaseAndDateRange(locationId, phase, tempDate.Date.Add(amPeak), tempDate.Date.Add(amPeak).AddHours(1)));
+//                amAggregations.AddRange(approachCycleAggregations.Where(a => a.LocationIdentifier == LocationId && a.PhaseNumber == phase && a.BinStartTime >= tempDate.Date.Add(amPeak) && a.BinStartTime < tempDate.Date.Add(amPeak).AddHours(1)));
+//                //amAggregations.AddRange(_approachCycleAggregationRepository.GetApproachCyclesAggregationBylocationIdPhaseAndDateRange(LocationId, phase, tempDate.Date.Add(amPeak), tempDate.Date.Add(amPeak).AddHours(1)));
 //            }
 //            averageCycles.Add(amPeak, amAggregations.Average(a => a.TotalRedToRedCycles));
 //            var pmPeak = peaks.Max(p => p.Key);
 //            List<PhaseCycleAggregation> pmAggregations = new List<PhaseCycleAggregation>();
 //            for (var tempDate = startDate.Date; tempDate <= endDate; tempDate = tempDate.AddDays(1))
 //            {
-//                amAggregations.AddRange(approachCycleAggregations.Where(a => a.LocationIdentifier == locationId && a.PhaseNumber == phase && a.BinStartTime >= tempDate.Date.Add(pmPeak) && a.BinStartTime < tempDate.Date.Add(pmPeak).AddHours(1)));
-//                //pmAggregations.AddRange(_approachCycleAggregationRepository.GetApproachCyclesAggregationBylocationIdPhaseAndDateRange(locationId, phase, tempDate.Date.Add(pmPeak), tempDate.Date.Add(pmPeak).AddHours(1)));
+//                amAggregations.AddRange(approachCycleAggregations.Where(a => a.LocationIdentifier == LocationId && a.PhaseNumber == phase && a.BinStartTime >= tempDate.Date.Add(pmPeak) && a.BinStartTime < tempDate.Date.Add(pmPeak).AddHours(1)));
+//                //pmAggregations.AddRange(_approachCycleAggregationRepository.GetApproachCyclesAggregationBylocationIdPhaseAndDateRange(LocationId, phase, tempDate.Date.Add(pmPeak), tempDate.Date.Add(pmPeak).AddHours(1)));
 //            }
 //            averageCycles.Add(pmPeak, pmAggregations.Average(a => a.TotalRedToRedCycles));
 //            return averageCycles;
@@ -229,7 +229,7 @@
 //        }
 
 //        private Dictionary<TimeSpan, double> GetMaxCycles(
-//            string locationId,
+//            string LocationId,
 //            int phaseNumber,
 //            DateTime startDate,
 //            DateTime endDate,
@@ -243,11 +243,11 @@
 //            for (var tempDate = startDate; tempDate <= endDate; tempDate = tempDate.AddDays(1))
 //            {
 //                var result = cycleAggregations.Where(c =>
-//                c.LocationIdentifier == locationId
+//                c.LocationIdentifier == LocationId
 //                && c.PhaseNumber == phaseNumber
 //                && c.BinStartTime >= tempDate.Add(peaks.First().Key)
 //                && c.BinStartTime < tempDate.Add(peaks.First().Key).AddHours(1)).Sum(p => p.TotalGreenToGreenCycles);
-//                //var result = _approachCycleAggregationRepository.GetCycleCountBylocationIdAndDateRange(locationId, phaseNumber, tempDate.Add(peaks.First().Key), tempDate.Add(peaks.First().Key).AddHours(1));
+//                //var result = _approachCycleAggregationRepository.GetCycleCountBylocationIdAndDateRange(LocationId, phaseNumber, tempDate.Add(peaks.First().Key), tempDate.Add(peaks.First().Key).AddHours(1));
 //                if (result > amMaxCycle)
 //                    amMaxCycle = result;
 //            }
@@ -256,11 +256,11 @@
 //            for (var tempDate = startDate; tempDate <= endDate; tempDate = tempDate.AddDays(1))
 //            {
 //                var result = cycleAggregations.Where(c =>
-//                c.LocationIdentifier == locationId
+//                c.LocationIdentifier == LocationId
 //                && c.PhaseNumber == phaseNumber
 //                && c.BinStartTime >= tempDate.Add(peaks.Last().Key)
 //                && c.BinStartTime < tempDate.Add(peaks.Last().Key).AddHours(1)).Sum(p => p.TotalGreenToGreenCycles);
-//                //var result = _approachCycleAggregationRepository.GetCycleCountBylocationIdAndDateRange(locationId, phaseNumber, tempDate.Add(peaks.Last().Key), tempDate.Add(peaks.Last().Key).AddHours(1));
+//                //var result = _approachCycleAggregationRepository.GetCycleCountBylocationIdAndDateRange(LocationId, phaseNumber, tempDate.Add(peaks.Last().Key), tempDate.Add(peaks.Last().Key).AddHours(1));
 //                if (result > pmMaxCycle)
 //                    pmMaxCycle = result;
 //            }
@@ -302,7 +302,7 @@
 //        }
 
 //        private Dictionary<TimeSpan, double> GetAverageGapOutsForPhase(
-//            string locationId,
+//            string LocationId,
 //            int phaseNumber,
 //            DateTime startDate,
 //            DateTime endDate,
@@ -319,7 +319,7 @@
 //                    p.BinStartTime >= tempDate.Date.Add(amPeak)
 //                    && p.BinStartTime < tempDate.Date.Add(amPeak).AddHours(1))
 //                    .Sum(g => g.GapOuts));
-//                //amGapOutCount.Add(_phaseTerminationAggregationRepository.GetPhaseTerminationsAggregationBylocationIdPhaseNumberAndDateRange(locationId, phaseNumber, tempDate.Date.Add(amPeak), tempDate.Date.Add(amPeak).AddHours(1)).Sum(g => g.GapOuts));
+//                //amGapOutCount.Add(_phaseTerminationAggregationRepository.GetPhaseTerminationsAggregationBylocationIdPhaseNumberAndDateRange(LocationId, phaseNumber, tempDate.Date.Add(amPeak), tempDate.Date.Add(amPeak).AddHours(1)).Sum(g => g.GapOuts));
 //            }
 //            LoadGapOutAverages(averages, amPeak, amGapOutCount);
 
@@ -331,7 +331,7 @@
 //                    p.BinStartTime >= tempDate.Date.Add(pmPeak)
 //                    && p.BinStartTime < tempDate.Date.Add(pmPeak).AddHours(1))
 //                    .Sum(g => g.GapOuts));
-//                //pmGapOutCount.Add(_phaseTerminationAggregationRepository.GetPhaseTerminationsAggregationBylocationIdPhaseNumberAndDateRange(locationId, phaseNumber, tempDate.Date.Add(pmPeak), tempDate.Date.Add(pmPeak).AddHours(1)).Sum(g => g.GapOuts));
+//                //pmGapOutCount.Add(_phaseTerminationAggregationRepository.GetPhaseTerminationsAggregationBylocationIdPhaseNumberAndDateRange(LocationId, phaseNumber, tempDate.Date.Add(pmPeak), tempDate.Date.Add(pmPeak).AddHours(1)).Sum(g => g.GapOuts));
 //            }
 //            LoadGapOutAverages(averages, pmPeak, pmGapOutCount);
 

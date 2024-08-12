@@ -81,9 +81,9 @@
 
 //            var repository = GetRepository<T>(aggregationType);
 
-//            foreach (var locationIdentifier in locationIdentifiers)
+//            foreach (var LocationIdentifier in locationIdentifiers)
 //            {
-//                var data = repository.GetAggregationsBetweenDates(locationIdentifier, start, end);
+//                var data = repository.GetAggregationsBetweenDates(LocationIdentifier, start, end);
 //                allData.AddRange(data);
 //            }
 //            var filteredData = allData.Where(filterFunc);
