@@ -17,8 +17,10 @@
 
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
+using Utah.Udot.Atspm.Business.LinkPivot;
+using Utah.Udot.Atspm.ReportApi.ReportServices;
 
-namespace ATSPM.ReportApi.Controllers
+namespace Utah.Udot.Atspm.ReportApi.Controllers
 {
     /// <summary>
     /// Left turn gap analysis report controller

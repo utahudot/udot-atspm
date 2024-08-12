@@ -16,7 +16,9 @@
 #endregion
 
 
-namespace ATSPM.ReportApi.ReportServices
+using Utah.Udot.Atspm.Business.LeftTurnGapReport;
+
+namespace Utah.Udot.Atspm.ReportApi.ReportServices
 {
     /// <summary>
     /// Left turn gap analysis report service
@@ -37,7 +39,7 @@ namespace ATSPM.ReportApi.ReportServices
         {
             this.detectorEventCountAggregationRepository = detectorEventCountAggregationRepository;
             this.locationRepository = locationRepository;
-            this.leftTurnReportService = leftTurnReportPreCheckService;
+            leftTurnReportService = leftTurnReportPreCheckService;
             this.logger = logger;
         }
 

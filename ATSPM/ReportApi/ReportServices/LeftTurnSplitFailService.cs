@@ -15,9 +15,9 @@
 // limitations under the License.
 #endregion
 
-using Utah.Udot.Atspm.Data.Models;
+using Utah.Udot.Atspm.Business.LeftTurnGapReport;
 
-namespace ATSPM.ReportApi.ReportServices
+namespace Utah.Udot.Atspm.ReportApi.ReportServices
 {
     /// <summary>
     /// Left turn gap analysis report service

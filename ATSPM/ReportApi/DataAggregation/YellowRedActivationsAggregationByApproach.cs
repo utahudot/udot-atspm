@@ -17,7 +17,7 @@
 
 using System.Collections.Concurrent;
 
-namespace ATSPM.ReportApi.DataAggregation
+namespace Utah.Udot.Atspm.ReportApi.DataAggregation
 {
     public class YellowRedActivationsAggregationByApproach : AggregationByApproach
     {
