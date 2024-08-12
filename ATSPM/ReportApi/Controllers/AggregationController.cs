@@ -17,9 +17,9 @@
 
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
-using Utah.Udot.Atspm.Data.Models;
+using Utah.Udot.Atspm.ReportApi.DataAggregation;
 
-namespace ATSPM.ReportApi.Controllers
+namespace Utah.Udot.Atspm.ReportApi.Controllers
 {
     /// <summary>
     /// Approach delay report controller.

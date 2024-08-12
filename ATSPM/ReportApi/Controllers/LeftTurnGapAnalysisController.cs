@@ -17,9 +17,9 @@
 
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
-using Utah.Udot.Atspm.Data.Models;
+using Utah.Udot.Atspm.Business.LeftTurnGapAnalysis;
 
-namespace ATSPM.ReportApi.Controllers
+namespace Utah.Udot.Atspm.ReportApi.Controllers
 {
     /// <summary>
     /// Left turn gap analysis report controller

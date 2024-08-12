@@ -18,9 +18,9 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using WatchDog.Models;
+using Utah.Udot.Atspm.WatchDog.Models;
 
-namespace WatchDog.Services
+namespace Utah.Udot.Atspm.WatchDog.Services
 {
     public class ScanHostedService : IHostedService
     {

@@ -15,7 +15,8 @@
 // limitations under the License.
 #endregion
 #nullable enable
-namespace WatchDog.Models
+
+namespace Utah.Udot.Atspm.WatchDog.Models
 {
     public class EmailOptions
     {

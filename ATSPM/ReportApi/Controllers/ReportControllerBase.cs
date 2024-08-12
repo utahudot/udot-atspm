@@ -18,7 +18,7 @@
 using AutoFixture;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ATSPM.ReportApi.Controllers
+namespace Utah.Udot.Atspm.ReportApi.Controllers
 {
     /// <summary>
     /// Report controller base
