@@ -17,10 +17,11 @@
 
 using System.Threading.Tasks.Dataflow;
 using Utah.Udot.Atspm.Data.Enums;
+using Utah.Udot.Atspm.Data.Models.EventLogModels;
 
 namespace Utah.Udot.Atspm.Analysis.WorkflowSteps
 {
-    public class IdentifyTerminationTypesAndTimes : TransformProcessStepBase<Tuple<Approach, int, IEnumerable<ControllerEventLog>>, Tuple<Approach, int, PhaseTerminations>>
+    public class IdentifyTerminationTypesAndTimes : TransformProcessStepBase<Tuple<Approach, int, IEnumerable<IndianaEvent>>, Tuple<Approach, int, PhaseTerminations>>
     {
         private readonly int _consecutiveCounts;
 
@@ -29,7 +30,7 @@ namespace Utah.Udot.Atspm.Analysis.WorkflowSteps
             _consecutiveCounts = consecutiveCounts;
         }
 
-        protected override Task<Tuple<Approach, int, PhaseTerminations>> Process(Tuple<Approach, int, IEnumerable<ControllerEventLog>> input, CancellationToken cancelToken = default)
+        protected override Task<Tuple<Approach, int, PhaseTerminations>> Process(Tuple<Approach, int, IEnumerable<IndianaEvent>> input, CancellationToken cancelToken = default)
         {
             var filters = new List<int>()
             {

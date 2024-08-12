@@ -16,6 +16,7 @@
 #endregion
 
 using System.Threading.Tasks.Dataflow;
+using Utah.Udot.Atspm.Data.Models.EventLogModels;
 using Utah.Udot.Atspm.Specifications;
 using Utah.Udot.NetStandardToolkit.Extensions;
 
@@ -26,18 +27,18 @@ namespace Utah.Udot.Atspm.Analysis.WorkflowSteps
     /// and returns separate Tuples of <see cref="Approach"/>/<see cref="ControllerEventLog"/> pairs
     /// sorted by <see cref="ControllerEventLog.Timestamp"/>.
     /// </summary>
-    public class GroupLocationsByApproaches : TransformManyProcessStepBase<Tuple<Location, IEnumerable<ControllerEventLog>>, Tuple<Approach, IEnumerable<ControllerEventLog>>>
+    public class GroupLocationsByApproaches : TransformManyProcessStepBase<Tuple<Location, IEnumerable<IndianaEvent>>, Tuple<Approach, IEnumerable<IndianaEvent>>>
     {
         /// <inheritdoc/>
         public GroupLocationsByApproaches(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
 
         /// <inheritdoc/>
-        protected override Task<IEnumerable<Tuple<Approach, IEnumerable<ControllerEventLog>>>> Process(Tuple<Location, IEnumerable<ControllerEventLog>> input, CancellationToken cancelToken = default)
+        protected override Task<IEnumerable<Tuple<Approach, IEnumerable<IndianaEvent>>>> Process(Tuple<Location, IEnumerable<IndianaEvent>> input, CancellationToken cancelToken = default)
         {
             var Location = input.Item1;
             var logs = input.Item2;
 
-            var result = Location.Approaches.Select(s => Tuple.Create(s, logs.FromSpecification(new ControllerLogLocationFilterSpecification(Location))));
+            var result = Location.Approaches.Select(s => Tuple.Create(s, logs.FromSpecification(new IndianaLogLocationFilterSpecification(Location))));
 
             return Task.FromResult(result);
         }

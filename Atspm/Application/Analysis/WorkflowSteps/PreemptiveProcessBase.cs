@@ -17,17 +17,18 @@
 
 using System.Threading.Tasks.Dataflow;
 using Utah.Udot.Atspm.Analysis.PreemptionDetails;
+using Utah.Udot.Atspm.Data.Models.EventLogModels;
 
 namespace Utah.Udot.Atspm.Analysis.WorkflowSteps
 {
-    public abstract class PreemptiveProcessBase<T> : TransformManyProcessStepBase<Tuple<Location, IEnumerable<ControllerEventLog>, int>, T> where T : PreempDetailValueBase, new()
+    public abstract class PreemptiveProcessBase<T> : TransformManyProcessStepBase<Tuple<Location, IEnumerable<IndianaEvent>, int>, T> where T : PreempDetailValueBase, new()
     {
         protected short first;
         protected short second;
 
         public PreemptiveProcessBase(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
 
-        protected override Task<IEnumerable<T>> Process(Tuple<Location, IEnumerable<ControllerEventLog>, int> input, CancellationToken cancelToken = default)
+        protected override Task<IEnumerable<T>> Process(Tuple<Location, IEnumerable<IndianaEvent>, int> input, CancellationToken cancelToken = default)
         {
             //var result = Tuple.Create(input.Item1, input.Item2
             //    .Where(w => w.LocationIdentifier == input.Item1.LocationIdentifier)
@@ -43,7 +44,7 @@ namespace Utah.Udot.Atspm.Analysis.WorkflowSteps
             //    }), input.Item3);
 
             var result = input.Item2
-                .Where(w => w.SignalIdentifier == input.Item1.LocationIdentifier)
+                .Where(w => w.LocationIdentifier == input.Item1.LocationIdentifier)
                 .Where(w => w.EventParam == input.Item3)
                 .TimeSpanFromConsecutiveCodes(first, second)
                 .Select(s => new T()

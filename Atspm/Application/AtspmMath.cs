@@ -16,6 +16,7 @@
 #endregion
 
 using Utah.Udot.Atspm.Data.Enums;
+using Utah.Udot.Atspm.Data.Models.EventLogModels;
 
 namespace Utah.Udot.Atspm
 {
@@ -83,11 +84,11 @@ namespace Utah.Udot.Atspm
         /// </item>
         /// </list>
         /// </summary>
-        /// <param name="items"><see cref="ControllerEventLog"/> list the <see cref="IndianaEnumerations"/> are sorted</param>
+        /// <param name="items"><see cref="IndianaEvent"/> list the <see cref="IndianaEnumerations"/> are sorted</param>
         /// <param name="first">Starting event code</param>
         /// <param name="second">Ending event code</param>
         /// <returns><see cref="TimeSpan"/> difference of <paramref name="second"/> minus <paramref name="first"/></returns>
-        public static IEnumerable<Tuple<ControllerEventLog[], TimeSpan>> TimeSpanFromConsecutiveCodes(this IEnumerable<ControllerEventLog> items, short first, short second)
+        public static IEnumerable<Tuple<IndianaEvent[], TimeSpan>> TimeSpanFromConsecutiveCodes(this IEnumerable<IndianaEvent> items, short first, short second)
         {
             var preFilter = items.OrderBy(o => o.Timestamp)
                 .Where(w => w.EventCode == first || w.EventCode == second)
@@ -98,7 +99,7 @@ namespace Utah.Udot.Atspm
                     y < preFilter.Count - 1 && x.EventCode == first && preFilter[y + 1].EventCode == second ||
                     y > 0 && x.EventCode == second && preFilter[y - 1].EventCode == first)
                         .Chunk(2)
-                        .Select(l => new Tuple<ControllerEventLog[], TimeSpan>(new ControllerEventLog[] { l[0], l[1] }, l[1].Timestamp - l[0].Timestamp));
+                        .Select(l => new Tuple<IndianaEvent[], TimeSpan>(new IndianaEvent[] { l[0], l[1] }, l[1].Timestamp - l[0].Timestamp));
 
             return result;
         }
@@ -143,7 +144,7 @@ namespace Utah.Udot.Atspm
         }
 
         //HACK: this is not working right!
-        public static IReadOnlyList<ControllerEventLog> GetLastConsecutiveEvent(this IEnumerable<ControllerEventLog> events, int consecutiveCount = 2)
+        public static IReadOnlyList<IndianaEvent> GetLastConsecutiveEvent(this IEnumerable<IndianaEvent> events, int consecutiveCount = 2)
         {
             return events
                 .OrderBy(o => o.Timestamp)
