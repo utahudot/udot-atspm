@@ -17,7 +17,6 @@
 
 using Asp.Versioning;
 using Asp.Versioning.OData;
-using Utah.Udot.Atspm.Data.Models;
 using Microsoft.OData.ModelBuilder;
 
 namespace Utah.Udot.Atspm.ConfigApi.Configuration

@@ -9668,9 +9668,9 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\Atspm\\IdentityApi\\IdentityApi.csproj",
+      "projectUniqueName": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\IdentityApi\\IdentityApi.csproj",
       "projectName": "Utah.Udot.Atspm.IdentityApi",
-      "projectPath": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\Atspm\\IdentityApi\\IdentityApi.csproj",
+      "projectPath": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\IdentityApi\\IdentityApi.csproj",
       "packagesPath": "C:\\Users\\christianbaker\\.nuget\\packages\\",
       "outputPath": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\Atspm\\IdentityApi\\obj\\",
       "projectStyle": "PackageReference",
@@ -9689,8 +9689,8 @@
         "net7.0": {
           "targetAlias": "net7.0",
           "projectReferences": {
-            "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\Atspm\\Infrastructure\\Infrastructure.csproj": {
-              "projectPath": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\Atspm\\Infrastructure\\Infrastructure.csproj"
+            "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\Infrastructure\\Infrastructure.csproj": {
+              "projectPath": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\Infrastructure\\Infrastructure.csproj"
             }
           }
         }

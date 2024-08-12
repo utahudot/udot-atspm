@@ -16,8 +16,8 @@
 #endregion
 
 using Asp.Versioning;
-using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
 using Utah.Udot.Atspm.Data.Models;
+using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
 
 namespace Utah.Udot.Atspm.ConfigApi.Controllers
 {
