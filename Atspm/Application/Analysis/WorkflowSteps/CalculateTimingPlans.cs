@@ -17,14 +17,15 @@
 
 using System.Threading.Tasks.Dataflow;
 using Utah.Udot.Atspm.Analysis.Plans;
+using Utah.Udot.Atspm.Data.Models.EventLogModels;
 
 namespace Utah.Udot.Atspm.Analysis.WorkflowSteps
 {
-    public class CalculateTimingPlans<T> : TransformProcessStepBase<Tuple<Location, int, IEnumerable<ControllerEventLog>>, Tuple<Location, int, IEnumerable<T>>> where T : IPlan, new()
+    public class CalculateTimingPlans<T> : TransformProcessStepBase<Tuple<Location, int, IEnumerable<IndianaEvent>>, Tuple<Location, int, IEnumerable<T>>> where T : IPlan, new()
     {
         public CalculateTimingPlans(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
 
-        protected override Task<Tuple<Location, int, IEnumerable<T>>> Process(Tuple<Location, int, IEnumerable<ControllerEventLog>> input, CancellationToken cancelToken = default)
+        protected override Task<Tuple<Location, int, IEnumerable<T>>> Process(Tuple<Location, int, IEnumerable<IndianaEvent>> input, CancellationToken cancelToken = default)
         {
             var result = Tuple.Create(input.Item1, input.Item2, input.Item3
                 .GroupBy(g => g.EventCode, (k, l) =>

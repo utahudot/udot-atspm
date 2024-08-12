@@ -17,6 +17,7 @@
 
 using System.Threading.Tasks.Dataflow;
 using Utah.Udot.Atspm.Data.Enums;
+using Utah.Udot.Atspm.Data.Models.EventLogModels;
 
 namespace Utah.Udot.Atspm.Analysis.WorkflowSteps
 {
@@ -25,18 +26,18 @@ namespace Utah.Udot.Atspm.Analysis.WorkflowSteps
     /// where <see cref="ControllerEventLog.EventCode"/> equals <see cref="IndianaEnumerations.VehicleDetectorOn"/>
     /// and <see cref="ControllerEventLog.EventParam"/> equals <see cref="Detector.DetectorChannel"/>.
     /// </summary>
-    public class AggregateDetectorEvents : TransformProcessStepBase<Tuple<Detector, int, IEnumerable<ControllerEventLog>>, IEnumerable<DetectorEventCountAggregation>>
+    public class AggregateDetectorEvents : TransformProcessStepBase<Tuple<Detector, int, IEnumerable<IndianaEvent>>, IEnumerable<DetectorEventCountAggregation>>
     {
         /// <inheritdoc/>
         public AggregateDetectorEvents(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
 
         /// <inheritdoc/>
-        protected override Task<IEnumerable<DetectorEventCountAggregation>> Process(Tuple<Detector, int, IEnumerable<ControllerEventLog>> input, CancellationToken cancelToken = default)
+        protected override Task<IEnumerable<DetectorEventCountAggregation>> Process(Tuple<Detector, int, IEnumerable<IndianaEvent>> input, CancellationToken cancelToken = default)
         {
             var detector = input.Item1;
             var detectorChannel = input.Item2;
             var logs = input.Item3
-                .Where(w => w.SignalIdentifier == detector.Approach?.Location?.LocationIdentifier)
+                .Where(w => w.LocationIdentifier == detector.Approach?.Location?.LocationIdentifier)
                 .Where(w => w.EventCode == (int)IndianaEnumerations.VehicleDetectorOn)
                 .Where(w => w.EventParam == detectorChannel);
 

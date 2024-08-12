@@ -17,6 +17,7 @@
 
 using System.Threading.Tasks.Dataflow;
 using Utah.Udot.Atspm.Data.Enums;
+using Utah.Udot.Atspm.Data.Models.EventLogModels;
 
 namespace Utah.Udot.Atspm.Analysis.WorkflowSteps
 {
@@ -28,19 +29,19 @@ namespace Utah.Udot.Atspm.Analysis.WorkflowSteps
     /// Timestamps for detector on events may need to be adjusted to represent vehicle arrivals at the stop bar
     /// rather than at the detector location or toadjust based on possible detector latency differences.
     /// </summary>
-    public class IdentifyandAdjustVehicleActivations : TransformProcessStepBase<Tuple<Approach, IEnumerable<ControllerEventLog>>, Tuple<Approach, IEnumerable<CorrectedDetectorEvent>>>
+    public class IdentifyandAdjustVehicleActivations : TransformProcessStepBase<Tuple<Approach, IEnumerable<IndianaEvent>>, Tuple<Approach, IEnumerable<CorrectedDetectorEvent>>>
     {
         /// <inheritdoc/>
         public IdentifyandAdjustVehicleActivations(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
 
         /// <inheritdoc/>
-        protected override Task<Tuple<Approach, IEnumerable<CorrectedDetectorEvent>>> Process(Tuple<Approach, IEnumerable<ControllerEventLog>> input, CancellationToken cancelToken = default)
+        protected override Task<Tuple<Approach, IEnumerable<CorrectedDetectorEvent>>> Process(Tuple<Approach, IEnumerable<IndianaEvent>> input, CancellationToken cancelToken = default)
         {
             var result = Tuple.Create(input.Item1, input.Item1?.Detectors.GroupJoin(input.Item2, o => o.DetectorChannel, i => i.EventParam, (o, i) =>
-            i.Where(w => w.SignalIdentifier == input.Item1?.Location?.LocationIdentifier && w.EventCode == (int)IndianaEnumerations.VehicleDetectorOn)
+            i.Where(w => w.LocationIdentifier == input.Item1?.Location?.LocationIdentifier && w.EventCode == (int)IndianaEnumerations.VehicleDetectorOn)
             .Select(s => new CorrectedDetectorEvent()
             {
-                LocationIdentifier = s.SignalIdentifier,
+                LocationIdentifier = s.LocationIdentifier,
                 PhaseNumber = o.Approach.ProtectedPhaseNumber,
                 Direction = o.Approach.DirectionTypeId,
                 DetectorChannel = o.DetectorChannel,

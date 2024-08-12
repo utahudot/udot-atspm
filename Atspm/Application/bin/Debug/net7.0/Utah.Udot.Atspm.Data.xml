@@ -229,6 +229,11 @@
             Version history table
             </summary>
         </member>
+        <member name="P:Utah.Udot.Atspm.Data.ConfigContext.WatchDogLogEvents">
+            <summary>
+            Watchdog log events
+            </summary>
+        </member>
         <member name="M:Utah.Udot.Atspm.Data.ConfigContext.ConfigureConventions(Microsoft.EntityFrameworkCore.ModelConfigurationBuilder)">
             <inheritdoc/>
         </member>
@@ -401,6 +406,30 @@
         <member name="M:Utah.Udot.Atspm.Data.Configuration.RouteLocationConfiguration.Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder{Utah.Udot.Atspm.Data.Models.RouteLocation})">
             <inheritdoc/>
         </member>
+        <member name="T:Utah.Udot.Atspm.Data.Configuration.UserAreaConfiguration">
+            <summary>
+            User area configuration
+            </summary>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Data.Configuration.UserAreaConfiguration.Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder{Utah.Udot.Atspm.Data.Models.UserArea})">
+            <inheritdoc/>
+        </member>
+        <member name="T:Utah.Udot.Atspm.Data.Configuration.UserJurisdictionConfiguration">
+            <summary>
+            User jurisdiction configuration
+            </summary>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Data.Configuration.UserJurisdictionConfiguration.Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder{Utah.Udot.Atspm.Data.Models.UserJurisdiction})">
+            <inheritdoc/>
+        </member>
+        <member name="T:Utah.Udot.Atspm.Data.Configuration.UserRegionConfiguration">
+            <summary>
+            User region configuration
+            </summary>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Data.Configuration.UserRegionConfiguration.Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder{Utah.Udot.Atspm.Data.Models.UserRegion})">
+            <inheritdoc/>
+        </member>
         <member name="T:Utah.Udot.Atspm.Data.Configuration.VersionHistoryConfiguration">
             <summary>
             Version history configuration
@@ -408,6 +437,111 @@
         </member>
         <member name="M:Utah.Udot.Atspm.Data.Configuration.VersionHistoryConfiguration.Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder{Utah.Udot.Atspm.Data.Models.VersionHistory})">
             <inheritdoc/>
+        </member>
+        <member name="T:Utah.Udot.Atspm.Data.Enums.DetectionHardwareTypes">
+            <summary>
+            Detection hardware types
+            </summary>
+        </member>
+        <member name="F:Utah.Udot.Atspm.Data.Enums.DetectionHardwareTypes.NA">
+            <summary>
+            Not applicable
+            </summary>
+        </member>
+        <member name="F:Utah.Udot.Atspm.Data.Enums.DetectionHardwareTypes.WavetronixMatrix">
+            <summary>
+            Wavetronics matrix
+            </summary>
+        </member>
+        <member name="F:Utah.Udot.Atspm.Data.Enums.DetectionHardwareTypes.WavetronixAdvance">
+            <summary>
+            Wavetronix advance
+            </summary>
+        </member>
+        <member name="F:Utah.Udot.Atspm.Data.Enums.DetectionHardwareTypes.InductiveLoops">
+            <summary>
+            Inductive loops
+            </summary>
+        </member>
+        <member name="F:Utah.Udot.Atspm.Data.Enums.DetectionHardwareTypes.Sensys">
+            <summary>
+            Sensys
+            </summary>
+        </member>
+        <member name="F:Utah.Udot.Atspm.Data.Enums.DetectionHardwareTypes.Video">
+            <summary>
+            Video
+            </summary>
+        </member>
+        <member name="F:Utah.Udot.Atspm.Data.Enums.DetectionHardwareTypes.FLIRThermalCamera">
+            <summary>
+            FLIR: thermal camera
+            </summary>
+        </member>
+        <member name="T:Utah.Udot.Atspm.Data.Enums.DetectionTypes">
+            <summary>
+            Detection types
+            </summary>
+        </member>
+        <member name="F:Utah.Udot.Atspm.Data.Enums.DetectionTypes.NA">
+            <summary>
+            Not applicable
+            </summary>
+        </member>
+        <member name="F:Utah.Udot.Atspm.Data.Enums.DetectionTypes.B">
+            <summary>
+            Basic
+            </summary>
+        </member>
+        <member name="F:Utah.Udot.Atspm.Data.Enums.DetectionTypes.AC">
+            <summary>
+            Advanced count
+            </summary>
+        </member>
+        <member name="F:Utah.Udot.Atspm.Data.Enums.DetectionTypes.AS">
+            <summary>
+            Advanced speed
+            </summary>
+        </member>
+        <member name="F:Utah.Udot.Atspm.Data.Enums.DetectionTypes.LLC">
+            <summary>
+            Lane by lane count
+            </summary>
+        </member>
+        <member name="F:Utah.Udot.Atspm.Data.Enums.DetectionTypes.LLS">
+            <summary>
+            Lane by lane with speed restriction
+            </summary>
+        </member>
+        <member name="F:Utah.Udot.Atspm.Data.Enums.DetectionTypes.SBP">
+            <summary>
+            Stop bar presence
+            </summary>
+        </member>
+        <member name="F:Utah.Udot.Atspm.Data.Enums.DetectionTypes.AP">
+            <summary>
+            Advanced presence
+            </summary>
+        </member>
+        <member name="F:Utah.Udot.Atspm.Data.Enums.DetectionTypes.P">
+            <summary>
+            Passage
+            </summary>
+        </member>
+        <member name="F:Utah.Udot.Atspm.Data.Enums.DetectionTypes.D">
+            <summary>
+            Demand
+            </summary>
+        </member>
+        <member name="F:Utah.Udot.Atspm.Data.Enums.DetectionTypes.IQ">
+            <summary>
+            intermediate queue
+            </summary>
+        </member>
+        <member name="F:Utah.Udot.Atspm.Data.Enums.DetectionTypes.EQ">
+            <summary>
+            Excessive queue
+            </summary>
         </member>
         <member name="T:Utah.Udot.Atspm.Data.Enums.DeviceStatus">
             <summary>
@@ -484,7 +618,62 @@
             Wavetronix Speed sensor
             </summary>
         </member>
-        <!-- Badly formed XML comment ignored for member "T:Utah.Udot.Atspm.Data.Enums.IndianaEnumerations" -->
+        <member name="T:Utah.Udot.Atspm.Data.Enums.DirectionTypes">
+            <summary>
+            Direction types
+            </summary>
+        </member>
+        <member name="F:Utah.Udot.Atspm.Data.Enums.DirectionTypes.NA">
+            <summary>
+            Not applicable
+            </summary>
+        </member>
+        <member name="F:Utah.Udot.Atspm.Data.Enums.DirectionTypes.NB">
+            <summary>
+            Northbound
+            </summary>
+        </member>
+        <member name="F:Utah.Udot.Atspm.Data.Enums.DirectionTypes.SB">
+            <summary>
+            Southbound
+            </summary>
+        </member>
+        <member name="F:Utah.Udot.Atspm.Data.Enums.DirectionTypes.EB">
+            <summary>
+            Eastbound
+            </summary>
+        </member>
+        <member name="F:Utah.Udot.Atspm.Data.Enums.DirectionTypes.WB">
+            <summary>
+            Westbound
+            </summary>
+        </member>
+        <member name="F:Utah.Udot.Atspm.Data.Enums.DirectionTypes.NE">
+            <summary>
+            Northeast
+            </summary>
+        </member>
+        <member name="F:Utah.Udot.Atspm.Data.Enums.DirectionTypes.NW">
+            <summary>
+            Northwest
+            </summary>
+        </member>
+        <member name="F:Utah.Udot.Atspm.Data.Enums.DirectionTypes.SE">
+            <summary>
+            Southeast
+            </summary>
+        </member>
+        <member name="F:Utah.Udot.Atspm.Data.Enums.DirectionTypes.SW">
+            <summary>
+            Southwest
+            </summary>
+        </member>
+        <member name="T:Utah.Udot.Atspm.Data.Enums.IndianaEnumerations">
+            <summary>
+            Traffic Location Hi Resolution Data Logger Enumerations.
+            <seealso href="https://docs.lib.purdue.edu/jtrpdata/4/"/>
+            </summary>
+        </member>
         <member name="F:Utah.Udot.Atspm.Data.Enums.IndianaEnumerations.PhaseOn">
             <summary>
             Set when NEMA Phase On becomes active, either upon start of green or walk interval, whichever occurs first
@@ -2052,6 +2241,51 @@
             The <c>Parameter</c> is used to indicate 1 - Intermediate Queue or 2 - Excessive Queue
             </summary>
         </member>
+        <member name="T:Utah.Udot.Atspm.Data.Enums.LaneTypes">
+            <summary>
+            Lane types
+            </summary>
+        </member>
+        <member name="F:Utah.Udot.Atspm.Data.Enums.LaneTypes.NA">
+            <summary>
+            Not applicable
+            </summary>
+        </member>
+        <member name="F:Utah.Udot.Atspm.Data.Enums.LaneTypes.V">
+            <summary>
+            Vehicle
+            </summary>
+        </member>
+        <member name="F:Utah.Udot.Atspm.Data.Enums.LaneTypes.Bike">
+            <summary>
+            Bike
+            </summary>
+        </member>
+        <member name="F:Utah.Udot.Atspm.Data.Enums.LaneTypes.Ped">
+            <summary>
+            Pedestrian
+            </summary>
+        </member>
+        <member name="F:Utah.Udot.Atspm.Data.Enums.LaneTypes.E">
+            <summary>
+            Exit
+            </summary>
+        </member>
+        <member name="F:Utah.Udot.Atspm.Data.Enums.LaneTypes.LRT">
+            <summary>
+            Light rail transit
+            </summary>
+        </member>
+        <member name="F:Utah.Udot.Atspm.Data.Enums.LaneTypes.Bus">
+            <summary>
+            Bus
+            </summary>
+        </member>
+        <member name="F:Utah.Udot.Atspm.Data.Enums.LaneTypes.HDV">
+            <summary>
+            High occupancy vechile
+            </summary>
+        </member>
         <member name="T:Utah.Udot.Atspm.Data.Enums.LocationVersionActions">
             <summary>
             Location version actions
@@ -2087,6 +2321,76 @@
             Initial version
             </summary>
         </member>
+        <member name="T:Utah.Udot.Atspm.Data.Enums.MetricFilterTypes">
+            <summary>
+            Metric filter types
+            </summary>
+        </member>
+        <member name="F:Utah.Udot.Atspm.Data.Enums.MetricFilterTypes.Unknown">
+            <summary>
+            Unknown
+            </summary>
+        </member>
+        <member name="F:Utah.Udot.Atspm.Data.Enums.MetricFilterTypes.locationId">
+            <summary>
+            Location id
+            </summary>
+        </member>
+        <member name="F:Utah.Udot.Atspm.Data.Enums.MetricFilterTypes.PrimaryName">
+            <summary>
+            Primary name
+            </summary>
+        </member>
+        <member name="F:Utah.Udot.Atspm.Data.Enums.MetricFilterTypes.SecondaryName">
+            <summary>
+            Secondary name
+            </summary>
+        </member>
+        <member name="F:Utah.Udot.Atspm.Data.Enums.MetricFilterTypes.Agency">
+            <summary>
+            Agency
+            </summary>
+        </member>
+        <member name="T:Utah.Udot.Atspm.Data.Enums.MovementTypes">
+            <summary>
+            MOvement types
+            </summary>
+        </member>
+        <member name="F:Utah.Udot.Atspm.Data.Enums.MovementTypes.NA">
+            <summary>
+            Not applicable
+            </summary>
+        </member>
+        <member name="F:Utah.Udot.Atspm.Data.Enums.MovementTypes.T">
+            <summary>
+            Thru
+            </summary>
+        </member>
+        <member name="F:Utah.Udot.Atspm.Data.Enums.MovementTypes.R">
+            <summary>
+            Right
+            </summary>
+        </member>
+        <member name="F:Utah.Udot.Atspm.Data.Enums.MovementTypes.L">
+            <summary>
+            Left
+            </summary>
+        </member>
+        <member name="F:Utah.Udot.Atspm.Data.Enums.MovementTypes.TR">
+            <summary>
+            Thru-right
+            </summary>
+        </member>
+        <member name="F:Utah.Udot.Atspm.Data.Enums.MovementTypes.TL">
+            <summary>
+            Thru left
+            </summary>
+        </member>
+        <member name="F:Utah.Udot.Atspm.Data.Enums.MovementTypes.NW">
+            <summary>
+            Northwest
+            </summary>
+        </member>
         <member name="T:Utah.Udot.Atspm.Data.Enums.TransportProtocols">
             <summary>
             Transport protocols used for connecting to devices
@@ -2115,6 +2419,66 @@
         <member name="F:Utah.Udot.Atspm.Data.Enums.TransportProtocols.Http">
             <summary>
             Supports HTTP Protocol
+            </summary>
+        </member>
+        <member name="T:Utah.Udot.Atspm.Data.Enums.WatchDogComponentTypes">
+            <summary>
+            Watchdog component types
+            </summary>
+        </member>
+        <member name="F:Utah.Udot.Atspm.Data.Enums.WatchDogComponentTypes.Location">
+            <summary>
+            Location
+            </summary>
+        </member>
+        <member name="F:Utah.Udot.Atspm.Data.Enums.WatchDogComponentTypes.Approach">
+            <summary>
+            Approach
+            </summary>
+        </member>
+        <member name="F:Utah.Udot.Atspm.Data.Enums.WatchDogComponentTypes.Detector">
+            <summary>
+            Detector
+            </summary>
+        </member>
+        <member name="T:Utah.Udot.Atspm.Data.Enums.WatchDogIssueTypes">
+            <summary>
+            Watchdog issue types
+            </summary>
+        </member>
+        <member name="F:Utah.Udot.Atspm.Data.Enums.WatchDogIssueTypes.RecordCount">
+            <summary>
+            Record count
+            </summary>
+        </member>
+        <member name="F:Utah.Udot.Atspm.Data.Enums.WatchDogIssueTypes.LowDetectorHits">
+            <summary>
+            Low detector hits
+            </summary>
+        </member>
+        <member name="F:Utah.Udot.Atspm.Data.Enums.WatchDogIssueTypes.StuckPed">
+            <summary>
+            Stuck ped
+            </summary>
+        </member>
+        <member name="F:Utah.Udot.Atspm.Data.Enums.WatchDogIssueTypes.ForceOffThreshold">
+            <summary>
+            Forceoff threshold
+            </summary>
+        </member>
+        <member name="F:Utah.Udot.Atspm.Data.Enums.WatchDogIssueTypes.MaxOutThreshold">
+            <summary>
+            Max out threshold
+            </summary>
+        </member>
+        <member name="F:Utah.Udot.Atspm.Data.Enums.WatchDogIssueTypes.UnconfiguredApproach">
+            <summary>
+            Unconfigured approach
+            </summary>
+        </member>
+        <member name="F:Utah.Udot.Atspm.Data.Enums.WatchDogIssueTypes.UnconfiguredDetector">
+            <summary>
+            Unconfigured detector
             </summary>
         </member>
         <member name="T:Utah.Udot.Atspm.Data.EventLogContext">
@@ -2155,6 +2519,17 @@
         </member>
         <member name="M:Utah.Udot.Atspm.Data.EventLogContext.OnModelCreating(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc/>
+        </member>
+        <member name="T:Utah.Udot.Atspm.Data.IdentityContext">
+            <summary>
+            Identity database context
+            </summary>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Data.IdentityContext.#ctor(Microsoft.EntityFrameworkCore.DbContextOptions{Utah.Udot.Atspm.Data.IdentityContext})">
+            <summary>
+            Identity database context
+            </summary>
+            <param name="options"></param>
         </member>
         <member name="T:Utah.Udot.Atspm.Data.Interfaces.ILocationApproachLayer">
             <summary>
@@ -2277,7 +2652,7 @@
         </member>
         <member name="P:Utah.Udot.Atspm.Data.Models.PhaseTerminationAggregation.ForceOffs">
             <summary>
-            Sum of consecutive <see cref="!:5"/> events
+            Sum of consecutive <see cref="F:Utah.Udot.Atspm.Data.Enums.IndianaEnumerations.PhaseMaxOut"/> events
             </summary>
         </member>
         <member name="P:Utah.Udot.Atspm.Data.Models.PhaseTerminationAggregation.MaxOuts">
@@ -2351,6 +2726,36 @@
         </member>
         <member name="P:Utah.Udot.Atspm.Data.Models.SignalPlanAggregation.PlanNumber">
             <inheritdoc/>
+        </member>
+        <member name="T:Utah.Udot.Atspm.Data.Models.ApplicationUser">
+            <summary>
+            Application user
+            </summary>
+        </member>
+        <member name="P:Utah.Udot.Atspm.Data.Models.ApplicationUser.FirstName">
+            <summary>
+            First name
+            </summary>
+        </member>
+        <member name="P:Utah.Udot.Atspm.Data.Models.ApplicationUser.LastName">
+            <summary>
+            Last name
+            </summary>
+        </member>
+        <member name="P:Utah.Udot.Atspm.Data.Models.ApplicationUser.Agency">
+            <summary>
+            Agency
+            </summary>
+        </member>
+        <member name="P:Utah.Udot.Atspm.Data.Models.ApplicationUser.FullName">
+            <summary>
+            Full name
+            </summary>
+        </member>
+        <member name="P:Utah.Udot.Atspm.Data.Models.ApplicationUser.Roles">
+            <summary>
+            Roles navigation property
+            </summary>
         </member>
         <member name="T:Utah.Udot.Atspm.Data.Models.CompressedDataBase">
             <summary>
@@ -2494,6 +2899,11 @@
         </member>
         <member name="P:Utah.Udot.Atspm.Data.Models.Area.Locations">
             <inheritdoc/>
+        </member>
+        <member name="P:Utah.Udot.Atspm.Data.Models.Area.UserAreas">
+            <summary>
+            Users for area
+            </summary>
         </member>
         <member name="M:Utah.Udot.Atspm.Data.Models.Area.ToString">
             <inheritdoc/>
@@ -2849,6 +3259,11 @@
             Other partners
             </summary>
         </member>
+        <member name="P:Utah.Udot.Atspm.Data.Models.Jurisdiction.UserJurisdictions">
+            <summary>
+            Users for jurisdiction
+            </summary>
+        </member>
         <member name="P:Utah.Udot.Atspm.Data.Models.Jurisdiction.Locations">
             <inheritdoc/>
         </member>
@@ -3142,6 +3557,11 @@
             Region description
             </summary>
         </member>
+        <member name="P:Utah.Udot.Atspm.Data.Models.Region.UserRegions">
+            <summary>
+            Users for region
+            </summary>
+        </member>
         <member name="P:Utah.Udot.Atspm.Data.Models.Region.Locations">
             <inheritdoc/>
         </member>
@@ -3276,6 +3696,66 @@
         <member name="M:Utah.Udot.Atspm.Data.Models.RouteLocation.ToString">
             <inheritdoc/>
         </member>
+        <member name="T:Utah.Udot.Atspm.Data.Models.UserArea">
+            <summary>
+            Users for area
+            </summary>
+        </member>
+        <member name="P:Utah.Udot.Atspm.Data.Models.UserArea.UserId">
+            <summary>
+            User id
+            </summary>
+        </member>
+        <member name="P:Utah.Udot.Atspm.Data.Models.UserArea.AreaId">
+            <summary>
+            Area id
+            </summary>
+        </member>
+        <member name="P:Utah.Udot.Atspm.Data.Models.UserArea.Area">
+            <summary>
+            Area
+            </summary>
+        </member>
+        <member name="T:Utah.Udot.Atspm.Data.Models.UserJurisdiction">
+            <summary>
+            Users for jurisdiction
+            </summary>
+        </member>
+        <member name="P:Utah.Udot.Atspm.Data.Models.UserJurisdiction.UserId">
+            <summary>
+            User id
+            </summary>
+        </member>
+        <member name="P:Utah.Udot.Atspm.Data.Models.UserJurisdiction.JurisdictionId">
+            <summary>
+            Jurisdiction id
+            </summary>
+        </member>
+        <member name="P:Utah.Udot.Atspm.Data.Models.UserJurisdiction.Jurisdiction">
+            <summary>
+            Jursidiction
+            </summary>
+        </member>
+        <member name="T:Utah.Udot.Atspm.Data.Models.UserRegion">
+            <summary>
+            Users for region
+            </summary>
+        </member>
+        <member name="P:Utah.Udot.Atspm.Data.Models.UserRegion.UserId">
+            <summary>
+            User id
+            </summary>
+        </member>
+        <member name="P:Utah.Udot.Atspm.Data.Models.UserRegion.RegionId">
+            <summary>
+            Region id
+            </summary>
+        </member>
+        <member name="P:Utah.Udot.Atspm.Data.Models.UserRegion.Region">
+            <summary>
+            Region
+            </summary>
+        </member>
         <member name="T:Utah.Udot.Atspm.Data.Models.VersionHistory">
             <summary>
             Version history
@@ -3319,6 +3799,11 @@
         <member name="M:Utah.Udot.Atspm.Data.Models.VersionHistory.ToString">
             <inheritdoc/>
         </member>
+        <member name="T:Utah.Udot.Atspm.Data.Models.ControllerEventLog">
+            <summary>
+            Legacy event log for indiana enumeration events
+            </summary>
+        </member>
         <member name="T:Utah.Udot.Atspm.Data.Models.EventLogModels.EventLogModelBase">
             <summary>
             Event log model base for models used in logging Atspm device data
@@ -3332,8 +3817,8 @@
         </member>
         <member name="T:Utah.Udot.Atspm.Data.Models.EventLogModels.IndianaEvent">
             <summary>
-            Indiana Traffic Signal Hi Resolution Data Logger Enumerations
-            <seealso cref="!:https://docs.lib.purdue.edu/jtrpdata/4/"/>
+            Indiana Traffic Signal Hi Resolution Data Logger Enumerations.
+            <seealso href="https://docs.lib.purdue.edu/jtrpdata/4/"/>
             </summary>
         </member>
         <member name="P:Utah.Udot.Atspm.Data.Models.EventLogModels.IndianaEvent.EventCode">
@@ -3406,6 +3891,78 @@
             <inheritdoc/>
         </member>
         <member name="M:Utah.Udot.Atspm.Data.Models.EventLogModels.SpeedEvent.ToString">
+            <inheritdoc/>
+        </member>
+        <member name="T:Utah.Udot.Atspm.Data.Models.WatchDogLogEvent">
+            <summary>
+            Watchdog log event
+            </summary>
+        </member>
+        <member name="P:Utah.Udot.Atspm.Data.Models.WatchDogLogEvent.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:Utah.Udot.Atspm.Data.Models.WatchDogLogEvent.LocationId">
+            <summary>
+            Location id
+            </summary>
+        </member>
+        <member name="P:Utah.Udot.Atspm.Data.Models.WatchDogLogEvent.LocationIdentifier">
+            <summary>
+            Location identifier
+            </summary>
+        </member>
+        <member name="P:Utah.Udot.Atspm.Data.Models.WatchDogLogEvent.Timestamp">
+            <summary>
+            Timestamp
+            </summary>
+        </member>
+        <member name="P:Utah.Udot.Atspm.Data.Models.WatchDogLogEvent.ComponentType">
+            <summary>
+            Component type
+            </summary>
+        </member>
+        <member name="P:Utah.Udot.Atspm.Data.Models.WatchDogLogEvent.ComponentId">
+            <summary>
+            Component id
+            </summary>
+        </member>
+        <member name="P:Utah.Udot.Atspm.Data.Models.WatchDogLogEvent.IssueType">
+            <summary>
+            Issue type
+            </summary>
+        </member>
+        <member name="P:Utah.Udot.Atspm.Data.Models.WatchDogLogEvent.Details">
+            <summary>
+            Details
+            </summary>
+        </member>
+        <member name="P:Utah.Udot.Atspm.Data.Models.WatchDogLogEvent.Phase">
+            <summary>
+            Phase
+            </summary>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Data.Models.WatchDogLogEvent.#ctor(System.Int32,System.String,System.DateTime,Utah.Udot.Atspm.Data.Enums.WatchDogComponentTypes,System.Int32,Utah.Udot.Atspm.Data.Enums.WatchDogIssueTypes,System.String,System.Nullable{System.Int32})">
+            <summary>
+            Watchdog log event
+            </summary>
+            <param name="locationId"></param>
+            <param name="locationIdentifier"></param>
+            <param name="timestamp"></param>
+            <param name="componentType"></param>
+            <param name="componentId"></param>
+            <param name="issueType"></param>
+            <param name="details"></param>
+            <param name="phase"></param>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Data.Models.WatchDogLogEvent.ToString">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Data.Models.WatchDogLogEvent.Equals(System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Data.Models.WatchDogLogEvent.GetHashCode">
             <inheritdoc/>
         </member>
         <member name="T:Utah.Udot.Atspm.Data.Relationships.IRelatedApproach">
@@ -3699,7 +4256,7 @@
             <summary>
             Custom <see cref="T:Newtonsoft.Json.Serialization.ISerializationBinder"/> for marking compressed lists with type
             for serializing/deserializing compressed data.
-            <seealso cref="!:https://www.newtonsoft.com/json/help/html/SerializeSerializationBinder.htm"/>
+            <seealso href="https://www.newtonsoft.com/json/help/html/SerializeSerializationBinder.htm"/>
             </summary>
             <typeparam name="T"></typeparam>
         </member>
