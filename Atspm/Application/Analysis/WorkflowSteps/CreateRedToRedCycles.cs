@@ -16,6 +16,7 @@
 #endregion
 
 using System.Threading.Tasks.Dataflow;
+using Utah.Udot.Atspm.Data.Models.EventLogModels;
 
 namespace Utah.Udot.Atspm.Analysis.WorkflowSteps
 {
@@ -63,21 +64,21 @@ namespace Utah.Udot.Atspm.Analysis.WorkflowSteps
     /// 
     /// </list>
     /// </summary>
-    public class CreateRedToRedCycles : TransformProcessStepBase<Tuple<Approach, IEnumerable<ControllerEventLog>>, Tuple<Approach, IEnumerable<RedToRedCycle>>>
+    public class CreateRedToRedCycles : TransformProcessStepBase<Tuple<Approach, IEnumerable<IndianaEvent>>, Tuple<Approach, IEnumerable<RedToRedCycle>>>
     {
         /// <inheritdoc/>
         public CreateRedToRedCycles(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
 
         /// <inheritdoc/>
-        protected override Task<Tuple<Approach, IEnumerable<RedToRedCycle>>> Process(Tuple<Approach, IEnumerable<ControllerEventLog>> input, CancellationToken cancelToken = default)
+        protected override Task<Tuple<Approach, IEnumerable<RedToRedCycle>>> Process(Tuple<Approach, IEnumerable<IndianaEvent>> input, CancellationToken cancelToken = default)
         {
             //TODO: get the correct phase from approach here
             var result = Tuple.Create(input.Item1, input.Item2?
-                .Where(w => w.SignalIdentifier == input?.Item1?.Location.LocationIdentifier)
+                .Where(w => w.LocationIdentifier == input?.Item1?.Location.LocationIdentifier)
                 .Where(w => w.EventParam == input?.Item1?.ProtectedPhaseNumber)
                 .Where(w => w.EventCode == 1 || w.EventCode == 8 || w.EventCode == 9)
                 .OrderBy(o => o.Timestamp)
-                .GroupBy(g => g.SignalIdentifier, (s, x) => x
+                .GroupBy(g => g.LocationIdentifier, (s, x) => x
                 .GroupBy(g => g.EventParam, (p, y) => y
                 .Where((w, i) => y.Count() > 3 && i <= y.Count() - 3)
                 .Where((w, i) => w.EventCode == 9 && y.ElementAt(i + 1).EventCode == 1 && y.ElementAt(i + 2).EventCode == 8 && y.ElementAt(i + 3).EventCode == 9)

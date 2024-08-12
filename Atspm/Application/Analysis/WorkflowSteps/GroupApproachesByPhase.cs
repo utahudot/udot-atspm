@@ -16,17 +16,18 @@
 #endregion
 
 using System.Threading.Tasks.Dataflow;
+using Utah.Udot.Atspm.Data.Models.EventLogModels;
 
 namespace Utah.Udot.Atspm.Analysis.WorkflowSteps
 {
-    public class GroupApproachesByPhase : TransformManyProcessStepBase<Tuple<Approach, IEnumerable<ControllerEventLog>>, Tuple<Approach, int, IEnumerable<ControllerEventLog>>>
+    public class GroupApproachesByPhase : TransformManyProcessStepBase<Tuple<Approach, IEnumerable<IndianaEvent>>, Tuple<Approach, int, IEnumerable<IndianaEvent>>>
     {
         public GroupApproachesByPhase(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
 
-        protected override Task<IEnumerable<Tuple<Approach, int, IEnumerable<ControllerEventLog>>>> Process(Tuple<Approach, IEnumerable<ControllerEventLog>> input, CancellationToken cancelToken = default)
+        protected override Task<IEnumerable<Tuple<Approach, int, IEnumerable<IndianaEvent>>>> Process(Tuple<Approach, IEnumerable<IndianaEvent>> input, CancellationToken cancelToken = default)
         {
             var result = input.Item2
-                .GroupBy(g => g.EventParam, (phase, i) => Tuple.Create(input.Item1, phase, i))
+                .GroupBy(g => g.EventParam, (phase, i) => Tuple.Create(input.Item1, Convert.ToInt32(phase), i))
                 .Where(w => w.Item1.ProtectedPhaseNumber == w.Item2);
 
             return Task.FromResult(result);

@@ -785,7 +785,7 @@
         <member name="M:Utah.Udot.Atspm.Analysis.WorkflowSteps.AggregateDetectorEvents.#ctor(System.Threading.Tasks.Dataflow.ExecutionDataflowBlockOptions)">
             <inheritdoc/>
         </member>
-        <member name="M:Utah.Udot.Atspm.Analysis.WorkflowSteps.AggregateDetectorEvents.Process(System.Tuple{Utah.Udot.Atspm.Data.Models.Detector,System.Int32,System.Collections.Generic.IEnumerable{Utah.Udot.Atspm.Data.Models.ControllerEventLog}},System.Threading.CancellationToken)">
+        <member name="M:Utah.Udot.Atspm.Analysis.WorkflowSteps.AggregateDetectorEvents.Process(System.Tuple{Utah.Udot.Atspm.Data.Models.Detector,System.Int32,System.Collections.Generic.IEnumerable{Utah.Udot.Atspm.Data.Models.EventLogModels.IndianaEvent}},System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
         <member name="M:Utah.Udot.Atspm.Analysis.WorkflowSteps.AggregatePhaseTerminationEvents.#ctor(System.Threading.Tasks.Dataflow.ExecutionDataflowBlockOptions)">
@@ -870,7 +870,7 @@
         <member name="M:Utah.Udot.Atspm.Analysis.WorkflowSteps.CreateRedToRedCycles.#ctor(System.Threading.Tasks.Dataflow.ExecutionDataflowBlockOptions)">
             <inheritdoc/>
         </member>
-        <member name="M:Utah.Udot.Atspm.Analysis.WorkflowSteps.CreateRedToRedCycles.Process(System.Tuple{Utah.Udot.Atspm.Data.Models.Approach,System.Collections.Generic.IEnumerable{Utah.Udot.Atspm.Data.Models.ControllerEventLog}},System.Threading.CancellationToken)">
+        <member name="M:Utah.Udot.Atspm.Analysis.WorkflowSteps.CreateRedToRedCycles.Process(System.Tuple{Utah.Udot.Atspm.Data.Models.Approach,System.Collections.Generic.IEnumerable{Utah.Udot.Atspm.Data.Models.EventLogModels.IndianaEvent}},System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
         <member name="T:Utah.Udot.Atspm.Analysis.WorkflowSteps.GeneratePurdueCoordinationResult">
@@ -896,7 +896,7 @@
         <member name="M:Utah.Udot.Atspm.Analysis.WorkflowSteps.GroupDetectorsByDetectorEvent.#ctor(System.Threading.Tasks.Dataflow.ExecutionDataflowBlockOptions)">
             <inheritdoc/>
         </member>
-        <member name="M:Utah.Udot.Atspm.Analysis.WorkflowSteps.GroupDetectorsByDetectorEvent.Process(System.Tuple{Utah.Udot.Atspm.Data.Models.Approach,System.Collections.Generic.IEnumerable{Utah.Udot.Atspm.Data.Models.ControllerEventLog}},System.Threading.CancellationToken)">
+        <member name="M:Utah.Udot.Atspm.Analysis.WorkflowSteps.GroupDetectorsByDetectorEvent.Process(System.Tuple{Utah.Udot.Atspm.Data.Models.Approach,System.Collections.Generic.IEnumerable{Utah.Udot.Atspm.Data.Models.EventLogModels.IndianaEvent}},System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
         <member name="T:Utah.Udot.Atspm.Analysis.WorkflowSteps.GroupLocationsByApproaches">
@@ -909,7 +909,7 @@
         <member name="M:Utah.Udot.Atspm.Analysis.WorkflowSteps.GroupLocationsByApproaches.#ctor(System.Threading.Tasks.Dataflow.ExecutionDataflowBlockOptions)">
             <inheritdoc/>
         </member>
-        <member name="M:Utah.Udot.Atspm.Analysis.WorkflowSteps.GroupLocationsByApproaches.Process(System.Tuple{Utah.Udot.Atspm.Data.Models.Location,System.Collections.Generic.IEnumerable{Utah.Udot.Atspm.Data.Models.ControllerEventLog}},System.Threading.CancellationToken)">
+        <member name="M:Utah.Udot.Atspm.Analysis.WorkflowSteps.GroupLocationsByApproaches.Process(System.Tuple{Utah.Udot.Atspm.Data.Models.Location,System.Collections.Generic.IEnumerable{Utah.Udot.Atspm.Data.Models.EventLogModels.IndianaEvent}},System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
         <member name="T:Utah.Udot.Atspm.Analysis.WorkflowSteps.IdentifyandAdjustVehicleActivations">
@@ -925,7 +925,7 @@
         <member name="M:Utah.Udot.Atspm.Analysis.WorkflowSteps.IdentifyandAdjustVehicleActivations.#ctor(System.Threading.Tasks.Dataflow.ExecutionDataflowBlockOptions)">
             <inheritdoc/>
         </member>
-        <member name="M:Utah.Udot.Atspm.Analysis.WorkflowSteps.IdentifyandAdjustVehicleActivations.Process(System.Tuple{Utah.Udot.Atspm.Data.Models.Approach,System.Collections.Generic.IEnumerable{Utah.Udot.Atspm.Data.Models.ControllerEventLog}},System.Threading.CancellationToken)">
+        <member name="M:Utah.Udot.Atspm.Analysis.WorkflowSteps.IdentifyandAdjustVehicleActivations.Process(System.Tuple{Utah.Udot.Atspm.Data.Models.Approach,System.Collections.Generic.IEnumerable{Utah.Udot.Atspm.Data.Models.EventLogModels.IndianaEvent}},System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
         <member name="M:Utah.Udot.Atspm.Analysis.Workflows.AggregationWorkflowBase`1.#ctor(Utah.Udot.Atspm.Analysis.Workflows.AggregationWorkflowOptions)">
@@ -1061,7 +1061,7 @@
             <param name="binSize">Bin size to break up hours</param>
             <returns></returns>
         </member>
-        <member name="M:Utah.Udot.Atspm.AtspmMath.TimeSpanFromConsecutiveCodes(System.Collections.Generic.IEnumerable{Utah.Udot.Atspm.Data.Models.ControllerEventLog},System.Int16,System.Int16)">
+        <member name="M:Utah.Udot.Atspm.AtspmMath.TimeSpanFromConsecutiveCodes(System.Collections.Generic.IEnumerable{Utah.Udot.Atspm.Data.Models.EventLogModels.IndianaEvent},System.Int16,System.Int16)">
             <summary>
             Calculates the <see cref="T:System.TimeSpan"/> difference between the first and second <see cref="T:Utah.Udot.Atspm.Data.Enums.IndianaEnumerations"/>
             <list type="bullet">
@@ -1092,7 +1092,7 @@
             </item>
             </list>
             </summary>
-            <param name="items"><see cref="T:Utah.Udot.Atspm.Data.Models.ControllerEventLog"/> list the <see cref="T:Utah.Udot.Atspm.Data.Enums.IndianaEnumerations"/> are sorted</param>
+            <param name="items"><see cref="T:Utah.Udot.Atspm.Data.Models.EventLogModels.IndianaEvent"/> list the <see cref="T:Utah.Udot.Atspm.Data.Enums.IndianaEnumerations"/> are sorted</param>
             <param name="first">Starting event code</param>
             <param name="second">Ending event code</param>
             <returns><see cref="T:System.TimeSpan"/> difference of <paramref name="second"/> minus <paramref name="first"/></returns>
@@ -1815,17 +1815,17 @@
         </member>
         <member name="T:Utah.Udot.Atspm.Extensions.ApplicationUserExtensions">
             <summary>
-            Extension methods for <see cref="T:Utah.Udot.Atspm.Data.ApplicationUser"/>
+            Extension methods for <see cref="T:Utah.Udot.Atspm.Data.Models.ApplicationUser"/>
             </summary>
         </member>
-        <member name="M:Utah.Udot.Atspm.Extensions.ApplicationUserExtensions.GetMailingAddress(Utah.Udot.Atspm.Data.ApplicationUser)">
+        <member name="M:Utah.Udot.Atspm.Extensions.ApplicationUserExtensions.GetMailingAddress(Utah.Udot.Atspm.Data.Models.ApplicationUser)">
             <summary>
             Returns a <see cref="T:System.Net.Mail.MailAddress"/> containing the users mailing address
             </summary>
             <param name="user"></param>
             <returns></returns>
         </member>
-        <member name="M:Utah.Udot.Atspm.Extensions.ApplicationUserExtensions.GetMailingAddresses(System.Collections.Generic.IEnumerable{Utah.Udot.Atspm.Data.ApplicationUser})">
+        <member name="M:Utah.Udot.Atspm.Extensions.ApplicationUserExtensions.GetMailingAddresses(System.Collections.Generic.IEnumerable{Utah.Udot.Atspm.Data.Models.ApplicationUser})">
             <summary>
             Returns a <see cref="T:System.Collections.Generic.IReadOnlyList`1"/> containing the users mailing addresses
             </summary>

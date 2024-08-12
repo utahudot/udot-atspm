@@ -16,20 +16,21 @@
 #endregion
 
 using System.Threading.Tasks.Dataflow;
+using Utah.Udot.Atspm.Data.Models.EventLogModels;
 using Utah.Udot.Atspm.Specifications;
 using Utah.Udot.NetStandardToolkit.Extensions;
 
 namespace Utah.Udot.Atspm.Analysis.WorkflowSteps
 {
-    public class AggregatePreemptCodes : TransformProcessStepBase<Tuple<Location, int, IEnumerable<ControllerEventLog>>, IEnumerable<PreemptionAggregation>>
+    public class AggregatePreemptCodes : TransformProcessStepBase<Tuple<Location, int, IEnumerable<IndianaEvent>>, IEnumerable<PreemptionAggregation>>
     {
         public AggregatePreemptCodes(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
 
-        protected override Task<IEnumerable<PreemptionAggregation>> Process(Tuple<Location, int, IEnumerable<ControllerEventLog>> input, CancellationToken cancelToken = default)
+        protected override Task<IEnumerable<PreemptionAggregation>> Process(Tuple<Location, int, IEnumerable<IndianaEvent>> input, CancellationToken cancelToken = default)
         {
             var Location = input.Item1;
             var preempt = input.Item2;
-            var logs = input.Item3.FromSpecification(new ControllerLogLocationAndParamterFilterSpecification(Location, preempt));
+            var logs = input.Item3.FromSpecification(new IndianaLogLocationAndParamterFilterSpecification(Location, preempt));
 
             var tl = new Timeline<PreemptionAggregation>(logs, TimeSpan.FromMinutes(15));
 

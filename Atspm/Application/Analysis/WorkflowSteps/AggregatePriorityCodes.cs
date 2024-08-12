@@ -16,20 +16,21 @@
 #endregion
 
 using System.Threading.Tasks.Dataflow;
+using Utah.Udot.Atspm.Data.Models.EventLogModels;
 using Utah.Udot.Atspm.Specifications;
 using Utah.Udot.NetStandardToolkit.Extensions;
 
 namespace Utah.Udot.Atspm.Analysis.WorkflowSteps
 {
-    public class AggregatePriorityCodes : TransformProcessStepBase<Tuple<Location, int, IEnumerable<ControllerEventLog>>, IEnumerable<PriorityAggregation>>
+    public class AggregatePriorityCodes : TransformProcessStepBase<Tuple<Location, int, IEnumerable<IndianaEvent>>, IEnumerable<PriorityAggregation>>
     {
         public AggregatePriorityCodes(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
 
-        protected override Task<IEnumerable<PriorityAggregation>> Process(Tuple<Location, int, IEnumerable<ControllerEventLog>> input, CancellationToken cancelToken = default)
+        protected override Task<IEnumerable<PriorityAggregation>> Process(Tuple<Location, int, IEnumerable<IndianaEvent>> input, CancellationToken cancelToken = default)
         {
             var Location = input.Item1;
             var priority = input.Item2;
-            var logs = input.Item3.FromSpecification(new ControllerLogLocationAndParamterFilterSpecification(Location, priority));
+            var logs = input.Item3.FromSpecification(new IndianaLogLocationAndParamterFilterSpecification(Location, priority));
 
             var tl = new Timeline<PriorityAggregation>(logs, TimeSpan.FromMinutes(15));
 

@@ -17,6 +17,7 @@
 
 using System.Threading.Tasks.Dataflow;
 using Utah.Udot.Atspm.Analysis.ApproachDelay;
+using Utah.Udot.Atspm.Data.Models.EventLogModels;
 
 namespace Utah.Udot.Atspm.Analysis.Workflows
 {
@@ -28,10 +29,10 @@ namespace Utah.Udot.Atspm.Analysis.Workflows
     /// Approach delay is a measure that integrates individual vehicle delay with
     /// volume to get an estimated sum of all vehicle delay on an approach.
     /// </summary>
-    public class ApproachDelayWorkflow : WorkflowBase<Tuple<Location, IEnumerable<ControllerEventLog>>, Tuple<Approach, ApproachDelayResult>>
+    public class ApproachDelayWorkflow : WorkflowBase<Tuple<Location, IEnumerable<IndianaEvent>>, Tuple<Approach, ApproachDelayResult>>
     {
-        private readonly DataflowBlockOptions _filterOptions = new DataflowBlockOptions();
-        private readonly ExecutionDataflowBlockOptions _stepOptions = new ExecutionDataflowBlockOptions();
+        private readonly DataflowBlockOptions _filterOptions = new();
+        private readonly ExecutionDataflowBlockOptions _stepOptions = new();
 
         public ApproachDelayWorkflow(int maxDegreeOfParallelism = 1, CancellationToken cancellationToken = default)
         {
