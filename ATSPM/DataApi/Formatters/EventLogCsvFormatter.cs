@@ -18,7 +18,6 @@
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Primitives;
 using System.Text;
-using Utah.Udot.Atspm.Data.Models;
 
 namespace Utah.Udot.Atspm.DataApi.Formatters
 {
