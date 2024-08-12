@@ -25,8 +25,8 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
     public class LocationLoggerUtilityHostedService : IHostedService
     {
         private readonly ILogger _log;
-        private IServiceProvider _serviceProvider;
-        private IOptions<EventLogLoggingConfiguration> _options;
+        private readonly IServiceProvider _serviceProvider;
+        private readonly IOptions<EventLogLoggingConfiguration> _options;
 
         public LocationLoggerUtilityHostedService(ILogger<LocationLoggerUtilityHostedService> log, IServiceProvider serviceProvider, IOptions<EventLogLoggingConfiguration> options) =>
             (_log, _serviceProvider, _options) = (log, serviceProvider, options);

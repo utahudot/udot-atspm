@@ -24,8 +24,8 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
     public class ExportUtilityService : IHostedService
     {
         private readonly ILogger _log;
-        private IServiceProvider _serviceProvider;
-        private IOptions<EventLogExtractConfiguration> _options;
+        private readonly IServiceProvider _serviceProvider;
+        private readonly IOptions<EventLogExtractConfiguration> _options;
 
         public ExportUtilityService(ILogger<ExportUtilityService> log, IServiceProvider serviceProvider, IOptions<EventLogExtractConfiguration> options) =>
                 (_log, _serviceProvider, _options) = (log, serviceProvider, options);

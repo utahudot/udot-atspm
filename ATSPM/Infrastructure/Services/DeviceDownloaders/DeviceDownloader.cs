@@ -216,7 +216,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders
                         }
                         catch (DownloaderClientConnectionException e)
                         {
-                            logMessages.DisconnectingFromHostException(locationIdentifier, ipaddress);
+                            logMessages.DisconnectingFromHostException(locationIdentifier, ipaddress, e);
                         }
                         catch (OperationCanceledException e)
                         {

@@ -2419,12 +2419,6 @@
             Detection type repository
             </summary>
         </member>
-        <member name="M:Utah.Udot.Atspm.Repositories.ConfigurationRepositories.IDetectionTypeRepository.GetAllDetectionTypesNoBasic">
-            <summary>
-            don't know what this does or if it's needed
-            </summary>
-            <returns></returns>
-        </member>
         <member name="T:Utah.Udot.Atspm.Repositories.ConfigurationRepositories.IDetectorCommentRepository">
             <summary>
             Detector Comment Repository

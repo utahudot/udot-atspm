@@ -23,11 +23,19 @@ using System.Net.Mail;
 
 namespace Utah.Udot.Atspm.Infrastructure.Services.EmailServices
 {
+    /// <summary>
+    /// Sendgrid email service
+    /// </summary>
     public class SendGridEmailService : ServiceObjectBase, IEmailService
     {
         private readonly EmailConfiguration _options;
         private readonly ILogger _logger;
 
+        /// <summary>
+        /// Sendgrid email service
+        /// </summary>
+        /// <param name="options"></param>
+        /// <param name="logger"></param>
         public SendGridEmailService(IOptionsSnapshot<EmailConfiguration> options, ILogger<SendGridEmailService> logger) : base(true)
         {
             _options = options?.Get(GetType().Name) ?? options?.Value;
