@@ -109,7 +109,7 @@ namespace Utah.Udot.Atspm.Extensions
         //}
 
         //[Obsolete("This method isn't currently being used")]
-        //public static int CheckVersionWithFirstDate(this ILocationRepository repo, string locationId)
+        //public static int CheckVersionWithFirstDate(this ILocationRepository repo, string LocationId)
         //{
         //    throw new NotImplementedException();
         //}
@@ -121,7 +121,7 @@ namespace Utah.Udot.Atspm.Extensions
         //}
 
         //[Obsolete("Not Required anymore")]
-        //public static bool Exists(this ILocationRepository repo, string locationId)
+        //public static bool Exists(this ILocationRepository repo, string LocationId)
         //{
         //    throw new NotImplementedException();
         //}
@@ -139,7 +139,7 @@ namespace Utah.Udot.Atspm.Extensions
         //}
 
         //[Obsolete("Use overload of GetLatestVersionOfAllLocations")]
-        //public static IReadOnlyList<Location> GetAllVersionsOfLocationBylocationId(this ILocationRepository repo, string locationId)
+        //public static IReadOnlyList<Location> GetAllVersionsOfLocationBylocationId(this ILocationRepository repo, string LocationId)
         //{
         //    throw new NotImplementedException();
         //}
@@ -151,13 +151,13 @@ namespace Utah.Udot.Atspm.Extensions
         //}
 
         //[Obsolete("This method isn't currently being used")]
-        //public static string GetLocationDescription(this ILocationRepository repo, string locationId)
+        //public static string GetLocationDescription(this ILocationRepository repo, string LocationId)
         //{
         //    throw new NotImplementedException();
         //}
 
         //[Obsolete("Use GetLatestVersionOfLocation")]
-        //public static Location GetLatestVersionOfLocationBylocationId(this ILocationRepository repo, string locationId)
+        //public static Location GetLatestVersionOfLocationBylocationId(this ILocationRepository repo, string LocationId)
         //{
         //    throw new NotImplementedException();
         //}
@@ -169,7 +169,7 @@ namespace Utah.Udot.Atspm.Extensions
         //}
 
         //[Obsolete("Use GetLatestVersionOfLocation")]
-        //public static string GetLocationLocation(this ILocationRepository repo, string locationId)
+        //public static string GetLocationLocation(this ILocationRepository repo, string LocationId)
         //{
         //    throw new NotImplementedException();
         //}
@@ -181,13 +181,13 @@ namespace Utah.Udot.Atspm.Extensions
         //}
 
         //[Obsolete("Use GetLatestVersionOfLocation")]
-        //public static Location GetVersionOfLocationByDate(this ILocationRepository repo, string locationId, DateTime startDate)
+        //public static Location GetVersionOfLocationByDate(this ILocationRepository repo, string LocationId, DateTime startDate)
         //{
         //    throw new NotImplementedException();
         //}
 
         //[Obsolete("Use GetLatestVersionOfLocation")]
-        //public static Location GetVersionOfLocationByDateWithDetectionTypes(this ILocationRepository repo, string locationId, DateTime startDate)
+        //public static Location GetVersionOfLocationByDateWithDetectionTypes(this ILocationRepository repo, string LocationId, DateTime startDate)
         //{
         //    throw new NotImplementedException();
         //}

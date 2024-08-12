@@ -20,8 +20,12 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Utah.Udot.Atspm.Data.Configuration
 {
+    /// <summary>
+    /// User area configuration
+    /// </summary>
     public class UserAreaConfiguration : IEntityTypeConfiguration<UserArea>
     {
+        /// <inheritdoc/>
         public void Configure(EntityTypeBuilder<UserArea> builder)
         {
             builder.ToTable(t => t.HasComment("UserAreas"));

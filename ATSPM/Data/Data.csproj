@@ -27,6 +27,9 @@
 	  <Compile Remove="Configuration\Aggregation\PriorityAggregationConfiguration.cs" />
 	  <Compile Remove="Configuration\Aggregation\SignalEventCountAggregationConfiguration.cs" />
 	  <Compile Remove="Configuration\Aggregation\SignalPlanAggregationConfiguration.cs" />
+	  <Compile Remove="Configuration\SpeedEventConfiguration.cs" />
+	  <Compile Remove="LegacyEventLogContext.cs" />
+	  <Compile Remove="SpeedContext.cs" />
 	</ItemGroup>
 	
 	<ItemGroup>
@@ -43,6 +46,9 @@
 	  <None Include="Configuration\Aggregation\PriorityAggregationConfiguration.cs" />
 	  <None Include="Configuration\Aggregation\SignalEventCountAggregationConfiguration.cs" />
 	  <None Include="Configuration\Aggregation\SignalPlanAggregationConfiguration.cs" />
+	  <None Include="Configuration\SpeedEventConfiguration.cs" />
+	  <None Include="LegacyEventLogContext.cs" />
+	  <None Include="SpeedContext.cs" />
 	</ItemGroup>
 
   <ItemGroup>

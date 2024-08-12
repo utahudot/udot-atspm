@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for Data - Utah.Udot.Atspm.Data.Models/ControllerLogArchive.cs
+// for Data - Utah.Udot.Atspm.Data.Enums/WatchDogIssueTypes.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,21 +15,28 @@
 // limitations under the License.
 #endregion
 
-#nullable disable
 
-
-namespace Utah.Udot.Atspm.Data.Models
+namespace Utah.Udot.Atspm.Data.Enums
 {
-    public partial class ControllerLogArchive
+    /// <summary>
+    /// Watchdog component types
+    /// </summary>
+    [Flags]
+    public enum WatchDogComponentTypes
     {
-        public string SignalIdentifier { get; set; }
-        public DateTime ArchiveDate { get; set; }
+        /// <summary>
+        /// Location
+        /// </summary>
+        Location,
 
-        public ICollection<ControllerEventLog> LogData { get; set; } = new List<ControllerEventLog>();
+        /// <summary>
+        /// Approach
+        /// </summary>
+        Approach,
 
-        public override string ToString()
-        {
-            return $"{SignalIdentifier}-{ArchiveDate:dd/MM/yyyy}-{LogData.Count}";
-        }
+        /// <summary>
+        /// Detector
+        /// </summary>
+        Detector
     }
 }

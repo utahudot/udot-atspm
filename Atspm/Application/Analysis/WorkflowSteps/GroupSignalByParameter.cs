@@ -16,20 +16,21 @@
 #endregion
 
 using System.Threading.Tasks.Dataflow;
+using Utah.Udot.Atspm.Data.Models.EventLogModels;
 using Utah.Udot.Atspm.Specifications;
 using Utah.Udot.NetStandardToolkit.Extensions;
 
 namespace Utah.Udot.Atspm.Analysis.WorkflowSteps
 {
-    public class GroupLocationByParameter : TransformManyProcessStepBase<Tuple<Location, IEnumerable<ControllerEventLog>>, Tuple<Location, int, IEnumerable<ControllerEventLog>>>
+    public class GroupLocationByParameter : TransformManyProcessStepBase<Tuple<Location, IEnumerable<IndianaEvent>>, Tuple<Location, int, IEnumerable<IndianaEvent>>>
     {
         public GroupLocationByParameter(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
 
-        protected override Task<IEnumerable<Tuple<Location, int, IEnumerable<ControllerEventLog>>>> Process(Tuple<Location, IEnumerable<ControllerEventLog>> input, CancellationToken cancelToken = default)
+        protected override Task<IEnumerable<Tuple<Location, int, IEnumerable<IndianaEvent>>>> Process(Tuple<Location, IEnumerable<IndianaEvent>> input, CancellationToken cancelToken = default)
         {
             var result = input.Item2
-                .FromSpecification(new ControllerLogLocationFilterSpecification(input.Item1))
-                .GroupBy(g => g.EventParam)
+                .FromSpecification(new IndianaLogLocationFilterSpecification(input.Item1))
+                .GroupBy(g => Convert.ToInt32(g.EventParam))
                 .Select(s => Tuple.Create(input.Item1, s.Key, s.AsEnumerable()));
 
             return Task.FromResult(result);

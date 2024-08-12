@@ -131,7 +131,7 @@ namespace Utah.Udot.Atspm.Extensions
             return repo.GetEventsByEventCodesParam(locationId, startTime, endTime, eventParameters, eventCodes).Count;
         }
 
-        //public static IReadOnlyList<IndianaEvent> GetAllAggregationCodes(this IIndianaEventLogRepository repo, string locationId, DateTime startTime, DateTime endTime)
+        //public static IReadOnlyList<IndianaEvent> GetAllAggregationCodes(this IIndianaEventLogRepository repo, string LocationId, DateTime startTime, DateTime endTime)
         //{
         //    var codes = new List<short>
         //    {
@@ -144,16 +144,16 @@ namespace Utah.Udot.Atspm.Extensions
         //        1
         //    };
 
-        //    var result = repo.GetEventsBetweenDates(locationId, startTime, endTime)
+        //    var result = repo.GetEventsBetweenDates(LocationId, startTime, endTime)
         //        .FromSpecification(new IndianaLogCodeAndParamSpecification(codes))
         //        .ToList();
 
         //    return result;
         //}
 
-        //public static int GetDetectorActivationCount(this IIndianaEventLogRepository repo, string locationId, DateTime startTime, DateTime endTime, int detectorChannel)
+        //public static int GetDetectorActivationCount(this IIndianaEventLogRepository repo, string LocationId, DateTime startTime, DateTime endTime, int detectorChannel)
         //{
-        //    var result = repo.GetEventsBetweenDates(locationId, startTime, endTime)
+        //    var result = repo.GetEventsBetweenDates(LocationId, startTime, endTime)
         //        .FromSpecification(new IndianaLogCodeAndParamSpecification(82, detectorChannel))
         //        .ToList().Count;
 
@@ -198,9 +198,9 @@ namespace Utah.Udot.Atspm.Extensions
             return result;
         }
 
-        //public static IReadOnlyList<IndianaEvent> GetSplitEvents(this IIndianaEventLogRepository repo, string locationId, DateTime startTime, DateTime endTime)
+        //public static IReadOnlyList<IndianaEvent> GetSplitEvents(this IIndianaEventLogRepository repo, string LocationId, DateTime startTime, DateTime endTime)
         //{
-        //    var result = repo.GetEventsBetweenDates(locationId, startTime, endTime)
+        //    var result = repo.GetEventsBetweenDates(LocationId, startTime, endTime)
         //        .Where(i => (int)i.EventCode > 130 && (int)i.EventCode < 150)
         //        .OrderBy(o => o.EventParam)
         //        .ToList();

@@ -20,8 +20,12 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Utah.Udot.Atspm.Data.Configuration
 {
+    /// <summary>
+    /// User jurisdiction configuration
+    /// </summary>
     public class UserJurisdictionConfiguration : IEntityTypeConfiguration<UserJurisdiction>
     {
+        /// <inheritdoc/>
         public void Configure(EntityTypeBuilder<UserJurisdiction> builder)
         {
             builder

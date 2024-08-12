@@ -15,13 +15,27 @@
 // limitations under the License.
 #endregion
 
-
+#nullable disable
 namespace Utah.Udot.Atspm.Data.Models
 {
+    /// <summary>
+    /// Users for jurisdiction
+    /// </summary>
     public class UserJurisdiction
     {
+       /// <summary>
+       /// User id
+       /// </summary>
         public string UserId { get; set; }
+        
+        /// <summary>
+        /// Jurisdiction id
+        /// </summary>
         public int JurisdictionId { get; set; }
+        
+        /// <summary>
+        /// Jursidiction
+        /// </summary>
         public virtual Jurisdiction Jurisdiction { get; set; }
     }
 }

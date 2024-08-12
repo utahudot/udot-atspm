@@ -19,20 +19,50 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Utah.Udot.Atspm.Data.Enums
 {
+    /// <summary>
+    /// MOvement types
+    /// </summary>
     public enum MovementTypes
     {
+        /// <summary>
+        /// Not applicable
+        /// </summary>
         [Display(Name = "Unknown", Order = 6)]
         NA = 0,
+
+        /// <summary>
+        /// Thru
+        /// </summary>
         [Display(Name = "Thru", Order = 3)]
         T = 1,
+
+        /// <summary>
+        /// Right
+        /// </summary>
         [Display(Name = "Right", Order = 5)]
         R = 2,
+
+        /// <summary>
+        /// Left
+        /// </summary>
         [Display(Name = "Left", Order = 1)]
         L = 3,
+
+        /// <summary>
+        /// Thru-right
+        /// </summary>
         [Display(Name = "Thru-Right", Order = 4)]
         TR = 4,
+
+        /// <summary>
+        /// Thru left
+        /// </summary>
         [Display(Name = "Thru-Left", Order = 2)]
         TL = 5,
+
+        /// <summary>
+        /// Northwest
+        /// </summary>
         [Display(Name = "Northwest", Order = 6)]
         NW = 6,
     }

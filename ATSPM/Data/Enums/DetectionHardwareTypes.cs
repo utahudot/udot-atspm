@@ -19,20 +19,50 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Utah.Udot.Atspm.Data.Enums
 {
+    /// <summary>
+    /// Detection hardware types
+    /// </summary>
     public enum DetectionHardwareTypes
     {
+        /// <summary>
+        /// Not applicable
+        /// </summary>
         [Display(Name = "Unknown", Order = 0)]
         NA = 0,
+
+        /// <summary>
+        /// Wavetronics matrix
+        /// </summary>
         [Display(Name = "Wavetronix Matrix", Order = 1)]
         WavetronixMatrix = 1,
+
+        /// <summary>
+        /// Wavetronix advance
+        /// </summary>
         [Display(Name = "Wavetronix Advance", Order = 2)]
         WavetronixAdvance = 2,
+
+        /// <summary>
+        /// Inductive loops
+        /// </summary>
         [Display(Name = "Inductive Loops", Order = 3)]
         InductiveLoops = 3,
+
+        /// <summary>
+        /// Sensys
+        /// </summary>
         [Display(Name = "Sensys", Order = 4)]
         Sensys = 4,
+
+        /// <summary>
+        /// Video
+        /// </summary>
         [Display(Name = "Video", Order = 5)]
         Video = 5,
+
+        /// <summary>
+        /// FLIR: thermal camera
+        /// </summary>
         [Display(Name = "FLIR: Thermal Camera", Order = 6)]
         FLIRThermalCamera = 6,
     }

@@ -126,9 +126,9 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
 
         //private void SetLocations(AggregationOptions options, List<Location> locations)
         //{
-        //    foreach (var locationIdentifier in options.LocationIdentifiers)
+        //    foreach (var LocationIdentifier in options.LocationIdentifiers)
         //    {
-        //        var location = locationRepository.GetLatestVersionOfLocation(locationIdentifier, options.Start);
+        //        var location = locationRepository.GetLatestVersionOfLocation(LocationIdentifier, options.Start);
         //        if (location != null)
         //        {
         //            locations.Add(location);

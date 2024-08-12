@@ -33,7 +33,7 @@ namespace Utah.Udot.Atspm.Repositories.ConfigurationRepositories
         #region Obsolete
 
         //[Obsolete("Related collection to Location model")]
-        //IReadOnlyList<Area> GetListOfAreasForLocation(string locationId);
+        //IReadOnlyList<Area> GetListOfAreasForLocation(string LocationId);
 
         //[Obsolete("Use GetList instead")]
         //IReadOnlyList<Area> GetAllAreas();

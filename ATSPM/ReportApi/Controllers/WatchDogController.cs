@@ -35,8 +35,8 @@ namespace Utah.Udot.Atspm.ReportApi.Controllers
         [HttpGet("GetIssueTypes")]
         public IEnumerable<WatchDogIssueTypeDTO> GetIssueTypes()
         {
-            var issues = Enum.GetValues(typeof(WatchDogIssueType))
-                .Cast<WatchDogIssueType>()
+            var issues = Enum.GetValues(typeof(WatchDogIssueTypes))
+                .Cast<WatchDogIssueTypes>()
                 .Select(e => new WatchDogIssueTypeDTO { Id = (int)e, Name = e.ToString() })
                 .ToList();
 
