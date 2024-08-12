@@ -22,8 +22,8 @@ using Utah.Udot.Atspm.Data.Enums;
 namespace Utah.Udot.Atspm.Data.Models.EventLogModels
 {
     /// <summary>
-    /// Indiana Traffic Signal Hi Resolution Data Logger Enumerations
-    /// <seealso cref="https://docs.lib.purdue.edu/jtrpdata/4/"/>
+    /// Indiana Traffic Signal Hi Resolution Data Logger Enumerations.
+    /// <seealso href="https://docs.lib.purdue.edu/jtrpdata/4/"/>
     /// </summary>
     public class IndianaEvent : EventLogModelBase
     {

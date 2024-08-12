@@ -20,7 +20,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using Utah.Udot.Atspm.Data;
+using Utah.Udot.Atspm.Data.Models;
 
 namespace Identity.Business.Tokens
 {

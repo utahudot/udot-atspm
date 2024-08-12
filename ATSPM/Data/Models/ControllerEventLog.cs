@@ -15,12 +15,18 @@
 // limitations under the License.
 #endregion
 
+using Utah.Udot.Atspm.Data.Models.EventLogModels;
 using Utah.Udot.NetStandardToolkit.Common;
 
 #nullable disable
+#pragma warning disable
 
 namespace Utah.Udot.Atspm.Data.Models
 {
+    /// <summary>
+    /// Legacy event log for indiana enumeration events
+    /// </summary>
+    [Obsolete($"use {nameof(IndianaEvent)} instead")]
     public class ControllerEventLog : ITimestamp
     {
         public string SignalIdentifier { get; set; }

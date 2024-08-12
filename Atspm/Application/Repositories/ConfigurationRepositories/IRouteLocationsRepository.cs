@@ -39,7 +39,7 @@ namespace Utah.Udot.Atspm.Repositories.ConfigurationRepositories
         //void DeleteById(int id);
 
         //[Obsolete("Use Update in the BaseClass")]
-        //void UpdateByRouteAndApproachID(int routeID, string locationId, int newOrderNumber);
+        //void UpdateByRouteAndApproachID(int routeID, string LocationId, int newOrderNumber);
 
         //[Obsolete("Use Add in the BaseClass")]
         //void Add(RouteLocation newRouteDetail);

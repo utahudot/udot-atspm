@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for Data - Utah.Udot.Atspm.Data.Models/AtspmConfigModelBase.cs
+// for Data - Utah.Udot.Atspm.Data/IdentityContext.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,21 +15,38 @@
 // limitations under the License.
 #endregion
 
-using Utah.Udot.NetStandardToolkit.BaseClasses;
-
-#nullable disable
+using Microsoft.AspNetCore.Identity;
 
 namespace Utah.Udot.Atspm.Data.Models
 {
     /// <summary>
-    /// Base class for configuration context models.
-    /// This base includes interfaces for working with user interfaces.
+    /// Application user
     /// </summary>
-    public class AtspmConfigModelBase<T> : ObjectModelBase
+    public class ApplicationUser : IdentityUser
     {
         /// <summary>
-        /// Primary key
+        /// First name
         /// </summary>
-        public T Id { get; set; }
+        public string? FirstName { get; set; }
+
+        /// <summary>
+        /// Last name
+        /// </summary>
+        public string? LastName { get; set; }
+
+        /// <summary>
+        /// Agency
+        /// </summary>
+        public string? Agency { get; set; }
+
+        /// <summary>
+        /// Full name
+        /// </summary>
+        public string FullName => $"{FirstName} {LastName}";
+
+        /// <summary>
+        /// Roles navigation property
+        /// </summary>
+        public ICollection<IdentityUserRole<string>>? Roles { get; set; }
     }
 }
