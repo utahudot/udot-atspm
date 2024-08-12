@@ -31,14 +31,14 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Host.ConfigureServices((host, services) =>
 {
-    services.AddIdentityDbContext(host);
+    services.AddDbContext<IdentityContext>(host, Microsoft.EntityFrameworkCore.QueryTrackingBehavior.NoTracking);
 
     services.AddIdentity<ApplicationUser, IdentityRole>() // Use AddDefaultIdentity if you don't need roles
     .AddEntityFrameworkStores<IdentityContext>()
     .AddDefaultTokenProviders();
 
-    services.AddAtspmAuthentication(host, builder);
-    services.AddAtspmAuthorization(host);
+    services.AddAtspmAuthentication(host);
+    services.AddAtspmAuthorization();
 
     services.AddEmailServices(host);
 

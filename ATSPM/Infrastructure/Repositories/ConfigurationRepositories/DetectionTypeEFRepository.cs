@@ -38,11 +38,6 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories
 
         #region IDetectionTypeRepository
 
-        public IReadOnlyList<DetectionType> GetAllDetectionTypesNoBasic()
-        {
-            throw new NotImplementedException();
-        }
-
         #endregion
     }
 }

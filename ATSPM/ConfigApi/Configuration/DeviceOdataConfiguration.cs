@@ -28,7 +28,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Configuration
     public class DeviceOdataConfiguration : IModelConfiguration
     {
         ///<inheritdoc/>
-        public void Apply(ODataModelBuilder builder, ApiVersion apiVersion, string routePrefix)
+        public void Apply(ODataModelBuilder builder, ApiVersion apiVersion, string? routePrefix)
         {
             var model = builder.EntitySet<Device>("Device").EntityType;
             model.Page(default, default);

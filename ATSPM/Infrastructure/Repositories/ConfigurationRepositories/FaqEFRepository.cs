@@ -28,6 +28,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories
 
         #region Overrides
 
+        /// <inheritdoc/>
         public override IQueryable<Faq> GetList()
         {
             return base.GetList().OrderBy(o => o.DisplayOrder);
