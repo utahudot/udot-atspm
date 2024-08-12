@@ -19,7 +19,7 @@ using Identity.Business.Users;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Utah.Udot.Atspm.Data;
+using Utah.Udot.Atspm.Data.Models;
 
 namespace Identity.Controllers
 {

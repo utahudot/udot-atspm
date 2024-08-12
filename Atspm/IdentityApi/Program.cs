@@ -23,6 +23,7 @@ using Identity.Business.Users;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi.Models;
 using Utah.Udot.Atspm.Data;
+using Utah.Udot.Atspm.Data.Models;
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 

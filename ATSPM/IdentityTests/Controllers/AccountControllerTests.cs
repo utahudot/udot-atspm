@@ -24,7 +24,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Moq;
 using System.Security.Claims;
-using Utah.Udot.Atspm.Data;
+using Utah.Udot.Atspm.Data.Models;
 using Xunit;
 
 namespace Utah.Udot.Atspm.IdentityTests.Controllers
