@@ -21,7 +21,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace InfrastructureTests.Attributes
+namespace Utah.Udot.Atspm.InfrastructureTests.Attributes
 {
     //https://github.com/AutoFixture/AutoFixture/wiki/Examples-of-using-behaviors
 

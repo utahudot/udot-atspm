@@ -19,7 +19,7 @@ using System;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace InfrastructureTests
+namespace Utah.Udot.Atspm.InfrastructureTests
 {
     public class TestingStuffs : IDisposable
     {

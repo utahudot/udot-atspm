@@ -172,6 +172,11 @@ namespace Utah.Udot.Atspm.Analysis.Common
             return time >= Start && time < End;
         }
 
+        public virtual bool InRange(ITimestamp time)
+        {
+            return time.Timestamp >= Start && time.Timestamp < End;
+        }
+
         #endregion
 
         public List<CorrectedDetectorEvent> DetectorEvents { get; set; } = new();
