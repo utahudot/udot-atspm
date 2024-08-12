@@ -24,16 +24,12 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.EventLogDecoders
     /// <inheritdoc/>
     public class AscToIndianaDecoder : EventLogDecoderBase<IndianaEvent>
     {
-        /// <inheritdoc/>
-        //public ASCEventLogDecoder(ILogger<ASCEventLogDecoder> log, IOptionsSnapshot<SignalControllerDecoderConfiguration> options) : base(log, options) { }
-
         #region Properties
 
         #endregion
 
         #region Methods
 
-        /// <inheritdoc/>
         //public override bool CanExecute(Tuple<Device, FileInfo> parameter)
         //{
         //    var device = parameter.Item1;
@@ -48,9 +44,9 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.EventLogDecoders
         {
             stream?.Seek(2, SeekOrigin.Begin);
 
-            using (DeflateStream deflateStream = new DeflateStream(stream, CompressionMode.Decompress))
+            using (DeflateStream deflateStream = new(stream, CompressionMode.Decompress))
             {
-                MemoryStream returnStream = new MemoryStream();
+                MemoryStream returnStream = new();
                 deflateStream.CopyTo(returnStream);
                 returnStream.Position = 0;
 

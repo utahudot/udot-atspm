@@ -89,8 +89,8 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddAtspmEFEventLogRepositories();
     s.AddAtspmEFAggregationRepositories();
 
-    s.AddAtspmAuthentication(h, builder);
-    s.AddAtspmAuthorization(h);
+    s.AddAtspmAuthentication(h);
+    s.AddAtspmAuthorization();
 
     //https://learn.microsoft.com/en-us/aspnet/core/fundamentals/http-logging/?view=aspnetcore-7.0
     s.AddHttpLogging(l =>

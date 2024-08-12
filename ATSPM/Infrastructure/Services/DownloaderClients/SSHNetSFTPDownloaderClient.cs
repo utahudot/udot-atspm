@@ -65,10 +65,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
                     Timeout = TimeSpan.FromMilliseconds(connectionTimeout)
                 };
 
-                if (_client == null)
-                {
-                    _client = new SftpClientWrapper(connectionInfo);
-                }
+                _client ??= new SftpClientWrapper(connectionInfo);
 
                 _client.OperationTimeout = TimeSpan.FromMilliseconds(operationTImeout);
 
