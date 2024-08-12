@@ -17,11 +17,11 @@
 
 using Microsoft.IdentityModel.Tokens;
 using System.ComponentModel.DataAnnotations;
+using Utah.Udot.Atspm.Business.TurningMovementCounts;
 using Utah.Udot.Atspm.Data.Enums;
-using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
 
-namespace ATSPM.ReportApi.ReportServices
+namespace Utah.Udot.Atspm.ReportApi.ReportServices
 {
     /// <summary>
     /// Turning movement count report service

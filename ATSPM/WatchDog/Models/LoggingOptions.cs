@@ -15,7 +15,8 @@
 // limitations under the License.
 #endregion
 
-namespace WatchDog.Models
+
+namespace Utah.Udot.Atspm.WatchDog.Models
 {
 
     public class LoggingOptions

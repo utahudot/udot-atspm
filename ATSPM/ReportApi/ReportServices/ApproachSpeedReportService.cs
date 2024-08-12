@@ -16,10 +16,10 @@
 #endregion
 
 using Microsoft.IdentityModel.Tokens;
-using Utah.Udot.Atspm.Data.Models;
+using Utah.Udot.Atspm.Business.ApproachSpeed;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
 
-namespace ATSPM.ReportApi.ReportServices
+namespace Utah.Udot.Atspm.ReportApi.ReportServices
 {
     /// <summary>
     /// Approach speed report service

@@ -16,9 +16,10 @@
 #endregion
 
 using Microsoft.IdentityModel.Tokens;
+using Utah.Udot.Atspm.Business.PurdueCoordinationDiagram;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
 
-namespace ATSPM.ReportApi.ReportServices
+namespace Utah.Udot.Atspm.ReportApi.ReportServices
 {
     /// <summary>
     /// Purdue coordination diagram report service

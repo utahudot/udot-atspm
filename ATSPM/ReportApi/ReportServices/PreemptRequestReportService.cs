@@ -16,8 +16,9 @@
 #endregion
 
 using Microsoft.IdentityModel.Tokens;
+using Utah.Udot.Atspm.Business.PreemptServiceRequest;
 
-namespace ATSPM.ReportApi.ReportServices
+namespace Utah.Udot.Atspm.ReportApi.ReportServices
 {
     /// <summary>
     /// Preempt request report service

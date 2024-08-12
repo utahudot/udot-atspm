@@ -16,8 +16,9 @@
 #endregion
 
 using Microsoft.IdentityModel.Tokens;
+using Utah.Udot.Atspm.Business.LeftTurnGapAnalysis;
 
-namespace ATSPM.ReportApi.ReportServices
+namespace Utah.Udot.Atspm.ReportApi.ReportServices
 {
     /// <summary>
     /// Left turn gap analysis report service

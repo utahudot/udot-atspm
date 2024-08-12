@@ -16,12 +16,12 @@
 #endregion
 
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Extensions;
 using System.ComponentModel.DataAnnotations;
+using Utah.Udot.Atspm.Business.TimingAndActuation;
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
 
-namespace ATSPM.ReportApi.ReportServices
+namespace Utah.Udot.Atspm.ReportApi.ReportServices
 {
     /// <summary>
     /// Timing and actuation report service

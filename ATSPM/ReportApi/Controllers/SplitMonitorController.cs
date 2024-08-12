@@ -17,9 +17,9 @@
 
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
-using Utah.Udot.Atspm.Data.Models;
+using Utah.Udot.Atspm.Business.SplitMonitor;
 
-namespace ATSPM.ReportApi.Controllers
+namespace Utah.Udot.Atspm.ReportApi.Controllers
 {
     /// <summary>
     /// Split monitor report controller

@@ -16,7 +16,9 @@
 #endregion
 
 
-namespace ATSPM.ReportApi.ReportServices
+using Utah.Udot.Atspm.ReportApi.DataAggregation;
+
+namespace Utah.Udot.Atspm.ReportApi.ReportServices
 {
 
 
@@ -85,31 +87,31 @@ namespace ATSPM.ReportApi.ReportServices
         {
             switch (options.AggregationType)
             {
-                case Application.Enums.AggregationType.DetectorEventCount:
+                case AggregationType.DetectorEventCount:
                     return detectorVolumeAggregationOptions.CreateMetric(options);
-                case Application.Enums.AggregationType.Speed:
+                case AggregationType.Speed:
                     return approachSpeedAggregationOptions.CreateMetric(options);
-                case Application.Enums.AggregationType.Pcd:
+                case AggregationType.Pcd:
                     return approachPcdAggregationOptions.CreateMetric(options);
-                case Application.Enums.AggregationType.PhaseCycle:
+                case AggregationType.PhaseCycle:
                     return phaseCycleAggregationOptions.CreateMetric(options);
-                case Application.Enums.AggregationType.SplitFail:
+                case AggregationType.SplitFail:
                     return approachSplitFailAggregationOptions.CreateMetric(options);
-                case Application.Enums.AggregationType.YellowRedActivation:
+                case AggregationType.YellowRedActivation:
                     return approachYellowRedActivationsAggregationOptions.CreateMetric(options);
-                case Application.Enums.AggregationType.Preemption:
+                case AggregationType.Preemption:
                     return preemptionAggregationOptions.CreateMetric(options);
-                case Application.Enums.AggregationType.Priority:
+                case AggregationType.Priority:
                     return priorityAggregationOptions.CreateMetric(options);
-                case Application.Enums.AggregationType.SignalEventCount:
+                case AggregationType.SignalEventCount:
                     return signalEventCountAggregationOptions.CreateMetric(options);
-                case Application.Enums.AggregationType.PhaseTermination:
+                case AggregationType.PhaseTermination:
                     return phaseTerminationAggregationOptions.CreateMetric(options);
-                case Application.Enums.AggregationType.Ped:
+                case AggregationType.Ped:
                     return phasePedAggregationOptions.CreateMetric(options);
-                case Application.Enums.AggregationType.PhaseLeftTurn:
+                case AggregationType.PhaseLeftTurn:
                     return phaseLeftTurnGapAggregationOptions.CreateMetric(options);
-                case Application.Enums.AggregationType.SplitMonitor:
+                case AggregationType.SplitMonitor:
                     return phaseSplitMonitorAggregationOptions.CreateMetric(options);
                 default:
                     throw new Exception("Unknown Chart Type");

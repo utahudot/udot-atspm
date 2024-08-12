@@ -19,9 +19,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Utah.Udot.Atspm.Data;
 using Utah.Udot.Atspm.Data.Models;
-using WatchDog.Models;
+using Utah.Udot.Atspm.WatchDog.Models;
 
-namespace WatchDog.Services
+namespace Utah.Udot.Atspm.WatchDog.Services
 {
     public class ScanService
     {
@@ -99,8 +99,8 @@ namespace WatchDog.Services
             var users = await GetUsersWithWatchDogClaimAsync();
 
 
-            if (!emailOptions.WeekdayOnly || (emailOptions.WeekdayOnly && emailOptions.ScanDate.DayOfWeek != DayOfWeek.Saturday &&
-               emailOptions.ScanDate.DayOfWeek != DayOfWeek.Sunday))
+            if (!emailOptions.WeekdayOnly || emailOptions.WeekdayOnly && emailOptions.ScanDate.DayOfWeek != DayOfWeek.Saturday &&
+               emailOptions.ScanDate.DayOfWeek != DayOfWeek.Sunday)
             {
                 var recordsFromTheDayBefore = new List<WatchDogLogEvent>();
                 if (!emailOptions.EmailAllErrors)

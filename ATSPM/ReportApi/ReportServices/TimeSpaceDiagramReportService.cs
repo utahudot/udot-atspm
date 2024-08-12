@@ -17,10 +17,10 @@
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Utah.Udot.Atspm.Data.Models;
+using Utah.Udot.Atspm.Business.TimeSpaceDiagram;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
 
-namespace ATSPM.ReportApi.ReportServices
+namespace Utah.Udot.Atspm.ReportApi.ReportServices
 {
     /// <summary>
     /// Time space diagram report service

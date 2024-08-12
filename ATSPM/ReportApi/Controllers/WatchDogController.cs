@@ -17,10 +17,10 @@
 
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
+using Utah.Udot.Atspm.Business.Watchdog;
 using Utah.Udot.Atspm.Data.Enums;
-using Utah.Udot.Atspm.Data.Models;
 
-namespace ATSPM.ReportApi.Controllers
+namespace Utah.Udot.Atspm.ReportApi.Controllers
 {
     /// <summary>
     /// Preempt request report controller
