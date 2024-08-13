@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>Utah.Udot.Atspm.Infrastructure</id>
+    <version>5.0.0-rc.1</version>
+    <title>Udot Automated Traffic Performance Measure Application</title>
+    <authors>utah.udot.gov</authors>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <license type="file">LICENSE</license>
+    <licenseUrl>https://aka.ms/deprecateLicenseUrl</licenseUrl>
+    <readme>README.md</readme>
+    <projectUrl>https://github.com/utahudot/udot-atspm</projectUrl>
+    <description>Library that defines services and workflows for the Automated Traffic Performance Measures platform</description>
+    <copyright>Copyright utah.udot.gov</copyright>
+    <tags>C# .net standard .net core</tags>
+    <repository url="https://github.com/utahudot/udot-atspm" />
+    <dependencies>
+      <group targetFramework="net7.0">
+        <dependency id="Utah.Udot.Atspm" version="5.0.0-rc.1" exclude="Build,Analyzers" />
+        <dependency id="Utah.Udot.Atspm.MySqlDatabaseProvider" version="1.0.0" exclude="Build,Analyzers" />
+        <dependency id="Utah.Udot.Atspm.OracleDatabaseProvider" version="1.0.0" exclude="Build,Analyzers" />
+        <dependency id="Utah.Udot.Atspm.PostgreSQLDatabaseProvider" version="1.0.0" exclude="Build,Analyzers" />
+        <dependency id="Utah.Udot.Atspm.SqlDatabaseProvider" version="1.0.0" exclude="Build,Analyzers" />
+        <dependency id="Utah.Udot.Atspm.SqlLiteDatabaseProvider" version="1.0.0" exclude="Build,Analyzers" />
+        <dependency id="FluentFTP" version="44.0.1" exclude="Build,Analyzers" />
+        <dependency id="Google.Cloud.Diagnostics.Common" version="5.0.0" exclude="Build,Analyzers" />
+        <dependency id="MailKit" version="4.5.0" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.AspNetCore.Authentication.JwtBearer" version="7.0.14" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.AspNetCore.Authentication.OpenIdConnect" version="7.0.20" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.CodeAnalysis" version="4.9.2" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.EntityFrameworkCore.Proxies" version="7.0.14" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.Extensions.Hosting.Abstractions" version="7.0.0" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.Extensions.Logging.Abstractions" version="7.0.0" exclude="Build,Analyzers" />
+        <dependency id="OData.Swagger" version="1.0.0" exclude="Build,Analyzers" />
+        <dependency id="Parquet.Net" version="3.10.0" exclude="Build,Analyzers" />
+        <dependency id="SSH.NET" version="2020.0.2" exclude="Build,Analyzers" />
+        <dependency id="SendGrid" version="9.29.3" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\Infrastructure\bin\Debug\net7.0\Utah.Udot.Atspm.Infrastructure.dll" target="lib\net7.0\Utah.Udot.Atspm.Infrastructure.dll" />
+    <file src="C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\Infrastructure\bin\Debug\net7.0\Utah.Udot.Atspm.Infrastructure.xml" target="lib\net7.0\Utah.Udot.Atspm.Infrastructure.xml" />
+    <file src="C:\Users\christianbaker\source\repos\udot-atspm\LICENSE" target="\LICENSE" />
+    <file src="C:\Users\christianbaker\source\repos\udot-atspm\README.md" target="\README.md" />
+  </files>
+</package>

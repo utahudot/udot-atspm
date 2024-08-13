@@ -1,0 +1,912 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Utah.Udot.Atspm.Infrastructure</name>
+    </assembly>
+    <members>
+        <member name="T:Utah.Udot.Atspm.Infrastructure.Converters.CompressedJsonFileTranscoder">
+            <summary>
+            Transcodes binary data to compressed json format
+            </summary>
+        </member>
+        <member name="P:Utah.Udot.Atspm.Infrastructure.Converters.CompressedJsonFileTranscoder.FileExtension">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Converters.CompressedJsonFileTranscoder.DecodeItem``1(System.Byte[])">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Converters.CompressedJsonFileTranscoder.EncodeItem``1(``0)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Utah.Udot.Atspm.Infrastructure.Converters.JsonFileTranscoder">
+            <summary>
+            Transcodes binary data to json format
+            </summary>
+        </member>
+        <member name="P:Utah.Udot.Atspm.Infrastructure.Converters.JsonFileTranscoder.FileExtension">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Converters.JsonFileTranscoder.DecodeItem``1(System.Byte[])">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Converters.JsonFileTranscoder.EncodeItem``1(``0)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Utah.Udot.Atspm.Infrastructure.Converters.ParquetFileTranscoder">
+            <summary>
+            Transcodes binary data to parquet format
+            </summary>
+        </member>
+        <member name="P:Utah.Udot.Atspm.Infrastructure.Converters.ParquetFileTranscoder.FileExtension">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Converters.ParquetFileTranscoder.DecodeItem``1(System.Byte[])">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Converters.ParquetFileTranscoder.EncodeItem``1(``0)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Utah.Udot.Atspm.Infrastructure.Extensions.EntityFrameworkCoreExtensions">
+            <summary>
+            Extensions for entity framework
+            </summary>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Extensions.EntityFrameworkCoreExtensions.CreateKeyValueName(Microsoft.EntityFrameworkCore.DbContext,System.Object)">
+            <summary>
+            Generates the key value name of an entity type from <paramref name="db"/>
+            </summary>
+            <param name="db"></param>
+            <param name="item"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Utah.Udot.Atspm.Infrastructure.Extensions.DatabaseOption">
+            <summary>
+            Specifies database provider and connection string
+            </summary>
+        </member>
+        <member name="P:Utah.Udot.Atspm.Infrastructure.Extensions.DatabaseOption.Provider">
+            <summary>
+            Provider Type
+            <list type="bullet">
+            <item><see cref="F:Utah.Udot.Atspm.SqlDatabaseProvider.SqlServerProvider.ProviderName"/></item>
+            <item><see cref="F:Utah.Udot.Atspm.PostgreSQLDatabaseProvider.PostgreSQLProvider.ProviderName"/></item>
+            <item><see cref="F:Utah.Udot.Atspm.SqlLiteDatabaseProvider.SqlLiteProvider.ProviderName"/></item>
+            <item><see cref="F:Utah.Udot.Atspm.MySqlDatabaseProvider.MySqlProvider.ProviderName"/></item>
+            <item><see cref="F:Utah.Udot.Atspm.OracleDatabaseProvider.OracleProvider.ProviderName"/></item>
+            </list>
+            </summary>
+        </member>
+        <member name="P:Utah.Udot.Atspm.Infrastructure.Extensions.DatabaseOption.ConnectionString">
+            <summary>
+            Database connection string for given <see cref="P:Utah.Udot.Atspm.Infrastructure.Extensions.DatabaseOption.Provider"/>
+            </summary>
+        </member>
+        <member name="T:Utah.Udot.Atspm.Infrastructure.Extensions.ServiceExtensions">
+            <summary>
+            Extensions for <see cref="N:Microsoft.Extensions.Hosting"/> environment
+            </summary>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Extensions.ServiceExtensions.AddDbContext``1(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Hosting.HostBuilderContext,Microsoft.EntityFrameworkCore.QueryTrackingBehavior)">
+            <summary>
+            Registers the given context as a service in the <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/> using the database provider specified in configuration
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="services"></param>
+            <param name="host"></param>
+            <param name="tracking"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Extensions.ServiceExtensions.AddAtspmDbContext(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Hosting.HostBuilderContext)">
+            <summary>
+            Adds database contexts based connection strings and assigns database provider
+            <seealso href="https://learn.microsoft.com/en-us/ef/core/providers/?tabs=dotnet-core-cli"/>
+            </summary>
+            <param name="services"></param>
+            <param name="host"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Extensions.ServiceExtensions.AddAtspmAuthentication(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Hosting.HostBuilderContext)">
+            <summary>
+            Add atspm authentication
+            </summary>
+            <param name="services"></param>
+            <param name="host"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Extensions.ServiceExtensions.AddAtspmAuthorization(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Add atspm authorization
+            </summary>
+            <param name="services"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Extensions.ServiceExtensions.AddAtspmEFConfigRepositories(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Adds all repositories that belong to <see cref="T:Utah.Udot.Atspm.Data.ConfigContext"/>
+            </summary>
+            <param name="services"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Extensions.ServiceExtensions.AddAtspmEFEventLogRepositories(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Adds all repositories that belong to <see cref="T:Utah.Udot.Atspm.Data.EventLogContext"/>
+            </summary>
+            <param name="services"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Extensions.ServiceExtensions.AddAtspmEFAggregationRepositories(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Adds all repositories that belong to <see cref="T:Utah.Udot.Atspm.Data.AggregationContext"/>
+            </summary>
+            <param name="services"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Extensions.ServiceExtensions.AddDownloaderClients(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Adds all implementations of <see cref="T:Utah.Udot.Atspm.Services.IDownloaderClient"/>
+            </summary>
+            <param name="services"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Extensions.ServiceExtensions.AddDeviceDownloaders(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Hosting.HostBuilderContext)">
+            <summary>
+            Adds all implementations of <see cref="T:Utah.Udot.Atspm.Services.IDeviceDownloader"/> which have corresponding <see cref="T:Utah.Udot.Atspm.Configuration.DeviceDownloaderConfiguration"/> definitions
+            </summary>
+            <param name="services"></param>
+            <param name="host"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Extensions.ServiceExtensions.AddEventLogDecoders(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Adds all implementations of <see cref="T:Utah.Udot.Atspm.Services.IEventLogDecoder"/>
+            </summary>
+            <param name="services"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Extensions.ServiceExtensions.AddEventLogImporters(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Hosting.HostBuilderContext)">
+            <summary>
+            Adds all implementations of <see cref="T:Utah.Udot.Atspm.Services.IEventLogImporter"/> which have corresponding <see cref="T:Utah.Udot.Atspm.Configuration.EventLogImporterConfiguration"/> definitions
+            </summary>
+            <param name="services"></param>
+            <param name="host"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Extensions.ServiceExtensions.AddEmailServices(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Hosting.HostBuilderContext)">
+            <summary>
+            Adds all implementations of <see cref="T:Utah.Udot.NetStandardToolkit.Services.IEmailService"/> which have corresponding <see cref="T:Utah.Udot.NetStandardToolkit.Configuration.EmailConfiguration"/> definitions
+            </summary>
+            <param name="services"></param>
+            <param name="host"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Utah.Udot.Atspm.Infrastructure.Properties.Resources">
+            <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:Utah.Udot.Atspm.Infrastructure.Properties.Resources.ResourceManager">
+            <summary>
+              Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:Utah.Udot.Atspm.Infrastructure.Properties.Resources.Culture">
+            <summary>
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
+        <member name="T:Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories.AggregationEFRepository">
+            <inheritdoc cref="T:Utah.Udot.Atspm.Repositories.AggregationRepositories.IAggregationRepository"/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories.AggregationEFRepository.#ctor(Utah.Udot.Atspm.Data.AggregationContext,Microsoft.Extensions.Logging.ILogger{Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories.AggregationEFRepository})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories.AggregationEFRepository.GetArchivedAggregations(System.String,System.DateOnly,System.DateOnly,System.Type)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories.AggregationEFRepository.GetArchivedAggregations``1(System.String,System.DateOnly,System.DateOnly)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories.AggregationEFRepository.GetArchivedAggregations(System.String,System.DateOnly,System.DateOnly)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories.AggregationEFRepositoryBase`1">
+            <summary>
+            Generic base for accessing aggregations
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories.AggregationEFRepositoryBase`1.#ctor(Utah.Udot.Atspm.Data.AggregationContext,Microsoft.Extensions.Logging.ILogger{Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories.AggregationEFRepositoryBase{`0}})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories.AggregationEFRepositoryBase`1.GetAggregationsBetweenDates(System.String,System.DateTime,System.DateTime)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories.ApproachPcdAggregationEFRepository">
+            <inheritdoc cref="T:Utah.Udot.Atspm.Repositories.AggregationRepositories.IApproachPcdAggregationRepository"/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories.ApproachPcdAggregationEFRepository.#ctor(Utah.Udot.Atspm.Data.AggregationContext,Microsoft.Extensions.Logging.ILogger{Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories.ApproachPcdAggregationEFRepository})">
+            <inheritdoc/>
+        </member>
+        <member name="T:Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories.ApproachSpeedAggregationEFRepository">
+            <inheritdoc cref="T:Utah.Udot.Atspm.Repositories.AggregationRepositories.IApproachSpeedAggregationRepository"/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories.ApproachSpeedAggregationEFRepository.#ctor(Utah.Udot.Atspm.Data.AggregationContext,Microsoft.Extensions.Logging.ILogger{Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories.ApproachSpeedAggregationEFRepository})">
+            <inheritdoc/>
+        </member>
+        <member name="T:Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories.ApproachSplitFailAggregationEFRepository">
+            <inheritdoc cref="T:Utah.Udot.Atspm.Repositories.AggregationRepositories.IApproachSplitFailAggregationRepository"/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories.ApproachSplitFailAggregationEFRepository.#ctor(Utah.Udot.Atspm.Data.AggregationContext,Microsoft.Extensions.Logging.ILogger{Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories.ApproachSplitFailAggregationEFRepository})">
+            <inheritdoc/>
+        </member>
+        <member name="T:Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories.ApproachYellowRedActivationAggregationEFRepository">
+            <inheritdoc cref="T:Utah.Udot.Atspm.Repositories.AggregationRepositories.IApproachYellowRedActivationAggregationRepository"/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories.ApproachYellowRedActivationAggregationEFRepository.#ctor(Utah.Udot.Atspm.Data.AggregationContext,Microsoft.Extensions.Logging.ILogger{Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories.ApproachYellowRedActivationAggregationEFRepository})">
+            <inheritdoc/>
+        </member>
+        <member name="T:Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories.DetectorEventCountAggregationEFRepository">
+            <inheritdoc cref="T:Utah.Udot.Atspm.Repositories.AggregationRepositories.IDetectorEventCountAggregationRepository"/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories.DetectorEventCountAggregationEFRepository.#ctor(Utah.Udot.Atspm.Data.AggregationContext,Microsoft.Extensions.Logging.ILogger{Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories.DetectorEventCountAggregationEFRepository})">
+            <inheritdoc/>
+        </member>
+        <member name="T:Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories.PhaseCycleAggregationEFRepository">
+            <inheritdoc cref="T:Utah.Udot.Atspm.Repositories.AggregationRepositories.IPhaseCycleAggregationRepository"/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories.PhaseCycleAggregationEFRepository.#ctor(Utah.Udot.Atspm.Data.AggregationContext,Microsoft.Extensions.Logging.ILogger{Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories.PhaseCycleAggregationEFRepository})">
+            <inheritdoc/>
+        </member>
+        <member name="T:Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories.PhaseLeftTurnGapAggregationEFRepository">
+            <inheritdoc cref="T:Utah.Udot.Atspm.Repositories.AggregationRepositories.IPhaseLeftTurnGapAggregationRepository"/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories.PhaseLeftTurnGapAggregationEFRepository.#ctor(Utah.Udot.Atspm.Data.AggregationContext,Microsoft.Extensions.Logging.ILogger{Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories.PhaseLeftTurnGapAggregationEFRepository})">
+            <inheritdoc/>
+        </member>
+        <member name="T:Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories.PhasePedAggregationEFRepository">
+            <inheritdoc cref="T:Utah.Udot.Atspm.Repositories.AggregationRepositories.IPhaseLeftTurnGapAggregationRepository"/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories.PhasePedAggregationEFRepository.#ctor(Utah.Udot.Atspm.Data.AggregationContext,Microsoft.Extensions.Logging.ILogger{Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories.PhasePedAggregationEFRepository})">
+            <inheritdoc/>
+        </member>
+        <member name="T:Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories.PhaseSplitMonitorAggregationEFRepository">
+            <inheritdoc cref="T:Utah.Udot.Atspm.Repositories.AggregationRepositories.IPhaseSplitMonitorAggregationRepository"/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories.PhaseSplitMonitorAggregationEFRepository.#ctor(Utah.Udot.Atspm.Data.AggregationContext,Microsoft.Extensions.Logging.ILogger{Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories.PhaseSplitMonitorAggregationEFRepository})">
+            <inheritdoc/>
+        </member>
+        <member name="T:Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories.PhaseTerminationAggregationEFRepository">
+            <inheritdoc cref="T:Utah.Udot.Atspm.Repositories.AggregationRepositories.IPhaseTerminationAggregationRepository"/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories.PhaseTerminationAggregationEFRepository.#ctor(Utah.Udot.Atspm.Data.AggregationContext,Microsoft.Extensions.Logging.ILogger{Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories.PhaseTerminationAggregationEFRepository})">
+            <inheritdoc/>
+        </member>
+        <member name="T:Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories.PreemptionAggregationEFRepository">
+            <inheritdoc cref="T:Utah.Udot.Atspm.Repositories.AggregationRepositories.IPreemptionAggregationRepository"/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories.PreemptionAggregationEFRepository.#ctor(Utah.Udot.Atspm.Data.AggregationContext,Microsoft.Extensions.Logging.ILogger{Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories.PreemptionAggregationEFRepository})">
+            <inheritdoc/>
+        </member>
+        <member name="T:Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories.PriorityAggregationEFRepository">
+            <inheritdoc cref="T:Utah.Udot.Atspm.Repositories.AggregationRepositories.IPriorityAggregationRepository"/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories.PriorityAggregationEFRepository.#ctor(Utah.Udot.Atspm.Data.AggregationContext,Microsoft.Extensions.Logging.ILogger{Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories.PriorityAggregationEFRepository})">
+            <inheritdoc/>
+        </member>
+        <member name="T:Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories.SignalEventCountAggregationEFRepository">
+            <inheritdoc cref="T:Utah.Udot.Atspm.Repositories.AggregationRepositories.ISignalEventCountAggregationRepository"/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories.SignalEventCountAggregationEFRepository.#ctor(Utah.Udot.Atspm.Data.AggregationContext,Microsoft.Extensions.Logging.ILogger{Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories.SignalEventCountAggregationEFRepository})">
+            <inheritdoc/>
+        </member>
+        <member name="T:Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories.SignalPlanAggregationEFRepository">
+            <inheritdoc cref="T:Utah.Udot.Atspm.Repositories.AggregationRepositories.ISignalPlanAggregationRepository"/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories.SignalPlanAggregationEFRepository.#ctor(Utah.Udot.Atspm.Data.AggregationContext,Microsoft.Extensions.Logging.ILogger{Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories.SignalPlanAggregationEFRepository})">
+            <inheritdoc/>
+        </member>
+        <member name="T:Utah.Udot.Atspm.Infrastructure.Repositories.ATSPMRepositoryEFBase`1">
+            <summary>
+            Base repository for working with entity framework contexts
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.ATSPMRepositoryEFBase`1.#ctor(Microsoft.EntityFrameworkCore.DbContext,Microsoft.Extensions.Logging.ILogger{Utah.Udot.Atspm.Infrastructure.Repositories.ATSPMRepositoryEFBase{`0}})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.ATSPMRepositoryEFBase`1.Add(`0)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.ATSPMRepositoryEFBase`1.AddAsync(`0)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.ATSPMRepositoryEFBase`1.AddRange(System.Collections.Generic.IEnumerable{`0})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.ATSPMRepositoryEFBase`1.AddRangeAsync(System.Collections.Generic.IEnumerable{`0})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.ATSPMRepositoryEFBase`1.GetList(System.Linq.Expressions.Expression{System.Func{`0,System.Boolean}})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.ATSPMRepositoryEFBase`1.GetList(Utah.Udot.NetStandardToolkit.Specifications.ISpecification{`0})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.ATSPMRepositoryEFBase`1.GetList">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.ATSPMRepositoryEFBase`1.GetListAsync(System.Linq.Expressions.Expression{System.Func{`0,System.Boolean}})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.ATSPMRepositoryEFBase`1.GetListAsync(Utah.Udot.NetStandardToolkit.Specifications.ISpecification{`0})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.ATSPMRepositoryEFBase`1.Lookup(`0)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.ATSPMRepositoryEFBase`1.Lookup(System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.ATSPMRepositoryEFBase`1.LookupAsync(`0)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.ATSPMRepositoryEFBase`1.LookupAsync(System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.ATSPMRepositoryEFBase`1.Remove(`0)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.ATSPMRepositoryEFBase`1.RemoveAsync(`0)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.ATSPMRepositoryEFBase`1.RemoveRange(System.Collections.Generic.IEnumerable{`0})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.ATSPMRepositoryEFBase`1.RemoveRangeAsync(System.Collections.Generic.IEnumerable{`0})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.ATSPMRepositoryEFBase`1.Update(`0)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.ATSPMRepositoryEFBase`1.UpdateAsync(`0)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.ATSPMRepositoryEFBase`1.UpdateRange(System.Collections.Generic.IEnumerable{`0})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.ATSPMRepositoryEFBase`1.UpdateRangeAsync(System.Collections.Generic.IEnumerable{`0})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.ATSPMRepositoryEFBase`1.UpdateCollections(`0,Microsoft.EntityFrameworkCore.ChangeTracking.CollectionEntry,`0,Microsoft.EntityFrameworkCore.ChangeTracking.CollectionEntry)">
+            <summary>
+            Determines what to do with related one-to-many and many-to-many entity collections
+            </summary>
+            <param name="oldItem"></param>
+            <param name="oldCollection"></param>
+            <param name="newItem"></param>
+            <param name="newCollection"></param>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.ATSPMRepositoryEFBase`1.UpdateReferences(`0,Microsoft.EntityFrameworkCore.ChangeTracking.ReferenceEntry,`0,Microsoft.EntityFrameworkCore.ChangeTracking.ReferenceEntry)">
+            <summary>
+            Determines what to do with related one-to-one entities
+            </summary>
+            <param name="oldItem"></param>
+            <param name="oldReference"></param>
+            <param name="newItem"></param>
+            <param name="newReference"></param>
+        </member>
+        <member name="T:Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.ApproachEFRepository">
+            <inheritdoc cref="T:Utah.Udot.Atspm.Repositories.ConfigurationRepositories.IApproachRepository"/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.ApproachEFRepository.#ctor(Utah.Udot.Atspm.Data.ConfigContext,Microsoft.Extensions.Logging.ILogger{Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.ApproachEFRepository})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.ApproachEFRepository.GetList">
+            <inheritdoc/>
+        </member>
+        <member name="T:Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.AreaEFRepository">
+            <inheritdoc cref="T:Utah.Udot.Atspm.Repositories.ConfigurationRepositories.IAreaRepository"/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.AreaEFRepository.#ctor(Utah.Udot.Atspm.Data.ConfigContext,Microsoft.Extensions.Logging.ILogger{Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.AreaEFRepository})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.AreaEFRepository.GetList">
+            <inheritdoc/>
+        </member>
+        <member name="T:Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.DetectionTypeEFRepository">
+            <inheritdoc cref="T:Utah.Udot.Atspm.Repositories.ConfigurationRepositories.IDetectionTypeRepository"/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.DetectionTypeEFRepository.#ctor(Utah.Udot.Atspm.Data.ConfigContext,Microsoft.Extensions.Logging.ILogger{Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.DetectionTypeEFRepository})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.DetectionTypeEFRepository.GetList">
+            <inheritdoc/>
+        </member>
+        <member name="T:Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.DetectorCommentEFRepository">
+            <inheritdoc cref="T:Utah.Udot.Atspm.Repositories.ConfigurationRepositories.IDetectorCommentRepository"/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.DetectorCommentEFRepository.#ctor(Utah.Udot.Atspm.Data.ConfigContext,Microsoft.Extensions.Logging.ILogger{Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.DetectorCommentEFRepository})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.DetectorCommentEFRepository.GetList">
+            <inheritdoc/>
+        </member>
+        <member name="T:Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.DetectorEFRepository">
+            <inheritdoc cref="T:Utah.Udot.Atspm.Repositories.ConfigurationRepositories.IDetectorRepository"/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.DetectorEFRepository.#ctor(Utah.Udot.Atspm.Data.ConfigContext,Microsoft.Extensions.Logging.ILogger{Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.DetectorEFRepository})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.DetectorEFRepository.GetList">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.DetectorEFRepository.UpdateCollections(Utah.Udot.Atspm.Data.Models.Detector,Microsoft.EntityFrameworkCore.ChangeTracking.CollectionEntry,Utah.Udot.Atspm.Data.Models.Detector,Microsoft.EntityFrameworkCore.ChangeTracking.CollectionEntry)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.DeviceConfigurationEFRepository">
+            <inheritdoc cref="T:Utah.Udot.Atspm.Repositories.ConfigurationRepositories.IDeviceConfigurationRepository"/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.DeviceConfigurationEFRepository.#ctor(Utah.Udot.Atspm.Data.ConfigContext,Microsoft.Extensions.Logging.ILogger{Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.DeviceConfigurationEFRepository})">
+            <inheritdoc/>
+        </member>
+        <member name="T:Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.DeviceEFRepository">
+            <inheritdoc cref="T:Utah.Udot.Atspm.Repositories.ConfigurationRepositories.IDeviceRepository"/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.DeviceEFRepository.#ctor(Utah.Udot.Atspm.Data.ConfigContext,Microsoft.Extensions.Logging.ILogger{Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.DeviceEFRepository})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.DeviceEFRepository.GetList">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.DeviceEFRepository.GetActiveDevicesByLocation(System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.DeviceEFRepository.GetActiveDevicesByAllLatestLocations">
+            <inheritdoc/>
+        </member>
+        <member name="T:Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.DirectionTypeEFRepository">
+            <inheritdoc cref="T:Utah.Udot.Atspm.Repositories.ConfigurationRepositories.IDirectionTypeRepository"/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.DirectionTypeEFRepository.#ctor(Utah.Udot.Atspm.Data.ConfigContext,Microsoft.Extensions.Logging.ILogger{Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.DirectionTypeEFRepository})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.DirectionTypeEFRepository.GetList">
+            <inheritdoc/>
+        </member>
+        <member name="T:Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.FaqEFRepository">
+            <inheritdoc cref="T:Utah.Udot.Atspm.Repositories.ConfigurationRepositories.IFaqRepository"/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.FaqEFRepository.#ctor(Utah.Udot.Atspm.Data.ConfigContext,Microsoft.Extensions.Logging.ILogger{Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.FaqEFRepository})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.FaqEFRepository.GetList">
+            <inheritdoc/>
+        </member>
+        <member name="T:Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.JurisdictionEFRepository">
+            <inheritdoc cref="T:Utah.Udot.Atspm.Repositories.ConfigurationRepositories.IJurisdictionRepository"/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.JurisdictionEFRepository.#ctor(Utah.Udot.Atspm.Data.ConfigContext,Microsoft.Extensions.Logging.ILogger{Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.JurisdictionEFRepository})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.JurisdictionEFRepository.GetList">
+            <inheritdoc/>
+        </member>
+        <member name="T:Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.LocationEFRepository">
+            <inheritdoc cref="T:Utah.Udot.Atspm.Repositories.ConfigurationRepositories.ILocationRepository"/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.LocationEFRepository.#ctor(Utah.Udot.Atspm.Data.ConfigContext,Microsoft.Extensions.Logging.ILogger{Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.LocationEFRepository})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.LocationEFRepository.UpdateCollections(Utah.Udot.Atspm.Data.Models.Location,Microsoft.EntityFrameworkCore.ChangeTracking.CollectionEntry,Utah.Udot.Atspm.Data.Models.Location,Microsoft.EntityFrameworkCore.ChangeTracking.CollectionEntry)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.LocationEFRepository.GetAllVersionsOfLocation(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.LocationEFRepository.GetLatestVersionOfAllLocations">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.LocationEFRepository.GetLatestVersionOfLocation(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.LocationEFRepository.GetVersionByIdDetached(System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.LocationEFRepository.GetLatestVersionOfLocation(System.String,System.DateTime)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.LocationEFRepository.GetLatestVersionOfAllLocations(System.DateTime)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.LocationEFRepository.GetLocationsBetweenDates(System.String,System.DateTime,System.DateTime)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.LocationTypeEFRepository">
+            <inheritdoc cref="T:Utah.Udot.Atspm.Repositories.ConfigurationRepositories.ILocationTypeRepository"/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.LocationTypeEFRepository.#ctor(Utah.Udot.Atspm.Data.ConfigContext,Microsoft.Extensions.Logging.ILogger{Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.LocationTypeEFRepository})">
+            <inheritdoc/>
+        </member>
+        <member name="T:Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.MeasureCommentEFRepository">
+            <inheritdoc cref="T:Utah.Udot.Atspm.Repositories.ConfigurationRepositories.IMeasureCommentRepository"/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.MeasureCommentEFRepository.#ctor(Utah.Udot.Atspm.Data.ConfigContext,Microsoft.Extensions.Logging.ILogger{Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.MeasureCommentEFRepository})">
+            <inheritdoc/>
+        </member>
+        <member name="T:Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.MeasureOptionsEFRepository">
+            <inheritdoc cref="T:Utah.Udot.Atspm.Repositories.ConfigurationRepositories.IMeasureOptionsRepository"/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.MeasureOptionsEFRepository.#ctor(Utah.Udot.Atspm.Data.ConfigContext,Microsoft.Extensions.Logging.ILogger{Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.MeasureOptionsEFRepository})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.MeasureOptionsEFRepository.GetList">
+            <inheritdoc/>
+        </member>
+        <member name="T:Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.MeasureTypeEFRepository">
+            <inheritdoc cref="T:Utah.Udot.Atspm.Repositories.ConfigurationRepositories.IMeasureTypeRepository"/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.MeasureTypeEFRepository.#ctor(Utah.Udot.Atspm.Data.ConfigContext,Microsoft.Extensions.Logging.ILogger{Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.MeasureTypeEFRepository})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.MeasureTypeEFRepository.GetList">
+            <inheritdoc/>
+        </member>
+        <member name="T:Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.MenuItemEFRepository">
+            <inheritdoc cref="T:Utah.Udot.Atspm.Repositories.ConfigurationRepositories.IMenuItemReposiotry"/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.MenuItemEFRepository.#ctor(Utah.Udot.Atspm.Data.ConfigContext,Microsoft.Extensions.Logging.ILogger{Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.MenuItemEFRepository})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.MenuItemEFRepository.GetList">
+            <inheritdoc/>
+        </member>
+        <member name="T:Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.ProductEFRepository">
+            <inheritdoc cref="T:Utah.Udot.Atspm.Repositories.ConfigurationRepositories.IProductRepository"/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.ProductEFRepository.#ctor(Utah.Udot.Atspm.Data.ConfigContext,Microsoft.Extensions.Logging.ILogger{Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.ProductEFRepository})">
+            <inheritdoc/>
+        </member>
+        <member name="T:Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.RegionEFRepository">
+            <inheritdoc cref="T:Utah.Udot.Atspm.Repositories.ConfigurationRepositories.IRegionsRepository"/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.RegionEFRepository.#ctor(Utah.Udot.Atspm.Data.ConfigContext,Microsoft.Extensions.Logging.ILogger{Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.RegionEFRepository})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.RegionEFRepository.GetList">
+            <inheritdoc/>
+        </member>
+        <member name="T:Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.RouteDistanceEFRepository">
+            <inheritdoc cref="T:Utah.Udot.Atspm.Repositories.ConfigurationRepositories.IRouteDistanceRepository"/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.RouteDistanceEFRepository.#ctor(Utah.Udot.Atspm.Data.ConfigContext,Microsoft.Extensions.Logging.ILogger{Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.RouteDistanceEFRepository})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.RouteDistanceEFRepository.GetList">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.RouteDistanceEFRepository.GetRouteDistanceByLocationIdentifiers(System.String,System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.RouteEFRepository">
+            <inheritdoc cref="T:Utah.Udot.Atspm.Repositories.ConfigurationRepositories.IRouteRepository"/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.RouteEFRepository.#ctor(Utah.Udot.Atspm.Data.ConfigContext,Microsoft.Extensions.Logging.ILogger{Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.RouteEFRepository})">
+            <inheritdoc/>
+        </member>
+        <member name="T:Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.RouteLocationEFRepository">
+            <inheritdoc cref="T:Utah.Udot.Atspm.Repositories.ConfigurationRepositories.IRouteLocationsRepository"/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.RouteLocationEFRepository.#ctor(Utah.Udot.Atspm.Data.ConfigContext,Microsoft.Extensions.Logging.ILogger{Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.RouteLocationEFRepository})">
+            <inheritdoc/>
+        </member>
+        <member name="T:Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.UserAreaEFRepository">
+            <inheritdoc cref="T:Utah.Udot.Atspm.Repositories.ConfigurationRepositories.IUserAreaRepository"/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.UserAreaEFRepository.#ctor(Utah.Udot.Atspm.Data.ConfigContext,Microsoft.Extensions.Logging.ILogger{Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.UserAreaEFRepository})">
+            <inheritdoc/>
+        </member>
+        <member name="T:Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.UserJurisdictionEFRepository">
+            <inheritdoc cref="T:Utah.Udot.Atspm.Repositories.ConfigurationRepositories.IUserJurisdictionRepository"/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.UserJurisdictionEFRepository.#ctor(Utah.Udot.Atspm.Data.ConfigContext,Microsoft.Extensions.Logging.ILogger{Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.UserJurisdictionEFRepository})">
+            <inheritdoc/>
+        </member>
+        <member name="T:Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.UserRegionEFRepository">
+            <inheritdoc cref="T:Utah.Udot.Atspm.Repositories.ConfigurationRepositories.IUserRegionRepository"/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.UserRegionEFRepository.#ctor(Utah.Udot.Atspm.Data.ConfigContext,Microsoft.Extensions.Logging.ILogger{Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.UserRegionEFRepository})">
+            <inheritdoc/>
+        </member>
+        <member name="T:Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.VersionHistoryEFRepository">
+            <inheritdoc cref="T:Utah.Udot.Atspm.Repositories.ConfigurationRepositories.IVersionHistoryRepository"/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.VersionHistoryEFRepository.#ctor(Utah.Udot.Atspm.Data.ConfigContext,Microsoft.Extensions.Logging.ILogger{Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.VersionHistoryEFRepository})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories.VersionHistoryEFRepository.GetList">
+            <inheritdoc/>
+        </member>
+        <member name="T:Utah.Udot.Atspm.Infrastructure.Repositories.EventLogRepositories.EventLogEFRepository">
+            <inheritdoc cref="T:Utah.Udot.Atspm.Repositories.EventLogRepositories.IEventLogRepository"/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.EventLogRepositories.EventLogEFRepository.#ctor(Utah.Udot.Atspm.Data.EventLogContext,Microsoft.Extensions.Logging.ILogger{Utah.Udot.Atspm.Infrastructure.Repositories.EventLogRepositories.EventLogEFRepository})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.EventLogRepositories.EventLogEFRepository.GetArchivedEvents(System.String,System.DateOnly,System.DateOnly,System.Type,System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.EventLogRepositories.EventLogEFRepository.GetArchivedEvents``1(System.String,System.DateOnly,System.DateOnly,System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.EventLogRepositories.EventLogEFRepository.GetArchivedEvents(System.String,System.DateOnly,System.DateOnly)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.EventLogRepositories.EventLogEFRepository.GetArchivedEvents(System.String,System.DateOnly,System.DateOnly,System.Type)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.EventLogRepositories.EventLogEFRepository.GetArchivedEvents(System.String,System.DateOnly,System.DateOnly,System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.EventLogRepositories.EventLogEFRepository.GetArchivedEvents``1(System.String,System.DateOnly,System.DateOnly)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Utah.Udot.Atspm.Infrastructure.Repositories.EventLogRepositories.EventLogEFRepositoryBase`1">
+            <summary>
+            Generic base for accessing device event logs
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.EventLogRepositories.EventLogEFRepositoryBase`1.#ctor(Utah.Udot.Atspm.Data.EventLogContext,Microsoft.Extensions.Logging.ILogger{Utah.Udot.Atspm.Infrastructure.Repositories.EventLogRepositories.EventLogEFRepositoryBase{`0}})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.EventLogRepositories.EventLogEFRepositoryBase`1.GetEventsBetweenDates(System.String,System.DateTime,System.DateTime)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Utah.Udot.Atspm.Infrastructure.Repositories.EventLogRepositories.IndianaEventLogEFRepository">
+            <inheritdoc cref="T:Utah.Udot.Atspm.Repositories.EventLogRepositories.IIndianaEventLogRepository"/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.EventLogRepositories.IndianaEventLogEFRepository.#ctor(Utah.Udot.Atspm.Data.EventLogContext,Microsoft.Extensions.Logging.ILogger{Utah.Udot.Atspm.Infrastructure.Repositories.EventLogRepositories.IndianaEventLogEFRepository})">
+            <inheritdoc/>
+        </member>
+        <member name="T:Utah.Udot.Atspm.Infrastructure.Repositories.EventLogRepositories.SpeedEventLogEFRepository">
+            <inheritdoc cref="T:Utah.Udot.Atspm.Repositories.EventLogRepositories.ISpeedEventLogRepository"/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.EventLogRepositories.SpeedEventLogEFRepository.#ctor(Utah.Udot.Atspm.Data.EventLogContext,Microsoft.Extensions.Logging.ILogger{Utah.Udot.Atspm.Infrastructure.Repositories.EventLogRepositories.SpeedEventLogEFRepository})">
+            <inheritdoc/>
+        </member>
+        <member name="T:Utah.Udot.Atspm.Infrastructure.Repositories.WatchDogLogEventEFRepository">
+            <inheritdoc cref="T:Utah.Udot.Atspm.Repositories.IWatchDogEventLogRepository"/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Repositories.WatchDogLogEventEFRepository.#ctor(Utah.Udot.Atspm.Data.ConfigContext,Microsoft.Extensions.Logging.ILogger{Utah.Udot.Atspm.Infrastructure.Repositories.WatchDogLogEventEFRepository})">
+            <inheritdoc/>
+        </member>
+        <member name="T:Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders.DeviceDownloader">
+            <inheritdoc cref="T:Utah.Udot.Atspm.Services.IDeviceDownloader"/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders.DeviceDownloader.#ctor(System.Collections.Generic.IEnumerable{Utah.Udot.Atspm.Services.IDownloaderClient},Microsoft.Extensions.Logging.ILogger{Utah.Udot.Atspm.Services.IDeviceDownloader},Microsoft.Extensions.Options.IOptionsSnapshot{Utah.Udot.Atspm.Configuration.DeviceDownloaderConfiguration})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders.DeviceDownloader.GenerateLocalFilePath(Utah.Udot.Atspm.Data.Models.Device,System.String)">
+            <summary>
+            Generates a pattern for folder structure used for temp event log storage
+            </summary>
+            <param name="value"></param>
+            <param name="file"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders.DeviceDownloader.CanExecute(Utah.Udot.Atspm.Data.Models.Device)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders.DeviceDownloader.Execute(Utah.Udot.Atspm.Data.Models.Device,System.IProgress{Utah.Udot.Atspm.Common.ControllerDownloadProgress},System.Threading.CancellationToken)">
+            <exception cref="T:System.ArgumentNullException"></exception>
+            <exception cref="T:Utah.Udot.Atspm.Exceptions.InvalidDeviceIpAddressException"></exception>
+            <exception cref="T:Utah.Udot.NetStandardToolkit.Exceptions.ExecuteException"></exception>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders.DeviceDownloader.DisposeManagedCode">
+            <inheritdoc/>
+        </member>
+        <member name="T:Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients.FluentFTPDownloaderClient">
+            <summary>
+            Connect to services and interact with their file directories using <see cref="T:FluentFTP.IAsyncFtpClient"/>
+            </summary>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients.FluentFTPDownloaderClient.#ctor">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients.FluentFTPDownloaderClient.#ctor(FluentFTP.IAsyncFtpClient)">
+            <summary>
+            <inheritdoc/>
+            </summary>
+            <param name="client">External client used for special settings and mocking</param>
+        </member>
+        <member name="P:Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients.FluentFTPDownloaderClient.Protocol">
+            <inheritdoc/>
+        </member>
+        <member name="P:Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients.FluentFTPDownloaderClient.IsConnected">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients.FluentFTPDownloaderClient.ConnectAsync(System.Net.IPEndPoint,System.Net.NetworkCredential,System.Int32,System.Int32,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients.FluentFTPDownloaderClient.DeleteFileAsync(System.String,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients.FluentFTPDownloaderClient.DisconnectAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients.FluentFTPDownloaderClient.DownloadFileAsync(System.String,System.String,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients.FluentFTPDownloaderClient.ListDirectoryAsync(System.String,System.Threading.CancellationToken,System.String[])">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients.FluentFTPDownloaderClient.DisposeManagedCode">
+            <inheritdoc/>
+        </member>
+        <member name="T:Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients.HttpDownloaderClient">
+            <summary>
+            Connect to services and interact with their file directories using <see cref="T:System.Net.Http.HttpClient"/>
+            </summary>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients.HttpDownloaderClient.#ctor">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients.HttpDownloaderClient.#ctor(System.Net.Http.HttpClient)">
+            <summary>
+            <inheritdoc/>
+            </summary>
+            <param name="client">External client used for special settings and mocking</param>
+        </member>
+        <member name="P:Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients.HttpDownloaderClient.Protocol">
+            <inheritdoc/>
+        </member>
+        <member name="P:Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients.HttpDownloaderClient.IsConnected">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients.HttpDownloaderClient.ConnectAsync(System.Net.IPEndPoint,System.Net.NetworkCredential,System.Int32,System.Int32,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients.HttpDownloaderClient.DeleteFileAsync(System.String,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients.HttpDownloaderClient.DisconnectAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients.HttpDownloaderClient.DownloadFileAsync(System.String,System.String,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients.HttpDownloaderClient.ListDirectoryAsync(System.String,System.Threading.CancellationToken,System.String[])">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients.HttpDownloaderClient.DisposeManagedCode">
+            <inheritdoc/>
+        </member>
+        <member name="T:Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients.SSHNetSFTPDownloaderClient">
+            <summary>
+            Connect to services and interact with their file directories using <see cref="T:Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients.ISftpClientWrapper"/>
+            </summary>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients.SSHNetSFTPDownloaderClient.#ctor">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients.SSHNetSFTPDownloaderClient.#ctor(Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients.ISftpClientWrapper)">
+            <summary>
+            <inheritdoc/>
+            </summary>
+            <param name="client">External client used for special settings and mocking</param>
+        </member>
+        <member name="P:Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients.SSHNetSFTPDownloaderClient.Protocol">
+            <inheritdoc/>
+        </member>
+        <member name="P:Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients.SSHNetSFTPDownloaderClient.IsConnected">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients.SSHNetSFTPDownloaderClient.ConnectAsync(System.Net.IPEndPoint,System.Net.NetworkCredential,System.Int32,System.Int32,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients.SSHNetSFTPDownloaderClient.DeleteFileAsync(System.String,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients.SSHNetSFTPDownloaderClient.DisconnectAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients.SSHNetSFTPDownloaderClient.DownloadFileAsync(System.String,System.String,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients.SSHNetSFTPDownloaderClient.ListDirectoryAsync(System.String,System.Threading.CancellationToken,System.String[])">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients.SSHNetSFTPDownloaderClient.DisposeManagedCode">
+            <inheritdoc/>
+        </member>
+        <member name="T:Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients.ISftpClientWrapper">
+            <summary>
+            Interface wrapper for Renci.SshNet so it can be mocked, tested and injected
+            </summary>
+        </member>
+        <member name="T:Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients.SftpClientWrapper">
+            <summary>
+            Implementation wrapper for Renci.SshNet so it can be mocked, tested and injected
+            </summary>
+        </member>
+        <member name="T:Utah.Udot.Atspm.Infrastructure.Services.EmailServices.SendGridEmailService">
+            <summary>
+            Sendgrid email service
+            </summary>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Services.EmailServices.SendGridEmailService.#ctor(Microsoft.Extensions.Options.IOptionsSnapshot{Utah.Udot.NetStandardToolkit.Configuration.EmailConfiguration},Microsoft.Extensions.Logging.ILogger{Utah.Udot.Atspm.Infrastructure.Services.EmailServices.SendGridEmailService})">
+            <summary>
+            Sendgrid email service
+            </summary>
+            <param name="options"></param>
+            <param name="logger"></param>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Services.EmailServices.SendGridEmailService.SendEmailAsync(System.Net.Mail.MailMessage)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Utah.Udot.Atspm.Infrastructure.Services.EmailServices.SmtpEmailService">
+            <summary>
+            Smtp email service
+            </summary>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Services.EmailServices.SmtpEmailService.#ctor(Microsoft.Extensions.Options.IOptionsSnapshot{Utah.Udot.NetStandardToolkit.Configuration.EmailConfiguration},Microsoft.Extensions.Logging.ILogger{Utah.Udot.Atspm.Infrastructure.Services.EmailServices.SmtpEmailService})">
+            <summary>
+            Smtp email service
+            </summary>
+            <param name="options"></param>
+            <param name="logger"></param>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Services.EmailServices.SmtpEmailService.SendEmailAsync(System.Net.Mail.MailMessage)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Utah.Udot.Atspm.Infrastructure.Services.EventLogDecoders.AscToIndianaDecoder">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Services.EventLogDecoders.AscToIndianaDecoder.Decompress(System.IO.Stream)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Services.EventLogDecoders.AscToIndianaDecoder.Decode(Utah.Udot.Atspm.Data.Models.Device,System.IO.Stream,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Utah.Udot.Atspm.Infrastructure.Services.EventLogDecoders.EventLogDecoderBase`1">
+            <inheritdoc cref="T:Utah.Udot.Atspm.Services.IEventLogDecoder`1"/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Services.EventLogDecoders.EventLogDecoderBase`1.IsCompressed(System.IO.Stream)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Services.EventLogDecoders.EventLogDecoderBase`1.IsEncoded(System.IO.Stream)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Services.EventLogDecoders.EventLogDecoderBase`1.Decompress(System.IO.Stream)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Services.EventLogDecoders.EventLogDecoderBase`1.Decode(Utah.Udot.Atspm.Data.Models.Device,System.IO.Stream,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Services.EventLogDecoders.EventLogDecoderBase`1.Utah#Udot#Atspm#Services#IEventLogDecoder#Decode(Utah.Udot.Atspm.Data.Models.Device,System.IO.Stream,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Utah.Udot.Atspm.Infrastructure.Services.EventLogDecoders.MaxtimeToIndianaDecoder">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Services.EventLogDecoders.MaxtimeToIndianaDecoder.Decode(Utah.Udot.Atspm.Data.Models.Device,System.IO.Stream,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Utah.Udot.Atspm.Infrastructure.Services.EventLogImporters.EventLogFileImporter">
+            <inheritdoc cref="T:Utah.Udot.Atspm.Services.IEventLogImporter"/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Services.EventLogImporters.EventLogFileImporter.#ctor(System.Collections.Generic.IEnumerable{Utah.Udot.Atspm.Services.IEventLogDecoder},Microsoft.Extensions.Logging.ILogger{Utah.Udot.Atspm.Services.IEventLogImporter},Microsoft.Extensions.Options.IOptionsSnapshot{Utah.Udot.Atspm.Configuration.EventLogImporterConfiguration})">
+            <inheritdoc cref="T:Utah.Udot.Atspm.Services.IEventLogImporter"/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Services.EventLogImporters.EventLogFileImporter.CanExecute(System.Tuple{Utah.Udot.Atspm.Data.Models.Device,System.IO.FileInfo})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.Infrastructure.Services.EventLogImporters.EventLogFileImporter.Execute(System.Tuple{Utah.Udot.Atspm.Data.Models.Device,System.IO.FileInfo},System.IProgress{Utah.Udot.Atspm.Common.ControllerDecodeProgress},System.Threading.CancellationToken)">
+            <inheritdoc/>
+            <exception cref="T:System.ArgumentNullException"></exception>
+            <exception cref="T:System.IO.FileNotFoundException"></exception>
+            <exception cref="T:Utah.Udot.NetStandardToolkit.Exceptions.ExecuteException"></exception>
+        </member>
+    </members>
+</doc>

@@ -1,0 +1,1005 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>DomainCore</name>
+    </assembly>
+    <members>
+        <member name="T:ATSPM.Domain.BaseClasses.ObjectModelBase">
+            <summary>
+            <c>ObjectModelBase</c> for data object models implementing:
+            <list type="table">
+            
+            <item>
+            <term><see cref="T:System.ComponentModel.INotifyPropertyChanged"/></term>
+            <description>Notifies clients that a property value has changed.</description>
+            </item>
+            
+            <item>
+            <term><see cref="T:System.ComponentModel.INotifyPropertyChanging"/></term>
+            <description>Notifies clients that a property value is changing.</description>
+            </item>
+            
+            <item>
+            <term><see cref="T:System.ComponentModel.IEditableObject"/></term>
+            <description>Provides functionality to commit or rollback changes to an object that is used as a data source.</description>
+            </item>
+            
+            <item>
+            <term><see cref="T:System.ComponentModel.INotifyDataErrorInfo"/></term>
+            <description>Defines members that data entity classes can implement to provide custom synchronous and asynchronous validation support.</description>
+            </item>
+            
+            <item>
+            <term><see cref="T:System.ComponentModel.IRevertibleChangeTracking"/></term>
+            <description>Provides support for rolling back the changes.</description>
+            </item>
+            
+            <item>
+            <term><see cref="T:System.ICloneable"/></term>
+            <description>Supports cloning, which creates a new instance of a class with the same value as an existing instance.</description>
+            </item>
+            
+            </list>
+            </summary>
+        </member>
+        <member name="F:ATSPM.Domain.BaseClasses.ObjectModelBase.changes">
+            <summary>
+            Dictionary of properties that have pending changes.
+            </summary>
+        </member>
+        <member name="M:ATSPM.Domain.BaseClasses.ObjectModelBase.Set``1(``0@,``0,System.Collections.Generic.IEqualityComparer{``0},System.String)">
+            <summary>
+            Sets a properties value and raises the <see cref="E:ATSPM.Domain.BaseClasses.ObservableObjectBase.PropertyChanging"/> and <see cref="E:ATSPM.Domain.BaseClasses.ObservableObjectBase.PropertyChanged"/> events if <paramref name="newValue"/> != <paramref name="currentValue"/>.
+            </summary>
+            <remarks>Overriden from <see cref="T:ATSPM.Domain.BaseClasses.ObservableObjectBase"/> to check for validation errors and change tracking.</remarks>
+        </member>
+        <member name="M:ATSPM.Domain.BaseClasses.ObjectModelBase.AddValidationRule``2(System.String,System.String,System.Linq.Expressions.Expression{System.Func{``0,``1,System.Boolean}})">
+            <summary>
+            Add a validation rule. Object model will not set property values if rules are not met.
+            <para>
+            <example> Example:
+            <code>AddValidationRule("TelephoneNumber", "Invalid Telephone Number", (DataModel, Value) => !DateModel.TelephoneNumber.IsValidTelephoneNumber(Value))</code>
+            </example>
+            </para>
+            </summary>
+            <remarks>Normally, rules would be defined in constructor of Object Model.</remarks>
+            <typeparam name="T1">Object Model</typeparam>
+            <typeparam name="T2"></typeparam>
+            <param name="propertyName">Name of property to apply rule to.</param>
+            <param name="message">Notification message if rule is not met.</param>
+            <param name="rule">Rule expression to add to rules list for <paramref name="propertyName"/>.</param>
+        </member>
+        <member name="M:ATSPM.Domain.BaseClasses.ObjectModelBase.AddChange``1(System.String,``0)">
+            <summary>
+            Add change to <see cref="F:ATSPM.Domain.BaseClasses.ObjectModelBase.changes"/> for tracking.
+            </summary>
+            <typeparam name="T">Changed property type.</typeparam>
+            <param name="propertyName">Changed property name.</param>
+            <param name="value">Changed property value.</param>
+        </member>
+        <member name="P:ATSPM.Domain.BaseClasses.ObjectModelBase.HasErrors">
+            <inheritdoc/>
+        </member>
+        <member name="E:ATSPM.Domain.BaseClasses.ObjectModelBase.ErrorsChanged">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Domain.BaseClasses.ObjectModelBase.GetErrors(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Domain.BaseClasses.ObjectModelBase.BeginEdit">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Domain.BaseClasses.ObjectModelBase.CancelEdit">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Domain.BaseClasses.ObjectModelBase.EndEdit">
+            <inheritdoc/>
+        </member>
+        <member name="P:ATSPM.Domain.BaseClasses.ObjectModelBase.IsChanged">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Domain.BaseClasses.ObjectModelBase.AcceptChanges">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Domain.BaseClasses.ObjectModelBase.RejectChanges">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Domain.BaseClasses.ObjectModelBase.Clone">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Domain.BaseClasses.ObjectModelBase.RaiseErrorChanged(System.String)">
+            <summary>
+            Raise <see cref="E:ATSPM.Domain.BaseClasses.ObjectModelBase.ErrorsChanged"/> event that property has pending changes.
+            </summary>
+            <param name="propertyName">Name of property that has pending changes</param>
+        </member>
+        <member name="T:ATSPM.Domain.BaseClasses.ObservableObjectBase">
+            <summary>
+            <c>ObservableObjectBase</c> for observable objects implementing:
+            <list type="table">
+            <item>
+            <term><see cref="T:System.ComponentModel.INotifyPropertyChanged"/></term>
+            <description>Notifies clients that a property value has changed.</description>
+            </item>
+            <item>
+            <term><see cref="T:System.ComponentModel.INotifyPropertyChanging"/></term>
+            <description>Notifies clients that a property value is changing.</description>
+            </item>
+            </list>
+            </summary>
+        </member>
+        <member name="E:ATSPM.Domain.BaseClasses.ObservableObjectBase.PropertyChanged">
+            <inheritdoc/>
+        </member>
+        <member name="E:ATSPM.Domain.BaseClasses.ObservableObjectBase.PropertyChanging">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Domain.BaseClasses.ObservableObjectBase.Set``1(``0@,``0,System.String)">
+            <summary>
+            Sets a properties value and raises the <see cref="E:ATSPM.Domain.BaseClasses.ObservableObjectBase.PropertyChanging"/> and <see cref="E:ATSPM.Domain.BaseClasses.ObservableObjectBase.PropertyChanged"/> events if <paramref name="newValue"/> != <paramref name="currentValue"/>.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="currentValue">Current property value.</param>
+            <param name="newValue">New value to change property to.</param>
+            <param name="propertyName">Name of property to change value of.</param>
+            <returns>Returns <c>false</c> if property is changed to <paramref name="newValue"/>, else returns <c>false</c> </returns>
+        </member>
+        <member name="M:ATSPM.Domain.BaseClasses.ObservableObjectBase.Set``1(``0@,``0,System.Collections.Generic.IEqualityComparer{``0},System.String)">
+            <summary>
+            Sets a properties value and raises the <see cref="E:ATSPM.Domain.BaseClasses.ObservableObjectBase.PropertyChanging"/> and <see cref="E:ATSPM.Domain.BaseClasses.ObservableObjectBase.PropertyChanged"/> events if <paramref name="newValue"/> != <paramref name="currentValue"/>.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="currentValue">Current property value.</param>
+            <param name="newValue">New value to change property to.</param>
+            <param name="comparer">Custom <see cref="T:System.Collections.IEqualityComparer"/> to compare <paramref name="newValue"/> and <paramref name="currentValue"/> </param>
+            <param name="propertyName">Name of property to change value of.</param>
+            <returns>Returns <c>false</c> if property is changed to <paramref name="newValue"/>, else returns <c>false</c> </returns>
+        </member>
+        <member name="M:ATSPM.Domain.BaseClasses.ObservableObjectBase.RaisePropertyChanging(System.String)">
+            <summary>
+            Rasie <see cref="E:ATSPM.Domain.BaseClasses.ObservableObjectBase.PropertyChanging"/> event that property is changing.
+            </summary>
+            <param name="propertyName">Name of property that is changing.</param>
+        </member>
+        <member name="M:ATSPM.Domain.BaseClasses.ObservableObjectBase.RaisePropertyChanged(System.String)">
+            <summary>
+            Rasie <see cref="E:ATSPM.Domain.BaseClasses.ObservableObjectBase.PropertyChanged"/> event that property has changed.
+            </summary>
+            <param name="propertyName">Name of property that has changed.</param>
+        </member>
+        <member name="T:ATSPM.Domain.BaseClasses.ServiceObjectBase">
+            <summary>
+            <c>ServiceObjectBase</c> For services implementing:
+            <list type="table">
+            
+            <item>
+            <term><see cref="T:System.ComponentModel.INotifyPropertyChanged"/></term>
+            <description>Notifies clients that a property value has changed.</description>
+            </item>
+            
+            <item>
+            <term><see cref="T:System.ComponentModel.INotifyPropertyChanging"/></term>
+            <description>Notifies clients that a property value is changing.</description>
+            </item>
+            
+            <item>
+            <term><see cref="T:System.ComponentModel.ISupportInitializeNotification"/></term>
+            <description>Allows coordination of initialization for a component and its dependent properties.</description>
+            </item>
+            
+            <item>
+            <term><see cref="T:System.IDisposable"/></term>
+            <description>Provides a mechanism for releasing unmanaged resources.</description>
+            </item>
+            
+            </list>
+            </summary>
+        </member>
+        <member name="M:ATSPM.Domain.BaseClasses.ServiceObjectBase.#ctor">
+            <summary>
+            Instantiate new service and calls <see cref="M:ATSPM.Domain.BaseClasses.ServiceObjectBase.BeginInit"/>
+            </summary>
+        </member>
+        <member name="M:ATSPM.Domain.BaseClasses.ServiceObjectBase.Initialize">
+            <summary>
+            Initialize service
+            </summary>
+            <remarks>Constructor calls <see cref="M:ATSPM.Domain.BaseClasses.ServiceObjectBase.BeginInit"/> and initializes on instantiation.</remarks>
+        </member>
+        <member name="M:ATSPM.Domain.BaseClasses.ServiceObjectBase.Set``1(``0@,``0,System.Collections.Generic.IEqualityComparer{``0},System.String)">
+            <summary>
+            Sets a properties value and raises the <see cref="E:ATSPM.Domain.BaseClasses.ObservableObjectBase.PropertyChanging"/> and <see cref="E:ATSPM.Domain.BaseClasses.ObservableObjectBase.PropertyChanged"/> events if <paramref name="newValue"/> != <paramref name="currentValue"/>.
+            </summary>
+            <remarks>Overriden from <see cref="T:ATSPM.Domain.BaseClasses.ObservableObjectBase"/> to check for validation errors and change tracking.</remarks>
+        </member>
+        <member name="P:ATSPM.Domain.BaseClasses.ServiceObjectBase.IsInitialized">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Domain.BaseClasses.ServiceObjectBase.BeginInit">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Domain.BaseClasses.ServiceObjectBase.EndInit">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Domain.BaseClasses.ServiceObjectBase.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Domain.BaseClasses.ServiceObjectBase.Dispose(System.Boolean)">
+            <summary>
+            Used for IDisposable Pattern
+            </summary>
+            <param name="disposing">Flag for keeping track of disposed state</param>
+        </member>
+        <member name="M:ATSPM.Domain.BaseClasses.ServiceObjectBase.RaiseInitialized">
+            <summary>
+            Raise <see cref="E:ATSPM.Domain.BaseClasses.ServiceObjectBase.Initialized"/> when initialization is complete.
+            </summary>
+        </member>
+        <member name="T:ATSPM.Domain.Common.IStartEndRange">
+            <summary>
+            A date/time range object
+            </summary>
+        </member>
+        <member name="P:ATSPM.Domain.Common.IStartEndRange.End">
+            <summary>
+            End of range
+            </summary>
+        </member>
+        <member name="P:ATSPM.Domain.Common.IStartEndRange.Start">
+            <summary>
+            Start of range
+            </summary>
+        </member>
+        <member name="M:ATSPM.Domain.Common.IStartEndRange.InRange(System.DateTime)">
+            <summary>
+            Checks to see if <see cref="T:System.DateTime"/> is in range of <see cref="P:ATSPM.Domain.Common.IStartEndRange.Start"/> and <see cref="P:ATSPM.Domain.Common.IStartEndRange.End"/>
+            </summary>
+            <param name="time">Returns true if <see cref="T:System.DateTime"/> is in range</param>
+            <returns></returns>
+        </member>
+        <member name="M:ATSPM.Domain.Common.IStartEndRange.InRange(ATSPM.Domain.Common.IStartEndRange)">
+            <summary>
+            Checks to see if <see cref="T:ATSPM.Domain.Common.IStartEndRange"/> is in range of <see cref="P:ATSPM.Domain.Common.IStartEndRange.Start"/> and <see cref="P:ATSPM.Domain.Common.IStartEndRange.End"/>
+            </summary>
+            <param name="range">Returns true if <see cref="T:ATSPM.Domain.Common.IStartEndRange"/> is in range</param>
+            <returns></returns>
+        </member>
+        <member name="T:ATSPM.Domain.Common.StartEndRange">
+            <inheritdoc/>
+        </member>
+        <member name="P:ATSPM.Domain.Common.StartEndRange.Start">
+            <inheritdoc/>
+        </member>
+        <member name="P:ATSPM.Domain.Common.StartEndRange.End">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Domain.Common.StartEndRange.InRange(System.DateTime)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Domain.Common.StartEndRange.InRange(ATSPM.Domain.Common.IStartEndRange)">
+            <inheritdoc/>
+        </member>
+        <member name="T:ATSPM.Domain.Common.IExecuteAsync">
+            <summary>
+            Defines an async command or process which can conditionally be executed.
+            </summary>
+        </member>
+        <member name="M:ATSPM.Domain.Common.IExecuteAsync.ExecuteAsync(System.Object)">
+            <summary>
+            Defines the async method to be called when the command is invoked.
+            </summary>
+            <param name="parameter">Data used by the command. If the command does not require data to be passed, this object can be set to null.</param>
+            <returns></returns>
+        </member>
+        <member name="T:ATSPM.Domain.Common.IExecute">
+            <summary>
+            Defines a command which can conditionally be executed.
+            </summary>
+        </member>
+        <member name="T:ATSPM.Domain.Common.IExecute`2">
+            <summary>
+            Defines a command with input and ouput parameters which can conditionally be executed.
+            </summary>
+            <typeparam name="Tin">Input paramter type.</typeparam>
+            <typeparam name="Tout">Output parameter type.</typeparam>
+        </member>
+        <member name="M:ATSPM.Domain.Common.IExecute`2.CanExecute(`0)">
+            <summary>
+            Defines the method that determines whether the command can execute in its current state.
+            </summary>
+            <param name="parameter">Input parameter</param>
+            <returns>true if this command can be executed; otherwise, false.</returns>
+        </member>
+        <member name="M:ATSPM.Domain.Common.IExecute`2.Execute(`0,System.Threading.CancellationToken)">
+            <summary>
+            Defines the method to be called when the command is invoked.
+            </summary>
+            <param name="parameter">Data used by the command. If the command does not require data to be passed, this object can be set to null.</param>
+            <param name="cancelToken">Token to cancel command</param>
+            <returns>Ouput result.</returns>
+        </member>
+        <member name="T:ATSPM.Domain.Common.IExecuteWithProgress`3">
+            <summary>
+            Defines a command with input and ouput parameters which can conditionally be executed and use IProgress.
+            </summary>
+            <typeparam name="Tin">Input paramter type.</typeparam>
+            <typeparam name="Tout">Output parameter type.</typeparam>
+            <typeparam name="Tp">IProgress type.</typeparam>
+        </member>
+        <member name="M:ATSPM.Domain.Common.IExecuteWithProgress`3.Execute(`0,System.IProgress{`2},System.Threading.CancellationToken)">
+            <summary>
+            Defines the method to be called when the command is invoked.
+            </summary>
+            <param name="parameter">Data used by the command. If the command does not require data to be passed, this object can be set to null.</param>
+            <param name="cancelToken">Token to cancel command</param>
+            <param name="progress">IProgress reporting implmentation</param>
+            <returns>Ouput result.</returns>
+        </member>
+        <member name="T:ATSPM.Domain.Common.IExecuteAsync`2">
+            <summary>
+            Defines an async command or process with input and ouput parameters which can conditionally be executed.
+            </summary>
+            <typeparam name="Tin">Input paramter type.</typeparam>
+            <typeparam name="Tout">Output parameter type.</typeparam>
+        </member>
+        <member name="M:ATSPM.Domain.Common.IExecuteAsync`2.CanExecute(`0)">
+            <summary>
+            Defines the method that determines whether the command can execute in its current state.
+            </summary>
+            <param name="parameter">Input parameter</param>
+            <returns>true if this command can be executed; otherwise, false.</returns>
+        </member>
+        <member name="M:ATSPM.Domain.Common.IExecuteAsync`2.ExecuteAsync(`0,System.Threading.CancellationToken)">
+            <summary>
+            Defines the async method to be called when the command is invoked.
+            </summary>
+            <param name="parameter">Data used by the command. If the command does not require data to be passed, this object can be set to null.</param>
+            <param name="cancelToken">Token to cancel command</param>
+            <returns>Ouput result.</returns>
+        </member>
+        <member name="T:ATSPM.Domain.Common.IExecuteAsyncWithProgress`3">
+            <summary>
+            Defines an async command or operation with input and ouput parameters which can conditionally be executed and use IProgress./>
+            </summary>
+            <typeparam name="Tin">Input paramter type.</typeparam>
+            <typeparam name="Tout">Output parameter type.</typeparam>
+            <typeparam name="Tp">IProgress type.</typeparam>
+        </member>
+        <member name="M:ATSPM.Domain.Common.IExecuteAsyncWithProgress`3.ExecuteAsync(`0,System.IProgress{`2},System.Threading.CancellationToken)">
+            <summary>
+            Defines the async method to be called when the command is invoked.
+            </summary>
+            <param name="parameter">Data used by the command. If the command does not require data to be passed, this object can be set to null.</param>
+            <param name="cancelToken">Token to cancel command</param>
+            <param name="progress">IProgress reporting implmentation</param>
+            <returns>Ouput result.</returns>
+        </member>
+        <member name="T:ATSPM.Domain.Common.IFileTranscoder">
+            <summary>
+            Provides an abrstraction when working with different file types
+            </summary>
+        </member>
+        <member name="P:ATSPM.Domain.Common.IFileTranscoder.FileExtension">
+            <summary>
+            File extension type to work with
+            <example>.txt</example>
+            </summary>
+        </member>
+        <member name="M:ATSPM.Domain.Common.IFileTranscoder.EncodeItem``1(``0)">
+            <summary>
+            Defines how the object should be encoded
+            </summary>
+            <typeparam name="T">object type</typeparam>
+            <param name="item">data to encode</param>
+            <returns></returns>
+        </member>
+        <member name="M:ATSPM.Domain.Common.IFileTranscoder.DecodeItem``1(System.Byte[])">
+            <summary>
+            Defines how the file should be decoded
+            </summary>
+            <typeparam name="T">object type</typeparam>
+            <param name="data">data to decode</param>
+            <returns></returns>
+        </member>
+        <member name="T:ATSPM.Domain.Common.LambdaEqualityComparer`1">
+            <summary>
+            Versitile IEqualityComparer implementation that provides passing of delegate functions
+            </summary>
+            <typeparam name="T">Type to compare</typeparam>
+            <example>
+            <code>new LambdaEqualityComparer((x, y) => Equals(x, y))</code>
+            </example>
+            <seealso href="https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.iequalitycomparer-1?view=net-5.0">Wiki</seealso>
+        </member>
+        <member name="M:ATSPM.Domain.Common.LambdaEqualityComparer`1.#ctor(System.Func{`0,`0,System.Boolean})">
+            <summary>
+            Creates a new IEqualityComparer with delegate functions
+            </summary>
+            <param name="lambdaComparer">Function that defines what to compare</param>
+        </member>
+        <member name="M:ATSPM.Domain.Common.LambdaEqualityComparer`1.#ctor(System.Func{`0,`0,System.Boolean},System.Func{`0,System.Int32})">
+            <summary>
+            Creates a new IEqualityComparer with delegate functions
+            </summary>
+            <param name="lambdaComparer">Function that defines what to compare</param>
+            <param name="lambdaHash">Function that defines how to generate HashCode</param>
+            <exception cref="T:System.ArgumentNullException"></exception>
+        </member>
+        <member name="M:ATSPM.Domain.Common.LambdaEqualityComparer`1.Equals(`0,`0)">
+            <summary>
+            Compares two objects of type "T" using supplied delegate functions
+            </summary>
+            <param name="x"></param>
+            <param name="y"></param>
+            <returns>Returns true if equal</returns>
+        </member>
+        <member name="M:ATSPM.Domain.Common.LambdaEqualityComparer`1.GetHashCode(`0)">
+            <summary>
+            Generates hashcode based on supplied delegate function
+            </summary>
+            <param name="obj"></param>
+            <returns>HashCode</returns>
+        </member>
+        <member name="T:ATSPM.Domain.Common.LambdaComparer`1">
+            <summary>
+            Versitile IComparer implementation that provides passing of delegate functions
+            </summary>
+            <typeparam name="T">Type to compare</typeparam>
+            <seealso href="https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.icomparer-1?view=net-5.0">Wiki</seealso>
+        </member>
+        <member name="M:ATSPM.Domain.Common.LambdaComparer`1.#ctor(System.Func{`0,`0,System.Int32})">
+            <summary>
+            Creates a new IComparerwith delegate function
+            </summary>
+            <param name="lambdaComparer"></param>
+            <exception cref="T:System.ArgumentNullException"></exception>
+        </member>
+        <member name="M:ATSPM.Domain.Common.LambdaComparer`1.Compare(`0,`0)">
+            <summary>
+            Compares two objects and returns a value indicating whether one is less than, equal to, or greater than the other based on a delegate function
+            </summary>
+            <param name="x">First object to compare</param>
+            <param name="y">Second object to compare</param>
+            <returns></returns>
+        </member>
+        <member name="T:ATSPM.Domain.Exceptions.ExecuteException">
+            <summary>
+            Used with <see cref="T:ATSPM.Domain.Common.IExecute"/> when <c>CanExecute</c> is false
+            </summary>
+        </member>
+        <member name="M:ATSPM.Domain.Exceptions.ExecuteException.#ctor">
+            <summary>
+            Used with <see cref="T:ATSPM.Domain.Common.IExecute"/> when <c>CanExecute</c> is false
+            </summary>
+        </member>
+        <member name="M:ATSPM.Domain.Exceptions.ExecuteException.#ctor(System.String)">
+            <summary>
+            Used with <see cref="T:ATSPM.Domain.Common.IExecute"/> when <c>CanExecute</c> is false
+            </summary>
+            <param name="message">Enter custom <c>CanExecute</c> failed message</param>
+        </member>
+        <member name="T:ATSPM.Domain.Exceptions.UdotExceptionBase">
+            <summary>
+            Base class for all domain exceptions
+            </summary>
+        </member>
+        <member name="M:ATSPM.Domain.Exceptions.UdotExceptionBase.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the System.Exception class with a specified error message.
+            </summary>
+            <param name="message">The message that describes the error.</param>
+        </member>
+        <member name="M:ATSPM.Domain.Exceptions.UdotExceptionBase.#ctor(System.String,System.Exception)">
+            <summary>
+            Initializes a new instance of the System.Exception class with a specified error
+            message and a reference to the inner exception that is the cause of this exception.
+            </summary>
+            <param name="message">The error message that explains the reason for the exception.</param>
+            <param name="innerException">The exception that is the cause of the current exception, or a null reference</param>
+        </member>
+        <member name="T:ATSPM.Domain.Extensions.CompressionExtensions">
+            <summary>
+            Data compression extension helpers
+            </summary>
+        </member>
+        <member name="M:ATSPM.Domain.Extensions.CompressionExtensions.GZipCompressToByte(System.String)">
+            <summary>
+            GZip string and encode to byte array
+            </summary>
+            <param name="str">string to compress and encode</param>
+            <returns>byte array of compressed string</returns>
+        </member>
+        <member name="M:ATSPM.Domain.Extensions.CompressionExtensions.GZipDecompressToStream(System.IO.Stream)">
+            <summary>
+            GZip stream and encode to <see cref="T:System.IO.MemoryStream"/>
+            </summary>
+            <param name="stream">Stream to compress and convert</param>
+            <returns><see cref="T:System.IO.MemoryStream"/> of compressed stream</returns>
+        </member>
+        <member name="M:ATSPM.Domain.Extensions.CompressionExtensions.GZipDecompressToStream(System.Byte[])">
+            <summary>
+            Decompress and decode byte array to <see cref="T:System.IO.MemoryStream"/>
+            </summary>
+            <param name="bytes">byte array to decompress</param>
+            <returns><see cref="T:System.IO.MemoryStream"/> of decompressed byte array</returns>
+        </member>
+        <member name="M:ATSPM.Domain.Extensions.CompressionExtensions.GZipDecompressToByteArray(System.IO.Stream)">
+            <summary>
+            Decompress GZip stream to byte array
+            </summary>
+            <param name="stream">Stream to decompress</param>
+            <returns>byte array of decompressed stream</returns>
+        </member>
+        <member name="M:ATSPM.Domain.Extensions.CompressionExtensions.GZipDecompressToByteArray(System.Byte[])">
+            <summary>
+            Decompress GZip byte array to byte array
+            </summary>
+            <param name="bytes">byte array to decompress</param>
+            <returns>byte array of decompressed byte array</returns>
+        </member>
+        <member name="M:ATSPM.Domain.Extensions.CompressionExtensions.GZipDecompressToString(System.IO.Stream)">
+            <summary>
+            Decompress GZip stream to string
+            </summary>
+            <param name="stream">Stream to decompress</param>
+            <returns>String of decompressed Stream</returns>
+        </member>
+        <member name="M:ATSPM.Domain.Extensions.CompressionExtensions.GZipDecompressToString(System.Byte[])">
+            <summary>
+            Decompress GZip byte array to string
+            </summary>
+            <param name="bytes">byte array to decompress</param>
+            <returns>string of decompressed byte array</returns>
+        </member>
+        <member name="M:ATSPM.Domain.Extensions.CompressionExtensions.IsCompressed(System.IO.Stream)">
+            <summary>
+            Determines if Stream is compressed
+            </summary>
+            <param name="stream">Stream to check</param>
+            <returns>True if Stream is compressed</returns>
+        </member>
+        <member name="M:ATSPM.Domain.Extensions.CompressionExtensions.IsCompressed(System.Byte[])">
+            <summary>
+            Determines if byte array is compressed
+            </summary>
+            <param name="bytes">byte array to check</param>
+            <returns>True if byte array is compressed</returns>
+        </member>
+        <member name="T:ATSPM.Domain.Extensions.EnumExtensions">
+            <summary>
+            Extensions for Enums
+            </summary>
+        </member>
+        <member name="M:ATSPM.Domain.Extensions.EnumExtensions.GetDisplayAttribute(System.Enum)">
+            <summary>
+            Checks to see if Enum is decorated with <see cref="T:System.ComponentModel.DataAnnotations.DisplayAttribute"/> and returns it
+            Returns null if <see cref="T:System.ComponentModel.DataAnnotations.DisplayAttribute"/> is not present
+            </summary>
+            <param name="enumValue"></param>
+            <returns></returns>
+        </member>
+        <member name="T:ATSPM.Domain.Extensions.FileSignature">
+            <summary>
+            Filesignature structure
+            <see href="https://en.wikipedia.org/wiki/List_of_file_signatures"/>
+            </summary>
+        </member>
+        <member name="M:ATSPM.Domain.Extensions.FileSignature.#ctor(System.Byte[],System.Int32,System.String,System.String,System.Boolean)">
+            <summary>
+            Filesignature
+            </summary>
+            <param name="magicHeader">File Magic Header</param>
+            <param name="offset">Offset from start byte</param>
+            <param name="extension">File extension</param>
+            <param name="description">File type description</param>
+            <param name="isCompressed">True if file type is compressed</param>
+        </member>
+        <member name="P:ATSPM.Domain.Extensions.FileSignature.MagicHeader">
+            <summary>
+            File Magic Header
+            </summary>
+        </member>
+        <member name="P:ATSPM.Domain.Extensions.FileSignature.Offset">
+            <summary>
+            Offset from start byte
+            </summary>
+        </member>
+        <member name="P:ATSPM.Domain.Extensions.FileSignature.Extension">
+            <summary>
+            File extension
+            </summary>
+        </member>
+        <member name="P:ATSPM.Domain.Extensions.FileSignature.Description">
+            <summary>
+            File type description
+            </summary>
+        </member>
+        <member name="P:ATSPM.Domain.Extensions.FileSignature.IsCompressed">
+            <summary>
+            True if file type is compressed
+            </summary>
+        </member>
+        <member name="T:ATSPM.Domain.Extensions.FileSignatureExtensions">
+            <summary>
+            FileSignature Extensions
+            <see href="https://en.wikipedia.org/wiki/List_of_file_signatures"/>
+            </summary>
+        </member>
+        <member name="P:ATSPM.Domain.Extensions.FileSignatureExtensions.FileSignatures">
+            <summary>
+            <see cref="T:ATSPM.Domain.Extensions.FileSignature"/> List
+            <see href="https://en.wikipedia.org/wiki/List_of_file_signatures"/>
+            </summary>
+        </member>
+        <member name="M:ATSPM.Domain.Extensions.FileSignatureExtensions.GetFileSignatureFromExtension(System.IO.FileInfo)">
+            <summary>
+            Gets the <see cref="T:ATSPM.Domain.Extensions.FileSignature"/> from <see cref="T:System.IO.FileInfo"/>
+            </summary>
+            <param name="file"><see cref="T:System.IO.FileInfo"/> to get info for</param>
+            <returns>List of <see cref="T:ATSPM.Domain.Extensions.FileSignature"/> that match file type</returns>
+        </member>
+        <member name="M:ATSPM.Domain.Extensions.FileSignatureExtensions.GetFileSignatureFromExtension(System.String)">
+            <summary>
+            Gets the <see cref="T:ATSPM.Domain.Extensions.FileSignature"/> from string
+            </summary>
+            <param name="fileExtension">string to get info for</param>
+            <returns>List of <see cref="T:ATSPM.Domain.Extensions.FileSignature"/> that match extension type</returns>
+        </member>
+        <member name="M:ATSPM.Domain.Extensions.FileSignatureExtensions.GetFileSignatureFromMagicHeader(System.Byte[])">
+            <summary>
+            Gets the <see cref="T:ATSPM.Domain.Extensions.FileSignature"/> info from Magic Header byte array
+            </summary>
+            <param name="bytes">array representing Magic Header</param>
+            <returns><see cref="T:ATSPM.Domain.Extensions.FileSignature"/> info that matches Magic Header bytes</returns>
+        </member>
+        <member name="T:ATSPM.Domain.Extensions.HostingExtensions">
+            <summary>
+            Microsoft Hosting Extension Helpers
+            </summary>
+        </member>
+        <member name="M:ATSPM.Domain.Extensions.HostingExtensions.PrintHostInformation(System.IServiceProvider)">
+            <summary>
+            Print hosting information
+            </summary>
+            <param name="services"></param>
+        </member>
+        <member name="M:ATSPM.Domain.Extensions.HostingExtensions.PrintEnvironment(Microsoft.Extensions.Hosting.IHostEnvironment)">
+            <summary>
+            Print environment information
+            </summary>
+            <param name="environment"></param>
+        </member>
+        <member name="M:ATSPM.Domain.Extensions.HostingExtensions.PrintConfiguration(Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Print configuration information
+            </summary>
+            <param name="config"></param>
+        </member>
+        <member name="T:ATSPM.Domain.Extensions.IPAddressExtensions">
+            <summary>
+            <see cref="T:System.Net.IPAddress"/> extension helpers
+            </summary>
+        </member>
+        <member name="M:ATSPM.Domain.Extensions.IPAddressExtensions.IsValidIPAddress(System.String,System.Boolean)">
+            <summary>
+            Checks to see if ipaddres string is valid
+            </summary>
+            <param name="ipaddress">ipaddress string to validate</param>
+            <param name="ping">True if system should validate by ping</param>
+            <returns>True if address is valid</returns>
+        </member>
+        <member name="M:ATSPM.Domain.Extensions.IPAddressExtensions.IsValidIPAddress(System.Net.IPAddress,System.Boolean)">
+            <summary>
+            Checks to see if <see cref="T:System.Net.IPAddress"/> is valid
+            </summary>
+            <param name="ipaddress"><see cref="T:System.Net.IPAddress"/> to validate</param>
+            <param name="ping">True if system should validate by ping</param>
+            <returns>True if address is valid</returns>
+        </member>
+        <member name="M:ATSPM.Domain.Extensions.IPAddressExtensions.PingIPAddress(System.Net.IPAddress,System.Int32)">
+            <summary>
+            Pings ip address
+            </summary>
+            <param name="ipaddress">IPAddress to ping</param>
+            <param name="timeout">Ping timeout in milliseconds</param>
+            <returns>True if ping succeeds</returns>
+        </member>
+        <member name="T:ATSPM.Domain.Extensions.PropertyExtensions">
+            <summary>
+            Extensions for working with class properties using <see cref="N:System.Reflection"/>
+            </summary>
+        </member>
+        <member name="M:ATSPM.Domain.Extensions.PropertyExtensions.HasProperty(System.Object,System.String)">
+            <summary>
+            Checks to see if string value is valid property on object
+            </summary>
+            <param name="obj">Object to check</param>
+            <param name="propertyName">String name of property to check</param>
+            <returns>true if <paramref name="propertyName"/> exists in <paramref name="obj"/></returns>
+        </member>
+        <member name="M:ATSPM.Domain.Extensions.PropertyExtensions.GetPropertyValue``1(System.Object,System.String)">
+            <summary>
+            Gets the property value
+            </summary>
+            <param name="obj">Object containing property</param>
+            <param name="propertyName">String name of project to get value for</param>
+            <returns></returns>
+            <exception cref="T:System.ArgumentException"></exception>
+        </member>
+        <member name="T:ATSPM.Domain.Extensions.QueryExtensions">
+            <summary>
+            Extensions specific to IQueryable
+            </summary>
+        </member>
+        <member name="M:ATSPM.Domain.Extensions.QueryExtensions.FromSpecification``1(System.Linq.IQueryable{``0},ATSPM.Domain.Specifications.ISpecification{``0})">
+            <summary>
+            Creates a query based on an <c>string</c> ISpecification&lt;<typeparamref name="T"/>&gt;
+            <see href="ControllerLogArchive"/>
+            </summary>
+            <typeparam name="T">POCO that the query pertains to</typeparam>
+            <param name="query">Input query</param>
+            <param name="specification"></param>
+            <returns>Returns the query created from the ISpecification<typeparamref name="T"/></returns>
+        </member>
+        <member name="M:ATSPM.Domain.Extensions.QueryExtensions.FromSpecification``1(System.Collections.Generic.IEnumerable{``0},ATSPM.Domain.Specifications.ISpecification{``0})">
+            <summary>
+            Creates a query based on an <c>string</c> ISpecification&lt;<typeparamref name="T"/>&gt;
+            <see href="ControllerLogArchive"/>
+            </summary>
+            <typeparam name="T">POCO that the query pertains to</typeparam>
+            <param name="list">Input list</param>
+            <param name="specification"></param>
+            <returns>Returns the query created from the ISpecification<typeparamref name="T"/></returns>
+        </member>
+        <member name="M:ATSPM.Domain.Extensions.QueryExtensions.IfCondition``1(System.Linq.IQueryable{``0},System.Func{System.Boolean},System.Linq.Expressions.Expression{System.Func{System.Linq.IQueryable{``0},System.Linq.IQueryable{``0}}},System.Linq.Expressions.Expression{System.Func{System.Linq.IQueryable{``0},System.Linq.IQueryable{``0}}})">
+            <summary>
+            Use to create an if statement on an linline linq query
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="query"></param>
+            <param name="condition">Condition that will pass or fail</param>
+            <param name="pass">query to return if <paramref name="condition"/> passes</param>
+            <param name="fail">query to return if <paramref name="condition"/> should fail</param>
+            <returns></returns>
+        </member>
+        <member name="M:ATSPM.Domain.Extensions.QueryExtensions.IfCondition``1(System.Collections.Generic.IEnumerable{``0},System.Func{System.Boolean},System.Linq.Expressions.Expression{System.Func{System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.IEnumerable{``0}}},System.Linq.Expressions.Expression{System.Func{System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.IEnumerable{``0}}})">
+            <summary>
+            Use to create an if statement on an linline linq query
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="query"></param>
+            <param name="condition">Condition that will pass or fail</param>
+            <param name="pass">query to return if <paramref name="condition"/> passes</param>
+            <param name="fail">query to return if <paramref name="condition"/> should fail</param>
+            <returns></returns>
+        </member>
+        <member name="T:ATSPM.Domain.Extensions.StreamExtensions">
+            <summary>
+            Stream extensions
+            </summary>
+        </member>
+        <member name="M:ATSPM.Domain.Extensions.StreamExtensions.ToMemoryStream(System.IO.FileInfo)">
+            <summary>
+            Converts a <see cref="T:System.IO.FileInfo"/> object to <see cref="T:System.IO.MemoryStream"/> object
+            </summary>
+            <param name="file">File to convert to <see cref="T:System.IO.MemoryStream"/></param>
+            <returns><see cref="T:System.IO.MemoryStream"/></returns>
+            <exception cref="T:System.IO.FileNotFoundException"></exception>
+        </member>
+        <member name="M:ATSPM.Domain.Extensions.StringExtensions.Capitalize(System.String)">
+            <summary>
+            Capitalize first letter of string
+            </summary>
+            <param name="input">Input string</param>
+            <returns></returns>
+            <exception cref="T:System.ArgumentNullException"></exception>
+            <exception cref="T:System.ArgumentException"></exception>
+        </member>
+        <member name="M:ATSPM.Domain.Extensions.TaskExtensions.FireAndForget(System.Threading.Tasks.Task)">
+            <summary>
+            Trigger a Task in an async method without having to await
+            Otherwise you have to mark the task with #pragma warning disable CS4014
+            </summary>
+            <param name="task"></param>
+        </member>
+        <member name="M:ATSPM.Domain.Extensions.TaskExtensions.StartAndWaitAllThrottledAsync(System.Collections.Generic.IEnumerable{System.Threading.Tasks.Task},System.Int32,System.Threading.CancellationToken)">
+            <summary>
+            Starts the given tasks and waits for them to complete. This will run, at most, the specified number of tasks in parallel.
+            <para>NOTE: If one of the given tasks has already been started, an exception will be thrown.</para>
+            </summary>
+            <param name="tasksToRun">The tasks to run.</param>
+            <param name="maxTasksToRunInParallel">The maximum number of tasks to run in parallel.</param>
+            <param name="cancellationToken">The cancellation token.</param>
+        </member>
+        <member name="M:ATSPM.Domain.Extensions.TaskExtensions.StartAndWaitAllThrottledAsync(System.Collections.Generic.IEnumerable{System.Threading.Tasks.Task},System.Int32,System.Int32,System.Threading.CancellationToken)">
+            <summary>
+            Starts the given tasks and waits for them to complete. This will run the specified number of tasks in parallel.
+            <para>NOTE: If a timeout is reached before the Task completes, another Task may be started, potentially running more than the specified maximum allowed.</para>
+            <para>NOTE: If one of the given tasks has already been started, an exception will be thrown.</para>
+            </summary>
+            <param name="tasksToRun">The tasks to run.</param>
+            <param name="maxTasksToRunInParallel">The maximum number of tasks to run in parallel.</param>
+            <param name="timeoutInMilliseconds">The maximum milliseconds we should allow the max tasks to run in parallel before allowing another task to start. Specify -1 to wait indefinitely.</param>
+            <param name="cancellationToken">The cancellation token.</param>
+        </member>
+        <member name="T:ATSPM.Domain.Specifications.GenericSpecification`1">
+            <summary>
+            Generic Specification class for making adhoc specifications
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="M:ATSPM.Domain.Specifications.GenericSpecification`1.#ctor(System.Linq.Expressions.Expression{System.Func{`0,System.Boolean}})">
+            <summary>
+            Pass critera function
+            </summary>
+            <param name="criteria">Specification Criteria</param>
+        </member>
+        <member name="T:ATSPM.Domain.Workflows.ProcessStepBase`2">
+            <summary>
+            Base class for workflow process steps
+            </summary>
+            <typeparam name="T1">Input data type</typeparam>
+            <typeparam name="T2">Output data type</typeparam>
+        </member>
+        <member name="M:ATSPM.Domain.Workflows.ProcessStepBase`2.#ctor(System.Threading.Tasks.Dataflow.DataflowBlockOptions)">
+            <inheritdoc/>
+        </member>
+        <member name="P:ATSPM.Domain.Workflows.ProcessStepBase`2.Completion">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Domain.Workflows.ProcessStepBase`2.Complete">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Domain.Workflows.ProcessStepBase`2.Fault(System.Exception)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Domain.Workflows.ProcessStepBase`2.ConsumeMessage(System.Threading.Tasks.Dataflow.DataflowMessageHeader,System.Threading.Tasks.Dataflow.ITargetBlock{`1},System.Boolean@)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Domain.Workflows.ProcessStepBase`2.LinkTo(System.Threading.Tasks.Dataflow.ITargetBlock{`1},System.Threading.Tasks.Dataflow.DataflowLinkOptions)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Domain.Workflows.ProcessStepBase`2.ReleaseReservation(System.Threading.Tasks.Dataflow.DataflowMessageHeader,System.Threading.Tasks.Dataflow.ITargetBlock{`1})">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Domain.Workflows.ProcessStepBase`2.ReserveMessage(System.Threading.Tasks.Dataflow.DataflowMessageHeader,System.Threading.Tasks.Dataflow.ITargetBlock{`1})">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Domain.Workflows.ProcessStepBase`2.OfferMessage(System.Threading.Tasks.Dataflow.DataflowMessageHeader,`0,System.Threading.Tasks.Dataflow.ISourceBlock{`0},System.Boolean)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Domain.Workflows.ProcessStepBase`2.TryReceive(System.Predicate{`1},`1@)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Domain.Workflows.ProcessStepBase`2.TryReceiveAll(System.Collections.Generic.IList{`1}@)">
+            <inheritdoc/>
+        </member>
+        <member name="T:ATSPM.Domain.Workflows.TransformManyProcessStepBase`2">
+            <summary>
+            Base class for workflow process steps using <see cref="T:System.Threading.Tasks.Dataflow.TransformManyBlock`2"/>
+            </summary>
+            <typeparam name="T1">Input data type</typeparam>
+            <typeparam name="T2">Output data type</typeparam>
+        </member>
+        <member name="E:ATSPM.Domain.Workflows.TransformManyProcessStepBase`2.CanExecuteChanged">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Domain.Workflows.TransformManyProcessStepBase`2.#ctor(System.Threading.Tasks.Dataflow.ExecutionDataflowBlockOptions)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Domain.Workflows.TransformManyProcessStepBase`2.CanExecute(`0)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Domain.Workflows.TransformManyProcessStepBase`2.ExecuteAsync(`0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Domain.Workflows.TransformManyProcessStepBase`2.ATSPM#Domain#Common#IExecuteAsync#ExecuteAsync(System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Domain.Workflows.TransformManyProcessStepBase`2.System#Windows#Input#ICommand#CanExecute(System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Domain.Workflows.TransformManyProcessStepBase`2.System#Windows#Input#ICommand#Execute(System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Domain.Workflows.TransformManyProcessStepBase`2.Process(`0,System.Threading.CancellationToken)">
+            <summary>
+            Process to perform when <see cref="M:ATSPM.Domain.Workflows.TransformManyProcessStepBase`2.ExecuteAsync(`0,System.Threading.CancellationToken)"/> is called
+            </summary>
+            <param name="input"></param>
+            <param name="cancelToken"></param>
+            <returns></returns>
+        </member>
+        <member name="T:ATSPM.Domain.Workflows.TransformProcessStepBase`2">
+            <summary>
+            Base class for workflow process steps using <see cref="T:System.Threading.Tasks.Dataflow.TransformBlock`2"/>
+            </summary>
+            <typeparam name="T1">Input data type</typeparam>
+            <typeparam name="T2">Output data type</typeparam>
+        </member>
+        <member name="E:ATSPM.Domain.Workflows.TransformProcessStepBase`2.CanExecuteChanged">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Domain.Workflows.TransformProcessStepBase`2.#ctor(System.Threading.Tasks.Dataflow.ExecutionDataflowBlockOptions)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Domain.Workflows.TransformProcessStepBase`2.CanExecute(`0)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Domain.Workflows.TransformProcessStepBase`2.ExecuteAsync(`0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Domain.Workflows.TransformProcessStepBase`2.ATSPM#Domain#Common#IExecuteAsync#ExecuteAsync(System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Domain.Workflows.TransformProcessStepBase`2.System#Windows#Input#ICommand#CanExecute(System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Domain.Workflows.TransformProcessStepBase`2.System#Windows#Input#ICommand#Execute(System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Domain.Workflows.TransformProcessStepBase`2.Process(`0,System.Threading.CancellationToken)">
+            <summary>
+            Process to perform when <see cref="M:ATSPM.Domain.Workflows.TransformProcessStepBase`2.ExecuteAsync(`0,System.Threading.CancellationToken)"/> is called
+            </summary>
+            <param name="input"></param>
+            <param name="cancelToken"></param>
+            <returns></returns>
+        </member>
+        <member name="T:ATSPM.Domain.Workflows.WorkflowBase`2">
+            <summary>
+            Used as a base to create complex, inter-linkable, parallel workflows
+            </summary>
+            <typeparam name="T1">Input data type</typeparam>
+            <typeparam name="T2">Output data type</typeparam>
+        </member>
+        <member name="E:ATSPM.Domain.Workflows.WorkflowBase`2.CanExecuteChanged">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Domain.Workflows.WorkflowBase`2.#ctor(System.Threading.Tasks.Dataflow.DataflowBlockOptions)">
+            <inheritdoc/>
+        </member>
+        <member name="P:ATSPM.Domain.Workflows.WorkflowBase`2.Steps">
+            <summary>
+            Used for tracking workflow step task completion results
+            </summary>
+        </member>
+        <member name="P:ATSPM.Domain.Workflows.WorkflowBase`2.Input">
+            <summary>
+            Can be used to post or send data or link from other workflows
+            </summary>
+        </member>
+        <member name="P:ATSPM.Domain.Workflows.WorkflowBase`2.Output">
+            <summary>
+            Can be used to recieve data or link to other workflows
+            </summary>
+        </member>
+        <member name="M:ATSPM.Domain.Workflows.WorkflowBase`2.Initialize">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Domain.Workflows.WorkflowBase`2.InstantiateSteps">
+            <summary>
+            Instantiate workflow steps objects
+            </summary>
+        </member>
+        <member name="M:ATSPM.Domain.Workflows.WorkflowBase`2.AddStepsToTracker">
+            <summary>
+            Add steps to <see cref="P:ATSPM.Domain.Workflows.WorkflowBase`2.Steps"/> for step task tracking
+            </summary>
+        </member>
+        <member name="M:ATSPM.Domain.Workflows.WorkflowBase`2.LinkSteps">
+            <summary>
+            Link workflow steps
+            </summary>
+        </member>
+        <member name="M:ATSPM.Domain.Workflows.WorkflowBase`2.Execute(`0,System.IProgress{System.Int32},System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Domain.Workflows.WorkflowBase`2.CanExecute(`0)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Domain.Workflows.WorkflowBase`2.Execute(`0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+    </members>
+</doc>
