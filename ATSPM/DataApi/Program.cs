@@ -25,8 +25,10 @@ using Utah.Udot.Atspm.DataApi.Configuration;
 using Utah.Udot.Atspm.DataApi.CustomOperations;
 using Utah.Udot.Atspm.DataApi.Formatters;
 
-var builder = WebApplication.CreateBuilder(args);
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
+var builder = WebApplication.CreateBuilder(args);
+
 builder.Host.ConfigureServices((h, s) =>
 {
     s.AddControllers(o =>
@@ -56,24 +58,26 @@ builder.Host.ConfigureServices((h, s) =>
         o.ReportApiVersions = true;
         o.DefaultApiVersion = new ApiVersion(1, 0);
         o.AssumeDefaultVersionWhenUnspecified = true;
-        o.Policies.Sunset(0.9)
-        .Effective(DateTimeOffset.Now.AddDays(60))
-        .Link("policy.html")
-        .Title("Versioning Policy")
-        .Type("text/html");
+
+        //Sunset policies
+        o.Policies.Sunset(0.1).Effective(DateTimeOffset.Now.AddDays(60)).Link("").Title("These are only available during development").Type("text/html");
+
     }).AddApiExplorer(o =>
     {
         o.GroupNameFormat = "'v'VVV";
         o.SubstituteApiVersionInUrl = true;
+
+        //configure query options(which cannot otherwise be configured by OData conventions)
+        //o.QueryOptions.Controller<JurisdictionController>()
+        //                    .Action(c => c.Get(default))
+        //                        .Allow(AllowedQueryOptions.Skip | AllowedQueryOptions.Count)
+        //                        .AllowTop(100);
     });
 
     s.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     s.AddSwaggerGen(o =>
      {
-         // add a custom operation filter which sets default values
-         //o.OperationFilter<SwaggerDefaultValues>();
-
          var fileName = typeof(Program).Assembly.GetName().Name + ".xml";
          var filePath = Path.Combine(AppContext.BaseDirectory, fileName);
 
@@ -84,24 +88,6 @@ builder.Host.ConfigureServices((h, s) =>
          o.DocumentFilter<GenerateAggregationSchemas>();
          o.DocumentFilter<GenerateEventSchemas>();
      });
-
-    s.AddAtspmDbContext(h);
-    s.AddAtspmEFEventLogRepositories();
-    s.AddAtspmEFAggregationRepositories();
-
-    s.AddAtspmAuthentication(h);
-    s.AddAtspmAuthorization();
-
-    //https://learn.microsoft.com/en-us/aspnet/core/fundamentals/http-logging/?view=aspnetcore-7.0
-    s.AddHttpLogging(l =>
-    {
-        l.LoggingFields = HttpLoggingFields.All;
-        //l.RequestHeaders.Add("My-Request-Header");
-        //l.ResponseHeaders.Add("My-Response-Header");
-        //l.MediaTypeOptions.AddText("application/json");
-        l.RequestBodyLogLimit = 4096;
-        l.ResponseBodyLogLimit = 4096;
-    });
 
     var allowedHosts = builder.Configuration.GetSection("AllowedHosts").Get<string>();
     s.AddCors(options =>
@@ -114,22 +100,40 @@ builder.Host.ConfigureServices((h, s) =>
                    .AllowAnyHeader();
         });
     });
+
+    //https://learn.microsoft.com/en-us/aspnet/core/fundamentals/http-logging/?view=aspnetcore-7.0
+    s.AddHttpLogging(l =>
+    {
+        l.LoggingFields = HttpLoggingFields.All;
+        //l.RequestHeaders.Add("My-Request-Header");
+        //l.ResponseHeaders.Add("My-Response-Header");
+        //l.MediaTypeOptions.AddText("application/json");
+        l.RequestBodyLogLimit = 4096;
+        l.ResponseBodyLogLimit = 4096;
+    });
+
+    s.AddAtspmDbContext(h);
+    s.AddAtspmEFEventLogRepositories();
+    s.AddAtspmEFAggregationRepositories();
+
+    if (!h.HostingEnvironment.IsDevelopment())
+    {
+        s.AddAtspmAuthentication(h);
+        s.AddAtspmAuthorization();
+    }
 });
 
 var app = builder.Build();
 
-app.UseResponseCompression();
-app.UseCors("CorsPolicy");
-
 if (app.Environment.IsDevelopment())
 {
     app.Services.PrintHostInformation();
+    app.UseDeveloperExceptionPage();
 }
 
-
+app.UseResponseCompression();
+app.UseCors("CorsPolicy");
 app.UseHttpLogging();
-
-// Configure the HTTP request pipeline.
 app.UseSwagger();
 app.UseSwaggerUI(o =>
 {
@@ -144,7 +148,9 @@ app.UseSwaggerUI(o =>
     }
 });
 
+app.UsePathBase(app.Configuration["PathBase"]);
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
+
 app.Run();
