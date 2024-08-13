@@ -1,6 +1,6 @@
-﻿using ATSPM.Application.Repositories.ConfigurationRepositories;
-using ATSPM.Data.Models;
+﻿
 using Microsoft.EntityFrameworkCore;
+using Utah.Udot.Atspm.Extensions;
 using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
 
 namespace Utah.Udot.Atspm.Business.LinkPivot
