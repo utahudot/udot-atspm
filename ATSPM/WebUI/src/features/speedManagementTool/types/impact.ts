@@ -6,8 +6,8 @@ export interface Impact {
     end?: Date | null;
     startMile: number;
     endMile: number;
-    impactTypeIds: string[] | null;
-    impactTypes?: ImpactType | null;
+    impactTypeIds?: string[] | null;
+    impactTypes?: ImpactType[] | null;
     createdOn?: Date | null;
     createdBy?: string | null;
     updatedOn?: Date | null;
