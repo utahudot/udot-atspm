@@ -1,4 +1,5 @@
 import { ChartType } from '@/features/charts/common/types'
+import { transformCongestionTrackerData } from '@/features/charts/congestionTracker/congestionTracker.transformer'
 import {
   adjustPlanPositions,
   handleGreenTimeUtilizationDataZoom,
@@ -43,6 +44,8 @@ export default function ApacheEChart({
   const [isScrolling, setIsScrolling] = useState(false)
   const chartInstance = useRef<ECharts | null>(null)
 
+  const [currentView, setCurrentView] = useState<'week' | 'month'>('week')
+
   const isActive = activeChart === id
 
   const initChart = () => {
@@ -83,6 +86,7 @@ export default function ApacheEChart({
       }
     }
   }
+
   useEffect(() => {
     initChart()
 
@@ -166,6 +170,18 @@ export default function ApacheEChart({
     }
   }
 
+  const handleToggleView = () => {
+    const newView = currentView === 'week' ? 'month' : 'week'
+    setCurrentView(newView)
+    const updatedOption = transformCongestionTrackerData(
+      option.response,
+      newView
+    )
+    chartInstance.current?.setOption(updatedOption, {
+      replaceMerge: ['title'],
+    })
+  }
+
   return (
     <div
       style={{
@@ -188,6 +204,23 @@ export default function ApacheEChart({
           height: '100%',
         }}
       />
+      <button
+        onClick={handleToggleView}
+        style={{
+          position: 'absolute',
+          top: '10px',
+          right: '10px',
+          zIndex: 10,
+          backgroundColor: '#0060df',
+          color: 'white',
+          border: 'none',
+          padding: '8px 12px',
+          cursor: 'pointer',
+          borderRadius: '4px',
+        }}
+      >
+        Toggle View
+      </button>
       {!hideInteractionMessage && (
         <>
           <div
