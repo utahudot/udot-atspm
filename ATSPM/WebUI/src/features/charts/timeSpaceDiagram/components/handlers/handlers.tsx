@@ -1,6 +1,6 @@
 import { Route, RouteLocation } from '@/features/routes/types'
 import { DateTimeProps, TimeOnlyProps } from '@/types/TimeProps'
-import { addDays, addMinutes, startOfDay } from 'date-fns'
+import { set, subDays, subMonths } from 'date-fns'
 import { useEffect, useState } from 'react'
 import {
   LocationWithCoordPhases,
@@ -14,6 +14,8 @@ interface TSContainerPresenterProps {
   handleToolOptions: (
     options: Partial<TimeSpaceAverageOptions | TimeSpaceHistoricOptions>
   ) => void
+  routeId: string
+  setRouteId: (routeId: string) => void
 }
 const defaultSequence = [
   [1, 2, 3, 4],
@@ -47,14 +49,16 @@ export interface TSAverageHandler
 export const useHistoricOptionsHandler = ({
   routes,
   handleToolOptions,
+  routeId,
+  setRouteId,
 }: TSContainerPresenterProps) => {
+  const yesterday = subDays(new Date(), 1)
   const [startDateTime, setStartDateTime] = useState(
-    addDays(startOfDay(new Date()), -1)
+    set(yesterday, { hours: 16, minutes: 0 })
   )
   const [endDateTime, setEndDateTime] = useState(
-    addMinutes(addDays(startOfDay(new Date()), -1), 20)
+    set(yesterday, { hours: 16, minutes: 20 })
   )
-  const [routeId, setRouteId] = useState('')
 
   const componentHandler: TSHistoricHandler = {
     startDateTime,
@@ -84,12 +88,18 @@ export const useHistoricOptionsHandler = ({
 export const useAverageOptionsHandler = ({
   routes,
   handleToolOptions,
+  routeId,
+  setRouteId,
 }: TSContainerPresenterProps) => {
-  const [startDate, setStartDate] = useState(startOfDay(new Date()))
-  const [endDate, setEndDate] = useState(startOfDay(new Date()))
-  const [startTime, setStartTime] = useState(startOfDay(new Date()))
-  const [endTime, setEndTime] = useState(startOfDay(new Date()))
-  const [routeId, setRouteId] = useState<string>('')
+  const yesterday = subDays(new Date(), 1)
+  const [startDate, setStartDate] = useState(subMonths(yesterday, 1))
+  const [endDate, setEndDate] = useState(yesterday)
+  const [startTime, setStartTime] = useState(
+    set(new Date(), { hours: 16, minutes: 0 })
+  )
+  const [endTime, setEndTime] = useState(
+    set(new Date(), { hours: 16, minutes: 20 })
+  )
   const [routeLocationsForSelectedRoute, setRouteLocationsForSelectedRoute] =
     useState<RouteLocation[]>([])
   const [routeLocationWithSequence, setRouteLocationWithSequence] = useState<

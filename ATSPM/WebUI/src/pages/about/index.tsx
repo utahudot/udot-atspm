@@ -5,11 +5,39 @@ import { Box, Button, Grid, Typography } from '@mui/material'
 import Image from 'next/image'
 import Link from 'next/link'
 const About = () => {
-  const partners = [
+  
+  const academimcPartners = [
     {
-      path: '/images/udot.png',
-      title: 'UDOT logo',
+      path: '/images/partners/purdue-university.png',
+      title: 'Purdue University logo',
     },
+    {
+      path: '/images/partners/byu.svg',
+      title: 'BYU logo',
+    },
+    {
+      path: '/images/partners/university-of-utah.png',
+      title: 'University of Utah logo',
+    },
+    {
+      path: '/images/partners/university-of-texas-at-arlington.png',
+      title: 'University of Texas at Arlington',
+    },
+    {
+      path: '/images/partners/iowa-state.png',
+      title: 'Iowa State',
+    },
+    {
+      path: '/images/partners/university-of-alabama.png',
+      title: 'University of Alabama',
+    },
+    {
+      path: '/images/partners/utah-state-university.png',
+      title: 'USU logo',
+    },
+  ]
+
+  const agencyPartners = [
     {
       path: '/images/partners/gdot.png',
       title: 'GDOT logo',
@@ -35,17 +63,23 @@ const About = () => {
       title: 'Minnesota DOT logo',
     },
     {
-      path: '/images/partners/purdue-university.png',
-      title: 'Purdue University logo',
+      path: '/images/partners/north-carolina-dot.png',
+      title: 'North Carolina DOT logo',
     },
     {
-      path: '/images/partners/byu.svg',
-      title: 'BYU logo',
+      path: '/images/partners/pennsylvania-dot.png',
+      title: 'Pennsylvania DOT logo',
     },
+  ]
+
+  const udotLogo = [
     {
-      path: '/images/partners/university-of-utah.png',
-      title: 'University of Utah logo',
-    },
+      path: '/images/udot.png',
+      title: 'UDOT logo',
+    }
+  ]
+
+  const consultantPartners = [
     {
       path: '/images/partners/econolite.png',
       title: 'Econolite logo',
@@ -82,6 +116,18 @@ const About = () => {
       path: '/images/partners/lee-engineering.png',
       title: 'Lee Engineering logo',
     },
+    { 
+      path: '/images/partners/traffop.png',
+      title: 'Traffop logo',
+    },
+    {
+      path: '/images/partners/portland-oregon.svg',
+      title: 'Portland Oregon logo',
+    },
+    {
+      path: '/images/partners/maricopa-county.png',
+      title: 'Maricopa County logo',
+    }
   ]
 
   return (
@@ -90,10 +136,10 @@ const About = () => {
         <Header title="About ATSPM" />
         <Box marginBottom={2}>
           <Typography variant="h4" component={'p'}>
-            Automated Traffic Location Performance Measures&apos;s show
-            real-time and historical functionality at locationized
-            intersections. This allows traffic engineers to directly measure
-            what previously could only be estimated and modeled.
+            Automated Traffic Signal Performance Measures show real-time
+            and historical functionality at locationized intersections. This
+            allows traffic engineers to directly measure what previously could
+            only be estimated and modeled.
           </Typography>
         </Box>
         <Box marginBottom={10}>
@@ -114,7 +160,88 @@ const About = () => {
           </Typography>
         </Box>
         <Grid container spacing={2}>
-          {partners.map((item) => (
+          {udotLogo.map((item) => (
+            <Grid item key={item.path} xs={4} sm={4} md={3} lg={2} xl={2}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  backgroundColor: '#f5f5f5',
+                  padding: '8px',
+                  height: '10vw',
+                  boxShadow: 1,
+                }}
+                position="relative"
+                padding="20px"
+              >
+                <Image
+                  src={item.path}
+                  alt={item.title}
+                  style={{ objectFit: 'contain', padding: '15px' }}
+                  sizes="(max-width: 1200px) 15vw"
+                  fill
+                />
+              </Box>
+            </Grid>
+          ))}
+        </Grid>
+        <Grid container spacing={2}>
+          {consultantPartners.map((item) => (
+            <Grid item key={item.path} xs={4} sm={4} md={3} lg={2} xl={2}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  backgroundColor: '#f5f5f5',
+                  padding: '8px',
+                  height: '10vw',
+                  boxShadow: 1,
+                }}
+                position="relative"
+                padding="20px"
+              >
+                <Image
+                  src={item.path}
+                  alt={item.title}
+                  style={{ objectFit: 'contain', padding: '15px' }}
+                  sizes="(max-width: 1200px) 15vw"
+                  fill
+                />
+              </Box>
+            </Grid>
+          ))}
+        </Grid>
+        <Grid container spacing={2}>
+          {agencyPartners.map((item) => (
+            <Grid item key={item.path} xs={4} sm={4} md={3} lg={2} xl={2}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  backgroundColor: '#f5f5f5',
+                  padding: '8px',
+                  height: '10vw',
+                  boxShadow: 1,
+                }}
+                position="relative"
+                padding="20px"
+              >
+                <Image
+                  src={item.path}
+                  alt={item.title}
+                  style={{ objectFit: 'contain', padding: '15px' }}
+                  sizes="(max-width: 1200px) 15vw"
+                  fill
+                />
+              </Box>
+            </Grid>
+          ))}
+        </Grid>
+        <Grid container spacing={2}>
+          {academimcPartners.map((item) => (
             <Grid item key={item.path} xs={4} sm={4} md={3} lg={2} xl={2}>
               <Box
                 sx={{
