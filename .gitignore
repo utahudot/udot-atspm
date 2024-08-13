@@ -115,3 +115,5 @@ dkms.conf
 /ATSPM/.sonarqube
 /ConfigApiTests/bin/
 /ConfigApiTests/obj/
+/ATSPM/variables.env
+/ATSPM/Data-ETL/bin/Release/net7.0
