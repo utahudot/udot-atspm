@@ -1,0 +1,133 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Utah.Udot.Atspm.DataApi</name>
+    </assembly>
+    <members>
+        <member name="T:Utah.Udot.Atspm.DataApi.Configuration.ConfigureSwaggerOptions">
+            <summary>
+            Configures the Swagger generation options.
+            </summary>
+            <remarks>This allows API versioning to define a Swagger document per API version after the
+            <see cref="T:Asp.Versioning.ApiExplorer.IApiVersionDescriptionProvider"/> service has been resolved from the service container.</remarks>                        
+        </member>
+        <member name="M:Utah.Udot.Atspm.DataApi.Configuration.ConfigureSwaggerOptions.#ctor(Asp.Versioning.ApiExplorer.IApiVersionDescriptionProvider)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Utah.Udot.Atspm.DataApi.Configuration.ConfigureSwaggerOptions"/> class.
+            </summary>
+            <param name="provider">The <see cref="T:Asp.Versioning.ApiExplorer.IApiVersionDescriptionProvider">provider</see> used to generate Swagger documents.</param>
+        </member>
+        <member name="M:Utah.Udot.Atspm.DataApi.Configuration.ConfigureSwaggerOptions.Configure(Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenOptions)">
+            <inheritdoc />
+        </member>
+        <member name="T:Utah.Udot.Atspm.DataApi.Controllers.AggregationController">
+            <summary>
+            Aggregation controller
+            for querying raw aggregation data
+            </summary>
+        </member>
+        <member name="M:Utah.Udot.Atspm.DataApi.Controllers.AggregationController.#ctor(Utah.Udot.Atspm.Repositories.AggregationRepositories.IAggregationRepository,Microsoft.Extensions.Logging.ILogger{Utah.Udot.Atspm.DataApi.Controllers.AggregationController})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.DataApi.Controllers.AggregationController.GetDataTypes">
+            <summary>
+            Returns the possible aggregated data types
+            </summary>
+            <returns></returns>
+            <response code="200">Call completed successfully</response>
+        </member>
+        <member name="M:Utah.Udot.Atspm.DataApi.Controllers.AggregationController.GetArchivedAggregations(System.String,System.DateOnly,System.DateOnly)">
+            <summary>
+            Get all aggregations for location by date
+            </summary>
+            <param name="locationIdentifier">Location identifier</param>
+            <param name="start">Archive date of aggregation to start with</param>
+            <param name="end">Archive date of aggregation to end with</param>
+            <returns></returns>
+            <response code="200">Call completed successfully</response>
+            <response code="400">Invalid request (date)</response>
+            <response code="404">Resource not found</response>
+        </member>
+        <member name="M:Utah.Udot.Atspm.DataApi.Controllers.AggregationController.GetArchivedAggregations(System.String,System.String,System.DateOnly,System.DateOnly)">
+            <summary>
+            Get all aggregations for location by date and datatype
+            </summary>
+            <param name="locationIdentifier">Location identifier</param>
+            <param name="dataType">Type that inherits from <see cref="T:Utah.Udot.Atspm.Data.Models.AggregationModelBase"/></param>
+            <param name="start">Archive date of aggregation to start with</param>
+            <param name="end">Archive date of aggregation to end with</param>
+            <returns></returns>
+            <response code="200">Call completed successfully</response>
+            <response code="400">Invalid request (date)</response>
+            <response code="404">Resource not found</response>
+        </member>
+        <member name="T:Utah.Udot.Atspm.DataApi.Controllers.EventLogController">
+            <summary>
+            Event log controller
+            for querying raw device log data
+            </summary>
+        </member>
+        <member name="M:Utah.Udot.Atspm.DataApi.Controllers.EventLogController.#ctor(Utah.Udot.Atspm.Repositories.EventLogRepositories.IEventLogRepository,Microsoft.Extensions.Logging.ILogger{Utah.Udot.Atspm.DataApi.Controllers.EventLogController})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Utah.Udot.Atspm.DataApi.Controllers.EventLogController.GetDataTypes">
+            <summary>
+            Returns the possible event log data types
+            </summary>
+            <returns></returns>
+            <response code="200">Call completed successfully</response>
+        </member>
+        <member name="M:Utah.Udot.Atspm.DataApi.Controllers.EventLogController.GetArchivedEvents(System.String,System.DateOnly,System.DateOnly)">
+            <summary>
+            Get all event logs for location by date
+            </summary>
+            <param name="locationIdentifier">Location identifier</param>
+            <param name="start">Archive date of event to start with</param>
+            <param name="end">Archive date of event to end with</param>
+            <returns></returns>
+            <response code="200">Call completed successfully</response>
+            <response code="400">Invalid request (date)</response>
+            <response code="404">Resource not found</response>
+        </member>
+        <member name="M:Utah.Udot.Atspm.DataApi.Controllers.EventLogController.GetArchivedEvents(System.String,System.Int32,System.DateOnly,System.DateOnly)">
+            <summary>
+            Get all event logs for location by date and device id
+            </summary>
+            <param name="locationIdentifier">Location identifier</param>
+            <param name="deviceId">Deivce id events came from</param>
+            <param name="start">Archive date of event to start with</param>
+            <param name="end">Archive date of event to end with</param>
+            <returns></returns>
+            <response code="200">Call completed successfully</response>
+            <response code="400">Invalid request (date)</response>
+            <response code="404">Resource not found</response>
+        </member>
+        <member name="M:Utah.Udot.Atspm.DataApi.Controllers.EventLogController.GetArchivedEvents(System.String,System.String,System.DateOnly,System.DateOnly)">
+            <summary>
+            Get all event logs for location by date and datatype
+            </summary>
+            <param name="locationIdentifier">Location identifier</param>
+            <param name="dataType">Type that inherits from <see cref="T:Utah.Udot.Atspm.Data.Models.EventLogModels.EventLogModelBase"/></param>
+            <param name="start">Archive date of event to start with</param>
+            <param name="end">Archive date of event to end with</param>
+            <returns></returns>
+            <response code="200">Call completed successfully</response>
+            <response code="400">Invalid request (date)</response>
+            <response code="404">Resource not found</response>
+        </member>
+        <member name="M:Utah.Udot.Atspm.DataApi.Controllers.EventLogController.GetArchivedEvents(System.String,System.Int32,System.String,System.DateOnly,System.DateOnly)">
+            <summary>
+            Get all event logs for location by date, device id and datatype
+            </summary>
+            <param name="locationIdentifier">Location identifier</param>
+            <param name="deviceId">Deivce id events came from</param>
+            <param name="dataType">Type that inherits from <see cref="T:Utah.Udot.Atspm.Data.Models.EventLogModels.EventLogModelBase"/></param>
+            <param name="start">Archive date of event to start with</param>
+            <param name="end">Archive date of event to end with</param>
+            <returns></returns>
+            <response code="200">Call completed successfully</response>
+            <response code="400">Invalid request (date)</response>
+            <response code="404">Resource not found</response>
+        </member>
+    </members>
+</doc>
