@@ -216,7 +216,7 @@ namespace ATSPM.ReportApi.ReportServices
                     var start = date.ToDateTime(parameter.StartTime);
                     var end = date.ToDateTime(parameter.EndTime);
                     var logs = controllerEventLogRepository.GetEventsBetweenDates(location.LocationIdentifier, start.AddHours(-12), end.AddHours(12)).ToList();
-                    if (controllerEventLogs.IsNullOrEmpty())
+                    if (logs.IsNullOrEmpty())
                     {
                         throw new NullReferenceException("No Controller Event Logs found for Location");
                     }
