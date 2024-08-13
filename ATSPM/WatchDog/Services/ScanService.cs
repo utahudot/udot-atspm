@@ -1,17 +1,31 @@
-﻿using ATSPM.Application.Repositories;
-using ATSPM.Application.Repositories.ConfigurationRepositories;
-using ATSPM.Data;
-using ATSPM.Data.Models;
+﻿#region license
+// Copyright 2024 Utah Departement of Transportation
+// for WatchDog - WatchDog.Services/ScanService.cs
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+// http://www.apache.org/licenses/LICENSE-2.
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+#endregion
+
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
-using WatchDog.Models;
+using Utah.Udot.Atspm.Data.Models;
+using Utah.Udot.Atspm.WatchDog.Models;
 
-namespace WatchDog.Services
+namespace Utah.Udot.Atspm.WatchDog.Services
 {
     public class ScanService
     {
         private readonly ILocationRepository LocationRepository;
-        private readonly IWatchDogLogEventRepository watchDogLogEventRepository;
+        private readonly IWatchDogEventLogRepository watchDogLogEventRepository;
         private readonly IRegionsRepository regionsRepository;
         private readonly IJurisdictionRepository jurisdictionRepository;
         private readonly IAreaRepository areaRepository;
@@ -22,12 +36,12 @@ namespace WatchDog.Services
         private readonly UserManager<ApplicationUser> userManager;
         private readonly RoleManager<IdentityRole> roleManager;
         private readonly WatchDogLogService logService;
-        private readonly EmailService emailService;
+        private readonly WatchdogEmailService emailService;
         private readonly ILogger<ScanService> logger;
 
         public ScanService(
             ILocationRepository LocationRepository,
-            IWatchDogLogEventRepository watchDogLogEventRepository,
+            IWatchDogEventLogRepository watchDogLogEventRepository,
             IRegionsRepository regionsRepository,
             IJurisdictionRepository jurisdictionRepository,
             IAreaRepository areaRepository,
@@ -37,7 +51,7 @@ namespace WatchDog.Services
             UserManager<ApplicationUser> userManager,
             RoleManager<IdentityRole> roleManager,
             WatchDogLogService logService,
-            EmailService emailService,
+            WatchdogEmailService emailService,
             ILogger<ScanService> logger)
         {
             this.LocationRepository = LocationRepository;
@@ -84,8 +98,8 @@ namespace WatchDog.Services
             var users = await GetUsersWithWatchDogClaimAsync();
 
 
-            if (!emailOptions.WeekdayOnly || (emailOptions.WeekdayOnly && emailOptions.ScanDate.DayOfWeek != DayOfWeek.Saturday &&
-               emailOptions.ScanDate.DayOfWeek != DayOfWeek.Sunday))
+            if (!emailOptions.WeekdayOnly || emailOptions.WeekdayOnly && emailOptions.ScanDate.DayOfWeek != DayOfWeek.Saturday &&
+               emailOptions.ScanDate.DayOfWeek != DayOfWeek.Sunday)
             {
                 var recordsFromTheDayBefore = new List<WatchDogLogEvent>();
                 if (!emailOptions.EmailAllErrors)

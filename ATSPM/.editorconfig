@@ -6,7 +6,6 @@ dotnet_analyzer_diagnostic.severity = none
 
 # C# files
 [*.cs]
-dotnet_diagnostic.CS1591.severity = none
 #### Core EditorConfig Options ####
 
 # Indentation and spacing

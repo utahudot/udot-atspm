@@ -1,14 +1,28 @@
-﻿using ATSPM.Data.Enums;
-using ATSPM.Data.Models;
-using ATSPM.Data.Models.EventLogModels;
-using ATSPM.Data.Utility;
+﻿#region license
+// Copyright 2024 Utah Departement of Transportation
+// for Data - Utah.Udot.Atspm.Data.Configuration/DeviceConfigConfiguration.cs
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+// http://www.apache.org/licenses/LICENSE-2.
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+#endregion
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Newtonsoft.Json;
+using Utah.Udot.Atspm.Data.Enums;
 
 #nullable disable
 
-namespace ATSPM.Data.Configuration
+namespace Utah.Udot.Atspm.Data.Configuration
 {
     /// <summary>
     /// Device configuration configuration
@@ -40,6 +54,7 @@ namespace ATSPM.Data.Configuration
 
             builder.Property(e => e.SearchTerms)
                 .IsRequired(false)
+                .HasDefaultValueSql("('[]')")
                 .HasMaxLength(512)
                 .HasConversion(
                 v => JsonConvert.SerializeObject(v),
@@ -51,10 +66,13 @@ namespace ATSPM.Data.Configuration
             builder.Property(e => e.OperationTimeout)
                 .HasDefaultValueSql("((2000))");
 
-            builder.Property(e => e.DataModel)
+            builder.Property(e => e.Decoders)
                 .IsRequired(false)
+                .HasDefaultValueSql("('[]')")
                 .HasMaxLength(512)
-                .HasConversion(new CompressionTypeConverter(typeof(EventLogModelBase).Namespace.ToString(), typeof(EventLogModelBase).Assembly.ToString()));
+                .HasConversion(
+                v => JsonConvert.SerializeObject(v),
+                v => JsonConvert.DeserializeObject<string[]>(v));
 
             builder.Property(e => e.UserName)
                 .IsRequired(false)

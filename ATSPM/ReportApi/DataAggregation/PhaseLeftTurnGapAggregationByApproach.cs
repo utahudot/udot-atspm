@@ -1,11 +1,23 @@
-﻿using ATSPM.Application.Business.Aggregation;
-using ATSPM.Application.Business.Bins;
-using ATSPM.Application.Repositories.AggregationRepositories;
-using ATSPM.Data.Models;
-using MOE.Common.Business.WCFServiceLibrary;
+﻿#region license
+// Copyright 2024 Utah Departement of Transportation
+// for ReportApi - ATSPM.ReportApi.DataAggregation/PhaseLeftTurnGapAggregationByApproach.cs
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+// http://www.apache.org/licenses/LICENSE-2.
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+#endregion
+
 using System.Collections.Concurrent;
 
-namespace MOE.Common.Business.DataAggregation
+namespace Utah.Udot.Atspm.ReportApi.DataAggregation
 {
     public class PhaseLeftTurnGapAggregationByApproach : AggregationByApproach
     {
@@ -68,19 +80,19 @@ namespace MOE.Common.Business.DataAggregation
                                     break;
                                 case LeftTurnGapDataTypes.GapCount3:
                                     approachCycleCount =
-                                        (int)approachLeftTurnGaps.Where(s =>
+                                        approachLeftTurnGaps.Where(s =>
                                                 s.Start >= bin.Start && s.Start < bin.End)
                                             .Sum(s => s.GapCount3);
                                     break;
                                 case LeftTurnGapDataTypes.GapCount4:
                                     approachCycleCount =
-                                        (int)approachLeftTurnGaps.Where(s =>
+                                        approachLeftTurnGaps.Where(s =>
                                                 s.Start >= bin.Start && s.Start < bin.End)
                                             .Sum(s => s.GapCount4);
                                     break;
                                 case LeftTurnGapDataTypes.GapCount5:
                                     approachCycleCount =
-                                        (int)approachLeftTurnGaps.Where(s =>
+                                        approachLeftTurnGaps.Where(s =>
                                                 s.Start >= bin.Start && s.Start < bin.End)
                                             .Sum(s => s.GapCount5);
                                     break;
@@ -98,19 +110,19 @@ namespace MOE.Common.Business.DataAggregation
                                     break;
                                 case LeftTurnGapDataTypes.GapCount8:
                                     approachCycleCount =
-                                        (int)approachLeftTurnGaps.Where(s =>
+                                        approachLeftTurnGaps.Where(s =>
                                                s.Start >= bin.Start && s.Start < bin.End)
                                             .Sum(s => s.GapCount8);
                                     break;
                                 case LeftTurnGapDataTypes.GapCount9:
                                     approachCycleCount =
-                                        (int)approachLeftTurnGaps.Where(s =>
+                                        approachLeftTurnGaps.Where(s =>
                                                s.Start >= bin.Start && s.Start < bin.End)
                                             .Sum(s => s.GapCount9);
                                     break;
                                 case LeftTurnGapDataTypes.GapCount10:
                                     approachCycleCount =
-                                        (int)approachLeftTurnGaps.Where(s =>
+                                        approachLeftTurnGaps.Where(s =>
                                                s.Start >= bin.Start && s.Start < bin.End)
                                             .Sum(s => s.GapCount10);
                                     break;

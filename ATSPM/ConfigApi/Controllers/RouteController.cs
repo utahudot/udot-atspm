@@ -1,14 +1,31 @@
-﻿using Asp.Versioning;
-using ATSPM.Application.Repositories.ConfigurationRepositories;
-using ATSPM.ConfigApi.Models;
-using ATSPM.ConfigApi.Services;
-using ATSPM.Data.Models;
+﻿#region license
+// Copyright 2024 Utah Departement of Transportation
+// for ConfigApi - ATSPM.ConfigApi.Controllers/RouteController.cs
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+// http://www.apache.org/licenses/LICENSE-2.
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+#endregion
+
+using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
+using Utah.Udot.Atspm.ConfigApi.Models;
+using Utah.Udot.Atspm.ConfigApi.Services;
+using Utah.Udot.Atspm.Data.Models;
+using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 using static Microsoft.AspNetCore.OData.Query.AllowedQueryOptions;
 
-namespace ATSPM.ConfigApi.Controllers
+namespace Utah.Udot.Atspm.ConfigApi.Controllers
 {
     /// <summary>
     /// Route controller
@@ -68,13 +85,13 @@ namespace ATSPM.ConfigApi.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+                return StatusCode(Status500InternalServerError, ex.Message);
             }
         }
 
         [HttpGet("api/v1/GetRouteView/{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(Status200OK)]
+        [ProducesResponseType(Status400BadRequest)]
         public IActionResult GetRouteView(int id, bool includeLocationDetail)
         {
             if (!ModelState.IsValid)
@@ -88,7 +105,7 @@ namespace ATSPM.ConfigApi.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+                return StatusCode(Status500InternalServerError, ex.Message);
             }
         }
 
