@@ -1,17 +1,23 @@
-import React, { useState, useEffect } from 'react'
+import { Impact } from '@/features/speedManagementTool/types/impact'
 import {
+  Box,
+  Button,
+  Chip,
   Dialog,
   DialogActions,
-  DialogContent,
-  DialogTitle,
-  Button,
-  TextField,
+  FormControl,
   Grid,
-  Box,
+  InputLabel,
+  MenuItem,
+  OutlinedInput,
+  Select,
+  SelectChangeEvent,
+  TextField,
 } from '@mui/material'
-import { Impact } from '@/features/speedManagementTool/types/impact'
+import { useTheme } from '@mui/material/styles'
+import { useRouter } from 'next/router'
+import React, { useEffect, useState } from 'react'
 import { useGetImpactTypes } from '../api/getImpactTypes'
-import { string } from 'zod'
 
 interface ImpactEditorModalProps {
   data?: Impact
@@ -20,6 +26,17 @@ interface ImpactEditorModalProps {
   onCreate: (impact: Impact) => void
   onEdit: (impact: Impact) => void
   onDelete?: (id: string) => void
+}
+
+const ITEM_HEIGHT = 48
+const ITEM_PADDING_TOP = 8
+const MenuProps = {
+  PaperProps: {
+    style: {
+      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+      width: 250,
+    },
+  },
 }
 
 const ImpactEditorModal: React.FC<ImpactEditorModalProps> = ({
@@ -37,15 +54,15 @@ const ImpactEditorModal: React.FC<ImpactEditorModalProps> = ({
     end: data?.end || null,
     startMile: data?.startMile || 0,
     endMile: data?.endMile || 0,
-    impactTypeIds: data?.impactTypeIds || null,
-    impactTypes: data?.impactTypes || null,
+    impactTypeIds: data?.impactTypeIds || [],
+    impactTypes: data?.impactTypes || [],
     segmentIds: data?.segmentIds || [],
   })
 
-  const { data: impactTypeData, isLoading:isLoadingImpactTypes } = useGetImpactTypes()
-if (!isLoadingImpactTypes){
-  console.log(impactTypeData)
-}
+  const { data: impactTypeData, isLoading: isLoadingImpactTypes } =
+    useGetImpactTypes()
+  const router = useRouter()
+  const theme = useTheme()
 
   useEffect(() => {
     if (data) {
@@ -53,9 +70,23 @@ if (!isLoadingImpactTypes){
     }
   }, [data])
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
-    setImpact({ ...impact, [name]: value })
+  const handleChange = (
+    event: SelectChangeEvent<typeof impact.impactTypeIds>
+  ) => {
+    const {
+      target: { value },
+    } = event
+
+    const selectedIds = value ? (typeof value === 'string' ? value.split(',') : value) : [];
+    const selectedImpactTypes = impactTypeData?.filter((type) =>
+      type.id && selectedIds.includes(type.id)
+    ) || [];
+
+    setImpact({
+      ...impact,
+      impactTypeIds: selectedIds,
+      impactTypes: selectedImpactTypes,
+    })
   }
 
   const handleSave = () => {
@@ -69,8 +100,8 @@ if (!isLoadingImpactTypes){
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="lg">
-      <Box sx={{marginX:'1.25rem'}}>
-      <h4>{impact.id ? 'Edit Impact' : 'Create New Impact'}</h4>
+      <Box sx={{ marginX: '1.25rem' }}>
+        <h4>{impact.id ? 'Edit Impact' : 'Create New Impact'}</h4>
         <Grid container spacing={2}>
           <Grid item xs={5}>
             <Grid container spacing={2}>
@@ -79,7 +110,9 @@ if (!isLoadingImpactTypes){
                   label="Description"
                   name="description"
                   value={impact.description}
-                  onChange={handleChange}
+                  onChange={(e) =>
+                    setImpact({ ...impact, description: e.target.value })
+                  }
                   fullWidth
                 />
               </Grid>
@@ -88,8 +121,10 @@ if (!isLoadingImpactTypes){
                   label="Start Date"
                   name="start"
                   type="datetime-local"
-                  value={impact.start}
-                  onChange={handleChange}
+                  value={impact.start || new Date}
+                  onChange={(e) =>
+                    setImpact({ ...impact, start: e.target.value })
+                  }
                   fullWidth
                   InputLabelProps={{
                     shrink: true,
@@ -101,8 +136,10 @@ if (!isLoadingImpactTypes){
                   label="End Date"
                   name="end"
                   type="datetime-local"
-                  value={impact.end}
-                  onChange={handleChange}
+                  value={impact.end || ''}
+                  onChange={(e) =>
+                    setImpact({ ...impact, end: e.target.value })
+                  }
                   fullWidth
                   InputLabelProps={{
                     shrink: true,
@@ -115,7 +152,12 @@ if (!isLoadingImpactTypes){
                   name="startMile"
                   type="number"
                   value={impact.startMile}
-                  onChange={handleChange}
+                  onChange={(e) =>
+                    setImpact({
+                      ...impact,
+                      startMile: parseFloat(e.target.value),
+                    })
+                  }
                   fullWidth
                 />
               </Grid>
@@ -125,24 +167,74 @@ if (!isLoadingImpactTypes){
                   name="endMile"
                   type="number"
                   value={impact.endMile}
-                  onChange={handleChange}
+                  onChange={(e) =>
+                    setImpact({
+                      ...impact,
+                      endMile: parseFloat(e.target.value),
+                    })
+                  }
                   fullWidth
                 />
               </Grid>
               <Grid item xs={12}>
-                <TextField
-                  label="Impact Types"
-                  name="impactTypes"
-                  value={impact.impactTypes || ""}
-                  fullWidth
-                />
+                <FormControl fullWidth>
+                  <InputLabel id="impact-types-label">Impact Types</InputLabel>
+                  <Select
+                    labelId="impact-types-label"
+                    id="impact-types-select"
+                    multiple
+                    value={impact.impactTypes?.map((type) => type.id)} 
+                    onChange={handleChange}
+                    input={
+                      <OutlinedInput
+                        id="select-multiple-chip"
+                        label="Impact Types"
+                      />
+                    }
+                    renderValue={(selected) => (
+                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                        {selected.map((value) => (
+                          <Chip
+                            key={value}
+                            label={
+                              impactTypeData?.find((type) => type.id === value)
+                                ?.name
+                            }
+                          />
+                        ))}
+                      </Box>
+                    )}
+                    MenuProps={MenuProps}
+                  >
+                    {impactTypeData?.map((type) => (
+                      <MenuItem
+                        key={type.id}
+                        value={type.id}
+                        style={{
+                          fontWeight: impact.impactTypes?.some(
+                            (impactType) => impactType.id === type.id
+                          )
+                            ? theme.typography.fontWeightMedium
+                            : theme.typography.fontWeightRegular,
+                        }}
+                      >
+                        {type.name}
+                      </MenuItem>
+                    ))}
+                    <MenuItem
+                      onClick={() => router.push('/admin/impact-type')}
+                      style={{ fontWeight: theme.typography.fontWeightMedium }}
+                    >
+                      Create new Impact Type
+                    </MenuItem>
+                  </Select>
+                </FormControl>
               </Grid>
               <Grid item xs={12}>
                 <TextField
                   label="Segments"
                   name="segmentIds"
-                  value={impact.segmentIds}
-                  // onChange={}
+                  value={'segments'}
                   fullWidth
                 />
               </Grid>
@@ -150,14 +242,19 @@ if (!isLoadingImpactTypes){
           </Grid>
           <Grid item xs={7}>
             {/* Your map component goes here */}
-            <div style={{ width: '100%', height: '100%', backgroundColor: '#eee', borderRadius:'5px' }}>
-              <div style={{padding:'15px'}}>
-              Map Placeholder
-              </div>
+            <div
+              style={{
+                width: '100%',
+                height: '100%',
+                backgroundColor: '#eee',
+                borderRadius: '5px',
+              }}
+            >
+              <div style={{ padding: '15px' }}>Map Placeholder</div>
             </div>
           </Grid>
         </Grid>
-        </Box>
+      </Box>
       <DialogActions>
         <Button onClick={onClose} color="secondary">
           Cancel
