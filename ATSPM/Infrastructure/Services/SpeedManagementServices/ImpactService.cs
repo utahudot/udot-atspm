@@ -44,6 +44,34 @@ namespace ATSPM.Infrastructure.Services.SpeedManagementServices
             return await PopulateImpactAsync(impact);
         }
 
+        public async Task<List<Impact>> GetImpactsOnSegment(Guid segmentId)
+        {
+            var segmentImpacts = await segmentImpactRepository.GetImpactsForSegmentAsync(segmentId);
+            var impactIds = segmentImpacts.Select(it => it.ImpactId).ToList();
+            var impactsMissingFields = await impactRepository.GetInstancesDetails(impactIds);
+            List<Impact> impacts = new List<Impact>();
+
+            foreach (Impact impactMissingFields in impactsMissingFields)
+            {
+                Impact impact = await PopulateImpactAsync(impactMissingFields);
+                impacts.Add(impact);
+            }
+            return impacts;
+        }
+
+        public async Task<List<Impact>> GetListOfImpactsFromIds(List<Guid> impactIds)
+        {
+            var impactsMissingFields = await impactRepository.GetInstancesDetails(impactIds);
+            List<Impact> impacts = new List<Impact>();
+
+            foreach (Impact impactMissingFields in impactsMissingFields)
+            {
+                Impact impact = await PopulateImpactAsync(impactMissingFields);
+                impacts.Add(impact);
+            }
+            return impacts;
+        }
+
         public async Task<Impact> UpsertImpact(Impact impact)
         {
             //Add the impact

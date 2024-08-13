@@ -404,7 +404,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
                 City = row["City"]?.ToString(),
                 County = row["County"]?.ToString(),
                 Shape = shape,
-                ShapeWKT = row["ShapeWKT"]?.ToString(),
+                ShapeWKT = wkt,
                 AlternateIdentifier = row["AlternateIdentifier"]?.ToString(),
                 AccessCategory = row["AccessCategory"]?.ToString(),
                 Offset = (long)row["Offset"]
@@ -509,7 +509,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             }
         }
 
-        public async Task<List<Segment>> GetSegmentDetails(List<Guid> segmentIds)
+        public async Task<List<Segment>> GetSegmentsDetails(List<Guid> segmentIds)
         {
             // Construct a comma-separated list of IDs for the IN clause
             string ids = string.Join(",", segmentIds.Select(id => $"'{id}'"));
@@ -523,7 +523,9 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             var parameters = new List<BigQueryParameter>();
 
             var results = await _client.ExecuteQueryAsync(query, parameters);
-            return results.Select(row => MapRowToEntity(row)).ToList();
+            var segments = results.Select(row => MapRowToEntity(row)).ToList();
+            segments.ForEach(seg => seg.Shape = null);
+            return segments;
         }
 
     }

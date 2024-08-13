@@ -264,7 +264,22 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             };
         }
 
+        public async Task<List<Impact>> GetInstancesDetails(List<Guid> impactIds)
+        {
+            // Construct a comma-separated list of IDs for the IN clause
+            string ids = string.Join(",", impactIds.Select(id => $"'{id}'"));
 
+            // Query with IN clause
+            string query = $@"
+                SELECT * 
+                FROM `{_datasetId}.{_tableId}` 
+                WHERE Id IN ({ids});";
+
+            var parameters = new List<BigQueryParameter>();
+
+            var results = await _client.ExecuteQueryAsync(query, parameters);
+            return results.Select(row => MapRowToEntity(row)).ToList();
+        }
 
 
         ///////////////////// 

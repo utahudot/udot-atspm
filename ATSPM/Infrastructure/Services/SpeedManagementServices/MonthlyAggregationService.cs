@@ -33,7 +33,7 @@ namespace ATSPM.Infrastructure.Services.SpeedManagementServices
                 return null;
             }
             var monthlyAggregations = await monthlyAggregationRepository.MonthlyAggregationsForSegmentInTimePeriod(segmentIds, startDate, endDate);
-            List<Segment> segments = await segmentRepository.GetSegmentDetails(segmentIds);
+            List<Segment> segments = await segmentRepository.GetSegmentsDetails(segmentIds);
             List<SpeedOverDistanceDto> speedOverDistanceDtoList = new List<SpeedOverDistanceDto>();
             foreach (var monthlyAggregation in monthlyAggregations)
             {
