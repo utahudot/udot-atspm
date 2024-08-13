@@ -1,3 +1,4 @@
+import OptionsWrapper from '@/components/OptionsWrapper'
 import {
   Box,
   FormControl,
@@ -7,7 +8,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { LocationWithCoordPhases, LocationWithSequence } from '../types'
 
 interface CoordinatedTableProps {
@@ -30,6 +31,37 @@ const SequenceAndCoordinationComponent = ({
   const [selectedLocation, setSelectedLocation] = useState<string | null>(null)
   const [sequenceValues, setSequenceValues] = useState<string[]>([])
   const [coordPhaseValue, setCoordPhaseValue] = useState<string>('')
+
+  useEffect(() => {
+    if (locationWithSequence.length > 0) {
+      setSelectedLocation(locationWithSequence[0].locationIdentifier)
+    }
+  }, [locationWithSequence])
+
+  useEffect(() => {
+    if (!selectedLocation) return
+
+    const selectedSeqLocation = locationWithSequence.find(
+      (loc) => loc.locationIdentifier === selectedLocation
+    )
+    const selectedCoordLocation = locationWithCoordPhases.find(
+      (loc) => loc.locationIdentifier === selectedLocation
+    )
+
+    if (selectedSeqLocation) {
+      setSequenceValues(
+        selectedSeqLocation.sequence.map((seq) => seq.join(','))
+      )
+    } else {
+      setSequenceValues([])
+    }
+
+    if (selectedCoordLocation) {
+      setCoordPhaseValue(selectedCoordLocation.coordinatedPhases.join(','))
+    } else {
+      setCoordPhaseValue('')
+    }
+  }, [selectedLocation, locationWithSequence, locationWithCoordPhases])
 
   const handleLocationChange = (
     event: React.ChangeEvent<{ value: unknown }>
@@ -102,19 +134,18 @@ const SequenceAndCoordinationComponent = ({
   }
 
   return (
-    <Box>
-      <Box display="flex" alignItems="center" minWidth="320.41px">
-        <InputLabel htmlFor={'location-select'}>
-          <Typography color="black" marginRight="8px" variant="subtitle1" >
+    <OptionsWrapper header="Sequence and Coordination">
+      <Box display="flex" alignItems="center" minWidth="320px" marginBottom={2}>
+        <InputLabel htmlFor="location-select">
+          <Typography color="black" marginRight="8px" variant="subtitle1">
             Select Location:
           </Typography>
         </InputLabel>
-        <FormControl>
+        <FormControl variant="outlined" size="small">
           <Select
-            style={{ minWidth: '83px' }}
+            style={{ minWidth: '150px' }}
             value={selectedLocation || ''}
             onChange={handleLocationChange}
-            size="small"
             inputProps={{ id: 'location-select' }}
           >
             {locationWithSequence.map((location) => (
@@ -130,36 +161,34 @@ const SequenceAndCoordinationComponent = ({
       </Box>
       {selectedLocation && (
         <Box>
-          <Box>
-            <Typography variant="subtitle1" marginBottom={1} mt={4}>
-              Sequence:
-            </Typography>
-            {sequenceValues.map((value, index) => (
-              <Box
-                key={index}
-                display="flex"
-                alignItems="center"
-                marginBottom={1}
-              >
-                <InputLabel htmlFor={`location-${index + 1}`}>
-                  <Typography color="black" variant="body1" marginRight={1}>
-                    Band {index + 1}:
-                  </Typography>
-                </InputLabel>
-
-                <TextField
-                  variant="outlined"
-                  value={value}
-                  size="small"
-                  onChange={(event) => handleSequenceChange(index, event)}
-                  inputProps={{ id: `location-${index + 1}` }}
-                />
-              </Box>
-            ))}
-          </Box>
-          <Box display="flex" alignItems="leftAlign" flexDirection="column"  marginTop={4}>
-            <InputLabel htmlFor={`coordinated-phases`}>
-              <Typography color="black" variant="subtitle1" flex={1}>
+          <Typography variant="subtitle1" marginBottom={2} marginTop={2}>
+            Sequence:
+          </Typography>
+          {sequenceValues.map((value, index) => (
+            <Box
+              key={index}
+              display="flex"
+              alignItems="center"
+              marginBottom={2}
+            >
+              <InputLabel htmlFor={`location-${index + 1}`}>
+                <Typography color="black" variant="body1" marginRight={1}>
+                  Band {index + 1}:
+                </Typography>
+              </InputLabel>
+              <TextField
+                variant="outlined"
+                value={value}
+                size="small"
+                onChange={(event) => handleSequenceChange(index, event)}
+                inputProps={{ id: `location-${index + 1}` }}
+                sx={{ flexGrow: 1 }}
+              />
+            </Box>
+          ))}
+          <Box marginTop={2}>
+            <InputLabel htmlFor="coordinated-phases">
+              <Typography color="black" variant="subtitle1">
                 Coordinated Phases:
               </Typography>
             </InputLabel>
@@ -168,13 +197,14 @@ const SequenceAndCoordinationComponent = ({
               value={coordPhaseValue}
               onChange={handleCoordPhaseChange}
               size="small"
-              sx={{ maxWidth:'210px', marginLeft:'3.8rem' }}
-              inputProps={{ id: `coordinated-phases` }}
+              inputProps={{ id: 'coordinated-phases' }}
+              fullWidth
+              sx={{ marginTop: 1 }}
             />
           </Box>
         </Box>
       )}
-    </Box>
+    </OptionsWrapper>
   )
 }
 

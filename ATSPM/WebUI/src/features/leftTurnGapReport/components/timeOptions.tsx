@@ -111,9 +111,7 @@ export const TimeOptions = ({
         },
       }}
     >
-      <Box>
-        <StyledComponentHeader header={'Time Options'} />
-      </Box>
+      <StyledComponentHeader header={'Time Options'} />
       <RadioGroup
         sx={{ ...timeOptionRaidoButtons }}
         value={timeOptions}
