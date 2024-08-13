@@ -120,3 +120,16 @@ dkms.conf
 /ConfigApiTests/bin/
 /ConfigApiTests/obj/
 /ATSPM/variables.env
+
+# NuGet
+project.nuget.cache
+*.nuget.props
+*.nuget.targets
+project.assets.json
+project.packagespec.json
+rider.project.restore.info
+
+# Build output
+*.obj/
+*.bin/
+*.cache
