@@ -12,8 +12,29 @@ import {
 import { CongestionTrackerResponse } from '@/features/speedManagementTool/api/getCongestionTrackingData'
 import { addHours, startOfDay } from 'date-fns'
 
+// Utility function to darken a color
+const lightenColor = (color: string, percent: number) => {
+  const num = parseInt(color.slice(1), 16),
+    amt = Math.round(2.55 * percent),
+    R = (num >> 16) + amt,
+    G = ((num >> 8) & 0x00ff) + amt,
+    B = (num & 0x0000ff) + amt
+
+  return `#${(
+    0x1000000 +
+    (R < 255 ? (R < 1 ? 0 : R) : 255) * 0x10000 +
+    (G < 255 ? (G < 1 ? 0 : G) : 255) * 0x100 +
+    (B < 255 ? (B < 1 ? 0 : B) : 255)
+  )
+    .toString(16)
+    .slice(1)
+    .toUpperCase()}`
+}
+
+// allow user to select a week or month
 export const transformCongestionTrackerData = (
-  response: CongestionTrackerResponse
+  response: CongestionTrackerResponse,
+  view: 'week' | 'month' = 'month'
 ) => {
   const date = response.data[0].date
 
@@ -50,6 +71,13 @@ export const transformCongestionTrackerData = (
   let dayCounter = 1
   const daysOfTheWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 
+  // const cellWidth = view === 'month' ? 78 : 95
+  const cellWidth = 78
+  const gapBetweenCells = 110
+  const paddingLeft = 5
+  const paddingTop = 20
+  const cellHeightPercent = view === 'month' ? 110 : 75
+
   for (let i = 0; i < totalCells; i++) {
     const rowIndex = Math.floor(i / 7)
     const colIndex = i % 7
@@ -60,18 +88,18 @@ export const transformCongestionTrackerData = (
           ).padStart(2, '0')}`
         : ''
 
-    const cellWidth = 78
-    const gapBetweenCells = 110
-    const paddingLeft = 5
-    const paddingTop = 20
-    const cellHeightPercent = 95
-
     grids.push({
       show: true,
       left: `${(colIndex / 7) * cellWidth + paddingLeft}%`,
-      top: `${(rowIndex / 7) * gapBetweenCells + paddingTop}%`,
+      top:
+        view === 'month'
+          ? `${(rowIndex / 7) * gapBetweenCells + paddingTop}%`
+          : `${paddingTop}%`,
       width: `${(1 / 7) * cellWidth}%`,
-      height: `${(1 / 7) * cellHeightPercent}%`,
+      height:
+        view === 'month'
+          ? `${(1 / 7) * cellHeightPercent}%`
+          : `${cellHeightPercent}%`,
       borderWidth: 1,
     })
 
@@ -83,7 +111,6 @@ export const transformCongestionTrackerData = (
 
     yAxes.push({
       type: 'value',
-      show: i % 7 === 0,
       gridIndex: count,
       max: ySeriesMax,
       min: 0,
@@ -91,11 +118,18 @@ export const transformCongestionTrackerData = (
         show: false,
       },
       splitLine: {
-        show: false,
+        show: view === 'week',
+        lineStyle: {
+          type: 'dashed',
+        },
       },
       axisLabel: {
-        fontSize: 8,
+        fontSize: view === 'month' ? 8 : 10,
         hideOverlap: true,
+        show: i % 7 === 0,
+        formatter: (value: number) => {
+          return view === 'month' && value === 0 ? '' : value
+        },
       },
     })
 
@@ -119,14 +153,15 @@ export const transformCongestionTrackerData = (
           showSymbol: false,
         })
       }
+      const weekNumber = Math.ceil(dayCounter / 7)
 
       if (dayData.series.average) {
         series.push({
-          name: `Average`,
+          name: view === 'month' ? 'Average' : `Week ${weekNumber} Average`,
           type: 'line',
           xAxisIndex: count,
           yAxisIndex: count,
-          color: Color.Red,
+          color: lightenColor(Color.Blue, weekNumber * 8),
           data: transformSeriesData(dayData.series.average),
           showSymbol: false,
         })
@@ -134,28 +169,34 @@ export const transformCongestionTrackerData = (
 
       if (dayData.series.eightyFifth) {
         series.push({
-          name: `85th Percentile`,
+          name:
+            view === 'month'
+              ? '85th Percentile'
+              : `Week ${weekNumber} 85th Percentile`,
           type: 'line',
           xAxisIndex: count,
           yAxisIndex: count,
-          color: Color.Blue,
+          color: lightenColor(Color.Red, weekNumber * 8),
           data: transformSeriesData(dayData.series.eightyFifth),
           showSymbol: false,
         })
       }
 
-      titles.push({
-        left:
-          parseFloat(`${(colIndex / 7) * cellWidth + 5.3}%`) +
-          parseFloat(`${(1 / 7) * 10 - 1}%`) / 2 +
-          '%',
-        top: `${(rowIndex / 7) * gapBetweenCells + paddingTop}%`,
-        textAlign: 'center',
-        text: String(dayCounter),
-        textStyle: {
-          fontSize: 10,
-        },
-      })
+      if (view === 'month') {
+        titles.push({
+          left:
+            parseFloat(`${(colIndex / 7) * cellWidth + 5.3}%`) +
+            parseFloat(`${(1 / 7) * 10 - 1}%`) / 2 +
+            '%',
+          top: `${(rowIndex / 7) * gapBetweenCells + paddingTop}%`,
+          textAlign: 'center',
+          text: String(dayCounter),
+          textStyle: {
+            fontSize: 10,
+          },
+        })
+      }
+
       dayCounter++
     } else {
       series.push({
@@ -172,7 +213,7 @@ export const transformCongestionTrackerData = (
     if (i < 7) {
       titles.push({
         left: `${(colIndex / 7) * cellWidth + paddingLeft + 5}%`,
-        top: `${(rowIndex / 7) * gapBetweenCells + 16}%`,
+        top: '16%',
         textAlign: 'center',
         text: daysOfTheWeek[i],
         textStyle: {
@@ -184,13 +225,40 @@ export const transformCongestionTrackerData = (
     count++
   }
 
-  const legend = createLegend({
-    data: [
-      { name: 'Speed Limit', icon: DashedLineSeriesSymbol },
-      { name: 'Average', icon: SolidLineSeriesSymbol },
-      { name: '85th Percentile', icon: SolidLineSeriesSymbol },
-    ],
-  })
+  let legend = ''
+  if (view === 'week') {
+    // Calculate number of weeks
+    const numOfWeeks = Math.ceil((days + monthStartDay) / 7)
+
+    // Dynamically generate the legend entries
+    const legendData = []
+    // Add all averages first
+    for (let week = 1; week <= numOfWeeks; week++) {
+      legendData.push({
+        name: `Week ${week} Average`,
+        icon: SolidLineSeriesSymbol,
+      })
+    }
+    // Add all 85th percentiles
+    for (let week = 1; week <= numOfWeeks; week++) {
+      legendData.push({
+        name: `Week ${week} 85th Percentile`,
+        icon: SolidLineSeriesSymbol,
+      })
+    }
+
+    legend = createLegend({
+      data: legendData,
+    })
+  } else {
+    legend = createLegend({
+      data: [
+        { name: 'Speed Limit', icon: DashedLineSeriesSymbol },
+        { name: 'Average', icon: SolidLineSeriesSymbol },
+        { name: '85th Percentile', icon: SolidLineSeriesSymbol },
+      ],
+    })
+  }
 
   const monthAndYear = new Date(date).toLocaleString('default', {
     month: 'long',
@@ -216,6 +284,8 @@ export const transformCongestionTrackerData = (
     xAxis: xAxes,
     yAxis: yAxes,
     series: series,
+    response: response,
+    currentView: view,
   }
 
   console.log('option', option)
