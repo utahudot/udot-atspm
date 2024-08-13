@@ -202,8 +202,8 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                 int currentOffset = 0;
                 var currentProgrammedSplitsForTimePeriod = new List<IndianaEvent>();
 
-                var primaryPhaseDetail = phaseService.GetPhases(location).Find(p => p.PhaseNumber == routeLocation.PrimaryPhase);
-                var opposingPhaseDetail = phaseService.GetPhases(location).Find(p => p.PhaseNumber == routeLocation.OpposingPhase);
+                var primaryPhaseDetail = phaseService.GetPhases(location).Find(p => p.PhaseNumber == routeLocation.PrimaryPhase && p.IsPermissivePhase != true);
+                var opposingPhaseDetail = phaseService.GetPhases(location).Find(p => p.PhaseNumber == routeLocation.OpposingPhase && p.IsPermissivePhase != true);
                 //var phaseToSearch = routeLocation.PrimaryPhase;
                 //var phaseDetail = _phaseService.GetPhases(location).Find(p => p.PhaseNumber == phaseToSearch);
 
@@ -214,12 +214,12 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
 
                 if (parameter.SpeedLimit == null && primaryPhaseDetail.Approach.Mph == null)
                 {
-                    throw new Exception($"Speed not configured in route for all phases");
+                    throw new Exception($"Speed not configured for phase {opposingPhaseDetail.Approach.Description} in {routeLocation.LocationIdentifier}");
                 }
 
                 if (parameter.SpeedLimit == null && opposingPhaseDetail.Approach.Mph == null)
                 {
-                    throw new Exception($"Speed not configured in route for all phases");
+                    throw new Exception($"Speed not configured for phase {opposingPhaseDetail.Approach.Description} in {routeLocation.LocationIdentifier}");
                 }
 
                 foreach (DateOnly date in daysToProcess)
@@ -227,6 +227,10 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                     var start = date.ToDateTime(parameter.StartTime);
                     var end = date.ToDateTime(parameter.EndTime);
                     var logs = controllerEventLogRepository.GetEventsBetweenDates(location.LocationIdentifier, start.AddHours(-12), end.AddHours(12)).ToList();
+                    if (logs.IsNullOrEmpty())
+                    {
+                        throw new NullReferenceException("No Controller Event Logs found for Location");
+                    }
                     var planEvents = logs.GetPlanEvents(start.AddHours(-12), end.AddHours(12));
                     var plan = planService.GetBasicPlans(start, end, routeLocation.LocationIdentifier, planEvents).FirstOrDefault();
 
@@ -262,11 +266,6 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
 
                     planEventsForPeriod.Add(plan);
                     controllerEventLogs.AddRange(logs);
-                }
-
-                if (controllerEventLogs.IsNullOrEmpty())
-                {
-                    throw new NullReferenceException("No Controller Event Logs found for Location");
                 }
 
                 if (!IsPlanSameForTimePeriod(planEventsForPeriod))

@@ -1,13 +1,16 @@
+import { transformMenuItems } from '@/components/topbar/menuUtils'
 import { useGetAdminPagesList } from '@/features/identity/pagesCheck'
 import { doesUserHaveAccess } from '@/features/identity/utils'
+import { useGetMenuItems } from '@/features/links/api/getMenuItems'
 import { useSidebarStore } from '@/stores/sidebar'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import MenuIcon from '@mui/icons-material/Menu'
 import PublishedWithChangesOutlinedIcon from '@mui/icons-material/PublishedWithChangesOutlined'
 import QuestionAnswerOutlinedIcon from '@mui/icons-material/QuestionAnswerOutlined'
-import { Box, IconButton, Paper } from '@mui/material'
+import { Box, Button, IconButton, Paper, Typography } from '@mui/material'
 import Image from 'next/image'
 import NextLink from 'next/link'
+import router from 'next/router'
 import { useEffect, useState } from 'react'
 import DropDownButton from './DropdownButton'
 import UserMenu from './UserMenu'
@@ -17,6 +20,7 @@ export const topbarHeight = 60
 export default function Topbar() {
   const { toggleSidebar } = useSidebarStore()
   const [userHasAccess, setUserHasAccess] = useState(false)
+  const { data: menuItemsData, isLoading } = useGetMenuItems()
 
   useEffect(() => {
     setUserHasAccess(doesUserHaveAccess())
@@ -25,6 +29,12 @@ export default function Topbar() {
   const handleMenuCollapseClick = () => {
     toggleSidebar()
   }
+
+  const handleNavigation = (path: string) => {
+    router.push(path)
+  }
+
+  const menuItems = menuItemsData ? transformMenuItems(menuItemsData.value) : []
 
   const infoItems = [
     {
@@ -50,6 +60,10 @@ export default function Topbar() {
     name: key,
     link: pagesToLinks.get(key) as string,
   }))
+
+  if (isLoading) {
+    return null
+  }
 
   return (
     <Box
@@ -99,6 +113,34 @@ export default function Topbar() {
         </NextLink>
       </Box>
       <Box>
+        {menuItems.map((item) =>
+          item.parentId === null && item.link ? (
+            <Button
+              key={item.name}
+              onClick={() => handleNavigation(item.link)}
+              sx={{
+                mx: '2px',
+                color: theme.palette.text.primary,
+                textTransform: 'none',
+              }}
+            >
+              <Typography fontWeight={400} sx={{ textTransform: 'none' }}>
+                {item.name}
+              </Typography>
+            </Button>
+          ) : (
+            <DropDownButton
+              key={item.name}
+              title={item.name}
+              icon={item.icon || <InfoOutlinedIcon />}
+              menuItems={
+                item.children.length > 0
+                  ? item.children
+                  : [{ name: item.name, icon: item.icon, link: item.link }]
+              }
+            />
+          )
+        )}
         <DropDownButton
           title="Info"
           icon={<InfoOutlinedIcon />}

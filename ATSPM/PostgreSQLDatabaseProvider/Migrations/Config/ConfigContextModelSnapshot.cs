@@ -25,7 +25,6 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
 {
     [DbContext(typeof(ConfigContext))]
     partial class ConfigContextModelSnapshot : ModelSnapshot
@@ -39,7 +38,6 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.Approach", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -94,7 +92,6 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.Area", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -116,7 +113,6 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.LocationType", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -142,7 +138,6 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.UserArea", b =>
                 {
                     b.Property<string>("UserId")
                         .IsUnicode(false)
@@ -161,7 +156,6 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.UserJurisdiction", b =>
                 {
                     b.Property<string>("UserId")
                         .IsUnicode(false)
@@ -177,7 +171,6 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
                     b.ToTable("UserJurisdictions");
                 });
 
-            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.UserRegion", b =>
                 {
                     b.Property<string>("UserId")
                         .IsUnicode(false)
@@ -193,7 +186,6 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
                     b.ToTable("UserRegions");
                 });
 
-            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.DetectionType", b =>
                 {
                     b.Property<int>("Id")
                         .HasColumnType("integer");
@@ -306,7 +298,6 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.Detector", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -369,7 +360,6 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.DetectorComment", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -399,7 +389,6 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.Device", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -455,7 +444,6 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.DeviceConfiguration", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -468,11 +456,7 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
                         .HasColumnType("integer")
                         .HasDefaultValueSql("((2000))");
 
-                    b.Property<string>("Decoders")
-                        .ValueGeneratedOnAdd()
                         .HasMaxLength(512)
-                        .HasColumnType("character varying(512)")
-                        .HasDefaultValueSql("('[]')");
 
                     b.Property<string>("Directory")
                         .HasMaxLength(512)
@@ -500,9 +484,7 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
                         .IsUnicode(false)
                         .HasColumnType("character varying(50)");
 
-                    b.Property<int>("Port")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
                         .HasDefaultValueSql("((0))");
 
                     b.Property<int?>("ProductId")
@@ -518,8 +500,6 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
                     b.Property<string>("SearchTerms")
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(512)
-                        .HasColumnType("character varying(512)")
-                        .HasDefaultValueSql("('[]')");
 
                     b.Property<string>("UserName")
                         .HasMaxLength(50)
@@ -536,7 +516,6 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.DirectionType", b =>
                 {
                     b.Property<int>("Id")
                         .HasColumnType("integer");
@@ -627,7 +606,37 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.Faq", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("DisplayOrder")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .IsUnicode(false)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasMaxLength(512)
+                        .IsUnicode(false)
+                        .HasColumnType("character varying(512)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ExternalLinks", t =>
+                        {
+                            t.HasComment("External Links");
+                        });
+                });
+
+            modelBuilder.Entity("ATSPM.Data.Models.Faq", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -807,7 +816,6 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.Jurisdiction", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -844,7 +852,6 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.Location", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -924,7 +931,6 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.MeasureComment", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -956,7 +962,6 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.MeasureOption", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -1353,7 +1358,6 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.MeasureType", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -1705,7 +1709,6 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.MenuItem", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -1747,7 +1750,6 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.Product", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -1784,7 +1786,6 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.Region", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -1806,7 +1807,6 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.Route", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -1827,7 +1827,6 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.RouteDistance", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -1861,7 +1860,6 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.RouteLocation", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -1926,7 +1924,6 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.VersionHistory", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -1937,7 +1934,6 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
                     b.Property<DateTime>("Date")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp")
-                        .HasDefaultValue(new DateTime(2024, 7, 30, 10, 13, 52, 989, DateTimeKind.Local).AddTicks(3988));
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -1966,7 +1962,6 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.WatchDogLogEvent", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -2067,15 +2062,12 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
                     b.ToTable("MeasureCommentMeasureType");
                 });
 
-            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.Approach", b =>
                 {
-                    b.HasOne("Utah.Udot.Atspm.Data.Models.DirectionType", "DirectionType")
                         .WithMany("Approaches")
                         .HasForeignKey("DirectionTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Utah.Udot.Atspm.Data.Models.Location", "Location")
                         .WithMany("Approaches")
                         .HasForeignKey("LocationId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -2086,9 +2078,7 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
                     b.Navigation("Location");
                 });
 
-            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.UserArea", b =>
                 {
-                    b.HasOne("Utah.Udot.Atspm.Data.Models.Area", "Area")
                         .WithMany("UserAreas")
                         .HasForeignKey("AreaId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -2097,9 +2087,7 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
                     b.Navigation("Area");
                 });
 
-            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.UserJurisdiction", b =>
                 {
-                    b.HasOne("Utah.Udot.Atspm.Data.Models.Jurisdiction", "Jurisdiction")
                         .WithMany("UserJurisdictions")
                         .HasForeignKey("JurisdictionId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -2108,9 +2096,7 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
                     b.Navigation("Jurisdiction");
                 });
 
-            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.UserRegion", b =>
                 {
-                    b.HasOne("Utah.Udot.Atspm.Data.Models.Region", "Region")
                         .WithMany("UserRegions")
                         .HasForeignKey("RegionId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -2119,9 +2105,7 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
                     b.Navigation("Region");
                 });
 
-            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.Detector", b =>
                 {
-                    b.HasOne("Utah.Udot.Atspm.Data.Models.Approach", "Approach")
                         .WithMany("Detectors")
                         .HasForeignKey("ApproachId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -2130,9 +2114,7 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
                     b.Navigation("Approach");
                 });
 
-            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.DetectorComment", b =>
                 {
-                    b.HasOne("Utah.Udot.Atspm.Data.Models.Detector", "Detector")
                         .WithMany("DetectorComments")
                         .HasForeignKey("DetectorId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -2141,13 +2123,10 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
                     b.Navigation("Detector");
                 });
 
-            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.Device", b =>
                 {
-                    b.HasOne("Utah.Udot.Atspm.Data.Models.DeviceConfiguration", "DeviceConfiguration")
                         .WithMany("Devices")
                         .HasForeignKey("DeviceConfigurationId");
 
-                    b.HasOne("Utah.Udot.Atspm.Data.Models.Location", "Location")
                         .WithMany("Devices")
                         .HasForeignKey("LocationId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -2158,28 +2137,22 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
                     b.Navigation("Location");
                 });
 
-            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.DeviceConfiguration", b =>
                 {
-                    b.HasOne("Utah.Udot.Atspm.Data.Models.Product", "Product")
                         .WithMany()
                         .HasForeignKey("ProductId");
 
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.Location", b =>
                 {
-                    b.HasOne("Utah.Udot.Atspm.Data.Models.Jurisdiction", "Jurisdiction")
                         .WithMany("Locations")
                         .HasForeignKey("JurisdictionId");
 
-                    b.HasOne("Utah.Udot.Atspm.Data.Models.LocationType", "LocationType")
                         .WithMany("Locations")
                         .HasForeignKey("LocationTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Utah.Udot.Atspm.Data.Models.Region", "Region")
                         .WithMany("Locations")
                         .HasForeignKey("RegionId");
 
@@ -2190,9 +2163,7 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
                     b.Navigation("Region");
                 });
 
-            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.MeasureOption", b =>
                 {
-                    b.HasOne("Utah.Udot.Atspm.Data.Models.MeasureType", "MeasureType")
                         .WithMany("MeasureOptions")
                         .HasForeignKey("MeasureTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -2201,9 +2172,7 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
                     b.Navigation("MeasureType");
                 });
 
-            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.MenuItem", b =>
                 {
-                    b.HasOne("Utah.Udot.Atspm.Data.Models.MenuItem", "Parent")
                         .WithMany("Children")
                         .HasForeignKey("ParentId")
                         .OnDelete(DeleteBehavior.Restrict);
@@ -2211,31 +2180,25 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
                     b.Navigation("Parent");
                 });
 
-            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.RouteLocation", b =>
                 {
-                    b.HasOne("Utah.Udot.Atspm.Data.Models.RouteDistance", "NextLocationDistance")
                         .WithMany("NextLocations")
                         .HasForeignKey("NextLocationDistanceId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("Utah.Udot.Atspm.Data.Models.DirectionType", "OpposingDirection")
                         .WithMany("OpposingDirections")
                         .HasForeignKey("OpposingDirectionId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Utah.Udot.Atspm.Data.Models.RouteDistance", "PreviousLocationDistance")
                         .WithMany("PreviousLocations")
                         .HasForeignKey("PreviousLocationDistanceId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("Utah.Udot.Atspm.Data.Models.DirectionType", "PrimaryDirection")
                         .WithMany("PrimaryDirections")
                         .HasForeignKey("PrimaryDirectionId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Utah.Udot.Atspm.Data.Models.Route", "Route")
                         .WithMany("RouteLocations")
                         .HasForeignKey("RouteId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -2252,9 +2215,7 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
                     b.Navigation("Route");
                 });
 
-            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.VersionHistory", b =>
                 {
-                    b.HasOne("Utah.Udot.Atspm.Data.Models.VersionHistory", "Parent")
                         .WithMany("Children")
                         .HasForeignKey("ParentId")
                         .OnDelete(DeleteBehavior.Restrict);
@@ -2264,13 +2225,11 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
 
             modelBuilder.Entity("AreaLocation", b =>
                 {
-                    b.HasOne("Utah.Udot.Atspm.Data.Models.Area", null)
                         .WithMany()
                         .HasForeignKey("AreasId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Utah.Udot.Atspm.Data.Models.Location", null)
                         .WithMany()
                         .HasForeignKey("LocationsId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -2279,13 +2238,11 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
 
             modelBuilder.Entity("DetectionTypeDetector", b =>
                 {
-                    b.HasOne("Utah.Udot.Atspm.Data.Models.DetectionType", null)
                         .WithMany()
                         .HasForeignKey("DetectionTypesId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Utah.Udot.Atspm.Data.Models.Detector", null)
                         .WithMany()
                         .HasForeignKey("DetectorsId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -2294,13 +2251,11 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
 
             modelBuilder.Entity("DetectionTypeMeasureType", b =>
                 {
-                    b.HasOne("Utah.Udot.Atspm.Data.Models.DetectionType", null)
                         .WithMany()
                         .HasForeignKey("DetectionTypesId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Utah.Udot.Atspm.Data.Models.MeasureType", null)
                         .WithMany()
                         .HasForeignKey("MeasureTypesId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -2309,45 +2264,37 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
 
             modelBuilder.Entity("MeasureCommentMeasureType", b =>
                 {
-                    b.HasOne("Utah.Udot.Atspm.Data.Models.MeasureComment", null)
                         .WithMany()
                         .HasForeignKey("MeasureCommentsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Utah.Udot.Atspm.Data.Models.MeasureType", null)
                         .WithMany()
                         .HasForeignKey("MeasureTypesId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.Approach", b =>
                 {
                     b.Navigation("Detectors");
                 });
 
-            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.Area", b =>
                 {
                     b.Navigation("UserAreas");
                 });
 
-            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.LocationType", b =>
                 {
                     b.Navigation("Locations");
                 });
 
-            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.Detector", b =>
                 {
                     b.Navigation("DetectorComments");
                 });
 
-            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.DeviceConfiguration", b =>
                 {
                     b.Navigation("Devices");
                 });
 
-            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.DirectionType", b =>
                 {
                     b.Navigation("Approaches");
 
@@ -2356,50 +2303,42 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
                     b.Navigation("PrimaryDirections");
                 });
 
-            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.Jurisdiction", b =>
                 {
                     b.Navigation("Locations");
 
                     b.Navigation("UserJurisdictions");
                 });
 
-            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.Location", b =>
                 {
                     b.Navigation("Approaches");
 
                     b.Navigation("Devices");
                 });
 
-            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.MeasureType", b =>
                 {
                     b.Navigation("MeasureOptions");
                 });
 
-            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.MenuItem", b =>
                 {
                     b.Navigation("Children");
                 });
 
-            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.Region", b =>
                 {
                     b.Navigation("Locations");
 
                     b.Navigation("UserRegions");
                 });
 
-            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.Route", b =>
                 {
                     b.Navigation("RouteLocations");
                 });
 
-            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.RouteDistance", b =>
                 {
                     b.Navigation("NextLocations");
 
                     b.Navigation("PreviousLocations");
                 });
 
-            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.VersionHistory", b =>
                 {
                     b.Navigation("Children");
                 });
