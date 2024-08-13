@@ -1,20 +1,5 @@
-﻿#region license
-// Copyright 2024 Utah Departement of Transportation
-// for ApplicationCore - ATSPM.Application.Business.LinkPivot/LinkPivotService.cs
-// 
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-// 
-// http://www.apache.org/licenses/LICENSE-2.
-// 
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-#endregion
-
+﻿using ATSPM.Application.Repositories.ConfigurationRepositories;
+using ATSPM.Data.Models;
 using Microsoft.EntityFrameworkCore;
 using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
 
@@ -70,14 +55,14 @@ namespace Utah.Udot.Atspm.Business.LinkPivot
 
             //Get the totals
             linkPivotResult.TotalAogDownstreamBefore = linkPivot.Adjustments.Sum(a => a.AOGDownstreamBefore);
-            linkPivotResult.TotalPaogDownstreamBefore = (int)Math.Round(linkPivot.Adjustments.Sum(a => a.AOGDownstreamBefore) / totalDownstreamVolume * 100);
+            linkPivotResult.TotalPaogDownstreamBefore = totalDownstreamVolume.AreEqual(0d) ? 0 : (int)Math.Round((linkPivot.Adjustments.Sum(a => a.AOGDownstreamBefore) / totalDownstreamVolume) * 100);
             if (double.IsNaN(linkPivotResult.TotalPaogDownstreamBefore))
             {
                 // If result is NaN, set it to 0
                 linkPivotResult.TotalPaogDownstreamBefore = 0;
             }
             linkPivotResult.TotalAogDownstreamPredicted = linkPivot.Adjustments.Sum(a => a.AOGDownstreamPredicted);
-            linkPivotResult.TotalPaogDownstreamPredicted = (int)Math.Round(linkPivot.Adjustments.Sum(a => a.AOGDownstreamPredicted) / totalDownstreamVolume * 100);
+            linkPivotResult.TotalPaogDownstreamPredicted = totalDownstreamVolume.AreEqual(0d) ? 0 : (int)Math.Round((linkPivot.Adjustments.Sum(a => a.AOGDownstreamPredicted) / totalDownstreamVolume) * 100);
             if (double.IsNaN(linkPivotResult.TotalPaogDownstreamPredicted))
             {
                 // If result is NaN, set it to 0
@@ -85,14 +70,14 @@ namespace Utah.Udot.Atspm.Business.LinkPivot
             }
 
             linkPivotResult.TotalAogUpstreamBefore = linkPivot.Adjustments.Sum(a => a.AOGUpstreamBefore);
-            linkPivotResult.TotalPaogUpstreamBefore = (int)Math.Round(linkPivot.Adjustments.Sum(a => a.AOGUpstreamBefore) / totalUpstreamVolume * 100);
+            linkPivotResult.TotalPaogUpstreamBefore = totalUpstreamVolume.AreEqual(0d) ? 0 : (int)Math.Round((linkPivot.Adjustments.Sum(a => a.AOGUpstreamBefore) / totalUpstreamVolume) * 100);
             if (double.IsNaN(linkPivotResult.TotalPaogUpstreamBefore))
             {
                 // If result is NaN, set it to 0
                 linkPivotResult.TotalPaogUpstreamBefore = 0;
             }
             linkPivotResult.TotalAogUpstreamPredicted = linkPivot.Adjustments.Sum(a => a.AOGUpstreamPredicted);
-            linkPivotResult.TotalPaogUpstreamPredicted = (int)Math.Round(linkPivot.Adjustments.Sum(a => a.AOGUpstreamPredicted) / totalUpstreamVolume * 100);
+            linkPivotResult.TotalPaogUpstreamPredicted = (int)Math.Round((linkPivot.Adjustments.Sum(a => a.AOGUpstreamPredicted) / totalUpstreamVolume) * 100);
             if (double.IsNaN(linkPivotResult.TotalPaogUpstreamPredicted))
             {
                 // If result is NaN, set it to 0
@@ -100,7 +85,7 @@ namespace Utah.Udot.Atspm.Business.LinkPivot
             }
 
             linkPivotResult.TotalAogBefore = linkPivotResult.TotalAogUpstreamBefore + linkPivotResult.TotalAogDownstreamBefore;
-            linkPivotResult.TotalPaogBefore = (int)Math.Round(linkPivotResult.TotalAogBefore / totalVolume * 100);
+            linkPivotResult.TotalPaogBefore = (int)Math.Round((linkPivotResult.TotalAogBefore / totalVolume) * 100);
             if (double.IsNaN(linkPivotResult.TotalPaogBefore))
             {
                 // If result is NaN, set it to 0
@@ -108,7 +93,7 @@ namespace Utah.Udot.Atspm.Business.LinkPivot
             }
 
             linkPivotResult.TotalAogPredicted = linkPivotResult.TotalAogUpstreamPredicted + linkPivotResult.TotalAogDownstreamPredicted;
-            linkPivotResult.TotalPaogPredicted = (int)Math.Round(linkPivotResult.TotalAogPredicted / totalVolume * 100);
+            linkPivotResult.TotalPaogPredicted = (int)Math.Round((linkPivotResult.TotalAogPredicted / totalVolume) * 100);
             if (double.IsNaN(linkPivotResult.TotalPaogPredicted))
             {
                 // If result is NaN, set it to 0

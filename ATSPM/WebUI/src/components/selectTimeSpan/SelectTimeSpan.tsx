@@ -246,7 +246,7 @@ export default function SelectDateTime({
         </Alert>
       )}
       {showWarningForTimeSpace && (
-        <Alert severity="warning" sx={{ marginTop: 2 }}>
+        <Alert severity="warning" sx={{ marginTop: 2, maxWidth: '330px' }}>
           We generally recommend a time span of 20 minutes or less for
           Time-Space.
         </Alert>

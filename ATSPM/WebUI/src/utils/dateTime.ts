@@ -43,8 +43,8 @@ export const getDateFromDateStamp = (dateStamp: string): Date => {
   return new Date(dateStamp)
 }
 
-export function formatTimestampToDDMMYYYY(timestamp: string) {
-  const date = new Date(timestamp)
+export function formatTimestampToDDMMYYYY(timestamp: string | Date) {
+  const date = typeof timestamp === 'string' ? new Date(timestamp) : timestamp
 
   const day = String(date.getDate()).padStart(2, '0')
   const month = String(date.getMonth() + 1).padStart(2, '0')
