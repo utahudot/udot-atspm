@@ -1,4 +1,5 @@
 import { Impact } from '@/features/speedManagementTool/types/impact'
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
 import {
   Box,
   Button,
@@ -18,7 +19,6 @@ import { useTheme } from '@mui/material/styles'
 import { useRouter } from 'next/router'
 import React, { useEffect, useState } from 'react'
 import { useGetImpactTypes } from '../api/getImpactTypes'
-
 interface ImpactEditorModalProps {
   data?: Impact
   open: boolean
@@ -77,10 +77,15 @@ const ImpactEditorModal: React.FC<ImpactEditorModalProps> = ({
       target: { value },
     } = event
 
-    const selectedIds = value ? (typeof value === 'string' ? value.split(',') : value) : [];
-    const selectedImpactTypes = impactTypeData?.filter((type) =>
-      type.id && selectedIds.includes(type.id)
-    ) || [];
+    const selectedIds = value
+      ? typeof value === 'string'
+        ? value.split(',')
+        : value
+      : []
+    const selectedImpactTypes =
+      impactTypeData?.filter(
+        (type) => type.id && selectedIds.includes(type.id)
+      ) || []
 
     setImpact({
       ...impact,
@@ -121,7 +126,7 @@ const ImpactEditorModal: React.FC<ImpactEditorModalProps> = ({
                   label="Start Date"
                   name="start"
                   type="datetime-local"
-                  value={impact.start || new Date}
+                  value={impact.start || new Date()}
                   onChange={(e) =>
                     setImpact({ ...impact, start: e.target.value })
                   }
@@ -183,7 +188,7 @@ const ImpactEditorModal: React.FC<ImpactEditorModalProps> = ({
                     labelId="impact-types-label"
                     id="impact-types-select"
                     multiple
-                    value={impact.impactTypes?.map((type) => type.id)} 
+                    value={impact.impactTypes?.map((type) => type.id)}
                     onChange={handleChange}
                     input={
                       <OutlinedInput
@@ -206,6 +211,15 @@ const ImpactEditorModal: React.FC<ImpactEditorModalProps> = ({
                     )}
                     MenuProps={MenuProps}
                   >
+                    <MenuItem onClick={() => router.push('/admin/impact-type')}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', color:'#555555' }}>
+                        <AddCircleOutlineIcon style={{ fontSize: 'large' }} />
+                        <Box sx={{ ml: 1 }}>
+                          {' '}
+                          Create Impact Type
+                        </Box>
+                      </Box>
+                    </MenuItem>
                     {impactTypeData?.map((type) => (
                       <MenuItem
                         key={type.id}
@@ -221,12 +235,6 @@ const ImpactEditorModal: React.FC<ImpactEditorModalProps> = ({
                         {type.name}
                       </MenuItem>
                     ))}
-                    <MenuItem
-                      onClick={() => router.push('/admin/impact-type')}
-                      style={{ fontWeight: theme.typography.fontWeightMedium }}
-                    >
-                      Create new Impact Type
-                    </MenuItem>
                   </Select>
                 </FormControl>
               </Grid>
