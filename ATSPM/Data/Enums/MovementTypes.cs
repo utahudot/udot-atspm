@@ -65,5 +65,7 @@ namespace Utah.Udot.Atspm.Data.Enums
         /// </summary>
         [Display(Name = "Northwest", Order = 6)]
         NW = 6,
+        [Display(Name = "left-thru-right", Order = 7)]
+        LTR = 7,
     }
 }
