@@ -1,0 +1,92 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <UserSecretsId>c250810b-210a-450f-a9cf-e8e158549776</UserSecretsId>
+    <AssemblyName>$(MSBuildProjectName)</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="7.0.14" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.14" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.10" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.10" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.1" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="7.0.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="Npgsql" Version="7.0.6" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.11" />
+    <PackageReference Include="Oracle.EntityFrameworkCore" Version="7.21.11" />
+    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="7.0.0" />
+    <PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
+    <PackageReference Include="System.CommandLine.Hosting" Version="0.4.0-alpha.22272.1" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.8.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\UDOT-ATSPM\ATSPM\Infrastructure\Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="ApplicationCore">
+      <HintPath>..\..\UDOT-ATSPM\ATSPM\Infrastructure\bin\Debug\net7.0\ApplicationCore.dll</HintPath>
+    </Reference>
+    <Reference Include="ATSPM.Data">
+      <HintPath>..\..\UDOT-ATSPM\ATSPM\Infrastructure\bin\Debug\net7.0\ATSPM.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="ATSPM.Infrastructure">
+      <HintPath>..\..\UDOT-ATSPM\ATSPM\Infrastructure\bin\Debug\net7.0\ATSPM.Infrastructure.dll</HintPath>
+    </Reference>
+    <Reference Include="ATSPM.Infrastructure.MySqlDatabaseProvider">
+      <HintPath>..\..\UDOT-ATSPM\ATSPM\Infrastructure\bin\Debug\net7.0\ATSPM.Infrastructure.MySqlDatabaseProvider.dll</HintPath>
+    </Reference>
+    <Reference Include="ATSPM.Infrastructure.OracleDatabaseProvider">
+      <HintPath>..\..\UDOT-ATSPM\ATSPM\Infrastructure\bin\Debug\net7.0\ATSPM.Infrastructure.OracleDatabaseProvider.dll</HintPath>
+    </Reference>
+    <Reference Include="ATSPM.Infrastructure.PostgreSQLDatabaseProvider">
+      <HintPath>..\..\UDOT-ATSPM\ATSPM\Infrastructure\bin\Debug\net7.0\ATSPM.Infrastructure.PostgreSQLDatabaseProvider.dll</HintPath>
+    </Reference>
+    <Reference Include="ATSPM.Infrastructure.SqlDatabaseProvider">
+      <HintPath>..\..\UDOT-ATSPM\ATSPM\Infrastructure\bin\Debug\net7.0\ATSPM.Infrastructure.SqlDatabaseProvider.dll</HintPath>
+    </Reference>
+    <Reference Include="ATSPM.Infrastructure.SqlLiteDatabaseProvider">
+      <HintPath>..\..\UDOT-ATSPM\ATSPM\Infrastructure\bin\Debug\net7.0\ATSPM.Infrastructure.SqlLiteDatabaseProvider.dll</HintPath>
+    </Reference>
+    <Reference Include="DomainCore">
+      <HintPath>..\..\UDOT-ATSPM\ATSPM\Infrastructure\bin\Debug\net7.0\DomainCore.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Files\DetectionTypeMeasureType.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="https://json.schemastore.org/artifacthub-repo.json" /></VisualStudio></ProjectExtensions>
+
+</Project>
