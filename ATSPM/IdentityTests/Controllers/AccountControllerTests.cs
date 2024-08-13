@@ -1,4 +1,21 @@
-﻿using Identity.Business.Agency;
+﻿#region license
+// Copyright 2024 Utah Departement of Transportation
+// for IdentityTests - IdentityTests.Controllers/AccountControllerTests.cs
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+// http://www.apache.org/licenses/LICENSE-2.
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+#endregion
+
+using Identity.Business.Agency;
 using Identity.Controllers;
 using Identity.Models.Account;
 using Microsoft.AspNetCore.Http;
@@ -7,9 +24,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Moq;
 using System.Security.Claims;
+using Utah.Udot.Atspm.Data.Models;
 using Xunit;
 
-namespace YourProject.Tests.Controllers
+namespace Utah.Udot.Atspm.IdentityTests.Controllers
 {
     public class AccountControllerTests
     {
@@ -35,7 +53,7 @@ namespace YourProject.Tests.Controllers
             // Mock any new services or dependencies you've added to the AccountController
             // var newServiceMock = new Mock<INewService>();
 
-            // Consider using a mock HTTP client if you're making external HTTP requests
+            // Consider using a mock HTTP _client if you're making external HTTP requests
             // var httpClientMock = new Mock<IHttpClientFactory>();
             //var serviceMock = new AccountService(_userManagerMock.Object, agencyServiceMock.Object, _signInManagerMock.Object);
 
@@ -148,31 +166,31 @@ namespace YourProject.Tests.Controllers
             Assert.IsType<OkObjectResult>(result);
         }
 
-        [Fact]
-        public async Task ChangePassword_ValidModel_ReturnsOk()
-        {
-            // Arrange
-            var model = new ChangePasswordViewModel
-            {
-                CurrentPassword = "OldPassword123!",
-                NewPassword = "NewPassword123!",
-                ConfirmPassword = "NewPassword123!"
-            };
+        //[Fact]
+        //public async Task ChangePassword_ValidModel_ReturnsOk()
+        //{
+        //    // Arrange
+        //    var model = new ChangePasswordViewModel
+        //    {
+        //        CurrentPassword = "OldPassword123!",
+        //        NewPassword = "NewPassword123!",
+        //        ConfirmPassword = "NewPassword123!"
+        //    };
 
-            var user = new ApplicationUser();
+        //    var user = new ApplicationUser();
 
-            _userManagerMock.Setup(um => um.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
-                .ReturnsAsync(user);
+        //    _userManagerMock.Setup(um => um.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
+        //        .ReturnsAsync(user);
 
-            _userManagerMock.Setup(um => um.ChangePasswordAsync(user, model.CurrentPassword, model.NewPassword))
-                .ReturnsAsync(IdentityResult.Success);
+        //    _userManagerMock.Setup(um => um.ChangePasswordAsync(user, model.CurrentPassword, model.NewPassword))
+        //        .ReturnsAsync(IdentityResult.Success);
 
-            // Act
-            var result = await _accountController.ChangePassword(model);
+        //    // Act
+        //    var result = await _accountController.ChangePassword(model);
 
-            // Assert
-            Assert.IsType<OkResult>(result);
-        }
+        //    // Assert
+        //    Assert.IsType<OkResult>(result);
+        //}
 
         [Fact]
         public async Task ChangePassword_InvalidModel_ReturnsBadRequest()

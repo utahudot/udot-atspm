@@ -1,17 +1,25 @@
-﻿using ATSPM.Application.Configuration;
-using ATSPM.Domain.Common;
-using ATSPM.Domain.Services;
-using ATSPM.Domain.Specifications;
+﻿#region license
+// Copyright 2024 Utah Departement of Transportation
+// for Infrastructure - ATSPM.Infrastructure.Repositories/ATSPMFileRepositoryBase.cs
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+// http://www.apache.org/licenses/LICENSE-2.
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+#endregion
+
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Threading.Tasks;
 
-namespace ATSPM.Infrastructure.Repositories
+namespace Utah.Udot.Atspm.Infrastructure.Repositories
 {
     public abstract class ATSPMFileRepositoryBase<T> : IAsyncRepository<T> where T : class, new()
     {
@@ -38,7 +46,7 @@ namespace ATSPM.Infrastructure.Repositories
 
         #endregion
 
-        public ATSPMFileRepositoryBase(IFileTranscoder fileTranscoder, IOptions<FileRepositoryConfiguration> options, ILogger<ATSPMFileRepositoryBase<T>> log) => 
+        public ATSPMFileRepositoryBase(IFileTranscoder fileTranscoder, IOptions<FileRepositoryConfiguration> options, ILogger<ATSPMFileRepositoryBase<T>> log) =>
             (_fileTranscoder, _options, _log) = (fileTranscoder, options, log);
 
         public void Add(T item)

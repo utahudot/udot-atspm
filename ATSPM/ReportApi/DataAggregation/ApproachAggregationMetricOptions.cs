@@ -1,17 +1,25 @@
-﻿using ATSPM.Application.Business.Aggregation;
-using ATSPM.Application.Business.Bins;
-using ATSPM.Application.Business.Common;
-using ATSPM.Application.Enums;
-using ATSPM.Application.Extensions;
-using ATSPM.Application.Repositories.ConfigurationRepositories;
-using ATSPM.Application.TempExtensions;
-using ATSPM.Data.Enums;
-using ATSPM.Data.Models;
-using ATSPM.ReportApi.DataAggregation;
+﻿#region license
+// Copyright 2024 Utah Departement of Transportation
+// for ReportApi - ATSPM.ReportApi.DataAggregation/ApproachAggregationMetricOptions.cs
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+// http://www.apache.org/licenses/LICENSE-2.
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+#endregion
+
 using System.Collections.Concurrent;
 using System.Diagnostics;
+using Utah.Udot.Atspm.Data.Enums;
 
-namespace MOE.Common.Business.WCFServiceLibrary
+namespace Utah.Udot.Atspm.ReportApi.DataAggregation
 {
 
     public abstract class ApproachAggregationMetricOptions : SignalAggregationMetricOptions
@@ -73,7 +81,7 @@ namespace MOE.Common.Business.WCFServiceLibrary
             var directionsList = GetFilteredDirections(options);
             foreach (var direction in directionsList)
             {
-                var dataPoint = new AggregationDataPoint { Identifier = direction.GetDescription() };
+                var dataPoint = new AggregationDataPoint { Identifier = direction.GetDisplayName() };
                 if (options.SelectedAggregationType == AggregationCalculationType.Sum)
                     dataPoint.Value = GetSumByDirection(signal, direction, options);
                 else
@@ -168,7 +176,7 @@ namespace MOE.Common.Business.WCFServiceLibrary
             availableDirections = availableDirections.Distinct().ToList();
             foreach (var directionType in availableDirections)
             {
-                var seriesName = directionType.GetDescription();
+                var seriesName = directionType.GetDisplayName();
                 var series = CreateSeries(seriesName);
                 foreach (var signal in signals)
                 {
@@ -179,7 +187,7 @@ namespace MOE.Common.Business.WCFServiceLibrary
                         Value = options.SelectedAggregationType == AggregationCalculationType.Sum
                         ? binsContainers.Sum(b => b.SumValue)
                         : Convert.ToInt32(Math.Round(binsContainers.Sum(b => b.SumValue) /
-                                                     (double)availableDirections.Count))
+                                                     availableDirections.Count))
                     };
                     series.DataPoints.Add(dataPoint);
                 }
@@ -203,7 +211,7 @@ namespace MOE.Common.Business.WCFServiceLibrary
 
         private void GetDirectionSeries(AggregationResult chart, DirectionTypes directionType, Location signal, AggregationOptions options)
         {
-            var series = CreateSeries(directionType.GetDescription());
+            var series = CreateSeries(directionType.GetDisplayName());
             var binsContainers = GetBinsContainersByDirection(directionType, signal, options);
             foreach (var binsContainer in binsContainers)
                 foreach (var bin in binsContainer.Bins)
@@ -266,7 +274,7 @@ namespace MOE.Common.Business.WCFServiceLibrary
             Parallel.For(0, availableDirections.Count, i => // foreach (var signal in signals)
             {
                 var binsContainers = GetBinsContainersByDirection(availableDirections[i], signal, options);
-                var series = CreateSeries(availableDirections[i].GetDescription());
+                var series = CreateSeries(availableDirections[i].GetDisplayName());
                 try
                 {
                     SetTimeAggregateSeries(series, binsContainers, options);
@@ -279,7 +287,7 @@ namespace MOE.Common.Business.WCFServiceLibrary
                 }
             });
             foreach (var direction in availableDirections)
-                chart.Series.Add(seriesList.FirstOrDefault(s => s.Identifier == direction.GetDescription()));
+                chart.Series.Add(seriesList.FirstOrDefault(s => s.Identifier == direction.GetDisplayName()));
 
             return chart;
         }

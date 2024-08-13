@@ -1,10 +1,24 @@
-﻿
-using ATSPM.Application.Business;
-using ATSPM.Application.LogMessages;
+﻿#region license
+// Copyright 2024 Utah Departement of Transportation
+// for ReportApi - ATSPM.ReportApi.Controllers/ReportControllerBase.cs
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+// http://www.apache.org/licenses/LICENSE-2.
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+#endregion
+
 using AutoFixture;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ATSPM.ReportApi.Controllers
+namespace Utah.Udot.Atspm.ReportApi.Controllers
 {
     /// <summary>
     /// Report controller base
@@ -13,14 +27,14 @@ namespace ATSPM.ReportApi.Controllers
     /// <typeparam name="Tout">Output results</typeparam>
     public abstract class ReportControllerBase<Tin, Tout> : ControllerBase
     {
-        private IReportService<Tin, Tout> _reportService;
-        private ReportsLoggerLogMessages _reportsLogMessages;
+        private readonly IReportService<Tin, Tout> _reportService;
+        private readonly ReportsLoggerLogMessages<Tin, Tout> _reportsLogMessages;
 
         /// <inheritdoc/>
         public ReportControllerBase(IReportService<Tin, Tout> reportService, ILogger logger)
         {
             _reportService = reportService;
-            _reportsLogMessages = new ReportsLoggerLogMessages(logger);
+            _reportsLogMessages = new ReportsLoggerLogMessages<Tin, Tout>(logger, _reportService);
         }
 
         /// <summary>

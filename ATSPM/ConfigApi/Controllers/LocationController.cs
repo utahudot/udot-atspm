@@ -1,18 +1,34 @@
-﻿using Asp.Versioning;
-using ATSPM.Application.Extensions;
-using ATSPM.Application.Repositories.ConfigurationRepositories;
-using ATSPM.Application.Specifications;
-using ATSPM.ConfigApi.Models;
-using ATSPM.ConfigApi.Services;
-using ATSPM.Data.Models;
-using ATSPM.Domain.Extensions;
+﻿#region license
+// Copyright 2024 Utah Departement of Transportation
+// for ConfigApi - ATSPM.ConfigApi.Controllers/LocationController.cs
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+// http://www.apache.org/licenses/LICENSE-2.
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+#endregion
+
+using Asp.Versioning;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
+using Utah.Udot.Atspm.ConfigApi.Models;
+using Utah.Udot.Atspm.Data.Models;
+using Utah.Udot.Atspm.Extensions;
+using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
+using Utah.Udot.Atspm.Specifications;
+using Utah.Udot.NetStandardToolkit.Extensions;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 using static Microsoft.AspNetCore.OData.Query.AllowedQueryOptions;
 
-namespace ATSPM.ConfigApi.Controllers
+namespace Utah.Udot.Atspm.ConfigApi.Controllers
 {
     /// <summary>
     /// Location Controller
@@ -22,13 +38,11 @@ namespace ATSPM.ConfigApi.Controllers
     public class LocationController : AtspmConfigControllerBase<Location, int>
     {
         private readonly ILocationRepository _repository;
-        private readonly ILocationService locationService;
 
         /// <inheritdoc/>
-        public LocationController(ILocationRepository repository, ILocationService locationService) : base(repository)
+        public LocationController(ILocationRepository repository) : base(repository)
         {
             _repository = repository;
-            this.locationService = locationService;
         }
 
         #region NavigationProperties
@@ -96,7 +110,7 @@ namespace ATSPM.ConfigApi.Controllers
         {
             try
             {
-                return Ok(await locationService.CopyLocationToNewVersion(key));
+                return Ok(await _repository.CopyLocationToNewVersion(key));
             }
             catch (ArgumentException e)
             {
@@ -113,7 +127,7 @@ namespace ATSPM.ConfigApi.Controllers
         [Authorize(Policy = "CanDeleteLocationConfigurations")]
         [HttpPost]
         [ProducesResponseType(Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(Status404NotFound)]
         public async Task<IActionResult> SetLocationToDeleted(int key)
         {
             try
@@ -242,14 +256,13 @@ namespace ATSPM.ConfigApi.Controllers
                 .GroupBy(r => r.locationIdentifier)
                 .Select(g => g.OrderByDescending(r => r.Start).FirstOrDefault())
                 .ToList();
-            //TODO: This is a hack to add basic charts to all locations.  Need to discuss with Christian and see if this is the best way to do this.
+
             foreach (var location in result)
             {
                 if (location != null && location.Charts != null)
                 {
                     location.Charts = location.Charts.Concat(basicCharts).Order();
                 }
-
             }
 
             return Ok(result);

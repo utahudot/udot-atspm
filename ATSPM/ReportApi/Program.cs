@@ -1,54 +1,54 @@
+#region license
+// Copyright 2024 Utah Departement of Transportation
+// for ReportApi - %Namespace%/Program.cs
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+// http://www.apache.org/licenses/LICENSE-2.
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+#endregion
+
 using Asp.Versioning;
-using ATSPM.Application.Business;
-using ATSPM.Application.Business.Aggregation;
-using ATSPM.Application.Business.AppoachDelay;
-using ATSPM.Application.Business.ApproachSpeed;
-using ATSPM.Application.Business.ApproachVolume;
-using ATSPM.Application.Business.ArrivalOnRed;
-using ATSPM.Application.Business.Common;
-using ATSPM.Application.Business.GreenTimeUtilization;
-using ATSPM.Application.Business.LeftTurnGapAnalysis;
-using ATSPM.Application.Business.LeftTurnGapReport;
-using ATSPM.Application.Business.LinkPivot;
-using ATSPM.Application.Business.PedDelay;
-using ATSPM.Application.Business.PhaseTermination;
-using ATSPM.Application.Business.PreempDetail;
-using ATSPM.Application.Business.PreemptService;
-using ATSPM.Application.Business.PreemptServiceRequest;
-using ATSPM.Application.Business.PurdueCoordinationDiagram;
-using ATSPM.Application.Business.SplitFail;
-using ATSPM.Application.Business.SplitMonitor;
-using ATSPM.Application.Business.TimeSpaceDiagram;
-using ATSPM.Application.Business.TimingAndActuation;
-using ATSPM.Application.Business.TurningMovementCounts;
-using ATSPM.Application.Business.WaitTime;
-using ATSPM.Application.Business.Watchdog;
-using ATSPM.Application.Business.YellowRedActivations;
-using ATSPM.Application.Repositories;
-using ATSPM.Infrastructure.Extensions;
-using ATSPM.Infrastructure.Repositories;
-using ATSPM.ReportApi.DataAggregation;
-using ATSPM.ReportApi.ReportServices;
-using AutoFixture;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ApiExplorer;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Options;
-using Microsoft.OpenApi.Models;
-using MOE.Common.Business.WCFServiceLibrary;
-using Moq;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using Utah.Udot.Atspm.Business.AppoachDelay;
+using Utah.Udot.Atspm.Business.ApproachSpeed;
+using Utah.Udot.Atspm.Business.ApproachVolume;
+using Utah.Udot.Atspm.Business.ArrivalOnRed;
+using Utah.Udot.Atspm.Business.GreenTimeUtilization;
+using Utah.Udot.Atspm.Business.LeftTurnGapAnalysis;
+using Utah.Udot.Atspm.Business.LeftTurnGapReport;
+using Utah.Udot.Atspm.Business.LinkPivot;
+using Utah.Udot.Atspm.Business.PedDelay;
+using Utah.Udot.Atspm.Business.PhaseTermination;
+using Utah.Udot.Atspm.Business.PreempDetail;
+using Utah.Udot.Atspm.Business.PreemptService;
+using Utah.Udot.Atspm.Business.PreemptServiceRequest;
+using Utah.Udot.Atspm.Business.PurdueCoordinationDiagram;
+using Utah.Udot.Atspm.Business.SplitFail;
+using Utah.Udot.Atspm.Business.SplitMonitor;
+using Utah.Udot.Atspm.Business.TimeSpaceDiagram;
+using Utah.Udot.Atspm.Business.TimingAndActuation;
+using Utah.Udot.Atspm.Business.TurningMovementCounts;
+using Utah.Udot.Atspm.Business.WaitTime;
+using Utah.Udot.Atspm.Business.Watchdog;
+using Utah.Udot.Atspm.Business.YellowRedActivations;
+using Utah.Udot.Atspm.ReportApi.DataAggregation;
+using Utah.Udot.Atspm.ReportApi.ReportServices;
 
-var builder = WebApplication.CreateBuilder(args);
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
-//// Configure Kestrel to listen on the port defined by the PORT environment variable
-//var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
-//builder.WebHost.ConfigureKestrel(serverOptions =>
-//{
-//    serverOptions.ListenAnyIP(int.Parse(port)); // Listen for HTTP on port defined by PORT environment variable
-//});
+var builder = WebApplication.CreateBuilder(args);
+
 builder.Host.ConfigureServices((h, s) =>
 {
     s.AddControllers(o =>
@@ -58,7 +58,6 @@ builder.Host.ConfigureServices((h, s) =>
         o.Filters.Add(new ProducesAttribute("application/json", "application/xml"));
     })
     .AddXmlDataContractSerializerFormatters();
-
     s.AddProblemDetails();
 
     s.AddResponseCompression(o =>
@@ -74,37 +73,36 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddApiVersioning(o =>
     {
         o.ReportApiVersions = true;
-        //o.DefaultApiVersion = new ApiVersion(1, 0);
+        o.DefaultApiVersion = new ApiVersion(1, 0);
         o.AssumeDefaultVersionWhenUnspecified = true;
-        o.Policies.Sunset(0.9)
-    .Effective(DateTimeOffset.Now.AddDays(60))
-    .Link("policy.html")
-    .Title("Versioning Policy")
-    .Type("text/html");
+
+        //Sunset policies
+        o.Policies.Sunset(0.1).Effective(DateTimeOffset.Now.AddDays(60)).Link("").Title("These are only available during development").Type("text/html");
+
     }).AddApiExplorer(o =>
     {
         o.GroupNameFormat = "'v'VVV";
         o.SubstituteApiVersionInUrl = true;
+
+        //configure query options(which cannot otherwise be configured by OData conventions)
+        //o.QueryOptions.Controller<JurisdictionController>()
+        //                    .Action(c => c.Get(default))
+        //                        .Allow(AllowedQueryOptions.Skip | AllowedQueryOptions.Count)
+        //                        .AllowTop(100);
     });
 
     s.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     s.AddSwaggerGen(o =>
     {
-        // add a custom operation filter which sets default values
-        o.OperationFilter<SwaggerDefaultValues>();
-
         var fileName = typeof(Program).Assembly.GetName().Name + ".xml";
         var filePath = Path.Combine(AppContext.BaseDirectory, fileName);
 
         // integrate xml comments
         o.IncludeXmlComments(filePath);
     });
+
     var allowedHosts = builder.Configuration.GetSection("AllowedHosts").Get<string>();
-    if (allowedHosts == null)
-    {
-        throw new Exception("AllowedHosts configuration is missing");
-    }
     s.AddCors(options =>
     {
         options.AddPolicy("CorsPolicy",
@@ -116,17 +114,21 @@ builder.Host.ConfigureServices((h, s) =>
         });
     });
 
+    //https://learn.microsoft.com/en-us/aspnet/core/fundamentals/http-logging/?view=aspnetcore-7.0
+    s.AddHttpLogging(l =>
+    {
+        l.LoggingFields = HttpLoggingFields.All;
+        //l.RequestHeaders.Add("My-Request-Header");
+        //l.ResponseHeaders.Add("My-Response-Header");
+        //l.MediaTypeOptions.AddText("application/json");
+        l.RequestBodyLogLimit = 4096;
+        l.ResponseBodyLogLimit = 4096;
+    });
+
     s.AddAtspmDbContext(h);
     s.AddAtspmEFEventLogRepositories();
     s.AddAtspmEFConfigRepositories();
     s.AddAtspmEFAggregationRepositories();
-
-    s.AddAtspmAuthentication(h, builder);
-    s.AddAtspmAuthorization(h);
-
-    s.AddScoped<IControllerEventLogRepository, ControllerEventLogEFRepository>();
-
-
 
     //report services
     s.AddScoped<IReportService<AggregationOptions, IEnumerable<AggregationResult>>, AggregationReportService>();
@@ -225,33 +227,24 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddScoped<LinkPivotPairService>();
     s.AddScoped<LinkPivotPcdService>();
 
-    //https://learn.microsoft.com/en-us/aspnet/core/fundamentals/http-logging/?view=aspnetcore-7.0
-    s.AddHttpLogging(l =>
+    if (!h.HostingEnvironment.IsDevelopment())
     {
-        l.LoggingFields = HttpLoggingFields.All;
-        //l.RequestHeaders.Add("My-Request-Header");
-        //l.ResponseHeaders.Add("My-Response-Header");
-        //l.MediaTypeOptions.AddText("application/json");
-        l.RequestBodyLogLimit = 4096;
-        l.ResponseBodyLogLimit = 4096;
-    });
-    s.AddLogging();
+        s.AddAtspmAuthentication(h);
+        s.AddAtspmAuthorization();
+    }
 });
 
 var app = builder.Build();
 
-
-app.UseResponseCompression();
-
-
-app.UseCors("CorsPolicy");
 if (app.Environment.IsDevelopment())
 {
-    //app.Services.PrintHostInformation();
+    app.Services.PrintHostInformation();
     app.UseDeveloperExceptionPage();
 }
 
-// Configure the HTTP request pipeline.
+app.UseResponseCompression();
+app.UseCors("CorsPolicy");
+app.UseHttpLogging();
 app.UseSwagger();
 app.UseSwaggerUI(o =>
 {
@@ -266,86 +259,9 @@ app.UseSwaggerUI(o =>
     }
 });
 
+app.UsePathBase(app.Configuration["PathBase"]);
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
-
-
-
-
-
-
-
-IReportService<Tin, IEnumerable<Tout>> GenerateMoqReportServiceA<Tin, Tout>()
-{
-    var moq = new Mock<IReportService<Tin, IEnumerable<Tout>>>();
-    moq.Setup(s => s.ExecuteAsync(It.IsAny<Tin>(), It.IsAny<IProgress<int>>(), It.IsAny<CancellationToken>())).ReturnsAsync(() => new Fixture().CreateMany<Tout>(10));
-    return moq.Object;
-}
-
-IReportService<Tin, Tout> GenerateMoqReportServiceB<Tin, Tout>()
-{
-    var moq = new Mock<IReportService<Tin, Tout>>();
-    moq.Setup(s => s.ExecuteAsync(It.IsAny<Tin>(), It.IsAny<IProgress<int>>(), It.IsAny<CancellationToken>())).ReturnsAsync(() => new Fixture().Create<Tout>());
-    return moq.Object;
-}
-
-/// <summary>
-/// Represents the OpenAPI/Swashbuckle operation filter used to document information provided, but not used.
-/// </summary>
-/// <remarks>This <see cref="IOperationFilter"/> is only required due to bugs in the <see cref="SwaggerGenerator"/>.
-/// Once they are fixed and published, this class can be removed.</remarks>
-public class SwaggerDefaultValues : IOperationFilter
-{
-    /// <inheritdoc />
-    public void Apply(OpenApiOperation operation, OperationFilterContext context)
-    {
-        var apiDescription = context.ApiDescription;
-
-        operation.Deprecated |= apiDescription.IsDeprecated();
-
-        // REF: https://github.com/domaindrivendev/Swashbuckle.AspNetCore/issues/1752#issue-663991077
-        foreach (var responseType in context.ApiDescription.SupportedResponseTypes)
-        {
-            // REF: https://github.com/domaindrivendev/Swashbuckle.AspNetCore/blob/b7cf75e7905050305b115dd96640ddd6e74c7ac9/src/Swashbuckle.AspNetCore.SwaggerGen/SwaggerGenerator/SwaggerGenerator.cs#L383-L387
-            var responseKey = responseType.IsDefaultResponse ? "default" : responseType.StatusCode.ToString();
-            var response = operation.Responses[responseKey];
-
-            foreach (var contentType in response.Content.Keys)
-            {
-                if (!responseType.ApiResponseFormats.Any(x => x.MediaType == contentType))
-                {
-                    response.Content.Remove(contentType);
-                }
-            }
-        }
-
-        if (operation.Parameters == null)
-        {
-            return;
-        }
-
-        // REF: https://github.com/domaindrivendev/Swashbuckle.AspNetCore/issues/412
-        // REF: https://github.com/domaindrivendev/Swashbuckle.AspNetCore/pull/413
-        foreach (var parameter in operation.Parameters)
-        {
-            var description = apiDescription.ParameterDescriptions.First(p => p.Name == parameter.Name);
-
-            parameter.Description ??= description.ModelMetadata?.Description;
-
-            if (parameter.Schema.Default == null &&
-                 description.DefaultValue != null &&
-                 description.DefaultValue is not DBNull &&
-                 description.ModelMetadata is ModelMetadata modelMetadata)
-            {
-                // REF: https://github.com/Microsoft/aspnet-api-versioning/issues/429#issuecomment-605402330
-                var json = System.Text.Json.JsonSerializer.Serialize(description.DefaultValue, modelMetadata.ModelType);
-                parameter.Schema.Default = OpenApiAnyFactory.CreateFromJson(json);
-            }
-
-            parameter.Required |= description.IsRequired;
-        }
-    }
-}

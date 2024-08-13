@@ -1,27 +1,41 @@
-﻿using ATSPM.Data.Enums;
-using ATSPM.Data.Models;
-using ATSPM.Data.Models.ConfigurationModels;
-using ATSPM.Domain.Configuration;
-using ATSPM.Infrastructure.Services.EmailServices;
-using Microsoft.Extensions.Configuration;
+﻿#region license
+// Copyright 2024 Utah Departement of Transportation
+// for WatchDogTests - WatchDogTests.Services/EmailServiceTests.cs
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+// http://www.apache.org/licenses/LICENSE-2.
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+#endregion
+
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
-using WatchDog.Models;
+using Utah.Udot.Atspm.Data;
+using Utah.Udot.Atspm.Data.Enums;
+using Utah.Udot.Atspm.Data.Models;
+using Utah.Udot.Atspm.WatchDog.Services;
 using Xunit;
 
-namespace WatchDog.Services.Tests
+namespace Utah.Udot.Atspm.WatchDogTests.Services
 {
     public class EmailServiceTests
     {
         [Fact()]
         public async void CreateAndSendEmailTest()
         {
-            var loggerMock = new Mock<ILogger<EmailService>>();
+            var loggerMock = new Mock<ILogger<WatchdogEmailService>>();
             var smtpLoggerMock = new Mock<ILogger<SmtpEmailService>>();
             var configurationMock = new Mock<IOptionsSnapshot<EmailConfiguration>>();
             var mailMock = new SmtpEmailService(configurationMock.Object, smtpLoggerMock.Object);
-            var emailService = new EmailService(loggerMock.Object, mailMock);
+            var emailService = new WatchdogEmailService(loggerMock.Object, mailMock);
             var emailOptions = new EmailOptions
             {
                 PreviousDayPMPeakEnd = 17,
@@ -50,7 +64,7 @@ namespace WatchDog.Services.Tests
             region1MockLocation.Object.ChartEnabled = true;
             region1MockLocation.Object.VersionAction = LocationVersionActions.Initial;
             region1MockLocation.Object.Note = "Initial - WAS #6500";
-            region1MockLocation.Object.Start = new System.DateTime(1900, 1, 1);
+            region1MockLocation.Object.Start = new DateTime(1900, 1, 1);
             region1MockLocation.Object.PedsAre1to1 = true;
 
             region1MockLocation.Setup(s => s.Jurisdiction).Returns(new Jurisdiction { Id = 1, Name = "Jurisdiction 1" });
@@ -78,7 +92,7 @@ namespace WatchDog.Services.Tests
 
             var mockDetector1 = new Mock<Detector>();
             mockDetector1.Object.ApproachId = 11;
-            mockDetector1.Object.DateAdded = new System.DateTime(2019, 12, 16);
+            mockDetector1.Object.DateAdded = new DateTime(2019, 12, 16);
             mockDetector1.Object.DateDisabled = null;
             mockDetector1.Object.DecisionPoint = null;
             mockDetector1.Object.DetectorChannel = 22;

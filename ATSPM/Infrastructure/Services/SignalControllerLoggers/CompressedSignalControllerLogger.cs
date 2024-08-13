@@ -1,22 +1,26 @@
-﻿using ATSPM.Application.Common.EqualityComparers;
-using ATSPM.Application.Configuration;
-using ATSPM.Application.Repositories;
-using ATSPM.Application.Services;
-using ATSPM.Data.Models;
-using ATSPM.Data.Models.EventLogModels;
-using ATSPM.Domain.Common;
+﻿#region license
+// Copyright 2024 Utah Departement of Transportation
+// for Infrastructure - ATSPM.Infrastructure.Services.SignalControllerLoggers/CompressedSignalControllerLogger.cs
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+// http://www.apache.org/licenses/LICENSE-2.
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+#endregion
+
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 
-namespace ATSPM.Infrastructure.Services.LocationControllerLoggers
+namespace Utah.Udot.Atspm.Infrastructure.Services.SignalControllerLoggers
 {
     public class CompressedLocationControllerLogger : LocationControllerLoggerBase
     {
@@ -90,51 +94,56 @@ namespace ATSPM.Infrastructure.Services.LocationControllerLoggers
 
         protected async virtual Task<IEnumerable<ControllerEventLog>> CreateEventLogs(FileInfo file, CancellationToken cancellationToken = default)
         {
-            HashSet<ControllerEventLog> logList = new HashSet<ControllerEventLog>(new ControllerEventLogEqualityComparer());
+            //HashSet<ControllerEventLog> logList = new HashSet<ControllerEventLog>(new IndianaEventEqualityComparer());
 
-            using (var scope = _serviceProvider.CreateScope())
-            {
-                var decoder = scope.ServiceProvider.GetServices<ILocationControllerDecoder<IndianaEvent>>().First(c => c.CanExecute(file));
-                //logList = await decoder.ExecuteAsync(file, cancellationToken);
-            }
+            //using (var scope = _serviceProvider.CreateScope())
+            //{
+            //    //var decoder = scope.ServiceProvider.GetServices<IEventLogDecoder<IndianaEvent>>().First(c => c.CanExecute(file));
+            //    //logList = await decoder.ExecuteAsync(file, cancellationToken);
+            //}
 
-            return logList;
+            //return logList;
+
+            return default;
         }
 
-        //TODO: Move into extension method
         protected virtual IEnumerable<ControllerLogArchive> ArchiveLogs(ControllerEventLog[] logs)
         {
-            HashSet<ControllerEventLog> uniqueLogs = new HashSet<ControllerEventLog>(logs, new ControllerEventLogEqualityComparer());
+            //    HashSet<ControllerEventLog> uniqueLogs = new HashSet<ControllerEventLog>(logs, new IndianaEventEqualityComparer());
 
-            return uniqueLogs.GroupBy(g => (g.Timestamp.Date, g.SignalIdentifier)).Select(s => new ControllerLogArchive() { SignalIdentifier = s.Key.SignalIdentifier, ArchiveDate = s.Key.Date, LogData = s.ToList() });
+            //    return uniqueLogs.GroupBy(g => (g.Timestamp.Date, g.SignalIdentifier)).Select(s => new ControllerLogArchive() { SignalIdentifier = s.Key.SignalIdentifier, ArchiveDate = s.Key.Date, LogData = s.ToList() });
+
+            return default;
         }
 
         protected async virtual Task<IEnumerable<ControllerLogArchive>> SaveToRepo(ControllerLogArchive archive, CancellationToken cancellationToken = default)
         {
-            List<ControllerLogArchive> result = new List<ControllerLogArchive>();
+            //List<ControllerLogArchive> result = new List<ControllerLogArchive>();
 
-            using (var scope = _serviceProvider.CreateScope())
-            {
-                IControllerEventLogRepository EventLogArchive = scope.ServiceProvider.GetService<IControllerEventLogRepository>();
-                var searchLog = await EventLogArchive.LookupAsync(archive);
+            //using (var scope = _serviceProvider.CreateScope())
+            //{
+            //    IControllerEventLogRepository EventLogArchive = scope.ServiceProvider.GetService<IControllerEventLogRepository>();
+            //    var searchLog = await EventLogArchive.LookupAsync(archive);
 
-                if (searchLog != null)
-                {
-                    var eventLogs = new HashSet<ControllerEventLog>(Enumerable.Union(searchLog.LogData, archive.LogData), new ControllerEventLogEqualityComparer());
-                    searchLog.LogData = eventLogs.ToList();
+            //    if (searchLog != null)
+            //    {
+            //        var eventLogs = new HashSet<ControllerEventLog>(Enumerable.Union(searchLog.LogData, archive.LogData), new IndianaEventEqualityComparer());
+            //        searchLog.LogData = eventLogs.ToList();
 
-                    await EventLogArchive.UpdateAsync(searchLog);
+            //        await EventLogArchive.UpdateAsync(searchLog);
 
-                    result.Add(searchLog);
-                }
-                else
-                {
-                    await EventLogArchive.AddAsync(archive);
-                    result.Add(archive);
-                }
-            }
+            //        result.Add(searchLog);
+            //    }
+            //    else
+            //    {
+            //        await EventLogArchive.AddAsync(archive);
+            //        result.Add(archive);
+            //    }
+            //}
 
-            return result;
+            //return result;
+
+            return default;
         }
     }
 }
