@@ -14,52 +14,69 @@ import { toUTCDateWithTimeStamp } from '@/utils/dateTime'
 import PlayArrowIcon from '@mui/icons-material/PlayArrow'
 import { LoadingButton, TabContext, TabList, TabPanel } from '@mui/lab'
 import { Alert, Box, Tab, Typography } from '@mui/material'
-import { AxiosError } from 'axios'
-import { startOfDay } from 'date-fns'
+import { set, subDays, subMonths } from 'date-fns'
 import { RefObject, useRef, useState } from 'react'
 
 const TimeSpaceDiagram = () => {
   const [currentTab, setCurrentTab] = useState(ToolType.TimeSpaceHistoric)
   const chartRefs = useRef<RefObject<HTMLDivElement>[]>([])
   const [hasAttemptedGenerate, setHasAttemptedGenerate] = useState(false)
+  const [routeId, setRouteId] = useState('')
 
   // Dynamic default options generation based on selected tab
   const getDefaultChartOptions = (tab: ToolType): TimeSpaceOptions => {
+    const yesterday = subDays(new Date(), 1)
+
     if (tab === ToolType.TimeSpaceHistoric) {
       return {
         extendStartStopSearch: 2,
         showAllLanesInfo: true,
-        start: startOfDay(new Date()),
-        end: startOfDay(new Date()),
-        routeId: '',
+        start: set(yesterday, { hours: 16, minutes: 0, seconds: 0 }),
+        end: set(yesterday, { hours: 16, minutes: 20, seconds: 0 }),
+        routeId: routeId || '',
         chartType: '',
         speedLimit: null,
         locationIdentifier: '',
       }
-    } else {
-      const date = new Date()
-      const year = date.getUTCFullYear()
-      const month = String(date.getUTCMonth() + 1).padStart(2, '0')
-      const day = String(date.getUTCDate()).padStart(2, '0')
-      const startTime = toUTCDateWithTimeStamp(startOfDay(date))
-      const endTime = toUTCDateWithTimeStamp(startOfDay(date))
-      const formattedDate = `${year}-${month}-${day}`
-      return {
-        startDate: formattedDate,
-        endDate: formattedDate,
-        startTime,
-        endTime,
-        routeId: '',
-        speedLimit: null,
-        daysOfWeek: [1, 2, 3, 4, 5],
-        sequence: [],
-        coordinatedPhases: [],
-      }
+    }
+
+    const formatTimestampToYYYYMMDD = (timestamp: string | Date) => {
+      const date =
+        typeof timestamp === 'string' ? new Date(timestamp) : timestamp
+
+      const day = String(date.getDate()).padStart(2, '0')
+      const month = String(date.getMonth() + 1).padStart(2, '0')
+      const year = date.getFullYear()
+
+      return `${year}-${month}-${day}`
+    }
+
+    const formattedStartTime = toUTCDateWithTimeStamp(
+      set(new Date(), { hours: 16, minutes: 0, seconds: 0 })
+    )
+    const formattedEndTime = toUTCDateWithTimeStamp(
+      set(new Date(), { hours: 16, minutes: 20, seconds: 0 })
+    )
+    return {
+      startDate: formatTimestampToYYYYMMDD(subMonths(yesterday, 1)),
+      endDate: formatTimestampToYYYYMMDD(yesterday),
+      startTime: formattedStartTime,
+      endTime: formattedEndTime,
+      routeId: routeId || '',
+      speedLimit: null,
+      daysOfWeek: [1, 2, 3, 4, 5],
+      sequence: [],
+      coordinatedPhases: [],
     }
   }
   const [toolOptions, setToolOptions] = useState<TimeSpaceOptions>(
     getDefaultChartOptions(ToolType.TimeSpaceHistoric)
   )
+
+  const handleRouteIdChange = (routeId: string) => {
+    setRouteId(routeId)
+    setToolOptions((prev) => ({ ...prev, routeId }))
+  }
 
   const {
     refetch,
@@ -83,6 +100,8 @@ const TimeSpaceDiagram = () => {
   }
 
   const routes = routesData?.value?.sort((a, b) => a.name.localeCompare(b.name))
+
+  console.log('chartData', chartData)
 
   const handleGenerateCharts = () => {
     setHasAttemptedGenerate(true)
@@ -135,12 +154,16 @@ const TimeSpaceDiagram = () => {
             <TimeSpaceHistoricContainer
               handleToolOptions={handleToolOptions}
               routes={routes}
+              routeId={routeId}
+              setRouteId={handleRouteIdChange}
             />
           </TabPanel>
           <TabPanel value={ToolType.TimeSpaceAverage} sx={{ padding: '0px' }}>
             <TimeSpaceAverageContainer
               handleToolOptions={handleToolOptions}
               routes={routes}
+              routeId={routeId}
+              setRouteId={handleRouteIdChange}
             />
           </TabPanel>
           <Box>
@@ -162,9 +185,7 @@ const TimeSpaceDiagram = () => {
               </LoadingButton>
               {isError && (
                 <Alert severity="error" sx={{ marginLeft: 1 }}>
-                  {error instanceof AxiosError
-                    ? error.response?.data
-                    : (error as Error).message}
+                  {(error as Error).message}
                 </Alert>
               )}
               {hasAttemptedGenerate && toolOptions.routeId === '' && (

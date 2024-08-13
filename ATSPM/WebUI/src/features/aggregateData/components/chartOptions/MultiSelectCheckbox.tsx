@@ -9,6 +9,7 @@ interface MultiSelectCheckboxProps {
   selectedItems: number[]
   setSelectedItems(items: number[]): void
   header: string
+  direction?: 'vertical' | 'horizontal'
 }
 
 export const MultiSelectCheckbox = ({
@@ -16,6 +17,7 @@ export const MultiSelectCheckbox = ({
   selectedItems,
   setSelectedItems,
   header,
+  direction = 'vertical',
 }: MultiSelectCheckboxProps) => {
   const handleChange = (itemIndex: number, isChecked: boolean) => {
     const arr = isChecked
@@ -24,10 +26,48 @@ export const MultiSelectCheckbox = ({
     setSelectedItems(arr)
   }
 
+  if (direction === 'vertical')
+    return (
+      <Paper
+        sx={{
+          ...commonPaperStyle,
+          minWidth: '170px',
+          paddingBottom: '20px',
+        }}
+      >
+        <StyledComponentHeader header={header} />
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            marginLeft: '25px',
+            height: '100%',
+          }}
+        >
+          {itemList.map((item, index) => {
+            return (
+              <FormControlLabel
+                key={index}
+                control={
+                  <Checkbox
+                    checked={selectedItems.includes(index)}
+                    onChange={(e) =>
+                      handleChange(index, e.currentTarget.checked)
+                    }
+                  />
+                }
+                label={item}
+              />
+            )
+          })}
+        </Box>
+      </Paper>
+    )
+
   return (
     <Paper
       sx={{
-        ...commonPaperStyle,
         minWidth: '170px',
         paddingBottom: '20px',
       }}
@@ -38,24 +78,28 @@ export const MultiSelectCheckbox = ({
       <Box
         sx={{
           display: 'flex',
-          flexDirection: 'column',
+          flexDirection: direction === 'vertical' ? 'column' : 'row',
           justifyContent: 'space-between',
-          marginLeft: '25px',
-          height: '100%',
+          height: direction === 'vertical' ? '200px' : 'auto',
+          px: 3,
         }}
       >
         {itemList.map((item, index) => {
           return (
-            <FormControlLabel
+            <Box
               key={index}
-              control={
-                <Checkbox
-                  checked={selectedItems.includes(index)}
-                  onChange={(e) => handleChange(index, e.currentTarget.checked)}
-                />
-              }
-              label={item}
-            />
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+              }}
+            >
+              <span>{item}</span>
+              <Checkbox
+                checked={selectedItems.includes(index)}
+                onChange={(e) => handleChange(index, e.currentTarget.checked)}
+              />
+            </Box>
           )
         })}
       </Box>
