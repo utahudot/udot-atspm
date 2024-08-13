@@ -48,7 +48,7 @@ const SelectedLocationsDisplay = ({ handler }: props) => {
         </TableCell>
         <CheckboxCell>
           <Checkbox
-            checked={approach.exclude}
+            checked={detector.exclude}
             onChange={() =>
               handler.updateDetectorExclude(location, approach, detector)
             }
