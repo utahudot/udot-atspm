@@ -56,9 +56,7 @@ export const LocationDataCheck = ({
         },
       }}
     >
-      <Box>
-        <StyledComponentHeader header={'Location Data Check'} />
-      </Box>
+      <StyledComponentHeader header={'Location Data Check'} />
       <Box
         sx={{
           display: 'flex',

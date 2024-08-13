@@ -1,22 +1,37 @@
 version: '3.8'
 
 x-environment: &default-environment
-    ASPNETCORE_ENVIRONMENT: Development
-    ASPNETCORE_Kestrel__Certificates__Default__Password: password
-    ASPNETCORE_Kestrel__Certificates__Default__Path: /root/.aspnet/https/aspnetapp.pfx
-    ConnectionStrings__ConfigContext__ConnectionString: "Host=/cloudsql/atspm-406601:us-west3:atspm;Port=5432;Username=admin;Password=Avenue.2006;Database=ATSPM-Config-V2;Pooling=true;"
-    ConnectionStrings__AggregationContext__ConnectionString: "Host=/cloudsql/atspm-406601:us-west3:atspm;Port=5432;Username=admin;Password=Avenue.2006;Database=ATSPM-Aggregation-V1;Pooling=true;"
-    ConnectionStrings__EventLogContext__ConnectionString: "Host=/cloudsql/atspm-406601:us-west3:atspm;Port=5432;Username=admin;Password=Avenue.2006;Database=ATSPM-EventLogs-V1;Pooling=true;"
-    ConnectionStrings__IdentityContext__ConnectionString: "Host=/cloudsql/atspm-406601:us-west3:atspm;Port=5432;Username=admin;Password=Avenue.2006;Database=ATSPM-Identity;Pooling=true;"
-    ConnectionStrings__ConfigContext__Provider: "PostgreSQL"
-    ConnectionStrings__AggregationContext__Provider: "PostgreSQL"
-    ConnectionStrings__EventLogContext__Provider: "PostgreSQL"
-    ConnectionStrings__IdentityContext__Provider: "PostgreSQL"
-    Jwt__ExpireDays: "1"
-    Jwt__Key: "ATSPMProductionIdentityOpenSource2024"
-    Jwt__Issuer: "AvenueConsultants"
+  ASPNETCORE_ENVIRONMENT: Development
+  ASPNETCORE_Kestrel__Certificates__Default__Password: password
+  ASPNETCORE_Kestrel__Certificates__Default__Path: /root/.aspnet/https/aspnetapp.pfx
+  ConnectionStrings__ConfigContext__ConnectionString: "Host=postgres;Port=5432;Username=admin;Password=Avenue.2006;Database=ATSPM-Config-V2;Pooling=true;"
+  ConnectionStrings__AggregationContext__ConnectionString: "Host=postgres;Port=5432;Username=admin;Password=Avenue.2006;Database=ATSPM-Aggregation-V1;Pooling=true;"
+  ConnectionStrings__EventLogContext__ConnectionString: "Host=postgres;Port=5432;Username=admin;Password=Avenue.2006;Database=ATSPM-EventLogs-V1;Pooling=true;"
+  ConnectionStrings__IdentityContext__ConnectionString: "Host=postgres;Port=5432;Username=admin;Password=Avenue.2006;Database=ATSPM-Identity;Pooling=true;"
+  ConnectionStrings__ConfigContext__Provider: "PostgreSQL"
+  ConnectionStrings__AggregationContext__Provider: "PostgreSQL"
+  ConnectionStrings__EventLogContext__Provider: "PostgreSQL"
+  ConnectionStrings__IdentityContext__Provider: "PostgreSQL"
+  Jwt__ExpireDays: "1"
+  Jwt__Key: "ATSPMProductionIdentityOpenSource2024"
+  Jwt__Issuer: "AvenueConsultants"
 
 services:
+  postgres:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: Avenue.2006
+      POSTGRES_DB: ATSPM-Config-V2
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./PostgreSQLDatabaseProvider/Migrations/Aggregation/Migrations.sql:/docker-entrypoint-initdb.d/1-aggregation.sql
+      - ./PostgreSQLDatabaseProvider/Migrations/Config/Migrations.sql:/docker-entrypoint-initdb.d/2-config.sql
+      - ./PostgreSQLDatabaseProvider/Migrations/EventLog/Migrations.sql:/docker-entrypoint-initdb.d/3-eventlog.sql
+      - ./PostgreSQLDatabaseProvider/Migrations/Identity/Migrations.sql:/docker-entrypoint-initdb.d/4-identity.sql
+    ports:
+      - "5432:5432"
+
   webui:
     build:
       context: ./WebUI
@@ -24,58 +39,72 @@ services:
     ports:
       - "3000:3000"
     depends_on:
-      - configapi
-      - dataapi
-      - signalcontroller
-      - watchdog
-      - reportapi
-      - identityapi
+      - postgres
 
   configapi:
     build:
       dockerfile: ./ConfigApi/Dockerfile
     ports:
-        - "44313:44313"
+      - "44313:44313"
     environment:
       <<: *default-environment
       ASPNETCORE_URLS: https://+:44313
-
-
     volumes:
-      - C:/Users/jbhatia/.aspnet/https:/root/.aspnet/https:ro
+      - aspnet_https:/root/.aspnet/https:ro
     user: root
-
+    depends_on:
+      - postgres
 
   dataapi:
     build:
       dockerfile: ./DataApi/Dockerfile
     ports:
       - "8082:80"
+    environment:
+      <<: *default-environment
+    depends_on:
+      - postgres
 
   signalcontroller:
     build:
       dockerfile: ./SignalControllerLogger/Dockerfile
     ports:
       - "8083:80"
+    environment:
+      <<: *default-environment
+    depends_on:
+      - postgres
 
   watchdog:
     build:
       dockerfile: ./WatchDog/Dockerfile
     ports:
       - "8084:80"
+    environment:
+      <<: *default-environment
+    depends_on:
+      - postgres
 
   reportapi:
     build:
       dockerfile: ./ReportApi/Dockerfile
     ports:
       - "8085:80"
+    environment:
+      <<: *default-environment
+    depends_on:
+      - postgres
 
   identityapi:
     build:
       dockerfile: ./Identity/Dockerfile
     ports:
       - "8086:80"
+    environment:
+      <<: *default-environment
+    depends_on:
+      - postgres
 
-networks:
-  default:
-    driver: bridge
+volumes:
+  postgres_data:
+  aspnet_https:

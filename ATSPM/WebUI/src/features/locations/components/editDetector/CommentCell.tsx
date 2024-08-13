@@ -117,14 +117,8 @@ const CommentCell = ({ detector }: CommentCellProps) => {
 
   return (
     <TableCell>
-      {detector.id ? (
-        <IconButton onClick={handleOpenPopover}>
-          <Badge badgeContent={comments.length} color="primary">
-            <ChatBubbleIcon />
-          </Badge>
-        </IconButton>
-      ) : (
-        <Tooltip title="Save detector to add comments">
+      {detector.isNew ? (
+        <Tooltip title="Please save before adding comments">
           <span>
             <IconButton disabled>
               <Badge badgeContent={comments.length} color="primary">
@@ -133,6 +127,12 @@ const CommentCell = ({ detector }: CommentCellProps) => {
             </IconButton>
           </span>
         </Tooltip>
+      ) : (
+        <IconButton onClick={handleOpenPopover}>
+          <Badge badgeContent={comments.length} color="primary">
+            <ChatBubbleIcon />
+          </Badge>
+        </IconButton>
       )}
       <Popover
         open={Boolean(anchorEl)}
