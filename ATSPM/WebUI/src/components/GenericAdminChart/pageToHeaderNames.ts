@@ -290,8 +290,8 @@ const impactHeaders: GridColDef[] = [
     flex: 1,
   },
   {
-    field: 'impactTypeId',
-    headerName: 'Impact Type',
+    field: 'impactTypes',
+    headerName: 'Impact Types',
     editable: true,
     flex: 1,
   },
