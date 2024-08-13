@@ -11,6 +11,6 @@ namespace ATSPM.Application.Repositories.SpeedManagementRepositories
         public Task AddRoutesAsync(IEnumerable<Segment> routes);
         public Task AddRouteAsync(Segment route);
         List<Segment> AllSegmentsWithEntity();
-        Task<List<Segment>> GetSegmentDetails(List<Guid> segmentIds);
+        Task<List<Segment>> GetSegmentsDetails(List<Guid> segmentIds);
     }
 }

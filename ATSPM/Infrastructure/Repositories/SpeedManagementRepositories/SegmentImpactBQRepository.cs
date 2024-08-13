@@ -49,6 +49,19 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             return result.Select(row => MapRowToEntity(row)).ToList().AsReadOnly();
         }
 
+        public async Task<IReadOnlyList<SegmentImpact>> GetImpactsForSegmentAsync(Guid segmentId)
+        {
+            var query = $"SELECT * FROM `{_datasetId}.{_tableId}` WHERE SegmentId = @segmentId";
+            var parameters = new List<BigQueryParameter>
+            {
+                new BigQueryParameter("segmentId", BigQueryDbType.String, segmentId.ToString())
+            };
+
+            var result = await _client.ExecuteQueryAsync(query, parameters);
+
+            return result.Select(row => MapRowToEntity(row)).ToList().AsReadOnly();
+        }
+
         public override SegmentImpact Lookup(object key)
         {
             var impactId = (long)key.GetType().GetProperty("ImpactId").GetValue(key);
