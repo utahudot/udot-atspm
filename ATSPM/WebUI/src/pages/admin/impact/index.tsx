@@ -93,7 +93,7 @@ const ImpactAdmin = () => {
       startMile: obj.startMile,
       endMile: obj.endMile,
       impactTypeId: obj.impactTypeId,
-      impactTypes: impactTypeNames,
+      impactTypes: obj.impactTypes,
     }
   })
 
