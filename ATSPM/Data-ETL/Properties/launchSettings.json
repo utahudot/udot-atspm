@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "InsertArchiveLogs": {
-      "commandName": "Project",
-      "commandLineArgs": "create-test --date 7/29/24"
-    }
-  }
-}
