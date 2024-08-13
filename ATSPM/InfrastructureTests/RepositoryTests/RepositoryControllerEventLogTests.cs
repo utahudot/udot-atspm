@@ -1,8 +1,25 @@
-﻿using ATSPM.Data.Models
-using ATSPM.Application.Repositories;
-using ATSPM.Domain.Services;
-using ATSPM.Infrastructure.Data;
-using ATSPM.Infrastructure.Repositories;
+﻿#region license
+// Copyright 2024 Utah Departement of Transportation
+// for InfrastructureTests - %Namespace%/RepositoryControllerEventLogTests.cs
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+// http://www.apache.org/licenses/LICENSE-2.
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+#endregion
+
+using Utah.Udot.Atspm.Data.Models
+using Utah.Udot.Atspm.Repositories;
+using Utah.Udot.NetStandardToolkit.Services;
+using Atspm.Infrastructure.Data;
+using Atspm.Infrastructure.Repositories;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Logging;
 using System;
@@ -12,11 +29,11 @@ using Xunit.Abstractions;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Collections.Generic;
-using ATSPM.Domain.Extensions;
-using ATSPM.Application.Specifications;
+using Utah.Udot.NetStandardToolkit.Extensions;
+using Utah.Udot.Atspm.Specifications;
 using System.Threading.Tasks;
-using ATSPM.Application.Extensions;
-using ATSPM.Application.ValueObjects;
+using Utah.Udot.Atspm.Extensions;
+using Utah.Udot.Atspm.ValueObjects;
 
 namespace InfrastructureTests
 {

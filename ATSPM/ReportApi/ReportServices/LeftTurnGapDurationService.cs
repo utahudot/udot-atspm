@@ -1,10 +1,24 @@
-﻿using ATSPM.Application.Business;
-using ATSPM.Application.Business.LeftTurnGapReport;
-using ATSPM.Application.Repositories.AggregationRepositories;
-using ATSPM.Application.Repositories.ConfigurationRepositories;
-using ATSPM.Data.Models;
+﻿#region license
+// Copyright 2024 Utah Departement of Transportation
+// for ReportApi - ATSPM.ReportApi.ReportServices/LeftTurnGapDurationService.cs
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+// http://www.apache.org/licenses/LICENSE-2.
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+#endregion
 
-namespace ATSPM.ReportApi.ReportServices
+using Utah.Udot.Atspm.Business.LeftTurnGapReport;
+using Utah.Udot.Atspm.Data.Enums;
+
+namespace Utah.Udot.Atspm.ReportApi.ReportServices
 {
     /// <summary>
     /// Left turn gap analysis report service
@@ -44,7 +58,7 @@ namespace ATSPM.ReportApi.ReportServices
             var endTime = new TimeSpan(options.EndHour, options.EndMinute, 0);
             var opposingPhase = leftTurnReportService.GetOpposingPhase(approach);
             var leftTurnAggregations = phaseLeftTurnGapAggregationRepository.GetAggregationsBetweenDates(options.LocationIdentifier, options.Start, options.End).ToList();
-            var leftTurnDetectors = approach.Detectors.Where(d => d.MovementType == Data.Enums.MovementTypes.L && d.DetectionTypes.Select(dt => dt.Id).Contains(Data.Enums.DetectionTypes.LLC));
+            var leftTurnDetectors = approach.Detectors.Where(d => d.MovementType == MovementTypes.L && d.DetectionTypes.Select(dt => dt.Id).Contains(DetectionTypes.LLC));
             int totalActivations = GetLeftTurnActivations(options, startTime, endTime, leftTurnDetectors);
             GapDurationResult gapDurationResult = leftTurnGapDurationService.GetPercentOfGapDuration(approach, options.Start, options.End,
             startTime, endTime, options.DaysOfWeek, location, totalActivations, leftTurnAggregations, opposingPhase);

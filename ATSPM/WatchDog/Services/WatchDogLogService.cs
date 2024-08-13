@@ -1,14 +1,30 @@
-﻿using ATSPM.Application.Business.Common;
-using ATSPM.Application.Repositories.EventLogRepositories;
-using ATSPM.Application.TempExtensions;
-using ATSPM.Data.Enums;
-using ATSPM.Data.Models;
-using ATSPM.Data.Models.EventLogModels;
+﻿#region license
+// Copyright 2024 Utah Departement of Transportation
+// for WatchDog - WatchDog.Services/WatchDogLogService.cs
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+// http://www.apache.org/licenses/LICENSE-2.
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+#endregion
+
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using System.Collections.Concurrent;
+using Utah.Udot.Atspm.Data.Enums;
+using Utah.Udot.Atspm.Data.Models;
+using Utah.Udot.Atspm.Data.Models.EventLogModels;
+using Utah.Udot.Atspm.TempExtensions;
+using Utah.Udot.Atspm.WatchDog.Models;
 
-namespace WatchDog.Services
+namespace Utah.Udot.Atspm.WatchDog.Services
 {
     public partial class WatchDogLogService
     {
@@ -81,7 +97,7 @@ namespace WatchDog.Services
             foreach (var detector in detectors)
                 try
                 {
-                    if (detector.DetectionTypes != null && detector.DetectionTypes.Any(d => d.Id == ATSPM.Data.Enums.DetectionTypes.AC))
+                    if (detector.DetectionTypes != null && detector.DetectionTypes.Any(d => d.Id == DetectionTypes.AC))
                     {
                         var channel = detector.DetectorChannel;
                         var direction = detector.Approach.DirectionType.Description;
@@ -105,9 +121,9 @@ namespace WatchDog.Services
                                 location.Id,
                                 location.LocationIdentifier,
                                 options.ScanDate,
-                                WatchDogComponentType.Detector,
+                                WatchDogComponentTypes.Detector,
                                 detector.Id,
-                                WatchDogIssueType.LowDetectorHits,
+                                WatchDogIssueTypes.LowDetectorHits,
                                 $"CH: {channel} - Count: {currentVolume.ToString().ToLowerInvariant()}",
                                 null);
                             if (!errors.Contains(error))
@@ -133,9 +149,9 @@ namespace WatchDog.Services
                                 Location.Id,
                                 Location.LocationIdentifier,
                                 options.ScanDate,
-                                WatchDogComponentType.Detector,
+                                WatchDogComponentTypes.Detector,
                                 -1,
-                                WatchDogIssueType.UnconfiguredDetector,
+                                WatchDogIssueTypes.UnconfiguredDetector,
                                 $"Unconfigured detector channel-{channel}",
                                 null);
                     if (!errors.Contains(error))
@@ -268,9 +284,9 @@ namespace WatchDog.Services
                         Location.Id,
                         Location.LocationIdentifier,
                         options.ScanDate,
-                        WatchDogComponentType.Approach,
+                        WatchDogComponentTypes.Approach,
                         -1,
-                        WatchDogIssueType.UnconfiguredApproach,
+                        WatchDogIssueTypes.UnconfiguredApproach,
                         $"No corresponding approach configured",
                         phaseNumber
                     );
@@ -292,9 +308,9 @@ namespace WatchDog.Services
                     approach.Location.Id,
                     approach.Location.LocationIdentifier,
                     options.ScanDate,
-                    WatchDogComponentType.Approach,
+                    WatchDogComponentTypes.Approach,
                     approach.Id,
-                    WatchDogIssueType.StuckPed,
+                    WatchDogIssueTypes.StuckPed,
                     phase.PedestrianEvents.Count + " Pedestrian Activations",
                     phase.PhaseNumber
                 );
@@ -316,9 +332,9 @@ namespace WatchDog.Services
                     approach.Location.Id,
                     approach.Location.LocationIdentifier,
                     options.ScanDate,
-                    WatchDogComponentType.Approach,
+                    WatchDogComponentTypes.Approach,
                     approach.Id,
-                    WatchDogIssueType.ForceOffThreshold,
+                    WatchDogIssueTypes.ForceOffThreshold,
                     "Force Offs " + Math.Round(phase.PercentForceOffs * 100, 1) + "%",
                     phase.PhaseNumber
                 );
@@ -340,9 +356,9 @@ namespace WatchDog.Services
                     approach.Location.Id,
                     approach.Location.LocationIdentifier,
                     options.ScanDate,
-                    WatchDogComponentType.Approach,
+                    WatchDogComponentTypes.Approach,
                     approach.Id,
-                    WatchDogIssueType.MaxOutThreshold,
+                    WatchDogIssueTypes.MaxOutThreshold,
                     "Max Outs " + Math.Round(phase.PercentMaxOuts * 100, 1) + "%",
                     phase.PhaseNumber
                 );
@@ -368,9 +384,9 @@ namespace WatchDog.Services
                     Location.Id,
                     Location.LocationIdentifier,
                     options.ScanDate,
-                    WatchDogComponentType.Location,
+                    WatchDogComponentTypes.Location,
                     Location.Id,
-                    WatchDogIssueType.RecordCount,
+                    WatchDogIssueTypes.RecordCount,
                     "Missing Records - IP: " + string.Join(",", Location.Devices.Select(d => d.Ipaddress.ToString()).ToList()),
                     null
                 );

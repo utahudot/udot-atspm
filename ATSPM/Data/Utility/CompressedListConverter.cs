@@ -1,10 +1,27 @@
-﻿using ATSPM.Domain.Extensions;
+﻿#region license
+// Copyright 2024 Utah Departement of Transportation
+// for Data - Utah.Udot.Atspm.Data.Utility/CompressedListConverter.cs
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+// http://www.apache.org/licenses/LICENSE-2.
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+#endregion
+
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Newtonsoft.Json;
+using Utah.Udot.NetStandardToolkit.Extensions;
 
 #nullable disable
 
-namespace ATSPM.Data.Utility
+namespace Utah.Udot.Atspm.Data.Utility
 {
     /// <summary>
     /// <see cref="ValueConverter"/> used to convert compressed list of <typeparamref name="T"/>
@@ -17,7 +34,7 @@ namespace ATSPM.Data.Utility
         /// <inheritdoc/>
         /// </summary>
         public CompressedListConverter() : base(
-            v => Newtonsoft.Json.JsonConvert.SerializeObject(v, new JsonSerializerSettings()
+            v => JsonConvert.SerializeObject(v, new JsonSerializerSettings()
             {
                 TypeNameHandling = TypeNameHandling.Arrays,
                 SerializationBinder = new CompressedSerializationBinder<T>()

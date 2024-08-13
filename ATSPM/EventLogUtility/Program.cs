@@ -1,31 +1,24 @@
-﻿using ATSPM.Application.Analysis.ApproachDelay;
-using ATSPM.Application.Analysis.Common;
-using ATSPM.Application.Analysis.WorkflowSteps;
-using ATSPM.Application.Configuration;
-using ATSPM.Data.Enums;
-using ATSPM.Data.Models;
-using ATSPM.Domain.Extensions;
-using Google.Protobuf.WellKnownTypes;
-using Microsoft.EntityFrameworkCore.Query.Internal;
+﻿#region license
+// Copyright 2024 Utah Departement of Transportation
+// for EventLogUtility - %Namespace%/Program.cs
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+// http://www.apache.org/licenses/LICENSE-2.
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+#endregion
+
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System.Collections;
-using System.Diagnostics.CodeAnalysis;
-using System.Threading.Tasks.Dataflow;
-using ATSPM.Domain.Common;
-using System.CommandLine;
-using ATSPM.Application;
-using Microsoft.AspNetCore.Mvc;
-using ATSPM.Application.Analysis.PurdueCoordination;
-using System.Text.Json;
-using ATSPM.Application.Analysis.PreemptionDetails;
-using System.Collections.Generic;
-using ATSPM.Application.Analysis.Plans;
-using ATSPM.Application.Analysis.WorkflowFilters;
-using ATSPM.Application.Analysis.Workflows;
-using System.Security.Cryptography.X509Certificates;
 
 
 //var path1 = "C:\\temp\\TestData\\7115_Approach_Delay.csv";
@@ -95,28 +88,6 @@ var list = File.ReadAllLines(path1)
 //    }
 //};
 
-var testData = new List<ControllerEventLog>
-            {
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:01:01.1"), EventCode = 102, EventParam = 1},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:02:01.1"), EventCode = 105, EventParam = 1},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:03:01.1"), EventCode = 104, EventParam = 1},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:04:01.1"), EventCode = 111, EventParam = 1},
-
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 7:01:01.1"), EventCode = 102, EventParam = 1},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 7:02:01.1"), EventCode = 105, EventParam = 1},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 7:03:01.1"), EventCode = 104, EventParam = 1},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 7:04:01.1"), EventCode = 111, EventParam = 1},
-
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 5:01:01.1"), EventCode = 102, EventParam = 1},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 5:02:01.1"), EventCode = 105, EventParam = 1},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 5:03:01.1"), EventCode = 104, EventParam = 1},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 5:04:01.1"), EventCode = 111, EventParam = 1},
-            };
-
-
-PreemptiveStuff test = new PreemptiveStuff();
-
-var result = await test.ExecuteAsync(testData);
 
 
 //public class VolumeByHour : TotalVolume
@@ -142,7 +113,6 @@ var result = await test.ExecuteAsync(testData);
 //    .UseConsoleLifetime()
 //    .ConfigureLogging((h, l) =>
 //    {
-//        //TODO: add a GoogleLogger section
 //        //LoggingServiceOptions GoogleOptions = h.Configuration.GetSection("GoogleLogging").Get<LoggingServiceOptions>();
 //        //TODO: remove this to an extension method
 //        //DOTNET_ENVIRONMENT = Development,GOOGLE_APPLICATION_CREDENTIALS = M:\My Drive\ut-udot-atspm-dev-023438451801.json
@@ -186,8 +156,8 @@ var result = await test.ExecuteAsync(testData);
 //        s.AddScoped<IDeviceDownloader, NewCobaltLocationControllerDownloader>();
 
 //        //decoders
-//        s.AddScoped<ILocationControllerDecoder, ASCLocationControllerDecoder>();
-//        s.AddScoped<ILocationControllerDecoder, MaxTimeLocationControllerDecoder>();
+//        s.AddScoped<IEventLogDecoder, ASCEventLogDecoder>();
+//        s.AddScoped<IEventLogDecoder, MaxTimeEventLogDecoder>();
 
 //        //LocationControllerLogger
 //        //s.AddScoped<ILocationControllerLoggerService, CompressedLocationControllerLogger>();
@@ -212,16 +182,16 @@ var result = await test.ExecuteAsync(testData);
 
 //        //    var opt = cmdOpt.GetOptionsBinder().CreateInstance(h.GetInvocationContext().BindingContext) as EventLogLoggingConfiguration;
 
-//        //    //s.PostConfigureAll<SignalControllerDownloaderConfiguration>(o => o.LocalPath = opt.Path.FullName);
-//        //    //s.PostConfigureAll<SignalControllerDownloaderConfiguration>(o => o.PingControllerToVerify = h.GetInvocationContext().ParseResult.GetValueForArgument(cmd.PingControllerArg));
-//        //    //s.PostConfigureAll<SignalControllerDownloaderConfiguration>(o => o.DeleteFile = h.GetInvocationContext().ParseResult.GetValueForArgument(cmd.DeleteLocalFileArg));
+//        //    //s.PostConfigureAll<DeviceDownloaderConfiguration>(o => o.LocalPath = opt.Path.FullName);
+//        //    //s.PostConfigureAll<DeviceDownloaderConfiguration>(o => o.Ping = h.GetInvocationContext().ParseResult.GetValueForArgument(cmd.PingControllerArg));
+//        //    //s.PostConfigureAll<DeviceDownloaderConfiguration>(o => o.DeleteFile = h.GetInvocationContext().ParseResult.GetValueForArgument(cmd.DeleteLocalFileArg));
 //        //}
 
 //        ////hosted services
 //        //s.AddHostedService<LocationLoggerUtilityHostedService>();
 //        //s.AddHostedService<TestLocationLoggerHostedService>();
 
-//        //s.PostConfigureAll<SignalControllerDownloaderConfiguration>(o => o.LocalPath = s.configurall);
+//        //s.PostConfigureAll<DeviceDownloaderConfiguration>(o => o.LocalPath = s.configurall);
 //    });
 //},
 //h =>
@@ -325,10 +295,10 @@ public class TestLocationLoggerHostedService : IHostedService
         {
             using (var scope = _serviceProvider.CreateAsyncScope())
             {
-                foreach (var option in scope.ServiceProvider.GetServices<IOptionsSnapshot<SignalControllerDownloaderConfiguration>>())
+                foreach (var option in scope.ServiceProvider.GetServices<IOptionsSnapshot<DeviceDownloaderConfiguration>>())
                 {
                     Console.WriteLine($"------------local path: {option.Value.LocalPath}");
-                    Console.WriteLine($"------------ping: {option.Value.PingControllerToVerify}");
+                    Console.WriteLine($"------------ping: {option.Value.Ping}");
                     Console.WriteLine($"------------delete: {option.Value.DeleteFile}");
                 }
 
