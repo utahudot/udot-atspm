@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\buildMultiTargeting\Utah.Udot.Atspm.ReportApi.props" />
+</Project>
