@@ -290,8 +290,23 @@ const impactHeaders: GridColDef[] = [
     flex: 1,
   },
   {
-    field: 'impactTypes',
+    field: 'impactTypesNames',
     headerName: 'Impact Types',
+    editable: true,
+    flex: 1,
+  }
+]
+
+const impactTypesHeaders: GridColDef[] = [
+  {
+    field: 'name',
+    headerName: 'name',
+    editable: true,
+    flex: 1,
+  },
+  {
+    field: 'description',
+    headerName: 'Description',
     editable: true,
     flex: 1,
   },
@@ -309,3 +324,4 @@ export const pageNameToHeaders: Map<string, GridColDef[]> = new Map()
   .set(PageNames.Products, productHeaders)
   .set(PageNames.DeviceConfigurations, deviceHeaders)
   .set(PageNames.Impacts, impactHeaders)
+  .set(PageNames.ImpactTypes, impactTypesHeaders)

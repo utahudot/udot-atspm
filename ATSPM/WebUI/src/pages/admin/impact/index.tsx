@@ -78,7 +78,7 @@ const ImpactAdmin = () => {
   if (!impactsData) {
     return <div>Error returning data</div>
   }
-  let impactTypeNames = 'hello'
+  let impactTypeNames = ''
 
   const filteredData = impactsData.map((obj: any) => {
     impactTypeNames = obj.impactTypes
@@ -93,7 +93,8 @@ const ImpactAdmin = () => {
       startMile: obj.startMile,
       endMile: obj.endMile,
       impactTypeId: obj.impactTypeId,
-      impactTypes: impactTypeNames,
+      impactTypes: obj.impactTypes,
+      impactTypesNames: impactTypeNames
     }
   })
 
@@ -104,10 +105,11 @@ const ImpactAdmin = () => {
     startMile: '',
     endMile: '',
     impactTypes: '',
+    impactTypesNames:''
   }
 
   return (
-    <ResponsivePageLayout title={'Impact Editor'} noBottomMargin>
+    <ResponsivePageLayout title={'Impacts'} noBottomMargin>
       <GenericAdminChart
         pageName={PageNames.Impacts}
         headers={headers}
