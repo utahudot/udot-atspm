@@ -33,3 +33,20 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+# NuGet related files
+project.nuget.cache
+*.nuget.props
+*.nuget.targets
+project.assets.json
+project.packagespec.json
+rider.project.restore.info
+
+# Build output directories and cache files
+*.obj/
+*.bin/
+*.cache
+
+# Ignore JetBrains IDE settings
+*.idea
+*.xml
+out/
