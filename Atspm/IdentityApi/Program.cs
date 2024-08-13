@@ -20,7 +20,9 @@ using Identity.Business.Agency;
 using Identity.Business.Claims;
 using Identity.Business.Tokens;
 using Identity.Business.Users;
+using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Models;
 using Utah.Udot.Atspm.Data;
 using Utah.Udot.Atspm.Data.Models;
@@ -29,45 +31,34 @@ AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Host.ConfigureServices((host, services) =>
+builder.Host.ConfigureServices((h, s) =>
 {
-    services.AddDbContext<IdentityContext>(host, Microsoft.EntityFrameworkCore.QueryTrackingBehavior.NoTracking);
-
-    services.AddIdentity<ApplicationUser, IdentityRole>() // Use AddDefaultIdentity if you don't need roles
-    .AddEntityFrameworkStores<IdentityContext>()
-    .AddDefaultTokenProviders();
-
-    services.AddAtspmAuthentication(host);
-    services.AddAtspmAuthorization();
-
-    services.AddEmailServices(host);
-
-    services.AddScoped<IAgencyService, AgencyService>();
-    services.AddScoped<IAccountService, AccountService>();
-    services.AddScoped<ClaimsService, ClaimsService>();
-    services.AddScoped<TokenService, TokenService>();
-    services.AddScoped<RoleManager<IdentityRole>>();
-    services.AddScoped<UserManager<ApplicationUser>>();
-    services.AddScoped<UsersService>();
-
-
-    services.AddControllers();
-
-    services.AddSwaggerGen(c =>
+    s.AddControllers(o =>
     {
-        c.SwaggerDoc("v1", new OpenApiInfo { Title = "Your API", Version = "v1" });
-        // Add other Swagger configuration as needed
+        o.ReturnHttpNotAcceptable = true;
+        o.Filters.Add(new ProducesResponseTypeAttribute(StatusCodes.Status406NotAcceptable));
+        o.Filters.Add(new ProducesAttribute("application/json", "application/xml"));
+    });
+    s.AddProblemDetails();
+
+    s.AddSwaggerGen(o =>
+    {
+        var fileName = typeof(Program).Assembly.GetName().Name + ".xml";
+        var filePath = Path.Combine(AppContext.BaseDirectory, fileName);
+
+        // integrate xml comments
+        o.IncludeXmlComments(filePath);
+        o.SwaggerDoc("v1", new OpenApiInfo 
+        { 
+            Title = "Atspm Authentication Api", 
+            Version = "v1",
+            Contact = new OpenApiContact() { Name = "udotdevelopment", Email = "udotdevelopment@gmail.com", Url = new Uri("https://udottraffic.utah.gov/atspm/") },
+            License = new OpenApiLicense() { Name = "MIT", Url = new Uri("https://opensource.org/licenses/MIT") }
+        });
     });
 
-    //services.ConfigureApplicationCookie(options =>
-    //{
-    //    // ... other options ...
-
-    //    options.Cookie.SameSite = SameSiteMode.Lax;
-    //    //options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-    //});
     var allowedHosts = builder.Configuration.GetSection("AllowedHosts").Get<string>();
-    services.AddCors(options =>
+    s.AddCors(options =>
     {
         options.AddPolicy("CorsPolicy",
         builder =>
@@ -77,48 +68,51 @@ builder.Host.ConfigureServices((host, services) =>
                    .AllowAnyHeader();
         });
     });
+
+    //https://learn.microsoft.com/en-us/aspnet/core/fundamentals/http-logging/?view=aspnetcore-7.0
+    s.AddHttpLogging(l =>
+    {
+        l.LoggingFields = HttpLoggingFields.All;
+        //l.RequestHeaders.Add("My-Request-Header");
+        //l.ResponseHeaders.Add("My-Response-Header");
+        //l.MediaTypeOptions.AddText("application/json");
+        l.RequestBodyLogLimit = 4096;
+        l.ResponseBodyLogLimit = 4096;
+    });
+
+    s.AddDbContext<IdentityContext>(h, Microsoft.EntityFrameworkCore.QueryTrackingBehavior.NoTracking);
+
+    s.AddIdentity<ApplicationUser, IdentityRole>() // Use AddDefaultIdentity if you don't need roles
+    .AddEntityFrameworkStores<IdentityContext>()
+    .AddDefaultTokenProviders();
+
+    s.AddEmailServices(h);
+
+    s.AddScoped<IAgencyService, AgencyService>();
+    s.AddScoped<IAccountService, AccountService>();
+    s.AddScoped<ClaimsService, ClaimsService>();
+    s.AddScoped<TokenService, TokenService>();
+    s.AddScoped<RoleManager<IdentityRole>>();
+    s.AddScoped<UserManager<ApplicationUser>>();
+    s.AddScoped<UsersService>();
+
+    s.AddAtspmAuthentication(h);
+    s.AddAtspmAuthorization();
 });
 
 var app = builder.Build();
-app.UseCors("CorsPolicy");
 
 if (app.Environment.IsDevelopment())
 {
-    // Create a new service scope
-    using (var scope = app.Services.CreateScope())
-    {
-        var services = scope.ServiceProvider;
-
-        try
-        {
-
-            // Get UserManager and RoleManager instances
-            //var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
-            //var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
-
-            // Run the seed method for configuration data
-            //ConfigurationSeedData.Seed(configContext);
-
-            // Run the seed method for users and roles
-            //await ConfigurationSeedData.SeedUsersAndRoles(userManager, roleManager);
-        }
-        catch (Exception ex)
-        {
-            // Log the error if there's any
-            var logger = services.GetRequiredService<ILogger<Program>>();
-            logger.LogError(ex, "An error occurred while seeding the configuration data.");
-        }
-        app.UseDeveloperExceptionPage();
-        app.UseSwagger();
-        app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Your API v1"));
-    }
-}
-else
-{
-    app.UseExceptionHandler("/Home/Error");
-    app.UseHsts();
+    app.Services.PrintHostInformation();
+    app.UseDeveloperExceptionPage();
 }
 
+app.UseCors("CorsPolicy");
+app.UseHttpLogging();
+app.UseSwagger();
+app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "v1"));
+app.UsePathBase(app.Configuration["PathBase"]);
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseCookiePolicy();
@@ -126,4 +120,5 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+
 app.Run();

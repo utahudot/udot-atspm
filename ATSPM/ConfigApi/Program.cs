@@ -24,7 +24,6 @@ using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Utah.Udot.Atspm.ConfigApi;
 using Utah.Udot.Atspm.ConfigApi.Configuration;
 using Utah.Udot.Atspm.ConfigApi.Services;
 using Utah.Udot.Atspm.ConfigApi.Utility;
@@ -34,6 +33,7 @@ using Utah.Udot.NetStandardToolkit.Extensions;
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 var builder = WebApplication.CreateBuilder(args);
+
 builder.Host.ConfigureServices((h, s) =>
 {
     s.AddControllers(o =>
@@ -62,7 +62,6 @@ builder.Host.ConfigureServices((h, s) =>
     {
         options.JsonSerializerOptions.Converters.Add(new CustomDateTimeConverter());
     });
-
     s.AddProblemDetails();
 
     //https://github.com/dotnet/aspnet-api-versioning/wiki/OData-Versioned-Metadata
@@ -74,7 +73,6 @@ builder.Host.ConfigureServices((h, s) =>
 
         //Sunset policies
         o.Policies.Sunset(0.1).Effective(DateTimeOffset.Now.AddDays(60)).Link("").Title("These are only available during development").Type("text/html");
-        //o.Policies.Sunset(0.9).Effective(DateTimeOffset.Now.AddDays(60)).Link("policy.html").Title("Versioning Policy").Type("text/html");
     })
     .AddOData(o => o.AddRouteComponents("api/v{version:apiVersion}"))
     .AddODataApiExplorer(o =>
@@ -93,9 +91,6 @@ builder.Host.ConfigureServices((h, s) =>
     builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
     builder.Services.AddSwaggerGen(o =>
     {
-        // add a custom operation filter which sets default values
-        o.OperationFilter<SwaggerDefaultValues>();
-
         var fileName = typeof(Program).Assembly.GetName().Name + ".xml";
         var filePath = Path.Combine(AppContext.BaseDirectory, fileName);
 
@@ -104,26 +99,6 @@ builder.Host.ConfigureServices((h, s) =>
 
         // Use the full name to avoid schema ID conflicts
         o.CustomSchemaIds(type => type.FullName);
-    });
-
-    s.AddAtspmDbContext(h);
-    s.AddAtspmEFConfigRepositories();
-
-    s.AddScoped<IRouteService, RouteService>();
-    s.AddScoped<IApproachService, ApproachService>();
-
-    s.AddAtspmAuthentication(h);
-    s.AddAtspmAuthorization();
-
-    //https://learn.microsoft.com/en-us/aspnet/core/fundamentals/http-logging/?view=aspnetcore-7.0
-    s.AddHttpLogging(l =>
-    {
-        l.LoggingFields = HttpLoggingFields.All;
-        //l.RequestHeaders.Add("My-Request-Header");
-        //l.ResponseHeaders.Add("My-Response-Header");
-        //l.MediaTypeOptions.AddText("application/json");
-        l.RequestBodyLogLimit = 4096;
-        l.ResponseBodyLogLimit = 4096;
     });
 
     var allowedHosts = builder.Configuration.GetSection("AllowedHosts").Get<string>();
@@ -137,6 +112,29 @@ builder.Host.ConfigureServices((h, s) =>
                    .AllowAnyHeader();
         });
     });
+
+    //https://learn.microsoft.com/en-us/aspnet/core/fundamentals/http-logging/?view=aspnetcore-7.0
+    s.AddHttpLogging(l =>
+    {
+        l.LoggingFields = HttpLoggingFields.All;
+        //l.RequestHeaders.Add("My-Request-Header");
+        //l.ResponseHeaders.Add("My-Response-Header");
+        //l.MediaTypeOptions.AddText("application/json");
+        l.RequestBodyLogLimit = 4096;
+        l.ResponseBodyLogLimit = 4096;
+    });
+
+    s.AddAtspmDbContext(h);
+    s.AddAtspmEFConfigRepositories();
+
+    s.AddScoped<IRouteService, RouteService>();
+    s.AddScoped<IApproachService, ApproachService>();
+
+    if (!h.HostingEnvironment.IsDevelopment())
+    {
+        s.AddAtspmAuthentication(h);
+        s.AddAtspmAuthorization();
+    }
 });
 
 var app = builder.Build();
@@ -146,10 +144,11 @@ if (app.Environment.IsDevelopment())
     // navigate to ~/$odata to determine whether any endpoints did not match an odata route template
     app.UseODataRouteDebug();
     app.Services.PrintHostInformation();
+    app.UseDeveloperExceptionPage();
 }
 
+app.UseCors("CorsPolicy");
 app.UseHttpLogging();
-
 app.UseSwagger();
 app.UseSwaggerUI(o =>
 {
@@ -163,11 +162,13 @@ app.UseSwaggerUI(o =>
         o.SwaggerEndpoint(url, name);
     }
 });
-app.UseCors("CorsPolicy");
+
+app.UsePathBase(app.Configuration["PathBase"]);
 app.UseHttpsRedirection();
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseVersionedODataBatching();
 app.MapControllers();
+
 app.Run();
