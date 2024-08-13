@@ -110,6 +110,19 @@ function EditApproach({ approach, handler }: ApproachAdminProps) {
       }
     }
 
+    // Make sure all detectors have a channel
+    approach.detectors.forEach((detector) => {
+      if (!detector.detectorChannel) {
+        newErrors = {
+          ...newErrors,
+          [detector.id]: {
+            error: 'Detector Channel is required',
+            id: detector.id,
+          },
+        }
+      }
+    })
+
     // Set errors and exit if any errors are found
     if (!isEmptyObject(newErrors)) {
       setErrors(newErrors)
