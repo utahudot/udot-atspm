@@ -31,7 +31,34 @@ const lightenColor = (color: string, percent: number) => {
     .toUpperCase()}`
 }
 
-// allow user to select a week or month
+// Calculate the week number based on the day of the month
+const getWeekNumber = (dayOfMonth: number, monthStartDay: number): number => {
+  return Math.ceil((dayOfMonth + monthStartDay) / 7)
+}
+
+// Calculate the date range for each week in the format "2/1 - 2/3"
+const getWeekDateRange = (
+  weekNumber: number,
+  monthStartDay: number,
+  year: number,
+  month: number
+) => {
+  const startDayOfWeek = (weekNumber - 1) * 7 + 1 - monthStartDay
+  const endDayOfWeek = Math.min(
+    startDayOfWeek + 6,
+    new Date(year, month, 0).getDate()
+  )
+
+  const startDate = new Date(year, month - 1, startDayOfWeek)
+  const endDate = new Date(year, month - 1, endDayOfWeek)
+
+  const startString = `${startDate.getMonth() + 1}/${startDate.getDate()}`
+  const endString = `${endDate.getMonth() + 1}/${endDate.getDate()}`
+
+  return `${startString}-${endString}`
+}
+
+// Allow user to select a week or month view
 export const transformCongestionTrackerData = (
   response: CongestionTrackerResponse,
   view: 'week' | 'month' = 'month'
@@ -71,8 +98,7 @@ export const transformCongestionTrackerData = (
   let dayCounter = 1
   const daysOfTheWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 
-  // const cellWidth = view === 'month' ? 78 : 95
-  const cellWidth = 78
+  const cellWidth = 74
   const gapBetweenCells = 110
   const paddingLeft = 5
   const paddingTop = 20
@@ -153,11 +179,13 @@ export const transformCongestionTrackerData = (
           showSymbol: false,
         })
       }
-      const weekNumber = Math.ceil(dayCounter / 7)
+
+      const weekNumber = getWeekNumber(dayCounter, monthStartDay)
+      const weekRange = getWeekDateRange(weekNumber, monthStartDay, year, month)
 
       if (dayData.series.average) {
         series.push({
-          name: view === 'month' ? 'Average' : `Week ${weekNumber} Average`,
+          name: view === 'month' ? 'Average' : `${weekRange} Average`,
           type: 'line',
           xAxisIndex: count,
           yAxisIndex: count,
@@ -172,7 +200,7 @@ export const transformCongestionTrackerData = (
           name:
             view === 'month'
               ? '85th Percentile'
-              : `Week ${weekNumber} 85th Percentile`,
+              : `${weekRange} 85th Percentile`,
           type: 'line',
           xAxisIndex: count,
           yAxisIndex: count,
@@ -232,18 +260,28 @@ export const transformCongestionTrackerData = (
 
     // Dynamically generate the legend entries
     const legendData = []
+
     // Add all averages first
     for (let week = 1; week <= numOfWeeks; week++) {
+      const weekRange = getWeekDateRange(week, monthStartDay, year, month)
       legendData.push({
-        name: `Week ${week} Average`,
+        name: `${weekRange} Average`,
         icon: SolidLineSeriesSymbol,
+        textStyle: {
+          fontSize: 10,
+        },
       })
     }
+
     // Add all 85th percentiles
     for (let week = 1; week <= numOfWeeks; week++) {
+      const weekRange = getWeekDateRange(week, monthStartDay, year, month)
       legendData.push({
-        name: `Week ${week} 85th Percentile`,
+        name: `${weekRange} 85th Percentile`,
         icon: SolidLineSeriesSymbol,
+        textStyle: {
+          fontSize: 10,
+        },
       })
     }
 

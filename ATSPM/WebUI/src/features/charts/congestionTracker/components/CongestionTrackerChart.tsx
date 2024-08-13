@@ -1,9 +1,11 @@
 import { ChartType } from '@/features/charts/common/types'
+import { transformCongestionTrackerData } from '@/features/charts/congestionTracker/congestionTracker.transformer'
 import {
   adjustPlanPositions,
   handleGreenTimeUtilizationDataZoom,
 } from '@/features/charts/utils'
 import { useChartsStore } from '@/stores/charts'
+import { ToggleButton, ToggleButtonGroup } from '@mui/material'
 import type {
   DataZoomComponentOption,
   DatasetComponentOption,
@@ -16,7 +18,7 @@ import { connect, init } from 'echarts'
 import type { CSSProperties } from 'react'
 import { useEffect, useRef, useState } from 'react'
 
-export interface ApacheEChartsProps {
+export interface CongestionChartProps {
   id: string
   option: EChartsOption
   chartType?: ChartType
@@ -27,7 +29,7 @@ export interface ApacheEChartsProps {
   hideInteractionMessage?: boolean
 }
 
-export default function ApacheEChart({
+export default function CongestionChart({
   id,
   option,
   chartType,
@@ -36,12 +38,14 @@ export default function ApacheEChart({
   loading,
   theme,
   hideInteractionMessage = false,
-}: ApacheEChartsProps) {
+}: CongestionChartProps) {
   const chartRef = useRef<HTMLDivElement>(null)
   const { activeChart, setActiveChart } = useChartsStore()
   const [isHovered, setIsHovered] = useState(false)
   const [isScrolling, setIsScrolling] = useState(false)
   const chartInstance = useRef<ECharts | null>(null)
+
+  const [currentView, setCurrentView] = useState<'week' | 'month'>('month')
 
   const isActive = activeChart === id
 
@@ -83,6 +87,7 @@ export default function ApacheEChart({
       }
     }
   }
+
   useEffect(() => {
     initChart()
 
@@ -166,6 +171,22 @@ export default function ApacheEChart({
     }
   }
 
+  const handleViewChange = (
+    event: React.MouseEvent<HTMLElement>,
+    newView: 'week' | 'month'
+  ) => {
+    if (newView !== null) {
+      setCurrentView(newView)
+      const updatedOption = transformCongestionTrackerData(
+        option.response,
+        newView
+      )
+      chartInstance.current?.setOption(updatedOption, {
+        replaceMerge: ['title'],
+      })
+    }
+  }
+
   return (
     <div
       style={{
@@ -188,6 +209,26 @@ export default function ApacheEChart({
           height: '100%',
         }}
       />
+      <ToggleButtonGroup
+        value={currentView}
+        exclusive
+        onChange={handleViewChange}
+        aria-label="View toggle"
+        size="small"
+        style={{
+          position: 'absolute',
+          top: '10px',
+          right: '10px',
+          zIndex: 10,
+        }}
+      >
+        <ToggleButton size="small" value="month" aria-label="Month view">
+          Month
+        </ToggleButton>
+        <ToggleButton size="small" value="week" aria-label="Week view">
+          Week
+        </ToggleButton>
+      </ToggleButtonGroup>
       {!hideInteractionMessage && (
         <>
           <div

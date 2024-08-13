@@ -118,7 +118,7 @@ const Sidebar = ({ selectedRouteId }) => {
             top: 0,
             backgroundColor: 'background.paper',
 
-            zIndex: 10,
+            zIndex: 100_000,
             borderTop: 'thin solid rgba(0, 0, 0, 0.12)',
             borderBottom: 'thin solid rgba(0, 0, 0, 0.12)',
           }}

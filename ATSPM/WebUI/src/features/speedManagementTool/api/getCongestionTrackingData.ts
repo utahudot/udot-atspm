@@ -52,7 +52,7 @@ export const useCongestionTrackingChart = ({
 }: BaseOptions) => {
   return useQuery<ExtractFnReturnType<QueryFnType>>({
     ...config,
-    enabled: true,
+    enabled: false,
     queryKey: ['CongestionTracking', options],
     queryFn: () => getCongestionTrackings(options),
   })
