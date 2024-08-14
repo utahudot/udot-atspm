@@ -9,6 +9,7 @@ import '@fontsource/roboto/700.css'
 import { CssBaseline, ThemeProvider } from '@mui/material'
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
+import { PublicEnvScript } from 'next-runtime-env'
 import { AppProps } from 'next/app'
 import Head from 'next/head'
 import { useState } from 'react'
@@ -32,6 +33,7 @@ export default function App({ Component, pageProps }: AppProps) {
                 <div>
                   <CssBaseline />
                   <Head>
+                    <PublicEnvScript />
                     <meta
                       name="viewport"
                       content="width=device-width, minimum-scale=1, maximum-scale=5"
