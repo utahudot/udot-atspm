@@ -151,3 +151,7 @@ rider.project.restore.info
 *.editorconfig
 ATSPM/SpeedManagementImporter/
 ATSPM/WebUI/obj/
+ATSPM/SpeedManagementImporter/obj/Debug/net7.0/SpeedManagementImporter.AssemblyInfo.cs
+ATSPM/SpeedManagementImporter/obj/Debug/net7.0/SpeedManagementImporter.AssemblyInfoInputs.cache
+ATSPM/SpeedManagementImporter/obj/Debug/net7.0/SpeedManagementImporter.assets.cache
+ATSPM/SpeedManagementImporter/obj/Debug/net7.0/SpeedManagementImporter.csproj.AssemblyReference.cache
