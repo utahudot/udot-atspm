@@ -34,7 +34,7 @@ export function transformSeriesData(
   const series: (string | number)[][] = []
   for (const dataPoint of dataPoints) {
     const values: (string | number)[] = [
-      dataPoint.timestamp,
+      dataPoint.start,
       dataPoint.value.toFixed(2),
     ]
     series.push(values)
