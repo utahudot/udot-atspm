@@ -128,8 +128,26 @@ project.nuget.cache
 project.assets.json
 project.packagespec.json
 rider.project.restore.info
+.idea
+*.xml
 
 # Build output
-*.obj/
+/ATSPM/SpeedManagementImporter/obj/
+
 *.bin/
 *.cache
+
+# Ignore all AssemblyInfo.cs files in the project
+**/AssemblyInfo.cs
+
+# Ignore project.assets.json, project.nuget.cache, and other similar files
+**/obj/**/
+**/bin/**/
+*.nuget.g.props
+*.nuget.g.targets
+*.nuget.dgspec.json
+*.nuget.cache
+*.assets.cache
+*.editorconfig
+ATSPM/SpeedManagementImporter/
+ATSPM/WebUI/obj/
