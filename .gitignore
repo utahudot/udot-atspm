@@ -117,15 +117,22 @@ dkms.conf
 /ConfigApiTests/obj/
 
 
-# Build output
-/ATSPM/SpeedManagementImporter/obj/
-                
+# NuGet
+project.nuget.cache
+*.nuget.props
+*.nuget.targets
+project.assets.json
+project.packagespec.json
+rider.project.restore.info
+.idea
+*.xml
+
 *.bin/
 *.cache
-                
+
 # Ignore all AssemblyInfo.cs files in the project
 **/AssemblyInfo.cs
-                
+
 # Ignore project.assets.json, project.nuget.cache, and other similar files
 **/obj/**/
 **/bin/**/
@@ -138,3 +145,13 @@ dkms.conf
 ATSPM/SpeedManagementImporter/
 ATSPM/WebUI/obj/
 ATSPM/docker-compose.dcproj
+
+
+/ATSPM/SpeedManagementImporter/obj/
+/ATSPM/SpeedManagementImporter/obj/**/*.cache
+/ATSPM/SpeedManagementImporter/obj/**/*.dll
+/ATSPM/SpeedManagementImporter/obj/**/*.pdb
+SpeedManagementImporter/obj/
+SpeedManagementImporter/obj/**/*.cache
+SpeedManagementImporter/obj/**/*.dll
+SpeedManagementImporter/obj/**/*.pdb
