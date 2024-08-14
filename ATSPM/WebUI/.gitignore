@@ -46,4 +46,4 @@ rider.project.restore.info
 *.obj/
 *.bin/
 *.cache
-
+ATSPM/WebUI/obj/
