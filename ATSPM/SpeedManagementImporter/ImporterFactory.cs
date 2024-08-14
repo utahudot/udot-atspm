@@ -9,11 +9,13 @@ namespace SpeedManagementImporter
     {
         private ISegmentEntityRepository segmentEntityRepository;
         private IHourlySpeedRepository hourlySpeedRepository;
+        private ITempDataRepository tempDataRepository;
 
-        public ImporterFactory(ISegmentEntityRepository routeEntityTableRepository, IHourlySpeedRepository hourlySpeedRepository)
+        public ImporterFactory(ISegmentEntityRepository routeEntityTableRepository, IHourlySpeedRepository hourlySpeedRepository, ITempDataRepository tempDataRepository)
         {
             this.segmentEntityRepository = routeEntityTableRepository;
             this.hourlySpeedRepository = hourlySpeedRepository;
+            this.tempDataRepository = tempDataRepository;
         }
         public IDataDownloader createDownloader(int sourceId)
         {
@@ -23,7 +25,7 @@ namespace SpeedManagementImporter
                     var atspmDownloader = new AtspmDownloaderService(segmentEntityRepository, hourlySpeedRepository);
                     return atspmDownloader;
                 case 3:
-                    var clearguideDownloader = new ClearguideDownloaderService(segmentEntityRepository, hourlySpeedRepository);
+                    var clearguideDownloader = new ClearguideFileDownloaderService(segmentEntityRepository, hourlySpeedRepository, tempDataRepository);
                     return clearguideDownloader;
                 case 2:
                     var pemsDownloader = new PemsDownloaderService(segmentEntityRepository, hourlySpeedRepository);

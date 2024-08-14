@@ -47,7 +47,17 @@ class Program
             var logger = provider.GetRequiredService<ILogger<SegmentEntityBQRepository>>();
             return new SegmentEntityBQRepository(client, datasetId, tableId, logger);
         });
+        services.AddScoped<ITempDataRepository, TempDataBQRepository>(provider =>
+        {
+            var client = provider.GetRequiredService<BigQueryClient>();
+            var datasetId = configuration["BigQuery:DatasetId"];
+            var tableId = configuration["BigQuery:TempDataTableId"];
+            var logger = provider.GetRequiredService<ILogger<TempDataBQRepository>>();
+            return new TempDataBQRepository(client, datasetId, tableId, logger);
+        });
         services.AddScoped<IImporterFactory, ImporterFactory>();
+
+        services.AddLogging();
 
         // Build the service provider
         var serviceProvider = services.BuildServiceProvider();
@@ -55,9 +65,10 @@ class Program
         // Resolve the dependencies
         var hourlySpeedRepository = serviceProvider.GetRequiredService<IHourlySpeedRepository>();
         var routeEntityTableRepository = serviceProvider.GetRequiredService<ISegmentEntityRepository>();
+        var tempDataRepository = serviceProvider.GetRequiredService<ITempDataRepository>();
 
 
-        rootCommand.AddCommand(new Download(routeEntityTableRepository, hourlySpeedRepository));
+        rootCommand.AddCommand(new Download(routeEntityTableRepository, hourlySpeedRepository, tempDataRepository));
 
         return await rootCommand.InvokeAsync(args);
     }
