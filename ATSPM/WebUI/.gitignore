@@ -33,8 +33,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-
-# NuGet
+# NuGet related files
 project.nuget.cache
 *.nuget.props
 *.nuget.targets
@@ -42,8 +41,33 @@ project.assets.json
 project.packagespec.json
 rider.project.restore.info
 
-# Build output
+# Build output directories and cache files
 *.obj/
 *.bin/
 *.cache
+
+# Ignore JetBrains IDE settings
+*.idea
+*.xml
+out/
+# Build output
+/ATSPM/SpeedManagementImporter/obj/
+                
+*.bin/
+*.cache
+                
+# Ignore all AssemblyInfo.cs files in the project
+**/AssemblyInfo.cs
+                
+# Ignore project.assets.json, project.nuget.cache, and other similar files
+**/obj/**/
+**/bin/**/
+*.nuget.g.props
+*.nuget.g.targets
+*.nuget.dgspec.json
+*.nuget.cache
+*.assets.cache
+*.editorconfig
+ATSPM/SpeedManagementImporter/
 ATSPM/WebUI/obj/
+ATSPM/docker-compose.dcproj

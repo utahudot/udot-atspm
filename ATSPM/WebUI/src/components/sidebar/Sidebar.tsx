@@ -7,6 +7,7 @@ import ForkLeftOutlinedIcon from '@mui/icons-material/ForkLeftOutlined'
 import RouteOutlinedIcon from '@mui/icons-material/RouteOutlined'
 import ShowChartOutlinedIcon from '@mui/icons-material/ShowChartOutlined'
 import SignalCellularAltOutlinedIcon from '@mui/icons-material/SignalCellularAltOutlined'
+import SpeedOutlinedIcon from '@mui/icons-material/SpeedOutlined'
 import { Box, Drawer, List, useTheme } from '@mui/material'
 import Image from 'next/image'
 import React from 'react'
@@ -90,6 +91,11 @@ export default function Sidebar() {
               icon={<AddchartOutlinedIcon />}
               text={'Aggregate Charts'}
               url={'/aggregate-charts'}
+            />
+            <NavItem
+              icon={<SpeedOutlinedIcon />}
+              text={'Speed Management Tool'}
+              url={'/speed-management-tool'}
             />
             {hasWatchDogPermission && (
               <NavItem
