@@ -1,0 +1,173 @@
+﻿using ATSPM.Application.Repositories.SpeedManagementRepositories;
+using ATSPM.Data.Models.SpeedManagementAggregation;
+using ATSPM.Data.Models.SpeedManagementConfigModels;
+using Google.Cloud.BigQuery.V2;
+using IdentityModel.Client;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
+{
+    public class TempDataBQRepository : ATSPMRepositoryBQBase<TempData>, ITempDataRepository
+    {
+        private readonly BigQueryClient _client;
+        private readonly string _datasetId;
+        private readonly string _tableId;
+        private readonly ILogger<ATSPMRepositoryBQBase<TempData>> _logger;
+        private BigQueryTable _table;
+
+        public TempDataBQRepository(BigQueryClient client, string datasetId, string tableId, ILogger<ATSPMRepositoryBQBase<TempData>> log) : base(client, datasetId, tableId, log)
+        {
+            _client = client;
+            _datasetId = datasetId;
+            _tableId = tableId;
+            _logger = log;
+            _table = _client.GetTable(_datasetId, _tableId);
+        }
+
+        public async Task<List<TempData>> GetHourlyAggregatedDataForAllSegments()
+        {
+            var query = @"
+            SELECT
+              TIMESTAMP_TRUNC(BinStartTime, HOUR) AS BinStartTime,
+              AVG(Average) AS AverageValue,
+              EntityId
+            FROM `atspm-406601.speed_dataset.tempData` 
+            GROUP BY
+            BinStartTime,
+            EntityId";
+            var result = await _client.ExecuteQueryAsync(query, null);
+            var tempData = new List<TempData>();
+            foreach (var row in result)
+            {
+                tempData.Add(MapRowToEntity(row));
+            }
+
+            return tempData;
+        }
+
+        public override IQueryable<TempData> GetList()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override TempData Lookup(object key)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override TempData Lookup(TempData item)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override Task<TempData> LookupAsync(object key)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override Task<TempData> LookupAsync(TempData item)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override void Remove(TempData item)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override Task RemoveAsync(TempData item)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override void RemoveRange(IEnumerable<TempData> items)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override Task RemoveRangeAsync(IEnumerable<TempData> items)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override void Update(TempData item)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override Task UpdateAsync(TempData item)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override void UpdateRange(IEnumerable<TempData> items)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override Task UpdateRangeAsync(IEnumerable<TempData> items)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public async Task UploadCsvToBigQuery(string filePath, Dictionary<string, int> headerIndices)
+        {
+            var schema = new TableSchemaBuilder
+            {
+                { "BinStartTime", BigQueryDbType.DateTime },
+                { "Average", BigQueryDbType.Float64 },
+                { "EntityId", BigQueryDbType.Int64 },
+            }.Build();
+
+            var dataset = _client.GetDataset(_datasetId);
+            var destinationTableRef = dataset.GetTableReference(_tableId);
+
+            // Create job configuration
+            var jobOptions = new CreateLoadJobOptions()
+            {
+                // The source format defaults to CSV; line below is optional.
+                SourceFormat = FileFormat.Csv,
+                SkipLeadingRows = 1
+            };
+            // Create and run job
+            var loadJob = _client.CreateLoadJob(
+                sourceUri: filePath, destination: destinationTableRef,
+                schema: schema, options: jobOptions);
+            loadJob = loadJob.PollUntilCompleted().ThrowOnAnyError();  // Waits for the job to complete.
+
+            // Display the number of rows uploaded
+            BigQueryTable table = _client.GetTable(destinationTableRef);
+            Console.WriteLine(
+                $"Loaded {table.Resource.NumRows} rows to {table.FullyQualifiedId}");
+        }
+
+        protected override BigQueryInsertRow CreateRow(TempData item)
+        {
+            return new BigQueryInsertRow
+            {
+                {"BinStartTime", item.BinStartTime },
+                {"Average", item.Average },
+                {"EntityId", item.EntityId }
+            };
+        }
+
+        protected override TempData MapRowToEntity(BigQueryRow row)
+        {
+            string[] formats = { "MM/dd/yyyy HH:mm:ss", "M/d/yyyy h:mm:ss tt", "yyyy-MM-ddTHH:mm:ss.fffZ" };
+            var binStartTime = DateTime.ParseExact(row["BinStartTime"].ToString(), formats, null);
+            var average = Double.Parse(row["Average"].ToString());
+            var entityId = long.Parse(row["EntityId"].ToString());
+
+            return new TempData
+            {
+                BinStartTime = binStartTime,
+                Average = average,
+                EntityId = entityId
+            };
+        }
+    }
+}

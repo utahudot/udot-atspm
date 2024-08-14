@@ -432,6 +432,9 @@
         <member name="T:ATSPM.Infrastructure.Repositories.SpeedManagementRepositories.ImpactBQRepository">
             <inheritdoc cref="T:ATSPM.Application.Repositories.SpeedManagementRepositories.ISegmentRepository"/>
         </member>
+        <member name="T:ATSPM.Infrastructure.Repositories.SpeedManagementRepositories.ImpactImpactTypeBQRepository">
+            <inheritdoc cref="T:ATSPM.Application.Repositories.SpeedManagementRepositories.IImpactTypeRepository"/>
+        </member>
         <member name="T:ATSPM.Infrastructure.Repositories.SpeedManagementRepositories.ImpactTypeBQRepository">
             <inheritdoc cref="T:ATSPM.Application.Repositories.SpeedManagementRepositories.IImpactTypeRepository"/>
         </member>
