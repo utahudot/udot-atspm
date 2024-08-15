@@ -4,8 +4,34 @@ import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArro
 import { Box, Button, Grid, Typography } from '@mui/material'
 import Image from 'next/image'
 import Link from 'next/link'
+
+const GridItem = ({ item }: { item: { path: string; title: string } }) => (
+  <Grid item key={item.path} xs={4} sm={4} md={3} lg={2} xl={2}>
+    <Box
+      sx={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#f5f5f5',
+        padding: '8px',
+        height: '10vw',
+        boxShadow: 1,
+      }}
+      position="relative"
+      padding="20px"
+    >
+      <Image
+        src={item.path}
+        alt={item.title}
+        style={{ objectFit: 'contain', padding: '15px' }}
+        sizes="(max-width: 1200px) 15vw"
+        fill
+      />
+    </Box>
+  </Grid>
+)
+
 const About = () => {
-  
   const academimcPartners = [
     {
       path: '/images/partners/purdue-university.png',
@@ -76,7 +102,7 @@ const About = () => {
     {
       path: '/images/udot.png',
       title: 'UDOT logo',
-    }
+    },
   ]
 
   const consultantPartners = [
@@ -116,7 +142,7 @@ const About = () => {
       path: '/images/partners/lee-engineering.png',
       title: 'Lee Engineering logo',
     },
-    { 
+    {
       path: '/images/partners/traffop.png',
       title: 'Traffop logo',
     },
@@ -127,7 +153,7 @@ const About = () => {
     {
       path: '/images/partners/maricopa-county.png',
       title: 'Maricopa County logo',
-    }
+    },
   ]
 
   return (
@@ -136,10 +162,10 @@ const About = () => {
         <Header title="About ATSPM" />
         <Box marginBottom={2}>
           <Typography variant="h4" component={'p'}>
-            Automated Traffic Signal Performance Measures show real-time
-            and historical functionality at locationized intersections. This
-            allows traffic engineers to directly measure what previously could
-            only be estimated and modeled.
+            Automated Traffic Signal Performance Measures show real-time and
+            historical functionality at locationized intersections. This allows
+            traffic engineers to directly measure what previously could only be
+            estimated and modeled.
           </Typography>
         </Box>
         <Box marginBottom={10}>
@@ -161,110 +187,22 @@ const About = () => {
         </Box>
         <Grid container spacing={2}>
           {udotLogo.map((item) => (
-            <Grid item key={item.path} xs={4} sm={4} md={3} lg={2} xl={2}>
-              <Box
-                sx={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  backgroundColor: '#f5f5f5',
-                  padding: '8px',
-                  height: '10vw',
-                  boxShadow: 1,
-                }}
-                position="relative"
-                padding="20px"
-              >
-                <Image
-                  src={item.path}
-                  alt={item.title}
-                  style={{ objectFit: 'contain', padding: '15px' }}
-                  sizes="(max-width: 1200px) 15vw"
-                  fill
-                />
-              </Box>
-            </Grid>
+            <GridItem key={item.title} item={item} />
           ))}
         </Grid>
         <Grid container spacing={2}>
           {consultantPartners.map((item) => (
-            <Grid item key={item.path} xs={4} sm={4} md={3} lg={2} xl={2}>
-              <Box
-                sx={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  backgroundColor: '#f5f5f5',
-                  padding: '8px',
-                  height: '10vw',
-                  boxShadow: 1,
-                }}
-                position="relative"
-                padding="20px"
-              >
-                <Image
-                  src={item.path}
-                  alt={item.title}
-                  style={{ objectFit: 'contain', padding: '15px' }}
-                  sizes="(max-width: 1200px) 15vw"
-                  fill
-                />
-              </Box>
-            </Grid>
+            <GridItem key={item.title} item={item} />
           ))}
         </Grid>
         <Grid container spacing={2}>
           {agencyPartners.map((item) => (
-            <Grid item key={item.path} xs={4} sm={4} md={3} lg={2} xl={2}>
-              <Box
-                sx={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  backgroundColor: '#f5f5f5',
-                  padding: '8px',
-                  height: '10vw',
-                  boxShadow: 1,
-                }}
-                position="relative"
-                padding="20px"
-              >
-                <Image
-                  src={item.path}
-                  alt={item.title}
-                  style={{ objectFit: 'contain', padding: '15px' }}
-                  sizes="(max-width: 1200px) 15vw"
-                  fill
-                />
-              </Box>
-            </Grid>
+            <GridItem key={item.title} item={item} />
           ))}
         </Grid>
         <Grid container spacing={2}>
           {academimcPartners.map((item) => (
-            <Grid item key={item.path} xs={4} sm={4} md={3} lg={2} xl={2}>
-              <Box
-                sx={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  backgroundColor: '#f5f5f5',
-                  padding: '8px',
-                  height: '10vw',
-                  boxShadow: 1,
-                }}
-                position="relative"
-                padding="20px"
-              >
-                <Image
-                  src={item.path}
-                  alt={item.title}
-                  style={{ objectFit: 'contain', padding: '15px' }}
-                  sizes="(max-width: 1200px) 15vw"
-                  fill
-                />
-              </Box>
-            </Grid>
+            <GridItem key={item.title} item={item} />
           ))}
         </Grid>
       </Box>

@@ -1,7 +1,7 @@
 import NextImage from '@/components/NextImage'
-import { IDENTITY_URL } from '@/config'
 import { useLogin } from '@/features/identity/api/getLogin'
 import IdentityDto from '@/features/identity/types/identityDto'
+import { getEnv } from '@/lib/getEnv'
 import { LoadingButton } from '@mui/lab'
 import { Alert, Button, Divider } from '@mui/material'
 import Box from '@mui/material/Box'
@@ -93,8 +93,9 @@ export default function Signin() {
     window.location.href = '/performance-measures'
   }
 
-  const redirectUser = () => {
-    const externalLoginUrl = `${IDENTITY_URL}Account/external-login`
+  const redirectUser = async () => {
+    const env = await getEnv()
+    const externalLoginUrl = `${env.IDENTITY_URL}Account/external-login`
 
     // Open the external login endpoint in a new tab
     window.open(externalLoginUrl, '_self')
