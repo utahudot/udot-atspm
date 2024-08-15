@@ -159,7 +159,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
                 AVG(NinetyNinthSpeed) AS NinetyNinthSpeed,
                 AVG(Violation) AS Violation,
                 AVG(Flow) AS Flow
-            FROM `atspm-406601.speed_dataset.hourly_speed`
+            FROM `atspm-406601.speed_dataset.hourlySpeed`
             WHERE 
                 SegmentId = @segmentId AND
                 SourceId = @sourceId AND
@@ -202,7 +202,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
                 AVG(NinetyNinthSpeed) AS NinetyNinthSpeed,
                 AVG(Violation) AS Violation,
                 AVG(Flow) AS Flow
-            FROM `atspm-406601.speed_dataset.hourly_speed`
+            FROM `atspm-406601.speed_dataset.hourlySpeed`
             WHERE 
                 SegmentId = @segmentId AND
                 date BETWEEN @startDate AND @endDate AND
@@ -288,7 +288,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
         {
             return $@"
             SELECT *
-            FROM `atspm-406601.speed_dataset.hourly_speed`
+            FROM `atspm-406601.speed_dataset.hourlySpeed`
             WHERE 
                 SegmentId = @segmentId AND
                 date BETWEEN @startDate AND @endDate 
@@ -303,7 +303,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
               SELECT 
                 *,
                 TIMESTAMP(DATETIME(Date, BinStartTime)) AS datetime
-              FROM `atspm-406601.speed_dataset.hourly_speed`
+              FROM `atspm-406601.speed_dataset.hourlySpeed`
               WHERE 
                 SourceId = @sourceId
                 AND SegmentId = @segmentId
@@ -477,7 +477,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
                                     FilteredSegments AS fs
                                 LEFT JOIN (
                                     SELECT *
-                                    FROM `atspm-406601.speed_dataset.hourly_speed`";
+                                    FROM `atspm-406601.speed_dataset.hourlySpeed`";
 
             var groupByClause = @"
                                 GROUP BY

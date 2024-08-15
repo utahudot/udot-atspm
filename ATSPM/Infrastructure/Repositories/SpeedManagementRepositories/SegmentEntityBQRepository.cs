@@ -77,7 +77,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
                                 entity_table.*,
                                 route.SpeedLimit
                             FROM 
-                                `atspm-406601.speed_dataset.entity_table` as entity_table
+                                `atspm-406601.speed_dataset.segmentEntity` as entity_table
                             JOIN `atspm-406601.speed_dataset.segment` as route
                             ON 
                                 entity_table.SegmentId = route.Id
@@ -119,7 +119,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
                                 route.SpeedLimit,
                                 route.AlternateIdentifier
                             FROM 
-                                `atspm-406601.speed_dataset.segment_entity` as entity_table
+                                `atspm-406601.speed_dataset.segmentEntity` as entity_table
                             JOIN
                                 `atspm-406601.speed_dataset.segment` as route
                             ON 
@@ -169,7 +169,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
                                 entity_table.*,
                                 route.SpeedLimit
                             FROM 
-                                `atspm-406601.speed_dataset.segment_entity` as entity_table
+                                `atspm-406601.speed_dataset.segmentEntity` as entity_table
                             JOIN
                                 `atspm-406601.speed_dataset.segment` as route
                             ON 
