@@ -74,11 +74,11 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
         {
             string query = $@"
                             SELECT 
-                                entity_table.*,
+                                entityTable.*,
                                 route.SpeedLimit
                             FROM 
-                                `atspm-406601.speed_dataset.segmentEntity` as entity_table
-                            JOIN `atspm-406601.speed_dataset.segment` as route
+                                `atspm-406601.speedDataset.segmentEntity` as entity_table
+                            JOIN `atspm-406601.speedDataset.segment` as route
                             ON 
                                 entity_table.SegmentId = route.Id
                             WHERE 
@@ -115,13 +115,13 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
         {
             string query = $@"
                              SELECT 
-                                entity_table.*,
+                                entityTable.*,
                                 route.SpeedLimit,
                                 route.AlternateIdentifier
                             FROM 
-                                `atspm-406601.speed_dataset.segmentEntity` as entity_table
+                                `atspm-406601.speedDataset.segmentEntity` as entity_table
                             JOIN
-                                `atspm-406601.speed_dataset.segment` as route
+                                `atspm-406601.speedDataset.segment` as route
                             ON 
                                 entity_table.SegmentId = route.Id
                             WHERE 
@@ -169,9 +169,9 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
                                 entity_table.*,
                                 route.SpeedLimit
                             FROM 
-                                `atspm-406601.speed_dataset.segmentEntity` as entity_table
+                                `atspm-406601.speedDataset.segmentEntity` as entity_table
                             JOIN
-                                `atspm-406601.speed_dataset.segment` as route
+                                `atspm-406601.speedDataset.segment` as route
                             ON 
                                 entity_table.SegmentId = route.Id
                             WHERE 
