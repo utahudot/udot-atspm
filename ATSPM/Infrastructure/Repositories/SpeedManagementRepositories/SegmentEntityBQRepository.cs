@@ -119,13 +119,13 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
                                 route.SpeedLimit,
                                 route.AlternateIdentifier
                             FROM 
-                                `atspm-406601.speedDataset.segmentEntity` as entity_table
+                                `atspm-406601.speedDataset.segmentEntity` as entityTable
                             JOIN
                                 `atspm-406601.speedDataset.segment` as route
                             ON 
-                                entity_table.SegmentId = route.Id
+                                entityTable.SegmentId = route.Id
                             WHERE 
-                                entity_table.SourceId = @sourceId";
+                                entityTable.SourceId = @sourceId";
             var parameters = new[]
                         {
                             new BigQueryParameter("sourceId", BigQueryDbType.Int64, id),

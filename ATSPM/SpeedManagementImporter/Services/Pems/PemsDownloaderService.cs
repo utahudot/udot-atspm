@@ -143,7 +143,7 @@ namespace SpeedManagementImporter.Services.Pems
                             }
                         }
                     }
-                    if (speeds.Count > 10000)
+                    if (speeds.Count > 1000)
                     {
                         await hourlySpeedRepository.AddHourlySpeedsAsync(speeds.ToList());
                         speeds.Clear();
