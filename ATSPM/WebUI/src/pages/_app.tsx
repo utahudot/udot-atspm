@@ -1,5 +1,6 @@
 import Layout from '@/components/layout'
 import { MOCKING_ENABLED } from '@/config'
+import { initializeAxiosInstances } from '@/lib/axios'
 import '@/styles/globals.css'
 import { ColorModeContext, useMode } from '@/theme'
 import '@fontsource/roboto/300.css'
@@ -12,7 +13,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { PublicEnvScript } from 'next-runtime-env'
 import { AppProps } from 'next/app'
 import Head from 'next/head'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Hydrate, QueryClient, QueryClientProvider } from 'react-query'
 
 if (MOCKING_ENABLED) {
@@ -22,6 +23,12 @@ if (MOCKING_ENABLED) {
 export default function App({ Component, pageProps }: AppProps) {
   const [theme, colorMode] = useMode()
   const [queryClient] = useState(() => new QueryClient())
+
+  useEffect(() => {
+    initializeAxiosInstances().catch((error) => {
+      console.error('Failed to initialize Axios instances:', error)
+    })
+  }, [])
 
   return (
     <QueryClientProvider client={queryClient}>
