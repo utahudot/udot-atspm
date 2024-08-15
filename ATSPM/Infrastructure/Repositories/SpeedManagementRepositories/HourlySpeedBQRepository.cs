@@ -159,7 +159,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
                 AVG(NinetyNinthSpeed) AS NinetyNinthSpeed,
                 AVG(Violation) AS Violation,
                 AVG(Flow) AS Flow
-            FROM `atspm-406601.speed_dataset.hourlySpeed`
+            FROM `atspm-406601.speedDataset.hourlySpeed`
             WHERE 
                 SegmentId = @segmentId AND
                 SourceId = @sourceId AND
@@ -202,7 +202,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
                 AVG(NinetyNinthSpeed) AS NinetyNinthSpeed,
                 AVG(Violation) AS Violation,
                 AVG(Flow) AS Flow
-            FROM `atspm-406601.speed_dataset.hourlySpeed`
+            FROM `atspm-406601.speedDataset.hourlySpeed`
             WHERE 
                 SegmentId = @segmentId AND
                 date BETWEEN @startDate AND @endDate AND
@@ -288,7 +288,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
         {
             return $@"
             SELECT *
-            FROM `atspm-406601.speed_dataset.hourlySpeed`
+            FROM `atspm-406601.speedDataset.hourlySpeed`
             WHERE 
                 SegmentId = @segmentId AND
                 date BETWEEN @startDate AND @endDate 
@@ -303,7 +303,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
               SELECT 
                 *,
                 TIMESTAMP(DATETIME(Date, BinStartTime)) AS datetime
-              FROM `atspm-406601.speed_dataset.hourlySpeed`
+              FROM `atspm-406601.speedDataset.hourlySpeed`
               WHERE 
                 SourceId = @sourceId
                 AND SegmentId = @segmentId
@@ -453,9 +453,9 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
                                     s.Name,
                                     ST_AsText(s.Shape) AS Shape
                                 FROM
-                                    `atspm-406601.speed_dataset.segment` AS s
+                                    `atspm-406601.speedDataset.segment` AS s
                                 JOIN
-                                    `atspm-406601.speed_dataset.segment_entity` AS se
+                                    `atspm-406601.speedDataset.segmentEntity` AS se
                                 ON
                                     s.Id = se.SegmentId
                                 WHERE
@@ -477,7 +477,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
                                     FilteredSegments AS fs
                                 LEFT JOIN (
                                     SELECT *
-                                    FROM `atspm-406601.speed_dataset.hourlySpeed`";
+                                    FROM `atspm-406601.speedDataset.hourlySpeed`";
 
             var groupByClause = @"
                                 GROUP BY
