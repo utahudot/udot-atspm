@@ -6,11 +6,11 @@
 
 	<PropertyGroup>
 		<TargetFramework>net7.0</TargetFramework>
-		<RootNamespace>$(NameSpacePrefix).$(SolutionName)</RootNamespace>
+		<RootNamespace>$(NameSpacePrefix).Atspm</RootNamespace>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
-		<AssemblyName>$(NameSpacePrefix).$(SolutionName)</AssemblyName>
+		<AssemblyName>$(NameSpacePrefix).Atspm</AssemblyName>
 		<ImplicitUsings>enable</ImplicitUsings>
-		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+		<GeneratePackageOnBuild>False</GeneratePackageOnBuild>
 		<Version>5.0-rc.1</Version>
 		<Title>Udot Automated Traffic Performance Measure Infrastructure</Title>
 		<Authors>utah.udot.gov</Authors>
@@ -87,9 +87,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Reference Include="Utah.Udot.NetStandardToolkit">
-			<HintPath>..\..\..\udot-netstandard-toolkit\NetStandardToolkit\bin\Release\net7.0\Utah.Udot.NetStandardToolkit.dll</HintPath>
-		</Reference>
+	  <Reference Include="Utah.Udot.NetStandardToolkit">
+	    <HintPath>..\Utah.Udot.NetStandardToolkit.dll</HintPath>
+	  </Reference>
 	</ItemGroup>
 
 	<ItemGroup>

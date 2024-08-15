@@ -8,8 +8,8 @@
     <TargetFramework>net7.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <RootNamespace>$(NameSpacePrefix).$(SolutionName).$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
-    <AssemblyName>$(NameSpacePrefix).$(SolutionName).$(MSBuildProjectName)</AssemblyName>
+    <RootNamespace>Utah.Udot.Atspm.Data</RootNamespace>
+    <AssemblyName>Utah.Udot.Atspm.Data</AssemblyName>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
   </PropertyGroup>
 	
@@ -68,7 +68,7 @@
 
   <ItemGroup>
     <Reference Include="Utah.Udot.NetStandardToolkit">
-      <HintPath>..\..\..\udot-netstandard-toolkit\NetStandardToolkit\bin\Release\net7.0\Utah.Udot.NetStandardToolkit.dll</HintPath>
+      <HintPath>..\Utah.Udot.NetStandardToolkit.dll</HintPath>
     </Reference>
   </ItemGroup>
 
