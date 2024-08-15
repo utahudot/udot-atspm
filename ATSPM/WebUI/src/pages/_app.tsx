@@ -1,5 +1,4 @@
 import Layout from '@/components/layout'
-import { MOCKING_ENABLED } from '@/config'
 import { initializeAxiosInstances } from '@/lib/axios'
 import '@/styles/globals.css'
 import { ColorModeContext, useMode } from '@/theme'
@@ -14,10 +13,6 @@ import { AppProps } from 'next/app'
 import Head from 'next/head'
 import { useEffect, useState } from 'react'
 import { Hydrate, QueryClient, QueryClientProvider } from 'react-query'
-
-if (MOCKING_ENABLED) {
-  import('@/mocks').then(({ initMocks }) => initMocks())
-}
 
 export default function App({ Component, pageProps }: AppProps) {
   const [theme, colorMode] = useMode()
