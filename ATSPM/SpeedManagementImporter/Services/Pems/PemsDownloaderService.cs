@@ -224,6 +224,7 @@ namespace SpeedManagementImporter.Services.Pems
             {
                 httpClient.DefaultRequestHeaders.Accept.Clear();
                 httpClient.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+                string debugString = "";
 
                 try
                 {
@@ -235,6 +236,7 @@ namespace SpeedManagementImporter.Services.Pems
                         if (string.IsNullOrEmpty(jsonResponse))
                             return null;
 
+                        debugString = jsonResponse;
                         // Deserialize JSON using Newtonsoft.Json
                         var rootObject = JsonConvert.DeserializeObject<RootObjectFlow>(jsonResponse);
                         return rootObject.stationsHourlySummary.stations;
@@ -251,7 +253,7 @@ namespace SpeedManagementImporter.Services.Pems
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Error: {ex.Message}");
+                    Console.WriteLine($"Error: {ex.Message} WITH JSON STRING - {debugString}\n\n");
                     return null;
                 }
             }
