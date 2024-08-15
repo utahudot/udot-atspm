@@ -6,6 +6,7 @@ using IdentityModel.Client;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -33,7 +34,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             var query = @"
             SELECT
               TIMESTAMP_TRUNC(BinStartTime, HOUR) AS BinStartTime,
-              AVG(Average) AS AverageValue,
+              AVG(Average) AS Average,
               EntityId
             FROM `atspm-406601.speed_dataset.tempData` 
             GROUP BY
@@ -112,37 +113,6 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
         public override Task UpdateRangeAsync(IEnumerable<TempData> items)
         {
             throw new System.NotImplementedException();
-        }
-
-        public async Task UploadCsvToBigQuery(string filePath, Dictionary<string, int> headerIndices)
-        {
-            var schema = new TableSchemaBuilder
-            {
-                { "BinStartTime", BigQueryDbType.DateTime },
-                { "Average", BigQueryDbType.Float64 },
-                { "EntityId", BigQueryDbType.Int64 },
-            }.Build();
-
-            var dataset = _client.GetDataset(_datasetId);
-            var destinationTableRef = dataset.GetTableReference(_tableId);
-
-            // Create job configuration
-            var jobOptions = new CreateLoadJobOptions()
-            {
-                // The source format defaults to CSV; line below is optional.
-                SourceFormat = FileFormat.Csv,
-                SkipLeadingRows = 1
-            };
-            // Create and run job
-            var loadJob = _client.CreateLoadJob(
-                sourceUri: filePath, destination: destinationTableRef,
-                schema: schema, options: jobOptions);
-            loadJob = loadJob.PollUntilCompleted().ThrowOnAnyError();  // Waits for the job to complete.
-
-            // Display the number of rows uploaded
-            BigQueryTable table = _client.GetTable(destinationTableRef);
-            Console.WriteLine(
-                $"Loaded {table.Resource.NumRows} rows to {table.FullyQualifiedId}");
         }
 
         protected override BigQueryInsertRow CreateRow(TempData item)

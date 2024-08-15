@@ -8,6 +8,5 @@ namespace ATSPM.Application.Repositories.SpeedManagementRepositories
     public interface ITempDataRepository : IAsyncRepository<TempData>
     {
         public Task<List<TempData>> GetHourlyAggregatedDataForAllSegments();
-        public Task UploadCsvToBigQuery(string filePath, Dictionary<string, int> headerIndices);
     }
 }
