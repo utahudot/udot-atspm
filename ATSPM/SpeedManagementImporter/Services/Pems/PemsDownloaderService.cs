@@ -39,7 +39,7 @@ namespace SpeedManagementImporter.Services.Pems
 
             var parallelOptions = new ParallelOptions
             {
-                MaxDegreeOfParallelism = 2 // Set the desired parallelism level here
+                MaxDegreeOfParallelism = 1 // Set the desired parallelism level here
             };
 
             for (DateTime date = startDate; date < endDate; date = date.AddDays(1))
@@ -218,7 +218,7 @@ namespace SpeedManagementImporter.Services.Pems
                 default: return null;
             }
         }
-        private static async Task<List<Station>> GetPemsFlows(string flowUrl)
+        private static async Task<List<Station>> GetPemsFlows(string flowUrl, int retry = 0)
         {
             using (HttpClient httpClient = new HttpClient())
             {
@@ -242,6 +242,10 @@ namespace SpeedManagementImporter.Services.Pems
                     else
                     {
                         Console.WriteLine($"HTTP Error: {response.StatusCode} - {response.ReasonPhrase}");
+                        if (retry < 4)
+                        {
+                            return await GetPemsFlows(flowUrl, retry++);
+                        }
                         return null;
                     }
                 }
