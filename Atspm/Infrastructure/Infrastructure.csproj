@@ -10,7 +10,7 @@
 		<AssemblyName>$(NameSpacePrefix).$(SolutionName).$(MSBuildProjectName)</AssemblyName>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<ImplicitUsings>enable</ImplicitUsings>
-		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+		<GeneratePackageOnBuild>False</GeneratePackageOnBuild>
 		<Title>Udot Automated Traffic Performance Measure Application</Title>
 		<Authors>utah.udot.gov</Authors>
 		<Description>Library that defines services and workflows for the Automated Traffic Performance Measures platform</Description>
@@ -22,6 +22,7 @@
 		<Version>5.0-rc.1</Version>
 		<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
 		<PackageLicenseFile>LICENSE</PackageLicenseFile>
+		<PackageId>$(AssemblyName)</PackageId>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -84,12 +85,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Reference Include="PipelineManagerLibrary">
-			<HintPath>..\..\..\udot-pipelinemanager\PipelineManager\PipelineManagerLibrary\bin\Debug\netcoreapp3.1\PipelineManagerLibrary.dll</HintPath>
-		</Reference>
-		<Reference Include="Utah.Udot.NetStandardToolkit">
-		  <HintPath>..\..\..\udot-netstandard-toolkit\NetStandardToolkit\bin\Release\net7.0\Utah.Udot.NetStandardToolkit.dll</HintPath>
-		</Reference>
+	  <Reference Include="Utah.Udot.NetStandardToolkit">
+	    <HintPath>..\Utah.Udot.NetStandardToolkit.dll</HintPath>
+	  </Reference>
 	</ItemGroup>
 
 	<ItemGroup>
