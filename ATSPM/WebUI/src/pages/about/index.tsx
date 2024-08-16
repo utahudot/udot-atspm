@@ -1,24 +1,19 @@
-import Header from '@/components/header'
 import { ResponsivePageLayout } from '@/components/ResponsivePage'
 import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight'
-import { Box, Button, Grid, Typography } from '@mui/material'
+import { Box, Button, Grid, Paper, Typography } from '@mui/material'
 import Image from 'next/image'
 import Link from 'next/link'
 
 const GridItem = ({ item }: { item: { path: string; title: string } }) => (
   <Grid item key={item.path} xs={4} sm={4} md={3} lg={2} xl={2}>
-    <Box
+    <Paper
       sx={{
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#f5f5f5',
-        padding: '8px',
-        height: '10vw',
-        boxShadow: 1,
+        height: '200px',
+        position: 'relative',
       }}
-      position="relative"
-      padding="20px"
     >
       <Image
         src={item.path}
@@ -27,7 +22,7 @@ const GridItem = ({ item }: { item: { path: string; title: string } }) => (
         sizes="(max-width: 1200px) 15vw"
         fill
       />
-    </Box>
+    </Paper>
   </Grid>
 )
 
@@ -50,7 +45,7 @@ const About = () => {
       title: 'University of Texas at Arlington',
     },
     {
-      path: '/images/partners/iowa-state.png',
+      path: '/images/partners/iowa-state-university.png',
       title: 'Iowa State',
     },
     {
@@ -81,10 +76,6 @@ const About = () => {
       title: 'FDOT logo',
     },
     {
-      path: '/images/partners/pennsylvania-dot.png',
-      title: 'Pennyslvania DOT logo',
-    },
-    {
       path: '/images/partners/minnesota-dot.png',
       title: 'Minnesota DOT logo',
     },
@@ -96,14 +87,20 @@ const About = () => {
       path: '/images/partners/pennsylvania-dot.png',
       title: 'Pennsylvania DOT logo',
     },
-  ]
-
-  const udotLogo = [
     {
-      path: '/images/udot.png',
-      title: 'UDOT logo',
+      path: '/images/partners/portland-oregon.svg',
+      title: 'Portland Oregon logo',
+    },
+    {
+      path: '/images/partners/maricopa-county.png',
+      title: 'Maricopa County logo',
     },
   ]
+
+  const udotLogo = {
+    path: '/images/udot.png',
+    title: 'UDOT logo',
+  }
 
   const consultantPartners = [
     {
@@ -146,66 +143,101 @@ const About = () => {
       path: '/images/partners/traffop.png',
       title: 'Traffop logo',
     },
-    {
-      path: '/images/partners/portland-oregon.svg',
-      title: 'Portland Oregon logo',
-    },
-    {
-      path: '/images/partners/maricopa-county.png',
-      title: 'Maricopa County logo',
-    },
   ]
 
   return (
     <ResponsivePageLayout title={'About'} hideTitle>
-      <Box>
-        <Header title="About ATSPM" />
-        <Box marginBottom={2}>
-          <Typography variant="h4" component={'p'}>
-            Automated Traffic Signal Performance Measures show real-time and
-            historical functionality at locationized intersections. This allows
-            traffic engineers to directly measure what previously could only be
-            estimated and modeled.
-          </Typography>
-        </Box>
-        <Box marginBottom={10}>
-          <Button
-            variant="contained"
-            href="/faq"
-            component="a"
-            LinkComponent={Link}
-            endIcon={<KeyboardDoubleArrowRightIcon />}
-          >
-            Learn more
-          </Button>
-        </Box>
-        <Box marginBottom={2}>
-          <Typography variant="h5" component={'p'}>
-            The following are those who have contributed changes to the ATSPM
-            system:
-          </Typography>
-        </Box>
-        <Grid container spacing={2}>
-          {udotLogo.map((item) => (
-            <GridItem key={item.title} item={item} />
-          ))}
-        </Grid>
-        <Grid container spacing={2}>
-          {consultantPartners.map((item) => (
-            <GridItem key={item.title} item={item} />
-          ))}
-        </Grid>
-        <Grid container spacing={2}>
-          {agencyPartners.map((item) => (
-            <GridItem key={item.title} item={item} />
-          ))}
-        </Grid>
-        <Grid container spacing={2}>
-          {academimcPartners.map((item) => (
-            <GridItem key={item.title} item={item} />
-          ))}
-        </Grid>
+      <Paper
+        sx={{
+          padding: 4,
+          marginBottom: 4,
+          maxWidth: '740px',
+          marginX: 'auto',
+          textAlign: 'center',
+        }}
+      >
+        <Typography variant="h2" gutterBottom>
+          About ATSPM
+        </Typography>
+        <Typography variant="subtitle1" paragraph>
+          Automated Traffic Signal Performance Measures show real-time and
+          historical functionality at signalized intersections. This allows
+          traffic engineers to directly measure what previously could only be
+          estimated and modeled.
+        </Typography>
+        <Button
+          variant="contained"
+          href="/faq"
+          component={Link}
+          endIcon={<KeyboardDoubleArrowRightIcon />}
+          sx={{ marginTop: 2 }}
+        >
+          Learn more
+        </Button>
+      </Paper>
+      <Box marginBottom={2} textAlign={'center'}>
+        <Typography variant="h3" fontStyle="italic">
+          Presented by
+        </Typography>
       </Box>
+      <Box
+        sx={{
+          height: '10vw',
+          minHeight: '160px',
+        }}
+        position="relative"
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        marginBottom={4}
+      >
+        <Image
+          src={udotLogo.path}
+          alt={udotLogo.title}
+          style={{
+            objectFit: 'contain',
+            padding: '40px',
+            paddingTop: '0px',
+          }}
+          sizes="(max-width: 1200px) 100vw"
+          fill
+        />
+      </Box>
+      <Box marginBottom={4} textAlign="center">
+        <Typography variant="h5" component="p">
+          The following are those who have contributed to ATSPM
+        </Typography>
+      </Box>
+      <Box marginBottom={2} textAlign={'center'}>
+        <Typography variant="h6" fontWeight="bold">
+          Agencies
+        </Typography>
+      </Box>
+      <Grid container spacing={3}>
+        {agencyPartners.map((item) => (
+          <GridItem key={item.title} item={item} />
+        ))}
+      </Grid>
+      <Box marginBottom={2} textAlign={'center'} marginTop={4}>
+        <Typography variant="h6" fontWeight="bold">
+          Academics
+        </Typography>
+      </Box>
+      <Grid container spacing={3}>
+        {academimcPartners.map((item) => (
+          <GridItem key={item.title} item={item} />
+        ))}
+      </Grid>
+      <Box marginBottom={2} textAlign={'center'} marginTop={4}>
+        <Typography variant="h6" fontWeight="bold">
+          Consultants
+        </Typography>
+      </Box>
+      <Grid container spacing={3}>
+        {consultantPartners.map((item) => (
+          <GridItem key={item.title} item={item} />
+        ))}
+      </Grid>
     </ResponsivePageLayout>
   )
 }
