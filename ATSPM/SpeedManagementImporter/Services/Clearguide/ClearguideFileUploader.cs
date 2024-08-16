@@ -41,7 +41,7 @@ namespace SpeedManagementImporter.Services.Clearguide
             //mnany block takes in the csv reader
 
             //Parse through file
-            var manyParseLineBlock = new TransformManyBlock<string, TempData>(filePath => ParseCsvFile(filePath, segmentEntities));
+            var manyParseLineBlock = new TransformManyBlock<string, TempData>(filePath => ParseCsvFile(filePath, segmentEntities), settings);
 
             //Create batch block
             var batchBlock = new BatchBlock<TempData>(batchSize);

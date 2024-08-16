@@ -39,7 +39,7 @@ namespace SpeedManagementImporter.Services.Pems
 
             var parallelOptions = new ParallelOptions
             {
-                MaxDegreeOfParallelism = 2 // Set the desired parallelism level here
+                MaxDegreeOfParallelism = 1 // Set the desired parallelism level here
             };
 
             for (DateTime date = startDate; date < endDate; date = date.AddDays(1))
@@ -56,7 +56,7 @@ namespace SpeedManagementImporter.Services.Pems
                     var pemsFlows = await GetPemsFlows(flowUrl);
                     for (int i = 0; i <= 22; i++)
                     {
-                        var tempTime = new TimeOnly(i, 0);
+                        DateTime binStartTime = DateOnly.FromDateTime(DateTime.Today).ToDateTime(new TimeOnly(i, 0));
                         var statisticsUrl = $"https://udot.iteris-pems.com/?srq=rest&api_key={apiKey}&service=bts.station.getStatistics&from_date={date:yyyyMMdd}&to_date={date.AddDays(1):yyyyMMdd}&from_tod={i}&to_tod={i + 1}&dow_0=on&dow_1=on&dow_2=on&dow_3=on&dow_4=on&dow_5=on&fwy={fwy}&dir={split[1]}&lanes=agg&start_pm=0&end_pm=349.440&q=speed&granularity=hour&returnformat=json";
                         var pemsStatistics = await GetPemsStatisticsAsync(statisticsUrl);
                         if (pemsStatistics == null || pemsStatistics.Count == 0)
@@ -124,7 +124,7 @@ namespace SpeedManagementImporter.Services.Pems
                                 var speed = new HourlySpeed
                                 {
                                     Date = date,
-                                    BinStartTime = date,
+                                    BinStartTime = binStartTime,
                                     SegmentId = routeId,
                                     SourceId = sourceId,
                                     ConfidenceId = confidenceId,
@@ -143,7 +143,7 @@ namespace SpeedManagementImporter.Services.Pems
                             }
                         }
                     }
-                    if (speeds.Count > 10000)
+                    if (speeds.Count > 1000)
                     {
                         await hourlySpeedRepository.AddHourlySpeedsAsync(speeds.ToList());
                         speeds.Clear();
@@ -218,12 +218,13 @@ namespace SpeedManagementImporter.Services.Pems
                 default: return null;
             }
         }
-        private static async Task<List<Station>> GetPemsFlows(string flowUrl)
+        private static async Task<List<Station>> GetPemsFlows(string flowUrl, int retry = 0)
         {
             using (HttpClient httpClient = new HttpClient())
             {
                 httpClient.DefaultRequestHeaders.Accept.Clear();
                 httpClient.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+                string debugString = "";
 
                 try
                 {
@@ -235,6 +236,7 @@ namespace SpeedManagementImporter.Services.Pems
                         if (string.IsNullOrEmpty(jsonResponse))
                             return null;
 
+                        debugString = jsonResponse;
                         // Deserialize JSON using Newtonsoft.Json
                         var rootObject = JsonConvert.DeserializeObject<RootObjectFlow>(jsonResponse);
                         return rootObject.stationsHourlySummary.stations;
@@ -242,12 +244,16 @@ namespace SpeedManagementImporter.Services.Pems
                     else
                     {
                         Console.WriteLine($"HTTP Error: {response.StatusCode} - {response.ReasonPhrase}");
+                        if (retry < 4)
+                        {
+                            return await GetPemsFlows(flowUrl, retry++);
+                        }
                         return null;
                     }
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Error: {ex.Message}");
+                    Console.WriteLine($"Error: {ex.Message} WITH JSON STRING - {debugString}\n\n");
                     return null;
                 }
             }
@@ -259,6 +265,7 @@ namespace SpeedManagementImporter.Services.Pems
             {
                 httpClient.DefaultRequestHeaders.Accept.Clear();
                 httpClient.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+                httpClient.Timeout = TimeSpan.FromMinutes(2);
 
                 try
                 {
