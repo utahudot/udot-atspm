@@ -41,25 +41,39 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
 
         public async Task AddHourlySpeedsAsync(List<HourlySpeed> hourlySpeeds)
         {
-            var table = _client.GetTable(_datasetId, _tableId);
-            List<BigQueryInsertRow> insertRows = new List<BigQueryInsertRow>();
-            int batchSize = 10000;
-
-            foreach (var hourlySpeed in hourlySpeeds)
+            try
             {
-                insertRows.Add(CreateRow(hourlySpeed));
+                var table = _client.GetTable(_datasetId, _tableId);
+                List<BigQueryInsertRow> insertRows = new List<BigQueryInsertRow>();
+                int batchSize = 1000;
 
-                if (insertRows.Count == batchSize)
+                foreach (var hourlySpeed in hourlySpeeds)
+                {
+                    try
+                    {
+                        insertRows.Add(CreateRow(hourlySpeed));
+
+                        if (insertRows.Count >= batchSize)
+                        {
+                            await table.InsertRowsAsync(insertRows);
+                            insertRows.Clear(); // Clear the list for the next batch
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("THERE WAS AN ERROR CREATING THE ROW - " + ex.ToString());
+                    }
+                }
+
+                // Insert any remaining rows that didn't make a full batch
+                if (insertRows.Count > 0)
                 {
                     await table.InsertRowsAsync(insertRows);
-                    insertRows.Clear(); // Clear the list for the next batch
                 }
             }
-
-            // Insert any remaining rows that didn't make a full batch
-            if (insertRows.Count > 0)
+            catch (Exception ex)
             {
-                await table.InsertRowsAsync(insertRows);
+                Console.WriteLine("This means that there was an error in the AddHourlySpeedsAsync - " + ex.ToString());
             }
         }
 
@@ -100,7 +114,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             {
                 { "Date", item.Date.AsBigQueryDate() },
                 {"BinStartTime", item.BinStartTime.TimeOfDay },
-                {"SegmentId", item.SegmentId },
+                {"SegmentId", item.SegmentId.ToString() },
                 {"SourceId", item.SourceId },
                 {"ConfidenceId", item.ConfidenceId },
                 {"Average", item.Average },
@@ -411,7 +425,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
         {
             var reader = new WKTReader();
             // Access row data as needed
-            var segmentId = row["SegmentId"];
+            var segmentId = Guid.Parse(row["SegmentId"].ToString());
             var sourceId = row["SourceId"];
             var avg = row["Avg"] != null ? double.Parse(row["Avg"].ToString()) : (double?)null;
             var percentile15 = row["Percentilespd_15"] != null ? double.Parse(row["Percentilespd_15"].ToString()) : (double?)null;
@@ -732,7 +746,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
         {
             new BigQueryParameter("@Date", BigQueryDbType.DateTime, item.Date),
             new BigQueryParameter("@BinStartTime", BigQueryDbType.DateTime, item.BinStartTime),
-            new BigQueryParameter("@SegmentId", BigQueryDbType.Int64, item.SegmentId)
+            new BigQueryParameter("@SegmentId", BigQueryDbType.String, item.SegmentId.ToString())
         };
 
                 _client.ExecuteQuery(query, parameters);
@@ -838,7 +852,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
         {
             new BigQueryParameter("@Date", BigQueryDbType.DateTime, item.Date),
             new BigQueryParameter("@BinStartTime", BigQueryDbType.DateTime, item.BinStartTime),
-            new BigQueryParameter("@SegmentId", BigQueryDbType.Int64, item.SegmentId)
+            new BigQueryParameter("@SegmentId", BigQueryDbType.String, item.SegmentId)
         };
 
                 _client.ExecuteQueryAsync(query, parameters);
