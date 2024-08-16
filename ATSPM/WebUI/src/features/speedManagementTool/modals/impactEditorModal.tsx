@@ -1,3 +1,4 @@
+import SelectLocationMap from '@/features/locations/components/selectLocationMap'
 import { Impact } from '@/features/speedManagementTool/types/impact'
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
 import {
@@ -19,6 +20,7 @@ import { useTheme } from '@mui/material/styles'
 import { useRouter } from 'next/router'
 import React, { useEffect, useState } from 'react'
 import { useGetImpactTypes } from '../api/getImpactTypes'
+import { useGetSegments } from '../api/getSegments'
 interface ImpactEditorModalProps {
   data?: Impact
   open: boolean
@@ -58,6 +60,8 @@ const ImpactEditorModal: React.FC<ImpactEditorModalProps> = ({
     impactTypes: data?.impactTypes || [],
     segmentIds: data?.segmentIds || [],
   })
+
+  const { data: segmentData, isLoading: isLoadingSegements } = useGetSegments()
 
   const { data: impactTypeData, isLoading: isLoadingImpactTypes } =
     useGetImpactTypes()
@@ -181,63 +185,75 @@ const ImpactEditorModal: React.FC<ImpactEditorModalProps> = ({
                   fullWidth
                 />
               </Grid>
-              <Grid item xs={12}>
-                <FormControl fullWidth>
-                  <InputLabel id="impact-types-label">Impact Types</InputLabel>
-                  <Select
-                    labelId="impact-types-label"
-                    id="impact-types-select"
-                    multiple
-                    value={impact.impactTypes?.map((type) => type.id)}
-                    onChange={handleChange}
-                    input={
-                      <OutlinedInput
-                        id="select-multiple-chip"
-                        label="Impact Types"
-                      />
-                    }
-                    renderValue={(selected) => (
-                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                        {selected.map((value) => (
-                          <Chip
-                            key={value}
-                            label={
-                              impactTypeData?.find((type) => type.id === value)
-                                ?.name
-                            }
-                          />
-                        ))}
-                      </Box>
-                    )}
-                    MenuProps={MenuProps}
-                  >
-                    <MenuItem onClick={() => router.push('/admin/impact-type')}>
-                      <Box sx={{ display: 'flex', alignItems: 'center', color:'#555555' }}>
-                        <AddCircleOutlineIcon style={{ fontSize: 'large' }} />
-                        <Box sx={{ ml: 1 }}>
-                          {' '}
-                          Create Impact Type
+              {impact.impactTypes && (
+                <Grid item xs={12}>
+                  <FormControl fullWidth>
+                    <InputLabel id="impact-types-label">
+                      Impact Types
+                    </InputLabel>
+                    <Select
+                      labelId="impact-types-label"
+                      id="impact-types-select"
+                      multiple
+                      value={impact.impactTypes?.map((type) => type.id)}
+                      onChange={handleChange}
+                      input={
+                        <OutlinedInput
+                          id="select-multiple-chip"
+                          label="Impact Types"
+                        />
+                      }
+                      renderValue={(selected) => (
+                        <Box
+                          sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}
+                        >
+                          {selected.map((value) => (
+                            <Chip
+                              key={value}
+                              label={
+                                impactTypeData?.find(
+                                  (type) => type.id === value
+                                )?.name
+                              }
+                            />
+                          ))}
                         </Box>
-                      </Box>
-                    </MenuItem>
-                    {impactTypeData?.map((type) => (
+                      )}
+                      MenuProps={MenuProps}
+                    >
                       <MenuItem
-                        key={type.id}
-                        value={type.id}
-                        style={{
-                          fontWeight: impact.impactTypes?.some(
-                            (impactType) => impactType.id === type.id
-                          )
-                            ? theme.typography.fontWeightMedium
-                            : theme.typography.fontWeightRegular,
-                        }}
+                        onClick={() => router.push('/admin/impact-type')}
                       >
-                        {type.name}
+                        <Box
+                          sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            color: '#555555',
+                          }}
+                        >
+                          <AddCircleOutlineIcon style={{ fontSize: 'large' }} />
+                          <Box sx={{ ml: 1 }}> Create Impact Type</Box>
+                        </Box>
                       </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Grid>
+                      {impactTypeData?.map((type) => (
+                        <MenuItem
+                          key={type.id}
+                          value={type.id}
+                          style={{
+                            fontWeight: impact.impactTypes?.some(
+                              (impactType) => impactType.id === type.id
+                            )
+                              ? theme.typography.fontWeightMedium
+                              : theme.typography.fontWeightRegular,
+                          }}
+                        >
+                          {type.name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </Grid>
+              )}
               <Grid item xs={12}>
                 <TextField
                   label="Segments"
@@ -249,8 +265,26 @@ const ImpactEditorModal: React.FC<ImpactEditorModalProps> = ({
             </Grid>
           </Grid>
           <Grid item xs={7}>
-            {/* Your map component goes here */}
-            <div
+            {/* {segmentData && <SegmentsSelectorMap
+      segments={segmentData} // Assuming segmentData is the array of segments
+      initialSelectedSegmentIds={impact.segmentIds} // Pass the initial selected segment IDs
+      onUpdateSelectedSegments={(selectedIds) => {
+        setImpact({ ...impact, segmentIds: selectedIds });
+      }}
+    />} */}
+            <SelectLocationMap
+              location={location}
+              setLocation={() => {
+                console.log('Helo')
+              }}
+              locations={[]}
+              center={[0, 0]}
+              zoom={10}
+              route={[]}
+              mapHeight={400}
+            />
+
+            {/* <div
               style={{
                 width: '100%',
                 height: '100%',
@@ -259,7 +293,7 @@ const ImpactEditorModal: React.FC<ImpactEditorModalProps> = ({
               }}
             >
               <div style={{ padding: '15px' }}>Map Placeholder</div>
-            </div>
+            </div> */}
           </Grid>
         </Grid>
       </Box>
