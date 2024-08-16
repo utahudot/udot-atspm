@@ -56,7 +56,7 @@ namespace SpeedManagementImporter.Services.Pems
                     var pemsFlows = await GetPemsFlows(flowUrl);
                     for (int i = 0; i <= 22; i++)
                     {
-                        var tempTime = new TimeOnly(i, 0);
+                        DateTime binStartTime = DateOnly.FromDateTime(DateTime.Today).ToDateTime(new TimeOnly(i, 0));
                         var statisticsUrl = $"https://udot.iteris-pems.com/?srq=rest&api_key={apiKey}&service=bts.station.getStatistics&from_date={date:yyyyMMdd}&to_date={date.AddDays(1):yyyyMMdd}&from_tod={i}&to_tod={i + 1}&dow_0=on&dow_1=on&dow_2=on&dow_3=on&dow_4=on&dow_5=on&fwy={fwy}&dir={split[1]}&lanes=agg&start_pm=0&end_pm=349.440&q=speed&granularity=hour&returnformat=json";
                         var pemsStatistics = await GetPemsStatisticsAsync(statisticsUrl);
                         if (pemsStatistics == null || pemsStatistics.Count == 0)
@@ -124,7 +124,7 @@ namespace SpeedManagementImporter.Services.Pems
                                 var speed = new HourlySpeed
                                 {
                                     Date = date,
-                                    BinStartTime = date,
+                                    BinStartTime = binStartTime,
                                     SegmentId = routeId,
                                     SourceId = sourceId,
                                     ConfidenceId = confidenceId,
