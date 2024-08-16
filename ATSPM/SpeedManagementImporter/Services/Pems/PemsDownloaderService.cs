@@ -265,6 +265,7 @@ namespace SpeedManagementImporter.Services.Pems
             {
                 httpClient.DefaultRequestHeaders.Accept.Clear();
                 httpClient.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+                httpClient.Timeout = TimeSpan.FromMinutes(2);
 
                 try
                 {
