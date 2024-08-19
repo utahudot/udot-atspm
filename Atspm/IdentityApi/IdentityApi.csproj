@@ -9,7 +9,7 @@
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<RootNamespace>$(NameSpacePrefix).$(SolutionName).$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
-		<AssemblyName>$(NameSpacePrefix).$(SolutionName).$(MSBuildProjectName)</AssemblyName>
+		<AssemblyName>$(MSBuildProjectName)</AssemblyName>
 		<UserSecretsId>c9b0a688-a79d-41c6-ba5b-a3db33a33762</UserSecretsId>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
@@ -34,7 +34,7 @@
 
 	<ItemGroup>
 	  <Reference Include="Utah.Udot.NetStandardToolkit">
-	    <HintPath>..\..\..\udot-netstandard-toolkit\NetStandardToolkit\bin\Release\net7.0\Utah.Udot.NetStandardToolkit.dll</HintPath>
+	    <HintPath>..\Utah.Udot.NetStandardToolkit.dll</HintPath>
 	  </Reference>
 	</ItemGroup>
 

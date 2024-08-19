@@ -130,6 +130,8 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddScoped<IRouteService, RouteService>();
     s.AddScoped<IApproachService, ApproachService>();
 
+    s.AddPathBaseFilter(h);
+
     if (!h.HostingEnvironment.IsDevelopment())
     {
         s.AddAtspmAuthentication(h);
@@ -157,15 +159,13 @@ app.UseSwaggerUI(o =>
     // build a swagger endpoint for each discovered API version
     foreach (var description in descriptions)
     {
-        var url = $"/swagger/{description.GroupName}/swagger.json";
+        var url = $"{app.Configuration["PathBaseSettings:ApplicationPathBase"]}/swagger/{description.GroupName}/swagger.json";
         var name = description.GroupName.ToUpperInvariant();
         o.SwaggerEndpoint(url, name);
     }
 });
 
-app.UsePathBase(app.Configuration["PathBase"]);
 app.UseHttpsRedirection();
-app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseVersionedODataBatching();
