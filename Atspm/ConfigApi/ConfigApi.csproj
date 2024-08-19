@@ -34,12 +34,12 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
+	  <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
 	  <Reference Include="Utah.Udot.NetStandardToolkit">
-	    <HintPath>..\..\..\udot-netstandard-toolkit\NetStandardToolkit\bin\Release\net7.0\Utah.Udot.NetStandardToolkit.dll</HintPath>
+	    <HintPath>..\Utah.Udot.NetStandardToolkit.dll</HintPath>
 	  </Reference>
 	</ItemGroup>
 

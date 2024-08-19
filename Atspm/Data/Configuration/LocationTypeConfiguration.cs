@@ -40,18 +40,22 @@ namespace Utah.Udot.Atspm.Data.Configuration
             builder.HasData(
                 new LocationType()
                 {
+                    Id = 1,
                     Name = "Intersection",
                 },
                 new LocationType()
                 {
+                    Id = 2,
                     Name = "Ramp",
                 },
                 new LocationType()
                 {
+                    Id = 3,
                     Name = "Side Walk",
                 },
                 new LocationType()
                 {
+                    Id = 4,
                     Name = "Trail",
                 });
         }
