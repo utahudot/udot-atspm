@@ -43,7 +43,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
         {
             try
             {
-                var table = _client.GetTable(_datasetId, _tableId);
+
                 List<BigQueryInsertRow> insertRows = new List<BigQueryInsertRow>();
                 int batchSize = 1000;
 
@@ -55,6 +55,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
 
                         if (insertRows.Count >= batchSize)
                         {
+                            var table = _client.GetTable(_datasetId, _tableId);
                             await table.InsertRowsAsync(insertRows);
                             insertRows.Clear(); // Clear the list for the next batch
                         }
@@ -68,6 +69,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
                 // Insert any remaining rows that didn't make a full batch
                 if (insertRows.Count > 0)
                 {
+                    var table = _client.GetTable(_datasetId, _tableId);
                     await table.InsertRowsAsync(insertRows);
                 }
             }
