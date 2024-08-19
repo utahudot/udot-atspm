@@ -1,0 +1,55 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<NameSpacePrefix>Utah.Udot</NameSpacePrefix>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>net7.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<RootNamespace>$(NameSpacePrefix).$(SolutionName).$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
+		<AssemblyName>$(NameSpacePrefix).$(SolutionName).$(MSBuildProjectName)</AssemblyName>
+		<UserSecretsId>4a25a28a-6471-4d98-ae56-b46fe556756b</UserSecretsId>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Remove="appsettings.json" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Include="appsettings.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+		</Content>
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Google.Apis.Gmail.v1" Version="1.67.0.3287" />
+		<PackageReference Include="MailKit" Version="4.5.0" />
+		<PackageReference Include="Microsoft.CodeAnalysis" Version="4.9.2" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.1" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Reference Include="Utah.Udot.NetStandardToolkit">
+	    <HintPath>..\Utah.Udot.NetStandardToolkit.dll</HintPath>
+	  </Reference>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Using Include="Utah.Udot.Atspm.Business.Common" />
+	  <Using Include="Utah.Udot.Atspm.Extensions" />
+	  <Using Include="Utah.Udot.Atspm.Repositories" />
+	  <Using Include="Utah.Udot.Atspm.Repositories.ConfigurationRepositories" />
+	  <Using Include="Utah.Udot.Atspm.Repositories.EventLogRepositories" />
+	  <Using Include="Utah.Udot.NetStandardToolkit.Services" />
+	</ItemGroup>
+
+</Project>
