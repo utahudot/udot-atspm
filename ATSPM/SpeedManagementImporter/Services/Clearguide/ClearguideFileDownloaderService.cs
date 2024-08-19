@@ -27,16 +27,17 @@ namespace SpeedManagementImporter.Services.Clearguide
             var routes = segmentEntities.GroupBy(r => r.SegmentId).ToList();
 
             var entityData = await tempDataRepository.GetHourlyAggregatedDataForAllSegments();
-            var dataBySegmentId = new Dictionary<long, List<HourlySpeedWithEntityId>>();
+
+            var settings = new ExecutionDataflowBlockOptions
+            {
+                MaxDegreeOfParallelism = Environment.ProcessorCount // or set to a specific value
+            };
 
             // Dataflow block to process each route
             var transformBlock = new TransformBlock<IGrouping<Guid, SegmentEntityWithSpeed>, List<HourlySpeed>>(async route =>
             {
-                return DownloadDataToHourlyTable(route, dataBySegmentId, entityData);
-            }, new ExecutionDataflowBlockOptions
-            {
-                MaxDegreeOfParallelism = Environment.ProcessorCount // or set to a specific value
-            });
+                return DownloadDataToHourlyTable(route, entityData);
+            }, settings);
 
             // Dataflow block to save aggregated speeds to the repository
             var actionBlock = new ActionBlock<List<HourlySpeed>>(async aggregatedSpeeds =>
@@ -44,9 +45,9 @@ namespace SpeedManagementImporter.Services.Clearguide
                 if (aggregatedSpeeds.Count > 0)
                 {
                     await hourlySpeedRepository.AddHourlySpeedsAsync(aggregatedSpeeds);
-                    Console.WriteLine($"Finished adding aggregated data to Speed Table for routes in group.");
+                    Console.WriteLine($"Finished adding aggregated data to Speed Table for route {aggregatedSpeeds[0].SegmentId} in group.");
                 }
-            });
+            }, settings);
 
             // Link the blocks
             transformBlock.LinkTo(actionBlock, new DataflowLinkOptions { PropagateCompletion = true });
@@ -64,7 +65,7 @@ namespace SpeedManagementImporter.Services.Clearguide
             await actionBlock.Completion;
         }
 
-        private List<HourlySpeed> DownloadDataToHourlyTable(IGrouping<Guid, SegmentEntityWithSpeed> route, Dictionary<long, List<HourlySpeedWithEntityId>> dataBySegmentId, List<TempData> entityData)
+        private List<HourlySpeed> DownloadDataToHourlyTable(IGrouping<Guid, SegmentEntityWithSpeed> route, List<TempData> entityData)
         {
             var speeds = new List<HourlySpeedWithEntityId>();
             foreach (SegmentEntityWithSpeed routeEntity in route)

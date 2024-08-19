@@ -24,24 +24,26 @@ namespace SpeedManagementImporter.Services.Clearguide
         public async Task FileUploaderAsync(string filePath)
         {
             List<SegmentEntityWithSpeed> segmentEntities = await segmentEntityRepository.GetEntitiesWithSpeedForSourceId(sourceId);
+            var distinctEntityIds = segmentEntities
+                                    .Select(e => e.EntityId)
+                                    .Distinct()
+                                    .ToList();
+            var entityIdSet = new HashSet<long>(distinctEntityIds);
 
-            await UploadFileAsync(segmentEntities, filePath);
+            await UploadFileAsync(entityIdSet, filePath);
             Console.WriteLine("Done adding data");
             // ADD a messaging service to let downloader service know that it is ready to download the data into hourly speeds
         }
 
-        private async Task UploadFileAsync(List<SegmentEntityWithSpeed> segmentEntities, string filePath)
+        private async Task UploadFileAsync(HashSet<long> entityIdSet, string filePath)
         {
             var settings = new ExecutionDataflowBlockOptions
             {
-                MaxDegreeOfParallelism = 10,
+                MaxDegreeOfParallelism = Environment.ProcessorCount // or set to a specific value
             };
 
-            //Transform Many block should take in filepath
-            //mnany block takes in the csv reader
-
             //Parse through file
-            var manyParseLineBlock = new TransformManyBlock<string, TempData>(filePath => ParseCsvFile(filePath, segmentEntities), settings);
+            var manyParseLineBlock = new TransformManyBlock<string, TempData>(filePath => ParseCsvFile(filePath, entityIdSet), settings);
 
             //Create batch block
             var batchBlock = new BatchBlock<TempData>(batchSize);
@@ -56,12 +58,12 @@ namespace SpeedManagementImporter.Services.Clearguide
             batchBlock.LinkTo(saveBatchBlock, linkOptions);
 
             await manyParseLineBlock.SendAsync(filePath);
-
+            manyParseLineBlock.Complete();
             // Await the completion of the ActionBlock
             await saveBatchBlock.Completion;
         }
 
-        private IEnumerable<TempData> ParseCsvFile(string filePath, List<SegmentEntityWithSpeed> segmentEntities)
+        private IEnumerable<TempData> ParseCsvFile(string filePath, HashSet<long> entityIdSet)
         {
             using var reader = new StreamReader(filePath);
             using var csvReader = new CsvReader(reader, CultureInfo.InvariantCulture);
@@ -78,7 +80,7 @@ namespace SpeedManagementImporter.Services.Clearguide
             {
                 // Extract the current line as a string
                 var line = csvReader.Parser.RawRecord;
-                yield return ParseCsvLine(line, segmentEntities, headerIndices);
+                yield return ParseCsvLine(line, entityIdSet, headerIndices);
             }
         }
 
@@ -93,7 +95,7 @@ namespace SpeedManagementImporter.Services.Clearguide
         }
 
         // Method to parse a CSV line and map it to TempData
-        private static TempData ParseCsvLine(string line, List<SegmentEntityWithSpeed> segmentEntities, Dictionary<string, int> headerIndices)
+        private static TempData ParseCsvLine(string line, HashSet<long> entityIdSet, Dictionary<string, int> headerIndices)
         {
             using var reader = new StringReader(line);
             using var csvReader = new CsvReader(reader, CultureInfo.InvariantCulture);
@@ -107,8 +109,7 @@ namespace SpeedManagementImporter.Services.Clearguide
 
             if (long.TryParse(sourceIdString, NumberStyles.Any, CultureInfo.InvariantCulture, out long sourceId))
             {
-                var segmentEntity = segmentEntities.FirstOrDefault(e => e.EntityId == sourceId);
-                if (segmentEntity != null)
+                if (entityIdSet.Contains(sourceId))
                 {
                     // Parse binStartTime as DateTime
                     if (DateTime.TryParse(csvReader.GetField(binStartTimeIndex), CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime binStartTime))
@@ -120,7 +121,7 @@ namespace SpeedManagementImporter.Services.Clearguide
                             {
                                 BinStartTime = binStartTime,
                                 Average = avg,
-                                EntityId = segmentEntity.EntityId
+                                EntityId = sourceId
                             };
                         }
                         else
@@ -149,28 +150,9 @@ namespace SpeedManagementImporter.Services.Clearguide
             {
                 //clean up tempData by removing any nulls
                 var sendData = tempData.Where(x => x != null);
-                Console.WriteLine($"Going to perform save for {sendData.Count()} number of lines");
                 await tempDataRepository.AddRangeAsync(sendData);
-                Console.WriteLine("performed save");
+                Console.WriteLine($"Performed save for {sendData.Count()} number of lines");
             }
-            //if (tempData != null)
-            //{
-            //    data.Add(tempData);
-            //    if (data.Count >= batchSize - 1)
-            //    {
-            //        List<TempData> batch;
-            //        lock (data)
-            //        {
-            //            batch = data.ToList();
-            //            data.Clear();
-
-            //            GC.Collect();
-            //        }
-
-            //        await tempDataRepository.AddRangeAsync(batch);
-            //        Console.WriteLine($"Added {batch.Count} rows");
-            //    }
-            //}
         }
     }
 
