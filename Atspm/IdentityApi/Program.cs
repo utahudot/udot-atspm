@@ -96,6 +96,8 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddScoped<UserManager<ApplicationUser>>();
     s.AddScoped<UsersService>();
 
+    s.AddPathBaseFilter(h);
+
     s.AddAtspmAuthentication(h);
     s.AddAtspmAuthorization();
 });
@@ -111,12 +113,10 @@ if (app.Environment.IsDevelopment())
 app.UseCors("CorsPolicy");
 app.UseHttpLogging();
 app.UseSwagger();
-app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "v1"));
-app.UsePathBase(app.Configuration["PathBase"]);
+app.UseSwaggerUI(c => c.SwaggerEndpoint($"{app.Configuration["PathBaseSettings:ApplicationPathBase"]}/swagger/v1/swagger.json", "v1"));
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseCookiePolicy();
-app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

@@ -19,11 +19,13 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
@@ -473,6 +475,59 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
             }
 
             return services;
+        }
+
+        /// <summary>
+        /// Registers an <see cref="IStartupFilter"/> to set path base on web applications
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="host"></param>
+        /// <returns></returns>
+        public static IServiceCollection AddPathBaseFilter(this IServiceCollection services, HostBuilderContext host)
+        {
+            services.Configure<PathBaseSettings>(host.Configuration.GetSection($"{nameof(PathBaseSettings)}"));
+
+            services.AddTransient<IStartupFilter, PathBaseStartupFilter>();
+
+            return services;
+        }
+    }
+
+    /// <summary>
+    /// Configuration settings to set path base of applications
+    /// </summary>
+    public class PathBaseSettings
+    {
+        /// <summary>
+        /// Path base of application
+        /// </summary>
+        public string ApplicationPathBase { get; set; }
+    }
+
+    /// <summary>
+    /// Adds a filter to web applications to set path base
+    /// </summary>
+    public class PathBaseStartupFilter : IStartupFilter
+    {
+        private readonly string _pathBase;
+
+        /// <summary>
+        /// Adds a filter to web applications to set path base
+        /// </summary>
+        /// <param name="options"></param>
+        public PathBaseStartupFilter(IOptions<PathBaseSettings> options)
+        {
+            _pathBase = options.Value.ApplicationPathBase;
+        }
+
+        /// <inheritdoc/>
+        public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
+        {
+            return app =>
+            {
+                app.UsePathBase(_pathBase);
+                next(app);
+            };
         }
     }
 }

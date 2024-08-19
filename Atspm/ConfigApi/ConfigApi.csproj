@@ -12,7 +12,7 @@
 		<IncludeOpenAPIAnalyzers>true</IncludeOpenAPIAnalyzers>
 		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
 		<RootNamespace>$(NameSpacePrefix).$(SolutionName).$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
-		<AssemblyName>$(NameSpacePrefix).$(SolutionName).$(MSBuildProjectName)</AssemblyName>
+		<AssemblyName>$(MSBuildProjectName)</AssemblyName>
 		<UserSecretsId>6ae15f41-e3a6-4c86-90f8-7344f3a24ee5</UserSecretsId>
 	</PropertyGroup>
 
