@@ -20,6 +20,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
         private readonly BigQueryClient _client;
         private readonly string _datasetId;
         private readonly string _tableId;
+        private BigQueryTable _table;
         private readonly ILogger<ATSPMRepositoryBQBase<HourlySpeed>> _logger;
 
         public HourlySpeedBQRepository(BigQueryClient client, string datasetId, string tableId, ILogger<ATSPMRepositoryBQBase<HourlySpeed>> log) : base(client, datasetId, tableId, log)
@@ -28,22 +29,20 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             _datasetId = datasetId;
             _tableId = tableId;
             _logger = log;
-
+            _table = _client.GetTable(_datasetId, _tableId);
         }
 
 
         public async Task AddHourlySpeedAsync(HourlySpeed hourlySpeed)
         {
-            var table = _client.GetTable(_datasetId, _tableId);
             var insertRow = CreateRow(hourlySpeed);
-            await table.InsertRowAsync(insertRow);
+            await _table.InsertRowAsync(insertRow);
         }
 
         public async Task AddHourlySpeedsAsync(List<HourlySpeed> hourlySpeeds)
         {
             try
             {
-                var table = _client.GetTable(_datasetId, _tableId);
                 List<BigQueryInsertRow> insertRows = new List<BigQueryInsertRow>();
                 int batchSize = 1000;
 
@@ -55,7 +54,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
 
                         if (insertRows.Count >= batchSize)
                         {
-                            await table.InsertRowsAsync(insertRows);
+                            await _table.InsertRowsAsync(insertRows);
                             insertRows.Clear(); // Clear the list for the next batch
                         }
                     }
@@ -68,7 +67,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
                 // Insert any remaining rows that didn't make a full batch
                 if (insertRows.Count > 0)
                 {
-                    await table.InsertRowsAsync(insertRows);
+                    await _table.InsertRowsAsync(insertRows);
                 }
             }
             catch (Exception ex)
