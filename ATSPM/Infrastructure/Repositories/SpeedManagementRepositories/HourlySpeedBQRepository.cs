@@ -1,7 +1,9 @@
 ﻿using ATSPM.Application.Business.RouteSpeed;
 using ATSPM.Application.Repositories.SpeedManagementRepositories;
 using ATSPM.Data.Models.SpeedManagementAggregation;
+using ATSPM.Domain.Extensions;
 using Google.Cloud.BigQuery.V2;
+using IdentityModel.Client;
 using Microsoft.Extensions.Logging;
 using NetTopologySuite.Geometries;
 using NetTopologySuite.IO;
@@ -172,7 +174,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
                 AVG(NinetyNinthSpeed) AS NinetyNinthSpeed,
                 AVG(Violation) AS Violation,
                 AVG(Flow) AS Flow
-            FROM `atspm-406601.speedDataset.hourlySpeed`
+            FROM `{_datasetId}.{_tableId}`
             WHERE 
                 SegmentId = @segmentId AND
                 SourceId = @sourceId AND
@@ -215,7 +217,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
                 AVG(NinetyNinthSpeed) AS NinetyNinthSpeed,
                 AVG(Violation) AS Violation,
                 AVG(Flow) AS Flow
-            FROM `atspm-406601.speedDataset.hourlySpeed`
+            FROM `{_datasetId}.{_tableId}`
             WHERE 
                 SegmentId = @segmentId AND
                 date BETWEEN @startDate AND @endDate AND
@@ -297,11 +299,11 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             };
         }
 
-        private static string GetHourlyQuery(long? sourceId)
+        private string GetHourlyQuery(long? sourceId)
         {
             return $@"
             SELECT *
-            FROM `atspm-406601.speedDataset.hourlySpeed`
+            FROM `{_datasetId}.{_tableId}`
             WHERE 
                 SegmentId = @segmentId AND
                 date BETWEEN @startDate AND @endDate 
@@ -309,14 +311,14 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             ORDER BY Date ASC, BinStartTime ASC;";
         }
 
-        private static string GetWeeklyQuery()
+        private string GetWeeklyQuery()
         {
             return $@"
             WITH data_with_datetime AS (
               SELECT 
                 *,
                 TIMESTAMP(DATETIME(Date, BinStartTime)) AS datetime
-              FROM `atspm-406601.speedDataset.hourlySpeed`
+              FROM `{_datasetId}.{_tableId}`
               WHERE 
                 SourceId = @sourceId
                 AND SegmentId = @segmentId
@@ -353,56 +355,26 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
         {
             var convertedStartDate = DateOnly.FromDateTime(options.StartDate);
             var convertedEndDate = DateOnly.FromDateTime(options.EndDate);
-            TimeOnly convertedStartTime = new(0, 0);
-            TimeOnly convertedEndTime = new(0, 0);
+            TimeOnly convertedStartTime = TimeOnly.FromDateTime(options.StartTime);
+            TimeOnly convertedEndTime = TimeOnly.FromDateTime(options.EndTime);
+            List<BigQueryParameter> parameters = new List<BigQueryParameter>();
 
-            if (options.StartTime.HasValue && options.EndTime.HasValue)
-            {
-                convertedStartTime = TimeOnly.FromDateTime(options.StartTime.Value);
-                convertedEndTime = TimeOnly.FromDateTime(options.EndTime.Value);
-            }
+            GetOptionalParams(options, parameters);
 
             try
             {
-                var startDateTime = new DateTime(convertedStartDate.Year, convertedStartDate.Month, convertedStartDate.Day, convertedStartTime.Hour, convertedStartTime.Minute, convertedStartTime.Second);
-                var end0DateTime = new DateTime(convertedEndDate.Year, convertedEndDate.Month, convertedEndDate.Day, convertedEndTime.Hour, convertedEndTime.Minute, convertedEndTime.Second);
                 var query = CreateQuery(options);
                 BigQueryResults queryResults;
-                BigQueryParameter[] parameters;
-                switch (options.AnalysisPeriod)
-                {
-                    case AnalysisPeriod.AllDay:
-                        parameters = new[]
-                        {
-                            new BigQueryParameter("startDate", BigQueryDbType.Date, convertedStartDate.ToDateTime(new TimeOnly(0, 0))),
-                            new BigQueryParameter("endDate", BigQueryDbType.Date, convertedEndDate.ToDateTime(new TimeOnly(0, 0))),
-                            new BigQueryParameter("sourceId", BigQueryDbType.Int64, options.SourceId)
-                        };
-                        queryResults = await _client.ExecuteQueryAsync(query, parameters);
-                        break;
-                    case AnalysisPeriod.PeekPeriod:
-                        parameters = new[]
-                        {
-                            new BigQueryParameter("startDate", BigQueryDbType.Date, convertedStartDate.ToDateTime(new TimeOnly(0, 0))),
-                            new BigQueryParameter("endDate", BigQueryDbType.Date, convertedEndDate.ToDateTime(new TimeOnly(0, 0))),
-                            new BigQueryParameter("sourceId", BigQueryDbType.Int64, options.SourceId)
-                        };
 
-                        queryResults = await _client.ExecuteQueryAsync(query, parameters);
-                        break;
-                    case AnalysisPeriod.CustomHour:
-                        parameters = new[]
-                        {
-                            new BigQueryParameter("startDate", BigQueryDbType.Date, convertedStartDate.ToDateTime(new TimeOnly(0, 0))),
-                            new BigQueryParameter("endDate", BigQueryDbType.Date, convertedEndDate.ToDateTime(new TimeOnly(0, 0))),
-                            new BigQueryParameter("startTime", BigQueryDbType.Time, convertedStartTime.ToTimeSpan()),
-                            new BigQueryParameter("endTime", BigQueryDbType.Time, convertedEndTime.ToTimeSpan()),
-                            new BigQueryParameter("sourceId", BigQueryDbType.Int64, options.SourceId)
-                        };
-                        queryResults = await _client.ExecuteQueryAsync(query, parameters);
-                        break;
-                    default: throw new NotSupportedException();
-                }
+                parameters.AddRange(new BigQueryParameter[]
+                {
+                    new BigQueryParameter("startDate", BigQueryDbType.Date, convertedStartDate.ToDateTime(new TimeOnly(0, 0))),
+                    new BigQueryParameter("endDate", BigQueryDbType.Date, convertedEndDate.ToDateTime(new TimeOnly(0, 0))),
+                    new BigQueryParameter("startTime", BigQueryDbType.Time, convertedStartTime.ToTimeSpan()),
+                    new BigQueryParameter("endTime", BigQueryDbType.Time, convertedEndTime.ToTimeSpan()),
+                    new BigQueryParameter("sourceId", BigQueryDbType.Int64, options.SourceId)
+                });
+                queryResults = await _client.ExecuteQueryAsync(query, parameters);
 
                 List<RouteSpeed> results = new List<RouteSpeed>();
                 foreach (BigQueryRow row in queryResults)
@@ -416,8 +388,35 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             {
                 throw ex;
             }
+        }
 
+        private void GetOptionalParams(RouteSpeedOptions options, List<BigQueryParameter> parameters)
+        {
+            if (!IsNullOrEmpty(options.City))
+            {
+                parameters.Add(new BigQueryParameter("city", BigQueryDbType.String, options.City));
+            }
+            if (!IsNullOrEmpty(options.County))
+            {
+                parameters.Add(new BigQueryParameter("county", BigQueryDbType.String, options.County));
+            }
+            if (!IsNullOrEmpty(options.Region))
+            {
+                parameters.Add(new BigQueryParameter("region", BigQueryDbType.String, options.Region));
+            }
+            if (!IsNullOrEmpty(options.AccessCategory))
+            {
+                parameters.Add(new BigQueryParameter("accessCategory", BigQueryDbType.String, options.AccessCategory));
+            }
+            if (!IsNullOrEmpty(options.FunctionalType))
+            {
+                parameters.Add(new BigQueryParameter("functionalType", BigQueryDbType.String, options.FunctionalType));
+            }
+        }
 
+        private bool IsNullOrEmpty(string val)
+        {
+            return val == null || val.Length == 0;
         }
 
         private static RouteSpeed TransformRowToRouteSpeed(BigQueryRow row)
@@ -453,27 +452,12 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             };
         }
 
-        private static string CreateQuery(RouteSpeedOptions options)
+        private string CreateQuery(RouteSpeedOptions options)
         {
             var daysOfWeekCondition = string.Join(", ", options.DaysOfWeek.Select(day => ((int)day + 1).ToString()));
+            var filteredSegmentsQuery = GetFilteredSegmentsQuery(options);
 
             var baseQuery = $@"
-                            WITH FilteredSegments AS (
-                                SELECT
-                                    s.Id,
-                                    se.SourceId,
-                                    s.SpeedLimit,
-                                    s.Name,
-                                    ST_AsText(s.Shape) AS Shape
-                                FROM
-                                    `atspm-406601.speedDataset.segment` AS s
-                                JOIN
-                                    `atspm-406601.speedDataset.segmentEntity` AS se
-                                ON
-                                    s.Id = se.SegmentId
-                                WHERE
-                                    se.SourceId = @sourceId
-                            ),
                             RouteStats AS (
                                 SELECT
                                     fs.Id AS SegmentId,
@@ -490,7 +474,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
                                     FilteredSegments AS fs
                                 LEFT JOIN (
                                     SELECT *
-                                    FROM `atspm-406601.speedDataset.hourlySpeed`";
+                                    FROM `{_datasetId}.{_tableId}`";
 
             var groupByClause = @"
                                 GROUP BY
@@ -526,44 +510,77 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
 
             string onClause = "ON fs.Id = hs.SegmentId";
 
-            string whereClause = "";
-
-            switch (options.AnalysisPeriod)
-            {
-                case AnalysisPeriod.AllDay:
-                    whereClause = $@"
-                                    WHERE DATE BETWEEN @startDate AND @endDate
-                                    AND EXTRACT(DAYOFWEEK FROM DATE) IN ({daysOfWeekCondition})
-                                    AND SourceId = @sourceId
-                                ) AS hs
-                                ";
-                    break;
-                case AnalysisPeriod.PeekPeriod:
-                    whereClause = $@"
-                                    WHERE DATE BETWEEN @startDate AND @endDate AND
-                                    (
-                                        (TIME(BinStartTime) BETWEEN TIME '06:00:00' AND TIME '09:00:00') OR
-                                        (TIME(BinStartTime) BETWEEN TIME '15:00:00' AND TIME '18:00:00')
-                                    ) AND
-                                    EXTRACT(DAYOFWEEK FROM DATE) IN ({daysOfWeekCondition})
-                                    AND SourceId = @sourceId
-                                ) AS hs
-                                ";
-                    break;
-                case AnalysisPeriod.CustomHour:
-                    whereClause = $@"
+            string whereClause = $@"
                                     WHERE DATE BETWEEN @startDate AND @endDate
                                     AND TIME(BinStartTime) BETWEEN @startTime AND @endTime
                                     AND EXTRACT(DAYOFWEEK FROM DATE) IN ({daysOfWeekCondition})
                                     AND SourceId = @sourceId
-                                ) AS hs
-                                ";
-                    break;
-                default:
-                    break;
-            }
-            var finalQuery = baseQuery + whereClause + onClause + groupByClause + selectClause;
+                                ) AS hs ";
+
+            var finalQuery = filteredSegmentsQuery + baseQuery + whereClause + onClause + groupByClause + selectClause;
             return finalQuery;
+        }
+
+        private string GetFilteredSegmentsQuery(RouteSpeedOptions options)
+        {
+            var whereClause = new StringBuilder();
+            bool hasPreviousCondition = true;
+
+            whereClause.AppendLine(" WHERE ");
+            whereClause.AppendLine(" se.SourceId = @sourceId ");
+
+            if (!string.IsNullOrEmpty(options.City))
+            {
+                if (hasPreviousCondition) whereClause.Append(" AND ");
+                whereClause.AppendLine($"s.City = @city");
+                hasPreviousCondition = true;
+            }
+
+            if (!string.IsNullOrEmpty(options.County))
+            {
+                if (hasPreviousCondition) whereClause.Append(" AND ");
+                whereClause.AppendLine($"s.County = @county");
+                hasPreviousCondition = true;
+            }
+
+            if (!string.IsNullOrEmpty(options.Region))
+            {
+                if (hasPreviousCondition) whereClause.Append(" AND ");
+                whereClause.AppendLine($"s.Region = @region");
+                hasPreviousCondition = true;
+            }
+
+            if (!string.IsNullOrEmpty(options.AccessCategory))
+            {
+                if (hasPreviousCondition) whereClause.Append(" AND ");
+                whereClause.AppendLine($"s.AccessCategory = @accessCategory");
+                hasPreviousCondition = true;
+            }
+
+            if (!string.IsNullOrEmpty(options.FunctionalType))
+            {
+                if (hasPreviousCondition) whereClause.Append(" AND ");
+                whereClause.AppendLine($"s.FunctionalType = @functionalType");
+            }
+            whereClause.AppendLine(" ),");
+
+            var filteredSegments = new StringBuilder();
+            filteredSegments.Append($@"
+            WITH FilteredSegments AS (
+                SELECT
+                    s.Id,
+                    se.SourceId,
+                    s.SpeedLimit,
+                    s.Name,
+                    ST_AsText(s.Shape) AS Shape
+                FROM
+                    `atspm-406601.speedDataset.segment` AS s
+                JOIN
+                    `atspm-406601.speedDataset.segmentEntity` AS se
+                ON
+                    s.Id = se.SegmentId");
+
+            return filteredSegments.Append(whereClause).ToString();
         }
 
         public override async Task RemoveAsync(HourlySpeed key)
