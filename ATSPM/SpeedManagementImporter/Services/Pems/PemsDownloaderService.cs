@@ -3,8 +3,8 @@ using ATSPM.Data.Models.SpeedManagement.Common;
 using ATSPM.Data.Models.SpeedManagementAggregation;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using SpeedManagementImporter.Business.Pems;
-using System.Collections.Concurrent;
 
 namespace SpeedManagementImporter.Services.Pems
 {
@@ -29,128 +29,156 @@ namespace SpeedManagementImporter.Services.Pems
                 .AddJsonFile("appsettings.json")
                 .Build();
             string apiKey = config.GetSection("AppSettings:ApiKey").Value;
+            var nullPems = 0;
 
 
             List<SegmentEntityWithSpeedAndAlternateIdentifier> routeEntities = await segmentEntityRepository.GetEntitiesWithSpeedAndAlternateIdentifierForSourceId(sourceId);
 
             var alternateIdentifiers = routeEntities.Where(r => r.AlternateIdentifier != null).Select(r => r.AlternateIdentifier).Distinct().ToList();
 
-            var speeds = new ConcurrentBag<HourlySpeed>();
+            var tasks = new List<Task>();
 
-            var parallelOptions = new ParallelOptions
+            foreach (var pemsRoute in alternateIdentifiers)
             {
-                MaxDegreeOfParallelism = 1 // Set the desired parallelism level here
-            };
-
-            for (DateTime date = startDate; date < endDate; date = date.AddDays(1))
-            {
-                Parallel.ForEach(alternateIdentifiers, parallelOptions, async pemsRoute =>
+                tasks.Add(Task.Run(async () =>
                 {
-                    var split = pemsRoute.Split('-');
-                    if (split.Length > 2)
-                    {
-                        split = split.Skip(1).ToArray();
-                    }
-                    var fwy = new string(split[0].Where(char.IsAsciiDigit).ToArray());
-                    var flowUrl = $"https://udot.iteris-pems.com/?srq=rest&api_key={apiKey}&service=bts.freeway.getSpatialHourlySummary&from={date:yyyyMMdd}&to={date.AddDays(1):yyyyMMdd}&dow_0=on&dow_1=on&dow_2=on&dow_3=on&dow_4=on&dow_5=on&dow_6=on&fwy={fwy}&dir={split[1]}&lanes=1&start_pm=0&end_pm=349.440&q=flow&returnformat=json";
-                    var pemsFlows = await GetPemsFlows(flowUrl);
-                    for (int i = 0; i <= 22; i++)
-                    {
-                        DateTime binStartTime = DateOnly.FromDateTime(DateTime.Today).ToDateTime(new TimeOnly(i, 0));
-                        var statisticsUrl = $"https://udot.iteris-pems.com/?srq=rest&api_key={apiKey}&service=bts.station.getStatistics&from_date={date:yyyyMMdd}&to_date={date.AddDays(1):yyyyMMdd}&from_tod={i}&to_tod={i + 1}&dow_0=on&dow_1=on&dow_2=on&dow_3=on&dow_4=on&dow_5=on&fwy={fwy}&dir={split[1]}&lanes=agg&start_pm=0&end_pm=349.440&q=speed&granularity=hour&returnformat=json";
-                        var pemsStatistics = await GetPemsStatisticsAsync(statisticsUrl);
-                        if (pemsStatistics == null || pemsStatistics.Count == 0)
-                            continue;
+                    var localSpeeds = new List<HourlySpeed>();
 
-                        Dictionary<Guid, List<SegmentEntityWithSpeedAndAlternateIdentifier>> routesAlternateIdentifier = routeEntities.Where(r => r.AlternateIdentifier == pemsRoute).GroupBy(re => re.SegmentId).ToDictionary(group => group.Key, group => group.ToList());
-
-                        foreach (var route in routesAlternateIdentifier)
+                    for (DateTime date = startDate; date < endDate; date = date.AddDays(1))
+                    {
+                        var split = pemsRoute.Split('-');
+                        if (split.Length > 2)
                         {
-                            try
+                            split = split.Skip(1).ToArray();
+                        }
+                        var fwy = new string(split[0].Where(char.IsAsciiDigit).ToArray());
+                        var flowUrl = $"https://udot.iteris-pems.com/?srq=rest&api_key={apiKey}&service=bts.freeway.getSpatialHourlySummary&from={date:yyyyMMdd}&to={date.AddDays(1):yyyyMMdd}&dow_0=on&dow_1=on&dow_2=on&dow_3=on&dow_4=on&dow_5=on&dow_6=on&fwy={fwy}&dir={split[1]}&lanes=1&start_pm=0&end_pm=349.440&q=flow&returnformat=json";
+                        var pemsFlows = await GetPemsFlows(flowUrl);
+                        if (pemsFlows != null)
+                        {
+                            for (int i = 0; i <= 22; i++)
                             {
-                                var routeId = route.Key;
-                                List<SegmentEntityWithSpeedAndAlternateIdentifier> routeEntityList = route.Value;
-
-                                var speedLimit = routeEntityList.Select(r => r.SpeedLimit).Distinct().First();
-
-                                List<long> stationIds = routeEntityList.Select(routeEntity => routeEntity.EntityId).ToList();
-                                if (stationIds == null || stationIds.Count <= 0)
+                                var toTime = i + 1;
+                                var toDate = date.AddDays(1);
+                                DateTime binStartTime = DateOnly.FromDateTime(DateTime.Today).ToDateTime(new TimeOnly(i, 0));
+                                var statisticsUrl = $"https://udot.iteris-pems.com/?srq=rest&api_key={apiKey}&service=bts.station.getStatistics&from_date={date:yyyyMMdd}&to_date={toDate:yyyyMMdd}&from_tod={i}&to_tod={toTime}&dow_0=on&dow_1=on&dow_2=on&dow_3=on&dow_4=on&dow_5=on&fwy={fwy}&dir={split[1]}&lanes=agg&start_pm=0&end_pm=349.440&q=speed&granularity=hour&returnformat=json";
+                                var pemsStatistics = await GetPemsStatisticsAsync(statisticsUrl, 0);
+                                if (pemsStatistics == null || pemsStatistics.Count() == 0)
                                     continue;
 
-                                List<StationMeasurement> statisticsByRoute = pemsStatistics.Where(p => p != null && stationIds.Contains(Convert.ToInt32(p.station_id))).ToList();
+                                Dictionary<Guid, List<SegmentEntityWithSpeedAndAlternateIdentifier>> routesAlternateIdentifier = routeEntities.Where(r => r.AlternateIdentifier == pemsRoute).GroupBy(re => re.SegmentId).ToDictionary(group => group.Key, group => group.ToList());
 
-                                if (statisticsByRoute == null || statisticsByRoute.Count == 0)
-                                    continue;
-                                int? averageFlowForHour = null;
-                                if (pemsFlows != null)
+                                foreach (var route in routesAlternateIdentifier)
                                 {
-                                    var flowByRoute = pemsFlows.Where(p => stationIds.Contains(Convert.ToInt32(p.station))).ToList();
-                                    averageFlowForHour = GetFlowValuesForHour(flowByRoute, i);
+                                    try
+                                    {
+                                        var routeId = route.Key;
+                                        List<SegmentEntityWithSpeedAndAlternateIdentifier> routeEntityList = route.Value;
+
+                                        var speedLimit = routeEntityList.Select(r => r.SpeedLimit).Distinct().First();
+
+                                        List<long> stationIds = routeEntityList.Select(routeEntity => routeEntity.EntityId).ToList();
+                                        if (stationIds == null || stationIds.Count <= 0)
+                                            continue;
+
+                                        List<StationMeasurement> statisticsByRoute = pemsStatistics.Where(p => p != null && stationIds.Contains(Convert.ToInt32(p.station_id))).ToList();
+
+                                        if (statisticsByRoute == null || statisticsByRoute.Count == 0)
+                                            continue;
+                                        int? averageFlowForHour = null;
+                                        if (pemsFlows != null)
+                                        {
+                                            var flowByRoute = pemsFlows.Where(p => stationIds.Contains(Convert.ToInt32(p.station))).ToList();
+                                            averageFlowForHour = GetFlowValuesForHour(flowByRoute, i);
+                                        }
+                                        List<Quantity> quantities = statisticsByRoute
+                                            .SelectMany(s => s.quantities.quantity).ToList();
+                                        if (!quantities.Any()) continue;
+
+                                        List<double> percentile15List = quantities
+                                            .Where(s => s.label == "15th" && s.value != null)
+                                            .Select(s => s.value.Value)
+                                            .ToList();
+
+                                        List<double> percentile85List = quantities
+                                            .Where(s => s.label == "85th" && s.value != null)
+                                            .Select(s => s.value.Value)
+                                            .ToList();
+                                        var percentile95List = quantities
+                                            .Where(s => s.label == "95th" && s.value != null)
+                                            .Select(s => s.value.Value)
+                                            .ToList();
+                                        var means = quantities
+                                            .Where(s => s.label == "Mean" && s.value != null)
+                                            .Select(s => s.value.Value)
+                                            .ToList();
+                                        int? fifteenthSpeed = GetNullSafeAverage(percentile15List);
+
+                                        int? eightyFifthSpeed = GetNullSafeAverage(percentile85List);
+
+                                        int? ninetyFifthSpeed = GetNullSafeAverage(percentile95List);
+
+                                        int? mean = GetNullSafeAverage(means);
+                                        if (mean == null) continue;
+
+                                        long? violation = null;
+                                        if (mean != null)
+                                            violation = mean > speedLimit && speedLimit > 0 ? mean - speedLimit : 0;
+
+                                        var speed = new HourlySpeed
+                                        {
+                                            Date = date,
+                                            BinStartTime = binStartTime,
+                                            SegmentId = routeId,
+                                            SourceId = sourceId,
+                                            ConfidenceId = confidenceId,
+                                            Average = mean.Value,
+                                            FifteenthSpeed = fifteenthSpeed,
+                                            EightyFifthSpeed = eightyFifthSpeed,
+                                            NinetyFifthSpeed = ninetyFifthSpeed,
+                                            Violation = violation,
+                                            Flow = averageFlowForHour
+                                        };
+                                        localSpeeds.Add(speed);
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        Console.WriteLine($"Error adding speed record for route {route.Key} {sourceId} {route.Value.First().AlternateIdentifier} {ex.Message}");
+                                    }
                                 }
-                                List<Quantity> quantities = statisticsByRoute
-                                    .SelectMany(s => s.quantities.quantity).ToList();
-                                if (!quantities.Any()) continue;
-
-                                List<double> percentile15List = quantities
-                                    .Where(s => s.label == "15th" && s.value != null)
-                                    .Select(s => s.value.Value)
-                                    .ToList();
-
-                                List<double> percentile85List = quantities
-                                    .Where(s => s.label == "85th" && s.value != null)
-                                    .Select(s => s.value.Value)
-                                    .ToList();
-                                var percentile95List = quantities
-                                    .Where(s => s.label == "95th" && s.value != null)
-                                    .Select(s => s.value.Value)
-                                    .ToList();
-                                var means = quantities
-                                    .Where(s => s.label == "Mean" && s.value != null)
-                                    .Select(s => s.value.Value)
-                                    .ToList();
-                                int? fifteenthSpeed = GetNullSafeAverage(percentile15List);
-
-                                int? eightyFifthSpeed = GetNullSafeAverage(percentile85List);
-
-                                int? ninetyFifthSpeed = GetNullSafeAverage(percentile95List);
-
-                                int? mean = GetNullSafeAverage(means);
-                                if (mean == null) continue;
-
-                                long? violation = null;
-                                if (mean != null)
-                                    violation = mean > speedLimit && speedLimit > 0 ? mean - speedLimit : 0;
-
-                                var speed = new HourlySpeed
-                                {
-                                    Date = date,
-                                    BinStartTime = binStartTime,
-                                    SegmentId = routeId,
-                                    SourceId = sourceId,
-                                    ConfidenceId = confidenceId,
-                                    Average = mean.Value,
-                                    FifteenthSpeed = fifteenthSpeed,
-                                    EightyFifthSpeed = eightyFifthSpeed,
-                                    NinetyFifthSpeed = ninetyFifthSpeed,
-                                    Violation = violation,
-                                    Flow = averageFlowForHour
-                                };
-                                speeds.Add(speed);
                             }
-                            catch (Exception ex)
+                            // Check if the batch size is reached
+                            if (localSpeeds.Count >= 1000)
                             {
-                                Console.WriteLine($"Error adding speed record for route {route.Key} {sourceId} {route.Value.First().AlternateIdentifier} {ex.Message}");
+                                await hourlySpeedRepository.AddHourlySpeedsAsync(localSpeeds);
+                                Console.WriteLine("\n Writing 1000 lines with more to go.\n");
+                                localSpeeds.Clear(); // Clear the batch after upload
                             }
                         }
+                        else
+                        {
+                            nullPems++;
+                        }
                     }
-                    if (speeds.Count > 1000)
+
+                    //Now we append that list
+                    // Upload any remaining speeds in the local batch
+                    if (localSpeeds.Count > 0)
                     {
-                        await hourlySpeedRepository.AddHourlySpeedsAsync(speeds.ToList());
-                        speeds.Clear();
+                        await hourlySpeedRepository.AddHourlySpeedsAsync(localSpeeds);
+                        Console.WriteLine($"\n\n Writing remaining {localSpeeds.Count} speeds.\n\n");
                     }
-                });
+                }));
+                if (tasks.Count >= 2) // Limit parallelism to 2
+                {
+                    await Task.WhenAny(tasks); // Wait for one task to complete before starting another
+                    tasks.RemoveAll(t => t.IsCompleted);
+                }
             }
-            await hourlySpeedRepository.AddHourlySpeedsAsync(speeds.ToList());
+
+            await Task.WhenAll(tasks); // Wait for all remaining tasks to complete
+            Console.WriteLine($"Pems was null {nullPems} times.");
+            Console.WriteLine("Complete");
         }
 
         private static int? GetNullSafeAverage(List<double> statisticsByRoute)
@@ -237,15 +265,21 @@ namespace SpeedManagementImporter.Services.Pems
                             return null;
 
                         debugString = jsonResponse;
+                        var json = JObject.Parse(jsonResponse);
                         // Deserialize JSON using Newtonsoft.Json
+                        if (json["stationsHourlySummary"].Count() == 0)
+                        {
+                            return null;
+                        }
                         var rootObject = JsonConvert.DeserializeObject<RootObjectFlow>(jsonResponse);
                         return rootObject.stationsHourlySummary.stations;
                     }
                     else
                     {
-                        Console.WriteLine($"HTTP Error: {response.StatusCode} - {response.ReasonPhrase}");
-                        if (retry < 4)
+                        Console.WriteLine($"HTTP Error(Flow): {response.StatusCode} - {response.ReasonPhrase} NUMBER RETRY - {retry}");
+                        if (retry < 10)
                         {
+
                             return await GetPemsFlows(flowUrl, retry++);
                         }
                         return null;
@@ -259,7 +293,7 @@ namespace SpeedManagementImporter.Services.Pems
             }
         }
 
-        private static async Task<List<StationMeasurement>> GetPemsStatisticsAsync(string url)
+        private static async Task<List<StationMeasurement>> GetPemsStatisticsAsync(string url, int retry)
         {
             using (HttpClient httpClient = new HttpClient())
             {
@@ -277,13 +311,24 @@ namespace SpeedManagementImporter.Services.Pems
                         if (string.IsNullOrEmpty(jsonResponse))
                             return null;
 
+                        var json = JObject.Parse(jsonResponse);
+                        // Deserialize JSON using Newtonsoft.Json
+                        if (json["measurements"].Count() == 0)
+                        {
+                            return null;
+                        }
                         // Deserialize JSON using Newtonsoft.Json
                         var rootObject = JsonConvert.DeserializeObject<RootObjectSpeed>(jsonResponse);
                         return rootObject.measurements.station;
                     }
                     else
                     {
-                        Console.WriteLine($"HTTP Error: {response.StatusCode} - {response.ReasonPhrase}");
+                        Console.WriteLine($"HTTP Error (Stats): {response.StatusCode} - {response.ReasonPhrase}NUMBER RETRY - {retry}");
+                        if (retry < 10)
+                        {
+
+                            return await GetPemsStatisticsAsync(url, retry++);
+                        }
                         return null;
                     }
                 }

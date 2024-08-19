@@ -1,14 +1,13 @@
 ﻿using ATSPM.Application.Repositories.SpeedManagementRepositories;
-using ATSPM.Data.Models.SpeedManagementAggregation;
 using ATSPM.Data.Models.SpeedManagementConfigModels;
 using Google.Cloud.BigQuery.V2;
-using IdentityModel.Client;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Threading.Tasks.Dataflow;
 
 namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
 {
@@ -31,23 +30,47 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
 
         public async Task<List<TempData>> GetHourlyAggregatedDataForAllSegments()
         {
-            var query = @"
+            var query = $@"
             SELECT
               TIMESTAMP_TRUNC(BinStartTime, HOUR) AS BinStartTime,
               AVG(Average) AS Average,
               EntityId
-            FROM `atspm-406601.speed_dataset.tempData` 
+            FROM `{_datasetId}.{_tableId}` 
             GROUP BY
             BinStartTime,
             EntityId";
             var result = await _client.ExecuteQueryAsync(query, null);
-            var tempData = new List<TempData>();
+            return await MapRowToData(result);
+        }
+
+        private async Task<List<TempData>> MapRowToData(BigQueryResults result)
+        {
+            var tempData = new ConcurrentBag<TempData>();
+            var settings = new ExecutionDataflowBlockOptions
+            {
+                MaxDegreeOfParallelism = Environment.ProcessorCount // or set to a specific value
+            };
+
+            var transformBlock = new TransformManyBlock<BigQueryResults, TempData>(ParseResult, settings);
+            var actionBlock = new ActionBlock<TempData>(tempData.Add, settings);
+
+            DataflowLinkOptions linkOptions = new DataflowLinkOptions() { PropagateCompletion = true };
+            transformBlock.LinkTo(actionBlock, linkOptions);
+
+            await transformBlock.SendAsync(result);
+            transformBlock.Complete();
+
+            await actionBlock.Completion;
+
+            return tempData.ToList();
+        }
+
+        private IEnumerable<TempData> ParseResult(BigQueryResults result)
+        {
             foreach (var row in result)
             {
-                tempData.Add(MapRowToEntity(row));
+                yield return MapRowToEntity(row);
             }
-
-            return tempData;
         }
 
         public override IQueryable<TempData> GetList()
