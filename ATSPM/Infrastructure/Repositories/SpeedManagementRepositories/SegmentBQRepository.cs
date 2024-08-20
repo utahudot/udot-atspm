@@ -449,7 +449,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
                 FROM 
                     `{_datasetId}.{_tableId}` s
                 LEFT JOIN 
-                    `{_datasetId}.segment_entity` se 
+                    `{_datasetId}.segmentEntity` se 
                 ON 
                     s.Id = se.SegmentId
                 ORDER BY 
