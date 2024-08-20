@@ -29,9 +29,11 @@ public class ApproachVolumeResult : LocationResult
         string locationId,
         DateTime start,
         DateTime end,
-        DirectionTypes directionType) : base(locationId, start, end)
+        DirectionTypes primaryDirectionType,
+        DirectionTypes opposingDirectionType) : base(locationId, start, end)
     {
-        PrimaryDirectionName = directionType.ToString();
+        PrimaryDirectionName = primaryDirectionType.ToString();
+        OpposingDirectionName = opposingDirectionType.ToString();
     }
 
     public ApproachVolumeResult(
