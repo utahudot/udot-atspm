@@ -2,7 +2,6 @@ import FullScreenToggleButton from '@/components/fullScreenLayoutButton'
 import { MAP_DEFAULT_LATITUDE, MAP_DEFAULT_LONGITUDE } from '@/config'
 import RoutesToggle from '@/features/speedManagementTool/components/detailsPanel/RoutesToggle'
 import ViolationRangeSlider from '@/features/speedManagementTool/components/detailsPanel/ViolationRangeSlider'
-import MapPopup from '@/features/speedManagementTool/components/speedManagementMap/Popup'
 import { RouteRenderOption } from '@/features/speedManagementTool/enums'
 import useSpeedManagementStore from '@/features/speedManagementTool/speedManagementStore'
 import { SpeedManagementRoute } from '@/features/speedManagementTool/types/routes'
@@ -107,7 +106,7 @@ const SpeedMap = ({
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openaip.net/">openAIP Data</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-NC-SA</a>)'
-          url="https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png"
+          url="https://tiles.stadiamaps.com/tiles/stamen_terrain/{z}/{x}/{y}{r}.png"
         />
         <Box
           sx={{
@@ -160,10 +159,14 @@ const SpeedMap = ({
                 weight={2.5}
                 eventHandlers={{
                   click: () => setSelectedRouteId(route.properties.route_id),
+                  mouseover: (e) => {
+                    e.target.setStyle({ weight: 4 })
+                  },
+                  mouseout: (e) => {
+                    e.target.setStyle({ weight: 2.5 })
+                  },
                 }}
-              >
-                <MapPopup route={route} />
-              </Polyline>
+              />
             </div>
           )
         })}

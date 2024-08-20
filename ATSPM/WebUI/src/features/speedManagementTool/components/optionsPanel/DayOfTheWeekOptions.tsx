@@ -1,4 +1,4 @@
-import Subtitle from '@/features/speedManagementTool/components/subtitle'
+import { StyledComponentHeader } from '@/components/HeaderStyling/StyledComponentHeader'
 import useStore from '@/features/speedManagementTool/speedManagementStore'
 import {
   Box,
@@ -66,12 +66,10 @@ export const DaysOfWeekOptions = () => {
   }
 
   return (
-    <Box padding={'10px'}>
-      <Box>
-        <Subtitle>Days of the Week</Subtitle>
-      </Box>
-      <Box>
-        <FormGroup row>
+    <>
+      <StyledComponentHeader header={'Days of the Week'} />
+      <Box padding={'10px'}>
+        <FormGroup row sx={{ ml: '12px' }}>
           <FormControlLabel
             control={
               <Checkbox
@@ -113,6 +111,6 @@ export const DaysOfWeekOptions = () => {
           ))}
         </FormGroup>
       </Box>
-    </Box>
+    </>
   )
 }

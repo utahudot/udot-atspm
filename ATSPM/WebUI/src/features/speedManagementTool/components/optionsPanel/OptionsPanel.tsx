@@ -45,26 +45,24 @@ function OptionsPanel() {
   }
 
   return (
-    <Box>
-      <Box padding={'0px'}>
-        <GeneralOptions />
-        <Divider />
-        <DateRangeOptions />
-        <Divider />
-        <DaysOfWeekOptions />
-        <Divider />
-        <AnalysisPeriodOptions />
-        <Divider />
-        <Box display={'flex'} justifyContent={'center'} padding={'10px'}>
-          <LoadingButton
-            variant="contained"
-            loading={isLoading}
-            onClick={handleOptionClick}
-            disabled={!isRequestChanged}
-          >
-            Update Routes
-          </LoadingButton>
-        </Box>
+    <Box padding={'0px'}>
+      <GeneralOptions />
+      <Divider />
+      <DateRangeOptions />
+      <Divider />
+      <DaysOfWeekOptions />
+      <Divider />
+      <AnalysisPeriodOptions />
+      <Divider />
+      <Box display={'flex'} justifyContent={'center'} padding={'10px'}>
+        <LoadingButton
+          variant="contained"
+          loading={isLoading}
+          onClick={handleOptionClick}
+          disabled={!isRequestChanged}
+        >
+          Update Routes
+        </LoadingButton>
       </Box>
     </Box>
   )
