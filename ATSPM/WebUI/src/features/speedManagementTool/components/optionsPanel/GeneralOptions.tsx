@@ -1,13 +1,7 @@
-import Subtitle from '@/features/speedManagementTool/components/subtitle'
+import { StyledComponentHeader } from '@/components/HeaderStyling/StyledComponentHeader'
 import { DataSource } from '@/features/speedManagementTool/enums'
 import useStore from '@/features/speedManagementTool/speedManagementStore'
-import {
-  Box,
-  InputAdornment,
-  TextField,
-  ToggleButton,
-  ToggleButtonGroup,
-} from '@mui/material'
+import { Box, ToggleButton, ToggleButtonGroup } from '@mui/material'
 
 export default function GeneralOptions() {
   const { routeSpeedRequest, setRouteSpeedRequest } = useStore()
@@ -34,45 +28,37 @@ export default function GeneralOptions() {
   }
 
   return (
-    <Box padding={'10px'}>
-      <Box sx={{ marginBottom: '10px' }}>
-        <Subtitle>Data Source and Violations</Subtitle>
-      </Box>
-      <Box display="flex" alignItems={'center'}>
-        <ToggleButtonGroup
-          value={routeSpeedRequest.sourceId}
-          size="small"
-          exclusive
-          onChange={handleDataSourceChange}
-        >
-          <ToggleButton
-            value={DataSource.ClearGuide}
-            sx={{ textTransform: 'none' }}
-          >
-            ClearGuide
-          </ToggleButton>
-          <ToggleButton value={DataSource.ATSPM} sx={{ textTransform: 'none' }}>
-            ATSPM
-          </ToggleButton>
-          <ToggleButton value={DataSource.PeMS} sx={{ textTransform: 'none' }}>
-            PeMS
-          </ToggleButton>
-        </ToggleButtonGroup>
-
-        <Box sx={{ padding: '10px', width: '140px' }}>
-          <TextField
-            label="Violations Threshold"
-            variant="outlined"
+    <>
+      <StyledComponentHeader header={'Data Source'} />
+      <Box padding={'10px'}>
+        <Box display="flex" alignItems={'center'}>
+          <ToggleButtonGroup
+            value={routeSpeedRequest.sourceId}
             size="small"
-            type="number"
-            value={routeSpeedRequest.violationThreshold}
-            onChange={handleViolationsThresholdChange}
-            InputProps={{
-              endAdornment: <InputAdornment position="end">%</InputAdornment>,
-            }}
-          />
+            exclusive
+            onChange={handleDataSourceChange}
+          >
+            <ToggleButton
+              value={DataSource.ClearGuide}
+              sx={{ textTransform: 'none' }}
+            >
+              ClearGuide
+            </ToggleButton>
+            <ToggleButton
+              value={DataSource.ATSPM}
+              sx={{ textTransform: 'none' }}
+            >
+              ATSPM
+            </ToggleButton>
+            <ToggleButton
+              value={DataSource.PeMS}
+              sx={{ textTransform: 'none' }}
+            >
+              PeMS
+            </ToggleButton>
+          </ToggleButtonGroup>
         </Box>
       </Box>
-    </Box>
+    </>
   )
 }

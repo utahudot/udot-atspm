@@ -1,4 +1,4 @@
-import Subtitle from '@/features/speedManagementTool/components/subtitle'
+import { StyledComponentHeader } from '@/components/HeaderStyling/StyledComponentHeader'
 import useStore from '@/features/speedManagementTool/speedManagementStore'
 import { Box, TextField } from '@mui/material'
 import { ChangeEvent } from 'react'
@@ -18,31 +18,31 @@ export default function DateRangeOptions() {
   }
 
   return (
-    <Box padding={'10px'}>
-      <Box>
-        <Subtitle>Date Range</Subtitle>
+    <>
+      <StyledComponentHeader header={'Date Range'} />
+      <Box padding={'10px'}>
+        <Box display="flex" marginTop={'10px'}>
+          <Box padding={'10px'} paddingLeft={'0px'}>
+            <TextField
+              type="date"
+              label="Start"
+              value={routeSpeedRequest.startDate}
+              onChange={handleStartDateChange}
+            />
+          </Box>
+          <Box display={'flex'} alignItems={'center'}>
+            –
+          </Box>
+          <Box padding={'10px'}>
+            <TextField
+              type="date"
+              label="End"
+              value={routeSpeedRequest.endDate}
+              onChange={handleEndDateChange}
+            />
+          </Box>
+        </Box>
       </Box>
-      <Box display="flex" marginTop={'10px'}>
-        <Box padding={'10px'} paddingLeft={'0px'}>
-          <TextField
-            type="date"
-            label="Start"
-            value={routeSpeedRequest.startDate}
-            onChange={handleStartDateChange}
-          />
-        </Box>
-        <Box display={'flex'} alignItems={'center'}>
-          –
-        </Box>
-        <Box padding={'10px'}>
-          <TextField
-            type="date"
-            label="End"
-            value={routeSpeedRequest.endDate}
-            onChange={handleEndDateChange}
-          />
-        </Box>
-      </Box>
-    </Box>
+    </>
   )
 }
