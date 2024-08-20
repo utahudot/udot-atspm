@@ -7,9 +7,9 @@ RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
 # Install dependencies based on the preferred package manager
-COPY package.json .
-COPY yarn.lock* .
-COPY package-lock.json* .
+COPY WebUI/package.json ./
+COPY WebUI/yarn.lock* ./
+COPY WebUI/package-lock.json* ./
 RUN \
   if [ -f package-lock.json ]; then npm ci --ignore-scripts; \
   else echo "Lockfile not found." && exit 1; \
@@ -19,7 +19,7 @@ RUN \
 FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
-COPY . .
+COPY WebUI/ ./
 
 # Next.js collects completely anonymous telemetry data about general usage.
 # Learn more here: https://nextjs.org/telemetry
