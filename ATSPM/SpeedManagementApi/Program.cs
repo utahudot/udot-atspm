@@ -168,6 +168,46 @@ builder.Host.ConfigureServices((h, s) =>
         var logger = provider.GetRequiredService<ILogger<MonthlyAggregationBQRepository>>();
         return new MonthlyAggregationBQRepository(client, datasetId, tableId, logger);
     });
+    s.AddScoped<ICityRepository, CityBQRepository>(provider =>
+    {
+        var client = provider.GetRequiredService<BigQueryClient>();
+        var datasetId = builder.Configuration["BigQuery:DatasetId"];
+        var tableId = builder.Configuration["BigQuery:CityTableId"];
+        var logger = provider.GetRequiredService<ILogger<CityBQRepository>>();
+        return new CityBQRepository(client, datasetId, tableId, logger);
+    });
+    s.AddScoped<ICountyRepository, CountyBQRepository>(provider =>
+    {
+        var client = provider.GetRequiredService<BigQueryClient>();
+        var datasetId = builder.Configuration["BigQuery:DatasetId"];
+        var tableId = builder.Configuration["BigQuery:CountyTableId"];
+        var logger = provider.GetRequiredService<ILogger<CountyBQRepository>>();
+        return new CountyBQRepository(client, datasetId, tableId, logger);
+    });
+    s.AddScoped<IRegionRepository, RegionBQRepository>(provider =>
+    {
+        var client = provider.GetRequiredService<BigQueryClient>();
+        var datasetId = builder.Configuration["BigQuery:DatasetId"];
+        var tableId = builder.Configuration["BigQuery:RegionTableId"];
+        var logger = provider.GetRequiredService<ILogger<RegionBQRepository>>();
+        return new RegionBQRepository(client, datasetId, tableId, logger);
+    });
+    s.AddScoped<IAccessCategoryRepository, AccessCategoryBQRepository>(provider =>
+    {
+        var client = provider.GetRequiredService<BigQueryClient>();
+        var datasetId = builder.Configuration["BigQuery:DatasetId"];
+        var tableId = builder.Configuration["BigQuery:AccessCategoryTableId"];
+        var logger = provider.GetRequiredService<ILogger<AccessCategoryBQRepository>>();
+        return new AccessCategoryBQRepository(client, datasetId, tableId, logger);
+    });
+    s.AddScoped<IFunctionalTypeRepository, FunctionalTypeBQRepository>(provider =>
+    {
+        var client = provider.GetRequiredService<BigQueryClient>();
+        var datasetId = builder.Configuration["BigQuery:DatasetId"];
+        var tableId = builder.Configuration["BigQuery:FunctionalTypeTableId"];
+        var logger = provider.GetRequiredService<ILogger<FunctionalTypeBQRepository>>();
+        return new FunctionalTypeBQRepository(client, datasetId, tableId, logger);
+    });
 
     Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", builder.Configuration["GoogleApplicationCredentials"]);
 
