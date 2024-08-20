@@ -120,7 +120,7 @@ namespace ATSPM.ConfigApi.Services
             }
             else
             {
-                _routeRepository.Update(route);
+                _routeRepository.UpdateAsync(route);
             }
             return ConvertRouteToDTO(route, false);
         }
@@ -224,7 +224,7 @@ namespace ATSPM.ConfigApi.Services
                 else if (distance.Distance.AreNotEqual(distanceDto.Distance))
                 {
                     distance.Distance = distanceDto.Distance;
-                    _routeDistanceRepository.Update(distance);
+                    _routeDistanceRepository.UpdateAsync(distance);
                 }
                 assignId(distance);
             }
