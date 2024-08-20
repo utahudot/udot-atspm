@@ -5,7 +5,7 @@ on:
     branches: 
       - Avenue_Staging
     paths:
-      - 'ATSPM/DataApi/**'
+      - 'Atspm/DataApi/**'
 env:
   GCP_PROJECT_ID: "atspm-406601"
   

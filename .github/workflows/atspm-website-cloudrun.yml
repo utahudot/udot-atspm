@@ -51,7 +51,7 @@ on:
     branches: 
       - Avenue_Staging
     paths:
-      - 'ATSPM/WebUI/**'
+      - 'Atspm/WebUI/**'
 env:
   GCP_PROJECT_ID: "atspm-406601"
   
