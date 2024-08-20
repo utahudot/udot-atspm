@@ -138,7 +138,7 @@ export const transformCongestionTrackerData = (
     yAxes.push({
       type: 'value',
       gridIndex: count,
-      max: ySeriesMax,
+      max: Math.round(ySeriesMax),
       min: 0,
       axisLine: {
         show: false,
@@ -325,8 +325,6 @@ export const transformCongestionTrackerData = (
     response: response,
     currentView: view,
   }
-
-  console.log('option', option)
 
   return option
 }

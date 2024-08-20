@@ -28,6 +28,8 @@ const specialCasesCharts = [
   ChartType.PreemptionDetails,
 ]
 
+// todo - switch start to timestamp
+
 export function transformSeriesData(
   dataPoints: DataPoint[]
 ): (string | number)[][] {
