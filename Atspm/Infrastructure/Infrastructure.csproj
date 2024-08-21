@@ -15,8 +15,8 @@
 		<Authors>utah.udot.gov</Authors>
 		<Description>Library that defines services and workflows for the Automated Traffic Performance Measures platform</Description>
 		<Copyright>Copyright $(Authors)</Copyright>
-		<PackageProjectUrl>https://github.com/utahudot/udot-atspm</PackageProjectUrl>
-		<RepositoryUrl>https://github.com/utahudot/udot-atspm</RepositoryUrl>
+		<PackageProjectUrl>https://github.com/udotdevelopment/ATSPM</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/udotdevelopment/ATSPM</RepositoryUrl>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageTags>C#; .net standard; .net core</PackageTags>
 		<Version>5.0-rc.1</Version>

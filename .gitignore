@@ -94,3 +94,4 @@ dkms.conf
 /ATSPM/WatchDogTests/obj/
 /ATSPM/WatchDogTests/bin/
 /ATSPM/WebUI/obj/
+*.config

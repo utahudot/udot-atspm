@@ -27,4 +27,4 @@ RUN dotnet publish "ReportApi.csproj" -c Release -o /app/publish /p:UseAppHost=f
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "Utah.Udot.ATSPM.ReportApi.dll"]
+ENTRYPOINT ["dotnet", "ReportApi.dll"]
