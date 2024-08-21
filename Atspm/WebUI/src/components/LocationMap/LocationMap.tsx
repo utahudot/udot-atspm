@@ -1,7 +1,7 @@
 import Markers from '@/components/LocationMap/Markers'
 import MapFilters from '@/components/MapFilters'
-import { MAP_DEFAULT_LATITUDE, MAP_DEFAULT_LONGITUDE } from '@/config'
 import { Location } from '@/features/locations/types'
+import { getEnv } from '@/lib/getEnv'
 import ClearIcon from '@mui/icons-material/Clear'
 import {
   Box,
@@ -51,6 +51,20 @@ const LocationMap = ({
     number | null
   >(null)
   const [filteredLocations, setFilteredLocations] = useState(locations)
+  const [initialLatLong, setInitialLatLong] = useState<[number, number] | null>(
+    null
+  )
+
+  useEffect(() => {
+    const fetchEnv = async () => {
+      const env = await getEnv()
+      setInitialLatLong([
+        parseFloat(env.MAP_DEFAULT_LATITUDE),
+        parseFloat(env.MAP_DEFAULT_LONGITUDE),
+      ])
+    }
+    fetchEnv()
+  }, [])
 
   // Pan to the selected location
   useEffect(() => {
@@ -142,16 +156,22 @@ const LocationMap = ({
     setSelectedLocationTypeId(null)
     setSelectedJurisdictionId(null)
     setSelectedMeasureTypeId(null)
-    mapRef?.setView([MAP_DEFAULT_LATITUDE, MAP_DEFAULT_LONGITUDE], 6)
+    if (initialLatLong) {
+      mapRef?.setView(initialLatLong, 6)
+    }
   }
 
   const handleClosePopper = () => {
     setIsPopperOpen(false)
   }
 
+  if (!initialLatLong) {
+    return <div>Loading map...</div> // or some other loading state
+  }
+
   return (
     <MapContainer
-      center={center || [MAP_DEFAULT_LATITUDE, MAP_DEFAULT_LONGITUDE]}
+      center={center || initialLatLong}
       zoom={zoom || 6}
       scrollWheelZoom={true}
       style={{

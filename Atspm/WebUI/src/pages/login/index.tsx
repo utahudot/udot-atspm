@@ -1,7 +1,7 @@
 import { ResponsivePageLayout } from '@/components/ResponsivePage'
-import { IDENTITY_URL } from '@/config'
 import { useLogin } from '@/features/identity/api/getLogin'
 import IdentityDto from '@/features/identity/types/identityDto'
+import { getEnv } from '@/lib/getEnv'
 import { LoadingButton } from '@mui/lab'
 import {
   Alert,
@@ -93,8 +93,9 @@ function Login() {
     window.location.href = '/'
   }
 
-  const redirectUser = () => {
-    const externalLoginUrl = `${IDENTITY_URL}Account/external-login`
+  const redirectUser = async () => {
+    const env = await getEnv()
+    const externalLoginUrl = `${env.IDENTITY_URL}Account/external-login`
     window.open(externalLoginUrl, '_self')
   }
 
