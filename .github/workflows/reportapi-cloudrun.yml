@@ -5,7 +5,7 @@ on:
     branches: 
       - Avenue_Staging
     paths:
-      - 'ATSPM/ReportApi/**'
+      - 'Atspm/ReportApi/**'
 env:
   GCP_PROJECT_ID: "atspm-406601"
   
@@ -63,7 +63,7 @@ jobs:
       - name: Build and push Docker image to Google Artifact Registry
         if: success()
         run: |
-          cd ATSPM
+          cd Atspm
           gcloud auth configure-docker
           docker build -t us-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/atspm/reportapi:${{ github.sha }} -f ReportApi/Dockerfile .
           docker push us-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/atspm/reportapi:${{ github.sha }}

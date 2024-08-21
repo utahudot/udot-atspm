@@ -1,26 +1,43 @@
-// #region license
-// Copyright 2024 Utah Departement of Transportation
-// for WebUI - axios.ts
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//http://www.apache.org/licenses/LICENSE-2.
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-// #endregion
-import { CONFIG_URL, DATA_URL, IDENTITY_URL, REPORTS_URL } from '@/config'
 import storage from '@/utils/storage'
 import Axios, {
   AxiosInstance,
   AxiosResponse,
   InternalAxiosRequestConfig,
 } from 'axios'
+import { getEnv } from './getEnv'
+
+let configAxios: AxiosInstance
+let reportsAxios: AxiosInstance
+let identityAxios: AxiosInstance
+let dataAxios: AxiosInstance
+let speedAxios: AxiosInstance
+
+export async function initializeAxiosInstances() {
+  const env = await getEnv()
+
+  configAxios = createAxiosInstance(env.CONFIG_URL)
+  reportsAxios = createAxiosInstance(env.REPORTS_URL)
+  identityAxios = createAxiosInstance(env.IDENTITY_URL)
+  dataAxios = createAxiosInstance(env.DATA_URL)
+  speedAxios = createAxiosInstance(env.SPEED_URL)
+}
+
+function createAxiosInstance(baseURL: string): AxiosInstance {
+  const instance = Axios.create({ baseURL })
+
+  instance.interceptors.request.use(authRequestInterceptor)
+  instance.interceptors.response.use(
+    (response: AxiosResponse) => {
+      if (baseURL === configAxios?.defaults.baseURL) {
+        response.data = removeZFromTimestamps(response.data)
+      }
+      return response.data
+    },
+    (error) => Promise.reject(error)
+  )
+
+  return instance
+}
 
 function authRequestInterceptor(config: InternalAxiosRequestConfig) {
   const token = storage.getToken()
@@ -51,24 +68,6 @@ function removeZFromTimestamps(data: any): any {
   return data
 }
 
-function createAxiosInstance(baseURL: string): AxiosInstance {
-  const instance = Axios.create({ baseURL })
-
-  instance.interceptors.request.use(authRequestInterceptor)
-  instance.interceptors.response.use(
-    (response: AxiosResponse) => {
-      if (baseURL === CONFIG_URL) {
-        response.data = removeZFromTimestamps(response.data)
-      }
-      return response.data
-    },
-    (error) => Promise.reject(error)
-  )
-
-  return instance
-}
-
-export const configAxios = createAxiosInstance(CONFIG_URL)
-export const reportsAxios = createAxiosInstance(REPORTS_URL)
-export const identityAxios = createAxiosInstance(IDENTITY_URL)
-export const dataAxios = createAxiosInstance(DATA_URL)
+// Export instances as undefined initially, but they will be initialized
+// when the application starts by calling `initializeAxiosInstances`.
+export { configAxios, dataAxios, identityAxios, reportsAxios, speedAxios }

@@ -7,9 +7,9 @@ RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
 # Install dependencies based on the preferred package manager
-COPY package.json .
-COPY yarn.lock* .
-COPY package-lock.json* .
+COPY package.json ./
+COPY yarn.lock* ./
+COPY package-lock.json* ./
 RUN \
   if [ -f package-lock.json ]; then npm ci --ignore-scripts; \
   else echo "Lockfile not found." && exit 1; \

@@ -61,10 +61,6 @@ export default function Topbar() {
     link: pagesToLinks.get(key) as string,
   }))
 
-  if (isLoading) {
-    return null
-  }
-
   return (
     <Box
       sx={{
@@ -112,49 +108,52 @@ export default function Topbar() {
           </Box>
         </NextLink>
       </Box>
-      <Box>
-        {menuItems.map((item) =>
-          item.parentId === null && item.link ? (
-            <Button
-              key={item.name}
-              onClick={() => handleNavigation(item.link)}
-              sx={{
-                mx: '2px',
-                color: theme.palette.text.primary,
-                textTransform: 'none',
-              }}
-            >
-              <Typography fontWeight={400} sx={{ textTransform: 'none' }}>
-                {item.name}
-              </Typography>
-            </Button>
-          ) : (
-            <DropDownButton
-              key={item.name}
-              title={item.name}
-              icon={item.icon || <InfoOutlinedIcon />}
-              menuItems={
-                item.children.length > 0
-                  ? item.children
-                  : [{ name: item.name, icon: item.icon, link: item.link }]
-              }
-            />
-          )
-        )}
-        <DropDownButton
-          title="Info"
-          icon={<InfoOutlinedIcon />}
-          menuItems={infoItems}
-        />
-        {userHasAccess && (
+
+      {!isLoading && (
+        <Box>
+          {menuItems.map((item) =>
+            item.parentId === null && item.link ? (
+              <Button
+                key={item.name}
+                onClick={() => handleNavigation(item.link)}
+                sx={{
+                  mx: '2px',
+                  color: theme.palette.text.primary,
+                  textTransform: 'none',
+                }}
+              >
+                <Typography fontWeight={400} sx={{ textTransform: 'none' }}>
+                  {item.name}
+                </Typography>
+              </Button>
+            ) : (
+              <DropDownButton
+                key={item.name}
+                title={item.name}
+                icon={item.icon || <InfoOutlinedIcon />}
+                menuItems={
+                  item.children.length > 0
+                    ? item.children
+                    : [{ name: item.name, icon: item.icon, link: item.link }]
+                }
+              />
+            )
+          )}
           <DropDownButton
-            title="Admin"
+            title="Info"
             icon={<InfoOutlinedIcon />}
-            menuItems={adminPagesList}
+            menuItems={infoItems}
           />
-        )}
-        <UserMenu />
-      </Box>
+          {userHasAccess && (
+            <DropDownButton
+              title="Admin"
+              icon={<InfoOutlinedIcon />}
+              menuItems={adminPagesList}
+            />
+          )}
+          <UserMenu />
+        </Box>
+      )}
     </Box>
   )
 }
