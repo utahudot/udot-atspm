@@ -26,3 +26,10 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "WatchDog.dll"]
+
+LABEL org.opencontainers.image.title="Atspm Watchdog"
+LABEL org.opencontainers.image.description="Watchdog utility for the Atspm platform"
+LABEL org.opencontainers.image.vendor="Udot.Utah.Gov"
+LABEL org.opencontainers.image.source=https://github.com/utahudot/udot-atspm
+LABEL org.opencontainers.image.documentation=""
+LABEL org.opencontainers.image.licenses="Apache License, Version 2.0"
