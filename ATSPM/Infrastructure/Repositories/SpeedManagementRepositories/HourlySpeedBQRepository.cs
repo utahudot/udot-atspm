@@ -1,5 +1,6 @@
 ﻿using ATSPM.Application.Business.RouteSpeed;
 using ATSPM.Application.Repositories.SpeedManagementRepositories;
+using ATSPM.Data.Models.SpeedManagement.Common;
 using ATSPM.Data.Models.SpeedManagementAggregation;
 using ATSPM.Domain.Extensions;
 using Google.Cloud.BigQuery.V2;
@@ -246,36 +247,27 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             }).ToList();
         }
 
-        public async Task<List<HourlySpeed>> GetHourlySpeeds(DateOnly startDate, DateOnly endDate, Guid segmentId)
+        public async Task<List<HourlySpeed>> GetHourlySpeedsForSegmentInSource(OptionsBase baseOptions, Guid segmentId)
         {
-            return await GetSpeedsInternal(startDate, endDate, segmentId, null, isWeekly: false);
+            return await GetSpeedsInternal(baseOptions, segmentId, isWeekly: false);
         }
 
-        public async Task<List<HourlySpeed>> GetHourlySpeeds(DateOnly startDate, DateOnly endDate, Guid segmentId, long? sourceId)
+        public async Task<List<HourlySpeed>> GetWeeklySpeedsForSegmentInSource(OptionsBase baseOptions, Guid segmentId)
         {
-            return await GetSpeedsInternal(startDate, endDate, segmentId, sourceId, isWeekly: false);
+            return await GetSpeedsInternal(baseOptions, segmentId, isWeekly: true);
         }
 
-        public async Task<List<HourlySpeed>> GetWeeklySpeeds(DateOnly startDate, DateOnly endDate, Guid segmentId, long? sourceId)
+        private async Task<List<HourlySpeed>> GetSpeedsInternal(OptionsBase baseOptions, Guid segmentId, bool isWeekly)
         {
-            return await GetSpeedsInternal(startDate, endDate, segmentId, sourceId, isWeekly: true);
-        }
-
-        private async Task<List<HourlySpeed>> GetSpeedsInternal(DateOnly startDate, DateOnly endDate, Guid segmentId, long? sourceId, bool isWeekly)
-        {
-            string query = isWeekly ? GetWeeklyQuery() : GetHourlyQuery(sourceId);
+            string query = isWeekly ? GetWeeklyQuery() : GetHourlyQuery();
 
             var parameters = new List<BigQueryParameter>
             {
                 new BigQueryParameter("segmentId", BigQueryDbType.String, segmentId.ToString()),
-                new BigQueryParameter("startDate", BigQueryDbType.Date, startDate.ToDateTime(TimeOnly.MinValue).Date),
-                new BigQueryParameter("endDate", BigQueryDbType.Date, endDate.ToDateTime(TimeOnly.MinValue).Date),
+                new BigQueryParameter("startDate", BigQueryDbType.Date, baseOptions.StartDate.ToDateTime(TimeOnly.MinValue).Date),
+                new BigQueryParameter("endDate", BigQueryDbType.Date, baseOptions.EndDate.ToDateTime(TimeOnly.MinValue).Date),
+                new BigQueryParameter("sourceId", BigQueryDbType.Int64, baseOptions.SourceId)
             };
-
-            if (sourceId.HasValue)
-            {
-                parameters.Add(new BigQueryParameter("sourceId", BigQueryDbType.Int64, sourceId.Value));
-            }
 
             var queryResults = await _client.ExecuteQueryAsync(query, parameters.ToArray());
             return queryResults.Select(row => ParseHourlySpeed(row, isWeekly)).ToList();
@@ -299,7 +291,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             };
         }
 
-        private string GetHourlyQuery(long? sourceId)
+        private string GetHourlyQuery()
         {
             return $@"
             SELECT *
@@ -307,7 +299,7 @@ namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
             WHERE 
                 SegmentId = @segmentId AND
                 date BETWEEN @startDate AND @endDate 
-                {(sourceId.HasValue ? "AND SourceId = @sourceId" : string.Empty)}
+                AND SourceId = @sourceId
             ORDER BY Date ASC, BinStartTime ASC;";
         }
 
