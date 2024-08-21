@@ -14,15 +14,15 @@ import { MapContainer, Polyline, TileLayer } from 'react-leaflet'
 import SpeedLegend from './Legend'
 
 type SpeedMapProps = {
-  fullScreenRef: React.RefObject<HTMLDivElement>
-  routes: SpeedManagementRoute[]
-  setSelectedRouteId: (routeId: number) => void
+  fullScreenRef?: React.RefObject<HTMLDivElement> | null // Nullable fullScreenRef
+  routes: SpeedManagementRoute[] // Array of routes
+  setSelectedRouteId?: ((routeId: number) => void) | null // Nullable setSelectedRouteId
 }
 
 const SpeedMap = ({
-  fullScreenRef,
+  fullScreenRef = null,
   routes,
-  setSelectedRouteId,
+  setSelectedRouteId = null,
 }: SpeedMapProps) => {
   const [mapRef, setMapRef] = useState<LeafletMap | null>(null)
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null)
@@ -108,21 +108,23 @@ const SpeedMap = ({
           attribution='&copy; <a href="https://www.openaip.net/">openAIP Data</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-NC-SA</a>)'
           url="https://tiles.stadiamaps.com/tiles/stamen_terrain/{z}/{x}/{y}{r}.png"
         />
+        {fullScreenRef && (
+          <Box
+            sx={{
+              position: 'absolute',
+              right: '10px',
+              top: '10px',
+              zIndex: 1000,
+            }}
+          >
+            <FullScreenToggleButton targetRef={fullScreenRef} />
+          </Box>
+        )}
         <Box
           sx={{
             position: 'absolute',
             right: '10px',
-            top: '10px',
-            zIndex: 1000,
-          }}
-        >
-          <FullScreenToggleButton targetRef={fullScreenRef} />
-        </Box>
-        <Box
-          sx={{
-            position: 'absolute',
-            right: '10px',
-            top: '50px',
+            top: fullScreenRef ? '50px' : '10px',
             zIndex: 1000,
           }}
         >
@@ -149,27 +151,25 @@ const SpeedMap = ({
             </Paper>
           </Popper>
         </Box>
-        {routes.map((route, index) => {
-          return (
-            <div key={index}>
-              <Polyline
-                pathOptions={{ color: getColor(route) }}
-                key={index}
-                positions={route.geometry.coordinates}
-                weight={2.5}
-                eventHandlers={{
-                  click: () => setSelectedRouteId(route.properties.route_id),
-                  mouseover: (e) => {
-                    e.target.setStyle({ weight: 4 })
-                  },
-                  mouseout: (e) => {
-                    e.target.setStyle({ weight: 2.5 })
-                  },
-                }}
-              />
-            </div>
-          )
-        })}
+        {routes.map((route, index) => (
+          <Polyline
+            key={index}
+            pathOptions={{ color: getColor(route) }}
+            positions={route.geometry.coordinates}
+            weight={2.5}
+            eventHandlers={{
+              click: () =>
+                setSelectedRouteId &&
+                setSelectedRouteId(route.properties.route_id),
+              mouseover: (e) => {
+                e.target.setStyle({ weight: 4 })
+              },
+              mouseout: (e) => {
+                e.target.setStyle({ weight: 2.5 })
+              },
+            }}
+          />
+        ))}
         <SpeedLegend />
       </MapContainer>
     </Box>

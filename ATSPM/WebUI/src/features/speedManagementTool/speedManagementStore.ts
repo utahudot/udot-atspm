@@ -37,8 +37,8 @@ const useSpeedManagementStore = create<StoreState>((set) => ({
   // Default route speed request
   routeSpeedRequest: {
     sourceId: DataSource.ClearGuide,
-    startDate: '2024-02-08',
-    endDate: '2024-02-09',
+    startDate: '2024-02-01',
+    endDate: '2024-08-30',
     daysOfWeek: [1, 2, 3, 4, 5],
     analysisPeriod: AnalysisPeriod.AllDay,
     violationThreshold: 5,
@@ -46,8 +46,8 @@ const useSpeedManagementStore = create<StoreState>((set) => ({
 
   submittedRouteSpeedRequest: {
     sourceId: DataSource.ClearGuide,
-    startDate: '2024-02-08',
-    endDate: '2024-02-09',
+    startDate: '2024-02-01',
+    endDate: '2024-08-30',
     daysOfWeek: [1, 2, 3, 4, 5],
     analysisPeriod: AnalysisPeriod.AllDay,
     violationThreshold: 5,

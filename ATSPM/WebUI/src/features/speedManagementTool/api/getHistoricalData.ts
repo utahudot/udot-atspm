@@ -17,11 +17,25 @@ interface HistoricalDataParams {
 export const getHistoricalData = async (
   params: HistoricalDataParams
 ): Promise<HistoricalDataResponse> => {
-  const { routeId, startDate, endDate, startTime, endTime, daysOfWeek } = params
+  // Modify the startDate before sending the request
+  const newStartDate = getPriorDate(params.startDate)
 
-  const newStartDate = getPriorDate(startDate)
-  const url = `${SPEED_URL}/RouteSpeed/historical?routeId=${routeId}&startDate=${newStartDate}&endDate=${endDate}&startTime=${startTime}&endTime=${endTime}&daysOfWeek=${daysOfWeek}`
-  const response = await axios.get<HistoricalDataResponse>(url)
+  // Construct the request body
+  const requestBody = {
+    ...params,
+    startDate: newStartDate,
+  }
+
+  // Make the POST request with params in the body
+  const response = await axios.post<HistoricalDataResponse>(
+    `${SPEED_URL}/SpeedManagement/GetHistoricalSpeeds`,
+    {
+      segmentId: params.routeId,
+      startDate: newStartDate,
+      endDate: '2024-08-21',
+      daysOfWeek: [0, 2, 3, 4, 5, 6],
+    }
+  )
   return response.data
 }
 

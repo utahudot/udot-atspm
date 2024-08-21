@@ -40,7 +40,7 @@ export default function DateRangeOptionsPopup() {
           textTransform: 'none',
           color: 'black',
           borderColor: 'lightgray',
-          width: '240px',
+          width: '250px',
         }}
       >
         {getDateRangeLabel()}
