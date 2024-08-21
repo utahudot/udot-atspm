@@ -51,7 +51,7 @@ on:
     branches: 
       - Avenue_Staging
     paths:
-      - 'ATSPM/WebUI/**'
+      - 'Atspm/WebUI/**'
 env:
   GCP_PROJECT_ID: "atspm-406601"
   
@@ -109,7 +109,7 @@ jobs:
       - name: Build and push Docker image to Google Artifact Registry
         if: success()
         run: |
-          cd ATSPM/WebUI
+          cd Atspm/WebUI
           gcloud auth configure-docker
           docker build -t us-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/atspm/atspmwebsite:${{ github.sha }} .
           docker push us-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/atspm/atspmwebsite:${{ github.sha }}
