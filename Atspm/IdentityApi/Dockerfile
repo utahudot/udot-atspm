@@ -27,4 +27,4 @@ RUN dotnet publish "IdentityApi.csproj" -c Release -o /app/publish /p:UseAppHost
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "Utah.Udot.ATSPM.IdentityApi.dll"]
+ENTRYPOINT ["dotnet", "IdentityApi.dll"]

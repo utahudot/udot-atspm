@@ -10,8 +10,9 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<RootNamespace>$(NameSpacePrefix).$(SolutionName).$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
-		<AssemblyName>$(NameSpacePrefix).$(SolutionName).$(MSBuildProjectName)</AssemblyName>
+		<AssemblyName>$(MSBuildProjectName)</AssemblyName>
 		<UserSecretsId>4a25a28a-6471-4d98-ae56-b46fe556756b</UserSecretsId>
+		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -37,6 +38,7 @@
 		<PackageReference Include="MailKit" Version="4.5.0" />
 		<PackageReference Include="Microsoft.CodeAnalysis" Version="4.9.2" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.1" />
+		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.18.1" />
 	</ItemGroup>
 
 	<ItemGroup>

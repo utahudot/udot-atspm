@@ -2,6 +2,9 @@
   "profiles": {
     "WatchDog": {
       "commandName": "Project"
+    },
+    "Docker": {
+      "commandName": "Docker"
     }
   }
 }
