@@ -32,8 +32,8 @@ services:
 
   webui:
     build:
-      context: .
-      dockerfile: WebUI/Dockerfile
+      context: /WebUI
+      dockerfile: Dockerfile
     ports:
       - "3000:3000"
     depends_on:
