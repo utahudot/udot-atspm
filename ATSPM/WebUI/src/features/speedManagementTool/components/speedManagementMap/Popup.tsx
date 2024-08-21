@@ -1,133 +1,91 @@
-import SeparateWindow from '@/features/speedManagementTool/components/NewWindow' // Assuming you save SeparateWindow in the same folder
+import ChartsContainer from '@/features/speedManagementTool/components/detailsPanel/ChartsContainer'
 import { SpeedManagementRoute } from '@/features/speedManagementTool/types/routes'
-import { ArrowBack, Close, OpenInNew } from '@mui/icons-material'
-import {
-  Box,
-  Dialog,
-  DialogContent,
-  IconButton,
-  Typography,
-} from '@mui/material'
-import { createPortal } from 'react-dom'
+import ArrowBackIosNewOutlinedIcon from '@mui/icons-material/ArrowBackIosNewOutlined'
+import { Box, Button, Dialog, DialogContent, Typography } from '@mui/material'
+import dynamic from 'next/dynamic'
+
+const StaticMap = dynamic(
+  () => import('@/features/speedManagementTool/components/StaticMap'),
+  { ssr: false }
+)
 
 type SM_PopupProps = {
   route: SpeedManagementRoute
-  onClose: () => void
   open: boolean
-  isSeparateScreen?: boolean
-  onPopBack?: () => void
-  onOpenSeparateScreen?: () => void
+  onClose: () => void
 }
 
-const SM_Popup = ({
-  route,
-  onClose,
-  open,
-  isSeparateScreen = false,
-  onPopBack,
-  onOpenSeparateScreen,
-}: SM_PopupProps) => {
-  if (isSeparateScreen) {
-    return (
-      <SeparateWindow onClose={onPopBack}>
-        <Dialog
-          open={open}
-          onClose={onClose}
-          PaperProps={{
-            sx: {
-              height: '100%',
-              width: '95%',
-              margin: 'auto',
-              position: 'relative',
-            },
-          }}
-        >
-          {/* Action Bar */}
-          <Box
-            sx={{
-              display: 'flex',
-              justifyContent: 'flex-end',
-              alignItems: 'center',
-              padding: 1,
-              borderBottom: '1px solid #ccc',
-            }}
-          >
-            <IconButton onClick={onPopBack}>
-              <ArrowBack />
-            </IconButton>
-            <IconButton onClick={onClose}>
-              <Close />
-            </IconButton>
-          </Box>
-          <DialogContent dividers>
-            {/* Title Inside Content */}
-            <Box sx={{ marginBottom: 2 }}>
-              <Typography variant="h6">{route.properties.name}</Typography>
-            </Box>
-            <Box sx={{ fontWeight: 'bold' }}>
-              <Typography>
-                Speed Limit: {route.properties.speedLimit}
-              </Typography>
-              <Typography>Average Speed: {route.properties.avg}</Typography>
-              {route.properties.percentilespd_85 && (
-                <Typography>
-                  85th Percentile: {route.properties.percentilespd_85}
-                </Typography>
-              )}
-            </Box>
-          </DialogContent>
-        </Dialog>
-      </SeparateWindow>
-    )
-  }
+const SM_Popup = ({ route, open, onClose }: SM_PopupProps) => {
+  const {
+    name,
+    speedLimit,
+    avg,
+    percentilespd_85,
+    averageSpeedAboveSpeedLimit,
+    enddate,
+    estimatedViolations,
+    flow,
+    percentilespd_15,
+    percentilespd_95,
+    startdate,
+  } = route.properties
 
-  return createPortal(
+  // if screen width is less than 600px, set the width to 100%
+
+  const formattedDateRange =
+    startdate && enddate
+      ? `for ${new Date(startdate).toLocaleDateString()} - ${new Date(
+          enddate
+        ).toLocaleDateString()}`
+      : null
+
+  return (
     <Dialog
       open={open}
       onClose={onClose}
+      fullScreen
+      maxWidth="md"
       PaperProps={{
         sx: {
-          height: 'auto',
-          width: '95%',
+          height: '100%',
+          width: '100%',
           margin: 'auto',
-          position: 'relative',
+          maxWidth: 'lg',
         },
       }}
     >
-      {/* Action Bar */}
       <Box
         sx={{
           display: 'flex',
-          justifyContent: 'flex-end',
+          justifyContent: 'right',
           alignItems: 'center',
           padding: 1,
           borderBottom: '1px solid #ccc',
         }}
       >
-        <IconButton onClick={onOpenSeparateScreen}>
-          <OpenInNew />
-        </IconButton>
-        <IconButton onClick={onClose}>
-          <Close />
-        </IconButton>
-      </Box>
-      <DialogContent dividers>
-        {/* Title Inside Content */}
-        <Box sx={{ marginBottom: 2 }}>
-          <Typography variant="h6">{route.properties.name}</Typography>
+        <Box width={'100%'}>
+          <Button onClick={onClose} startIcon={<ArrowBackIosNewOutlinedIcon />}>
+            Back to Map
+          </Button>
         </Box>
-        <Box sx={{ fontWeight: 'bold' }}>
-          <Typography>Speed Limit: {route.properties.speedLimit}</Typography>
-          <Typography>Average Speed: {route.properties.avg}</Typography>
-          {route.properties.percentilespd_85 && (
-            <Typography>
-              85th Percentile: {route.properties.percentilespd_85}
-            </Typography>
-          )}
+      </Box>
+      <DialogContent>
+        <Typography variant="h2" sx={{ mb: 2 }}>
+          {name}
+        </Typography>
+        {formattedDateRange && (
+          <Typography variant="subtitle1" sx={{ mb: 2 }}>
+            {formattedDateRange}
+          </Typography>
+        )}
+        <Box width={'100%'} mb={2}>
+          <StaticMap routes={[route]} />
+        </Box>
+        <Box>
+          <ChartsContainer selectedRouteId={route.properties.route_id} />
         </Box>
       </DialogContent>
-    </Dialog>,
-    document.body
+    </Dialog>
   )
 }
 

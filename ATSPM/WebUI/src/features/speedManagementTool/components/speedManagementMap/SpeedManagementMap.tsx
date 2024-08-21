@@ -7,17 +7,12 @@ import useSpeedManagementStore from '@/features/speedManagementTool/speedManagem
 import { Box } from '@mui/material'
 import 'leaflet/dist/leaflet.css'
 import dynamic from 'next/dynamic'
-import { memo, useEffect, useRef, useState } from 'react'
-import ReactDOM from 'react-dom'
+import { memo, useRef, useState } from 'react'
 
 const SpeedManagementMap = dynamic(() => import('./Map'), { ssr: false })
 
 const Map = () => {
   const [selectedRouteId, setSelectedRouteId] = useState<number | undefined>()
-  const [isSeparateScreen, setIsSeparateScreen] = useState(false)
-  const [popupWindow, setPopupWindow] = useState<Window | null>(null)
-  const [isClient, setIsClient] = useState(false)
-
   const fullScreenRef = useRef<HTMLDivElement>(null)
 
   const { submittedRouteSpeedRequest, routeRenderOption } =
@@ -61,73 +56,6 @@ const Map = () => {
       properties: feature.properties,
     })) || []
 
-  useEffect(() => {
-    // Indicate that the component has mounted on the client side
-    setIsClient(true)
-  }, [])
-
-  const handleOpenSeparateScreen = () => {
-    if (typeof window !== 'undefined') {
-      const newWindow = window.open(
-        '',
-        '_blank',
-        'width=800,height=600,scrollbars=yes,resizable=yes'
-      )
-      if (newWindow) {
-        newWindow.document.body.innerHTML = '' // Clear the new window content
-        setPopupWindow(newWindow)
-        setIsSeparateScreen(true)
-
-        // Render the popup content into the new window
-        ReactDOM.render(
-          <SM_Popup
-            route={
-              routes.find(
-                (route) => route.properties.route_id === selectedRouteId
-              ) || { properties: {} }
-            }
-            onClose={() => {
-              newWindow.close()
-              setPopupWindow(null)
-              setIsSeparateScreen(false)
-              setSelectedRouteId(undefined)
-            }}
-            open={true}
-            isSeparateScreen={true}
-            onPopBack={() => {
-              newWindow.close()
-              setPopupWindow(null)
-              setIsSeparateScreen(false)
-            }}
-          />,
-          newWindow.document.body
-        )
-      }
-    }
-  }
-
-  const handlePopBack = () => {
-    if (popupWindow) {
-      popupWindow.close()
-      setPopupWindow(null)
-    }
-    setIsSeparateScreen(false)
-  }
-
-  useEffect(() => {
-    if (popupWindow) {
-      const handleUnload = () => {
-        setPopupWindow(null)
-        setIsSeparateScreen(false)
-      }
-
-      popupWindow.addEventListener('beforeunload', handleUnload)
-      return () => {
-        popupWindow.removeEventListener('beforeunload', handleUnload)
-      }
-    }
-  }, [popupWindow])
-
   return (
     <Box
       ref={fullScreenRef}
@@ -153,7 +81,7 @@ const Map = () => {
           />
         </Box>
       </Box>
-      {isClient && !isSeparateScreen && (
+      {selectedRouteId && (
         <SM_Popup
           route={
             routes.find(
@@ -162,9 +90,6 @@ const Map = () => {
           }
           onClose={() => setSelectedRouteId(undefined)}
           open={!!selectedRouteId}
-          isSeparateScreen={isSeparateScreen}
-          onPopBack={handlePopBack}
-          onOpenSeparateScreen={handleOpenSeparateScreen}
         />
       )}
     </Box>

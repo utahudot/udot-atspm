@@ -9,6 +9,7 @@ import {
 } from '@/features/speedManagementTool/api/getHistoricalData'
 import { RouteRenderOption } from '@/features/speedManagementTool/enums'
 import useStore from '@/features/speedManagementTool/speedManagementStore'
+import { Box, Skeleton } from '@mui/material'
 
 interface HistoricalDataParams {
   routeId: string
@@ -43,37 +44,41 @@ const ChartsContainer = ({ selectedRouteId }: { selectedRouteId: number }) => {
       params.percentile = 99
   }
 
-  const { data } = useHistoricalData({ params })
-
-  if (!data) return null
-
-  const monthlyOptions = createMonthlyAverageChart(
-    data.monthlyHistoricalRouteData,
-    getPriorDate(submittedRouteSpeedRequest.startDate),
-    submittedRouteSpeedRequest.endDate,
-    routeRenderOption
-  )
-
-  const yearlyOptions = createDailyAverageChart(
-    data.dailyHistoricalRouteData,
-    getPriorDate(submittedRouteSpeedRequest.startDate),
-    submittedRouteSpeedRequest.endDate,
-    routeRenderOption
-  )
+  const { data, isLoading } = useHistoricalData({ params })
 
   return (
-    <>
-      <ApacheEChart
-        id="monthly-data"
-        option={monthlyOptions}
-        style={{ height: '250px' }}
-      />
-      <ApacheEChart
-        id="yearly-data"
-        option={yearlyOptions}
-        style={{ height: '250px' }}
-      />
-    </>
+    <Box display="flex" flexDirection="row" gap={2}>
+      {isLoading ? (
+        <Skeleton variant="rectangular" width="100%" height={250} />
+      ) : (
+        <ApacheEChart
+          id="monthly-data"
+          option={createMonthlyAverageChart(
+            data?.monthlyHistoricalRouteData,
+            getPriorDate(submittedRouteSpeedRequest.startDate),
+            submittedRouteSpeedRequest.endDate,
+            routeRenderOption
+          )}
+          style={{ height: '250px' }}
+          hideInteractionMessage
+        />
+      )}
+      {isLoading ? (
+        <Skeleton variant="rectangular" width="100%" height={250} />
+      ) : (
+        <ApacheEChart
+          id="yearly-data"
+          option={createDailyAverageChart(
+            data?.dailyHistoricalRouteData,
+            getPriorDate(submittedRouteSpeedRequest.startDate),
+            submittedRouteSpeedRequest.endDate,
+            routeRenderOption
+          )}
+          style={{ height: '250px' }}
+          hideInteractionMessage
+        />
+      )}
+    </Box>
   )
 }
 

@@ -1,5 +1,5 @@
 import { createTooltip } from '@/features/charts/common/transformers'
-import { RouteRenderOption } from '@/features/speedManagementTool/speedManagementStore'
+import { RouteRenderOption } from '@/features/speedManagementTool/enums'
 
 interface MonthlyAverage {
   month: number
@@ -38,8 +38,8 @@ export function createMonthlyAverageChart(
     name: sourceMapping[source.sourceId],
     type: 'line',
     data: source.monthlyAverages
-      .map(({ year, month, averageSpeed }) => ({
-        value: averageSpeed,
+      .map(({ year, month, average }) => ({
+        value: average,
         name: `${month}/${year}`,
       }))
       .reverse(),
@@ -113,8 +113,8 @@ export function createDailyAverageChart(
     name: sourceMapping[source.sourceId],
     type: 'line',
     data: source.dailyAverages
-      .map(({ date, averageSpeed }) => ({
-        value: averageSpeed,
+      .map(({ date, average }) => ({
+        value: average,
         name: `${date.split('T')[0]}`,
       }))
       .reverse(),
@@ -174,6 +174,8 @@ export function createDailyAverageChart(
     ],
     series: seriesData,
   }
+
+  console.log('dfsd', option) // Log the option object for debugging
 
   return option
 }
