@@ -144,7 +144,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             if (primaryDetectorEvents.Count == 0 &&
                 opposingDetectorEvents.Count == 0)
             {
-                return new ApproachVolumeResult(Location.LocationIdentifier, options.Start, options.End, primaryApproaches.FirstOrDefault().DirectionTypeId);
+                return new ApproachVolumeResult(Location.LocationIdentifier, options.Start, options.End, primaryApproaches.FirstOrDefault().DirectionTypeId, opposingApproaches.FirstOrDefault().DirectionTypeId);
             }
             ApproachVolumeResult viewModel = approachVolumeService.GetChartData(
                 options,
