@@ -11,7 +11,7 @@
 		<UserSecretsId>af468330-96e6-4297-a188-86f216ee07b4</UserSecretsId>
 		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
 		<RootNamespace>$(NameSpacePrefix).$(SolutionName).$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
-		<AssemblyName>$(NameSpacePrefix).$(SolutionName).$(MSBuildProjectName)</AssemblyName>
+		<AssemblyName>$(MSBuildProjectName)</AssemblyName>
 		<ServerGarbageCollection>true</ServerGarbageCollection>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<IncludeOpenAPIAnalyzers>True</IncludeOpenAPIAnalyzers>
@@ -44,7 +44,7 @@
 
 	<ItemGroup>
 	  <Reference Include="Utah.Udot.NetStandardToolkit">
-	    <HintPath>..\..\..\udot-netstandard-toolkit\NetStandardToolkit\bin\Release\net7.0\Utah.Udot.NetStandardToolkit.dll</HintPath>
+	    <HintPath>..\Utah.Udot.NetStandardToolkit.dll</HintPath>
 	  </Reference>
 	</ItemGroup>
 
