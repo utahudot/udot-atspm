@@ -111,7 +111,7 @@ namespace Utah.Udot.Atspm.Business.ApproachVolume
                 primaryApproaches[0].DirectionType.Description,
                 opposingApproaches[0].DirectionType.Description)
             {
-
+                PrimaryDirectionVolumes = direction1VolumesSeries,
                 OpposingDirectionVolumes = direction2VolumesSeries,
                 CombinedDirectionVolumes = combinedDirectionsVolumesSeries,
                 PrimaryDFactors = GetDFactorSeries(primaryDirectionVolume, combinedDirectionsVolumes),
