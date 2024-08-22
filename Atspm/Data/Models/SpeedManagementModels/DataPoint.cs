@@ -1,5 +1,4 @@
-﻿
-namespace ATSPM.Data.Models.SpeedManagement
+﻿namespace Utah.Udot.Atspm.Data.Models.SpeedManagementModels
 {
     public class DataPoint<T> where T : struct, IComparable, IConvertible, IFormattable
     {

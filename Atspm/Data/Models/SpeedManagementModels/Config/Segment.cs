@@ -1,6 +1,6 @@
 ﻿using NetTopologySuite.Geometries;
 
-namespace ATSPM.Data.Models.SpeedManagementConfigModels
+namespace Utah.Udot.Atspm.Data.Models.SpeedManagementModels.Config
 {
     public class Segment
     {

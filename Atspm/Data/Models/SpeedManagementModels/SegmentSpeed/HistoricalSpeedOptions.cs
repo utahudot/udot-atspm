@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace ATSPM.Application.Business.RouteSpeed
+﻿namespace Utah.Udot.Atspm.Data.Models.SpeedManagementModels.SegmentSpeed
 {
     public class HistoricalSpeedOptions
     {

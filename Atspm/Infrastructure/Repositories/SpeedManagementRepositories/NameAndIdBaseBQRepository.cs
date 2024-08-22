@@ -1,14 +1,8 @@
-﻿using ATSPM.Data.Models.SpeedManagement.Common;
-using ATSPM.Data.Models.SpeedManagementConfigModels;
-using ATSPM.Domain.Services;
-using Google.Cloud.BigQuery.V2;
+﻿using Google.Cloud.BigQuery.V2;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.Common;
 
-namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
+namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositories
 {
     public abstract class NameAndIdBaseBQRepository : ATSPMRepositoryBQBase<NameAndIdDto>
     {

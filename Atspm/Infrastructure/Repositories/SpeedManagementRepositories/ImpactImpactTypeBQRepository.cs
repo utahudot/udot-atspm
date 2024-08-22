@@ -1,14 +1,10 @@
-﻿using ATSPM.Application.Repositories.SpeedManagementRepositories;
-using ATSPM.Data.Models.SpeedManagementConfigModels;
-using Google.Cloud.BigQuery.V2;
+﻿using Google.Cloud.BigQuery.V2;
 using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.Config;
+using Utah.Udot.Atspm.Repositories.SpeedManagementRepositories;
 
-namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
+namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositories
 {
     ///<inheritdoc cref="IImpactTypeRepository"/>
     public class ImpactImpactTypeBQRepository : ATSPMRepositoryBQBase<ImpactImpactType>, IImpactImpactTypeRepository

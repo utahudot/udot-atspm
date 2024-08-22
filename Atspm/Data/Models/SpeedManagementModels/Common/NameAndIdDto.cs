@@ -1,6 +1,4 @@
-﻿using ATSPM.Data.Models.ConfigurationModels;
-
-namespace ATSPM.Data.Models.SpeedManagement.Common
+﻿namespace Utah.Udot.Atspm.Data.Models.SpeedManagementModels.Common
 {
     public class NameAndIdDto : AtspmConfigModelBase<Guid>
     {

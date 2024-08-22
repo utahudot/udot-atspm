@@ -1,10 +1,7 @@
-﻿using ATSPM.Data.Models.SpeedManagement.MonthlyAggregation;
-using ATSPM.Domain.Services;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.MonthlyAggregation;
+using Utah.Udot.NetStandardToolkit.Services;
 
-namespace ATSPM.Application.Repositories.SpeedManagementRepositories
+namespace Utah.Udot.Atspm.Repositories.SpeedManagementRepositories
 {
     public interface IMonthlyAggregationRepository : IAsyncRepository<MonthlyAggregation>
     {

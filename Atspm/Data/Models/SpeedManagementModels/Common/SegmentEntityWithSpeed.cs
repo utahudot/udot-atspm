@@ -1,6 +1,6 @@
-﻿using ATSPM.Data.Models.SpeedManagementConfigModels;
+﻿using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.Config;
 
-namespace ATSPM.Data.Models.SpeedManagement.Common
+namespace Utah.Udot.Atspm.Data.Models.SpeedManagementModels.Common
 {
     public class SegmentEntityWithSpeed : SegmentEntity
     {

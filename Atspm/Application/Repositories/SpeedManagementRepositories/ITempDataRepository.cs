@@ -1,9 +1,7 @@
-﻿using ATSPM.Data.Models.SpeedManagementConfigModels;
-using ATSPM.Domain.Services;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.Config;
+using Utah.Udot.NetStandardToolkit.Services;
 
-namespace ATSPM.Application.Repositories.SpeedManagementRepositories
+namespace Utah.Udot.Atspm.Repositories.SpeedManagementRepositories
 {
     public interface ITempDataRepository : IAsyncRepository<TempData>
     {

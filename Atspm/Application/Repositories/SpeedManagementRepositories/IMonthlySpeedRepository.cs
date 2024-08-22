@@ -1,7 +1,7 @@
-﻿using ATSPM.Data.Models.SpeedConfigModels;
-using ATSPM.Domain.Services;
+﻿using Utah.Udot.Atspm.Data.Models.SpeedManagementModels;
+using Utah.Udot.NetStandardToolkit.Services;
 
-namespace ATSPM.Application.Repositories.SpeedManagementRepositories
+namespace Utah.Udot.Atspm.Repositories.SpeedManagementRepositories
 {
     public interface IMonthlySpeedRepository : IAsyncRepository<MonthlySpeed>
     {

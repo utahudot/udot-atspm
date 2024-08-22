@@ -1,6 +1,6 @@
 using ATSPM.Data.Models.SpeedManagement.Common;
 
-namespace ATSPM.Data.Models.SpeedManagement.CongestionTracking
+namespace Utah.Udot.Atspm.Data.Models.SpeedManagementModels.CongestionTracking
 {
     public class CongestionTrackingOptions : OptionsBase
     {

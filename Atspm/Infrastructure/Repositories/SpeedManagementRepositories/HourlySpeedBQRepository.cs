@@ -1,20 +1,14 @@
-﻿using ATSPM.Application.Business.RouteSpeed;
-using ATSPM.Application.Repositories.SpeedManagementRepositories;
-using ATSPM.Data.Models.SpeedManagement.Common;
-using ATSPM.Data.Models.SpeedManagementAggregation;
-using ATSPM.Domain.Extensions;
-using Google.Cloud.BigQuery.V2;
-using IdentityModel.Client;
+﻿using Google.Cloud.BigQuery.V2;
 using Microsoft.Extensions.Logging;
 using NetTopologySuite.Geometries;
 using NetTopologySuite.IO;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using Utah.Udot.Atspm.Data.Models.SpeedManagementModels;
+using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.Common;
+using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.SegmentSpeed;
+using Utah.Udot.Atspm.Repositories.SpeedManagementRepositories;
 
-namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
+namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositories
 {
     ///<inheritdoc cref="IHourlySpeedRepository"/>
     public class HourlySpeedBQRepository : ATSPMRepositoryBQBase<HourlySpeed>, IHourlySpeedRepository

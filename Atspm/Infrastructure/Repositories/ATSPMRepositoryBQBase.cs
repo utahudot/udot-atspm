@@ -1,17 +1,10 @@
-﻿using ATSPM.Data;
-using ATSPM.Domain.Services;
-using ATSPM.Domain.Specifications;
-using ATSPM.Infrastructure.Repositories.SpeedManagementRepositories;
-using Google.Cloud.BigQuery.V2;
+﻿using Google.Cloud.BigQuery.V2;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
-using System.Threading.Tasks;
+using Utah.Udot.Atspm.Data;
 
-namespace ATSPM.Infrastructure.Repositories
+namespace Utah.Udot.Atspm.Infrastructure.Repositories
 {
     public abstract class ATSPMRepositoryBQBase<T> : IAsyncRepository<T> where T : class
     {
@@ -20,7 +13,6 @@ namespace ATSPM.Infrastructure.Repositories
         protected readonly string _datasetId;
         protected readonly string _tableId;
         private ConfigContext db;
-        private ILogger<HourlySpeedBQRepository> log;
 
         public ATSPMRepositoryBQBase(BigQueryClient client, string datasetId, string tableId, ILogger<ATSPMRepositoryBQBase<T>> log)
         {

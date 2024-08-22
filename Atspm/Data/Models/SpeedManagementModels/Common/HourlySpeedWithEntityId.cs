@@ -1,6 +1,4 @@
-﻿using ATSPM.Data.Models.SpeedManagementAggregation;
-
-namespace ATSPM.Data.Models.SpeedManagement.Common
+﻿namespace Utah.Udot.Atspm.Data.Models.SpeedManagementModels.Common
 {
     public class HourlySpeedWithEntityId : HourlySpeed
     {

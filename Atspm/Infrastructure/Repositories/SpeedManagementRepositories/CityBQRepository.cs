@@ -1,9 +1,9 @@
-﻿using ATSPM.Application.Repositories.SpeedManagementRepositories;
-using ATSPM.Data.Models.SpeedManagement.Common;
-using Google.Cloud.BigQuery.V2;
+﻿using Google.Cloud.BigQuery.V2;
 using Microsoft.Extensions.Logging;
+using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.Common;
+using Utah.Udot.Atspm.Repositories.SpeedManagementRepositories;
 
-namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
+namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositories
 {
     public class CityBQRepository : NameAndIdBaseBQRepository, ICityRepository
     {

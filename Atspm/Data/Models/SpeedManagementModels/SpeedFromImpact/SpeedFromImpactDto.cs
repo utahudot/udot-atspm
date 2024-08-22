@@ -1,7 +1,6 @@
-﻿using ATSPM.Data.Models.SpeedManagementAggregation;
-using ATSPM.Data.Models.SpeedManagementConfigModels;
+﻿using ATSPM.Data.Models.SpeedManagementConfigModels;
 
-namespace ATSPM.Data.Models.SpeedManagement.MonthlyAggregation;
+namespace Utah.Udot.Atspm.Data.Models.SpeedManagementModels.SpeedFromImpact;
 
 public class SpeedFromImpactDto
 {

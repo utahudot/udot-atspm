@@ -1,4 +1,4 @@
-﻿namespace ATSPM.Data.Models.SpeedManagementAggregation;
+﻿namespace Utah.Udot.Atspm.Data.Models.SpeedManagementModels;
 
 public class HourlySpeed
 {

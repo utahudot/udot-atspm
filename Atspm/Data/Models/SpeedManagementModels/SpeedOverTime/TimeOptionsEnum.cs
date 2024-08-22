@@ -1,4 +1,4 @@
-﻿namespace ATSPM.Data.Models.SpeedManagement.SpeedOverTime
+﻿namespace Utah.Udot.Atspm.Data.Models.SpeedManagementModels.SpeedOverTime
 {
     public enum TimeOptionsEnum
     {

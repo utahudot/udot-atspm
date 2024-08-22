@@ -1,7 +1,7 @@
-﻿using ATSPM.Data.Models.SpeedManagement.Common;
-using ATSPM.Domain.Services;
+﻿using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.Common;
+using Utah.Udot.NetStandardToolkit.Services;
 
-namespace ATSPM.Application.Repositories.SpeedManagementRepositories
+namespace Utah.Udot.Atspm.Repositories.SpeedManagementRepositories
 {
     public interface IRegionRepository : IAsyncRepository<NameAndIdDto>
     {
