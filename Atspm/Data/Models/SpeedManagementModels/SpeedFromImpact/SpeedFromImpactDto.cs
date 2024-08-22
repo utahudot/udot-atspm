@@ -1,4 +1,4 @@
-﻿using ATSPM.Data.Models.SpeedManagementConfigModels;
+﻿using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.Config;
 
 namespace Utah.Udot.Atspm.Data.Models.SpeedManagementModels.SpeedFromImpact;
 

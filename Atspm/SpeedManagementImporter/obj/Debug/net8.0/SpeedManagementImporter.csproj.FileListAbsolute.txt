@@ -1,0 +1,6 @@
+C:\Users\kford\Projects\udot-atspm\Atspm\SpeedManagementImporter\obj\Debug\net8.0\SpeedManagementImporter.csproj.AssemblyReference.cache
+C:\Users\kford\Projects\udot-atspm\Atspm\SpeedManagementImporter\obj\Debug\net8.0\SpeedManagementImporter.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\kford\Projects\udot-atspm\Atspm\SpeedManagementImporter\obj\Debug\net8.0\SpeedManagementImporter.AssemblyInfoInputs.cache
+C:\Users\kford\Projects\udot-atspm\Atspm\SpeedManagementImporter\obj\Debug\net8.0\SpeedManagementImporter.AssemblyInfo.cs
+C:\Users\kford\Projects\udot-atspm\Atspm\SpeedManagementImporter\obj\Debug\net8.0\SpeedManagementImporter.csproj.CoreCompileInputs.cache
+C:\Users\kford\Projects\udot-atspm\Atspm\SpeedManagementImporter\obj\Debug\net8.0\SpeedManagementImporter.sourcelink.json

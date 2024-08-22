@@ -1,9 +1,9 @@
-﻿using ATSPM.Application.Repositories.SpeedManagementRepositories;
-using ATSPM.Infrastructure.Repositories.SpeedManagementRepositories;
-using Google.Cloud.BigQuery.V2;
+﻿using Google.Cloud.BigQuery.V2;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositories;
+using Utah.Udot.Atspm.Repositories.SpeedManagementRepositories;
 
 namespace SpeedManagementImporter
 {

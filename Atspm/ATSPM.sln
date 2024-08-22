@@ -66,6 +66,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpeedManagementApi", "SpeedManagementApi\SpeedManagementApi.csproj", "{1DD39077-CFDF-4888-BE9B-9EF06F74C83F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpeedManagementImporter", "SpeedManagementImporter\SpeedManagementImporter.csproj", "{AD900A0D-FCE0-4B8F-BC27-0C6C81BF1322}"
+	ProjectSection(ProjectDependencies) = postProject
+		{367B779D-CD6D-4143-9C12-9F68D6B397D6} = {367B779D-CD6D-4143-9C12-9F68D6B397D6}
+		{B7CD987F-6522-4FE0-9285-0AF80C572979} = {B7CD987F-6522-4FE0-9285-0AF80C572979}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,10 +1,10 @@
-﻿using ATSPM.Application.Repositories.SpeedManagementRepositories;
-using ATSPM.Data.Models.SpeedManagement.Common;
-using ATSPM.Data.Models.SpeedManagementConfigModels;
-using CsvHelper;
+﻿using CsvHelper;
 using CsvHelper.Configuration;
 using System.Globalization;
 using System.Threading.Tasks.Dataflow;
+using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.Common;
+using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.Config;
+using Utah.Udot.Atspm.Repositories.SpeedManagementRepositories;
 
 namespace SpeedManagementImporter.Services.Clearguide
 {

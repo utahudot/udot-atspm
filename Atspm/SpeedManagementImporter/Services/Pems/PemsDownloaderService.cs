@@ -1,10 +1,10 @@
-﻿using ATSPM.Application.Repositories.SpeedManagementRepositories;
-using ATSPM.Data.Models.SpeedManagement.Common;
-using ATSPM.Data.Models.SpeedManagementAggregation;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SpeedManagementImporter.Business.Pems;
+using Utah.Udot.Atspm.Data.Models.SpeedManagementModels;
+using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.Common;
+using Utah.Udot.Atspm.Repositories.SpeedManagementRepositories;
 
 namespace SpeedManagementImporter.Services.Pems
 {
@@ -29,7 +29,7 @@ namespace SpeedManagementImporter.Services.Pems
             string apiKey = configuration["Pems:ApiKey"];
             var nullPems = 0;
 
-            if(apiKey == null)
+            if (apiKey == null)
             {
                 return;
             }

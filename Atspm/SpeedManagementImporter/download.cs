@@ -1,8 +1,8 @@
-﻿using ATSPM.Application.Repositories.SpeedManagementRepositories;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using SpeedManagementImporter.Services.Clearguide;
 using System.CommandLine;
 using System.CommandLine.NamingConventionBinder;
+using Utah.Udot.Atspm.Repositories.SpeedManagementRepositories;
 
 namespace SpeedManagementImporter
 {

@@ -1,4 +1,4 @@
-using ATSPM.Data.Models.SpeedManagement.Common;
+using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.Common;
 
 namespace Utah.Udot.Atspm.Data.Models.SpeedManagementModels.SpeedOverTime
 {
