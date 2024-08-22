@@ -1,5 +1,6 @@
 ﻿using ATSPM.Application.Repositories.SpeedManagementRepositories;
 using ATSPM.Data.Models.SpeedManagementAggregation;
+using Microsoft.Extensions.Configuration;
 using SpeedManagementImporter.Business.Atspm;
 using System.Collections.Concurrent;
 using System.Data.SqlClient;
@@ -9,14 +10,17 @@ namespace SpeedManagementImporter.Services.Atspm
     public class AtspmDownloaderService : IDataDownloader
     {
         private readonly int sourceId = 1;
-        private readonly string sourceConnectionString = "Data Source=srwtcmoedb.utah.utad.state.ut.us;Initial Catalog=MOE;User ID=spm;Password=UdotNewMoeDb!9;Connect Timeout=60;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
+        private readonly string sourceConnectionString;
         private ISegmentEntityRepository segmentEntityRepository;
         private IHourlySpeedRepository hourlySpeedRepository;
+        private IConfigurationRoot configuration;
 
-        public AtspmDownloaderService(ISegmentEntityRepository routeEntityTableRepository, IHourlySpeedRepository hourlySpeedRepository)
+        public AtspmDownloaderService(ISegmentEntityRepository routeEntityTableRepository, IHourlySpeedRepository hourlySpeedRepository, IConfigurationRoot configuration)
         {
             this.segmentEntityRepository = routeEntityTableRepository;
             this.hourlySpeedRepository = hourlySpeedRepository;
+            this.configuration = configuration;
+            sourceConnectionString = this.configuration["Atspm:ConnectionString"];
         }
 
         public async Task Download(DateTime startDate, DateTime endDate)
@@ -25,6 +29,11 @@ namespace SpeedManagementImporter.Services.Atspm
             var routes = routeEntities.GroupBy(r => r.SegmentId).ToList();
 
             var speeds = new ConcurrentBag<HourlySpeed>();
+
+            if(sourceConnectionString == null)
+            {
+                return;
+            }
 
             for (DateTime date = startDate; date < endDate; date = date.AddHours(1))
             {

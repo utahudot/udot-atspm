@@ -28,7 +28,7 @@ namespace ATSPM.Infrastructure.Services.SpeedManagementServices.CongestionTracki
         public override async Task<CongestionTrackingDto> ExecuteAsync(CongestionTrackingOptions parameter, IProgress<int> progress = null, CancellationToken cancelToken = default)
         {
             var segment = await segmentRepository.LookupAsync(parameter.SegmentId);
-            var hourlyResult = await hourlySpeedRepository.GetHourlySpeeds(parameter.StartDate, parameter.EndDate, Guid.Parse(parameter.SegmentId));
+            var hourlyResult = await hourlySpeedRepository.GetHourlySpeedsForSegmentInSource(parameter, Guid.Parse(parameter.SegmentId));
             var result = ConvertToCongestionResult(hourlyResult, segment);
             return result;
         }

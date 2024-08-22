@@ -12,24 +12,27 @@ namespace SpeedManagementImporter.Services.Pems
     {
         private ISegmentEntityRepository segmentEntityRepository;
         private IHourlySpeedRepository hourlySpeedRepository;
+        private IConfigurationRoot configuration;
 
         static readonly int confidenceId = 4;
         static readonly int sourceId = 2;
 
-        public PemsDownloaderService(ISegmentEntityRepository segmentEntityRepository, IHourlySpeedRepository hourlySpeedRepository)
+        public PemsDownloaderService(ISegmentEntityRepository segmentEntityRepository, IHourlySpeedRepository hourlySpeedRepository, IConfigurationRoot configuration)
         {
             this.segmentEntityRepository = segmentEntityRepository;
             this.hourlySpeedRepository = hourlySpeedRepository;
+            this.configuration = configuration;
         }
 
         public async Task Download(DateTime startDate, DateTime endDate)
         {
-            IConfiguration config = new ConfigurationBuilder()
-                .SetBasePath(AppContext.BaseDirectory)
-                .AddJsonFile("appsettings.json")
-                .Build();
-            string apiKey = config.GetSection("AppSettings:ApiKey").Value;
+            string apiKey = configuration["Pems:ApiKey"];
             var nullPems = 0;
+
+            if(apiKey == null)
+            {
+                return;
+            }
 
 
             List<SegmentEntityWithSpeedAndAlternateIdentifier> routeEntities = await segmentEntityRepository.GetEntitiesWithSpeedAndAlternateIdentifierForSourceId(sourceId);

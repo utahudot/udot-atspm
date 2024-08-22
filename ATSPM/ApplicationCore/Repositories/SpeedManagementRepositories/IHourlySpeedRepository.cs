@@ -1,5 +1,5 @@
 ﻿using ATSPM.Application.Business.RouteSpeed;
-using ATSPM.Data.Models.SpeedManagement.CongestionTracking;
+using ATSPM.Data.Models.SpeedManagement.Common;
 using ATSPM.Data.Models.SpeedManagementAggregation;
 using ATSPM.Domain.Services;
 using System;
@@ -15,9 +15,8 @@ namespace ATSPM.Application.Repositories.SpeedManagementRepositories
         public Task<List<MonthlyAverage>> GetMonthlyAveragesAsync(Guid segmentId, DateOnly startDate, DateOnly endDate, string daysOfWeek, int sourceId);
         public Task<List<DailyAverage>> GetDailyAveragesAsync(Guid segmentId, DateOnly startDate, DateOnly endDate, string daysOfWeek);
         public Task<List<RouteSpeed>> GetRoutesSpeeds(RouteSpeedOptions options);
-        public Task<List<HourlySpeed>> GetHourlySpeeds(DateOnly startDate, DateOnly endDate, Guid segmentId);
-        public Task<List<HourlySpeed>> GetHourlySpeeds(DateOnly startDate, DateOnly endDate, Guid segmentId, long? sourceId);
-        public Task<List<HourlySpeed>> GetWeeklySpeeds(DateOnly startDate, DateOnly endDate, Guid segmentId, long? sourceId);
+        public Task<List<HourlySpeed>> GetHourlySpeedsForSegmentInSource(OptionsBase baseOptions, Guid segmentId);
+        public Task<List<HourlySpeed>> GetWeeklySpeedsForSegmentInSource(OptionsBase baseOptions, Guid segmentId);
         Task<List<HourlySpeed>> GetHourlySpeedsForTimePeriod(Guid segmentId, DateTime startDate, DateTime endDate, DateTime startTime, DateTime endTime);
         #region ExtensionMethods
 

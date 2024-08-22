@@ -1,4 +1,5 @@
 ﻿using ATSPM.Application.Repositories.SpeedManagementRepositories;
+using Microsoft.Extensions.Configuration;
 using SpeedManagementImporter.Services.Atspm;
 using SpeedManagementImporter.Services.Clearguide;
 using SpeedManagementImporter.Services.Pems;
@@ -10,25 +11,27 @@ namespace SpeedManagementImporter
         private ISegmentEntityRepository segmentEntityRepository;
         private IHourlySpeedRepository hourlySpeedRepository;
         private ITempDataRepository tempDataRepository;
+        private IConfigurationRoot configuration;
 
-        public ImporterFactory(ISegmentEntityRepository routeEntityTableRepository, IHourlySpeedRepository hourlySpeedRepository, ITempDataRepository tempDataRepository)
+        public ImporterFactory(ISegmentEntityRepository routeEntityTableRepository, IHourlySpeedRepository hourlySpeedRepository, ITempDataRepository tempDataRepository, IConfigurationRoot configuration)
         {
             this.segmentEntityRepository = routeEntityTableRepository;
             this.hourlySpeedRepository = hourlySpeedRepository;
             this.tempDataRepository = tempDataRepository;
+            this.configuration = configuration;
         }
         public IDataDownloader createDownloader(int sourceId)
         {
             switch (sourceId)
             {
                 case 1:
-                    var atspmDownloader = new AtspmDownloaderService(segmentEntityRepository, hourlySpeedRepository);
+                    var atspmDownloader = new AtspmDownloaderService(segmentEntityRepository, hourlySpeedRepository, configuration);
                     return atspmDownloader;
                 case 3:
-                    var clearguideDownloader = new ClearguideFileDownloaderService(segmentEntityRepository, hourlySpeedRepository, tempDataRepository);
+                    var clearguideDownloader = new ClearguideDownloaderService(segmentEntityRepository, hourlySpeedRepository, configuration);
                     return clearguideDownloader;
                 case 2:
-                    var pemsDownloader = new PemsDownloaderService(segmentEntityRepository, hourlySpeedRepository);
+                    var pemsDownloader = new PemsDownloaderService(segmentEntityRepository, hourlySpeedRepository, configuration);
                     return pemsDownloader;
                 default:
                     return null;
