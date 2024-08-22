@@ -80,7 +80,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Models\SpeedManagementModels\" />
+    <Folder Include="Models\SpeedManagementModels\SegmentSpeed\" />
   </ItemGroup>
 
 </Project>

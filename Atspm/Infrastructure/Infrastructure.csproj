@@ -125,4 +125,8 @@
 	  </EmbeddedResource>
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="Services\SpeedManagementServices\SegmentSpeed\" />
+	</ItemGroup>
+
 </Project>
