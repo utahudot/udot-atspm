@@ -79,4 +79,8 @@
     <Using Include="Utah.Udot.Atspm.Data.Models" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Models\SpeedManagementModels\" />
+  </ItemGroup>
+
 </Project>
