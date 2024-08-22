@@ -1,7 +1,6 @@
 import CongestionChart from '@/features/charts/congestionTracker/components/CongestionTrackerChart'
 import { useCongestionTrackingChart } from '@/features/speedManagementTool/api/getCongestionTrackingData'
-import { useSpeedOverTimeChart } from '@/features/speedManagementTool/api/getSpeedOverTimeChart'
-import { Paper } from '@mui/material'
+import { Box } from '@mui/material'
 import { useEffect } from 'react'
 
 const CongestionTrackingChartsContainer = ({
@@ -26,37 +25,35 @@ const CongestionTrackingChartsContainer = ({
   //   },
   // })
 
-  const { data: testData, refetch: fetchTestData } = useSpeedOverTimeChart({
-    options: {
-      segmentId: selectedRouteId.toString(),
-      startDate: '2024-05-01',
-      endDate: '2024-05-10',
-      startTime: '2024-05-01T06:00:00Z',
-      endTime: '2024-05-10T09:00:00Z',
-      daysOfWeek: [0],
-      sourceId: 3,
-      timeOptions: 0,
-    },
-  })
-
-  console.log('test', testData)
+  // const { data: testData, refetch: fetchTestData } = useSpeedOverTimeChart({
+  //   options: {
+  //     segmentId: selectedRouteId.toString(),
+  //     startDate: '2024-05-01',
+  //     endDate: '2024-05-10',
+  //     startTime: '2024-05-01T06:00:00Z',
+  //     endTime: '2024-05-10T09:00:00Z',
+  //     daysOfWeek: [0],
+  //     sourceId: 3,
+  //     timeOptions: 0,
+  //   },
+  // })
 
   useEffect(() => {
     fetchCongestionTrackerData()
   }, [selectedRouteId, fetchCongestionTrackerData])
 
-  if (!congestionTrackingData || !testData) return null
+  if (!congestionTrackingData) return null
 
   return (
     // align in center
-    <Paper sx={{ display: 'flex', justifyContent: 'center', pt: 2 }}>
+    <Box sx={{ display: 'flex', justifyContent: 'center', pt: 2 }}>
       <CongestionChart
         id="congestion-chart"
-        option={testData}
-        style={{ width: '800px', height: '550px' }}
+        option={congestionTrackingData}
+        style={{ width: '1100px', height: '550px' }}
         hideInteractionMessage
       />
-    </Paper>
+    </Box>
   )
 }
 

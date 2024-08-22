@@ -1,8 +1,19 @@
 import ChartsContainer from '@/features/speedManagementTool/components/detailsPanel/ChartsContainer'
+import SM_Charts from '@/features/speedManagementTool/components/SM_Charts'
 import { SpeedManagementRoute } from '@/features/speedManagementTool/types/routes'
 import ArrowBackIosNewOutlinedIcon from '@mui/icons-material/ArrowBackIosNewOutlined'
-import { Box, Button, Dialog, DialogContent, Typography } from '@mui/material'
+import { TabContext, TabList, TabPanel } from '@mui/lab'
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogContent,
+  Divider,
+  Tab,
+  Typography,
+} from '@mui/material'
 import dynamic from 'next/dynamic'
+import { useState } from 'react'
 
 const StaticMap = dynamic(
   () => import('@/features/speedManagementTool/components/StaticMap'),
@@ -16,21 +27,13 @@ type SM_PopupProps = {
 }
 
 const SM_Popup = ({ route, open, onClose }: SM_PopupProps) => {
-  const {
-    name,
-    speedLimit,
-    avg,
-    percentilespd_85,
-    averageSpeedAboveSpeedLimit,
-    enddate,
-    estimatedViolations,
-    flow,
-    percentilespd_15,
-    percentilespd_95,
-    startdate,
-  } = route.properties
+  const { name, startdate, enddate } = route.properties
 
-  // if screen width is less than 600px, set the width to 100%
+  const [currentTab, setCurrentTab] = useState('1')
+
+  const handleTabChange = (_: React.SyntheticEvent, newTab: string) => {
+    setCurrentTab(newTab)
+  }
 
   const formattedDateRange =
     startdate && enddate
@@ -69,21 +72,33 @@ const SM_Popup = ({ route, open, onClose }: SM_PopupProps) => {
           </Button>
         </Box>
       </Box>
-      <DialogContent>
-        <Typography variant="h2" sx={{ mb: 2 }}>
-          {name}
-        </Typography>
-        {formattedDateRange && (
-          <Typography variant="subtitle1" sx={{ mb: 2 }}>
-            {formattedDateRange}
-          </Typography>
-        )}
-        <Box width={'100%'} mb={2}>
-          <StaticMap routes={[route]} />
-        </Box>
-        <Box>
-          <ChartsContainer selectedRouteId={route.properties.route_id} />
-        </Box>
+      <DialogContent sx={{ px: 0 }}>
+        <TabContext value={currentTab}>
+          <Box display={'flex'} gap={2} ml={2}>
+            <Typography variant="h2">{name}</Typography>
+            {formattedDateRange && (
+              <Typography variant="subtitle1">{formattedDateRange}</Typography>
+            )}
+            <TabList
+              onChange={handleTabChange}
+              aria-label="SM Popup Tabs"
+              centered
+            >
+              <Tab label="Overview" value="1" />
+              <Tab label="Charts" value="2" />
+            </TabList>
+          </Box>
+          <Divider />
+          <TabPanel value="1" sx={{ p: 0 }}>
+            <Box width={'100%'} my={2}>
+              <StaticMap routes={[route]} />
+              <ChartsContainer selectedRouteId={route.properties.route_id} />
+            </Box>
+          </TabPanel>
+          <TabPanel value="2" sx={{ p: 0 }}>
+            <SM_Charts route={route} />
+          </TabPanel>
+        </TabContext>
       </DialogContent>
     </Dialog>
   )

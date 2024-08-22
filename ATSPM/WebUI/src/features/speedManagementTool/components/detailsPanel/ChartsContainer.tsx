@@ -47,7 +47,7 @@ const ChartsContainer = ({ selectedRouteId }: { selectedRouteId: number }) => {
   const { data, isLoading } = useHistoricalData({ params })
 
   return (
-    <Box display="flex" flexDirection="row" gap={2}>
+    <Box display="flex" flexDirection="row" gap={2} p={2}>
       {isLoading ? (
         <Skeleton variant="rectangular" width="100%" height={250} />
       ) : (

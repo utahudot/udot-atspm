@@ -30,8 +30,9 @@ interface CongestionTrackerData {
 export const getCongestionTrackings = async (
   options: CongestionTrackingParams
 ): Promise<CongestionTrackerResponse> => {
-  options.startDate = '2024-05-01'
-  options.endDate = '2024-05-28'
+  options.startDate = '2021-04-01'
+  options.endDate = '2024-06-30'
+  options.sourceId = 3
   const response = await speedAxios.post(
     'CongestionTracking/GetReportData',
     options
@@ -52,7 +53,7 @@ export const useCongestionTrackingChart = ({
 }: BaseOptions) => {
   return useQuery<ExtractFnReturnType<QueryFnType>>({
     ...config,
-    enabled: false,
+    enabled: true,
     queryKey: ['CongestionTracking', options],
     queryFn: () => getCongestionTrackings(options),
   })

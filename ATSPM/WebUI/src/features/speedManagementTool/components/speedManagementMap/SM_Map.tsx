@@ -106,7 +106,7 @@ const SpeedMap = ({
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openaip.net/">openAIP Data</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-NC-SA</a>)'
-          url="https://tiles.stadiamaps.com/tiles/stamen_terrain/{z}/{x}/{y}{r}.png"
+          url="https://tiles.stadiamaps.com/tiles/alidade_bright/{z}/{x}/{y}{r}.png"
         />
         {fullScreenRef && (
           <Box
@@ -162,10 +162,13 @@ const SpeedMap = ({
                 setSelectedRouteId &&
                 setSelectedRouteId(route.properties.route_id),
               mouseover: (e) => {
-                e.target.setStyle({ weight: 4 })
+                e.target.setStyle({ weight: 4, color: 'blue' })
               },
               mouseout: (e) => {
-                e.target.setStyle({ weight: 2.5 })
+                e.target.setStyle({
+                  weight: 2.5,
+                  color: getColor(route),
+                })
               },
             }}
           />

@@ -49,7 +49,7 @@ const StaticMap = ({ routes }: StaticMapProps) => {
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openaip.net/">openAIP Data</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-NC-SA</a>)'
-          url="https://tiles.stadiamaps.com/tiles/stamen_terrain/{z}/{x}/{y}{r}.png"
+          url="https://tiles.stadiamaps.com/tiles/alidade_satellite/{z}/{x}/{y}{r}.png"
         />
         {routes.map((route, index) => (
           <Polyline

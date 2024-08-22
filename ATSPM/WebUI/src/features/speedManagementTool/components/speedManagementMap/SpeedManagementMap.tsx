@@ -1,7 +1,7 @@
 import { useRoutes } from '@/features/speedManagementTool/api/getRoutes'
 import { useUdotSpeedLimitRoutes } from '@/features/speedManagementTool/api/getUdotSpeedLimitRoutes'
 import SM_TopBar from '@/features/speedManagementTool/components/SM_Topbar'
-import SM_Popup from '@/features/speedManagementTool/components/speedManagementMap/Popup'
+import SM_Popup from '@/features/speedManagementTool/components/speedManagementMap/SM_Popup'
 import { RouteRenderOption } from '@/features/speedManagementTool/enums'
 import useSpeedManagementStore from '@/features/speedManagementTool/speedManagementStore'
 import { Box } from '@mui/material'
@@ -9,7 +9,7 @@ import 'leaflet/dist/leaflet.css'
 import dynamic from 'next/dynamic'
 import { memo, useRef, useState } from 'react'
 
-const SpeedManagementMap = dynamic(() => import('./Map'), { ssr: false })
+const SpeedManagementMap = dynamic(() => import('./SM_Map'), { ssr: false })
 
 const Map = () => {
   const [selectedRouteId, setSelectedRouteId] = useState<number | undefined>()
