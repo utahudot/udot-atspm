@@ -65,6 +65,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GUIs", "GUIs", "{1CFBBB2E-F
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpeedManagementApi", "SpeedManagementApi\SpeedManagementApi.csproj", "{1DD39077-CFDF-4888-BE9B-9EF06F74C83F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpeedManagementImporter", "SpeedManagementImporter\SpeedManagementImporter.csproj", "{AD900A0D-FCE0-4B8F-BC27-0C6C81BF1322}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -245,6 +247,14 @@ Global
 		{1DD39077-CFDF-4888-BE9B-9EF06F74C83F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1DD39077-CFDF-4888-BE9B-9EF06F74C83F}.Release|x86.ActiveCfg = Release|Any CPU
 		{1DD39077-CFDF-4888-BE9B-9EF06F74C83F}.Release|x86.Build.0 = Release|Any CPU
+		{AD900A0D-FCE0-4B8F-BC27-0C6C81BF1322}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD900A0D-FCE0-4B8F-BC27-0C6C81BF1322}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AD900A0D-FCE0-4B8F-BC27-0C6C81BF1322}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{AD900A0D-FCE0-4B8F-BC27-0C6C81BF1322}.Debug|x86.Build.0 = Debug|Any CPU
+		{AD900A0D-FCE0-4B8F-BC27-0C6C81BF1322}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AD900A0D-FCE0-4B8F-BC27-0C6C81BF1322}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AD900A0D-FCE0-4B8F-BC27-0C6C81BF1322}.Release|x86.ActiveCfg = Release|Any CPU
+		{AD900A0D-FCE0-4B8F-BC27-0C6C81BF1322}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -271,6 +281,7 @@ Global
 		{8EBCFA39-009D-450C-B4D6-8DAB84F1D0A5} = {9BAE6520-EDD0-4C01-B591-FA1C32B9BCD6}
 		{1DC2A63D-5DDF-4E51-BF29-1186A2ECDA53} = {35438977-FC79-4CF6-933F-7ADAF41841D1}
 		{1DD39077-CFDF-4888-BE9B-9EF06F74C83F} = {35438977-FC79-4CF6-933F-7ADAF41841D1}
+		{AD900A0D-FCE0-4B8F-BC27-0C6C81BF1322} = {AEE33F3F-898A-4ABA-9D53-D174435F3536}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EEE1679F-AC1D-4DE8-93ED-A8CBCDC6F71F}
