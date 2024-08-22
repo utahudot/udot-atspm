@@ -18,6 +18,7 @@ class Program
         var configuration = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+            .AddUserSecrets<Program>()
             .Build();
 
         Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", configuration["GoogleApplicationCredentials"]);
@@ -68,7 +69,7 @@ class Program
         var tempDataRepository = serviceProvider.GetRequiredService<ITempDataRepository>();
 
 
-        rootCommand.AddCommand(new Download(routeEntityTableRepository, hourlySpeedRepository, tempDataRepository));
+        rootCommand.AddCommand(new Download(routeEntityTableRepository, hourlySpeedRepository, tempDataRepository, configuration));
 
         return await rootCommand.InvokeAsync(args);
     }

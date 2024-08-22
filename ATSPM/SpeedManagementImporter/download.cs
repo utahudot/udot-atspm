@@ -1,4 +1,5 @@
 ﻿using ATSPM.Application.Repositories.SpeedManagementRepositories;
+using Microsoft.Extensions.Configuration;
 using SpeedManagementImporter.Services.Clearguide;
 using System.CommandLine;
 using System.CommandLine.NamingConventionBinder;
@@ -10,8 +11,9 @@ namespace SpeedManagementImporter
         private ISegmentEntityRepository routeEntityTableRepository;
         private IHourlySpeedRepository hourlySpeedRepository;
         private ITempDataRepository tempDataRepository;
+        private IConfigurationRoot configuration;
 
-        public Download(ISegmentEntityRepository routeEntityTableRepository, IHourlySpeedRepository hourlySpeedRepository, ITempDataRepository tempDataRepository) : base("download", "ATSPMImporter download data")
+        public Download(ISegmentEntityRepository routeEntityTableRepository, IHourlySpeedRepository hourlySpeedRepository, ITempDataRepository tempDataRepository, IConfigurationRoot configuration) : base("download", "ATSPMImporter download data")
         {
             var tempStartDateOption = new Option<DateTime>("--startDate", "start date (mm-dd-yyyy)");
             var tempEndDateOption = new Option<DateTime>("--endDate", "end date (mm-dd-yyyy)");
@@ -30,6 +32,7 @@ namespace SpeedManagementImporter
             this.routeEntityTableRepository = routeEntityTableRepository;
             this.hourlySpeedRepository = hourlySpeedRepository;
             this.tempDataRepository = tempDataRepository;
+            this.configuration = configuration;
         }
 
         private async Task Execute(DateTime startDate, DateTime endDate, int sourceId, string? filePath)
@@ -43,7 +46,7 @@ namespace SpeedManagementImporter
                 }
                 else
                 {
-                    var factory = new ImporterFactory(routeEntityTableRepository, hourlySpeedRepository, tempDataRepository);
+                    var factory = new ImporterFactory(routeEntityTableRepository, hourlySpeedRepository, tempDataRepository, configuration);
                     var downloader = factory.createDownloader(sourceId);
 
                     if (downloader is IFileDataDownloader fileDownloader)

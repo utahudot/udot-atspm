@@ -1,6 +1,7 @@
 ﻿using ATSPM.Application.Repositories.SpeedManagementRepositories;
 using ATSPM.Data.Models.SpeedManagement.Common;
 using ATSPM.Data.Models.SpeedManagementAggregation;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
 using SpeedManagementImporter.Business.Clearguide;
 using System.Collections.Concurrent;
@@ -11,6 +12,7 @@ namespace SpeedManagementImporter.Services.Clearguide
     {
         private readonly IHourlySpeedRepository hourlySpeedRepository;
         private readonly ISegmentEntityRepository segmentEntityRepository;
+        private IConfigurationRoot configuration;
 
 
         static readonly string API_URL = "https://api.iteris-clearguide.com/v1/link/timeseries/";
@@ -22,10 +24,11 @@ namespace SpeedManagementImporter.Services.Clearguide
         static readonly int confidenceId = 4;
         static readonly int sourceId = 3;
 
-        public ClearguideDownloaderService(ISegmentEntityRepository segmentEntityRepository, IHourlySpeedRepository hourlySpeedRepository)
+        public ClearguideDownloaderService(ISegmentEntityRepository segmentEntityRepository, IHourlySpeedRepository hourlySpeedRepository, IConfigurationRoot configuration)
         {
             this.segmentEntityRepository = segmentEntityRepository;
             this.hourlySpeedRepository = hourlySpeedRepository;
+            this.configuration = configuration;
         }
 
         public async Task Download(DateTime startDate, DateTime endDate)
@@ -37,7 +40,15 @@ namespace SpeedManagementImporter.Services.Clearguide
             long START_TIMESTAMP = ((DateTimeOffset)startDate).ToUnixTimeSeconds();
             long END_TIMESTAMP = ((DateTimeOffset)endDate).ToUnixTimeSeconds() - 3600;
 
-            var cgApiHandler = new ClearguideApiHandler("slarson@avenueconsultants.com", "Toad22#24#14");
+            var username = configuration["Clearguide:Username"];
+            var password = configuration["Clearguide:Password"];
+
+            if (username == null || password == null)
+            {
+                return;
+            }
+
+            var cgApiHandler = new ClearguideApiHandler(username, password);
             int maxParallelTasks = 1;
             var semaphore = new SemaphoreSlim(maxParallelTasks);
 
