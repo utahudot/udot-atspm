@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.WatchDog.Models;
+using Utah.Udot.ATSPM.WatchDog.Services;
 
 namespace Utah.Udot.Atspm.WatchDog.Services
 {
@@ -37,6 +38,7 @@ namespace Utah.Udot.Atspm.WatchDog.Services
         private readonly RoleManager<IdentityRole> roleManager;
         private readonly WatchDogLogService logService;
         private readonly WatchdogEmailService emailService;
+        private readonly SegmentedErrorsService segmentedErrorsService;
         private readonly ILogger<ScanService> logger;
 
         public ScanService(
@@ -52,7 +54,8 @@ namespace Utah.Udot.Atspm.WatchDog.Services
             RoleManager<IdentityRole> roleManager,
             WatchDogLogService logService,
             WatchdogEmailService emailService,
-            ILogger<ScanService> logger)
+            ILogger<ScanService> logger,
+            SegmentedErrorsService segmentedErrorsService)
         {
             this.LocationRepository = LocationRepository;
             this.watchDogLogEventRepository = watchDogLogEventRepository;
@@ -67,6 +70,7 @@ namespace Utah.Udot.Atspm.WatchDog.Services
             this.logService = logService;
             this.emailService = emailService;
             this.logger = logger;
+            this.segmentedErrorsService = segmentedErrorsService;
         }
         public async Task StartScan(
             LoggingOptions loggingOptions,
@@ -97,6 +101,8 @@ namespace Utah.Udot.Atspm.WatchDog.Services
 
             var users = await GetUsersWithWatchDogClaimAsync();
 
+            var (newErrors, dailyRecurringErrors, recurringErrors) = segmentedErrorsService.GetSegmentedErrors(errors, emailOptions);
+
 
             if (!emailOptions.WeekdayOnly || emailOptions.WeekdayOnly && emailOptions.ScanDate.DayOfWeek != DayOfWeek.Saturday &&
                emailOptions.ScanDate.DayOfWeek != DayOfWeek.Sunday)
@@ -115,6 +121,7 @@ namespace Utah.Udot.Atspm.WatchDog.Services
                             watchDogLogEventRepository.GetList(w => w.Timestamp >= emailOptions.ScanDate.AddDays(-1) &&
                                 w.Timestamp < emailOptions.ScanDate).ToList();
                 }
+
 
                 await emailService.SendAllEmails(
                     emailOptions,
