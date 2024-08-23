@@ -34,6 +34,7 @@ export function createMonthlyAverageChart(
   endDate: string,
   routeRenderOption?: RouteRenderOption
 ) {
+  console.log('data', data)
   const seriesData = data.map((source) => ({
     name: sourceMapping[source.sourceId],
     type: 'line',

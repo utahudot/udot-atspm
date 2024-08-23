@@ -7,41 +7,24 @@ import {
   getPriorDate,
   useHistoricalData,
 } from '@/features/speedManagementTool/api/getHistoricalData'
-import { RouteRenderOption } from '@/features/speedManagementTool/enums'
 import useStore from '@/features/speedManagementTool/speedManagementStore'
 import { Box, Skeleton } from '@mui/material'
 
 interface HistoricalDataParams {
-  routeId: string
+  segmentId: string
   startDate: string
   endDate: string
-  startTime: string
-  endTime: string
-  daysOfWeek: string
-  percentile?: number
+  daysOfWeek: number[]
 }
 
 const ChartsContainer = ({ selectedRouteId }: { selectedRouteId: number }) => {
   const { submittedRouteSpeedRequest, routeRenderOption } = useStore()
 
   const params: HistoricalDataParams = {
-    routeId: selectedRouteId,
+    segmentId: selectedRouteId,
     startDate: submittedRouteSpeedRequest.startDate,
     endDate: submittedRouteSpeedRequest.endDate,
-    startTime: '00:00',
-    endTime: '23:00',
-    daysOfWeek: submittedRouteSpeedRequest.daysOfWeek.join(','),
-  }
-
-  switch (routeRenderOption) {
-    case RouteRenderOption.Percentile_85th:
-      params.percentile = 85
-      break
-    case RouteRenderOption.Percentile_95th:
-      params.percentile = 95
-      break
-    case RouteRenderOption.Percentile_99th:
-      params.percentile = 99
+    daysOfWeek: submittedRouteSpeedRequest.daysOfWeek,
   }
 
   const { data, isLoading } = useHistoricalData({ params })
