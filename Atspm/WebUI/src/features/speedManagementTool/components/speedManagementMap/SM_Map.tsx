@@ -103,6 +103,10 @@ const SpeedMap = ({
   const open = Boolean(anchorEl)
   const id = open ? 'settings-popover' : undefined
 
+  if (!initialLatLong) {
+    return <div>Loading...</div>
+  }
+
   return (
     <Box sx={{ height: '100%', width: '100%' }}>
       <MapContainer

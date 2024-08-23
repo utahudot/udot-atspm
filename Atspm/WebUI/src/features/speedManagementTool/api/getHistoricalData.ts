@@ -1,7 +1,6 @@
-import axios from 'axios'
 import { useQuery } from 'react-query'
 
-import { SPEED_URL } from '@/config'
+import { speedAxios } from '@/lib/axios'
 import { ExtractFnReturnType, QueryConfig } from '@/lib/react-query'
 import { HistoricalDataResponse } from '@/types/historicalData'
 
@@ -27,8 +26,8 @@ export const getHistoricalData = async (
   }
 
   // Make the POST request with params in the body
-  const response = await axios.post<HistoricalDataResponse>(
-    `${SPEED_URL}/SpeedManagement/GetHistoricalSpeeds`,
+  const response = await speedAxios.post<HistoricalDataResponse>(
+    `/SpeedManagement/GetHistoricalSpeeds`,
     {
       segmentId: params.routeId,
       startDate: newStartDate,

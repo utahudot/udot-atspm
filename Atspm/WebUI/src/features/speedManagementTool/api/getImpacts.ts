@@ -1,4 +1,3 @@
-import { SPEED_URL } from '@/config'
 import { Impact } from '@/features/speedManagementTool/types/impact'
 import { ExtractFnReturnType, QueryConfig } from '@/lib/react-query'
 import axios from 'axios'
@@ -8,7 +7,7 @@ import { useQuery } from 'react-query'
 const token = Cookies.get('token')
 const localhostURL = 'https://localhost:44379/'
 const getImpacts = async (): Promise<Impact[]> => {
-    console.log(`switch for ${SPEED_URL} once cloud works`)
+  // console.log(`switch for ${SPEED_URL} once cloud works`)
   const { data } = await axios.get<Impact[]>(`${localhostURL}api/Impact`, {
     headers: {
       Authorization: `Bearer ${token}`,
