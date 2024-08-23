@@ -1,7 +1,6 @@
 ﻿using NetTopologySuite.Geometries;
-using System;
 
-namespace ATSPM.Application.Business.RouteSpeed
+namespace Utah.Udot.Atspm.Data.Models.SpeedManagementModels.SegmentSpeed
 {
     public class RouteSpeed
     {

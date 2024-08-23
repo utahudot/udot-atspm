@@ -1,12 +1,9 @@
-﻿using ATSPM.Application.Repositories.SpeedManagementRepositories;
-using ATSPM.Data.Models.SpeedManagement.MonthlyAggregation;
-using ATSPM.Data.Models.SpeedManagementConfigModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.Config;
+using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.MonthlyAggregation;
+using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.SpeedOverDistance;
+using Utah.Udot.Atspm.Repositories.SpeedManagementRepositories;
 
-namespace ATSPM.Infrastructure.Services.SpeedManagementServices
+namespace Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices
 {
     public class MonthlyAggregationService
     {

@@ -1,12 +1,7 @@
-﻿using ATSPM.Data.Models.SpeedManagementConfigModels;
-using NetTopologySuite.Geometries;
-using NetTopologySuite;
-using System.Collections.Generic;
-using System;
-using System.Threading.Tasks;
-using ATSPM.Application.Repositories.SpeedManagementRepositories;
+﻿using NetTopologySuite.Geometries;
+using Utah.Udot.Atspm.Repositories.SpeedManagementRepositories;
 
-namespace ATSPM.Application.Business.RouteSpeed
+namespace Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices.SegmentSpeed
 {
     public class RouteService
     {

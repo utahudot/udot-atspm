@@ -4,6 +4,589 @@
     "C:\\Users\\kford\\Projects\\udot-atspm\\Atspm\\SpeedManagementImporter\\SpeedManagementImporter.csproj": {}
   },
   "projects": {
+    "C:\\Users\\kford\\Projects\\udot-atspm\\Atspm\\Application\\Application.csproj": {
+      "version": "5.0.0-rc.1",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\kford\\Projects\\udot-atspm\\Atspm\\Application\\Application.csproj",
+        "projectName": "Utah.Udot.Atspm",
+        "projectPath": "C:\\Users\\kford\\Projects\\udot-atspm\\Atspm\\Application\\Application.csproj",
+        "packagesPath": "C:\\Users\\kford\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\kford\\Projects\\udot-atspm\\Atspm\\Application\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\kford\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net7.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net7.0": {
+            "targetAlias": "net7.0",
+            "projectReferences": {
+              "C:\\Users\\kford\\Projects\\udot-atspm\\Atspm\\Data\\Data.csproj": {
+                "projectPath": "C:\\Users\\kford\\Projects\\udot-atspm\\Atspm\\Data\\Data.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net7.0": {
+          "targetAlias": "net7.0",
+          "dependencies": {
+            "Google.Cloud.Diagnostics.Common": {
+              "target": "Package",
+              "version": "[5.0.0, )"
+            },
+            "Microsoft.CodeAnalysis": {
+              "target": "Package",
+              "version": "[4.9.2, )"
+            },
+            "Microsoft.CodeAnalysis.NetAnalyzers": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[7.0.0, )"
+            },
+            "Microsoft.Extensions.Logging": {
+              "target": "Package",
+              "version": "[7.0.0, )"
+            },
+            "Microsoft.Extensions.Logging.Abstractions": {
+              "target": "Package",
+              "version": "[7.0.0, )"
+            },
+            "Microsoft.Extensions.Logging.Console": {
+              "target": "Package",
+              "version": "[7.0.0, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.300\\RuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Users\\kford\\Projects\\udot-atspm\\Atspm\\Data\\Data.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\kford\\Projects\\udot-atspm\\Atspm\\Data\\Data.csproj",
+        "projectName": "Utah.Udot.Atspm.Data",
+        "projectPath": "C:\\Users\\kford\\Projects\\udot-atspm\\Atspm\\Data\\Data.csproj",
+        "packagesPath": "C:\\Users\\kford\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\kford\\Projects\\udot-atspm\\Atspm\\Data\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\kford\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net7.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net7.0": {
+            "targetAlias": "net7.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net7.0": {
+          "targetAlias": "net7.0",
+          "dependencies": {
+            "Duende.IdentityServer.EntityFramework.Storage": {
+              "target": "Package",
+              "version": "[6.3.6, )"
+            },
+            "EFCore.BulkExtensions": {
+              "target": "Package",
+              "version": "[7.1.6, )"
+            },
+            "Microsoft.AspNetCore.Identity.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[7.0.14, )"
+            },
+            "Microsoft.CodeAnalysis": {
+              "target": "Package",
+              "version": "[4.9.2, )"
+            },
+            "Microsoft.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[7.0.14, )"
+            },
+            "Microsoft.EntityFrameworkCore.Design": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[7.0.14, )"
+            },
+            "Microsoft.EntityFrameworkCore.Relational": {
+              "target": "Package",
+              "version": "[7.0.14, )"
+            },
+            "Newtonsoft.Json": {
+              "target": "Package",
+              "version": "[13.0.1, )"
+            },
+            "Npgsql.EntityFrameworkCore.PostgreSQL": {
+              "target": "Package",
+              "version": "[7.0.11, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.300\\RuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Users\\kford\\Projects\\udot-atspm\\Atspm\\Infrastructure\\Infrastructure.csproj": {
+      "version": "5.0.0-rc.1",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\kford\\Projects\\udot-atspm\\Atspm\\Infrastructure\\Infrastructure.csproj",
+        "projectName": "Utah.Udot.ATSPM.Infrastructure",
+        "projectPath": "C:\\Users\\kford\\Projects\\udot-atspm\\Atspm\\Infrastructure\\Infrastructure.csproj",
+        "packagesPath": "C:\\Users\\kford\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\kford\\Projects\\udot-atspm\\Atspm\\Infrastructure\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\kford\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net7.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net7.0": {
+            "targetAlias": "net7.0",
+            "projectReferences": {
+              "C:\\Users\\kford\\Projects\\udot-atspm\\Atspm\\Application\\Application.csproj": {
+                "projectPath": "C:\\Users\\kford\\Projects\\udot-atspm\\Atspm\\Application\\Application.csproj"
+              },
+              "C:\\Users\\kford\\Projects\\udot-atspm\\Atspm\\MySqlDatabaseProvider\\MySqlDatabaseProvider.csproj": {
+                "projectPath": "C:\\Users\\kford\\Projects\\udot-atspm\\Atspm\\MySqlDatabaseProvider\\MySqlDatabaseProvider.csproj"
+              },
+              "C:\\Users\\kford\\Projects\\udot-atspm\\Atspm\\OracleDatabaseProvider\\OracleDatabaseProvider.csproj": {
+                "projectPath": "C:\\Users\\kford\\Projects\\udot-atspm\\Atspm\\OracleDatabaseProvider\\OracleDatabaseProvider.csproj"
+              },
+              "C:\\Users\\kford\\Projects\\udot-atspm\\Atspm\\PostgreSQLDatabaseProvider\\PostgreSQLDatabaseProvider.csproj": {
+                "projectPath": "C:\\Users\\kford\\Projects\\udot-atspm\\Atspm\\PostgreSQLDatabaseProvider\\PostgreSQLDatabaseProvider.csproj"
+              },
+              "C:\\Users\\kford\\Projects\\udot-atspm\\Atspm\\SqlDatabaseProvider\\SqlDatabaseProvider.csproj": {
+                "projectPath": "C:\\Users\\kford\\Projects\\udot-atspm\\Atspm\\SqlDatabaseProvider\\SqlDatabaseProvider.csproj"
+              },
+              "C:\\Users\\kford\\Projects\\udot-atspm\\Atspm\\SqlLiteDatabaseProvider\\SqlLiteDatabaseProvider.csproj": {
+                "projectPath": "C:\\Users\\kford\\Projects\\udot-atspm\\Atspm\\SqlLiteDatabaseProvider\\SqlLiteDatabaseProvider.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net7.0": {
+          "targetAlias": "net7.0",
+          "dependencies": {
+            "FluentFTP": {
+              "target": "Package",
+              "version": "[44.0.1, )"
+            },
+            "Google.Cloud.BigQuery.V2": {
+              "target": "Package",
+              "version": "[3.10.0, )"
+            },
+            "Google.Cloud.Diagnostics.Common": {
+              "target": "Package",
+              "version": "[5.0.0, )"
+            },
+            "MailKit": {
+              "target": "Package",
+              "version": "[4.5.0, )"
+            },
+            "Microsoft.AspNetCore.Authentication.JwtBearer": {
+              "target": "Package",
+              "version": "[7.0.14, )"
+            },
+            "Microsoft.AspNetCore.Authentication.OpenIdConnect": {
+              "target": "Package",
+              "version": "[7.0.20, )"
+            },
+            "Microsoft.CodeAnalysis": {
+              "target": "Package",
+              "version": "[4.9.2, )"
+            },
+            "Microsoft.CodeAnalysis.NetAnalyzers": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[7.0.0, )"
+            },
+            "Microsoft.EntityFrameworkCore.Proxies": {
+              "target": "Package",
+              "version": "[7.0.14, )"
+            },
+            "Microsoft.Extensions.Hosting.Abstractions": {
+              "target": "Package",
+              "version": "[7.0.0, )"
+            },
+            "Microsoft.Extensions.Logging.Abstractions": {
+              "target": "Package",
+              "version": "[7.0.0, )"
+            },
+            "OData.Swagger": {
+              "target": "Package",
+              "version": "[1.0.0, )"
+            },
+            "Parquet.Net": {
+              "target": "Package",
+              "version": "[3.10.0, )"
+            },
+            "SSH.NET": {
+              "target": "Package",
+              "version": "[2020.0.2, )"
+            },
+            "SendGrid": {
+              "target": "Package",
+              "version": "[9.29.3, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.300\\RuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Users\\kford\\Projects\\udot-atspm\\Atspm\\MySqlDatabaseProvider\\MySqlDatabaseProvider.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\kford\\Projects\\udot-atspm\\Atspm\\MySqlDatabaseProvider\\MySqlDatabaseProvider.csproj",
+        "projectName": "Utah.Udot.ATSPM.MySqlDatabaseProvider",
+        "projectPath": "C:\\Users\\kford\\Projects\\udot-atspm\\Atspm\\MySqlDatabaseProvider\\MySqlDatabaseProvider.csproj",
+        "packagesPath": "C:\\Users\\kford\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\kford\\Projects\\udot-atspm\\Atspm\\MySqlDatabaseProvider\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\kford\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net7.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net7.0": {
+            "targetAlias": "net7.0",
+            "projectReferences": {
+              "C:\\Users\\kford\\Projects\\udot-atspm\\Atspm\\Data\\Data.csproj": {
+                "projectPath": "C:\\Users\\kford\\Projects\\udot-atspm\\Atspm\\Data\\Data.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net7.0": {
+          "targetAlias": "net7.0",
+          "dependencies": {
+            "Microsoft.CodeAnalysis": {
+              "target": "Package",
+              "version": "[4.9.2, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.300\\RuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Users\\kford\\Projects\\udot-atspm\\Atspm\\OracleDatabaseProvider\\OracleDatabaseProvider.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\kford\\Projects\\udot-atspm\\Atspm\\OracleDatabaseProvider\\OracleDatabaseProvider.csproj",
+        "projectName": "Utah.Udot.ATSPM.OracleDatabaseProvider",
+        "projectPath": "C:\\Users\\kford\\Projects\\udot-atspm\\Atspm\\OracleDatabaseProvider\\OracleDatabaseProvider.csproj",
+        "packagesPath": "C:\\Users\\kford\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\kford\\Projects\\udot-atspm\\Atspm\\OracleDatabaseProvider\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\kford\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net7.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net7.0": {
+            "targetAlias": "net7.0",
+            "projectReferences": {
+              "C:\\Users\\kford\\Projects\\udot-atspm\\Atspm\\Data\\Data.csproj": {
+                "projectPath": "C:\\Users\\kford\\Projects\\udot-atspm\\Atspm\\Data\\Data.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net7.0": {
+          "targetAlias": "net7.0",
+          "dependencies": {
+            "Microsoft.CodeAnalysis": {
+              "target": "Package",
+              "version": "[4.9.2, )"
+            },
+            "Oracle.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[7.21.12, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.300\\RuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Users\\kford\\Projects\\udot-atspm\\Atspm\\PostgreSQLDatabaseProvider\\PostgreSQLDatabaseProvider.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\kford\\Projects\\udot-atspm\\Atspm\\PostgreSQLDatabaseProvider\\PostgreSQLDatabaseProvider.csproj",
+        "projectName": "Utah.Udot.ATSPM.PostgreSQLDatabaseProvider",
+        "projectPath": "C:\\Users\\kford\\Projects\\udot-atspm\\Atspm\\PostgreSQLDatabaseProvider\\PostgreSQLDatabaseProvider.csproj",
+        "packagesPath": "C:\\Users\\kford\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\kford\\Projects\\udot-atspm\\Atspm\\PostgreSQLDatabaseProvider\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\kford\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net7.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net7.0": {
+            "targetAlias": "net7.0",
+            "projectReferences": {
+              "C:\\Users\\kford\\Projects\\udot-atspm\\Atspm\\Data\\Data.csproj": {
+                "projectPath": "C:\\Users\\kford\\Projects\\udot-atspm\\Atspm\\Data\\Data.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net7.0": {
+          "targetAlias": "net7.0",
+          "dependencies": {
+            "Microsoft.CodeAnalysis": {
+              "target": "Package",
+              "version": "[4.9.2, )"
+            },
+            "Npgsql.EntityFrameworkCore.PostgreSQL": {
+              "target": "Package",
+              "version": "[7.0.11, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.300\\RuntimeIdentifierGraph.json"
+        }
+      }
+    },
     "C:\\Users\\kford\\Projects\\udot-atspm\\Atspm\\SpeedManagementImporter\\SpeedManagementImporter.csproj": {
       "version": "1.0.0",
       "restore": {
@@ -32,7 +615,14 @@
         "frameworks": {
           "net8.0": {
             "targetAlias": "net8.0",
-            "projectReferences": {}
+            "projectReferences": {
+              "C:\\Users\\kford\\Projects\\udot-atspm\\Atspm\\Application\\Application.csproj": {
+                "projectPath": "C:\\Users\\kford\\Projects\\udot-atspm\\Atspm\\Application\\Application.csproj"
+              },
+              "C:\\Users\\kford\\Projects\\udot-atspm\\Atspm\\Infrastructure\\Infrastructure.csproj": {
+                "projectPath": "C:\\Users\\kford\\Projects\\udot-atspm\\Atspm\\Infrastructure\\Infrastructure.csproj"
+              }
+            }
           }
         },
         "warningProperties": {
@@ -49,6 +639,28 @@
       "frameworks": {
         "net8.0": {
           "targetAlias": "net8.0",
+          "dependencies": {
+            "CsvHelper": {
+              "target": "Package",
+              "version": "[33.0.1, )"
+            },
+            "Google.Cloud.BigQuery.V2": {
+              "target": "Package",
+              "version": "[3.10.0, )"
+            },
+            "Microsoft.Extensions.Configuration.CommandLine": {
+              "target": "Package",
+              "version": "[9.0.0-preview.7.24405.7, )"
+            },
+            "System.CommandLine": {
+              "target": "Package",
+              "version": "[2.0.0-beta4.22272.1, )"
+            },
+            "System.CommandLine.NamingConventionBinder": {
+              "target": "Package",
+              "version": "[2.0.0-beta4.22272.1, )"
+            }
+          },
           "imports": [
             "net461",
             "net462",
@@ -66,6 +678,160 @@
             }
           },
           "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.300/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Users\\kford\\Projects\\udot-atspm\\Atspm\\SqlDatabaseProvider\\SqlDatabaseProvider.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\kford\\Projects\\udot-atspm\\Atspm\\SqlDatabaseProvider\\SqlDatabaseProvider.csproj",
+        "projectName": "Utah.Udot.ATSPM.SqlDatabaseProvider",
+        "projectPath": "C:\\Users\\kford\\Projects\\udot-atspm\\Atspm\\SqlDatabaseProvider\\SqlDatabaseProvider.csproj",
+        "packagesPath": "C:\\Users\\kford\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\kford\\Projects\\udot-atspm\\Atspm\\SqlDatabaseProvider\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\kford\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net7.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net7.0": {
+            "targetAlias": "net7.0",
+            "projectReferences": {
+              "C:\\Users\\kford\\Projects\\udot-atspm\\Atspm\\Data\\Data.csproj": {
+                "projectPath": "C:\\Users\\kford\\Projects\\udot-atspm\\Atspm\\Data\\Data.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net7.0": {
+          "targetAlias": "net7.0",
+          "dependencies": {
+            "Microsoft.CodeAnalysis": {
+              "target": "Package",
+              "version": "[4.9.2, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.300\\RuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Users\\kford\\Projects\\udot-atspm\\Atspm\\SqlLiteDatabaseProvider\\SqlLiteDatabaseProvider.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\kford\\Projects\\udot-atspm\\Atspm\\SqlLiteDatabaseProvider\\SqlLiteDatabaseProvider.csproj",
+        "projectName": "Utah.Udot.ATSPM.SqlLiteDatabaseProvider",
+        "projectPath": "C:\\Users\\kford\\Projects\\udot-atspm\\Atspm\\SqlLiteDatabaseProvider\\SqlLiteDatabaseProvider.csproj",
+        "packagesPath": "C:\\Users\\kford\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\kford\\Projects\\udot-atspm\\Atspm\\SqlLiteDatabaseProvider\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\kford\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net7.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net7.0": {
+            "targetAlias": "net7.0",
+            "projectReferences": {
+              "C:\\Users\\kford\\Projects\\udot-atspm\\Atspm\\Data\\Data.csproj": {
+                "projectPath": "C:\\Users\\kford\\Projects\\udot-atspm\\Atspm\\Data\\Data.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net7.0": {
+          "targetAlias": "net7.0",
+          "dependencies": {
+            "Microsoft.CodeAnalysis": {
+              "target": "Package",
+              "version": "[4.9.2, )"
+            },
+            "Microsoft.EntityFrameworkCore.Sqlite": {
+              "target": "Package",
+              "version": "[7.0.0, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.300\\RuntimeIdentifierGraph.json"
         }
       }
     }

@@ -1,15 +1,11 @@
-﻿using ATSPM.Application.Repositories.SpeedManagementRepositories;
-using ATSPM.Data.Models.SpeedManagementConfigModels;
-using Google.Cloud.BigQuery.V2;
+﻿using Google.Cloud.BigQuery.V2;
 using Microsoft.Extensions.Logging;
-using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
+using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.Config;
+using Utah.Udot.Atspm.Repositories.SpeedManagementRepositories;
 
-namespace ATSPM.Infrastructure.Repositories.SpeedManagementRepositories
+namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositories
 {
     public class TempDataBQRepository : ATSPMRepositoryBQBase<TempData>, ITempDataRepository
     {

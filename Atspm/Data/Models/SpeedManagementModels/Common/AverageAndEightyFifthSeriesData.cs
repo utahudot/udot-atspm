@@ -1,4 +1,4 @@
-﻿namespace ATSPM.Data.Models.SpeedManagement.Common
+﻿namespace Utah.Udot.Atspm.Data.Models.SpeedManagementModels.Common
 {
     public class AverageAndEightyFifthSeriesData
     {

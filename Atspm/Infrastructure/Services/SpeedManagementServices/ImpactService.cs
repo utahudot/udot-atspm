@@ -1,11 +1,7 @@
-﻿using ATSPM.Application.Repositories.SpeedManagementRepositories;
-using ATSPM.Data.Models.SpeedManagementConfigModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.Config;
+using Utah.Udot.Atspm.Repositories.SpeedManagementRepositories;
 
-namespace ATSPM.Infrastructure.Services.SpeedManagementServices
+namespace Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices
 {
     public class ImpactService
     {
@@ -148,10 +144,10 @@ namespace ATSPM.Infrastructure.Services.SpeedManagementServices
         //PRIVATE FUNCTIONS//
         /////////////////////
 
-        private async Task<List<Data.Models.SpeedManagementConfigModels.Segment>> GetImpactTypesAsync(List<Guid> ids)
+        private async Task<List<Segment>> GetImpactTypesAsync(List<Guid> ids)
         {
             var tasks = ids.Select(id => segmentRepository.LookupAsync(id));
-            Data.Models.SpeedManagementConfigModels.Segment[] routes = await Task.WhenAll(tasks);
+            Segment[] routes = await Task.WhenAll(tasks);
             return routes.ToList();
         }
 

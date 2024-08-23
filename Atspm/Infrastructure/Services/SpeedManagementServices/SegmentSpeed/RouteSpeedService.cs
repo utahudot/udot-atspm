@@ -1,11 +1,8 @@
-﻿using ATSPM.Application.Repositories.SpeedManagementRepositories;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.SegmentSpeed;
+using Utah.Udot.Atspm.Repositories.SpeedManagementRepositories;
 
-namespace ATSPM.Application.Business.RouteSpeed
+namespace Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices.SegmentSpeed
 {
-
     public enum AnalysisPeriod
     {
         AllDay,
@@ -45,8 +42,8 @@ namespace ATSPM.Application.Business.RouteSpeed
 
             foreach (var sourceId in sources)
             {
-                var monthlyAverages = await this.hourlySpeedRepository.GetMonthlyAveragesAsync(options.SegmentId, options.StartDate, options.EndDate, commaSeparatedDays, sourceId);
-                var dailyAverages = await this.hourlySpeedRepository.GetDailyAveragesAsync(options.SegmentId, options.StartDate, options.EndDate, commaSeparatedDays);
+                var monthlyAverages = await hourlySpeedRepository.GetMonthlyAveragesAsync(options.SegmentId, options.StartDate, options.EndDate, commaSeparatedDays, sourceId);
+                var dailyAverages = await hourlySpeedRepository.GetDailyAveragesAsync(options.SegmentId, options.StartDate, options.EndDate, commaSeparatedDays);
 
                 routeSpeeds.MonthlyHistoricalRouteData.Add(new MonthlyHistoricalRouteData
                 {

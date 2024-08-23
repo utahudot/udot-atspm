@@ -1,4 +1,4 @@
-﻿namespace ATSPM.Data.Models.SpeedManagement.MonthlyAggregation;
+﻿namespace Utah.Udot.Atspm.Data.Models.SpeedManagementModels.SpeedOverDistance;
 
 public class SpeedOverDistanceDto
 {

@@ -1,7 +1,6 @@
-﻿
-using ATSPM.Data.Models.SpeedManagement.Common;
+﻿using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.Common;
 
-namespace ATSPM.Data.Models.SpeedManagement.CongestionTracking
+namespace Utah.Udot.Atspm.Data.Models.SpeedManagementModels.CongestionTracking
 {
     public class CongestionTrackingDto
     {

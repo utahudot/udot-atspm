@@ -1,10 +1,7 @@
-﻿using ATSPM.Application.Repositories.SpeedManagementRepositories;
-using ATSPM.Data.Models.SpeedManagementAggregation;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using Utah.Udot.Atspm.Data.Models.SpeedManagementModels;
+using Utah.Udot.Atspm.Repositories.SpeedManagementRepositories;
 
-namespace ATSPM.Infrastructure.Services.SpeedManagementServices
+namespace Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices
 {
     public class HourlySpeedService
     {

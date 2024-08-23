@@ -1,12 +1,9 @@
-﻿using ATSPM.Application.Business.RouteSpeed;
-using ATSPM.Data.Models.SpeedManagement.Common;
-using ATSPM.Data.Models.SpeedManagementAggregation;
-using ATSPM.Domain.Services;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using Utah.Udot.Atspm.Data.Models.SpeedManagementModels;
+using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.Common;
+using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.SegmentSpeed;
+using Utah.Udot.NetStandardToolkit.Services;
 
-namespace ATSPM.Application.Repositories.SpeedManagementRepositories
+namespace Utah.Udot.Atspm.Repositories.SpeedManagementRepositories
 {
     public interface IHourlySpeedRepository : IAsyncRepository<HourlySpeed>
     {
