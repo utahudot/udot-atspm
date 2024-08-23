@@ -2,7 +2,7 @@ import Sidebar from '@/components/sidebar/Sidebar'
 import Toast from '@/components/toast'
 import { Box, useTheme } from '@mui/material'
 import React from 'react'
-import Topbar from './topbar'
+import Topbar, { topbarHeight } from './topbar'
 
 interface LayoutProps {
   children: React.ReactNode
@@ -23,7 +23,7 @@ export default function Layout({ children }: LayoutProps) {
         <Topbar />
         <Box
           sx={{
-            minHeight: `calc(100vh - 73px)`,
+            minHeight: `calc(100vh - ${topbarHeight}px)`,
             width: '100%',
             p: 3,
             transition: 'width 0.3s ease-out',

@@ -11,6 +11,5 @@ export const getEnv = async () => {
   }
 
   const response = await fetch(url)
-  const env = await response.json()
-  return env
+  return await response.json()
 }
