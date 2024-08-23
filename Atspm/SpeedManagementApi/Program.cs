@@ -80,7 +80,7 @@ builder.Host.ConfigureServices((h, s) =>
         var filePath = Path.Combine(AppContext.BaseDirectory, fileName);
 
         // integrate xml comments
-        o.IncludeXmlComments(filePath);
+        //o.IncludeXmlComments(filePath);
     });
     var allowedHosts = builder.Configuration.GetSection("AllowedHosts").Get<string>();
     s.AddCors(options =>
