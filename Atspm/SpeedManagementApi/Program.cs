@@ -13,6 +13,7 @@ using System.Text.Json.Serialization;
 using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.CongestionTracking;
 using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.SpeedOverTime;
 using Utah.Udot.Atspm.DataApi.Configuration;
+using Utah.Udot.Atspm.Infrastructure.Extensions;
 using Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositories;
 using Utah.Udot.Atspm.Repositories.SpeedManagementRepositories;
 using Utah.Udot.Atspm.Services;
@@ -98,10 +99,10 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddAtspmEFConfigRepositories();
     s.AddAtspmEFAggregationRepositories();
 
-    s.AddAtspmAuthentication(h, builder);
-    s.AddAtspmAuthorization(h);
+    s.AddAtspmAuthentication(h);
+    s.AddAtspmAuthorization();
 
-    s.AddScoped<IControllerEventLogRepository, ControllerEventLogEFRepository>();
+    //s.AddScoped<IControllerEventLogRepository, ControllerEventLogEFRepository>();
     s.AddSingleton(provider =>
     {
         var projectId = builder.Configuration["BigQuery:ProjectId"];
