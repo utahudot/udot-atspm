@@ -166,7 +166,7 @@ const LocationMap = ({
   }
 
   if (!initialLatLong) {
-    return <div>Loading map...</div> // or some other loading state
+    return <div>Loading...</div> // or some other loading state
   }
 
   return (
