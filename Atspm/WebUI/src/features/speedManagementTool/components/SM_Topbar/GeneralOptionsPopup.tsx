@@ -1,9 +1,9 @@
-import { StyledComponentHeader } from '@/components/HeaderStyling/StyledComponentHeader'
 import { DataSource } from '@/features/speedManagementTool/enums'
 import useStore from '@/features/speedManagementTool/speedManagementStore'
 import { Box, ToggleButton, ToggleButtonGroup } from '@mui/material'
+import OptionsPopupWrapper from './OptionsPopupWrapper'
 
-export default function GeneralOptions() {
+export default function GeneralOptionsPopup() {
   const { routeSpeedRequest, setRouteSpeedRequest } = useStore()
 
   const handleDataSourceChange = (
@@ -18,18 +18,21 @@ export default function GeneralOptions() {
     }
   }
 
-  const handleViolationsThresholdChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setRouteSpeedRequest({
-      ...routeSpeedRequest,
-      violationThreshold: parseInt(event.target.value),
-    })
+  const getDataSourceLabel = () => {
+    switch (routeSpeedRequest.sourceId) {
+      case DataSource.ATSPM:
+        return 'ATSPM'
+      case DataSource.PeMS:
+        return 'PeMS'
+      case DataSource.ClearGuide:
+        return 'ClearGuide'
+      default:
+        return 'Select Data Source'
+    }
   }
 
   return (
-    <>
-      <StyledComponentHeader header={'Data Source'} />
+    <OptionsPopupWrapper label="data-source" getLabel={getDataSourceLabel}>
       <Box padding={'10px'}>
         <Box display="flex" alignItems={'center'}>
           <ToggleButtonGroup
@@ -59,6 +62,6 @@ export default function GeneralOptions() {
           </ToggleButtonGroup>
         </Box>
       </Box>
-    </>
+    </OptionsPopupWrapper>
   )
 }

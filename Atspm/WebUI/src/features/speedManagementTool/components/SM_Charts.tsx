@@ -14,7 +14,7 @@ import {
 import { useState } from 'react'
 import CongestionTrackingOptions, {
   CongestionTrackingOptionsValues,
-} from './CongestionTrackingOptions'
+} from './ChartOptions/CongestionTrackingOptions'
 // import SpeedOverTimeOptions from './SpeedOverTimeOptions';
 
 enum SM_ChartType {

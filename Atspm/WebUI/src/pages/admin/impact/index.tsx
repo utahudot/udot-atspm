@@ -6,7 +6,7 @@ import { PageNames, useViewPage } from '@/features/identity/pagesCheck'
 import { useDeleteImpacts } from '@/features/speedManagementTool/api/deleteImpact'
 import { useGetImpacts } from '@/features/speedManagementTool/api/getImpacts'
 import { usePostImpacts } from '@/features/speedManagementTool/api/postImpacts'
-import ImpactEditorModal from '@/features/speedManagementTool/modals/impactEditorModal'
+import ImpactEditorModal from '@/features/speedManagementTool/components/ImpactEditorModal'
 import { Impact, ImpactType } from '@/features/speedManagementTool/types/impact'
 import { Backdrop, CircularProgress } from '@mui/material'
 import { GridColDef } from '@mui/x-data-grid'
@@ -27,20 +27,36 @@ const ImpactAdmin = () => {
   const { data: impactsData, isLoading } = useGetImpacts()
 
   const HandleCreateImpact = async (impactData: Impact) => {
-    const { description, start,end,startMile,endMile, impactTypeIds, impactTypes} = impactData
+    const {
+      description,
+      start,
+      end,
+      startMile,
+      endMile,
+      impactTypeIds,
+      impactTypes,
+    } = impactData
     try {
-        await createMutation.mutateAsync({ description, start,end,startMile,endMile, impactTypeIds, impactTypes})
+      await createMutation.mutateAsync({
+        description,
+        start,
+        end,
+        startMile,
+        endMile,
+        impactTypeIds,
+        impactTypes,
+      })
     } catch (error) {
-        console.error('Mutation Error:', error)
+      console.error('Mutation Error:', error)
     }
   }
 
   const HandleDeleteImpact = async (impactData: Impact) => {
     const { id } = impactData
     try {
-        await deleteMutation.mutateAsync(id)
+      await deleteMutation.mutateAsync(id)
     } catch (error) {
-        console.error('Mutation Error:', error)
+      console.error('Mutation Error:', error)
     }
   }
 
@@ -94,7 +110,7 @@ const ImpactAdmin = () => {
       endMile: obj.endMile,
       impactTypeId: obj.impactTypeId,
       impactTypes: obj.impactTypes,
-      impactTypesNames: impactTypeNames || "none"
+      impactTypesNames: impactTypeNames || 'none',
     }
   })
 
@@ -105,7 +121,7 @@ const ImpactAdmin = () => {
     startMile: '',
     endMile: '',
     impactTypes: '',
-    impactTypesNames:''
+    impactTypesNames: '',
   }
 
   return (

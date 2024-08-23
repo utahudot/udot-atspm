@@ -19,7 +19,7 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 })
 
 module.exports = withBundleAnalyzer({
-  reactStrictMode: false,
+  reactStrictMode: true,
   transpilePackages: ['react-leaflet'],
   output: 'standalone',
   webpack: (config) => {

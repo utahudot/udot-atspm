@@ -1,9 +1,10 @@
-import { StyledComponentHeader } from '@/components/HeaderStyling/StyledComponentHeader'
+import OptionsPopupWrapper from '@/features/speedManagementTool/components/SM_Topbar/OptionsPopupWrapper'
 import useStore from '@/features/speedManagementTool/speedManagementStore'
 import { Box, TextField } from '@mui/material'
+import { format } from 'date-fns'
 import { ChangeEvent } from 'react'
 
-export default function DateRangeOptions() {
+export default function DateRangeOptionsPopup() {
   const { setRouteSpeedRequest, routeSpeedRequest } = useStore()
 
   const handleStartDateChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -17,9 +18,15 @@ export default function DateRangeOptions() {
     setRouteSpeedRequest({ ...routeSpeedRequest, endDate: event.target.value })
   }
 
+  const getDateRangeLabel = () => {
+    const { startDate, endDate } = routeSpeedRequest
+    const formattedStartDate = format(new Date(startDate), 'MMM d, yyyy')
+    const formattedEndDate = format(new Date(endDate), 'MMM d, yyyy')
+    return `${formattedStartDate} - ${formattedEndDate}`
+  }
+
   return (
-    <>
-      <StyledComponentHeader header={'Date Range'} />
+    <OptionsPopupWrapper label="date-range" getLabel={getDateRangeLabel}>
       <Box padding={'10px'}>
         <Box display="flex" marginTop={'10px'}>
           <Box padding={'10px'} paddingLeft={'0px'}>
@@ -43,6 +50,6 @@ export default function DateRangeOptions() {
           </Box>
         </Box>
       </Box>
-    </>
+    </OptionsPopupWrapper>
   )
 }

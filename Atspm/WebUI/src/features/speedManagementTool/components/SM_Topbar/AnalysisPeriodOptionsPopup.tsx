@@ -1,7 +1,5 @@
-import useStore from '@/features/speedManagementTool/speedManagementStore'
-
-import { StyledComponentHeader } from '@/components/HeaderStyling/StyledComponentHeader'
 import { AnalysisPeriod } from '@/features/speedManagementTool/enums'
+import useStore from '@/features/speedManagementTool/speedManagementStore'
 import {
   Box,
   FormControl,
@@ -10,16 +8,38 @@ import {
   RadioGroup,
 } from '@mui/material'
 import { TimePicker } from '@mui/x-date-pickers'
+import { format } from 'date-fns'
+import OptionsPopupWrapper from './OptionsPopupWrapper'
 
-const AnalysisPeriodOptions = () => {
+export default function AnalysisPeriodOptionsPopup() {
   const { routeSpeedRequest, setRouteSpeedRequest } = useStore()
 
-  // Convert enum to string
   const analysisPeriodString = AnalysisPeriod[routeSpeedRequest.analysisPeriod]
 
+  const getAnalysisPeriodLabel = () => {
+    switch (routeSpeedRequest.analysisPeriod) {
+      case AnalysisPeriod.AllDay:
+        return 'Whole Day'
+      case AnalysisPeriod.PeekPeriod:
+        return 'Peak Periods'
+      case AnalysisPeriod.CustomHour:
+        const formattedStartTime = routeSpeedRequest.customStartTime
+          ? format(routeSpeedRequest.customStartTime, 'HH:mm')
+          : 'N/A'
+        const formattedEndTime = routeSpeedRequest.customEndTime
+          ? format(routeSpeedRequest.customEndTime, 'HH:mm')
+          : 'N/A'
+        return `Custom: ${formattedStartTime} - ${formattedEndTime}`
+      default:
+        return 'Analysis Period'
+    }
+  }
+
   return (
-    <>
-      <StyledComponentHeader header={'Analysis Period'} />
+    <OptionsPopupWrapper
+      label="analysis-period"
+      getLabel={getAnalysisPeriodLabel}
+    >
       <Box paddingX={'10px'}>
         <FormControl component="fieldset">
           <RadioGroup
@@ -34,11 +54,6 @@ const AnalysisPeriodOptions = () => {
               })
             }}
           >
-            {/* <FormControlLabel
-            value="MorningPeak"
-            control={<Radio />}
-            label="Morning Post Peak (10AM - 12PM)"
-          /> */}
             <FormControlLabel
               value="AllDay"
               control={<Radio />}
@@ -59,7 +74,7 @@ const AnalysisPeriodOptions = () => {
         </FormControl>
 
         {routeSpeedRequest.analysisPeriod === AnalysisPeriod.CustomHour && (
-          <Box display="flex" gap={2}>
+          <Box display="flex" gap={2} marginTop="10px">
             <Box>
               <TimePicker
                 label="Start Time"
@@ -94,8 +109,6 @@ const AnalysisPeriodOptions = () => {
           </Box>
         )}
       </Box>
-    </>
+    </OptionsPopupWrapper>
   )
 }
-
-export default AnalysisPeriodOptions

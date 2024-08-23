@@ -175,8 +175,6 @@ export function createDailyAverageChart(
     series: seriesData,
   }
 
-  console.log('dfsd', option) // Log the option object for debugging
-
   return option
 }
 

@@ -1,32 +1,47 @@
 import FullScreenToggleButton from '@/components/fullScreenLayoutButton'
-import { MAP_DEFAULT_LATITUDE, MAP_DEFAULT_LONGITUDE } from '@/config'
-import RoutesToggle from '@/features/speedManagementTool/components/detailsPanel/RoutesToggle'
-import ViolationRangeSlider from '@/features/speedManagementTool/components/detailsPanel/ViolationRangeSlider'
+import RoutesToggle from '@/features/speedManagementTool/components/RoutesToggle'
+import ViolationRangeSlider from '@/features/speedManagementTool/components/RoutesToggle/ViolationRangeSlider'
 import { RouteRenderOption } from '@/features/speedManagementTool/enums'
 import useSpeedManagementStore from '@/features/speedManagementTool/speedManagementStore'
 import { SpeedManagementRoute } from '@/features/speedManagementTool/types/routes'
 import { ViolationColors } from '@/features/speedManagementTool/utils/colors'
+import { getEnv } from '@/lib/getEnv'
 import DisplaySettingsOutlinedIcon from '@mui/icons-material/DisplaySettingsOutlined'
 import { Box, Button, Paper, Popper } from '@mui/material'
 import L, { Map as LeafletMap } from 'leaflet'
-import React, { memo, useState } from 'react'
+import React, { memo, useEffect, useState } from 'react'
 import { MapContainer, Polyline, TileLayer } from 'react-leaflet'
-import SpeedLegend from './Legend'
+import SpeedLegend from './SM_Legend'
 
-type SpeedMapProps = {
-  fullScreenRef?: React.RefObject<HTMLDivElement> | null // Nullable fullScreenRef
-  routes: SpeedManagementRoute[] // Array of routes
-  setSelectedRouteId?: ((routeId: number) => void) | null // Nullable setSelectedRouteId
+type SM_MapProps = {
+  fullScreenRef?: React.RefObject<HTMLDivElement> | null
+  routes: SpeedManagementRoute[]
+  setSelectedRouteId?: ((routeId: number) => void) | null
 }
 
-const SpeedMap = ({
+const SM_Map = ({
   fullScreenRef = null,
   routes,
   setSelectedRouteId = null,
-}: SpeedMapProps) => {
+}: SM_MapProps) => {
   const [mapRef, setMapRef] = useState<LeafletMap | null>(null)
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null)
+  const [initialLatLong, setInitialLatLong] = useState<[number, number] | null>(
+    null
+  )
+
   const { routeRenderOption, mediumMin, mediumMax } = useSpeedManagementStore()
+
+  useEffect(() => {
+    const fetchEnv = async () => {
+      const env = await getEnv()
+      setInitialLatLong([
+        parseFloat(env.MAP_DEFAULT_LATITUDE),
+        parseFloat(env.MAP_DEFAULT_LONGITUDE),
+      ])
+    }
+    fetchEnv()
+  }, [])
 
   const getColor = (route: SpeedManagementRoute) => {
     let field
@@ -88,10 +103,14 @@ const SpeedMap = ({
   const open = Boolean(anchorEl)
   const id = open ? 'settings-popover' : undefined
 
+  if (!initialLatLong) {
+    return <div>Loading...</div>
+  }
+
   return (
     <Box sx={{ height: '100%', width: '100%' }}>
       <MapContainer
-        center={[MAP_DEFAULT_LATITUDE, MAP_DEFAULT_LONGITUDE]}
+        center={initialLatLong}
         zoom={6}
         scrollWheelZoom={true}
         style={{
@@ -106,7 +125,7 @@ const SpeedMap = ({
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openaip.net/">openAIP Data</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-NC-SA</a>)'
-          url="https://tiles.stadiamaps.com/tiles/stamen_terrain/{z}/{x}/{y}{r}.png"
+          url="https://tiles.stadiamaps.com/tiles/alidade_bright/{z}/{x}/{y}{r}.png"
         />
         {fullScreenRef && (
           <Box
@@ -162,10 +181,13 @@ const SpeedMap = ({
                 setSelectedRouteId &&
                 setSelectedRouteId(route.properties.route_id),
               mouseover: (e) => {
-                e.target.setStyle({ weight: 4 })
+                e.target.setStyle({ weight: 4, color: 'blue' })
               },
               mouseout: (e) => {
-                e.target.setStyle({ weight: 2.5 })
+                e.target.setStyle({
+                  weight: 2.5,
+                  color: getColor(route),
+                })
               },
             }}
           />
@@ -176,4 +198,4 @@ const SpeedMap = ({
   )
 }
 
-export default memo(SpeedMap)
+export default memo(SM_Map)

@@ -4,13 +4,11 @@ import { speedAxios } from '@/lib/axios'
 import { ExtractFnReturnType, QueryConfig } from '@/lib/react-query'
 import { HistoricalDataResponse } from '@/types/historicalData'
 
-interface HistoricalDataParams {
-  routeId: string
+export interface HistoricalDataParams {
+  segmentId: string
   startDate: string
   endDate: string
-  startTime: string
-  endTime: string
-  daysOfWeek: string
+  daysOfWeek: number[]
 }
 
 export const getHistoricalData = async (
@@ -25,17 +23,14 @@ export const getHistoricalData = async (
     startDate: newStartDate,
   }
 
+  console.log('requestBody', requestBody)
+
   // Make the POST request with params in the body
   const response = await speedAxios.post<HistoricalDataResponse>(
     `/SpeedManagement/GetHistoricalSpeeds`,
-    {
-      segmentId: params.routeId,
-      startDate: newStartDate,
-      endDate: '2024-08-21',
-      daysOfWeek: [0, 2, 3, 4, 5, 6],
-    }
+    requestBody
   )
-  return response.data
+  return response
 }
 
 export function getPriorDate(dateString: string) {

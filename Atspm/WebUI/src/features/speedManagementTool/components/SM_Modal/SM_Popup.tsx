@@ -1,5 +1,5 @@
-import ChartsContainer from '@/features/speedManagementTool/components/detailsPanel/ChartsContainer'
 import SM_Charts from '@/features/speedManagementTool/components/SM_Charts'
+import ChartsContainer from '@/features/speedManagementTool/components/SM_Modal/ChartsContainer'
 import { SpeedManagementRoute } from '@/features/speedManagementTool/types/routes'
 import ArrowBackIosNewOutlinedIcon from '@mui/icons-material/ArrowBackIosNewOutlined'
 import { TabContext, TabList, TabPanel } from '@mui/lab'
@@ -15,10 +15,7 @@ import {
 import dynamic from 'next/dynamic'
 import { useState } from 'react'
 
-const StaticMap = dynamic(
-  () => import('@/features/speedManagementTool/components/StaticMap'),
-  { ssr: false }
-)
+const StaticMap = dynamic(() => import('./StaticMap'), { ssr: false })
 
 type SM_PopupProps = {
   route: SpeedManagementRoute
