@@ -1,9 +1,9 @@
-﻿using ATSPM.Application.Repositories.SpeedManagementRepositories;
-using ATSPM.Data.Models.SpeedManagement.MonthlyAggregation;
-using ATSPM.Data.Models.SpeedManagementAggregation;
-using ATSPM.Data.Models.SpeedManagementConfigModels;
-using ATSPM.Infrastructure.Services.SpeedManagementServices;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using Utah.Udot.Atspm.Data.Models.SpeedManagementModels;
+using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.Config;
+using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.SpeedFromImpact;
+using Utah.Udot.Atspm.Repositories.SpeedManagementRepositories;
+using Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices;
 
 namespace SpeedManagementApi.Controllers
 {

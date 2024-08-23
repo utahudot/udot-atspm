@@ -1,7 +1,6 @@
-﻿using ATSPM.Application.Business;
-using ATSPM.Application.Repositories.SpeedManagementRepositories;
-using ATSPM.Data.Models.SpeedManagement.CongestionTracking;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.CongestionTracking;
+using Utah.Udot.Atspm.Services;
 
 namespace SpeedManagementApi.Controllers
 {
@@ -9,6 +8,6 @@ namespace SpeedManagementApi.Controllers
     [Route("[controller]")]
     public class CongestionTrackingController : SpeedBaseController<CongestionTrackingOptions, CongestionTrackingDto>
     {
-        public CongestionTrackingController(IReportService<CongestionTrackingOptions, CongestionTrackingDto> reportService): base(reportService) {}
+        public CongestionTrackingController(IReportService<CongestionTrackingOptions, CongestionTrackingDto> reportService) : base(reportService) { }
     }
 }

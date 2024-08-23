@@ -1,17 +1,10 @@
-﻿using ATSPM.Application.Business;
-using ATSPM.Application.Repositories.SpeedManagementRepositories;
-using ATSPM.Data.Models.SpeedManagement;
-using ATSPM.Data.Models.SpeedManagement.Common;
-using ATSPM.Data.Models.SpeedManagement.MonthlyAggregation;
-using ATSPM.Data.Models.SpeedManagement.SpeedOverTime;
-using ATSPM.Data.Models.SpeedManagementAggregation;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using Utah.Udot.Atspm.Data.Models.SpeedManagementModels;
+using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.Common;
+using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.MonthlyAggregation;
+using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.SpeedOverTime;
+using Utah.Udot.Atspm.Repositories.SpeedManagementRepositories;
 
-namespace ATSPM.Infrastructure.Services.SpeedManagementServices.SpeedOverTime
+namespace Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices.SpeedOverTime
 {
     public class SpeedOverTimeService : ReportServiceBase<SpeedOverTimeOptions, SpeedOverTimeDto>
     {
@@ -93,7 +86,7 @@ namespace ATSPM.Infrastructure.Services.SpeedManagementServices.SpeedOverTime
             var averageData = new List<DataPoint<double>>();
             var eightyFifthData = new List<DataPoint<long>>();
 
-            if (weeklyResult[0].Date < startDate.ToDateTime(new TimeOnly(0,0)))
+            if (weeklyResult[0].Date < startDate.ToDateTime(new TimeOnly(0, 0)))
             {
                 weeklyResult[0].Date = startDate.ToDateTime(new TimeOnly(0, 0));
             }

@@ -1,8 +1,8 @@
-﻿using ATSPM.Application.Repositories.SpeedManagementRepositories;
-using ATSPM.Data.Models.SpeedManagement.MonthlyAggregation;
-using ATSPM.Data.Models.SpeedManagementAggregation;
-using ATSPM.Infrastructure.Services.SpeedManagementServices;
-using System.Threading.Tasks.Dataflow;
+﻿using System.Threading.Tasks.Dataflow;
+using Utah.Udot.Atspm.Data.Models.SpeedManagementModels;
+using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.MonthlyAggregation;
+using Utah.Udot.Atspm.Repositories.SpeedManagementRepositories;
+using Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices;
 
 namespace SpeedManagementApi.Processors
 {

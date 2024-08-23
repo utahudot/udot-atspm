@@ -1,6 +1,6 @@
-﻿using ATSPM.Data.Models.SpeedManagement.MonthlyAggregation;
-using ATSPM.Infrastructure.Services.SpeedManagementServices;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.SpeedOverDistance;
+using Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices;
 
 namespace SpeedManagementApi.Controllers
 {

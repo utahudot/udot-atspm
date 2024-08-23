@@ -1,8 +1,8 @@
-﻿using ATSPM.Data.Models.SpeedManagementConfigModels;
-using ATSPM.Infrastructure.Services.SpeedManagementServices;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.Config;
+using Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices;
 
 namespace SpeedManagementApi.Controllers
 {

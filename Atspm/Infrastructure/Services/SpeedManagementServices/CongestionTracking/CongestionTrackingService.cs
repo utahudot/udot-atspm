@@ -1,15 +1,8 @@
-﻿using ATSPM.Application.Business;
-using ATSPM.Application.Repositories.SpeedManagementRepositories;
-using ATSPM.Data.Models.SpeedManagement;
-using ATSPM.Data.Models.SpeedManagement.Common;
-using ATSPM.Data.Models.SpeedManagement.CongestionTracking;
-using ATSPM.Data.Models.SpeedManagementAggregation;
-using ATSPM.Data.Models.SpeedManagementConfigModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using Utah.Udot.Atspm.Data.Models.SpeedManagementModels;
+using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.Common;
+using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.Config;
+using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.CongestionTracking;
+using Utah.Udot.Atspm.Repositories.SpeedManagementRepositories;
 
 
 namespace ATSPM.Infrastructure.Services.SpeedManagementServices.CongestionTracking

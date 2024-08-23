@@ -127,7 +127,7 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddAtspmDbContext(h);
     s.AddAtspmEFConfigRepositories();
 
-    s.AddScoped<IRouteService, RouteService>();
+    s.AddScoped<IRouteService, Utah.Udot.Atspm.ConfigApi.Services.RouteService>();
     s.AddScoped<IApproachService, ApproachService>();
 
     s.AddPathBaseFilter(h);

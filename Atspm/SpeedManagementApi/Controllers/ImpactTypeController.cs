@@ -1,6 +1,6 @@
-﻿using ATSPM.Data.Models.SpeedManagementConfigModels;
-using ATSPM.Infrastructure.Services.SpeedManagementServices;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.Config;
+using Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices;
 
 namespace SpeedManagementApi.Controllers
 {

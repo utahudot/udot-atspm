@@ -1,6 +1,6 @@
-﻿using ATSPM.Application.Business;
-using ATSPM.Data.Models.SpeedManagement.SpeedOverTime;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.SpeedOverTime;
+using Utah.Udot.Atspm.Services;
 
 namespace SpeedManagementApi.Controllers
 {

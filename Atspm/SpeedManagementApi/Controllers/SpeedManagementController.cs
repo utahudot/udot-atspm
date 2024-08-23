@@ -1,13 +1,14 @@
-﻿using ATSPM.Application.Business.RouteSpeed;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using NetTopologySuite.Features;
 using NetTopologySuite.IO;
+using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.SegmentSpeed;
+using Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices.SegmentSpeed;
 
 namespace SpeedManagementApi.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class SpeedManagementController: ControllerBase
+    public class SpeedManagementController : ControllerBase
     {
         private RouteSpeedService routeSpeedService;
         private RouteService routeService;
@@ -87,10 +88,11 @@ namespace SpeedManagementApi.Controllers
 
             var result = await Task.Run(() => task);
 
-            if(result != null)
+            if (result != null)
             {
                 return Ok(result);
-            } else { return BadRequest(); }
+            }
+            else { return BadRequest(); }
         }
 
     }

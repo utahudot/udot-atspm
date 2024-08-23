@@ -1,16 +1,5 @@
 using Asp.Versioning;
-using ATSPM.Application.Business;
-using ATSPM.Application.Business.RouteSpeed;
-using ATSPM.Application.Repositories;
-using ATSPM.Application.Repositories.SpeedManagementRepositories;
-using ATSPM.Data.Models.SpeedManagement.CongestionTracking;
-using ATSPM.Data.Models.SpeedManagement.SpeedOverTime;
-using ATSPM.Infrastructure.Extensions;
-using ATSPM.Infrastructure.Repositories;
-using ATSPM.Infrastructure.Repositories.SpeedManagementRepositories;
-using ATSPM.Infrastructure.Services.SpeedManagementServices;
 using ATSPM.Infrastructure.Services.SpeedManagementServices.CongestionTracking;
-using ATSPM.Infrastructure.Services.SpeedManagementServices.SpeedOverTime;
 using Google.Cloud.BigQuery.V2;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Mvc;
@@ -21,6 +10,15 @@ using Microsoft.OpenApi.Models;
 using SpeedManagementApi.Processors;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Text.Json.Serialization;
+using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.CongestionTracking;
+using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.SpeedOverTime;
+using Utah.Udot.Atspm.DataApi.Configuration;
+using Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositories;
+using Utah.Udot.Atspm.Repositories.SpeedManagementRepositories;
+using Utah.Udot.Atspm.Services;
+using Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices;
+using Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices.SegmentSpeed;
+using Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices.SpeedOverTime;
 
 var builder = WebApplication.CreateBuilder(args);
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
@@ -51,10 +49,8 @@ builder.Host.ConfigureServices((h, s) =>
         o.EnableForHttps = true; // Enable compression for HTTPS requests
                                  //o.Providers.Add<GzipCompressionProvider>(); // Enable GZIP compression
                                  //o.Providers.Add<BrotliCompressionProvider>();
-
         o.MimeTypes = new[] { "application/json", "application/xml" };
     });
-
     //https://github.com/dotnet/aspnet-api-versioning/wiki/OData-Versioned-Metadata
     s.AddApiVersioning(o =>
     {
@@ -89,12 +85,12 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddCors(options =>
     {
         options.AddPolicy("CorsPolicy",
-        builder =>
-        {
-            builder.WithOrigins(allowedHosts.Split(','))
-                   .AllowAnyMethod()
-                   .AllowAnyHeader();
-        });
+    builder =>
+    {
+        builder.WithOrigins(allowedHosts.Split(','))
+           .AllowAnyMethod()
+           .AllowAnyHeader();
+    });
     });
 
     s.AddAtspmDbContext(h);

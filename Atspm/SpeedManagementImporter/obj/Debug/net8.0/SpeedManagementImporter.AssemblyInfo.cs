@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SpeedManagementImporter")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9636759c34c9c1db6b9a0b88b6071ad1eb25a9f0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8526a1be56bd295ef65d6f16986f1c44c9d6ad39")]
 [assembly: System.Reflection.AssemblyProductAttribute("SpeedManagementImporter")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SpeedManagementImporter")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
