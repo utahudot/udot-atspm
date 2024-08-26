@@ -18,7 +18,7 @@ namespace Utah.Udot.ATSPM.WatchDog.Services
         {
             //Get all values from last 12 months excluding the scan date value
             //Also get values from day before the scan date
-            var recordsForLast12Months = new List<WatchDogLogEvent>(); 
+            var recordsForLast12Months = new List<WatchDogLogEvent>();
             var recordsForDayBeforeScanDate = new List<WatchDogLogEvent>();
             if (emailOptions.WeekdayOnly && emailOptions.ScanDate.DayOfWeek == DayOfWeek.Monday)
             {
@@ -35,35 +35,24 @@ namespace Utah.Udot.ATSPM.WatchDog.Services
                     w.Timestamp < emailOptions.ScanDate).ToList();
             }
 
-            //Create a dictonary to allow for quick search on last 12 months records
-            var locationIssueLookupForLast12Months = recordsForLast12Months
-            .GroupBy(r => r.LocationIdentifier)
-            .ToDictionary(
-                group => group.Key,
-                group => new HashSet<WatchDogIssueTypes>(group.Select(g => g.IssueType))
-            );
+            var locationIssueLookupForLast12Months = GetUniqeWatchdogEvents(recordsForLast12Months);
 
             //Create a dictonary to allow for quick search on day before scan date
-            var dayBeforeLookup = recordsForDayBeforeScanDate
-                .GroupBy(r => r.LocationIdentifier)
-                .ToDictionary(
-                    group => group.Key,
-                    group => new HashSet<WatchDogIssueTypes>(group.Select(i => i.IssueType))
-                );
+            var dayBeforeLookup = GetUniqeWatchdogEvents(recordsForDayBeforeScanDate);
 
             //Filter values from recordsFromDayBefore that are newly occured
             var newIssues = recordsFromDayBefore
                 .Where(r =>
-                    !locationIssueLookupForLast12Months.ContainsKey(r.LocationIdentifier) ||
-                    !locationIssueLookupForLast12Months[r.LocationIdentifier].Contains(r.IssueType)
+                    !locationIssueLookupForLast12Months.TryGetValue((r.LocationIdentifier, r.IssueType, r.ComponentType), out var phase) ||
+                    phase != r.Phase
                 )
                 .ToList();
 
             //Filter values from recordsFromDayBefore that have occured twice in a row
             var dailyRecurringIssues = recordsFromDayBefore
                 .Where(r =>
-                    dayBeforeLookup.ContainsKey(r.LocationIdentifier) &&
-                    dayBeforeLookup[r.LocationIdentifier].Contains(r.IssueType)
+                    dayBeforeLookup.TryGetValue((r.LocationIdentifier, r.IssueType, r.ComponentType), out var phase) &&
+                    phase == r.Phase
                 )
                 .ToList();
 
@@ -73,6 +62,17 @@ namespace Utah.Udot.ATSPM.WatchDog.Services
             var filteredList = recordsFromDayBefore.Except(combinedMatches).ToList();
 
             return (newIssues, dailyRecurringIssues, filteredList);
+        }
+
+        private static Dictionary<(string LocationIdentifier, WatchDogIssueTypes IssueType, WatchDogComponentTypes ComponentType), int?> GetUniqeWatchdogEvents(List<WatchDogLogEvent> watchDogRecords)
+        {
+            //Create a dictonary to allow for quick search
+            return watchDogRecords
+            .GroupBy(r => (r.LocationIdentifier, r.IssueType, r.ComponentType))
+            .ToDictionary(
+                group => group.Key,
+                group => group.Select(e => e.Phase).FirstOrDefault()
+            );
         }
     }
 }

@@ -40,7 +40,9 @@ namespace Utah.Udot.Atspm.WatchDog.Services
 
         public async Task SendAllEmails(
             EmailOptions options,
-            List<WatchDogLogEvent> eventsContainer,
+            List<WatchDogLogEvent> newErrors,
+            List<WatchDogLogEvent> dailyRecurringErrors,
+            List<WatchDogLogEvent> recurringErrors,
             List<Location> Locations,
             List<ApplicationUser> users,
             List<Jurisdiction> jurisdictions,
@@ -51,20 +53,28 @@ namespace Utah.Udot.Atspm.WatchDog.Services
             List<UserRegion> userRegions,
             List<WatchDogLogEvent> logsFromPreviousDay)
         {
-            await SendRegionEmails(options, eventsContainer, Locations, users, regions, userRegions, logsFromPreviousDay);
-            await SendJurisdictionEmails(options, eventsContainer, Locations, users, jurisdictions, userJurisdictions, logsFromPreviousDay);
-            await SendAreaEmails(options, eventsContainer, Locations, users, areas, userAreas, logsFromPreviousDay);
+            await SendRegionEmails(options, newErrors, dailyRecurringErrors, recurringErrors, Locations, users, regions, userRegions, logsFromPreviousDay);
+            await SendJurisdictionEmails(options, newErrors, dailyRecurringErrors, recurringErrors, Locations, users, jurisdictions, userJurisdictions, logsFromPreviousDay);
+            await SendAreaEmails(options, newErrors, dailyRecurringErrors, recurringErrors, Locations, users, areas, userAreas, logsFromPreviousDay);
             var otherUsers = users.Where(u => !userRegions.Any(ur => ur.UserId == u.Id)
                                               && !userJurisdictions.Any(uj => uj.UserId == u.Id)
                                               && !userAreas.Any(ua => ua.UserId == u.Id)).ToList();
-            await SendAdminEmail(options, eventsContainer, Locations, "All Locations", otherUsers, logsFromPreviousDay);
+            await SendAdminEmail(options, newErrors, dailyRecurringErrors, recurringErrors, Locations, "All Locations", otherUsers, logsFromPreviousDay);
 
         }
 
-        private async Task SendAdminEmail(EmailOptions options, List<WatchDogLogEvent> eventsContainer, List<Location> locations, string v, List<ApplicationUser> users, List<WatchDogLogEvent> logsFromPreviousDay)
+        private async Task SendAdminEmail(
+            EmailOptions options,
+            List<WatchDogLogEvent> newErrors,
+            List<WatchDogLogEvent> dailyRecurringErrors,
+            List<WatchDogLogEvent> recurringErrors,
+            List<Location> locations,
+            string v,
+            List<ApplicationUser> users,
+            List<WatchDogLogEvent> logsFromPreviousDay)
         {
             var subject = $"All Locations ATSPM Alerts for {options.ScanDate.ToShortDateString()}";
-            var emailBody = await CreateEmailBody(options, eventsContainer, locations, logsFromPreviousDay);
+            var emailBody = await CreateEmailBody(options, newErrors, dailyRecurringErrors, recurringErrors, locations, logsFromPreviousDay);
 
             //await mailService.SendEmailAsync(options.DefaultEmailAddress, users, subject, emailBody);
 
@@ -74,7 +84,9 @@ namespace Utah.Udot.Atspm.WatchDog.Services
 
         private async Task SendJurisdictionEmails(
             EmailOptions options,
-            List<WatchDogLogEvent> eventsContainer,
+            List<WatchDogLogEvent> newErrors,
+            List<WatchDogLogEvent> dailyRecurringErrors,
+            List<WatchDogLogEvent> recurringErrors,
             List<Location> Locations,
             List<ApplicationUser> users,
             List<Jurisdiction> jurisdictions,
@@ -93,7 +105,7 @@ namespace Utah.Udot.Atspm.WatchDog.Services
                 {
                     var emailBody = await CreateEmailBody(
                         options,
-                        eventsContainer,
+                        newErrors, dailyRecurringErrors, recurringErrors,
                         LocationsByJurisdiction,
                         logsFromPreviousDay);
                     //await mailService.SendEmailAsync(options.DefaultEmailAddress, usersByJurisdiction, subject, emailBody);
@@ -105,7 +117,9 @@ namespace Utah.Udot.Atspm.WatchDog.Services
 
         private async Task SendAreaEmails(
             EmailOptions options,
-            List<WatchDogLogEvent> eventsContainer,
+            List<WatchDogLogEvent> newErrors,
+            List<WatchDogLogEvent> dailyRecurringErrors,
+            List<WatchDogLogEvent> recurringErrors,
             List<Location> Locations,
             List<ApplicationUser> users,
             List<Area> areas,
@@ -124,7 +138,9 @@ namespace Utah.Udot.Atspm.WatchDog.Services
                 {
                     var emailBody = await CreateEmailBody(
                         options,
-                        eventsContainer,
+                        newErrors,
+                        dailyRecurringErrors,
+                        recurringErrors,
                         LocationsByArea,
                         logsFromPreviousDay);
                     //await mailService.SendEmailAsync(options.DefaultEmailAddress, usersByArea, subject, emailBody);
@@ -135,7 +151,9 @@ namespace Utah.Udot.Atspm.WatchDog.Services
         }
         private async Task SendRegionEmails(
             EmailOptions options,
-            List<WatchDogLogEvent> eventsContainer,
+            List<WatchDogLogEvent> newErrors,
+            List<WatchDogLogEvent> dailyRecurringErrors,
+            List<WatchDogLogEvent> recurringErrors,
             List<Location> Locations,
             List<ApplicationUser> users,
             List<Region> regions,
@@ -154,7 +172,9 @@ namespace Utah.Udot.Atspm.WatchDog.Services
                 {
                     var emailBody = await CreateEmailBody(
                         options,
-                        eventsContainer,
+                        newErrors,
+                        dailyRecurringErrors,
+                        recurringErrors,
                         LocationsByRegion,
                         logsFromPreviousDay);
                     //await mailService.SendEmailAsync(options.DefaultEmailAddress, usersByRegion, subject, emailBody);
@@ -166,12 +186,13 @@ namespace Utah.Udot.Atspm.WatchDog.Services
 
         public async Task<string> CreateEmailBody(
             EmailOptions options,
-            List<WatchDogLogEvent> eventsContainer,
+            List<WatchDogLogEvent> newErrors,
+            List<WatchDogLogEvent> dailyRecurringErrors,
+            List<WatchDogLogEvent> recurringErrors,
             List<Location> Locations,
             List<WatchDogLogEvent> logsFromPreviousDay)
         {
-            List<WatchDogLogEvent> missingErrorsLogs, forceErrorsLogs, maxErrorsLogs, countErrorsLogs, stuckpedErrorsLogs, configurationErrorsLogs, unconfiguredDetectorErrorsLogs;
-            GetEventsByIssueType(eventsContainer, out missingErrorsLogs, out forceErrorsLogs, out maxErrorsLogs, out countErrorsLogs, out stuckpedErrorsLogs, out configurationErrorsLogs, out unconfiguredDetectorErrorsLogs);
+            GetEventsByIssueType(eventsContainer, out var missingErrorsLogs, out forceErrorsLogs, out maxErrorsLogs, out countErrorsLogs, out stuckpedErrorsLogs, out configurationErrorsLogs, out unconfiguredDetectorErrorsLogs);
             return GetFormattedMessageBody(options, Locations, logsFromPreviousDay, missingErrorsLogs, forceErrorsLogs, maxErrorsLogs, countErrorsLogs, stuckpedErrorsLogs, configurationErrorsLogs, unconfiguredDetectorErrorsLogs);
 
         }
@@ -191,6 +212,7 @@ namespace Utah.Udot.Atspm.WatchDog.Services
         {
             var body = "<style>\r\n  .atspm-table {\r\n    border: solid 2px #DDEEEE;\r\n    border-collapse: collapse;\r\n    border-spacing: 0;\r\n    font: normal 14px Roboto, sans-serif;\r\n  }\r\n\r\n  .atspm-table thead th {\r\n    background-color: #DDEFEF;\r\n    border: solid 1px #DDEEEE;\r\n    color: #336B6B;\r\n    padding: 10px;\r\n    text-align: left;\r\n    text-shadow: 1px 1px 1px #fff;\r\n  }\r\n\r\n  .atspm-table tbody td {\r\n    border: solid 1px #DDEEEE;\r\n    color: #333;\r\n    padding: 10px;\r\n    text-shadow: 1px 1px 1px #fff;\r\n  }\r\n</style>";
 
+            //Make these become subsets of the segmented errors
 
             //var ftpErrors = SortAndAddToMessage(Locations, eventsContainer.CannotFtpFiles, options);
             if (missingErrorsLogs.Any())

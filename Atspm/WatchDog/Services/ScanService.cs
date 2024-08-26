@@ -125,7 +125,9 @@ namespace Utah.Udot.Atspm.WatchDog.Services
 
                 await emailService.SendAllEmails(
                     emailOptions,
-                    errors,
+                    newErrors,
+                    dailyRecurringErrors,
+                    recurringErrors,
                     locations,
                     users,
                     jurisdictions,
