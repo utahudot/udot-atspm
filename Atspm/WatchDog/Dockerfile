@@ -30,6 +30,6 @@ ENTRYPOINT ["dotnet", "WatchDog.dll"]
 LABEL org.opencontainers.image.title="Atspm Watchdog"
 LABEL org.opencontainers.image.description="Watchdog utility for the Atspm platform"
 LABEL org.opencontainers.image.vendor="Udot.Utah.Gov"
-LABEL org.opencontainers.image.source=https://github.com/utahudot/udot-atspm
-LABEL org.opencontainers.image.documentation=""
-LABEL org.opencontainers.image.licenses="Apache License, Version 2.0"
+LABEL org.opencontainers.image.source=https://github.com/OpenSourceTransportation/Atspm
+LABEL org.opencontainers.image.documentation=https://github.com/OpenSourceTransportation/Atspm/wiki/Watchdog
+LABEL org.opencontainers.image.licenses=Apache-2.0
