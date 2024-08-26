@@ -38,6 +38,8 @@
 
 # Debug files
 /Debug
+*/Debug/
+*/Release/
 *.dSYM/
 *.su
 *.idb
