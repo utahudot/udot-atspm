@@ -93,7 +93,9 @@ dkms.conf
 /ATSPM/ReportApi/obj
 /ATSPM/ReportApi/bin
 /ATSPM/SpeedManagementApi/obj
+/ATSPM/SpeedManagementImporter/obj
 /ATSPM/SpeedManagementApi/bin
+/ATSPM/SpeedManagementImporter/bin
 /ATSPM/WatchDog/obj/
 /ATSPM/WatchDog/bin/
 /ATSPM/WatchDogTests/obj/
