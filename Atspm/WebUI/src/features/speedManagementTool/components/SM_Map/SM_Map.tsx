@@ -114,7 +114,7 @@ const SM_Map = ({
         zoom={6}
         scrollWheelZoom={true}
         style={{
-          minHeight: '700px',
+          minHeight: 'calc(100vh - 250px)',
           height: '100%',
           width: '100%',
           zIndex: 0,
