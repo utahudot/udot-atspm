@@ -14,35 +14,35 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 // #endregion
-import transformApproachDelayData from '@/features/charts/approachDelay/transformers'
-import transformApproachSpeedData from '@/features/charts/approachSpeed/transformers'
-import transformApproachVolumeData from '@/features/charts/approachVolume/transformers'
-import transformArrivalsOnRedData from '@/features/charts/arrivalsOnRed/transformers'
 import {
   ChartType,
   RawChartResponse,
   RawToolResponse,
   ToolType,
 } from '@/features/charts/common/types'
-import transformGreenTimeUtilizationData from '@/features/charts/greenTimeUtilization/transformers'
-import transformLeftTurnGapAnalysisData from '@/features/charts/leftTurnGapAnalysis/transformers'
-import transformPedestrianDelayData from '@/features/charts/pedestrianDelay/transformers'
+import transformApproachDelayData from '@/features/charts/performanceMeasures/approachDelay/transformers'
+import transformApproachSpeedData from '@/features/charts/performanceMeasures/approachSpeed/transformers'
+import transformApproachVolumeData from '@/features/charts/performanceMeasures/approachVolume/transformers'
+import transformArrivalsOnRedData from '@/features/charts/performanceMeasures/arrivalsOnRed/transformers'
+import transformGreenTimeUtilizationData from '@/features/charts/performanceMeasures/greenTimeUtilization/transformers'
+import transformLeftTurnGapAnalysisData from '@/features/charts/performanceMeasures/leftTurnGapAnalysis/transformers'
+import transformPedestrianDelayData from '@/features/charts/performanceMeasures/pedestrianDelay/transformers'
 import transformPreemptionDetailsData from '@/features/charts/performanceMeasures/preemptionDetails/transformers'
-import transformPurdueCoordinationDiagramData from '@/features/charts/purdueCoordinationDiagram/transformers'
-import transformPurduePhaseTerminationData from '@/features/charts/purduePhaseTermination/transformers'
-import transformPurdueSplitFailureData from '@/features/charts/purdueSplitFailure/transformers'
-import transformSplitMonitorData from '@/features/charts/splitMonitor/tranformers'
-import transformTimingAndActuationData from '@/features/charts/timingAndActuation/transformers'
-import transformTurningMovementCountsData from '@/features/charts/turningMovementCounts/transformers'
+import transformPurdueCoordinationDiagramData from '@/features/charts/performanceMeasures/purdueCoordinationDiagram/transformers'
+import transformPurduePhaseTerminationData from '@/features/charts/performanceMeasures/purduePhaseTermination/transformers'
+import transformPurdueSplitFailureData from '@/features/charts/performanceMeasures/purdueSplitFailure/transformers'
+import transformSplitMonitorData from '@/features/charts/performanceMeasures/splitMonitor/tranformers'
+import transformTimingAndActuationData from '@/features/charts/performanceMeasures/timingAndActuation/transformers'
+import transformTurningMovementCountsData from '@/features/charts/performanceMeasures/turningMovementCounts/transformers'
+import transformWaitTimeData from '@/features/charts/performanceMeasures/waitTime/transformers'
+import transformYellowAndRedActuationsData from '@/features/charts/performanceMeasures/yellowAndRedActuations/transformers'
+import transformRampMeteringData from '@/features/charts/rampMetering/transformer'
+import transformTimeSpaceAverageData from '@/features/charts/timeSpaceDiagram/transformers/timeSpaceAverageTransformer'
+import transformTimeSpaceHistoricData from '@/features/charts/timeSpaceDiagram/transformers/timeSpaceHistoricTransformer'
 import {
   TransformedChartResponse,
   TransformedToolResponse,
 } from '@/features/charts/types'
-import transformWaitTimeData from '@/features/charts/waitTime/transformers'
-import transformYellowAndRedActuationsData from '@/features/charts/yellowAndRedActuations/transformers'
-import transformRampMeteringData from '../../rampMetering/transformer'
-import transformTimeSpaceAverageData from '../../timeSpaceDiagram/transformers/timeSpaceAverageTransformer'
-import transformTimeSpaceHistoricData from '../../timeSpaceDiagram/transformers/timeSpaceHistoricTransformer'
 
 export const transformChartData = (
   response: RawChartResponse
