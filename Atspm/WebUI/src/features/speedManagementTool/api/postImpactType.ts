@@ -1,21 +1,20 @@
 import { ImpactType } from '@/features/speedManagementTool/types/impact'
+import { getEnv } from '@/lib/getEnv'
 import { QueryConfig } from '@/lib/react-query'
 import axios from 'axios'
 import Cookies from 'js-cookie'
 import { useMutation } from 'react-query'
 
 const token = Cookies.get('token')
-const localhostURL = 'https://localhost:44379/'
-
 const postImpactType = async (impactData: {
   name: string
   description: string
 }): Promise<ImpactType> => {
-  // console.log(`switch for ${SPEED_URL} once cloud works`)
+  const env = await getEnv()
 
   // Correcting the axios.post call
   const response = await axios.post<ImpactType>(
-    `${localhostURL}api/ImpactType`,
+    `${env.SPEED_URL}/api/ImpactType`,
     impactData,
     {
       headers: {
