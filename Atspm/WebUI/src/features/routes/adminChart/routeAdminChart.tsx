@@ -1,4 +1,3 @@
-
 import { useGetRouteLocations } from '@/features/routes/api/getRouteLocations'
 import { RouteConfiguration } from '@/features/routes/routeConfiguration/routeConfiguration'
 import DeleteIcon from '@mui/icons-material/DeleteOutlined'
@@ -68,7 +67,6 @@ export const RouteAdminChart = ({
   }
 
   const handleDeleteClick = (id: GridRowId) => {
-    console.log('delete')
     setOpen(false)
     setRows(rows?.filter((row: any) => row.id !== (id as number)))
     setId(-1)

@@ -1,31 +1,47 @@
-import {
-  Box,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  SelectChangeEvent,
-} from '@mui/material'
+import { DataSource } from '@/features/speedManagementTool/enums'
+import { Box, SelectChangeEvent } from '@mui/material'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import { useEffect, useState } from 'react'
 
 export interface CongestionTrackingOptionsValues {
-  selectedDate: Date | null
-  selectedSource: number
+  startDate: string
+  endDate: string
+  sourceId: number
 }
 
 interface CongestionTrackingOptionsProps {
   onOptionsChange: (options: CongestionTrackingOptionsValues) => void
 }
 
+const initialDate = new Date('2024-05-10')
+
 const CongestionTrackingOptions = ({
   onOptionsChange,
 }: CongestionTrackingOptionsProps) => {
-  const [selectedDate, setSelectedDate] = useState<Date | null>(new Date())
-  const [selectedSource, setSelectedSource] = useState<number>(0)
+  const [selectedDate, setSelectedDate] = useState<Date | null>(initialDate)
+  const [selectedSource, setSelectedSource] = useState<DataSource>(
+    DataSource.PeMS
+  )
 
   useEffect(() => {
-    onOptionsChange({ selectedDate, selectedSource })
+    if (!selectedDate) return
+
+    const startDate = new Date(
+      selectedDate.getFullYear(),
+      selectedDate.getMonth(),
+      1
+    )
+    const endDate = new Date(
+      selectedDate.getFullYear(),
+      selectedDate.getMonth() + 1,
+      0
+    )
+
+    onOptionsChange({
+      startDate: startDate.toISOString().split('T')[0],
+      endDate: endDate.toISOString().split('T')[0],
+      sourceId: selectedSource,
+    })
   }, [selectedDate, selectedSource])
 
   const handleDateChange = (date: Date | null) => {
@@ -33,7 +49,7 @@ const CongestionTrackingOptions = ({
   }
 
   const handleSourceChange = (event: SelectChangeEvent<number>) => {
-    setSelectedSource(event.target.value as number)
+    setSelectedSource(event.target.value as DataSource)
   }
 
   return (
@@ -46,7 +62,7 @@ const CongestionTrackingOptions = ({
         value={selectedDate}
         onChange={handleDateChange}
       />
-      <FormControl sx={{ width: '150px' }}>
+      {/* <FormControl sx={{ width: '150px' }}>
         <InputLabel id="source-select-label">Source Select</InputLabel>
         <Select
           labelId="source-select-label"
@@ -55,11 +71,11 @@ const CongestionTrackingOptions = ({
           label="Source Select"
           onChange={handleSourceChange}
         >
-          <MenuItem value={0}>PeMS</MenuItem>
-          <MenuItem value={1}>ATSPM</MenuItem>
-          <MenuItem value={2}>Clear Guide</MenuItem>
+          <MenuItem value={DataSource.PeMS}>PeMS</MenuItem>
+          <MenuItem value={DataSource.ATSPM}>ATSPM</MenuItem>
+          <MenuItem value={DataSource.ClearGuide}>Clear Guide</MenuItem>
         </Select>
-      </FormControl>
+      </FormControl> */}
     </Box>
   )
 }

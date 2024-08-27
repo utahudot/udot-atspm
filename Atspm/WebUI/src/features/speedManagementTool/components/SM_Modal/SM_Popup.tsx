@@ -1,11 +1,14 @@
 import SM_Charts from '@/features/speedManagementTool/components/SM_Charts'
 import ChartsContainer from '@/features/speedManagementTool/components/SM_Modal/ChartsContainer'
+import { getDataSourceName } from '@/features/speedManagementTool/enums'
+import useSpeedManagementStore from '@/features/speedManagementTool/speedManagementStore'
 import { SpeedManagementRoute } from '@/features/speedManagementTool/types/routes'
 import ArrowBackIosNewOutlinedIcon from '@mui/icons-material/ArrowBackIosNewOutlined'
 import { TabContext, TabList, TabPanel } from '@mui/lab'
 import {
   Box,
   Button,
+  Chip,
   Dialog,
   DialogContent,
   Divider,
@@ -24,7 +27,9 @@ type SM_PopupProps = {
 }
 
 const SM_Popup = ({ route, open, onClose }: SM_PopupProps) => {
-  const { name, startdate, enddate } = route.properties
+  const { name, startdate, enddate, avg, speedLimit } = route.properties
+
+  const { submittedRouteSpeedRequest } = useSpeedManagementStore()
 
   const [currentTab, setCurrentTab] = useState('1')
 
@@ -38,6 +43,39 @@ const SM_Popup = ({ route, open, onClose }: SM_PopupProps) => {
           enddate
         ).toLocaleDateString()}`
       : null
+
+  const getDataSourceColor = (sourceId: number) => {
+    switch (sourceId) {
+      case 1:
+        return '#2196f3'
+      case 2:
+        return '#f44336'
+      case 3:
+        return '#4caf50'
+      default:
+        return '#000'
+    }
+  }
+
+  const InfoBox = ({ label, value }: { label: string; value: string }) => (
+    <Box
+      display="flex"
+      flexDirection="column"
+      justifyContent="center"
+      alignItems="center"
+      // bgColor should be light blue with 0.05 opacity
+      bgcolor="rgba(33, 150, 243, 0.2)"
+      borderRadius={1}
+      padding="10px"
+      marginRight="10px"
+      minWidth={200}
+    >
+      <Typography variant="subtitle2">{label}</Typography>
+      <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
+        {value}
+      </Typography>
+    </Box>
+  )
 
   return (
     <Dialog
@@ -68,6 +106,15 @@ const SM_Popup = ({ route, open, onClose }: SM_PopupProps) => {
             Back to Map
           </Button>
         </Box>
+        <Chip
+          label={getDataSourceName(submittedRouteSpeedRequest.sourceId)}
+          sx={{
+            backgroundColor: getDataSourceColor(
+              submittedRouteSpeedRequest.sourceId
+            ),
+            color: 'white',
+          }}
+        />
       </Box>
       <DialogContent sx={{ px: 0 }}>
         <TabContext value={currentTab}>
@@ -89,6 +136,14 @@ const SM_Popup = ({ route, open, onClose }: SM_PopupProps) => {
           <TabPanel value="1" sx={{ p: 0 }}>
             <Box width={'100%'} my={2}>
               <StaticMap routes={[route]} />
+
+              <Box display="flex" padding="10px">
+                <InfoBox label="Speed Limit" value={`${speedLimit} mph`} />
+                <InfoBox label="Average Speed" value={`${avg} mph`} />
+              </Box>
+
+              <Divider />
+
               <ChartsContainer selectedRouteId={route.properties.route_id} />
             </Box>
           </TabPanel>

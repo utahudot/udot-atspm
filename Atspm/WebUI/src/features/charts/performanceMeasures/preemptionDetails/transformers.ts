@@ -118,9 +118,6 @@ function transformDetailsData(data: LocationDetail) {
   }
 
   if (inputOff.length > 0) {
-    console.log('inputOff')
-    console.log(inputOff)
-
     series.push({
       name: 'Input Off',
       type: 'scatter',
@@ -128,7 +125,6 @@ function transformDetailsData(data: LocationDetail) {
       color: Color.Black,
     })
   }
-  console.log('GateDown')
   console.log(gateDown)
 
   if (callMaxOut.length > 0) {
@@ -214,9 +210,9 @@ type PremptStuf = ChartDataEntry[]
 
 function getSeries(key: keyof Cycle, cycles: Cycle[]): PremptStuf {
   return cycles.map((cycle) => {
-    let value: number;
+    let value: number
 
-    if (cycle[key] == null) return 
+    if (cycle[key] == null) return
 
     if (typeof cycle[key] === 'string' && Date.parse(cycle[key] as string)) {
       value =

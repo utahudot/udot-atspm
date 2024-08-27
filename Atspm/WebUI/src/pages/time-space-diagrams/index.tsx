@@ -1,7 +1,7 @@
 import { ResponsivePageLayout } from '@/components/ResponsivePage'
-import { useTools } from '@/features/charts/api/getTools'
 import { ToolType } from '@/features/charts/common/types'
 import DefaultChartResults from '@/features/charts/components/defaultToolResults/DefaultToolResults'
+import { useTools } from '@/features/charts/performanceMeasures/api/getTools'
 import { TimeSpaceAverageContainer } from '@/features/charts/timeSpaceDiagram/components/containers/TimeSpaceAverageContainer'
 import { TimeSpaceHistoricContainer } from '@/features/charts/timeSpaceDiagram/components/containers/TimeSpaceHistoricContainer'
 import {
@@ -100,8 +100,6 @@ const TimeSpaceDiagram = () => {
   }
 
   const routes = routesData?.value?.sort((a, b) => a.name.localeCompare(b.name))
-
-  console.log('chartData', chartData)
 
   const handleGenerateCharts = () => {
     setHasAttemptedGenerate(true)

@@ -1,5 +1,5 @@
 import { DataPoint } from '@/features/charts/common/types'
-import { transformCongestionTrackerData } from '@/features/charts/congestionTracker/congestionTracker.transformer'
+import { transformCongestionTrackerData } from '@/features/charts/speedManagementTool/congestionTracker/congestionTracker.transformer'
 import { speedAxios } from '@/lib/axios'
 import { ExtractFnReturnType, QueryConfig } from '@/lib/react-query'
 import { useQuery } from 'react-query'

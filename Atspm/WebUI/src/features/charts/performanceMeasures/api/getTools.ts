@@ -18,8 +18,8 @@ import { reportsAxios } from '@/lib/axios'
 import { ExtractFnReturnType, QueryConfig } from '@/lib/react-query'
 import { dateToTimestamp } from '@/utils/dateTime'
 import { useQuery } from 'react-query'
-import { RawToolResponse, ToolOptions, ToolType } from '../common/types'
-import { TransformedToolResponse } from '../types'
+import { RawToolResponse, ToolOptions, ToolType } from '../../common/types'
+import { TransformedToolResponse } from '../../types'
 import { transformToolData } from './transformData'
 
 export const toolTypeApiMap: Record<ToolType, string> = {

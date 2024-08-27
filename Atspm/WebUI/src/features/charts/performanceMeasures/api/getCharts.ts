@@ -80,8 +80,6 @@ export const getCharts = async (
   transformedOptions.start = dateToTimestamp(transformedOptions.start as Date)
   transformedOptions.end = dateToTimestamp(transformedOptions.end as Date)
 
-  console.log('combinedOptions', transformedOptions.start)
-
   const response = await reportsAxios.post(endpoint, transformedOptions)
 
   return transformChartData({
