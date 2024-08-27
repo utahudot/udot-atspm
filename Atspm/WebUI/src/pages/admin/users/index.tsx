@@ -24,7 +24,6 @@ const UsersAdmin = () => {
   const handleDeleteUser = async (userId: string) => {
     try {
       await deleteUserMutation(userId)
-      console.log('User deleted successfully')
     } catch (error) {
       console.error('Error deleting user:', error)
     }

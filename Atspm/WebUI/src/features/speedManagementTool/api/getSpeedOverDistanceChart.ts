@@ -1,5 +1,5 @@
 import { DataPoint } from '@/features/charts/common/types'
-import transformSpeedOverTimeData from '@/features/charts/speedOverTime/speedOverTime.transformer'
+import transformSpeedOverTimeData from '@/features/charts/speedManagementTool/speedOverTime/speedOverTime.transformer'
 // import { transformSpeedOverDistanceData } from '@/features/charts/SpeedOverDistance/SpeedOverDistance.transformer'
 import { speedAxios } from '@/lib/axios'
 import { ExtractFnReturnType, QueryConfig } from '@/lib/react-query'

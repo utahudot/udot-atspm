@@ -1,4 +1,11 @@
-import CongestionTrackerChartsContainer from '@/features/charts/congestionTracker/components/CongestionTrackerChartsContainer'
+import CongestionTrackerChartsContainer from '@/features/charts/speedManagementTool/congestionTracker/components/CongestionTrackerChartsContainer'
+import SpeedOverTimeChartContainer from '@/features/charts/speedManagementTool/speedOverTime/components/SpeedOverTimeChartContainer'
+import {
+  SM_ChartType,
+  useSMCharts,
+} from '@/features/speedManagementTool/api/getSMCharts'
+import SpeedOverTimeOptions from '@/features/speedManagementTool/components/SM_ChartOptions/SpeedOverTimeOptions'
+import useSpeedManagementStore from '@/features/speedManagementTool/speedManagementStore'
 import { SpeedManagementRoute } from '@/features/speedManagementTool/types/routes'
 import PlayArrowIcon from '@mui/icons-material/PlayArrow'
 import { LoadingButton } from '@mui/lab'
@@ -10,17 +17,12 @@ import {
   MenuItem,
   Select,
   SelectChangeEvent,
+  Typography,
 } from '@mui/material'
 import { useState } from 'react'
 import CongestionTrackingOptions, {
   CongestionTrackingOptionsValues,
-} from './ChartOptions/CongestionTrackingOptions'
-// import SpeedOverTimeOptions from './SpeedOverTimeOptions';
-
-enum SM_ChartType {
-  CONGESTION_TRACKING = 'Congestion Tracking',
-  SPEED_OVER_TIME = 'Speed over Time',
-}
+} from './SM_ChartOptions/CongestionTrackingOptions'
 
 const SM_Charts = ({ route }: { route: SpeedManagementRoute }) => {
   const [selectedChart, setSelectedChart] = useState<SM_ChartType | null>(
@@ -28,17 +30,26 @@ const SM_Charts = ({ route }: { route: SpeedManagementRoute }) => {
   )
   const [chartOptions, setChartOptions] =
     useState<CongestionTrackingOptionsValues | null>(null)
-  const [showChart, setShowChart] = useState(false)
 
   const handleChartChange = (event: SelectChangeEvent<SM_ChartType>) => {
     setSelectedChart(event.target.value as SM_ChartType)
     setChartOptions(null)
-    setShowChart(false) // Reset the chart display when the chart type changes
   }
 
   const handleOptionsChange = (options: CongestionTrackingOptionsValues) => {
     setChartOptions(options)
   }
+
+  const { submittedRouteSpeedRequest } = useSpeedManagementStore()
+
+  const { data, isLoading, refetch } = useSMCharts({
+    chartType: selectedChart,
+    chartOptions: {
+      ...chartOptions,
+      segmentId: route.properties.route_id,
+      sourceId: submittedRouteSpeedRequest?.sourceId,
+    },
+  })
 
   const renderOptionsComponent = () => {
     switch (selectedChart) {
@@ -47,34 +58,33 @@ const SM_Charts = ({ route }: { route: SpeedManagementRoute }) => {
           <CongestionTrackingOptions onOptionsChange={handleOptionsChange} />
         )
       case SM_ChartType.SPEED_OVER_TIME:
-        // return <SpeedOverTimeOptions onOptionsChange={handleOptionsChange} />;
-        return null
-      default:
-        return null
-    }
-  }
-
-  const renderChartContainer = () => {
-    if (!showChart) return null
-
-    switch (selectedChart) {
-      case SM_ChartType.CONGESTION_TRACKING:
-        return (
-          <CongestionTrackerChartsContainer
-            selectedRouteId={route.properties.route_id}
-            options={chartOptions}
-          />
-        )
-      case SM_ChartType.SPEED_OVER_TIME:
-        // return <SpeedOverTimeChartsContainer options={chartOptions} />;
-        return null
+        return <SpeedOverTimeOptions onOptionsChange={handleOptionsChange} />
       default:
         return null
     }
   }
 
   const handleRunChart = () => {
-    setShowChart(true)
+    refetch()
+  }
+
+  const renderChartContainer = () => {
+    if (isLoading) {
+      return <Typography sx={{ ml: 2 }}>Loading...</Typography>
+    }
+
+    if (!data) return null
+
+    console.log('stuff', data)
+
+    switch (selectedChart) {
+      case SM_ChartType.CONGESTION_TRACKING:
+        return <CongestionTrackerChartsContainer chartData={data} />
+      case SM_ChartType.SPEED_OVER_TIME:
+        return <SpeedOverTimeChartContainer chartData={data} />
+      default:
+        return null
+    }
   }
 
   return (
@@ -118,6 +128,7 @@ const SM_Charts = ({ route }: { route: SpeedManagementRoute }) => {
               sx={{ mt: 2 }}
               startIcon={<PlayArrowIcon />}
               disabled={!selectedChart || !chartOptions}
+              loading={isLoading}
             >
               Run Chart
             </LoadingButton>

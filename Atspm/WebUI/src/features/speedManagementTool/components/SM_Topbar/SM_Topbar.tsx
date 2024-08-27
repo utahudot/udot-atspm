@@ -1,4 +1,3 @@
-import SearchRoutesInput from '@/features/locations/components/SearchRoutesInput'
 import { useRoutes } from '@/features/speedManagementTool/api/getRoutes'
 import ViolationsThresholdPopup from '@/features/speedManagementTool/components/RoutesToggle/ViolationsThresholdPopup'
 import DateRangeOptionsPopup from '@/features/speedManagementTool/components/SM_Topbar/DateRangeOptionsPopup'
@@ -68,13 +67,13 @@ export default function TopBar({ routes }: { routes: SpeedManagementRoute[] }) {
         backgroundColor: 'background.paper',
       }}
     >
-      <Box sx={{ flexGrow: 1 }}>
+      {/* <Box sx={{ flexGrow: 1 }}>
         <SearchRoutesInput
           route={selectedRoute}
           routes={routes}
           handleChange={handleRouteChange}
         />
-      </Box>
+      </Box> */}
       <Box sx={{ display: 'flex', gap: 2 }}>
         <GeneralOptionsPopup />
         <ViolationsThresholdPopup />

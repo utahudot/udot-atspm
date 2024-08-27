@@ -41,8 +41,6 @@ const DeviceConfigModal = ({
     ConfigEnum.TransportProtocols
   )
 
-  console.log('data', transportProtocols)
-
   const [errors, setErrors] = useState({
     firmware: false,
     productId: false,

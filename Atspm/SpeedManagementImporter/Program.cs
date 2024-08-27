@@ -22,7 +22,6 @@ class Program
             .Build();
 
         Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", configuration["GoogleApplicationCredentials"]);
-
         services.AddSingleton(provider =>
         {
             var projectId = configuration["BigQuery:ProjectId"];

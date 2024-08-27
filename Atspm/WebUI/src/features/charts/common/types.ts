@@ -45,7 +45,7 @@ import {
 import {
   PreemptionDetailsChartOptions,
   RawPreemptionDetailsResponse,
-} from '@/features/charts/preemptionDetails/types'
+} from '@/features/charts/performanceMeasures/preemptionDetails/types'
 import {
   PurdueCoordinationDiagramChartOptions,
   RawPurdueCoordinationDiagramResponse,
