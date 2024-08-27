@@ -19,7 +19,7 @@ import {
   createTitle,
 } from '@/features/charts/common/transformers'
 import { ToolType } from '@/features/charts/common/types'
-import { transformPcdData } from '@/features/charts/purdueCoordinationDiagram/transformers'
+import { transformPcdData } from '@/features/charts/performanceMeasures/purdueCoordinationDiagram/transformers'
 import { StandardChart, TransformedToolResponse } from '@/features/charts/types'
 import { RawLpPcdData } from '../types'
 
