@@ -27,7 +27,7 @@ import {
 import transformGreenTimeUtilizationData from '@/features/charts/greenTimeUtilization/transformers'
 import transformLeftTurnGapAnalysisData from '@/features/charts/leftTurnGapAnalysis/transformers'
 import transformPedestrianDelayData from '@/features/charts/pedestrianDelay/transformers'
-import transformPreemptionDetailsData from '@/features/charts/preemptionDetails/transformers'
+import transformPreemptionDetailsData from '@/features/charts/performanceMeasures/preemptionDetails/transformers'
 import transformPurdueCoordinationDiagramData from '@/features/charts/purdueCoordinationDiagram/transformers'
 import transformPurduePhaseTerminationData from '@/features/charts/purduePhaseTermination/transformers'
 import transformPurdueSplitFailureData from '@/features/charts/purdueSplitFailure/transformers'
@@ -40,9 +40,9 @@ import {
 } from '@/features/charts/types'
 import transformWaitTimeData from '@/features/charts/waitTime/transformers'
 import transformYellowAndRedActuationsData from '@/features/charts/yellowAndRedActuations/transformers'
-import transformRampMeteringData from '../rampMetering/transformer'
-import transformTimeSpaceAverageData from '../timeSpaceDiagram/transformers/timeSpaceAverageTransformer'
-import transformTimeSpaceHistoricData from '../timeSpaceDiagram/transformers/timeSpaceHistoricTransformer'
+import transformRampMeteringData from '../../rampMetering/transformer'
+import transformTimeSpaceAverageData from '../../timeSpaceDiagram/transformers/timeSpaceAverageTransformer'
+import transformTimeSpaceHistoricData from '../../timeSpaceDiagram/transformers/timeSpaceHistoricTransformer'
 
 export const transformChartData = (
   response: RawChartResponse

@@ -53,9 +53,6 @@ export default function transformSplitMonitorData(
     }
   })
 
-  console.log('before')
-  console.log(charts)
-
   return {
     type: ChartType.SplitMonitor,
     data: {

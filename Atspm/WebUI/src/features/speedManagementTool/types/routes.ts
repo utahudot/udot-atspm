@@ -29,7 +29,7 @@ interface MonthlyAverage {
 }
 
 interface Properties {
-  // route_name: string
+  name: string
   route_id: number
   startdate: string | null
   enddate: string | null

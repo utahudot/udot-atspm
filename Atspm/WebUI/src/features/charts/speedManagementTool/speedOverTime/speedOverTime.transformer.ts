@@ -22,8 +22,10 @@ export default function transformSpeedOverTimeData(
     } (between MP ${response.startingMilePoint.toFixed(
       1
     )} and MP ${response.endingMilePoint.toFixed(1)})`,
-    dateRange: 'please add me',
+    dateRange: '',
   })
+
+  // todo add date range
 
   const averageSpeed = 'Average Speed (mph)'
   const eightyFifthPercentile = '85th Percentile Speed (mph)'
@@ -92,13 +94,16 @@ function transformData(response) {
 
     if (average && Array.isArray(average)) {
       average.forEach((item) => {
-        result.average.push({ start: item.start, value: item.value })
+        result.average.push({ timestamp: item.timestamp, value: item.value })
       })
     }
 
     if (eightyFifth && Array.isArray(eightyFifth)) {
       eightyFifth.forEach((item) => {
-        result.eightyFifth.push({ start: item.start, value: item.value })
+        result.eightyFifth.push({
+          timestamp: item.timestamp,
+          value: item.value,
+        })
       })
     }
   })

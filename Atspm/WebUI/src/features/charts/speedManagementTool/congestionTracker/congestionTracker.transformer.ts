@@ -63,6 +63,8 @@ export const transformCongestionTrackerData = (
   response: CongestionTrackerResponse,
   view: 'week' | 'month' = 'month'
 ) => {
+  // if (!response.data) return null
+
   const date = response.data[0].date
 
   const daysInMonth = (year: number, month: number) =>

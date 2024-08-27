@@ -1,5 +1,4 @@
 import { ChartType } from '@/features/charts/common/types'
-import { CongestionTrackerChartOptions } from '@/features/charts/congestionTracker/components/CongestionTrackerChartOptions/CongestionTrackerChartOptions'
 import { getDisplayNameFromChartType } from '@/features/charts/utils'
 import {
   Box,
@@ -8,23 +7,35 @@ import {
   InputLabel,
   MenuItem,
   Select,
+  SelectChangeEvent,
   Typography,
 } from '@mui/material'
+import { useState } from 'react'
+import CongestionTrackerChartOptions from './CongestionTrackingOptions'
+import SpeedOverTimeOptions from './SpeedOverTimeOptions'
 
 const availableCharts = {
   CongestionTracker: CongestionTrackerChartOptions,
+  SpeedOverTime: SpeedOverTimeOptions,
 } as const
 
-const ChartOptions = () => {
+const SM_ChartOptions = () => {
+  const [selectedChartType, setSelectedChartType] = useState<ChartType | null>(
+    null
+  )
+
+  const handleChartTypeChange = (event: SelectChangeEvent<string>) => {
+    setSelectedChartType(event.target.value as ChartType)
+  }
+
   const renderChartOptionsComponent = () => {
-    //     const ChartComponent =
-    //       availableCharts[chartType as keyof typeof availableCharts]
+    const ChartComponent =
+      selectedChartType &&
+      availableCharts[selectedChartType as keyof typeof availableCharts]
 
-    //     if (!ChartComponent || !chartDefaults) return null
+    if (!ChartComponent) return null
 
-    //     if (isLoading) return <div>Loading...</div>
-
-    return <CongestionTrackerChartOptions />
+    return <ChartComponent />
   }
 
   return (
@@ -33,10 +44,9 @@ const ChartOptions = () => {
         <InputLabel htmlFor="chart-type-label">Chart</InputLabel>
         <Select
           inputProps={{ id: 'chart-type-label' }}
-          value={'Congestion Tracker'}
+          value={selectedChartType ?? ''}
           label="Chart"
-          // displayEmpty
-          // disabled={!location}
+          onChange={handleChartTypeChange}
         >
           {Object.keys(availableCharts).map((type) => (
             <MenuItem key={type} value={type}>
@@ -55,4 +65,4 @@ const ChartOptions = () => {
   )
 }
 
-export default ChartOptions
+export default SM_ChartOptions

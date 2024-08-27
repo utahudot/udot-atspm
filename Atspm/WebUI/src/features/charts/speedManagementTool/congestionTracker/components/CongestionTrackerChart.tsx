@@ -1,5 +1,5 @@
 import { ChartType } from '@/features/charts/common/types'
-import { transformCongestionTrackerData } from '@/features/charts/congestionTracker/congestionTracker.transformer'
+import { transformCongestionTrackerData } from '@/features/charts/speedManagementTool/congestionTracker/congestionTracker.transformer'
 import { ToggleButton, ToggleButtonGroup } from '@mui/material'
 import type { ECharts, EChartsOption, SetOptionOpts } from 'echarts'
 import { init } from 'echarts'
