@@ -17,31 +17,31 @@
 import {
   ApproachDelayChartOptions,
   RawApproachDelayReponse,
-} from '@/features/charts/approachDelay/types'
+} from '@/features/charts/performanceMeasures/approachDelay/types'
 import {
   ApproachSpeedChartOptions,
   RawApproachSpeedReponse,
-} from '@/features/charts/approachSpeed/types'
+} from '@/features/charts/performanceMeasures/approachSpeed/types'
 import {
   ApproachVolumeChartOptions,
   RawApproachVolumeResponse,
-} from '@/features/charts/approachVolume/types'
+} from '@/features/charts/performanceMeasures/approachVolume/types'
 import {
   ArrivalsOnRedChartOptions,
   RawArrivalsOnRedResponse,
-} from '@/features/charts/arrivalsOnRed/types'
+} from '@/features/charts/performanceMeasures/arrivalsOnRed/types'
 import {
   GreenTimeUtilizationChartOptions,
   RawGreenTimeUtilizationResponse,
-} from '@/features/charts/greenTimeUtilization/types'
+} from '@/features/charts/performanceMeasures/greenTimeUtilization/types'
 import {
   LeftTurnGapAnalysisChartOptions,
   RawLeftTurnGapAnalysisResponse,
-} from '@/features/charts/leftTurnGapAnalysis/types'
+} from '@/features/charts/performanceMeasures/leftTurnGapAnalysis/types'
 import {
   PedestrianDelayChartOptions,
   RawPedestrianDelayResponse,
-} from '@/features/charts/pedestrianDelay/types'
+} from '@/features/charts/performanceMeasures/pedestrianDelay/types'
 import {
   PreemptionDetailsChartOptions,
   RawPreemptionDetailsResponse,
@@ -49,36 +49,36 @@ import {
 import {
   PurdueCoordinationDiagramChartOptions,
   RawPurdueCoordinationDiagramResponse,
-} from '@/features/charts/purdueCoordinationDiagram/types'
+} from '@/features/charts/performanceMeasures/purdueCoordinationDiagram/types'
 import {
   PurduePhaseTerminationChartOptions,
   RawPurduePhaseTerminationResponse,
-} from '@/features/charts/purduePhaseTermination/types'
+} from '@/features/charts/performanceMeasures/purduePhaseTermination/types'
 import {
   PurdueSplitFailureChartOptions,
   RawPurdueSplitFailureResponse,
-} from '@/features/charts/purdueSplitFailure/types'
+} from '@/features/charts/performanceMeasures/purdueSplitFailure/types'
 import {
   RawSplitMonitorResponse,
   SplitMonitorChartOptions,
-} from '@/features/charts/splitMonitor/types'
+} from '@/features/charts/performanceMeasures/splitMonitor/types'
 import {
   RawTimingAndActuationResponse,
   TimingAndActuationChartOptions,
-} from '@/features/charts/timingAndActuation/types'
+} from '@/features/charts/performanceMeasures/timingAndActuation/types'
 import {
   RawTurningMovementCountsResponse,
   TurningMovementCountsChartOptions,
-} from '@/features/charts/turningMovementCounts/types'
-import { Color } from '@/features/charts/utils'
+} from '@/features/charts/performanceMeasures/turningMovementCounts/types'
 import {
   RawWaitTimeResponse,
   WaitTimeChartOptions,
-} from '@/features/charts/waitTime/types'
+} from '@/features/charts/performanceMeasures/waitTime/types'
 import {
   RawYellowAndRedActuationsResponse,
   YellowAndRedActuationsChartOptions,
-} from '@/features/charts/yellowAndRedActuations/types'
+} from '@/features/charts/performanceMeasures/yellowAndRedActuations/types'
+import { Color } from '@/features/charts/utils'
 import {
   LinkPivotOptions,
   RawLinkPivotPcdResponse,
