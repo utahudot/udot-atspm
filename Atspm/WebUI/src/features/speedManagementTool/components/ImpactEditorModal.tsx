@@ -21,6 +21,7 @@ import { useRouter } from 'next/router'
 import React, { useEffect, useState } from 'react'
 import { useGetImpactTypes } from '../api/getImpactTypes'
 import { useGetSegments } from '../api/getSegments'
+import SegmentSelectMap from './SegmentSelectMap'
 interface ImpactEditorModalProps {
   data?: Impact
   open: boolean
@@ -272,17 +273,7 @@ const ImpactEditorModal: React.FC<ImpactEditorModalProps> = ({
         setImpact({ ...impact, segmentIds: selectedIds });
       }}
     />} */}
-            <SelectLocationMap
-              location={location}
-              setLocation={() => {
-                console.log('Helo')
-              }}
-              locations={[]}
-              center={[0, 0]}
-              zoom={10}
-              route={[]}
-              mapHeight={400}
-            />
+           <SegmentSelectMap />
 
             {/* <div
               style={{
