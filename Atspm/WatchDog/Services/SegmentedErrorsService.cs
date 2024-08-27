@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using Utah.Udot.Atspm.Data.Enums;
+﻿using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.WatchDog.Models;
 
@@ -14,65 +13,93 @@ namespace Utah.Udot.ATSPM.WatchDog.Services
             this.watchDogLogEventRepository = watchDogLogEventRepository;
         }
 
-        public (List<WatchDogLogEvent>, List<WatchDogLogEvent>, List<WatchDogLogEvent>) GetSegmentedErrors(List<WatchDogLogEvent> recordsFromDayBefore, EmailOptions emailOptions)
+        public (List<WatchDogLogEventWithCountAndDate> newIssues, List<WatchDogLogEventWithCountAndDate> dailyRecurringIssues, List<WatchDogLogEventWithCountAndDate> recurringIssues)
+        GetSegmentedErrors(List<WatchDogLogEvent> recordsForScanDate, EmailOptions emailOptions)
         {
-            //Get all values from last 12 months excluding the scan date value
-            //Also get values from day before the scan date
-            var recordsForLast12Months = new List<WatchDogLogEvent>();
-            var recordsForDayBeforeScanDate = new List<WatchDogLogEvent>();
+            var (recordsForLast12Months, recordsForDayBeforeScanDate) = FetchRecords(emailOptions);
+
+            var countAndDateLookupForLast12Months = CreateCountAndDateLookup(recordsForLast12Months);
+            var countForDayBeforeScanDate = CreateDayBeforeCountLookup(recordsForDayBeforeScanDate);
+
+            var allConvertedRecords = ConvertRecords(recordsForScanDate, countAndDateLookupForLast12Months);
+
+            return CategorizeIssues(allConvertedRecords, countForDayBeforeScanDate);
+        }
+
+        private (List<WatchDogLogEvent> recordsForLast12Months, List<WatchDogLogEvent> recordsForDayBeforeScanDate)
+        FetchRecords(EmailOptions emailOptions)
+        {
             if (emailOptions.WeekdayOnly && emailOptions.ScanDate.DayOfWeek == DayOfWeek.Monday)
             {
-                recordsForDayBeforeScanDate = watchDogLogEventRepository.GetList(w => w.Timestamp >= emailOptions.ScanDate.AddDays(-3) &&
-                                w.Timestamp < emailOptions.ScanDate.AddDays(-2)).ToList();
-                recordsForLast12Months = watchDogLogEventRepository.GetList(w => w.Timestamp >= emailOptions.ScanDate.AddDays(-3).AddMonths(-12) &&
+                var recordsForDayBeforeScanDate = watchDogLogEventRepository.GetList(w => w.Timestamp >= emailOptions.ScanDate.AddDays(-3) &&
+                                    w.Timestamp < emailOptions.ScanDate.AddDays(-2)).ToList();
+                var recordsForLast12Months = watchDogLogEventRepository.GetList(w => w.Timestamp >= emailOptions.ScanDate.AddDays(-3).AddMonths(-12) &&
                     w.Timestamp < emailOptions.ScanDate.AddDays(-2)).ToList();
+                return (recordsForLast12Months, recordsForDayBeforeScanDate);
             }
             else
             {
-                recordsForDayBeforeScanDate = watchDogLogEventRepository.GetList(w => w.Timestamp >= emailOptions.ScanDate.AddDays(-1) &&
-                               w.Timestamp < emailOptions.ScanDate).ToList();
-                recordsForLast12Months = watchDogLogEventRepository.GetList(w => w.Timestamp >= emailOptions.ScanDate.AddDays(-1).AddMonths(-12) &&
+                var recordsForDayBeforeScanDate = watchDogLogEventRepository.GetList(w => w.Timestamp >= emailOptions.ScanDate.AddDays(-1) &&
+                                   w.Timestamp < emailOptions.ScanDate).ToList();
+                var recordsForLast12Months = watchDogLogEventRepository.GetList(w => w.Timestamp >= emailOptions.ScanDate.AddDays(-1).AddMonths(-12) &&
                     w.Timestamp < emailOptions.ScanDate).ToList();
+                return (recordsForLast12Months, recordsForDayBeforeScanDate);
             }
-
-            var locationIssueLookupForLast12Months = GetUniqeWatchdogEvents(recordsForLast12Months);
-
-            //Create a dictonary to allow for quick search on day before scan date
-            var dayBeforeLookup = GetUniqeWatchdogEvents(recordsForDayBeforeScanDate);
-
-            //Filter values from recordsFromDayBefore that are newly occured
-            var newIssues = recordsFromDayBefore
-                .Where(r =>
-                    !locationIssueLookupForLast12Months.TryGetValue((r.LocationIdentifier, r.IssueType, r.ComponentType), out var phase) ||
-                    phase != r.Phase
-                )
-                .ToList();
-
-            //Filter values from recordsFromDayBefore that have occured twice in a row
-            var dailyRecurringIssues = recordsFromDayBefore
-                .Where(r =>
-                    dayBeforeLookup.TryGetValue((r.LocationIdentifier, r.IssueType, r.ComponentType), out var phase) &&
-                    phase == r.Phase
-                )
-                .ToList();
-
-            var combinedMatches = newIssues.Concat(dailyRecurringIssues).ToList();
-
-            //remaing values from recordsFromDayBefore
-            var filteredList = recordsFromDayBefore.Except(combinedMatches).ToList();
-
-            return (newIssues, dailyRecurringIssues, filteredList);
         }
 
-        private static Dictionary<(string LocationIdentifier, WatchDogIssueTypes IssueType, WatchDogComponentTypes ComponentType), int?> GetUniqeWatchdogEvents(List<WatchDogLogEvent> watchDogRecords)
+        private Dictionary<(string LocationIdentifier, WatchDogIssueTypes IssueType, WatchDogComponentTypes ComponentType), (int Count, DateTime DateOfFirstOccurrence)>
+        CreateCountAndDateLookup(List<WatchDogLogEvent> recordsForLast12Months)
         {
-            //Create a dictonary to allow for quick search
-            return watchDogRecords
-            .GroupBy(r => (r.LocationIdentifier, r.IssueType, r.ComponentType))
-            .ToDictionary(
-                group => group.Key,
-                group => group.Select(e => e.Phase).FirstOrDefault()
-            );
+            return recordsForLast12Months
+                .GroupBy(r => (r.LocationIdentifier, r.IssueType, r.ComponentType))
+                .ToDictionary(
+                    group => group.Key,
+                    group => (
+                        Count: group.Count(),
+                        DateOfFirstOccurrence: group.Min(e => e.Timestamp)
+                    )
+                );
+        }
+
+        private Dictionary<(string LocationIdentifier, WatchDogIssueTypes IssueType, WatchDogComponentTypes ComponentType), int>
+        CreateDayBeforeCountLookup(List<WatchDogLogEvent> recordsForDayBeforeScanDate)
+        {
+            return recordsForDayBeforeScanDate
+                .GroupBy(r => (r.LocationIdentifier, r.IssueType, r.ComponentType))
+                .ToDictionary(
+                    group => group.Key,
+                    group => group.Count()
+                );
+        }
+
+        private List<WatchDogLogEventWithCountAndDate>
+        ConvertRecords(List<WatchDogLogEvent> recordsForScanDate, Dictionary<(string LocationIdentifier, WatchDogIssueTypes IssueType, WatchDogComponentTypes ComponentType), (int Count, DateTime DateOfFirstOccurrence)> countAndDateLookupForLast12Months)
+        {
+            return recordsForScanDate
+                .Select(r => new WatchDogLogEventWithCountAndDate(r.LocationId, r.LocationIdentifier, r.Timestamp, r.ComponentType, r.ComponentId, r.IssueType, r.Details, r.Phase)
+                {
+                    EventCount = countAndDateLookupForLast12Months.TryGetValue((r.LocationIdentifier, r.IssueType, r.ComponentType), out var data) ? data.Count : 0,
+                    DateOfFirstInstance = countAndDateLookupForLast12Months.TryGetValue((r.LocationIdentifier, r.IssueType, r.ComponentType), out data) ? data.DateOfFirstOccurrence : r.Timestamp
+                })
+                .ToList();
+        }
+
+        private (List<WatchDogLogEventWithCountAndDate> newIssues, List<WatchDogLogEventWithCountAndDate> dailyRecurringIssues, List<WatchDogLogEventWithCountAndDate> recurringIssues)
+        CategorizeIssues(List<WatchDogLogEventWithCountAndDate> allConvertedRecords, Dictionary<(string LocationIdentifier, WatchDogIssueTypes IssueType, WatchDogComponentTypes ComponentType), int> countForDayBeforeScanDate)
+        {
+            var newIssues = allConvertedRecords
+                .Where(r => r.EventCount == 0)
+                .ToList();
+
+            var dailyRecurringIssues = allConvertedRecords
+                .Where(r => countForDayBeforeScanDate.TryGetValue((r.LocationIdentifier, r.IssueType, r.ComponentType), out var dayBeforeCount) && dayBeforeCount == 1)
+                .ToList();
+
+            var recurringIssues = allConvertedRecords
+                .Except(newIssues.Concat(dailyRecurringIssues))
+                .ToList();
+
+            return (newIssues, dailyRecurringIssues, recurringIssues);
         }
     }
 }

@@ -41,9 +41,9 @@ namespace Utah.Udot.Atspm.WatchDog.Services
 
         public async Task SendAllEmails(
             EmailOptions options,
-            List<WatchDogLogEvent> newErrors,
-            List<WatchDogLogEvent> dailyRecurringErrors,
-            List<WatchDogLogEvent> recurringErrors,
+            List<WatchDogLogEventWithCountAndDate> newErrors,
+            List<WatchDogLogEventWithCountAndDate> dailyRecurringErrors,
+            List<WatchDogLogEventWithCountAndDate> recurringErrors,
             List<Location> Locations,
             List<ApplicationUser> users,
             List<Jurisdiction> jurisdictions,
@@ -66,9 +66,9 @@ namespace Utah.Udot.Atspm.WatchDog.Services
 
         private async Task SendAdminEmail(
             EmailOptions options,
-            List<WatchDogLogEvent> newErrors,
-            List<WatchDogLogEvent> dailyRecurringErrors,
-            List<WatchDogLogEvent> recurringErrors,
+            List<WatchDogLogEventWithCountAndDate> newErrors,
+            List<WatchDogLogEventWithCountAndDate> dailyRecurringErrors,
+            List<WatchDogLogEventWithCountAndDate> recurringErrors,
             List<Location> locations,
             string v,
             List<ApplicationUser> users,
@@ -86,9 +86,9 @@ namespace Utah.Udot.Atspm.WatchDog.Services
 
         private async Task SendJurisdictionEmails(
             EmailOptions options,
-            List<WatchDogLogEvent> newErrors,
-            List<WatchDogLogEvent> dailyRecurringErrors,
-            List<WatchDogLogEvent> recurringErrors,
+            List<WatchDogLogEventWithCountAndDate> newErrors,
+            List<WatchDogLogEventWithCountAndDate> dailyRecurringErrors,
+            List<WatchDogLogEventWithCountAndDate> recurringErrors,
             List<Location> Locations,
             List<ApplicationUser> users,
             List<Jurisdiction> jurisdictions,
@@ -119,9 +119,9 @@ namespace Utah.Udot.Atspm.WatchDog.Services
 
         private async Task SendAreaEmails(
             EmailOptions options,
-            List<WatchDogLogEvent> newErrors,
-            List<WatchDogLogEvent> dailyRecurringErrors,
-            List<WatchDogLogEvent> recurringErrors,
+            List<WatchDogLogEventWithCountAndDate> newErrors,
+            List<WatchDogLogEventWithCountAndDate> dailyRecurringErrors,
+            List<WatchDogLogEventWithCountAndDate> recurringErrors,
             List<Location> Locations,
             List<ApplicationUser> users,
             List<Area> areas,
@@ -153,9 +153,9 @@ namespace Utah.Udot.Atspm.WatchDog.Services
         }
         private async Task SendRegionEmails(
             EmailOptions options,
-            List<WatchDogLogEvent> newErrors,
-            List<WatchDogLogEvent> dailyRecurringErrors,
-            List<WatchDogLogEvent> recurringErrors,
+            List<WatchDogLogEventWithCountAndDate> newErrors,
+            List<WatchDogLogEventWithCountAndDate> dailyRecurringErrors,
+            List<WatchDogLogEventWithCountAndDate> recurringErrors,
             List<Location> Locations,
             List<ApplicationUser> users,
             List<Region> regions,
@@ -188,9 +188,9 @@ namespace Utah.Udot.Atspm.WatchDog.Services
 
         public async Task<string> CreateEmailBody(
             EmailOptions options,
-            List<WatchDogLogEvent> newErrors,
-            List<WatchDogLogEvent> dailyRecurringErrors,
-            List<WatchDogLogEvent> recurringErrors,
+            List<WatchDogLogEventWithCountAndDate> newErrors,
+            List<WatchDogLogEventWithCountAndDate> dailyRecurringErrors,
+            List<WatchDogLogEventWithCountAndDate> recurringErrors,
             List<Location> locations,
             List<WatchDogLogEvent> logsFromPreviousDay)
         {
@@ -210,7 +210,7 @@ namespace Utah.Udot.Atspm.WatchDog.Services
 
         private string ProcessErrorList(
             string errorTitle,
-            List<WatchDogLogEvent> errors,
+            List<WatchDogLogEventWithCountAndDate> errors,
             EmailOptions options,
             List<Location> locations,
             List<WatchDogLogEvent> logsFromPreviousDay)
@@ -242,7 +242,7 @@ namespace Utah.Udot.Atspm.WatchDog.Services
 
         private string BuildErrorSection(
             string sectionTitle,
-            List<WatchDogLogEvent> errorLogs,
+            List<WatchDogLogEventWithCountAndDate> errorLogs,
             List<Location> locations,
             EmailOptions options,
             List<WatchDogLogEvent> logsFromPreviousDay)
@@ -283,29 +283,29 @@ namespace Utah.Udot.Atspm.WatchDog.Services
             switch (sectionTitle)
             {
                 case "Missing Records Errors":
-                    return new List<string> { "Location", "Location Description", "Issue Details" };
+                    return new List<string> { "Location", "Location Description", "Issue Details", "Error Count", "Date of First Occurrence" };
                 case "Force Off Errors":
                 case "Max Out Errors":
                 case "High Pedestrian Activation Errors":
                 case "Unconfigured Approaches Errors":
-                    return new List<string> { "Location", "Location Description", "Phase", "Issue Details" };
+                    return new List<string> { "Location", "Location Description", "Phase", "Issue Details", "Error Count", "Date of First Occurrence" };
                 case "Low Detection Count Errors":
                 case "Unconfigured Detectors Errors":
-                    return new List<string> { "Location", "Location Description", "Detector Id", "Issue Details" };
+                    return new List<string> { "Location", "Location Description", "Detector Id", "Issue Details", "Error Count", "Date of First Occurrence" };
                 default:
-                    return new List<string> { "Location", "Location Description", "Issue Details" };
+                    return new List<string> { "Location", "Location Description", "Issue Details", "Error Count", "Date of First Occurrence" };
             }
         }
 
         private static void GetEventsByIssueType(
-            List<WatchDogLogEvent> eventsContainer,
-            out List<WatchDogLogEvent> missingErrorsLogs,
-            out List<WatchDogLogEvent> forceErrorsLogs,
-            out List<WatchDogLogEvent> maxErrorsLogs,
-            out List<WatchDogLogEvent> countErrorsLogs,
-            out List<WatchDogLogEvent> stuckpedErrorsLogs,
-            out List<WatchDogLogEvent> configurationErrorsLogs,
-            out List<WatchDogLogEvent> unconfiguredDetectorErrorsLogs
+            List<WatchDogLogEventWithCountAndDate> eventsContainer,
+            out List<WatchDogLogEventWithCountAndDate> missingErrorsLogs,
+            out List<WatchDogLogEventWithCountAndDate> forceErrorsLogs,
+            out List<WatchDogLogEventWithCountAndDate> maxErrorsLogs,
+            out List<WatchDogLogEventWithCountAndDate> countErrorsLogs,
+            out List<WatchDogLogEventWithCountAndDate> stuckpedErrorsLogs,
+            out List<WatchDogLogEventWithCountAndDate> configurationErrorsLogs,
+            out List<WatchDogLogEventWithCountAndDate> unconfiguredDetectorErrorsLogs
             )
         {
             missingErrorsLogs = eventsContainer.Where(e => e.IssueType == Data.Enums.WatchDogIssueTypes.RecordCount).ToList();
@@ -320,7 +320,7 @@ namespace Utah.Udot.Atspm.WatchDog.Services
 
         private string SortAndAddToMessage(
             List<Location> Locations,
-            List<WatchDogLogEvent> issues,
+            List<WatchDogLogEventWithCountAndDate> issues,
             EmailOptions options,
             List<WatchDogLogEvent> logsFromPreviousDay)
         {
@@ -349,7 +349,10 @@ namespace Utah.Udot.Atspm.WatchDog.Services
                             errorMessage += $"<td>{error.ComponentId}</td>";
                         }
 
-                        errorMessage += $"<td>{error.Details}</td></tr>";
+                        errorMessage += $"<td>{error.Details}</td>";
+
+                        errorMessage += $"<td>{error.EventCount}</td><";
+                        errorMessage += $"<td>{error.DateOfFirstInstance}</td></tr>";
                     }
                 }
             }
