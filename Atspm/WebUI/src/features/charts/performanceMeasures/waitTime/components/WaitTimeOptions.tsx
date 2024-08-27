@@ -1,6 +1,6 @@
 import { BinSizeDropdown } from '@/features/charts/components/selectChart/BinSizeDropdown'
 import { Default } from '@/features/charts/types'
-import { WaitTimeChartOptionsDefaults } from '@/features/charts/waitTime/types'
+import { WaitTimeChartOptionsDefaults } from '@/features/charts/performanceMeasures/waitTime/types'
 import { SelectChangeEvent } from '@mui/material'
 import { useState } from 'react'
 

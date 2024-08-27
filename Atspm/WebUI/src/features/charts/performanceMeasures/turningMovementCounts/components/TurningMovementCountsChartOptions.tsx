@@ -1,5 +1,5 @@
 import { BinSizeDropdown } from '@/features/charts/components/selectChart/BinSizeDropdown'
-import { TurningMovementCountsChartOptionsDefaults } from '@/features/charts/turningMovementCounts/types'
+import { TurningMovementCountsChartOptionsDefaults } from '@/features/charts/performanceMeasures/turningMovementCounts/types'
 import { Default } from '@/features/charts/types'
 import { SelectChangeEvent } from '@mui/material'
 import { useState } from 'react'

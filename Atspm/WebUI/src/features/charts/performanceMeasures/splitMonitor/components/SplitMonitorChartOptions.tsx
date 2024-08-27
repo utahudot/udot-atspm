@@ -1,4 +1,4 @@
-import { SplitMonitorChartOptionsDefaults } from '@/features/charts/splitMonitor/types'
+import { SplitMonitorChartOptionsDefaults } from '@/features/charts/performanceMeasures/splitMonitor/types'
 import { Default } from '@/features/charts/types'
 import {
   Box,

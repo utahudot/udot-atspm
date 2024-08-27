@@ -31,7 +31,7 @@ import {
   Phase,
   RawPurduePhaseTerminationData,
   RawPurduePhaseTerminationResponse,
-} from '@/features/charts/purduePhaseTermination/types'
+} from '@/features/charts/performanceMeasures/purduePhaseTermination/types'
 import {
   ExtendedEChartsOption,
   TransformedChartResponse,

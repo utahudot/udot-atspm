@@ -1,4 +1,4 @@
-import { PurduePhaseTerminationChartOptionsDefaults } from '@/features/charts/purduePhaseTermination/types'
+import { PurduePhaseTerminationChartOptionsDefaults } from '@/features/charts/performanceMeasures/purduePhaseTermination/types'
 import { Default } from '@/features/charts/types'
 import { Box, FormControl, TextField, Typography } from '@mui/material'
 import { ChangeEvent, useState } from 'react'

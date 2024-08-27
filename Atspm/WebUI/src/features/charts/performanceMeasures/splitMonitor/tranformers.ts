@@ -34,7 +34,7 @@ import {
   RawSplitMonitorData,
   RawSplitMonitorResponse,
   SplitMonitorPlan,
-} from '@/features/charts/splitMonitor/types'
+} from '@/features/charts/performanceMeasures/splitMonitor/types'
 import { TransformedChartResponse } from '@/features/charts/types'
 import {
   Color,

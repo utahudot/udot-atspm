@@ -1,4 +1,4 @@
-import { ApproachSpeedChartOptionsDefaults } from '@/features/charts/approachSpeed/types'
+import { ApproachSpeedChartOptionsDefaults } from '@/features/charts/performanceMeasures/approachSpeed/types'
 import { BinSizeDropdown } from '@/features/charts/components/selectChart/BinSizeDropdown'
 import { Default } from '@/features/charts/types'
 import { SelectChangeEvent } from '@mui/material'

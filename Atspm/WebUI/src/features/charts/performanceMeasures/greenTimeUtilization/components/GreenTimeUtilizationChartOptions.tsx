@@ -1,4 +1,4 @@
-import { GreenTimeUtilizationChartOptionsDefaults } from '@/features/charts/greenTimeUtilization/types'
+import { GreenTimeUtilizationChartOptionsDefaults } from '@/features/charts/performanceMeasures/greenTimeUtilization/types'
 import { Default } from '@/features/charts/types'
 import { Box, FormControl, TextField, Typography } from '@mui/material'
 import { ChangeEvent, useState } from 'react'

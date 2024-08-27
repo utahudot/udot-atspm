@@ -34,7 +34,7 @@ import {
   RawPedestrianDelayData,
   RawPedestrianDelayResponse,
   pedestrianDelayPlan,
-} from '@/features/charts/pedestrianDelay/types'
+} from '@/features/charts/performanceMeasures/pedestrianDelay/types'
 import { TransformedChartResponse } from '@/features/charts/types'
 import {
   Color,

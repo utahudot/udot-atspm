@@ -33,7 +33,7 @@ import {
   RawPurdueCoordinationDiagramData,
   RawPurdueCoordinationDiagramResponse,
   purdueCoordinationDiagramPlan,
-} from '@/features/charts/purdueCoordinationDiagram/types'
+} from '@/features/charts/performanceMeasures/purdueCoordinationDiagram/types'
 import { TransformedChartResponse } from '@/features/charts/types'
 import {
   Color,

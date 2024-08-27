@@ -36,7 +36,7 @@ import {
   PurdueSplitFailurePlan,
   RawPurdueSplitFailureData,
   RawPurdueSplitFailureResponse,
-} from '@/features/charts/purdueSplitFailure/types'
+} from '@/features/charts/performanceMeasures/purdueSplitFailure/types'
 import { TransformedChartResponse } from '@/features/charts/types'
 import {
   Color,

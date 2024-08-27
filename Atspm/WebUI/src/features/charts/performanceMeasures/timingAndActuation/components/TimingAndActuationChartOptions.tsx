@@ -1,4 +1,4 @@
-import { TimingAndActuationChartOptionsDefaults } from '@/features/charts/timingAndActuation/types'
+import { TimingAndActuationChartOptionsDefaults } from '@/features/charts/performanceMeasures/timingAndActuation/types'
 import { Default } from '@/features/charts/types'
 import { Box, Typography } from '@mui/material'
 

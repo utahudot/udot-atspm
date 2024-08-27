@@ -18,7 +18,7 @@ import {
   ArrivalsOnRedPlan,
   RawArrivalsOnRedData,
   RawArrivalsOnRedResponse,
-} from '@/features/charts/arrivalsOnRed/types'
+} from '@/features/charts/performanceMeasures/arrivalsOnRed/types'
 import {
   createDataZoom,
   createDisplayProps,

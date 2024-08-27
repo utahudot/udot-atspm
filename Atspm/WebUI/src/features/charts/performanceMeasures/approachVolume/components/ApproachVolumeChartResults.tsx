@@ -1,5 +1,5 @@
-import { ApproachVolumeTable } from '@/features/charts/approachVolume/components/ApproachVolumeTable'
 import ApacheEChart from '@/features/charts/components/apacheEChart'
+import { ApproachVolumeTable } from '@/features/charts/performanceMeasures/approachVolume/components/ApproachVolumeTable'
 import { TransformedApproachVolumeResponse } from '@/features/charts/types'
 import { Box, Paper, useTheme } from '@mui/material'
 

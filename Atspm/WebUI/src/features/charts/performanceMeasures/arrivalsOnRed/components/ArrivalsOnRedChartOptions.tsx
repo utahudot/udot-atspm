@@ -1,4 +1,4 @@
-import { ArrivalsOnRedChartOptionsDefaults } from '@/features/charts/arrivalsOnRed/types'
+import { ArrivalsOnRedChartOptionsDefaults } from '@/features/charts/performanceMeasures/arrivalsOnRed/types'
 import { BinSizeDropdown } from '@/features/charts/components/selectChart/BinSizeDropdown'
 import { Default } from '@/features/charts/types'
 import { SelectChangeEvent } from '@mui/material'

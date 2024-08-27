@@ -1,4 +1,4 @@
-import { ApproachDelayChartOptionsDefaults } from '@/features/charts/approachDelay/types'
+import { ApproachDelayChartOptionsDefaults } from '@/features/charts/performanceMeasures/approachDelay/types'
 import { BinSizeDropdown } from '@/features/charts/components/selectChart/BinSizeDropdown'
 import { Default } from '@/features/charts/types'
 import { SelectChangeEvent } from '@mui/material'
