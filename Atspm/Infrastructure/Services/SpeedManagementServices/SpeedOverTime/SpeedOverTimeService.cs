@@ -44,6 +44,8 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices.SpeedO
             {
                 SegmentId = segment.Id,
                 SegmentName = segment.Name,
+                StartDate = parameter.StartDate.ToDateTime(new TimeOnly(0, 0)),
+                EndDate = parameter.EndDate.ToDateTime(new TimeOnly(0,0)),
                 SpeedLimit = segment.SpeedLimit,
                 StartingMilePoint = segment.StartMilePoint,
                 EndingMilePoint = segment.EndMilePoint,

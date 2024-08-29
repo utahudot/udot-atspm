@@ -1,33 +1,15 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.SpeedOverDistance;
-using Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices;
+using Utah.Udot.Atspm.Services;
 
 namespace SpeedManagementApi.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
-    public class SpeedOverDistanceController : ControllerBase
+    [Route("[controller]")]
+    public class SpeedOverDistanceController : SpeedBaseController<SpeedOverDistanceOptions, List<SpeedOverDistanceDto>>
     {
-        private MonthlyAggregationService monthlyAggregationService;
-
-        public SpeedOverDistanceController(MonthlyAggregationService monthlyAggregationService)
+        public SpeedOverDistanceController(IReportService<SpeedOverDistanceOptions, List<SpeedOverDistanceDto>> reportService) : base(reportService)
         {
-            this.monthlyAggregationService = monthlyAggregationService;
         }
-
-        // POST: /SpeedOverDistance
-        [HttpPost("")]
-        public async Task<ActionResult<List<SpeedOverDistanceDto>>> GetSegmentsMonthlyAggregations([FromBody] SpeedOverDistanceRequestDto speedOverDistanceRequest)
-        {
-            var thresholdDate = DateTime.UtcNow.AddYears(-2).AddMonths(-1);
-            if (speedOverDistanceRequest == null || speedOverDistanceRequest.StartDate < thresholdDate || speedOverDistanceRequest.StartDate > speedOverDistanceRequest.EndDate)
-            {
-                return BadRequest();
-            }
-            List<SpeedOverDistanceDto> speedOverDistances = await monthlyAggregationService.MonthlyAggregationsForSegmentInTimePeriod(speedOverDistanceRequest.SegmentIds, speedOverDistanceRequest.StartDate, speedOverDistanceRequest.EndDate);
-
-            return Ok(speedOverDistances);
-        }
-
     }
 }

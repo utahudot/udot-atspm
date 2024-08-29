@@ -35,29 +35,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices
             foreach (var monthlyAggregation in monthlyAggregations)
             {
                 var segment = segments.Where(segment => segment.Id == monthlyAggregation.SegmentId).FirstOrDefault();
-                SpeedOverDistanceDto speedOverDistanceDto = new SpeedOverDistanceDto
-                {
-                    BinStartTime = monthlyAggregation.BinStartTime,
-                    SegmentId = monthlyAggregation.SegmentId,
-                    SourceId = monthlyAggregation.SourceId,
-                    SpeedLimit = segment.SpeedLimit,
-                    StartMilePoint = segment.StartMilePoint,
-                    EndMilePoint = segment.EndMilePoint,
-                    AllDayAverageSpeed = monthlyAggregation.AllDayAverageSpeed,
-                    AllDayAverageEightyFifthSpeed = monthlyAggregation.AllDayAverageEightyFifthSpeed,
-                    OffPeakAverageSpeed = monthlyAggregation.OffPeakAverageSpeed,
-                    OffPeakAverageEightyFifthSpeed = monthlyAggregation.OffPeakAverageEightyFifthSpeed,
-                    AmPeakAverageSpeed = monthlyAggregation.AmPeakAverageSpeed,
-                    AmPeakAverageEightyFifthSpeed = monthlyAggregation.AmPeakAverageEightyFifthSpeed,
-                    PmPeakAverageSpeed = monthlyAggregation.PmPeakAverageSpeed,
-                    PmPeakAverageEightyFifthSpeed = monthlyAggregation.PmPeakAverageEightyFifthSpeed,
-                    MidDayAverageSpeed = monthlyAggregation.MidDayAverageSpeed,
-                    MidDayAverageEightyFifthSpeed = monthlyAggregation.MidDayAverageEightyFifthSpeed,
-                    EveningAverageSpeed = monthlyAggregation.EveningAverageSpeed,
-                    EveningAverageEightyFifthSpeed = monthlyAggregation.EveningAverageEightyFifthSpeed,
-                    EarlyMorningAverageSpeed = monthlyAggregation.EarlyMorningAverageSpeed,
-                    EarlyMorningAverageEightyFifthSpeed = monthlyAggregation.EarlyMorningAverageEightyFifthSpeed
-                };
+                SpeedOverDistanceDto speedOverDistanceDto = new SpeedOverDistanceDto();
                 speedOverDistanceDtoList.Add(speedOverDistanceDto);
             }
             return speedOverDistanceDtoList;
@@ -74,6 +52,11 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices
             //var monthlyAggregationId = (Guid)updatedMonthlyAggregation.Id;
 
             //return await GetMonthlyAggregationById(monthlyAggregationId);
+        }
+
+        public async Task UpsertMonthlyAggregations(IEnumerable<MonthlyAggregation> monthlyAggregations)
+        {
+            await monthlyAggregationRepository.AddRangeAsync(monthlyAggregations);
         }
 
         //For the DeleteOldEvents

@@ -23,6 +23,9 @@ namespace ATSPM.Infrastructure.Services.SpeedManagementServices.CongestionTracki
             var segment = await segmentRepository.LookupAsync(parameter.SegmentId);
             var hourlyResult = await hourlySpeedRepository.GetHourlySpeedsForSegmentInSource(parameter, Guid.Parse(parameter.SegmentId));
             var result = ConvertToCongestionResult(hourlyResult, segment);
+
+            result.StartDate = parameter.StartDate.ToDateTime(new TimeOnly(0,0));
+            result.EndDate = parameter.EndDate.ToDateTime(new TimeOnly(0,0));
             return result;
         }
 
