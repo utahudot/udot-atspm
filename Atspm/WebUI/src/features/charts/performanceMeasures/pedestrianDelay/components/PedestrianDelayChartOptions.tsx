@@ -1,4 +1,4 @@
-import { PedestrianDelayChartOptionsDefaults } from '@/features/charts/pedestrianDelay/types'
+import { PedestrianDelayChartOptionsDefaults } from '@/features/charts/performanceMeasures/pedestrianDelay/types'
 import { Default } from '@/features/charts/types'
 import { Box, FormControl, TextField, Typography } from '@mui/material'
 import { ChangeEvent, useState } from 'react'

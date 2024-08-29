@@ -1,5 +1,5 @@
 import { Default } from '@/features/charts/types'
-import { YellowAndRedActuationsChartOptionsDefaults } from '@/features/charts/yellowAndRedActuations/types'
+import { YellowAndRedActuationsChartOptionsDefaults } from '@/features/charts/performanceMeasures/yellowAndRedActuations/types'
 import { Box, FormControl, TextField, Typography } from '@mui/material'
 import { ChangeEvent, useState } from 'react'
 

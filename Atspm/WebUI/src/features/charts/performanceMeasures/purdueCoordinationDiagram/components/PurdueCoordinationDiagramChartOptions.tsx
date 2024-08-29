@@ -1,5 +1,5 @@
 import { BinSizeDropdown } from '@/features/charts/components/selectChart/BinSizeDropdown'
-import { PurdueCoordinationDiagramChartOptionsDefaults } from '@/features/charts/purdueCoordinationDiagram/types'
+import { PurdueCoordinationDiagramChartOptionsDefaults } from '@/features/charts/performanceMeasures/purdueCoordinationDiagram/types'
 import { Default } from '@/features/charts/types'
 import { SelectChangeEvent } from '@mui/material'
 import { useState } from 'react'

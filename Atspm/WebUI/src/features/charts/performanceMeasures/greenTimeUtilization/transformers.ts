@@ -31,7 +31,7 @@ import {
   Bin,
   RawGreenTimeUtilizationData,
   RawGreenTimeUtilizationResponse,
-} from '@/features/charts/greenTimeUtilization/types'
+} from '@/features/charts/performanceMeasures/greenTimeUtilization/types'
 import { TransformedChartResponse } from '@/features/charts/types'
 import {
   Color,

@@ -1,5 +1,5 @@
 import { BinSizeDropdown } from '@/features/charts/components/selectChart/BinSizeDropdown'
-import { LeftTurnGapAnalysisChartOptionsDefaults } from '@/features/charts/leftTurnGapAnalysis/types'
+import { LeftTurnGapAnalysisChartOptionsDefaults } from '@/features/charts/performanceMeasures/leftTurnGapAnalysis/types'
 import { Default } from '@/features/charts/types'
 import {
   Box,

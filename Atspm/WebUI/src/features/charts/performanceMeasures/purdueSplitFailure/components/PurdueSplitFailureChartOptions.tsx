@@ -1,4 +1,4 @@
-import { PurdueSplitFailureChartOptionsDefaults } from '@/features/charts/purdueSplitFailure/types'
+import { PurdueSplitFailureChartOptionsDefaults } from '@/features/charts/performanceMeasures/purdueSplitFailure/types'
 import { Default } from '@/features/charts/types'
 import { Box, FormControl, TextField, Typography } from '@mui/material'
 import { ChangeEvent, useState } from 'react'

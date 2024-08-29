@@ -1,4 +1,4 @@
-import { ApproachVolumeSummaryData } from '@/features/charts/approachVolume/types'
+import { ApproachVolumeSummaryData } from '@/features/charts/performanceMeasures/approachVolume/types'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import {
   Accordion,

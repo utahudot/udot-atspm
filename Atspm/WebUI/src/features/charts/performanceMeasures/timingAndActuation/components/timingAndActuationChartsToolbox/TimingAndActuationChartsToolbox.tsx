@@ -1,5 +1,5 @@
 import IndividualChartControls from '@/features/charts/components/chartsToolbox/IndividualChartControls'
-import TimingAndActuationLegendDisplay from '@/features/charts/timingAndActuation/components/timingAndActuationChartsToolbox/TimingAndActuationLegendDisplay'
+import TimingAndActuationLegendDisplay from '@/features/charts/performanceMeasures/timingAndActuation/components/timingAndActuationChartsToolbox/TimingAndActuationLegendDisplay'
 import {
   Box,
   Button,
