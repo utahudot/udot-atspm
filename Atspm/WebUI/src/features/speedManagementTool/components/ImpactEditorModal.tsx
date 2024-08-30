@@ -64,6 +64,13 @@ const ImpactEditorModal: React.FC<ImpactEditorModalProps> = ({
 
   const { data: segmentData, isLoading: isLoadingSegements } = useGetSegments()
 
+  useEffect(()=>{
+    if(!isLoadingSegements){
+      console.log(segmentData)
+    }
+
+  },[segmentData])
+
   const { data: impactTypeData, isLoading: isLoadingImpactTypes } =
     useGetImpactTypes()
   const router = useRouter()
@@ -273,7 +280,7 @@ const ImpactEditorModal: React.FC<ImpactEditorModalProps> = ({
         setImpact({ ...impact, segmentIds: selectedIds });
       }}
     />} */}
-           <SegmentSelectMap />
+           {/* <SegmentSelectMap /> */}
 
             {/* <div
               style={{
