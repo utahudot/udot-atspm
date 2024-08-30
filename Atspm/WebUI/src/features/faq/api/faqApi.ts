@@ -40,11 +40,11 @@ export function useCreateFaqs() {
 }
 
 export function useEditFaqs() {
-  const mutation = usePatchRequest({ url: route, axiosInstance, headers })
+  const mutation = usePatchRequest({ url: route, headers })
   return mutation
 }
 
 export function useDeleteFaqs() {
-  const mutation = useDeleteRequest({ url: route, axiosInstance, headers })
+  const mutation = useDeleteRequest({ url: route, headers })
   return mutation
 }

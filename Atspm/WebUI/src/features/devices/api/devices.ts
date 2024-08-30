@@ -46,11 +46,11 @@ export function useCreateDevice() {
 }
 
 export function useUpdateDevice() {
-  const mutation = usePatchRequest({ url: route, axiosInstance, headers })
+  const mutation = usePatchRequest({ url: route, headers })
   return mutation
 }
 
 export function useDeleteDevice() {
-  const mutation = useDeleteRequest({ url: route, axiosInstance, headers })
+  const mutation = useDeleteRequest({ url: route, headers })
   return mutation
 }

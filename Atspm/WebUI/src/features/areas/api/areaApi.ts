@@ -39,11 +39,11 @@ export function useCreateArea() {
 }
 
 export function useEditArea() {
-  const mutation = usePatchRequest({ url: route, axiosInstance, headers })
+  const mutation = usePatchRequest({ url: route, headers })
   return mutation
 }
 
 export function useDeleteArea() {
-  const mutation = useDeleteRequest({ url: route, axiosInstance, headers })
+  const mutation = useDeleteRequest({ url: route, headers })
   return mutation
 }

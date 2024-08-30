@@ -40,11 +40,11 @@ export function useCreateDeviceConfiguration() {
 }
 
 export function useEditDeviceConfiguration() {
-  const mutation = usePatchRequest({ url: route, axiosInstance, headers })
+  const mutation = usePatchRequest({ url: route, headers })
   return mutation
 }
 
 export function useDeleteDeviceConfiguration() {
-  const mutation = useDeleteRequest({ url: route, axiosInstance, headers })
+  const mutation = useDeleteRequest({ url: route, headers })
   return mutation
 }
