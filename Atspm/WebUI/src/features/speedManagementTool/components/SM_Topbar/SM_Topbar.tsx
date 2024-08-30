@@ -1,6 +1,7 @@
 import { useRoutes } from '@/features/speedManagementTool/api/getRoutes'
 import ViolationsThresholdPopup from '@/features/speedManagementTool/components/RoutesToggle/ViolationsThresholdPopup'
 import DateRangeOptionsPopup from '@/features/speedManagementTool/components/SM_Topbar/DateRangeOptionsPopup'
+import FiltersButton from '@/features/speedManagementTool/components/SM_Topbar/Filters'
 import { DataSource } from '@/features/speedManagementTool/enums'
 import useStore from '@/features/speedManagementTool/speedManagementStore'
 import { SpeedManagementRoute } from '@/features/speedManagementTool/types/routes'
@@ -80,6 +81,7 @@ export default function TopBar({ routes }: { routes: SpeedManagementRoute[] }) {
         <DateRangeOptionsPopup />
         <DaysOfWeekOptionsPopup />
         <AnalysisPeriodOptionsPopup />
+        <FiltersButton />
         <LoadingButton
           variant="contained"
           loading={isLoading}

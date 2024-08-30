@@ -26,7 +26,11 @@ export default function DateRangeOptionsPopup() {
   }
 
   return (
-    <OptionsPopupWrapper label="date-range" getLabel={getDateRangeLabel}>
+    <OptionsPopupWrapper
+      label="date-range"
+      getLabel={getDateRangeLabel}
+      width="255px"
+    >
       <Box padding={'10px'}>
         <Box display="flex" marginTop={'10px'}>
           <Box padding={'10px'} paddingLeft={'0px'}>

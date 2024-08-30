@@ -7,6 +7,7 @@ interface OptionsPopupWrapperProps {
   label: string
   getLabel: () => string
   children: ReactNode
+  width?: string
   buttonStyles?: object
 }
 
@@ -14,6 +15,7 @@ export default function OptionsPopupWrapper({
   label,
   getLabel,
   children,
+  width = '200px',
   buttonStyles = {},
 }: OptionsPopupWrapperProps) {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
@@ -39,8 +41,8 @@ export default function OptionsPopupWrapper({
           textTransform: 'none',
           color: 'black',
           borderColor: 'lightgray',
-          width: '250px',
           ...buttonStyles,
+          width,
         }}
       >
         {getLabel()}
