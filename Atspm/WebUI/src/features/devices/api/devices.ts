@@ -19,7 +19,6 @@ import { useDeleteRequest } from '@/hooks/useDeleteRequest'
 import { useGetRequest } from '@/hooks/useGetRequest'
 import { usePatchRequest } from '@/hooks/usePatchRequest'
 import { usePostRequest } from '@/hooks/usePostRequest'
-import { configAxios } from '@/lib/axios'
 import { ApiResponse } from '@/types'
 import { AxiosHeaders } from 'axios'
 import Cookies from 'js-cookie'
@@ -30,7 +29,6 @@ const headers: AxiosHeaders = new AxiosHeaders({
   'Content-Type': 'application/json',
   Authorization: `Bearer ${token}`,
 })
-const axiosInstance = configAxios
 
 export function useGetDevices() {
   return useGetRequest<ApiResponse<Device>>({ route })
@@ -43,7 +41,7 @@ export function useGetDevicesForLocation(locationId: string) {
 }
 
 export function useCreateDevice() {
-  const mutation = usePostRequest({ url: route, axiosInstance, headers })
+  const mutation = usePostRequest({ url: route, headers })
   return mutation
 }
 
