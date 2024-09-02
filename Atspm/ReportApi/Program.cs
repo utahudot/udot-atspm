@@ -44,6 +44,7 @@ using Utah.Udot.Atspm.Business.Watchdog;
 using Utah.Udot.Atspm.Business.YellowRedActivations;
 using Utah.Udot.Atspm.ReportApi.DataAggregation;
 using Utah.Udot.Atspm.ReportApi.ReportServices;
+using Utah.Udot.ATSPM.ReportApi.ReportServices;
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
@@ -162,6 +163,7 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddScoped<IReportService<YellowRedActivationsOptions, IEnumerable<YellowRedActivationsResult>>, YellowRedActivationsReportService>();
     s.AddScoped<IReportService<WaitTimeOptions, IEnumerable<WaitTimeResult>>, WaitTimeReportService>();
     s.AddScoped<IReportService<WatchDogOptions, WatchDogResult>, WatchDogReportService>();
+    s.AddScoped<WatchDogDashboardReportService>();
 
     //AggregationResult Services
     s.AddScoped<AggregationReportService>();

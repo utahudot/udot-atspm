@@ -47,11 +47,11 @@ namespace Utah.Udot.ATSPM.WatchDog.Services
             }
         }
 
-        private Dictionary<(string LocationIdentifier, WatchDogIssueTypes IssueType, WatchDogComponentTypes ComponentType), (int Count, DateTime DateOfFirstOccurrence)>
+        private Dictionary<(string LocationIdentifier, WatchDogIssueTypes IssueType, WatchDogComponentTypes ComponentType, int? Phase), (int Count, DateTime DateOfFirstOccurrence)>
         CreateCountAndDateLookup(List<WatchDogLogEvent> recordsForLast12Months)
         {
             return recordsForLast12Months
-                .GroupBy(r => (r.LocationIdentifier, r.IssueType, r.ComponentType))
+                .GroupBy(r => (r.LocationIdentifier, r.IssueType, r.ComponentType, r.Phase))
                 .ToDictionary(
                     group => group.Key,
                     group => (
@@ -61,11 +61,11 @@ namespace Utah.Udot.ATSPM.WatchDog.Services
                 );
         }
 
-        private Dictionary<(string LocationIdentifier, WatchDogIssueTypes IssueType, WatchDogComponentTypes ComponentType), int>
+        private Dictionary<(string LocationIdentifier, WatchDogIssueTypes IssueType, WatchDogComponentTypes ComponentType, int? Phase), int>
         CreateDayBeforeCountLookup(List<WatchDogLogEvent> recordsForDayBeforeScanDate)
         {
             return recordsForDayBeforeScanDate
-                .GroupBy(r => (r.LocationIdentifier, r.IssueType, r.ComponentType))
+                .GroupBy(r => (r.LocationIdentifier, r.IssueType, r.ComponentType, r.Phase))
                 .ToDictionary(
                     group => group.Key,
                     group => group.Count()
@@ -73,26 +73,26 @@ namespace Utah.Udot.ATSPM.WatchDog.Services
         }
 
         private List<WatchDogLogEventWithCountAndDate>
-        ConvertRecords(List<WatchDogLogEvent> recordsForScanDate, Dictionary<(string LocationIdentifier, WatchDogIssueTypes IssueType, WatchDogComponentTypes ComponentType), (int Count, DateTime DateOfFirstOccurrence)> countAndDateLookupForLast12Months)
+        ConvertRecords(List<WatchDogLogEvent> recordsForScanDate, Dictionary<(string LocationIdentifier, WatchDogIssueTypes IssueType, WatchDogComponentTypes ComponentType, int? Phase), (int Count, DateTime DateOfFirstOccurrence)> countAndDateLookupForLast12Months)
         {
             return recordsForScanDate
                 .Select(r => new WatchDogLogEventWithCountAndDate(r.LocationId, r.LocationIdentifier, r.Timestamp, r.ComponentType, r.ComponentId, r.IssueType, r.Details, r.Phase)
                 {
-                    EventCount = countAndDateLookupForLast12Months.TryGetValue((r.LocationIdentifier, r.IssueType, r.ComponentType), out var data) ? data.Count : 0,
-                    DateOfFirstInstance = countAndDateLookupForLast12Months.TryGetValue((r.LocationIdentifier, r.IssueType, r.ComponentType), out data) ? data.DateOfFirstOccurrence : r.Timestamp
+                    EventCount = countAndDateLookupForLast12Months.TryGetValue((r.LocationIdentifier, r.IssueType, r.ComponentType, r.Phase), out var data) ? data.Count : 0,
+                    DateOfFirstInstance = countAndDateLookupForLast12Months.TryGetValue((r.LocationIdentifier, r.IssueType, r.ComponentType, r.Phase), out data) ? data.DateOfFirstOccurrence : r.Timestamp
                 })
                 .ToList();
         }
 
         private (List<WatchDogLogEventWithCountAndDate> newIssues, List<WatchDogLogEventWithCountAndDate> dailyRecurringIssues, List<WatchDogLogEventWithCountAndDate> recurringIssues)
-        CategorizeIssues(List<WatchDogLogEventWithCountAndDate> allConvertedRecords, Dictionary<(string LocationIdentifier, WatchDogIssueTypes IssueType, WatchDogComponentTypes ComponentType), int> countForDayBeforeScanDate)
+        CategorizeIssues(List<WatchDogLogEventWithCountAndDate> allConvertedRecords, Dictionary<(string LocationIdentifier, WatchDogIssueTypes IssueType, WatchDogComponentTypes ComponentType, int? Phase), int> countForDayBeforeScanDate)
         {
             var newIssues = allConvertedRecords
                 .Where(r => r.EventCount == 0)
                 .ToList();
 
             var dailyRecurringIssues = allConvertedRecords
-                .Where(r => countForDayBeforeScanDate.TryGetValue((r.LocationIdentifier, r.IssueType, r.ComponentType), out var dayBeforeCount) && dayBeforeCount == 1)
+                .Where(r => countForDayBeforeScanDate.TryGetValue((r.LocationIdentifier, r.IssueType, r.ComponentType, r.Phase), out var dayBeforeCount) && dayBeforeCount == 1)
                 .ToList();
 
             var recurringIssues = allConvertedRecords
