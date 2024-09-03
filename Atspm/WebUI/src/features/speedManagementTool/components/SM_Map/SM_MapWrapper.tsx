@@ -4,20 +4,32 @@ import SM_Popup from '@/features/speedManagementTool/components/SM_Modal/SM_Popu
 import SM_TopBar from '@/features/speedManagementTool/components/SM_Topbar/SM_Topbar'
 import { RouteRenderOption } from '@/features/speedManagementTool/enums'
 import useSpeedManagementStore from '@/features/speedManagementTool/speedManagementStore'
-import { Box } from '@mui/material'
+import CloseIcon from '@mui/icons-material/Close'
+import {
+  Box,
+  Button,
+  IconButton,
+  List,
+  ListItem,
+  ListItemSecondaryAction,
+  ListItemText,
+} from '@mui/material'
 import 'leaflet/dist/leaflet.css'
 import dynamic from 'next/dynamic'
 import { memo, useRef, useState } from 'react'
+
+export const SM_Height = 'calc(100vh - 250px)'
 
 const SpeedManagementMap = dynamic(() => import('./SM_Map'), {
   ssr: false,
 })
 
 const SM_MapWrapper = () => {
-  const [selectedRouteId, setSelectedRouteId] = useState<number | undefined>()
+  const [selectedRouteIds, setSelectedRouteIds] = useState<number[]>([])
+  const [showPopup, setShowPopup] = useState<boolean>(false)
   const fullScreenRef = useRef<HTMLDivElement>(null)
 
-  const { submittedRouteSpeedRequest, routeRenderOption } =
+  const { submittedRouteSpeedRequest, routeRenderOption, multiselect } =
     useSpeedManagementStore()
 
   const { data: routeData } = useRoutes({
@@ -58,19 +70,93 @@ const SM_MapWrapper = () => {
       properties: feature.properties,
     })) || []
 
+  const handleRouteSelection = (routeId: number) => {
+    if (multiselect) {
+      setSelectedRouteIds((prevSelectedRouteIds) =>
+        prevSelectedRouteIds.includes(routeId)
+          ? prevSelectedRouteIds.filter((id) => id !== routeId)
+          : [...prevSelectedRouteIds, routeId]
+      )
+    } else {
+      setSelectedRouteIds([routeId])
+      setShowPopup(true) // Show the popup for a single route
+    }
+  }
+
+  const handleViewCharts = () => {
+    setShowPopup(true)
+  }
+
+  const handleClosePopup = () => {
+    setShowPopup(false)
+  }
+
   return (
     <Box
       ref={fullScreenRef}
       sx={{
         display: 'flex',
-        flex: 1,
-        overflow: 'hidden',
-        height: `calc(100vh - 110px)`,
         flexDirection: 'column',
+        overflow: 'hidden',
       }}
     >
-      <SM_TopBar routes={routes} />
-      <Box display={'flex'}>
+      <SM_TopBar />
+      <Box sx={{ display: 'flex', flex: 1 }}>
+        <Box
+          sx={{
+            width: multiselect ? 300 : 0,
+            transition: 'width 0.2s ease',
+            display: 'flex',
+            flexDirection: 'column',
+            overflow: 'hidden',
+            bgcolor: 'background.paper',
+            borderTop: 'none',
+            borderLeft: '1px solid',
+            borderBottom: '1px solid',
+            borderColor: 'divider',
+            maxHeight: SM_Height,
+            overflowY: 'auto',
+          }}
+        >
+          <List sx={{ flex: 1, overflowY: 'auto', minWidth: '300px' }}>
+            {selectedRouteIds.map((routeId) => {
+              const route = routes.find(
+                (route) => route.properties.route_id === routeId
+              )
+              return (
+                <ListItem key={routeId}>
+                  <ListItemText
+                    primary={route?.properties.name || 'Unknown Route'}
+                  />
+                  <ListItemSecondaryAction>
+                    <IconButton
+                      edge="end"
+                      aria-label="delete"
+                      onClick={() =>
+                        setSelectedRouteIds((prevSelectedRouteIds) =>
+                          prevSelectedRouteIds.filter((id) => id !== routeId)
+                        )
+                      }
+                    >
+                      <CloseIcon />
+                    </IconButton>
+                  </ListItemSecondaryAction>
+                </ListItem>
+              )
+            })}
+          </List>
+          <Box sx={{ p: 2, minWidth: '300px' }}>
+            <Button
+              variant="contained"
+              color="primary"
+              fullWidth
+              onClick={handleViewCharts}
+              disabled={selectedRouteIds.length === 0}
+            >
+              View Charts
+            </Button>
+          </Box>
+        </Box>
         <Box sx={{ flex: 1, height: '100%' }}>
           <SpeedManagementMap
             fullScreenRef={fullScreenRef}
@@ -79,19 +165,27 @@ const SM_MapWrapper = () => {
                 ? speedLimitRoutes
                 : routes
             }
-            setSelectedRouteId={setSelectedRouteId}
+            selectedRouteIds={selectedRouteIds}
+            setSelectedRouteId={handleRouteSelection}
           />
         </Box>
       </Box>
-      {selectedRouteId && (
+
+      {showPopup && (
         <SM_Popup
-          route={
-            routes.find(
-              (route) => route.properties.route_id === selectedRouteId
-            ) || { properties: {} }
+          routes={
+            multiselect
+              ? routes.filter((route) =>
+                  selectedRouteIds.includes(route.properties.route_id)
+                )
+              : [
+                  routes.find(
+                    (route) => route.properties.route_id === selectedRouteIds[0]
+                  ) || { properties: {} },
+                ]
           }
-          onClose={() => setSelectedRouteId(undefined)}
-          open={!!selectedRouteId}
+          onClose={handleClosePopup}
+          open={showPopup}
         />
       )}
     </Box>

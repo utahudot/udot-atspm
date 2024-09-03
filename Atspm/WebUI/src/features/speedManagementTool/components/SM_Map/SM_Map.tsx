@@ -1,13 +1,10 @@
-import FullScreenToggleButton from '@/components/fullScreenLayoutButton'
-import RoutesToggle from '@/features/speedManagementTool/components/RoutesToggle'
-import ViolationRangeSlider from '@/features/speedManagementTool/components/RoutesToggle/ViolationRangeSlider'
+import { SM_Height } from '@/features/speedManagementTool/components/SM_Map'
 import { RouteRenderOption } from '@/features/speedManagementTool/enums'
 import useSpeedManagementStore from '@/features/speedManagementTool/speedManagementStore'
 import { SpeedManagementRoute } from '@/features/speedManagementTool/types/routes'
 import { ViolationColors } from '@/features/speedManagementTool/utils/colors'
 import { getEnv } from '@/lib/getEnv'
-import DisplaySettingsOutlinedIcon from '@mui/icons-material/DisplaySettingsOutlined'
-import { Box, Button, Paper, Popper } from '@mui/material'
+import { Box, Button } from '@mui/material'
 import L, { Map as LeafletMap } from 'leaflet'
 import React, { memo, useEffect, useState } from 'react'
 import { MapContainer, Polyline, TileLayer } from 'react-leaflet'
@@ -16,13 +13,15 @@ import SpeedLegend from './SM_Legend'
 type SM_MapProps = {
   fullScreenRef?: React.RefObject<HTMLDivElement> | null
   routes: SpeedManagementRoute[]
-  setSelectedRouteId?: ((routeId: number) => void) | null
+  setSelectedRouteId: (routeId: number) => void
+  selectedRouteIds: number[]
 }
 
 const SM_Map = ({
   fullScreenRef = null,
   routes,
-  setSelectedRouteId = null,
+  setSelectedRouteId,
+  selectedRouteIds = [],
 }: SM_MapProps) => {
   const [mapRef, setMapRef] = useState<LeafletMap | null>(null)
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null)
@@ -30,7 +29,13 @@ const SM_Map = ({
     null
   )
 
-  const { routeRenderOption, mediumMin, mediumMax } = useSpeedManagementStore()
+  const {
+    routeRenderOption,
+    mediumMin,
+    mediumMax,
+    multiselect,
+    setMultiselect,
+  } = useSpeedManagementStore()
 
   useEffect(() => {
     const fetchEnv = async () => {
@@ -100,6 +105,10 @@ const SM_Map = ({
     setAnchorEl(anchorEl ? null : event.currentTarget)
   }
 
+  const toggleMultiselect = () => {
+    setMultiselect(!multiselect)
+  }
+
   const open = Boolean(anchorEl)
   const id = open ? 'settings-popover' : undefined
 
@@ -108,13 +117,13 @@ const SM_Map = ({
   }
 
   return (
-    <Box sx={{ height: '100%', width: '100%' }}>
+    <Box sx={{ height: '100%', width: '100%', position: 'relative' }}>
       <MapContainer
         center={initialLatLong}
         zoom={6}
         scrollWheelZoom={true}
         style={{
-          minHeight: 'calc(100vh - 250px)',
+          minHeight: SM_Height,
           height: '100%',
           width: '100%',
           zIndex: 0,
@@ -127,71 +136,53 @@ const SM_Map = ({
           attribution='&copy; <a href="https://www.openaip.net/">openAIP Data</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-NC-SA</a>)'
           url="https://tiles.stadiamaps.com/tiles/alidade_bright/{z}/{x}/{y}{r}.png"
         />
-        {fullScreenRef && (
-          <Box
-            sx={{
-              position: 'absolute',
-              right: '10px',
-              top: '10px',
-              zIndex: 1000,
-            }}
-          >
-            <FullScreenToggleButton targetRef={fullScreenRef} />
-          </Box>
-        )}
         <Box
           sx={{
             position: 'absolute',
             right: '10px',
-            top: fullScreenRef ? '50px' : '10px',
+            top: '10px',
             zIndex: 1000,
           }}
         >
           <Button
-            sx={{
-              px: 1,
-              minWidth: 0,
-            }}
             variant="contained"
-            onClick={handleDisplaySettingsClick}
+            color={multiselect ? 'secondary' : 'primary'}
+            onClick={toggleMultiselect}
           >
-            <DisplaySettingsOutlinedIcon fontSize="small" />
+            {multiselect ? 'Disable Multiselect' : 'Enable Multiselect'}
           </Button>
-          <Popper
-            id={id}
-            open={open}
-            anchorEl={anchorEl}
-            placement="bottom-start"
-            disablePortal
-          >
-            <Paper sx={{ width: '300px' }}>
-              <RoutesToggle />
-              <ViolationRangeSlider />
-            </Paper>
-          </Popper>
         </Box>
         {routes.map((route, index) => (
           <Polyline
             key={index}
-            pathOptions={{ color: getColor(route) }}
+            pathOptions={{
+              color: selectedRouteIds.includes(route.properties.route_id)
+                ? 'blue'
+                : getColor(route),
+              weight: selectedRouteIds.includes(route.properties.route_id)
+                ? 5
+                : 2.5,
+            }}
             positions={route.geometry.coordinates}
-            weight={2.5}
             eventHandlers={{
-              click: () =>
-                setSelectedRouteId &&
-                setSelectedRouteId(route.properties.route_id),
+              click: () => setSelectedRouteId(route.properties.route_id),
               mouseover: (e) => {
-                e.target.setStyle({ weight: 4, color: 'blue' })
+                e.target.setStyle({ weight: 5, color: 'blue' })
               },
               mouseout: (e) => {
                 e.target.setStyle({
-                  weight: 2.5,
-                  color: getColor(route),
+                  weight: selectedRouteIds.includes(route.properties.route_id)
+                    ? 5
+                    : 2.5,
+                  color: selectedRouteIds.includes(route.properties.route_id)
+                    ? 'blue'
+                    : getColor(route),
                 })
               },
             }}
           />
         ))}
+
         <SpeedLegend />
       </MapContainer>
     </Box>

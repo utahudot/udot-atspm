@@ -17,12 +17,21 @@ import { Hydrate, QueryClient, QueryClientProvider } from 'react-query'
 export default function App({ Component, pageProps }: AppProps) {
   const [theme, colorMode] = useMode()
   const [queryClient] = useState(() => new QueryClient())
+  const [axiosInitialized, setAxiosInitialized] = useState(false)
 
   useEffect(() => {
-    initializeAxiosInstances().catch((error) => {
-      console.error('Failed to initialize Axios instances:', error)
-    })
+    initializeAxiosInstances()
+      .then(() => {
+        setAxiosInitialized(true)
+      })
+      .catch((error) => {
+        console.error('Failed to initialize Axios instances:', error)
+      })
   }, [])
+
+  if (!axiosInitialized) {
+    return null
+  }
 
   return (
     <QueryClientProvider client={queryClient}>
