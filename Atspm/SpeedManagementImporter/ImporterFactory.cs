@@ -28,7 +28,7 @@ namespace SpeedManagementImporter
                     var atspmDownloader = new AtspmDownloaderService(segmentEntityRepository, hourlySpeedRepository, configuration);
                     return atspmDownloader;
                 case 3:
-                    var clearguideDownloader = new ClearguideDownloaderService(segmentEntityRepository, hourlySpeedRepository, configuration);
+                    var clearguideDownloader = new ClearguideFileDownloaderService(segmentEntityRepository, hourlySpeedRepository, tempDataRepository);
                     return clearguideDownloader;
                 case 2:
                     var pemsDownloader = new PemsDownloaderService(segmentEntityRepository, hourlySpeedRepository, configuration);
