@@ -228,6 +228,31 @@ namespace Utah.Udot.Atspm.WatchDog.Services
             var bodyBuilder = new StringBuilder();
             bodyBuilder.Append($"<h2>{errorTitle}</h2>");
 
+            // Define the CSS style
+            var body = "<style>\r\n" +
+                       "  .atspm-table {\r\n" +
+                       "    border: solid 2px #DDEEEE;\r\n" +
+                       "    border-collapse: collapse;\r\n" +
+                       "    border-spacing: 0;\r\n" +
+                       "    font: normal 14px Roboto, sans-serif;\r\n" +
+                       "  }\r\n\r\n" +
+                       "  .atspm-table thead th {\r\n" +
+                       "    background-color: #DDEFEF;\r\n" +
+                       "    border: solid 1px #DDEEEE;\r\n" +
+                       "    color: #336B6B;\r\n" +
+                       "    padding: 10px;\r\n" +
+                       "    text-align: left;\r\n" +
+                       "    text-shadow: 1px 1px 1px #fff;\r\n" +
+                       "  }\r\n\r\n" +
+                       "  .atspm-table tbody td {\r\n" +
+                       "    border: solid 1px #DDEEEE;\r\n" +
+                       "    color: #333;\r\n" +
+                       "    padding: 10px;\r\n" +
+                       "    text-shadow: 1px 1px 1px #fff;\r\n" +
+                       "  }\r\n</style>";
+
+            bodyBuilder.Append(body);
+
             // Build HTML sections for each error type
             bodyBuilder.Append(BuildErrorSection("Missing Records Errors", missingErrorsLogs, locations, options, logsFromPreviousDay));
             bodyBuilder.Append(BuildErrorSection("Force Off Errors", forceErrorsLogs, locations, options, logsFromPreviousDay));
@@ -351,7 +376,7 @@ namespace Utah.Udot.Atspm.WatchDog.Services
 
                         errorMessage += $"<td>{error.Details}</td>";
 
-                        errorMessage += $"<td>{error.EventCount}</td><";
+                        errorMessage += $"<td>{error.EventCount}</td>";
                         errorMessage += $"<td>{error.DateOfFirstInstance}</td></tr>";
                     }
                 }

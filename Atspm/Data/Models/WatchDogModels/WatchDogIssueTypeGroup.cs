@@ -18,6 +18,11 @@ namespace Utah.Udot.Atspm.Data.Models.WatchDogModels
     {
         public string Manufacturer { get; set; }
         public string Model { get; set; }
+        public List<FirmwareEvent> Firmware { get; set; }
+    }
+
+    public class FirmwareEvent
+    {
         public string Firmware { get; set; }
         public int Counts { get; set; }
     }

@@ -1,5 +1,4 @@
-﻿using Grpc.Net.Client.Configuration;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Utah.Udot.Atspm.Business.Watchdog;
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models.WatchDogModels;
@@ -55,12 +54,15 @@ namespace Utah.Udot.ATSPM.ReportApi.ReportServices
                 {
                     IssueType = issue.Key,
                     Name = issue.Key.ToString(),
-                    Products = issue.Value.GroupBy(g => (g.Manufacturer, g.Firmware, g.Model)).Select(group => new ProductEvent
+                    Products = issue.Value.GroupBy(g => (g.Manufacturer, g.Model)).Select(product => new ProductEvent
                     {
-                        Manufacturer = group.Key.Manufacturer,
-                        Firmware = group.Key.Firmware,
-                        Model = group.Key.Model,
-                        Counts = group.Count()
+                        Manufacturer = product.Key.Manufacturer,
+                        Model = product.Key.Model,
+                        Firmware = product.GroupBy(g => g.Firmware).Select(firmware => new FirmwareEvent
+                        {
+                            Firmware = firmware.Key,
+                            Counts = firmware.Count()
+                        }).ToList(),
                     }).ToList()
                 };
                 result.Add(val);
