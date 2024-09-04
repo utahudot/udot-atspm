@@ -26,3 +26,24 @@ export type Watchdog = {
   Phase: string | null
   Name: string
 }
+
+enum IssueType {
+  RecordCount = 1,
+  LowDetectorHits,
+  StuckPed,
+  ForceOffThreshold,
+  MaxOutThreshold,
+  UnconfiguredApproach,
+}
+interface ProductEvents {
+  manufacturer: string
+  model: string
+  firmware: string
+  counts: number
+}
+
+export interface IssueTypeGrouping {
+  issueType: IssueType
+  products: ProductEvents[]
+  name: string
+}
