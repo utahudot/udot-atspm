@@ -1,5 +1,5 @@
 import { useGetAreas } from '@/features/areas/api/areaApi'
-import { useGetMeasureTypes } from '@/features/charts/api/getMeasureTypes'
+import { useGetMeasureTypes } from '@/features/charts/performanceMeasures/api/getMeasureTypes'
 import { useGetJurisdiction } from '@/features/jurisdictions/api/jurisdictionApi'
 import { useLocationTypes } from '@/features/locations/api/getLocationTypes'
 import { useGetRegion } from '@/features/region/api/regionApi'

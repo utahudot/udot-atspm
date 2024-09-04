@@ -29,7 +29,7 @@ import { isValid, startOfToday, startOfTomorrow } from 'date-fns'
 
 import SelectDateTime from '@/components/selectTimeSpan'
 import { useGetAggData } from '@/features/data/exportData/api/getAggData'
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 
 const ExportData = () => {
   const theme = useTheme()
@@ -128,15 +128,14 @@ const ExportData = () => {
       let data
       if (selectedDataType == 'All Raw Data') {
         response = await refetchEventLogs()
-        console.log('dans response ', response)
-        if (response.status === 'error'){
+        if (response.status === 'error') {
           setError(true)
           setIsDownloading(false)
 
           return
         }
         data = response.data
-  
+
         setIsDownloading(false)
       } else {
         response = await refetchAggData()
@@ -224,14 +223,6 @@ const ExportData = () => {
     isValid(endDateTime) ? dateToTimestamp(endDateTime) : ''
   )
 
-  useEffect(() => {
-    console.log('LocationIdentifer: ', location?.locationIdentifier)
-    console.log('Data Type: ', selectedDataType)
-    console.log('Start Time:', startDateTime)
-    console.log('end Time:', dateToTimestamp(endDateTime))
-
-  }, [selectedDataType])
-
   const requiredClaim = 'Data:View'
   return (
     <Authorization requiredClaim={requiredClaim}>
@@ -299,7 +290,14 @@ const ExportData = () => {
           </Box>
         </Box>
 
-        <Box sx={{ display: 'flex', gap: '10px', marginTop: '10px', marginBottom: "120px" }}>
+        <Box
+          sx={{
+            display: 'flex',
+            gap: '10px',
+            marginTop: '10px',
+            marginBottom: '120px',
+          }}
+        >
           <ButtonGroup
             variant="contained"
             ref={anchorRef}
@@ -335,7 +333,7 @@ const ExportData = () => {
           <Popper
             sx={{
               zIndex: 1300,
-              paddingLeft:'140px',
+              paddingLeft: '140px',
             }}
             open={open}
             anchorEl={anchorRef.current}
@@ -347,11 +345,11 @@ const ExportData = () => {
               {
                 name: 'preventOverflow',
                 options: {
-                  altAxis: true, 
+                  altAxis: true,
                   altBoundary: true,
                   tether: true,
                   rootBoundary: 'document',
-                  padding: 8, 
+                  padding: 8,
                 },
               },
             ]}
@@ -387,10 +385,10 @@ const ExportData = () => {
                 display: 'flex',
                 marginLeft: '1rem',
                 marginTop: '19px',
-                height: "48px"
+                height: '48px',
               }}
             >
-              <Alert  severity="error">No Data Found</Alert>
+              <Alert severity="error">No Data Found</Alert>
             </Box>
           )}
         </Box>

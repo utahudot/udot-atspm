@@ -32,7 +32,11 @@ export default function GeneralOptionsPopup() {
   }
 
   return (
-    <OptionsPopupWrapper label="data-source" getLabel={getDataSourceLabel}>
+    <OptionsPopupWrapper
+      label="data-source"
+      getLabel={getDataSourceLabel}
+      width={'130px'}
+    >
       <Box padding={'10px'}>
         <Box display="flex" alignItems={'center'}>
           <ToggleButtonGroup

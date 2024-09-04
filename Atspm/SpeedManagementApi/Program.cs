@@ -11,6 +11,7 @@ using SpeedManagementApi.Processors;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Text.Json.Serialization;
 using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.CongestionTracking;
+using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.SpeedOverDistance;
 using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.SpeedOverTime;
 using Utah.Udot.Atspm.DataApi.Configuration;
 using Utah.Udot.Atspm.Infrastructure.Extensions;
@@ -19,6 +20,7 @@ using Utah.Udot.Atspm.Repositories.SpeedManagementRepositories;
 using Utah.Udot.Atspm.Services;
 using Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices;
 using Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices.SegmentSpeed;
+using Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices.SpeedOverDistance;
 using Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices.SpeedOverTime;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -218,6 +220,7 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddScoped<DeleteOldEventsProcessor>();
     s.AddScoped<IReportService<CongestionTrackingOptions, CongestionTrackingDto>, CongestionTrackingService>();
     s.AddScoped<IReportService<SpeedOverTimeOptions, SpeedOverTimeDto>, SpeedOverTimeService>();
+    s.AddScoped<IReportService<SpeedOverDistanceOptions, List<SpeedOverDistanceDto>>, SpeedOverDistanceService>();
 
     //report services
 

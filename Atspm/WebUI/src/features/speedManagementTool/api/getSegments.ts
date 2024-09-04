@@ -2,12 +2,14 @@ import { ExtractFnReturnType, QueryConfig } from '@/lib/react-query'
 import axios from 'axios'
 import Cookies from 'js-cookie'
 import { useQuery } from 'react-query'
+import { getEnv } from '@/lib/getEnv'
+
 
 const token = Cookies.get('token')
-const localhostURL = 'https://localhost:44379/'
+const localhostURL = 'https://speedmanagement-api-bdppc3riba-wm.a.run.app/'
 const getSegments = async (): Promise<Segment[]> => {
-  // console.log(`switch for ${SPEED_URL} once cloud works`)
-  const { data } = await axios.get<Segment[]>(`${localhostURL}api/segment`, {
+  const env = await getEnv()
+  const { data } = await axios.get<Segment[]>(`${env.SPEED_URL}/api/segment`, {
     headers: {
       Authorization: `Bearer ${token}`,
       //   'Content-Type': 'application/json',

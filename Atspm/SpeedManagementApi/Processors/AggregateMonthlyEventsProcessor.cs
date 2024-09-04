@@ -21,6 +21,7 @@ namespace SpeedManagementApi.Processors
 
         public async Task AggregateMonthlyEvents()
         {
+            var batchSize = 500;
             var settings = new ExecutionDataflowBlockOptions()
             {
                 MaxDegreeOfParallelism = 10,
@@ -46,7 +47,8 @@ namespace SpeedManagementApi.Processors
 
 
             //Save the information
-            var saveBlock = new ActionBlock<MonthlyAggregationProcessorDto>(UpsertMonthlyAggregation, settings);
+            var batchBlock = new BatchBlock<MonthlyAggregationProcessorDto>(batchSize);
+            var saveBlock = new ActionBlock<IEnumerable<MonthlyAggregationProcessorDto>>(UpsertMonthlyAggregations, settings);
 
             //This is very important for batching
             DataflowLinkOptions linkOptions = new DataflowLinkOptions() { PropagateCompletion = true };
@@ -60,7 +62,8 @@ namespace SpeedManagementApi.Processors
             pmPeak.LinkTo(midDay, linkOptions);
             midDay.LinkTo(evening, linkOptions);
             evening.LinkTo(earlyMorning, linkOptions);
-            earlyMorning.LinkTo(saveBlock, linkOptions);
+            earlyMorning.LinkTo(batchBlock, linkOptions);
+            batchBlock.LinkTo(saveBlock, linkOptions);
 
             //Start the workflow
             await expiredEvents.SendAsync("");
@@ -131,8 +134,6 @@ namespace SpeedManagementApi.Processors
             var allSegments = segmentRepository.AllSegmentsWithEntity();
             foreach (var segment in allSegments)
             {
-                foreach (var segmentEntity in segment.RouteEntities)
-                {
                     yield return new MonthlyAggregationProcessorDto
                     {
                         hourlySpeeds = new List<HourlySpeed>(),
@@ -141,13 +142,15 @@ namespace SpeedManagementApi.Processors
                         SegmentId = segment.Id,
                         monthlyAggregation = new MonthlyAggregation
                         {
+                            Id = Guid.NewGuid(),
+                            CreatedDate = DateTime.SpecifyKind(today, DateTimeKind.Utc),
                             BinStartTime = firstDayOfPreviousMonth,
                             SegmentId = segment.Id,
-                            SourceId = segmentEntity.SourceId,
+                            //INSTEAD OF GET ALL SEGMENTS, DO GET SEGMENTS BY SOURCE ID, FOR KENZIE PROBABLY
+                            SourceId = 0,
                             DataQuality = true
                         }
                     };
-                }
             }
         }
 
@@ -179,6 +182,14 @@ namespace SpeedManagementApi.Processors
                 firstDayOfPreviousMonth = firstDayOfPreviousMonth.AddMonths(-1);
             }
         }
+
+
+        private async void UpsertMonthlyAggregations(IEnumerable<MonthlyAggregationProcessorDto> enumerable)
+        {
+            var monthlyAggregations = enumerable.Select(x => x.monthlyAggregation);
+            await monthlyAggregationService.UpsertMonthlyAggregations(monthlyAggregations);
+        }
+
         private async Task UpsertMonthlyAggregation(MonthlyAggregationProcessorDto monthlyAggregationProcess)
         {
             await monthlyAggregationService.UpsertMonthlyAggregation(monthlyAggregationProcess.monthlyAggregation);
