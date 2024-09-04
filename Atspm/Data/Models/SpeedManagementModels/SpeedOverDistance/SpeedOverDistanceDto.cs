@@ -1,5 +1,4 @@
-﻿using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.Common;
-namespace Utah.Udot.Atspm.Data.Models.SpeedManagementModels.SpeedOverDistance;
+﻿namespace Utah.Udot.Atspm.Data.Models.SpeedManagementModels.SpeedOverDistance;
 
 public class SpeedOverDistanceDto
 {
@@ -10,6 +9,6 @@ public class SpeedOverDistanceDto
     public double StartingMilePoint { get; set; }
     public double EndingMilePoint { get; set; }
     public long SpeedLimit { get; set; }
-    public DataPoint<double> Average { get; set; }
-    public DataPoint<long> EightyFifth { get; set; }
+    public double Average { get; set; }
+    public long EightyFifth { get; set; }
 }

@@ -1,6 +1,4 @@
-﻿using Utah.Udot.Atspm.Data.Models.SpeedManagementModels;
-using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.Common;
-using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.Config;
+﻿using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.Config;
 using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.MonthlyAggregation;
 using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.SpeedOverDistance;
 using Utah.Udot.Atspm.Repositories.SpeedManagementRepositories;
@@ -54,11 +52,11 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices.SpeedO
             return result.OrderBy(x => x.StartingMilePoint).ToList();
         }
 
-        private static (DataPoint<double> Average, DataPoint<long> EightyFifth) GetSpeedData(IGrouping<Guid, MonthlyAggregation> monthlyAggregation)
+        private static (double Average, long EightyFifth) GetSpeedData(IGrouping<Guid, MonthlyAggregation> monthlyAggregation)
         {
             var aggregate = monthlyAggregation.FirstOrDefault();
-            var average = new DataPoint<double>(aggregate.BinStartTime, aggregate.AllDayAverageSpeed.Value);
-            var eightyFifth = new DataPoint<long>(aggregate.BinStartTime, ((long)aggregate.AllDayAverageEightyFifthSpeed.Value));
+            var average = aggregate.AllDayAverageSpeed.Value;
+            var eightyFifth = (long)aggregate.AllDayAverageEightyFifthSpeed.Value;
 
             return (average, eightyFifth);
         }
