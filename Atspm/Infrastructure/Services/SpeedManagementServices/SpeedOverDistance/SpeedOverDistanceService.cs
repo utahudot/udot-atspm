@@ -35,7 +35,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices.SpeedO
                 if (segment != null)
                 {
                     var speedData = GetSpeedData(monthlyAggregation);
-                    SpeedOverDistanceDto speedOverDistanceDto = new SpeedOverDistanceDto
+                    var speedOverDistanceDto = new SpeedOverDistanceDto
                     {
                         SegmentId = segment.Id,
                         SegmentName = segment.Name,
@@ -44,37 +44,23 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices.SpeedO
                         EndingMilePoint = segment.EndMilePoint,
                         StartDate = parameter.StartDate,
                         EndDate = parameter.EndDate,
-                        Data = speedData
+                        Average = speedData.Average,
+                        EightyFifth = speedData.EightyFifth
                     };
 
                     result.Add(speedOverDistanceDto);
                 }
             }
-            return result;
+            return result.OrderBy(x => x.StartingMilePoint).ToList();
         }
 
-        private List<SpeedDataDto> GetSpeedData(IGrouping<Guid, MonthlyAggregation> monthlyAggregation)
+        private static (DataPoint<double> Average, DataPoint<long> EightyFifth) GetSpeedData(IGrouping<Guid, MonthlyAggregation> monthlyAggregation)
         {
-            var result = new List<SpeedDataDto>();
-            var average = new List<DataPoint<double>>();
-            var eightyFifth = new List<DataPoint<long>>();
+            var aggregate = monthlyAggregation.FirstOrDefault();
+            var average = new DataPoint<double>(aggregate.BinStartTime, aggregate.AllDayAverageSpeed.Value);
+            var eightyFifth = new DataPoint<long>(aggregate.BinStartTime, ((long)aggregate.AllDayAverageEightyFifthSpeed.Value));
 
-            foreach (var aggregate in monthlyAggregation) {
-                average.Add(new DataPoint<double>(aggregate.BinStartTime, aggregate.AllDayAverageSpeed.Value));
-                eightyFifth.Add(new DataPoint<long>(aggregate.BinStartTime, ((long)aggregate.AllDayAverageEightyFifthSpeed.Value)));
-            }
-
-            var speedData = new SpeedDataDto()
-            {
-                Series = new AverageAndEightyFifthSeriesData()
-                {
-                    Average = average,
-                    EightyFifth = eightyFifth
-                }
-            };
-            result.Add(speedData);
-
-            return result;
+            return (average, eightyFifth);
         }
     }
 }
