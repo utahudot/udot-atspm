@@ -22,7 +22,7 @@ namespace Utah.Udot.ATSPM.ReportApi.Controllers
         {
             try
             {
-                var result = watchDogDashboardReportService.GetIssueTypeGroups(options);
+                var result = watchDogDashboardReportService.GetDashboardGroup(options);
 
                 return Ok(result);
             }

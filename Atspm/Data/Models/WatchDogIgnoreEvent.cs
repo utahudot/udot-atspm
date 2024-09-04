@@ -3,17 +3,18 @@ using Utah.Udot.Atspm.Data.Interfaces;
 
 namespace Utah.Udot.Atspm.Data.Models
 {
-    public class WatchDogIgnoreEvents : ILocationLayer
+    public class WatchDogIgnoreEvent : ILocationLayer
     {
-        /// <summary>
-        /// Location id
-        /// </summary>
-        public int LocationId { get; set; }
 
         /// <summary>
         /// Location identifier
         /// </summary>
-        public string LocationIdentifier { get; set; }
+        public string? LocationIdentifier { get; set; }
+
+        /// <summary>
+        /// Timestamp
+        /// </summary>
+        public DateTime StartTime { get; set; }
 
         /// <summary>
         /// Timestamp
@@ -23,12 +24,12 @@ namespace Utah.Udot.Atspm.Data.Models
         /// <summary>
         /// Component type
         /// </summary>
-        public WatchDogComponentTypes ComponentType { get; set; }
+        public WatchDogComponentTypes? ComponentType { get; set; }
 
         /// <summary>
         /// Component id
         /// </summary>
-        public int ComponentId { get; set; }
+        public int? ComponentId { get; set; }
 
         /// <summary>
         /// Issue type
@@ -51,11 +52,11 @@ namespace Utah.Udot.Atspm.Data.Models
         /// <param name="issueType"></param>
         /// <param name="details"></param>
         /// <param name="phase"></param>
-        public WatchDogIgnoreEvents(int locationId, string locationIdentifier, DateTime timestamp, WatchDogComponentTypes componentType, int componentId, WatchDogIssueTypes issueType, string details, int? phase)
+        public WatchDogIgnoreEvent(string locationIdentifier, DateTime startTime, DateTime endTime, WatchDogComponentTypes componentType, int componentId, WatchDogIssueTypes issueType, string details, int? phase)
         {
-            this.LocationId = locationId;
             this.LocationIdentifier = locationIdentifier;
-            EndTime = timestamp;
+            StartTime = startTime;
+            EndTime = startTime;
             ComponentType = componentType;
             ComponentId = componentId;
             IssueType = issueType;
@@ -70,13 +71,14 @@ namespace Utah.Udot.Atspm.Data.Models
                 return false;
             }
 
-            WatchDogIgnoreEvents other = (WatchDogIgnoreEvents)obj;
+            WatchDogIgnoreEvent other = (WatchDogIgnoreEvent)obj;
 
             return LocationIdentifier == other.LocationIdentifier &&
+                    StartTime == other.StartTime &&
                     EndTime == other.EndTime &&
-                   ComponentType == other.ComponentType &&
-                   ComponentId == other.ComponentId &&
-                   IssueType == other.IssueType;
+                    ComponentType == other.ComponentType &&
+                    ComponentId == other.ComponentId &&
+                    IssueType == other.IssueType;
         }
 
         /// <inheritdoc/>

@@ -5,18 +5,12 @@ namespace Utah.Udot.Atspm.Data.Models.WatchDogModels
     public class WatchDogDetectionTypeGroup
     {
         public DetectionTypes DetectionType { get; set; }
-        public List<HardwareEvent> Hardware { get; set; }
+        public List<WatchDogHardwareCount> Hardware { get; set; }
         public string Name { get; set; }
 
         public WatchDogDetectionTypeGroup()
         {
-            Hardware = new List<HardwareEvent>();
+            Hardware = new List<WatchDogHardwareCount>();
         }
-    }
-
-    public class HardwareEvent
-    {
-        public string Name { get; set; }
-        public int Counts { get; set; }
     }
 }

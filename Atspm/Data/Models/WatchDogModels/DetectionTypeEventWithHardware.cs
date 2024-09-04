@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Utah.Udot.Atspm.Data.Enums;
+﻿using Utah.Udot.Atspm.Data.Enums;
 
 namespace Utah.Udot.Atspm.Data.Models.WatchDogModels
 {
