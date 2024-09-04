@@ -54,15 +54,18 @@ namespace Utah.Udot.ATSPM.ReportApi.ReportServices
                 {
                     IssueType = issue.Key,
                     Name = issue.Key.ToString(),
-                    Products = issue.Value.GroupBy(g => (g.Manufacturer, g.Model)).Select(product => new ProductEvent
+                    Products = issue.Value.GroupBy(g => (g.Manufacturer)).Select(manufacturer => new ProductEvent
                     {
-                        Manufacturer = product.Key.Manufacturer,
-                        Model = product.Key.Model,
-                        Firmware = product.GroupBy(g => g.Firmware).Select(firmware => new FirmwareEvent
+                        Name = manufacturer.Key,
+                        Model = manufacturer.GroupBy(g => g.Model).Select(model => new ModelEvent
                         {
-                            Firmware = firmware.Key,
-                            Counts = firmware.Count()
-                        }).ToList(),
+                            Name = model.Key,
+                            Firmware = manufacturer.GroupBy(g => g.Firmware).Select(firmware => new FirmwareEvent
+                            {
+                                Name = firmware.Key,
+                                Counts = firmware.Count()
+                            }).ToList()
+                        }).ToList()
                     }).ToList()
                 };
                 result.Add(val);
