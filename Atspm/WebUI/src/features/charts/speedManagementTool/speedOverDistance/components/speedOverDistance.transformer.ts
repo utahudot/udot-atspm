@@ -5,7 +5,6 @@ import {
   createTitle,
   createTooltip,
   createYAxis,
-  transformSeriesData,
 } from '@/features/charts/common/transformers'
 import { ExtendedEChartsOption } from '@/features/charts/types'
 import { Color, SolidLineSeriesSymbol } from '@/features/charts/utils'
@@ -14,6 +13,11 @@ import { SpeedOverDistanceResponse } from '@/features/speedManagementTool/api/ge
 export default function transformSpeedOverDistanceData(
   response: SpeedOverDistanceResponse[]
 ) {
+  // Sort the response by startingMilePoint before processing
+  const sortedResponse = response.sort(
+    (a, b) => a.startingMilePoint - b.startingMilePoint
+  )
+
   const title = createTitle({
     title: 'Speed Over Distance',
     dateRange: '',
@@ -22,8 +26,10 @@ export default function transformSpeedOverDistanceData(
   const xAxis = {
     type: 'value',
     name: 'Mile Points',
-    min: Math.min(...response.map((segment) => segment.startingMilePoint)),
-    max: Math.max(...response.map((segment) => segment.endingMilePoint)),
+    min: Math.min(
+      ...sortedResponse.map((segment) => segment.startingMilePoint)
+    ),
+    max: Math.max(...sortedResponse.map((segment) => segment.endingMilePoint)),
   }
 
   const yAxis = createYAxis(true, { name: 'Speed (mph)' })
@@ -46,33 +52,34 @@ export default function transformSpeedOverDistanceData(
 
   const tooltip = createTooltip()
 
-  // Call mergeSeriesData once and destructure the result
+  // Destructure the series data from mergeSeriesData
   const { averageSpeedData, eightyFifthPercentileData, speedLimitData } =
-    mergeSeriesData(response)
-
-  console.log('averageSpeedData', averageSpeedData)
+    mergeSeriesData(sortedResponse)
 
   const series = [
     {
       name: 'Average Speed',
-      data: transformSeriesData(averageSpeedData),
+      data: averageSpeedData,
       type: 'line',
       step: 'start',
       color: Color.Blue,
     },
     {
       name: '85th Percentile Speed',
-      data: transformSeriesData(eightyFifthPercentileData),
+      data: eightyFifthPercentileData,
       type: 'line',
       step: 'start',
       color: Color.Red,
     },
     {
       name: 'Speed Limit',
-      data: transformSeriesData(speedLimitData),
+      data: speedLimitData,
       type: 'line',
       step: 'start',
-      color: Color.Green,
+      lineStyle: {
+        type: 'dashed',
+        color: '#000', // Black dashed line for the speed limit
+      },
     },
   ]
 
@@ -91,22 +98,20 @@ export default function transformSpeedOverDistanceData(
 }
 
 function mergeSeriesData(response: SpeedOverDistanceResponse[]) {
-  const averageSpeedData = []
-  const eightyFifthPercentileData = []
-  const speedLimitData = []
+  const averageSpeedData: [number, number | null][] = []
+  const eightyFifthPercentileData: [number, number | null][] = []
+  const speedLimitData: [number, number | null][] = []
 
   response.forEach((segment, index) => {
     const startingMilePoint = segment.startingMilePoint
     const endingMilePoint = segment.endingMilePoint
 
-    const averageValue = segment.data[0].series.average?.find(
-      (item) => item.value > 0
-    )?.value
-    const eightyFifthValue = segment.data[0].series.eightyFifth?.find(
-      (item) => item.value > 0
-    )?.value
+    // Extract average, eightyFifth, and speedLimit directly
+    const averageValue = segment.average
+    const eightyFifthValue = segment.eightyFifth
     const speedLimitValue = segment.speedLimit
 
+    // Only add data if values are present
     if (averageValue !== undefined) {
       addSegmentData(
         averageSpeedData,
@@ -117,6 +122,7 @@ function mergeSeriesData(response: SpeedOverDistanceResponse[]) {
         response
       )
     }
+
     if (eightyFifthValue !== undefined) {
       addSegmentData(
         eightyFifthPercentileData,
@@ -127,6 +133,7 @@ function mergeSeriesData(response: SpeedOverDistanceResponse[]) {
         response
       )
     }
+
     if (speedLimitValue !== undefined) {
       addSegmentData(
         speedLimitData,
@@ -147,7 +154,7 @@ function mergeSeriesData(response: SpeedOverDistanceResponse[]) {
 }
 
 function addSegmentData(
-  dataArray: { timestamp: number; value: number }[],
+  dataArray: [number, number | null][], // Array of [milepoint, value] pairs
   index: number,
   startingMilePoint: number,
   endingMilePoint: number,
@@ -158,19 +165,17 @@ function addSegmentData(
 
   // If this is the first segment, just add the points
   if (index === 0) {
-    dataArray.push({ timestamp: startingMilePoint, value })
-    dataArray.push({ timestamp: endingMilePoint, value })
+    dataArray.push([startingMilePoint, value])
+    dataArray.push([endingMilePoint, value])
   } else {
-    // Only add the starting mile point if it's different from the previous segment's end
+    // Add a break if segments are not continuous
     if (previousSegment.endingMilePoint !== startingMilePoint) {
-      dataArray.push({
-        timestamp: previousSegment.endingMilePoint,
-        value: dataArray[dataArray.length - 1]?.value,
-      })
-      dataArray.push({ timestamp: startingMilePoint, value })
+      // Insert a break (null) between non-continuous segments
+      dataArray.push([previousSegment.endingMilePoint, null]) // Break in the data
+      dataArray.push([startingMilePoint, value])
     }
 
     // Always add the ending mile point
-    dataArray.push({ timestamp: endingMilePoint, value })
+    dataArray.push([endingMilePoint, value])
   }
 }

@@ -1,10 +1,12 @@
 import { SM_Height } from '@/features/speedManagementTool/components/SM_Map'
+import RouteDisplayToggle from '@/features/speedManagementTool/components/SM_Map/RouteDisplayToggle'
 import { RouteRenderOption } from '@/features/speedManagementTool/enums'
 import useSpeedManagementStore from '@/features/speedManagementTool/speedManagementStore'
 import { SpeedManagementRoute } from '@/features/speedManagementTool/types/routes'
 import { ViolationColors } from '@/features/speedManagementTool/utils/colors'
 import { getEnv } from '@/lib/getEnv'
-import { Box, Button } from '@mui/material'
+import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd'
+import { Box, Button, Tooltip } from '@mui/material'
 import L, { Map as LeafletMap } from 'leaflet'
 import React, { memo, useEffect, useState } from 'react'
 import { MapContainer, Polyline, TileLayer } from 'react-leaflet'
@@ -28,6 +30,7 @@ const SM_Map = ({
   const [initialLatLong, setInitialLatLong] = useState<[number, number] | null>(
     null
   )
+  const [zoomLevel, setZoomLevel] = useState(6)
 
   const {
     routeRenderOption,
@@ -47,6 +50,14 @@ const SM_Map = ({
     }
     fetchEnv()
   }, [])
+
+  useEffect(() => {
+    if (mapRef) {
+      mapRef.on('zoomend', () => {
+        setZoomLevel(mapRef.getZoom())
+      })
+    }
+  }, [mapRef])
 
   const getColor = (route: SpeedManagementRoute) => {
     let field
@@ -116,11 +127,20 @@ const SM_Map = ({
     return <div>Loading...</div>
   }
 
+  const getPolylineWeight = (zoom: number) => {
+    if (zoom >= 18) return 10
+    if (zoom >= 15) return 5
+    if (zoom >= 12) return 4
+    if (zoom >= 10) return 3
+    if (zoom >= 8) return 2
+    return 2
+  }
+
   return (
     <Box sx={{ height: '100%', width: '100%', position: 'relative' }}>
       <MapContainer
         center={initialLatLong}
-        zoom={6}
+        zoom={zoomLevel}
         scrollWheelZoom={true}
         style={{
           minHeight: SM_Height,
@@ -144,14 +164,20 @@ const SM_Map = ({
             zIndex: 1000,
           }}
         >
-          <Button
-            variant="contained"
-            color={multiselect ? 'secondary' : 'primary'}
-            onClick={toggleMultiselect}
-          >
-            {multiselect ? 'Disable Multiselect' : 'Enable Multiselect'}
-          </Button>
+          <Tooltip title="Toggle Multiselect">
+            <Button
+              sx={{
+                px: 1,
+                minWidth: 0,
+              }}
+              variant="contained"
+              onClick={toggleMultiselect}
+            >
+              <PlaylistAddIcon />
+            </Button>
+          </Tooltip>
         </Box>
+        <RouteDisplayToggle />
         {routes.map((route, index) => (
           <Polyline
             key={index}
@@ -159,21 +185,20 @@ const SM_Map = ({
               color: selectedRouteIds.includes(route.properties.route_id)
                 ? 'blue'
                 : getColor(route),
-              weight: selectedRouteIds.includes(route.properties.route_id)
-                ? 5
-                : 2.5,
+              weight: getPolylineWeight(zoomLevel),
             }}
             positions={route.geometry.coordinates}
             eventHandlers={{
               click: () => setSelectedRouteId(route.properties.route_id),
               mouseover: (e) => {
-                e.target.setStyle({ weight: 5, color: 'blue' })
+                e.target.setStyle({
+                  weight: getPolylineWeight(zoomLevel) + 3,
+                  color: 'blue',
+                })
               },
               mouseout: (e) => {
                 e.target.setStyle({
-                  weight: selectedRouteIds.includes(route.properties.route_id)
-                    ? 5
-                    : 2.5,
+                  weight: getPolylineWeight(zoomLevel),
                   color: selectedRouteIds.includes(route.properties.route_id)
                     ? 'blue'
                     : getColor(route),

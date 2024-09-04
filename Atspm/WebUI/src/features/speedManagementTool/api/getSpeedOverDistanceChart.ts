@@ -1,4 +1,3 @@
-import { DataPoint } from '@/features/charts/common/types'
 import transformSpeedOverTimeData from '@/features/charts/speedManagementTool/speedOverTime/speedOverTime.transformer'
 // import { transformSpeedOverDistanceData } from '@/features/charts/SpeedOverDistance/SpeedOverDistance.transformer'
 import { speedAxios } from '@/lib/axios'
@@ -17,15 +16,8 @@ export interface SpeedOverDistanceResponse {
   startingMilePoint: number
   endingMilePoint: number
   speedLimit: number
-  data: SpeedOverDistanceData[]
-}
-
-interface SpeedOverDistanceData {
-  date: string
-  series: {
-    average: DataPoint[] | null
-    eightyFifth: DataPoint[] | null
-  }
+  average: number
+  eightyFifth: number
 }
 
 export const getSpeedOverDistances = async (

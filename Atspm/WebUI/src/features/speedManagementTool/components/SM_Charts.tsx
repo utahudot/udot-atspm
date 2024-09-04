@@ -101,6 +101,11 @@ const SM_Charts = ({ routes }: { routes: SpeedManagementRoute[] }) => {
     }
   }
 
+  const chartTypes: SM_ChartType[] =
+    routes.length === 1
+      ? [SM_ChartType.CONGESTION_TRACKING, SM_ChartType.SPEED_OVER_TIME]
+      : [SM_ChartType.SPEED_OVER_DISTANCE]
+
   return (
     <>
       <Box
@@ -119,25 +124,15 @@ const SM_Charts = ({ routes }: { routes: SpeedManagementRoute[] }) => {
             <Select
               labelId="chart-select-label"
               id="chart-select"
-              value={selectedChart ?? ''}
+              value={selectedChart || ''}
               label="Chart Select"
               onChange={handleChartChange}
             >
-              {routes.length === 1 && (
-                <>
-                  <MenuItem value={SM_ChartType.CONGESTION_TRACKING}>
-                    {SM_ChartType.CONGESTION_TRACKING}
-                  </MenuItem>
-                  <MenuItem value={SM_ChartType.SPEED_OVER_TIME}>
-                    {SM_ChartType.SPEED_OVER_TIME}
-                  </MenuItem>
-                </>
-              )}
-              {routes.length > 1 && (
-                <MenuItem value={SM_ChartType.SPEED_OVER_DISTANCE}>
-                  {SM_ChartType.SPEED_OVER_DISTANCE}
+              {chartTypes.map((chartType) => (
+                <MenuItem key={chartType} value={chartType}>
+                  {chartType}
                 </MenuItem>
-              )}
+              ))}
             </Select>
           </FormControl>
         </Box>

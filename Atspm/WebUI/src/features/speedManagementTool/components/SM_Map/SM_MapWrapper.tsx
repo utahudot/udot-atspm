@@ -13,10 +13,11 @@ import {
   ListItem,
   ListItemSecondaryAction,
   ListItemText,
+  Typography,
 } from '@mui/material'
 import 'leaflet/dist/leaflet.css'
 import dynamic from 'next/dynamic'
-import { memo, useRef, useState } from 'react'
+import { memo, useEffect, useRef, useState } from 'react'
 
 export const SM_Height = 'calc(100vh - 250px)'
 
@@ -31,6 +32,12 @@ const SM_MapWrapper = () => {
 
   const { submittedRouteSpeedRequest, routeRenderOption, multiselect } =
     useSpeedManagementStore()
+
+  useEffect(() => {
+    if (!multiselect) {
+      setSelectedRouteIds([])
+    }
+  }, [multiselect])
 
   const { data: routeData } = useRoutes({
     options: submittedRouteSpeedRequest,
@@ -105,7 +112,6 @@ const SM_MapWrapper = () => {
         <Box
           sx={{
             width: multiselect ? 300 : 0,
-            transition: 'width 0.2s ease',
             display: 'flex',
             flexDirection: 'column',
             overflow: 'hidden',
@@ -118,6 +124,17 @@ const SM_MapWrapper = () => {
             overflowY: 'auto',
           }}
         >
+          <Box
+            sx={{
+              p: 2,
+              borderBottom: '1px solid',
+              borderColor: 'divider',
+              backgroundColor: 'background.default',
+            }}
+          >
+            <Typography variant="subtitle2">Selected Routes</Typography>
+          </Box>
+
           <List sx={{ flex: 1, overflowY: 'auto', minWidth: '300px' }}>
             {selectedRouteIds.map((routeId) => {
               const route = routes.find(
