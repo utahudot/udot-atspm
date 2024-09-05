@@ -39,45 +39,71 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
         {
             _log.LogInformation("*********************************Starting Service*********************************");
 
-            _serviceProvider.PrintHostInformation();
+            //_serviceProvider.PrintHostInformation();
 
+            //var test = _serviceProvider.GetService<IOptions<DeviceEventLoggingQueryOptions>>();
 
-            //foreach (var d in _options.Value.IncludedLocations)
+            _log.LogInformation($"*****asdfasdfsadf*****************{_options.Value}*********************************");
+
+            var queryOptions = _options.Value.DeviceEventLoggingQueryOptions;
+
+            if (queryOptions.IncludedLocations?.Count() > 0)
+            {
+                foreach (var d in queryOptions.IncludedLocations)
+                {
+                    _log.LogDebug("Including Event Logs for locations: {location}", d);
+                }
+            }
+
+            if (queryOptions.ExcludedLocations?.Count() > 0)
+            {
+                foreach (var d in queryOptions.ExcludedLocations)
+                {
+                    _log.LogDebug("Excluding Event Logs for locations: {location}", d);
+                }
+            }
+
+            if (queryOptions.IncludedAreas?.Count() > 0)
+            {
+                foreach (var d in queryOptions.IncludedAreas)
+                {
+                    _log.LogDebug("Including Event Logs for area: {area}", d);
+                }
+            }
+
+            if (queryOptions.IncludedJurisdictions?.Count() > 0)
+            {
+                foreach (var d in queryOptions.IncludedJurisdictions)
+                {
+                    _log.LogDebug("Including Event Logs for jurisdiction: {jurisdiction}", d);
+                }
+            }
+
+            if (queryOptions.IncludedRegions?.Count() > 0)
+            {
+                foreach (var d in queryOptions.IncludedRegions)
+                {
+                    _log.LogDebug("Including Event Logs for region: {region}", d);
+                }
+            }
+
+            if (queryOptions.IncludedLocationTypes?.Count() > 0)
+            {
+                foreach (var d in queryOptions.IncludedLocationTypes)
+                {
+                    _log.LogDebug("Including Event Logs for location type: {locationtype}", d);
+                }
+            }
+
+            //if (queryOptions.DeviceType != DeviceTypes.Unknown)
             //{
-            //    _log.LogInformation("Including Event Logs for locations: {location}", d);
+                _log.LogDebug("Filtering event logs by device type: {devicetype}", queryOptions.DeviceType);
             //}
 
-            //foreach (var d in _options.Value.ExcludedLocations)
+            //if (queryOptions.TransportProtocol != TransportProtocols.Unknown)
             //{
-            //    _log.LogInformation("Excluding Event Logs for locations: {location}", d);
+                _log.LogDebug("Filtering event logs by transport protocol: {protocol}", queryOptions.TransportProtocol);
             //}
-
-            //foreach (var d in _options.Value.IncludedAreas)
-            //{
-            //    _log.LogInformation("Including Event Logs for area: {area}", d);
-            //}
-
-            //foreach (var d in _options.Value.IncludedJurisdictions)
-            //{
-            //    _log.LogInformation("Including Event Logs for jurisdiction: {jurisdiction}", d);
-            //}
-
-            //foreach (var d in _options.Value.IncludedRegions)
-            //{
-            //    _log.LogInformation("Including Event Logs for region: {region}", d);
-            //}
-
-            //foreach (var d in _options.Value.IncludedLocationTypes)
-            //{
-            //    _log.LogInformation("Including Event Logs for location type: {locationtype}", d);
-            //}
-
-            //_log.LogInformation("Filtering event logs by device type: {devicetype}", _options.Value.DeviceType);
-
-            //_log.LogInformation("Filtering event logs by transport protocol: {protocol}", _options.Value.TransportProtocol);
-
-            //Console.WriteLine("*********************************Starting Service*********************************");
-
 
 
 
@@ -87,90 +113,90 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
 
             using (var scope = _serviceProvider.CreateScope())
             {
-                var query = scope.ServiceProvider.GetService<IDeviceRepository>().GetActiveDevicesByAllLatestLocations().AsQueryable();
+                //var query = scope.ServiceProvider.GetService<IDeviceRepository>().GetActiveDevicesByAllLatestLocations().AsQueryable();
 
-                if (_options.Value.IncludedLocations?.Count() > 0)
-                {
-                    foreach (var d in _options.Value.IncludedLocations)
-                    {
-                        _log.LogInformation("Including Event Logs for locations: {location}", d);
-                    }
+                //if (_options.Value.IncludedLocations?.Count() > 0)
+                //{
+                //    foreach (var d in _options.Value.IncludedLocations)
+                //    {
+                //        _log.LogInformation("Including Event Logs for locations: {location}", d);
+                //    }
 
-                    query = query.Where(i => _options.Value.IncludedLocations.Any(d => i.Location.LocationIdentifier == d));
-                }
+                //    query = query.Where(i => _options.Value.IncludedLocations.Any(d => i.Location.LocationIdentifier == d));
+                //}
 
-                if (_options.Value.ExcludedLocations?.Count() > 0)
-                {
-                    foreach (var d in _options.Value.ExcludedLocations)
-                    {
-                        _log.LogInformation("Excluding Event Logs for locations: {location}", d);
-                    }
+                //if (_options.Value.ExcludedLocations?.Count() > 0)
+                //{
+                //    foreach (var d in _options.Value.ExcludedLocations)
+                //    {
+                //        _log.LogInformation("Excluding Event Logs for locations: {location}", d);
+                //    }
 
-                    query = query.Where(i => !_options.Value.ExcludedLocations.Any(d => i.Location.LocationIdentifier == d));
-                }
+                //    query = query.Where(i => !_options.Value.ExcludedLocations.Any(d => i.Location.LocationIdentifier == d));
+                //}
 
-                if (_options.Value.IncludedAreas?.Count() > 0)
-                {
-                    foreach (var d in _options.Value.IncludedAreas)
-                    {
-                        _log.LogInformation("Including Event Logs for area: {area}", d);
-                    }
+                //if (_options.Value.IncludedAreas?.Count() > 0)
+                //{
+                //    foreach (var d in _options.Value.IncludedAreas)
+                //    {
+                //        _log.LogInformation("Including Event Logs for area: {area}", d);
+                //    }
 
-                    query = query.Where(i => _options.Value.IncludedAreas.Any(d => i.Location.Areas.Any(a => a.Name == d)));
-                }
+                //    query = query.Where(i => _options.Value.IncludedAreas.Any(d => i.Location.Areas.Any(a => a.Name == d)));
+                //}
 
-                if (_options.Value.IncludedJurisdictions?.Count() > 0)
-                {
-                    foreach (var d in _options.Value.IncludedJurisdictions)
-                    {
-                        _log.LogInformation("Including Event Logs for jurisdiction: {jurisdiction}", d);
-                    }
+                //if (_options.Value.IncludedJurisdictions?.Count() > 0)
+                //{
+                //    foreach (var d in _options.Value.IncludedJurisdictions)
+                //    {
+                //        _log.LogInformation("Including Event Logs for jurisdiction: {jurisdiction}", d);
+                //    }
 
-                    query = query.Where(i => _options.Value.IncludedJurisdictions.Any(d => i.Location.Jurisdiction.Name == d));
-                }
+                //    query = query.Where(i => _options.Value.IncludedJurisdictions.Any(d => i.Location.Jurisdiction.Name == d));
+                //}
 
-                if (_options.Value.IncludedRegions?.Count() > 0)
-                {
-                    foreach (var d in _options.Value.IncludedRegions)
-                    {
-                        _log.LogInformation("Including Event Logs for region: {region}", d);
-                    }
+                //if (_options.Value.IncludedRegions?.Count() > 0)
+                //{
+                //    foreach (var d in _options.Value.IncludedRegions)
+                //    {
+                //        _log.LogInformation("Including Event Logs for region: {region}", d);
+                //    }
 
-                    query = query.Where(i => _options.Value.IncludedRegions.Any(d => i.Location.Region.Description == d));
-                }
+                //    query = query.Where(i => _options.Value.IncludedRegions.Any(d => i.Location.Region.Description == d));
+                //}
 
-                if (_options.Value.IncludedLocationTypes?.Count() > 0)
-                {
-                    foreach (var d in _options.Value.IncludedLocationTypes)
-                    {
-                        _log.LogInformation("Including Event Logs for location type: {locationtype}", d);
-                    }
+                //if (_options.Value.IncludedLocationTypes?.Count() > 0)
+                //{
+                //    foreach (var d in _options.Value.IncludedLocationTypes)
+                //    {
+                //        _log.LogInformation("Including Event Logs for location type: {locationtype}", d);
+                //    }
 
-                    query = query.Where(i => _options.Value.IncludedLocationTypes.Any(d => i.Location.LocationType.Name == d));
-                }
+                //    query = query.Where(i => _options.Value.IncludedLocationTypes.Any(d => i.Location.LocationType.Name == d));
+                //}
 
-                if (_options.Value.DeviceType != DeviceTypes.Unknown)
-                {
-                    _log.LogInformation("Filtering event logs by device type: {devicetype}", _options.Value.DeviceType);
+                //if (_options.Value.DeviceType != DeviceTypes.Unknown)
+                //{
+                //    _log.LogInformation("Filtering event logs by device type: {devicetype}", _options.Value.DeviceType);
 
-                    query = query.Where(i => i.DeviceType == _options.Value.DeviceType);
-                }
+                //    query = query.Where(i => i.DeviceType == _options.Value.DeviceType);
+                //}
 
-                if (_options.Value.TransportProtocol != TransportProtocols.Unknown)
-                {
-                    _log.LogInformation("Filtering event logs by transport protocol: {protocol}", _options.Value.TransportProtocol);
+                //if (_options.Value.TransportProtocol != TransportProtocols.Unknown)
+                //{
+                //    _log.LogInformation("Filtering event logs by transport protocol: {protocol}", _options.Value.TransportProtocol);
 
-                    query = query.Where(i => i.DeviceConfiguration.Protocol == _options.Value.TransportProtocol);
-                }
+                //    query = query.Where(i => i.DeviceConfiguration.Protocol == _options.Value.TransportProtocol);
+                //}
 
-                var devices = query.ToList();
+                //var devices = query.ToList();
 
-                Console.WriteLine($"devices: {devices.Count()}");
+                //Console.WriteLine($"devices: {devices.Count()}");
 
-                foreach (var d in devices)
-                {
-                    Console.WriteLine($"device: {d}");
-                }
+                //foreach (var d in devices)
+                //{
+                //    Console.WriteLine($"device: {d}");
+                //}
 
 
 

@@ -17,15 +17,19 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using System.CommandLine;
+using System.CommandLine.Binding;
 using System.CommandLine.Hosting;
 using System.CommandLine.NamingConventionBinder;
+using Utah.Udot.Atspm.Configuration;
 using Utah.Udot.Atspm.Data.Enums;
+using Utah.Udot.Atspm.Infrastructure.Converters;
 using Utah.Udot.Atspm.Infrastructure.Services.HostedServices;
 
 namespace Utah.Udot.Atspm.EventLogUtility.Commands
 {
-    public class LogConsoleCommand : Command, ICommandOption<DeviceEventLoggingConfiguration>
+    public class LogConsoleCommand : Command, ICommandOption
     {
         public LogConsoleCommand() : base("log", "Logs data from Location controllers")
         {
@@ -76,28 +80,32 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
 
         public PathCommandOption PathCommandOption { get; set; } = new();
 
-        public ModelBinder<DeviceEventLoggingConfiguration> GetOptionsBinder()
-        {
-            var binder = new ModelBinder<DeviceEventLoggingConfiguration>();
-
-            binder.BindMemberFromValue(b => b.IncludedLocations, IncludeOption);
-            binder.BindMemberFromValue(b => b.ExcludedLocations, ExcludeOption);
-            binder.BindMemberFromValue(b => b.IncludedAreas, AreaOption);
-            binder.BindMemberFromValue(b => b.IncludedJurisdictions, JurisdictionOption);
-            binder.BindMemberFromValue(b => b.IncludedRegions, RegionOption);
-            binder.BindMemberFromValue(b => b.IncludedLocationTypes, LocationTypeOption);
-            binder.BindMemberFromValue(b => b.DeviceType, DeviceTypeOption);
-            binder.BindMemberFromValue(b => b.TransportProtocol, TransportProtocolOption);
-            binder.BindMemberFromValue(b => b.Path, PathCommandOption);
-
-            return binder;
-        }
-
         public void BindCommandOptions(HostBuilderContext host, IServiceCollection services)
         {
-            services.AddSingleton(GetOptionsBinder());
             services.Configure<DeviceEventLoggingConfiguration>(host.Configuration.GetSection(nameof(DeviceEventLoggingConfiguration)));
-            services.AddOptions<DeviceEventLoggingConfiguration>().BindCommandLine();
+
+            var parentBinder = new ModelBinder<DeviceEventLoggingConfiguration>();
+
+            parentBinder.BindMemberFromValue(b => b.Path, PathCommandOption);
+
+            var childBinder = new ModelBinder<DeviceEventLoggingQueryOptions>();
+
+            childBinder.BindMemberFromValue(b => b.IncludedLocations, IncludeOption);
+            childBinder.BindMemberFromValue(b => b.ExcludedLocations, ExcludeOption);
+            childBinder.BindMemberFromValue(b => b.IncludedAreas, AreaOption);
+            childBinder.BindMemberFromValue(b => b.IncludedJurisdictions, JurisdictionOption);
+            childBinder.BindMemberFromValue(b => b.IncludedRegions, RegionOption);
+            childBinder.BindMemberFromValue(b => b.IncludedLocationTypes, LocationTypeOption);
+            childBinder.BindMemberFromValue(b => b.DeviceType, DeviceTypeOption);
+            childBinder.BindMemberFromValue(b => b.TransportProtocol, TransportProtocolOption);
+
+            services.AddOptions<DeviceEventLoggingConfiguration>()
+                .Configure<BindingContext>((a, b) =>
+                {
+                    parentBinder.UpdateInstance(a, b);
+                    childBinder.UpdateInstance(a.DeviceEventLoggingQueryOptions, b);
+                });
+
             services.AddHostedService<LocationLoggerUtilityHostedService>();
         }
     }

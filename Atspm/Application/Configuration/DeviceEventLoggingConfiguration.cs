@@ -25,6 +25,25 @@ namespace Utah.Udot.Atspm.Configuration
     public class DeviceEventLoggingConfiguration
     {
         /// <summary>
+        /// Path to logging directory
+        /// </summary>
+        public string Path { get; set; } = System.IO.Path.GetTempPath();
+
+        /// <inheritdoc cref="DeviceEventLoggingQueryOptions"/>
+        public DeviceEventLoggingQueryOptions DeviceEventLoggingQueryOptions { get; set; } = new DeviceEventLoggingQueryOptions();
+
+        public override string ToString()
+        {
+            return $"{DeviceEventLoggingQueryOptions} --- {Path}";
+        }
+    }
+
+    /// <summary>
+    /// Options for querying which <see cref="Device"/> to log.
+    /// </summary>
+    public class DeviceEventLoggingQueryOptions
+    {
+        /// <summary>
         /// List of <see cref="Location.LocationIdentifier"/> to include
         /// </summary>
         public IEnumerable<string> IncludedLocations { get; set; }
@@ -57,21 +76,16 @@ namespace Utah.Udot.Atspm.Configuration
         /// <summary>
         /// <see cref="DeviceTypes"/> to include
         /// </summary>
-        public DeviceTypes DeviceType { get; set; }
-        
+        public DeviceTypes DeviceType { get; set; } = DeviceTypes.Unknown;
+
         /// <summary>
         /// <see cref="TransportProtocols"/> to include
         /// </summary>
         public TransportProtocols TransportProtocol { get; set; }
-        
-        /// <summary>
-        /// Path to logging directory
-        /// </summary>
-        public DirectoryInfo Path { get; set; }
 
         public override string ToString()
         {
-            return $"{IncludedLocations?.Count()} - {ExcludedLocations?.Count()} - {DeviceType} - {TransportProtocol} - {Path}";
+            return $"{DeviceType} - {TransportProtocol}";
         }
     }
 }
