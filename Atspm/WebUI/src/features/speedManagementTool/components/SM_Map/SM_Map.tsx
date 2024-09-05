@@ -20,13 +20,11 @@ type SM_MapProps = {
 }
 
 const SM_Map = ({
-  fullScreenRef = null,
   routes,
   setSelectedRouteId,
   selectedRouteIds = [],
 }: SM_MapProps) => {
   const [mapRef, setMapRef] = useState<LeafletMap | null>(null)
-  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null)
   const [initialLatLong, setInitialLatLong] = useState<[number, number] | null>(
     null
   )
@@ -110,21 +108,12 @@ const SM_Map = ({
 
   const renderer = L.canvas({ tolerance: 5 }) // Increase clickability of polylines
 
-  const handleDisplaySettingsClick = (
-    event: React.MouseEvent<HTMLButtonElement>
-  ) => {
-    setAnchorEl(anchorEl ? null : event.currentTarget)
-  }
-
   const toggleMultiselect = () => {
     setMultiselect(!multiselect)
   }
 
-  const open = Boolean(anchorEl)
-  const id = open ? 'settings-popover' : undefined
-
   if (!initialLatLong) {
-    return <div>Loading...</div>
+    return <Box p={2}>Loading...</Box>
   }
 
   const getPolylineWeight = (zoom: number) => {
@@ -164,7 +153,7 @@ const SM_Map = ({
             zIndex: 1000,
           }}
         >
-          <Tooltip title="Toggle Multiselect">
+          <Tooltip title="Select Multiple Routes">
             <Button
               sx={{
                 px: 1,

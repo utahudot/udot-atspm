@@ -23,7 +23,7 @@ const RouteDisplayToggle = () => {
         zIndex: 1000,
       }}
     >
-      <Tooltip title="Toggle Route Display">
+      <Tooltip title="Toggle Segment Display">
         <Button
           sx={{
             px: 1,

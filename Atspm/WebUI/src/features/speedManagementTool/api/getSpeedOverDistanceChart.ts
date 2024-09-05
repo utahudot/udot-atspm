@@ -18,6 +18,8 @@ export interface SpeedOverDistanceResponse {
   speedLimit: number
   average: number
   eightyFifth: number
+  startDate: string
+  endDate: string
 }
 
 export const getSpeedOverDistances = async (

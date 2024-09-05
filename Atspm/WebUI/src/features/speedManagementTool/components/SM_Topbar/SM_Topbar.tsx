@@ -8,7 +8,6 @@ import { SpeedManagementRoute } from '@/features/speedManagementTool/types/route
 import { LoadingButton } from '@mui/lab'
 import { Box } from '@mui/material'
 import { useEffect, useState } from 'react'
-import AnalysisPeriodOptionsPopup from './AnalysisPeriodOptionsPopup'
 import DaysOfWeekOptionsPopup from './DaysOfWeekOptionsPopup'
 import GeneralOptionsPopup from './GeneralOptionsPopup'
 
@@ -81,7 +80,7 @@ export default function TopBar() {
         <ViolationsThresholdPopup />
         <DateRangeOptionsPopup />
         <DaysOfWeekOptionsPopup />
-        <AnalysisPeriodOptionsPopup />
+        {/* <AnalysisPeriodOptionsPopup /> */}
         <FiltersButton />
         <LoadingButton
           variant="contained"
