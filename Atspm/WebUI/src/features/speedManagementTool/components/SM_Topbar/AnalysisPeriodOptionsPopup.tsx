@@ -7,29 +7,31 @@ import {
   Radio,
   RadioGroup,
 } from '@mui/material'
-import { TimePicker } from '@mui/x-date-pickers'
-import { format } from 'date-fns'
 import OptionsPopupWrapper from './OptionsPopupWrapper'
 
 export default function AnalysisPeriodOptionsPopup() {
   const { routeSpeedRequest, setRouteSpeedRequest } = useStore()
 
-  const analysisPeriodString = AnalysisPeriod[routeSpeedRequest.analysisPeriod]
+  const analysisPeriodString = routeSpeedRequest.analysisPeriod
+    ? AnalysisPeriod[routeSpeedRequest.analysisPeriod]
+    : AnalysisPeriod.AllDay
 
   const getAnalysisPeriodLabel = () => {
     switch (routeSpeedRequest.analysisPeriod) {
       case AnalysisPeriod.AllDay:
-        return 'Whole Day'
-      case AnalysisPeriod.PeekPeriod:
-        return 'Peak Periods'
-      case AnalysisPeriod.CustomHour:
-        const formattedStartTime = routeSpeedRequest.customStartTime
-          ? format(routeSpeedRequest.customStartTime, 'HH:mm')
-          : 'N/A'
-        const formattedEndTime = routeSpeedRequest.customEndTime
-          ? format(routeSpeedRequest.customEndTime, 'HH:mm')
-          : 'N/A'
-        return `Custom: ${formattedStartTime} - ${formattedEndTime}`
+        return 'All Day'
+      case AnalysisPeriod.OffPeak:
+        return 'Off-Peak (10 PM - 4 AM)'
+      case AnalysisPeriod.AMPeak:
+        return 'AM Peak (6 AM - 9 AM)'
+      case AnalysisPeriod.PMPeak:
+        return 'PM Peak (4 PM - 6 PM)'
+      case AnalysisPeriod.MidDay:
+        return 'Mid Day (9 AM - 4 PM)'
+      case AnalysisPeriod.Evening:
+        return 'Evening (6 PM - 10 PM)'
+      case AnalysisPeriod.EarlyMorning:
+        return 'Early Morning (4 AM - 6 AM)'
       default:
         return 'Analysis Period'
     }
@@ -39,6 +41,7 @@ export default function AnalysisPeriodOptionsPopup() {
     <OptionsPopupWrapper
       label="analysis-period"
       getLabel={getAnalysisPeriodLabel}
+      width="250px"
     >
       <Box paddingX={'10px'}>
         <FormControl component="fieldset">
@@ -57,57 +60,47 @@ export default function AnalysisPeriodOptionsPopup() {
             <FormControlLabel
               value="AllDay"
               control={<Radio />}
-              label="Whole Day"
+              label="All Day"
               sx={{ p: '0px' }}
             />
             <FormControlLabel
-              value="PeekPeriod"
+              value="OffPeak"
               control={<Radio />}
-              label="Peak Periods (6AM - 9AM & 3PM - 6PM)"
+              label="Off-Peak (10 PM - 4 AM)"
+              sx={{ p: '0px' }}
             />
             <FormControlLabel
-              value="CustomHour"
+              value="AMPeak"
               control={<Radio />}
-              label="Custom"
+              label="AM Peak (6 AM - 9 AM)"
+              sx={{ p: '0px' }}
+            />
+            <FormControlLabel
+              value="PMPeak"
+              control={<Radio />}
+              label="PM Peak (4 PM - 6 PM)"
+              sx={{ p: '0px' }}
+            />
+            <FormControlLabel
+              value="MidDay"
+              control={<Radio />}
+              label="Mid Day (9 AM - 4 PM)"
+              sx={{ p: '0px' }}
+            />
+            <FormControlLabel
+              value="Evening"
+              control={<Radio />}
+              label="Evening (6 PM - 10 PM)"
+              sx={{ p: '0px' }}
+            />
+            <FormControlLabel
+              value="EarlyMorning"
+              control={<Radio />}
+              label="Early Morning (4 AM - 6 AM)"
+              sx={{ p: '0px' }}
             />
           </RadioGroup>
         </FormControl>
-
-        {routeSpeedRequest.analysisPeriod === AnalysisPeriod.CustomHour && (
-          <Box display="flex" gap={2} marginTop="10px">
-            <Box>
-              <TimePicker
-                label="Start Time"
-                value={routeSpeedRequest.customStartTime}
-                minutesStep={5}
-                onChange={(date) => {
-                  if (!date) return
-                  setRouteSpeedRequest({
-                    ...routeSpeedRequest,
-                    customStartTime: date,
-                  })
-                }}
-              />
-            </Box>
-            <Box display={'flex'} alignItems={'center'}>
-              -
-            </Box>
-            <Box>
-              <TimePicker
-                label="End Time"
-                value={routeSpeedRequest.customEndTime}
-                minutesStep={5}
-                onChange={(date) => {
-                  if (!date) return
-                  setRouteSpeedRequest({
-                    ...routeSpeedRequest,
-                    customEndTime: date,
-                  })
-                }}
-              />
-            </Box>
-          </Box>
-        )}
       </Box>
     </OptionsPopupWrapper>
   )

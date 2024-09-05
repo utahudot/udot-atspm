@@ -35,8 +35,6 @@ const SpeedOverTimeOptions = ({
   )
   const [endDate, setEndDate] = useState<Date | null>(endOfMonth(initialDate))
 
-  console.log('startDate', startDate)
-  console.log('endDate', endDate)
   const [selectedSource, setSelectedSource] = useState<DataSource>(
     DataSource.PeMS
   )

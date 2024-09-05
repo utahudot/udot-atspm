@@ -38,12 +38,6 @@ import {
   YAXisComponentOption,
 } from 'echarts'
 
-const specialCasesCharts = [
-  ChartType.ApproachSpeed,
-  ChartType.GreenTimeUtilization,
-  ChartType.PreemptionDetails,
-]
-
 export function transformSeriesData(
   dataPoints: DataPoint[]
 ): (string | number)[][] {

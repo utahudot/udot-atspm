@@ -25,6 +25,8 @@ export default function FiltersButton() {
   const { data: functionalTypesData } = useGetFunctionalTypes()
   const { data: regionsData } = useGetRegions()
 
+  const { routeSpeedRequest, setRouteSpeedRequest } = useStore()
+
   const counties = countiesData?.sort((a, b) => a.name.localeCompare(b.name))
   const accessCategories = accessCategoriesData?.sort((a, b) => {
     const nameA = a.name.replace('Category', '')
@@ -37,8 +39,6 @@ export default function FiltersButton() {
     a.name.localeCompare(b.name)
   )
   const regions = regionsData?.sort((a, b) => a.name.localeCompare(b.name))
-
-  const { routeSpeedRequest, setRouteSpeedRequest } = useStore()
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget)
