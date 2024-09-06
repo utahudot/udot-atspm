@@ -67,7 +67,6 @@ const ExportData = () => {
 
   const downloadData = (data: any, filename: string, type: string) => {
     setError(false)
-    console.log(data)
     let formattedData = ''
 
     if (type === 'application/json') {
@@ -128,7 +127,6 @@ const ExportData = () => {
       let data
       if (selectedDataType == 'All Raw Data') {
         response = await refetchEventLogs()
-        console.log('dans response ', response)
         if (response.status === 'error'){
           setError(true)
           setIsDownloading(false)
@@ -223,14 +221,6 @@ const ExportData = () => {
     isValid(startDateTime) ? dateToTimestamp(startDateTime) : '',
     isValid(endDateTime) ? dateToTimestamp(endDateTime) : ''
   )
-
-  useEffect(() => {
-    console.log('LocationIdentifer: ', location?.locationIdentifier)
-    console.log('Data Type: ', selectedDataType)
-    console.log('Start Time:', startDateTime)
-    console.log('end Time:', dateToTimestamp(endDateTime))
-
-  }, [selectedDataType])
 
   const requiredClaim = 'Data:View'
   return (

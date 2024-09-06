@@ -20,8 +20,6 @@ const WatchDog = () => {
     ConfigEnum.TransportProtocols
   )
 
-  console.log('data', transportProtocols)
-
   return (
     <Authorization requiredClaim={requiredClaim}>
       <ResponsivePageLayout title={'Watchdog'} noBottomMargin>

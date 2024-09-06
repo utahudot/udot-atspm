@@ -35,7 +35,6 @@ function Login() {
 
   useEffect(() => {
     if (queryData) {
-      console.log(queryData)
       setData(queryData as IdentityDto)
     }
   }, [data, queryData])

@@ -74,8 +74,6 @@ const TurningMovementCountsTable = ({
       hour12: false,
     })
 
-    console.log('timestamp', timestamp)
-
     const date = new Date(timestamp)
     return formatter.format(date)
   }

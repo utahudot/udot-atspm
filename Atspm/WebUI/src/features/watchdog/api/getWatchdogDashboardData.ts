@@ -1,22 +1,22 @@
-import transformWatchdogIssueTypeData from '@/features/charts/watchdogDashboard/watchdogIssueType.transformer'
-import { IssueTypeGrouping } from '@/features/watchdog/types'
+import { WatchdogDashboardData } from '@/features/watchdog/types'
 import { ExtractFnReturnType, QueryConfig } from '@/lib/react-query'
-import { ApiResponse } from '@/types'
 import axios from 'axios'
 import { useQuery } from 'react-query'
 
-type QueryFnType = typeof getIssueTypeGroup
+type QueryFnType = typeof getWatchdogDashboardData
 
-type UseGetIssueTypeGroupOptions = {
+
+type UseGetWatchdogDashboardDataOptions = {
   start: string
   end: string
+  enabled?: boolean
   config?: QueryConfig<QueryFnType>
 }
 
-export const getIssueTypeGroup = async (
+export const getWatchdogDashboardData = async (
   start: string,
   end: string
-): Promise<IssueTypeGrouping[]> => {
+): Promise<WatchdogDashboardData> => {
   const response = await axios.post('https://localhost:44366/getIssueTypeGroup', {
     start,
     end,
@@ -25,14 +25,16 @@ export const getIssueTypeGroup = async (
 
 }
 
-export const useGetIssueTypeGroup = ({
+export const useGetWatchdogDashboardData = ({
   start,
   end,
+  enabled = false,
   config,
-}: UseGetIssueTypeGroupOptions) => {
+}: UseGetWatchdogDashboardDataOptions) => {
   return useQuery<ExtractFnReturnType<QueryFnType>>({
     ...config,
     queryKey: ['issueTypeGroup', start, end],
-    queryFn: () => getIssueTypeGroup(start, end),
+    queryFn: () => getWatchdogDashboardData(start, end),
+    enabled: enabled,
   })
 }

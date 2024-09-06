@@ -171,7 +171,6 @@ export const useVerifyTokenHandler = (): VerifyTokenHandler => {
     const queryParams = new URLSearchParams(router.asPath.split('?')[1])
     const name = queryParams.get('username')
     const code = queryParams.get('token')
-    console.log(name, code)
     if (name && code) {
       setUsername(name)
       setResetToken(code)
@@ -181,7 +180,6 @@ export const useVerifyTokenHandler = (): VerifyTokenHandler => {
   useEffect(() => {
     const code = Cookies.get('resetToken')
     const name = Cookies.get('username')
-    console.log(name, code)
     if (name && code) {
       setUsername(name)
       setResetToken(code)

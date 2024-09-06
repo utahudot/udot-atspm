@@ -9,7 +9,6 @@ const SsoLogin = () => {
   useEffect(() => {
     const query = router.query
     const { token, claims, error: callError } = query
-    console.log(claims)
     if (token) {
       Cookies.set('token', token as string, {
         secure: true,

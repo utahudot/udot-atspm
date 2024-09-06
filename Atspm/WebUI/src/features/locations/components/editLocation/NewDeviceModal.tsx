@@ -151,7 +151,6 @@ const DeviceModal = ({
   }
 
   const handleSave = () => {
-    console.log(deviceData?.deviceConfiguration)
     const newErrors = {
       product: !deviceData?.deviceConfiguration?.product,
       configuration: !deviceData?.deviceConfiguration?.firmware,

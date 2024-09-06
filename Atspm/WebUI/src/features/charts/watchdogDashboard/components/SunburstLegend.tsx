@@ -1,4 +1,5 @@
 import React from 'react'
+import { Box, Stack, Typography } from '@mui/material'
 
 interface LegendItem {
   name: string
@@ -9,25 +10,31 @@ interface LegendItem {
 interface ChartLegendProps {
   legendData: LegendItem[]
   onToggle: (name: string) => void
+  isMobile: boolean
 }
 
-const SunburstLegend: React.FC<ChartLegendProps> = ({ legendData, onToggle }) => {
+const SunburstLegend: React.FC<ChartLegendProps> = ({ legendData, onToggle, isMobile }) => {
   return (
-    <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', marginBottom: '10px' }}>
+    <Stack
+      direction={isMobile ? "row" : "column"}
+      alignItems="flex-start"
+      flexWrap={isMobile ? "wrap" : "nowrap"}
+      justifyContent={isMobile ? "center" : "flex-start"}
+    >
       {legendData.map((item) => (
-        <div
+        <Box
           key={item.name}
-          style={{
+          sx={{
             cursor: 'pointer',
-            margin: '0 10px',
+            margin: isMobile ? '2px' : '1px 0',
             display: 'flex',
             alignItems: 'center',
             opacity: item.selected ? 1 : 0.5,
           }}
           onClick={() => onToggle(item.name)}
         >
-          <span
-            style={{
+          <Box
+            sx={{
               display: 'inline-block',
               width: '25px',
               height: '14px',
@@ -35,11 +42,11 @@ const SunburstLegend: React.FC<ChartLegendProps> = ({ legendData, onToggle }) =>
               backgroundColor: item.color,
               marginRight: '5px',
             }}
-          ></span>
-          {item.name}
-        </div>
+          />
+          <Typography variant={isMobile ? "caption" : "body2"}>{item.name}</Typography>
+        </Box>
       ))}
-    </div>
+    </Stack>
   )
 }
 

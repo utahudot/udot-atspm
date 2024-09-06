@@ -40,7 +40,6 @@ const RoleModal: React.FC<ModalProps> = ({ open, onClose, data }) => {
   const roleId = data?.role || null
 
   const handleClaimsChange = (role: string, claims: string[]) => {
-    console.log(`Updated claims for ${role}:`, claims)
     setUserClaims(claims)
   }
 

@@ -1,20 +1,37 @@
 import { StyledPaper } from '@/components/StyledPaper'
-import WatchDogIssueTypeContainer from '@/features/charts/watchdogDashboard/components/WatchDogIssueTypeContainer'
+import WatchdogChartsContainer from '@/features/charts/watchdogDashboard/components/WatchDogChartsContainer'
 import PlayArrowIcon from '@mui/icons-material/PlayArrow'
 import { LoadingButton } from '@mui/lab'
-import { useMediaQuery, useTheme } from '@mui/material'
-import { startOfToday, startOfTomorrow, subDays, subYears } from 'date-fns'
-import { useEffect, useState } from 'react'
+import {
+  format,
+  startOfToday,
+  startOfTomorrow,
+  subDays,
+  subYears,
+} from 'date-fns'
+import { useState } from 'react'
 import HorizontalDateInput from './HorizontalDateInputs'
-import { useGetDetectionTypeGroup } from '../api/getDetectionTypeGroup'
+import { useGetWatchdogDashboardData } from '../api/getWatchdogDashboardData'
+import { Box } from '@mui/material'
 
 const WatchdogSummaryReport = () => {
   const [startDateTime, setStartDateTime] = useState(
     subYears(startOfToday(), 1)
   )
   const [endDateTime, setEndDateTime] = useState(subDays(startOfTomorrow(), 1))
-  const theme = useTheme()
-  const isMobileView = useMediaQuery(theme.breakpoints.down('md'))
+  const [fetchData, setFetchData] = useState(false)
+  const formattedStartDate = format(startDateTime, "yyyy-MM-dd'T'HH:mm:ss'Z'")
+  const formattedEndDate = format(endDateTime, "yyyy-MM-dd'T'HH:mm:ss'Z'")
+
+  const { data, isLoading, error } = useGetWatchdogDashboardData({
+    start: formattedStartDate,
+    end: formattedEndDate,
+    enabled: fetchData,
+  })
+
+  const handleGenerateSummary = () => {
+    setFetchData(true)
+  }
 
   const handleStartDateTimeChange = (date: Date) => {
     setStartDateTime(date)
@@ -24,6 +41,7 @@ const WatchdogSummaryReport = () => {
     setEndDateTime(date)
   }
 
+if(!isLoading)console.log("KIMBRO", data)
 
   return (
     <>
@@ -41,19 +59,25 @@ const WatchdogSummaryReport = () => {
           changeEndDate={handleEndDateTimeChange}
         />
       </StyledPaper>
-
       <LoadingButton
-        //   loading={isLoading}
-        sx={{ mt: 2, padding: '10px' }}
+        loading={isLoading}
+        sx={{ mt: 2, padding: '10px', mb: 2 }}
         loadingPosition="start"
         startIcon={<PlayArrowIcon />}
         variant="contained"
-        onClick={() => console.log('summary report')}
+        onClick={handleGenerateSummary}
       >
         Generate Summary
       </LoadingButton>
 
-        <WatchDogIssueTypeContainer />
+      {error && <Box>Error loading data</Box>}
+      
+      {!isLoading && data && (
+        <WatchdogChartsContainer
+          data={data}
+          isLoading={isLoading}
+        />
+      )}
     </>
   )
 }

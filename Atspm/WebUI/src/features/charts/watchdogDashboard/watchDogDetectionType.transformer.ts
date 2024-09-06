@@ -21,7 +21,7 @@ const transformDetectionTypeData = (data: DetectionTypeData[]): EChartsOption =>
     stack:'total',
 
     label: {
-      show: false,
+      show: true,
       position: 'insideBottom',
       distance: 15,
       align: 'left',
@@ -51,20 +51,27 @@ const transformDetectionTypeData = (data: DetectionTypeData[]): EChartsOption =>
       }
     },
     legend: {
-      data: legendData
-    },
+        orient: 'vertical',
+        right:70,
+        top: 'center',
+        data: legendData,
+        itemWidth: 26,  
+        itemHeight: 15, 
+        textStyle: {
+          fontSize: 16  
+        }
+      },
+      grid: {
+        left: '3%',
+        right: '25%',
+        bottom: '5%',
+        containLabel: false
+      },
     toolbox: {
-      show: true,
+      show: false,
       orient: 'vertical',
       left: 'right',
       top: 'center',
-      feature: {
-        mark: { show: true },
-        dataView: { show: true, readOnly: false },
-        magicType: { show: true, type: ['line', 'bar', 'stack'] },
-        restore: { show: true },
-        saveAsImage: { show: true }
-      }
     },
     xAxis: [
       {
