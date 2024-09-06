@@ -62,7 +62,7 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
             return binder;
         }
 
-        public void BindCommandOptions(IServiceCollection services)
+        public void BindCommandOptions(HostBuilderContext host, IServiceCollection services)
         {
             services.AddSingleton(GetOptionsBinder());
             services.AddOptions<EventLogLocationInfoConfiguration>().BindCommandLine();

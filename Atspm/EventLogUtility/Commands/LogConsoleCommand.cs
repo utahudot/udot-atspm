@@ -16,14 +16,20 @@
 #endregion
 
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using System.CommandLine;
+using System.CommandLine.Binding;
 using System.CommandLine.Hosting;
 using System.CommandLine.NamingConventionBinder;
+using Utah.Udot.Atspm.Configuration;
+using Utah.Udot.Atspm.Data.Enums;
+using Utah.Udot.Atspm.Infrastructure.Converters;
 using Utah.Udot.Atspm.Infrastructure.Services.HostedServices;
 
 namespace Utah.Udot.Atspm.EventLogUtility.Commands
 {
-    public class LogConsoleCommand : Command, ICommandOption<EventLogLoggingConfiguration>
+    public class LogConsoleCommand : Command, ICommandOption
     {
         public LogConsoleCommand() : base("log", "Logs data from Location controllers")
         {
@@ -38,34 +44,21 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
                     r.ErrorMessage = "Can't use exclude option when also using include option";
             });
 
-            AddArgument(PingControllerArg);
+            AddArgument(PingDeviceArg);
             AddArgument(DeleteLocalFileArg);
 
             AddOption(IncludeOption);
             AddOption(ExcludeOption);
-            AddOption(TypeOption);
+            AddOption(AreaOption);
+            AddOption(JurisdictionOption);
+            AddOption(RegionOption);
+            AddOption(LocationTypeOption);
+            AddOption(DeviceTypeOption);
+            AddOption(TransportProtocolOption);
             AddOption(PathCommandOption);
-
-            //this.SetHandler((d, i, e, p) =>
-            //{
-            //    Console.WriteLine($"{this.Name} is executing");
-
-            //    foreach (var s in i)
-            //    {
-            //        Console.WriteLine($"Extracting event logs for Location {s}");
-            //    }
-
-            //    foreach (var s in e)
-            //    {
-            //        Console.WriteLine($"Excluding event logs for Location {s}");
-            //    }
-
-            //    Console.WriteLine($"Extraction path {p}");
-
-            //}, DateOption, IncludeOption, ExcludeOption, PathCommandOption);
         }
 
-        public Argument<bool> PingControllerArg { get; set; } = new Argument<bool>("ping", "Ping to verify Location controller is online");
+        public Argument<bool> PingDeviceArg { get; set; } = new Argument<bool>("ping", "Ping to verify device is online");
 
         public Argument<bool> DeleteLocalFileArg { get; set; } = new Argument<bool>("delete local", "Delete local file");
 
@@ -73,27 +66,63 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
 
         public LocationExcludeCommandOption ExcludeOption { get; set; } = new();
 
-        public LocationTypeCommandOption TypeOption { get; set; } = new();
+        public LocationAreaCommandOption AreaOption { get; set; } = new();
+
+        public LocationJurisdictionCommandOption JurisdictionOption { get; set; } = new();
+
+        public LocationRegionCommandOption RegionOption { get; set; } = new();
+
+        public LocationTypeCommandOption LocationTypeOption { get; set; } = new();
+
+        public DeviceTypeCommandOption DeviceTypeOption { get; set; } = new();
+
+        public TransportProtocolCommandOption TransportProtocolOption { get; set; } = new();
 
         public PathCommandOption PathCommandOption { get; set; } = new();
 
-        public ModelBinder<EventLogLoggingConfiguration> GetOptionsBinder()
+        public void BindCommandOptions(HostBuilderContext host, IServiceCollection services)
         {
-            var binder = new ModelBinder<EventLogLoggingConfiguration>();
+            services.Configure<DeviceEventLoggingConfiguration>(host.Configuration.GetSection(nameof(DeviceEventLoggingConfiguration)));
 
-            binder.BindMemberFromValue(b => b.Included, IncludeOption);
-            binder.BindMemberFromValue(b => b.Excluded, ExcludeOption);
-            binder.BindMemberFromValue(b => b.ControllerTypes, TypeOption);
-            binder.BindMemberFromValue(b => b.Path, PathCommandOption);
+            var parentBinder = new ModelBinder<DeviceEventLoggingConfiguration>();
 
-            return binder;
-        }
+            parentBinder.BindMemberFromValue(b => b.Path, PathCommandOption);
 
-        public void BindCommandOptions(IServiceCollection services)
-        {
-            services.AddSingleton(GetOptionsBinder());
-            services.AddOptions<EventLogLoggingConfiguration>().BindCommandLine();
+            var childBinder = new ModelBinder<DeviceEventLoggingQueryOptions>();
+
+            childBinder.BindMemberFromValue(b => b.IncludedLocations, IncludeOption);
+            childBinder.BindMemberFromValue(b => b.ExcludedLocations, ExcludeOption);
+            childBinder.BindMemberFromValue(b => b.IncludedAreas, AreaOption);
+            childBinder.BindMemberFromValue(b => b.IncludedJurisdictions, JurisdictionOption);
+            childBinder.BindMemberFromValue(b => b.IncludedRegions, RegionOption);
+            childBinder.BindMemberFromValue(b => b.IncludedLocationTypes, LocationTypeOption);
+            childBinder.BindMemberFromValue(b => b.DeviceType, DeviceTypeOption);
+            childBinder.BindMemberFromValue(b => b.TransportProtocol, TransportProtocolOption);
+
+            services.AddOptions<DeviceEventLoggingConfiguration>()
+                .Configure<BindingContext>((a, b) =>
+                {
+                    parentBinder.UpdateInstance(a, b);
+                    childBinder.UpdateInstance(a.DeviceEventLoggingQueryOptions, b);
+                });
+
             services.AddHostedService<LocationLoggerUtilityHostedService>();
+        }
+    }
+
+    public class DeviceTypeCommandOption : Option<DeviceTypes>
+    {
+        public DeviceTypeCommandOption() : base("--device-type", "Device type to include") 
+        {
+            AddAlias("-dt");
+        }
+    }
+
+    public class TransportProtocolCommandOption : Option<TransportProtocols>
+    {
+        public TransportProtocolCommandOption() : base("--transport-protocol", "Device transport protocol to include")
+        {
+            AddAlias("-tp");
         }
     }
 }

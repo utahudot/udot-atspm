@@ -50,24 +50,24 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
 
                 //    var archiveQuery = eventRepository.GetList().Where(i => _options.Value.Dates.Any(d => i.ArchiveDate == d));
 
-                //    if (_options.Value.Included != null)
+                //    if (_options.Value.IncludedLocations != null)
                 //    {
-                //        foreach (var s in _options.Value.Included)
+                //        foreach (var s in _options.Value.IncludedLocations)
                 //        {
                 //            _log.LogInformation("Including Event Logs for Location(s): {Location}", s);
                 //        }
 
-                //        archiveQuery = archiveQuery.Where(i => _options.Value.Included.Any(d => i.SignalIdentifier == d));
+                //        archiveQuery = archiveQuery.Where(i => _options.Value.IncludedLocations.Any(d => i.SignalIdentifier == d));
                 //    }
 
-                //    if (_options.Value.Excluded != null)
+                //    if (_options.Value.ExcludedLocations != null)
                 //    {
-                //        foreach (var s in _options.Value.Excluded)
+                //        foreach (var s in _options.Value.ExcludedLocations)
                 //        {
                 //            _log.LogInformation("Excluding Event Logs for Location(s): {Location}", s);
                 //        }
 
-                //        archiveQuery = archiveQuery.Where(i => !_options.Value.Excluded.Contains(i.SignalIdentifier));
+                //        archiveQuery = archiveQuery.Where(i => !_options.Value.ExcludedLocations.Contains(i.SignalIdentifier));
                 //    }
 
                 //    int processedCount = 0;
