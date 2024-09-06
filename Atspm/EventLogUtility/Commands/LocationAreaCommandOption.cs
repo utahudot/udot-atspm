@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for EventLogUtility - ATSPM.EventLogUtility.Commands/ICommandOption.cs
+// for EventLogUtility - ATSPM.EventLogUtility.Commands/SignalTypeCommandOption.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,18 +15,16 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using System.CommandLine.NamingConventionBinder;
+using System.CommandLine;
 
 namespace Utah.Udot.Atspm.EventLogUtility.Commands
 {
-    public interface ICommandOption<T> : ICommandOption
+    public class LocationAreaCommandOption : Option<IEnumerable<string>>
     {
-        ModelBinder<T> GetOptionsBinder();
-    }
-    public interface ICommandOption
-    {
-        void BindCommandOptions(HostBuilderContext host, IServiceCollection services);
+        public LocationAreaCommandOption() : base("--areas", "Areas to include in filter")
+        {
+            AllowMultipleArgumentsPerToken = true;
+            AddAlias("-a");
+        }
     }
 }
