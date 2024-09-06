@@ -4,6 +4,7 @@ import { getDataSourceName } from '@/features/speedManagementTool/enums'
 import useSpeedManagementStore from '@/features/speedManagementTool/speedManagementStore'
 import { SpeedManagementRoute } from '@/features/speedManagementTool/types/routes'
 import ArrowBackIosNewOutlinedIcon from '@mui/icons-material/ArrowBackIosNewOutlined'
+import EastOutlinedIcon from '@mui/icons-material/EastOutlined'
 import { TabContext, TabList, TabPanel } from '@mui/lab'
 import {
   Box,
@@ -16,31 +17,37 @@ import {
   Typography,
 } from '@mui/material'
 import dynamic from 'next/dynamic'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 const StaticMap = dynamic(() => import('./StaticMap'), { ssr: false })
 
 type SM_PopupProps = {
-  route: SpeedManagementRoute
+  routes: SpeedManagementRoute[]
   open: boolean
   onClose: () => void
 }
 
-const SM_Popup = ({ route, open, onClose }: SM_PopupProps) => {
-  const { name, startdate, enddate, avg, speedLimit } = route.properties
-
+const SM_Popup = ({ routes, open, onClose }: SM_PopupProps) => {
   const { submittedRouteSpeedRequest } = useSpeedManagementStore()
-
   const [currentTab, setCurrentTab] = useState('1')
 
   const handleTabChange = (_: React.SyntheticEvent, newTab: string) => {
     setCurrentTab(newTab)
   }
 
+  useEffect(() => {
+    if (routes.length > 1) {
+      // Automatically switch to "Charts" tab if multiple routes
+      setCurrentTab('2')
+    }
+  }, [routes])
+
   const formattedDateRange =
-    startdate && enddate
-      ? `for ${new Date(startdate).toLocaleDateString()} - ${new Date(
-          enddate
+    routes[0]?.properties.startdate && routes[0]?.properties.enddate
+      ? `for ${new Date(
+          routes[0].properties.startdate
+        ).toLocaleDateString()} - ${new Date(
+          routes[0].properties.enddate
         ).toLocaleDateString()}`
       : null
 
@@ -63,7 +70,6 @@ const SM_Popup = ({ route, open, onClose }: SM_PopupProps) => {
       flexDirection="column"
       justifyContent="center"
       alignItems="center"
-      // bgColor should be light blue with 0.05 opacity
       bgcolor="rgba(33, 150, 243, 0.2)"
       borderRadius={1}
       padding="10px"
@@ -119,7 +125,17 @@ const SM_Popup = ({ route, open, onClose }: SM_PopupProps) => {
       <DialogContent sx={{ px: 0 }}>
         <TabContext value={currentTab}>
           <Box display={'flex'} gap={2} ml={2}>
-            <Typography variant="h2">{name}</Typography>
+            <Typography variant="h2" display="flex" alignItems="center">
+              {routes.length > 1 ? (
+                <>
+                  {routes[0]?.properties.name}
+                  <EastOutlinedIcon sx={{ mx: 3 }} />
+                  {routes[routes.length - 1]?.properties.name}
+                </>
+              ) : (
+                routes[0]?.properties.name
+              )}
+            </Typography>
             {formattedDateRange && (
               <Typography variant="subtitle1">{formattedDateRange}</Typography>
             )}
@@ -127,28 +143,36 @@ const SM_Popup = ({ route, open, onClose }: SM_PopupProps) => {
               onChange={handleTabChange}
               aria-label="SM Popup Tabs"
               centered
+              sx={{ visibility: routes.length > 1 ? 'hidden' : 'visible' }}
             >
               <Tab label="Overview" value="1" />
               <Tab label="Charts" value="2" />
             </TabList>
           </Box>
           <Divider />
-          <TabPanel value="1" sx={{ p: 0 }}>
-            <Box width={'100%'} my={2}>
-              <StaticMap routes={[route]} />
-
-              <Box display="flex" padding="10px">
-                <InfoBox label="Speed Limit" value={`${speedLimit} mph`} />
-                <InfoBox label="Average Speed" value={`${avg} mph`} />
+          {routes.length === 1 && (
+            <TabPanel value="1" sx={{ p: 0 }}>
+              <Box width={'100%'} my={2}>
+                <StaticMap routes={routes} />
+                <Box display="flex" padding="10px">
+                  <InfoBox
+                    label="Speed Limit"
+                    value={`${routes[0]?.properties.speedLimit} mph`}
+                  />
+                  <InfoBox
+                    label="Average Speed"
+                    value={`${routes[0]?.properties.avg} mph`}
+                  />
+                </Box>
+                <Divider />
+                <ChartsContainer
+                  selectedRouteId={routes[0]?.properties.route_id}
+                />
               </Box>
-
-              <Divider />
-
-              <ChartsContainer selectedRouteId={route.properties.route_id} />
-            </Box>
-          </TabPanel>
+            </TabPanel>
+          )}
           <TabPanel value="2" sx={{ p: 0 }}>
-            <SM_Charts route={route} />
+            <SM_Charts routes={routes} />
           </TabPanel>
         </TabContext>
       </DialogContent>

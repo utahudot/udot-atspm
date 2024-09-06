@@ -1,4 +1,7 @@
 import { ChartType } from '@/features/charts/common/types'
+import CongestionTrackerChartOptions from '@/features/charts/speedManagementTool/congestionTracker/components/CongestionTrackingOptions'
+import SpeedOverDistanceOptions from '@/features/charts/speedManagementTool/speedOverDistance/components/SpeedOverDistanceChartOptions'
+import SpeedOverTimeOptions from '@/features/charts/speedManagementTool/speedOverTime/components/SpeedOverTimeOptions'
 import { getDisplayNameFromChartType } from '@/features/charts/utils'
 import {
   Box,
@@ -11,12 +14,11 @@ import {
   Typography,
 } from '@mui/material'
 import { useState } from 'react'
-import CongestionTrackerChartOptions from './CongestionTrackingOptions'
-import SpeedOverTimeOptions from './SpeedOverTimeOptions'
 
 const availableCharts = {
   CongestionTracker: CongestionTrackerChartOptions,
   SpeedOverTime: SpeedOverTimeOptions,
+  SpeedOverDistance: SpeedOverDistanceOptions,
 } as const
 
 const SM_ChartOptions = () => {

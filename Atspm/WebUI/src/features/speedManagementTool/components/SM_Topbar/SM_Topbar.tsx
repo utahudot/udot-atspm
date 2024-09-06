@@ -8,11 +8,10 @@ import { SpeedManagementRoute } from '@/features/speedManagementTool/types/route
 import { LoadingButton } from '@mui/lab'
 import { Box } from '@mui/material'
 import { useEffect, useState } from 'react'
-import AnalysisPeriodOptionsPopup from './AnalysisPeriodOptionsPopup'
 import DaysOfWeekOptionsPopup from './DaysOfWeekOptionsPopup'
 import GeneralOptionsPopup from './GeneralOptionsPopup'
 
-export default function TopBar({ routes }: { routes: SpeedManagementRoute[] }) {
+export default function TopBar() {
   const {
     routeSpeedRequest,
     submittedRouteSpeedRequest,
@@ -64,8 +63,9 @@ export default function TopBar({ routes }: { routes: SpeedManagementRoute[] }) {
         padding: 2,
         gap: 2,
         alignItems: 'center',
-        borderBottom: '1px solid lightgray',
         backgroundColor: 'background.paper',
+        border: '1px solid',
+        borderColor: 'divider',
       }}
     >
       {/* <Box sx={{ flexGrow: 1 }}>
@@ -80,7 +80,7 @@ export default function TopBar({ routes }: { routes: SpeedManagementRoute[] }) {
         <ViolationsThresholdPopup />
         <DateRangeOptionsPopup />
         <DaysOfWeekOptionsPopup />
-        <AnalysisPeriodOptionsPopup />
+        {/* <AnalysisPeriodOptionsPopup /> */}
         <FiltersButton />
         <LoadingButton
           variant="contained"

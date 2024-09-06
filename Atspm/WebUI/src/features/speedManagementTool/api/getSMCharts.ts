@@ -1,4 +1,5 @@
 import { transformCongestionTrackerData } from '@/features/charts/speedManagementTool/congestionTracker/congestionTracker.transformer'
+import transformSpeedOverDistanceData from '@/features/charts/speedManagementTool/speedOverDistance/components/speedOverDistance.transformer'
 import transformSpeedOverTimeData from '@/features/charts/speedManagementTool/speedOverTime/speedOverTime.transformer'
 import { TransformedChartResponse } from '@/features/charts/types'
 import { speedAxios } from '@/lib/axios'
@@ -8,11 +9,13 @@ import { useQuery } from 'react-query'
 export enum SM_ChartType {
   CONGESTION_TRACKING = 'Congestion Tracking',
   SPEED_OVER_TIME = 'Speed over Time',
+  SPEED_OVER_DISTANCE = 'Speed over Distance',
 }
 
 const SM_TypeApiMap = {
   [SM_ChartType.CONGESTION_TRACKING]: '/CongestionTracking/GetReportData',
   [SM_ChartType.SPEED_OVER_TIME]: '/SpeedOverTime/GetReportData',
+  [SM_ChartType.SPEED_OVER_DISTANCE]: '/SpeedOverDistance/GetReportData',
 }
 
 export interface ChartOptions {
@@ -68,6 +71,8 @@ export const getSMCharts = async (
       return transformCongestionTrackerData(response)
     case SM_ChartType.SPEED_OVER_TIME:
       return transformSpeedOverTimeData(response)
+    case SM_ChartType.SPEED_OVER_DISTANCE:
+      return transformSpeedOverDistanceData(response)
   }
 }
 

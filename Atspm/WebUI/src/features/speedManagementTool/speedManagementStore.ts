@@ -2,8 +2,8 @@ import {
   AnalysisPeriod,
   DataSource,
   RouteRenderOption,
-  RouteSpeedRequest,
 } from '@/features/speedManagementTool/enums'
+import { RouteSpeedRequest } from '@/features/speedManagementTool/types/routeSpeedRequest'
 import { create } from 'zustand'
 
 interface StoreState {
@@ -24,6 +24,9 @@ interface StoreState {
   setSliderMax: (max: number) => void
   sliderMin: number
   setSliderMin: (min: number) => void
+
+  multiselect: boolean
+  setMultiselect: (multiselect: boolean) => void
 }
 
 // Create the Zustand store
@@ -54,7 +57,7 @@ const useSpeedManagementStore = create<StoreState>((set) => ({
     daysOfWeek: [1, 2, 3, 4, 5],
     analysisPeriod: AnalysisPeriod.AllDay,
     violationThreshold: 5,
-    region: '1',
+    region: null,
     county: null,
     city: null,
     accessCategory: null,
@@ -77,6 +80,9 @@ const useSpeedManagementStore = create<StoreState>((set) => ({
   setSliderMax: (max: number) => set({ sliderMax: max }),
   sliderMin: 0,
   setSliderMin: (min: number) => set({ sliderMin: min }),
+
+  multiselect: false,
+  setMultiselect: (multiselect: boolean) => set({ multiselect }),
 }))
 
 export default useSpeedManagementStore

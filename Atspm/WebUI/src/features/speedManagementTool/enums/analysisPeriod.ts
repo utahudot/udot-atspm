@@ -1,6 +1,9 @@
 export enum AnalysisPeriod {
   AllDay,
-  PeekPeriod,
-  MorningPeak,
-  CustomHour,
+  OffPeak,
+  AMPeak,
+  PMPeak,
+  MidDay,
+  Evening,
+  EarlyMorning,
 }
