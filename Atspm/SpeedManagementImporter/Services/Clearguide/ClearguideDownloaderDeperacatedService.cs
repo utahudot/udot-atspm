@@ -6,9 +6,10 @@ using Utah.Udot.Atspm.Data.Models.SpeedManagementModels;
 using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.Common;
 using Utah.Udot.Atspm.Repositories.SpeedManagementRepositories;
 
+///DELETE OLD DEPERACATED!!!///
 namespace SpeedManagementImporter.Services.Clearguide
 {
-    public class ClearguideDownloaderService : IDataDownloader
+    public class ClearguideDownloaderDeperacatedService : IDataDownloader
     {
         private readonly IHourlySpeedRepository hourlySpeedRepository;
         private readonly ISegmentEntityRepository segmentEntityRepository;
@@ -24,7 +25,7 @@ namespace SpeedManagementImporter.Services.Clearguide
         static readonly int confidenceId = 4;
         static readonly int sourceId = 3;
 
-        public ClearguideDownloaderService(ISegmentEntityRepository segmentEntityRepository, IHourlySpeedRepository hourlySpeedRepository, IConfigurationRoot configuration)
+        public ClearguideDownloaderDeperacatedService(ISegmentEntityRepository segmentEntityRepository, IHourlySpeedRepository hourlySpeedRepository, IConfigurationRoot configuration)
         {
             this.segmentEntityRepository = segmentEntityRepository;
             this.hourlySpeedRepository = hourlySpeedRepository;
