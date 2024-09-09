@@ -95,3 +95,5 @@ dkms.conf
 /ATSPM/WatchDogTests/bin/
 /ATSPM/WebUI/obj/
 *.config
+/DatabaseInstaller/bin/Debug/net7.0
+/DatabaseInstaller/obj
