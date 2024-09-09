@@ -85,7 +85,7 @@ const ControllerTypeChart: React.FC<ControllerTypeChartProps> = ({
               id="watchdog-controller-type-chart"
               option={controllerTypeData}
               loading={isLoading}
-              style={{ width: '100%', height: '800px' }}
+              style={{ width: '100%', height: '700px' }}
               hideInteractionMessage
             />
           )}

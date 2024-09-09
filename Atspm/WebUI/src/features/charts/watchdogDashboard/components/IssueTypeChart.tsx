@@ -72,7 +72,7 @@ const IssueTypeChart: React.FC<IssueTypeChartProps> = ({
               id="watchdog-issue-type-chart"
               option={issueTypeData}
               loading={isLoading}
-              style={{ width: '100%', height: '800px' }}
+              style={{ width: '100%', height: '700px' }}
               hideInteractionMessage
             />
           )}
