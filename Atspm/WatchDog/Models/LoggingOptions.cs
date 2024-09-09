@@ -34,22 +34,9 @@ namespace Utah.Udot.Atspm.WatchDog.Models
         public int MaximumPedestrianEvents { get; set; }
         public bool WeekdayOnly { get; set; }
 
-        public DateTime AnalysisStart
-        {
-            get
-            {
-                var startHour = new TimeSpan(ScanDayStartHour, 0, 0);
-                return ScanDate.Date + startHour;
-            }
-        }
-        public DateTime AnalysisEnd
-        {
-            get
-            {
-                var endHour = new TimeSpan(ScanDayEndHour, 0, 0);
-                return ScanDate.Date + endHour;
-            }
-        }
+        public DateTime AnalysisStart => ScanDate.Date + new TimeSpan(ScanDayStartHour, 0, 0);
+
+        public DateTime AnalysisEnd => ScanDate.Date + new TimeSpan(ScanDayEndHour, 0, 0);
     }
 
 }

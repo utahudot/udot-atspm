@@ -7,5 +7,7 @@ export default function handler(req, res) {
     SPEED_URL: process.env.SPEED_URL,
     MAP_DEFAULT_LATITUDE: process.env.MAP_DEFAULT_LATITUDE,
     MAP_DEFAULT_LONGITUDE: process.env.MAP_DEFAULT_LONGITUDE,
+    MAP_TILE_LAYER: process.env.MAP_TILE_LAYER,
+    MAP_TILE_ATTRIBUTION: process.env.MAP_TILE_ATTRIBUTION,
   })
 }

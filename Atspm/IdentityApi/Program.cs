@@ -48,9 +48,9 @@ builder.Host.ConfigureServices((h, s) =>
 
         // integrate xml comments
         o.IncludeXmlComments(filePath);
-        o.SwaggerDoc("v1", new OpenApiInfo 
-        { 
-            Title = "Atspm Authentication Api", 
+        o.SwaggerDoc("v1", new OpenApiInfo
+        {
+            Title = "Atspm Authentication Api",
             Version = "v1",
             Contact = new OpenApiContact() { Name = "udotdevelopment", Email = "udotdevelopment@gmail.com", Url = new Uri("https://udottraffic.utah.gov/atspm/") },
             License = new OpenApiLicense() { Name = "MIT", Url = new Uri("https://opensource.org/licenses/MIT") }

@@ -118,8 +118,8 @@ export default function Topbar() {
                 onClick={() => handleNavigation(item.link)}
                 sx={{
                   mx: '2px',
-                  color: theme.palette.text.primary,
                   textTransform: 'none',
+                  color: 'black',
                 }}
               >
                 <Typography fontWeight={400} sx={{ textTransform: 'none' }}>

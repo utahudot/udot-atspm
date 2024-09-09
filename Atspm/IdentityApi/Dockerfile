@@ -28,3 +28,10 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "IdentityApi.dll"]
+
+LABEL org.opencontainers.image.title="Atspm Identity Api"
+LABEL org.opencontainers.image.description="Identity Api for use with the Atspm platform"
+LABEL org.opencontainers.image.vendor="Udot.Utah.Gov"
+LABEL org.opencontainers.image.source=https://github.com/OpenSourceTransportation/Atspm
+LABEL org.opencontainers.image.documentation=https://github.com/OpenSourceTransportation/Atspm/wiki/Identity-Api
+LABEL org.opencontainers.image.licenses=Apache-2.0

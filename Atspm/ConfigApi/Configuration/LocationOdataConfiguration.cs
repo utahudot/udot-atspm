@@ -77,6 +77,9 @@ namespace Utah.Udot.Atspm.ConfigApi.Configuration
                         //f.Parameter<int>("metricTypeId");
                         f.ReturnsCollectionFromEntitySet<SearchLocation>("SearchLocations");
 
+                        var g = model.Collection.Function("GetDetectionTypeCount");
+                        g.ReturnsCollectionFromEntitySet<Location>("DetectionTypeGroups");
+
                         break;
                     }
             }

@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Utah.Udot.Atspm.Configuration;
 using Utah.Udot.Atspm.Data;
 using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Infrastructure.Extensions;
@@ -70,6 +71,8 @@ namespace Utah.Udot.Atspm.WatchDog
                     s.AddIdentity<ApplicationUser, IdentityRole>() // Add this line to register Identity
                      .AddEntityFrameworkStores<IdentityContext>() // Specify the EF Core store
                      .AddDefaultTokenProviders();
+
+                    s.Configure<WatchdogConfiguration>(h.Configuration.GetSection(nameof(WatchdogConfiguration)));
 
                 })
                 .Build();
