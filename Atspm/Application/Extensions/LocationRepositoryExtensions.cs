@@ -99,26 +99,6 @@ namespace Utah.Udot.Atspm.Extensions
 
         public static List<DetectionTypeGroup> GetDetectionTypeCountForVersions(this ILocationRepository repo, DateTime date)
         {
-            //var result = repo.GetList()
-            //    .Include(s => s.Approaches)
-            //        .ThenInclude(a => a.Detectors)
-            //            .ThenInclude(d => d.DetectionTypes)
-            //    .Where(Location => Location.Start <= date)
-            //    .FromSpecification(new ActiveLocationSpecification())
-            //    .GroupBy(r => r.LocationIdentifier)
-            //    .Select(g => g.OrderByDescending(r => r.Start).FirstOrDefault())
-            //    .ToList()
-            //    .SelectMany(location => location.Approaches
-            //        .SelectMany(approach => approach.Detectors
-            //            .SelectMany(detector => detector.DetectionTypes)))
-            //    .GroupBy(detectionType => detectionType.Description)
-            //    .Select(g => new DetectionTypeGroup
-            //    {
-            //        Description = g.Key,
-            //        Count = g.Count()
-            //    })
-            //    .ToList();
-
             var result = repo.GetList()
                 .Where(Location => Location.Start <= date)
                 .FromSpecification(new ActiveLocationSpecification())
@@ -134,7 +114,7 @@ namespace Utah.Udot.Atspm.Extensions
                 .GroupBy(d => d.DetectionTypeDescription)
                 .Select(g => new DetectionTypeGroup
                 {
-                    Description = g.Key,
+                    Id = g.Key,
                     Count = g.Count()
                 })
                 .ToList();

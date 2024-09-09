@@ -18,6 +18,7 @@
 using Asp.Versioning;
 using Asp.Versioning.OData;
 using Microsoft.OData.ModelBuilder;
+using Utah.Udot.Atspm.Business.Watchdog;
 using Utah.Udot.Atspm.ConfigApi.Models;
 using Utah.Udot.Atspm.Data.Models;
 
@@ -78,7 +79,11 @@ namespace Utah.Udot.Atspm.ConfigApi.Configuration
                         f.ReturnsCollectionFromEntitySet<SearchLocation>("SearchLocations");
 
                         var g = model.Collection.Function("GetDetectionTypeCount");
-                        g.ReturnsCollectionFromEntitySet<Location>("DetectionTypeGroups");
+                        g.ReturnsCollectionFromEntitySet<DetectionTypeGroup>("DetectionTypeGroups");
+
+                        var detectionTypeGroup = builder.EntitySet<DetectionTypeGroup>("DetectionTypeGroups").EntityType;
+                        detectionTypeGroup.Property(d => d.Id).IsRequired();
+                        detectionTypeGroup.Property(d => d.Count).IsRequired();
 
                         break;
                     }

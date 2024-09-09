@@ -73,7 +73,7 @@ namespace Utah.Udot.Atspm.InfrastructureTests.RepositoryTests
 
         //    foreach (var r in result)
         //    {
-        //        _output.WriteLine($"result: {r.Id} - {r.LocationId} - {r.Description} - {r.DirectionTypeId}");
+        //        _output.WriteLine($"result: {r.Id} - {r.LocationId} - {r.Id} - {r.DirectionTypeId}");
         //    }
 
         //    //compare to initial collection

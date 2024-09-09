@@ -162,7 +162,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
                 //        _log.LogInformation("Including Event Logs for region: {region}", d);
                 //    }
 
-                //    query = query.Where(i => _options.Value.IncludedRegions.Any(d => i.Location.Region.Description == d));
+                //    query = query.Where(i => _options.Value.IncludedRegions.Any(d => i.Location.Region.Id == d));
                 //}
 
                 //if (_options.Value.IncludedLocationTypes?.Count() > 0)

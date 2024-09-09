@@ -218,13 +218,13 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
         /// <summary>
         /// Get count of Device Types using correct version of all <see cref="Location"/>
         /// </summary>
-        /// <returns>List of <see cref="DetectionTypeGroup"/> with newest start date</returns>
+        /// <returns>List of <see cref="DetectionTypeGroup"/></returns>
         [HttpGet]
         [EnableQuery(AllowedQueryOptions = Count | Filter | Select | OrderBy | Top | Skip)]
-        [ProducesResponseType(typeof(IEnumerable<DetectionTypeGroup>), Status200OK)]
-        public IActionResult GetDetectionTypeCount()
+        [ProducesResponseType(typeof(List<DetectionTypeGroup>), Status200OK)]
+        public IActionResult GetDetectionTypeCount([FromQuery] DateTime date)
         {
-            var result = _repository.GetDetectionTypeCountForVersions(DateTime.Now);
+            var result = _repository.GetDetectionTypeCountForVersions(date);
             return Ok(result);
         }
 
