@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "DatabaseInstaller": {
+      "commandName": "Project",
+      "commandLineArgs": "dotnet run --Migrate=true --SeedAdmin=true --Provider=PostgreSQL --ConfigConnectionString=\"Host=34.106.25.230;Port=5432;Username=admin;Password=Avenue.2006;Database=DatabaseInstaller-Config;Pooling=true;\" --AggregationConnectionString=\"Host=34.106.25.230;Port=5432;Username=admin;Password=Avenue.2006;Database=DatabaseInstaller-Aggregation;Pooling=true;\" --EventLogConnectionString=\"Host=34.106.25.230;Port=5432;Username=admin;Password=Avenue.2006;Database=DatabaseInstaller-EventLogs;Pooling=true;\" --IdentityConnectionString=\"Host=34.106.25.230;Port=5432;Username=admin;Password=Avenue.2006;Database=DatabaseInstaller-Identity;Pooling=true;\" --AdminEmail=\"admin@example.com\" --AdminPassword=\"Admin@12345\" --AdminRole=\"Admin\"\r\n"
+    }
+  }
+}
