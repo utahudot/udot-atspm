@@ -53,6 +53,9 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories
         public IReadOnlyList<Device> GetActiveDevicesByAllLatestLocations()
         {
             var result = _db.Set<Location>()
+                .Include(i => i.Region)
+                .Include(i => i.Jurisdiction)
+                .Include(i => i.Areas)
                 .Include(i => i.Devices).ThenInclude(i => i.DeviceConfiguration).ThenInclude(i => i.Product)
                 .FromSpecification(new ActiveLocationSpecification())
                 .GroupBy(r => r.LocationIdentifier)
@@ -60,6 +63,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories
                 .AsEnumerable()
                 .SelectMany(m => m.Devices)
                 .Where(w => w.DeviceStatus == DeviceStatus.Active && w.LoggingEnabled)
+                .Where(w => w.Ipaddress.IsValidIPAddress())
                 .ToList();
 
             return result;

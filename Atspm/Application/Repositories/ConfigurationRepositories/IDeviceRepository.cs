@@ -38,5 +38,7 @@ namespace Utah.Udot.Atspm.Repositories.ConfigurationRepositories
         /// </summary>
         /// <returns></returns>
         IReadOnlyList<Device> GetActiveDevicesByAllLatestLocations();
+
+        //IReadOnlyList<Device> GetDevicesForEventLogging();
     }
 }

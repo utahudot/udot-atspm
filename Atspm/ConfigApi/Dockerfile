@@ -32,6 +32,6 @@ ENTRYPOINT ["dotnet", "ConfigApi.dll"]
 LABEL org.opencontainers.image.title="Atspm Configuration Api"
 LABEL org.opencontainers.image.description="Configuration Api for use with the Atspm platform"
 LABEL org.opencontainers.image.vendor="Udot.Utah.Gov"
-LABEL org.opencontainers.image.source=https://github.com/utahudot/udot-atspm
-LABEL org.opencontainers.image.documentation=""
-LABEL org.opencontainers.image.licenses="Apache License, Version 2.0"
+LABEL org.opencontainers.image.source=https://github.com/OpenSourceTransportation/Atspm
+LABEL org.opencontainers.image.documentation=https://github.com/OpenSourceTransportation/Atspm/wiki/Config-Api
+LABEL org.opencontainers.image.licenses=Apache-2.0
