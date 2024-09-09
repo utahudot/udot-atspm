@@ -38,7 +38,7 @@ export default function FiltersButton() {
   const functionalTypes = functionalTypesData?.sort((a, b) =>
     a.name.localeCompare(b.name)
   )
-  const regions = regionsData?.sort((a, b) => a.name.localeCompare(b.name))
+  const regions = regionsData?.sort((a, b) => a.name.localeCompare(b.name)) || [] //! TODO: MORGAN, I added || [] to fix the error. please looking this if its not correct. - DAN
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget)
