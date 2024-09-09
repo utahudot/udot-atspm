@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using NetTopologySuite.Geometries;
+using NetTopologySuite.IO;
 using Utah.Udot.Atspm.Data.Models.SpeedManagementModels;
 using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.Config;
 using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.Segments;
@@ -26,7 +28,7 @@ namespace SpeedManagementApi.Controllers
         {
             //Get the segments
             var segments = segmentRepository.GetList().ToList();
-            //segments.ForEach(seg => seg.Shape = null);
+            segments.ForEach(seg => seg.Shape = null);
 
             return Ok(segments);
         }
@@ -45,14 +47,29 @@ namespace SpeedManagementApi.Controllers
 
         // GET: /Segment/segment/{segmentId}
         [HttpGet("{segmentId}")]
-        public async Task<ActionResult<Segment>> GetSegment(
+        public async Task<ActionResult<Geometry>> GetSegment(
             Guid segmentId)
         {
             //Get the segments
             var segment = await segmentRepository.LookupAsync(segmentId);
-            //segment.Shape = null;
+            segment.Shape = null;
 
             return Ok(segment);
+        }
+
+        // GET: /Segment/segment/{segmentId}/geometry
+        [HttpGet("{segmentId}/geometry")]
+        public async Task<ActionResult<Geometry>> GetSegmentGeometry(
+            Guid segmentId)
+        {
+            //Get the segments
+            var segment = await segmentRepository.LookupAsync(segmentId);
+            var geometry = segment.Shape;
+
+            var geoJsonWriter = new GeoJsonWriter();
+            var geoJson = geoJsonWriter.Write(geometry);
+
+            return Content(geoJson, "application/geo+json");
         }
 
         // POST: /Segment/speeds
