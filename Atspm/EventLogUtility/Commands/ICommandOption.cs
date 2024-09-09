@@ -16,6 +16,7 @@
 #endregion
 
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using System.CommandLine.NamingConventionBinder;
 
 namespace Utah.Udot.Atspm.EventLogUtility.Commands
@@ -26,6 +27,6 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
     }
     public interface ICommandOption
     {
-        void BindCommandOptions(IServiceCollection services);
+        void BindCommandOptions(HostBuilderContext host, IServiceCollection services);
     }
 }

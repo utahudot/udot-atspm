@@ -15,7 +15,8 @@
 // limitations under the License.
 // #endregion
 import { BaseChartData, ChartType, DataPoint } from '../common/types'
-import { DetectorEvent } from '../timingAndActuation/types'
+import { DetectorEvent } from '@/features/charts/performanceMeasures/timingAndActuation/types'
+
 
 export interface DescriptionWithDataPoints {
   description: string

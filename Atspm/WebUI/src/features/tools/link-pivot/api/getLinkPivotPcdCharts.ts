@@ -14,11 +14,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 // #endregion
+import { ToolOptions, ToolType } from '@/features/charts/common/types'
 import {
   mapStringBooleansToBoolean,
   toolTypeApiMap,
-} from '@/features/charts/api/getTools'
-import { ToolOptions, ToolType } from '@/features/charts/common/types'
+} from '@/features/charts/performanceMeasures/api/getTools'
 import { reportsAxios } from '@/lib/axios'
 import { ExtractFnReturnType, QueryConfig } from '@/lib/react-query'
 import { useQuery } from 'react-query'

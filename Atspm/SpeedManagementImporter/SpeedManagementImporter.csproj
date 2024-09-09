@@ -5,12 +5,16 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <UserSecretsId>28e2565f-f386-4fea-a9ed-aea6b12b0614</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="CsvHelper" Version="33.0.1" />
+    <PackageReference Include="EPPlus" Version="7.3.0" />
     <PackageReference Include="Google.Cloud.BigQuery.V2" Version="3.10.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="9.0.0-preview.7.24405.7" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.11.64" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.1" />
+    <PackageReference Include="OpenQA.Selenium.Chrome.ChromeDriverExtensions" Version="1.2.0" />
     <PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
     <PackageReference Include="System.CommandLine.NamingConventionBinder" Version="2.0.0-beta4.22272.1" />
   </ItemGroup>
@@ -24,6 +28,12 @@
     <Reference Include="Utah.Udot.NetStandardToolkit">
       <HintPath>..\Utah.Udot.NetStandardToolkit.dll</HintPath>
     </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

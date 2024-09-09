@@ -65,13 +65,13 @@ namespace SpeedManagementImporter.Services.Clearguide
             await actionBlock.Completion;
         }
 
-        private List<HourlySpeed> DownloadDataToHourlyTable(IGrouping<Guid, SegmentEntityWithSpeed> route, List<TempData> entityData)
+        private List<HourlySpeed> DownloadDataToHourlyTable(IGrouping<Guid, SegmentEntityWithSpeed> route, List<TempDataWithDataQuility> entityData)
         {
             var speeds = new List<HourlySpeedWithEntityId>();
             foreach (SegmentEntityWithSpeed routeEntity in route)
             {
                 var dataForEntity = entityData.Where(e => e.EntityId == routeEntity.EntityId).ToList();
-                foreach (TempData entity in dataForEntity)
+                foreach (TempDataWithDataQuility entity in dataForEntity)
                 {
                     HourlySpeedWithEntityId speed = new()
                     {
@@ -80,9 +80,10 @@ namespace SpeedManagementImporter.Services.Clearguide
                         BinStartTime = entity.BinStartTime,
                         SegmentId = routeEntity.SegmentId,
                         SourceId = sourceId,
-                        ConfidenceId = confidenceId,
+                        ConfidenceId = (long)entity.DataQuality * 100,
                         Average = entity.Average,
-                        Violation = routeEntity.SpeedLimit > 0 && entity.Average > routeEntity.SpeedLimit ? (long)(entity.Average - routeEntity.SpeedLimit) : 0,
+                        Violation = null,
+                        ExtremeViolation = null,
                         Length = routeEntity.Length
                     };
                     speeds.Add(speed);

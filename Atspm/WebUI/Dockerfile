@@ -65,3 +65,10 @@ ENV HOSTNAME "0.0.0.0"
 # server.js is created by next build from the standalone output
 # https://nextjs.org/docs/pages/api-reference/next-config-js/output
 CMD ["node", "server.js"]
+
+LABEL org.opencontainers.image.title="Atspm Web Interface"
+LABEL org.opencontainers.image.description="Web interface for the Atspm platform"
+LABEL org.opencontainers.image.vendor="Udot.Utah.Gov"
+LABEL org.opencontainers.image.source=https://github.com/utahudot/udot-atspm
+LABEL org.opencontainers.image.documentation=""
+LABEL org.opencontainers.image.licenses="Apache License, Version 2.0"

@@ -22,7 +22,6 @@ const config = (path: string) => `${CONFIG_URL}${path}`
 
 export const routeHandler = [
   rest.get(config(`Route`), (_req, res, ctx) => {
-    console.log('mocked')
     return res(ctx.json<any>(routesData))
   }),
 ]

@@ -1,18 +1,17 @@
-import SearchRoutesInput from '@/features/locations/components/SearchRoutesInput'
 import { useRoutes } from '@/features/speedManagementTool/api/getRoutes'
 import ViolationsThresholdPopup from '@/features/speedManagementTool/components/RoutesToggle/ViolationsThresholdPopup'
 import DateRangeOptionsPopup from '@/features/speedManagementTool/components/SM_Topbar/DateRangeOptionsPopup'
+import FiltersButton from '@/features/speedManagementTool/components/SM_Topbar/Filters'
 import { DataSource } from '@/features/speedManagementTool/enums'
 import useStore from '@/features/speedManagementTool/speedManagementStore'
 import { SpeedManagementRoute } from '@/features/speedManagementTool/types/routes'
 import { LoadingButton } from '@mui/lab'
 import { Box } from '@mui/material'
 import { useEffect, useState } from 'react'
-import AnalysisPeriodOptionsPopup from './AnalysisPeriodOptionsPopup'
 import DaysOfWeekOptionsPopup from './DaysOfWeekOptionsPopup'
 import GeneralOptionsPopup from './GeneralOptionsPopup'
 
-export default function TopBar({ routes }: { routes: SpeedManagementRoute[] }) {
+export default function TopBar() {
   const {
     routeSpeedRequest,
     submittedRouteSpeedRequest,
@@ -64,23 +63,25 @@ export default function TopBar({ routes }: { routes: SpeedManagementRoute[] }) {
         padding: 2,
         gap: 2,
         alignItems: 'center',
-        borderBottom: '1px solid lightgray',
         backgroundColor: 'background.paper',
+        border: '1px solid',
+        borderColor: 'divider',
       }}
     >
-      <Box sx={{ flexGrow: 1 }}>
+      {/* <Box sx={{ flexGrow: 1 }}>
         <SearchRoutesInput
           route={selectedRoute}
           routes={routes}
           handleChange={handleRouteChange}
         />
-      </Box>
+      </Box> */}
       <Box sx={{ display: 'flex', gap: 2 }}>
         <GeneralOptionsPopup />
         <ViolationsThresholdPopup />
         <DateRangeOptionsPopup />
         <DaysOfWeekOptionsPopup />
-        <AnalysisPeriodOptionsPopup />
+        {/* <AnalysisPeriodOptionsPopup /> */}
+        <FiltersButton />
         <LoadingButton
           variant="contained"
           loading={isLoading}

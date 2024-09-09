@@ -1,15 +1,14 @@
+import { getEnv } from '@/lib/getEnv'
 import { QueryConfig } from '@/lib/react-query'
 import axios from 'axios'
 import Cookies from 'js-cookie'
 import { useMutation } from 'react-query'
 
 const token = Cookies.get('token')
-const localhostURL = 'https://localhost:44379/'
-
 const deleteImpactType = async (id: string): Promise<void> => {
-  // console.log(`switch for ${SPEED_URL} once cloud works`)
+  const env = await getEnv()
 
-  await axios.delete(`${localhostURL}api/ImpactType/${id}`, {
+  await axios.delete(`${env.SPEED_URL}/api/ImpactType/${id}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },

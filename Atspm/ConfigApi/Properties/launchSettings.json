@@ -5,17 +5,19 @@
       "launchBrowser": true,
       "launchUrl": "swagger",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "PathBaseSettings:ApplicationPathBase": "/config"
       },
       "dotnetRunMessages": true,
-      "applicationUrl": "https://localhost:44313"
+      "applicationUrl": ""
     },
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
       "launchUrl": "swagger",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "PathBaseSettings:ApplicationPathBase": "/config"
       },
       "sslPort": 44313
     },
