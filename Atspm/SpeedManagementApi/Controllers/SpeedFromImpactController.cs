@@ -64,7 +64,15 @@ namespace SpeedManagementApi.Controllers
             speedFromImpact.Segments = new List<Segment> { segment };
 
             //Get the impacts
-            List<Impact> impacts = await impactService.GetImpactsOnSegment(segmentId);
+            List<Impact> impacts;
+            try
+            {
+                impacts = await impactService.GetImpactsOnSegment(segmentId);
+            }
+            catch (Exception ex)
+            {
+                impacts = new List<Impact>();
+            }
             speedFromImpact.Impacts = impacts;
 
             //get the hourly speed for those segments based on the date times.
