@@ -1,5 +1,6 @@
 ﻿using CsvHelper;
 using CsvHelper.Configuration;
+using System.Diagnostics;
 using System.Globalization;
 using System.Threading.Tasks.Dataflow;
 using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.Common;
@@ -23,6 +24,8 @@ namespace SpeedManagementImporter.Services.Clearguide
 
         public async Task FileUploaderAsync(string filePath)
         {
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
             List<SegmentEntityWithSpeed> segmentEntities = await segmentEntityRepository.GetEntitiesWithSpeedForSourceId(sourceId);
             var distinctEntityIds = segmentEntities
                                     .Select(e => e.EntityId)
@@ -31,10 +34,13 @@ namespace SpeedManagementImporter.Services.Clearguide
             var entityIdSet = new HashSet<long>(distinctEntityIds);
 
             await UploadFileAsync(entityIdSet, filePath);
-            Console.WriteLine("Done adding data");
+            stopwatch.Stop();
+            TimeSpan ts = stopwatch.Elapsed;
+            Console.WriteLine($"Done adding data. It took {ts.TotalSeconds} Seconds. Here is the milliseconds {ts}");
             // ADD a messaging service to let downloader service know that it is ready to download the data into hourly speeds
         }
 
+        //Private Methods//
         private async Task UploadFileAsync(HashSet<long> entityIdSet, string filePath)
         {
             var settings = new ExecutionDataflowBlockOptions
@@ -103,6 +109,7 @@ namespace SpeedManagementImporter.Services.Clearguide
             var sourceIdIndex = headerIndices["source_id"];
             var binStartTimeIndex = headerIndices["local_timestamp"];
             var avgIndex = headerIndices["avg_speed_mph"];
+            var freeflowIndex = headerIndices["freeflow_mph"];
 
             csvReader.Read();
             var sourceIdString = csvReader.GetField(sourceIdIndex);
@@ -117,12 +124,20 @@ namespace SpeedManagementImporter.Services.Clearguide
                         // Parse avg as double
                         if (double.TryParse(csvReader.GetField(avgIndex), NumberStyles.Any, CultureInfo.InvariantCulture, out double avg))
                         {
-                            return new TempData
+                            if (double.TryParse(csvReader.GetField(freeflowIndex), NumberStyles.Any, CultureInfo.InvariantCulture, out double freeflow))
                             {
-                                BinStartTime = binStartTime,
-                                Average = avg,
-                                EntityId = sourceId
-                            };
+                                return new TempData
+                                {
+                                    BinStartTime = binStartTime,
+                                    Average = avg,
+                                    EntityId = sourceId,
+                                    FilledIn = avg == freeflow
+                                };
+                            }
+                            else
+                            {
+                                Console.WriteLine($"Failed to parse flow speed: {csvReader.GetField(freeflowIndex)}");
+                            }
                         }
                         else
                         {
@@ -163,6 +178,7 @@ namespace SpeedManagementImporter.Services.Clearguide
             Map(m => m.EntityId).Name("source_id");
             Map(m => m.BinStartTime).Name("local_timestamp");
             Map(m => m.Average).Name("avg_speed_mph");
+            Map(m => m.FilledIn).Name("freeflow_mph");
         }
     }
 }

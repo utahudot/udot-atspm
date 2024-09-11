@@ -28,25 +28,28 @@ const headers: AxiosHeaders = new AxiosHeaders({
   'Content-Type': 'application/json',
   Authorization: `Bearer ${token}`,
 })
-const axiosInstance = configAxios
 
 export function useGetApproach(id: number) {
   return useGetRequest<ApiResponse<Approach>>({
     route: `/Approach/${id}/?expand=detectors($expand=DetectionTypes, detectorComments)`,
     headers,
-    axiosInstance,
+    axiosInstance: configAxios,
   })
 }
 
 export function useCreateApproach() {
-  const mutation = usePostRequest({ url: '/Approach', axiosInstance, headers })
+  const mutation = usePostRequest({
+    url: '/Approach',
+    axiosInstance: configAxios,
+    headers,
+  })
   return mutation
 }
 
 export function useEditApproach() {
   const mutation = usePostRequest({
     url: '/UpsertApproach',
-    axiosInstance,
+    axiosInstance: configAxios,
     headers,
   })
   return mutation
@@ -55,7 +58,7 @@ export function useEditApproach() {
 export function useDeleteApproach() {
   const mutation = useDeleteRequest({
     url: '/Approach',
-    axiosInstance,
+    axiosInstance: configAxios,
     headers,
   })
   return mutation

@@ -25,10 +25,19 @@ const headers: AxiosHeaders = new AxiosHeaders({
   'Content-Type': 'application/json',
   Authorization: `Bearer ${token}`,
 })
-const axiosInstance = dataAxios
 
-export function useGetAggData(locationIdentifier:number, dataType:string, start:Date, end:Date) {
-    const route = `/Aggregation/GetArchivedAggregations/${locationIdentifier}/${dataType}?start=${start}&end=${end}`
+export function useGetAggData(
+  locationIdentifier: number,
+  dataType: string,
+  start: Date,
+  end: Date
+) {
+  const route = `/Aggregation/GetArchivedAggregations/${locationIdentifier}/${dataType}?start=${start}&end=${end}`
 
-  return useGetRequest<ApiResponse<string[]>>({ route, axiosInstance, headers, enabled: false })
+  return useGetRequest<ApiResponse<string[]>>({
+    route,
+    axiosInstance: dataAxios,
+    headers,
+    enabled: false,
+  })
 }

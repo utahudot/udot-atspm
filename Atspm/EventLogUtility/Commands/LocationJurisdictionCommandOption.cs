@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for EventLogUtility - ATSPM.EventLogUtility.Commands/SignalIncludeCommandOption.cs
+// for EventLogUtility - ATSPM.EventLogUtility.Commands/SignalTypeCommandOption.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,12 +19,12 @@ using System.CommandLine;
 
 namespace Utah.Udot.Atspm.EventLogUtility.Commands
 {
-    public class LocationIncludeCommandOption : Option<IEnumerable<string>>
+    public class LocationJurisdictionCommandOption : Option<IEnumerable<string>>
     {
-        public LocationIncludeCommandOption() : base("--include", "List of Location controller numbers to include")
+        public LocationJurisdictionCommandOption() : base("--jurisdictions", "Jurisdictions to include in filter")
         {
             AllowMultipleArgumentsPerToken = true;
-            AddAlias("-i");
+            AddAlias("-j");
         }
     }
 }

@@ -98,7 +98,7 @@ namespace SpeedManagementImporter.Services.Pems
                                 if (pemsStatistics == null || pemsStatistics.Count() == 0)
                                     continue;
 
-
+                                //Use the percent observed... from the pemsStats
                                 foreach (var route in routesAlternateIdentifier)
                                 {
                                     try

@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for ApplicationCore - ATSPM.Application.Configuration/EventLogLoggingConfiguration.cs
+// for EventLogUtility - ATSPM.EventLogUtility.Commands/SignalTypeCommandOption.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,14 +15,16 @@
 // limitations under the License.
 #endregion
 
+using System.CommandLine;
 
-namespace Utah.Udot.Atspm.Configuration
+namespace Utah.Udot.Atspm.EventLogUtility.Commands
 {
-    public class EventLogLoggingConfiguration
+    public class LocationRegionCommandOption : Option<IEnumerable<string>>
     {
-        public IEnumerable<string> Included { get; set; }
-        public IEnumerable<string> Excluded { get; set; }
-        public IEnumerable<int> ControllerTypes { get; set; }
-        public DirectoryInfo Path { get; set; }
+        public LocationRegionCommandOption() : base("--regions", "Regions to include in filter")
+        {
+            AllowMultipleArgumentsPerToken = true;
+            AddAlias("-r");
+        }
     }
 }

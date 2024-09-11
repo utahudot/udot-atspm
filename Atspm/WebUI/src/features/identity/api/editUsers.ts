@@ -36,9 +36,12 @@ const headers: AxiosHeaders = new AxiosHeaders({
   'Content-Type': 'application/json',
   Authorization: `Bearer ${token}`,
 })
-const axiosInstance = identityAxios
 
 export function useEditUsers() {
-  const mutation = usePostRequest({ url: route, axiosInstance, headers })
+  const mutation = usePostRequest({
+    url: route,
+    axiosInstance: identityAxios,
+    headers,
+  })
   return mutation
 }

@@ -19,9 +19,9 @@ using System.CommandLine;
 
 namespace Utah.Udot.Atspm.EventLogUtility.Commands
 {
-    public class PathCommandOption : Option<DirectoryInfo>
+    public class PathCommandOption : Option<string>
     {
-        public PathCommandOption() : base("--path", () => new DirectoryInfo(Path.GetTempPath()), "Path to directory")
+        public PathCommandOption() : base("--path", "Path to directory")
         {
             AddAlias("-p");
         }

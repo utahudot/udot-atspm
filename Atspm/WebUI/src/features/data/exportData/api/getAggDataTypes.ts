@@ -26,8 +26,11 @@ const headers: AxiosHeaders = new AxiosHeaders({
   'Content-Type': 'application/json',
   Authorization: `Bearer ${token}`,
 })
-const axiosInstance = dataAxios
 
 export function useGetAggDataTypes() {
-  return useGetRequest<ApiResponse<string[]>>({ route, axiosInstance, headers })
+  return useGetRequest<ApiResponse<string[]>>({
+    route,
+    axiosInstance: dataAxios,
+    headers,
+  })
 }

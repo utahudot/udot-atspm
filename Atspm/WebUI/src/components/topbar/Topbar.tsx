@@ -120,6 +120,7 @@ export default function Topbar() {
                   mx: '2px',
                   color: 'text.primary',
                   textTransform: 'none',
+                  color: 'black',
                 }}
               >
                 <Typography fontWeight={400} sx={{ textTransform: 'none' }}>

@@ -1,7 +1,5 @@
 ﻿using Google.Cloud.BigQuery.V2;
 using Microsoft.Extensions.Logging;
-using System.Collections.Concurrent;
-using System.Threading.Tasks.Dataflow;
 using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.Config;
 using Utah.Udot.Atspm.Repositories.SpeedManagementRepositories;
 
@@ -24,50 +22,52 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             _table = _client.GetTable(_datasetId, _tableId);
         }
 
-        public async Task<List<TempData>> GetHourlyAggregatedDataForAllSegments()
+        public async Task<List<TempDataWithDataQuility>> GetHourlyAggregatedDataForAllSegments()
         {
             var query = $@"
             SELECT
               TIMESTAMP_TRUNC(BinStartTime, HOUR) AS BinStartTime,
               AVG(Average) AS Average,
-              EntityId
+              EntityId,
+              SUM(CASE WHEN FilledIn = FALSE THEN 1 ELSE 0 END) / COUNT(FilledIn) AS DataQuality
             FROM `{_datasetId}.{_tableId}` 
             GROUP BY
             BinStartTime,
             EntityId";
-            var result = await _client.ExecuteQueryAsync(query, null);
-            return await MapRowToData(result);
+            var results = await _client.ExecuteQueryAsync(query, null);
+            var tempDataWithDataQuality = results.Select(row => MapRowToEntityWithDataQuiality(row)).ToList();
+            return tempDataWithDataQuality;
         }
 
-        private async Task<List<TempData>> MapRowToData(BigQueryResults result)
-        {
-            var tempData = new ConcurrentBag<TempData>();
-            var settings = new ExecutionDataflowBlockOptions
-            {
-                MaxDegreeOfParallelism = Environment.ProcessorCount // or set to a specific value
-            };
+        //private async Task<List<TempData>> MapRowToData(BigQueryResults result)
+        //{
+        //    var tempData = new ConcurrentBag<TempData>();
+        //    var settings = new ExecutionDataflowBlockOptions
+        //    {
+        //        MaxDegreeOfParallelism = Environment.ProcessorCount // or set to a specific value
+        //    };
 
-            var transformBlock = new TransformManyBlock<BigQueryResults, TempData>(ParseResult, settings);
-            var actionBlock = new ActionBlock<TempData>(tempData.Add, settings);
+        //    var transformBlock = new TransformManyBlock<BigQueryResults, TempData>(ParseResult, settings);
+        //    var actionBlock = new ActionBlock<TempData>(tempData.Add, settings);
 
-            DataflowLinkOptions linkOptions = new DataflowLinkOptions() { PropagateCompletion = true };
-            transformBlock.LinkTo(actionBlock, linkOptions);
+        //    DataflowLinkOptions linkOptions = new DataflowLinkOptions() { PropagateCompletion = true };
+        //    transformBlock.LinkTo(actionBlock, linkOptions);
 
-            await transformBlock.SendAsync(result);
-            transformBlock.Complete();
+        //    await transformBlock.SendAsync(result);
+        //    transformBlock.Complete();
 
-            await actionBlock.Completion;
+        //    await actionBlock.Completion;
 
-            return tempData.ToList();
-        }
+        //    return tempData.ToList();
+        //}
 
-        private IEnumerable<TempData> ParseResult(BigQueryResults result)
-        {
-            foreach (var row in result)
-            {
-                yield return MapRowToEntity(row);
-            }
-        }
+        //private IEnumerable<TempData> ParseResult(BigQueryResults result)
+        //{
+        //    foreach (var row in result)
+        //    {
+        //        yield return MapRowToEntity(row);
+        //    }
+        //}
 
         public override IQueryable<TempData> GetList()
         {
@@ -140,7 +140,8 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             {
                 {"BinStartTime", item.BinStartTime },
                 {"Average", item.Average },
-                {"EntityId", item.EntityId }
+                {"EntityId", item.EntityId },
+                {"FilledIn", item.FilledIn }
             };
         }
 
@@ -150,12 +151,31 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             var binStartTime = DateTime.ParseExact(row["BinStartTime"].ToString(), formats, null);
             var average = Double.Parse(row["Average"].ToString());
             var entityId = long.Parse(row["EntityId"].ToString());
+            var filledIn = bool.Parse(row["FilledIn"].ToString());
 
             return new TempData
             {
                 BinStartTime = binStartTime,
                 Average = average,
-                EntityId = entityId
+                EntityId = entityId,
+                FilledIn = filledIn
+            };
+        }
+
+        private TempDataWithDataQuility MapRowToEntityWithDataQuiality(BigQueryRow row)
+        {
+            string[] formats = { "MM/dd/yyyy HH:mm:ss", "M/d/yyyy h:mm:ss tt", "yyyy-MM-ddTHH:mm:ss.fffZ" };
+            var binStartTime = DateTime.ParseExact(row["BinStartTime"].ToString(), formats, null);
+            var average = Double.Parse(row["Average"].ToString());
+            var entityId = long.Parse(row["EntityId"].ToString());
+            var dataQuality = Double.Parse(row["DataQuality"].ToString());
+
+            return new TempDataWithDataQuility
+            {
+                BinStartTime = binStartTime,
+                Average = average,
+                EntityId = entityId,
+                DataQuality = dataQuality
             };
         }
     }
