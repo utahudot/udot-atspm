@@ -89,6 +89,11 @@ namespace Utah.Udot.Atspm.Data.Models
             get => base.Data.Cast<T>().ToHashSet().ToList();
             set => base.Data = value.Cast<T>().ToHashSet().ToList();
         }
+
+        public override string ToString()
+        {
+            return $"***{this.LocationIdentifier} - {this.ArchiveDate} - {this.DeviceId} - {this.DataType.Name} - {this.Data.Count}";
+        }
     }
 
     /// <summary>

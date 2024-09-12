@@ -67,46 +67,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
 
                 workflow.Input.Complete();
 
-
-                await workflow.Output.Completion;
-
-
-
-
-
-
-
-                //var input = new BufferBlock<Device>();
-
-                //var downloadStep = new DownloadDeviceData(_services, new ExecutionDataflowBlockOptions() { MaxDegreeOfParallelism = _options.Value.MaxDegreeOfParallelism, CancellationToken = cancellationToken });
-                //var processEventLogFileWorkflow = new ProcessEventLogFileWorkflow<IndianaEvent>(_services, _options.Value.SaveToDatabaseBatchSize, _options.Value.MaxDegreeOfParallelism);
-
-                //var actionResult = new ActionBlock<Tuple<Device, FileInfo>>(t =>
-                //{
-                //    //Console.WriteLine($"{t.Item1} - {t.Item2.FullName}");
-                //}, new ExecutionDataflowBlockOptions() { MaxDegreeOfParallelism = _options.Value.MaxDegreeOfParallelism, CancellationToken = cancellationToken });
-
-                //input.LinkTo(downloadStep, new DataflowLinkOptions() { PropagateCompletion = true });
-
-                //await Task.Delay(TimeSpan.FromSeconds(1));
-
-                //downloadStep.LinkTo(actionResult, new DataflowLinkOptions() { PropagateCompletion = true });
-
-                //foreach (var d in devices)
-                //{
-                //    input.Post(d);
-                //}
-
-                //input.Complete();
-
-                //try
-                //{
-                //    await actionResult.Completion.ContinueWith(t => Console.WriteLine($"!!!Task actionResult is complete!!! {t.Status}"), cancellationToken);
-                //}
-                //catch (Exception e)
-                //{
-                //    Console.WriteLine($"{actionResult.Completion.Status}---------------{e}");
-                //}
+                await Task.WhenAll(workflow.Steps.Select(s => s.Completion));
 
                 sw.Stop();
 
@@ -123,7 +84,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
         }
     }
 
-    public class DeviceEventLogWorkflow : WorkflowBase<Device, CompressedEventLogs<EventLogModelBase>>
+    public class DeviceEventLogWorkflow : WorkflowBase<Device, CompressedEventLogBase>
     {
         private readonly ExecutionDataflowBlockOptions _stepOptions = new ExecutionDataflowBlockOptions();
         private readonly IServiceScopeFactory _services;
@@ -140,6 +101,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
         public DecodeDeviceData DecodeDeviceData { get; private set; }
         public BatchBlock<Tuple<Device, EventLogModelBase>> BatchEventLogs { get; private set; }
         public ArchiveDeviceData ArchiveDeviceData { get; private set; }
+        public SaveEventsToRepo SaveEventsToRepo { get; private set; }
 
         /// <inheritdoc/>
         protected override void AddStepsToTracker()
@@ -148,6 +110,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
             Steps.Add(DecodeDeviceData);
             Steps.Add(BatchEventLogs);
             Steps.Add(ArchiveDeviceData);
+            Steps.Add(SaveEventsToRepo);
         }
 
         /// <inheritdoc/>
@@ -157,6 +120,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
             DecodeDeviceData = new(_services, _stepOptions);
             BatchEventLogs = new(_batchSize);
             ArchiveDeviceData = new(_stepOptions);
+            SaveEventsToRepo = new(_services, _stepOptions);
         }
 
         /// <inheritdoc/>
@@ -166,7 +130,8 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
             DownloadDeviceData.LinkTo(DecodeDeviceData, new DataflowLinkOptions() { PropagateCompletion = true });
             DecodeDeviceData.LinkTo(BatchEventLogs, new DataflowLinkOptions() { PropagateCompletion = true });
             BatchEventLogs.LinkTo(ArchiveDeviceData, new DataflowLinkOptions() { PropagateCompletion = true });
-            ArchiveDeviceData.LinkTo(Output, new DataflowLinkOptions() { PropagateCompletion = true });
+            ArchiveDeviceData.LinkTo(SaveEventsToRepo, new DataflowLinkOptions() { PropagateCompletion = true });
+            SaveEventsToRepo.LinkTo(Output, new DataflowLinkOptions() { PropagateCompletion = true });
         }
     }
 
@@ -232,7 +197,45 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
 
             foreach (var r in result)
             {
+                Console.WriteLine(r);
+                
                 yield return r;
+            }
+        }
+    }
+
+    public class SaveEventsToRepo : TransformManyProcessStepBaseAsync<CompressedEventLogBase, CompressedEventLogBase>
+    {
+        private readonly IServiceScopeFactory _services;
+
+        /// <inheritdoc/>
+        public SaveEventsToRepo(IServiceScopeFactory services, ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
+        {
+            _services = services;
+        }
+
+        protected override async IAsyncEnumerable<CompressedEventLogBase> Process(CompressedEventLogBase input, [EnumeratorCancellation] CancellationToken cancelToken = default)
+        {
+            using (var scope = _services.CreateAsyncScope())
+            {
+                var repo = scope.ServiceProvider.GetService<IEventLogRepository>();
+
+                var searchLog = await repo.LookupAsync(input);
+
+                if (searchLog != null)
+                {
+                    var eventLogs = new HashSet<EventLogModelBase>(Enumerable.Union(searchLog.Data, input.Data));
+
+                    searchLog.Data = eventLogs.ToList();
+
+                    await repo.UpdateAsync(searchLog);
+                }
+                else
+                {
+                    await repo.AddAsync(input);
+                }
+
+                yield return input;
             }
         }
     }
