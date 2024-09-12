@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Utah.Udot.Atspm.Business.Watchdog;
-using Utah.Udot.Atspm.Data.Models.WatchDogModels;
 using Utah.Udot.ATSPM.ReportApi.ReportServices;
 
 namespace Utah.Udot.ATSPM.ReportApi.Controllers
