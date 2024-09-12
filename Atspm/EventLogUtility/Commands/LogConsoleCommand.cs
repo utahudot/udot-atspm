@@ -17,14 +17,10 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
 using System.CommandLine;
 using System.CommandLine.Binding;
-using System.CommandLine.Hosting;
 using System.CommandLine.NamingConventionBinder;
-using Utah.Udot.Atspm.Configuration;
 using Utah.Udot.Atspm.Data.Enums;
-using Utah.Udot.Atspm.Infrastructure.Converters;
 using Utah.Udot.Atspm.Infrastructure.Services.HostedServices;
 
 namespace Utah.Udot.Atspm.EventLogUtility.Commands
@@ -55,6 +51,7 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
             AddOption(LocationTypeOption);
             AddOption(DeviceTypeOption);
             AddOption(TransportProtocolOption);
+            AddOption(DeviceStatusCommandOption);
             AddOption(PathCommandOption);
         }
 
@@ -78,6 +75,8 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
 
         public TransportProtocolCommandOption TransportProtocolOption { get; set; } = new();
 
+        public DeviceStatusCommandOption DeviceStatusCommandOption { get; set; } = new();   
+
         public PathCommandOption PathCommandOption { get; set; } = new();
 
         public void BindCommandOptions(HostBuilderContext host, IServiceCollection services)
@@ -97,6 +96,7 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
             childBinder.BindMemberFromValue(b => b.IncludedRegions, RegionOption);
             childBinder.BindMemberFromValue(b => b.IncludedLocationTypes, LocationTypeOption);
             childBinder.BindMemberFromValue(b => b.DeviceType, DeviceTypeOption);
+            childBinder.BindMemberFromValue(b => b.TransportProtocol, TransportProtocolOption);
             childBinder.BindMemberFromValue(b => b.TransportProtocol, TransportProtocolOption);
 
             services.AddOptions<DeviceEventLoggingConfiguration>()
@@ -123,6 +123,14 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
         public TransportProtocolCommandOption() : base("--transport-protocol", "Device transport protocol to include")
         {
             AddAlias("-tp");
+        }
+    }
+
+    public class DeviceStatusCommandOption : Option<DeviceStatus>
+    {
+        public DeviceStatusCommandOption() : base("--device-status", "Device status to include")
+        {
+            AddAlias("-ds");
         }
     }
 }

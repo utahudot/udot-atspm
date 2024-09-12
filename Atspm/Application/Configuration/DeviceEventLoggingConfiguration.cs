@@ -83,9 +83,14 @@ namespace Utah.Udot.Atspm.Configuration
         /// </summary>
         public TransportProtocols TransportProtocol { get; set; }
 
+        /// <summary>
+        /// <see cref="DeviceStatus"/> to include
+        /// </summary>
+        public DeviceStatus DeviceStatus { get; set; } = DeviceStatus.Active;
+
         public override string ToString()
         {
-            return $"{DeviceType} - {TransportProtocol}";
+            return $"{DeviceType} - {TransportProtocol} - {DeviceStatus}";
         }
     }
 }

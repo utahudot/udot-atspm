@@ -17,6 +17,7 @@
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System.Security.Permissions;
 using Utah.Udot.Atspm.Data;
 using Utah.Udot.Atspm.Data.Enums;
 
@@ -34,9 +35,11 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories
         public override IQueryable<Device> GetList()
         {
             return base.GetList()
-                .Include(i => i.Location)
-                .Include(i => i.DeviceConfiguration).ThenInclude(i => i.Product);
-
+                .Include(i => i.Location).ThenInclude(i => i.Region)
+                .Include(i => i.Location).ThenInclude(i => i.Jurisdiction)
+                .Include(i => i.Location).ThenInclude(i => i.Areas)
+                .Include(i => i.DeviceConfiguration).ThenInclude(i => i.Product)
+                .AsQueryable();
         }
 
         #endregion
