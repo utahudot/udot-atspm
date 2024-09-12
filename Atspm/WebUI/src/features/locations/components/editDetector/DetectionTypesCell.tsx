@@ -131,6 +131,7 @@ const DetectionTypesCell = ({
                 height: 26,
                 fontSize: '11px',
               }}
+              aria-disabled={!valueAbbreviations.has(abbreviation)}
             >
               {abbreviation}
             </Avatar>
