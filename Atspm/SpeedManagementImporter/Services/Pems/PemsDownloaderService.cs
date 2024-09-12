@@ -21,7 +21,6 @@ namespace SpeedManagementImporter.Services.Pems
         private IHourlySpeedRepository hourlySpeedRepository;
         private IConfigurationRoot configuration;
 
-        static readonly int confidenceId = 4;
         static readonly int sourceId = 2;
         private string sessionId;
 
@@ -119,6 +118,7 @@ namespace SpeedManagementImporter.Services.Pems
                                         int? averageFlowForHour = null;
                                         int extremeViolation = 0;
                                         int violation = 0;
+                                        int dataQuality = 0;
                                         if (pemsFlows != null)
                                         {
                                             var flowByRoute = pemsFlows.Where(p => stationIds.Contains(Convert.ToInt32(p.station))).ToList();
@@ -127,6 +127,11 @@ namespace SpeedManagementImporter.Services.Pems
                                             {
                                                 extremeViolation = extremeViolation + violationsForToday[currentFlowRoute.station].GetExtremeViolation(i);
                                                 violation = violation + violationsForToday[currentFlowRoute.station].GetViolation(i);
+                                                dataQuality = dataQuality + violationsForToday[currentFlowRoute.station].GetDataQuality(i);
+                                            }
+                                            if (dataQuality > 0 && flowByRoute.Count > 0)
+                                            {
+                                                dataQuality = dataQuality / flowByRoute.Count;
                                             }
                                         }
                                         List<Quantity> quantities = statisticsByRoute
@@ -165,7 +170,7 @@ namespace SpeedManagementImporter.Services.Pems
                                             BinStartTime = binStartTime,
                                             SegmentId = routeId,
                                             SourceId = sourceId,
-                                            ConfidenceId = confidenceId,
+                                            ConfidenceId = dataQuality,
                                             Average = mean.Value,
                                             FifteenthSpeed = fifteenthSpeed,
                                             EightyFifthSpeed = eightyFifthSpeed,
@@ -473,8 +478,8 @@ namespace SpeedManagementImporter.Services.Pems
                     .ToList();
                 //These will be the combine violations that will be added to
                 var combinedSpeedViolations = 0;
-
                 var combinedExtremeSpeedViolations = 0;
+                var missingData = 0;
                 //Cycle through each lane to get the violations
                 for (var lanes = 0; lanes < lanesCount; lanes++)
                 {
@@ -502,12 +507,13 @@ namespace SpeedManagementImporter.Services.Pems
                         extremeSpeedViolationsFlow = extremeSpeedViolations?
                             .Sum(i => int.TryParse(i[flowLane], out int flow) ? flow : 0) ?? 0;
                     }
-
+                    missingData = missingData + dataForTheHour.Count(hourRow => (!hourRow[flowLane].IsNullOrEmpty() || !hourRow[flowLane].Equals(0)) && hourRow[speedLane].IsNullOrEmpty());
                     combinedSpeedViolations = combinedSpeedViolations + speedViolationsFlow;
                     combinedExtremeSpeedViolations = combinedExtremeSpeedViolations + extremeSpeedViolationsFlow;
                 }
                 //Add that combine violations to the object
-                violationsForEachHour = violationsForEachHour.PopulateViolationsForEachHour(hour, combinedSpeedViolations, combinedExtremeSpeedViolations);
+                var dataQuality = 100 - (missingData / (lanesCount * dataForTheHour.Count));
+                violationsForEachHour = violationsForEachHour.PopulateViolationsForEachHour(hour, combinedSpeedViolations, combinedExtremeSpeedViolations, dataQuality);
             }
 
             return violationsForEachHour;
