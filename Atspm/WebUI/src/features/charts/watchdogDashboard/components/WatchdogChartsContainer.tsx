@@ -1,9 +1,11 @@
-import React from 'react'
-import { Box } from '@mui/material'
-import ControllerTypeChart from './ControllerTypeChart'
-import IssueTypeChart from './IssueTypeChart'
-import DetectionTypeChart from './DetectionTypeChart'
 import { WatchdogDashboardData } from '@/features/watchdog/types'
+import { Box } from '@mui/material'
+import React from 'react'
+import ControllerTypeChart from './ControllerTypeChart'
+import DeviceCountChart from './DeviceCountChart'
+import DetectionTypeChart from './DetectionTypeChart'
+import IssueTypeChart from './IssueTypeChart'
+import DetectionTypeCountChart from './DetectionTypeCountChart'
 
 interface WatchdogChartsContainerProps {
   data: WatchdogDashboardData
@@ -14,9 +16,16 @@ const WatchdogChartsContainer: React.FC<WatchdogChartsContainerProps> = ({
   data,
   isLoading,
 }) => {
-console.log("TEST")
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+      <Box sx={{ display: 'flex', gap: 3 }}>
+        <Box sx={{ flex: 1 }}>
+          <DeviceCountChart data={data?.deviceCount} isLoading={isLoading} />
+        </Box>
+        <Box sx={{ flex: 1 }}>
+          <DetectionTypeCountChart data={data?.detectionTypeCount} isLoading={isLoading} />
+        </Box>
+      </Box>
       <Box>
         <ControllerTypeChart
           data={data?.controllerTypeGroup}

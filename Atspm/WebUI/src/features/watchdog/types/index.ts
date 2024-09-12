@@ -96,3 +96,16 @@ export interface WatchdogDashboardData {
   detectionTypeGroup: DetectionTypeGroup[];
   controllerTypeGroup: ControllerTypeGroup[];
 }
+
+
+export interface DeviceCount {
+  manufacturer: string;
+  model: string;
+  firmware: string;
+  count: number;
+}
+
+export interface DetectionTypeCount {
+  id: string;
+  count: number;
+}
