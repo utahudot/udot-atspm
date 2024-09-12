@@ -1,4 +1,4 @@
-﻿namespace Utah.Udot.Atspm.Data.Models.WatchDogModels
+﻿namespace Utah.Udot.Atspm.Business.Watchdog
 {
     public class WatchDogProductInfo
     {

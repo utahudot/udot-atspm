@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Utah.Udot.Atspm.Business.Watchdog;
 using Utah.Udot.Atspm.Data.Enums;
-using Utah.Udot.Atspm.Data.Models.WatchDogModels;
 using Utah.Udot.Atspm.Repositories;
 
 namespace Utah.Udot.ATSPM.ReportApi.ReportServices

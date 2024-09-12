@@ -167,6 +167,11 @@ namespace Utah.Udot.Atspm.Data
         /// </summary>
         public virtual DbSet<WatchDogLogEvent> WatchDogLogEvents { get; set; }
 
+        /// <summary>
+        /// Watchdog log events
+        /// </summary>
+        public virtual DbSet<WatchDogIgnoreEvent> WatchDogIgnoreEvents { get; set; }
+
         /// <inheritdoc/>
         protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
         {
@@ -216,6 +221,7 @@ namespace Utah.Udot.Atspm.Data
             modelBuilder.ApplyConfiguration(new UserJurisdictionConfiguration());
             modelBuilder.ApplyConfiguration(new UserRegionConfiguration());
             modelBuilder.ApplyConfiguration(new VersionHistoryConfiguration());
+            //modelBuilder.ApplyConfiguration(new WatchDogIgnoreEventConfiguration());
 
             //Set keys to null for optional relationships
             foreach (var fk in modelBuilder.Model.GetEntityTypes()
