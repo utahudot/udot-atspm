@@ -1,10 +1,10 @@
 import { useRoutes } from '@/features/speedManagementTool/api/getRoutes'
 import ViolationsThresholdPopup from '@/features/speedManagementTool/components/RoutesToggle/ViolationsThresholdPopup'
+import AnalysisPeriodOptionsPopup from '@/features/speedManagementTool/components/SM_Topbar/AnalysisPeriodOptionsPopup'
 import DateRangeOptionsPopup from '@/features/speedManagementTool/components/SM_Topbar/DateRangeOptionsPopup'
 import FiltersButton from '@/features/speedManagementTool/components/SM_Topbar/Filters'
 import { DataSource } from '@/features/speedManagementTool/enums'
 import useStore from '@/features/speedManagementTool/speedManagementStore'
-import { SpeedManagementRoute } from '@/features/speedManagementTool/types/routes'
 import { LoadingButton } from '@mui/lab'
 import { Box } from '@mui/material'
 import { useEffect, useState } from 'react'
@@ -42,19 +42,23 @@ export default function TopBar() {
     const change =
       JSON.stringify(routeSpeedRequest) !==
       JSON.stringify(submittedRouteSpeedRequest)
+
+    console.log('change', change)
+    console.log('routeSpeedRequest', routeSpeedRequest)
+    console.log('submittedRouteSpeedRequest', submittedRouteSpeedRequest)
     setIsRequestChanged(change)
   }, [routeSpeedRequest, submittedRouteSpeedRequest])
 
   const [isRequestChanged, setIsRequestChanged] = useState(false)
-  const [selectedRoute, setSelectedRoute] =
-    useState<SpeedManagementRoute | null>(null)
+  // const [selectedRoute, setSelectedRoute] =
+  //   useState<SpeedManagementRoute | null>(null)
 
-  const handleRouteChange = (
-    _: React.SyntheticEvent,
-    value: SpeedManagementRoute | null
-  ) => {
-    setSelectedRoute(value)
-  }
+  // const handleRouteChange = (
+  //   _: React.SyntheticEvent,
+  //   value: SpeedManagementRoute | null
+  // ) => {
+  //   setSelectedRoute(value)
+  // }
 
   return (
     <Box
@@ -80,7 +84,7 @@ export default function TopBar() {
         <ViolationsThresholdPopup />
         <DateRangeOptionsPopup />
         <DaysOfWeekOptionsPopup />
-        {/* <AnalysisPeriodOptionsPopup /> */}
+        <AnalysisPeriodOptionsPopup />
         <FiltersButton />
         <LoadingButton
           variant="contained"

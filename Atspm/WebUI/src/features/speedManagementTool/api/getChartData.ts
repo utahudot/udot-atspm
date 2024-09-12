@@ -1,5 +1,6 @@
 import { createTooltip } from '@/features/charts/common/transformers'
 import { RouteRenderOption } from '@/features/speedManagementTool/enums'
+import { eachDayOfInterval, eachMonthOfInterval, format } from 'date-fns'
 
 interface MonthlyAverage {
   month: number
@@ -34,49 +35,64 @@ export function createMonthlyAverageChart(
   endDate: string,
   routeRenderOption?: RouteRenderOption
 ) {
-  const seriesData = data.map((source) => ({
-    name: sourceMapping[source.sourceId],
-    type: 'line',
-    data: source.monthlyAverages
-      .map(({ year, month, average }) => ({
-        value: average,
-        name: `${month}/${year}`,
-      }))
-      .reverse(),
-  }))
+  let valueKey = 'average'
+  let percentileTitle = 'Average'
+
+  if (routeRenderOption === RouteRenderOption.Percentile_85th) {
+    valueKey = 'eightyFifthSpeed'
+    percentileTitle = '85th Percentile'
+  } else if (routeRenderOption === RouteRenderOption.Percentile_95th) {
+    valueKey = 'ninetyFifthSpeed'
+    percentileTitle = '95th Percentile'
+  } else if (routeRenderOption === RouteRenderOption.Percentile_99th) {
+    valueKey = 'ninetyNinthSpeed'
+    percentileTitle = '99th Percentile'
+  }
 
   const xAxisLabels = generateXAxisLabels(startDate, endDate)
+
+  const seriesData = data.map((source) => {
+    const sourceData = xAxisLabels
+      .map((label) => {
+        const matchedEntry = source.monthlyAverages.find((entry) => {
+          const entryDate = new Date(entry.month)
+          const formattedDate = format(entryDate, 'MM/yy')
+          return formattedDate === label
+        })
+
+        if (matchedEntry) {
+          return [label, parseFloat(matchedEntry[valueKey].toFixed(2))]
+        }
+      })
+      .filter(Boolean)
+
+    return {
+      name: sourceMapping[source.sourceId],
+      type: 'line',
+      data: sourceData,
+    }
+  })
 
   const tooltip = createTooltip({
     formatters: [
       {
         name: sourceMapping[1],
-        format: (val) => `${parseInt(val).toFixed(0)} mph`,
+        format: (val) => `${parseFloat(val).toFixed(2)} mph`,
       },
       {
         name: sourceMapping[2],
-        format: (val) => `${parseInt(val).toFixed(0)} mph`,
+        format: (val) => `${parseFloat(val).toFixed(2)} mph`,
       },
       {
         name: sourceMapping[3],
-        format: (val) => `${parseInt(val).toFixed(0)} mph`,
+        format: (val) => `${parseFloat(val).toFixed(2)} mph`,
       },
     ],
   })
 
-  let percentile = 'Average'
-
-  if (routeRenderOption === RouteRenderOption.Percentile_85th) {
-    percentile = '85th Percentile'
-  } else if (routeRenderOption === RouteRenderOption.Percentile_95th) {
-    percentile = '95th Percentile'
-  } else if (routeRenderOption === RouteRenderOption.Percentile_99th) {
-    percentile = '99th Percentile'
-  }
-
   const option = {
-    title: { text: `Monthly ${percentile}` },
-    tooltip: tooltip,
+    title: { text: `Monthly ${percentileTitle}` },
+    tooltip,
     legend: {
       data: seriesData.map((s) => s.name),
       y: 30,
@@ -109,49 +125,63 @@ export function createDailyAverageChart(
   endDate: string,
   routeRenderOption?: RouteRenderOption
 ) {
-  const seriesData = data.map((source) => ({
-    name: sourceMapping[source.sourceId],
-    type: 'line',
-    data: source.dailyAverages
-      .map(({ date, average }) => ({
-        value: average,
-        name: `${date.split('T')[0]}`,
-      }))
-      .reverse(),
-  }))
+  let valueKey = 'average' // Default to averageSpeed
+  let percentileTitle = 'Average'
+
+  if (routeRenderOption === RouteRenderOption.Percentile_85th) {
+    valueKey = 'eightyFifthSpeed'
+    percentileTitle = '85th Percentile'
+  } else if (routeRenderOption === RouteRenderOption.Percentile_95th) {
+    valueKey = 'ninetyFifthSpeed'
+    percentileTitle = '95th Percentile'
+  } else if (routeRenderOption === RouteRenderOption.Percentile_99th) {
+    valueKey = 'ninetyNinthSpeed'
+    percentileTitle = '99th Percentile'
+  }
 
   const xAxisLabels = generateDailyXAxisLabels(startDate, endDate)
+
+  const seriesData = data.map((source) => {
+    const sourceData = xAxisLabels
+      .map((label) => {
+        const matchedEntry = source.dailyAverages.find((entry) => {
+          const formattedDate = format(new Date(entry.date), 'M/d') // Format date to match xAxisLabels
+          return formattedDate === label
+        })
+
+        if (matchedEntry) {
+          return [label, parseFloat(matchedEntry[valueKey].toFixed(2))] // Use valueKey to dynamically access the correct value and round it to 2 decimal places
+        }
+      })
+      .filter(Boolean) // Remove undefined entries where no match is found
+
+    return {
+      name: sourceMapping[source.sourceId],
+      type: 'line',
+      data: sourceData,
+    }
+  })
 
   const tooltip = createTooltip({
     formatters: [
       {
         name: sourceMapping[1],
-        format: (val) => `${parseInt(val).toFixed(0)} mph`,
+        format: (val) => `${parseFloat(val).toFixed(2)} mph`,
       },
       {
         name: sourceMapping[2],
-        format: (val) => `${parseInt(val).toFixed(0)} mph`,
+        format: (val) => `${parseFloat(val).toFixed(2)} mph`,
       },
       {
         name: sourceMapping[3],
-        format: (val) => `${parseInt(val).toFixed(0)} mph`,
+        format: (val) => `${parseFloat(val).toFixed(2)} mph`,
       },
     ],
   })
 
-  let percentile = 'Average'
-
-  if (routeRenderOption === RouteRenderOption.Percentile_85th) {
-    percentile = '85th Percentile'
-  } else if (routeRenderOption === RouteRenderOption.Percentile_95th) {
-    percentile = '95th Percentile'
-  } else if (routeRenderOption === RouteRenderOption.Percentile_99th) {
-    percentile = '99th Percentile'
-  }
-
   const option = {
-    title: { text: `Daily ${percentile}` },
-    tooltip: tooltip,
+    title: { text: `Daily ${percentileTitle}` },
+    tooltip,
     legend: {
       data: seriesData.map((s) => s.name),
       y: 30,
@@ -181,29 +211,18 @@ export function createDailyAverageChart(
 function generateXAxisLabels(startDate: string, endDate: string): string[] {
   const start = new Date(startDate)
   const end = new Date(endDate)
-  const labels = []
 
-  for (let dt = new Date(start); dt <= end; dt.setMonth(dt.getMonth() + 1)) {
-    labels.push(`${dt.getMonth() + 1}/${dt.getFullYear().toString().slice(-2)}`)
-  }
-
-  return labels
+  return eachMonthOfInterval({ start, end }).map((date) =>
+    format(date, 'MM/yy')
+  )
 }
 
-function generateDailyXAxisLabels(startDate, endDate) {
-  let labels = []
-  let currentDate = new Date(startDate)
-  const end = new Date(endDate)
-
-  while (currentDate <= end) {
-    // Construct the date string as 'month/day'
-    let month = currentDate.getMonth() + 1 // getMonth() is zero-based
-    let day = currentDate.getDate()
-    let formattedDate = `${month}/${day}`
-
-    labels.push(formattedDate) // Add the formatted date string to labels
-    currentDate.setDate(currentDate.getDate() + 1) // Increment the date by 1 day
-  }
-
-  return labels
+function generateDailyXAxisLabels(
+  startDate: string,
+  endDate: string
+): string[] {
+  return eachDayOfInterval({
+    start: new Date(startDate),
+    end: new Date(endDate),
+  }).map((date) => format(date, 'M/d'))
 }

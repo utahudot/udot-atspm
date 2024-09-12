@@ -3,10 +3,7 @@ import {
   createDailyAverageChart,
   createMonthlyAverageChart,
 } from '@/features/speedManagementTool/api/getChartData'
-import {
-  getPriorDate,
-  useHistoricalData,
-} from '@/features/speedManagementTool/api/getHistoricalData'
+import { useHistoricalData } from '@/features/speedManagementTool/api/getHistoricalData'
 import useStore from '@/features/speedManagementTool/speedManagementStore'
 import { Box, Paper, Skeleton } from '@mui/material'
 
@@ -44,7 +41,7 @@ const ChartsContainer = ({ selectedRouteId }: { selectedRouteId: number }) => {
             id="monthly-data"
             option={createMonthlyAverageChart(
               data?.monthlyHistoricalRouteData,
-              getPriorDate(submittedRouteSpeedRequest.startDate),
+              submittedRouteSpeedRequest.startDate,
               submittedRouteSpeedRequest.endDate,
               routeRenderOption
             )}
@@ -66,7 +63,7 @@ const ChartsContainer = ({ selectedRouteId }: { selectedRouteId: number }) => {
             id="yearly-data"
             option={createDailyAverageChart(
               data?.dailyHistoricalRouteData,
-              getPriorDate(submittedRouteSpeedRequest.startDate),
+              submittedRouteSpeedRequest.startDate,
               submittedRouteSpeedRequest.endDate,
               routeRenderOption
             )}
