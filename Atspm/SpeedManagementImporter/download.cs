@@ -39,25 +39,26 @@ namespace SpeedManagementImporter
         {
             try
             {
-                if (sourceId == 4)
+                IDataDownloader downloader;
+                if (sourceId == 3)
                 {
                     var uploader = new ClearguideFileUploader(routeEntityTableRepository, tempDataRepository);
                     await uploader.FileUploaderAsync(filePath);
+                    downloader = new ClearguideFileDownloaderService(routeEntityTableRepository, hourlySpeedRepository, tempDataRepository);
                 }
                 else
                 {
                     var factory = new ImporterFactory(routeEntityTableRepository, hourlySpeedRepository, tempDataRepository, configuration);
-                    var downloader = factory.createDownloader(sourceId);
+                    downloader = factory.createDownloader(sourceId);
+                }
 
-                    if (downloader is IFileDataDownloader fileDownloader)
-                    {
-                        await fileDownloader.Download(filePath);
-                    }
-                    else
-                    {
-                        await downloader.Download(startDate, endDate);
-                    }
-
+                if (downloader is IFileDataDownloader fileDownloader)
+                {
+                    await fileDownloader.Download(filePath);
+                }
+                else
+                {
+                    await downloader.Download(startDate, endDate);
                 }
             }
             catch (Exception ex)
