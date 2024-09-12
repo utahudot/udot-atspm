@@ -20,9 +20,14 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks.Dataflow;
+using Utah.Udot.Atspm.Analysis.WorkflowFilters;
+using Utah.Udot.Atspm.Analysis.Workflows;
+using Utah.Udot.Atspm.Analysis.WorkflowSteps;
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
+using Utah.Udot.NetStandardToolkit.Workflows;
 
 namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
 {
@@ -43,17 +48,27 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
             var sw = new Stopwatch();
             sw.Start();
 
+            Console.WriteLine($"path1: {_options.Value.Path}");
+
             using (var scope = _services.CreateAsyncScope())
             {
+                var workflow = new DeviceEventLogWorkflow(_services);
+
+                workflow.Initialized += (s,a) => Console.WriteLine($"{s.GetType().Name} - initialized");
+
                 var repo = scope.ServiceProvider.GetService<IDeviceRepository>();
 
                 await foreach(var d in repo.GetDevicesForLogging(_options.Value.DeviceEventLoggingQueryOptions))
                 {
                     Console.WriteLine($"device: {d}");
+
+                    await workflow.Input.SendAsync(d);
                 }
 
+                workflow.Input.Complete();
 
 
+                await workflow.Output.Completion;
 
 
 
@@ -63,8 +78,8 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
 
                 //var input = new BufferBlock<Device>();
 
-                //var downloadStep = new DownloadDeviceData(_serviceProvider, new ExecutionDataflowBlockOptions() { MaxDegreeOfParallelism = _options.Value.MaxDegreeOfParallelism, CancellationToken = cancellationToken });
-                //var processEventLogFileWorkflow = new ProcessEventLogFileWorkflow<IndianaEvent>(_serviceProvider, _options.Value.SaveToDatabaseBatchSize, _options.Value.MaxDegreeOfParallelism);
+                //var downloadStep = new DownloadDeviceData(_services, new ExecutionDataflowBlockOptions() { MaxDegreeOfParallelism = _options.Value.MaxDegreeOfParallelism, CancellationToken = cancellationToken });
+                //var processEventLogFileWorkflow = new ProcessEventLogFileWorkflow<IndianaEvent>(_services, _options.Value.SaveToDatabaseBatchSize, _options.Value.MaxDegreeOfParallelism);
 
                 //var actionResult = new ActionBlock<Tuple<Device, FileInfo>>(t =>
                 //{
@@ -105,6 +120,120 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
             cancellationToken.Register(() => _log.LogInformation("StopAsync has been cancelled"));
 
             return Task.CompletedTask;
+        }
+    }
+
+    public class DeviceEventLogWorkflow : WorkflowBase<Device, CompressedEventLogs<EventLogModelBase>>
+    {
+        private readonly ExecutionDataflowBlockOptions _stepOptions = new ExecutionDataflowBlockOptions();
+        private readonly IServiceScopeFactory _services;
+        private readonly int _batchSize;
+
+        /// <inheritdoc/>
+        public DeviceEventLogWorkflow(IServiceScopeFactory services, int batchSize = 50000)
+        {
+            _services = services;
+            _batchSize = batchSize;
+        }
+
+        public DownloadDeviceData DownloadDeviceData { get; private set; }
+        public DecodeDeviceData DecodeDeviceData { get; private set; }
+        public BatchBlock<Tuple<Device, EventLogModelBase>> BatchEventLogs { get; private set; }
+        public ArchiveDeviceData ArchiveDeviceData { get; private set; }
+
+        /// <inheritdoc/>
+        protected override void AddStepsToTracker()
+        {
+            Steps.Add(DownloadDeviceData);
+            Steps.Add(DecodeDeviceData);
+            Steps.Add(BatchEventLogs);
+            Steps.Add(ArchiveDeviceData);
+        }
+
+        /// <inheritdoc/>
+        protected override void InstantiateSteps()
+        {
+            DownloadDeviceData = new(_services, _stepOptions);
+            DecodeDeviceData = new(_services, _stepOptions);
+            BatchEventLogs = new(_batchSize);
+            ArchiveDeviceData = new(_stepOptions);
+        }
+
+        /// <inheritdoc/>
+        protected override void LinkSteps()
+        {
+            Input.LinkTo(DownloadDeviceData, new DataflowLinkOptions() { PropagateCompletion = true });
+            DownloadDeviceData.LinkTo(DecodeDeviceData, new DataflowLinkOptions() { PropagateCompletion = true });
+            DecodeDeviceData.LinkTo(BatchEventLogs, new DataflowLinkOptions() { PropagateCompletion = true });
+            BatchEventLogs.LinkTo(ArchiveDeviceData, new DataflowLinkOptions() { PropagateCompletion = true });
+            ArchiveDeviceData.LinkTo(Output, new DataflowLinkOptions() { PropagateCompletion = true });
+        }
+    }
+
+    public class DownloadDeviceData : TransformManyProcessStepBaseAsync<Device, Tuple<Device, FileInfo>>
+    {
+        private readonly IServiceScopeFactory _services;
+
+        /// <inheritdoc/>
+        public DownloadDeviceData(IServiceScopeFactory services, ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
+        {
+            _services = services;
+        }
+
+        protected override IAsyncEnumerable<Tuple<Device, FileInfo>> Process(Device input, CancellationToken cancelToken = default)
+        {
+            using (var scope = _services.CreateAsyncScope())
+            {
+                var downloader = scope.ServiceProvider.GetServices<IDeviceDownloader>().First(c => c.CanExecute(input));
+
+                return downloader.Execute(input, cancelToken);
+            }
+        }
+    }
+
+    //public class DecodeDeviceData<T> : TransformManyProcessStepBaseAsync<Tuple<Device, FileInfo>, Tuple<Device, T>> where T : EventLogModelBase
+    public class DecodeDeviceData : TransformManyProcessStepBaseAsync<Tuple<Device, FileInfo>, Tuple<Device, EventLogModelBase>>
+    {
+        private readonly IServiceScopeFactory _services;
+
+        /// <inheritdoc/>
+        public DecodeDeviceData(IServiceScopeFactory services, ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
+        {
+            _services = services;
+        }
+
+        protected override IAsyncEnumerable<Tuple<Device, EventLogModelBase>> Process(Tuple<Device, FileInfo> input, CancellationToken cancelToken = default)
+        {
+            using (var scope = _services.CreateAsyncScope())
+            {
+                var importer = scope.ServiceProvider.GetService<IEventLogImporter>();
+
+                return importer.Execute(input, cancelToken);
+            }
+        }
+    }
+
+    //public class ArchiveDeviceData<T> : TransformManyProcessStepBaseAsync<Tuple<Device, T>[], CompressedEventLogs<T>> where T : EventLogModelBase
+    public class ArchiveDeviceData : TransformManyProcessStepBaseAsync<Tuple<Device, EventLogModelBase>[], CompressedEventLogs<EventLogModelBase>>
+    {
+        /// <inheritdoc/>
+        public ArchiveDeviceData(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
+
+        protected override async IAsyncEnumerable<CompressedEventLogs<EventLogModelBase>> Process(Tuple<Device, EventLogModelBase>[] input, [EnumeratorCancellation] CancellationToken cancelToken = default)
+        {
+            var result = input.GroupBy(g => (g.Item2.LocationIdentifier, g.Item2.Timestamp.Date, g.Item1.Id))
+                .Select(s => new CompressedEventLogs<EventLogModelBase>()
+                {
+                    LocationIdentifier = s.Key.LocationIdentifier,
+                    ArchiveDate = DateOnly.FromDateTime(s.Key.Date),
+                    DeviceId = s.Key.Id,
+                    Data = s.Select(s => s.Item2).ToList()
+                });
+
+            foreach (var r in result)
+            {
+                yield return r;
+            }
         }
     }
 }

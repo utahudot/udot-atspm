@@ -32,14 +32,14 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            //_serviceProvider.PrintHostInformation();
+            //_services.PrintHostInformation();
 
             try
             {
                 _log.LogInformation("Extraction Path: {path}", _options.Value.Path);
                 _log.LogInformation("Extraction File Formate: {format}", _options.Value.FileFormat);
 
-                //using (var scope = _serviceProvider.CreateAsyncScope())
+                //using (var scope = _services.CreateAsyncScope())
                 //{
                 //    var eventRepository = scope.ServiceProvider.GetService<IIndianaEventLogRepository>();
 
