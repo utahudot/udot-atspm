@@ -69,7 +69,6 @@ namespace SpeedManagementImporter.Services.Pems
                         {
                             Dictionary<Guid, List<SegmentEntityWithSpeedAndAlternateIdentifier>> routesAlternateIdentifier = routeEntities.Where(r => r.AlternateIdentifier == pemsRoute).ToList().GroupBy(re => re.SegmentId).ToList().ToDictionary(group => group.Key, group => group.ToList());
 
-
                             Dictionary<String, ViolationsForEachHour> violationsForToday = new Dictionary<String, ViolationsForEachHour>();
 
                             foreach (var pemsFlow in pemsFlows)
@@ -120,7 +119,6 @@ namespace SpeedManagementImporter.Services.Pems
                                         int extremeViolation = 0;
                                         int violation = 0;
                                         int dataQuality = 0;
-
                                         //TODO check if pemsFlow or PemsStat should be used.
                                         if (pemsFlows != null)
                                         {
@@ -414,7 +412,7 @@ namespace SpeedManagementImporter.Services.Pems
                         desiredMinute,
                         0 // seconds
                     );
-                    Console.WriteLine($"Violations - Pulling out 20 second Data");
+
                     string formattedDate = date.ToString("MM/dd/yyyy HH:mm");
                     string urlEncodedDate = HttpUtility.UrlEncode(formattedDate);
                     long unixTime = ((DateTimeOffset)date).ToUnixTimeSeconds();
