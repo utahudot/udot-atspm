@@ -6,39 +6,63 @@ import { useGetRegions } from '@/features/speedManagementTool/api/getRegion'
 import useStore from '@/features/speedManagementTool/speedManagementStore'
 import TuneOutlinedIcon from '@mui/icons-material/TuneOutlined'
 import {
+  Autocomplete,
+  Badge,
   Box,
   Button,
-  FormControl,
-  InputLabel,
-  MenuItem,
   Popover,
-  Select,
+  TextField,
 } from '@mui/material'
-import React, { useState } from 'react'
+import match from 'autosuggest-highlight/match'
+import parse from 'autosuggest-highlight/parse'
+import React, { useEffect, useState } from 'react'
+
+const formatLabel = (option: any) => option.name
+
+const customSort = (options: any[], value: string) => {
+  return options.sort((a, b) => a.name.localeCompare(b.name))
+}
 
 export default function FiltersButton() {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
-
   const { data: countiesData } = useGetCounties()
   const { data: accessCategoriesData } = useGetAccessCategories()
   const { data: citiesData } = useGetCities()
   const { data: functionalTypesData } = useGetFunctionalTypes()
   const { data: regionsData } = useGetRegions()
 
-  const { routeSpeedRequest, setRouteSpeedRequest } = useStore()
+  const {
+    routeSpeedRequest,
+    setRouteSpeedRequest,
+    submittedRouteSpeedRequest,
+    setSubmittedRouteSpeedRequest,
+  } = useStore()
 
-  const counties = countiesData?.sort((a, b) => a.name.localeCompare(b.name))
-  const accessCategories = accessCategoriesData?.sort((a, b) => {
-    const nameA = a.name.replace('Category', '')
-    const nameB = b.name.replace('Category', '')
-    return parseInt(nameA) - parseInt(nameB)
-  })
+  const counties = countiesData || []
+  const accessCategories = accessCategoriesData || []
+  const cities = citiesData || []
+  const functionalTypes = functionalTypesData || []
+  const regions = regionsData || []
 
-  const cities = citiesData?.sort((a, b) => a.name.localeCompare(b.name))
-  const functionalTypes = functionalTypesData?.sort((a, b) =>
-    a.name.localeCompare(b.name)
-  )
-  const regions = regionsData?.sort((a, b) => a.name.localeCompare(b.name)) || [] //! TODO: MORGAN, I added || [] to fix the error. please looking this if its not correct. - DAN
+  const [filterCount, setFilterCount] = useState(0)
+
+  const optionalFilters = [
+    'county',
+    'city',
+    'accessCategory',
+    'functionalType',
+    'region',
+  ]
+
+  useEffect(() => {
+    const activeFilters = optionalFilters.filter(
+      (key) =>
+        submittedRouteSpeedRequest[
+          key as keyof typeof submittedRouteSpeedRequest
+        ] !== null
+    )
+    setFilterCount(activeFilters.length)
+  }, [submittedRouteSpeedRequest])
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget)
@@ -50,164 +74,219 @@ export default function FiltersButton() {
 
   const open = Boolean(anchorEl)
 
-  const handleCountyChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+  const handleAutocompleteChange = (key: string, value: any) => {
     setRouteSpeedRequest({
       ...routeSpeedRequest,
-      county:
-        event.target.value === 'all' ? null : (event.target.value as string),
+      [key]: value ? value.name : null,
     })
   }
 
-  const handleAccessCategoryChange = (
-    event: React.ChangeEvent<{ value: unknown }>
-  ) => {
-    setRouteSpeedRequest({
-      ...routeSpeedRequest,
-      accessCategory:
-        event.target.value === 'all' ? null : (event.target.value as string),
-    })
-  }
-
-  const handleCityChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-    setRouteSpeedRequest({
-      ...routeSpeedRequest,
-      city:
-        event.target.value === 'all' ? null : (event.target.value as string),
-    })
-  }
-
-  const handleFunctionalTypeChange = (
-    event: React.ChangeEvent<{ value: unknown }>
-  ) => {
-    setRouteSpeedRequest({
-      ...routeSpeedRequest,
-      functionalType:
-        event.target.value === 'all' ? null : (event.target.value as string),
-    })
-  }
-
-  const handleRegionChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-    setRouteSpeedRequest({
-      ...routeSpeedRequest,
-      region:
-        event.target.value === 'all' ? null : (event.target.value as string),
-    })
+  const handleSubmit = () => {
+    setSubmittedRouteSpeedRequest(routeSpeedRequest)
+    setAnchorEl(null) // Close the popover after submitting filters
   }
 
   return (
-    <Box>
-      <Button
-        variant="outlined"
-        startIcon={<TuneOutlinedIcon />}
-        onClick={handleClick}
-        sx={{ textTransform: 'none' }}
-      >
-        Filters
-      </Button>
+    <Box display="flex" alignItems="center" gap={2}>
+      <Badge badgeContent={filterCount} color="primary">
+        <Button
+          variant="outlined"
+          startIcon={<TuneOutlinedIcon />}
+          onClick={handleClick}
+          sx={{ textTransform: 'none' }}
+        >
+          Filters
+        </Button>
+      </Badge>
       <Popover
         open={open}
         anchorEl={anchorEl}
         onClose={handleClose}
         anchorOrigin={{
           vertical: 'bottom',
-          horizontal: 'left',
+          horizontal: 'right',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
         }}
       >
-        <Box sx={{ p: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
-          {/* County Filter */}
-          <FormControl fullWidth>
-            <InputLabel id="county-label">County</InputLabel>
-            <Select
-              labelId="county-label"
-              value={routeSpeedRequest.county || 'all'}
-              onChange={handleCountyChange}
-              sx={{ minWidth: 200 }}
-              label="County"
-            >
-              <MenuItem value="all">All</MenuItem>
-              {counties?.map((county) => (
-                <MenuItem key={county.id} value={county.name}>
-                  {county.name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+        <Box
+          sx={{
+            p: 2,
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 2,
+            minWidth: '300px',
+          }}
+        >
+          {/* County Autocomplete */}
+          <Autocomplete
+            value={
+              counties.find(
+                (option) => option.name === routeSpeedRequest.county
+              ) || null
+            }
+            options={customSort(counties, routeSpeedRequest.county || '')}
+            getOptionLabel={(option) => formatLabel(option)}
+            onChange={(event, newValue) =>
+              handleAutocompleteChange('county', newValue)
+            }
+            renderInput={(params) => <TextField {...params} label="County" />}
+            renderOption={(props, option, { inputValue }) => {
+              const matches = match(option.name, inputValue)
+              const parts = parse(option.name, matches)
+              return (
+                <li {...props} key={option.id}>
+                  {parts.map((part, index) => (
+                    <span
+                      key={index}
+                      style={{ fontWeight: part.highlight ? 700 : 400 }}
+                    >
+                      {part.text}
+                    </span>
+                  ))}
+                </li>
+              )
+            }}
+          />
 
-          {/* Access Category Filter */}
-          <FormControl fullWidth>
-            <InputLabel id="access-category-label">Access Category</InputLabel>
-            <Select
-              labelId="access-category-label"
-              value={routeSpeedRequest.accessCategory || 'all'}
-              onChange={handleAccessCategoryChange}
-              sx={{ minWidth: 200 }}
-              label="Access Category"
-            >
-              <MenuItem value="all">All</MenuItem>
-              {accessCategories?.map((category) => (
-                <MenuItem key={category.id} value={category.name}>
-                  {category.name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+          {/* Access Category Autocomplete */}
+          <Autocomplete
+            value={
+              accessCategories.find(
+                (option) => option.name === routeSpeedRequest.accessCategory
+              ) || null
+            }
+            options={customSort(
+              accessCategories,
+              routeSpeedRequest.accessCategory || ''
+            )}
+            getOptionLabel={(option) => formatLabel(option)}
+            onChange={(event, newValue) =>
+              handleAutocompleteChange('accessCategory', newValue)
+            }
+            renderInput={(params) => (
+              <TextField {...params} label="Access Category" />
+            )}
+            renderOption={(props, option, { inputValue }) => {
+              const matches = match(option.name, inputValue)
+              const parts = parse(option.name, matches)
+              return (
+                <li {...props} key={option.id}>
+                  {parts.map((part, index) => (
+                    <span
+                      key={index}
+                      style={{ fontWeight: part.highlight ? 700 : 400 }}
+                    >
+                      {part.text}
+                    </span>
+                  ))}
+                </li>
+              )
+            }}
+          />
 
-          {/* City Filter */}
-          <FormControl fullWidth>
-            <InputLabel id="city-label">City</InputLabel>
-            <Select
-              labelId="city-label"
-              value={routeSpeedRequest.city || 'all'}
-              onChange={handleCityChange}
-              sx={{ minWidth: 200 }}
-              label="City"
-            >
-              <MenuItem value="all">All</MenuItem>
-              {cities?.map((city) => (
-                <MenuItem key={city.id} value={city.name}>
-                  {city.name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+          {/* City Autocomplete */}
+          <Autocomplete
+            value={
+              cities.find((option) => option.name === routeSpeedRequest.city) ||
+              null
+            }
+            options={customSort(cities, routeSpeedRequest.city || '')}
+            getOptionLabel={(option) => formatLabel(option)}
+            onChange={(event, newValue) =>
+              handleAutocompleteChange('city', newValue)
+            }
+            renderInput={(params) => <TextField {...params} label="City" />}
+            renderOption={(props, option, { inputValue }) => {
+              const matches = match(option.name, inputValue)
+              const parts = parse(option.name, matches)
+              return (
+                <li {...props} key={option.id}>
+                  {parts.map((part, index) => (
+                    <span
+                      key={index}
+                      style={{ fontWeight: part.highlight ? 700 : 400 }}
+                    >
+                      {part.text}
+                    </span>
+                  ))}
+                </li>
+              )
+            }}
+          />
 
-          {/* Functional Type Filter */}
-          <FormControl fullWidth>
-            <InputLabel id="functional-type-label">Functional Type</InputLabel>
-            <Select
-              labelId="functional-type-label"
-              value={routeSpeedRequest.functionalType || 'all'}
-              onChange={handleFunctionalTypeChange}
-              sx={{ minWidth: 200 }}
-              label="Functional Type"
-            >
-              <MenuItem value="all">All</MenuItem>
-              {functionalTypes?.map((type) => (
-                <MenuItem key={type.id} value={type.name}>
-                  {type.name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+          {/* Functional Type Autocomplete */}
+          <Autocomplete
+            value={
+              functionalTypes.find(
+                (option) => option.name === routeSpeedRequest.functionalType
+              ) || null
+            }
+            options={customSort(
+              functionalTypes,
+              routeSpeedRequest.functionalType || ''
+            )}
+            getOptionLabel={(option) => formatLabel(option)}
+            onChange={(event, newValue) =>
+              handleAutocompleteChange('functionalType', newValue)
+            }
+            renderInput={(params) => (
+              <TextField {...params} label="Functional Type" />
+            )}
+            renderOption={(props, option, { inputValue }) => {
+              const matches = match(option.name, inputValue)
+              const parts = parse(option.name, matches)
+              return (
+                <li {...props} key={option.id}>
+                  {parts.map((part, index) => (
+                    <span
+                      key={index}
+                      style={{ fontWeight: part.highlight ? 700 : 400 }}
+                    >
+                      {part.text}
+                    </span>
+                  ))}
+                </li>
+              )
+            }}
+          />
 
-          {/* Region Filter */}
-          <FormControl fullWidth>
-            <InputLabel id="region-label">Region</InputLabel>
-            <Select
-              labelId="region-label"
-              value={routeSpeedRequest.region || 'all'}
-              onChange={handleRegionChange}
-              sx={{ minWidth: 200 }}
-              label="Region"
-            >
-              <MenuItem value="all">All</MenuItem>
-              {regions?.map((region) => (
-                <MenuItem key={region.id} value={region.name}>
-                  {region.name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+          {/* Region Autocomplete */}
+          <Autocomplete
+            value={
+              regions.find(
+                (option) => option.name === routeSpeedRequest.region
+              ) || null
+            }
+            options={customSort(regions, routeSpeedRequest.region || '')}
+            getOptionLabel={(option) => formatLabel(option)}
+            onChange={(event, newValue) =>
+              handleAutocompleteChange('region', newValue)
+            }
+            renderInput={(params) => <TextField {...params} label="Region" />}
+            renderOption={(props, option, { inputValue }) => {
+              const matches = match(option.name, inputValue)
+              const parts = parse(option.name, matches)
+              return (
+                <li {...props} key={option.id}>
+                  {parts.map((part, index) => (
+                    <span
+                      key={index}
+                      style={{ fontWeight: part.highlight ? 700 : 400 }}
+                    >
+                      {part.text}
+                    </span>
+                  ))}
+                </li>
+              )
+            }}
+          />
+
+          <Button variant="contained" color="primary" onClick={handleSubmit}>
+            Apply Filters
+          </Button>
         </Box>
       </Popover>
     </Box>
