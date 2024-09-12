@@ -12,4 +12,9 @@ export interface RouteSpeedRequest {
   violationThreshold: number
   customStartTime?: Date
   customEndTime?: Date
+  region: string | null
+  county: string | null
+  city: string | null
+  accessCategory: string | null
+  functionalType: string | null
 }

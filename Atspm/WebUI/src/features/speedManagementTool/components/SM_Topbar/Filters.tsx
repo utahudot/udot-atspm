@@ -1,3 +1,4 @@
+import AutocompleteInput from '@/components/AutocompleteInput'
 import { useGetAccessCategories } from '@/features/speedManagementTool/api/getAccessCategory'
 import { useGetCities } from '@/features/speedManagementTool/api/getCity'
 import { useGetCounties } from '@/features/speedManagementTool/api/getCounty'
@@ -5,25 +6,18 @@ import { useGetFunctionalTypes } from '@/features/speedManagementTool/api/getFun
 import { useGetRegions } from '@/features/speedManagementTool/api/getRegion'
 import useStore from '@/features/speedManagementTool/speedManagementStore'
 import TuneOutlinedIcon from '@mui/icons-material/TuneOutlined'
-import {
-  Autocomplete,
-  Badge,
-  Box,
-  Button,
-  Popover,
-  TextField,
-} from '@mui/material'
-import match from 'autosuggest-highlight/match'
-import parse from 'autosuggest-highlight/parse'
+import { Badge, Box, Button, Popover } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 
-const formatLabel = (option: any) => option.name
+const optionalFilters = [
+  'county',
+  'city',
+  'accessCategory',
+  'functionalType',
+  'region',
+]
 
-const customSort = (options: any[], value: string) => {
-  return options.sort((a, b) => a.name.localeCompare(b.name))
-}
-
-export default function FiltersButton() {
+const Filters = () => {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const { data: countiesData } = useGetCounties()
   const { data: accessCategoriesData } = useGetAccessCategories()
@@ -46,14 +40,6 @@ export default function FiltersButton() {
 
   const [filterCount, setFilterCount] = useState(0)
 
-  const optionalFilters = [
-    'county',
-    'city',
-    'accessCategory',
-    'functionalType',
-    'region',
-  ]
-
   useEffect(() => {
     const activeFilters = optionalFilters.filter(
       (key) =>
@@ -74,16 +60,19 @@ export default function FiltersButton() {
 
   const open = Boolean(anchorEl)
 
-  const handleAutocompleteChange = (key: string, value: any) => {
+  const handleAutocompleteChange = <T,>(
+    key: keyof typeof routeSpeedRequest,
+    value: T | null
+  ) => {
     setRouteSpeedRequest({
       ...routeSpeedRequest,
-      [key]: value ? value.name : null,
+      [key]: value,
     })
   }
 
   const handleSubmit = () => {
     setSubmittedRouteSpeedRequest(routeSpeedRequest)
-    setAnchorEl(null) // Close the popover after submitting filters
+    setAnchorEl(null)
   }
 
   return (
@@ -121,167 +110,58 @@ export default function FiltersButton() {
           }}
         >
           {/* County Autocomplete */}
-          <Autocomplete
-            value={
-              counties.find(
-                (option) => option.name === routeSpeedRequest.county
-              ) || null
-            }
-            options={customSort(counties, routeSpeedRequest.county || '')}
-            getOptionLabel={(option) => formatLabel(option)}
-            onChange={(event, newValue) =>
+          <AutocompleteInput
+            label="County"
+            options={counties}
+            value={routeSpeedRequest.county}
+            onChange={(_, newValue) =>
               handleAutocompleteChange('county', newValue)
             }
-            renderInput={(params) => <TextField {...params} label="County" />}
-            renderOption={(props, option, { inputValue }) => {
-              const matches = match(option.name, inputValue)
-              const parts = parse(option.name, matches)
-              return (
-                <li {...props} key={option.id}>
-                  {parts.map((part, index) => (
-                    <span
-                      key={index}
-                      style={{ fontWeight: part.highlight ? 700 : 400 }}
-                    >
-                      {part.text}
-                    </span>
-                  ))}
-                </li>
-              )
-            }}
+            getOptionLabelProperty="name"
           />
 
           {/* Access Category Autocomplete */}
-          <Autocomplete
-            value={
-              accessCategories.find(
-                (option) => option.name === routeSpeedRequest.accessCategory
-              ) || null
-            }
-            options={customSort(
-              accessCategories,
-              routeSpeedRequest.accessCategory || ''
-            )}
-            getOptionLabel={(option) => formatLabel(option)}
+          <AutocompleteInput
+            label="Access Category"
+            options={accessCategories}
+            value={routeSpeedRequest.accessCategory}
             onChange={(event, newValue) =>
               handleAutocompleteChange('accessCategory', newValue)
             }
-            renderInput={(params) => (
-              <TextField {...params} label="Access Category" />
-            )}
-            renderOption={(props, option, { inputValue }) => {
-              const matches = match(option.name, inputValue)
-              const parts = parse(option.name, matches)
-              return (
-                <li {...props} key={option.id}>
-                  {parts.map((part, index) => (
-                    <span
-                      key={index}
-                      style={{ fontWeight: part.highlight ? 700 : 400 }}
-                    >
-                      {part.text}
-                    </span>
-                  ))}
-                </li>
-              )
-            }}
+            getOptionLabelProperty="name"
           />
 
           {/* City Autocomplete */}
-          <Autocomplete
-            value={
-              cities.find((option) => option.name === routeSpeedRequest.city) ||
-              null
-            }
-            options={customSort(cities, routeSpeedRequest.city || '')}
-            getOptionLabel={(option) => formatLabel(option)}
-            onChange={(event, newValue) =>
+          <AutocompleteInput
+            label="City"
+            options={cities}
+            value={routeSpeedRequest.city}
+            onChange={(_, newValue) =>
               handleAutocompleteChange('city', newValue)
             }
-            renderInput={(params) => <TextField {...params} label="City" />}
-            renderOption={(props, option, { inputValue }) => {
-              const matches = match(option.name, inputValue)
-              const parts = parse(option.name, matches)
-              return (
-                <li {...props} key={option.id}>
-                  {parts.map((part, index) => (
-                    <span
-                      key={index}
-                      style={{ fontWeight: part.highlight ? 700 : 400 }}
-                    >
-                      {part.text}
-                    </span>
-                  ))}
-                </li>
-              )
-            }}
+            getOptionLabelProperty="name"
           />
 
           {/* Functional Type Autocomplete */}
-          <Autocomplete
-            value={
-              functionalTypes.find(
-                (option) => option.name === routeSpeedRequest.functionalType
-              ) || null
-            }
-            options={customSort(
-              functionalTypes,
-              routeSpeedRequest.functionalType || ''
-            )}
-            getOptionLabel={(option) => formatLabel(option)}
-            onChange={(event, newValue) =>
+          <AutocompleteInput
+            label="Functional Type"
+            options={functionalTypes}
+            value={routeSpeedRequest.functionalType}
+            onChange={(_, newValue) =>
               handleAutocompleteChange('functionalType', newValue)
             }
-            renderInput={(params) => (
-              <TextField {...params} label="Functional Type" />
-            )}
-            renderOption={(props, option, { inputValue }) => {
-              const matches = match(option.name, inputValue)
-              const parts = parse(option.name, matches)
-              return (
-                <li {...props} key={option.id}>
-                  {parts.map((part, index) => (
-                    <span
-                      key={index}
-                      style={{ fontWeight: part.highlight ? 700 : 400 }}
-                    >
-                      {part.text}
-                    </span>
-                  ))}
-                </li>
-              )
-            }}
+            getOptionLabelProperty="name"
           />
 
           {/* Region Autocomplete */}
-          <Autocomplete
-            value={
-              regions.find(
-                (option) => option.name === routeSpeedRequest.region
-              ) || null
-            }
-            options={customSort(regions, routeSpeedRequest.region || '')}
-            getOptionLabel={(option) => formatLabel(option)}
-            onChange={(event, newValue) =>
+          <AutocompleteInput
+            label="Region"
+            options={regions}
+            value={routeSpeedRequest.region}
+            onChange={(_, newValue) =>
               handleAutocompleteChange('region', newValue)
             }
-            renderInput={(params) => <TextField {...params} label="Region" />}
-            renderOption={(props, option, { inputValue }) => {
-              const matches = match(option.name, inputValue)
-              const parts = parse(option.name, matches)
-              return (
-                <li {...props} key={option.id}>
-                  {parts.map((part, index) => (
-                    <span
-                      key={index}
-                      style={{ fontWeight: part.highlight ? 700 : 400 }}
-                    >
-                      {part.text}
-                    </span>
-                  ))}
-                </li>
-              )
-            }}
+            getOptionLabelProperty="name"
           />
 
           <Button variant="contained" color="primary" onClick={handleSubmit}>
@@ -292,3 +172,5 @@ export default function FiltersButton() {
     </Box>
   )
 }
+
+export default Filters
