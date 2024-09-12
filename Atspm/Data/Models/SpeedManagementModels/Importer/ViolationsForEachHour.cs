@@ -3,7 +3,7 @@
     public class ViolationsForEachHour
     {
         public DateTime Date { get; set; }
-        public int SpeedLimit { get; set; }
+        public long SpeedLimit { get; set; }
 
         public int ViolationsHour0 { get; set; }
         public int ExtremeViolationsHour0 { get; set; }

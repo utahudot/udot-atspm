@@ -44,7 +44,7 @@ namespace SpeedManagementImporter.Services.Pems
 
             List<SegmentEntityWithSpeedAndAlternateIdentifier> routeEntities = await segmentEntityRepository.GetEntitiesWithSpeedAndAlternateIdentifierForSourceId(sourceId);
 
-            var alternateIdentifiers = routeEntities.Where(r => r.AlternateIdentifier != null).Select(r => r.AlternateIdentifier).Distinct().ToList();
+            var alternateIdentifiers = routeEntities.Where(r => r.AlternateIdentifier != null).ToList().Select(r => r.AlternateIdentifier).Distinct().ToList();
 
             var tasks = new List<Task>();
 
@@ -54,7 +54,7 @@ namespace SpeedManagementImporter.Services.Pems
                 {
                     var localSpeeds = new List<HourlySpeed>();
 
-                    for (DateTime date = startDate; date < endDate; date = date.AddDays(1))
+                    for (DateTime date = startDate; date <= endDate; date = date.AddDays(1))
                     {
                         var split = pemsRoute.Split('-');
                         if (split.Length > 2)
@@ -67,7 +67,8 @@ namespace SpeedManagementImporter.Services.Pems
 
                         if (pemsFlows != null)
                         {
-                            Dictionary<Guid, List<SegmentEntityWithSpeedAndAlternateIdentifier>> routesAlternateIdentifier = routeEntities.Where(r => r.AlternateIdentifier == pemsRoute).GroupBy(re => re.SegmentId).ToDictionary(group => group.Key, group => group.ToList());
+                            Dictionary<Guid, List<SegmentEntityWithSpeedAndAlternateIdentifier>> routesAlternateIdentifier = routeEntities.Where(r => r.AlternateIdentifier == pemsRoute).ToList().GroupBy(re => re.SegmentId).ToList().ToDictionary(group => group.Key, group => group.ToList());
+
 
                             Dictionary<String, ViolationsForEachHour> violationsForToday = new Dictionary<String, ViolationsForEachHour>();
 
@@ -119,12 +120,16 @@ namespace SpeedManagementImporter.Services.Pems
                                         int extremeViolation = 0;
                                         int violation = 0;
                                         int dataQuality = 0;
+
+                                        //TODO check if pemsFlow or PemsStat should be used.
                                         if (pemsFlows != null)
                                         {
                                             var flowByRoute = pemsFlows.Where(p => stationIds.Contains(Convert.ToInt32(p.station))).ToList();
                                             averageFlowForHour = GetFlowValuesForHour(flowByRoute, i);
                                             foreach (var currentFlowRoute in flowByRoute)
                                             {
+                                                //See how often we hit this and if it is worth it to just have it in here...
+                                                //var hourlyViolations = await GetViolationsForEachHourInTheDay(date, currentFlowRoute.station, speedLimit, true);
                                                 extremeViolation = extremeViolation + violationsForToday[currentFlowRoute.station].GetExtremeViolation(i);
                                                 violation = violation + violationsForToday[currentFlowRoute.station].GetViolation(i);
                                                 dataQuality = dataQuality + violationsForToday[currentFlowRoute.station].GetDataQuality(i);
@@ -380,7 +385,7 @@ namespace SpeedManagementImporter.Services.Pems
             }
         }
 
-        private async Task<ViolationsForEachHour> GetViolationsForEachHourInTheDay(DateTime originalDateTime, string stationId, int speedLimit, Boolean freeway, int retry = 0)
+        private async Task<ViolationsForEachHour> GetViolationsForEachHourInTheDay(DateTime originalDateTime, string stationId, long speedLimit, Boolean freeway, int retry = 0)
         {
             if (this.sessionId.IsNullOrEmpty())
             {
@@ -409,6 +414,7 @@ namespace SpeedManagementImporter.Services.Pems
                         desiredMinute,
                         0 // seconds
                     );
+                    Console.WriteLine($"Violations - Pulling out 20 second Data");
                     string formattedDate = date.ToString("MM/dd/yyyy HH:mm");
                     string urlEncodedDate = HttpUtility.UrlEncode(formattedDate);
                     long unixTime = ((DateTimeOffset)date).ToUnixTimeSeconds();
@@ -439,7 +445,7 @@ namespace SpeedManagementImporter.Services.Pems
                     //Call the endpoint
                     var TwentySecondResults = await httpClient.GetAsync(downloadDataUrl);
                     var TwentySecondSpeedString = await TwentySecondResults.Content.ReadAsStringAsync();
-
+                    Console.WriteLine($"Violations - Splitting 20 second data in");
                     List<List<String>> rowsOfColumns = SplitToTimeGrid(TwentySecondSpeedString);
                     ViolationsForEachHour violationsForEachHour = GridToObject(speedLimit, freeway, rowsOfColumns);
 
@@ -458,7 +464,7 @@ namespace SpeedManagementImporter.Services.Pems
             }
         }
 
-        private static ViolationsForEachHour GridToObject(int speedLimit, bool freeway, List<List<string>> rowsOfColumns)
+        private static ViolationsForEachHour GridToObject(long speedLimit, bool freeway, List<List<string>> rowsOfColumns)
         {
             //These are important because this is how the grid is populated
             //Always skip the first location because that is the time
@@ -479,7 +485,7 @@ namespace SpeedManagementImporter.Services.Pems
                 //These will be the combine violations that will be added to
                 var combinedSpeedViolations = 0;
                 var combinedExtremeSpeedViolations = 0;
-                var missingData = 0;
+                var dataInFlowGreaterThan0 = 0;
                 //Cycle through each lane to get the violations
                 for (var lanes = 0; lanes < lanesCount; lanes++)
                 {
@@ -507,12 +513,13 @@ namespace SpeedManagementImporter.Services.Pems
                         extremeSpeedViolationsFlow = extremeSpeedViolations?
                             .Sum(i => int.TryParse(i[flowLane], out int flow) ? flow : 0) ?? 0;
                     }
-                    missingData = missingData + dataForTheHour.Count(hourRow => (!hourRow[flowLane].IsNullOrEmpty() || !hourRow[flowLane].Equals(0)) && hourRow[speedLane].IsNullOrEmpty());
+                    dataInFlowGreaterThan0 = dataInFlowGreaterThan0 + dataForTheHour.Count(hourRow => !hourRow[flowLane].Equals(0));
+
                     combinedSpeedViolations = combinedSpeedViolations + speedViolationsFlow;
                     combinedExtremeSpeedViolations = combinedExtremeSpeedViolations + extremeSpeedViolationsFlow;
                 }
                 //Add that combine violations to the object
-                var dataQuality = 100 - (missingData / (lanesCount * dataForTheHour.Count));
+                var dataQuality = ((lanesCount * dataForTheHour.Count) / dataInFlowGreaterThan0);
                 violationsForEachHour = violationsForEachHour.PopulateViolationsForEachHour(hour, combinedSpeedViolations, combinedExtremeSpeedViolations, dataQuality);
             }
 
