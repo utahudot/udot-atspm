@@ -1,5 +1,4 @@
-import transformSpeedOverTimeData from '@/features/charts/speedManagementTool/speedOverTime/speedOverTime.transformer'
-// import { transformSpeedOverDistanceData } from '@/features/charts/SpeedOverDistance/SpeedOverDistance.transformer'
+import transformSpeedOverDistanceData from '@/features/charts/speedManagementTool/speedOverDistance/components/speedOverDistance.transformer'
 import { speedAxios } from '@/lib/axios'
 import { ExtractFnReturnType, QueryConfig } from '@/lib/react-query'
 import { useQuery } from 'react-query'
@@ -26,7 +25,7 @@ export const getSpeedOverDistances = async (
   options: SpeedOverDistanceParams
 ): Promise<SpeedOverDistanceResponse> => {
   const response = await speedAxios.post('api/SpeedOverDistance', options)
-  return transformSpeedOverTimeData(response)
+  return transformSpeedOverDistanceData(response)
 }
 
 type QueryFnType = typeof getSpeedOverDistances

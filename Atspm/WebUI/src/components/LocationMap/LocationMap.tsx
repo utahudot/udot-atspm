@@ -170,7 +170,7 @@ const LocationMap = ({
     setIsPopperOpen(false)
   }
 
-  if (!initialLatLong) {
+  if (!mapInfo) {
     return <div>Loading...</div> // or some other loading state
   }
 
