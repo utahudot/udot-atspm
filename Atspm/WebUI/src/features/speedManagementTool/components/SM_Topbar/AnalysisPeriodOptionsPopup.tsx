@@ -14,7 +14,7 @@ export default function AnalysisPeriodOptionsPopup() {
 
   const analysisPeriodString = routeSpeedRequest.analysisPeriod
     ? AnalysisPeriod[routeSpeedRequest.analysisPeriod]
-    : AnalysisPeriod.AllDay
+    : 'AllDay'
 
   const getAnalysisPeriodLabel = () => {
     switch (routeSpeedRequest.analysisPeriod) {
