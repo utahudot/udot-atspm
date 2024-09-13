@@ -92,6 +92,9 @@ namespace DatabaseInstaller.Services
         private async Task SeedAdminUserAndAssignRole()
         {
             using var scope = _serviceProvider.CreateScope();
+            var identityContext = scope.ServiceProvider.GetRequiredService<IdentityContext>();
+            // Set the connection string dynamically
+            identityContext.Database.GetDbConnection().ConnectionString = _config.IdentityConnection;
             var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
             // Check if the admin user already exists
