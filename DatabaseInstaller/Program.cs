@@ -47,16 +47,14 @@ cmdBuilder.UseHost(a =>
     {
         // Add required services and repositories for DatabaseInstaller
         services.AddAtspmDbContext(hostContext);
-        services.AddAtspmEFConfigRepositories();
-        services.AddAtspmEFEventLogRepositories();
-        services.AddAtspmEFAggregationRepositories();
+
+        // Ensure command-line options take precedence over configuration file settings
+        services.Configure<UpdateCommandConfiguration>(hostContext.Configuration.GetSection("CommandLineOptions"));
+        services.AddOptions<UpdateCommandConfiguration>()
+                .BindCommandLine();
 
         // Register custom commands
         services.AddTransient<UpdateCommand>();  // Add your UpdateCommand
-        services.AddSingleton<DatabaseInstallerCommands>();  // Add root command
-
-        services.AddOptions<UpdateCommandConfiguration>()
-                .BindCommandLine();
     });
 }, host =>
 {
@@ -74,3 +72,4 @@ cmdBuilder.UseHost(a =>
 // Build the command parser and execute
 var cmdParser = cmdBuilder.Build();
 await cmdParser.InvokeAsync(args);
+
