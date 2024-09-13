@@ -443,7 +443,6 @@ namespace SpeedManagementImporter.Services.Pems
                     //Call the endpoint
                     var TwentySecondResults = await httpClient.GetAsync(downloadDataUrl);
                     var TwentySecondSpeedString = await TwentySecondResults.Content.ReadAsStringAsync();
-                    Console.WriteLine($"Violations - Splitting 20 second data in");
                     List<List<String>> rowsOfColumns = SplitToTimeGrid(TwentySecondSpeedString);
                     ViolationsForEachHour violationsForEachHour = GridToObject(speedLimit, freeway, rowsOfColumns);
 
