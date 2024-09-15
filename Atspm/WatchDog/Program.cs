@@ -27,6 +27,7 @@ using Utah.Udot.Atspm.Infrastructure.Repositories;
 using Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories;
 using Utah.Udot.Atspm.Infrastructure.Repositories.EventLogRepositories;
 using Utah.Udot.Atspm.WatchDog.Services;
+using Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices;
 using Utah.Udot.ATSPM.WatchDog.Services;
 
 namespace Utah.Udot.Atspm.WatchDog
@@ -50,6 +51,7 @@ namespace Utah.Udot.Atspm.WatchDog
 
                     s.AddAtspmDbContext(h);
                     s.AddScoped<ILocationRepository, LocationEFRepository>();
+                    s.AddScoped<IWatchDogIgnoreEventRepository, WatchDogIgnoreEventEFRepository>();
                     s.AddScoped<IIndianaEventLogRepository, IndianaEventLogEFRepository>();
                     s.AddScoped<IWatchDogEventLogRepository, WatchDogLogEventEFRepository>();
                     s.AddScoped<IRegionsRepository, RegionEFRepository>();
@@ -65,6 +67,7 @@ namespace Utah.Udot.Atspm.WatchDog
                     s.AddScoped<AnalysisPhaseService>();
                     s.AddScoped<PhaseService>();
                     s.AddScoped<SegmentedErrorsService>();
+                    s.AddScoped<WatchDogIgnoreEventService>();
 
                     // Register the hosted service with the date
                     s.AddHostedService<ScanHostedService>();

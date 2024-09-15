@@ -1,7 +1,48 @@
-﻿namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
+﻿using Utah.Udot.Atspm.Repositories;
+
+namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
 {
     public class WatchDogIgnoreEventService
     {
+        private readonly IWatchDogIgnoreEventRepository watchDogIgnoreEventLogRepository;
+        private readonly IWatchDogEventLogRepository watchDogEventLogRepository;
 
+        public WatchDogIgnoreEventService(IWatchDogIgnoreEventRepository watchDogIgnoreEventLogRepository, IWatchDogEventLogRepository watchDogEventLogRepository)
+        {
+            this.watchDogIgnoreEventLogRepository = watchDogIgnoreEventLogRepository;
+            this.watchDogEventLogRepository = watchDogEventLogRepository;
+        }
+
+        public List<WatchDogLogEvent> GetFilteredWatchDogEventsForEmail(List<WatchDogLogEvent> watchDogLogEvents)
+        {
+            var ignoreEvents = watchDogIgnoreEventLogRepository.GetList();
+
+            var result = watchDogLogEvents.Where(logEvent => !ignoreEvents.Any(ignoreEvent =>
+                ignoreEvent.LocationIdentifier == logEvent.LocationIdentifier && 
+                logEvent.Timestamp >= ignoreEvent.Start && 
+                logEvent.Timestamp <= ignoreEvent.End &&
+                (ignoreEvent.ComponentType == null || ignoreEvent.ComponentType == logEvent.ComponentType) && 
+                (ignoreEvent.ComponentId == null || ignoreEvent.ComponentId == logEvent.ComponentId) &&
+                (ignoreEvent.Phase == null || ignoreEvent.Phase == logEvent.Phase)))
+                .ToList();
+
+            return result;
+        }
+
+        public IQueryable<WatchDogLogEvent> GetFilteredWatchDogEventsForReport()
+        {
+            var ignoreEvents = watchDogIgnoreEventLogRepository.GetList();
+            var watchDogLogEvents = watchDogEventLogRepository.GetList();
+
+            var result = watchDogLogEvents.Where(logEvent => !ignoreEvents.Any(ignoreEvent =>
+                ignoreEvent.LocationIdentifier == logEvent.LocationIdentifier &&
+                logEvent.Timestamp >= ignoreEvent.Start &&
+                logEvent.Timestamp <= ignoreEvent.End &&
+                (ignoreEvent.ComponentType == null || ignoreEvent.ComponentType == logEvent.ComponentType) &&
+                (ignoreEvent.ComponentId == null || ignoreEvent.ComponentId == logEvent.ComponentId) &&
+                (ignoreEvent.Phase == null || ignoreEvent.Phase == logEvent.Phase)));
+
+            return result;
+        }
     }
 }
