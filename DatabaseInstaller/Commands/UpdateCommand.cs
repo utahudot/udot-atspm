@@ -15,7 +15,6 @@
 // limitations under the License.
 #endregion
 
-using DatabaseInstaller.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.CommandLine;
@@ -29,20 +28,22 @@ namespace DatabaseInstaller.Commands
     {
         public UpdateCommand() : base("update", "Apply migrations and optionally seed the admin user")
         {
-            AddArgument(ConfigConnectionArgument);
-            AddArgument(AggregationConnectionArgument);
-            AddArgument(EventLogConnectionArgument);
-            AddArgument(IdentityConnectionArgument);
+            AddOption(ConfigConnectionOption);
+            AddOption(AggregationConnectionOption);
+            AddOption(EventLogConnectionOption);
+            AddOption(IdentityConnectionOption);
+            AddOption(ProviderOption);
             AddOption(AdminEmailOption);
             AddOption(AdminPasswordOption);
             AddOption(AdminRoleOption);
             AddOption(SeedAdminOption);
         }
 
-        public Argument<string> ConfigConnectionArgument { get; set; } = new("config-connection", "Connection string for ConfigContext");
-        public Argument<string> AggregationConnectionArgument { get; set; } = new("aggregation-connection", "Connection string for AggregationContext");
-        public Argument<string> EventLogConnectionArgument { get; set; } = new("eventlog-connection", "Connection string for EventLogContext");
-        public Argument<string> IdentityConnectionArgument { get; set; } = new("identity-connection", "Connection string for IdentityContext");
+        public Option<string> ConfigConnectionOption { get; set; } = new("--config-connection", "Connection string for ConfigContext");
+        public Option<string> AggregationConnectionOption { get; set; } = new("--aggregation-connection", "Connection string for AggregationContext");
+        public Option<string> EventLogConnectionOption { get; set; } = new("--eventlog-connection", "Connection string for EventLogContext");
+        public Option<string> IdentityConnectionOption { get; set; } = new("--identity-connection", "Connection string for IdentityContext");
+        public Option<string> ProviderOption { get; set; } = new("--provider", "Provider string for Context");
 
         public Option<string> AdminEmailOption { get; set; } = new("--admin-email", "Admin user's email address");
         public Option<string> AdminPasswordOption { get; set; } = new("--admin-password", "Admin user's password");
@@ -53,10 +54,11 @@ namespace DatabaseInstaller.Commands
         {
             var binder = new ModelBinder<UpdateCommandConfiguration>();
 
-            binder.BindMemberFromValue(b => b.ConfigConnection, ConfigConnectionArgument);
-            binder.BindMemberFromValue(b => b.AggregationConnection, AggregationConnectionArgument);
-            binder.BindMemberFromValue(b => b.EventLogConnection, EventLogConnectionArgument);
-            binder.BindMemberFromValue(b => b.IdentityConnection, IdentityConnectionArgument);
+            binder.BindMemberFromValue(b => b.ConfigConnection, ConfigConnectionOption);
+            binder.BindMemberFromValue(b => b.AggregationConnection, AggregationConnectionOption);
+            binder.BindMemberFromValue(b => b.EventLogConnection, EventLogConnectionOption);
+            binder.BindMemberFromValue(b => b.IdentityConnection, IdentityConnectionOption);
+            binder.BindMemberFromValue(b => b.Provider, ProviderOption);
             binder.BindMemberFromValue(b => b.AdminEmail, AdminEmailOption);
             binder.BindMemberFromValue(b => b.AdminPassword, AdminPasswordOption);
             binder.BindMemberFromValue(b => b.AdminRole, AdminRoleOption);
@@ -69,7 +71,7 @@ namespace DatabaseInstaller.Commands
         {
             services.AddSingleton(GetOptionsBinder());
             services.AddOptions<UpdateCommandConfiguration>().BindCommandLine();
-            services.AddHostedService<UpdateCommandHostedService>();
+            //services.AddHostedService<UpdateCommandHostedService>();
         }
     }
 
@@ -79,6 +81,7 @@ namespace DatabaseInstaller.Commands
         public string AggregationConnection { get; set; }
         public string EventLogConnection { get; set; }
         public string IdentityConnection { get; set; }
+        public string Provider { get; set; }
         public string AdminEmail { get; set; }
         public string AdminPassword { get; set; }
         public string AdminRole { get; set; }
