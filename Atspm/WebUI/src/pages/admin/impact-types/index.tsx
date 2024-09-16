@@ -1,11 +1,11 @@
+import { useGetApiImpactType } from '@/api/speedManagement'
 import GenericAdminChart, {
   pageNameToHeaders,
 } from '@/components/GenericAdminChart'
 import { ResponsivePageLayout } from '@/components/ResponsivePage'
-import { PageNames, useViewPage } from '@/features/identity/pagesCheck'
+import { PageNames } from '@/features/identity/pagesCheck'
 import { useDeleteImpactType } from '@/features/speedManagementTool/api/deleteImpactType'
 import { useEditImpactType } from '@/features/speedManagementTool/api/editImpactType'
-import { useGetImpactTypes } from '@/features/speedManagementTool/api/getImpactTypes'
 import { usePostImpactType } from '@/features/speedManagementTool/api/postImpactType'
 import { ImpactType } from '@/features/speedManagementTool/types/impact'
 import { Backdrop, CircularProgress } from '@mui/material'
@@ -13,7 +13,7 @@ import { GridColDef } from '@mui/x-data-grid'
 import { useState } from 'react'
 
 const ImpactTypeAdmin = () => {
-//   const pageAccess = useViewPage(PageNames.ImpactTypes)
+  //   const pageAccess = useViewPage(PageNames.ImpactTypes)
 
   const [data, setData] = useState<any>(null)
   const headers: GridColDef[] = pageNameToHeaders.get(
@@ -24,36 +24,36 @@ const ImpactTypeAdmin = () => {
   const deleteMutation = useDeleteImpactType()
   const editMutation = useEditImpactType()
 
-  const { data: impactTypesData, isLoading } = useGetImpactTypes()
+  const { data: impactTypesData, isLoading } = useGetApiImpactType()
 
   const HandleCreateImpactType = async (impactType: ImpactType) => {
-    const { name, description} = impactType
+    const { name, description } = impactType
     try {
-        await createMutation.mutateAsync({name, description})
+      await createMutation.mutateAsync({ name, description })
     } catch (error) {
-        console.error('Mutation Error:', error)
+      console.error('Mutation Error:', error)
     }
   }
 
   const HandleDeleteImpactType = async (impactType: ImpactType) => {
     const { id } = impactType
     try {
-        await deleteMutation.mutateAsync(id)
+      await deleteMutation.mutateAsync(id)
     } catch (error) {
-        console.error('Mutation Error:', error)
+      console.error('Mutation Error:', error)
     }
   }
 
   const HandleEditImpactType = async (impactType: ImpactType) => {
     const { id, name, description } = impactType
-    console.log("EDIT ", id)
+    console.log('EDIT ', id)
     try {
       await editMutation.mutateAsync({ name, description, id })
     } catch (error) {
       console.error('Mutation Error:', error)
     }
   }
-  
+
   const deleteImpactType = (data: ImpactType) => {
     HandleDeleteImpactType(data)
   }

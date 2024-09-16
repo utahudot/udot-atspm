@@ -38,7 +38,7 @@ const AutocompleteInput = <T,>({
         const parts = parse(label, matches)
 
         return (
-          <li {...props}>
+          <li {...props} key={label}>
             {parts.map((part, index) => (
               <span
                 key={index}

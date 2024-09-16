@@ -1,37 +1,34 @@
+// src/lib/axios.ts
+
 import storage from '@/utils/storage'
-import Axios, {
+import axios, {
   AxiosInstance,
+  AxiosRequestConfig,
   AxiosResponse,
   InternalAxiosRequestConfig,
 } from 'axios'
 import { getEnv } from './getEnv'
 
-let configAxios: AxiosInstance
-let reportsAxios: AxiosInstance
-let identityAxios: AxiosInstance
-let dataAxios: AxiosInstance
-let speedAxios: AxiosInstance
+// Retrieve environment variables synchronously
+const env = getEnv()
 
-export async function initializeAxiosInstances() {
-  const env = await getEnv()
+// Initialize Axios instances synchronously
+export const configAxios: AxiosInstance = createAxiosInstance(env.CONFIG_URL)
+export const reportsAxios: AxiosInstance = createAxiosInstance(env.REPORTS_URL)
+export const identityAxios: AxiosInstance = createAxiosInstance(
+  env.IDENTITY_URL
+)
+export const dataAxios: AxiosInstance = createAxiosInstance(env.DATA_URL)
+export const speedAxios: AxiosInstance = createAxiosInstance(env.SPEED_URL)
 
-  configAxios = createAxiosInstance(env.CONFIG_URL)
-  reportsAxios = createAxiosInstance(env.REPORTS_URL)
-  identityAxios = createAxiosInstance(env.IDENTITY_URL)
-  dataAxios = createAxiosInstance(env.DATA_URL)
-  speedAxios = createAxiosInstance(env.SPEED_URL)
-}
-
+// Function to create an Axios instance with common interceptors
 function createAxiosInstance(baseURL: string): AxiosInstance {
-  const instance = Axios.create({ baseURL })
+  const instance = axios.create({ baseURL })
 
   instance.interceptors.request.use(authRequestInterceptor)
   instance.interceptors.response.use(
     (response: AxiosResponse) => {
-      if (baseURL === configAxios?.defaults.baseURL) {
-        response.data = removeZFromTimestamps(response.data)
-      }
-      return response.data
+      return response.data // Modify response data if necessary
     },
     (error) => Promise.reject(error)
   )
@@ -39,6 +36,7 @@ function createAxiosInstance(baseURL: string): AxiosInstance {
   return instance
 }
 
+// Request interceptor to add the Authorization header
 function authRequestInterceptor(config: InternalAxiosRequestConfig) {
   const token = storage.getToken()
   if (token) {
@@ -47,27 +45,23 @@ function authRequestInterceptor(config: InternalAxiosRequestConfig) {
   return config
 }
 
-function isValidTimestamp(value: string) {
-  const iso8601Regex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?Z$/
-  return iso8601Regex.test(value)
+// Define individual request functions for each Axios instance
+export const configRequest = <T>(config: AxiosRequestConfig): Promise<T> => {
+  return configAxios.request<T>(config)
 }
 
-function removeZFromTimestamps(data: any): any {
-  if (typeof data === 'string' && isValidTimestamp(data)) {
-    return data.replace(/Z$/, '')
-  }
-  if (Array.isArray(data)) {
-    return data.map((item) => removeZFromTimestamps(item))
-  }
-  if (typeof data === 'object' && data !== null) {
-    return Object.keys(data).reduce((acc, key) => {
-      acc[key] = removeZFromTimestamps(data[key])
-      return acc
-    }, {} as any)
-  }
-  return data
+export const reportsRequest = <T>(config: AxiosRequestConfig): Promise<T> => {
+  return reportsAxios.request<T>(config)
 }
 
-// Export instances as undefined initially, but they will be initialized
-// when the application starts by calling `initializeAxiosInstances`.
-export { configAxios, dataAxios, identityAxios, reportsAxios, speedAxios }
+export const identityRequest = <T>(config: AxiosRequestConfig): Promise<T> => {
+  return identityAxios.request<T>(config)
+}
+
+export const dataRequest = <T>(config: AxiosRequestConfig): Promise<T> => {
+  return dataAxios.request<T>(config)
+}
+
+export const speedRequest = <T>(config: AxiosRequestConfig): Promise<T> => {
+  return speedAxios.request<T>(config)
+}
