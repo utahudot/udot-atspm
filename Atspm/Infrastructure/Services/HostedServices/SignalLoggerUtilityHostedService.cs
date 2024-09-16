@@ -19,6 +19,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System.Collections;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks.Dataflow;
@@ -26,6 +27,7 @@ using Utah.Udot.Atspm.Analysis.WorkflowFilters;
 using Utah.Udot.Atspm.Analysis.Workflows;
 using Utah.Udot.Atspm.Analysis.WorkflowSteps;
 using Utah.Udot.Atspm.Data.Enums;
+using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
 using Utah.Udot.NetStandardToolkit.Workflows;
 
@@ -52,7 +54,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
 
             using (var scope = _services.CreateAsyncScope())
             {
-                var workflow = new DeviceEventLogWorkflow(_services);
+                var workflow = new DeviceEventLogWorkflow(_services, 1000);
 
                 workflow.Initialized += (s,a) => Console.WriteLine($"{s.GetType().Name} - initialized");
 
@@ -178,27 +180,40 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
         }
     }
 
-    //public class ArchiveDeviceData<T> : TransformManyProcessStepBaseAsync<Tuple<Device, T>[], CompressedEventLogs<T>> where T : EventLogModelBase
-    public class ArchiveDeviceData : TransformManyProcessStepBaseAsync<Tuple<Device, EventLogModelBase>[], CompressedEventLogs<EventLogModelBase>>
+    //public class ArchiveDeviceData<T> : TransformManyProcessStepBaseAsync<Tuple<Device, EventLogModelBase>[], CompressedEventLogs<T>> where T : EventLogModelBase
+    public class ArchiveDeviceData : TransformManyProcessStepBaseAsync<Tuple<Device, EventLogModelBase>[], CompressedEventLogBase>
     {
         /// <inheritdoc/>
         public ArchiveDeviceData(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
 
-        protected override async IAsyncEnumerable<CompressedEventLogs<EventLogModelBase>> Process(Tuple<Device, EventLogModelBase>[] input, [EnumeratorCancellation] CancellationToken cancelToken = default)
+        protected override async IAsyncEnumerable<CompressedEventLogBase> Process(Tuple<Device, EventLogModelBase>[] input, [EnumeratorCancellation] CancellationToken cancelToken = default)
         {
-            var result = input.GroupBy(g => (g.Item2.LocationIdentifier, g.Item2.Timestamp.Date, g.Item1.Id))
-                .Select(s => new CompressedEventLogs<EventLogModelBase>()
+            var result = input.GroupBy(g => (g.Item2.LocationIdentifier, g.Item2.Timestamp.Date, g.Item1.Id, g.Item2.GetType()))
+                .Select(s =>
                 {
-                    LocationIdentifier = s.Key.LocationIdentifier,
-                    ArchiveDate = DateOnly.FromDateTime(s.Key.Date),
-                    DeviceId = s.Key.Id,
-                    Data = s.Select(s => s.Item2).ToList()
+                    dynamic list = Activator.CreateInstance(typeof(List<>).MakeGenericType(s.Key.Item4));
+
+                    foreach (var i in s.Select(s => s.Item2))
+                    {
+                        if (list is IList l)
+                        {
+                            l.Add(i);
+                        }
+                    }
+
+                    dynamic comp = Activator.CreateInstance(typeof(CompressedEventLogs<>).MakeGenericType(s.Key.Item4));
+
+                    comp.LocationIdentifier = s.Key.LocationIdentifier;
+                    comp.ArchiveDate = DateOnly.FromDateTime(s.Key.Date);
+                    comp.DataType = s.Key.Item4;
+                    comp.DeviceId = s.Key.Id;
+                    comp.Data = list;
+
+                    return comp;
                 });
 
             foreach (var r in result)
             {
-                Console.WriteLine(r);
-                
                 yield return r;
             }
         }
@@ -216,6 +231,8 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
 
         protected override async IAsyncEnumerable<CompressedEventLogBase> Process(CompressedEventLogBase input, [EnumeratorCancellation] CancellationToken cancelToken = default)
         {
+            Console.WriteLine($"###{input}###");
+
             using (var scope = _services.CreateAsyncScope())
             {
                 var repo = scope.ServiceProvider.GetService<IEventLogRepository>();
@@ -224,6 +241,8 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
 
                 if (searchLog != null)
                 {
+                    Console.WriteLine($"%%%searchLog is not null: {input}%%%");
+
                     var eventLogs = new HashSet<EventLogModelBase>(Enumerable.Union(searchLog.Data, input.Data));
 
                     searchLog.Data = eventLogs.ToList();
@@ -232,6 +251,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
                 }
                 else
                 {
+                    Console.WriteLine($"%%%searchLog is null: {input}%%%");
                     await repo.AddAsync(input);
                 }
 

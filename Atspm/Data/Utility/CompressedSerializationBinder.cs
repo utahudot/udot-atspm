@@ -33,7 +33,7 @@ namespace Utah.Udot.Atspm.Data.Utility
         {
             if (serializedType.IsAssignableTo(typeof(IEnumerable<T>)) &&
                 serializedType.IsGenericType &&
-                serializedType.GetGenericArguments()[0].IsSubclassOf(typeof(T)))
+                (serializedType.GetGenericArguments()[0].IsSubclassOf(typeof(T)) || serializedType.GetGenericArguments()[0]== typeof(T)))
             {
                 assemblyName = null;
                 typeName = serializedType.GetGenericArguments()[0].Name;

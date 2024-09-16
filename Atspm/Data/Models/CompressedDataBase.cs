@@ -92,7 +92,7 @@ namespace Utah.Udot.Atspm.Data.Models
 
         public override string ToString()
         {
-            return $"***{this.LocationIdentifier} - {this.ArchiveDate} - {this.DeviceId} - {this.DataType.Name} - {this.Data.Count}";
+            return $"***{this.LocationIdentifier} - {this.ArchiveDate} - {this.DeviceId} - {this.DataType.Name} - {this.Data?.Count} - {typeof(T).Name}";
         }
     }
 

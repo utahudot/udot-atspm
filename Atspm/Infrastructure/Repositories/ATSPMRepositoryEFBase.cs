@@ -105,10 +105,13 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories
         {
             var result = table.Find(_db.Model.FindEntityType(typeof(T)).FindPrimaryKey().Properties.Select(p => p.PropertyInfo.GetValue(item, null)).ToArray());
 
-            foreach (var n in _db.Entry(result).Navigations)
+            if (result != null)
             {
-                //if (!n.IsLoaded)
-                n.Load();
+                foreach (var n in _db.Entry(result).Navigations)
+                {
+                    //if (!n.IsLoaded)
+                    n.Load();
+                }
             }
 
             return result;
@@ -120,10 +123,13 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories
         {
             var result = table.Find(key);
 
-            foreach (var n in _db.Entry(result).Navigations)
+            if (result != null)
             {
-                //if (!n.IsLoaded)
-                n.Load();
+                foreach (var n in _db.Entry(result).Navigations)
+                {
+                    //if (!n.IsLoaded)
+                    n.Load();
+                }
             }
 
             return result;
@@ -134,10 +140,13 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories
         {
             var result = await table.FindAsync(_db.Model.FindEntityType(typeof(T)).FindPrimaryKey().Properties.Select(p => p.PropertyInfo.GetValue(item, null)).ToArray()).ConfigureAwait(false);
 
-            foreach (var n in _db.Entry(result).Navigations)
+            if (result != null)
             {
-                //if (!n.IsLoaded)
-                await n.LoadAsync().ConfigureAwait(false);
+                foreach (var n in _db.Entry(result).Navigations)
+                {
+                    //if (!n.IsLoaded)
+                    await n.LoadAsync().ConfigureAwait(false);
+                }
             }
 
             return result;
