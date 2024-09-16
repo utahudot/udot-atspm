@@ -7,7 +7,7 @@ using Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices;
 namespace SpeedManagementApi.Controllers
 {
     [Authorize()]
-    [Route("api/[controller]")]
+    [Route("api/v1/[controller]")]
     [ApiController]
     public class ImpactController : ControllerBase
     {

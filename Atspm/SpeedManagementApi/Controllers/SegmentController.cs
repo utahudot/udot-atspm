@@ -10,7 +10,7 @@ using Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices;
 namespace SpeedManagementApi.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/v1/[controller]")]
     public class SegmentController : ControllerBase
     {
         private readonly ISegmentRepository segmentRepository;
