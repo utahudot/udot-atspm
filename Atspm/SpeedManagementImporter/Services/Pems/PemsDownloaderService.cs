@@ -527,7 +527,7 @@ namespace SpeedManagementImporter.Services.Pems
                 var dataQuality = 0;
                 if (dataInFlowGreaterThan0 > 0)
                 {
-                    dataQuality = ((lanesCount * dataForTheHour.Count) / dataInFlowGreaterThan0);
+                    dataQuality = ((lanesCount * dataForTheHour.Count) / dataInFlowGreaterThan0) * 100;
                 }
                 violationsForEachHour = violationsForEachHour.PopulateViolationsForEachHour(hour, combinedSpeedViolations, combinedExtremeSpeedViolations, dataQuality);
             }

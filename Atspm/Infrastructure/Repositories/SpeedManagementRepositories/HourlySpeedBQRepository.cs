@@ -119,6 +119,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 {"NinetyFifthSpeed", item.NinetyFifthSpeed },
                 {"NinetyNinthSpeed", item.NinetyNinthSpeed },
                 {"Violation", item.Violation },
+                {"ExtremeViolation", item.ExtremeViolation },
                 {"Flow", item.Flow }
             };
         }
@@ -137,6 +138,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             var bigQueryNinetyFifthSpeed = row["NinetyFifthSpeed"] != null ? double.Parse(row["NinetyFifthSpeed"].ToString()) : (double?)null;
             var bigQueryNinetyNinthSpeed = row["NinetyNinthSpeed"] != null ? double.Parse(row["NinetyNinthSpeed"].ToString()) : (double?)null;
             var bigQueryViolation = row["Violation"] != null ? long.Parse(row["Violation"].ToString()) : (long?)null;
+            var bigQueryExtremeViolation = row["ExtremeViolation"] != null ? long.Parse(row["ExtremeViolation"].ToString()) : (long?)null;
             var bigQueryFlow = row["Flow"] != null ? long.Parse(row["Flow"].ToString()) : (long?)null;
 
             return new HourlySpeed
@@ -152,6 +154,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 NinetyFifthSpeed = bigQueryNinetyFifthSpeed,
                 NinetyNinthSpeed = bigQueryNinetyNinthSpeed,
                 Violation = bigQueryViolation,
+                ExtremeViolation = bigQueryExtremeViolation,
                 Flow = bigQueryFlow
             };
         }
@@ -168,6 +171,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 AVG(NinetyFifthSpeed) AS NinetyFifthSpeed,
                 AVG(NinetyNinthSpeed) AS NinetyNinthSpeed,
                 AVG(Violation) AS Violation,
+                AVG(ExtremeViolation) AS ExtremeViolation,
                 AVG(Flow) AS Flow
             FROM `{_datasetId}.{_tableId}`
             WHERE 
@@ -196,6 +200,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 NinetyFifthSpeed = Convert.ToDouble(row["NinetyFifthSpeed"]),
                 NinetyNinthSpeed = Convert.ToDouble(row["NinetyNinthSpeed"]),
                 Violation = Convert.ToDouble(row["Violation"]),
+                ExtremeViolation = Convert.ToDouble(row["ExtremeViolation"]),
                 Flow = Convert.ToDouble(row["Flow"])
             }).ToList();
         }
@@ -211,6 +216,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 AVG(NinetyFifthSpeed) AS NinetyFifthSpeed,
                 AVG(NinetyNinthSpeed) AS NinetyNinthSpeed,
                 AVG(Violation) AS Violation,
+                AVG(ExtremeViolation) AS ExtremeViolation,
                 AVG(Flow) AS Flow
             FROM `{_datasetId}.{_tableId}`
             WHERE 
@@ -237,6 +243,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 NinetyFifthSpeed = Convert.ToDouble(row["NinetyFifthSpeed"]),
                 NinetyNinthSpeed = Convert.ToDouble(row["NinetyNinthSpeed"]),
                 Violation = Convert.ToDouble(row["Violation"]),
+                ExtremeViolation = Convert.ToDouble(row["ExtremeViolation"]),
                 Flow = Convert.ToDouble(row["Flow"])
             }).ToList();
         }
@@ -281,6 +288,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 EightyFifthSpeed = row["EightyFifthSpeed"] != null ? Convert.ToDouble(row["EightyFifthSpeed"]) : null,
                 NinetyFifthSpeed = row["NinetyFifthSpeed"] != null ? Convert.ToDouble(row["NinetyFifthSpeed"]) : null,
                 Violation = row["Violation"] != null ? (long)row["Violation"] : null,
+                ExtremeViolation = row["ExtremeViolation"] != null ? (long)row["ExtremeViolation"] : null,
                 Flow = row["Flow"] != null ? (long)row["Flow"] : null
             };
         }
@@ -328,6 +336,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
               AVG(EightyFifthSpeed) as EightyFifthSpeed,
               AVG(NinetyFifthSpeed) as NinetyFifthSpeed,
               SUM(Flow) as Flow,
+              SUM(ExtremeViolation) as ExtremeViolation,
               SUM(Violation) as Violation
             FROM
               data_with_custom_week_start
@@ -728,6 +737,15 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                     queryBuilder.Append($"Violation = NULL, ");
                 }
 
+                if (item.ExtremeViolation.HasValue)
+                {
+                    queryBuilder.Append($"ExtremeViolation = {item.ExtremeViolation}, ");
+                }
+                else
+                {
+                    queryBuilder.Append($"ExtremeViolation = NULL, ");
+                }
+
                 if (item.Flow.HasValue)
                 {
                     queryBuilder.Append($"Flow = {item.Flow}, ");
@@ -756,7 +774,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             else
             {
                 var query = $"INSERT INTO `{_datasetId}.{_tableId}` " +
-                    $"(Date, BinStartTime, SegmentId, SourceId, ConfidenceId, Average, FifteenthSpeed, EightyFifthSpeed, NinetyFifthSpeed, NinetyNinthSpeed, Violation, Flow) " +
+                    $"(Date, BinStartTime, SegmentId, SourceId, ConfidenceId, Average, FifteenthSpeed, EightyFifthSpeed, NinetyFifthSpeed, NinetyNinthSpeed, Violation, ExtremeViolation, Flow) " +
                     $"VALUES (" +
                     $"'{item.Date:O}', " +
                     $"'{item.BinStartTime:O}', " +
@@ -769,6 +787,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                     $"{(item.NinetyFifthSpeed.HasValue ? item.NinetyFifthSpeed.Value.ToString() : "NULL")}, " +
                     $"{(item.NinetyNinthSpeed.HasValue ? item.NinetyNinthSpeed.Value.ToString() : "NULL")}, " +
                     $"{(item.Violation.HasValue ? item.Violation.Value.ToString() : "NULL")}, " +
+                    $"{(item.ExtremeViolation.HasValue ? item.ExtremeViolation.Value.ToString() : "NULL")}, " +
                     $"{(item.Flow.HasValue ? item.Flow.Value.ToString() : "NULL")})";
 
                 var parameters = new List<BigQueryParameter>();
@@ -834,6 +853,15 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                     queryBuilder.Append($"Violation = NULL, ");
                 }
 
+                if (item.ExtremeViolation.HasValue)
+                {
+                    queryBuilder.Append($"ExtremeViolation = {item.ExtremeViolation}, ");
+                }
+                else
+                {
+                    queryBuilder.Append($"ExtremeViolation = NULL, ");
+                }
+
                 if (item.Flow.HasValue)
                 {
                     queryBuilder.Append($"Flow = {item.Flow}, ");
@@ -875,6 +903,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                     $"{(item.NinetyFifthSpeed.HasValue ? item.NinetyFifthSpeed.Value.ToString() : "NULL")}, " +
                     $"{(item.NinetyNinthSpeed.HasValue ? item.NinetyNinthSpeed.Value.ToString() : "NULL")}, " +
                     $"{(item.Violation.HasValue ? item.Violation.Value.ToString() : "NULL")}, " +
+                    $"{(item.ExtremeViolation.HasValue ? item.ExtremeViolation.Value.ToString() : "NULL")}, " +
                     $"{(item.Flow.HasValue ? item.Flow.Value.ToString() : "NULL")})";
 
                 var parameters = new List<BigQueryParameter>();
@@ -897,6 +926,41 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             {
                 await UpdateAsync(item);
             }
+        }
+
+        public async Task<List<HourlySpeed>> HourlyAggregationsForSegmentInTimePeriod(List<Guid> segmentIds, DateTime startTime, DateTime endTime)
+        {
+            var convertedStartDate = DateOnly.FromDateTime(startTime);
+            var convertedEndDate = DateOnly.FromDateTime(endTime);
+            TimeOnly convertedStartTime = TimeOnly.FromDateTime(startTime);
+            TimeOnly convertedEndTime = TimeOnly.FromDateTime(endTime);
+            // Construct a comma-separated list of IDs for the IN clause
+            string ids = string.Join(",", segmentIds.Select(id => $"'{id}'"));
+            //TIMESTAMP('{item.BinStartTime:yyyy-MM-dd HH:mm:ss}')
+            var query = $@"
+            SELECT * FROM `{_datasetId}.{_tableId}` 
+                WHERE 
+                Date BETWEEN @startDate AND @endDate AND
+                BinStartTime BETWEEN @startTime AND @endTime
+                AND SegmentId IN ({ids})";
+
+            var parameters = new List<BigQueryParameter>();
+            parameters.AddRange(new BigQueryParameter[]
+                {
+                    new BigQueryParameter("startDate", BigQueryDbType.Date, convertedStartDate.ToDateTime(new TimeOnly(0, 0))),
+                    new BigQueryParameter("endDate", BigQueryDbType.Date, convertedEndDate.ToDateTime(new TimeOnly(0, 0))),
+                    new BigQueryParameter("startTime", BigQueryDbType.Time, convertedStartTime.ToTimeSpan()),
+                    new BigQueryParameter("endTime", BigQueryDbType.Time, convertedEndTime.ToTimeSpan())
+                });
+
+            var result = await _client.ExecuteQueryAsync(query, parameters);
+            var hourlyAggregations = new List<HourlySpeed>();
+            foreach (var row in result)
+            {
+                hourlyAggregations.Add(MapRowToEntity(row));
+            }
+
+            return hourlyAggregations;
         }
 
 
