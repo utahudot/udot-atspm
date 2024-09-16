@@ -444,25 +444,34 @@ namespace SpeedManagementImporter.Services.Pems
                     var TwentySecondResults = await httpClient.GetAsync(downloadDataUrl);
                     var TwentySecondSpeedString = await TwentySecondResults.Content.ReadAsStringAsync();
                     List<List<String>> rowsOfColumns = SplitToTimeGrid(TwentySecondSpeedString);
-                    ViolationsForEachHour violationsForEachHour = GridToObject(speedLimit, freeway, rowsOfColumns);
+                    ViolationsForEachHour violationsForEachHour = GridToObject(speedLimit, freeway, rowsOfColumns, originalDateTime);
 
                     return violationsForEachHour;
                 }
             }
-            catch
+            catch (Exception ex)
             {
                 if (retry > 2)
                 {
                     Console.WriteLine($"Violations - We had an issue pulling the 20 second data from pems for this station - {stationId}, therefore we failed out and returned 0's.");
                     return new ViolationsForEachHour();
                 }
+                Console.WriteLine("threw exception" + ex.Message);
                 this.sessionId = await LoginToPems();
                 return await GetViolationsForEachHourInTheDay(originalDateTime, stationId, speedLimit, freeway, retry++);
             }
         }
 
-        private static ViolationsForEachHour GridToObject(long speedLimit, bool freeway, List<List<string>> rowsOfColumns)
+        private static ViolationsForEachHour GridToObject(long speedLimit, bool freeway, List<List<string>> rowsOfColumns, DateTime date)
         {
+            ViolationsForEachHour violationsForEachHour = new ViolationsForEachHour();
+            violationsForEachHour.SpeedLimit = speedLimit;
+            violationsForEachHour.Date = date;
+            if (rowsOfColumns.Count == 0)
+            {
+                return violationsForEachHour;
+            }
+
             //These are important because this is how the grid is populated
             //Always skip the first location because that is the time
             //Speed comes first
@@ -471,8 +480,7 @@ namespace SpeedManagementImporter.Services.Pems
             var lanesCount = (rowsOfColumns[0].Count - 1) / 2;
             //Then comes flow
             var startOfFlowLocation = ((rowsOfColumns[0].Count - 1) / 2) + 1;
-            ViolationsForEachHour violationsForEachHour = new ViolationsForEachHour();
-            violationsForEachHour.SpeedLimit = speedLimit;
+
             for (var hour = 0; hour <= 23; hour++)
             {
                 //Get out all the rows where the time hour is equal to the hour I am looking for.
@@ -516,7 +524,11 @@ namespace SpeedManagementImporter.Services.Pems
                     combinedExtremeSpeedViolations = combinedExtremeSpeedViolations + extremeSpeedViolationsFlow;
                 }
                 //Add that combine violations to the object
-                var dataQuality = ((lanesCount * dataForTheHour.Count) / dataInFlowGreaterThan0);
+                var dataQuality = 0;
+                if (dataInFlowGreaterThan0 > 0)
+                {
+                    dataQuality = ((lanesCount * dataForTheHour.Count) / dataInFlowGreaterThan0);
+                }
                 violationsForEachHour = violationsForEachHour.PopulateViolationsForEachHour(hour, combinedSpeedViolations, combinedExtremeSpeedViolations, dataQuality);
             }
 
