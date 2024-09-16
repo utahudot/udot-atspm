@@ -5,7 +5,7 @@ using Utah.Udot.Atspm.Repositories.SpeedManagementRepositories;
 namespace SpeedManagementApi.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/v1/[controller]")]
     public class FunctionalTypeController : SpeedConfigBaseController<NameAndIdDto, Guid>
     {
         public FunctionalTypeController(IFunctionalTypeRepository repository) : base(repository)

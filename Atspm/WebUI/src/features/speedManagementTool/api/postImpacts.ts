@@ -10,7 +10,7 @@ const postImpacts = async (impactData: Impact): Promise<Impact> => {
   const env = await getEnv()
 
   const { data } = await axios.post<Impact>(
-    `${env.SPEED_URL}/api/Impact`,
+    `${env.SPEED_URL}/Impact`,
     impactData,
     {
       headers: {

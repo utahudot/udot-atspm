@@ -14,7 +14,7 @@ const postImpactType = async (impactData: {
 
   // Correcting the axios.post call
   const response = await axios.post<ImpactType>(
-    `${env.SPEED_URL}/api/ImpactType`,
+    `${env.SPEED_URL}/ImpactType`,
     impactData,
     {
       headers: {

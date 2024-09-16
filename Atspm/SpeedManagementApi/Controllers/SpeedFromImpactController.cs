@@ -8,7 +8,7 @@ using Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices;
 namespace SpeedManagementApi.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/v1/[controller]")]
     public class SpeedFromImpactController : ControllerBase
     {
         private ImpactService impactService;

@@ -5,6 +5,7 @@ using Utah.Udot.NetStandardToolkit.Services;
 namespace SpeedManagementApi.Controllers
 {
     [ApiController]
+    [Route("api/v1/[controller]")]
     public class SpeedConfigBaseController<T, TKey> : ControllerBase where T : AtspmConfigModelBase<TKey>
     {
         private readonly IAsyncRepository<T> _repository;
