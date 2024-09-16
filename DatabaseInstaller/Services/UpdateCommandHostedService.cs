@@ -18,7 +18,11 @@ namespace DatabaseInstaller.Services
         private readonly ILogger<UpdateCommandHostedService> _logger;
         private readonly IHostApplicationLifetime _hostApplicationLifetime;
 
-        public UpdateCommandHostedService(IServiceProvider serviceProvider, UpdateCommandConfiguration config, ILogger<UpdateCommandHostedService> logger, IHostApplicationLifetime hostApplicationLifetime)
+        public UpdateCommandHostedService(
+            IServiceProvider serviceProvider,
+            UpdateCommandConfiguration config,
+            ILogger<UpdateCommandHostedService> logger,
+            IHostApplicationLifetime hostApplicationLifetime)
         {
             _serviceProvider = serviceProvider;
             _config = config;

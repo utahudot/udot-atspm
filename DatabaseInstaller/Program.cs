@@ -28,6 +28,8 @@ using Utah.Udot.Atspm.Common;
 using Utah.Udot.Atspm.Data;
 using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Infrastructure.Extensions;
+using Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories;
+using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
 
 var rootCmd = new DatabaseInstallerCommands();  // Root command registration
 var cmdBuilder = new CommandLineBuilder(rootCmd);
@@ -64,6 +66,9 @@ cmdBuilder.UseHost(a =>
             // Register UpdateCommand and its hosted service
             services.AddTransient<UpdateCommand>();
             services.AddScoped<UpdateCommandHostedService>();
+            services.AddScoped<IJurisdictionRepository, JurisdictionEFRepository>();
+            services.AddScoped<ILocationTypeRepository, LocationTypeEFRepository>();
+
 
             // Add UpdateCommandConfiguration as a singleton service to the service collection
             services.AddSingleton<UpdateCommandConfiguration>(sp =>
