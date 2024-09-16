@@ -14,7 +14,7 @@ const editImpactType = async (params: {
   const env = await getEnv()
   const body = { name: params.name, description: params.description }
   const response = await axios.put<ImpactType>(
-    `${env.SPEED_URL}/api/ImpactType/${params.id}`,
+    `${env.SPEED_URL}/ImpactType/${params.id}`,
     body,
     {
       headers: {

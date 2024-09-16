@@ -24,7 +24,7 @@ export interface SpeedOverDistanceResponse {
 export const getSpeedOverDistances = async (
   options: SpeedOverDistanceParams
 ): Promise<SpeedOverDistanceResponse> => {
-  const response = await speedAxios.post('api/SpeedOverDistance', options)
+  const response = await speedAxios.post('/SpeedOverDistance', options)
   return transformSpeedOverDistanceData(response)
 }
 
