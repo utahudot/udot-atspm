@@ -14,26 +14,26 @@ import {
   http
 } from 'msw'
 
-export const getGetAccessCategoryMock = () => (Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({id: faker.helpers.arrayElement([faker.string.uuid(), undefined]), name: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.word.sample(), null]), undefined])})))
+export const getGetApiV1AccessCategoryMock = () => (Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({id: faker.helpers.arrayElement([faker.string.uuid(), undefined]), name: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.word.sample(), null]), undefined])})))
 
-export const getGetCityMock = () => (Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({id: faker.helpers.arrayElement([faker.string.uuid(), undefined]), name: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.word.sample(), null]), undefined])})))
+export const getGetApiV1CityMock = () => (Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({id: faker.helpers.arrayElement([faker.string.uuid(), undefined]), name: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.word.sample(), null]), undefined])})))
 
-export const getPostCongestionTrackingGetReportDataMock = () => ({data: faker.helpers.arrayElement([Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({date: faker.helpers.arrayElement([`${faker.date.past().toISOString().split('.')[0]}Z`, undefined]), series: faker.helpers.arrayElement([{average: faker.helpers.arrayElement([Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({timestamp: faker.helpers.arrayElement([`${faker.date.past().toISOString().split('.')[0]}Z`, undefined]), value: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined])})), undefined]), eightyFifth: faker.helpers.arrayElement([Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({timestamp: faker.helpers.arrayElement([`${faker.date.past().toISOString().split('.')[0]}Z`, undefined]), value: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined])})), undefined])}, undefined])})), undefined]), endDate: faker.helpers.arrayElement([`${faker.date.past().toISOString().split('.')[0]}Z`, undefined]), endingMilePoint: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), segmentId: faker.helpers.arrayElement([faker.string.uuid(), undefined]), segmentName: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.word.sample(), null]), undefined]), speedLimit: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), startDate: faker.helpers.arrayElement([`${faker.date.past().toISOString().split('.')[0]}Z`, undefined]), startingMilePoint: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined])})
+export const getPostApiV1CongestionTrackingGetReportDataMock = () => ({data: faker.helpers.arrayElement([Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({date: faker.helpers.arrayElement([`${faker.date.past().toISOString().split('.')[0]}Z`, undefined]), series: faker.helpers.arrayElement([{average: faker.helpers.arrayElement([Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({timestamp: faker.helpers.arrayElement([`${faker.date.past().toISOString().split('.')[0]}Z`, undefined]), value: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined])})), undefined]), eightyFifth: faker.helpers.arrayElement([Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({timestamp: faker.helpers.arrayElement([`${faker.date.past().toISOString().split('.')[0]}Z`, undefined]), value: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined])})), undefined])}, undefined])})), undefined]), endDate: faker.helpers.arrayElement([`${faker.date.past().toISOString().split('.')[0]}Z`, undefined]), endingMilePoint: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), segmentId: faker.helpers.arrayElement([faker.string.uuid(), undefined]), segmentName: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.word.sample(), null]), undefined]), speedLimit: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), startDate: faker.helpers.arrayElement([`${faker.date.past().toISOString().split('.')[0]}Z`, undefined]), startingMilePoint: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined])})
 
-export const getGetCountyMock = () => (Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({id: faker.helpers.arrayElement([faker.string.uuid(), undefined]), name: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.word.sample(), null]), undefined])})))
+export const getGetApiV1CountyMock = () => (Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({id: faker.helpers.arrayElement([faker.string.uuid(), undefined]), name: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.word.sample(), null]), undefined])})))
 
-export const getGetFunctionalTypeMock = () => (Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({id: faker.helpers.arrayElement([faker.string.uuid(), undefined]), name: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.word.sample(), null]), undefined])})))
+export const getGetApiV1FunctionalTypeMock = () => (Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({id: faker.helpers.arrayElement([faker.string.uuid(), undefined]), name: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.word.sample(), null]), undefined])})))
 
-export const getGetRegionMock = () => (Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({id: faker.helpers.arrayElement([faker.string.uuid(), undefined]), name: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.word.sample(), null]), undefined])})))
+export const getGetApiV1RegionMock = () => (Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({id: faker.helpers.arrayElement([faker.string.uuid(), undefined]), name: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.word.sample(), null]), undefined])})))
 
-export const getPostSpeedOverDistanceGetReportDataMock = () => (Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({average: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), eightyFifth: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), endDate: faker.helpers.arrayElement([`${faker.date.past().toISOString().split('.')[0]}Z`, undefined]), endingMilePoint: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), segmentId: faker.helpers.arrayElement([faker.string.uuid(), undefined]), segmentName: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.word.sample(), null]), undefined]), speedLimit: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), startDate: faker.helpers.arrayElement([`${faker.date.past().toISOString().split('.')[0]}Z`, undefined]), startingMilePoint: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined])})))
+export const getPostApiV1SpeedOverDistanceGetReportDataMock = () => (Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({average: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), eightyFifth: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), endDate: faker.helpers.arrayElement([`${faker.date.past().toISOString().split('.')[0]}Z`, undefined]), endingMilePoint: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), segmentId: faker.helpers.arrayElement([faker.string.uuid(), undefined]), segmentName: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.word.sample(), null]), undefined]), speedLimit: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), startDate: faker.helpers.arrayElement([`${faker.date.past().toISOString().split('.')[0]}Z`, undefined]), startingMilePoint: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined])})))
 
-export const getPostSpeedOverTimeGetReportDataMock = () => ({data: faker.helpers.arrayElement([Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({date: faker.helpers.arrayElement([`${faker.date.past().toISOString().split('.')[0]}Z`, undefined]), series: faker.helpers.arrayElement([{average: faker.helpers.arrayElement([Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({timestamp: faker.helpers.arrayElement([`${faker.date.past().toISOString().split('.')[0]}Z`, undefined]), value: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined])})), undefined]), eightyFifth: faker.helpers.arrayElement([Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({timestamp: faker.helpers.arrayElement([`${faker.date.past().toISOString().split('.')[0]}Z`, undefined]), value: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined])})), undefined])}, undefined])})), undefined]), endDate: faker.helpers.arrayElement([`${faker.date.past().toISOString().split('.')[0]}Z`, undefined]), endingMilePoint: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), segmentId: faker.helpers.arrayElement([faker.string.uuid(), undefined]), segmentName: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.word.sample(), null]), undefined]), speedLimit: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), startDate: faker.helpers.arrayElement([`${faker.date.past().toISOString().split('.')[0]}Z`, undefined]), startingMilePoint: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), timeOptions: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined])})
+export const getPostApiV1SpeedOverTimeGetReportDataMock = () => ({data: faker.helpers.arrayElement([Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({date: faker.helpers.arrayElement([`${faker.date.past().toISOString().split('.')[0]}Z`, undefined]), series: faker.helpers.arrayElement([{average: faker.helpers.arrayElement([Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({timestamp: faker.helpers.arrayElement([`${faker.date.past().toISOString().split('.')[0]}Z`, undefined]), value: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined])})), undefined]), eightyFifth: faker.helpers.arrayElement([Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({timestamp: faker.helpers.arrayElement([`${faker.date.past().toISOString().split('.')[0]}Z`, undefined]), value: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined])})), undefined])}, undefined])})), undefined]), endDate: faker.helpers.arrayElement([`${faker.date.past().toISOString().split('.')[0]}Z`, undefined]), endingMilePoint: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), segmentId: faker.helpers.arrayElement([faker.string.uuid(), undefined]), segmentName: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.word.sample(), null]), undefined]), speedLimit: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), startDate: faker.helpers.arrayElement([`${faker.date.past().toISOString().split('.')[0]}Z`, undefined]), startingMilePoint: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), timeOptions: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined])})
 
 export const getATSPMSpeedManagementApiMock = () => [
-http.get('*/AccessCategory', async () => {
+http.get('*/api/v1/AccessCategory', async () => {
         await delay(1000);
-        return new HttpResponse(JSON.stringify(getGetAccessCategoryMock()),
+        return new HttpResponse(JSON.stringify(getGetApiV1AccessCategoryMock()),
           { 
             status: 200,
             headers: {
@@ -41,9 +41,9 @@ http.get('*/AccessCategory', async () => {
             }
           }
         )
-      }),http.get('*/City', async () => {
+      }),http.get('*/api/v1/City', async () => {
         await delay(1000);
-        return new HttpResponse(JSON.stringify(getGetCityMock()),
+        return new HttpResponse(JSON.stringify(getGetApiV1CityMock()),
           { 
             status: 200,
             headers: {
@@ -51,9 +51,9 @@ http.get('*/AccessCategory', async () => {
             }
           }
         )
-      }),http.post('*/CongestionTracking/getReportData', async () => {
+      }),http.post('*/api/v1/CongestionTracking/getReportData', async () => {
         await delay(1000);
-        return new HttpResponse(JSON.stringify(getPostCongestionTrackingGetReportDataMock()),
+        return new HttpResponse(JSON.stringify(getPostApiV1CongestionTrackingGetReportDataMock()),
           { 
             status: 200,
             headers: {
@@ -61,9 +61,9 @@ http.get('*/AccessCategory', async () => {
             }
           }
         )
-      }),http.get('*/County', async () => {
+      }),http.get('*/api/v1/County', async () => {
         await delay(1000);
-        return new HttpResponse(JSON.stringify(getGetCountyMock()),
+        return new HttpResponse(JSON.stringify(getGetApiV1CountyMock()),
           { 
             status: 200,
             headers: {
@@ -71,9 +71,9 @@ http.get('*/AccessCategory', async () => {
             }
           }
         )
-      }),http.get('*/FunctionalType', async () => {
+      }),http.get('*/api/v1/FunctionalType', async () => {
         await delay(1000);
-        return new HttpResponse(JSON.stringify(getGetFunctionalTypeMock()),
+        return new HttpResponse(JSON.stringify(getGetApiV1FunctionalTypeMock()),
           { 
             status: 200,
             headers: {
@@ -81,7 +81,7 @@ http.get('*/AccessCategory', async () => {
             }
           }
         )
-      }),http.get('*/api/Impact', async () => {
+      }),http.get('*/api/v1/Impact', async () => {
         await delay(1000);
         return new HttpResponse(null,
           { 
@@ -91,7 +91,7 @@ http.get('*/AccessCategory', async () => {
             }
           }
         )
-      }),http.post('*/api/Impact', async () => {
+      }),http.post('*/api/v1/Impact', async () => {
         await delay(1000);
         return new HttpResponse(null,
           { 
@@ -101,7 +101,7 @@ http.get('*/AccessCategory', async () => {
             }
           }
         )
-      }),http.get('*/api/Impact/:id', async () => {
+      }),http.get('*/api/v1/Impact/:id', async () => {
         await delay(1000);
         return new HttpResponse(null,
           { 
@@ -111,7 +111,7 @@ http.get('*/AccessCategory', async () => {
             }
           }
         )
-      }),http.put('*/api/Impact/:id', async () => {
+      }),http.put('*/api/v1/Impact/:id', async () => {
         await delay(1000);
         return new HttpResponse(null,
           { 
@@ -121,7 +121,7 @@ http.get('*/AccessCategory', async () => {
             }
           }
         )
-      }),http.delete('*/api/Impact/:id', async () => {
+      }),http.delete('*/api/v1/Impact/:id', async () => {
         await delay(1000);
         return new HttpResponse(null,
           { 
@@ -131,7 +131,7 @@ http.get('*/AccessCategory', async () => {
             }
           }
         )
-      }),http.put('*/api/Impact/:id/segments/:segmentId', async () => {
+      }),http.put('*/api/v1/Impact/:id/segments/:segmentId', async () => {
         await delay(1000);
         return new HttpResponse(null,
           { 
@@ -141,7 +141,7 @@ http.get('*/AccessCategory', async () => {
             }
           }
         )
-      }),http.delete('*/api/Impact/:id/segments/:segmentId', async () => {
+      }),http.delete('*/api/v1/Impact/:id/segments/:segmentId', async () => {
         await delay(1000);
         return new HttpResponse(null,
           { 
@@ -151,7 +151,7 @@ http.get('*/AccessCategory', async () => {
             }
           }
         )
-      }),http.put('*/api/Impact/:id/impactType/:impactTypeId', async () => {
+      }),http.put('*/api/v1/Impact/:id/impactType/:impactTypeId', async () => {
         await delay(1000);
         return new HttpResponse(null,
           { 
@@ -161,7 +161,7 @@ http.get('*/AccessCategory', async () => {
             }
           }
         )
-      }),http.delete('*/api/Impact/:id/impactType/:impactTypeId', async () => {
+      }),http.delete('*/api/v1/Impact/:id/impactType/:impactTypeId', async () => {
         await delay(1000);
         return new HttpResponse(null,
           { 
@@ -171,7 +171,7 @@ http.get('*/AccessCategory', async () => {
             }
           }
         )
-      }),http.get('*/api/ImpactType', async () => {
+      }),http.get('*/api/v1/ImpactType', async () => {
         await delay(1000);
         return new HttpResponse(null,
           { 
@@ -181,7 +181,7 @@ http.get('*/AccessCategory', async () => {
             }
           }
         )
-      }),http.post('*/api/ImpactType', async () => {
+      }),http.post('*/api/v1/ImpactType', async () => {
         await delay(1000);
         return new HttpResponse(null,
           { 
@@ -191,7 +191,7 @@ http.get('*/AccessCategory', async () => {
             }
           }
         )
-      }),http.get('*/api/ImpactType/:id', async () => {
+      }),http.get('*/api/v1/ImpactType/:id', async () => {
         await delay(1000);
         return new HttpResponse(null,
           { 
@@ -201,7 +201,7 @@ http.get('*/AccessCategory', async () => {
             }
           }
         )
-      }),http.put('*/api/ImpactType/:id', async () => {
+      }),http.put('*/api/v1/ImpactType/:id', async () => {
         await delay(1000);
         return new HttpResponse(null,
           { 
@@ -211,7 +211,7 @@ http.get('*/AccessCategory', async () => {
             }
           }
         )
-      }),http.delete('*/api/ImpactType/:id', async () => {
+      }),http.delete('*/api/v1/ImpactType/:id', async () => {
         await delay(1000);
         return new HttpResponse(null,
           { 
@@ -221,7 +221,7 @@ http.get('*/AccessCategory', async () => {
             }
           }
         )
-      }),http.post('*/api/MonthlyAggregation', async () => {
+      }),http.post('*/api/v1/MonthlyAggregation', async () => {
         await delay(1000);
         return new HttpResponse(null,
           { 
@@ -231,7 +231,7 @@ http.get('*/AccessCategory', async () => {
             }
           }
         )
-      }),http.delete('*/api/MonthlyAggregation', async () => {
+      }),http.delete('*/api/v1/MonthlyAggregation', async () => {
         await delay(1000);
         return new HttpResponse(null,
           { 
@@ -241,7 +241,7 @@ http.get('*/AccessCategory', async () => {
             }
           }
         )
-      }),http.post('*/api/MonthlyAggregation/segment', async () => {
+      }),http.post('*/api/v1/MonthlyAggregation/segment', async () => {
         await delay(1000);
         return new HttpResponse(null,
           { 
@@ -251,7 +251,7 @@ http.get('*/AccessCategory', async () => {
             }
           }
         )
-      }),http.get('*/api/MonthlyAggregation/segments/:segmentId', async () => {
+      }),http.get('*/api/v1/MonthlyAggregation/segments/:segmentId', async () => {
         await delay(1000);
         return new HttpResponse(null,
           { 
@@ -261,9 +261,9 @@ http.get('*/AccessCategory', async () => {
             }
           }
         )
-      }),http.get('*/Region', async () => {
+      }),http.get('*/api/v1/Region', async () => {
         await delay(1000);
-        return new HttpResponse(JSON.stringify(getGetRegionMock()),
+        return new HttpResponse(JSON.stringify(getGetApiV1RegionMock()),
           { 
             status: 200,
             headers: {
@@ -271,7 +271,7 @@ http.get('*/AccessCategory', async () => {
             }
           }
         )
-      }),http.get('*/api/Segment', async () => {
+      }),http.get('*/api/v1/Segment', async () => {
         await delay(1000);
         return new HttpResponse(null,
           { 
@@ -281,7 +281,7 @@ http.get('*/AccessCategory', async () => {
             }
           }
         )
-      }),http.post('*/api/Segment', async () => {
+      }),http.post('*/api/v1/Segment', async () => {
         await delay(1000);
         return new HttpResponse(null,
           { 
@@ -291,7 +291,7 @@ http.get('*/AccessCategory', async () => {
             }
           }
         )
-      }),http.get('*/api/Segment/:segmentId', async () => {
+      }),http.get('*/api/v1/Segment/:segmentId', async () => {
         await delay(1000);
         return new HttpResponse(null,
           { 
@@ -301,7 +301,7 @@ http.get('*/AccessCategory', async () => {
             }
           }
         )
-      }),http.post('*/api/Segment/speeds', async () => {
+      }),http.get('*/api/v1/Segment/:segmentId/geometry', async () => {
         await delay(1000);
         return new HttpResponse(null,
           { 
@@ -311,7 +311,7 @@ http.get('*/AccessCategory', async () => {
             }
           }
         )
-      }),http.post('*/api/Segment/:segmentId/speeds', async () => {
+      }),http.post('*/api/v1/Segment/speeds', async () => {
         await delay(1000);
         return new HttpResponse(null,
           { 
@@ -321,7 +321,7 @@ http.get('*/AccessCategory', async () => {
             }
           }
         )
-      }),http.post('*/api/SpeedFromImpact/impact/:impactId', async () => {
+      }),http.post('*/api/v1/Segment/:segmentId/speeds', async () => {
         await delay(1000);
         return new HttpResponse(null,
           { 
@@ -331,7 +331,7 @@ http.get('*/AccessCategory', async () => {
             }
           }
         )
-      }),http.post('*/api/SpeedFromImpact/segment/:segmentId', async () => {
+      }),http.post('*/api/v1/SpeedFromImpact/impact/:impactId', async () => {
         await delay(1000);
         return new HttpResponse(null,
           { 
@@ -341,7 +341,7 @@ http.get('*/AccessCategory', async () => {
             }
           }
         )
-      }),http.post('*/SpeedManagement/GetRouteSpeeds', async () => {
+      }),http.post('*/api/v1/SpeedFromImpact/segment/:segmentId', async () => {
         await delay(1000);
         return new HttpResponse(null,
           { 
@@ -351,7 +351,7 @@ http.get('*/AccessCategory', async () => {
             }
           }
         )
-      }),http.post('*/SpeedManagement/GetHistoricalSpeeds', async () => {
+      }),http.post('*/api/v1/SpeedManagement/GetRouteSpeeds', async () => {
         await delay(1000);
         return new HttpResponse(null,
           { 
@@ -361,9 +361,9 @@ http.get('*/AccessCategory', async () => {
             }
           }
         )
-      }),http.post('*/SpeedOverDistance/getReportData', async () => {
+      }),http.post('*/api/v1/SpeedManagement/GetHistoricalSpeeds', async () => {
         await delay(1000);
-        return new HttpResponse(JSON.stringify(getPostSpeedOverDistanceGetReportDataMock()),
+        return new HttpResponse(null,
           { 
             status: 200,
             headers: {
@@ -371,9 +371,19 @@ http.get('*/AccessCategory', async () => {
             }
           }
         )
-      }),http.post('*/SpeedOverTime/getReportData', async () => {
+      }),http.post('*/api/v1/SpeedOverDistance/getReportData', async () => {
         await delay(1000);
-        return new HttpResponse(JSON.stringify(getPostSpeedOverTimeGetReportDataMock()),
+        return new HttpResponse(JSON.stringify(getPostApiV1SpeedOverDistanceGetReportDataMock()),
+          { 
+            status: 200,
+            headers: {
+              'Content-Type': 'application/json',
+            }
+          }
+        )
+      }),http.post('*/api/v1/SpeedOverTime/getReportData', async () => {
+        await delay(1000);
+        return new HttpResponse(JSON.stringify(getPostApiV1SpeedOverTimeGetReportDataMock()),
           { 
             status: 200,
             headers: {

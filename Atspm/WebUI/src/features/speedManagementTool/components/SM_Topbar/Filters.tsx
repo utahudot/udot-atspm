@@ -1,9 +1,9 @@
 import {
-  useGetAccessCategory,
-  useGetCity,
-  useGetCounty,
-  useGetFunctionalType,
-  useGetRegion,
+  useGetApiV1AccessCategory,
+  useGetApiV1City,
+  useGetApiV1County,
+  useGetApiV1FunctionalType,
+  useGetApiV1Region,
 } from '@/api/speedManagement/aTSPMSpeedManagementApi'
 import AutocompleteInput from '@/components/AutocompleteInput'
 import useStore from '@/features/speedManagementTool/speedManagementStore'
@@ -21,11 +21,11 @@ const optionalFilters = [
 
 const Filters = () => {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
-  const { data: countiesData } = useGetCounty()
-  const { data: accessCategoriesData } = useGetAccessCategory()
-  const { data: citiesData } = useGetCity()
-  const { data: functionalTypesData } = useGetFunctionalType()
-  const { data: regionsData } = useGetRegion()
+  const { data: countiesData } = useGetApiV1County()
+  const { data: accessCategoriesData } = useGetApiV1AccessCategory()
+  const { data: citiesData } = useGetApiV1City()
+  const { data: functionalTypesData } = useGetApiV1FunctionalType()
+  const { data: regionsData } = useGetApiV1Region()
 
   const {
     routeSpeedRequest,

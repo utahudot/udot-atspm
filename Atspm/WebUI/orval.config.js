@@ -3,7 +3,7 @@ module.exports = {
     input:
       'https://speedmanagement-api-bdppc3riba-wm.a.run.app/swagger/v1/swagger.json',
     output: {
-      target: './src/api/speedManagement',
+      target: './src/api/generated/speedManagement',
       client: 'react-query',
       templates: './orval-templates',
       override: {
@@ -20,7 +20,7 @@ module.exports = {
     input:
       'https://speedmanagement-api-bdppc3riba-wm.a.run.app/swagger/v1/swagger.json',
     output: {
-      target: './src/api/speedManagement',
+      target: './src/api/generated/speedManagement',
       client: 'react-query',
       templates: './orval-templates',
       override: {
@@ -34,4 +34,19 @@ module.exports = {
       fileExtension: '.zod.ts',
     },
   },
+  // config: {
+  //   input: 'https://config-api-bdppc3riba-wm.a.run.app/swagger/v1/swagger.json',
+  //   output: {
+  //     target: './src/api/config',
+  //     client: 'react-query',
+  //     templates: './orval-templates',
+  //     override: {
+  //       mutator: {
+  //         path: './src/lib/axios.ts',
+  //         name: 'configRequest',
+  //       },
+  //     },
+  //     mode: 'split',
+  //   },
+  // },
 }

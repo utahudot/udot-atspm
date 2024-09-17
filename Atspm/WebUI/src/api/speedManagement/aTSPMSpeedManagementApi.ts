@@ -20,47 +20,48 @@ import type {
 import type {
   CongestionTrackingDto,
   CongestionTrackingOptions,
-  DeleteApiImpactIdImpactTypeImpactTypeIdParams,
-  DeleteApiImpactIdParams,
-  DeleteApiImpactIdSegmentsSegmentIdParams,
-  DeleteApiImpactTypeIdParams,
-  DeleteApiMonthlyAggregationParams,
-  GetAccessCategoryParams,
-  GetApiImpactIdParams,
-  GetApiImpactParams,
-  GetApiImpactTypeIdParams,
-  GetApiImpactTypeParams,
-  GetApiMonthlyAggregationSegmentsSegmentIdParams,
-  GetApiSegmentParams,
-  GetApiSegmentSegmentIdParams,
-  GetCityParams,
-  GetCountyParams,
-  GetFunctionalTypeParams,
-  GetRegionParams,
+  DeleteApiV1ImpactIdImpactTypeImpactTypeIdParams,
+  DeleteApiV1ImpactIdParams,
+  DeleteApiV1ImpactIdSegmentsSegmentIdParams,
+  DeleteApiV1ImpactTypeIdParams,
+  DeleteApiV1MonthlyAggregationParams,
+  GetApiV1AccessCategoryParams,
+  GetApiV1CityParams,
+  GetApiV1CountyParams,
+  GetApiV1FunctionalTypeParams,
+  GetApiV1ImpactIdParams,
+  GetApiV1ImpactParams,
+  GetApiV1ImpactTypeIdParams,
+  GetApiV1ImpactTypeParams,
+  GetApiV1MonthlyAggregationSegmentsSegmentIdParams,
+  GetApiV1RegionParams,
+  GetApiV1SegmentParams,
+  GetApiV1SegmentSegmentIdGeometryParams,
+  GetApiV1SegmentSegmentIdParams,
   GetRouteSpeedsParams,
   HistoricalSpeedOptions,
   Impact,
   ImpactType,
   MonthlyAggregation,
   NameAndIdDto,
-  PostApiImpactParams,
-  PostApiImpactTypeParams,
-  PostApiMonthlyAggregationParams,
-  PostApiMonthlyAggregationSegmentParams,
-  PostApiSegmentParams,
-  PostApiSegmentSegmentIdSpeedsParams,
-  PostApiSegmentSpeedsParams,
-  PostApiSpeedFromImpactImpactImpactIdParams,
-  PostApiSpeedFromImpactSegmentSegmentIdParams,
-  PostCongestionTrackingGetReportDataParams,
-  PostSpeedManagementGetHistoricalSpeedsParams,
-  PostSpeedOverDistanceGetReportDataParams,
-  PostSpeedOverTimeGetReportDataParams,
+  PostApiV1CongestionTrackingGetReportDataParams,
+  PostApiV1ImpactParams,
+  PostApiV1ImpactTypeParams,
+  PostApiV1MonthlyAggregationParams,
+  PostApiV1MonthlyAggregationSegmentParams,
+  PostApiV1SegmentParams,
+  PostApiV1SegmentSegmentIdSpeedsParams,
+  PostApiV1SegmentSpeedsParams,
+  PostApiV1SpeedFromImpactImpactImpactIdParams,
+  PostApiV1SpeedFromImpactSegmentSegmentIdParams,
+  PostApiV1SpeedManagementGetHistoricalSpeedsParams,
+  PostApiV1SpeedOverDistanceGetReportDataParams,
+  PostApiV1SpeedOverTimeGetReportDataParams,
   ProblemDetails,
-  PutApiImpactIdImpactTypeImpactTypeIdParams,
-  PutApiImpactIdParams,
-  PutApiImpactIdSegmentsSegmentIdParams,
-  PutApiImpactTypeIdParams,
+  PutApiV1ImpactIdImpactTypeImpactTypeIdParams,
+  PutApiV1ImpactIdParams,
+  PutApiV1ImpactIdSegmentsSegmentIdParams,
+  PutApiV1ImpactTypeIdParams,
   RouteSpeedOptions,
   SegmentRequestDto,
   SpeedFromImpactDto,
@@ -73,52 +74,52 @@ import { speedRequest } from '../../lib/axios';
 
 
 
-export const getAccessCategory = (
-    params?: GetAccessCategoryParams,
+export const getApiV1AccessCategory = (
+    params?: GetApiV1AccessCategoryParams,
  signal?: AbortSignal
 ) => {
       
       
       return speedRequest<NameAndIdDto[]>(
-      {url: `/AccessCategory`, method: 'GET',
+      {url: `/api/v1/AccessCategory`, method: 'GET',
         params, signal
     },
       );
     }
   
 
-export const getGetAccessCategoryQueryKey = (params?: GetAccessCategoryParams,) => {
-    return [`/AccessCategory`, ...(params ? [params]: [])] as const;
+export const getGetApiV1AccessCategoryQueryKey = (params?: GetApiV1AccessCategoryParams,) => {
+    return [`/api/v1/AccessCategory`, ...(params ? [params]: [])] as const;
     }
 
     
-export const getGetAccessCategoryQueryOptions = <TData = Awaited<ReturnType<typeof getAccessCategory>>, TError = ProblemDetails>(params?: GetAccessCategoryParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getAccessCategory>>, TError, TData>, }
+export const getGetApiV1AccessCategoryQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1AccessCategory>>, TError = ProblemDetails>(params?: GetApiV1AccessCategoryParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getApiV1AccessCategory>>, TError, TData>, }
 ) => {
 
 const {query: queryOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetAccessCategoryQueryKey(params);
+  const queryKey =  queryOptions?.queryKey ?? getGetApiV1AccessCategoryQueryKey(params);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAccessCategory>>> = ({ signal }) => getAccessCategory(params, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1AccessCategory>>> = ({ signal }) => getApiV1AccessCategory(params, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAccessCategory>>, TError, TData> & { queryKey: QueryKey }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1AccessCategory>>, TError, TData> & { queryKey: QueryKey }
 }
 
-export type GetAccessCategoryQueryResult = NonNullable<Awaited<ReturnType<typeof getAccessCategory>>>
-export type GetAccessCategoryQueryError = ProblemDetails
+export type GetApiV1AccessCategoryQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1AccessCategory>>>
+export type GetApiV1AccessCategoryQueryError = ProblemDetails
 
-export const useGetAccessCategory = <TData = Awaited<ReturnType<typeof getAccessCategory>>, TError = ProblemDetails>(
- params?: GetAccessCategoryParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getAccessCategory>>, TError, TData>, }
+export const useGetApiV1AccessCategory = <TData = Awaited<ReturnType<typeof getApiV1AccessCategory>>, TError = ProblemDetails>(
+ params?: GetApiV1AccessCategoryParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getApiV1AccessCategory>>, TError, TData>, }
 
   ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
 
-  const queryOptions = getGetAccessCategoryQueryOptions(params,options)
+  const queryOptions = getGetApiV1AccessCategoryQueryOptions(params,options)
 
   const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 
@@ -130,52 +131,52 @@ export const useGetAccessCategory = <TData = Awaited<ReturnType<typeof getAccess
 
 
 
-export const getCity = (
-    params?: GetCityParams,
+export const getApiV1City = (
+    params?: GetApiV1CityParams,
  signal?: AbortSignal
 ) => {
       
       
       return speedRequest<NameAndIdDto[]>(
-      {url: `/City`, method: 'GET',
+      {url: `/api/v1/City`, method: 'GET',
         params, signal
     },
       );
     }
   
 
-export const getGetCityQueryKey = (params?: GetCityParams,) => {
-    return [`/City`, ...(params ? [params]: [])] as const;
+export const getGetApiV1CityQueryKey = (params?: GetApiV1CityParams,) => {
+    return [`/api/v1/City`, ...(params ? [params]: [])] as const;
     }
 
     
-export const getGetCityQueryOptions = <TData = Awaited<ReturnType<typeof getCity>>, TError = ProblemDetails>(params?: GetCityParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getCity>>, TError, TData>, }
+export const getGetApiV1CityQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1City>>, TError = ProblemDetails>(params?: GetApiV1CityParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getApiV1City>>, TError, TData>, }
 ) => {
 
 const {query: queryOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetCityQueryKey(params);
+  const queryKey =  queryOptions?.queryKey ?? getGetApiV1CityQueryKey(params);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getCity>>> = ({ signal }) => getCity(params, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1City>>> = ({ signal }) => getApiV1City(params, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getCity>>, TError, TData> & { queryKey: QueryKey }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1City>>, TError, TData> & { queryKey: QueryKey }
 }
 
-export type GetCityQueryResult = NonNullable<Awaited<ReturnType<typeof getCity>>>
-export type GetCityQueryError = ProblemDetails
+export type GetApiV1CityQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1City>>>
+export type GetApiV1CityQueryError = ProblemDetails
 
-export const useGetCity = <TData = Awaited<ReturnType<typeof getCity>>, TError = ProblemDetails>(
- params?: GetCityParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getCity>>, TError, TData>, }
+export const useGetApiV1City = <TData = Awaited<ReturnType<typeof getApiV1City>>, TError = ProblemDetails>(
+ params?: GetApiV1CityParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getApiV1City>>, TError, TData>, }
 
   ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
 
-  const queryOptions = getGetCityQueryOptions(params,options)
+  const queryOptions = getGetApiV1CityQueryOptions(params,options)
 
   const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 
@@ -187,14 +188,14 @@ export const useGetCity = <TData = Awaited<ReturnType<typeof getCity>>, TError =
 
 
 
-export const postCongestionTrackingGetReportData = (
+export const postApiV1CongestionTrackingGetReportData = (
     congestionTrackingOptions: CongestionTrackingOptions,
-    params?: PostCongestionTrackingGetReportDataParams,
+    params?: PostApiV1CongestionTrackingGetReportDataParams,
  ) => {
       
       
       return speedRequest<CongestionTrackingDto>(
-      {url: `/CongestionTracking/getReportData`, method: 'POST',
+      {url: `/api/v1/CongestionTracking/getReportData`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: congestionTrackingOptions,
         params
@@ -204,18 +205,18 @@ export const postCongestionTrackingGetReportData = (
   
 
 
-export const getPostCongestionTrackingGetReportDataMutationOptions = <TError = ProblemDetails,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postCongestionTrackingGetReportData>>, TError,{data: CongestionTrackingOptions;params?: PostCongestionTrackingGetReportDataParams}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof postCongestionTrackingGetReportData>>, TError,{data: CongestionTrackingOptions;params?: PostCongestionTrackingGetReportDataParams}, TContext> => {
+export const getPostApiV1CongestionTrackingGetReportDataMutationOptions = <TError = ProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1CongestionTrackingGetReportData>>, TError,{data: CongestionTrackingOptions;params?: PostApiV1CongestionTrackingGetReportDataParams}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof postApiV1CongestionTrackingGetReportData>>, TError,{data: CongestionTrackingOptions;params?: PostApiV1CongestionTrackingGetReportDataParams}, TContext> => {
  const {mutation: mutationOptions} = options ?? {};
 
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postCongestionTrackingGetReportData>>, {data: CongestionTrackingOptions;params?: PostCongestionTrackingGetReportDataParams}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiV1CongestionTrackingGetReportData>>, {data: CongestionTrackingOptions;params?: PostApiV1CongestionTrackingGetReportDataParams}> = (props) => {
           const {data,params} = props ?? {};
 
-          return  postCongestionTrackingGetReportData(data,params,)
+          return  postApiV1CongestionTrackingGetReportData(data,params,)
         }
 
         
@@ -223,65 +224,65 @@ export const getPostCongestionTrackingGetReportDataMutationOptions = <TError = P
 
    return  { mutationFn, ...mutationOptions }}
 
-    export type PostCongestionTrackingGetReportDataMutationResult = NonNullable<Awaited<ReturnType<typeof postCongestionTrackingGetReportData>>>
-    export type PostCongestionTrackingGetReportDataMutationBody = CongestionTrackingOptions
-    export type PostCongestionTrackingGetReportDataMutationError = ProblemDetails
+    export type PostApiV1CongestionTrackingGetReportDataMutationResult = NonNullable<Awaited<ReturnType<typeof postApiV1CongestionTrackingGetReportData>>>
+    export type PostApiV1CongestionTrackingGetReportDataMutationBody = CongestionTrackingOptions
+    export type PostApiV1CongestionTrackingGetReportDataMutationError = ProblemDetails
 
-    export const usePostCongestionTrackingGetReportData = <TError = ProblemDetails,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postCongestionTrackingGetReportData>>, TError,{data: CongestionTrackingOptions;params?: PostCongestionTrackingGetReportDataParams}, TContext>, }
+    export const usePostApiV1CongestionTrackingGetReportData = <TError = ProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1CongestionTrackingGetReportData>>, TError,{data: CongestionTrackingOptions;params?: PostApiV1CongestionTrackingGetReportDataParams}, TContext>, }
 ) => {
 
-      const mutationOptions = getPostCongestionTrackingGetReportDataMutationOptions(options);
+      const mutationOptions = getPostApiV1CongestionTrackingGetReportDataMutationOptions(options);
 
       return useMutation(mutationOptions);
     }
     
-export const getCounty = (
-    params?: GetCountyParams,
+export const getApiV1County = (
+    params?: GetApiV1CountyParams,
  signal?: AbortSignal
 ) => {
       
       
       return speedRequest<NameAndIdDto[]>(
-      {url: `/County`, method: 'GET',
+      {url: `/api/v1/County`, method: 'GET',
         params, signal
     },
       );
     }
   
 
-export const getGetCountyQueryKey = (params?: GetCountyParams,) => {
-    return [`/County`, ...(params ? [params]: [])] as const;
+export const getGetApiV1CountyQueryKey = (params?: GetApiV1CountyParams,) => {
+    return [`/api/v1/County`, ...(params ? [params]: [])] as const;
     }
 
     
-export const getGetCountyQueryOptions = <TData = Awaited<ReturnType<typeof getCounty>>, TError = ProblemDetails>(params?: GetCountyParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getCounty>>, TError, TData>, }
+export const getGetApiV1CountyQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1County>>, TError = ProblemDetails>(params?: GetApiV1CountyParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getApiV1County>>, TError, TData>, }
 ) => {
 
 const {query: queryOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetCountyQueryKey(params);
+  const queryKey =  queryOptions?.queryKey ?? getGetApiV1CountyQueryKey(params);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getCounty>>> = ({ signal }) => getCounty(params, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1County>>> = ({ signal }) => getApiV1County(params, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getCounty>>, TError, TData> & { queryKey: QueryKey }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1County>>, TError, TData> & { queryKey: QueryKey }
 }
 
-export type GetCountyQueryResult = NonNullable<Awaited<ReturnType<typeof getCounty>>>
-export type GetCountyQueryError = ProblemDetails
+export type GetApiV1CountyQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1County>>>
+export type GetApiV1CountyQueryError = ProblemDetails
 
-export const useGetCounty = <TData = Awaited<ReturnType<typeof getCounty>>, TError = ProblemDetails>(
- params?: GetCountyParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getCounty>>, TError, TData>, }
+export const useGetApiV1County = <TData = Awaited<ReturnType<typeof getApiV1County>>, TError = ProblemDetails>(
+ params?: GetApiV1CountyParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getApiV1County>>, TError, TData>, }
 
   ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
 
-  const queryOptions = getGetCountyQueryOptions(params,options)
+  const queryOptions = getGetApiV1CountyQueryOptions(params,options)
 
   const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 
@@ -293,52 +294,52 @@ export const useGetCounty = <TData = Awaited<ReturnType<typeof getCounty>>, TErr
 
 
 
-export const getFunctionalType = (
-    params?: GetFunctionalTypeParams,
+export const getApiV1FunctionalType = (
+    params?: GetApiV1FunctionalTypeParams,
  signal?: AbortSignal
 ) => {
       
       
       return speedRequest<NameAndIdDto[]>(
-      {url: `/FunctionalType`, method: 'GET',
+      {url: `/api/v1/FunctionalType`, method: 'GET',
         params, signal
     },
       );
     }
   
 
-export const getGetFunctionalTypeQueryKey = (params?: GetFunctionalTypeParams,) => {
-    return [`/FunctionalType`, ...(params ? [params]: [])] as const;
+export const getGetApiV1FunctionalTypeQueryKey = (params?: GetApiV1FunctionalTypeParams,) => {
+    return [`/api/v1/FunctionalType`, ...(params ? [params]: [])] as const;
     }
 
     
-export const getGetFunctionalTypeQueryOptions = <TData = Awaited<ReturnType<typeof getFunctionalType>>, TError = ProblemDetails>(params?: GetFunctionalTypeParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getFunctionalType>>, TError, TData>, }
+export const getGetApiV1FunctionalTypeQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1FunctionalType>>, TError = ProblemDetails>(params?: GetApiV1FunctionalTypeParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getApiV1FunctionalType>>, TError, TData>, }
 ) => {
 
 const {query: queryOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetFunctionalTypeQueryKey(params);
+  const queryKey =  queryOptions?.queryKey ?? getGetApiV1FunctionalTypeQueryKey(params);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getFunctionalType>>> = ({ signal }) => getFunctionalType(params, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1FunctionalType>>> = ({ signal }) => getApiV1FunctionalType(params, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getFunctionalType>>, TError, TData> & { queryKey: QueryKey }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1FunctionalType>>, TError, TData> & { queryKey: QueryKey }
 }
 
-export type GetFunctionalTypeQueryResult = NonNullable<Awaited<ReturnType<typeof getFunctionalType>>>
-export type GetFunctionalTypeQueryError = ProblemDetails
+export type GetApiV1FunctionalTypeQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1FunctionalType>>>
+export type GetApiV1FunctionalTypeQueryError = ProblemDetails
 
-export const useGetFunctionalType = <TData = Awaited<ReturnType<typeof getFunctionalType>>, TError = ProblemDetails>(
- params?: GetFunctionalTypeParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getFunctionalType>>, TError, TData>, }
+export const useGetApiV1FunctionalType = <TData = Awaited<ReturnType<typeof getApiV1FunctionalType>>, TError = ProblemDetails>(
+ params?: GetApiV1FunctionalTypeParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getApiV1FunctionalType>>, TError, TData>, }
 
   ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
 
-  const queryOptions = getGetFunctionalTypeQueryOptions(params,options)
+  const queryOptions = getGetApiV1FunctionalTypeQueryOptions(params,options)
 
   const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 
@@ -350,52 +351,52 @@ export const useGetFunctionalType = <TData = Awaited<ReturnType<typeof getFuncti
 
 
 
-export const getApiImpact = (
-    params?: GetApiImpactParams,
+export const getApiV1Impact = (
+    params?: GetApiV1ImpactParams,
  signal?: AbortSignal
 ) => {
       
       
       return speedRequest<unknown>(
-      {url: `/api/Impact`, method: 'GET',
+      {url: `/api/v1/Impact`, method: 'GET',
         params, signal
     },
       );
     }
   
 
-export const getGetApiImpactQueryKey = (params?: GetApiImpactParams,) => {
-    return [`/api/Impact`, ...(params ? [params]: [])] as const;
+export const getGetApiV1ImpactQueryKey = (params?: GetApiV1ImpactParams,) => {
+    return [`/api/v1/Impact`, ...(params ? [params]: [])] as const;
     }
 
     
-export const getGetApiImpactQueryOptions = <TData = Awaited<ReturnType<typeof getApiImpact>>, TError = ProblemDetails>(params?: GetApiImpactParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getApiImpact>>, TError, TData>, }
+export const getGetApiV1ImpactQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1Impact>>, TError = ProblemDetails>(params?: GetApiV1ImpactParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getApiV1Impact>>, TError, TData>, }
 ) => {
 
 const {query: queryOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiImpactQueryKey(params);
+  const queryKey =  queryOptions?.queryKey ?? getGetApiV1ImpactQueryKey(params);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiImpact>>> = ({ signal }) => getApiImpact(params, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1Impact>>> = ({ signal }) => getApiV1Impact(params, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiImpact>>, TError, TData> & { queryKey: QueryKey }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1Impact>>, TError, TData> & { queryKey: QueryKey }
 }
 
-export type GetApiImpactQueryResult = NonNullable<Awaited<ReturnType<typeof getApiImpact>>>
-export type GetApiImpactQueryError = ProblemDetails
+export type GetApiV1ImpactQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1Impact>>>
+export type GetApiV1ImpactQueryError = ProblemDetails
 
-export const useGetApiImpact = <TData = Awaited<ReturnType<typeof getApiImpact>>, TError = ProblemDetails>(
- params?: GetApiImpactParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getApiImpact>>, TError, TData>, }
+export const useGetApiV1Impact = <TData = Awaited<ReturnType<typeof getApiV1Impact>>, TError = ProblemDetails>(
+ params?: GetApiV1ImpactParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getApiV1Impact>>, TError, TData>, }
 
   ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
 
-  const queryOptions = getGetApiImpactQueryOptions(params,options)
+  const queryOptions = getGetApiV1ImpactQueryOptions(params,options)
 
   const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 
@@ -407,14 +408,14 @@ export const useGetApiImpact = <TData = Awaited<ReturnType<typeof getApiImpact>>
 
 
 
-export const postApiImpact = (
+export const postApiV1Impact = (
     impact: Impact,
-    params?: PostApiImpactParams,
+    params?: PostApiV1ImpactParams,
  ) => {
       
       
       return speedRequest<unknown>(
-      {url: `/api/Impact`, method: 'POST',
+      {url: `/api/v1/Impact`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: impact,
         params
@@ -424,18 +425,18 @@ export const postApiImpact = (
   
 
 
-export const getPostApiImpactMutationOptions = <TError = ProblemDetails,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiImpact>>, TError,{data: Impact;params?: PostApiImpactParams}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof postApiImpact>>, TError,{data: Impact;params?: PostApiImpactParams}, TContext> => {
+export const getPostApiV1ImpactMutationOptions = <TError = ProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1Impact>>, TError,{data: Impact;params?: PostApiV1ImpactParams}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof postApiV1Impact>>, TError,{data: Impact;params?: PostApiV1ImpactParams}, TContext> => {
  const {mutation: mutationOptions} = options ?? {};
 
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiImpact>>, {data: Impact;params?: PostApiImpactParams}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiV1Impact>>, {data: Impact;params?: PostApiV1ImpactParams}> = (props) => {
           const {data,params} = props ?? {};
 
-          return  postApiImpact(data,params,)
+          return  postApiV1Impact(data,params,)
         }
 
         
@@ -443,69 +444,69 @@ export const getPostApiImpactMutationOptions = <TError = ProblemDetails,
 
    return  { mutationFn, ...mutationOptions }}
 
-    export type PostApiImpactMutationResult = NonNullable<Awaited<ReturnType<typeof postApiImpact>>>
-    export type PostApiImpactMutationBody = Impact
-    export type PostApiImpactMutationError = ProblemDetails
+    export type PostApiV1ImpactMutationResult = NonNullable<Awaited<ReturnType<typeof postApiV1Impact>>>
+    export type PostApiV1ImpactMutationBody = Impact
+    export type PostApiV1ImpactMutationError = ProblemDetails
 
-    export const usePostApiImpact = <TError = ProblemDetails,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiImpact>>, TError,{data: Impact;params?: PostApiImpactParams}, TContext>, }
+    export const usePostApiV1Impact = <TError = ProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1Impact>>, TError,{data: Impact;params?: PostApiV1ImpactParams}, TContext>, }
 ) => {
 
-      const mutationOptions = getPostApiImpactMutationOptions(options);
+      const mutationOptions = getPostApiV1ImpactMutationOptions(options);
 
       return useMutation(mutationOptions);
     }
     
-export const getApiImpactId = (
+export const getApiV1ImpactId = (
     id: string,
-    params?: GetApiImpactIdParams,
+    params?: GetApiV1ImpactIdParams,
  signal?: AbortSignal
 ) => {
       
       
       return speedRequest<unknown>(
-      {url: `/api/Impact/${id}`, method: 'GET',
+      {url: `/api/v1/Impact/${id}`, method: 'GET',
         params, signal
     },
       );
     }
   
 
-export const getGetApiImpactIdQueryKey = (id: string,
-    params?: GetApiImpactIdParams,) => {
-    return [`/api/Impact/${id}`, ...(params ? [params]: [])] as const;
+export const getGetApiV1ImpactIdQueryKey = (id: string,
+    params?: GetApiV1ImpactIdParams,) => {
+    return [`/api/v1/Impact/${id}`, ...(params ? [params]: [])] as const;
     }
 
     
-export const getGetApiImpactIdQueryOptions = <TData = Awaited<ReturnType<typeof getApiImpactId>>, TError = ProblemDetails>(id: string,
-    params?: GetApiImpactIdParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getApiImpactId>>, TError, TData>, }
+export const getGetApiV1ImpactIdQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1ImpactId>>, TError = ProblemDetails>(id: string,
+    params?: GetApiV1ImpactIdParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getApiV1ImpactId>>, TError, TData>, }
 ) => {
 
 const {query: queryOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiImpactIdQueryKey(id,params);
+  const queryKey =  queryOptions?.queryKey ?? getGetApiV1ImpactIdQueryKey(id,params);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiImpactId>>> = ({ signal }) => getApiImpactId(id,params, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1ImpactId>>> = ({ signal }) => getApiV1ImpactId(id,params, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiImpactId>>, TError, TData> & { queryKey: QueryKey }
+   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1ImpactId>>, TError, TData> & { queryKey: QueryKey }
 }
 
-export type GetApiImpactIdQueryResult = NonNullable<Awaited<ReturnType<typeof getApiImpactId>>>
-export type GetApiImpactIdQueryError = ProblemDetails
+export type GetApiV1ImpactIdQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1ImpactId>>>
+export type GetApiV1ImpactIdQueryError = ProblemDetails
 
-export const useGetApiImpactId = <TData = Awaited<ReturnType<typeof getApiImpactId>>, TError = ProblemDetails>(
+export const useGetApiV1ImpactId = <TData = Awaited<ReturnType<typeof getApiV1ImpactId>>, TError = ProblemDetails>(
  id: string,
-    params?: GetApiImpactIdParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getApiImpactId>>, TError, TData>, }
+    params?: GetApiV1ImpactIdParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getApiV1ImpactId>>, TError, TData>, }
 
   ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
 
-  const queryOptions = getGetApiImpactIdQueryOptions(id,params,options)
+  const queryOptions = getGetApiV1ImpactIdQueryOptions(id,params,options)
 
   const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 
@@ -517,15 +518,15 @@ export const useGetApiImpactId = <TData = Awaited<ReturnType<typeof getApiImpact
 
 
 
-export const putApiImpactId = (
+export const putApiV1ImpactId = (
     id: string,
     impact: Impact,
-    params?: PutApiImpactIdParams,
+    params?: PutApiV1ImpactIdParams,
  ) => {
       
       
       return speedRequest<unknown>(
-      {url: `/api/Impact/${id}`, method: 'PUT',
+      {url: `/api/v1/Impact/${id}`, method: 'PUT',
       headers: {'Content-Type': 'application/json', },
       data: impact,
         params
@@ -535,18 +536,18 @@ export const putApiImpactId = (
   
 
 
-export const getPutApiImpactIdMutationOptions = <TError = ProblemDetails,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putApiImpactId>>, TError,{id: string;data: Impact;params?: PutApiImpactIdParams}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof putApiImpactId>>, TError,{id: string;data: Impact;params?: PutApiImpactIdParams}, TContext> => {
+export const getPutApiV1ImpactIdMutationOptions = <TError = ProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putApiV1ImpactId>>, TError,{id: string;data: Impact;params?: PutApiV1ImpactIdParams}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof putApiV1ImpactId>>, TError,{id: string;data: Impact;params?: PutApiV1ImpactIdParams}, TContext> => {
  const {mutation: mutationOptions} = options ?? {};
 
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof putApiImpactId>>, {id: string;data: Impact;params?: PutApiImpactIdParams}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof putApiV1ImpactId>>, {id: string;data: Impact;params?: PutApiV1ImpactIdParams}> = (props) => {
           const {id,data,params} = props ?? {};
 
-          return  putApiImpactId(id,data,params,)
+          return  putApiV1ImpactId(id,data,params,)
         }
 
         
@@ -554,27 +555,27 @@ export const getPutApiImpactIdMutationOptions = <TError = ProblemDetails,
 
    return  { mutationFn, ...mutationOptions }}
 
-    export type PutApiImpactIdMutationResult = NonNullable<Awaited<ReturnType<typeof putApiImpactId>>>
-    export type PutApiImpactIdMutationBody = Impact
-    export type PutApiImpactIdMutationError = ProblemDetails
+    export type PutApiV1ImpactIdMutationResult = NonNullable<Awaited<ReturnType<typeof putApiV1ImpactId>>>
+    export type PutApiV1ImpactIdMutationBody = Impact
+    export type PutApiV1ImpactIdMutationError = ProblemDetails
 
-    export const usePutApiImpactId = <TError = ProblemDetails,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putApiImpactId>>, TError,{id: string;data: Impact;params?: PutApiImpactIdParams}, TContext>, }
+    export const usePutApiV1ImpactId = <TError = ProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putApiV1ImpactId>>, TError,{id: string;data: Impact;params?: PutApiV1ImpactIdParams}, TContext>, }
 ) => {
 
-      const mutationOptions = getPutApiImpactIdMutationOptions(options);
+      const mutationOptions = getPutApiV1ImpactIdMutationOptions(options);
 
       return useMutation(mutationOptions);
     }
     
-export const deleteApiImpactId = (
+export const deleteApiV1ImpactId = (
     id: string,
-    params?: DeleteApiImpactIdParams,
+    params?: DeleteApiV1ImpactIdParams,
  ) => {
       
       
       return speedRequest<unknown>(
-      {url: `/api/Impact/${id}`, method: 'DELETE',
+      {url: `/api/v1/Impact/${id}`, method: 'DELETE',
         params
     },
       );
@@ -582,18 +583,18 @@ export const deleteApiImpactId = (
   
 
 
-export const getDeleteApiImpactIdMutationOptions = <TError = ProblemDetails,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteApiImpactId>>, TError,{id: string;params?: DeleteApiImpactIdParams}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof deleteApiImpactId>>, TError,{id: string;params?: DeleteApiImpactIdParams}, TContext> => {
+export const getDeleteApiV1ImpactIdMutationOptions = <TError = ProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteApiV1ImpactId>>, TError,{id: string;params?: DeleteApiV1ImpactIdParams}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof deleteApiV1ImpactId>>, TError,{id: string;params?: DeleteApiV1ImpactIdParams}, TContext> => {
  const {mutation: mutationOptions} = options ?? {};
 
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteApiImpactId>>, {id: string;params?: DeleteApiImpactIdParams}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteApiV1ImpactId>>, {id: string;params?: DeleteApiV1ImpactIdParams}> = (props) => {
           const {id,params} = props ?? {};
 
-          return  deleteApiImpactId(id,params,)
+          return  deleteApiV1ImpactId(id,params,)
         }
 
         
@@ -601,28 +602,28 @@ export const getDeleteApiImpactIdMutationOptions = <TError = ProblemDetails,
 
    return  { mutationFn, ...mutationOptions }}
 
-    export type DeleteApiImpactIdMutationResult = NonNullable<Awaited<ReturnType<typeof deleteApiImpactId>>>
+    export type DeleteApiV1ImpactIdMutationResult = NonNullable<Awaited<ReturnType<typeof deleteApiV1ImpactId>>>
     
-    export type DeleteApiImpactIdMutationError = ProblemDetails
+    export type DeleteApiV1ImpactIdMutationError = ProblemDetails
 
-    export const useDeleteApiImpactId = <TError = ProblemDetails,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteApiImpactId>>, TError,{id: string;params?: DeleteApiImpactIdParams}, TContext>, }
+    export const useDeleteApiV1ImpactId = <TError = ProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteApiV1ImpactId>>, TError,{id: string;params?: DeleteApiV1ImpactIdParams}, TContext>, }
 ) => {
 
-      const mutationOptions = getDeleteApiImpactIdMutationOptions(options);
+      const mutationOptions = getDeleteApiV1ImpactIdMutationOptions(options);
 
       return useMutation(mutationOptions);
     }
     
-export const putApiImpactIdSegmentsSegmentId = (
+export const putApiV1ImpactIdSegmentsSegmentId = (
     id: string,
     segmentId: string,
-    params?: PutApiImpactIdSegmentsSegmentIdParams,
+    params?: PutApiV1ImpactIdSegmentsSegmentIdParams,
  ) => {
       
       
       return speedRequest<unknown>(
-      {url: `/api/Impact/${id}/segments/${segmentId}`, method: 'PUT',
+      {url: `/api/v1/Impact/${id}/segments/${segmentId}`, method: 'PUT',
         params
     },
       );
@@ -630,18 +631,18 @@ export const putApiImpactIdSegmentsSegmentId = (
   
 
 
-export const getPutApiImpactIdSegmentsSegmentIdMutationOptions = <TError = ProblemDetails,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putApiImpactIdSegmentsSegmentId>>, TError,{id: string;segmentId: string;params?: PutApiImpactIdSegmentsSegmentIdParams}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof putApiImpactIdSegmentsSegmentId>>, TError,{id: string;segmentId: string;params?: PutApiImpactIdSegmentsSegmentIdParams}, TContext> => {
+export const getPutApiV1ImpactIdSegmentsSegmentIdMutationOptions = <TError = ProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putApiV1ImpactIdSegmentsSegmentId>>, TError,{id: string;segmentId: string;params?: PutApiV1ImpactIdSegmentsSegmentIdParams}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof putApiV1ImpactIdSegmentsSegmentId>>, TError,{id: string;segmentId: string;params?: PutApiV1ImpactIdSegmentsSegmentIdParams}, TContext> => {
  const {mutation: mutationOptions} = options ?? {};
 
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof putApiImpactIdSegmentsSegmentId>>, {id: string;segmentId: string;params?: PutApiImpactIdSegmentsSegmentIdParams}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof putApiV1ImpactIdSegmentsSegmentId>>, {id: string;segmentId: string;params?: PutApiV1ImpactIdSegmentsSegmentIdParams}> = (props) => {
           const {id,segmentId,params} = props ?? {};
 
-          return  putApiImpactIdSegmentsSegmentId(id,segmentId,params,)
+          return  putApiV1ImpactIdSegmentsSegmentId(id,segmentId,params,)
         }
 
         
@@ -649,28 +650,28 @@ export const getPutApiImpactIdSegmentsSegmentIdMutationOptions = <TError = Probl
 
    return  { mutationFn, ...mutationOptions }}
 
-    export type PutApiImpactIdSegmentsSegmentIdMutationResult = NonNullable<Awaited<ReturnType<typeof putApiImpactIdSegmentsSegmentId>>>
+    export type PutApiV1ImpactIdSegmentsSegmentIdMutationResult = NonNullable<Awaited<ReturnType<typeof putApiV1ImpactIdSegmentsSegmentId>>>
     
-    export type PutApiImpactIdSegmentsSegmentIdMutationError = ProblemDetails
+    export type PutApiV1ImpactIdSegmentsSegmentIdMutationError = ProblemDetails
 
-    export const usePutApiImpactIdSegmentsSegmentId = <TError = ProblemDetails,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putApiImpactIdSegmentsSegmentId>>, TError,{id: string;segmentId: string;params?: PutApiImpactIdSegmentsSegmentIdParams}, TContext>, }
+    export const usePutApiV1ImpactIdSegmentsSegmentId = <TError = ProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putApiV1ImpactIdSegmentsSegmentId>>, TError,{id: string;segmentId: string;params?: PutApiV1ImpactIdSegmentsSegmentIdParams}, TContext>, }
 ) => {
 
-      const mutationOptions = getPutApiImpactIdSegmentsSegmentIdMutationOptions(options);
+      const mutationOptions = getPutApiV1ImpactIdSegmentsSegmentIdMutationOptions(options);
 
       return useMutation(mutationOptions);
     }
     
-export const deleteApiImpactIdSegmentsSegmentId = (
+export const deleteApiV1ImpactIdSegmentsSegmentId = (
     id: string,
     segmentId: string,
-    params?: DeleteApiImpactIdSegmentsSegmentIdParams,
+    params?: DeleteApiV1ImpactIdSegmentsSegmentIdParams,
  ) => {
       
       
       return speedRequest<unknown>(
-      {url: `/api/Impact/${id}/segments/${segmentId}`, method: 'DELETE',
+      {url: `/api/v1/Impact/${id}/segments/${segmentId}`, method: 'DELETE',
         params
     },
       );
@@ -678,18 +679,18 @@ export const deleteApiImpactIdSegmentsSegmentId = (
   
 
 
-export const getDeleteApiImpactIdSegmentsSegmentIdMutationOptions = <TError = ProblemDetails,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteApiImpactIdSegmentsSegmentId>>, TError,{id: string;segmentId: string;params?: DeleteApiImpactIdSegmentsSegmentIdParams}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof deleteApiImpactIdSegmentsSegmentId>>, TError,{id: string;segmentId: string;params?: DeleteApiImpactIdSegmentsSegmentIdParams}, TContext> => {
+export const getDeleteApiV1ImpactIdSegmentsSegmentIdMutationOptions = <TError = ProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteApiV1ImpactIdSegmentsSegmentId>>, TError,{id: string;segmentId: string;params?: DeleteApiV1ImpactIdSegmentsSegmentIdParams}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof deleteApiV1ImpactIdSegmentsSegmentId>>, TError,{id: string;segmentId: string;params?: DeleteApiV1ImpactIdSegmentsSegmentIdParams}, TContext> => {
  const {mutation: mutationOptions} = options ?? {};
 
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteApiImpactIdSegmentsSegmentId>>, {id: string;segmentId: string;params?: DeleteApiImpactIdSegmentsSegmentIdParams}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteApiV1ImpactIdSegmentsSegmentId>>, {id: string;segmentId: string;params?: DeleteApiV1ImpactIdSegmentsSegmentIdParams}> = (props) => {
           const {id,segmentId,params} = props ?? {};
 
-          return  deleteApiImpactIdSegmentsSegmentId(id,segmentId,params,)
+          return  deleteApiV1ImpactIdSegmentsSegmentId(id,segmentId,params,)
         }
 
         
@@ -697,28 +698,28 @@ export const getDeleteApiImpactIdSegmentsSegmentIdMutationOptions = <TError = Pr
 
    return  { mutationFn, ...mutationOptions }}
 
-    export type DeleteApiImpactIdSegmentsSegmentIdMutationResult = NonNullable<Awaited<ReturnType<typeof deleteApiImpactIdSegmentsSegmentId>>>
+    export type DeleteApiV1ImpactIdSegmentsSegmentIdMutationResult = NonNullable<Awaited<ReturnType<typeof deleteApiV1ImpactIdSegmentsSegmentId>>>
     
-    export type DeleteApiImpactIdSegmentsSegmentIdMutationError = ProblemDetails
+    export type DeleteApiV1ImpactIdSegmentsSegmentIdMutationError = ProblemDetails
 
-    export const useDeleteApiImpactIdSegmentsSegmentId = <TError = ProblemDetails,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteApiImpactIdSegmentsSegmentId>>, TError,{id: string;segmentId: string;params?: DeleteApiImpactIdSegmentsSegmentIdParams}, TContext>, }
+    export const useDeleteApiV1ImpactIdSegmentsSegmentId = <TError = ProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteApiV1ImpactIdSegmentsSegmentId>>, TError,{id: string;segmentId: string;params?: DeleteApiV1ImpactIdSegmentsSegmentIdParams}, TContext>, }
 ) => {
 
-      const mutationOptions = getDeleteApiImpactIdSegmentsSegmentIdMutationOptions(options);
+      const mutationOptions = getDeleteApiV1ImpactIdSegmentsSegmentIdMutationOptions(options);
 
       return useMutation(mutationOptions);
     }
     
-export const putApiImpactIdImpactTypeImpactTypeId = (
+export const putApiV1ImpactIdImpactTypeImpactTypeId = (
     id: string,
     impactTypeId: string,
-    params?: PutApiImpactIdImpactTypeImpactTypeIdParams,
+    params?: PutApiV1ImpactIdImpactTypeImpactTypeIdParams,
  ) => {
       
       
       return speedRequest<unknown>(
-      {url: `/api/Impact/${id}/impactType/${impactTypeId}`, method: 'PUT',
+      {url: `/api/v1/Impact/${id}/impactType/${impactTypeId}`, method: 'PUT',
         params
     },
       );
@@ -726,18 +727,18 @@ export const putApiImpactIdImpactTypeImpactTypeId = (
   
 
 
-export const getPutApiImpactIdImpactTypeImpactTypeIdMutationOptions = <TError = ProblemDetails,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putApiImpactIdImpactTypeImpactTypeId>>, TError,{id: string;impactTypeId: string;params?: PutApiImpactIdImpactTypeImpactTypeIdParams}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof putApiImpactIdImpactTypeImpactTypeId>>, TError,{id: string;impactTypeId: string;params?: PutApiImpactIdImpactTypeImpactTypeIdParams}, TContext> => {
+export const getPutApiV1ImpactIdImpactTypeImpactTypeIdMutationOptions = <TError = ProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putApiV1ImpactIdImpactTypeImpactTypeId>>, TError,{id: string;impactTypeId: string;params?: PutApiV1ImpactIdImpactTypeImpactTypeIdParams}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof putApiV1ImpactIdImpactTypeImpactTypeId>>, TError,{id: string;impactTypeId: string;params?: PutApiV1ImpactIdImpactTypeImpactTypeIdParams}, TContext> => {
  const {mutation: mutationOptions} = options ?? {};
 
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof putApiImpactIdImpactTypeImpactTypeId>>, {id: string;impactTypeId: string;params?: PutApiImpactIdImpactTypeImpactTypeIdParams}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof putApiV1ImpactIdImpactTypeImpactTypeId>>, {id: string;impactTypeId: string;params?: PutApiV1ImpactIdImpactTypeImpactTypeIdParams}> = (props) => {
           const {id,impactTypeId,params} = props ?? {};
 
-          return  putApiImpactIdImpactTypeImpactTypeId(id,impactTypeId,params,)
+          return  putApiV1ImpactIdImpactTypeImpactTypeId(id,impactTypeId,params,)
         }
 
         
@@ -745,28 +746,28 @@ export const getPutApiImpactIdImpactTypeImpactTypeIdMutationOptions = <TError = 
 
    return  { mutationFn, ...mutationOptions }}
 
-    export type PutApiImpactIdImpactTypeImpactTypeIdMutationResult = NonNullable<Awaited<ReturnType<typeof putApiImpactIdImpactTypeImpactTypeId>>>
+    export type PutApiV1ImpactIdImpactTypeImpactTypeIdMutationResult = NonNullable<Awaited<ReturnType<typeof putApiV1ImpactIdImpactTypeImpactTypeId>>>
     
-    export type PutApiImpactIdImpactTypeImpactTypeIdMutationError = ProblemDetails
+    export type PutApiV1ImpactIdImpactTypeImpactTypeIdMutationError = ProblemDetails
 
-    export const usePutApiImpactIdImpactTypeImpactTypeId = <TError = ProblemDetails,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putApiImpactIdImpactTypeImpactTypeId>>, TError,{id: string;impactTypeId: string;params?: PutApiImpactIdImpactTypeImpactTypeIdParams}, TContext>, }
+    export const usePutApiV1ImpactIdImpactTypeImpactTypeId = <TError = ProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putApiV1ImpactIdImpactTypeImpactTypeId>>, TError,{id: string;impactTypeId: string;params?: PutApiV1ImpactIdImpactTypeImpactTypeIdParams}, TContext>, }
 ) => {
 
-      const mutationOptions = getPutApiImpactIdImpactTypeImpactTypeIdMutationOptions(options);
+      const mutationOptions = getPutApiV1ImpactIdImpactTypeImpactTypeIdMutationOptions(options);
 
       return useMutation(mutationOptions);
     }
     
-export const deleteApiImpactIdImpactTypeImpactTypeId = (
+export const deleteApiV1ImpactIdImpactTypeImpactTypeId = (
     id: string,
     impactTypeId: string,
-    params?: DeleteApiImpactIdImpactTypeImpactTypeIdParams,
+    params?: DeleteApiV1ImpactIdImpactTypeImpactTypeIdParams,
  ) => {
       
       
       return speedRequest<unknown>(
-      {url: `/api/Impact/${id}/impactType/${impactTypeId}`, method: 'DELETE',
+      {url: `/api/v1/Impact/${id}/impactType/${impactTypeId}`, method: 'DELETE',
         params
     },
       );
@@ -774,18 +775,18 @@ export const deleteApiImpactIdImpactTypeImpactTypeId = (
   
 
 
-export const getDeleteApiImpactIdImpactTypeImpactTypeIdMutationOptions = <TError = ProblemDetails,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteApiImpactIdImpactTypeImpactTypeId>>, TError,{id: string;impactTypeId: string;params?: DeleteApiImpactIdImpactTypeImpactTypeIdParams}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof deleteApiImpactIdImpactTypeImpactTypeId>>, TError,{id: string;impactTypeId: string;params?: DeleteApiImpactIdImpactTypeImpactTypeIdParams}, TContext> => {
+export const getDeleteApiV1ImpactIdImpactTypeImpactTypeIdMutationOptions = <TError = ProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteApiV1ImpactIdImpactTypeImpactTypeId>>, TError,{id: string;impactTypeId: string;params?: DeleteApiV1ImpactIdImpactTypeImpactTypeIdParams}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof deleteApiV1ImpactIdImpactTypeImpactTypeId>>, TError,{id: string;impactTypeId: string;params?: DeleteApiV1ImpactIdImpactTypeImpactTypeIdParams}, TContext> => {
  const {mutation: mutationOptions} = options ?? {};
 
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteApiImpactIdImpactTypeImpactTypeId>>, {id: string;impactTypeId: string;params?: DeleteApiImpactIdImpactTypeImpactTypeIdParams}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteApiV1ImpactIdImpactTypeImpactTypeId>>, {id: string;impactTypeId: string;params?: DeleteApiV1ImpactIdImpactTypeImpactTypeIdParams}> = (props) => {
           const {id,impactTypeId,params} = props ?? {};
 
-          return  deleteApiImpactIdImpactTypeImpactTypeId(id,impactTypeId,params,)
+          return  deleteApiV1ImpactIdImpactTypeImpactTypeId(id,impactTypeId,params,)
         }
 
         
@@ -793,65 +794,65 @@ export const getDeleteApiImpactIdImpactTypeImpactTypeIdMutationOptions = <TError
 
    return  { mutationFn, ...mutationOptions }}
 
-    export type DeleteApiImpactIdImpactTypeImpactTypeIdMutationResult = NonNullable<Awaited<ReturnType<typeof deleteApiImpactIdImpactTypeImpactTypeId>>>
+    export type DeleteApiV1ImpactIdImpactTypeImpactTypeIdMutationResult = NonNullable<Awaited<ReturnType<typeof deleteApiV1ImpactIdImpactTypeImpactTypeId>>>
     
-    export type DeleteApiImpactIdImpactTypeImpactTypeIdMutationError = ProblemDetails
+    export type DeleteApiV1ImpactIdImpactTypeImpactTypeIdMutationError = ProblemDetails
 
-    export const useDeleteApiImpactIdImpactTypeImpactTypeId = <TError = ProblemDetails,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteApiImpactIdImpactTypeImpactTypeId>>, TError,{id: string;impactTypeId: string;params?: DeleteApiImpactIdImpactTypeImpactTypeIdParams}, TContext>, }
+    export const useDeleteApiV1ImpactIdImpactTypeImpactTypeId = <TError = ProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteApiV1ImpactIdImpactTypeImpactTypeId>>, TError,{id: string;impactTypeId: string;params?: DeleteApiV1ImpactIdImpactTypeImpactTypeIdParams}, TContext>, }
 ) => {
 
-      const mutationOptions = getDeleteApiImpactIdImpactTypeImpactTypeIdMutationOptions(options);
+      const mutationOptions = getDeleteApiV1ImpactIdImpactTypeImpactTypeIdMutationOptions(options);
 
       return useMutation(mutationOptions);
     }
     
-export const getApiImpactType = (
-    params?: GetApiImpactTypeParams,
+export const getApiV1ImpactType = (
+    params?: GetApiV1ImpactTypeParams,
  signal?: AbortSignal
 ) => {
       
       
       return speedRequest<unknown>(
-      {url: `/api/ImpactType`, method: 'GET',
+      {url: `/api/v1/ImpactType`, method: 'GET',
         params, signal
     },
       );
     }
   
 
-export const getGetApiImpactTypeQueryKey = (params?: GetApiImpactTypeParams,) => {
-    return [`/api/ImpactType`, ...(params ? [params]: [])] as const;
+export const getGetApiV1ImpactTypeQueryKey = (params?: GetApiV1ImpactTypeParams,) => {
+    return [`/api/v1/ImpactType`, ...(params ? [params]: [])] as const;
     }
 
     
-export const getGetApiImpactTypeQueryOptions = <TData = Awaited<ReturnType<typeof getApiImpactType>>, TError = ProblemDetails>(params?: GetApiImpactTypeParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getApiImpactType>>, TError, TData>, }
+export const getGetApiV1ImpactTypeQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1ImpactType>>, TError = ProblemDetails>(params?: GetApiV1ImpactTypeParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getApiV1ImpactType>>, TError, TData>, }
 ) => {
 
 const {query: queryOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiImpactTypeQueryKey(params);
+  const queryKey =  queryOptions?.queryKey ?? getGetApiV1ImpactTypeQueryKey(params);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiImpactType>>> = ({ signal }) => getApiImpactType(params, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1ImpactType>>> = ({ signal }) => getApiV1ImpactType(params, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiImpactType>>, TError, TData> & { queryKey: QueryKey }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1ImpactType>>, TError, TData> & { queryKey: QueryKey }
 }
 
-export type GetApiImpactTypeQueryResult = NonNullable<Awaited<ReturnType<typeof getApiImpactType>>>
-export type GetApiImpactTypeQueryError = ProblemDetails
+export type GetApiV1ImpactTypeQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1ImpactType>>>
+export type GetApiV1ImpactTypeQueryError = ProblemDetails
 
-export const useGetApiImpactType = <TData = Awaited<ReturnType<typeof getApiImpactType>>, TError = ProblemDetails>(
- params?: GetApiImpactTypeParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getApiImpactType>>, TError, TData>, }
+export const useGetApiV1ImpactType = <TData = Awaited<ReturnType<typeof getApiV1ImpactType>>, TError = ProblemDetails>(
+ params?: GetApiV1ImpactTypeParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getApiV1ImpactType>>, TError, TData>, }
 
   ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
 
-  const queryOptions = getGetApiImpactTypeQueryOptions(params,options)
+  const queryOptions = getGetApiV1ImpactTypeQueryOptions(params,options)
 
   const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 
@@ -863,14 +864,14 @@ export const useGetApiImpactType = <TData = Awaited<ReturnType<typeof getApiImpa
 
 
 
-export const postApiImpactType = (
+export const postApiV1ImpactType = (
     impactType: ImpactType,
-    params?: PostApiImpactTypeParams,
+    params?: PostApiV1ImpactTypeParams,
  ) => {
       
       
       return speedRequest<unknown>(
-      {url: `/api/ImpactType`, method: 'POST',
+      {url: `/api/v1/ImpactType`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: impactType,
         params
@@ -880,18 +881,18 @@ export const postApiImpactType = (
   
 
 
-export const getPostApiImpactTypeMutationOptions = <TError = ProblemDetails,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiImpactType>>, TError,{data: ImpactType;params?: PostApiImpactTypeParams}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof postApiImpactType>>, TError,{data: ImpactType;params?: PostApiImpactTypeParams}, TContext> => {
+export const getPostApiV1ImpactTypeMutationOptions = <TError = ProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1ImpactType>>, TError,{data: ImpactType;params?: PostApiV1ImpactTypeParams}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof postApiV1ImpactType>>, TError,{data: ImpactType;params?: PostApiV1ImpactTypeParams}, TContext> => {
  const {mutation: mutationOptions} = options ?? {};
 
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiImpactType>>, {data: ImpactType;params?: PostApiImpactTypeParams}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiV1ImpactType>>, {data: ImpactType;params?: PostApiV1ImpactTypeParams}> = (props) => {
           const {data,params} = props ?? {};
 
-          return  postApiImpactType(data,params,)
+          return  postApiV1ImpactType(data,params,)
         }
 
         
@@ -899,69 +900,69 @@ export const getPostApiImpactTypeMutationOptions = <TError = ProblemDetails,
 
    return  { mutationFn, ...mutationOptions }}
 
-    export type PostApiImpactTypeMutationResult = NonNullable<Awaited<ReturnType<typeof postApiImpactType>>>
-    export type PostApiImpactTypeMutationBody = ImpactType
-    export type PostApiImpactTypeMutationError = ProblemDetails
+    export type PostApiV1ImpactTypeMutationResult = NonNullable<Awaited<ReturnType<typeof postApiV1ImpactType>>>
+    export type PostApiV1ImpactTypeMutationBody = ImpactType
+    export type PostApiV1ImpactTypeMutationError = ProblemDetails
 
-    export const usePostApiImpactType = <TError = ProblemDetails,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiImpactType>>, TError,{data: ImpactType;params?: PostApiImpactTypeParams}, TContext>, }
+    export const usePostApiV1ImpactType = <TError = ProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1ImpactType>>, TError,{data: ImpactType;params?: PostApiV1ImpactTypeParams}, TContext>, }
 ) => {
 
-      const mutationOptions = getPostApiImpactTypeMutationOptions(options);
+      const mutationOptions = getPostApiV1ImpactTypeMutationOptions(options);
 
       return useMutation(mutationOptions);
     }
     
-export const getApiImpactTypeId = (
+export const getApiV1ImpactTypeId = (
     id: string,
-    params?: GetApiImpactTypeIdParams,
+    params?: GetApiV1ImpactTypeIdParams,
  signal?: AbortSignal
 ) => {
       
       
       return speedRequest<unknown>(
-      {url: `/api/ImpactType/${id}`, method: 'GET',
+      {url: `/api/v1/ImpactType/${id}`, method: 'GET',
         params, signal
     },
       );
     }
   
 
-export const getGetApiImpactTypeIdQueryKey = (id: string,
-    params?: GetApiImpactTypeIdParams,) => {
-    return [`/api/ImpactType/${id}`, ...(params ? [params]: [])] as const;
+export const getGetApiV1ImpactTypeIdQueryKey = (id: string,
+    params?: GetApiV1ImpactTypeIdParams,) => {
+    return [`/api/v1/ImpactType/${id}`, ...(params ? [params]: [])] as const;
     }
 
     
-export const getGetApiImpactTypeIdQueryOptions = <TData = Awaited<ReturnType<typeof getApiImpactTypeId>>, TError = ProblemDetails>(id: string,
-    params?: GetApiImpactTypeIdParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getApiImpactTypeId>>, TError, TData>, }
+export const getGetApiV1ImpactTypeIdQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1ImpactTypeId>>, TError = ProblemDetails>(id: string,
+    params?: GetApiV1ImpactTypeIdParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getApiV1ImpactTypeId>>, TError, TData>, }
 ) => {
 
 const {query: queryOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiImpactTypeIdQueryKey(id,params);
+  const queryKey =  queryOptions?.queryKey ?? getGetApiV1ImpactTypeIdQueryKey(id,params);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiImpactTypeId>>> = ({ signal }) => getApiImpactTypeId(id,params, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1ImpactTypeId>>> = ({ signal }) => getApiV1ImpactTypeId(id,params, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiImpactTypeId>>, TError, TData> & { queryKey: QueryKey }
+   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1ImpactTypeId>>, TError, TData> & { queryKey: QueryKey }
 }
 
-export type GetApiImpactTypeIdQueryResult = NonNullable<Awaited<ReturnType<typeof getApiImpactTypeId>>>
-export type GetApiImpactTypeIdQueryError = ProblemDetails
+export type GetApiV1ImpactTypeIdQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1ImpactTypeId>>>
+export type GetApiV1ImpactTypeIdQueryError = ProblemDetails
 
-export const useGetApiImpactTypeId = <TData = Awaited<ReturnType<typeof getApiImpactTypeId>>, TError = ProblemDetails>(
+export const useGetApiV1ImpactTypeId = <TData = Awaited<ReturnType<typeof getApiV1ImpactTypeId>>, TError = ProblemDetails>(
  id: string,
-    params?: GetApiImpactTypeIdParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getApiImpactTypeId>>, TError, TData>, }
+    params?: GetApiV1ImpactTypeIdParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getApiV1ImpactTypeId>>, TError, TData>, }
 
   ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
 
-  const queryOptions = getGetApiImpactTypeIdQueryOptions(id,params,options)
+  const queryOptions = getGetApiV1ImpactTypeIdQueryOptions(id,params,options)
 
   const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 
@@ -973,15 +974,15 @@ export const useGetApiImpactTypeId = <TData = Awaited<ReturnType<typeof getApiIm
 
 
 
-export const putApiImpactTypeId = (
+export const putApiV1ImpactTypeId = (
     id: string,
     impactType: ImpactType,
-    params?: PutApiImpactTypeIdParams,
+    params?: PutApiV1ImpactTypeIdParams,
  ) => {
       
       
       return speedRequest<unknown>(
-      {url: `/api/ImpactType/${id}`, method: 'PUT',
+      {url: `/api/v1/ImpactType/${id}`, method: 'PUT',
       headers: {'Content-Type': 'application/json', },
       data: impactType,
         params
@@ -991,18 +992,18 @@ export const putApiImpactTypeId = (
   
 
 
-export const getPutApiImpactTypeIdMutationOptions = <TError = ProblemDetails,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putApiImpactTypeId>>, TError,{id: string;data: ImpactType;params?: PutApiImpactTypeIdParams}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof putApiImpactTypeId>>, TError,{id: string;data: ImpactType;params?: PutApiImpactTypeIdParams}, TContext> => {
+export const getPutApiV1ImpactTypeIdMutationOptions = <TError = ProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putApiV1ImpactTypeId>>, TError,{id: string;data: ImpactType;params?: PutApiV1ImpactTypeIdParams}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof putApiV1ImpactTypeId>>, TError,{id: string;data: ImpactType;params?: PutApiV1ImpactTypeIdParams}, TContext> => {
  const {mutation: mutationOptions} = options ?? {};
 
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof putApiImpactTypeId>>, {id: string;data: ImpactType;params?: PutApiImpactTypeIdParams}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof putApiV1ImpactTypeId>>, {id: string;data: ImpactType;params?: PutApiV1ImpactTypeIdParams}> = (props) => {
           const {id,data,params} = props ?? {};
 
-          return  putApiImpactTypeId(id,data,params,)
+          return  putApiV1ImpactTypeId(id,data,params,)
         }
 
         
@@ -1010,27 +1011,27 @@ export const getPutApiImpactTypeIdMutationOptions = <TError = ProblemDetails,
 
    return  { mutationFn, ...mutationOptions }}
 
-    export type PutApiImpactTypeIdMutationResult = NonNullable<Awaited<ReturnType<typeof putApiImpactTypeId>>>
-    export type PutApiImpactTypeIdMutationBody = ImpactType
-    export type PutApiImpactTypeIdMutationError = ProblemDetails
+    export type PutApiV1ImpactTypeIdMutationResult = NonNullable<Awaited<ReturnType<typeof putApiV1ImpactTypeId>>>
+    export type PutApiV1ImpactTypeIdMutationBody = ImpactType
+    export type PutApiV1ImpactTypeIdMutationError = ProblemDetails
 
-    export const usePutApiImpactTypeId = <TError = ProblemDetails,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putApiImpactTypeId>>, TError,{id: string;data: ImpactType;params?: PutApiImpactTypeIdParams}, TContext>, }
+    export const usePutApiV1ImpactTypeId = <TError = ProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putApiV1ImpactTypeId>>, TError,{id: string;data: ImpactType;params?: PutApiV1ImpactTypeIdParams}, TContext>, }
 ) => {
 
-      const mutationOptions = getPutApiImpactTypeIdMutationOptions(options);
+      const mutationOptions = getPutApiV1ImpactTypeIdMutationOptions(options);
 
       return useMutation(mutationOptions);
     }
     
-export const deleteApiImpactTypeId = (
+export const deleteApiV1ImpactTypeId = (
     id: string,
-    params?: DeleteApiImpactTypeIdParams,
+    params?: DeleteApiV1ImpactTypeIdParams,
  ) => {
       
       
       return speedRequest<unknown>(
-      {url: `/api/ImpactType/${id}`, method: 'DELETE',
+      {url: `/api/v1/ImpactType/${id}`, method: 'DELETE',
         params
     },
       );
@@ -1038,18 +1039,18 @@ export const deleteApiImpactTypeId = (
   
 
 
-export const getDeleteApiImpactTypeIdMutationOptions = <TError = ProblemDetails,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteApiImpactTypeId>>, TError,{id: string;params?: DeleteApiImpactTypeIdParams}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof deleteApiImpactTypeId>>, TError,{id: string;params?: DeleteApiImpactTypeIdParams}, TContext> => {
+export const getDeleteApiV1ImpactTypeIdMutationOptions = <TError = ProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteApiV1ImpactTypeId>>, TError,{id: string;params?: DeleteApiV1ImpactTypeIdParams}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof deleteApiV1ImpactTypeId>>, TError,{id: string;params?: DeleteApiV1ImpactTypeIdParams}, TContext> => {
  const {mutation: mutationOptions} = options ?? {};
 
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteApiImpactTypeId>>, {id: string;params?: DeleteApiImpactTypeIdParams}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteApiV1ImpactTypeId>>, {id: string;params?: DeleteApiV1ImpactTypeIdParams}> = (props) => {
           const {id,params} = props ?? {};
 
-          return  deleteApiImpactTypeId(id,params,)
+          return  deleteApiV1ImpactTypeId(id,params,)
         }
 
         
@@ -1057,26 +1058,26 @@ export const getDeleteApiImpactTypeIdMutationOptions = <TError = ProblemDetails,
 
    return  { mutationFn, ...mutationOptions }}
 
-    export type DeleteApiImpactTypeIdMutationResult = NonNullable<Awaited<ReturnType<typeof deleteApiImpactTypeId>>>
+    export type DeleteApiV1ImpactTypeIdMutationResult = NonNullable<Awaited<ReturnType<typeof deleteApiV1ImpactTypeId>>>
     
-    export type DeleteApiImpactTypeIdMutationError = ProblemDetails
+    export type DeleteApiV1ImpactTypeIdMutationError = ProblemDetails
 
-    export const useDeleteApiImpactTypeId = <TError = ProblemDetails,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteApiImpactTypeId>>, TError,{id: string;params?: DeleteApiImpactTypeIdParams}, TContext>, }
+    export const useDeleteApiV1ImpactTypeId = <TError = ProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteApiV1ImpactTypeId>>, TError,{id: string;params?: DeleteApiV1ImpactTypeIdParams}, TContext>, }
 ) => {
 
-      const mutationOptions = getDeleteApiImpactTypeIdMutationOptions(options);
+      const mutationOptions = getDeleteApiV1ImpactTypeIdMutationOptions(options);
 
       return useMutation(mutationOptions);
     }
     
-export const postApiMonthlyAggregation = (
-    params?: PostApiMonthlyAggregationParams,
+export const postApiV1MonthlyAggregation = (
+    params?: PostApiV1MonthlyAggregationParams,
  ) => {
       
       
       return speedRequest<unknown>(
-      {url: `/api/MonthlyAggregation`, method: 'POST',
+      {url: `/api/v1/MonthlyAggregation`, method: 'POST',
         params
     },
       );
@@ -1084,18 +1085,18 @@ export const postApiMonthlyAggregation = (
   
 
 
-export const getPostApiMonthlyAggregationMutationOptions = <TError = ProblemDetails,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiMonthlyAggregation>>, TError,{params?: PostApiMonthlyAggregationParams}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof postApiMonthlyAggregation>>, TError,{params?: PostApiMonthlyAggregationParams}, TContext> => {
+export const getPostApiV1MonthlyAggregationMutationOptions = <TError = ProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1MonthlyAggregation>>, TError,{params?: PostApiV1MonthlyAggregationParams}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof postApiV1MonthlyAggregation>>, TError,{params?: PostApiV1MonthlyAggregationParams}, TContext> => {
  const {mutation: mutationOptions} = options ?? {};
 
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiMonthlyAggregation>>, {params?: PostApiMonthlyAggregationParams}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiV1MonthlyAggregation>>, {params?: PostApiV1MonthlyAggregationParams}> = (props) => {
           const {params} = props ?? {};
 
-          return  postApiMonthlyAggregation(params,)
+          return  postApiV1MonthlyAggregation(params,)
         }
 
         
@@ -1103,26 +1104,26 @@ export const getPostApiMonthlyAggregationMutationOptions = <TError = ProblemDeta
 
    return  { mutationFn, ...mutationOptions }}
 
-    export type PostApiMonthlyAggregationMutationResult = NonNullable<Awaited<ReturnType<typeof postApiMonthlyAggregation>>>
+    export type PostApiV1MonthlyAggregationMutationResult = NonNullable<Awaited<ReturnType<typeof postApiV1MonthlyAggregation>>>
     
-    export type PostApiMonthlyAggregationMutationError = ProblemDetails
+    export type PostApiV1MonthlyAggregationMutationError = ProblemDetails
 
-    export const usePostApiMonthlyAggregation = <TError = ProblemDetails,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiMonthlyAggregation>>, TError,{params?: PostApiMonthlyAggregationParams}, TContext>, }
+    export const usePostApiV1MonthlyAggregation = <TError = ProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1MonthlyAggregation>>, TError,{params?: PostApiV1MonthlyAggregationParams}, TContext>, }
 ) => {
 
-      const mutationOptions = getPostApiMonthlyAggregationMutationOptions(options);
+      const mutationOptions = getPostApiV1MonthlyAggregationMutationOptions(options);
 
       return useMutation(mutationOptions);
     }
     
-export const deleteApiMonthlyAggregation = (
-    params?: DeleteApiMonthlyAggregationParams,
+export const deleteApiV1MonthlyAggregation = (
+    params?: DeleteApiV1MonthlyAggregationParams,
  ) => {
       
       
       return speedRequest<unknown>(
-      {url: `/api/MonthlyAggregation`, method: 'DELETE',
+      {url: `/api/v1/MonthlyAggregation`, method: 'DELETE',
         params
     },
       );
@@ -1130,18 +1131,18 @@ export const deleteApiMonthlyAggregation = (
   
 
 
-export const getDeleteApiMonthlyAggregationMutationOptions = <TError = ProblemDetails,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteApiMonthlyAggregation>>, TError,{params?: DeleteApiMonthlyAggregationParams}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof deleteApiMonthlyAggregation>>, TError,{params?: DeleteApiMonthlyAggregationParams}, TContext> => {
+export const getDeleteApiV1MonthlyAggregationMutationOptions = <TError = ProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteApiV1MonthlyAggregation>>, TError,{params?: DeleteApiV1MonthlyAggregationParams}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof deleteApiV1MonthlyAggregation>>, TError,{params?: DeleteApiV1MonthlyAggregationParams}, TContext> => {
  const {mutation: mutationOptions} = options ?? {};
 
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteApiMonthlyAggregation>>, {params?: DeleteApiMonthlyAggregationParams}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteApiV1MonthlyAggregation>>, {params?: DeleteApiV1MonthlyAggregationParams}> = (props) => {
           const {params} = props ?? {};
 
-          return  deleteApiMonthlyAggregation(params,)
+          return  deleteApiV1MonthlyAggregation(params,)
         }
 
         
@@ -1149,27 +1150,27 @@ export const getDeleteApiMonthlyAggregationMutationOptions = <TError = ProblemDe
 
    return  { mutationFn, ...mutationOptions }}
 
-    export type DeleteApiMonthlyAggregationMutationResult = NonNullable<Awaited<ReturnType<typeof deleteApiMonthlyAggregation>>>
+    export type DeleteApiV1MonthlyAggregationMutationResult = NonNullable<Awaited<ReturnType<typeof deleteApiV1MonthlyAggregation>>>
     
-    export type DeleteApiMonthlyAggregationMutationError = ProblemDetails
+    export type DeleteApiV1MonthlyAggregationMutationError = ProblemDetails
 
-    export const useDeleteApiMonthlyAggregation = <TError = ProblemDetails,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteApiMonthlyAggregation>>, TError,{params?: DeleteApiMonthlyAggregationParams}, TContext>, }
+    export const useDeleteApiV1MonthlyAggregation = <TError = ProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteApiV1MonthlyAggregation>>, TError,{params?: DeleteApiV1MonthlyAggregationParams}, TContext>, }
 ) => {
 
-      const mutationOptions = getDeleteApiMonthlyAggregationMutationOptions(options);
+      const mutationOptions = getDeleteApiV1MonthlyAggregationMutationOptions(options);
 
       return useMutation(mutationOptions);
     }
     
-export const postApiMonthlyAggregationSegment = (
+export const postApiV1MonthlyAggregationSegment = (
     monthlyAggregation: MonthlyAggregation,
-    params?: PostApiMonthlyAggregationSegmentParams,
+    params?: PostApiV1MonthlyAggregationSegmentParams,
  ) => {
       
       
       return speedRequest<unknown>(
-      {url: `/api/MonthlyAggregation/segment`, method: 'POST',
+      {url: `/api/v1/MonthlyAggregation/segment`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: monthlyAggregation,
         params
@@ -1179,18 +1180,18 @@ export const postApiMonthlyAggregationSegment = (
   
 
 
-export const getPostApiMonthlyAggregationSegmentMutationOptions = <TError = ProblemDetails,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiMonthlyAggregationSegment>>, TError,{data: MonthlyAggregation;params?: PostApiMonthlyAggregationSegmentParams}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof postApiMonthlyAggregationSegment>>, TError,{data: MonthlyAggregation;params?: PostApiMonthlyAggregationSegmentParams}, TContext> => {
+export const getPostApiV1MonthlyAggregationSegmentMutationOptions = <TError = ProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1MonthlyAggregationSegment>>, TError,{data: MonthlyAggregation;params?: PostApiV1MonthlyAggregationSegmentParams}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof postApiV1MonthlyAggregationSegment>>, TError,{data: MonthlyAggregation;params?: PostApiV1MonthlyAggregationSegmentParams}, TContext> => {
  const {mutation: mutationOptions} = options ?? {};
 
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiMonthlyAggregationSegment>>, {data: MonthlyAggregation;params?: PostApiMonthlyAggregationSegmentParams}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiV1MonthlyAggregationSegment>>, {data: MonthlyAggregation;params?: PostApiV1MonthlyAggregationSegmentParams}> = (props) => {
           const {data,params} = props ?? {};
 
-          return  postApiMonthlyAggregationSegment(data,params,)
+          return  postApiV1MonthlyAggregationSegment(data,params,)
         }
 
         
@@ -1198,69 +1199,69 @@ export const getPostApiMonthlyAggregationSegmentMutationOptions = <TError = Prob
 
    return  { mutationFn, ...mutationOptions }}
 
-    export type PostApiMonthlyAggregationSegmentMutationResult = NonNullable<Awaited<ReturnType<typeof postApiMonthlyAggregationSegment>>>
-    export type PostApiMonthlyAggregationSegmentMutationBody = MonthlyAggregation
-    export type PostApiMonthlyAggregationSegmentMutationError = ProblemDetails
+    export type PostApiV1MonthlyAggregationSegmentMutationResult = NonNullable<Awaited<ReturnType<typeof postApiV1MonthlyAggregationSegment>>>
+    export type PostApiV1MonthlyAggregationSegmentMutationBody = MonthlyAggregation
+    export type PostApiV1MonthlyAggregationSegmentMutationError = ProblemDetails
 
-    export const usePostApiMonthlyAggregationSegment = <TError = ProblemDetails,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiMonthlyAggregationSegment>>, TError,{data: MonthlyAggregation;params?: PostApiMonthlyAggregationSegmentParams}, TContext>, }
+    export const usePostApiV1MonthlyAggregationSegment = <TError = ProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1MonthlyAggregationSegment>>, TError,{data: MonthlyAggregation;params?: PostApiV1MonthlyAggregationSegmentParams}, TContext>, }
 ) => {
 
-      const mutationOptions = getPostApiMonthlyAggregationSegmentMutationOptions(options);
+      const mutationOptions = getPostApiV1MonthlyAggregationSegmentMutationOptions(options);
 
       return useMutation(mutationOptions);
     }
     
-export const getApiMonthlyAggregationSegmentsSegmentId = (
+export const getApiV1MonthlyAggregationSegmentsSegmentId = (
     segmentId: string,
-    params?: GetApiMonthlyAggregationSegmentsSegmentIdParams,
+    params?: GetApiV1MonthlyAggregationSegmentsSegmentIdParams,
  signal?: AbortSignal
 ) => {
       
       
       return speedRequest<unknown>(
-      {url: `/api/MonthlyAggregation/segments/${segmentId}`, method: 'GET',
+      {url: `/api/v1/MonthlyAggregation/segments/${segmentId}`, method: 'GET',
         params, signal
     },
       );
     }
   
 
-export const getGetApiMonthlyAggregationSegmentsSegmentIdQueryKey = (segmentId: string,
-    params?: GetApiMonthlyAggregationSegmentsSegmentIdParams,) => {
-    return [`/api/MonthlyAggregation/segments/${segmentId}`, ...(params ? [params]: [])] as const;
+export const getGetApiV1MonthlyAggregationSegmentsSegmentIdQueryKey = (segmentId: string,
+    params?: GetApiV1MonthlyAggregationSegmentsSegmentIdParams,) => {
+    return [`/api/v1/MonthlyAggregation/segments/${segmentId}`, ...(params ? [params]: [])] as const;
     }
 
     
-export const getGetApiMonthlyAggregationSegmentsSegmentIdQueryOptions = <TData = Awaited<ReturnType<typeof getApiMonthlyAggregationSegmentsSegmentId>>, TError = ProblemDetails>(segmentId: string,
-    params?: GetApiMonthlyAggregationSegmentsSegmentIdParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getApiMonthlyAggregationSegmentsSegmentId>>, TError, TData>, }
+export const getGetApiV1MonthlyAggregationSegmentsSegmentIdQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1MonthlyAggregationSegmentsSegmentId>>, TError = ProblemDetails>(segmentId: string,
+    params?: GetApiV1MonthlyAggregationSegmentsSegmentIdParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getApiV1MonthlyAggregationSegmentsSegmentId>>, TError, TData>, }
 ) => {
 
 const {query: queryOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiMonthlyAggregationSegmentsSegmentIdQueryKey(segmentId,params);
+  const queryKey =  queryOptions?.queryKey ?? getGetApiV1MonthlyAggregationSegmentsSegmentIdQueryKey(segmentId,params);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiMonthlyAggregationSegmentsSegmentId>>> = ({ signal }) => getApiMonthlyAggregationSegmentsSegmentId(segmentId,params, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1MonthlyAggregationSegmentsSegmentId>>> = ({ signal }) => getApiV1MonthlyAggregationSegmentsSegmentId(segmentId,params, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, enabled: !!(segmentId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiMonthlyAggregationSegmentsSegmentId>>, TError, TData> & { queryKey: QueryKey }
+   return  { queryKey, queryFn, enabled: !!(segmentId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1MonthlyAggregationSegmentsSegmentId>>, TError, TData> & { queryKey: QueryKey }
 }
 
-export type GetApiMonthlyAggregationSegmentsSegmentIdQueryResult = NonNullable<Awaited<ReturnType<typeof getApiMonthlyAggregationSegmentsSegmentId>>>
-export type GetApiMonthlyAggregationSegmentsSegmentIdQueryError = ProblemDetails
+export type GetApiV1MonthlyAggregationSegmentsSegmentIdQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1MonthlyAggregationSegmentsSegmentId>>>
+export type GetApiV1MonthlyAggregationSegmentsSegmentIdQueryError = ProblemDetails
 
-export const useGetApiMonthlyAggregationSegmentsSegmentId = <TData = Awaited<ReturnType<typeof getApiMonthlyAggregationSegmentsSegmentId>>, TError = ProblemDetails>(
+export const useGetApiV1MonthlyAggregationSegmentsSegmentId = <TData = Awaited<ReturnType<typeof getApiV1MonthlyAggregationSegmentsSegmentId>>, TError = ProblemDetails>(
  segmentId: string,
-    params?: GetApiMonthlyAggregationSegmentsSegmentIdParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getApiMonthlyAggregationSegmentsSegmentId>>, TError, TData>, }
+    params?: GetApiV1MonthlyAggregationSegmentsSegmentIdParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getApiV1MonthlyAggregationSegmentsSegmentId>>, TError, TData>, }
 
   ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
 
-  const queryOptions = getGetApiMonthlyAggregationSegmentsSegmentIdQueryOptions(segmentId,params,options)
+  const queryOptions = getGetApiV1MonthlyAggregationSegmentsSegmentIdQueryOptions(segmentId,params,options)
 
   const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 
@@ -1272,52 +1273,52 @@ export const useGetApiMonthlyAggregationSegmentsSegmentId = <TData = Awaited<Ret
 
 
 
-export const getRegion = (
-    params?: GetRegionParams,
+export const getApiV1Region = (
+    params?: GetApiV1RegionParams,
  signal?: AbortSignal
 ) => {
       
       
       return speedRequest<NameAndIdDto[]>(
-      {url: `/Region`, method: 'GET',
+      {url: `/api/v1/Region`, method: 'GET',
         params, signal
     },
       );
     }
   
 
-export const getGetRegionQueryKey = (params?: GetRegionParams,) => {
-    return [`/Region`, ...(params ? [params]: [])] as const;
+export const getGetApiV1RegionQueryKey = (params?: GetApiV1RegionParams,) => {
+    return [`/api/v1/Region`, ...(params ? [params]: [])] as const;
     }
 
     
-export const getGetRegionQueryOptions = <TData = Awaited<ReturnType<typeof getRegion>>, TError = ProblemDetails>(params?: GetRegionParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getRegion>>, TError, TData>, }
+export const getGetApiV1RegionQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1Region>>, TError = ProblemDetails>(params?: GetApiV1RegionParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getApiV1Region>>, TError, TData>, }
 ) => {
 
 const {query: queryOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetRegionQueryKey(params);
+  const queryKey =  queryOptions?.queryKey ?? getGetApiV1RegionQueryKey(params);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getRegion>>> = ({ signal }) => getRegion(params, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1Region>>> = ({ signal }) => getApiV1Region(params, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getRegion>>, TError, TData> & { queryKey: QueryKey }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1Region>>, TError, TData> & { queryKey: QueryKey }
 }
 
-export type GetRegionQueryResult = NonNullable<Awaited<ReturnType<typeof getRegion>>>
-export type GetRegionQueryError = ProblemDetails
+export type GetApiV1RegionQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1Region>>>
+export type GetApiV1RegionQueryError = ProblemDetails
 
-export const useGetRegion = <TData = Awaited<ReturnType<typeof getRegion>>, TError = ProblemDetails>(
- params?: GetRegionParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getRegion>>, TError, TData>, }
+export const useGetApiV1Region = <TData = Awaited<ReturnType<typeof getApiV1Region>>, TError = ProblemDetails>(
+ params?: GetApiV1RegionParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getApiV1Region>>, TError, TData>, }
 
   ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
 
-  const queryOptions = getGetRegionQueryOptions(params,options)
+  const queryOptions = getGetApiV1RegionQueryOptions(params,options)
 
   const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 
@@ -1329,52 +1330,52 @@ export const useGetRegion = <TData = Awaited<ReturnType<typeof getRegion>>, TErr
 
 
 
-export const getApiSegment = (
-    params?: GetApiSegmentParams,
+export const getApiV1Segment = (
+    params?: GetApiV1SegmentParams,
  signal?: AbortSignal
 ) => {
       
       
       return speedRequest<unknown>(
-      {url: `/api/Segment`, method: 'GET',
+      {url: `/api/v1/Segment`, method: 'GET',
         params, signal
     },
       );
     }
   
 
-export const getGetApiSegmentQueryKey = (params?: GetApiSegmentParams,) => {
-    return [`/api/Segment`, ...(params ? [params]: [])] as const;
+export const getGetApiV1SegmentQueryKey = (params?: GetApiV1SegmentParams,) => {
+    return [`/api/v1/Segment`, ...(params ? [params]: [])] as const;
     }
 
     
-export const getGetApiSegmentQueryOptions = <TData = Awaited<ReturnType<typeof getApiSegment>>, TError = ProblemDetails>(params?: GetApiSegmentParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getApiSegment>>, TError, TData>, }
+export const getGetApiV1SegmentQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1Segment>>, TError = ProblemDetails>(params?: GetApiV1SegmentParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getApiV1Segment>>, TError, TData>, }
 ) => {
 
 const {query: queryOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiSegmentQueryKey(params);
+  const queryKey =  queryOptions?.queryKey ?? getGetApiV1SegmentQueryKey(params);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiSegment>>> = ({ signal }) => getApiSegment(params, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1Segment>>> = ({ signal }) => getApiV1Segment(params, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiSegment>>, TError, TData> & { queryKey: QueryKey }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1Segment>>, TError, TData> & { queryKey: QueryKey }
 }
 
-export type GetApiSegmentQueryResult = NonNullable<Awaited<ReturnType<typeof getApiSegment>>>
-export type GetApiSegmentQueryError = ProblemDetails
+export type GetApiV1SegmentQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1Segment>>>
+export type GetApiV1SegmentQueryError = ProblemDetails
 
-export const useGetApiSegment = <TData = Awaited<ReturnType<typeof getApiSegment>>, TError = ProblemDetails>(
- params?: GetApiSegmentParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getApiSegment>>, TError, TData>, }
+export const useGetApiV1Segment = <TData = Awaited<ReturnType<typeof getApiV1Segment>>, TError = ProblemDetails>(
+ params?: GetApiV1SegmentParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getApiV1Segment>>, TError, TData>, }
 
   ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
 
-  const queryOptions = getGetApiSegmentQueryOptions(params,options)
+  const queryOptions = getGetApiV1SegmentQueryOptions(params,options)
 
   const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 
@@ -1386,16 +1387,16 @@ export const useGetApiSegment = <TData = Awaited<ReturnType<typeof getApiSegment
 
 
 
-export const postApiSegment = (
-    postApiSegmentBody: string[],
-    params?: PostApiSegmentParams,
+export const postApiV1Segment = (
+    postApiV1SegmentBody: string[],
+    params?: PostApiV1SegmentParams,
  ) => {
       
       
       return speedRequest<unknown>(
-      {url: `/api/Segment`, method: 'POST',
+      {url: `/api/v1/Segment`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
-      data: postApiSegmentBody,
+      data: postApiV1SegmentBody,
         params
     },
       );
@@ -1403,18 +1404,18 @@ export const postApiSegment = (
   
 
 
-export const getPostApiSegmentMutationOptions = <TError = ProblemDetails,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiSegment>>, TError,{data: string[];params?: PostApiSegmentParams}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof postApiSegment>>, TError,{data: string[];params?: PostApiSegmentParams}, TContext> => {
+export const getPostApiV1SegmentMutationOptions = <TError = ProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1Segment>>, TError,{data: string[];params?: PostApiV1SegmentParams}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof postApiV1Segment>>, TError,{data: string[];params?: PostApiV1SegmentParams}, TContext> => {
  const {mutation: mutationOptions} = options ?? {};
 
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiSegment>>, {data: string[];params?: PostApiSegmentParams}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiV1Segment>>, {data: string[];params?: PostApiV1SegmentParams}> = (props) => {
           const {data,params} = props ?? {};
 
-          return  postApiSegment(data,params,)
+          return  postApiV1Segment(data,params,)
         }
 
         
@@ -1422,69 +1423,69 @@ export const getPostApiSegmentMutationOptions = <TError = ProblemDetails,
 
    return  { mutationFn, ...mutationOptions }}
 
-    export type PostApiSegmentMutationResult = NonNullable<Awaited<ReturnType<typeof postApiSegment>>>
-    export type PostApiSegmentMutationBody = string[]
-    export type PostApiSegmentMutationError = ProblemDetails
+    export type PostApiV1SegmentMutationResult = NonNullable<Awaited<ReturnType<typeof postApiV1Segment>>>
+    export type PostApiV1SegmentMutationBody = string[]
+    export type PostApiV1SegmentMutationError = ProblemDetails
 
-    export const usePostApiSegment = <TError = ProblemDetails,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiSegment>>, TError,{data: string[];params?: PostApiSegmentParams}, TContext>, }
+    export const usePostApiV1Segment = <TError = ProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1Segment>>, TError,{data: string[];params?: PostApiV1SegmentParams}, TContext>, }
 ) => {
 
-      const mutationOptions = getPostApiSegmentMutationOptions(options);
+      const mutationOptions = getPostApiV1SegmentMutationOptions(options);
 
       return useMutation(mutationOptions);
     }
     
-export const getApiSegmentSegmentId = (
+export const getApiV1SegmentSegmentId = (
     segmentId: string,
-    params?: GetApiSegmentSegmentIdParams,
+    params?: GetApiV1SegmentSegmentIdParams,
  signal?: AbortSignal
 ) => {
       
       
       return speedRequest<unknown>(
-      {url: `/api/Segment/${segmentId}`, method: 'GET',
+      {url: `/api/v1/Segment/${segmentId}`, method: 'GET',
         params, signal
     },
       );
     }
   
 
-export const getGetApiSegmentSegmentIdQueryKey = (segmentId: string,
-    params?: GetApiSegmentSegmentIdParams,) => {
-    return [`/api/Segment/${segmentId}`, ...(params ? [params]: [])] as const;
+export const getGetApiV1SegmentSegmentIdQueryKey = (segmentId: string,
+    params?: GetApiV1SegmentSegmentIdParams,) => {
+    return [`/api/v1/Segment/${segmentId}`, ...(params ? [params]: [])] as const;
     }
 
     
-export const getGetApiSegmentSegmentIdQueryOptions = <TData = Awaited<ReturnType<typeof getApiSegmentSegmentId>>, TError = ProblemDetails>(segmentId: string,
-    params?: GetApiSegmentSegmentIdParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getApiSegmentSegmentId>>, TError, TData>, }
+export const getGetApiV1SegmentSegmentIdQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1SegmentSegmentId>>, TError = ProblemDetails>(segmentId: string,
+    params?: GetApiV1SegmentSegmentIdParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getApiV1SegmentSegmentId>>, TError, TData>, }
 ) => {
 
 const {query: queryOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiSegmentSegmentIdQueryKey(segmentId,params);
+  const queryKey =  queryOptions?.queryKey ?? getGetApiV1SegmentSegmentIdQueryKey(segmentId,params);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiSegmentSegmentId>>> = ({ signal }) => getApiSegmentSegmentId(segmentId,params, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1SegmentSegmentId>>> = ({ signal }) => getApiV1SegmentSegmentId(segmentId,params, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, enabled: !!(segmentId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiSegmentSegmentId>>, TError, TData> & { queryKey: QueryKey }
+   return  { queryKey, queryFn, enabled: !!(segmentId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1SegmentSegmentId>>, TError, TData> & { queryKey: QueryKey }
 }
 
-export type GetApiSegmentSegmentIdQueryResult = NonNullable<Awaited<ReturnType<typeof getApiSegmentSegmentId>>>
-export type GetApiSegmentSegmentIdQueryError = ProblemDetails
+export type GetApiV1SegmentSegmentIdQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1SegmentSegmentId>>>
+export type GetApiV1SegmentSegmentIdQueryError = ProblemDetails
 
-export const useGetApiSegmentSegmentId = <TData = Awaited<ReturnType<typeof getApiSegmentSegmentId>>, TError = ProblemDetails>(
+export const useGetApiV1SegmentSegmentId = <TData = Awaited<ReturnType<typeof getApiV1SegmentSegmentId>>, TError = ProblemDetails>(
  segmentId: string,
-    params?: GetApiSegmentSegmentIdParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getApiSegmentSegmentId>>, TError, TData>, }
+    params?: GetApiV1SegmentSegmentIdParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getApiV1SegmentSegmentId>>, TError, TData>, }
 
   ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
 
-  const queryOptions = getGetApiSegmentSegmentIdQueryOptions(segmentId,params,options)
+  const queryOptions = getGetApiV1SegmentSegmentIdQueryOptions(segmentId,params,options)
 
   const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 
@@ -1496,14 +1497,75 @@ export const useGetApiSegmentSegmentId = <TData = Awaited<ReturnType<typeof getA
 
 
 
-export const postApiSegmentSpeeds = (
+export const getApiV1SegmentSegmentIdGeometry = (
+    segmentId: string,
+    params?: GetApiV1SegmentSegmentIdGeometryParams,
+ signal?: AbortSignal
+) => {
+      
+      
+      return speedRequest<unknown>(
+      {url: `/api/v1/Segment/${segmentId}/geometry`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+  
+
+export const getGetApiV1SegmentSegmentIdGeometryQueryKey = (segmentId: string,
+    params?: GetApiV1SegmentSegmentIdGeometryParams,) => {
+    return [`/api/v1/Segment/${segmentId}/geometry`, ...(params ? [params]: [])] as const;
+    }
+
+    
+export const getGetApiV1SegmentSegmentIdGeometryQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1SegmentSegmentIdGeometry>>, TError = ProblemDetails>(segmentId: string,
+    params?: GetApiV1SegmentSegmentIdGeometryParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getApiV1SegmentSegmentIdGeometry>>, TError, TData>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetApiV1SegmentSegmentIdGeometryQueryKey(segmentId,params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1SegmentSegmentIdGeometry>>> = ({ signal }) => getApiV1SegmentSegmentIdGeometry(segmentId,params, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(segmentId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1SegmentSegmentIdGeometry>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetApiV1SegmentSegmentIdGeometryQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1SegmentSegmentIdGeometry>>>
+export type GetApiV1SegmentSegmentIdGeometryQueryError = ProblemDetails
+
+export const useGetApiV1SegmentSegmentIdGeometry = <TData = Awaited<ReturnType<typeof getApiV1SegmentSegmentIdGeometry>>, TError = ProblemDetails>(
+ segmentId: string,
+    params?: GetApiV1SegmentSegmentIdGeometryParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getApiV1SegmentSegmentIdGeometry>>, TError, TData>, }
+
+  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+
+  const queryOptions = getGetApiV1SegmentSegmentIdGeometryQueryOptions(segmentId,params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+export const postApiV1SegmentSpeeds = (
     segmentRequestDto: SegmentRequestDto,
-    params?: PostApiSegmentSpeedsParams,
+    params?: PostApiV1SegmentSpeedsParams,
  ) => {
       
       
       return speedRequest<unknown>(
-      {url: `/api/Segment/speeds`, method: 'POST',
+      {url: `/api/v1/Segment/speeds`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: segmentRequestDto,
         params
@@ -1513,18 +1575,18 @@ export const postApiSegmentSpeeds = (
   
 
 
-export const getPostApiSegmentSpeedsMutationOptions = <TError = ProblemDetails,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiSegmentSpeeds>>, TError,{data: SegmentRequestDto;params?: PostApiSegmentSpeedsParams}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof postApiSegmentSpeeds>>, TError,{data: SegmentRequestDto;params?: PostApiSegmentSpeedsParams}, TContext> => {
+export const getPostApiV1SegmentSpeedsMutationOptions = <TError = ProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1SegmentSpeeds>>, TError,{data: SegmentRequestDto;params?: PostApiV1SegmentSpeedsParams}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof postApiV1SegmentSpeeds>>, TError,{data: SegmentRequestDto;params?: PostApiV1SegmentSpeedsParams}, TContext> => {
  const {mutation: mutationOptions} = options ?? {};
 
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiSegmentSpeeds>>, {data: SegmentRequestDto;params?: PostApiSegmentSpeedsParams}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiV1SegmentSpeeds>>, {data: SegmentRequestDto;params?: PostApiV1SegmentSpeedsParams}> = (props) => {
           const {data,params} = props ?? {};
 
-          return  postApiSegmentSpeeds(data,params,)
+          return  postApiV1SegmentSpeeds(data,params,)
         }
 
         
@@ -1532,28 +1594,28 @@ export const getPostApiSegmentSpeedsMutationOptions = <TError = ProblemDetails,
 
    return  { mutationFn, ...mutationOptions }}
 
-    export type PostApiSegmentSpeedsMutationResult = NonNullable<Awaited<ReturnType<typeof postApiSegmentSpeeds>>>
-    export type PostApiSegmentSpeedsMutationBody = SegmentRequestDto
-    export type PostApiSegmentSpeedsMutationError = ProblemDetails
+    export type PostApiV1SegmentSpeedsMutationResult = NonNullable<Awaited<ReturnType<typeof postApiV1SegmentSpeeds>>>
+    export type PostApiV1SegmentSpeedsMutationBody = SegmentRequestDto
+    export type PostApiV1SegmentSpeedsMutationError = ProblemDetails
 
-    export const usePostApiSegmentSpeeds = <TError = ProblemDetails,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiSegmentSpeeds>>, TError,{data: SegmentRequestDto;params?: PostApiSegmentSpeedsParams}, TContext>, }
+    export const usePostApiV1SegmentSpeeds = <TError = ProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1SegmentSpeeds>>, TError,{data: SegmentRequestDto;params?: PostApiV1SegmentSpeedsParams}, TContext>, }
 ) => {
 
-      const mutationOptions = getPostApiSegmentSpeedsMutationOptions(options);
+      const mutationOptions = getPostApiV1SegmentSpeedsMutationOptions(options);
 
       return useMutation(mutationOptions);
     }
     
-export const postApiSegmentSegmentIdSpeeds = (
+export const postApiV1SegmentSegmentIdSpeeds = (
     segmentId: string,
     segmentRequestDto: SegmentRequestDto,
-    params?: PostApiSegmentSegmentIdSpeedsParams,
+    params?: PostApiV1SegmentSegmentIdSpeedsParams,
  ) => {
       
       
       return speedRequest<unknown>(
-      {url: `/api/Segment/${segmentId}/speeds`, method: 'POST',
+      {url: `/api/v1/Segment/${segmentId}/speeds`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: segmentRequestDto,
         params
@@ -1563,18 +1625,18 @@ export const postApiSegmentSegmentIdSpeeds = (
   
 
 
-export const getPostApiSegmentSegmentIdSpeedsMutationOptions = <TError = ProblemDetails,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiSegmentSegmentIdSpeeds>>, TError,{segmentId: string;data: SegmentRequestDto;params?: PostApiSegmentSegmentIdSpeedsParams}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof postApiSegmentSegmentIdSpeeds>>, TError,{segmentId: string;data: SegmentRequestDto;params?: PostApiSegmentSegmentIdSpeedsParams}, TContext> => {
+export const getPostApiV1SegmentSegmentIdSpeedsMutationOptions = <TError = ProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1SegmentSegmentIdSpeeds>>, TError,{segmentId: string;data: SegmentRequestDto;params?: PostApiV1SegmentSegmentIdSpeedsParams}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof postApiV1SegmentSegmentIdSpeeds>>, TError,{segmentId: string;data: SegmentRequestDto;params?: PostApiV1SegmentSegmentIdSpeedsParams}, TContext> => {
  const {mutation: mutationOptions} = options ?? {};
 
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiSegmentSegmentIdSpeeds>>, {segmentId: string;data: SegmentRequestDto;params?: PostApiSegmentSegmentIdSpeedsParams}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiV1SegmentSegmentIdSpeeds>>, {segmentId: string;data: SegmentRequestDto;params?: PostApiV1SegmentSegmentIdSpeedsParams}> = (props) => {
           const {segmentId,data,params} = props ?? {};
 
-          return  postApiSegmentSegmentIdSpeeds(segmentId,data,params,)
+          return  postApiV1SegmentSegmentIdSpeeds(segmentId,data,params,)
         }
 
         
@@ -1582,28 +1644,28 @@ export const getPostApiSegmentSegmentIdSpeedsMutationOptions = <TError = Problem
 
    return  { mutationFn, ...mutationOptions }}
 
-    export type PostApiSegmentSegmentIdSpeedsMutationResult = NonNullable<Awaited<ReturnType<typeof postApiSegmentSegmentIdSpeeds>>>
-    export type PostApiSegmentSegmentIdSpeedsMutationBody = SegmentRequestDto
-    export type PostApiSegmentSegmentIdSpeedsMutationError = ProblemDetails
+    export type PostApiV1SegmentSegmentIdSpeedsMutationResult = NonNullable<Awaited<ReturnType<typeof postApiV1SegmentSegmentIdSpeeds>>>
+    export type PostApiV1SegmentSegmentIdSpeedsMutationBody = SegmentRequestDto
+    export type PostApiV1SegmentSegmentIdSpeedsMutationError = ProblemDetails
 
-    export const usePostApiSegmentSegmentIdSpeeds = <TError = ProblemDetails,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiSegmentSegmentIdSpeeds>>, TError,{segmentId: string;data: SegmentRequestDto;params?: PostApiSegmentSegmentIdSpeedsParams}, TContext>, }
+    export const usePostApiV1SegmentSegmentIdSpeeds = <TError = ProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1SegmentSegmentIdSpeeds>>, TError,{segmentId: string;data: SegmentRequestDto;params?: PostApiV1SegmentSegmentIdSpeedsParams}, TContext>, }
 ) => {
 
-      const mutationOptions = getPostApiSegmentSegmentIdSpeedsMutationOptions(options);
+      const mutationOptions = getPostApiV1SegmentSegmentIdSpeedsMutationOptions(options);
 
       return useMutation(mutationOptions);
     }
     
-export const postApiSpeedFromImpactImpactImpactId = (
+export const postApiV1SpeedFromImpactImpactImpactId = (
     impactId: string,
     speedFromImpactDto: SpeedFromImpactDto,
-    params?: PostApiSpeedFromImpactImpactImpactIdParams,
+    params?: PostApiV1SpeedFromImpactImpactImpactIdParams,
  ) => {
       
       
       return speedRequest<unknown>(
-      {url: `/api/SpeedFromImpact/impact/${impactId}`, method: 'POST',
+      {url: `/api/v1/SpeedFromImpact/impact/${impactId}`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: speedFromImpactDto,
         params
@@ -1613,18 +1675,18 @@ export const postApiSpeedFromImpactImpactImpactId = (
   
 
 
-export const getPostApiSpeedFromImpactImpactImpactIdMutationOptions = <TError = ProblemDetails,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiSpeedFromImpactImpactImpactId>>, TError,{impactId: string;data: SpeedFromImpactDto;params?: PostApiSpeedFromImpactImpactImpactIdParams}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof postApiSpeedFromImpactImpactImpactId>>, TError,{impactId: string;data: SpeedFromImpactDto;params?: PostApiSpeedFromImpactImpactImpactIdParams}, TContext> => {
+export const getPostApiV1SpeedFromImpactImpactImpactIdMutationOptions = <TError = ProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1SpeedFromImpactImpactImpactId>>, TError,{impactId: string;data: SpeedFromImpactDto;params?: PostApiV1SpeedFromImpactImpactImpactIdParams}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof postApiV1SpeedFromImpactImpactImpactId>>, TError,{impactId: string;data: SpeedFromImpactDto;params?: PostApiV1SpeedFromImpactImpactImpactIdParams}, TContext> => {
  const {mutation: mutationOptions} = options ?? {};
 
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiSpeedFromImpactImpactImpactId>>, {impactId: string;data: SpeedFromImpactDto;params?: PostApiSpeedFromImpactImpactImpactIdParams}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiV1SpeedFromImpactImpactImpactId>>, {impactId: string;data: SpeedFromImpactDto;params?: PostApiV1SpeedFromImpactImpactImpactIdParams}> = (props) => {
           const {impactId,data,params} = props ?? {};
 
-          return  postApiSpeedFromImpactImpactImpactId(impactId,data,params,)
+          return  postApiV1SpeedFromImpactImpactImpactId(impactId,data,params,)
         }
 
         
@@ -1632,28 +1694,28 @@ export const getPostApiSpeedFromImpactImpactImpactIdMutationOptions = <TError = 
 
    return  { mutationFn, ...mutationOptions }}
 
-    export type PostApiSpeedFromImpactImpactImpactIdMutationResult = NonNullable<Awaited<ReturnType<typeof postApiSpeedFromImpactImpactImpactId>>>
-    export type PostApiSpeedFromImpactImpactImpactIdMutationBody = SpeedFromImpactDto
-    export type PostApiSpeedFromImpactImpactImpactIdMutationError = ProblemDetails
+    export type PostApiV1SpeedFromImpactImpactImpactIdMutationResult = NonNullable<Awaited<ReturnType<typeof postApiV1SpeedFromImpactImpactImpactId>>>
+    export type PostApiV1SpeedFromImpactImpactImpactIdMutationBody = SpeedFromImpactDto
+    export type PostApiV1SpeedFromImpactImpactImpactIdMutationError = ProblemDetails
 
-    export const usePostApiSpeedFromImpactImpactImpactId = <TError = ProblemDetails,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiSpeedFromImpactImpactImpactId>>, TError,{impactId: string;data: SpeedFromImpactDto;params?: PostApiSpeedFromImpactImpactImpactIdParams}, TContext>, }
+    export const usePostApiV1SpeedFromImpactImpactImpactId = <TError = ProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1SpeedFromImpactImpactImpactId>>, TError,{impactId: string;data: SpeedFromImpactDto;params?: PostApiV1SpeedFromImpactImpactImpactIdParams}, TContext>, }
 ) => {
 
-      const mutationOptions = getPostApiSpeedFromImpactImpactImpactIdMutationOptions(options);
+      const mutationOptions = getPostApiV1SpeedFromImpactImpactImpactIdMutationOptions(options);
 
       return useMutation(mutationOptions);
     }
     
-export const postApiSpeedFromImpactSegmentSegmentId = (
+export const postApiV1SpeedFromImpactSegmentSegmentId = (
     segmentId: string,
     speedFromImpactDto: SpeedFromImpactDto,
-    params?: PostApiSpeedFromImpactSegmentSegmentIdParams,
+    params?: PostApiV1SpeedFromImpactSegmentSegmentIdParams,
  ) => {
       
       
       return speedRequest<unknown>(
-      {url: `/api/SpeedFromImpact/segment/${segmentId}`, method: 'POST',
+      {url: `/api/v1/SpeedFromImpact/segment/${segmentId}`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: speedFromImpactDto,
         params
@@ -1663,18 +1725,18 @@ export const postApiSpeedFromImpactSegmentSegmentId = (
   
 
 
-export const getPostApiSpeedFromImpactSegmentSegmentIdMutationOptions = <TError = ProblemDetails,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiSpeedFromImpactSegmentSegmentId>>, TError,{segmentId: string;data: SpeedFromImpactDto;params?: PostApiSpeedFromImpactSegmentSegmentIdParams}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof postApiSpeedFromImpactSegmentSegmentId>>, TError,{segmentId: string;data: SpeedFromImpactDto;params?: PostApiSpeedFromImpactSegmentSegmentIdParams}, TContext> => {
+export const getPostApiV1SpeedFromImpactSegmentSegmentIdMutationOptions = <TError = ProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1SpeedFromImpactSegmentSegmentId>>, TError,{segmentId: string;data: SpeedFromImpactDto;params?: PostApiV1SpeedFromImpactSegmentSegmentIdParams}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof postApiV1SpeedFromImpactSegmentSegmentId>>, TError,{segmentId: string;data: SpeedFromImpactDto;params?: PostApiV1SpeedFromImpactSegmentSegmentIdParams}, TContext> => {
  const {mutation: mutationOptions} = options ?? {};
 
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiSpeedFromImpactSegmentSegmentId>>, {segmentId: string;data: SpeedFromImpactDto;params?: PostApiSpeedFromImpactSegmentSegmentIdParams}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiV1SpeedFromImpactSegmentSegmentId>>, {segmentId: string;data: SpeedFromImpactDto;params?: PostApiV1SpeedFromImpactSegmentSegmentIdParams}> = (props) => {
           const {segmentId,data,params} = props ?? {};
 
-          return  postApiSpeedFromImpactSegmentSegmentId(segmentId,data,params,)
+          return  postApiV1SpeedFromImpactSegmentSegmentId(segmentId,data,params,)
         }
 
         
@@ -1682,15 +1744,15 @@ export const getPostApiSpeedFromImpactSegmentSegmentIdMutationOptions = <TError 
 
    return  { mutationFn, ...mutationOptions }}
 
-    export type PostApiSpeedFromImpactSegmentSegmentIdMutationResult = NonNullable<Awaited<ReturnType<typeof postApiSpeedFromImpactSegmentSegmentId>>>
-    export type PostApiSpeedFromImpactSegmentSegmentIdMutationBody = SpeedFromImpactDto
-    export type PostApiSpeedFromImpactSegmentSegmentIdMutationError = ProblemDetails
+    export type PostApiV1SpeedFromImpactSegmentSegmentIdMutationResult = NonNullable<Awaited<ReturnType<typeof postApiV1SpeedFromImpactSegmentSegmentId>>>
+    export type PostApiV1SpeedFromImpactSegmentSegmentIdMutationBody = SpeedFromImpactDto
+    export type PostApiV1SpeedFromImpactSegmentSegmentIdMutationError = ProblemDetails
 
-    export const usePostApiSpeedFromImpactSegmentSegmentId = <TError = ProblemDetails,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiSpeedFromImpactSegmentSegmentId>>, TError,{segmentId: string;data: SpeedFromImpactDto;params?: PostApiSpeedFromImpactSegmentSegmentIdParams}, TContext>, }
+    export const usePostApiV1SpeedFromImpactSegmentSegmentId = <TError = ProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1SpeedFromImpactSegmentSegmentId>>, TError,{segmentId: string;data: SpeedFromImpactDto;params?: PostApiV1SpeedFromImpactSegmentSegmentIdParams}, TContext>, }
 ) => {
 
-      const mutationOptions = getPostApiSpeedFromImpactSegmentSegmentIdMutationOptions(options);
+      const mutationOptions = getPostApiV1SpeedFromImpactSegmentSegmentIdMutationOptions(options);
 
       return useMutation(mutationOptions);
     }
@@ -1702,7 +1764,7 @@ export const getRouteSpeeds = (
       
       
       return speedRequest<unknown>(
-      {url: `/SpeedManagement/GetRouteSpeeds`, method: 'POST',
+      {url: `/api/v1/SpeedManagement/GetRouteSpeeds`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: routeSpeedOptions,
         params
@@ -1744,14 +1806,14 @@ export const getGetRouteSpeedsMutationOptions = <TError = ProblemDetails,
       return useMutation(mutationOptions);
     }
     
-export const postSpeedManagementGetHistoricalSpeeds = (
+export const postApiV1SpeedManagementGetHistoricalSpeeds = (
     historicalSpeedOptions: HistoricalSpeedOptions,
-    params?: PostSpeedManagementGetHistoricalSpeedsParams,
+    params?: PostApiV1SpeedManagementGetHistoricalSpeedsParams,
  ) => {
       
       
       return speedRequest<unknown>(
-      {url: `/SpeedManagement/GetHistoricalSpeeds`, method: 'POST',
+      {url: `/api/v1/SpeedManagement/GetHistoricalSpeeds`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: historicalSpeedOptions,
         params
@@ -1761,18 +1823,18 @@ export const postSpeedManagementGetHistoricalSpeeds = (
   
 
 
-export const getPostSpeedManagementGetHistoricalSpeedsMutationOptions = <TError = ProblemDetails,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postSpeedManagementGetHistoricalSpeeds>>, TError,{data: HistoricalSpeedOptions;params?: PostSpeedManagementGetHistoricalSpeedsParams}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof postSpeedManagementGetHistoricalSpeeds>>, TError,{data: HistoricalSpeedOptions;params?: PostSpeedManagementGetHistoricalSpeedsParams}, TContext> => {
+export const getPostApiV1SpeedManagementGetHistoricalSpeedsMutationOptions = <TError = ProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1SpeedManagementGetHistoricalSpeeds>>, TError,{data: HistoricalSpeedOptions;params?: PostApiV1SpeedManagementGetHistoricalSpeedsParams}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof postApiV1SpeedManagementGetHistoricalSpeeds>>, TError,{data: HistoricalSpeedOptions;params?: PostApiV1SpeedManagementGetHistoricalSpeedsParams}, TContext> => {
  const {mutation: mutationOptions} = options ?? {};
 
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postSpeedManagementGetHistoricalSpeeds>>, {data: HistoricalSpeedOptions;params?: PostSpeedManagementGetHistoricalSpeedsParams}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiV1SpeedManagementGetHistoricalSpeeds>>, {data: HistoricalSpeedOptions;params?: PostApiV1SpeedManagementGetHistoricalSpeedsParams}> = (props) => {
           const {data,params} = props ?? {};
 
-          return  postSpeedManagementGetHistoricalSpeeds(data,params,)
+          return  postApiV1SpeedManagementGetHistoricalSpeeds(data,params,)
         }
 
         
@@ -1780,27 +1842,27 @@ export const getPostSpeedManagementGetHistoricalSpeedsMutationOptions = <TError 
 
    return  { mutationFn, ...mutationOptions }}
 
-    export type PostSpeedManagementGetHistoricalSpeedsMutationResult = NonNullable<Awaited<ReturnType<typeof postSpeedManagementGetHistoricalSpeeds>>>
-    export type PostSpeedManagementGetHistoricalSpeedsMutationBody = HistoricalSpeedOptions
-    export type PostSpeedManagementGetHistoricalSpeedsMutationError = ProblemDetails
+    export type PostApiV1SpeedManagementGetHistoricalSpeedsMutationResult = NonNullable<Awaited<ReturnType<typeof postApiV1SpeedManagementGetHistoricalSpeeds>>>
+    export type PostApiV1SpeedManagementGetHistoricalSpeedsMutationBody = HistoricalSpeedOptions
+    export type PostApiV1SpeedManagementGetHistoricalSpeedsMutationError = ProblemDetails
 
-    export const usePostSpeedManagementGetHistoricalSpeeds = <TError = ProblemDetails,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postSpeedManagementGetHistoricalSpeeds>>, TError,{data: HistoricalSpeedOptions;params?: PostSpeedManagementGetHistoricalSpeedsParams}, TContext>, }
+    export const usePostApiV1SpeedManagementGetHistoricalSpeeds = <TError = ProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1SpeedManagementGetHistoricalSpeeds>>, TError,{data: HistoricalSpeedOptions;params?: PostApiV1SpeedManagementGetHistoricalSpeedsParams}, TContext>, }
 ) => {
 
-      const mutationOptions = getPostSpeedManagementGetHistoricalSpeedsMutationOptions(options);
+      const mutationOptions = getPostApiV1SpeedManagementGetHistoricalSpeedsMutationOptions(options);
 
       return useMutation(mutationOptions);
     }
     
-export const postSpeedOverDistanceGetReportData = (
+export const postApiV1SpeedOverDistanceGetReportData = (
     speedOverDistanceOptions: SpeedOverDistanceOptions,
-    params?: PostSpeedOverDistanceGetReportDataParams,
+    params?: PostApiV1SpeedOverDistanceGetReportDataParams,
  ) => {
       
       
       return speedRequest<SpeedOverDistanceDto[]>(
-      {url: `/SpeedOverDistance/getReportData`, method: 'POST',
+      {url: `/api/v1/SpeedOverDistance/getReportData`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: speedOverDistanceOptions,
         params
@@ -1810,18 +1872,18 @@ export const postSpeedOverDistanceGetReportData = (
   
 
 
-export const getPostSpeedOverDistanceGetReportDataMutationOptions = <TError = ProblemDetails,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postSpeedOverDistanceGetReportData>>, TError,{data: SpeedOverDistanceOptions;params?: PostSpeedOverDistanceGetReportDataParams}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof postSpeedOverDistanceGetReportData>>, TError,{data: SpeedOverDistanceOptions;params?: PostSpeedOverDistanceGetReportDataParams}, TContext> => {
+export const getPostApiV1SpeedOverDistanceGetReportDataMutationOptions = <TError = ProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1SpeedOverDistanceGetReportData>>, TError,{data: SpeedOverDistanceOptions;params?: PostApiV1SpeedOverDistanceGetReportDataParams}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof postApiV1SpeedOverDistanceGetReportData>>, TError,{data: SpeedOverDistanceOptions;params?: PostApiV1SpeedOverDistanceGetReportDataParams}, TContext> => {
  const {mutation: mutationOptions} = options ?? {};
 
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postSpeedOverDistanceGetReportData>>, {data: SpeedOverDistanceOptions;params?: PostSpeedOverDistanceGetReportDataParams}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiV1SpeedOverDistanceGetReportData>>, {data: SpeedOverDistanceOptions;params?: PostApiV1SpeedOverDistanceGetReportDataParams}> = (props) => {
           const {data,params} = props ?? {};
 
-          return  postSpeedOverDistanceGetReportData(data,params,)
+          return  postApiV1SpeedOverDistanceGetReportData(data,params,)
         }
 
         
@@ -1829,27 +1891,27 @@ export const getPostSpeedOverDistanceGetReportDataMutationOptions = <TError = Pr
 
    return  { mutationFn, ...mutationOptions }}
 
-    export type PostSpeedOverDistanceGetReportDataMutationResult = NonNullable<Awaited<ReturnType<typeof postSpeedOverDistanceGetReportData>>>
-    export type PostSpeedOverDistanceGetReportDataMutationBody = SpeedOverDistanceOptions
-    export type PostSpeedOverDistanceGetReportDataMutationError = ProblemDetails
+    export type PostApiV1SpeedOverDistanceGetReportDataMutationResult = NonNullable<Awaited<ReturnType<typeof postApiV1SpeedOverDistanceGetReportData>>>
+    export type PostApiV1SpeedOverDistanceGetReportDataMutationBody = SpeedOverDistanceOptions
+    export type PostApiV1SpeedOverDistanceGetReportDataMutationError = ProblemDetails
 
-    export const usePostSpeedOverDistanceGetReportData = <TError = ProblemDetails,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postSpeedOverDistanceGetReportData>>, TError,{data: SpeedOverDistanceOptions;params?: PostSpeedOverDistanceGetReportDataParams}, TContext>, }
+    export const usePostApiV1SpeedOverDistanceGetReportData = <TError = ProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1SpeedOverDistanceGetReportData>>, TError,{data: SpeedOverDistanceOptions;params?: PostApiV1SpeedOverDistanceGetReportDataParams}, TContext>, }
 ) => {
 
-      const mutationOptions = getPostSpeedOverDistanceGetReportDataMutationOptions(options);
+      const mutationOptions = getPostApiV1SpeedOverDistanceGetReportDataMutationOptions(options);
 
       return useMutation(mutationOptions);
     }
     
-export const postSpeedOverTimeGetReportData = (
+export const postApiV1SpeedOverTimeGetReportData = (
     speedOverTimeOptions: SpeedOverTimeOptions,
-    params?: PostSpeedOverTimeGetReportDataParams,
+    params?: PostApiV1SpeedOverTimeGetReportDataParams,
  ) => {
       
       
       return speedRequest<SpeedOverTimeDto>(
-      {url: `/SpeedOverTime/getReportData`, method: 'POST',
+      {url: `/api/v1/SpeedOverTime/getReportData`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: speedOverTimeOptions,
         params
@@ -1859,18 +1921,18 @@ export const postSpeedOverTimeGetReportData = (
   
 
 
-export const getPostSpeedOverTimeGetReportDataMutationOptions = <TError = ProblemDetails,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postSpeedOverTimeGetReportData>>, TError,{data: SpeedOverTimeOptions;params?: PostSpeedOverTimeGetReportDataParams}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof postSpeedOverTimeGetReportData>>, TError,{data: SpeedOverTimeOptions;params?: PostSpeedOverTimeGetReportDataParams}, TContext> => {
+export const getPostApiV1SpeedOverTimeGetReportDataMutationOptions = <TError = ProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1SpeedOverTimeGetReportData>>, TError,{data: SpeedOverTimeOptions;params?: PostApiV1SpeedOverTimeGetReportDataParams}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof postApiV1SpeedOverTimeGetReportData>>, TError,{data: SpeedOverTimeOptions;params?: PostApiV1SpeedOverTimeGetReportDataParams}, TContext> => {
  const {mutation: mutationOptions} = options ?? {};
 
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postSpeedOverTimeGetReportData>>, {data: SpeedOverTimeOptions;params?: PostSpeedOverTimeGetReportDataParams}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiV1SpeedOverTimeGetReportData>>, {data: SpeedOverTimeOptions;params?: PostApiV1SpeedOverTimeGetReportDataParams}> = (props) => {
           const {data,params} = props ?? {};
 
-          return  postSpeedOverTimeGetReportData(data,params,)
+          return  postApiV1SpeedOverTimeGetReportData(data,params,)
         }
 
         
@@ -1878,15 +1940,15 @@ export const getPostSpeedOverTimeGetReportDataMutationOptions = <TError = Proble
 
    return  { mutationFn, ...mutationOptions }}
 
-    export type PostSpeedOverTimeGetReportDataMutationResult = NonNullable<Awaited<ReturnType<typeof postSpeedOverTimeGetReportData>>>
-    export type PostSpeedOverTimeGetReportDataMutationBody = SpeedOverTimeOptions
-    export type PostSpeedOverTimeGetReportDataMutationError = ProblemDetails
+    export type PostApiV1SpeedOverTimeGetReportDataMutationResult = NonNullable<Awaited<ReturnType<typeof postApiV1SpeedOverTimeGetReportData>>>
+    export type PostApiV1SpeedOverTimeGetReportDataMutationBody = SpeedOverTimeOptions
+    export type PostApiV1SpeedOverTimeGetReportDataMutationError = ProblemDetails
 
-    export const usePostSpeedOverTimeGetReportData = <TError = ProblemDetails,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postSpeedOverTimeGetReportData>>, TError,{data: SpeedOverTimeOptions;params?: PostSpeedOverTimeGetReportDataParams}, TContext>, }
+    export const usePostApiV1SpeedOverTimeGetReportData = <TError = ProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1SpeedOverTimeGetReportData>>, TError,{data: SpeedOverTimeOptions;params?: PostApiV1SpeedOverTimeGetReportDataParams}, TContext>, }
 ) => {
 
-      const mutationOptions = getPostSpeedOverTimeGetReportDataMutationOptions(options);
+      const mutationOptions = getPostApiV1SpeedOverTimeGetReportDataMutationOptions(options);
 
       return useMutation(mutationOptions);
     }

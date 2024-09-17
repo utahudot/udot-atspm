@@ -5,21 +5,21 @@
  * ATSPM Log Data with OpenAPI, Swashbuckle, and API versioning.
  * OpenAPI spec version: 1.0
  */
-export type PostSpeedOverTimeGetReportDataParams = {
+export type PostApiV1SpeedOverTimeGetReportDataParams = {
 /**
  * The requested API version
  */
 'api-version'?: string;
 };
 
-export type PostSpeedOverDistanceGetReportDataParams = {
+export type PostApiV1SpeedOverDistanceGetReportDataParams = {
 /**
  * The requested API version
  */
 'api-version'?: string;
 };
 
-export type PostSpeedManagementGetHistoricalSpeedsParams = {
+export type PostApiV1SpeedManagementGetHistoricalSpeedsParams = {
 /**
  * The requested API version
  */
@@ -33,217 +33,224 @@ export type GetRouteSpeedsParams = {
 'api-version'?: string;
 };
 
-export type PostApiSpeedFromImpactSegmentSegmentIdParams = {
+export type PostApiV1SpeedFromImpactSegmentSegmentIdParams = {
 /**
  * The requested API version
  */
 'api-version'?: string;
 };
 
-export type PostApiSpeedFromImpactImpactImpactIdParams = {
+export type PostApiV1SpeedFromImpactImpactImpactIdParams = {
 /**
  * The requested API version
  */
 'api-version'?: string;
 };
 
-export type PostApiSegmentSegmentIdSpeedsParams = {
+export type PostApiV1SegmentSegmentIdSpeedsParams = {
 /**
  * The requested API version
  */
 'api-version'?: string;
 };
 
-export type PostApiSegmentSpeedsParams = {
+export type PostApiV1SegmentSpeedsParams = {
 /**
  * The requested API version
  */
 'api-version'?: string;
 };
 
-export type GetApiSegmentSegmentIdParams = {
+export type GetApiV1SegmentSegmentIdGeometryParams = {
 /**
  * The requested API version
  */
 'api-version'?: string;
 };
 
-export type PostApiSegmentParams = {
+export type GetApiV1SegmentSegmentIdParams = {
 /**
  * The requested API version
  */
 'api-version'?: string;
 };
 
-export type GetApiSegmentParams = {
+export type PostApiV1SegmentParams = {
 /**
  * The requested API version
  */
 'api-version'?: string;
 };
 
-export type GetRegionParams = {
+export type GetApiV1SegmentParams = {
 /**
  * The requested API version
  */
 'api-version'?: string;
 };
 
-export type GetApiMonthlyAggregationSegmentsSegmentIdParams = {
+export type GetApiV1RegionParams = {
 /**
  * The requested API version
  */
 'api-version'?: string;
 };
 
-export type PostApiMonthlyAggregationSegmentParams = {
+export type GetApiV1MonthlyAggregationSegmentsSegmentIdParams = {
 /**
  * The requested API version
  */
 'api-version'?: string;
 };
 
-export type DeleteApiMonthlyAggregationParams = {
+export type PostApiV1MonthlyAggregationSegmentParams = {
 /**
  * The requested API version
  */
 'api-version'?: string;
 };
 
-export type PostApiMonthlyAggregationParams = {
+export type DeleteApiV1MonthlyAggregationParams = {
 /**
  * The requested API version
  */
 'api-version'?: string;
 };
 
-export type DeleteApiImpactTypeIdParams = {
+export type PostApiV1MonthlyAggregationParams = {
 /**
  * The requested API version
  */
 'api-version'?: string;
 };
 
-export type PutApiImpactTypeIdParams = {
+export type DeleteApiV1ImpactTypeIdParams = {
 /**
  * The requested API version
  */
 'api-version'?: string;
 };
 
-export type GetApiImpactTypeIdParams = {
+export type PutApiV1ImpactTypeIdParams = {
 /**
  * The requested API version
  */
 'api-version'?: string;
 };
 
-export type PostApiImpactTypeParams = {
+export type GetApiV1ImpactTypeIdParams = {
 /**
  * The requested API version
  */
 'api-version'?: string;
 };
 
-export type GetApiImpactTypeParams = {
+export type PostApiV1ImpactTypeParams = {
 /**
  * The requested API version
  */
 'api-version'?: string;
 };
 
-export type DeleteApiImpactIdImpactTypeImpactTypeIdParams = {
+export type GetApiV1ImpactTypeParams = {
 /**
  * The requested API version
  */
 'api-version'?: string;
 };
 
-export type PutApiImpactIdImpactTypeImpactTypeIdParams = {
+export type DeleteApiV1ImpactIdImpactTypeImpactTypeIdParams = {
 /**
  * The requested API version
  */
 'api-version'?: string;
 };
 
-export type DeleteApiImpactIdSegmentsSegmentIdParams = {
+export type PutApiV1ImpactIdImpactTypeImpactTypeIdParams = {
 /**
  * The requested API version
  */
 'api-version'?: string;
 };
 
-export type PutApiImpactIdSegmentsSegmentIdParams = {
+export type DeleteApiV1ImpactIdSegmentsSegmentIdParams = {
 /**
  * The requested API version
  */
 'api-version'?: string;
 };
 
-export type DeleteApiImpactIdParams = {
+export type PutApiV1ImpactIdSegmentsSegmentIdParams = {
 /**
  * The requested API version
  */
 'api-version'?: string;
 };
 
-export type PutApiImpactIdParams = {
+export type DeleteApiV1ImpactIdParams = {
 /**
  * The requested API version
  */
 'api-version'?: string;
 };
 
-export type GetApiImpactIdParams = {
+export type PutApiV1ImpactIdParams = {
 /**
  * The requested API version
  */
 'api-version'?: string;
 };
 
-export type PostApiImpactParams = {
+export type GetApiV1ImpactIdParams = {
 /**
  * The requested API version
  */
 'api-version'?: string;
 };
 
-export type GetApiImpactParams = {
+export type PostApiV1ImpactParams = {
 /**
  * The requested API version
  */
 'api-version'?: string;
 };
 
-export type GetFunctionalTypeParams = {
+export type GetApiV1ImpactParams = {
 /**
  * The requested API version
  */
 'api-version'?: string;
 };
 
-export type GetCountyParams = {
+export type GetApiV1FunctionalTypeParams = {
 /**
  * The requested API version
  */
 'api-version'?: string;
 };
 
-export type PostCongestionTrackingGetReportDataParams = {
+export type GetApiV1CountyParams = {
 /**
  * The requested API version
  */
 'api-version'?: string;
 };
 
-export type GetCityParams = {
+export type PostApiV1CongestionTrackingGetReportDataParams = {
 /**
  * The requested API version
  */
 'api-version'?: string;
 };
 
-export type GetAccessCategoryParams = {
+export type GetApiV1CityParams = {
+/**
+ * The requested API version
+ */
+'api-version'?: string;
+};
+
+export type GetApiV1AccessCategoryParams = {
 /**
  * The requested API version
  */
@@ -270,18 +277,6 @@ export interface SpeedOverTimeOptions {
   timeOptions?: TimeOptionsEnum;
 }
 
-export interface SpeedOverTimeDto {
-  data?: SpeedDataDto[] | null;
-  endDate?: string;
-  endingMilePoint?: number;
-  segmentId?: string;
-  segmentName?: string | null;
-  speedLimit?: number;
-  startDate?: string;
-  startingMilePoint?: number;
-  timeOptions?: TimeOptionsEnum;
-}
-
 export interface SpeedOverDistanceOptions {
   endDate?: string;
   segmentIds?: string[] | null;
@@ -303,6 +298,18 @@ export interface SpeedOverDistanceDto {
 export interface SpeedDataDto {
   date?: string;
   series?: AverageAndEightyFifthSeriesData;
+}
+
+export interface SpeedOverTimeDto {
+  data?: SpeedDataDto[] | null;
+  endDate?: string;
+  endingMilePoint?: number;
+  segmentId?: string;
+  segmentName?: string | null;
+  speedLimit?: number;
+  startDate?: string;
+  startingMilePoint?: number;
+  timeOptions?: TimeOptionsEnum;
 }
 
 export interface SegmentRequestDto {
