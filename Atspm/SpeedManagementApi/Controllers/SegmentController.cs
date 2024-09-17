@@ -27,7 +27,7 @@ namespace SpeedManagementApi.Controllers
         public async Task<ActionResult<List<Segment>>> GetAllSegments()
         {
             //Get the segments
-            var segments = segmentRepository.GetList().ToList();
+            var segments = segmentRepository.AllSegmentsWithEntity();
 
             var features = new List<Feature>();
             foreach (var lookedUpSegment in segments)

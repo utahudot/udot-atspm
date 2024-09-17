@@ -71,13 +71,43 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             {
                 return null;
             }
-            var query = $"SELECT * FROM `{_projectId}.{_datasetId}.{_tableId}` WHERE Id = @key";
+            string query = $@"
+                SELECT 
+                    s.Id,
+                    s.UdotRouteNumber,
+                    s.StartMilePoint,
+                    s.EndMilePoint,
+                    s.FunctionalType,
+                    s.Name,
+                    s.Direction,
+                    s.SpeedLimit,
+                    s.Region,
+                    s.City,
+                    s.County,
+                    s.Shape,
+                    s.ShapeWKT,
+                    s.AlternateIdentifier,
+                    s.AccessCategory,
+                    s.Offset,
+                    se.EntityId,
+                    se.SourceId,
+                    se.SegmentId
+                FROM 
+                    `{_projectId}.{_datasetId}.{_tableId}` s
+                LEFT JOIN 
+                    `{_projectId}.{_datasetId}.segmentEntity` se 
+                ON 
+                    s.Id = se.SegmentId
+                WHERE Id = @key
+                ORDER BY 
+                    s.Id, se.EntityId;";
+
             var parameters = new List<BigQueryParameter>
             {
                     new BigQueryParameter("key", BigQueryDbType.String, key.ToString())
                 };
             var results = _client.ExecuteQuery(query, parameters);
-            Task<Segment> task = Task.FromResult(results.Select(row => MapRowToEntity(row)).FirstOrDefault());
+            Task<Segment> task = Task.FromResult(results.Select(row => MapSegmentWithEntities(row)).FirstOrDefault());
             return task.Result;
         }
 
@@ -87,14 +117,45 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             {
                 return null;
             }
-            var query = $"SELECT * FROM `{_projectId}.{_datasetId}.{_tableId}` WHERE Id = @key";
+            //var query = $"SELECT * FROM `{_projectId}.{_datasetId}.{_tableId}` WHERE Id = @key";
+            string query = $@"
+                SELECT 
+                    s.Id,
+                    s.UdotRouteNumber,
+                    s.StartMilePoint,
+                    s.EndMilePoint,
+                    s.FunctionalType,
+                    s.Name,
+                    s.Direction,
+                    s.SpeedLimit,
+                    s.Region,
+                    s.City,
+                    s.County,
+                    s.Shape,
+                    s.ShapeWKT,
+                    s.AlternateIdentifier,
+                    s.AccessCategory,
+                    s.Offset,
+                    se.EntityId,
+                    se.SourceId,
+                    se.SegmentId
+                FROM 
+                    `{_projectId}.{_datasetId}.{_tableId}` s
+                LEFT JOIN 
+                    `{_projectId}.{_datasetId}.segmentEntity` se 
+                ON 
+                    s.Id = se.SegmentId
+                WHERE Id = @key
+                ORDER BY 
+                    s.Id, se.EntityId;";
+
             var parameters = new List<BigQueryParameter>
                 {
                     new BigQueryParameter("key", BigQueryDbType.String, item.Id.ToString())
                 };
 
             var results = _client.ExecuteQuery(query, parameters);
-            Task<Segment> task = Task.FromResult(results.Select(row => MapRowToEntity(row)).FirstOrDefault());
+            Task<Segment> task = Task.FromResult(results.Select(row => MapSegmentWithEntities(row)).FirstOrDefault());
             return task.Result;
         }
 
@@ -104,13 +165,42 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             {
                 return null;
             }
-            var query = $"SELECT * FROM `{_projectId}.{_datasetId}.{_tableId}` WHERE Id = @key";
+            string query = $@"
+                SELECT 
+                    s.Id,
+                    s.UdotRouteNumber,
+                    s.StartMilePoint,
+                    s.EndMilePoint,
+                    s.FunctionalType,
+                    s.Name,
+                    s.Direction,
+                    s.SpeedLimit,
+                    s.Region,
+                    s.City,
+                    s.County,
+                    s.Shape,
+                    s.ShapeWKT,
+                    s.AlternateIdentifier,
+                    s.AccessCategory,
+                    s.Offset,
+                    se.EntityId,
+                    se.SourceId,
+                    se.SegmentId
+                FROM 
+                    `{_projectId}.{_datasetId}.{_tableId}` s
+                LEFT JOIN 
+                    `{_projectId}.{_datasetId}.segmentEntity` se 
+                ON 
+                    s.Id = se.SegmentId
+                WHERE Id = @key
+                ORDER BY 
+                    s.Id, se.EntityId;";
             var parameters = new List<BigQueryParameter>
             {
                     new BigQueryParameter("key", BigQueryDbType.String, key.ToString())
             };
             var results = await _client.ExecuteQueryAsync(query, parameters);
-            return results.Select(row => MapRowToEntity(row)).FirstOrDefault();
+            return results.Select(row => MapSegmentWithEntities(row)).FirstOrDefault();
         }
 
         public override async Task<Segment> LookupAsync(Segment item)
@@ -119,13 +209,42 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             {
                 return null;
             }
-            var query = $"SELECT * FROM `{_projectId}.{_datasetId}.{_tableId}` WHERE Id = @key";
+            string query = $@"
+                SELECT 
+                    s.Id,
+                    s.UdotRouteNumber,
+                    s.StartMilePoint,
+                    s.EndMilePoint,
+                    s.FunctionalType,
+                    s.Name,
+                    s.Direction,
+                    s.SpeedLimit,
+                    s.Region,
+                    s.City,
+                    s.County,
+                    s.Shape,
+                    s.ShapeWKT,
+                    s.AlternateIdentifier,
+                    s.AccessCategory,
+                    s.Offset,
+                    se.EntityId,
+                    se.SourceId,
+                    se.SegmentId
+                FROM 
+                    `{_projectId}.{_datasetId}.{_tableId}` s
+                LEFT JOIN 
+                    `{_projectId}.{_datasetId}.segmentEntity` se 
+                ON 
+                    s.Id = se.SegmentId
+                WHERE Id = @key
+                ORDER BY 
+                    s.Id, se.EntityId;";
             var parameters = new List<BigQueryParameter>
                 {
                     new BigQueryParameter("key", BigQueryDbType.String, item.Id.ToString())
                 };
             var results = await _client.ExecuteQueryAsync(query, parameters);
-            return results.Select(row => MapRowToEntity(row)).FirstOrDefault();
+            return results.Select(row => MapSegmentWithEntities(row)).FirstOrDefault();
         }
 
         public override void Remove(Segment item)
@@ -459,50 +578,55 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 foreach (var row in result)
                 {
                     var segmentId = Guid.Parse(row["Id"].ToString());
-
-                    if (!segments.TryGetValue(segmentId, out var segment))
-                    {
-                        var reader = new WKTReader();
-                        var wkt = row["Shape"].ToString();
-                        Geometry shape = wkt != null ? reader.Read(wkt) : null;
-
-                        segment = new Segment
-                        {
-                            Id = segmentId,
-                            UdotRouteNumber = row["UdotRouteNumber"].ToString(),
-                            StartMilePoint = (double)row["StartMilePoint"],
-                            EndMilePoint = (double)row["EndMilePoint"],
-                            FunctionalType = row["FunctionalType"].ToString(),
-                            Name = row["Name"].ToString(),
-                            Direction = row["Direction"]?.ToString(),
-                            SpeedLimit = (long)row["SpeedLimit"],
-                            Region = row["Region"]?.ToString(),
-                            City = row["City"]?.ToString(),
-                            County = row["County"]?.ToString(),
-                            Shape = shape,
-                            ShapeWKT = row["ShapeWKT"]?.ToString(),
-                            AlternateIdentifier = row["AlternateIdentifier"]?.ToString(),
-                            AccessCategory = row["AccessCategory"]?.ToString(),
-                            Offset = (long?)row["Offset"],
-                            RouteEntities = new List<SegmentEntity>()
-                        };
-
-                        segments.Add(segmentId, segment);
-                    }
-
-                    if (row["EntityId"] != null && row["SourceId"] != null && row["SegmentId"] != null)
-                    {
-                        segment.RouteEntities.Add(new SegmentEntity
-                        {
-                            EntityId = Convert.ToInt32((long)row["EntityId"]),
-                            SourceId = Convert.ToInt32((long)row["SourceId"]),
-                            SegmentId = Guid.Parse(row["SegmentId"].ToString())
-                        });
-                    }
+                    var segment = MapSegmentWithEntities(row);
+                    segments.Add(segmentId, segment);
                 }
 
                 return segments.Values.ToList();
             }
+        }
+
+        private static Segment MapSegmentWithEntities(BigQueryRow row)
+        {
+            var segmentId = Guid.Parse(row["Id"].ToString());
+
+
+            var reader = new WKTReader();
+            var wkt = row["Shape"].ToString();
+            Geometry shape = wkt != null ? reader.Read(wkt) : null;
+
+            var segment = new Segment
+            {
+                Id = segmentId,
+                UdotRouteNumber = row["UdotRouteNumber"].ToString(),
+                StartMilePoint = (double)row["StartMilePoint"],
+                EndMilePoint = (double)row["EndMilePoint"],
+                FunctionalType = row["FunctionalType"].ToString(),
+                Name = row["Name"].ToString(),
+                Direction = row["Direction"]?.ToString(),
+                SpeedLimit = (long)row["SpeedLimit"],
+                Region = row["Region"]?.ToString(),
+                City = row["City"]?.ToString(),
+                County = row["County"]?.ToString(),
+                Shape = shape,
+                ShapeWKT = row["ShapeWKT"]?.ToString(),
+                AlternateIdentifier = row["AlternateIdentifier"]?.ToString(),
+                AccessCategory = row["AccessCategory"]?.ToString(),
+                Offset = (long?)row["Offset"],
+                RouteEntities = new List<SegmentEntity>()
+            };
+
+
+            if (row["EntityId"] != null && row["SourceId"] != null && row["SegmentId"] != null)
+            {
+                segment.RouteEntities.Add(new SegmentEntity
+                {
+                    EntityId = Convert.ToInt32((long)row["EntityId"]),
+                    SourceId = Convert.ToInt32((long)row["SourceId"]),
+                    SegmentId = Guid.Parse(row["SegmentId"].ToString())
+                });
+            }
+            return segment;
         }
 
         public async Task<List<Segment>> GetSegmentsDetails(List<Guid> segmentIds)
@@ -512,14 +636,40 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
 
             // Query with IN clause
             string query = $@"
-                SELECT * 
-                FROM `{_projectId}.{_datasetId}.{_tableId}` 
-                WHERE Id IN ({ids});";
+                SELECT 
+                    s.Id,
+                    s.UdotRouteNumber,
+                    s.StartMilePoint,
+                    s.EndMilePoint,
+                    s.FunctionalType,
+                    s.Name,
+                    s.Direction,
+                    s.SpeedLimit,
+                    s.Region,
+                    s.City,
+                    s.County,
+                    s.Shape,
+                    s.ShapeWKT,
+                    s.AlternateIdentifier,
+                    s.AccessCategory,
+                    s.Offset,
+                    se.EntityId,
+                    se.SourceId,
+                    se.SegmentId
+                FROM 
+                    `{_projectId}.{_datasetId}.{_tableId}` s
+                LEFT JOIN 
+                    `{_projectId}.{_datasetId}.segmentEntity` se 
+                ON 
+                    s.Id = se.SegmentId
+                WHERE Id IN ({ids})
+                ORDER BY 
+                    s.Id, se.EntityId;";
 
             var parameters = new List<BigQueryParameter>();
 
             var results = await _client.ExecuteQueryAsync(query, parameters);
-            var segments = results.Select(row => MapRowToEntity(row)).ToList();
+            var segments = results.Select(row => MapSegmentWithEntities(row)).ToList();
             segments.ForEach(seg => seg.Shape = null);
             return segments;
         }
