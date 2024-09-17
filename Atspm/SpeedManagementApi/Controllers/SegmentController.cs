@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using NetTopologySuite.Geometries;
+using NetTopologySuite.Features;
 using NetTopologySuite.IO;
 using Utah.Udot.Atspm.Data.Models.SpeedManagementModels;
 using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.Config;
@@ -27,10 +27,53 @@ namespace SpeedManagementApi.Controllers
         public async Task<ActionResult<List<Segment>>> GetAllSegments()
         {
             //Get the segments
-            var segments = segmentRepository.GetList().ToList();
-            segments.ForEach(seg => seg.Shape = null);
+            var segments = segmentRepository.AllSegmentsWithEntity();
 
-            return Ok(segments);
+            var features = new List<Feature>();
+            foreach (var lookedUpSegment in segments)
+            {
+                var geometry = lookedUpSegment.Shape;
+                var segment = new AttributesTable
+                {
+                    { "Id", lookedUpSegment.Id },
+                    { "UdotRouteNumber", lookedUpSegment.UdotRouteNumber },
+                    { "StartMilePoint", lookedUpSegment.StartMilePoint },
+                    { "EndMilePoint", lookedUpSegment.EndMilePoint },
+                    { "FunctionalType", lookedUpSegment.FunctionalType },
+                    { "Name", lookedUpSegment.Name },
+                    { "Direction", lookedUpSegment.Direction },
+                    { "SpeedLimit", lookedUpSegment.SpeedLimit },
+                    { "Region", lookedUpSegment.Region },
+                    { "City", lookedUpSegment.City },
+                    { "County", lookedUpSegment.County },
+                    { "AlternateIdentifier", lookedUpSegment.AlternateIdentifier },
+                    { "AccessCategory", lookedUpSegment.AccessCategory },
+                    { "Offset", lookedUpSegment.Offset },
+                    { "RouteEntities", lookedUpSegment.RouteEntities }
+                };
+                var feature = new Feature(geometry, segment);
+                features.Add(feature);
+            }
+
+            var featureCollection = new FeatureCollection();
+            features.ForEach(f => featureCollection.Add(f));
+            var featuresArray = featureCollection.ToArray();
+
+            var geoJsonObj = new
+            {
+                type = "Segments",
+                features = featuresArray
+            };
+
+
+            var writer = new GeoJsonWriter();
+            var geoJson = writer.Write(geoJsonObj);
+            //var test = System.IO.File.ReadAllText(geoJson);
+
+
+            // Return the GeoJSON as the response
+            return Content(geoJson, "application/geo+json");
+            //return Ok(segments);
         }
 
         // POST: /Segment
@@ -41,33 +84,98 @@ namespace SpeedManagementApi.Controllers
             //Get the segments
             List<Segment> segments = await segmentRepository.GetSegmentsDetails(segmentIds);
             //segments.ForEach(seg => seg.Shape = null);
+            var features = new List<Feature>();
+            foreach (var lookedUpSegment in segments)
+            {
+                var geometry = lookedUpSegment.Shape;
+                var segment = new AttributesTable
+                {
+                    { "Id", lookedUpSegment.Id },
+                    { "UdotRouteNumber", lookedUpSegment.UdotRouteNumber },
+                    { "StartMilePoint", lookedUpSegment.StartMilePoint },
+                    { "EndMilePoint", lookedUpSegment.EndMilePoint },
+                    { "FunctionalType", lookedUpSegment.FunctionalType },
+                    { "Name", lookedUpSegment.Name },
+                    { "Direction", lookedUpSegment.Direction },
+                    { "SpeedLimit", lookedUpSegment.SpeedLimit },
+                    { "Region", lookedUpSegment.Region },
+                    { "City", lookedUpSegment.City },
+                    { "County", lookedUpSegment.County },
+                    { "AlternateIdentifier", lookedUpSegment.AlternateIdentifier },
+                    { "AccessCategory", lookedUpSegment.AccessCategory },
+                    { "Offset", lookedUpSegment.Offset },
+                    { "RouteEntities", lookedUpSegment.RouteEntities }
+                };
+                var feature = new Feature(geometry, segment);
+                features.Add(feature);
+            }
 
-            return Ok(segments);
+            var featureCollection = new FeatureCollection();
+            features.ForEach(f => featureCollection.Add(f));
+            var featuresArray = featureCollection.ToArray();
+
+            var geoJsonObj = new
+            {
+                type = "Segments",
+                features = featuresArray
+            };
+
+
+            var writer = new GeoJsonWriter();
+            var geoJson = writer.Write(geoJsonObj);
+            //var test = System.IO.File.ReadAllText(geoJson);
+
+
+            // Return the GeoJSON as the response
+            return Content(geoJson, "application/geo+json");
+            //return Ok(segments);
         }
 
         // GET: /Segment/segment/{segmentId}
         [HttpGet("{segmentId}")]
-        public async Task<ActionResult<Geometry>> GetSegment(
+        public async Task<IActionResult> GetSegment(
             Guid segmentId)
         {
             //Get the segments
-            var segment = await segmentRepository.LookupAsync(segmentId);
-            segment.Shape = null;
+            var lookedUpSegment = await segmentRepository.LookupAsync(segmentId);
+            var geometry = lookedUpSegment.Shape;
+            lookedUpSegment.Shape = null;
 
-            return Ok(segment);
-        }
+            var segment = new AttributesTable
+            {
+                { "Id", lookedUpSegment.Id },
+                { "UdotRouteNumber", lookedUpSegment.UdotRouteNumber },
+                { "StartMilePoint", lookedUpSegment.StartMilePoint },
+                { "EndMilePoint", lookedUpSegment.EndMilePoint },
+                { "FunctionalType", lookedUpSegment.FunctionalType },
+                { "Name", lookedUpSegment.Name },
+                { "Direction", lookedUpSegment.Direction },
+                { "SpeedLimit", lookedUpSegment.SpeedLimit },
+                { "Region", lookedUpSegment.Region },
+                { "City", lookedUpSegment.City },
+                { "County", lookedUpSegment.County },
+                { "AlternateIdentifier", lookedUpSegment.AlternateIdentifier },
+                { "AccessCategory", lookedUpSegment.AccessCategory },
+                { "Offset", lookedUpSegment.Offset },
+                { "RouteEntities", lookedUpSegment.RouteEntities }
+            };
 
-        // GET: /Segment/segment/{segmentId}/geometry
-        [HttpGet("{segmentId}/geometry")]
-        public async Task<ActionResult<Geometry>> GetSegmentGeometry(
-            Guid segmentId)
-        {
-            //Get the segments
-            var segment = await segmentRepository.LookupAsync(segmentId);
-            var geometry = segment.Shape;
+            var features = new List<Feature>();
+            var feature = new Feature(geometry, segment);
+            features.Add(feature);
+            var featureCollection = new FeatureCollection();
+            features.ForEach(f => featureCollection.Add(f));
+            var featuresArray = featureCollection.ToArray();
 
-            var geoJsonWriter = new GeoJsonWriter();
-            var geoJson = geoJsonWriter.Write(geometry);
+            var geoJsonObj = new
+            {
+                type = "Segment",
+                features = featuresArray
+            };
+
+
+            var writer = new GeoJsonWriter();
+            var geoJson = writer.Write(geoJsonObj);
 
             return Content(geoJson, "application/geo+json");
         }
@@ -111,5 +219,6 @@ namespace SpeedManagementApi.Controllers
 
             return Ok(currentSegments);
         }
+
     }
 }

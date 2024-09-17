@@ -9,6 +9,7 @@
         public double NinetyFifthSpeed { get; set; }
         public double NinetyNinthSpeed { get; set; }
         public double Violation { get; set; }
+        public double ExtremeViolation { get; set; }
         public double Flow { get; set; }
     }
 }
