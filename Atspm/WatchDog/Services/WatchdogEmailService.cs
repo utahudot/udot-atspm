@@ -309,17 +309,17 @@ namespace Utah.Udot.Atspm.WatchDog.Services
             switch (sectionTitle)
             {
                 case "Missing Records Errors":
-                    return new List<string> { "Location", "Location Description", "Issue Details", "Error Count", "Date of First Occurrence" };
+                    return new List<string> { "Location", "Location Description", "Issue Details", "Error Count", "Consecutive Occurrence Count", "Date of First Occurrence" };
                 case "Force Off Errors":
                 case "Max Out Errors":
                 case "High Pedestrian Activation Errors":
                 case "Unconfigured Approaches Errors":
-                    return new List<string> { "Location", "Location Description", "Phase", "Issue Details", "Error Count", "Date of First Occurrence" };
+                    return new List<string> { "Location", "Location Description", "Phase", "Issue Details", "Error Count", "Consecutive Occurrence Count", "Date of First Occurrence" };
                 case "Low Detection Count Errors":
                 case "Unconfigured Detectors Errors":
-                    return new List<string> { "Location", "Location Description", "Detector Id", "Issue Details", "Error Count", "Date of First Occurrence" };
+                    return new List<string> { "Location", "Location Description", "Detector Id", "Issue Details", "Error Count", "Consecutive Occurrence Count", "Date of First Occurrence" };
                 default:
-                    return new List<string> { "Location", "Location Description", "Issue Details", "Error Count", "Date of First Occurrence" };
+                    return new List<string> { "Location", "Location Description", "Issue Details", "Error Count", "Consecutive Occurrence Count", "Date of First Occurrence" };
             }
         }
 
@@ -378,6 +378,7 @@ namespace Utah.Udot.Atspm.WatchDog.Services
                         errorMessage += $"<td>{error.Details}</td>";
 
                         errorMessage += $"<td>{error.EventCount}</td>";
+                        errorMessage += $"<td>{error.ConsecutiveOccurenceCount}</td>";
                         errorMessage += $"<td>{error.DateOfFirstInstance}</td></tr>";
                     }
                 }

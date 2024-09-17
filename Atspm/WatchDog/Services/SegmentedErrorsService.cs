@@ -23,6 +23,7 @@ namespace Utah.Udot.ATSPM.WatchDog.Services
             var countForDayBeforeScanDate = CreateDayBeforeCountLookup(recordsForDayBeforeScanDate);
 
             var allConvertedRecords = ConvertRecords(recordsForScanDate, countAndDateLookupForLast12Months);
+            var orderedConvertedRecords = allConvertedRecords.OrderByDescending(record => record.ConsecutiveOccurenceCount).ToList();
 
             return CategorizeIssues(allConvertedRecords, countForDayBeforeScanDate);
         }
