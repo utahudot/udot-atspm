@@ -10,5 +10,6 @@ namespace Utah.Udot.Atspm.Business.Watchdog
 
         public int EventCount { get; set; }
         public DateTime DateOfFirstInstance { get; set; }
+        public int ConsecutiveOccurenceCount { get; set; }
     }
 }
