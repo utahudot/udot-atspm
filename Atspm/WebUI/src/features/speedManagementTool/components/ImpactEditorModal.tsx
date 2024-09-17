@@ -1,4 +1,4 @@
-import SelectLocationMap from '@/features/locations/components/selectLocationMap'
+import { useGetApiImpactType } from '@/api/speedManagement'
 import { Impact } from '@/features/speedManagementTool/types/impact'
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
 import {
@@ -19,9 +19,7 @@ import {
 import { useTheme } from '@mui/material/styles'
 import { useRouter } from 'next/router'
 import React, { useEffect, useState } from 'react'
-import { useGetImpactTypes } from '../api/getImpactTypes'
 import { useGetSegments } from '../api/getSegments'
-import SegmentSelectMap from './SegmentSelectMap'
 interface ImpactEditorModalProps {
   data?: Impact
   open: boolean
@@ -64,15 +62,13 @@ const ImpactEditorModal: React.FC<ImpactEditorModalProps> = ({
 
   const { data: segmentData, isLoading: isLoadingSegements } = useGetSegments()
 
-  useEffect(()=>{
-    if(!isLoadingSegements){
+  useEffect(() => {
+    if (!isLoadingSegements) {
       console.log(segmentData)
     }
+  }, [segmentData])
 
-  },[segmentData])
-
-  const { data: impactTypeData, isLoading: isLoadingImpactTypes } =
-    useGetImpactTypes()
+  const { data: impactTypeData } = useGetApiImpactType()
   const router = useRouter()
   const theme = useTheme()
 
@@ -280,7 +276,7 @@ const ImpactEditorModal: React.FC<ImpactEditorModalProps> = ({
         setImpact({ ...impact, segmentIds: selectedIds });
       }}
     />} */}
-           {/* <SegmentSelectMap /> */}
+            {/* <SegmentSelectMap /> */}
 
             {/* <div
               style={{
