@@ -105,7 +105,7 @@ namespace Utah.Udot.Atspm.WatchDog.Services
 
             var users = await GetUsersWithWatchDogClaimAsync();
 
-            var filteredErrors = ignoreEventService.GetFilteredWatchDogEventsForEmail(errors);
+            var filteredErrors = ignoreEventService.GetFilteredWatchDogEventsForEmail(errors, emailOptions.ScanDate);
             var (newErrors, dailyRecurringErrors, recurringErrors) = segmentedErrorsService.GetSegmentedErrors(filteredErrors, emailOptions);
 
 

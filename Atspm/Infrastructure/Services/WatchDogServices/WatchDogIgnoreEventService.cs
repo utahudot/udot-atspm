@@ -13,17 +13,21 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
             this.watchDogEventLogRepository = watchDogEventLogRepository;
         }
 
-        public List<WatchDogLogEvent> GetFilteredWatchDogEventsForEmail(List<WatchDogLogEvent> watchDogLogEvents)
+        public List<WatchDogLogEvent> GetFilteredWatchDogEventsForEmail(List<WatchDogLogEvent> watchDogLogEvents, DateTime scanDate)
         {
-            var ignoreEvents = watchDogIgnoreEventLogRepository.GetList();
+            //var ignoreEvents = watchDogIgnoreEventLogRepository.GetList();
+            var ignoreEvents = watchDogIgnoreEventLogRepository.GetList()
+                .Where(ignoreEvent => ignoreEvent.Start <= scanDate && ignoreEvent.End >= scanDate)
+                .ToList();
 
-            var result = watchDogLogEvents.Where(logEvent => !ignoreEvents.Any(ignoreEvent =>
-                ignoreEvent.LocationIdentifier == logEvent.LocationIdentifier && 
-                logEvent.Timestamp >= ignoreEvent.Start && 
-                logEvent.Timestamp <= ignoreEvent.End &&
-                (ignoreEvent.ComponentType == null || ignoreEvent.ComponentType == logEvent.ComponentType) && 
-                (ignoreEvent.ComponentId == null || ignoreEvent.ComponentId == logEvent.ComponentId) &&
-                (ignoreEvent.Phase == null || ignoreEvent.Phase == logEvent.Phase)))
+            var result = watchDogLogEvents
+                .Where(logEvent => !ignoreEvents.Exists(ignoreEvent =>
+                    ignoreEvent.LocationIdentifier == logEvent.LocationIdentifier &&
+                    logEvent.Timestamp >= ignoreEvent.Start &&
+                    logEvent.Timestamp <= ignoreEvent.End &&
+                    (ignoreEvent.ComponentType == null || ignoreEvent.ComponentType == logEvent.ComponentType) &&
+                    (ignoreEvent.ComponentId == null || ignoreEvent.ComponentId == logEvent.ComponentId) &&
+                    (ignoreEvent.Phase == null || ignoreEvent.Phase == logEvent.Phase)))
                 .ToList();
 
             return result;
