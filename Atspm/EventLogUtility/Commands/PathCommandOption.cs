@@ -24,6 +24,7 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
         public PathCommandOption() : base("--path", "Path to directory")
         {
             AddAlias("-p");
+            SetDefaultValue(System.IO.Path.GetTempPath());
         }
     }
 }

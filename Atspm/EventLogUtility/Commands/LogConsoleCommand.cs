@@ -43,6 +43,10 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
             AddArgument(PingDeviceArg);
             AddArgument(DeleteLocalFileArg);
 
+            AddOption(PathCommandOption);
+            AddOption(BatchSizeOption);
+            AddOption(PrallelProcessesOption);
+
             AddOption(IncludeOption);
             AddOption(ExcludeOption);
             AddOption(AreaOption);
@@ -52,12 +56,17 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
             AddOption(DeviceTypeOption);
             AddOption(TransportProtocolOption);
             AddOption(DeviceStatusCommandOption);
-            AddOption(PathCommandOption);
         }
 
-        public Argument<bool> PingDeviceArg { get; set; } = new Argument<bool>("ping", "Ping to verify device is online");
+        public Argument<bool> PingDeviceArg { get; set; } = new Argument<bool>("ping", () => true, "Ping to verify device is online");
 
-        public Argument<bool> DeleteLocalFileArg { get; set; } = new Argument<bool>("delete local", "Delete local file");
+        public Argument<bool> DeleteLocalFileArg { get; set; } = new Argument<bool>("delete local", () => false, "Delete local file");
+
+        public PathCommandOption PathCommandOption { get; set; } = new();
+
+        public BatchSizeOption BatchSizeOption { get; set; } = new();
+
+        public PrallelProcessesOption PrallelProcessesOption { get; set; } = new();
 
         public LocationIncludeCommandOption IncludeOption { get; set; } = new();
 
@@ -77,8 +86,6 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
 
         public DeviceStatusCommandOption DeviceStatusCommandOption { get; set; } = new();   
 
-        public PathCommandOption PathCommandOption { get; set; } = new();
-
         public void BindCommandOptions(HostBuilderContext host, IServiceCollection services)
         {
             services.Configure<DeviceEventLoggingConfiguration>(host.Configuration.GetSection(nameof(DeviceEventLoggingConfiguration)));
@@ -86,6 +93,8 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
             var parentBinder = new ModelBinder<DeviceEventLoggingConfiguration>();
 
             parentBinder.BindMemberFromValue(b => b.Path, PathCommandOption);
+            parentBinder.BindMemberFromValue(b => b.BatchSize, PathCommandOption);
+            parentBinder.BindMemberFromValue(b => b.ParallelProcesses, PrallelProcessesOption);
 
             var childBinder = new ModelBinder<DeviceEventLoggingQueryOptions>();
 
@@ -106,7 +115,25 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
                     childBinder.UpdateInstance(a.DeviceEventLoggingQueryOptions, b);
                 });
 
-            services.AddHostedService<LocationLoggerUtilityHostedService>();
+            services.AddHostedService<DeviceEventLogHostedService>();
+        }
+    }
+
+    public class BatchSizeOption : Option<int>
+    {
+        public BatchSizeOption() : base("--batch-size", "Batch size of event logs to save to repository")
+        {
+            AddAlias("-bs");
+            SetDefaultValue(50000);
+        }
+    }
+
+    public class PrallelProcessesOption : Option<int>
+    {
+        public PrallelProcessesOption() : base("--parallel-processes", "Amount of processes that can be run in parallel")
+        {
+            AddAlias("-pp");
+            SetDefaultValue(50);
         }
     }
 

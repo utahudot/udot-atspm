@@ -69,15 +69,24 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.EventLogImporters
         /// <exception cref="ExecuteException"></exception>
         public override async IAsyncEnumerable<Tuple<Device, EventLogModelBase>> Execute(Tuple<Device, FileInfo> parameter, IProgress<ControllerDecodeProgress> progress = null, [EnumeratorCancellation] CancellationToken cancelToken = default)
         {
+            if (parameter == null)
+                throw new ArgumentNullException(nameof(parameter), $"can not be null");
+
             var device = parameter.Item1;
             var file = parameter.Item2;
             var decoders = parameter.Item1.DeviceConfiguration.Decoders.ToList();
 
+            if (device == null)
+                throw new ArgumentNullException(nameof(device), $"can not be null");
+
             if (file == null)
-                throw new ArgumentNullException(nameof(file), $"FileInfo file can not be null");
+                throw new ArgumentNullException(nameof(file), $"can not be null");
 
             if (!file.Exists)
                 throw new FileNotFoundException($"File not found {file.FullName}", file.FullName);
+
+            if (decoders == null)
+                throw new ArgumentNullException(nameof(decoders), $"can not be null");
 
             if (CanExecute(parameter))
             {

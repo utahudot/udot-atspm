@@ -16,6 +16,7 @@
 #endregion
 
 using Utah.Udot.Atspm.Data.Enums;
+using Utah.Udot.Atspm.Data.Models.EventLogModels;
 
 namespace Utah.Udot.Atspm.Configuration
 {
@@ -25,17 +26,22 @@ namespace Utah.Udot.Atspm.Configuration
     public class DeviceEventLoggingConfiguration
     {
         /// <summary>
-        /// Path to logging directory
+        /// Path to local directory where event logs are saved
         /// </summary>
         public string Path { get; set; } = System.IO.Path.GetTempPath();
 
+        /// <summary>
+        /// Batch size of <see cref="EventLogModelBase"/> objects when saving to repository
+        /// </summary>
+        public int BatchSize { get; set; } = 50000;
+
+        /// <summary>
+        /// Amount of processes that can be run in parallel
+        /// </summary>
+        public int ParallelProcesses { get; set; } = 50;
+
         /// <inheritdoc cref="DeviceEventLoggingQueryOptions"/>
         public DeviceEventLoggingQueryOptions DeviceEventLoggingQueryOptions { get; set; } = new DeviceEventLoggingQueryOptions();
-
-        public override string ToString()
-        {
-            return $"{DeviceEventLoggingQueryOptions} --- {Path}";
-        }
     }
 
     /// <summary>
@@ -87,10 +93,5 @@ namespace Utah.Udot.Atspm.Configuration
         /// <see cref="DeviceStatus"/> to include
         /// </summary>
         public DeviceStatus DeviceStatus { get; set; } = DeviceStatus.Active;
-
-        public override string ToString()
-        {
-            return $"{DeviceType} - {TransportProtocol} - {DeviceStatus}";
-        }
     }
 }

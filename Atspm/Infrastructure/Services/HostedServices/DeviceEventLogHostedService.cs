@@ -20,29 +20,34 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Collections;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks.Dataflow;
-using Utah.Udot.Atspm.Analysis.WorkflowFilters;
-using Utah.Udot.Atspm.Analysis.Workflows;
-using Utah.Udot.Atspm.Analysis.WorkflowSteps;
-using Utah.Udot.Atspm.Data.Enums;
-using Utah.Udot.Atspm.Data.Models;
+using System.Windows.Input;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
 using Utah.Udot.NetStandardToolkit.Workflows;
 
 namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
 {
-    public class LocationLoggerUtilityHostedService : IHostedService
+    /// <summary>
+    /// Hosted service for running the <see cref="DeviceEventLogWorkflow"/>
+    /// </summary>
+    public class DeviceEventLogHostedService : IHostedService
     {
         private readonly ILogger _log;
         private readonly IServiceScopeFactory _services;
         private readonly IOptions<DeviceEventLoggingConfiguration> _options;
 
-        public LocationLoggerUtilityHostedService(ILogger<LocationLoggerUtilityHostedService> log, IServiceScopeFactory serviceProvider, IOptions<DeviceEventLoggingConfiguration> options) =>
+        /// <summary>
+        /// Hosted service for running the <see cref="DeviceEventLogWorkflow"/>
+        /// </summary>
+        /// <param name="log"></param>
+        /// <param name="serviceProvider"></param>
+        /// <param name="options"></param>
+        public DeviceEventLogHostedService(ILogger<DeviceEventLogHostedService> log, IServiceScopeFactory serviceProvider, IOptions<DeviceEventLoggingConfiguration> options) =>
             (_log, _services, _options) = (log, serviceProvider, options);
 
+        /// <inheritdoc/>
         public async Task StartAsync(CancellationToken cancellationToken)
         {
             var serviceName = this.GetType().Name;
@@ -56,11 +61,11 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
 
             using (var scope = _services.CreateAsyncScope())
             {
-                var workflow = new DeviceEventLogWorkflow(_services, 1000);
+                var workflow = new DeviceEventLogWorkflow(_services, _options.Value.BatchSize, _options.Value.ParallelProcesses, cancellationToken);
 
                 var repo = scope.ServiceProvider.GetService<IDeviceRepository>();
 
-                await foreach(var d in repo.GetDevicesForLogging(_options.Value.DeviceEventLoggingQueryOptions))
+                await foreach (var d in repo.GetDevicesForLogging(_options.Value.DeviceEventLoggingQueryOptions))
                 {
                     await workflow.Input.SendAsync(d);
                 }
@@ -75,6 +80,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
             logMessages.CompletingService(serviceName, sw.Elapsed);
         }
 
+        /// <inheritdoc/>
         public Task StopAsync(CancellationToken cancellationToken)
         {
             var serviceName = this.GetType().Name;
@@ -87,6 +93,9 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
         }
     }
 
+    /// <summary>
+    /// Downloads <see cref="EventLogModelBase"/> objects from <see cref="Device"/> and saves them to <see cref="IEventLogRepository"/>
+    /// </summary>
     public class DeviceEventLogWorkflow : WorkflowBase<Device, CompressedEventLogBase>
     {
         private readonly ExecutionDataflowBlockOptions _stepOptions = new ExecutionDataflowBlockOptions();
@@ -94,10 +103,12 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
         private readonly int _batchSize;
 
         /// <inheritdoc/>
-        public DeviceEventLogWorkflow(IServiceScopeFactory services, int batchSize = 50000)
+        public DeviceEventLogWorkflow(IServiceScopeFactory services, int batchSize = 50000, int parallelProcesses = 50, CancellationToken cancellationToken = default)
         {
             _services = services;
             _batchSize = batchSize;
+            _stepOptions.MaxDegreeOfParallelism = parallelProcesses;
+            _stepOptions.CancellationToken = cancellationToken;
         }
 
         public DownloadDeviceData DownloadDeviceData { get; private set; }
@@ -226,6 +237,8 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
         public SaveEventsToRepo(IServiceScopeFactory services, ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
         {
             _services = services;
+            if (options is ExecutionDataflowBlockOptions opt)
+                opt.MaxDegreeOfParallelism = 1;
         }
 
         protected override async IAsyncEnumerable<CompressedEventLogBase> Process(CompressedEventLogBase input, [EnumeratorCancellation] CancellationToken cancelToken = default)

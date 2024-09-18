@@ -20,9 +20,9 @@ namespace Utah.Udot.Atspm.Extensions
         {
             var result = repo.GetList()
                 .Where(w => w.LoggingEnabled)
-                .Where(w => w.DeviceType == queryOptions.DeviceType)
-                .Where(w => w.DeviceConfiguration.Protocol == TransportProtocols.Unknown ? true : w.DeviceConfiguration.Protocol == queryOptions.TransportProtocol)
-                .Where(w => w.DeviceStatus == queryOptions.DeviceStatus)
+                .Where(w => queryOptions.DeviceType == DeviceTypes.Unknown ? true : w.DeviceType == queryOptions.DeviceType)
+                .Where(w => queryOptions.DeviceStatus == DeviceStatus.Unknown ? true : w.DeviceStatus == queryOptions.DeviceStatus)
+                .Where(w => queryOptions.TransportProtocol == TransportProtocols.Unknown ? true : w.DeviceConfiguration.Protocol == queryOptions.TransportProtocol)
                 .AsQueryable()
                 .AsAsyncEnumerable()
                 .Where(w => (queryOptions.IncludedLocations?.Count() > 0) ? queryOptions.IncludedLocations.Any(a => w.Location.LocationIdentifier == a) : true)
