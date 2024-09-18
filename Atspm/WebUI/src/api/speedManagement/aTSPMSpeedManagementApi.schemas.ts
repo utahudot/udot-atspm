@@ -5,6 +5,13 @@
  * ATSPM Log Data with OpenAPI, Swashbuckle, and API versioning.
  * OpenAPI spec version: 1.0
  */
+export type PostApiViolationsAndExtremeViolationsGetReportDataParams = {
+/**
+ * The requested API version
+ */
+'api-version'?: string;
+};
+
 export type PostApiV1SpeedOverTimeGetReportDataParams = {
 /**
  * The requested API version
@@ -55,13 +62,6 @@ export type PostApiV1SegmentSegmentIdSpeedsParams = {
 };
 
 export type PostApiV1SegmentSpeedsParams = {
-/**
- * The requested API version
- */
-'api-version'?: string;
-};
-
-export type GetApiV1SegmentSegmentIdGeometryParams = {
 /**
  * The requested API version
  */
@@ -229,6 +229,13 @@ export type GetApiV1FunctionalTypeParams = {
 'api-version'?: string;
 };
 
+export type PostApiV1DataQualityGetReportDataParams = {
+/**
+ * The requested API version
+ */
+'api-version'?: string;
+};
+
 export type GetApiV1CountyParams = {
 /**
  * The requested API version
@@ -256,6 +263,24 @@ export type GetApiV1AccessCategoryParams = {
  */
 'api-version'?: string;
 };
+
+export interface ViolationsAndExtremeViolationsOptions {
+  endDate?: string;
+  segmentIds?: string[] | null;
+  startDate?: string;
+}
+
+export interface ViolationsAndExtremeViolationsDto {
+  endingMilePoint?: number;
+  exteremeViolations?: number;
+  flow?: number;
+  segmentId?: string;
+  segmentName?: string | null;
+  speedLimit?: number;
+  startingMilePoint?: number;
+  time?: string;
+  violations?: number;
+}
 
 export type TimeOptionsEnum = typeof TimeOptionsEnum[keyof typeof TimeOptionsEnum];
 
@@ -336,6 +361,14 @@ export interface Segment {
   speedLimit?: number;
   startMilePoint?: number;
   udotRouteNumber?: string | null;
+}
+
+export interface SpeedFromImpactDto {
+  endDate?: string;
+  hourlySpeeds?: HourlySpeed[] | null;
+  impacts?: Impact[] | null;
+  segments?: Segment[] | null;
+  startDate?: string;
 }
 
 export interface SegmentEntity {
@@ -556,14 +589,6 @@ export interface HourlySpeed {
   violation?: number | null;
 }
 
-export interface SpeedFromImpactDto {
-  endDate?: string;
-  hourlySpeeds?: HourlySpeed[] | null;
-  impacts?: Impact[] | null;
-  segments?: Segment[] | null;
-  startDate?: string;
-}
-
 export interface HistoricalSpeedOptions {
   daysOfWeek?: DayOfWeek[] | null;
   endDate?: string;
@@ -572,6 +597,13 @@ export interface HistoricalSpeedOptions {
 }
 
 export interface GeometryOverlay { [key: string]: any }
+
+export interface GeometryFactory {
+  coordinateSequenceFactory?: CoordinateSequenceFactory;
+  geometryServices?: NtsGeometryServices;
+  precisionModel?: PrecisionModel;
+  readonly srid?: number;
+}
 
 export type GeometryUserData = unknown | null;
 
@@ -636,56 +668,6 @@ export interface Geometry {
   userData?: GeometryUserData;
 }
 
-export type DayOfWeek = typeof DayOfWeek[keyof typeof DayOfWeek];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const DayOfWeek = {
-  NUMBER_0: 0,
-  NUMBER_1: 1,
-  NUMBER_2: 2,
-  NUMBER_3: 3,
-  NUMBER_4: 4,
-  NUMBER_5: 5,
-  NUMBER_6: 6,
-} as const;
-
-export interface CoordinateSequenceFactory {
-  ordinates?: Ordinates;
-}
-
-export interface GeometryFactory {
-  coordinateSequenceFactory?: CoordinateSequenceFactory;
-  geometryServices?: NtsGeometryServices;
-  precisionModel?: PrecisionModel;
-  readonly srid?: number;
-}
-
-export interface CoordinateSequence {
-  readonly count?: number;
-  readonly dimension?: number;
-  first?: Coordinate;
-  readonly hasM?: boolean;
-  readonly hasZ?: boolean;
-  last?: Coordinate;
-  readonly measures?: number;
-  readonly mOrdinateIndex?: number;
-  ordinates?: Ordinates;
-  readonly spatial?: number;
-  readonly zOrdinateIndex?: number;
-}
-
-export interface CoordinateEqualityComparer { [key: string]: any }
-
-export interface Coordinate {
-  coordinateValue?: Coordinate;
-  readonly isValid?: boolean;
-  m?: number;
-  x?: number;
-  y?: number;
-  z?: number;
-}
-
 export interface Point {
   readonly area?: number;
   boundary?: Geometry;
@@ -713,6 +695,67 @@ export interface Point {
   precisionModel?: PrecisionModel;
   srid?: number;
   userData?: PointUserData;
+  x?: number;
+  y?: number;
+  z?: number;
+}
+
+export type DayOfWeek = typeof DayOfWeek[keyof typeof DayOfWeek];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const DayOfWeek = {
+  NUMBER_0: 0,
+  NUMBER_1: 1,
+  NUMBER_2: 2,
+  NUMBER_3: 3,
+  NUMBER_4: 4,
+  NUMBER_5: 5,
+  NUMBER_6: 6,
+} as const;
+
+export interface DataQualityOptions {
+  endDate?: string;
+  segmentIds?: string[] | null;
+  startDate?: string;
+}
+
+export interface DataQualityDto {
+  dataQuality?: number;
+  endingMilePoint?: number;
+  flow?: number;
+  segmentId?: string;
+  segmentName?: string | null;
+  speedLimit?: number;
+  startingMilePoint?: number;
+  time?: string;
+  violations?: number;
+}
+
+export interface CoordinateSequenceFactory {
+  ordinates?: Ordinates;
+}
+
+export interface CoordinateSequence {
+  readonly count?: number;
+  readonly dimension?: number;
+  first?: Coordinate;
+  readonly hasM?: boolean;
+  readonly hasZ?: boolean;
+  last?: Coordinate;
+  readonly measures?: number;
+  readonly mOrdinateIndex?: number;
+  ordinates?: Ordinates;
+  readonly spatial?: number;
+  readonly zOrdinateIndex?: number;
+}
+
+export interface CoordinateEqualityComparer { [key: string]: any }
+
+export interface Coordinate {
+  coordinateValue?: Coordinate;
+  readonly isValid?: boolean;
+  m?: number;
   x?: number;
   y?: number;
   z?: number;

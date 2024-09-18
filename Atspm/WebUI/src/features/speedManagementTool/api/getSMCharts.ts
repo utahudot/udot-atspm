@@ -3,24 +3,28 @@ import { useQuery, UseQueryOptions, UseQueryResult } from 'react-query'
 
 import { transformCongestionTrackerData } from '@/features/charts/speedManagementTool/congestionTracker/congestionTracker.transformer'
 import transformSpeedOverDistanceData from '@/features/charts/speedManagementTool/speedOverDistance/components/speedOverDistance.transformer'
-import transformSpeedOverTimeData from '@/features/charts/speedManagementTool/speedOverTime/speedOverTime.transformer'
+import { default as transformSpeedOverTimeData } from '@/features/charts/speedManagementTool/speedOverTime/speedOverTime.transformer'
 
 import {
   postApiV1CongestionTrackingGetReportData,
+  postApiV1DataQualityGetReportData,
   postApiV1SpeedOverDistanceGetReportData,
   postApiV1SpeedOverTimeGetReportData,
 } from '@/api/speedManagement/aTSPMSpeedManagementApi'
 
 import {
   CongestionTrackingOptions,
+  DataQualityOptions,
   SpeedOverDistanceOptions,
   SpeedOverTimeOptions,
 } from '@/api/speedManagement/aTSPMSpeedManagementApi.schemas'
+import transformDataQualityData from '@/features/charts/speedManagementTool/dataQuality/dataQuality.transformer'
 
 export enum SM_ChartType {
   CONGESTION_TRACKING = 'Congestion Tracking',
   SPEED_OVER_TIME = 'Speed over Time',
   SPEED_OVER_DISTANCE = 'Speed over Distance',
+  DATA_QUALITY = 'Data Quality',
 }
 
 type TransformedCongestionTrackerData = ReturnType<
@@ -33,17 +37,21 @@ type TransformedSpeedOverDistanceData = ReturnType<
   typeof transformSpeedOverDistanceData
 >
 
+type TransformedDataQualityData = ReturnType<typeof transformDataQualityData>
+
 // Map chart types to options and data types
 type ChartOptionsMapping = {
   [SM_ChartType.CONGESTION_TRACKING]: CongestionTrackingOptions
   [SM_ChartType.SPEED_OVER_TIME]: SpeedOverTimeOptions
   [SM_ChartType.SPEED_OVER_DISTANCE]: SpeedOverDistanceOptions
+  [SM_ChartType.DATA_QUALITY]: DataQualityOptions
 }
 
 type SMChartsDataMapping = {
   [SM_ChartType.CONGESTION_TRACKING]: TransformedCongestionTrackerData
   [SM_ChartType.SPEED_OVER_TIME]: TransformedSpeedOverTimeData
   [SM_ChartType.SPEED_OVER_DISTANCE]: TransformedSpeedOverDistanceData
+  [SM_ChartType.DATA_QUALITY]: TransformedDataQualityData
 }
 
 type UseSMChartsOptions<TChartType extends SM_ChartType> = Omit<
@@ -58,7 +66,6 @@ export function useSMCharts<TChartType extends SM_ChartType>(
   config?: UseSMChartsOptions<TChartType>
 ): UseQueryResult<SMChartsDataMapping[TChartType], Error> {
   const queryFn = async (): Promise<SMChartsDataMapping[TChartType]> => {
-    console.log('chartType', chartType)
     switch (chartType) {
       case SM_ChartType.CONGESTION_TRACKING: {
         const response = await postApiV1CongestionTrackingGetReportData(
@@ -84,6 +91,13 @@ export function useSMCharts<TChartType extends SM_ChartType>(
           response
         ) as SMChartsDataMapping[TChartType]
       }
+      case SM_ChartType.DATA_QUALITY:
+        const response = await postApiV1DataQualityGetReportData(
+          chartOptions as DataQualityOptions
+        )
+        return transformDataQualityData(
+          response
+        ) as SMChartsDataMapping[TChartType]
       default:
         throw new Error(`Unsupported chart type: ${chartType}`)
     }

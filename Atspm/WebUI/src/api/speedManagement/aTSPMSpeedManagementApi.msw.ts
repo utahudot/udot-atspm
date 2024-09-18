@@ -22,6 +22,8 @@ export const getPostApiV1CongestionTrackingGetReportDataMock = () => ({data: fak
 
 export const getGetApiV1CountyMock = () => (Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({id: faker.helpers.arrayElement([faker.string.uuid(), undefined]), name: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.word.sample(), null]), undefined])})))
 
+export const getPostApiV1DataQualityGetReportDataMock = () => (Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({dataQuality: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), endingMilePoint: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), flow: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), segmentId: faker.helpers.arrayElement([faker.string.uuid(), undefined]), segmentName: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.word.sample(), null]), undefined]), speedLimit: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), startingMilePoint: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), time: faker.helpers.arrayElement([`${faker.date.past().toISOString().split('.')[0]}Z`, undefined]), violations: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined])})))
+
 export const getGetApiV1FunctionalTypeMock = () => (Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({id: faker.helpers.arrayElement([faker.string.uuid(), undefined]), name: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.word.sample(), null]), undefined])})))
 
 export const getGetApiV1RegionMock = () => (Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({id: faker.helpers.arrayElement([faker.string.uuid(), undefined]), name: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.word.sample(), null]), undefined])})))
@@ -29,6 +31,8 @@ export const getGetApiV1RegionMock = () => (Array.from({ length: faker.number.in
 export const getPostApiV1SpeedOverDistanceGetReportDataMock = () => (Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({average: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), eightyFifth: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), endDate: faker.helpers.arrayElement([`${faker.date.past().toISOString().split('.')[0]}Z`, undefined]), endingMilePoint: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), segmentId: faker.helpers.arrayElement([faker.string.uuid(), undefined]), segmentName: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.word.sample(), null]), undefined]), speedLimit: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), startDate: faker.helpers.arrayElement([`${faker.date.past().toISOString().split('.')[0]}Z`, undefined]), startingMilePoint: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined])})))
 
 export const getPostApiV1SpeedOverTimeGetReportDataMock = () => ({data: faker.helpers.arrayElement([Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({date: faker.helpers.arrayElement([`${faker.date.past().toISOString().split('.')[0]}Z`, undefined]), series: faker.helpers.arrayElement([{average: faker.helpers.arrayElement([Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({timestamp: faker.helpers.arrayElement([`${faker.date.past().toISOString().split('.')[0]}Z`, undefined]), value: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined])})), undefined]), eightyFifth: faker.helpers.arrayElement([Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({timestamp: faker.helpers.arrayElement([`${faker.date.past().toISOString().split('.')[0]}Z`, undefined]), value: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined])})), undefined])}, undefined])})), undefined]), endDate: faker.helpers.arrayElement([`${faker.date.past().toISOString().split('.')[0]}Z`, undefined]), endingMilePoint: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), segmentId: faker.helpers.arrayElement([faker.string.uuid(), undefined]), segmentName: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.word.sample(), null]), undefined]), speedLimit: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), startDate: faker.helpers.arrayElement([`${faker.date.past().toISOString().split('.')[0]}Z`, undefined]), startingMilePoint: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), timeOptions: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined])})
+
+export const getPostApiViolationsAndExtremeViolationsGetReportDataMock = () => (Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({endingMilePoint: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), exteremeViolations: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), flow: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), segmentId: faker.helpers.arrayElement([faker.string.uuid(), undefined]), segmentName: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.word.sample(), null]), undefined]), speedLimit: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), startingMilePoint: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), time: faker.helpers.arrayElement([`${faker.date.past().toISOString().split('.')[0]}Z`, undefined]), violations: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined])})))
 
 export const getATSPMSpeedManagementApiMock = () => [
 http.get('*/api/v1/AccessCategory', async () => {
@@ -64,6 +68,16 @@ http.get('*/api/v1/AccessCategory', async () => {
       }),http.get('*/api/v1/County', async () => {
         await delay(1000);
         return new HttpResponse(JSON.stringify(getGetApiV1CountyMock()),
+          { 
+            status: 200,
+            headers: {
+              'Content-Type': 'application/json',
+            }
+          }
+        )
+      }),http.post('*/api/v1/DataQuality/getReportData', async () => {
+        await delay(1000);
+        return new HttpResponse(JSON.stringify(getPostApiV1DataQualityGetReportDataMock()),
           { 
             status: 200,
             headers: {
@@ -301,16 +315,6 @@ http.get('*/api/v1/AccessCategory', async () => {
             }
           }
         )
-      }),http.get('*/api/v1/Segment/:segmentId/geometry', async () => {
-        await delay(1000);
-        return new HttpResponse(null,
-          { 
-            status: 200,
-            headers: {
-              'Content-Type': 'application/json',
-            }
-          }
-        )
       }),http.post('*/api/v1/Segment/speeds', async () => {
         await delay(1000);
         return new HttpResponse(null,
@@ -384,6 +388,16 @@ http.get('*/api/v1/AccessCategory', async () => {
       }),http.post('*/api/v1/SpeedOverTime/getReportData', async () => {
         await delay(1000);
         return new HttpResponse(JSON.stringify(getPostApiV1SpeedOverTimeGetReportDataMock()),
+          { 
+            status: 200,
+            headers: {
+              'Content-Type': 'application/json',
+            }
+          }
+        )
+      }),http.post('*/api/ViolationsAndExtremeViolations/getReportData', async () => {
+        await delay(1000);
+        return new HttpResponse(JSON.stringify(getPostApiViolationsAndExtremeViolationsGetReportDataMock()),
           { 
             status: 200,
             headers: {

@@ -2,8 +2,11 @@ import CongestionTrackerChartsContainer from '@/features/charts/speedManagementT
 import CongestionTrackingOptions, {
   CongestionTrackingOptionsValues,
 } from '@/features/charts/speedManagementTool/congestionTracker/components/CongestionTrackingOptions'
+import DataQualityChartOptions, {
+  DataQualityChartOptionsValues,
+} from '@/features/charts/speedManagementTool/dataQuality/components/DataQualityChartOptions'
 import SpeedOverDistanceOptions, {
-  SpeedOverDistanceOptionsValues,
+  SpeedOverDistanceChartOptionsValues,
 } from '@/features/charts/speedManagementTool/speedOverDistance/components/SpeedOverDistanceChartOptions'
 import SpeedOverTimeChartContainer from '@/features/charts/speedManagementTool/speedOverTime/components/SpeedOverTimeChartContainer'
 import SpeedOverTimeOptions, {
@@ -32,7 +35,8 @@ import { useEffect, useMemo, useState } from 'react'
 type ChartOptions =
   | CongestionTrackingOptionsValues
   | SpeedOverTimeOptionsValues
-  | SpeedOverDistanceOptionsValues
+  | SpeedOverDistanceChartOptionsValues
+  | DataQualityChartOptionsValues
   | null
 
 const SM_Charts = ({ routes }: { routes: SpeedManagementRoute[] }) => {
@@ -58,7 +62,7 @@ const SM_Charts = ({ routes }: { routes: SpeedManagementRoute[] }) => {
   const chartTypes: SM_ChartType[] = useMemo(() => {
     return routes.length === 1
       ? [SM_ChartType.CONGESTION_TRACKING, SM_ChartType.SPEED_OVER_TIME]
-      : [SM_ChartType.SPEED_OVER_DISTANCE]
+      : [SM_ChartType.SPEED_OVER_DISTANCE, SM_ChartType.DATA_QUALITY]
   }, [routes.length])
 
   useEffect(() => {
@@ -114,7 +118,17 @@ const SM_Charts = ({ routes }: { routes: SpeedManagementRoute[] }) => {
           <SpeedOverDistanceOptions
             onOptionsChange={
               handleOptionsChange as (
-                options: SpeedOverDistanceOptionsValues
+                options: SpeedOverDistanceChartOptionsValues
+              ) => void
+            }
+          />
+        )
+      case SM_ChartType.DATA_QUALITY:
+        return (
+          <DataQualityChartOptions
+            onOptionsChange={
+              handleOptionsChange as (
+                options: DataQualityChartOptionsValues
               ) => void
             }
           />

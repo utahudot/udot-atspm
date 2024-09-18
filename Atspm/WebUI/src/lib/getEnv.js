@@ -8,7 +8,6 @@ export const getEnv = () => {
   if (typeof window !== 'undefined') {
     // Running on the client
     envCache = window.__ENV__
-    console.log('Client-side getEnv envCache:', envCache)
   } else {
     // Running on the server
     envCache = {
@@ -22,8 +21,6 @@ export const getEnv = () => {
       MAP_TILE_LAYER: process.env.MAP_TILE_LAYER,
       MAP_TILE_ATTRIBUTION: process.env.MAP_TILE_ATTRIBUTION,
     }
-
-    console.log('Server-side getEnv envCache:', envCache)
   }
 
   return envCache

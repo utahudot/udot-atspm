@@ -20,6 +20,8 @@ import type {
 import type {
   CongestionTrackingDto,
   CongestionTrackingOptions,
+  DataQualityDto,
+  DataQualityOptions,
   DeleteApiV1ImpactIdImpactTypeImpactTypeIdParams,
   DeleteApiV1ImpactIdParams,
   DeleteApiV1ImpactIdSegmentsSegmentIdParams,
@@ -36,7 +38,6 @@ import type {
   GetApiV1MonthlyAggregationSegmentsSegmentIdParams,
   GetApiV1RegionParams,
   GetApiV1SegmentParams,
-  GetApiV1SegmentSegmentIdGeometryParams,
   GetApiV1SegmentSegmentIdParams,
   GetRouteSpeedsParams,
   HistoricalSpeedOptions,
@@ -45,6 +46,7 @@ import type {
   MonthlyAggregation,
   NameAndIdDto,
   PostApiV1CongestionTrackingGetReportDataParams,
+  PostApiV1DataQualityGetReportDataParams,
   PostApiV1ImpactParams,
   PostApiV1ImpactTypeParams,
   PostApiV1MonthlyAggregationParams,
@@ -57,6 +59,7 @@ import type {
   PostApiV1SpeedManagementGetHistoricalSpeedsParams,
   PostApiV1SpeedOverDistanceGetReportDataParams,
   PostApiV1SpeedOverTimeGetReportDataParams,
+  PostApiViolationsAndExtremeViolationsGetReportDataParams,
   ProblemDetails,
   PutApiV1ImpactIdImpactTypeImpactTypeIdParams,
   PutApiV1ImpactIdParams,
@@ -68,7 +71,9 @@ import type {
   SpeedOverDistanceDto,
   SpeedOverDistanceOptions,
   SpeedOverTimeDto,
-  SpeedOverTimeOptions
+  SpeedOverTimeOptions,
+  ViolationsAndExtremeViolationsDto,
+  ViolationsAndExtremeViolationsOptions
 } from './aTSPMSpeedManagementApi.schemas'
 import { speedRequest } from '../../lib/axios';
 
@@ -294,6 +299,55 @@ export const useGetApiV1County = <TData = Awaited<ReturnType<typeof getApiV1Coun
 
 
 
+export const postApiV1DataQualityGetReportData = (
+    dataQualityOptions: DataQualityOptions,
+    params?: PostApiV1DataQualityGetReportDataParams,
+ ) => {
+      
+      
+      return speedRequest<DataQualityDto[]>(
+      {url: `/api/v1/DataQuality/getReportData`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: dataQualityOptions,
+        params
+    },
+      );
+    }
+  
+
+
+export const getPostApiV1DataQualityGetReportDataMutationOptions = <TError = ProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1DataQualityGetReportData>>, TError,{data: DataQualityOptions;params?: PostApiV1DataQualityGetReportDataParams}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof postApiV1DataQualityGetReportData>>, TError,{data: DataQualityOptions;params?: PostApiV1DataQualityGetReportDataParams}, TContext> => {
+ const {mutation: mutationOptions} = options ?? {};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiV1DataQualityGetReportData>>, {data: DataQualityOptions;params?: PostApiV1DataQualityGetReportDataParams}> = (props) => {
+          const {data,params} = props ?? {};
+
+          return  postApiV1DataQualityGetReportData(data,params,)
+        }
+
+        
+
+
+   return  { mutationFn, ...mutationOptions }}
+
+    export type PostApiV1DataQualityGetReportDataMutationResult = NonNullable<Awaited<ReturnType<typeof postApiV1DataQualityGetReportData>>>
+    export type PostApiV1DataQualityGetReportDataMutationBody = DataQualityOptions
+    export type PostApiV1DataQualityGetReportDataMutationError = ProblemDetails
+
+    export const usePostApiV1DataQualityGetReportData = <TError = ProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1DataQualityGetReportData>>, TError,{data: DataQualityOptions;params?: PostApiV1DataQualityGetReportDataParams}, TContext>, }
+) => {
+
+      const mutationOptions = getPostApiV1DataQualityGetReportDataMutationOptions(options);
+
+      return useMutation(mutationOptions);
+    }
+    
 export const getApiV1FunctionalType = (
     params?: GetApiV1FunctionalTypeParams,
  signal?: AbortSignal
@@ -1497,67 +1551,6 @@ export const useGetApiV1SegmentSegmentId = <TData = Awaited<ReturnType<typeof ge
 
 
 
-export const getApiV1SegmentSegmentIdGeometry = (
-    segmentId: string,
-    params?: GetApiV1SegmentSegmentIdGeometryParams,
- signal?: AbortSignal
-) => {
-      
-      
-      return speedRequest<unknown>(
-      {url: `/api/v1/Segment/${segmentId}/geometry`, method: 'GET',
-        params, signal
-    },
-      );
-    }
-  
-
-export const getGetApiV1SegmentSegmentIdGeometryQueryKey = (segmentId: string,
-    params?: GetApiV1SegmentSegmentIdGeometryParams,) => {
-    return [`/api/v1/Segment/${segmentId}/geometry`, ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getGetApiV1SegmentSegmentIdGeometryQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1SegmentSegmentIdGeometry>>, TError = ProblemDetails>(segmentId: string,
-    params?: GetApiV1SegmentSegmentIdGeometryParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getApiV1SegmentSegmentIdGeometry>>, TError, TData>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getGetApiV1SegmentSegmentIdGeometryQueryKey(segmentId,params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1SegmentSegmentIdGeometry>>> = ({ signal }) => getApiV1SegmentSegmentIdGeometry(segmentId,params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(segmentId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1SegmentSegmentIdGeometry>>, TError, TData> & { queryKey: QueryKey }
-}
-
-export type GetApiV1SegmentSegmentIdGeometryQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1SegmentSegmentIdGeometry>>>
-export type GetApiV1SegmentSegmentIdGeometryQueryError = ProblemDetails
-
-export const useGetApiV1SegmentSegmentIdGeometry = <TData = Awaited<ReturnType<typeof getApiV1SegmentSegmentIdGeometry>>, TError = ProblemDetails>(
- segmentId: string,
-    params?: GetApiV1SegmentSegmentIdGeometryParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getApiV1SegmentSegmentIdGeometry>>, TError, TData>, }
-
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
-
-  const queryOptions = getGetApiV1SegmentSegmentIdGeometryQueryOptions(segmentId,params,options)
-
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
-}
-
-
-
-
 export const postApiV1SegmentSpeeds = (
     segmentRequestDto: SegmentRequestDto,
     params?: PostApiV1SegmentSpeedsParams,
@@ -1949,6 +1942,55 @@ export const getPostApiV1SpeedOverTimeGetReportDataMutationOptions = <TError = P
 ) => {
 
       const mutationOptions = getPostApiV1SpeedOverTimeGetReportDataMutationOptions(options);
+
+      return useMutation(mutationOptions);
+    }
+    
+export const postApiViolationsAndExtremeViolationsGetReportData = (
+    violationsAndExtremeViolationsOptions: ViolationsAndExtremeViolationsOptions,
+    params?: PostApiViolationsAndExtremeViolationsGetReportDataParams,
+ ) => {
+      
+      
+      return speedRequest<ViolationsAndExtremeViolationsDto[]>(
+      {url: `/api/ViolationsAndExtremeViolations/getReportData`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: violationsAndExtremeViolationsOptions,
+        params
+    },
+      );
+    }
+  
+
+
+export const getPostApiViolationsAndExtremeViolationsGetReportDataMutationOptions = <TError = ProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiViolationsAndExtremeViolationsGetReportData>>, TError,{data: ViolationsAndExtremeViolationsOptions;params?: PostApiViolationsAndExtremeViolationsGetReportDataParams}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof postApiViolationsAndExtremeViolationsGetReportData>>, TError,{data: ViolationsAndExtremeViolationsOptions;params?: PostApiViolationsAndExtremeViolationsGetReportDataParams}, TContext> => {
+ const {mutation: mutationOptions} = options ?? {};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiViolationsAndExtremeViolationsGetReportData>>, {data: ViolationsAndExtremeViolationsOptions;params?: PostApiViolationsAndExtremeViolationsGetReportDataParams}> = (props) => {
+          const {data,params} = props ?? {};
+
+          return  postApiViolationsAndExtremeViolationsGetReportData(data,params,)
+        }
+
+        
+
+
+   return  { mutationFn, ...mutationOptions }}
+
+    export type PostApiViolationsAndExtremeViolationsGetReportDataMutationResult = NonNullable<Awaited<ReturnType<typeof postApiViolationsAndExtremeViolationsGetReportData>>>
+    export type PostApiViolationsAndExtremeViolationsGetReportDataMutationBody = ViolationsAndExtremeViolationsOptions
+    export type PostApiViolationsAndExtremeViolationsGetReportDataMutationError = ProblemDetails
+
+    export const usePostApiViolationsAndExtremeViolationsGetReportData = <TError = ProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiViolationsAndExtremeViolationsGetReportData>>, TError,{data: ViolationsAndExtremeViolationsOptions;params?: PostApiViolationsAndExtremeViolationsGetReportDataParams}, TContext>, }
+) => {
+
+      const mutationOptions = getPostApiViolationsAndExtremeViolationsGetReportDataMutationOptions(options);
 
       return useMutation(mutationOptions);
     }
