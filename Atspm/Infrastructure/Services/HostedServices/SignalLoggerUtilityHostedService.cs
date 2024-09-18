@@ -159,7 +159,6 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
         }
     }
 
-    //public class DecodeDeviceData<T> : TransformManyProcessStepBaseAsync<Tuple<Device, FileInfo>, Tuple<Device, T>> where T : EventLogModelBase
     public class DecodeDeviceData : TransformManyProcessStepBaseAsync<Tuple<Device, FileInfo>, Tuple<Device, EventLogModelBase>>
     {
         private readonly IServiceScopeFactory _services;
@@ -181,7 +180,6 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
         }
     }
 
-    //public class ArchiveDeviceData<T> : TransformManyProcessStepBaseAsync<Tuple<Device, EventLogModelBase>[], CompressedEventLogs<T>> where T : EventLogModelBase
     public class ArchiveDeviceData : TransformManyProcessStepBaseAsync<Tuple<Device, EventLogModelBase>[], CompressedEventLogBase>
     {
         /// <inheritdoc/>
@@ -250,8 +248,6 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
                         }
                     }
 
-                    Console.WriteLine($"################### {searchLog.LocationIdentifier} - {searchLog.Data.Count()} - {input.Data.Count()} - {list.Count} ###################");
-
                     searchLog.Data = list;
 
                     await repo.UpdateAsync(searchLog);
@@ -265,22 +261,4 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
             }
         }
     }
-
-    //public static class IListExtension
-    //{
-    //    public static IList CastType(this IEnumerable list, Type type)
-    //    {
-    //        dynamic newList = Activator.CreateInstance(typeof(List<>).MakeGenericType(type));
-
-    //        foreach (var i in list)
-    //        {
-    //            if (newList is IList l)
-    //            {
-    //                l.Add(i);
-    //            }
-    //        }
-
-    //        return newList;
-    //    }
-    //}
 }
