@@ -48,13 +48,15 @@ namespace SpeedManagementImporter.Services.Pems
 
             var tasks = new List<Task>();
 
-            foreach (var pemsRoute in alternateIdentifiers)
+            //foreach (var pemsRoute in alternateIdentifiers)
+            for (DateTime date = startDate; date <= endDate; date = date.AddDays(1))
             {
                 tasks.Add(Task.Run(async () =>
                 {
                     var localSpeeds = new List<HourlySpeed>();
 
-                    for (DateTime date = startDate; date <= endDate; date = date.AddDays(1))
+                    //for (DateTime date = startDate; date <= endDate; date = date.AddDays(1))
+                    foreach (var pemsRoute in alternateIdentifiers)
                     {
                         var split = pemsRoute.Split('-');
                         if (split.Length > 2)
