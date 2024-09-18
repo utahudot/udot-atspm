@@ -45,43 +45,43 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            _log.LogInformation("*********************************Starting Service*********************************");
+            var serviceName = this.GetType().Name;
+            var logMessages = new HostedServiceLogMessages(_log, this.GetType().Name);
 
+            cancellationToken.Register(() => logMessages.StartingCancelled(serviceName));
+            logMessages.StartingService(serviceName);
 
             var sw = new Stopwatch();
             sw.Start();
-
-            Console.WriteLine($"path1: {_options.Value.Path}");
 
             using (var scope = _services.CreateAsyncScope())
             {
                 var workflow = new DeviceEventLogWorkflow(_services, 1000);
 
-                workflow.Initialized += (s,a) => Console.WriteLine($"{s.GetType().Name} - initialized");
-
                 var repo = scope.ServiceProvider.GetService<IDeviceRepository>();
 
                 await foreach(var d in repo.GetDevicesForLogging(_options.Value.DeviceEventLoggingQueryOptions))
                 {
-                    Console.WriteLine($"device: {d}");
-
                     await workflow.Input.SendAsync(d);
                 }
 
                 workflow.Input.Complete();
 
                 await Task.WhenAll(workflow.Steps.Select(s => s.Completion));
-
-                sw.Stop();
-
-                Console.WriteLine($"*********************************************complete - {sw.Elapsed}");
             }
+
+            sw.Stop();
+
+            logMessages.CompletingService(serviceName, sw.Elapsed);
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            _log.LogInformation("*********************************Stopping Service*********************************");
-            cancellationToken.Register(() => _log.LogInformation("StopAsync has been cancelled"));
+            var serviceName = this.GetType().Name;
+            var logMessages = new HostedServiceLogMessages(_log, this.GetType().Name);
+
+            cancellationToken.Register(() => logMessages.StoppingCancelled(serviceName));
+            logMessages.StoppingService(serviceName);
 
             return Task.CompletedTask;
         }
