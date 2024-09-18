@@ -255,19 +255,20 @@ namespace Utah.Udot.Atspm.WatchDog.Services
             bodyBuilder.Append(body);
 
             // Build HTML sections for each error type
-            bodyBuilder.Append(BuildErrorSection("Missing Records Errors", missingErrorsLogs, locations, options, logsFromPreviousDay));
-            bodyBuilder.Append(BuildErrorSection("Force Off Errors", forceErrorsLogs, locations, options, logsFromPreviousDay));
-            bodyBuilder.Append(BuildErrorSection("Max Out Errors", maxErrorsLogs, locations, options, logsFromPreviousDay));
-            bodyBuilder.Append(BuildErrorSection("Low Detection Count Errors", countErrorsLogs, locations, options, logsFromPreviousDay));
-            bodyBuilder.Append(BuildErrorSection("High Pedestrian Activation Errors", stuckPedErrorsLogs, locations, options, logsFromPreviousDay));
-            bodyBuilder.Append(BuildErrorSection("Unconfigured Approaches Errors", configurationErrorsLogs, locations, options, logsFromPreviousDay));
-            bodyBuilder.Append(BuildErrorSection("Unconfigured Detectors Errors", unconfiguredDetectorErrorsLogs, locations, options, logsFromPreviousDay));
+            bodyBuilder.Append(BuildErrorSection("Missing Records Errors", $"The following Locations had too few records in the database on {options.ScanDate.Date.ToShortDateString()}", missingErrorsLogs, locations, options, logsFromPreviousDay));
+            bodyBuilder.Append(BuildErrorSection("Force Off Errors", $"The following Locations had too many force off occurrences between {options.ScanDayStartHour}:00 and {options.ScanDayEndHour}:00", forceErrorsLogs, locations, options, logsFromPreviousDay));
+            bodyBuilder.Append(BuildErrorSection("Max Out Errors", $"The following Locations had too many max out occurrences between {options.ScanDayStartHour}:00 and {options.ScanDayEndHour}:00", maxErrorsLogs, locations, options, logsFromPreviousDay));
+            bodyBuilder.Append(BuildErrorSection("Low Detection Count Errors", $"The following Locations had unusually low advanced detection counts on {options.ScanDate.Date.ToShortDateString()}", countErrorsLogs, locations, options, logsFromPreviousDay));
+            bodyBuilder.Append(BuildErrorSection("High Pedestrian Activation Errors", $"The following Locations have high pedestrian activation occurrences between {options.ScanDayStartHour}:00 and {options.ScanDayEndHour}:00", stuckPedErrorsLogs, locations, options, logsFromPreviousDay));
+            bodyBuilder.Append(BuildErrorSection("Unconfigured Approaches Errors", "", configurationErrorsLogs, locations, options, logsFromPreviousDay));
+            bodyBuilder.Append(BuildErrorSection("Unconfigured Detectors Errors", "", unconfiguredDetectorErrorsLogs, locations, options, logsFromPreviousDay));
 
             return bodyBuilder.ToString();
         }
 
         private string BuildErrorSection(
             string sectionTitle,
+            string sectionTimeDescription,
             List<WatchDogLogEventWithCountAndDate> errorLogs,
             List<Location> locations,
             EmailOptions options,
@@ -280,6 +281,11 @@ namespace Utah.Udot.Atspm.WatchDog.Services
                 sectionBuilder.Append($"<h3>{sectionTitle}</h3>");
                 sectionBuilder.Append("<table class='atspm-table'>");
                 sectionBuilder.Append("<thead><tr>");
+
+                if (sectionTimeDescription.Length > 0)
+                {
+                    sectionBuilder.Append($"<p>{sectionTimeDescription}</p>");
+                }
 
                 // Define table headers based on error type
                 var headers = GetTableHeadersForErrorType(sectionTitle);
