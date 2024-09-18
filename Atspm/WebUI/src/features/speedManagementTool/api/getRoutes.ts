@@ -63,7 +63,10 @@ export const getRoutes = async (
       break
   }
 
-  return speedAxios.post('/SpeedManagement/GetRouteSpeeds', transfomedOptions)
+  return speedAxios.post(
+    'api/v1/SpeedManagement/GetRouteSpeeds',
+    transfomedOptions
+  )
 }
 
 type QueryFnType = typeof getRoutes
