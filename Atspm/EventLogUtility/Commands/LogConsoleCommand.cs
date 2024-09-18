@@ -93,7 +93,7 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
             var parentBinder = new ModelBinder<DeviceEventLoggingConfiguration>();
 
             parentBinder.BindMemberFromValue(b => b.Path, PathCommandOption);
-            parentBinder.BindMemberFromValue(b => b.BatchSize, PathCommandOption);
+            parentBinder.BindMemberFromValue(b => b.BatchSize, BatchSizeOption);
             parentBinder.BindMemberFromValue(b => b.ParallelProcesses, PrallelProcessesOption);
 
             var childBinder = new ModelBinder<DeviceEventLoggingQueryOptions>();

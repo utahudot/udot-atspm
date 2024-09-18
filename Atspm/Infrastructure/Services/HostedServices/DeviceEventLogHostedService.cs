@@ -22,6 +22,7 @@ using Microsoft.Extensions.Options;
 using System.Collections;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Threading.Tasks.Dataflow;
 using System.Windows.Input;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
@@ -98,17 +99,18 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
     /// </summary>
     public class DeviceEventLogWorkflow : WorkflowBase<Device, CompressedEventLogBase>
     {
-        private readonly ExecutionDataflowBlockOptions _stepOptions = new ExecutionDataflowBlockOptions();
         private readonly IServiceScopeFactory _services;
         private readonly int _batchSize;
+        private readonly int _parallelProcesses;
+        private readonly CancellationToken _cancellationToken;
 
         /// <inheritdoc/>
         public DeviceEventLogWorkflow(IServiceScopeFactory services, int batchSize = 50000, int parallelProcesses = 50, CancellationToken cancellationToken = default)
         {
             _services = services;
             _batchSize = batchSize;
-            _stepOptions.MaxDegreeOfParallelism = parallelProcesses;
-            _stepOptions.CancellationToken = cancellationToken;
+            _parallelProcesses = parallelProcesses;
+            _cancellationToken = cancellationToken;
         }
 
         public DownloadDeviceData DownloadDeviceData { get; private set; }
@@ -130,11 +132,11 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
         /// <inheritdoc/>
         protected override void InstantiateSteps()
         {
-            DownloadDeviceData = new(_services, _stepOptions);
-            DecodeDeviceData = new(_services, _stepOptions);
+            DownloadDeviceData = new(_services, new ExecutionDataflowBlockOptions() { MaxDegreeOfParallelism = _parallelProcesses, CancellationToken = _cancellationToken });
+            DecodeDeviceData = new(_services, new ExecutionDataflowBlockOptions() { MaxDegreeOfParallelism = _parallelProcesses, CancellationToken = _cancellationToken });
             BatchEventLogs = new(_batchSize);
-            ArchiveDeviceData = new(_stepOptions);
-            SaveEventsToRepo = new(_services, _stepOptions);
+            ArchiveDeviceData = new(new ExecutionDataflowBlockOptions() { MaxDegreeOfParallelism = _parallelProcesses, CancellationToken = _cancellationToken });
+            SaveEventsToRepo = new(_services, new ExecutionDataflowBlockOptions() { MaxDegreeOfParallelism = 1, CancellationToken = _cancellationToken });
         }
 
         /// <inheritdoc/>
@@ -237,8 +239,6 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
         public SaveEventsToRepo(IServiceScopeFactory services, ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
         {
             _services = services;
-            if (options is ExecutionDataflowBlockOptions opt)
-                opt.MaxDegreeOfParallelism = 1;
         }
 
         protected override async IAsyncEnumerable<CompressedEventLogBase> Process(CompressedEventLogBase input, [EnumeratorCancellation] CancellationToken cancelToken = default)
