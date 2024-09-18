@@ -1,9 +1,10 @@
 module.exports = {
   speedManagement: {
-    input:
-      'https://speedmanagement-api-bdppc3riba-wm.a.run.app/swagger/v1/swagger.json',
+    input: {
+      target: './speed-spec.json',
+    },
     output: {
-      target: './src/api/generated/speedManagement',
+      target: './src/api/speedManagement',
       client: 'react-query',
       templates: './orval-templates',
       override: {
@@ -17,10 +18,11 @@ module.exports = {
     },
   },
   speedManagementZod: {
-    input:
-      'https://speedmanagement-api-bdppc3riba-wm.a.run.app/swagger/v1/swagger.json',
+    input: {
+      target: './speed-spec.json',
+    },
     output: {
-      target: './src/api/generated/speedManagement',
+      target: './src/api/speedManagement',
       client: 'react-query',
       templates: './orval-templates',
       override: {
