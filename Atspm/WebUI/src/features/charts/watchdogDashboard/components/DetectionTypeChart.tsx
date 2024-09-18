@@ -20,19 +20,21 @@ const DetectionTypeChart: React.FC<DetectionTypeChartProps> = ({
   }, [data])
 
   return (
-    <Paper elevation={3} sx={{ height: 700, padding: 1 }}>
+    <Paper elevation={3} sx={{ height: 600, padding: 1 }}>
       <div style={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
         <h2>Detection Type Breakdown</h2>
       </div>
+ 
       {!isLoading && detectionTypeChartOption && (
         <ApacheEChart
           id="watchdog-detection-type-chart"
           option={detectionTypeChartOption}
           loading={isLoading}
-          style={{ width: '100%', height: 'calc(100% - 40px)' }}
+          style={{ width: '100%', height: 'calc(100% - 80px)' }}
           hideInteractionMessage
         />
       )}
+    
     </Paper>
   )
 }
