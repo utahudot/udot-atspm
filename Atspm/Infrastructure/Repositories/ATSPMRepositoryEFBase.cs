@@ -198,47 +198,54 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories
         /// <inheritdoc/>
         public void Update(T item)
         {
-            switch (_db.Entry(item).State)
+            if (_db.ChangeTracker.QueryTrackingBehavior == QueryTrackingBehavior.TrackAll)
             {
-                case EntityState.Detached:
-                    {
-                        var old = Lookup(item);
-
-                        if (old != null)
+                switch (_db.Entry(item).State)
+                {
+                    case EntityState.Detached:
                         {
-                            _db.Entry(old).CurrentValues.SetValues(item);
+                            var old = Lookup(item);
 
-                            foreach (var i in _db.Entry(old).Collections)
+                            if (old != null)
                             {
-                                if (!i.IsLoaded)
-                                    i.Load();
+                                _db.Entry(old).CurrentValues.SetValues(item);
 
-                                UpdateCollections(old, i, item, _db.Entry(item).Collections.First(w => w.Metadata.Name == i.Metadata.Name));
+                                foreach (var i in _db.Entry(old).Collections)
+                                {
+                                    if (!i.IsLoaded)
+                                        i.Load();
+
+                                    UpdateCollections(old, i, item, _db.Entry(item).Collections.First(w => w.Metadata.Name == i.Metadata.Name));
+                                }
+
+                                foreach (var i in _db.Entry(old).References)
+                                {
+                                    if (!i.IsLoaded)
+                                        i.Load();
+
+                                    UpdateReferences(old, i, item, _db.Entry(item).References.First(w => w.Metadata.Name == i.Metadata.Name));
+                                }
+                            }
+                            else
+                            {
+                                table.Update(item);
                             }
 
-                            foreach (var i in _db.Entry(old).References)
-                            {
-                                if (!i.IsLoaded)
-                                    i.Load();
-
-                                UpdateReferences(old, i, item, _db.Entry(item).References.First(w => w.Metadata.Name == i.Metadata.Name));
-                            }
+                            break;
                         }
-                        else
+                    case EntityState.Modified:
                         {
-                            table.Update(item);
+                            break;
                         }
-
-                        break;
-                    }
-                case EntityState.Modified:
-                    {
-                        break;
-                    }
-                case EntityState.Unchanged:
-                    {
-                        break;
-                    }
+                    case EntityState.Unchanged:
+                        {
+                            break;
+                        }
+                }
+            }
+            else
+            {
+                table.Update(item);
             }
 
             _db.SaveChanges();
@@ -247,47 +254,54 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories
         /// <inheritdoc/>
         public async Task UpdateAsync(T item)
         {
-            switch (_db.Entry(item).State)
+            if (_db.ChangeTracker.QueryTrackingBehavior == QueryTrackingBehavior.TrackAll) 
             {
-                case EntityState.Detached:
-                    {
-                        var old = await LookupAsync(item);
-
-                        if (old != null)
+                switch (_db.Entry(item).State)
+                {
+                    case EntityState.Detached:
                         {
-                            _db.Entry(old).CurrentValues.SetValues(item);
+                            var old = await LookupAsync(item);
 
-                            foreach (var i in _db.Entry(old).Collections)
+                            if (old != null)
                             {
-                                if (!i.IsLoaded)
-                                    await i.LoadAsync();
+                                _db.Entry(old).CurrentValues.SetValues(item);
 
-                                UpdateCollections(old, i, item, _db.Entry(item).Collections.First(w => w.Metadata.Name == i.Metadata.Name));
+                                foreach (var i in _db.Entry(old).Collections)
+                                {
+                                    if (!i.IsLoaded)
+                                        await i.LoadAsync();
+
+                                    UpdateCollections(old, i, item, _db.Entry(item).Collections.First(w => w.Metadata.Name == i.Metadata.Name));
+                                }
+
+                                foreach (var i in _db.Entry(old).References)
+                                {
+                                    if (!i.IsLoaded)
+                                        await i.LoadAsync();
+
+                                    UpdateReferences(old, i, item, _db.Entry(item).References.First(w => w.Metadata.Name == i.Metadata.Name));
+                                }
+                            }
+                            else
+                            {
+                                table.Update(item);
                             }
 
-                            foreach (var i in _db.Entry(old).References)
-                            {
-                                if (!i.IsLoaded)
-                                    await i.LoadAsync();
-
-                                UpdateReferences(old, i, item, _db.Entry(item).References.First(w => w.Metadata.Name == i.Metadata.Name));
-                            }
+                            break;
                         }
-                        else
+                    case EntityState.Modified:
                         {
-                            table.Update(item);
+                            break;
                         }
-
-                        break;
-                    }
-                case EntityState.Modified:
-                    {
-                        break;
-                    }
-                case EntityState.Unchanged:
-                    {
-                        break;
-                    }
+                    case EntityState.Unchanged:
+                        {
+                            break;
+                        }
+                }
+            }
+            else
+            {
+                table.Update(item);
             }
 
             await _db.SaveChangesAsync().ConfigureAwait(false);

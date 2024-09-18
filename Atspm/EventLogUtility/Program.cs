@@ -33,19 +33,6 @@ cmdBuilder.UseHost(a =>
     .UseConsoleLifetime()
     .ConfigureLogging((h, l) =>
     {
-        //LoggingServiceOptions GoogleOptions = h.Configuration.GetSection("GoogleLogging").Get<LoggingServiceOptions>();
-        //TODO: remove this to an extension method
-        //if (h.Configuration.GetValue<bool>("UseGoogleLogger"))
-        //{
-        //    l.AddGoogle(new LoggingServiceOptions
-        //    {
-        //        ProjectId = "1022556126938",
-        //        //ProjectId = "869261868126",
-        //        ServiceName = AppDomain.CurrentDomain.FriendlyName,
-        //        Version = Assembly.GetEntryAssembly().GetName().Version.ToString(),
-        //        Options = LoggingOptions.Create(LogLevel.Warning, AppDomain.CurrentDomain.FriendlyName)
-        //    });
-        //}
     })
     .ConfigureServices((h, s) =>
     {
@@ -57,28 +44,6 @@ cmdBuilder.UseHost(a =>
         s.AddDeviceDownloaders(h);
         s.AddEventLogDecoders();
         s.AddEventLogImporters(h);
-
-        //s.Configure<LocationControllerLoggerConfiguration>(h.Configuration.GetSection(nameof(LocationControllerLoggerConfiguration)));
-        //s.Configure<DeviceEventLoggingConfiguration>(h.Configuration.GetSection(nameof(DeviceEventLoggingConfiguration)));
-
-        //command options
-        //if (cmd is ICommandOption<DeviceEventLoggingConfiguration> cmdOpt)
-        //{
-        //    s.AddSingleton(cmdOpt.GetOptionsBinder());
-        //    s.AddOptions<DeviceEventLoggingConfiguration>().BindCommandLine();
-
-        //    var opt = cmdOpt.GetOptionsBinder().CreateInstance(h.GetInvocationContext().BindingContext) as DeviceEventLoggingConfiguration;
-
-        //    //s.PostConfigureAll<DeviceDownloaderConfiguration>(o => o.LocalPath = opt.Path.FullName);
-        //    //s.PostConfigureAll<DeviceDownloaderConfiguration>(o => o.Ping = h.GetInvocationContext().ParseResult.GetValueForArgument(cmd.PingDeviceArg));
-        //    //s.PostConfigureAll<DeviceDownloaderConfiguration>(o => o.DeleteFile = h.GetInvocationContext().ParseResult.GetValueForArgument(cmd.DeleteLocalFileArg));
-        //}
-
-        ////hosted services
-        //s.AddHostedService<LocationLoggerUtilityHostedService>();
-        //s.AddHostedService<TestLocationLoggerHostedService>();
-
-        //s.PostConfigureAll<DeviceDownloaderConfiguration>(o => o.LocalPath = s.configurall);
     });
 },
 h =>

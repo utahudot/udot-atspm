@@ -20,6 +20,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks.Dataflow;
@@ -231,8 +232,6 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
 
         protected override async IAsyncEnumerable<CompressedEventLogBase> Process(CompressedEventLogBase input, [EnumeratorCancellation] CancellationToken cancelToken = default)
         {
-            Console.WriteLine($"###{input}###");
-
             using (var scope = _services.CreateAsyncScope())
             {
                 var repo = scope.ServiceProvider.GetService<IEventLogRepository>();
@@ -241,17 +240,24 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
 
                 if (searchLog != null)
                 {
-                    Console.WriteLine($"%%%searchLog is not null: {input}%%%");
+                    dynamic list = Activator.CreateInstance(typeof(List<>).MakeGenericType(input.DataType));
 
-                    var eventLogs = new HashSet<EventLogModelBase>(Enumerable.Union(searchLog.Data, input.Data));
+                    foreach(var i in Enumerable.Union(searchLog.Data, input.Data).ToHashSet())
+                    {
+                        if (list is IList l)
+                        {
+                            l.Add(i);
+                        }
+                    }
 
-                    searchLog.Data = eventLogs.ToList();
+                    Console.WriteLine($"################### {searchLog.LocationIdentifier} - {searchLog.Data.Count()} - {input.Data.Count()} - {list.Count} ###################");
+
+                    searchLog.Data = list;
 
                     await repo.UpdateAsync(searchLog);
                 }
                 else
                 {
-                    Console.WriteLine($"%%%searchLog is null: {input}%%%");
                     await repo.AddAsync(input);
                 }
 
@@ -259,4 +265,22 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
             }
         }
     }
+
+    //public static class IListExtension
+    //{
+    //    public static IList CastType(this IEnumerable list, Type type)
+    //    {
+    //        dynamic newList = Activator.CreateInstance(typeof(List<>).MakeGenericType(type));
+
+    //        foreach (var i in list)
+    //        {
+    //            if (newList is IList l)
+    //            {
+    //                l.Add(i);
+    //            }
+    //        }
+
+    //        return newList;
+    //    }
+    //}
 }
