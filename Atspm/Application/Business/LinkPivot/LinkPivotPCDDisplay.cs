@@ -125,7 +125,7 @@
 //        private Approach GetApproachToAnalyze(Location signal, string direction)
 //        {
 //            Approach approachToAnalyze = null;
-//            var approaches = signal.Approaches.Where(a => a.DirectionType.Description == direction).ToList();
+//            var approaches = signal.Approaches.Where(a => a.DirectionType.Name == direction).ToList();
 //            foreach (var approach in approaches)
 //                if (approach.GetDetectorsForMetricType(6).Count > 0)
 //                    approachToAnalyze = approach;
@@ -137,7 +137,7 @@
 //        {
 //            var chartName = string.Empty;
 //            //find the upstream approach
-//            if (!string.IsNullOrEmpty(approach.DirectionType.Description))
+//            if (!string.IsNullOrEmpty(approach.DirectionType.Name))
 //            {
 //                //Find PCD detector for this appraoch
 //                var detector = approach.Location.GetDetectorsForSignalThatSupportAMetricByApproachDirection(
@@ -214,7 +214,7 @@
 //            //Add formatting to the chart
 //            chart = GetNewChart(startDate, endDate, signalPhase.Approach.SignalID,
 //                signalPhase.Approach.ProtectedPhaseNumber,
-//                signalPhase.Approach.DirectionType.Description, location, signalPhase.Approach.IsProtectedPhaseOverlap,
+//                signalPhase.Approach.DirectionType.Name, location, signalPhase.Approach.IsProtectedPhaseOverlap,
 //                maxYAxis, 2000, false, 2);
 
 //            //Add the data to the chart

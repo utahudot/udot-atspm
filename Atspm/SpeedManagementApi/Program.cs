@@ -10,8 +10,8 @@ using Microsoft.OpenApi.Models;
 using SpeedManagementApi.Processors;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Text.Json.Serialization;
+using Utah.Udot.Atspm.Business.SpeedManagement.DataQuality;
 using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.CongestionTracking;
-using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.DataQuality;
 using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.SpeedOverDistance;
 using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.SpeedOverTime;
 using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.ViolationsAndExtremeViolations;
@@ -225,7 +225,7 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddScoped<IReportService<CongestionTrackingOptions, CongestionTrackingDto>, CongestionTrackingService>();
     s.AddScoped<IReportService<SpeedOverTimeOptions, SpeedOverTimeDto>, SpeedOverTimeService>();
     s.AddScoped<IReportService<SpeedOverDistanceOptions, List<SpeedOverDistanceDto>>, SpeedOverDistanceService>();
-    s.AddScoped<IReportService<DataQualityOptions, List<DataQualityDto>>, DataQualityService>();
+    s.AddScoped<IReportService<DataQualityOptions, List<DataQualitySource>>, DataQualityService>();
     s.AddScoped<IReportService<ViolationsAndExtremeViolationsOptions, List<ViolationsAndExtremeViolationsDto>>, ViolationsAndExtremeViolationsService>();
 
     //report services

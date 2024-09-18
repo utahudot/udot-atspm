@@ -34,7 +34,7 @@ namespace SpeedManagementApi.Controllers
             speedFromImpact.Impacts = new List<Impact> { impact };
 
             //Get the segments
-            List<Segment> segments = await segmentRepository.GetSegmentsDetails(impact.SegmentIds);
+            List<Segment> segments = await segmentRepository.GetSegmentsDetailsWithEntity(impact.SegmentIds);
             segments.ForEach(seg => seg.Shape = null);
             speedFromImpact.Segments = segments;
 
@@ -99,7 +99,7 @@ namespace SpeedManagementApi.Controllers
         //    speedFromImpact.Impacts = impacts;
 
         //    //Get the segments
-        //    List<Segment> segments = await segmentRepository.GetSegmentsDetails(speedFromImpact.SegmentIds);
+        //    List<Segment> segments = await segmentRepository.GetSegmentsDetailsWithEntity(speedFromImpact.SegmentIds);
         //    speedFromImpact.Segments = segments;
 
         //    //get the hourly speed for those segments based on the date times.

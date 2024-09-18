@@ -616,8 +616,8 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 RouteEntities = new List<SegmentEntity>()
             };
 
-
-            if (row["EntityId"] != null && row["SourceId"] != null && row["SegmentId"] != null)
+            if (ColumnExists(row, "EntityId") && ColumnExists(row, "SourceId") && ColumnExists(row, "SegmentId")
+               && row["EntityId"] != null && row["SourceId"] != null && row["SegmentId"] != null)
             {
                 segment.RouteEntities.Add(new SegmentEntity
                 {
@@ -626,10 +626,16 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                     SegmentId = Guid.Parse(row["SegmentId"].ToString())
                 });
             }
+
             return segment;
         }
+        private static bool ColumnExists(BigQueryRow row, string columnName)
+        {
+            // Check if the schema contains a field with the specified column name
+            return row.Schema.Fields.Any(field => field.Name == columnName);
+        }
 
-        public async Task<List<Segment>> GetSegmentsDetails(List<Guid> segmentIds)
+        public async Task<List<Segment>> GetSegmentsDetailsWithEntity(List<Guid> segmentIds)
         {
             // Construct a comma-separated list of IDs for the IN clause
             string ids = string.Join(",", segmentIds.Select(id => $"'{id}'"));
@@ -665,6 +671,44 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 WHERE Id IN ({ids})
                 ORDER BY 
                     s.Id, se.EntityId;";
+
+            var parameters = new List<BigQueryParameter>();
+
+            var results = await _client.ExecuteQueryAsync(query, parameters);
+            var segments = results.Select(row => MapSegmentWithEntities(row)).ToList();
+            segments.ForEach(seg => seg.Shape = null);
+            return segments;
+        }
+
+        public async Task<List<Segment>> GetSegmentsDetail(List<Guid> segmentIds)
+        {
+            // Construct a comma-separated list of IDs for the IN clause
+            string ids = string.Join(",", segmentIds.Select(id => $"'{id}'"));
+
+            // Query with IN clause
+            string query = $@"
+                SELECT 
+                    s.Id,
+                    s.UdotRouteNumber,
+                    s.StartMilePoint,
+                    s.EndMilePoint,
+                    s.FunctionalType,
+                    s.Name,
+                    s.Direction,
+                    s.SpeedLimit,
+                    s.Region,
+                    s.City,
+                    s.County,
+                    s.Shape,
+                    s.ShapeWKT,
+                    s.AlternateIdentifier,
+                    s.AccessCategory,
+                    s.Offset
+                FROM 
+                    `{_projectId}.{_datasetId}.{_tableId}` s
+                WHERE Id IN ({ids})
+                ORDER BY 
+                    s.Id";
 
             var parameters = new List<BigQueryParameter>();
 

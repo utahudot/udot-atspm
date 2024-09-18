@@ -24,7 +24,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices.Violat
                 return null;
             }
             var hourlyAggregations = await hourlySpeedRepository.HourlyAggregationsForSegmentInTimePeriod(parameter.SegmentIds, parameter.StartDate, parameter.EndDate);
-            List<Segment> segments = await segmentRepository.GetSegmentsDetails(parameter.SegmentIds);
+            List<Segment> segments = await segmentRepository.GetSegmentsDetailsWithEntity(parameter.SegmentIds);
             foreach (var hourlyAggregation in hourlyAggregations)
             {
                 var segment = segments.Where(segment => segment.Id == hourlyAggregation.SegmentId).FirstOrDefault();

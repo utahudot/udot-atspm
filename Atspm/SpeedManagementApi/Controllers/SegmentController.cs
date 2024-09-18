@@ -82,7 +82,7 @@ namespace SpeedManagementApi.Controllers
             [FromBody] List<Guid> segmentIds)
         {
             //Get the segments
-            List<Segment> segments = await segmentRepository.GetSegmentsDetails(segmentIds);
+            List<Segment> segments = await segmentRepository.GetSegmentsDetailsWithEntity(segmentIds);
             //segments.ForEach(seg => seg.Shape = null);
             var features = new List<Feature>();
             foreach (var lookedUpSegment in segments)
@@ -186,7 +186,7 @@ namespace SpeedManagementApi.Controllers
             [FromBody] SegmentRequestDto segmentRequestDto)
         {
             //Get the segments
-            var segments = await segmentRepository.GetSegmentsDetails(segmentRequestDto.SegmentIds);
+            var segments = await segmentRepository.GetSegmentsDetailsWithEntity(segmentRequestDto.SegmentIds);
             //segments.ForEach(seg => seg.Shape = null);
 
             //get the hourly speed for those segments based on the date times.
