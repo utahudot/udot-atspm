@@ -4,10 +4,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System.Data.SqlClient;
 using Utah.Udot.Atspm.Data;
 using Utah.Udot.Atspm.Data.Models;
-using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
 
 
 namespace DatabaseInstaller.Services
@@ -15,10 +15,9 @@ namespace DatabaseInstaller.Services
     public class CopyConfigCommandHostedService : IHostedService
     {
         private readonly IServiceProvider _serviceProvider;
-        private readonly CopyConfigurationConfiguration _config;
+        private readonly IOptions<CopyConfigCommandConfiguration> _config;
         private readonly ILogger<CopyConfigCommandHostedService> _logger;
         private readonly IHostApplicationLifetime _hostApplicationLifetime;
-        private readonly IJurisdictionRepository _jurisdictionRepository;
         private readonly Dictionary<string, string> _tableMappings;
         private readonly Dictionary<string, Dictionary<string, string>> _columnMappings;
         private readonly Dictionary<string, string> _locationTableMappings;
@@ -27,17 +26,15 @@ namespace DatabaseInstaller.Services
 
         public CopyConfigCommandHostedService(
             IServiceProvider serviceProvider,
-            CopyConfigurationConfiguration config,
+            IOptions<CopyConfigCommandConfiguration> config,
             ILogger<CopyConfigCommandHostedService> logger,
             IHostApplicationLifetime hostApplicationLifetime,
-            IJurisdictionRepository jurisdictionRepository,
             IConfiguration appSettings)
         {
             _serviceProvider = serviceProvider;
-            _config = config;
+            _config = config ?? throw new ArgumentNullException(nameof(config));
             _logger = logger;
             _hostApplicationLifetime = hostApplicationLifetime;
-            _jurisdictionRepository = jurisdictionRepository;
             _tableMappings = appSettings.GetSection("TableMappings").Get<Dictionary<string, string>>();
             _columnMappings = appSettings.GetSection("ColumnMappings").Get<Dictionary<string, Dictionary<string, string>>>();
             _locationTableMappings = appSettings.GetSection("LocationTableMappings").Get<Dictionary<string, string>>();
@@ -47,16 +44,15 @@ namespace DatabaseInstaller.Services
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-
-            Console.WriteLine($"Source is {_config.SourceConnection}");
-            Console.WriteLine($"Target is {_config.TargetConnection}");
+            Console.WriteLine($"Source is {_config.Value.Source}");
+            Console.WriteLine($"Target is {_config.Value.Target}");
             FindNewAndDeletedFromGeneralConfiguration();
             Console.WriteLine("Data copied and bulk inserted.");
         }
 
         private void FindNewAndDeletedFromGeneralConfiguration()
         {
-            using (SqlConnection sourceConnection = new SqlConnection(_config.SourceConnection))
+            using (SqlConnection sourceConnection = new SqlConnection(_config.Value.Source))
             {
                 sourceConnection.Open();
             }
@@ -66,7 +62,7 @@ namespace DatabaseInstaller.Services
         {
             var sourceData = new List<Dictionary<string, object>>();
 
-            using (SqlConnection sourceConnection = new SqlConnection(_config.SourceConnection))
+            using (SqlConnection sourceConnection = new SqlConnection(_config.Value.Source))
             {
                 await sourceConnection.OpenAsync();
                 var columns = string.Join(", ", columnMappings.Keys); // Use the column mappings to select relevant fields
