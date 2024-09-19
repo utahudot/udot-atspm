@@ -26,6 +26,7 @@ using System.Threading;
 using System.Threading.Tasks.Dataflow;
 using System.Windows.Input;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
+using Utah.Udot.ATSPM.Infrastructure.WorkflowSteps;
 using Utah.Udot.NetStandardToolkit.Workflows;
 
 namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
@@ -116,7 +117,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
         public DownloadDeviceData DownloadDeviceData { get; private set; }
         public DecodeDeviceData DecodeDeviceData { get; private set; }
         public BatchBlock<Tuple<Device, EventLogModelBase>> BatchEventLogs { get; private set; }
-        public ArchiveDeviceData ArchiveDeviceData { get; private set; }
+        public ArchiveDataEvents ArchiveDeviceData { get; private set; }
         public SaveEventsToRepo SaveEventsToRepo { get; private set; }
 
         /// <inheritdoc/>
@@ -189,44 +190,6 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
                 var importer = scope.ServiceProvider.GetService<IEventLogImporter>();
 
                 return importer.Execute(input, cancelToken);
-            }
-        }
-    }
-
-    public class ArchiveDeviceData : TransformManyProcessStepBaseAsync<Tuple<Device, EventLogModelBase>[], CompressedEventLogBase>
-    {
-        /// <inheritdoc/>
-        public ArchiveDeviceData(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
-
-        protected override async IAsyncEnumerable<CompressedEventLogBase> Process(Tuple<Device, EventLogModelBase>[] input, [EnumeratorCancellation] CancellationToken cancelToken = default)
-        {
-            var result = input.GroupBy(g => (g.Item2.LocationIdentifier, g.Item2.Timestamp.Date, g.Item1.Id, g.Item2.GetType()))
-                .Select(s =>
-                {
-                    dynamic list = Activator.CreateInstance(typeof(List<>).MakeGenericType(s.Key.Item4));
-
-                    foreach (var i in s.Select(s => s.Item2))
-                    {
-                        if (list is IList l)
-                        {
-                            l.Add(i);
-                        }
-                    }
-
-                    dynamic comp = Activator.CreateInstance(typeof(CompressedEventLogs<>).MakeGenericType(s.Key.Item4));
-
-                    comp.LocationIdentifier = s.Key.LocationIdentifier;
-                    comp.ArchiveDate = DateOnly.FromDateTime(s.Key.Date);
-                    comp.DataType = s.Key.Item4;
-                    comp.DeviceId = s.Key.Id;
-                    comp.Data = list;
-
-                    return comp;
-                });
-
-            foreach (var r in result)
-            {
-                yield return r;
             }
         }
     }
