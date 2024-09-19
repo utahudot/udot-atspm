@@ -35,9 +35,11 @@ const ImpactAdmin = () => {
       endMile,
       impactTypeIds,
       impactTypes,
+      segmentIds
     } = impactData
     try {
       await createMutation.mutateAsync({
+        id:null,
         description,
         start,
         end,
@@ -45,6 +47,7 @@ const ImpactAdmin = () => {
         endMile,
         impactTypeIds,
         impactTypes,
+        segmentIds
       })
     } catch (error) {
       console.error('Mutation Error:', error)
@@ -111,6 +114,7 @@ const ImpactAdmin = () => {
       impactTypeId: obj.impactTypeId,
       impactTypes: obj.impactTypes,
       impactTypesNames: impactTypeNames || 'none',
+      segmentIds: obj.segmentIds
     }
   })
 

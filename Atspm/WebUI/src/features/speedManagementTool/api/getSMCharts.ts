@@ -13,9 +13,9 @@ export enum SM_ChartType {
 }
 
 const SM_TypeApiMap = {
-  [SM_ChartType.CONGESTION_TRACKING]: '/CongestionTracking/GetReportData',
-  [SM_ChartType.SPEED_OVER_TIME]: '/SpeedOverTime/GetReportData',
-  [SM_ChartType.SPEED_OVER_DISTANCE]: '/SpeedOverDistance/GetReportData',
+  [SM_ChartType.CONGESTION_TRACKING]: '/api/v1/CongestionTracking/GetReportData',
+  [SM_ChartType.SPEED_OVER_TIME]: '/api/v1/SpeedOverTime/GetReportData',
+  [SM_ChartType.SPEED_OVER_DISTANCE]: '/api/v1/SpeedOverDistance/GetReportData',
 }
 
 export interface ChartOptions {

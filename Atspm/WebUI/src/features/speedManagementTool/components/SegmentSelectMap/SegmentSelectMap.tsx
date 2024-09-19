@@ -1,38 +1,27 @@
-// import { useRoutes } from '@/features/speedManagementTool/api/getRoutes'
-// import { useUdotSpeedLimitRoutes } from '@/features/speedManagementTool/api/getUdotSpeedLimitRoutes'
-// import SM_TopBar from '@/features/speedManagementTool/components/SM_Topbar'
-// import SM_Popup from '@/features/speedManagementTool/components/speedManagementMap/SM_Popup'
-// import { RouteRenderOption } from '@/features/speedManagementTool/enums'
-// import useSpeedManagementStore from '@/features/speedManagementTool/speedManagementStore'
+import { Box, Skeleton, Typography } from '@mui/material';
+import 'leaflet/dist/leaflet.css';
+import dynamic from 'next/dynamic';
+import { memo } from 'react';
+import { useGetSegments } from '../../api/getSegments';
 
-import { Box } from '@mui/material'
-import 'leaflet/dist/leaflet.css'
-import dynamic from 'next/dynamic'
-import { memo } from 'react'
-import { useGetSegments } from '../../api/getSegments'
+const SegmentSelectMap = dynamic(() => import('./Map'), {
+  // loading: () => <Skeleton variant="rectangular" />,
+  ssr: false,
+});
 
-const SegmentSelectMap = dynamic(() => import('./Map'), { ssr: false })
+interface SegmentSelectMapProps {
+  selectedSegmentIds: string[];
+  onSegmentSelect: (id: string, startMile: number, endMile: number) => void;
+  segmentData: any[]; // Add segments to props
+  isLoadingSegments : any;
+}
 
-// const LocationMap = useMemo(
-//     () =>
-//       dynamic(() => import('@/components/LocationMap'), {
-//         loading: () => (
-//           <Skeleton variant="rectangular" height={mapHeight ?? 400} />
-//         ),
-//         ssr: false,
-//       }),
-//     [mapHeight]
-//   )
+const MapWrapper:React.FC<SegmentSelectMapProps> = ({selectedSegmentIds, segmentData, isLoadingSegments , onSegmentSelect }) => {
+  // const { data: segmentData, isLoading: isLoadingSegments } = useGetSegments();
 
-const Map = () => {
-  const { data: segmentData, isLoading: isLoadingSegements } = useGetSegments()
-
-  const filteredRoutes = segmentData?.filter(
-    (segment) => segment?.shapeWKT
-  )
-
-  const routes =
-    filteredRoutes?.map((feature) => ({
+  const segments = segmentData?.features
+    ?.filter((feature) => feature.geometry.type === 'LineString')
+    ?.map((feature) => ({
       ...feature,
       geometry: {
         ...feature.geometry,
@@ -41,15 +30,20 @@ const Map = () => {
           coord[0],
         ]),
       },
-      properties: feature.properties,
-    })) || []
-
-
+    })) || [];
   return (
     <Box sx={{ height: '100%', width: '100%' }}>
-      <SegmentSelectMap />
+      {!isLoadingSegments && segmentData ? (
+        <SegmentSelectMap 
+          segments={segments}
+          selectedSegmentIds={selectedSegmentIds}
+          onSegmentSelect={onSegmentSelect}
+        /> 
+      ) : (
+        <Typography>Map is loading</Typography>
+      )}
     </Box>
-  )
-}
+  );
+};
 
-export default memo(Map)
+export default memo(MapWrapper);

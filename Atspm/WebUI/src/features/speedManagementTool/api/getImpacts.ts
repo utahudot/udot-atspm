@@ -8,7 +8,7 @@ import { useQuery } from 'react-query'
 const token = Cookies.get('token')
 const getImpacts = async (): Promise<Impact[]> => {
   const env = await getEnv()
-  const { data } = await axios.get<Impact[]>(`${env.SPEED_URL}/Impact`, {
+  const { data } = await axios.get<Impact[]>(`${env.SPEED_URL}Impact`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },

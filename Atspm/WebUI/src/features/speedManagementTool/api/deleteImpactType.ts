@@ -8,7 +8,7 @@ const token = Cookies.get('token')
 const deleteImpactType = async (id: string): Promise<void> => {
   const env = await getEnv()
 
-  await axios.delete(`${env.SPEED_URL}/ImpactType/${id}`, {
+  await axios.delete(`${env.SPEED_URL}ImpactType/${id}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },

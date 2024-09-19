@@ -83,13 +83,13 @@ function Login() {
   }, [password])
 
   if (data?.code === 200) {
-    const inOneMinute = addMinutes(new Date(), 1)
+    const inOneDay = addMinutes(new Date(), 1440)
     Cookies.set('token', data.token, {
       secure: true,
       sameSite: 'strict',
     })
     Cookies.set('claims', data.claims.join(','))
-    Cookies.set('loggedIn', 'True', { expires: inOneMinute })
+    Cookies.set('loggedIn', 'True', { expires: inOneDay })
     window.location.href = '/'
   }
 

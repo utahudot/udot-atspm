@@ -10,7 +10,7 @@ const getImpactTypes = async (): Promise<ImpactType[]> => {
   const env = await getEnv()
 
   const { data } = await axios.get<ImpactType[]>(
-    `${env.SPEED_URL}/ImpactType`,
+    `${env.SPEED_URL}ImpactType`,
     {
       headers: {
         Authorization: `Bearer ${token}`,
