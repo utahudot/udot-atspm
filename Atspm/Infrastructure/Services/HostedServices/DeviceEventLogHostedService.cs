@@ -152,27 +152,6 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
         }
     }
 
-    public class DownloadDeviceData : TransformManyProcessStepBaseAsync<Device, Tuple<Device, FileInfo>>
-    {
-        private readonly IServiceScopeFactory _services;
-
-        /// <inheritdoc/>
-        public DownloadDeviceData(IServiceScopeFactory services, ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
-        {
-            _services = services;
-        }
-
-        protected override IAsyncEnumerable<Tuple<Device, FileInfo>> Process(Device input, CancellationToken cancelToken = default)
-        {
-            using (var scope = _services.CreateAsyncScope())
-            {
-                var downloader = scope.ServiceProvider.GetServices<IDeviceDownloader>().First(c => c.CanExecute(input));
-
-                return downloader.Execute(input, cancelToken);
-            }
-        }
-    }
-
     public class DecodeDeviceData : TransformManyProcessStepBaseAsync<Tuple<Device, FileInfo>, Tuple<Device, EventLogModelBase>>
     {
         private readonly IServiceScopeFactory _services;
