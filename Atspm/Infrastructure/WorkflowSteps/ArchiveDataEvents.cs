@@ -1,16 +1,36 @@
 ﻿using System.Collections;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks.Dataflow;
+using Utah.Udot.Atspm.Data.Interfaces;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
 using Utah.Udot.NetStandardToolkit.Workflows;
 
 namespace Utah.Udot.ATSPM.Infrastructure.WorkflowSteps
 {
+    /// <summary>
+    /// returns a <see cref="CompressedEventLogs{T}"/> object to store to a repository that is grouped by:
+    /// <list type="bullet">
+    /// <item><see cref="ILocationLayer.LocationIdentifier"/></item>
+    /// <item><see cref="ITimestamp.Timestamp"/></item>
+    /// <item><see cref="Device"/></item>
+    /// <item>Event type derived from <see cref="EventLogModelBase"/></item>
+    /// </list>
+    /// </summary>
     public class ArchiveDataEvents : TransformManyProcessStepBaseAsync<Tuple<Device, EventLogModelBase>[], CompressedEventLogBase>
     {
-        /// <inheritdoc/>
+        /// <summary>
+        /// returns a <see cref="CompressedEventLogs{T}"/> object to store to a repository that is grouped by:
+        /// <list type="bullet">
+        /// <item><see cref="ILocationLayer.LocationIdentifier"/></item>
+        /// <item><see cref="ITimestamp.Timestamp"/></item>
+        /// <item><see cref="Device"/></item>
+        /// <item>Event type derived from <see cref="EventLogModelBase"/></item>
+        /// </list>
+        /// </summary>
+        /// <param name="dataflowBlockOptions"></param>
         public ArchiveDataEvents(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
 
+        /// <inheritdoc/>
         protected override async IAsyncEnumerable<CompressedEventLogBase> Process(Tuple<Device, EventLogModelBase>[] input, [EnumeratorCancellation] CancellationToken cancelToken = default)
         {
             var result = input.GroupBy(g => (g.Item2.LocationIdentifier, g.Item2.Timestamp.Date, g.Item1.Id, g.Item2.GetType()))
