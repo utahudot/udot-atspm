@@ -118,7 +118,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
         public DecodeDeviceData DecodeDeviceData { get; private set; }
         public BatchBlock<Tuple<Device, EventLogModelBase>> BatchEventLogs { get; private set; }
         public ArchiveDataEvents ArchiveDeviceData { get; private set; }
-        public SaveEventsToRepo SaveEventsToRepo { get; private set; }
+        public SaveArchivedEventLogs SaveEventsToRepo { get; private set; }
 
         /// <inheritdoc/>
         protected override void AddStepsToTracker()
@@ -149,54 +149,6 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
             BatchEventLogs.LinkTo(ArchiveDeviceData, new DataflowLinkOptions() { PropagateCompletion = true });
             ArchiveDeviceData.LinkTo(SaveEventsToRepo, new DataflowLinkOptions() { PropagateCompletion = true });
             SaveEventsToRepo.LinkTo(Output, new DataflowLinkOptions() { PropagateCompletion = true });
-        }
-    }
-
-    
-
-    public class SaveEventsToRepo : TransformManyProcessStepBaseAsync<CompressedEventLogBase, CompressedEventLogBase>
-    {
-        private readonly IServiceScopeFactory _services;
-
-        /// <inheritdoc/>
-        public SaveEventsToRepo(IServiceScopeFactory services, ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
-        {
-            _services = services;
-        }
-
-        protected override async IAsyncEnumerable<CompressedEventLogBase> Process(CompressedEventLogBase input, [EnumeratorCancellation] CancellationToken cancelToken = default)
-        {
-            using (var scope = _services.CreateAsyncScope())
-            {
-                var repo = scope.ServiceProvider.GetService<IEventLogRepository>();
-
-                //var searchLog = await repo.LookupAsync(input);
-
-                //if (searchLog != null)
-                //{
-                //    dynamic list = Activator.CreateInstance(typeof(List<>).MakeGenericType(input.DataType));
-
-                //    foreach(var i in Enumerable.Union(searchLog.Data, input.Data).ToHashSet())
-                //    {
-                //        if (list is IList l)
-                //        {
-                //            l.Add(i);
-                //        }
-                //    }
-
-                //    searchLog.Data = list;
-
-                //    await repo.UpdateAsync(searchLog);
-                //}
-                //else
-                //{
-                //    await repo.AddAsync(input);
-                //}
-
-                //yield return input;
-
-                yield return await repo.Upsert(input);
-            }
         }
     }
 }
