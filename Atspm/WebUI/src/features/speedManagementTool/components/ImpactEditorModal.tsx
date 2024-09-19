@@ -1,4 +1,4 @@
-import { useGetApiImpactType } from '@/api/speedManagement'
+import { useGetApiV1ImpactType } from '@/api/speedManagement/aTSPMSpeedManagementApi'
 import { Impact } from '@/features/speedManagementTool/types/impact'
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
 import {
@@ -68,7 +68,7 @@ const ImpactEditorModal: React.FC<ImpactEditorModalProps> = ({
     }
   }, [segmentData])
 
-  const { data: impactTypeData } = useGetApiImpactType()
+  const { data: impactTypeData } = useGetApiV1ImpactType()
   const router = useRouter()
   const theme = useTheme()
 
