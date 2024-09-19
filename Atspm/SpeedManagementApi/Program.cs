@@ -23,6 +23,7 @@ using Utah.Udot.Atspm.Services;
 using Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices;
 using Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices.DataQuality;
 using Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices.SegmentSpeed;
+using Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices.SpeedCompliance;
 using Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices.SpeedOverDistance;
 using Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices.SpeedOverTime;
 using Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices.ViolationsAndExtremeViolations;
@@ -224,6 +225,7 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddScoped<DeleteOldEventsProcessor>();
     s.AddScoped<IReportService<CongestionTrackingOptions, CongestionTrackingDto>, CongestionTrackingService>();
     s.AddScoped<IReportService<SpeedOverTimeOptions, SpeedOverTimeDto>, SpeedOverTimeService>();
+    s.AddScoped<IReportService<SpeedOverDistanceOptions, List<SpeedComplianceDto>>, SpeedComplianceService>();
     s.AddScoped<IReportService<SpeedOverDistanceOptions, List<SpeedOverDistanceDto>>, SpeedOverDistanceService>();
     s.AddScoped<IReportService<DataQualityOptions, List<DataQualitySource>>, DataQualityService>();
     s.AddScoped<IReportService<ViolationsAndExtremeViolationsOptions, List<ViolationsAndExtremeViolationsDto>>, ViolationsAndExtremeViolationsService>();
