@@ -1,4 +1,4 @@
-import { useGetApiImpactType } from '@/api/speedManagement'
+import { useGetApiV1ImpactType } from '@/api/speedManagement/aTSPMSpeedManagementApi'
 import GenericAdminChart, {
   pageNameToHeaders,
 } from '@/components/GenericAdminChart'
@@ -24,7 +24,7 @@ const ImpactTypeAdmin = () => {
   const deleteMutation = useDeleteImpactType()
   const editMutation = useEditImpactType()
 
-  const { data: impactTypesData, isLoading } = useGetApiImpactType()
+  const { data: impactTypesData, isLoading } = useGetApiV1ImpactType()
 
   const HandleCreateImpactType = async (impactType: ImpactType) => {
     const { name, description } = impactType
