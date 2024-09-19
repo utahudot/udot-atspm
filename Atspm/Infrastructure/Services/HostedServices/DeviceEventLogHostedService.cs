@@ -19,15 +19,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System.Collections;
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
-using System.Threading;
 using System.Threading.Tasks.Dataflow;
-using System.Windows.Input;
-using Utah.Udot.Atspm.Data.Models.EventLogModels;
-using Utah.Udot.ATSPM.Infrastructure.WorkflowSteps;
-using Utah.Udot.NetStandardToolkit.Workflows;
+using Utah.Udot.ATSPM.Infrastructure.Workflows;
 
 namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
 {
@@ -92,63 +86,6 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
             logMessages.StoppingService(serviceName);
 
             return Task.CompletedTask;
-        }
-    }
-
-    /// <summary>
-    /// Downloads <see cref="EventLogModelBase"/> objects from <see cref="Device"/> and saves them to <see cref="IEventLogRepository"/>
-    /// </summary>
-    public class DeviceEventLogWorkflow : WorkflowBase<Device, CompressedEventLogBase>
-    {
-        private readonly IServiceScopeFactory _services;
-        private readonly int _batchSize;
-        private readonly int _parallelProcesses;
-        private readonly CancellationToken _cancellationToken;
-
-        /// <inheritdoc/>
-        public DeviceEventLogWorkflow(IServiceScopeFactory services, int batchSize = 50000, int parallelProcesses = 50, CancellationToken cancellationToken = default)
-        {
-            _services = services;
-            _batchSize = batchSize;
-            _parallelProcesses = parallelProcesses;
-            _cancellationToken = cancellationToken;
-        }
-
-        public DownloadDeviceData DownloadDeviceData { get; private set; }
-        public DecodeDeviceData DecodeDeviceData { get; private set; }
-        public BatchBlock<Tuple<Device, EventLogModelBase>> BatchEventLogs { get; private set; }
-        public ArchiveDataEvents ArchiveDeviceData { get; private set; }
-        public SaveArchivedEventLogs SaveEventsToRepo { get; private set; }
-
-        /// <inheritdoc/>
-        protected override void AddStepsToTracker()
-        {
-            Steps.Add(DownloadDeviceData);
-            Steps.Add(DecodeDeviceData);
-            Steps.Add(BatchEventLogs);
-            Steps.Add(ArchiveDeviceData);
-            Steps.Add(SaveEventsToRepo);
-        }
-
-        /// <inheritdoc/>
-        protected override void InstantiateSteps()
-        {
-            DownloadDeviceData = new(_services, new ExecutionDataflowBlockOptions() { MaxDegreeOfParallelism = _parallelProcesses, CancellationToken = _cancellationToken });
-            DecodeDeviceData = new(_services, new ExecutionDataflowBlockOptions() { MaxDegreeOfParallelism = _parallelProcesses, CancellationToken = _cancellationToken });
-            BatchEventLogs = new(_batchSize);
-            ArchiveDeviceData = new(new ExecutionDataflowBlockOptions() { MaxDegreeOfParallelism = _parallelProcesses, CancellationToken = _cancellationToken });
-            SaveEventsToRepo = new(_services, new ExecutionDataflowBlockOptions() { MaxDegreeOfParallelism = 1, CancellationToken = _cancellationToken });
-        }
-
-        /// <inheritdoc/>
-        protected override void LinkSteps()
-        {
-            Input.LinkTo(DownloadDeviceData, new DataflowLinkOptions() { PropagateCompletion = true });
-            DownloadDeviceData.LinkTo(DecodeDeviceData, new DataflowLinkOptions() { PropagateCompletion = true });
-            DecodeDeviceData.LinkTo(BatchEventLogs, new DataflowLinkOptions() { PropagateCompletion = true });
-            BatchEventLogs.LinkTo(ArchiveDeviceData, new DataflowLinkOptions() { PropagateCompletion = true });
-            ArchiveDeviceData.LinkTo(SaveEventsToRepo, new DataflowLinkOptions() { PropagateCompletion = true });
-            SaveEventsToRepo.LinkTo(Output, new DataflowLinkOptions() { PropagateCompletion = true });
         }
     }
 }

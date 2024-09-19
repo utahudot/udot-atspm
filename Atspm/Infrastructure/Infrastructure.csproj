@@ -125,8 +125,4 @@
 	  </EmbeddedResource>
 	</ItemGroup>
 
-	<ItemGroup>
-	  <Folder Include="Workflows\" />
-	</ItemGroup>
-
 </Project>
