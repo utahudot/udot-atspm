@@ -103,6 +103,46 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             return monthlyAggregations;
         }
 
+        public async Task<List<HourlySpeed>> GetHourlySpeedsWithFiltering(List<Guid> segmentIds, DateTime startDate, DateTime endDate, DateTime? startTime = null, DateTime? endTime = null, int? dayOfWeek = null, List<DateTime>? specificDays = null)
+        {
+            var ids = string.Join(", ", segmentIds);
+            string query = $@"SELECT * FROM `{_datasetId}.{_tableId}` WHERE 
+                    SegmentId IN ({ids}) AND
+                    Date BETWEEN @startDate AND @endDate";
+            if (startTime != null && endTime != null)
+            {
+                DateTime startTimeOut = (DateTime)startTime;
+                DateTime endTimeOut = (DateTime)endTime;
+                query = query + $" AND BinStartTime BETWEEN {startTimeOut.TimeOfDay} AND {endTimeOut.TimeOfDay}";
+            }
+            if (startTime != null && endTime != null)
+            {
+                var dates = string.Join(", ", specificDays.Select(d => d.ToString("yyyy-MM-dd")));
+                query = query + $" Date IN ({dates})";
+            }
+            if (dayOfWeek != null && dayOfWeek < 8 && dayOfWeek > 0)
+            {
+                query = query + $" EXTRACT(DAYOFWEEK FROM `Date`) = {dayOfWeek}";
+            }
+
+            query = query + " ORDER BY Date ASC, BinStartTime ASC;";
+
+            var parameters = new List<BigQueryParameter>
+            {
+                new BigQueryParameter("startDate", BigQueryDbType.Date, startDate.Date),
+                new BigQueryParameter("endDate", BigQueryDbType.Date, endDate.Date)
+            };
+
+            var result = await _client.ExecuteQueryAsync(query, parameters);
+            var monthlyAggregations = new List<HourlySpeed>();
+            foreach (var row in result)
+            {
+                monthlyAggregations.Add(MapRowToEntity(row));
+            }
+
+            return monthlyAggregations;
+        }
+
         #region Overrides
         protected override BigQueryInsertRow CreateRow(HourlySpeed item)
         {
