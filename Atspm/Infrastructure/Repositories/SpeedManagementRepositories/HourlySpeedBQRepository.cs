@@ -115,7 +115,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 DateTime endTimeOut = (DateTime)endTime;
                 query = query + $" AND BinStartTime BETWEEN {startTimeOut.TimeOfDay} AND {endTimeOut.TimeOfDay}";
             }
-            if (startTime != null && endTime != null)
+            if (specificDays != null && specificDays.Count > 0)
             {
                 var dates = string.Join(", ", specificDays.Select(d => d.ToString("yyyy-MM-dd")));
                 query = query + $" Date IN ({dates})";
