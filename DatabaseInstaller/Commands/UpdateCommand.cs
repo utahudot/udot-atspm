@@ -15,6 +15,7 @@
 // limitations under the License.
 #endregion
 
+using DatabaseInstaller.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.CommandLine;
@@ -71,7 +72,7 @@ namespace DatabaseInstaller.Commands
         {
             services.AddSingleton(GetOptionsBinder());
             services.AddOptions<UpdateCommandConfiguration>().BindCommandLine();
-            //services.AddHostedService<UpdateCommandHostedService>();
+            services.AddHostedService<UpdateCommandHostedService>();
         }
     }
 

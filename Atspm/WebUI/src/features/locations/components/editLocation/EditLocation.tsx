@@ -3,19 +3,12 @@ import EditApproach from '@/features/locations/components/editApproach/EditAppro
 import EditGeneralLocation from '@/features/locations/components/editLocation/editGeneralLocation'
 import { ConfigEnum, useConfigEnums } from '@/hooks/useConfigEnums'
 import { TabContext, TabList, TabPanel } from '@mui/lab'
-import {
-  Box,
-  Checkbox,
-  FormControlLabel,
-  FormGroup,
-  Paper,
-  Tab,
-  Typography,
-} from '@mui/material'
+import { Box, Tab, Typography } from '@mui/material'
 import { useEffect, useState } from 'react'
 import { Location } from '../../types'
 import EditDevices from './EditDevices'
 import EditLocationHeader from './EditLocationHeader'
+import WatchdogEditor from './WatchdogEditor'
 import {
   ApproachForConfig,
   LocationConfigHandler,
@@ -25,16 +18,6 @@ interface EditLocationProps {
   handler: LocationConfigHandler
   updateLocationVersion: (location: Location | null) => void
 }
-
-// Watchdog options (can be dummy data or fetched dynamically)
-const watchdogOptions = [
-  'Unconfigured Detector',
-  'Duplicate Data',
-  'Failed Communication',
-  'Excessive Data Errors',
-  'Signal Controller Failure',
-  'Malfunction Flash',
-]
 
 const EditLocation = ({
   handler,
@@ -57,11 +40,6 @@ const EditLocation = ({
   const handleTabChange = (_: React.SyntheticEvent, newTab: string) => {
     setCurrentTab(newTab)
   }
-
-  const handleWatchdogCheckboxChange =
-    (index: number) => (event: React.ChangeEvent<HTMLInputElement>) => {
-      handler.handleLocationEdit(`watchdog_${index}`, event.target.checked)
-    }
 
   return (
     <TabContext value={currentTab}>
@@ -116,28 +94,8 @@ const EditLocation = ({
           )}
         </Box>
       </TabPanel>
-      <TabPanel value="4" sx={{ padding: 2 }}>
-        <Typography variant="h5" fontWeight="bold" gutterBottom>
-          Watchdog Errors
-        </Typography>
-
-        <Paper sx={{ padding: 2 }}>
-          <FormGroup>
-            {watchdogOptions.map((option, index) => (
-              <FormControlLabel
-                key={index}
-                control={
-                  <Checkbox
-                    checked={!!handler.expandedLocation[`watchdog_${index}`]} // Adjust for your state logic
-                    onChange={handleWatchdogCheckboxChange(index)}
-                  />
-                }
-                label={option}
-                sx={{ marginBottom: 0.5 }}
-              />
-            ))}
-          </FormGroup>
-        </Paper>
+      <TabPanel value="4" sx={{ padding: 0 }}>
+        <WatchdogEditor handler={handler} />
       </TabPanel>
     </TabContext>
   )
