@@ -5,17 +5,13 @@ namespace Utah.Udot.Atspm.Data.Models
 {
     public class WatchDogIgnoreEvent : AtspmConfigModelBase<int>, ILocationLayer
     {
-        /// <summary>
-        /// Location id
-        /// </summary>
-        public int Id { get; set; }
 
         /// <summary>
         /// Location id
         /// </summary>
         public int LocationId { get; set; }
 
-        public virtual Location Location { get; set; }
+        public virtual Location? Location { get; set; }
 
         /// <summary>
         /// Location identifier
