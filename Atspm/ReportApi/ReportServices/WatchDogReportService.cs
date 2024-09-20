@@ -18,6 +18,7 @@
 using Microsoft.EntityFrameworkCore;
 using Utah.Udot.Atspm.Business.Watchdog;
 using Utah.Udot.Atspm.Repositories;
+using Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices;
 
 namespace Utah.Udot.Atspm.ReportApi.ReportServices
 {
@@ -30,24 +31,34 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
         private readonly ILocationRepository locationRepository;
         private readonly IJurisdictionRepository jurisdictionRepository;
         private readonly IRegionsRepository regionsRepository;
+        private readonly WatchDogIgnoreEventService watchDogIgnoreEventService;
 
 
         /// <inheritdoc/>
-        public WatchDogReportService(IWatchDogEventLogRepository watchDogLogEventRepository, ILocationRepository locationRepository, IJurisdictionRepository jurisdictionRepository, IRegionsRepository regionsRepository)
+        public WatchDogReportService(IWatchDogEventLogRepository watchDogLogEventRepository, ILocationRepository locationRepository, IJurisdictionRepository jurisdictionRepository, IRegionsRepository regionsRepository, WatchDogIgnoreEventService watchDogIgnoreEventService)
 
         {
             this.watchDogLogEventRepository = watchDogLogEventRepository;
             this.locationRepository = locationRepository;
             this.jurisdictionRepository = jurisdictionRepository;
             this.regionsRepository = regionsRepository;
+            this.watchDogIgnoreEventService = watchDogIgnoreEventService;
         }
 
         /// <inheritdoc/>
         public override async Task<WatchDogResult> ExecuteAsync(WatchDogOptions parameter, IProgress<int> progress = null, CancellationToken cancelToken = default)
         {
+            IEnumerable<WatchDogLogEvent> query;
+            if (parameter.IsFilteredEvents)
+            {
+                query = watchDogIgnoreEventService.GetFilteredWatchDogEventsForReport(parameter);
+            }
+            else
+            {
+                query = watchDogLogEventRepository.GetList()
+                .Where(w => w.Timestamp >= parameter.Start && w.Timestamp < parameter.End).ToList();
+            }
 
-            var query = watchDogLogEventRepository.GetList()
-                .Where(w => w.Timestamp >= parameter.Start && w.Timestamp < parameter.End);
 
             if (parameter.LocationIdentifier != null)
             {
@@ -99,6 +110,10 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             foreach (var e in events)
             {
                 var location = locations.Where(l => l.Id == e.LocationId).FirstOrDefault();
+                if(location == null)
+                {
+                    continue;
+                }
                 string jurisdictionName = jurisdictionDict.ContainsKey(location.JurisdictionId ?? 0)
                                               ? jurisdictionDict[location.JurisdictionId ?? 0]
                                               : "NA";
