@@ -14,6 +14,8 @@ import Head from 'next/head'
 import { useEffect, useState } from 'react'
 import { Hydrate, QueryClient, QueryClientProvider } from 'react-query'
 
+import('@/mocks').then(({ initMocks }) => initMocks())
+
 export default function App({ Component, pageProps }: AppProps) {
   const [theme, colorMode] = useMode()
   const [queryClient] = useState(() => new QueryClient())
