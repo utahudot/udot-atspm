@@ -112,7 +112,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 {"BinStartTime", item.BinStartTime.TimeOfDay },
                 {"SegmentId", item.SegmentId.ToString() },
                 {"SourceId", item.SourceId },
-                {"ConfidenceId", item.ConfidenceId },
+                {"ConfidenceId", item.PercentObserved },
                 {"Average", item.Average },
                 {"FifteenthSpeed", item.FifteenthSpeed },
                 {"EightyFifthSpeed", item.EightyFifthSpeed },
@@ -120,7 +120,9 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 {"NinetyNinthSpeed", item.NinetyNinthSpeed },
                 {"Violation", item.Violation },
                 {"ExtremeViolation", item.ExtremeViolation },
-                {"Flow", item.Flow }
+                {"Flow", item.Flow },
+                {"MinSpeed", item.MinSpeed },
+                {"MaxSpeed", item.MaxSpeed }
             };
         }
 
@@ -140,6 +142,8 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             var bigQueryViolation = row["Violation"] != null ? long.Parse(row["Violation"].ToString()) : (long?)null;
             var bigQueryExtremeViolation = row["ExtremeViolation"] != null ? long.Parse(row["ExtremeViolation"].ToString()) : (long?)null;
             var bigQueryFlow = row["Flow"] != null ? long.Parse(row["Flow"].ToString()) : (long?)null;
+            var bigQueryMinSpeed = row["MinSpeed"] != null ? double.Parse(row["MinSpeed"].ToString()) : (double?)null;
+            var bigQueryMaxSpeed = row["MaxSpeed"] != null ? double.Parse(row["MaxSpeed"].ToString()) : (double?)null;
 
             return new HourlySpeed
             {
@@ -147,7 +151,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 BinStartTime = bigQueryDate.ToDateTime(bigQueryBinStartTime),
                 SegmentId = bigQuerySegmentId,
                 SourceId = bigQuerySourceId,
-                ConfidenceId = bigQueryConfidenceId,
+                PercentObserved = bigQueryConfidenceId,
                 Average = bigQueryAverage,
                 FifteenthSpeed = bigQueryFifteenthSpeed,
                 EightyFifthSpeed = bigQueryEightyFifthSpeed,
@@ -155,7 +159,9 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 NinetyNinthSpeed = bigQueryNinetyNinthSpeed,
                 Violation = bigQueryViolation,
                 ExtremeViolation = bigQueryExtremeViolation,
-                Flow = bigQueryFlow
+                Flow = bigQueryFlow,
+                MinSpeed = bigQueryMinSpeed,
+                MaxSpeed = bigQueryMaxSpeed
             };
         }
 
@@ -172,7 +178,8 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 AVG(NinetyNinthSpeed) AS NinetyNinthSpeed,
                 AVG(Violation) AS Violation,
                 AVG(ExtremeViolation) AS ExtremeViolation,
-                AVG(Flow) AS Flow
+                MIN(MinSpeed) AS MinSpeed,
+                MAX(MaxSpeed) AS MaxSpeed
             FROM `{_datasetId}.{_tableId}`
             WHERE 
                 SegmentId = @segmentId AND
@@ -201,7 +208,9 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 NinetyNinthSpeed = Convert.ToDouble(row["NinetyNinthSpeed"]),
                 Violation = Convert.ToDouble(row["Violation"]),
                 ExtremeViolation = Convert.ToDouble(row["ExtremeViolation"]),
-                Flow = Convert.ToDouble(row["Flow"])
+                Flow = Convert.ToDouble(row["Flow"]),
+                MaxSpeed = Convert.ToDouble(row["MaxSpeed"]),
+                MinSpeed = Convert.ToDouble(row["MinSpeed"])
             }).ToList();
         }
 
@@ -217,7 +226,9 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 AVG(NinetyNinthSpeed) AS NinetyNinthSpeed,
                 AVG(Violation) AS Violation,
                 AVG(ExtremeViolation) AS ExtremeViolation,
-                AVG(Flow) AS Flow
+                AVG(Flow) AS Flow,
+                MIN(MinSpeed) AS MinSpeed,
+                MAX(MaxSpeed) AS MaxSpeed
             FROM `{_datasetId}.{_tableId}`
             WHERE 
                 SegmentId = @segmentId AND
@@ -244,7 +255,9 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 NinetyNinthSpeed = Convert.ToDouble(row["NinetyNinthSpeed"]),
                 Violation = Convert.ToDouble(row["Violation"]),
                 ExtremeViolation = Convert.ToDouble(row["ExtremeViolation"]),
-                Flow = Convert.ToDouble(row["Flow"])
+                Flow = Convert.ToDouble(row["Flow"]),
+                MaxSpeed = Convert.ToDouble(row["MaxSpeed"]),
+                MinSpeed = Convert.ToDouble(row["MinSpeed"])
             }).ToList();
         }
 
@@ -287,9 +300,11 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 FifteenthSpeed = row["FifteenthSpeed"] != null ? Convert.ToDouble(row["FifteenthSpeed"]) : null,
                 EightyFifthSpeed = row["EightyFifthSpeed"] != null ? Convert.ToDouble(row["EightyFifthSpeed"]) : null,
                 NinetyFifthSpeed = row["NinetyFifthSpeed"] != null ? Convert.ToDouble(row["NinetyFifthSpeed"]) : null,
+                MinSpeed = row["MinSpeed"] != null ? Convert.ToDouble(row["MinSpeed"]) : null,
+                MaxSpeed = row["MaxSpeed"] != null ? Convert.ToDouble(row["MaxSpeed"]) : null,
                 Violation = row["Violation"] != null ? (long)row["Violation"] : null,
                 ExtremeViolation = row["ExtremeViolation"] != null ? (long)row["ExtremeViolation"] : null,
-                Flow = row["Flow"] != null ? (long)row["Flow"] : null
+                Flow = row["Flow"] != null ? (long)row["Flow"] : null,
             };
         }
 
@@ -425,6 +440,8 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             var percentile85 = row["Percentilespd_85"] != null ? double.Parse(row["Percentilespd_85"].ToString()) : (double?)null;
             var percentile95 = row["Percentilespd_95"] != null ? double.Parse(row["Percentilespd_95"].ToString()) : (double?)null;
             var flow = row["Flow"];
+            var minSpeed = row["MinSpeed"];
+            var maxSpeed = row["MaxSpeed"];
             var estimatedViolations = row["EstimatedViolations"];
             var speedLimit = row["SpeedLimit"];
             var name = row["Name"];
@@ -444,6 +461,8 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 EstimatedViolations = estimatedViolations != null ? (long)estimatedViolations : null,
                 SpeedLimit = speedLimit != null ? (long)speedLimit : 0,
                 Shape = shape,
+                MinSpeed = minSpeed != null ? (double)minSpeed : null,
+                MaxSpeed = maxSpeed != null ? (double)maxSpeed : null
             };
         }
 
@@ -689,7 +708,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 queryBuilder.Append($"UPDATE `{_datasetId}.{_tableId}` SET ");
 
                 queryBuilder.Append($"SourceId = {item.SourceId}, ");
-                queryBuilder.Append($"ConfidenceId = {item.ConfidenceId}, ");
+                queryBuilder.Append($"ConfidenceId = {item.PercentObserved}, ");
                 queryBuilder.Append($"Average = {item.Average}, ");
 
                 if (item.FifteenthSpeed.HasValue)
@@ -780,7 +799,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                     $"'{item.BinStartTime:O}', " +
                     $"{item.SegmentId}, " +
                     $"{item.SourceId}, " +
-                    $"{item.ConfidenceId}, " +
+                    $"{item.PercentObserved}, " +
                     $"{item.Average}, " +
                     $"{(item.FifteenthSpeed.HasValue ? item.FifteenthSpeed.Value.ToString() : "NULL")}, " +
                     $"{(item.EightyFifthSpeed.HasValue ? item.EightyFifthSpeed.Value.ToString() : "NULL")}, " +
@@ -805,7 +824,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 queryBuilder.Append($"UPDATE `{_datasetId}.{_tableId}` SET ");
 
                 queryBuilder.Append($"SourceId = {item.SourceId}, ");
-                queryBuilder.Append($"ConfidenceId = {item.ConfidenceId}, ");
+                queryBuilder.Append($"ConfidenceId = {item.PercentObserved}, ");
                 queryBuilder.Append($"Average = {item.Average}, ");
 
                 if (item.FifteenthSpeed.HasValue)
@@ -871,6 +890,24 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                     queryBuilder.Append($"Flow = NULL, ");
                 }
 
+                if (item.Flow.HasValue)
+                {
+                    queryBuilder.Append($"MinSpeed = {item.MinSpeed}, ");
+                }
+                else
+                {
+                    queryBuilder.Append($"MinSpeed = NULL, ");
+                }
+
+                if (item.Flow.HasValue)
+                {
+                    queryBuilder.Append($"MaxSpeed = {item.MaxSpeed}, ");
+                }
+                else
+                {
+                    queryBuilder.Append($"MaxSpeed = NULL, ");
+                }
+
                 // Remove the last comma and space
                 queryBuilder.Length -= 2;
 
@@ -896,7 +933,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                     $"'{item.BinStartTime:O}', " +
                     $"{item.SegmentId}, " +
                     $"{item.SourceId}, " +
-                    $"{item.ConfidenceId}, " +
+                    $"{item.PercentObserved}, " +
                     $"{item.Average}, " +
                     $"{(item.FifteenthSpeed.HasValue ? item.FifteenthSpeed.Value.ToString() : "NULL")}, " +
                     $"{(item.EightyFifthSpeed.HasValue ? item.EightyFifthSpeed.Value.ToString() : "NULL")}, " +

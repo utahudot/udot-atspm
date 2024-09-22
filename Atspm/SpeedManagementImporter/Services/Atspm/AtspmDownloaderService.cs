@@ -109,7 +109,7 @@ namespace SpeedManagementImporter.Services.Atspm
                         Violation = Convert.ToInt64(speedLimit < eightyFifthSpeed && speedLimit != 0 ? (long)eightyFifthSpeed - speedLimit : 0),
                         Flow = summedVolume,
                         SourceId = sourceId,
-                        ConfidenceId = 4
+                        PercentObserved = 4
                     });
 
                 }

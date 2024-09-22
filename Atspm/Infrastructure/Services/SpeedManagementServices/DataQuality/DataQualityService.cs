@@ -46,7 +46,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices.DataQu
                             .Select(aggregation => new DataPoint<long>
                             (
                                 aggregation.BinStartTime,
-                                aggregation.ConfidenceId
+                                aggregation.PercentObserved
                             )).ToList()
                     }).ToList()
                 };

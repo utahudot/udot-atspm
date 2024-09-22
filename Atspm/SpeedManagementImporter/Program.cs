@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SpeedManagementImporter;
+using SpeedManagementImporter.Services.Pems;
 using System.CommandLine;
 using Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositories;
 using Utah.Udot.Atspm.Repositories.SpeedManagementRepositories;
@@ -20,6 +21,21 @@ class Program
             .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
             .AddUserSecrets<Program>()
             .Build();
+        // Configure logging services explicitly
+        services.AddLogging(loggingBuilder =>
+        {
+            loggingBuilder.ClearProviders();  // Clear any default providers just in case
+            loggingBuilder.AddConsole();      // Add console logging explicitly
+            loggingBuilder.AddDebug();        // Add debug logging (optional)
+            loggingBuilder.SetMinimumLevel(LogLevel.Trace); // Set minimum log level to Trace (to capture everything)
+        });
+
+        services.AddSingleton<IConfiguration>(configuration);
+        services.AddScoped<IHourlySpeedRepository, HourlySpeedBQRepository>();
+        services.AddScoped<ISegmentEntityRepository, SegmentEntityBQRepository>();
+        services.AddScoped<ISegmentRepository, SegmentBQRepository>();
+        services.AddScoped<ITempDataRepository, TempDataBQRepository>();
+        services.AddScoped<IImporterFactory, ImporterFactory>();
 
         Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", configuration["GoogleApplicationCredentials"]);
         services.AddSingleton(provider =>
@@ -47,6 +63,15 @@ class Program
             var logger = provider.GetRequiredService<ILogger<SegmentEntityBQRepository>>();
             return new SegmentEntityBQRepository(client, datasetId, tableId, logger);
         });
+        services.AddScoped<ISegmentRepository, SegmentBQRepository>(provider =>
+        {
+            var client = provider.GetRequiredService<BigQueryClient>();
+            var datasetId = configuration["BigQuery:DatasetId"];
+            var tableId = configuration["BigQuery:RouteTableId"];
+            var projectId = configuration["BigQuery:ProjectId"];
+            var logger = provider.GetRequiredService<ILogger<SegmentBQRepository>>();
+            return new SegmentBQRepository(client, datasetId, tableId, projectId, logger);
+        });
         services.AddScoped<ITempDataRepository, TempDataBQRepository>(provider =>
         {
             var client = provider.GetRequiredService<BigQueryClient>();
@@ -61,14 +86,18 @@ class Program
 
         // Build the service provider
         var serviceProvider = services.BuildServiceProvider();
+        var logger = serviceProvider.GetRequiredService<ILogger<Program>>();
+        logger.LogInformation("Application Starting");
 
         // Resolve the dependencies
         var hourlySpeedRepository = serviceProvider.GetRequiredService<IHourlySpeedRepository>();
-        var routeEntityTableRepository = serviceProvider.GetRequiredService<ISegmentEntityRepository>();
+        var segmentEntityRepository = serviceProvider.GetRequiredService<ISegmentEntityRepository>();
+        var segmentRepository = serviceProvider.GetRequiredService<ISegmentRepository>();
         var tempDataRepository = serviceProvider.GetRequiredService<ITempDataRepository>();
+        var pemsLogger = serviceProvider.GetRequiredService<ILogger<PemsDownloaderService>>();
 
 
-        rootCommand.AddCommand(new Download(routeEntityTableRepository, hourlySpeedRepository, tempDataRepository, configuration));
+        rootCommand.AddCommand(new Download(segmentEntityRepository, segmentRepository, hourlySpeedRepository, tempDataRepository, configuration, pemsLogger));
 
         return await rootCommand.InvokeAsync(args);
     }
