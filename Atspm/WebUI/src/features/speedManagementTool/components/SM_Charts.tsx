@@ -2,6 +2,7 @@ import CongestionTrackerChartsContainer from '@/features/charts/speedManagementT
 import CongestionTrackingOptions, {
   CongestionTrackingOptionsValues,
 } from '@/features/charts/speedManagementTool/congestionTracker/components/CongestionTrackingOptions'
+import DataQualityChartContainer from '@/features/charts/speedManagementTool/dataQuality/components/DataQualityChartContainer'
 import DataQualityChartOptions, {
   DataQualityChartOptionsValues,
 } from '@/features/charts/speedManagementTool/dataQuality/components/DataQualityChartOptions'
@@ -53,7 +54,7 @@ const SM_Charts = ({ routes }: { routes: SpeedManagementRoute[] }) => {
   const updatedChartOptions = chartOptions
     ? {
         ...chartOptions,
-        ...(multiselect
+        ...(multiselect || selectedChart === SM_ChartType.DATA_QUALITY
           ? { segmentIds: segmentIds }
           : { segmentId: segmentIds[0] }),
       }
@@ -61,7 +62,11 @@ const SM_Charts = ({ routes }: { routes: SpeedManagementRoute[] }) => {
 
   const chartTypes: SM_ChartType[] = useMemo(() => {
     return routes.length === 1
-      ? [SM_ChartType.CONGESTION_TRACKING, SM_ChartType.SPEED_OVER_TIME]
+      ? [
+          SM_ChartType.CONGESTION_TRACKING,
+          SM_ChartType.SPEED_OVER_TIME,
+          SM_ChartType.DATA_QUALITY,
+        ]
       : [SM_ChartType.SPEED_OVER_DISTANCE, SM_ChartType.DATA_QUALITY]
   }, [routes.length])
 
@@ -152,6 +157,8 @@ const SM_Charts = ({ routes }: { routes: SpeedManagementRoute[] }) => {
         return <SpeedOverTimeChartContainer chartData={data} />
       case SM_ChartType.SPEED_OVER_DISTANCE:
         return <SpeedOverTimeChartContainer chartData={data} />
+      case SM_ChartType.DATA_QUALITY:
+        return <DataQualityChartContainer chartData={data} />
       default:
         return null
     }

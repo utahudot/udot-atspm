@@ -35,6 +35,8 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices.DataQu
                 {
                     SourceId = (int)source,
                     Name = source.GetDisplayName(),
+                    StartDate = parameter.StartDate,
+                    EndDate = parameter.EndDate,
                     Segments = segments.Select(segment => new DataQualitySegment
                     {
                         SegmentId = segment.Id,
@@ -43,6 +45,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices.DataQu
                         EndingMilePoint = segment.EndMilePoint,
                         DataPoints = hourlyAggregations
                             .Where(aggregation => aggregation.SourceId == (int)source && aggregation.SegmentId == segment.Id)
+                            .OrderBy(aggregation => aggregation.BinStartTime)
                             .Select(aggregation => new DataPoint<long>
                             (
                                 aggregation.BinStartTime,

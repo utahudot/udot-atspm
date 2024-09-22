@@ -2,111 +2,163 @@ import {
   createDataZoom,
   createGrid,
   createLegend,
+  createSeries,
   createTitle,
+  createToolbox,
   createTooltip,
+  createXAxis,
   createYAxis,
+  lightenColor,
+  transformSeriesData,
 } from '@/features/charts/common/transformers'
 import { ExtendedEChartsOption } from '@/features/charts/types'
-import {
-  Color,
-  DashedLineSeriesSymbol,
-  SolidLineSeriesSymbol,
-  formatChartDateTimeRange,
-} from '@/features/charts/utils'
-import { round } from '@/utils/math'
+import { Color, formatChartDateTimeRange } from '@/features/charts/utils'
+import { SM_ChartType } from '@/features/speedManagementTool/api/getSMCharts'
+import { SeriesOption } from 'echarts'
 
-export default function transformDataQualityData(response: any[]) {
-  console.log('response', response)
-  return null
-  const sortedResponse = response
-    .map((segment) => {
-      if (segment.startingMilePoint > segment.endingMilePoint) {
-        return {
-          ...segment,
-          startingMilePoint: segment.endingMilePoint,
-          endingMilePoint: segment.startingMilePoint,
-        }
-      }
-      return segment
+type DataPoint = {
+  timestamp: string
+  value: number
+}
+
+export type RawDataQualitySegment = {
+  segmentId: string
+  segmentName: string
+  startingMilePoint: number
+  endingMilePoint: number
+  dataPoints: DataPoint[]
+}
+
+export type RawDataQualitySource = {
+  sourceId: number
+  name: string
+  segments: RawDataQualitySegment[]
+  startDate: string
+  endDate: string
+}
+
+export type RawDataQualityResponse = RawDataQualitySource[]
+
+export default function transformDataQualityData(
+  response: RawDataQualityResponse
+) {
+  // Check if only one segment exists across all sources
+  const allSegments = response.flatMap((source) => source.segments)
+  const uniqueSegmentIds = [
+    ...new Set(allSegments.map((segment) => segment.segmentId)),
+  ]
+
+  if (uniqueSegmentIds.length === 1) {
+    // If only one unique segment exists, combine data from all sources into a single chart
+    const combinedChart = transformSingleSegmentAcrossSources(
+      response,
+      uniqueSegmentIds[0]
+    )
+    return {
+      type: SM_ChartType.DATA_QUALITY,
+      charts: [combinedChart],
+    }
+  }
+
+  const charts = response
+    .map((source) => {
+      const chartOptions = transformData(source)
+      return chartOptions ? { chart: chartOptions } : null
     })
-    .sort((a, b) => a.startingMilePoint - b.startingMilePoint)
+    .filter(Boolean)
+
+  return {
+    type: SM_ChartType.DATA_QUALITY,
+    charts,
+  }
+}
+
+function transformSingleSegmentAcrossSources(
+  response: RawDataQualityResponse,
+  segmentId: string
+): { chart: ExtendedEChartsOption } | null {
+  const segmentsWithData = response
+    .map((source) =>
+      source.segments.find((segment) => segment.segmentId === segmentId)
+    )
+    .filter(
+      (segment) => segment && segment.dataPoints.length > 0
+    ) as RawDataQualitySegment[]
+
+  if (segmentsWithData.length === 0) return null
 
   const dateRange = formatChartDateTimeRange(
     response[0].startDate,
-    response[0].endDate
+    response[0].endDate,
+    'date'
   )
 
   const title = createTitle({
-    title: 'Speed Over Distance',
-    dateRange: dateRange,
+    title: `Data Quality - ${segmentsWithData[0].segmentName} (All Sources)`,
+    dateRange,
   })
 
-  const xAxis = {
-    type: 'value',
-    name: 'Mile Points',
-    min: round(
-      Math.min(...sortedResponse.map((segment) => segment.startingMilePoint)),
-      2
-    ),
-    max: round(
-      Math.max(...sortedResponse.map((segment) => segment.endingMilePoint)),
-      2
-    ),
-  }
-
-  const yAxis = createYAxis(true, { name: 'Speed (mph)' })
+  const xAxis = createXAxis()
+  const yAxis = createYAxis(true, {
+    name: 'Confidence Percent',
+    max: 100,
+    axisLabel: { formatter: '{value}%' },
+  })
 
   const grid = createGrid({
-    top: 100,
-    left: 60,
-    right: 210,
+    top: 70,
+    left: 80,
+    right: 150,
   })
 
   const legend = createLegend({
-    data: [
-      { name: 'Average Speed', icon: SolidLineSeriesSymbol },
-      { name: '85th Percentile Speed', icon: SolidLineSeriesSymbol },
-      { name: 'Speed Limit', icon: DashedLineSeriesSymbol },
-    ],
+    data: response.map((source) => source.name),
   })
 
   const dataZoom = createDataZoom()
-
+  const toolbox = createToolbox()
   const tooltip = createTooltip()
 
-  // Destructure the series data from mergeSeriesData
-  const { averageSpeedData, eightyFifthPercentileData, speedLimitData } =
-    mergeSeriesData(sortedResponse)
+  const getSourceColor = (sourceName: string, index: number) => {
+    switch (sourceName) {
+      case 'ClearGuide':
+        return Color.Green
+      case 'ATSPM':
+        return Color.Blue
+      case 'PeMS':
+        return Color.Red
+      default:
+        const availableColors = [
+          Color.Blue,
+          Color.Red,
+          Color.Yellow,
+          Color.Orange,
+          Color.Green,
+          Color.Pink,
+        ]
+        const colorIndex = index % availableColors.length
+        const baseColor = availableColors[colorIndex]
+        const lightenFactor = Math.floor(index / availableColors.length) * 10
+        return lightenFactor > 0
+          ? lightenColor(baseColor, lightenFactor)
+          : baseColor
+    }
+  }
 
-  const series = [
-    {
-      name: 'Average Speed',
-      data: averageSpeedData,
+  const seriesData: SeriesOption[] = response.map((source, index) => {
+    const segment = source.segments.find((seg) => seg.segmentId === segmentId)
+    return {
+      name: source.name,
+      data: transformSeriesData(segment!.dataPoints),
       type: 'line',
-      step: 'start',
-      showSymbol: false,
-      color: Color.Blue,
-    },
-    {
-      name: '85th Percentile Speed',
-      data: eightyFifthPercentileData,
-      type: 'line',
-      step: 'start',
-      showSymbol: false,
-      color: Color.Red,
-    },
-    {
-      name: 'Speed Limit',
-      data: speedLimitData,
-      type: 'line',
-      step: 'start',
-      showSymbol: false,
-      color: Color.Black,
-      lineStyle: {
-        type: 'dashed',
+      color: getSourceColor(source.name, index),
+      tooltip: {
+        valueFormatter: (value) => Math.round(value as number).toLocaleString(),
       },
-    },
-  ]
+    }
+  })
+
+  const series = createSeries(...seriesData)
 
   const chartOptions: ExtendedEChartsOption = {
     title,
@@ -114,78 +166,100 @@ export default function transformDataQualityData(response: any[]) {
     yAxis,
     grid,
     legend,
+    dataZoom,
+    toolbox,
     tooltip,
     series,
-    dataZoom,
   }
 
-  console.log('chartOptions', chartOptions)
-
-  return chartOptions
+  return { chart: chartOptions }
 }
 
-function mergeSeriesData(response: DataQualityResponse[]) {
-  const averageSpeedData: [number, number | null][] = []
-  const eightyFifthPercentileData: [number, number | null][] = []
-  const speedLimitData: [number, number | null][] = []
+function transformData(
+  source: RawDataQualitySource
+): ExtendedEChartsOption | null {
+  const segmentsWithData = source.segments.filter(
+    (segment) => segment.dataPoints.length > 0
+  )
 
-  response.forEach((segment, index) => {
-    const {
-      startingMilePoint,
-      endingMilePoint,
-      average,
-      eightyFifth,
-      speedLimit,
-    } = segment
-    const previousSegment = response[index - 1]
+  if (segmentsWithData.length === 0) return null
 
-    // Ensure the startingMilePoint of the first segment is added
-    if (index === 0) {
-      if (average !== undefined) {
-        averageSpeedData.push([startingMilePoint, average])
-      }
-      if (eightyFifth !== undefined) {
-        eightyFifthPercentileData.push([startingMilePoint, eightyFifth])
-      }
-      if (speedLimit !== undefined) {
-        speedLimitData.push([startingMilePoint, speedLimit])
-      }
-    }
+  const dateRange = formatChartDateTimeRange(
+    source.startDate,
+    source.endDate,
+    'date'
+  )
 
-    // Handle the break between non-continuous segments by adding [null, null]
-    if (index > 0 && previousSegment.endingMilePoint !== startingMilePoint) {
-      // Add a break for non-continuous segments
-      averageSpeedData.push([null, null])
-      eightyFifthPercentileData.push([null, null])
-      speedLimitData.push([null, null])
-
-      // Add the startingMilePoint of the current segment
-      if (average !== undefined) {
-        averageSpeedData.push([startingMilePoint, average])
-      }
-      if (eightyFifth !== undefined) {
-        eightyFifthPercentileData.push([startingMilePoint, eightyFifth])
-      }
-      if (speedLimit !== undefined) {
-        speedLimitData.push([startingMilePoint, speedLimit])
-      }
-    }
-
-    // Always add the endingMilePoint for each segment
-    if (average !== undefined) {
-      averageSpeedData.push([endingMilePoint, average])
-    }
-    if (eightyFifth !== undefined) {
-      eightyFifthPercentileData.push([endingMilePoint, eightyFifth])
-    }
-    if (speedLimit !== undefined) {
-      speedLimitData.push([endingMilePoint, speedLimit])
-    }
+  const title = createTitle({
+    title: `Data Quality - ${source.name}`,
+    dateRange,
   })
 
-  return {
-    averageSpeedData,
-    eightyFifthPercentileData,
-    speedLimitData,
+  const xAxis = createXAxis()
+  const yAxis = createYAxis(true, {
+    name: 'Confidence Percent',
+    max: 100,
+    axisLabel: { formatter: '{value}%' },
+  })
+
+  const grid = createGrid({
+    top: 70,
+    left: 80,
+    right: 150,
+  })
+
+  const legend = createLegend({
+    data: segmentsWithData.map((segment) => segment.segmentName),
+  })
+
+  const dataZoom = createDataZoom()
+  const toolbox = createToolbox()
+  const tooltip = createTooltip()
+
+  const availableColors = [
+    Color.Blue,
+    Color.Red,
+    Color.Yellow,
+    Color.Orange,
+    Color.Green,
+    Color.Pink,
+  ]
+
+  const getColor = (index: number) => {
+    const colorIndex = index % availableColors.length
+    const baseColor = availableColors[colorIndex]
+
+    // If we've cycled through the list, start lightening the color
+    const lightenFactor = Math.floor(index / availableColors.length) * 10
+
+    return lightenFactor > 0
+      ? lightenColor(baseColor, lightenFactor)
+      : baseColor
   }
+
+  const seriesData: SeriesOption[] = segmentsWithData.map((segment, index) => ({
+    name: segment.segmentName,
+    data: transformSeriesData(segment.dataPoints),
+    type: 'line',
+    color: getColor(index),
+    tooltip: {
+      valueFormatter: (value) => Math.round(value as number).toLocaleString(),
+    },
+  }))
+
+  const series = createSeries(...seriesData)
+
+  const chartOptions: ExtendedEChartsOption = {
+    title,
+    xAxis,
+    yAxis,
+    grid,
+    legend,
+    dataZoom,
+    toolbox,
+    tooltip,
+    series,
+  }
+
+  return chartOptions
 }
