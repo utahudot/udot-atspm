@@ -1,7 +1,6 @@
 import { AddButton } from '@/components/addButton'
 import EditApproach from '@/features/locations/components/editApproach/EditApproach'
 import EditGeneralLocation from '@/features/locations/components/editLocation/editGeneralLocation'
-import { ConfigEnum, useConfigEnums } from '@/hooks/useConfigEnums'
 import { TabContext, TabList, TabPanel } from '@mui/lab'
 import { Box, Tab, Typography } from '@mui/material'
 import { useEffect, useState } from 'react'
@@ -27,9 +26,6 @@ const EditLocation = ({
   const [sortedApproaches, setSortedApproaches] = useState<ApproachForConfig[]>(
     []
   )
-
-  const data = useConfigEnums(ConfigEnum.WatchDogIssueTypes)
-  console.log('data', data)
 
   useEffect(() => {
     setSortedApproaches(handler.approaches)

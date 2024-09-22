@@ -7,7 +7,6 @@ import NewLocationModal from '@/features/locations/components/editLocation/NewLo
 import { useLocationConfigHandler } from '@/features/locations/components/editLocation/editLocationConfigHandler'
 import SelectLocation from '@/features/locations/components/selectLocation/SelectLocation'
 import { Location } from '@/features/locations/types/Location'
-import { ConfigEnum, useConfigEnums } from '@/hooks/useConfigEnums'
 import { useState } from 'react'
 
 const LocationsAdmin = () => {
@@ -19,8 +18,8 @@ const LocationsAdmin = () => {
     location: location as Location,
   })
 
-  const data = useConfigEnums(ConfigEnum.WatchDogIssueTypes)
-  console.log('data', data)
+  // const data = useConfigEnums(ConfigEnum.WatchDogIssueTypes)
+  // console.log('data', data)
 
   if (pageAccess.isLoading) {
     return
