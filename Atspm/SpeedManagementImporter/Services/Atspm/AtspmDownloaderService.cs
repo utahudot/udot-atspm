@@ -13,9 +13,9 @@ namespace SpeedManagementImporter.Services.Atspm
         private readonly string sourceConnectionString;
         private ISegmentEntityRepository segmentEntityRepository;
         private IHourlySpeedRepository hourlySpeedRepository;
-        private IConfigurationRoot configuration;
+        private IConfiguration configuration;
 
-        public AtspmDownloaderService(ISegmentEntityRepository routeEntityTableRepository, IHourlySpeedRepository hourlySpeedRepository, IConfigurationRoot configuration)
+        public AtspmDownloaderService(ISegmentEntityRepository routeEntityTableRepository, IHourlySpeedRepository hourlySpeedRepository, IConfiguration configuration)
         {
             this.segmentEntityRepository = routeEntityTableRepository;
             this.hourlySpeedRepository = hourlySpeedRepository;

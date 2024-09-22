@@ -2,7 +2,8 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using SpeedManagementImporter;
+using SpeedManagementImporter.Services.Atspm;
+using SpeedManagementImporter.Services.Clearguide;
 using SpeedManagementImporter.Services.Pems;
 using System.CommandLine;
 using Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositories;
@@ -21,23 +22,28 @@ class Program
             .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
             .AddUserSecrets<Program>()
             .Build();
+
         // Configure logging services explicitly
         services.AddLogging(loggingBuilder =>
         {
-            loggingBuilder.ClearProviders();  // Clear any default providers just in case
-            loggingBuilder.AddConsole();      // Add console logging explicitly
+            loggingBuilder.ClearProviders();  // Clear any default providers
+            loggingBuilder.AddConsole();      // Add console logging
             loggingBuilder.AddDebug();        // Add debug logging (optional)
-            loggingBuilder.SetMinimumLevel(LogLevel.Trace); // Set minimum log level to Trace (to capture everything)
+            loggingBuilder.SetMinimumLevel(LogLevel.Trace); // Set minimum log level to Trace
         });
 
+        // Register configuration as IConfiguration
         services.AddSingleton<IConfiguration>(configuration);
-        services.AddScoped<IHourlySpeedRepository, HourlySpeedBQRepository>();
-        services.AddScoped<ISegmentEntityRepository, SegmentEntityBQRepository>();
-        services.AddScoped<ISegmentRepository, SegmentBQRepository>();
-        services.AddScoped<ITempDataRepository, TempDataBQRepository>();
-        services.AddScoped<IImporterFactory, ImporterFactory>();
 
+        // Register download services
+        services.AddScoped<PemsDownloaderService>();
+        services.AddScoped<AtspmDownloaderService>();
+        services.AddScoped<ClearguideFileDownloaderService>();
+
+        // Set Google Cloud Credentials
         Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", configuration["GoogleApplicationCredentials"]);
+
+        // Add BigQueryClient as a singleton
         services.AddSingleton(provider =>
         {
             var projectId = configuration["BigQuery:ProjectId"];
@@ -47,6 +53,8 @@ class Program
             }
             return BigQueryClient.Create(projectId);
         });
+
+        // Register repositories with BigQuery dependencies
         services.AddScoped<IHourlySpeedRepository, HourlySpeedBQRepository>(provider =>
         {
             var client = provider.GetRequiredService<BigQueryClient>();
@@ -55,6 +63,7 @@ class Program
             var logger = provider.GetRequiredService<ILogger<HourlySpeedBQRepository>>();
             return new HourlySpeedBQRepository(client, datasetId, tableId, logger);
         });
+
         services.AddScoped<ISegmentEntityRepository, SegmentEntityBQRepository>(provider =>
         {
             var client = provider.GetRequiredService<BigQueryClient>();
@@ -63,6 +72,7 @@ class Program
             var logger = provider.GetRequiredService<ILogger<SegmentEntityBQRepository>>();
             return new SegmentEntityBQRepository(client, datasetId, tableId, logger);
         });
+
         services.AddScoped<ISegmentRepository, SegmentBQRepository>(provider =>
         {
             var client = provider.GetRequiredService<BigQueryClient>();
@@ -72,6 +82,7 @@ class Program
             var logger = provider.GetRequiredService<ILogger<SegmentBQRepository>>();
             return new SegmentBQRepository(client, datasetId, tableId, projectId, logger);
         });
+
         services.AddScoped<ITempDataRepository, TempDataBQRepository>(provider =>
         {
             var client = provider.GetRequiredService<BigQueryClient>();
@@ -80,9 +91,6 @@ class Program
             var logger = provider.GetRequiredService<ILogger<TempDataBQRepository>>();
             return new TempDataBQRepository(client, datasetId, tableId, logger);
         });
-        services.AddScoped<IImporterFactory, ImporterFactory>();
-
-        services.AddLogging();
 
         // Build the service provider
         var serviceProvider = services.BuildServiceProvider();
@@ -90,14 +98,12 @@ class Program
         logger.LogInformation("Application Starting");
 
         // Resolve the dependencies
-        var hourlySpeedRepository = serviceProvider.GetRequiredService<IHourlySpeedRepository>();
-        var segmentEntityRepository = serviceProvider.GetRequiredService<ISegmentEntityRepository>();
-        var segmentRepository = serviceProvider.GetRequiredService<ISegmentRepository>();
-        var tempDataRepository = serviceProvider.GetRequiredService<ITempDataRepository>();
-        var pemsLogger = serviceProvider.GetRequiredService<ILogger<PemsDownloaderService>>();
+        var pemsDownloader = serviceProvider.GetRequiredService<PemsDownloaderService>();
+        var atspmDownloader = serviceProvider.GetRequiredService<AtspmDownloaderService>();
+        var clearguideDownloader = serviceProvider.GetRequiredService<ClearguideFileDownloaderService>();
 
-
-        rootCommand.AddCommand(new Download(segmentEntityRepository, segmentRepository, hourlySpeedRepository, tempDataRepository, configuration, pemsLogger));
+        // Add the download command
+        rootCommand.AddCommand(new Download(pemsDownloader, atspmDownloader, clearguideDownloader));
 
         return await rootCommand.InvokeAsync(args);
     }

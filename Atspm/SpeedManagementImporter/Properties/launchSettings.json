@@ -2,7 +2,7 @@
   "profiles": {
     "SpeedManagementImporter": {
       "commandName": "Project",
-      "commandLineArgs": "download\r\n--startDate \"2023-01-04\" \r\n--endDate \"2023-01-04\"\r\n--sourceId 2\r\n--filePath \"C:\\Users\\jbhatia\\Desktop\\SpeedManagement\\ClearguideData\\Clearguide_May\\May_8th_15th_Utah.csv\""
+      "commandLineArgs": "download\r\n--startDate \"2023-01-04\" \r\n--endDate \"2023-01-04\"\r\n--sourceId 2"
     }
   }
 }

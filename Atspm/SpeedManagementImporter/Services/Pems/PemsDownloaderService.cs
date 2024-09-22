@@ -20,22 +20,22 @@ namespace SpeedManagementImporter.Services.Pems
 {
     public class PemsDownloaderService : IDataDownloader
     {
-        private ISegmentRepository segmentRepository;
-        private IHourlySpeedRepository hourlySpeedRepository;
-        private IConfigurationRoot configuration;
-        private ILogger<PemsDownloaderService> logger;
+        private readonly ISegmentRepository segmentRepository;
+        private readonly IHourlySpeedRepository hourlySpeedRepository;
+        private readonly IConfiguration configuration; // Change from IConfigurationRoot to IConfiguration
+        private readonly ILogger<PemsDownloaderService> logger;
         static readonly int sourceId = 2;
         private string sessionId;
 
         public PemsDownloaderService(
-            ISegmentRepository segmentRepository,
-            IHourlySpeedRepository hourlySpeedRepository,
-            IConfigurationRoot configuration,
-            ILogger<PemsDownloaderService> logger)
+        ISegmentRepository segmentRepository,
+        IHourlySpeedRepository hourlySpeedRepository,
+        IConfiguration configuration, // Change here
+        ILogger<PemsDownloaderService> logger)
         {
             this.segmentRepository = segmentRepository;
             this.hourlySpeedRepository = hourlySpeedRepository;
-            this.configuration = configuration;
+            this.configuration = configuration; // Change here
             this.logger = logger;
         }
 
