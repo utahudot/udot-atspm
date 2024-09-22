@@ -1,4 +1,4 @@
-﻿namespace SpeedManagementImporter
+﻿namespace SpeedManagementImporter.Services
 {
     public interface IFileDataDownloader : IDataDownloader
     {

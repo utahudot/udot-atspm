@@ -4,13 +4,13 @@ using SpeedManagementImporter.Services.Pems;
 using System.CommandLine;
 using System.CommandLine.NamingConventionBinder;
 
-public class Download : Command
+public class DownloadCommand : Command
 {
     private readonly PemsDownloaderService _pemsDownloader;
     private readonly AtspmDownloaderService _atspmDownloader;
     private readonly ClearguideFileDownloaderService _clearguideDownloader;
 
-    public Download(
+    public DownloadCommand(
         PemsDownloaderService pemsDownloader,
         AtspmDownloaderService atspmDownloader,
         ClearguideFileDownloaderService clearguideDownloader)
