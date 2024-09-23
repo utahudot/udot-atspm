@@ -208,6 +208,15 @@ namespace Utah.Udot.Atspm.LogMessages
         #endregion
 
         /// <summary>
+        /// Invalid device ipaddress exception message
+        /// </summary>
+        /// <param name="locationId"></param>
+        /// <param name="ip"></param>
+        /// <param name="ex"></param>
+        [LoggerMessage(EventId = 9000, EventName = "Invalid ipaddress Exception", Level = LogLevel.Warning, Message = "Exception validating or connecting to {ip}")]
+        public partial void InvalidDeviceIpAddressException(IPAddress ip, Exception ex = null);
+
+        /// <summary>
         /// Operation cancelled exception message
         /// </summary>
         /// <param name="locationId"></param>

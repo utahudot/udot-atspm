@@ -86,10 +86,14 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders
             //if (CanExecute(parameter) && !cancelToken.IsCancellationRequested)
             if (CanExecute(parameter))
             {
+                var logMessages = new DeviceDownloaderLogMessages(_log, parameter);
+
                 if (!IPAddress.TryParse(parameter.Ipaddress, out IPAddress ipaddress) && !ipaddress.IsValidIpAddress())
                 {
                     if (_options.Ping ? !await ipaddress.PingIpAddressAsync() : true)
                     {
+                        logMessages.InvalidDeviceIpAddressException(ipaddress);
+
                         throw new InvalidDeviceIpAddressException(parameter);
                     }
                 }
@@ -101,8 +105,6 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders
                 var searchTerms = parameter?.DeviceConfiguration?.SearchTerms;
                 var connectionTimeout = parameter?.DeviceConfiguration?.ConnectionTimeout ?? 2000;
                 var operationTimeout = parameter?.DeviceConfiguration?.OperationTimeout ?? 2000;
-
-                var logMessages = new DeviceDownloaderLogMessages(_log, parameter);
 
                 using (client)
                 {
