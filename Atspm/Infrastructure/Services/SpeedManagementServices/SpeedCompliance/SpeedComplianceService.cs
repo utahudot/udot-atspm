@@ -7,7 +7,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices.SpeedC
 {
     public class SpeedComplianceService : ReportServiceBase<SpeedComplianceOptions, List<SpeedComplianceDto>>
     {
-        private readonly SpeedOverDistanceService speedOverDistanceService;
+        private readonly IReportService<SpeedOverDistanceOptions, List<SpeedOverDistanceDto>> speedOverDistanceService;
         private readonly ISegmentRepository segmentRepository;
 
         public SpeedComplianceService(SpeedOverDistanceService speedOverDistanceService, ISegmentRepository segmentRepository)

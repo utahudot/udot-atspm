@@ -53,7 +53,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices.Segmen
         //            Shape = lineString,
         //            ShapeWKT = lineString.AsText(),
         //            AlternateIdentifier = null,
-        //            RouteEntities = new List<SegmentEntity>()
+        //            Entities = new List<SegmentEntity>()
         //        };
 
         //        routes.Add(route);

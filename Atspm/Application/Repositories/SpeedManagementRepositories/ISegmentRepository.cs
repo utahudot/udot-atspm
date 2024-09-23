@@ -10,5 +10,6 @@ namespace Utah.Udot.Atspm.Repositories.SpeedManagementRepositories
         List<Segment> AllSegmentsWithEntity();
         Task<List<Segment>> GetSegmentsDetailsWithEntity(List<Guid> segmentIds);
         Task<List<Segment>> GetSegmentsDetail(List<Guid> segmentIds);
+        List<Segment> AllSegmentsWithEntity(int source);
     }
 }
