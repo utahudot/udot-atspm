@@ -177,7 +177,7 @@ namespace SpeedManagementImporter.Services.Pems
                         BinStartTime = new DateTime(firstDate.Year, firstDate.Month, firstDate.Day, hour, 0, 0),
                         SegmentId = segment.Id,
                         SourceId = sourceId,  // Ensure sourceId is set correctly in the broader scope
-                        PercentObserved = (long)percentObserved,
+                        PercentObserved = percentObserved,
                         Flow = (long)summedFlow,
                         Violation = (long)hourlyStatistics.Average(s => s.Violations),
                         ExtremeViolation = (long)hourlyStatistics.Average(s => s.ExtremeViolations),

@@ -6,7 +6,7 @@ public class HourlySpeed
     public DateTime BinStartTime { get; set; }
     public Guid SegmentId { get; set; }
     public long SourceId { get; set; }
-    public long PercentObserved { get; set; }
+    public double? PercentObserved { get; set; }
     public double Average { get; set; }
     public double? FifteenthSpeed { get; set; }
     public double? EightyFifthSpeed { get; set; }

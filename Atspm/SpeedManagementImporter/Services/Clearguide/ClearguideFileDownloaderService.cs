@@ -80,7 +80,7 @@ namespace SpeedManagementImporter.Services.Clearguide
                         BinStartTime = entity.BinStartTime,
                         SegmentId = routeEntity.SegmentId,
                         SourceId = sourceId,
-                        PercentObserved = (long)entity.DataQuality * 100,
+                        PercentObserved = entity.DataQuality * 100,
                         Average = entity.Average,
                         Violation = null,
                         ExtremeViolation = null,

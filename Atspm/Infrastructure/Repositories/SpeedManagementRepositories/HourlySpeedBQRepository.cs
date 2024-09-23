@@ -153,6 +153,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 {"SegmentId", item.SegmentId.ToString() },
                 {"SourceId", item.SourceId },
                 {"ConfidenceId", item.PercentObserved },
+                {"PercentObserved", item.PercentObserved },
                 {"Average", item.Average },
                 {"FifteenthSpeed", item.FifteenthSpeed },
                 {"EightyFifthSpeed", item.EightyFifthSpeed },
@@ -173,7 +174,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             var bigQueryBinStartTime = TimeOnly.Parse(row["BinStartTime"].ToString());
             var bigQuerySegmentId = Guid.Parse(row["SegmentId"].ToString());
             var bigQuerySourceId = long.Parse(row["SourceId"].ToString());
-            var bigQueryConfidenceId = long.Parse(row["ConfidenceId"].ToString());
+            var bigQueryPercentObservedId = row["PercentObserved"] != null ? double.Parse(row["PercentObserved"].ToString()) : (double?)null;
             var bigQueryAverage = double.Parse(row["Average"].ToString());
             var bigQueryFifteenthSpeed = row["FifteenthSpeed"] != null ? double.Parse(row["FifteenthSpeed"].ToString()) : (double?)null;
             var bigQueryEightyFifthSpeed = row["EightyFifthSpeed"] != null ? double.Parse(row["EightyFifthSpeed"].ToString()) : (double?)null;
@@ -191,7 +192,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 BinStartTime = bigQueryDate.ToDateTime(bigQueryBinStartTime),
                 SegmentId = bigQuerySegmentId,
                 SourceId = bigQuerySourceId,
-                PercentObserved = bigQueryConfidenceId,
+                PercentObserved = bigQueryPercentObservedId,
                 Average = bigQueryAverage,
                 FifteenthSpeed = bigQueryFifteenthSpeed,
                 EightyFifthSpeed = bigQueryEightyFifthSpeed,
@@ -748,7 +749,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 queryBuilder.Append($"UPDATE `{_datasetId}.{_tableId}` SET ");
 
                 queryBuilder.Append($"SourceId = {item.SourceId}, ");
-                queryBuilder.Append($"ConfidenceId = {item.PercentObserved}, ");
+                queryBuilder.Append($"PercentObserved = {item.PercentObserved}, ");
                 queryBuilder.Append($"Average = {item.Average}, ");
 
                 if (item.FifteenthSpeed.HasValue)
@@ -833,7 +834,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             else
             {
                 var query = $"INSERT INTO `{_datasetId}.{_tableId}` " +
-                    $"(Date, BinStartTime, SegmentId, SourceId, ConfidenceId, Average, FifteenthSpeed, EightyFifthSpeed, NinetyFifthSpeed, NinetyNinthSpeed, Violation, ExtremeViolation, Flow) " +
+                    $"(Date, BinStartTime, SegmentId, SourceId, PercentObserved, Average, FifteenthSpeed, EightyFifthSpeed, NinetyFifthSpeed, NinetyNinthSpeed, Violation, ExtremeViolation, Flow) " +
                     $"VALUES (" +
                     $"'{item.Date:O}', " +
                     $"'{item.BinStartTime:O}', " +
@@ -864,7 +865,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 queryBuilder.Append($"UPDATE `{_datasetId}.{_tableId}` SET ");
 
                 queryBuilder.Append($"SourceId = {item.SourceId}, ");
-                queryBuilder.Append($"ConfidenceId = {item.PercentObserved}, ");
+                queryBuilder.Append($"PercentObserved = {item.PercentObserved}, ");
                 queryBuilder.Append($"Average = {item.Average}, ");
 
                 if (item.FifteenthSpeed.HasValue)
@@ -967,7 +968,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             else
             {
                 var query = $"INSERT INTO `{_datasetId}.{_tableId}` " +
-                    $"(Date, BinStartTime, SegmentId, SourceId, ConfidenceId, Average, FifteenthSpeed, EightyFifthSpeed, NinetyFifthSpeed, NinetyNinthSpeed, Violation, Flow) " +
+                    $"(Date, BinStartTime, SegmentId, SourceId, PercentObserved, Average, FifteenthSpeed, EightyFifthSpeed, NinetyFifthSpeed, NinetyNinthSpeed, Violation, Flow) " +
                     $"VALUES (" +
                     $"'{item.Date:O}', " +
                     $"'{item.BinStartTime:O}', " +
