@@ -162,7 +162,8 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 {"ExtremeViolation", item.ExtremeViolation },
                 {"Flow", item.Flow },
                 {"MinSpeed", item.MinSpeed },
-                {"MaxSpeed", item.MaxSpeed }
+                {"MaxSpeed", item.MaxSpeed },
+                {"SourceDataAnalyzed", item.SourceDataAnalyzed },
             };
         }
 
@@ -184,6 +185,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             var bigQueryFlow = row["Flow"] != null ? long.Parse(row["Flow"].ToString()) : (long?)null;
             var bigQueryMinSpeed = row["MinSpeed"] != null ? double.Parse(row["MinSpeed"].ToString()) : (double?)null;
             var bigQueryMaxSpeed = row["MaxSpeed"] != null ? double.Parse(row["MaxSpeed"].ToString()) : (double?)null;
+            var sourceDataAnalyzed = row["SourceDataAnalyzed"] != null ? bool.Parse(row["SourceDataAnalyzed"].ToString()) : (bool?)null;
 
             return new HourlySpeed
             {
@@ -201,7 +203,8 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 ExtremeViolation = bigQueryExtremeViolation,
                 Flow = bigQueryFlow,
                 MinSpeed = bigQueryMinSpeed,
-                MaxSpeed = bigQueryMaxSpeed
+                MaxSpeed = bigQueryMaxSpeed,
+                SourceDataAnalyzed = sourceDataAnalyzed
             };
         }
 
@@ -250,7 +253,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 ExtremeViolation = Convert.ToDouble(row["ExtremeViolation"]),
                 Flow = Convert.ToDouble(row["Flow"]),
                 MaxSpeed = Convert.ToDouble(row["MaxSpeed"]),
-                MinSpeed = Convert.ToDouble(row["MinSpeed"])
+                MinSpeed = Convert.ToDouble(row["MinSpeed"]),
             }).ToList();
         }
 
@@ -345,6 +348,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 Violation = row["Violation"] != null ? (long)row["Violation"] : null,
                 ExtremeViolation = row["ExtremeViolation"] != null ? (long)row["ExtremeViolation"] : null,
                 Flow = row["Flow"] != null ? (long)row["Flow"] : null,
+                SourceDataAnalyzed = row["SourceDataAnalyzed"] != null ? (bool)row["SourceDataAnalyzed"] : null,
             };
         }
 
@@ -479,6 +483,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             var percentile15 = row["Percentilespd_15"] != null ? double.Parse(row["Percentilespd_15"].ToString()) : (double?)null;
             var percentile85 = row["Percentilespd_85"] != null ? double.Parse(row["Percentilespd_85"].ToString()) : (double?)null;
             var percentile95 = row["Percentilespd_95"] != null ? double.Parse(row["Percentilespd_95"].ToString()) : (double?)null;
+            var sourceDataAnalyzed = row["SourceDataAnalyzed"] != null ? bool.Parse(row["SourceDataAnalyzed"].ToString()) : (bool?)null;
             var flow = row["Flow"];
             var minSpeed = row["MinSpeed"];
             var maxSpeed = row["MaxSpeed"];
@@ -486,6 +491,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             var speedLimit = row["SpeedLimit"];
             var name = row["Name"];
             var wkt = (string)row["Shape"];
+
             Geometry shape = wkt != null ? reader.Read(wkt) : null;
 
             return new RouteSpeed

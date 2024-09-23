@@ -17,4 +17,5 @@ public class HourlySpeed
     public long? Flow { get; set; }
     public double? MinSpeed { get; set; }
     public double? MaxSpeed { get; set; }
+    public bool? SourceDataAnalyzed { get; set; }
 }
