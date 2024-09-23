@@ -66,7 +66,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories
                 .AsEnumerable()
                 .SelectMany(m => m.Devices)
                 .Where(w => w.DeviceStatus == DeviceStatus.Active && w.LoggingEnabled)
-                .Where(w => w.Ipaddress.IsValidIPAddress())
+                .Where(w => w.Ipaddress.IsValidIpAddress())
                 .ToList();
 
             return result;

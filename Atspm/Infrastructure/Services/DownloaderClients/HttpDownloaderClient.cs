@@ -48,7 +48,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
         public TransportProtocols Protocol => TransportProtocols.Http;
 
         ///<inheritdoc/>
-        public bool IsConnected => _client != null && _client.BaseAddress.Host.IsValidIPAddress();
+        public bool IsConnected => _client != null && _client.BaseAddress.Host.IsValidIpAddress();
 
         ///<inheritdoc/>
         public Task ConnectAsync(IPEndPoint connection, NetworkCredential credentials, int connectionTimeout = 2000, int operationTImeout = 2000, CancellationToken token = default)

@@ -86,9 +86,9 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders
             //if (CanExecute(parameter) && !cancelToken.IsCancellationRequested)
             if (CanExecute(parameter))
             {
-                if (IPAddress.TryParse(parameter.Ipaddress, out IPAddress ipaddress) && ipaddress.IsValidIpAddress())
+                if (!IPAddress.TryParse(parameter.Ipaddress, out IPAddress ipaddress) && !ipaddress.IsValidIpAddress())
                 {
-                    if (_options.Ping ? await ipaddress.PingIpAddressAsync() : true)
+                    if (_options.Ping ? !await ipaddress.PingIpAddressAsync() : true)
                     {
                         throw new InvalidDeviceIpAddressException(parameter);
                     }
