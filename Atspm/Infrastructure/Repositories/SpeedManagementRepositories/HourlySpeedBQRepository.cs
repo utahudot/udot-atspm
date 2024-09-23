@@ -105,7 +105,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
 
         public async Task<List<HourlySpeed>> GetHourlySpeedsWithFiltering(List<Guid> segmentIds, DateTime startDate, DateTime endDate, DateTime? startTime = null, DateTime? endTime = null, int? dayOfWeek = null, List<DateTime>? specificDays = null)
         {
-            var ids = string.Join(", ", segmentIds);
+            var ids = string.Join(", ", segmentIds.Select(id => $"'{id}'"));
             string query = $@"SELECT * FROM `{_datasetId}.{_tableId}` WHERE 
                     SegmentId IN ({ids}) AND
                     Date BETWEEN @startDate AND @endDate";
@@ -113,7 +113,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             {
                 DateTime startTimeOut = (DateTime)startTime;
                 DateTime endTimeOut = (DateTime)endTime;
-                query = query + $" AND BinStartTime BETWEEN {startTimeOut.TimeOfDay} AND {endTimeOut.TimeOfDay}";
+                query = query + $" AND TIME(BinStartTime) BETWEEN '{startTimeOut.TimeOfDay.ToString(@"hh\:mm\:ss")}' AND '{endTimeOut.TimeOfDay.ToString(@"hh\:mm\:ss")}'";
             }
             if (specificDays != null && specificDays.Count > 0)
             {
