@@ -1,4 +1,4 @@
-﻿namespace Utah.Udot.Atspm.Data.Models.SpeedManagementModels.DataQuality
+﻿namespace Utah.Udot.Atspm.Business.SpeedManagement.DataQuality
 {
     public class DataQualityOptions
     {

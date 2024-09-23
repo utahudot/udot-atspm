@@ -179,7 +179,7 @@ namespace Utah.Udot.Atspm.Business.LinkPivot
         //    var chart = new Chart();
         //    //Display the PDC chart
         //    chart = GetNewChart(startDate, endDate, sp.Approach.SignalID, sp.Approach.ProtectedPhaseNumber,
-        //        sp.Approach.DirectionType.Description,
+        //        sp.Approach.DirectionType.Name,
         //        location, sp.Approach.IsProtectedPhaseOverlap, 150, 2000, false, 2);
 
         //    AddDataToChart(chart, sp, startDate, false, true);

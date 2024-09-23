@@ -59,11 +59,41 @@ export const DottedLineSeriesSymbol =
 export const SolidLineSeriesSymbol =
   'path://M180 1000 l0 -20 200 0 200 0 0 20 0 20 -200 0 -200 0 0 -20z'
 
-export function formatChartDateTimeRange(startDate: string, endDate: string) {
-  return `${new Date(startDate).toLocaleString(
-    'en-US',
-    dateFormat
-  )} - ${new Date(endDate).toLocaleString('en-US', dateFormat)}`
+export function formatChartDateTimeRange(
+  startDate: string,
+  endDate: string,
+  type: 'datetime' | 'date' | 'time' = 'datetime'
+) {
+  let dateFormat: Intl.DateTimeFormatOptions
+
+  switch (type) {
+    case 'date':
+      dateFormat = { year: 'numeric', month: 'short' }
+      return `${new Date(startDate).toLocaleDateString(
+        'en-US',
+        dateFormat
+      )} - ${new Date(endDate).toLocaleDateString('en-US', dateFormat)}`
+    case 'time':
+      dateFormat = { hour: 'numeric', minute: 'numeric', hour12: true }
+      return `${new Date(startDate).toLocaleTimeString(
+        'en-US',
+        dateFormat
+      )} - ${new Date(endDate).toLocaleTimeString('en-US', dateFormat)}`
+    case 'datetime':
+    default:
+      dateFormat = {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+        hour12: true,
+      }
+      return `${new Date(startDate).toLocaleString(
+        'en-US',
+        dateFormat
+      )} - ${new Date(endDate).toLocaleString('en-US', dateFormat)}`
+  }
 }
 
 export function adjustPlanPositions(chart: ECharts) {

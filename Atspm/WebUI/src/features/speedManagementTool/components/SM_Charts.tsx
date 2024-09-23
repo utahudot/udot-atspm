@@ -2,9 +2,17 @@ import CongestionTrackerChartsContainer from '@/features/charts/speedManagementT
 import CongestionTrackingOptions, {
   CongestionTrackingOptionsValues,
 } from '@/features/charts/speedManagementTool/congestionTracker/components/CongestionTrackingOptions'
-import SpeedOverDistanceOptions from '@/features/charts/speedManagementTool/speedOverDistance/components/SpeedOverDistanceChartOptions'
+import DataQualityChartContainer from '@/features/charts/speedManagementTool/dataQuality/components/DataQualityChartContainer'
+import DataQualityChartOptions, {
+  DataQualityChartOptionsValues,
+} from '@/features/charts/speedManagementTool/dataQuality/components/DataQualityChartOptions'
+import SpeedOverDistanceOptions, {
+  SpeedOverDistanceChartOptionsValues,
+} from '@/features/charts/speedManagementTool/speedOverDistance/components/SpeedOverDistanceChartOptions'
 import SpeedOverTimeChartContainer from '@/features/charts/speedManagementTool/speedOverTime/components/SpeedOverTimeChartContainer'
-import SpeedOverTimeOptions from '@/features/charts/speedManagementTool/speedOverTime/components/SpeedOverTimeOptions'
+import SpeedOverTimeOptions, {
+  SpeedOverTimeOptionsValues,
+} from '@/features/charts/speedManagementTool/speedOverTime/components/SpeedOverTimeOptions'
 import {
   SM_ChartType,
   useSMCharts,
@@ -23,63 +31,116 @@ import {
   SelectChangeEvent,
   Typography,
 } from '@mui/material'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+
+type ChartOptions =
+  | CongestionTrackingOptionsValues
+  | SpeedOverTimeOptionsValues
+  | SpeedOverDistanceChartOptionsValues
+  | DataQualityChartOptionsValues
+  | null
 
 const SM_Charts = ({ routes }: { routes: SpeedManagementRoute[] }) => {
   const [selectedChart, setSelectedChart] = useState<SM_ChartType | null>(null)
-  const [chartOptions, setChartOptions] = useState(null)
+  const [chartOptions, setChartOptions] = useState<ChartOptions>(null)
 
-  const { submittedRouteSpeedRequest } = useSpeedManagementStore()
+  const { multiselect } = useSpeedManagementStore()
+
+  const segmentIds = useMemo(
+    () => routes.map((route) => route.properties.route_id),
+    [routes]
+  )
+
+  const updatedChartOptions = chartOptions
+    ? {
+        ...chartOptions,
+        ...(multiselect || selectedChart === SM_ChartType.DATA_QUALITY
+          ? { segmentIds: segmentIds }
+          : { segmentId: segmentIds[0] }),
+      }
+    : null
+
+  const chartTypes: SM_ChartType[] = useMemo(() => {
+    return routes.length === 1
+      ? [
+          SM_ChartType.CONGESTION_TRACKING,
+          SM_ChartType.SPEED_OVER_TIME,
+          SM_ChartType.DATA_QUALITY,
+        ]
+      : [SM_ChartType.SPEED_OVER_DISTANCE, SM_ChartType.DATA_QUALITY]
+  }, [routes.length])
 
   useEffect(() => {
-    if (routes.length > 1) {
-      setSelectedChart(SM_ChartType.SPEED_OVER_DISTANCE)
-    } else {
-      setSelectedChart(SM_ChartType.CONGESTION_TRACKING)
+    // If selectedChart is null or not valid for the current number of routes, set a default
+    if (selectedChart === null || !chartTypes.includes(selectedChart)) {
+      setSelectedChart(chartTypes[0])
+      setChartOptions(null)
     }
-  }, [routes])
+  }, [routes, selectedChart, chartTypes])
+
+  const { data, isLoading, refetch } = useSMCharts(
+    selectedChart,
+    updatedChartOptions
+  )
 
   const handleChartChange = (event: SelectChangeEvent<SM_ChartType>) => {
     setSelectedChart(event.target.value as SM_ChartType)
     setChartOptions(null)
   }
 
-  const handleOptionsChange = (options: CongestionTrackingOptionsValues) => {
+  const handleOptionsChange = (options: ChartOptions) => {
     setChartOptions(options)
   }
 
-  const { data, isLoading, refetch } = useSMCharts({
-    chartType: selectedChart,
-    chartOptions: {
-      ...chartOptions,
-      ...(routes.length === 1
-        ? {
-            segmentId: routes[0].properties.route_id,
-            sourceId: submittedRouteSpeedRequest?.sourceId,
-          }
-        : { segmentIds: routes.map((route) => route.properties.route_id) }),
-    },
-  })
+  const handleRunChart = () => {
+    refetch()
+  }
 
   const renderOptionsComponent = () => {
     switch (selectedChart) {
       case SM_ChartType.CONGESTION_TRACKING:
         return (
-          <CongestionTrackingOptions onOptionsChange={handleOptionsChange} />
+          <CongestionTrackingOptions
+            onOptionsChange={
+              handleOptionsChange as (
+                options: CongestionTrackingOptionsValues
+              ) => void
+            }
+          />
         )
       case SM_ChartType.SPEED_OVER_TIME:
-        return <SpeedOverTimeOptions onOptionsChange={handleOptionsChange} />
+        return (
+          <SpeedOverTimeOptions
+            onOptionsChange={
+              handleOptionsChange as (
+                options: SpeedOverTimeOptionsValues
+              ) => void
+            }
+          />
+        )
       case SM_ChartType.SPEED_OVER_DISTANCE:
         return (
-          <SpeedOverDistanceOptions onOptionsChange={handleOptionsChange} />
+          <SpeedOverDistanceOptions
+            onOptionsChange={
+              handleOptionsChange as (
+                options: SpeedOverDistanceChartOptionsValues
+              ) => void
+            }
+          />
+        )
+      case SM_ChartType.DATA_QUALITY:
+        return (
+          <DataQualityChartOptions
+            onOptionsChange={
+              handleOptionsChange as (
+                options: DataQualityChartOptionsValues
+              ) => void
+            }
+          />
         )
       default:
         return null
     }
-  }
-
-  const handleRunChart = () => {
-    refetch()
   }
 
   const renderChartContainer = () => {
@@ -96,15 +157,12 @@ const SM_Charts = ({ routes }: { routes: SpeedManagementRoute[] }) => {
         return <SpeedOverTimeChartContainer chartData={data} />
       case SM_ChartType.SPEED_OVER_DISTANCE:
         return <SpeedOverTimeChartContainer chartData={data} />
+      case SM_ChartType.DATA_QUALITY:
+        return <DataQualityChartContainer chartData={data} />
       default:
         return null
     }
   }
-
-  const chartTypes: SM_ChartType[] =
-    routes.length === 1
-      ? [SM_ChartType.CONGESTION_TRACKING, SM_ChartType.SPEED_OVER_TIME]
-      : [SM_ChartType.SPEED_OVER_DISTANCE]
 
   return (
     <>

@@ -1,8 +1,10 @@
 import { ChartType } from '@/features/charts/common/types'
 import CongestionTrackerChartOptions from '@/features/charts/speedManagementTool/congestionTracker/components/CongestionTrackingOptions'
+import DataQualityChartOptions from '@/features/charts/speedManagementTool/dataQuality/components/DataQualityChartOptions'
 import SpeedOverDistanceOptions from '@/features/charts/speedManagementTool/speedOverDistance/components/SpeedOverDistanceChartOptions'
 import SpeedOverTimeOptions from '@/features/charts/speedManagementTool/speedOverTime/components/SpeedOverTimeOptions'
 import { getDisplayNameFromChartType } from '@/features/charts/utils'
+import { SM_ChartType } from '@/features/speedManagementTool/api/getSMCharts'
 import {
   Box,
   Divider,
@@ -19,15 +21,15 @@ const availableCharts = {
   CongestionTracker: CongestionTrackerChartOptions,
   SpeedOverTime: SpeedOverTimeOptions,
   SpeedOverDistance: SpeedOverDistanceOptions,
+  DataQuality: DataQualityChartOptions,
 } as const
 
 const SM_ChartOptions = () => {
-  const [selectedChartType, setSelectedChartType] = useState<ChartType | null>(
-    null
-  )
+  const [selectedChartType, setSelectedChartType] =
+    useState<SM_ChartType | null>(null)
 
   const handleChartTypeChange = (event: SelectChangeEvent<string>) => {
-    setSelectedChartType(event.target.value as ChartType)
+    setSelectedChartType(event.target.value as SM_ChartType)
   }
 
   const renderChartOptionsComponent = () => {

@@ -1,6 +1,7 @@
 import { Impact } from '@/features/speedManagementTool/types/impact'
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
 import {
+  Alert,
   Box,
   Button,
   Chip,
@@ -22,11 +23,11 @@ import SegmentSelectMap from './SegmentSelectMap'
 import { useGetSegments } from '../api/getSegments'
 interface ImpactEditorModalProps {
   data?: Impact
-  open: boolean
-  onClose: () => void
-  onCreate: (impact: Impact) => void
+  open?: boolean
+  onClose?: () => void
+  onSave: (impact: Impact) => void
+  onCreate: (inpact: Impact) => void
   onEdit: (impact: Impact) => void
-  onDelete?: (id: string) => void
 }
 
 const ITEM_HEIGHT = 48
@@ -44,9 +45,9 @@ const ImpactEditorModal: React.FC<ImpactEditorModalProps> = ({
   data,
   open,
   onClose,
+  onSave,
   onCreate,
   onEdit,
-  onDelete,
 }) => {
   const [impact, setImpact] = useState<Impact>({
     id: data?.id || null,
@@ -58,6 +59,7 @@ const ImpactEditorModal: React.FC<ImpactEditorModalProps> = ({
     impactTypeIds: data?.impactTypeIds || [],
     impactTypes: data?.impactTypes || [],
     segmentIds: data?.segmentIds || [],
+    impactTypeNames: '',
   })
 
   const { data: impactTypeData, isLoading: isLoadingImpactTypes } =
@@ -99,6 +101,22 @@ const ImpactEditorModal: React.FC<ImpactEditorModalProps> = ({
   }
 
   const handleSave = () => {
+    const newErrors = {
+      description: impact.description === '',
+      start: !impact.start,
+      end: !impact.end,
+      startMile: !impact.startMile,
+      endMile: !impact.endMile,
+      impactTypes: !impact.impactTypes,
+      segmentIds: !impact.segmentIds,
+    }
+
+    setErrors(newErrors)
+
+    if (Object.values(newErrors).some((hasError) => hasError)) {
+      return
+    }
+    console.log(impact)
     if (impact.id) {
       onEdit(impact)
       console.log(impact)
@@ -301,13 +319,23 @@ const ImpactEditorModal: React.FC<ImpactEditorModalProps> = ({
           </FormControl>
         </Box>
       </Box>
-      <DialogActions>
-        <Button onClick={onClose} color="secondary">
-          Cancel
-        </Button>
-        <Button onClick={handleSave} color="primary">
-          Save
-        </Button>
+      <DialogActions sx={{ justifyContent: 'space-between' }}>
+        <Box>
+          {errors.segmentIds && (
+            <Alert severity="error" sx={{ marginLeft: 1 }}>
+              Please add Segments using the map below
+            </Alert>
+          )}
+        </Box>
+
+        <Box sx={{ display: 'flex', gap: 1 }}>
+          <Button onClick={onClose} color="secondary">
+            Cancel
+          </Button>
+          <Button onClick={handleSave} color="primary">
+            Save
+          </Button>
+        </Box>
       </DialogActions>
       <SegmentSelectMap
         selectedSegmentIds={impact.segmentIds}

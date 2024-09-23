@@ -1,10 +1,12 @@
-﻿using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.Config;
-using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.DataQuality;
+﻿using Utah.Udot.Atspm.Business.SpeedManagement.DataQuality;
+using Utah.Udot.Atspm.Data.Models.SpeedManagementModels;
+using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.Config;
+using Utah.Udot.Atspm.Enums.SpeedManagement;
 using Utah.Udot.Atspm.Repositories.SpeedManagementRepositories;
 
 namespace Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices.DataQuality
 {
-    public class DataQualityService : ReportServiceBase<DataQualityOptions, List<DataQualityDto>>
+    public class DataQualityService : ReportServiceBase<DataQualityOptions, List<DataQualitySource>>
     {
         private readonly IHourlySpeedRepository hourlySpeedRepository;
         private readonly ISegmentRepository segmentRepository;
@@ -15,38 +17,45 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices.DataQu
             this.segmentRepository = segmentRepository;
         }
 
-        public override async Task<List<DataQualityDto>> ExecuteAsync(DataQualityOptions parameter, IProgress<int> progress = null, CancellationToken cancelToken = default)
+        public override async Task<List<DataQualitySource>> ExecuteAsync(DataQualityOptions parameter, IProgress<int> progress = null, CancellationToken cancelToken = default)
         {
             var thresholdDate = DateTime.UtcNow.AddYears(-2).AddMonths(-1);
-            var result = new List<DataQualityDto>();
+            var result = new List<DataQualitySource>();
             if (parameter.StartDate < thresholdDate || parameter.StartDate > parameter.EndDate)
             {
                 return null;
             }
+            //Get all the sources from the SourceEnum
+            var sources = Enum.GetValues(typeof(SourceEnum)).Cast<SourceEnum>().ToList();
             var hourlyAggregations = await hourlySpeedRepository.HourlyAggregationsForSegmentInTimePeriod(parameter.SegmentIds, parameter.StartDate, parameter.EndDate);
-            List<Segment> segments = await segmentRepository.GetSegmentsDetails(parameter.SegmentIds);
-            foreach (var hourlyAggregation in hourlyAggregations)
+            List<Segment> segments = await segmentRepository.GetSegmentsDetail(parameter.SegmentIds);
+            foreach (var source in sources)
             {
-                var segment = segments.Where(segment => segment.Id == hourlyAggregation.SegmentId).FirstOrDefault();
-                if (segment != null)
+                var dataSource = new DataQualitySource
                 {
-                    var speedOverDistanceDto = new DataQualityDto
+                    SourceId = (int)source,
+                    Name = source.GetDisplayName(),
+                    StartDate = parameter.StartDate,
+                    EndDate = parameter.EndDate,
+                    Segments = segments.Select(segment => new DataQualitySegment
                     {
                         SegmentId = segment.Id,
                         SegmentName = segment.Name,
-                        Time = hourlyAggregation.BinStartTime,
                         StartingMilePoint = segment.StartMilePoint,
                         EndingMilePoint = segment.EndMilePoint,
-                        SpeedLimit = segment.SpeedLimit,
-                        Flow = hourlyAggregation.Flow ?? 0,
-                        Violations = hourlyAggregation.Violation ?? 0,
-                        DataQuality = (long)hourlyAggregation.ConfidenceId
-                    };
-
-                    result.Add(speedOverDistanceDto);
-                }
+                        DataPoints = hourlyAggregations
+                            .Where(aggregation => aggregation.SourceId == (int)source && aggregation.SegmentId == segment.Id)
+                            .OrderBy(aggregation => aggregation.BinStartTime)
+                            .Select(aggregation => new DataPoint<long>
+                            (
+                                aggregation.BinStartTime,
+                                aggregation.ConfidenceId
+                            )).ToList()
+                    }).ToList()
+                };
+                result.Add(dataSource);
             }
-            return result.OrderBy(x => x.SegmentId).ToList();
+            return result;
         }
     }
 }

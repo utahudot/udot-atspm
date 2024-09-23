@@ -1,9 +1,11 @@
+import {
+  useGetApiV1AccessCategory,
+  useGetApiV1City,
+  useGetApiV1County,
+  useGetApiV1FunctionalType,
+  useGetApiV1Region,
+} from '@/api/speedManagement/aTSPMSpeedManagementApi'
 import AutocompleteInput from '@/components/AutocompleteInput'
-import { useGetAccessCategories } from '@/features/speedManagementTool/api/getAccessCategory'
-import { useGetCities } from '@/features/speedManagementTool/api/getCity'
-import { useGetCounties } from '@/features/speedManagementTool/api/getCounty'
-import { useGetFunctionalTypes } from '@/features/speedManagementTool/api/getFunctionalType'
-import { useGetRegions } from '@/features/speedManagementTool/api/getRegion'
 import useStore from '@/features/speedManagementTool/speedManagementStore'
 import TuneOutlinedIcon from '@mui/icons-material/TuneOutlined'
 import { Badge, Box, Button, Popover } from '@mui/material'
@@ -19,11 +21,11 @@ const optionalFilters = [
 
 const Filters = () => {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
-  const { data: countiesData } = useGetCounties()
-  const { data: accessCategoriesData } = useGetAccessCategories()
-  const { data: citiesData } = useGetCities()
-  const { data: functionalTypesData } = useGetFunctionalTypes()
-  const { data: regionsData } = useGetRegions()
+  const { data: countiesData } = useGetApiV1County()
+  const { data: accessCategoriesData } = useGetApiV1AccessCategory()
+  const { data: citiesData } = useGetApiV1City()
+  const { data: functionalTypesData } = useGetApiV1FunctionalType()
+  const { data: regionsData } = useGetApiV1Region()
 
   const {
     routeSpeedRequest,

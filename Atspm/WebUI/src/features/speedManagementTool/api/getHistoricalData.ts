@@ -25,7 +25,7 @@ export const getHistoricalData = async (
 
   // Make the POST request with params in the body
   const response = await speedAxios.post<HistoricalDataResponse>(
-    `/SpeedManagement/GetHistoricalSpeeds`,
+    `api/v1/SpeedManagement/GetHistoricalSpeeds`,
     requestBody
   )
   return response

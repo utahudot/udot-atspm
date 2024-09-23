@@ -43,9 +43,6 @@ export default function TopBar() {
       JSON.stringify(routeSpeedRequest) !==
       JSON.stringify(submittedRouteSpeedRequest)
 
-    console.log('change', change)
-    console.log('routeSpeedRequest', routeSpeedRequest)
-    console.log('submittedRouteSpeedRequest', submittedRouteSpeedRequest)
     setIsRequestChanged(change)
   }, [routeSpeedRequest, submittedRouteSpeedRequest])
 

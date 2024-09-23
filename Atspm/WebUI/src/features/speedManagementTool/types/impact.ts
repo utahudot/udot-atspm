@@ -15,6 +15,7 @@ export interface Impact {
     deletedOn?: Date | null;
     deletedBy?: string | null;
     segmentIds?: string[] | null;
+    impactTypeNames?:string
 }
 
 export interface ImpactType {

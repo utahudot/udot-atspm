@@ -130,7 +130,7 @@ namespace Utah.Udot.Atspm.Business.Common
         //    var phaseEvents = FindPhaseEvents(CycleEventsTable, phaseNumber);
         //    analysisPhaseData.Cycles = new AnalysisPhaseCycleCollection(phaseNumber, analysisPhaseData.LocationIdentifier, phaseEvents, pedEvents);
         //    var approach = location.Approaches.FirstOrDefault(a => a.ProtectedPhaseNumber == phaseNumber);
-        //    analysisPhaseData.Direction = approach != null ? approach.DirectionType.Description : "Unknown";
+        //    analysisPhaseData.Direction = approach != null ? approach.DirectionType.Name : "Unknown";
         //    analysisPhaseData.location = location;
         //    return analysisPhaseData;
         //}

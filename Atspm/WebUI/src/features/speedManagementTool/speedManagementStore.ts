@@ -37,8 +37,8 @@ const useSpeedManagementStore = create<StoreState>((set) => ({
     set({ routeRenderOption: option }),
 
   routeSpeedRequest: {
-    sourceId: DataSource.ClearGuide,
-    startDate: '2024-02-01',
+    sourceId: DataSource.PeMS,
+    startDate: '2023-01-01',
     endDate: '2024-08-30',
     daysOfWeek: [1, 2, 3, 4, 5],
     analysisPeriod: AnalysisPeriod.AllDay,
@@ -51,8 +51,8 @@ const useSpeedManagementStore = create<StoreState>((set) => ({
   },
 
   submittedRouteSpeedRequest: {
-    sourceId: DataSource.ClearGuide,
-    startDate: '2024-02-01',
+    sourceId: DataSource.PeMS,
+    startDate: '2023-01-01',
     endDate: '2024-08-30',
     daysOfWeek: [1, 2, 3, 4, 5],
     analysisPeriod: AnalysisPeriod.AllDay,

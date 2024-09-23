@@ -7,7 +7,6 @@ const CongestionTrackingChartsContainer = ({
   chartData: number
 }) => {
   return (
-    // align in center
     <Box sx={{ display: 'flex', justifyContent: 'center', pt: 2 }}>
       <CongestionChart
         id="congestion-chart"
