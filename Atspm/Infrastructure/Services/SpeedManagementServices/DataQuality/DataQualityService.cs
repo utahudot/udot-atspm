@@ -46,10 +46,10 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices.DataQu
                         DataPoints = hourlyAggregations
                             .Where(aggregation => aggregation.SourceId == (int)source && aggregation.SegmentId == segment.Id)
                             .OrderBy(aggregation => aggregation.BinStartTime)
-                            .Select(aggregation => new DataPoint<long>
+                            .Select(aggregation => new DataPoint<double>
                             (
                                 aggregation.BinStartTime,
-                                aggregation.PercentObserved
+                                aggregation.PercentObserved ?? 0.0
                             )).ToList()
                     }).ToList()
                 };

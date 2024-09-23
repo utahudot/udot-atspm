@@ -35,5 +35,5 @@ public class MonthlyAggregation
     public double? EarlyMorningAverageEightyFifthSpeed { get; set; }
     public long? EarlyMorningViolations { get; set; }
     public long? EarlyMorningExtremeViolations { get; set; }
-    public bool DataQuality { get; set; } //true is reliable false is unreliable
+    public double? PercentObserved { get; set; } //true is reliable false is unreliable
 }

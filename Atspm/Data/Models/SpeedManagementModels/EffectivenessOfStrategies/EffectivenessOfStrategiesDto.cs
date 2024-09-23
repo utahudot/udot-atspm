@@ -21,6 +21,8 @@ public class TimeSegmentEffectiveness
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
     public long Flow { get; set; }
+    public double MinSpeed { get; set; }
+    public double MaxSpeed { get; set; }
     public double AverageSpeed { get; set; } //Average of the AvgSpeed column, weighted by the Flow column
     public double AverageEightyFifthSpeed { get; set; } //Average of the 85thPercentileSpeed column, weighted by the Flow column
     public double Variablitiy { get; set; } //Maximum of the MaxSpeed column minus minimum of the MinSpeed column

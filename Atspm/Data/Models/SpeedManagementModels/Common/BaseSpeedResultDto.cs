@@ -1,6 +1,6 @@
-﻿namespace Utah.Udot.Atspm.Data.Models.SpeedManagementModels.SpeedCompliance
+﻿namespace Utah.Udot.Atspm.Data.Models.SpeedManagementModels.Common
 {
-    public class SpeedComplianceDto
+    public class BaseSpeedResultDto
     {
         public Guid SegmentId { get; set; }
         public string SegmentName { get; set; }
@@ -9,9 +9,5 @@
         public double StartingMilePoint { get; set; }
         public double EndingMilePoint { get; set; }
         public long SpeedLimit { get; set; }
-        public double Average { get; set; }
-        public double AvgVsBaseSpeed { get; set; }
-        public long EightyFifth { get; set; }
-        public long EightyFifthPercentileVsBaseSpeed { get; set; }
     }
 }

@@ -1,12 +1,13 @@
-﻿using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.SpeedOverDistance;
+﻿using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.SpeedCompliance;
+using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.SpeedOverDistance;
 using Utah.Udot.Atspm.Repositories.SpeedManagementRepositories;
 using Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices.SpeedOverDistance;
 
 namespace Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices.SpeedCompliance
 {
-    public class SpeedComplianceService : ReportServiceBase<SpeedOverDistanceOptions, List<SpeedComplianceDto>>
+    public class SpeedComplianceService : ReportServiceBase<SpeedComplianceOptions, List<SpeedComplianceDto>>
     {
-        private readonly SpeedOverDistanceService speedOverDistanceService;
+        private readonly IReportService<SpeedOverDistanceOptions, List<SpeedOverDistanceDto>> speedOverDistanceService;
         private readonly ISegmentRepository segmentRepository;
 
         public SpeedComplianceService(SpeedOverDistanceService speedOverDistanceService, ISegmentRepository segmentRepository)
@@ -15,10 +16,15 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices.SpeedC
             this.segmentRepository = segmentRepository;
         }
 
-        public override async Task<List<SpeedComplianceDto>> ExecuteAsync(SpeedOverDistanceOptions parameter, IProgress<int> progress = null, CancellationToken cancelToken = default)
+        public override async Task<List<SpeedComplianceDto>> ExecuteAsync(SpeedComplianceOptions parameter, IProgress<int> progress = null, CancellationToken cancelToken = default)
         {
-
-            var speedOverDistance = await speedOverDistanceService.ExecuteAsync(parameter, progress, cancelToken);
+            var speedOverDistanceOption = new SpeedOverDistanceOptions
+            {
+                StartDate = parameter.StartDate,
+                EndDate = parameter.EndDate,
+                SegmentIds = parameter.SegmentIds
+            };
+            var speedOverDistance = await speedOverDistanceService.ExecuteAsync(speedOverDistanceOption, progress, cancelToken);
             var result = new List<SpeedComplianceDto>();
             foreach (var speed in speedOverDistance)
             {
