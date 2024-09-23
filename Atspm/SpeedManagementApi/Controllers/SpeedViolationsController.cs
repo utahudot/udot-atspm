@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.SpeedOverDistance;
+using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.SpeedViolations;
 using Utah.Udot.Atspm.Services;
 
 namespace SpeedManagementApi.Controllers

@@ -16,6 +16,7 @@ using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.EffectivenessOfStrategie
 using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.SpeedCompliance;
 using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.SpeedOverDistance;
 using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.SpeedOverTime;
+using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.SpeedViolations;
 using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.ViolationsAndExtremeViolations;
 using Utah.Udot.Atspm.DataApi.Configuration;
 using Utah.Udot.Atspm.Infrastructure.Extensions;

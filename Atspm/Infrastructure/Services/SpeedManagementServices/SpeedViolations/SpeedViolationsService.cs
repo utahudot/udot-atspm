@@ -1,4 +1,4 @@
-﻿using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.SpeedOverDistance;
+﻿using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.SpeedViolations;
 using Utah.Udot.Atspm.Repositories.SpeedManagementRepositories;
 
 namespace Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices.SpeedViolations
