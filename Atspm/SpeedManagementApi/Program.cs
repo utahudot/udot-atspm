@@ -234,7 +234,6 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddScoped<IReportService<CongestionTrackingOptions, CongestionTrackingDto>, CongestionTrackingService>();
     s.AddScoped<IReportService<SpeedOverTimeOptions, SpeedOverTimeDto>, SpeedOverTimeService>();
     s.AddScoped<IReportService<SpeedOverDistanceOptions, List<SpeedOverDistanceDto>>, SpeedOverDistanceService>();
-    s.AddScoped<IReportService<SpeedOverDistanceOptions, List<SpeedComplianceDto>>, SpeedComplianceService>();
     s.AddScoped<IReportService<SpeedOverDistanceOptions, List<SpeedOverDistanceDto>>, SpeedOverDistanceService>();
     s.AddScoped<IReportService<SpeedComplianceOptions, List<SpeedComplianceDto>>, SpeedComplianceService>();
     s.AddScoped<IReportService<SpeedViolationsOptions, List<SpeedViolationsDto>>, SpeedViolationsService>();
