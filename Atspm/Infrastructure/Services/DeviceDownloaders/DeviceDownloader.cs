@@ -86,13 +86,17 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders
             //if (CanExecute(parameter) && !cancelToken.IsCancellationRequested)
             if (CanExecute(parameter))
             {
-                if (!parameter.Ipaddress.IsValidIPAddress(_options.Ping))
-                    throw new InvalidDeviceIpAddressException(parameter);
+                if (IPAddress.TryParse(parameter.Ipaddress, out IPAddress ipaddress) && ipaddress.IsValidIpAddress())
+                {
+                    if (_options.Ping ? await ipaddress.PingIpAddressAsync() : true)
+                    {
+                        throw new InvalidDeviceIpAddressException(parameter);
+                    }
+                }
 
                 var locationIdentifier = parameter?.Location?.LocationIdentifier;
                 var user = parameter?.DeviceConfiguration?.UserName;
                 var password = parameter?.DeviceConfiguration?.Password;
-                var ipaddress = IPAddress.Parse(parameter?.Ipaddress);
                 var directory = parameter?.DeviceConfiguration?.Directory;
                 var searchTerms = parameter?.DeviceConfiguration?.SearchTerms;
                 var connectionTimeout = parameter?.DeviceConfiguration?.ConnectionTimeout ?? 2000;
