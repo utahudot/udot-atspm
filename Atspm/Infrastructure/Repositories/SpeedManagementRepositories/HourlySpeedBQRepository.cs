@@ -117,12 +117,12 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             }
             if (specificDays != null && specificDays.Count > 0)
             {
-                var dates = string.Join(", ", specificDays.Select(d => d.ToString("yyyy-MM-dd")));
-                query = query + $" Date IN ({dates})";
+                var dates = string.Join(", ", specificDays.Select(d => $"'{d.ToString("yyyy-MM-dd")}'"));
+                query = query + $" AND Date IN ({dates})";
             }
             if (dayOfWeek != null && dayOfWeek < 8 && dayOfWeek > 0)
             {
-                query = query + $" EXTRACT(DAYOFWEEK FROM `Date`) = {dayOfWeek}";
+                query = query + $" AND EXTRACT(DAYOFWEEK FROM `Date`) = {dayOfWeek}";
             }
 
             query = query + " ORDER BY Date ASC, BinStartTime ASC;";
