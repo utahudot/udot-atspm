@@ -24,7 +24,7 @@ namespace ATSPM.Data
         //public virtual DbSet<Source> Sources { get; set; }
         //public virtual DbSet<Confidence> Confidences { get; set; }
         //public virtual DbSet<Segment> Routes { get; set; }
-        ////public virtual DbSet<HourlySpeed> Speeds { get; set; }
+        ////public virtual DbSet<HourlySpeed> WeightedSpeeds { get; set; }
 
         ///// <inheritdoc/>
         //protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)

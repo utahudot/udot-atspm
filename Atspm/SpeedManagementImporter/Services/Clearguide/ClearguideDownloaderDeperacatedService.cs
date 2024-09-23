@@ -101,7 +101,7 @@ namespace SpeedManagementImporter.Services.Clearguide
                                             BinStartTime = date,
                                             SegmentId = routeEntity.SegmentId,
                                             SourceId = sourceId,
-                                            ConfidenceId = confidenceId,
+                                            PercentObserved = confidenceId,
                                             Average = avg,
                                             Violation = routeEntity.SpeedLimit > 0 && avg > routeEntity.SpeedLimit ? (long)(avg - routeEntity.SpeedLimit) : 0,
                                             Length = routeEntity.Length
@@ -156,7 +156,7 @@ namespace SpeedManagementImporter.Services.Clearguide
                     Date = g.First().Date,
                     SegmentId = g.First().SegmentId,
                     SourceId = g.First().SourceId,
-                    ConfidenceId = g.First().ConfidenceId,
+                    PercentObserved = g.First().PercentObserved,
                     Average = (int)(g.Sum(s => s.Average * s.Length) / g.Sum(s => s.Length)), // Aggregate average speed.
                     Violation = g.Sum(s => s.Violation) // Sum up the violations.
                 });

@@ -11,5 +11,7 @@
         public double Violation { get; set; }
         public double ExtremeViolation { get; set; }
         public double Flow { get; set; }
+        public double MaxSpeed { get; set; }
+        public double MinSpeed { get; set; }
     }
 }
