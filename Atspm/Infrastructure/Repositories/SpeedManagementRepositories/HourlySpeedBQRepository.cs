@@ -152,7 +152,6 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 {"BinStartTime", item.BinStartTime.TimeOfDay },
                 {"SegmentId", item.SegmentId.ToString() },
                 {"SourceId", item.SourceId },
-                {"ConfidenceId", item.PercentObserved },
                 {"PercentObserved", item.PercentObserved },
                 {"Average", item.Average },
                 {"FifteenthSpeed", item.FifteenthSpeed },
