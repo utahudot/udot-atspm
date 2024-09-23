@@ -261,7 +261,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 { "EarlyMorningAverageEightyFifthSpeed", item.EarlyMorningAverageEightyFifthSpeed },
                 { "EarlyMorningViolations", item.EarlyMorningViolations },
                 { "EarlyMorningExtremeViolations", item.EarlyMorningExtremeViolations },
-                { "DataQuality", item.DataQuality }
+                { "PercentObserved", item.PercentObserved }
             };
         }
 
@@ -300,7 +300,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             var bigQueryEarlyMorningAverageEightyFifthSpeed = row["EarlyMorningAverageEightyFifthSpeed"] != null ? int.Parse(row["EarlyMorningAverageEightyFifthSpeed"].ToString()) : (int?)null;
             var bigQueryEarlyMorningViolations = row["EarlyMorningViolations"] != null ? int.Parse(row["EarlyMorningViolations"].ToString()) : (int?)null;
             var bigQueryEarlyMorningExtremeViolations = row["EarlyMorningExtremeViolations"] != null ? int.Parse(row["EarlyMorningExtremeViolations"].ToString()) : (int?)null;
-            var bigQueryDataQuality = bool.Parse(row["DataQuality"].ToString());
+            var bigQueryPercentObserved = row["PercentObserved"] != null ? double.Parse(row["PercentObserved"].ToString()) : (double?)null;
 
             return new MonthlyAggregation
             {
@@ -337,7 +337,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 EarlyMorningAverageEightyFifthSpeed = bigQueryEarlyMorningAverageEightyFifthSpeed,
                 EarlyMorningViolations = bigQueryEarlyMorningViolations,
                 EarlyMorningExtremeViolations = bigQueryEarlyMorningExtremeViolations,
-                DataQuality = bigQueryDataQuality
+                PercentObserved = bigQueryPercentObserved
             };
         }
 
@@ -527,7 +527,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 $"MidDayAverageSpeed, MidDayAverageEightyFifthSpeed, MidDayViolations, MidDayExtremeViolations, " +
                 $"EveningAverageSpeed, EveningAverageEightyFifthSpeed, EveningViolations, EveningExtremeViolations, " +
                 $"EarlyMorningAverageSpeed, EarlyMorningAverageEightyFifthSpeed, EarlyMorningViolations, EarlyMorningExtremeViolations, " +
-                $"DataQuality) " +
+                $"PercentObserved) " +
                 $"VALUES (" +
                 $"GENERATE_UUID(), " +
                 $"CURRENT_TIMESTAMP(), " +
@@ -562,7 +562,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 $"{(item.EarlyMorningAverageEightyFifthSpeed.HasValue ? ((int)item.EarlyMorningAverageEightyFifthSpeed.Value).ToString() : "NULL")}, " +
                 $"{(item.EarlyMorningViolations.HasValue ? item.EarlyMorningViolations.Value.ToString() : "NULL")}, " +
                 $"{(item.EarlyMorningExtremeViolations.HasValue ? item.EarlyMorningExtremeViolations.Value.ToString() : "NULL")}, " +
-            $"{item.DataQuality})";
+            $"{item.PercentObserved})";
         }
 
         private string updateQuery(MonthlyAggregation item)
@@ -712,7 +712,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 queryBuilder.Append($"EarlyMorningExtremeViolations = {item.EarlyMorningExtremeViolations.Value}, ");
             }
 
-            queryBuilder.Append($"DataQuality = {item.DataQuality}");
+            queryBuilder.Append($"PercentObserved = {item.PercentObserved}");
 
             // Remove the last comma and space if present
             if (queryBuilder[queryBuilder.Length - 2] == ',')

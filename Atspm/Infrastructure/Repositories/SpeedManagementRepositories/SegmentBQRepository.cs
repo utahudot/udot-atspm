@@ -586,6 +586,78 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             }
         }
 
+        public List<Segment> AllSegmentsWithEntity(int source)
+        {
+            string query = $@"
+        SELECT 
+            s.Id,
+            s.UdotRouteNumber,
+            s.StartMilePoint,
+            s.EndMilePoint,
+            s.FunctionalType,
+            s.Name,
+            s.Direction,
+            s.SpeedLimit,
+            s.Region,
+            s.City,
+            s.County,
+            s.Shape,
+            s.ShapeWKT,
+            s.AlternateIdentifier,
+            s.AccessCategory,
+            s.Offset,
+            se.EntityId,
+            se.SourceId,
+            se.SegmentId
+        FROM 
+            `{_datasetId}.{_tableId}` s
+        LEFT JOIN 
+            `{_datasetId}.segmentEntity` se 
+        ON 
+            s.Id = se.SegmentId
+        WHERE se.SourceId = {source}
+        ORDER BY 
+            s.Id, se.EntityId;";
+
+            var parameters = new List<BigQueryParameter>();
+            var result = _client.ExecuteQuery(query, parameters).ToList();
+
+            var segments = new Dictionary<Guid, Segment>();
+
+            foreach (var row in result)
+            {
+                var segmentId = Guid.Parse(row["Id"].ToString());
+
+                if (!segments.TryGetValue(segmentId, out var segment))
+                {
+                    // Segment doesn't exist in the dictionary, create a new one
+                    segment = MapSegmentWithEntities(row);
+                    segments.Add(segmentId, segment);
+                }
+
+                // Add the SegmentEntity to the existing segment if it exists in the row
+                if (ColumnExists(row, "EntityId") && ColumnExists(row, "SourceId") && ColumnExists(row, "SegmentId")
+                    && row["EntityId"] != null && row["SourceId"] != null && row["SegmentId"] != null)
+                {
+                    var newEntity = new SegmentEntity
+                    {
+                        EntityId = Convert.ToInt32((long)row["EntityId"]),
+                        SourceId = Convert.ToInt32((long)row["SourceId"]),
+                        SegmentId = segmentId
+                    };
+
+                    // Check if the entity already exists in the list before adding it
+                    if (!segment.Entities.Any(e => e.EntityId == newEntity.EntityId && e.SourceId == newEntity.SourceId))
+                    {
+                        segment.Entities.Add(newEntity);
+                    }
+                }
+            }
+
+            return segments.Values.ToList();
+        }
+
+
         private static Segment MapSegmentWithEntities(BigQueryRow row)
         {
             var segmentId = Guid.Parse(row["Id"].ToString());
@@ -613,18 +685,24 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 AlternateIdentifier = row["AlternateIdentifier"]?.ToString(),
                 AccessCategory = row["AccessCategory"]?.ToString(),
                 Offset = (long?)row["Offset"],
-                RouteEntities = new List<SegmentEntity>()
+                Entities = new List<SegmentEntity>()
             };
 
             if (ColumnExists(row, "EntityId") && ColumnExists(row, "SourceId") && ColumnExists(row, "SegmentId")
                && row["EntityId"] != null && row["SourceId"] != null && row["SegmentId"] != null)
             {
-                segment.RouteEntities.Add(new SegmentEntity
+                var newEntity = new SegmentEntity
                 {
                     EntityId = Convert.ToInt32((long)row["EntityId"]),
                     SourceId = Convert.ToInt32((long)row["SourceId"]),
-                    SegmentId = Guid.Parse(row["SegmentId"].ToString())
-                });
+                    SegmentId = segmentId
+                };
+
+                // Check if the entity already exists in the list before adding it
+                if (!segment.Entities.Any(e => e.EntityId == newEntity.EntityId && e.SourceId == newEntity.SourceId))
+                {
+                    segment.Entities.Add(newEntity);
+                }
             }
 
             return segment;

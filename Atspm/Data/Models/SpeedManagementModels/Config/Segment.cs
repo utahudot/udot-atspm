@@ -20,7 +20,7 @@ namespace Utah.Udot.Atspm.Data.Models.SpeedManagementModels.Config
         public string? AlternateIdentifier { get; set; }
         public string? AccessCategory { get; set; }
         public long? Offset { get; set; }
-        public virtual List<SegmentEntity>? RouteEntities { get; set; }
+        public virtual List<SegmentEntity>? Entities { get; set; }
 
     }
 }

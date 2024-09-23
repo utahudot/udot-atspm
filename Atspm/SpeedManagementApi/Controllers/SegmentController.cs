@@ -49,7 +49,7 @@ namespace SpeedManagementApi.Controllers
                     { "AlternateIdentifier", lookedUpSegment.AlternateIdentifier },
                     { "AccessCategory", lookedUpSegment.AccessCategory },
                     { "Offset", lookedUpSegment.Offset },
-                    { "RouteEntities", lookedUpSegment.RouteEntities }
+                    { "RouteEntities", lookedUpSegment.Entities }
                 };
                 var feature = new Feature(geometry, segment);
                 features.Add(feature);
@@ -104,7 +104,7 @@ namespace SpeedManagementApi.Controllers
                     { "AlternateIdentifier", lookedUpSegment.AlternateIdentifier },
                     { "AccessCategory", lookedUpSegment.AccessCategory },
                     { "Offset", lookedUpSegment.Offset },
-                    { "RouteEntities", lookedUpSegment.RouteEntities }
+                    { "RouteEntities", lookedUpSegment.Entities }
                 };
                 var feature = new Feature(geometry, segment);
                 features.Add(feature);
@@ -157,7 +157,7 @@ namespace SpeedManagementApi.Controllers
                 { "AlternateIdentifier", lookedUpSegment.AlternateIdentifier },
                 { "AccessCategory", lookedUpSegment.AccessCategory },
                 { "Offset", lookedUpSegment.Offset },
-                { "RouteEntities", lookedUpSegment.RouteEntities }
+                { "RouteEntities", lookedUpSegment.Entities }
             };
 
             var features = new List<Feature>();

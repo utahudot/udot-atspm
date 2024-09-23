@@ -1,11 +1,11 @@
-﻿using Google.Cloud.BigQuery.V2;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SpeedManagementImporter;
+using SpeedManagementImporter.Services.Atspm;
+using SpeedManagementImporter.Services.Clearguide;
+using SpeedManagementImporter.Services.Pems;
 using System.CommandLine;
-using Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositories;
-using Utah.Udot.Atspm.Repositories.SpeedManagementRepositories;
 
 class Program
 {
@@ -21,54 +21,40 @@ class Program
             .AddUserSecrets<Program>()
             .Build();
 
-        Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", configuration["GoogleApplicationCredentials"]);
-        services.AddSingleton(provider =>
+        // Configure logging services explicitly
+        services.AddLogging(loggingBuilder =>
         {
-            var projectId = configuration["BigQuery:ProjectId"];
-            if (string.IsNullOrEmpty(projectId))
-            {
-                throw new InvalidOperationException("ProjectId is not configured.");
-            }
-            return BigQueryClient.Create(projectId);
+            loggingBuilder.ClearProviders();  // Clear any default providers
+            loggingBuilder.AddConsole();      // Add console logging
+            loggingBuilder.AddDebug();        // Add debug logging (optional)
+            loggingBuilder.SetMinimumLevel(LogLevel.Trace); // Set minimum log level to Trace
         });
-        services.AddScoped<IHourlySpeedRepository, HourlySpeedBQRepository>(provider =>
-        {
-            var client = provider.GetRequiredService<BigQueryClient>();
-            var datasetId = configuration["BigQuery:DatasetId"];
-            var tableId = configuration["BigQuery:HourlySpeedTableId"];
-            var logger = provider.GetRequiredService<ILogger<HourlySpeedBQRepository>>();
-            return new HourlySpeedBQRepository(client, datasetId, tableId, logger);
-        });
-        services.AddScoped<ISegmentEntityRepository, SegmentEntityBQRepository>(provider =>
-        {
-            var client = provider.GetRequiredService<BigQueryClient>();
-            var datasetId = configuration["BigQuery:DatasetId"];
-            var tableId = configuration["BigQuery:RouteEntityTableId"];
-            var logger = provider.GetRequiredService<ILogger<SegmentEntityBQRepository>>();
-            return new SegmentEntityBQRepository(client, datasetId, tableId, logger);
-        });
-        services.AddScoped<ITempDataRepository, TempDataBQRepository>(provider =>
-        {
-            var client = provider.GetRequiredService<BigQueryClient>();
-            var datasetId = configuration["BigQuery:DatasetId"];
-            var tableId = configuration["BigQuery:TempDataTableId"];
-            var logger = provider.GetRequiredService<ILogger<TempDataBQRepository>>();
-            return new TempDataBQRepository(client, datasetId, tableId, logger);
-        });
-        services.AddScoped<IImporterFactory, ImporterFactory>();
 
-        services.AddLogging();
+        // Register configuration as IConfiguration
+        services.AddSingleton<IConfiguration>(configuration);
+
+        // Register download services
+        services.AddScoped<PemsDownloaderService>();
+        services.AddScoped<AtspmDownloaderService>();
+        services.AddScoped<ClearguideFileDownloaderService>();
+
+        // Set Google Cloud Credentials
+        Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", configuration["GoogleApplicationCredentials"]);
+
+        ServiceRegistrations.AddRepositories(services, configuration);
 
         // Build the service provider
         var serviceProvider = services.BuildServiceProvider();
+        var logger = serviceProvider.GetRequiredService<ILogger<Program>>();
+        logger.LogInformation("Application Starting");
 
         // Resolve the dependencies
-        var hourlySpeedRepository = serviceProvider.GetRequiredService<IHourlySpeedRepository>();
-        var routeEntityTableRepository = serviceProvider.GetRequiredService<ISegmentEntityRepository>();
-        var tempDataRepository = serviceProvider.GetRequiredService<ITempDataRepository>();
+        var pemsDownloader = serviceProvider.GetRequiredService<PemsDownloaderService>();
+        var atspmDownloader = serviceProvider.GetRequiredService<AtspmDownloaderService>();
+        var clearguideDownloader = serviceProvider.GetRequiredService<ClearguideFileDownloaderService>();
 
-
-        rootCommand.AddCommand(new Download(routeEntityTableRepository, hourlySpeedRepository, tempDataRepository, configuration));
+        // Add the download command
+        rootCommand.AddCommand(new DownloadCommand(pemsDownloader, atspmDownloader, clearguideDownloader));
 
         return await rootCommand.InvokeAsync(args);
     }

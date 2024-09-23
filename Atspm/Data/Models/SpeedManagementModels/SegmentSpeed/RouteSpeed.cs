@@ -13,6 +13,8 @@ namespace Utah.Udot.Atspm.Data.Models.SpeedManagementModels.SegmentSpeed
         public double? Percentilespd_15 { get; set; }
         public double? Percentilespd_85 { get; set; }
         public double? Percentilespd_95 { get; set; }
+        public double? MinSpeed { get; set; }
+        public double? MaxSpeed { get; set; }
         //public int? Percentilespd_99 { get; set; }
         //(Avg speed - speed limit ) /speed limit
         public long? AverageSpeedAboveSpeedLimit { get; set; }

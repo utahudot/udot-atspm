@@ -12,8 +12,12 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Text.Json.Serialization;
 using Utah.Udot.Atspm.Business.SpeedManagement.DataQuality;
 using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.CongestionTracking;
+using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.EffectivenessOfStrategies;
+using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.SpeedCompliance;
 using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.SpeedOverDistance;
 using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.SpeedOverTime;
+using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.SpeedVariability;
+using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.SpeedViolations;
 using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.ViolationsAndExtremeViolations;
 using Utah.Udot.Atspm.DataApi.Configuration;
 using Utah.Udot.Atspm.Infrastructure.Extensions;
@@ -22,10 +26,13 @@ using Utah.Udot.Atspm.Repositories.SpeedManagementRepositories;
 using Utah.Udot.Atspm.Services;
 using Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices;
 using Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices.DataQuality;
+using Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices.EffectivenessOrStrategies;
 using Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices.SegmentSpeed;
 using Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices.SpeedCompliance;
 using Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices.SpeedOverDistance;
 using Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices.SpeedOverTime;
+using Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices.SpeedVariability;
+using Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices.SpeedViolations;
 using Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices.ViolationsAndExtremeViolations;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -223,13 +230,18 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddScoped<HourlySpeedService>();
     s.AddScoped<AggregateMonthlyEventsProcessor>();
     s.AddScoped<DeleteOldEventsProcessor>();
+    s.AddScoped<SpeedOverDistanceService>();
     s.AddScoped<IReportService<CongestionTrackingOptions, CongestionTrackingDto>, CongestionTrackingService>();
     s.AddScoped<IReportService<SpeedOverTimeOptions, SpeedOverTimeDto>, SpeedOverTimeService>();
-    s.AddScoped<IReportService<SpeedOverDistanceOptions, List<SpeedComplianceDto>>, SpeedComplianceService>();
     s.AddScoped<IReportService<SpeedOverDistanceOptions, List<SpeedOverDistanceDto>>, SpeedOverDistanceService>();
+    s.AddScoped<IReportService<SpeedOverDistanceOptions, List<SpeedOverDistanceDto>>, SpeedOverDistanceService>();
+    s.AddScoped<IReportService<SpeedComplianceOptions, List<SpeedComplianceDto>>, SpeedComplianceService>();
+    s.AddScoped<IReportService<SpeedViolationsOptions, List<SpeedViolationsDto>>, SpeedViolationsService>();
+    s.AddScoped<IReportService<EffectivenessOfStrategiesOptions, List<EffectivenessOfStrategiesDto>>, EffectivenessOfStrategiesService>();
     s.AddScoped<IReportService<DataQualityOptions, List<DataQualitySource>>, DataQualityService>();
     s.AddScoped<IReportService<ViolationsAndExtremeViolationsOptions, List<ViolationsAndExtremeViolationsDto>>, ViolationsAndExtremeViolationsService>();
-
+    s.AddScoped<IReportService<SpeedVariabilityOptions, SpeedVariabilityDto>, SpeedVariabilityService>();
+    s.AddScoped<SpeedOverDistanceService>();
     //report services
 
 
