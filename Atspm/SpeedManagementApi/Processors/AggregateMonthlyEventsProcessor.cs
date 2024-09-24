@@ -160,7 +160,6 @@ namespace SpeedManagementApi.Processors
             DateTime lastDayOfPreviousMonth = new DateTime(today.Year, today.Month, 1).AddDays(-1);
             DateTime firstDayOfPreviousMonth = new DateTime(today.Year, today.Month, 1).AddMonths(-1);
             DateTime endCondition = new DateTime(today.Year, today.Month, 1).AddMonths(-1).AddYears(-2);
-            var allSegments = segmentRepository.AllSegmentsWithEntity();
 
             while (firstDayOfPreviousMonth >= endCondition)
             {
