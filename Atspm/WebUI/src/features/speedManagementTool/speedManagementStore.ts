@@ -39,7 +39,7 @@ const useSpeedManagementStore = create<StoreState>((set) => ({
   routeSpeedRequest: {
     sourceId: DataSource.PeMS,
     startDate: '2023-01-01',
-    endDate: '2024-08-30',
+    endDate: '2023-02-01',
     daysOfWeek: [1, 2, 3, 4, 5],
     analysisPeriod: AnalysisPeriod.AllDay,
     violationThreshold: 5,
@@ -53,7 +53,7 @@ const useSpeedManagementStore = create<StoreState>((set) => ({
   submittedRouteSpeedRequest: {
     sourceId: DataSource.PeMS,
     startDate: '2023-01-01',
-    endDate: '2024-08-30',
+    endDate: '2023-02-01',
     daysOfWeek: [1, 2, 3, 4, 5],
     analysisPeriod: AnalysisPeriod.AllDay,
     violationThreshold: 5,
