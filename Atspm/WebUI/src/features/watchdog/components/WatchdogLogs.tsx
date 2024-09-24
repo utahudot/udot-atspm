@@ -1,116 +1,69 @@
-import { OptionalWatchDogFilters } from '@/components/MapFilters/OptionalWatchDogFilters'
+import { StyledComponentHeader } from '@/components/HeaderStyling/StyledComponentHeader'
+import OptionalWatchDogFilters from '@/components/MapFilters/OptionalWatchDogFilters'
 import { StyledPaper } from '@/components/StyledPaper'
 import SelectDateTime from '@/components/selectTimeSpan/SelectTimeSpan'
-import { useLatestVersionOfAllLocations } from '@/features/locations/api'
-import { Location } from '@/features/locations/types/Location'
 import {
-  getIssueTypes,
-  getWatchdogLogs,
+  LogEventsData,
+  useGetIssueTypes,
+  useGetWatchdogLogs,
 } from '@/features/watchdog/api/getWatchdogLogs'
-import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined'
+import PlayArrowIcon from '@mui/icons-material/PlayArrow'
 import { LoadingButton } from '@mui/lab'
-import {
-  Alert,
-  Box,
-  Paper,
-  Theme,
-  useMediaQuery,
-  useTheme,
-} from '@mui/material'
-
+import { Alert, Box, Paper } from '@mui/material'
 import {
   DataGrid,
-  GridCellParams,
   GridColDef,
   GridToolbar,
-  GridToolbarExport,
   gridClasses,
 } from '@mui/x-data-grid'
+import { AxiosError } from 'axios'
 import { startOfToday, startOfTomorrow } from 'date-fns'
 import { useEffect, useState } from 'react'
 
-const tableCellStyle = {
-  '& table': {
-    width: '100%',
-    borderCollapse: 'collapse',
-    border: '1px solid black',
-  },
-  '& th, & td': {
-    border: '1px solid black',
-    padding: '8px',
-    textAlign: 'left',
-  },
-}
-
 const WatchDogLogs = () => {
-  const today = new Date()
-  const [location, setLocation] = useState<Location | null>(null)
-  const [locations, setLocations] = useState<Location[]>([])
-  const [locationIdentifier, setLocationidentifier] = useState<string | null>(
+  const [locationIdentifier, setLocationIdentifier] = useState<string | null>(
     null
   )
-  const [startDateTime, setStartDateTime] = useState(startOfToday())
-  const [endDateTime, setEndDateTime] = useState(startOfTomorrow())
-
+  const [startDateTime, setStartDateTime] = useState<Date>(startOfToday())
+  const [endDateTime, setEndDateTime] = useState<Date>(startOfTomorrow())
   const [areaId, setAreaId] = useState<number | null>(null)
   const [regionId, setRegionId] = useState<number | null>(null)
   const [jurisdictionId, setJurisdictionId] = useState<number | null>(null)
-  const { data } = useLatestVersionOfAllLocations()
-  const [isCheckingRecords, setIsCheckingRecords] = useState<boolean>(false)
-  const [wdData, setWData] = useState<any>(null)
-  const [selectedIssueType, setSelectedIssueType] = useState<any>(null)
-  const [issueTypes, setIssueTypes] = useState<any>(null)
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState(null)
-
-  const theme = useTheme()
-  const mode = theme.palette.mode
-  const isSmallScreen = useMediaQuery((theme: Theme) =>
-    theme.breakpoints.down('sm')
+  const [selectedIssueType, setSelectedIssueType] = useState<number | null>(
+    null
   )
-  const isMobileView = useMediaQuery(theme.breakpoints.down('md'))
+  const [issueTypes, setIssueTypes] = useState<Record<string, string> | null>(
+    null
+  )
 
-  const start = startDateTime
-  const end = endDateTime
+  const { data: issueTypesData } = useGetIssueTypes()
+  const {
+    data: watchdogLogsData,
+    isLoading: isWatchdogLogsLoading,
+    error: watchdogLogsError,
+    mutateAsync: fetchWatchdogLogs,
+  } = useGetWatchdogLogs()
 
-  const handleStartDateTimeChange = (date: Date) => {
-    setStartDateTime(date)
-  }
+  useEffect(() => {
+    if (issueTypesData) {
+      const mappedIssueTypes: Record<string, string> = issueTypesData.reduce(
+        (acc, issueType) => ({ ...acc, [issueType.id]: issueType.name }),
+        {}
+      )
+      setIssueTypes(mappedIssueTypes)
+    }
+  }, [issueTypesData])
 
-  const handleEndDateTimeChange = (date: Date) => {
-    setEndDateTime(date)
-  }
-
-  const userFiltersInput = {
-    start,
-    end,
-    areaId,
-    regionId,
-    jurisdictionId,
-    issueType: selectedIssueType,
-    locationIdentifier,
-  }
-
-  const wrappedCellStyle = (params: GridCellParams) => {
-    return (
-      <div
-        style={{
-          width: '100%',
-          maxHeight: '100px',
-          overflow: 'auto',
-          whiteSpace: 'normal',
-          overflowWrap: 'break-word',
-        }}
-      >
-        {params.value}
-      </div>
-    )
-  }
-
-  const centeredCellStyle = (params: GridCellParams) => {
-    return (
-      <div style={{ textAlign: 'center', width: '100%' }}>{params.value}</div>
-    )
+  const handleFetchData = () => {
+    fetchWatchdogLogs({
+      start: startDateTime,
+      end: endDateTime,
+      areaId,
+      regionId,
+      jurisdictionId,
+      issueType: selectedIssueType,
+      locationIdentifier,
+    })
   }
 
   const columns: GridColDef[] = [
@@ -118,288 +71,178 @@ const WatchDogLogs = () => {
       field: 'LocationIdentifier',
       headerName: 'Location',
       flex: 1,
-      minWidth: isSmallScreen ? 190 : 70,
       headerAlign: 'center',
-      renderCell: centeredCellStyle,
+      renderCell: (params) => (
+        <div style={{ textAlign: 'center', width: '100%' }}>{params.value}</div>
+      ),
     },
     {
       field: 'Timestamp',
       headerName: 'Timestamp',
       flex: 1,
-      minWidth: isSmallScreen ? 150 : 70,
       headerAlign: 'center',
-      renderCell: wrappedCellStyle,
+      renderCell: (params) => (
+        <div style={{ whiteSpace: 'normal', wordWrap: 'break-word' }}>
+          {params.value}
+        </div>
+      ),
     },
     {
       field: 'RegionDescription',
       headerName: 'Region',
       flex: 1,
-      minWidth: isSmallScreen ? 150 : 65,
       headerAlign: 'center',
-      renderCell: centeredCellStyle,
+      renderCell: (params) => (
+        <div style={{ textAlign: 'center', width: '100%' }}>{params.value}</div>
+      ),
     },
     {
       field: 'JurisdictionName',
       headerName: 'Jurisdiction',
       flex: 1,
-      minWidth: isSmallScreen ? 150 : 80,
       headerAlign: 'center',
-      renderCell: wrappedCellStyle,
+      renderCell: (params) => (
+        <div style={{ whiteSpace: 'normal', wordWrap: 'break-word' }}>
+          {params.value}
+        </div>
+      ),
     },
     {
       field: 'Areas',
       headerName: 'Areas',
       flex: 1,
-      minWidth: isSmallScreen ? 150 : 70,
       headerAlign: 'center',
-      renderCell: centeredCellStyle,
+      renderCell: (params) => (
+        <div style={{ textAlign: 'center', width: '100%' }}>{params.value}</div>
+      ),
     },
     {
       field: 'IssueType',
       headerName: 'Issue Type',
       flex: 1,
-      minWidth: isSmallScreen ? 150 : 90,
       headerAlign: 'center',
-      renderCell: centeredCellStyle,
+      renderCell: (params) => (
+        <div style={{ textAlign: 'center', width: '100%' }}>
+          {issueTypes
+            ? `${params.value} - ${issueTypes[params.value]}`
+            : params.value}
+        </div>
+      ),
     },
     {
       field: 'Phase',
       headerName: 'Phase',
       flex: 1,
-      minWidth: isSmallScreen ? 150 : 30,
       headerAlign: 'center',
-      renderCell: centeredCellStyle,
+      renderCell: (params) => (
+        <div style={{ textAlign: 'center', width: '100%' }}>{params.value}</div>
+      ),
     },
     {
       field: 'Details',
       headerName: 'Details',
       flex: 2,
-      minWidth: isSmallScreen ? 150 : undefined,
       headerAlign: 'center',
-      renderCell: wrappedCellStyle,
+      renderCell: (params) => (
+        <div
+          style={{
+            whiteSpace: 'normal',
+            wordWrap: 'break-word',
+            overflow: 'auto',
+            maxHeight: '100px',
+          }}
+        >
+          {params.value}
+        </div>
+      ),
     },
   ]
 
-  let filteredData = []
-  if (wdData && wdData.logEvents) {
-    filteredData = wdData.logEvents.map((obj: any, key: number) => {
-      let areaName = obj.areas.map((a: Area) => a.name)
-      return {
-        id: key,
-        LocationIdentifier: obj.locationIdentifier,
-        Timestamp: obj.timestamp,
-        RegionDescription: obj.regionDescription,
-        JurisdictionName: obj.jurisdictionName,
-        Areas: areaName,
-        IssueType: `${obj.issueType} - ${issueTypes[obj.issueType]}`,
-        Details: obj.details,
-        Phase: obj.phase,
-      }
-    })
-  }
+  const processedRows =
+    (watchdogLogsData as unknown as LogEventsData)?.logEvents?.map(
+      (logEvent, index: number) => ({
+        id: index,
+        LocationIdentifier: logEvent.locationIdentifier,
+        Timestamp: logEvent.timestamp,
+        RegionDescription: logEvent.regionDescription,
+        JurisdictionName: logEvent.jurisdictionName,
+        Areas: logEvent.areas.map((area) => area.name).join(', '),
+        IssueType: logEvent.issueType,
+        Phase: logEvent.phase,
+        Details: logEvent.details,
+      })
+    ) || []
 
-  const fetchData = async () => {
-    setError(null)
-    setIsCheckingRecords(true)
-    try {
-      const response = await getWatchdogLogs(userFiltersInput)
-      if (response) {
-        setWData(response)
-      }
-    } catch (error) {
-      console.error('Error fetching data:', error)
-      setWData(null)
-      setError(error.response.data)
-    } finally {
-      setIsCheckingRecords(false)
-    }
-  }
+  const startTimeToLocaleString = startDateTime.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  })
 
-  useEffect(() => {
-    const fetchIssueTypes = async () => {
-      try {
-        setIsLoading(true)
-        const response = await getIssueTypes()
+  const endTimeToLocaleString = endDateTime.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  })
 
-        if (Array.isArray(response)) {
-          let issueTypesObj: { [key: string]: string } = {}
-          response.forEach((issueType) => {
-            let formattedName = issueType.name.replace(/([A-Z])/g, ' $1').trim()
-            issueTypesObj[issueType.id] = formattedName
-          })
-          setIssueTypes(issueTypesObj)
-        }
-      } catch (err) {
-        setError(err as Error)
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    fetchIssueTypes()
-  }, [])
-
-  useEffect(() => {
-    if (data) {
-      setLocations(data.value)
-    }
-  }, [data])
-
-  useEffect(() => {
-    if (location) {
-      setLocationidentifier(location.locationIdentifier)
-    } else {
-      setLocationidentifier(null)
-    }
-  }, [location?.locationIdentifier])
-
-  const requiredClaim = 'Watchdog:View'
+  const fileName = `WatchdogData-${startTimeToLocaleString}-${endTimeToLocaleString}`
 
   return (
     <>
-      <Box
-        sx={{
-          display: 'flex',
-          gap: 2,
-          flexDirection: 'row',
-          flexWrap: 'wrap',
-        }}
-      >
-        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
-          <StyledPaper
-            sx={{
-              flexGrow: 1,
-              width: '23.188rem',
-              padding: theme.spacing(3),
-            }}
-          >
-            <SelectDateTime
-              startDateTime={startDateTime}
-              endDateTime={endDateTime}
-              changeStartDate={handleStartDateTimeChange}
-              changeEndDate={handleEndDateTimeChange}
-              noCalendar={isMobileView}
-            />
-          </StyledPaper>
-        </Box>
-        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
-          <StyledPaper
-            sx={{
-              flexGrow: 1,
-              width: '23.188rem',
-              padding: theme.spacing(3),
-            }}
-          >
-            {/* <Typography
-            sx={{
-              color: 'gray',
-              fontSize: '.9rem',
-              padding: '0px 0px 15px 0px',
-            }}
-          >
-            Optional Filters
-          </Typography> */}
+      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+        <StyledPaper sx={{ width: '23rem', padding: 3 }}>
+          <SelectDateTime
+            startDateTime={startDateTime}
+            endDateTime={endDateTime}
+            changeStartDate={setStartDateTime}
+            changeEndDate={setEndDateTime}
+          />
+        </StyledPaper>
+        <StyledPaper sx={{ width: '23rem' }}>
+          <StyledComponentHeader header="Optional Filters" />
+          <Box sx={{ padding: 3 }}>
             <OptionalWatchDogFilters
               issueType={issueTypes}
               setSelectedIssueType={setSelectedIssueType}
               setAreaId={setAreaId}
               setRegionId={setRegionId}
               setJurisdictionId={setJurisdictionId}
+              setLocationIdentifier={setLocationIdentifier}
             />
-          </StyledPaper>
-        </Box>
+          </Box>
+        </StyledPaper>
       </Box>
-      {
-        <Box
-          sx={{
-            display: 'flex',
-            width: '100%',
-          }}
-        >
-          <LoadingButton
-            loading={isLoading}
-            loadingPosition="start"
-            startIcon={<DescriptionOutlinedIcon />}
-            variant="contained"
-            sx={{ margin: '20px 0', padding: '10px' }}
-            onClick={fetchData}
-          >
-            Generate Report
-          </LoadingButton>
-          {wdData?.logEvents.length === 0 && (
-            <Box
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                marginLeft: '1rem',
-              }}
-            >
-              <Alert severity="warning">No data available in date range</Alert>
-            </Box>
-          )}
-          {/* {error && (
-                <Box
-                  sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    marginLeft: '1rem',
-                  }}
-                >
-                  <Alert severity="error">{error}</Alert>
-                </Box>
-              )} */}
-        </Box>
-      }
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          minWidth: '375px',
-          padding: '1px',
-          [theme.breakpoints.up('md')]: {
-            maxWidth: '100%',
-          },
-        }}
+
+      <LoadingButton
+        loading={isWatchdogLogsLoading}
+        startIcon={<PlayArrowIcon />}
+        loadingPosition="start"
+        variant="contained"
+        onClick={handleFetchData}
+        sx={{ marginY: 3, padding: '10px' }}
       >
-        {filteredData.length > 0 && (
+        Generate Report
+      </LoadingButton>
+
+      {watchdogLogsError && (
+        <Alert severity="error">
+          {(watchdogLogsError as AxiosError).message}
+        </Alert>
+      )}
+
+      <Box sx={{ width: '100%' }}>
+        {processedRows.length > 0 && (
           <Paper>
             <DataGrid
               getRowHeight={() => 'auto'}
-              rows={filteredData}
+              rows={processedRows}
               columns={columns}
               disableDensitySelector
               slots={{ toolbar: GridToolbar }}
-              components={{ Toolbar: GridToolbarExport }}
-              componentsProps={{
+              slotProps={{
                 toolbar: {
-                  csvOptions: {
-                    fileName: `WatchDogData-${start.toLocaleDateString(
-                      'en-US',
-                      {
-                        year: 'numeric',
-                        month: '2-digit',
-                        day: '2-digit',
-                      }
-                    )}-${end.toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: '2-digit',
-                      day: '2-digit',
-                    })}`,
-                  },
-                  printOptions: {
-                    fileName: `WatchDogData-${start.toLocaleDateString(
-                      'en-US',
-                      {
-                        year: 'numeric',
-                        month: '2-digit',
-                        day: '2-digit',
-                      }
-                    )}-${end.toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: '2-digit',
-                      day: '2-digit',
-                    })}`,
-                  },
+                  csvOptions: { fileName },
+                  printOptions: { fileName },
                 },
               }}
               pageSizeOptions={[{ value: 100, label: '100' }]}
@@ -407,22 +250,18 @@ const WatchDogLogs = () => {
                 [`& .${gridClasses.cell}`]: {
                   paddingTop: '20px',
                   paddingBottom: '20px',
-                  ...tableCellStyle,
                 },
                 [`& .${gridClasses.columnHeaders}`]: {
                   position: 'sticky',
                   top: '30px',
-                  backgroundColor: mode === 'light' ? 'white' : '#1F2A40',
+                  backgroundColor: 'white',
                   zIndex: '1',
                 },
                 [`& .${gridClasses.toolbarContainer}`]: {
                   position: 'sticky',
                   top: '0',
-                  backgroundColor: mode === 'light' ? 'white' : '#1F2A40',
+                  backgroundColor: 'white',
                   zIndex: '1',
-                },
-                [`& .${gridClasses.main}`]: {
-                  overflow: 'inherit',
                 },
               }}
             />

@@ -6,14 +6,7 @@ import {
   useEditWatchdogIgnoreEvents,
   useGetWatchdogIgnoreEvents,
 } from '@/features/watchdog/api/watchdogIgnoreEvents'
-import {
-  Box,
-  Button,
-  Divider,
-  Paper,
-  Skeleton,
-  Typography,
-} from '@mui/material'
+import { Box, Button, Divider, Paper, Typography } from '@mui/material'
 import { addDays, format } from 'date-fns'
 import { useEffect, useState } from 'react'
 
@@ -186,7 +179,7 @@ const WatchdogEditor = ({ handler }: WatchdogEditorProps) => {
   }
 
   if (isLoading) {
-    return <Skeleton height={'600px'}>Loading...</Skeleton>
+    return <Box height={'700px'}>Loading...</Box>
   }
 
   return (
@@ -222,7 +215,10 @@ const WatchdogEditor = ({ handler }: WatchdogEditorProps) => {
                 <Typography variant="subtitle1" fontWeight="bold">
                   {option.label}
                 </Typography>
-                <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                <Typography
+                  variant="body2"
+                  sx={{ color: 'text.secondary', maxWidth: '750px' }}
+                >
                   {option.description}
                 </Typography>
               </Box>
@@ -231,7 +227,6 @@ const WatchdogEditor = ({ handler }: WatchdogEditorProps) => {
                 color={isIgnored ? 'warning' : 'success'}
                 variant="contained"
                 sx={{
-                  borderRadius: '20px',
                   px: 2,
                   textTransform: 'none',
                 }}

@@ -26,7 +26,7 @@ namespace Utah.Udot.Atspm.Business.Watchdog
         public int? IssueType { get; set; }
         public DateTime Start { get; set; }
         public DateTime End { get; set; }
-        public string LocationIdentifier { get; set; }
+        public string? LocationIdentifier { get; set; }
         public bool IsFilteredEvents { get; set; } = false;
     }
 }
