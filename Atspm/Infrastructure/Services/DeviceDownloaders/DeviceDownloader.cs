@@ -58,7 +58,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders
         public virtual string GenerateLocalFilePath(Device value, string file)
         {
             var result = Path.Combine
-                (_options.LocalPath,
+                (_options.BasePath,
                 $"{value.Location?.LocationIdentifier} - {value.Location?.PrimaryName}",
                 value.DeviceType.ToString(),
                 value.Ipaddress.ToString(),
@@ -177,7 +177,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders
                                 logMessages.OperationCancelledException(locationIdentifier, ipaddress, e);
                             }
 
-                            if (_options.DeleteFile)
+                            if (_options.DeleteRemoteFile)
                             {
                                 try
                                 {

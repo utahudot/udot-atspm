@@ -25,18 +25,23 @@ namespace Utah.Udot.Atspm.Configuration
     public class DeviceDownloaderConfiguration
     {
         /// <summary>
-        /// Local path to store downloaded event logs
+        /// Base path to store downloaded event logs
         /// </summary>
-        public string LocalPath { get; set; }
+        public string BasePath { get; set; }
 
         /// <summary>
         /// Flag for deleting remote file after downloading
         /// </summary>
-        public bool DeleteFile { get; set; }
+        public bool DeleteRemoteFile { get; set; }
 
         /// <summary>
-        /// Flag to ping <see cref="Device"/> to verify <see cref="Device.Ipaddress"/>
+        /// Flag to ping <see cref="Device"/> to verify <see cref="Device.Ipaddress"/> before downloading
         /// </summary>
         public bool Ping { get; set; }
+
+        public override string ToString()
+        {
+            return $"{BasePath} - {DeleteRemoteFile} - {Ping}";
+        }
     }
 }

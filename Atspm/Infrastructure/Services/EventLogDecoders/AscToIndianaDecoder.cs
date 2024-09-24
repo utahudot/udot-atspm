@@ -30,14 +30,6 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.EventLogDecoders
 
         #region Methods
 
-        //public override bool CanExecute(Tuple<Device, FileInfo> parameter)
-        //{
-        //    var device = parameter.Item1;
-        //    var file = parameter.Item2;
-
-        //    return base.CanExecute(parameter) && file.Exists && (file.Extension == ".dat" || file.Extension == ".datZ" || file.Extension == ".DAT");
-        //}
-
         //HACK: need to use extension methods and GetFileSignatureFromMagicHeader to get compression type
         /// <inheritdoc/>
         public override Stream Decompress(Stream stream)

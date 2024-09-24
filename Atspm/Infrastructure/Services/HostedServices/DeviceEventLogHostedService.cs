@@ -57,6 +57,8 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
 
             using (var scope = _services.CreateAsyncScope())
             {
+                scope.ServiceProvider.PrintHostInformation();
+
                 var workflow = new DeviceEventLogWorkflow(_services, _options.Value.BatchSize, _options.Value.ParallelProcesses, cancellationToken);
 
                 var repo = scope.ServiceProvider.GetService<IDeviceRepository>();

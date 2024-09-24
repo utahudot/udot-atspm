@@ -40,9 +40,10 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
                     r.ErrorMessage = "Can't use exclude option when also using include option";
             });
 
+            AddArgument(DeleteRemoteFileArg);
+            AddArgument(DeleteImportSourceArg);
             AddArgument(PingDeviceArg);
-            AddArgument(DeleteLocalFileArg);
-
+            
             AddOption(PathCommandOption);
             AddOption(BatchSizeOption);
             AddOption(PrallelProcessesOption);
@@ -58,9 +59,11 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
             AddOption(DeviceStatusCommandOption);
         }
 
-        public Argument<bool> PingDeviceArg { get; set; } = new Argument<bool>("ping", () => true, "Ping to verify device is online");
+        public Argument<bool?> DeleteRemoteFileArg { get; set; } = new Argument<bool?>("delete local", "Delete the remote file on the device after downloading");
 
-        public Argument<bool> DeleteLocalFileArg { get; set; } = new Argument<bool>("delete local", () => false, "Delete local file");
+        public Argument<bool?> DeleteImportSourceArg { get; set; } = new Argument<bool?>("delete source", "Delete the local import source after importing");
+
+        public Argument<bool?> PingDeviceArg { get; set; } = new Argument<bool?>("ping", "Ping to verify device is online before downloading");
 
         public PathCommandOption PathCommandOption { get; set; } = new();
 
@@ -90,30 +93,72 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
         {
             services.Configure<DeviceEventLoggingConfiguration>(host.Configuration.GetSection(nameof(DeviceEventLoggingConfiguration)));
 
-            var parentBinder = new ModelBinder<DeviceEventLoggingConfiguration>();
+            var deviceEventLoggingConfiguration = new ModelBinder<DeviceEventLoggingConfiguration>();
 
-            parentBinder.BindMemberFromValue(b => b.Path, PathCommandOption);
-            parentBinder.BindMemberFromValue(b => b.BatchSize, BatchSizeOption);
-            parentBinder.BindMemberFromValue(b => b.ParallelProcesses, PrallelProcessesOption);
+            deviceEventLoggingConfiguration.BindMemberFromValue(b => b.Path, PathCommandOption);
+            deviceEventLoggingConfiguration.BindMemberFromValue(b => b.BatchSize, BatchSizeOption);
+            deviceEventLoggingConfiguration.BindMemberFromValue(b => b.ParallelProcesses, PrallelProcessesOption);
 
-            var childBinder = new ModelBinder<DeviceEventLoggingQueryOptions>();
+            var deviceEventLoggingQueryOptions = new ModelBinder<DeviceEventLoggingQueryOptions>();
 
-            childBinder.BindMemberFromValue(b => b.IncludedLocations, IncludeOption);
-            childBinder.BindMemberFromValue(b => b.ExcludedLocations, ExcludeOption);
-            childBinder.BindMemberFromValue(b => b.IncludedAreas, AreaOption);
-            childBinder.BindMemberFromValue(b => b.IncludedJurisdictions, JurisdictionOption);
-            childBinder.BindMemberFromValue(b => b.IncludedRegions, RegionOption);
-            childBinder.BindMemberFromValue(b => b.IncludedLocationTypes, LocationTypeOption);
-            childBinder.BindMemberFromValue(b => b.DeviceType, DeviceTypeOption);
-            childBinder.BindMemberFromValue(b => b.TransportProtocol, TransportProtocolOption);
-            childBinder.BindMemberFromValue(b => b.TransportProtocol, TransportProtocolOption);
+            deviceEventLoggingQueryOptions.BindMemberFromValue(b => b.IncludedLocations, IncludeOption);
+            deviceEventLoggingQueryOptions.BindMemberFromValue(b => b.ExcludedLocations, ExcludeOption);
+            deviceEventLoggingQueryOptions.BindMemberFromValue(b => b.IncludedAreas, AreaOption);
+            deviceEventLoggingQueryOptions.BindMemberFromValue(b => b.IncludedJurisdictions, JurisdictionOption);
+            deviceEventLoggingQueryOptions.BindMemberFromValue(b => b.IncludedRegions, RegionOption);
+            deviceEventLoggingQueryOptions.BindMemberFromValue(b => b.IncludedLocationTypes, LocationTypeOption);
+            deviceEventLoggingQueryOptions.BindMemberFromValue(b => b.DeviceType, DeviceTypeOption);
+            deviceEventLoggingQueryOptions.BindMemberFromValue(b => b.TransportProtocol, TransportProtocolOption);
+            deviceEventLoggingQueryOptions.BindMemberFromValue(b => b.TransportProtocol, TransportProtocolOption);
+
+            //var deviceDownloaderConfiguration = new ModelBinder<DeviceDownloaderConfiguration>();
+            //deviceDownloaderConfiguration.BindMemberFromValue(b => b.BasePath, PathCommandOption);
+            //deviceDownloaderConfiguration.BindMemberFromValue(b => b.DeleteRemoteFile, DeleteRemoteFileArg);
+            //deviceDownloaderConfiguration.BindMemberFromValue(b => b.Ping, PingDeviceArg);
+
+            //var eventLogImporterConfiguration = new ModelBinder<EventLogImporterConfiguration>();
+            //eventLogImporterConfiguration.BindMemberFromValue(b => b.DeleteSource, DeleteImportSourceArg);
 
             services.AddOptions<DeviceEventLoggingConfiguration>()
                 .Configure<BindingContext>((a, b) =>
                 {
-                    parentBinder.UpdateInstance(a, b);
-                    childBinder.UpdateInstance(a.DeviceEventLoggingQueryOptions, b);
+                    deviceEventLoggingConfiguration.UpdateInstance(a, b);
+                    deviceEventLoggingQueryOptions.UpdateInstance(a.DeviceEventLoggingQueryOptions, b);
                 });
+
+            //services.AddOptions<DeviceDownloaderConfiguration>()
+            //    .Configure<BindingContext>((a, b) =>
+            //    {
+            //        deviceDownloaderConfiguration.UpdateInstance(a, b);
+            //    });
+
+            //services.AddOptions<EventLogImporterConfiguration>()
+            //    .Configure<BindingContext>((a, b) =>
+            //    {
+            //        eventLogImporterConfiguration.UpdateInstance(a, b);
+            //    });
+
+            //Console.WriteLine($"{nameof(this.DeleteRemoteFileArg)} : {host.GetInvocationContext().ParseResult.GetValueForArgument(DeleteRemoteFileArg)}");
+            //Console.WriteLine($"{nameof(this.DeleteImportSourceArg)} : {host.GetInvocationContext().ParseResult.GetValueForArgument(DeleteImportSourceArg)}");
+            //Console.WriteLine($"{nameof(this.PingDeviceArg)} : {host.GetInvocationContext().ParseResult.GetValueForArgument(PingDeviceArg)}");
+
+            //services.PostConfigure<DeviceDownloaderConfiguration>(o =>
+            //{
+            //    var deleteRemoteFile = host.GetInvocationContext().ParseResult.GetValueForArgument(DeleteRemoteFileArg);
+            //    var ping = host.GetInvocationContext().ParseResult.GetValueForArgument(PingDeviceArg);
+            //    var path = host.GetInvocationContext().ParseResult.GetValueForOption(PathCommandOption);
+
+            //    if (deleteRemoteFile != null) o.DeleteRemoteFile = (bool)deleteRemoteFile;
+            //    if (ping != null) o.Ping = (bool)ping;
+            //    if (!string.IsNullOrEmpty(path)) o.BasePath = path;
+            //});
+
+            //services.PostConfigureAll<EventLogImporterConfiguration>(o =>
+            //{
+            //    var deleteSource = host.GetInvocationContext().ParseResult.GetValueForArgument(DeleteRemoteFileArg);
+
+            //    if (deleteSource != null) o.DeleteSource = (bool)deleteSource;
+            //});
 
             services.AddHostedService<DeviceEventLogHostedService>();
         }

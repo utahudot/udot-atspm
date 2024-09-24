@@ -40,9 +40,9 @@ namespace Utah.Udot.Atspm.InfrastructureTests.DeviceDownloaderTests
     //        .AddLogging(lb => lb.AddXunitOutput())
     //        .PostConfigureAll<DeviceDownloaderConfiguration>(o =>
     //                {
-    //                    o.LocalPath = "C:\\temp3";
+    //                    o.BasePath = "C:\\temp3";
     //                    o.Ping = true;
-    //                    o.DeleteFile = false;
+    //                    o.DeleteSource = false;
     //                })
     //        .AddDownloaderClients()
     //        .AddDeviceDownloaders(context);
@@ -253,11 +253,11 @@ namespace Utah.Udot.Atspm.InfrastructureTests.DeviceDownloaderTests
 
         //    //Mock.Get(mockConfig).Setup(s => s.Value).Returns(new DeviceDownloaderConfiguration()
         //    //{
-        //    //    LocalPath = Path.GetTempPath(),
+        //    //    BasePath = Path.GetTempPath(),
         //    //    Ping = false
         //    //});
 
-        //    //var verifyPath = Path.Combine(mockConfig.Value.LocalPath, downloader.Name);
+        //    //var verifyPath = Path.Combine(mockConfig.Value.BasePath, downloader.Name);
         //    //var directory = "\\dir";
 
         //    //Mock.Get(mockClient).Setup(s => s.ConnectAsync(It.IsAny<IPEndPoint>(), It.IsAny<NetworkCredential>(), 0, 0, default)).Returns(Task.CompletedTask).Verifiable();
@@ -314,11 +314,11 @@ namespace Utah.Udot.Atspm.InfrastructureTests.DeviceDownloaderTests
 
         //    //Mock.Get(mockConfig).Setup(s => s.Value).Returns(new DeviceDownloaderConfiguration()
         //    //{
-        //    //    LocalPath = "C:\\TestPath",
+        //    //    BasePath = "C:\\TestPath",
         //    //    Ping = false
         //    //});
 
-        //    //var verifyPath = Path.Combine(mockConfig.Value.LocalPath, Location.LocationIdentifier);
+        //    //var verifyPath = Path.Combine(mockConfig.Value.BasePath, Location.LocationIdentifier);
         //    //var ftpDirectory = "\\dir";
 
         //    //Mock.Get(mockClient).Setup(s => s.ConnectAsync(It.IsAny<NetworkCredential>(), 0, 0, default)).Returns(Task.CompletedTask).Verifiable();

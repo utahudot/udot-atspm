@@ -29,14 +29,6 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.EventLogDecoders
 
         #region Methods
 
-        //public override bool CanExecute(Tuple<Device, FileInfo> parameter)
-        //{
-        //    var device = parameter.Item1;
-        //    var file = parameter.Item2;
-
-        //    return base.CanExecute(parameter) && (file.Extension == ".xml" || file.Extension == ".XML");
-        //}
-
         /// <inheritdoc/>
         public override IEnumerable<IndianaEvent> Decode(Device device, Stream stream, CancellationToken cancelToken = default)
         {
