@@ -27,7 +27,6 @@ const SegmentPolylines: React.FC<SegmentPolylinesProps> = memo(function SegmentP
   zoomLevel 
 }) {
 
-  console.log('maptsx ', segments)
   return (
     <>
       {segments.map((segment, index) => (

@@ -14,7 +14,7 @@ import { GridColDef } from '@mui/x-data-grid'
 import { useEffect, useState } from 'react'
 
 const ImpactAdmin = () => {
-  const pageAccess = useViewPage(PageNames.Impacts)
+  useViewPage(PageNames.Impacts)
 
   const [data, setData] = useState<any>(null)
   const headers: GridColDef[] = pageNameToHeaders.get(
@@ -57,6 +57,7 @@ const ImpactAdmin = () => {
           impactTypes,
           segmentIds,
         })
+        
     } catch (error) {
       console.error('Mutation Error:', error)
     }
