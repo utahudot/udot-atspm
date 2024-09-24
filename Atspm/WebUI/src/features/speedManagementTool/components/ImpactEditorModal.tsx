@@ -18,9 +18,9 @@ import {
 import { useTheme } from '@mui/material/styles'
 import { useRouter } from 'next/router'
 import React, { useEffect, useState } from 'react'
-import { useGetImpactTypes } from '../api/getImpactTypes'
 import SegmentSelectMap from './SegmentSelectMap'
 import { useGetSegments } from '../api/getSegments'
+import { useGetApiV1ImpactType } from '@/api/speedManagement/aTSPMSpeedManagementApi'
 interface ImpactEditorModalProps {
   data?: Impact
   open?: boolean
@@ -63,7 +63,7 @@ const ImpactEditorModal: React.FC<ImpactEditorModalProps> = ({
   })
 
   const { data: impactTypeData, isLoading: isLoadingImpactTypes } =
-    useGetImpactTypes()
+    useGetApiV1ImpactType()
   const router = useRouter()
   const theme = useTheme()
 
@@ -321,11 +321,11 @@ const ImpactEditorModal: React.FC<ImpactEditorModalProps> = ({
       </Box>
       <DialogActions sx={{ justifyContent: 'space-between' }}>
         <Box>
-          {errors.segmentIds && (
+          {/* {errors?.segmentIds && (
             <Alert severity="error" sx={{ marginLeft: 1 }}>
               Please add Segments using the map below
             </Alert>
-          )}
+          )} */}
         </Box>
 
         <Box sx={{ display: 'flex', gap: 1 }}>
