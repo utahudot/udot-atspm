@@ -24,7 +24,11 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices.SpeedO
             {
                 return null;
             }
-            var monthlyAggregations = await monthlyAggregationRepository.MonthlyAggregationsForSegmentInTimePeriod(parameter.SegmentIds, parameter.StartDate, parameter.EndDate);
+
+            DateTime endDate = new DateTime(parameter.EndDate.Year, parameter.EndDate.Month, 1).AddMonths(1).AddDays(-1);
+            DateTime startDate = new DateTime(parameter.StartDate.Year, parameter.StartDate.Month, 1);
+
+            var monthlyAggregations = await monthlyAggregationRepository.MonthlyAggregationsForSegmentInTimePeriod(parameter.SegmentIds, startDate, endDate);
             var aggregationsBySegment = monthlyAggregations.GroupBy(x => x.SegmentId);
             List<Segment> segments = await segmentRepository.GetSegmentsDetailsWithEntity(parameter.SegmentIds);
             foreach (var monthlyAggregation in aggregationsBySegment)
