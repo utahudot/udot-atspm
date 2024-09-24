@@ -52,9 +52,9 @@ export default function transformSpeedOverTimeData(
         (new Date(startTime).getTime() + new Date(endTime).getTime()) / 2
       ).toISOString()
 
-      const impactInfo = `{plan|${
-        impact.description
-      }}\n{info|${impact.impactTypes.map((type) => type.name).join(', ')}}`
+      const impactInfo = `Impacts: {info|${impact.impactTypes
+        .map((type) => type.name)
+        .join(', ')}}`
 
       planData.push([middleTime, 1, impactInfo])
     })

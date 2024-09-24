@@ -1,10 +1,15 @@
+import { Segment } from '@/api/speedManagement/aTSPMSpeedManagementApi.schemas'
 import { getEnv } from '@/lib/getEnv'
 import { Box } from '@mui/material'
 import L, { Map as LeafletMap } from 'leaflet'
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react'
 import { MapContainer, Polyline, TileLayer } from 'react-leaflet'
-
-// ... (interfaces remain the same)
+interface SegmentPolylinesProps {
+  segments: Segment[];
+  selectedSegmentIds: string[]; 
+  onSegmentSelect: (id: string, startMile: number, endMile: number) => void;
+  zoomLevel: number;
+}
 
 const getPolylineWeight = (zoom: number) => {
   if (zoom >= 18) return 10
@@ -15,12 +20,14 @@ const getPolylineWeight = (zoom: number) => {
   return 2
 }
 
-const SegmentPolylines = memo(function SegmentPolylines({ 
+const SegmentPolylines: React.FC<SegmentPolylinesProps> = memo(function SegmentPolylines({ 
   segments, 
   selectedSegmentIds, 
   onSegmentSelect, 
   zoomLevel 
 }) {
+
+  console.log('maptsx ', segments)
   return (
     <>
       {segments.map((segment, index) => (
