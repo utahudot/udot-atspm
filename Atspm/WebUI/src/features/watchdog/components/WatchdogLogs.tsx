@@ -7,13 +7,19 @@ import {
   useGetIssueTypes,
   useGetWatchdogLogs,
 } from '@/features/watchdog/api/getWatchdogLogs'
+import NotificationsPausedIcon from '@mui/icons-material/NotificationsPaused'
 import PlayArrowIcon from '@mui/icons-material/PlayArrow'
 import { LoadingButton } from '@mui/lab'
-import { Alert, Box, Paper } from '@mui/material'
+import { Alert, Box, Button, Checkbox, Paper, Tooltip } from '@mui/material'
 import {
   DataGrid,
   GridColDef,
-  GridToolbar,
+  GridToolbarColumnsButton,
+  GridToolbarContainer,
+  GridToolbarDensitySelector,
+  GridToolbarExport,
+  GridToolbarFilterButton,
+  GridToolbarProps,
   gridClasses,
 } from '@mui/x-data-grid'
 import { AxiosError } from 'axios'
@@ -35,6 +41,8 @@ const WatchDogLogs = () => {
   const [issueTypes, setIssueTypes] = useState<Record<string, string> | null>(
     null
   )
+  const [isIconClicked, setIsIconClicked] = useState(false)
+  const [selectedRows, setSelectedRows] = useState<number[]>([])
 
   const { data: issueTypesData } = useGetIssueTypes()
   const {
@@ -64,6 +72,44 @@ const WatchDogLogs = () => {
       issueType: selectedIssueType,
       locationIdentifier,
     })
+  }
+
+  const handleIconClick = () => {
+    setIsIconClicked(!isIconClicked)
+  }
+
+  const handleCancelClick = () => {
+    setIsIconClicked(false)
+    setSelectedRows([]) // Reset selected rows when cancelling
+  }
+
+  const handleIgnoreEventsClick = () => {
+    console.log('Ignore Events button clicked')
+    console.log('Selected Rows:', selectedRows)
+    // Future implementation: Open a popup with a time range input
+  }
+
+  const checkboxColumn: GridColDef = {
+    field: 'checkbox',
+    headerName: '',
+    width: 50,
+    renderCell: (params) => {
+      const isSelected = selectedRows.includes(params.id as number)
+      const handleChange = (event) => {
+        if (event.target.checked) {
+          setSelectedRows((prev) => [...prev, params.id as number])
+        } else {
+          setSelectedRows((prev) => prev.filter((id) => id !== params.id))
+        }
+      }
+      return (
+        <Checkbox
+          checked={isSelected}
+          onChange={handleChange}
+          color="primary"
+        />
+      )
+    },
   }
 
   const columns: GridColDef[] = [
@@ -158,6 +204,10 @@ const WatchDogLogs = () => {
     },
   ]
 
+  const columnsWithCheckbox = isIconClicked
+    ? [checkboxColumn, ...columns]
+    : columns
+
   const processedRows =
     (watchdogLogsData as unknown as LogEventsData)?.logEvents?.map(
       (logEvent, index: number) => ({
@@ -186,6 +236,72 @@ const WatchDogLogs = () => {
   })
 
   const fileName = `WatchdogData-${startTimeToLocaleString}-${endTimeToLocaleString}`
+
+  const CustomToolbar = (props: GridToolbarProps) => {
+    const { csvOptions, printOptions } = props
+
+    return (
+      <GridToolbarContainer>
+        <Box sx={{ flexGrow: 1 }}>
+          <GridToolbarColumnsButton />
+          <GridToolbarFilterButton />
+          <GridToolbarDensitySelector />
+          <GridToolbarExport
+            csvOptions={csvOptions}
+            printOptions={printOptions}
+          />
+        </Box>
+        <Box
+          sx={{ display: 'flex', alignItems: 'center', position: 'relative' }}
+        >
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              transform: isIconClicked ? 'translateX(-300px)' : 'translateX(0)',
+            }}
+          >
+            <Button
+              onClick={handleIconClick}
+              sx={{ color: 'red', minWidth: 'auto' }}
+              aria-label="Ignore Events"
+            >
+              <Tooltip title="Ignore Events" placement="top">
+                <NotificationsPausedIcon />
+              </Tooltip>
+            </Button>
+          </Box>
+          {isIconClicked && (
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                position: 'absolute',
+                right: 0,
+              }}
+            >
+              <Button
+                onClick={handleIgnoreEventsClick}
+                variant="contained"
+                color="primary"
+                sx={{ marginRight: 1, width: '200px' }}
+                disabled={selectedRows.length === 0}
+              >
+                Ignore Events
+              </Button>
+              <Button
+                onClick={handleCancelClick}
+                variant="outlined"
+                color="primary"
+              >
+                Cancel
+              </Button>
+            </Box>
+          )}
+        </Box>
+      </GridToolbarContainer>
+    )
+  }
 
   return (
     <>
@@ -234,11 +350,10 @@ const WatchDogLogs = () => {
         {processedRows.length > 0 && (
           <Paper>
             <DataGrid
-              getRowHeight={() => 'auto'}
               rows={processedRows}
-              columns={columns}
+              columns={columnsWithCheckbox}
               disableDensitySelector
-              slots={{ toolbar: GridToolbar }}
+              slots={{ toolbar: CustomToolbar }}
               slotProps={{
                 toolbar: {
                   csvOptions: { fileName },
@@ -253,7 +368,6 @@ const WatchDogLogs = () => {
                 },
                 [`& .${gridClasses.columnHeaders}`]: {
                   position: 'sticky',
-                  top: '30px',
                   backgroundColor: 'white',
                   zIndex: '1',
                 },
@@ -262,6 +376,7 @@ const WatchDogLogs = () => {
                   top: '0',
                   backgroundColor: 'white',
                   zIndex: '1',
+                  pb: '5px',
                 },
               }}
             />
