@@ -1021,17 +1021,14 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             var query = $@"
             SELECT * FROM `{_datasetId}.{_tableId}` 
                 WHERE 
-                Date BETWEEN @startDate AND @endDate AND
-                BinStartTime BETWEEN @startTime AND @endTime
+                Date BETWEEN @startDate AND @endDate
                 AND SegmentId IN ({ids})";
 
             var parameters = new List<BigQueryParameter>();
             parameters.AddRange(new BigQueryParameter[]
                 {
                     new BigQueryParameter("startDate", BigQueryDbType.Date, convertedStartDate.ToDateTime(new TimeOnly(0, 0))),
-                    new BigQueryParameter("endDate", BigQueryDbType.Date, convertedEndDate.ToDateTime(new TimeOnly(0, 0))),
-                    new BigQueryParameter("startTime", BigQueryDbType.Time, convertedStartTime.ToTimeSpan()),
-                    new BigQueryParameter("endTime", BigQueryDbType.Time, convertedEndTime.ToTimeSpan())
+                    new BigQueryParameter("endDate", BigQueryDbType.Date, convertedEndDate.ToDateTime(new TimeOnly(0, 0)))
                 });
 
             var result = await _client.ExecuteQueryAsync(query, parameters);
