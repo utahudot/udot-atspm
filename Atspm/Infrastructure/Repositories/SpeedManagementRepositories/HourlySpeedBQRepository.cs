@@ -222,7 +222,8 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 AVG(Violation) AS Violation,
                 AVG(ExtremeViolation) AS ExtremeViolation,
                 MIN(MinSpeed) AS MinSpeed,
-                MAX(MaxSpeed) AS MaxSpeed
+                MAX(MaxSpeed) AS MaxSpeed,
+                AVG(Flow) AS Flow
             FROM `{_datasetId}.{_tableId}`
             WHERE 
                 SegmentId = @segmentId AND
@@ -241,20 +242,28 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
         };
 
             var queryResults = await _client.ExecuteQueryAsync(query, parameters);
-            return queryResults.Select(row => new MonthlyAverage
+            try
             {
-                Month = DateTime.Parse(row["Month"].ToString()),
-                Average = Convert.ToDouble(row["Average"]),
-                FifteenthSpeed = Convert.ToDouble(row["FifteenthSpeed"]),
-                EightyFifthSpeed = Convert.ToDouble(row["EightyFifthSpeed"]),
-                NinetyFifthSpeed = Convert.ToDouble(row["NinetyFifthSpeed"]),
-                NinetyNinthSpeed = Convert.ToDouble(row["NinetyNinthSpeed"]),
-                Violation = Convert.ToDouble(row["Violation"]),
-                ExtremeViolation = Convert.ToDouble(row["ExtremeViolation"]),
-                Flow = Convert.ToDouble(row["Flow"]),
-                MaxSpeed = Convert.ToDouble(row["MaxSpeed"]),
-                MinSpeed = Convert.ToDouble(row["MinSpeed"]),
-            }).ToList();
+                return queryResults.Select(row => new MonthlyAverage
+                {
+                    Month = DateTime.Parse(row["Month"].ToString()),
+                    Average = Convert.ToDouble(row["Average"]),
+                    FifteenthSpeed = Convert.ToDouble(row["FifteenthSpeed"]),
+                    EightyFifthSpeed = Convert.ToDouble(row["EightyFifthSpeed"]),
+                    NinetyFifthSpeed = Convert.ToDouble(row["NinetyFifthSpeed"]),
+                    NinetyNinthSpeed = Convert.ToDouble(row["NinetyNinthSpeed"]),
+                    Violation = Convert.ToDouble(row["Violation"]),
+                    ExtremeViolation = Convert.ToDouble(row["ExtremeViolation"]),
+                    Flow = Convert.ToDouble(row["Flow"]),
+                    MaxSpeed = Convert.ToDouble(row["MaxSpeed"]),
+                    MinSpeed = Convert.ToDouble(row["MinSpeed"]),
+                }).ToList();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting monthly averages");
+                throw;
+            }
         }
 
         public async Task<List<DailyAverage>> GetDailyAveragesAsync(Guid segmentId, DateOnly startDate, DateOnly endDate, string daysOfWeek)
@@ -481,10 +490,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             var percentile15 = row["Percentilespd_15"] != null ? double.Parse(row["Percentilespd_15"].ToString()) : (double?)null;
             var percentile85 = row["Percentilespd_85"] != null ? double.Parse(row["Percentilespd_85"].ToString()) : (double?)null;
             var percentile95 = row["Percentilespd_95"] != null ? double.Parse(row["Percentilespd_95"].ToString()) : (double?)null;
-            var sourceDataAnalyzed = row["SourceDataAnalyzed"] != null ? bool.Parse(row["SourceDataAnalyzed"].ToString()) : (bool?)null;
             var flow = row["Flow"];
-            var minSpeed = row["MinSpeed"];
-            var maxSpeed = row["MaxSpeed"];
             var estimatedViolations = row["EstimatedViolations"];
             var speedLimit = row["SpeedLimit"];
             var name = row["Name"];
@@ -505,8 +511,6 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 EstimatedViolations = estimatedViolations != null ? (long)estimatedViolations : null,
                 SpeedLimit = speedLimit != null ? (long)speedLimit : 0,
                 Shape = shape,
-                MinSpeed = minSpeed != null ? (double)minSpeed : null,
-                MaxSpeed = maxSpeed != null ? (double)maxSpeed : null
             };
         }
 

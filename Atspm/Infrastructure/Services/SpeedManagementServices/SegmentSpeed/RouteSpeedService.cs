@@ -34,7 +34,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices.Segmen
                 SegmentId = options.SegmentId
             };
 
-            var sources = new List<int> { 1, 3 };
+            var sources = new List<int> { 1, 2, 3 };
             var dayOfWeekValues = options.DaysOfWeek.Select(day => (int)day);
 
             // Convert the values to a comma-separated string
