@@ -4,13 +4,14 @@ import GenericAdminChart, {
 import { ResponsivePageLayout } from '@/components/ResponsivePage'
 import { PageNames, useViewPage } from '@/features/identity/pagesCheck'
 import { useDeleteImpacts } from '@/features/speedManagementTool/api/deleteImpact'
+import { useEditImpact } from '@/features/speedManagementTool/api/editImpacts'
 import { useGetImpacts } from '@/features/speedManagementTool/api/getImpacts'
 import { usePostImpacts } from '@/features/speedManagementTool/api/postImpacts'
 import ImpactEditorModal from '@/features/speedManagementTool/components/ImpactEditorModal'
 import { Impact, ImpactType } from '@/features/speedManagementTool/types/impact'
 import { Backdrop, CircularProgress } from '@mui/material'
 import { GridColDef } from '@mui/x-data-grid'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 const ImpactAdmin = () => {
   const pageAccess = useViewPage(PageNames.Impacts)
@@ -22,9 +23,15 @@ const ImpactAdmin = () => {
 
   const createMutation = usePostImpacts()
   const deleteMutation = useDeleteImpacts()
-  // const editMutation = useEditArea()
+  const editMutation = useEditImpact()
 
-  const { data: impactsData, isLoading } = useGetImpacts()
+  const { data: impactsData, isLoading, refetch } = useGetImpacts()
+
+  useEffect(() => {
+    if (impactsData) {
+      setData(impactsData)
+    }
+  }, [impactsData])
 
   const HandleCreateImpact = async (impactData: Impact) => {
     const {
@@ -35,17 +42,21 @@ const ImpactAdmin = () => {
       endMile,
       impactTypeIds,
       impactTypes,
+      segmentIds,
     } = impactData
     try {
-      await createMutation.mutateAsync({
-        description,
-        start,
-        end,
-        startMile,
-        endMile,
-        impactTypeIds,
-        impactTypes,
-      })
+      await createMutation
+        .mutateAsync({
+          id: null,
+          description,
+          start,
+          end,
+          startMile,
+          endMile,
+          impactTypeIds,
+          impactTypes,
+          segmentIds,
+        })
     } catch (error) {
       console.error('Mutation Error:', error)
     }
@@ -61,13 +72,33 @@ const ImpactAdmin = () => {
   }
 
   const HandleEditImpact = async (impactData: Impact) => {
-    // const { description, start,end,startMile,endMile, impactTypeId, impactTypes} = impactData
-    console.log('Test edit')
+    const {
+      id,
+      description,
+      start,
+      end,
+      startMile,
+      endMile,
+      impactTypeIds,
+      impactTypes,
+      segmentIds,
+    } = impactData
     try {
-      //   await editMutation.mutateAsync({ data: { name }, id })
+      await editMutation.mutateAsync({
+        impactId: id,
+        impactData: {
+          description,
+          start,
+          end,
+          startMile,
+          endMile,
+          impactTypeIds,
+          impactTypes,
+          segmentIds,
+        },
+      })
     } catch (error) {
-      //   console.error('Mutation Error:', error)
-      console.log('Test edit')
+      console.error('Edit Mutation Error:', error)
     }
   }
 
@@ -91,14 +122,14 @@ const ImpactAdmin = () => {
     )
   }
 
-  if (!impactsData) {
+  if (!data) {
     return <div>Error returning data</div>
   }
   let impactTypeNames = ''
 
-  const filteredData = impactsData.map((obj: any) => {
+  const filteredData = data.map((obj: any) => {
     impactTypeNames = obj.impactTypes
-      .map((impactType: ImpactType) => impactType.name)
+      .map((impactType: ImpactType) => impactType?.name)
       .join(', ')
 
     return {
@@ -111,6 +142,7 @@ const ImpactAdmin = () => {
       impactTypeId: obj.impactTypeId,
       impactTypes: obj.impactTypes,
       impactTypesNames: impactTypeNames || 'none',
+      segmentIds: obj.segmentIds,
     }
   })
 
@@ -140,7 +172,6 @@ const ImpactAdmin = () => {
           <ImpactEditorModal
             onCreate={createImpact}
             onEdit={editImpact}
-            onDelete={deleteImpact}
           />
         }
       />

@@ -1,81 +1,68 @@
-// import { ViolationColors } from '@/features/speedManagementTool/utils/colors'
+import { getEnv } from '@/lib/getEnv'
 import { Box } from '@mui/material'
 import L, { Map as LeafletMap } from 'leaflet'
-import { memo, useEffect, useState } from 'react'
-import { MapContainer, TileLayer } from 'react-leaflet'
-import { getEnv } from '@/lib/getEnv'
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react'
+import { MapContainer, Polyline, TileLayer } from 'react-leaflet'
 
-// type SpeedMapProps = {
-//   fullScreenRef?: React.RefObject<HTMLDivElement> | null // Nullable fullScreenRef
-//   routes: SpeedManagementRoute[] // Array of routes
-//   setSelectedRouteId?: ((routeId: number) => void) | null // Nullable setSelectedRouteId
-// }
+// ... (interfaces remain the same)
 
-const Map = () => {
-  const [mapRef, setMapRef] = useState<LeafletMap | null>(null)
-  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null)
-  const [initialLatLong, setInitialLatLong] = useState<[number, number] | null>(
-    null
+const getPolylineWeight = (zoom: number) => {
+  if (zoom >= 18) return 10
+  if (zoom >= 15) return 5
+  if (zoom >= 12) return 4
+  if (zoom >= 10) return 3
+  if (zoom >= 8) return 2
+  return 2
+}
+
+const SegmentPolylines = memo(function SegmentPolylines({ 
+  segments, 
+  selectedSegmentIds, 
+  onSegmentSelect, 
+  zoomLevel 
+}) {
+  return (
+    <>
+      {segments.map((segment, index) => (
+        <Polyline
+          key={segment.properties.Id}
+          positions={segment.geometry.coordinates}
+          pathOptions={{
+            color: selectedSegmentIds.includes(segment.properties.Id) ? 'blue' : 'gray',
+            weight: getPolylineWeight(zoomLevel),
+          }}
+          eventHandlers={{
+            click: () => onSegmentSelect(segment.properties.Id, segment.properties.StartMilePoint, segment.properties.EndMilePoint),
+          }}
+        />
+      ))}
+    </>
   )
-  //   const getColor = (route: SpeedManagementRoute) => {
-  //     let field
-  //     switch (routeRenderOption) {
-  //       case RouteRenderOption.Violations:
-  //         field = 'estimatedViolations'
-  //         break
-  //       case RouteRenderOption.Posted_Speed:
-  //         field = 'Speed_Limit'
-  //         break
-  //       case RouteRenderOption.Average_Speed:
-  //         field = 'avg'
-  //         break
-  //       case RouteRenderOption.Percentile_85th:
-  //         field = 'percentilespd_85'
-  //         break
-  //       case RouteRenderOption.Percentile_95th:
-  //         field = 'percentilespd_95'
-  //         break
-  //       case RouteRenderOption.Percentile_99th:
-  //         field = 'percentilespd_99'
-  //         break
-  //       default:
-  //         field = 'avg'
-  //         break
-  //     }
+})
 
-  //     const val = route.properties[
-  //       field as keyof SpeedManagementRoute['properties']
-  //     ] as number
+const Map: React.FC<MapProps> = memo(({
+  segments,
+  selectedSegmentIds,
+  onSegmentSelect,
+}) => {
+  const [mapRef, setMapRef] = useState<LeafletMap | null>(null)
+  const [initialLatLong, setInitialLatLong] = useState<[number, number] | null>(null)
+  const [zoomLevel, setZoomLevel] = useState(6)
 
-  //     if (routeRenderOption === RouteRenderOption.Violations) {
-  //       if (val <= mediumMin) return ViolationColors.Low
-  //       if (val < mediumMax) return ViolationColors.Medium
-  //       return ViolationColors.High
-  //     }
+  const handlePolylineClick = useCallback(
+    (id: string, startMile: number, endMile: number) => {
+      onSegmentSelect(id, startMile, endMile);
+    },
+    [onSegmentSelect]
+  );
 
-  //     if (val === null) return '#000'
-
-  //     if (val < 20) return 'rgba(0, 115, 255, 1)'
-  //     if (val < 30) return 'rgba(0, 255, 170, 1)'
-  //     if (val < 35) return 'rgba(55, 255, 0, 1)'
-  //     if (val < 40) return 'rgba(175, 250, 0, 1)'
-  //     if (val < 45) return 'rgba(247, 214, 0, 1)'
-  //     if (val < 55) return 'rgba(245, 114, 0, 1)'
-  //     if (val < 65) return 'rgba(245, 57, 0, 1)'
-  //     if (val < 75) return 'rgba(245, 0, 0, 1)'
-  //     return '#000'
-  //   }
-
-  const renderer = L.canvas({ tolerance: 5 }) // Increase clickability of polylines
-
-  //   const handleDisplaySettingsClick = (
-  //     event: React.MouseEvent<HTMLButtonElement>
-  //   ) => {
-  //     setAnchorEl(anchorEl ? null : event.currentTarget)
-  //   }
-
-  //   const open = Boolean(anchorEl)
-  //   const id = open ? 'settings-popover' : undefined
+  useEffect(() => {
+    if (mapRef) {
+      mapRef.on('zoomend', () => {
+        setZoomLevel(mapRef.getZoom())
+      })
+    }
+  }, [mapRef])
 
   useEffect(() => {
     const fetchEnv = async () => {
@@ -88,9 +75,25 @@ const Map = () => {
     fetchEnv()
   }, [])
 
+  const memoizedSegmentPolylines = useMemo(
+    () => (
+      <SegmentPolylines
+        segments={segments}
+        selectedSegmentIds={selectedSegmentIds}
+        onSegmentSelect={handlePolylineClick}
+        zoomLevel={zoomLevel}
+      />
+    ),
+    [segments, selectedSegmentIds, handlePolylineClick, zoomLevel]
+  )
+
+  if (!initialLatLong) {
+    return null;
+  }
+
   return (
     <Box sx={{ height: '100%', width: '100%' }}>
-      {initialLatLong && <MapContainer
+      <MapContainer
         center={initialLatLong}
         zoom={10}
         scrollWheelZoom={true}
@@ -99,7 +102,7 @@ const Map = () => {
           width: '100%',
           zIndex: 0,
         }}
-        renderer={renderer}
+        renderer={L.canvas({ tolerance: 5 })}
         ref={setMapRef}
         doubleClickZoom={false}
       >
@@ -107,33 +110,12 @@ const Map = () => {
           attribution='&copy; <a href="https://www.openaip.net/">openAIP Data</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-NC-SA</a>)'
           url="https://tiles.stadiamaps.com/tiles/alidade_bright/{z}/{x}/{y}{r}.png"
         />
-
-        {/* 
-        {routes.map((route, index) => (
-          <Polyline
-            key={index}
-            pathOptions={{ color: getColor(route) }}
-            positions={route.geometry.coordinates}
-            weight={2.5}
-            eventHandlers={{
-              click: () =>
-                setSelectedRouteId &&
-                setSelectedRouteId(route.properties.route_id),
-              mouseover: (e) => {
-                e.target.setStyle({ weight: 4, color: 'blue' })
-              },
-              mouseout: (e) => {
-                e.target.setStyle({
-                  weight: 2.5,
-                  color: getColor(route),
-                })
-              },
-            }}
-          />
-        ))} */}
-      </MapContainer>}
+        {memoizedSegmentPolylines}
+      </MapContainer>
     </Box>
   )
-}
+})
 
-export default memo(Map)
+Map.displayName = 'Map';
+
+export default Map
