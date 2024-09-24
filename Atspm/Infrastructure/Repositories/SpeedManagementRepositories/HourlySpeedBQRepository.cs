@@ -360,8 +360,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             WHERE 
                 SegmentId = @segmentId AND
                 date BETWEEN @startDate AND @endDate 
-                AND SourceId = @sourceId
-            ORDER BY Date ASC, BinStartTime ASC;";
+                ORDER BY Date ASC, BinStartTime ASC;";
         }
 
         private string GetWeeklyQuery()
@@ -373,8 +372,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 TIMESTAMP(DATETIME(Date, BinStartTime)) AS datetime
               FROM `{_datasetId}.{_tableId}`
               WHERE 
-                SourceId = @sourceId
-                AND SegmentId = @segmentId
+                SegmentId = @segmentId
                 AND Date BETWEEN @startDate AND @endDate
             ),
             data_with_custom_week_start AS (
