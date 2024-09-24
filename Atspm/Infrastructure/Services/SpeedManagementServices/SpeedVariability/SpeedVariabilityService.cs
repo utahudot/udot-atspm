@@ -53,7 +53,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices.SpeedV
                 StartingMilePoint = segment.StartMilePoint,
                 EndingMilePoint = segment.EndMilePoint,
                 SpeedLimit = segment.SpeedLimit,
-                speedVariabilities = groupedByDate,
+                Data = groupedByDate,
             };
         }
 

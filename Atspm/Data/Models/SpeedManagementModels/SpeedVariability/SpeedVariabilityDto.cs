@@ -4,7 +4,7 @@ namespace Utah.Udot.Atspm.Data.Models.SpeedManagementModels.SpeedVariability
 {
     public class SpeedVariabilityDto : BaseSpeedResultDto
     {
-        public List<SpeedVariabilityDataDto> speedVariabilities {  get; set; }
+        public List<SpeedVariabilityDataDto> Data {  get; set; }
     }
 
     public class SpeedVariabilityDataDto
