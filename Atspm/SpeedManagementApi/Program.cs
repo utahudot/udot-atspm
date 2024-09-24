@@ -13,9 +13,11 @@ using System.Text.Json.Serialization;
 using Utah.Udot.Atspm.Business.SpeedManagement.DataQuality;
 using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.CongestionTracking;
 using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.EffectivenessOfStrategies;
+using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.SpeedCompliance;
 using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.SpeedOverDistance;
 using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.SpeedOverTime;
 using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.SpeedVariability;
+using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.SpeedViolations;
 using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.ViolationsAndExtremeViolations;
 using Utah.Udot.Atspm.DataApi.Configuration;
 using Utah.Udot.Atspm.Infrastructure.Extensions;
@@ -232,11 +234,14 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddScoped<IReportService<CongestionTrackingOptions, CongestionTrackingDto>, CongestionTrackingService>();
     s.AddScoped<IReportService<SpeedOverTimeOptions, SpeedOverTimeDto>, SpeedOverTimeService>();
     s.AddScoped<IReportService<SpeedOverDistanceOptions, List<SpeedOverDistanceDto>>, SpeedOverDistanceService>();
-    s.AddScoped<IReportService<SpeedOverDistanceOptions, List<SpeedComplianceDto>>, SpeedComplianceService>();
+    s.AddScoped<IReportService<SpeedOverDistanceOptions, List<SpeedOverDistanceDto>>, SpeedOverDistanceService>();
+    s.AddScoped<IReportService<SpeedComplianceOptions, List<SpeedComplianceDto>>, SpeedComplianceService>();
+    s.AddScoped<IReportService<SpeedViolationsOptions, List<SpeedViolationsDto>>, SpeedViolationsService>();
+    s.AddScoped<IReportService<EffectivenessOfStrategiesOptions, List<EffectivenessOfStrategiesDto>>, EffectivenessOfStrategiesService>();
     s.AddScoped<IReportService<DataQualityOptions, List<DataQualitySource>>, DataQualityService>();
     s.AddScoped<IReportService<ViolationsAndExtremeViolationsOptions, List<ViolationsAndExtremeViolationsDto>>, ViolationsAndExtremeViolationsService>();
     s.AddScoped<IReportService<SpeedVariabilityOptions, SpeedVariabilityDto>, SpeedVariabilityService>();
-
+    s.AddScoped<SpeedOverDistanceService>();
     //report services
 
 

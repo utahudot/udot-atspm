@@ -51,7 +51,7 @@ namespace SpeedManagementImporter.Services.Pems
             try
             {
 
-                List<Segment> segments = segmentRepository.AllSegmentsWithEntity(sourceId);
+                List<Segment> segments = segmentRepository.AllSegmentsWithEntity(sourceId);//.Where(s => s.Id == new Guid("0089d399-3c88-45b8-a448-17d5ba05735a")).ToList();
                 var timer = new Stopwatch();
                 timer.Start();
                 for (DateTime date = startDate; date <= endDate; date = date.AddDays(1))
@@ -104,7 +104,7 @@ namespace SpeedManagementImporter.Services.Pems
                             logger.LogError(ex, $"Error processing Station: {entity.EntityId} on {date:yyyy-MM-dd}");
                         }
                     }
-                    var speeds = GetSegmentSpeeds(segment, segmentStatistics);
+                    var speeds = GetSegmentSpeeds(segment, segmentStatistics, date);
                     try
                     {
                         await hourlySpeedRepository.AddHourlySpeedsAsync(speeds);
@@ -118,7 +118,7 @@ namespace SpeedManagementImporter.Services.Pems
             });
         }
 
-        private List<HourlySpeed> GetSegmentSpeeds(Segment segment, List<DayStatistics> segmentStatistics)
+        private List<HourlySpeed> GetSegmentSpeeds(Segment segment, List<DayStatistics> segmentStatistics, DateTime date)
         {
             var hourlySpeeds = new List<HourlySpeed>();
 
@@ -134,11 +134,30 @@ namespace SpeedManagementImporter.Services.Pems
                 {
                     var hourlyStatistics = segmentStatistics
                         .SelectMany(s => s.HourlyStatistics)
-                        .Where(s => s.Hour == hour)
+                        .Where(s => s.Hour == hour && s.SourceDataAnalyzed)
                         .ToList();
 
                     if (!hourlyStatistics.Any())
                     {
+                        hourlySpeeds.Add(new HourlySpeed
+                        {
+                            Date = date.Date,
+                            BinStartTime = new DateTime(date.Year, date.Month, date.Day, hour, 0, 0),
+                            SegmentId = segment.Id,
+                            SourceId = sourceId,  // Ensure sourceId is set correctly in the broader scope
+                            PercentObserved = 0,
+                            Flow = 0,
+                            Violation = null,
+                            ExtremeViolation = null,
+                            Average = 0,
+                            FifteenthSpeed = null,
+                            EightyFifthSpeed = null,
+                            NinetyFifthSpeed = null,
+                            NinetyNinthSpeed = null,
+                            MinSpeed = null,
+                            MaxSpeed = null,
+                            SourceDataAnalyzed = false
+                        });
                         // Skip processing for this hour if there is no data
                         logger.LogWarning($"No data available for hour {hour} for segment {segment.Id}");
                         continue;
@@ -154,10 +173,10 @@ namespace SpeedManagementImporter.Services.Pems
                     // Check for division by zero
                     var percentObserved = totalBins > 0 ? 100D - (combinedSpeedFlowMismatches / totalBins * 100D) : 0;
                     var summedFlow = hourlyStatistics.Any() ? hourlyStatistics.Average(s => s.Flow) : 0;
-                    var summedFlowSpeedProduct = hourlyStatistics.Any() ? hourlyStatistics.Sum(s => s.TotalFlowSpeedProduct) : 0;
+                    //var summedFlowSpeedProduct = hourlyStatistics.Any() ? hourlyStatistics.Sum(s => s.TotalFlowSpeedProduct) : 0;
 
                     // Calculate weighted average only if summedFlow is greater than 0
-                    double? weightedAverage = summedFlow > 0 ? summedFlowSpeedProduct / summedFlow : null;
+                    //double? weightedAverage = summedFlow > 0 ? summedFlowSpeedProduct / summedFlow : null;
 
                     // Safeguard for speed calculations
                     var averageSpeed = combinedSpeeds.Count > 0 ? combinedSpeeds.Average() : 0;
@@ -168,26 +187,26 @@ namespace SpeedManagementImporter.Services.Pems
                     double? minspeed = combinedSpeeds.Count > 0 ? combinedSpeeds.Min() : null;
                     double? maxspeed = combinedSpeeds.Count > 0 ? combinedSpeeds.Max() : null;
 
-                    // Ensure there is a valid date and no null references
-                    var firstDate = segmentStatistics.First().Date;
+
 
                     hourlySpeeds.Add(new HourlySpeed
                     {
-                        Date = firstDate,
-                        BinStartTime = new DateTime(firstDate.Year, firstDate.Month, firstDate.Day, hour, 0, 0),
+                        Date = date.Date,
+                        BinStartTime = new DateTime(date.Year, date.Month, date.Day, hour, 0, 0),
                         SegmentId = segment.Id,
                         SourceId = sourceId,  // Ensure sourceId is set correctly in the broader scope
-                        PercentObserved = (long)percentObserved,
+                        PercentObserved = percentObserved,
                         Flow = (long)summedFlow,
-                        Violation = (long)hourlyStatistics.Average(s => s.Violations),
-                        ExtremeViolation = (long)hourlyStatistics.Average(s => s.ExtremeViolations),
-                        Average = weightedAverage ?? 0,
+                        Violation = (long?)hourlyStatistics?.Average(s => s.Violations),
+                        ExtremeViolation = (long?)hourlyStatistics?.Average(s => s.ExtremeViolations),
+                        Average = averageSpeed,
                         FifteenthSpeed = fifteenthPercentile,
                         EightyFifthSpeed = eightyFifthPercentile,
                         NinetyFifthSpeed = ninetyFifthPercentile,
                         NinetyNinthSpeed = ninetyNinthPercentile,
                         MinSpeed = minspeed,
-                        MaxSpeed = maxspeed
+                        MaxSpeed = maxspeed,
+                        SourceDataAnalyzed = true
                     });
                 }
                 catch (Exception ex)
@@ -438,12 +457,29 @@ namespace SpeedManagementImporter.Services.Pems
                     var dataForTheHour = laneData
                         .Where(row => DateTime.TryParse(row[0], out var dateTime) && dateTime.Hour == hour && dateTime.Day == date.Day)
                         .ToList();
+                    if (dataForTheHour == null || dataForTheHour.Count == 0)
+                    {
+                        dayStatistics.HourlyStatistics.Add(new HourlyStatistics
+                        {
+                            Hour = hour,
+                            Violations = 0,
+                            ExtremeViolations = 0,
+                            Flow = 0,
+                            WeightedSpeeds = new List<double>(),
+                            SpeedFlowMismatches = 0,
+                            TotalBins = 0,
+                            SourceDataAnalyzed = false
+                            //TotalFlowSpeedProduct = combinedFlowSpeedProduct
+                        });
+                        logger?.LogWarning($"Station - {stationId} Skipping hour {hour} due to invalid data.");
+                        continue;
+                    }
 
-                    var combinedSpeedViolations = 0;
-                    var combinedExtremeSpeedViolations = 0;
+                    int? combinedSpeedViolations = null;
+                    int? combinedExtremeSpeedViolations = null;
                     var combinedFlow = 0;
                     var combinedSpeedFlowMismatches = 0;
-                    var combinedFlowSpeedProduct = 0D;
+                    //var combinedFlowSpeedProduct = 0D;
                     var combinedWeightedSpeeds = new List<double>();
 
                     for (var lane = 0; lane < lanesCount; lane++)
@@ -451,59 +487,82 @@ namespace SpeedManagementImporter.Services.Pems
                         int speedColumnIndex = startOfSpeedLocation + lane;
                         int flowColumnIndex = startOfFlowLocation + lane;
 
-                        if (dataForTheHour == null || dataForTheHour.Count == 0 || speedColumnIndex >= laneData[0].Count || flowColumnIndex >= laneData[0].Count)
+                        if (speedColumnIndex >= laneData[0].Count || flowColumnIndex >= laneData[0].Count)
                         {
                             logger?.LogWarning($"Station - {stationId} Skipping lane {lane} for hour - {hour}  due to invalid data.");
                             continue;
                         }
-
-                        int laneFlow = dataForTheHour
-                            .Sum(i => int.TryParse(i[flowColumnIndex], out int flow) ? flow : 0);
-
-                        var speedViolations = dataForTheHour
-                            .Where(i => double.TryParse(i[speedColumnIndex], out double speed) && speed >= (speedLimit + 2))
-                            .ToList();
-                        int speedViolationsFlow = speedViolations
-                            .Sum(i => int.TryParse(i[flowColumnIndex], out int flow) ? flow : 0);
-
-                        var extremeSpeedViolations = dataForTheHour
-                            .Where(i => double.TryParse(i[speedColumnIndex], out double speed) && speed >= (speedLimit + 7))
-                            .ToList();
-                        int extremeSpeedViolationsFlow = extremeSpeedViolations
-                            .Sum(i => int.TryParse(i[flowColumnIndex], out int flow) ? flow : 0);
-
-                        if (freeway)
+                        var laneDataForHour = new List<ParsedLaneDataForHour>();
+                        foreach (var row in dataForTheHour)
                         {
-                            extremeSpeedViolations = dataForTheHour
-                                .Where(i => double.TryParse(i[speedColumnIndex], out double speed) && speed >= (speedLimit + 10))
-                                .ToList();
-                            extremeSpeedViolationsFlow = extremeSpeedViolations
-                                .Sum(i => int.TryParse(i[flowColumnIndex], out int flow) ? flow : 0);
+                            if (DateTime.TryParse(row[0], out var dateTime) && dateTime.Hour == hour && dateTime.Day == date.Day)
+                            {
+                                laneDataForHour.Add(new ParsedLaneDataForHour
+                                {
+                                    DateTime = dateTime,
+                                    Speed = double.TryParse(row[speedColumnIndex], out double speed) ? speed : (double?)null,
+                                    Flow = int.TryParse(row[flowColumnIndex], out int flow) ? flow : (int?)null
+                                });
+                            }
                         }
 
-                        combinedSpeedFlowMismatches += dataForTheHour.Count(hourRow => !hourRow[flowColumnIndex].Equals("0") && string.IsNullOrEmpty(hourRow[speedColumnIndex]));
-                        combinedSpeedViolations += speedViolationsFlow;
-                        combinedExtremeSpeedViolations += extremeSpeedViolationsFlow;
+                        var laneFlow = laneDataForHour
+                            .Sum(i => i.Flow ?? 0);
                         combinedFlow += laneFlow;
+
+                        int? extremeSpeedViolations = null;
+                        int? speedViolations = null;
+                        if (speedLimit > 0)
+                        {
+                            if (combinedExtremeSpeedViolations == null)
+                            {
+                                combinedExtremeSpeedViolations = 0;
+                            }
+                            if (combinedSpeedViolations == null)
+                            {
+                                combinedSpeedViolations = 0;
+                            }
+                            speedViolations = laneDataForHour
+                                .Where(i => i.Speed.HasValue && i.Speed >= (speedLimit + 2))
+                                .Sum(i => i.Flow ?? 0);
+
+                            if (freeway)
+                            {
+                                extremeSpeedViolations = laneDataForHour
+                                    .Where(i => i.Speed.HasValue && i.Speed >= (speedLimit + 10))
+                                    .Sum(i => i.Flow ?? 0);
+                            }
+                            else
+                            {
+                                extremeSpeedViolations = laneDataForHour
+                                    .Where(i => i.Speed.HasValue && i.Speed >= (speedLimit + 7))
+                                    .Sum(i => i.Flow ?? 0);
+                            }
+                            combinedSpeedViolations += speedViolations.HasValue ? speedViolations.Value : 0;
+                            combinedExtremeSpeedViolations += extremeSpeedViolations.HasValue ? extremeSpeedViolations.Value : 0;
+                        }
+
+                        combinedSpeedFlowMismatches += laneDataForHour.Count(hourRow => hourRow.Flow.HasValue && hourRow.Flow > 0 && !hourRow.Speed.HasValue);
+
 
                         // Add valid speeds to the list
                         //combinedWeightedSpeeds.AddRange(dataForTheHour.Where(i => double.TryParse(i[speedColumnIndex], out _)).Select(i => double.Parse(i[speedColumnIndex])));
-                        foreach (var row in dataForTheHour)
+                        foreach (var row in laneDataForHour)
                         {
-                            if (double.TryParse(row[speedColumnIndex], out double speed) && int.TryParse(row[flowColumnIndex], out int flow))
+                            if (row.Speed.HasValue && row.Flow.HasValue)
                             {
                                 // Add the speed multiple times based on the flow
-                                for (int i = 0; i < flow; i++)
+                                for (int i = 0; i < row.Flow; i++)
                                 {
-                                    combinedWeightedSpeeds.Add(speed);
+                                    combinedWeightedSpeeds.Add(row.Speed.Value);
                                 }
                             }
                         }
 
                         // Calculate combined flow-speed product
-                        combinedFlowSpeedProduct += dataForTheHour
-                            .Where(i => double.TryParse(i[speedColumnIndex], out _) && double.TryParse(i[flowColumnIndex], out _))
-                            .Sum(i => double.Parse(i[speedColumnIndex]) * double.Parse(i[flowColumnIndex]));
+                        //combinedFlowSpeedProduct += dataForTheHour
+                        //    .Where(i => double.TryParse(i[speedColumnIndex], out _) && double.TryParse(i[flowColumnIndex], out _))
+                        //    .Sum(i => double.Parse(i[speedColumnIndex]) * double.Parse(i[flowColumnIndex]));
                     }
 
                     dayStatistics.HourlyStatistics.Add(new HourlyStatistics
@@ -515,7 +574,8 @@ namespace SpeedManagementImporter.Services.Pems
                         WeightedSpeeds = combinedWeightedSpeeds,
                         SpeedFlowMismatches = combinedSpeedFlowMismatches,
                         TotalBins = lanesCount * (dataForTheHour?.Count ?? 0),
-                        TotalFlowSpeedProduct = combinedFlowSpeedProduct
+                        SourceDataAnalyzed = true
+                        //TotalFlowSpeedProduct = combinedFlowSpeedProduct
                     });
                 }
             }
@@ -526,8 +586,6 @@ namespace SpeedManagementImporter.Services.Pems
 
             return dayStatistics;
         }
-
-
 
 
         private List<List<string>> SplitToTimeGrid(string data)
@@ -656,4 +714,12 @@ namespace SpeedManagementImporter.Services.Pems
         }
 
     }
+
+    public class ParsedLaneDataForHour
+    {
+        public DateTime DateTime { get; set; }
+        public double? Speed { get; set; }
+        public int? Flow { get; set; }
+    }
+
 }

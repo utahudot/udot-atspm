@@ -7,11 +7,15 @@ import Cookies from 'js-cookie'
 import { useMutation } from 'react-query'
 
 const token = Cookies.get('token')
-const postImpacts = async (impactData: Impact): Promise<Impact> => {
+
+const editImpact = async (
+  impactId: string,
+  impactData: Impact
+): Promise<Impact> => {
   const env = await getEnv()
 
-  const { data } = await axios.post<Impact>(
-    `${env.SPEED_URL}api/v1/Impact`,
+  const { data } = await axios.put<Impact>(
+    `${env.SPEED_URL}api/v1/impact/${impactId}`,
     impactData,
     {
       headers: {
@@ -23,22 +27,28 @@ const postImpacts = async (impactData: Impact): Promise<Impact> => {
   return data
 }
 
-export const usePostImpacts = (config?: QueryConfig<typeof postImpacts>) => {
-  const { addNotification } = useNotificationStore()
+export const useEditImpact = (config?: QueryConfig<typeof editImpact>) => {
+  const { addNotification } = useNotificationStore();
 
   return useMutation({
-    mutationFn: postImpacts,
-    onMutate: async (impactData: Impact) => {},
+    mutationFn: ({
+      impactId,
+      impactData,
+    }: {
+      impactId: string
+      impactData: Impact
+    }) => editImpact(impactId, impactData),
+
     onError: (error: any) => {
       addNotification({
         type: 'error',
-        title: 'Failed to Create Impact',
+        title: 'Failed to Edit Impact',
       })
     },
     onSuccess: (data: Impact) => {
       addNotification({
         type: 'success',
-        title: 'Impact Created',
+        title: 'Impact Edited',
       })
     },
     ...config,

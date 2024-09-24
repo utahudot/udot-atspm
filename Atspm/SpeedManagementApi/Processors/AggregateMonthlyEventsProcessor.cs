@@ -134,23 +134,23 @@ namespace SpeedManagementApi.Processors
             var allSegments = segmentRepository.AllSegmentsWithEntity();
             foreach (var segment in allSegments)
             {
-                    yield return new MonthlyAggregationProcessorDto
+                yield return new MonthlyAggregationProcessorDto
+                {
+                    hourlySpeeds = new List<HourlySpeed>(),
+                    startDate = firstDayOfPreviousMonth,
+                    endDate = lastDayOfPreviousMonth,
+                    SegmentId = segment.Id,
+                    monthlyAggregation = new MonthlyAggregation
                     {
-                        hourlySpeeds = new List<HourlySpeed>(),
-                        startDate = firstDayOfPreviousMonth,
-                        endDate = lastDayOfPreviousMonth,
+                        Id = Guid.NewGuid(),
+                        CreatedDate = DateTime.SpecifyKind(today, DateTimeKind.Utc),
+                        BinStartTime = firstDayOfPreviousMonth,
                         SegmentId = segment.Id,
-                        monthlyAggregation = new MonthlyAggregation
-                        {
-                            Id = Guid.NewGuid(),
-                            CreatedDate = DateTime.SpecifyKind(today, DateTimeKind.Utc),
-                            BinStartTime = firstDayOfPreviousMonth,
-                            SegmentId = segment.Id,
-                            //INSTEAD OF GET ALL SEGMENTS, DO GET SEGMENTS BY SOURCE ID, FOR KENZIE PROBABLY
-                            SourceId = 0,
-                            DataQuality = true
-                        }
-                    };
+                        //INSTEAD OF GET ALL SEGMENTS, DO GET SEGMENTS BY SOURCE ID, FOR KENZIE PROBABLY
+                        SourceId = 0,
+                        PercentObserved = 100.00
+                    }
+                };
             }
         }
 
@@ -175,7 +175,7 @@ namespace SpeedManagementApi.Processors
                         BinStartTime = firstDayOfPreviousMonth,
                         SegmentId = monthlyAggregation.SegmentId,
                         SourceId = monthlyAggregation.SourceId,
-                        DataQuality = true
+                        PercentObserved = 100.00
                     }
                 };
                 lastDayOfPreviousMonth = firstDayOfPreviousMonth.AddDays(-1); ;

@@ -3,13 +3,14 @@
     public class HourlyStatistics
     {
         public int Hour { get; set; }
-        public int Violations { get; set; }
-        public int ExtremeViolations { get; set; }
+        public int? Violations { get; set; }
+        public int? ExtremeViolations { get; set; }
         public int Flow { get; set; }
         public List<Double> WeightedSpeeds { get; set; }
         public int SpeedFlowMismatches { get; set; }
         public int TotalBins { get; set; }
-        public double TotalFlowSpeedProduct { get; set; }
+        public bool SourceDataAnalyzed { get; set; }
+        //public double TotalFlowSpeedProduct { get; set; }
     }
     public class DayStatistics
     {

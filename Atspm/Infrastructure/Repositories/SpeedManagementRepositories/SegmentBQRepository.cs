@@ -639,12 +639,18 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 if (ColumnExists(row, "EntityId") && ColumnExists(row, "SourceId") && ColumnExists(row, "SegmentId")
                     && row["EntityId"] != null && row["SourceId"] != null && row["SegmentId"] != null)
                 {
-                    segment.Entities.Add(new SegmentEntity
+                    var newEntity = new SegmentEntity
                     {
                         EntityId = Convert.ToInt32((long)row["EntityId"]),
                         SourceId = Convert.ToInt32((long)row["SourceId"]),
                         SegmentId = segmentId
-                    });
+                    };
+
+                    // Check if the entity already exists in the list before adding it
+                    if (!segment.Entities.Any(e => e.EntityId == newEntity.EntityId && e.SourceId == newEntity.SourceId))
+                    {
+                        segment.Entities.Add(newEntity);
+                    }
                 }
             }
 
@@ -685,12 +691,18 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             if (ColumnExists(row, "EntityId") && ColumnExists(row, "SourceId") && ColumnExists(row, "SegmentId")
                && row["EntityId"] != null && row["SourceId"] != null && row["SegmentId"] != null)
             {
-                segment.Entities.Add(new SegmentEntity
+                var newEntity = new SegmentEntity
                 {
                     EntityId = Convert.ToInt32((long)row["EntityId"]),
                     SourceId = Convert.ToInt32((long)row["SourceId"]),
-                    SegmentId = Guid.Parse(row["SegmentId"].ToString())
-                });
+                    SegmentId = segmentId
+                };
+
+                // Check if the entity already exists in the list before adding it
+                if (!segment.Entities.Any(e => e.EntityId == newEntity.EntityId && e.SourceId == newEntity.SourceId))
+                {
+                    segment.Entities.Add(newEntity);
+                }
             }
 
             return segment;

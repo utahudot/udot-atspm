@@ -105,7 +105,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
 
         public async Task<List<HourlySpeed>> GetHourlySpeedsWithFiltering(List<Guid> segmentIds, DateTime startDate, DateTime endDate, DateTime? startTime = null, DateTime? endTime = null, int? dayOfWeek = null, List<DateTime>? specificDays = null)
         {
-            var ids = string.Join(", ", segmentIds);
+            var ids = string.Join(", ", segmentIds.Select(id => $"'{id}'"));
             string query = $@"SELECT * FROM `{_datasetId}.{_tableId}` WHERE 
                     SegmentId IN ({ids}) AND
                     Date BETWEEN @startDate AND @endDate";
@@ -113,16 +113,16 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             {
                 DateTime startTimeOut = (DateTime)startTime;
                 DateTime endTimeOut = (DateTime)endTime;
-                query = query + $" AND BinStartTime BETWEEN {startTimeOut.TimeOfDay} AND {endTimeOut.TimeOfDay}";
+                query = query + $" AND TIME(BinStartTime) BETWEEN '{startTimeOut.TimeOfDay.ToString(@"hh\:mm\:ss")}' AND '{endTimeOut.TimeOfDay.ToString(@"hh\:mm\:ss")}'";
             }
             if (specificDays != null && specificDays.Count > 0)
             {
-                var dates = string.Join(", ", specificDays.Select(d => d.ToString("yyyy-MM-dd")));
-                query = query + $" Date IN ({dates})";
+                var dates = string.Join(", ", specificDays.Select(d => $"'{d.ToString("yyyy-MM-dd")}'"));
+                query = query + $" AND Date IN ({dates})";
             }
             if (dayOfWeek != null && dayOfWeek < 8 && dayOfWeek > 0)
             {
-                query = query + $" EXTRACT(DAYOFWEEK FROM `Date`) = {dayOfWeek}";
+                query = query + $" AND EXTRACT(DAYOFWEEK FROM `Date`) = {dayOfWeek}";
             }
 
             query = query + " ORDER BY Date ASC, BinStartTime ASC;";
@@ -153,6 +153,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 {"SegmentId", item.SegmentId.ToString() },
                 {"SourceId", item.SourceId },
                 {"ConfidenceId", item.PercentObserved },
+                {"PercentObserved", item.PercentObserved },
                 {"Average", item.Average },
                 {"FifteenthSpeed", item.FifteenthSpeed },
                 {"EightyFifthSpeed", item.EightyFifthSpeed },
@@ -162,7 +163,8 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 {"ExtremeViolation", item.ExtremeViolation },
                 {"Flow", item.Flow },
                 {"MinSpeed", item.MinSpeed },
-                {"MaxSpeed", item.MaxSpeed }
+                {"MaxSpeed", item.MaxSpeed },
+                {"SourceDataAnalyzed", item.SourceDataAnalyzed },
             };
         }
 
@@ -173,7 +175,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             var bigQueryBinStartTime = TimeOnly.Parse(row["BinStartTime"].ToString());
             var bigQuerySegmentId = Guid.Parse(row["SegmentId"].ToString());
             var bigQuerySourceId = long.Parse(row["SourceId"].ToString());
-            var bigQueryConfidenceId = long.Parse(row["ConfidenceId"].ToString());
+            var bigQueryPercentObservedId = row["PercentObserved"] != null ? double.Parse(row["PercentObserved"].ToString()) : (double?)null;
             var bigQueryAverage = double.Parse(row["Average"].ToString());
             var bigQueryFifteenthSpeed = row["FifteenthSpeed"] != null ? double.Parse(row["FifteenthSpeed"].ToString()) : (double?)null;
             var bigQueryEightyFifthSpeed = row["EightyFifthSpeed"] != null ? double.Parse(row["EightyFifthSpeed"].ToString()) : (double?)null;
@@ -184,6 +186,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             var bigQueryFlow = row["Flow"] != null ? long.Parse(row["Flow"].ToString()) : (long?)null;
             var bigQueryMinSpeed = row["MinSpeed"] != null ? double.Parse(row["MinSpeed"].ToString()) : (double?)null;
             var bigQueryMaxSpeed = row["MaxSpeed"] != null ? double.Parse(row["MaxSpeed"].ToString()) : (double?)null;
+            var sourceDataAnalyzed = row["SourceDataAnalyzed"] != null ? bool.Parse(row["SourceDataAnalyzed"].ToString()) : (bool?)null;
 
             return new HourlySpeed
             {
@@ -191,7 +194,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 BinStartTime = bigQueryDate.ToDateTime(bigQueryBinStartTime),
                 SegmentId = bigQuerySegmentId,
                 SourceId = bigQuerySourceId,
-                PercentObserved = bigQueryConfidenceId,
+                PercentObserved = bigQueryPercentObservedId,
                 Average = bigQueryAverage,
                 FifteenthSpeed = bigQueryFifteenthSpeed,
                 EightyFifthSpeed = bigQueryEightyFifthSpeed,
@@ -201,7 +204,8 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 ExtremeViolation = bigQueryExtremeViolation,
                 Flow = bigQueryFlow,
                 MinSpeed = bigQueryMinSpeed,
-                MaxSpeed = bigQueryMaxSpeed
+                MaxSpeed = bigQueryMaxSpeed,
+                SourceDataAnalyzed = sourceDataAnalyzed
             };
         }
 
@@ -250,7 +254,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 ExtremeViolation = Convert.ToDouble(row["ExtremeViolation"]),
                 Flow = Convert.ToDouble(row["Flow"]),
                 MaxSpeed = Convert.ToDouble(row["MaxSpeed"]),
-                MinSpeed = Convert.ToDouble(row["MinSpeed"])
+                MinSpeed = Convert.ToDouble(row["MinSpeed"]),
             }).ToList();
         }
 
@@ -345,6 +349,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 Violation = row["Violation"] != null ? (long)row["Violation"] : null,
                 ExtremeViolation = row["ExtremeViolation"] != null ? (long)row["ExtremeViolation"] : null,
                 Flow = row["Flow"] != null ? (long)row["Flow"] : null,
+                SourceDataAnalyzed = row["SourceDataAnalyzed"] != null ? (bool)row["SourceDataAnalyzed"] : null,
             };
         }
 
@@ -479,6 +484,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             var percentile15 = row["Percentilespd_15"] != null ? double.Parse(row["Percentilespd_15"].ToString()) : (double?)null;
             var percentile85 = row["Percentilespd_85"] != null ? double.Parse(row["Percentilespd_85"].ToString()) : (double?)null;
             var percentile95 = row["Percentilespd_95"] != null ? double.Parse(row["Percentilespd_95"].ToString()) : (double?)null;
+            var sourceDataAnalyzed = row["SourceDataAnalyzed"] != null ? bool.Parse(row["SourceDataAnalyzed"].ToString()) : (bool?)null;
             var flow = row["Flow"];
             var minSpeed = row["MinSpeed"];
             var maxSpeed = row["MaxSpeed"];
@@ -486,6 +492,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             var speedLimit = row["SpeedLimit"];
             var name = row["Name"];
             var wkt = (string)row["Shape"];
+
             Geometry shape = wkt != null ? reader.Read(wkt) : null;
 
             return new RouteSpeed
@@ -748,7 +755,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 queryBuilder.Append($"UPDATE `{_datasetId}.{_tableId}` SET ");
 
                 queryBuilder.Append($"SourceId = {item.SourceId}, ");
-                queryBuilder.Append($"ConfidenceId = {item.PercentObserved}, ");
+                queryBuilder.Append($"PercentObserved = {item.PercentObserved}, ");
                 queryBuilder.Append($"Average = {item.Average}, ");
 
                 if (item.FifteenthSpeed.HasValue)
@@ -833,7 +840,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             else
             {
                 var query = $"INSERT INTO `{_datasetId}.{_tableId}` " +
-                    $"(Date, BinStartTime, SegmentId, SourceId, ConfidenceId, Average, FifteenthSpeed, EightyFifthSpeed, NinetyFifthSpeed, NinetyNinthSpeed, Violation, ExtremeViolation, Flow) " +
+                    $"(Date, BinStartTime, SegmentId, SourceId, PercentObserved, Average, FifteenthSpeed, EightyFifthSpeed, NinetyFifthSpeed, NinetyNinthSpeed, Violation, ExtremeViolation, Flow) " +
                     $"VALUES (" +
                     $"'{item.Date:O}', " +
                     $"'{item.BinStartTime:O}', " +
@@ -864,7 +871,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 queryBuilder.Append($"UPDATE `{_datasetId}.{_tableId}` SET ");
 
                 queryBuilder.Append($"SourceId = {item.SourceId}, ");
-                queryBuilder.Append($"ConfidenceId = {item.PercentObserved}, ");
+                queryBuilder.Append($"PercentObserved = {item.PercentObserved}, ");
                 queryBuilder.Append($"Average = {item.Average}, ");
 
                 if (item.FifteenthSpeed.HasValue)
@@ -967,7 +974,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             else
             {
                 var query = $"INSERT INTO `{_datasetId}.{_tableId}` " +
-                    $"(Date, BinStartTime, SegmentId, SourceId, ConfidenceId, Average, FifteenthSpeed, EightyFifthSpeed, NinetyFifthSpeed, NinetyNinthSpeed, Violation, Flow) " +
+                    $"(Date, BinStartTime, SegmentId, SourceId, PercentObserved, Average, FifteenthSpeed, EightyFifthSpeed, NinetyFifthSpeed, NinetyNinthSpeed, Violation, Flow) " +
                     $"VALUES (" +
                     $"'{item.Date:O}', " +
                     $"'{item.BinStartTime:O}', " +

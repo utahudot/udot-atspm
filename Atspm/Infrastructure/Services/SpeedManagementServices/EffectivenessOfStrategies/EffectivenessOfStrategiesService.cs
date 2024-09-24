@@ -41,9 +41,11 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices.Effect
                         StartDate = startDateChunking.AddDays(g.Key * 7),
                         EndDate = startDateChunking.AddDays((g.Key * 7) + 6), // Start of the 7-day chunk
                         Flow = (g.Sum(h => h.Flow)) ?? 0,
+                        MaxSpeed = g.Max(h => h.MaxSpeed) ?? 0,
+                        MinSpeed = g.Min(h => h.MinSpeed) ?? 0,
                         AverageSpeed = ((double)(g.Sum(h => h.Average)) / (g.Sum(h => h.Flow))) ?? 0,
                         AverageEightyFifthSpeed = ((double)(g.Sum(h => h.EightyFifthSpeed)) / (g.Sum(h => h.Flow))) ?? 0,
-                        Variablitiy = g.Max(h => h.Average) - g.Min(h => h.Average),
+                        Variablitiy = ((double)g.Max(h => h.MaxSpeed ?? 0)) - ((double)g.Min(h => h.MinSpeed ?? 0)),
                         PercentViolations = (g.Sum(h => h.Flow) != 0 ? (double)g.Sum(h => h.Violation) / g.Sum(h => h.Flow) ?? 0 : 0) * 100,
                         PercentExtremeViolations = (g.Sum(h => h.Flow) != 0 ? (double)g.Sum(h => h.ExtremeViolation) / g.Sum(h => h.Flow) ?? 0 : 0) * 100,
                     })
@@ -57,9 +59,11 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices.Effect
                         StartDate = hourlySpeeds.Min(h => h.Date), // Earliest date in the filtered data
                         EndDate = implementationDate.AddDays(-1), // End the day before the specific date
                         Flow = g.Sum(h => h.Flow) ?? 0,
+                        MaxSpeed = g.Max(h => h.MaxSpeed) ?? 0,
+                        MinSpeed = g.Min(h => h.MinSpeed) ?? 0,
                         AverageSpeed = g.Sum(h => h.Flow) != 0 ? g.Sum(h => h.Average * (h.Flow ?? 0)) / g.Sum(h => h.Flow) ?? 0 : 0,
                         AverageEightyFifthSpeed = g.Sum(h => h.Flow) != 0 ? g.Sum(h => h.EightyFifthSpeed ?? 0) / g.Sum(h => h.Flow) ?? 0 : 0,
-                        Variablitiy = g.Max(h => h.Average) - g.Min(h => h.Average),
+                        Variablitiy = ((double)g.Max(h => h.MaxSpeed ?? 0)) - ((double)g.Min(h => h.MinSpeed ?? 0)),
                         PercentViolations = (g.Sum(h => h.Flow) != 0 ? (double)(g.Sum(h => h.Violation ?? 0)) / g.Sum(h => h.Flow) ?? 0 : 0) * 100,
                         PercentExtremeViolations = (g.Sum(h => h.Flow) != 0 ? (double)(g.Sum(h => h.ExtremeViolation ?? 0)) / g.Sum(h => h.Flow) ?? 0 : 0) * 100,
                     })
@@ -73,9 +77,11 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices.Effect
                         StartDate = implementationDate, // Earliest date in the filtered data
                         EndDate = hourlySpeeds.Max(h => h.Date), // End the day before the specific date
                         Flow = g.Sum(h => h.Flow) ?? 0,
+                        MaxSpeed = g.Max(h => h.MaxSpeed) ?? 0,
+                        MinSpeed = g.Min(h => h.MinSpeed) ?? 0,
                         AverageSpeed = g.Sum(h => h.Flow) != 0 ? g.Sum(h => h.Average * (h.Flow ?? 0)) / g.Sum(h => h.Flow) ?? 0 : 0,
                         AverageEightyFifthSpeed = g.Sum(h => h.Flow) != 0 ? g.Sum(h => h.EightyFifthSpeed ?? 0) / g.Sum(h => h.Flow) ?? 0 : 0,
-                        Variablitiy = g.Max(h => h.Average) - g.Min(h => h.Average),
+                        Variablitiy = ((double)g.Max(h => h.MaxSpeed ?? 0)) - ((double)g.Min(h => h.MinSpeed ?? 0)),
                         PercentViolations = (g.Sum(h => h.Flow) != 0 ? (double)(g.Sum(h => h.Violation ?? 0)) / g.Sum(h => h.Flow) ?? 0 : 0) * 100,
                         PercentExtremeViolations = (g.Sum(h => h.Flow) != 0 ? (double)(g.Sum(h => h.ExtremeViolation ?? 0)) / g.Sum(h => h.Flow) ?? 0 : 0) * 100,
                     })
