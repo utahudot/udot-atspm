@@ -179,11 +179,13 @@ namespace SpeedManagementImporter.Services.Pems
                     //double? weightedAverage = summedFlow > 0 ? summedFlowSpeedProduct / summedFlow : null;
 
                     // Safeguard for speed calculations
-                    var averageSpeed = combinedSpeeds.Count > 0 ? combinedSpeeds.Average() : 0;
-                    double? fifteenthPercentile = combinedSpeeds.Count > 0 ? AtspmMath.Percentile(combinedSpeeds, 15) : null;
-                    double? eightyFifthPercentile = combinedSpeeds.Count > 0 ? AtspmMath.Percentile(combinedSpeeds, 85) : null;
-                    double? ninetyFifthPercentile = combinedSpeeds.Count > 0 ? AtspmMath.Percentile(combinedSpeeds, 95) : null;
-                    double? ninetyNinthPercentile = combinedSpeeds.Count > 0 ? AtspmMath.Percentile(combinedSpeeds, 99) : null;
+                    // Round to the first decimal place to avoid floating point errors
+
+                    var averageSpeed = combinedSpeeds.Count > 0 ? Math.Round(combinedSpeeds.Average(), 1) : 0;
+                    double? fifteenthPercentile = combinedSpeeds.Count > 0 ? Math.Round(AtspmMath.Percentile(combinedSpeeds, 15), 1) : null;
+                    double? eightyFifthPercentile = combinedSpeeds.Count > 0 ? Math.Round(AtspmMath.Percentile(combinedSpeeds, 85), 1) : null;
+                    double? ninetyFifthPercentile = combinedSpeeds.Count > 0 ? Math.Round(AtspmMath.Percentile(combinedSpeeds, 95), 1) : null;
+                    double? ninetyNinthPercentile = combinedSpeeds.Count > 0 ? Math.Round(AtspmMath.Percentile(combinedSpeeds, 99), 1) : null;
                     double? minspeed = combinedSpeeds.Count > 0 ? combinedSpeeds.Min() : null;
                     double? maxspeed = combinedSpeeds.Count > 0 ? combinedSpeeds.Max() : null;
 
