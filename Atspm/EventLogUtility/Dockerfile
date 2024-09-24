@@ -5,7 +5,6 @@ WORKDIR /app
 
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /src
-COPY ["Application/nuget.config", "Application/"]
 COPY ["EventLogUtility/EventLogUtility.csproj", "EventLogUtility/"]
 COPY ["Infrastructure/Infrastructure.csproj", "Infrastructure/"]
 COPY ["Application/Application.csproj", "Application/"]
