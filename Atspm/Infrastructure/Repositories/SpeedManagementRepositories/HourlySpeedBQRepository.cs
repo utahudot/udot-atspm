@@ -490,10 +490,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             var percentile15 = row["Percentilespd_15"] != null ? double.Parse(row["Percentilespd_15"].ToString()) : (double?)null;
             var percentile85 = row["Percentilespd_85"] != null ? double.Parse(row["Percentilespd_85"].ToString()) : (double?)null;
             var percentile95 = row["Percentilespd_95"] != null ? double.Parse(row["Percentilespd_95"].ToString()) : (double?)null;
-            var sourceDataAnalyzed = row["SourceDataAnalyzed"] != null ? bool.Parse(row["SourceDataAnalyzed"].ToString()) : (bool?)null;
             var flow = row["Flow"];
-            var minSpeed = row["MinSpeed"];
-            var maxSpeed = row["MaxSpeed"];
             var estimatedViolations = row["EstimatedViolations"];
             var speedLimit = row["SpeedLimit"];
             var name = row["Name"];
@@ -514,8 +511,6 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 EstimatedViolations = estimatedViolations != null ? (long)estimatedViolations : null,
                 SpeedLimit = speedLimit != null ? (long)speedLimit : 0,
                 Shape = shape,
-                MinSpeed = minSpeed != null ? (double)minSpeed : null,
-                MaxSpeed = maxSpeed != null ? (double)maxSpeed : null
             };
         }
 
