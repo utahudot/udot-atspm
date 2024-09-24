@@ -1,12 +1,12 @@
 // src/lib/axios.ts
 
-import storage from '@/utils/storage'
 import axios, {
   AxiosInstance,
   AxiosRequestConfig,
   AxiosResponse,
   InternalAxiosRequestConfig,
 } from 'axios'
+import Cookies from 'js-cookie'
 import { getEnv } from './getEnv'
 
 // Retrieve environment variables synchronously
@@ -38,30 +38,30 @@ function createAxiosInstance(baseURL: string): AxiosInstance {
 
 // Request interceptor to add the Authorization header
 function authRequestInterceptor(config: InternalAxiosRequestConfig) {
-  const token = storage.getToken()
+  const token = Cookies.get('token')
   if (token) {
-    config.headers.authorization = `${token}`
+    config.headers.authorization = `Bearer ${token}`
   }
   return config
 }
 
 // Define individual request functions for each Axios instance
-export const configRequest = <T>(config: AxiosRequestConfig): Promise<T> => {
+export const configRequest = <T>(config: AxiosRequestConfig) => {
   return configAxios.request<T>(config)
 }
 
-export const reportsRequest = <T>(config: AxiosRequestConfig): Promise<T> => {
+export const reportsRequest = <T>(config: AxiosRequestConfig) => {
   return reportsAxios.request<T>(config)
 }
 
-export const identityRequest = <T>(config: AxiosRequestConfig): Promise<T> => {
+export const identityRequest = <T>(config: AxiosRequestConfig) => {
   return identityAxios.request<T>(config)
 }
 
-export const dataRequest = <T>(config: AxiosRequestConfig): Promise<T> => {
+export const dataRequest = <T>(config: AxiosRequestConfig) => {
   return dataAxios.request<T>(config)
 }
 
-export const speedRequest = <T>(config: AxiosRequestConfig): Promise<T> => {
+export const speedRequest = <T>(config: AxiosRequestConfig) => {
   return speedAxios.request<T>(config)
 }

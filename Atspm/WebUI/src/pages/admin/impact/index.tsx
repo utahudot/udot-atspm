@@ -1,12 +1,14 @@
+import {
+  useDeleteApiV1ImpactId,
+  useGetApiV1Impact,
+  usePostApiV1Impact,
+  usePutApiV1ImpactId,
+} from '@/api/speedManagement/aTSPMSpeedManagementApi'
 import GenericAdminChart, {
   pageNameToHeaders,
 } from '@/components/GenericAdminChart'
 import { ResponsivePageLayout } from '@/components/ResponsivePage'
 import { PageNames, useViewPage } from '@/features/identity/pagesCheck'
-import { useDeleteImpacts } from '@/features/speedManagementTool/api/deleteImpact'
-import { useEditImpact } from '@/features/speedManagementTool/api/editImpacts'
-import { useGetImpacts } from '@/features/speedManagementTool/api/getImpacts'
-import { usePostImpacts } from '@/features/speedManagementTool/api/postImpacts'
 import ImpactEditorModal from '@/features/speedManagementTool/components/ImpactEditorModal'
 import { Impact, ImpactType } from '@/features/speedManagementTool/types/impact'
 import { Backdrop, CircularProgress } from '@mui/material'
@@ -21,11 +23,13 @@ const ImpactAdmin = () => {
     PageNames.Impacts
   ) as GridColDef[]
 
-  const createMutation = usePostImpacts()
-  const deleteMutation = useDeleteImpacts()
-  const editMutation = useEditImpact()
+  const createMutation = usePostApiV1Impact()
+  const deleteMutation = useDeleteApiV1ImpactId()
+  const editMutation = usePutApiV1ImpactId()
 
-  const { data: impactsData, isLoading, refetch } = useGetImpacts()
+  const { data: impactsData, isLoading, refetch } = useGetApiV1Impact()
+
+  console.log('impactsData', impactsData)
 
   useEffect(() => {
     if (impactsData) {
@@ -45,19 +49,17 @@ const ImpactAdmin = () => {
       segmentIds,
     } = impactData
     try {
-      await createMutation
-        .mutateAsync({
-          id: null,
-          description,
-          start,
-          end,
-          startMile,
-          endMile,
-          impactTypeIds,
-          impactTypes,
-          segmentIds,
-        })
-        
+      await createMutation.mutateAsync({
+        id: null,
+        description,
+        start,
+        end,
+        startMile,
+        endMile,
+        impactTypeIds,
+        impactTypes,
+        segmentIds,
+      })
     } catch (error) {
       console.error('Mutation Error:', error)
     }
@@ -170,10 +172,7 @@ const ImpactAdmin = () => {
         hasEditPrivileges={true}
         hasDeletePrivileges={true}
         customModal={
-          <ImpactEditorModal
-            onCreate={createImpact}
-            onEdit={editImpact}
-          />
+          <ImpactEditorModal onCreate={createImpact} onEdit={editImpact} />
         }
       />
     </ResponsivePageLayout>
