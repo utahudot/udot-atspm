@@ -8,7 +8,7 @@ import {
   SelectChangeEvent,
 } from '@mui/material'
 import { DatePicker } from '@mui/x-date-pickers'
-import { endOfMonth, startOfMonth } from 'date-fns'
+import { endOfMonth, isValid, parse, startOfMonth } from 'date-fns'
 import { useEffect, useState } from 'react'
 
 export interface SpeedOverTimeOptionsValues {
@@ -24,16 +24,19 @@ interface SpeedOverTimeOptionsProps {
   onOptionsChange: (options: SpeedOverTimeOptionsValues) => void
 }
 
-// todo - remove this
-const initialDate = new Date('2024-05-10')
+const initialDateString = '2023-01-01'
+const parsedInitialDate = parse(initialDateString, 'yyyy-MM-dd', new Date())
+const initialDate = isValid(parsedInitialDate) ? parsedInitialDate : null
 
 const SpeedOverTimeOptions = ({
   onOptionsChange,
 }: SpeedOverTimeOptionsProps) => {
   const [startDate, setStartDate] = useState<Date | null>(
-    startOfMonth(initialDate)
+    initialDate ? startOfMonth(initialDate) : null
   )
-  const [endDate, setEndDate] = useState<Date | null>(endOfMonth(initialDate))
+  const [endDate, setEndDate] = useState<Date | null>(
+    initialDate ? endOfMonth(initialDate) : null
+  )
 
   const [selectedSource, setSelectedSource] = useState<DataSource>(
     DataSource.PeMS
@@ -54,6 +57,16 @@ const SpeedOverTimeOptions = ({
         startTime: startTime.toISOString(),
         endTime: endTime.toISOString(),
       })
+    } else {
+      // Handle invalid dates by sending empty strings
+      onOptionsChange({
+        startDate: '',
+        endDate: '',
+        sourceId: selectedSource,
+        timeOptions: selectedTimeOptions,
+        startTime: '',
+        endTime: '',
+      })
     }
   }, [
     startDate,
@@ -65,11 +78,19 @@ const SpeedOverTimeOptions = ({
   ])
 
   const handleStartDateChange = (date: Date | null) => {
-    setStartDate(date)
+    if (date && isValid(date)) {
+      setStartDate(date)
+    } else {
+      setStartDate(null)
+    }
   }
 
   const handleEndDateChange = (date: Date | null) => {
-    setEndDate(date)
+    if (date && isValid(date)) {
+      setEndDate(date)
+    } else {
+      setEndDate(null)
+    }
   }
 
   const handleSourceChange = (event: SelectChangeEvent<number>) => {
@@ -81,11 +102,23 @@ const SpeedOverTimeOptions = ({
   }
 
   const handleStartTimeChange = (time: Date | null) => {
-    setStartTime(time)
+    if (time && isValid(time)) {
+      setStartTime(time)
+      // You can add error handling for time if needed
+    } else {
+      setStartTime(null)
+      // Handle time errors if necessary
+    }
   }
 
   const handleEndTimeChange = (time: Date | null) => {
-    setEndTime(time)
+    if (time && isValid(time)) {
+      setEndTime(time)
+      // You can add error handling for time if needed
+    } else {
+      setEndTime(null)
+      // Handle time errors if necessary
+    }
   }
 
   return (
@@ -105,17 +138,32 @@ const SpeedOverTimeOptions = ({
       </Box>
 
       {/* Row 2: Start Time and End Time */}
+      {/* Uncomment and update if needed */}
       {/* <Box display="flex" gap={2}>
         <TimePicker
           label="Start Time"
           value={startTime}
           onChange={handleStartTimeChange}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              // Add error handling if necessary
+              InputLabelProps={{ shrink: true }}
+            />
+          )}
           fullWidth
         />
         <TimePicker
           label="End Time"
           value={endTime}
           onChange={handleEndTimeChange}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              // Add error handling if necessary
+              InputLabelProps={{ shrink: true }}
+            />
+          )}
           fullWidth
         />
       </Box> */}
@@ -136,6 +184,7 @@ const SpeedOverTimeOptions = ({
             <MenuItem value={TimeOptions.Month}>Month</MenuItem>
           </Select>
         </FormControl>
+        {/* Uncomment and update the Source Select component if needed */}
         {/* <FormControl fullWidth>
           <InputLabel id="source-select-label">Source Select</InputLabel>
           <Select
