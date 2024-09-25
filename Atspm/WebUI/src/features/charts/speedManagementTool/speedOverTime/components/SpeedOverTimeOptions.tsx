@@ -80,20 +80,16 @@ const SpeedOverTimeOptions = ({
   const handleStartDateChange = (date: Date | null) => {
     if (date && isValid(date)) {
       setStartDate(date)
-      setStartDateError(false)
     } else {
       setStartDate(null)
-      setStartDateError(true)
     }
   }
 
   const handleEndDateChange = (date: Date | null) => {
     if (date && isValid(date)) {
       setEndDate(date)
-      setEndDateError(false)
     } else {
       setEndDate(null)
-      setEndDateError(true)
     }
   }
 
