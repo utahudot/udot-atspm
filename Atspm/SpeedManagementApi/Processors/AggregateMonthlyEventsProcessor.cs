@@ -74,6 +74,62 @@ namespace SpeedManagementApi.Processors
             // _timer = new Timer(StartWorkflow, null, TimeSpan.Zero, TimeSpan.FromMinutes(1));
         }
 
+        public async Task AggregateCertainMonthforSource(DateTime date, int source)
+        {
+            var batchSize = 500;
+            var settings = new ExecutionDataflowBlockOptions()
+            {
+                MaxDegreeOfParallelism = 10,
+            };
+            var startDate = DateTime.Now;
+            var endDate = DateTime.Now;
+
+            //List out the steps 
+            var expiredEvents = new TransformManyBlock<Tuple<DateTime, int>, MonthlyAggregationProcessorDto>(input => AllSegmentsFromSourceTimePeriod(input.Item1, input.Item2));
+            //Set up monthlyAggregationProcessor DTO
+            var allTimeData = new TransformBlock<MonthlyAggregationProcessorDto, MonthlyAggregationProcessorDto>(async monthlyAggregationProcessor =>
+            {
+                var result = await PullOutAllMonthlyDataForSegment(monthlyAggregationProcessor);
+                return result;
+            }, settings);
+            var allDay = new TransformBlock<MonthlyAggregationProcessorDto, MonthlyAggregationProcessorDto>(GetHourlySpeedsForAllDay, settings);
+            var offPeak = new TransformBlock<MonthlyAggregationProcessorDto, MonthlyAggregationProcessorDto>(GetHourlySpeedsForOffPeak, settings);
+            var amPeak = new TransformBlock<MonthlyAggregationProcessorDto, MonthlyAggregationProcessorDto>(GetHourlySpeedsForAmPeak, settings);
+            var pmPeak = new TransformBlock<MonthlyAggregationProcessorDto, MonthlyAggregationProcessorDto>(GetHourlySpeedsForPmPeak, settings);
+            var midDay = new TransformBlock<MonthlyAggregationProcessorDto, MonthlyAggregationProcessorDto>(GetHourlySpeedsForMidDay, settings);
+            var evening = new TransformBlock<MonthlyAggregationProcessorDto, MonthlyAggregationProcessorDto>(GetHourlySpeedsForEvening, settings);
+            var earlyMorning = new TransformBlock<MonthlyAggregationProcessorDto, MonthlyAggregationProcessorDto>(GetHourlySpeedsForEarlyMorning, settings);
+
+
+            //Save the information
+            var batchBlock = new BatchBlock<MonthlyAggregationProcessorDto>(batchSize);
+            var saveBlock = new ActionBlock<IEnumerable<MonthlyAggregationProcessorDto>>(UpsertMonthlyAggregations, settings);
+
+            //This is very important for batching
+            DataflowLinkOptions linkOptions = new DataflowLinkOptions() { PropagateCompletion = true };
+
+            //Link to the workflow
+            expiredEvents.LinkTo(allTimeData, linkOptions);
+            allTimeData.LinkTo(allDay, linkOptions);
+            allDay.LinkTo(offPeak, linkOptions);
+            offPeak.LinkTo(amPeak, linkOptions);
+            amPeak.LinkTo(pmPeak, linkOptions);
+            pmPeak.LinkTo(midDay, linkOptions);
+            midDay.LinkTo(evening, linkOptions);
+            evening.LinkTo(earlyMorning, linkOptions);
+            earlyMorning.LinkTo(batchBlock, linkOptions);
+            batchBlock.LinkTo(saveBlock, linkOptions);
+
+            var tuple = new Tuple<DateTime, int>(date, source);
+            //Start the workflow
+            await expiredEvents.SendAsync(tuple);
+            expiredEvents.Complete();
+
+            await saveBlock.Completion;
+
+            // _timer = new Timer(StartWorkflow, null, TimeSpan.Zero, TimeSpan.FromMinutes(1));
+        }
+
         public async Task AggregateMonthlyEventsForSingleSegment(MonthlyAggregation monthlyAggregation)
         {
             var settings = new ExecutionDataflowBlockOptions()
@@ -147,6 +203,33 @@ namespace SpeedManagementApi.Processors
                         BinStartTime = firstDayOfPreviousMonth,
                         SegmentId = segment.Id,
                         //INSTEAD OF GET ALL SEGMENTS, DO GET SEGMENTS BY SOURCE ID, FOR KENZIE PROBABLY
+                        SourceId = 0,
+                        PercentObserved = 100.00
+                    }
+                };
+            }
+        }
+
+        private IEnumerable<MonthlyAggregationProcessorDto> AllSegmentsFromSourceTimePeriod(DateTime date, int source)
+        {
+            DateTime today = date;
+            DateTime lastDayOfMonth = new DateTime(today.Year, today.Month, 1).AddMonths(1).AddDays(-1);
+            DateTime firstDayOfMonth = new DateTime(today.Year, today.Month, 1);
+            var allSegments = segmentRepository.AllSegmentsWithEntity(source);
+            foreach (var segment in allSegments)
+            {
+                yield return new MonthlyAggregationProcessorDto
+                {
+                    hourlySpeeds = new List<HourlySpeed>(),
+                    startDate = firstDayOfMonth,
+                    endDate = lastDayOfMonth,
+                    SegmentId = segment.Id,
+                    monthlyAggregation = new MonthlyAggregation
+                    {
+                        Id = Guid.NewGuid(),
+                        CreatedDate = DateTime.SpecifyKind(today, DateTimeKind.Utc),
+                        BinStartTime = firstDayOfMonth,
+                        SegmentId = segment.Id,
                         SourceId = 0,
                         PercentObserved = 100.00
                     }
