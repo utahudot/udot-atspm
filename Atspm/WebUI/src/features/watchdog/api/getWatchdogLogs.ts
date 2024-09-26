@@ -15,16 +15,16 @@
 // limitations under the License.
 // #endregion
 import { reportsAxios } from '@/lib/axios'
-import { ExtractFnReturnType, QueryConfig } from '@/lib/react-query'
-import { ApiResponse } from '@/types'
-import { useQuery } from 'react-query'
 
-import { Watchdog } from '@/features/watchdog/types'
+import { Area } from '@/features/areas/types'
+import { useGetRequest } from '@/hooks/useGetRequest'
+import { usePostRequest } from '@/hooks/usePostRequest'
+import { AxiosHeaders } from 'axios'
 
 export interface WatchdogReportDataRequestBody {
   start: Date
   end: Date
-  areaId?: number | null // Allowing number, undefined, or null
+  areaId?: number | null
   regionId?: number | null
   jurisdictionId?: number | null
   issueType?: number | null
@@ -32,37 +32,49 @@ export interface WatchdogReportDataRequestBody {
 }
 
 export interface WatchDogIssueTypeDTO {
-  Id: number
+  id: number
   name: string
 }
-export const getWatchdogLogs = async (
-  requestBody: WatchdogReportDataRequestBody
-): Promise<ApiResponse<Watchdog>> => {
-  return await reportsAxios.post('/Watchdog/getReportData', requestBody)
+
+export interface LogEvent {
+  regionId: number
+  regionDescription: string
+  jurisdictionId: number
+  jurisdictionName: string
+  areas: Area[]
+  id: number
+  locationId: number
+  locationIdentifier: string | null
+  timestamp: string
+  componentType: number
+  componentId: number
+  issueType: number
+  details: string
+  phase: string | null
 }
 
-type QueryFnType = typeof getWatchdogLogs
-
-type UseWatchDogOptions = {
-  requestBody: WatchdogReportDataRequestBody
-  config?: QueryConfig<QueryFnType>
-  enabled?: boolean
+export interface LogEventsData {
+  logEvents: LogEvent[]
+  start: string
+  end: string
 }
 
-export const useWatchdogLogs = ({
-  requestBody,
-  // config,
-  enabled = false,
-}: UseWatchDogOptions) => {
-  return useQuery<ExtractFnReturnType<QueryFnType>>({
-    queryKey: ['watchdogLogs', requestBody],
-    queryFn: () => getWatchdogLogs(requestBody),
-    enabled,
+export function useGetWatchdogLogs() {
+  const mutation = usePostRequest<LogEventsData, WatchdogReportDataRequestBody>(
+    {
+      url: '/Watchdog/getReportData',
+      axiosInstance: reportsAxios,
+      headers: new AxiosHeaders({
+        'Content-Type': 'application/json',
+      }),
+    }
+  )
+  return mutation
+}
+
+export const useGetIssueTypes = () => {
+  return useGetRequest<WatchDogIssueTypeDTO[]>({
+    route: '/Watchdog/GetIssueTypes',
+    axiosInstance: reportsAxios,
   })
-}
-
-export const getIssueTypes = async (): Promise<
-  ApiResponse<WatchDogIssueTypeDTO[]>
-> => {
-  return await reportsAxios.get('/Watchdog/GetIssueTypes')
 }

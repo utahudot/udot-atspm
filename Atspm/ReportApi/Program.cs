@@ -44,6 +44,7 @@ using Utah.Udot.Atspm.Business.Watchdog;
 using Utah.Udot.Atspm.Business.YellowRedActivations;
 using Utah.Udot.Atspm.ReportApi.DataAggregation;
 using Utah.Udot.Atspm.ReportApi.ReportServices;
+using Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices;
 using Utah.Udot.ATSPM.ReportApi.ReportServices;
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
@@ -228,6 +229,7 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddScoped<LinkPivotService>();
     s.AddScoped<LinkPivotPairService>();
     s.AddScoped<LinkPivotPcdService>();
+    s.AddScoped<WatchDogIgnoreEventService>();
 
     s.AddPathBaseFilter(h);
 
