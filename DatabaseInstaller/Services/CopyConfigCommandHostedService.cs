@@ -50,6 +50,31 @@ namespace DatabaseInstaller.Services
             Console.WriteLine("Data copied and bulk inserted.");
         }
 
+
+        public async Task MigrateProducts()
+        {
+            //var command = new SqlCommand("SELECT * FROM ControllerType", );
+            //_sqlConnection.Open();
+            //using (var reader = await command.ExecuteReaderAsync())
+            //{
+            //    while (await reader.ReadAsync())
+            //    {
+            //        var product = new Product
+            //        {
+            //            Manufacturer = reader.GetString(reader.GetOrdinal("Description")), // Mapping Manufacturer from ControllerType.Description
+            //            Model = reader.GetString(reader.GetOrdinal("Description")),        // Mapping Model from ControllerType.Description (or another field?)
+            //            WebPage = "?",                                                     // Unclear how to map WebPage
+            //            Notes = "?"                                                        // Unclear how to map Notes
+            //        };
+            //        _newDbContext.Products.Add(product);
+            //    }
+            //}
+            //_sqlConnection.Close();
+            //await _newDbContext.SaveChangesAsync();
+        }
+
+
+
         private void FindNewAndDeletedFromGeneralConfiguration()
         {
             using (SqlConnection sourceConnection = new SqlConnection(_config.Value.Source))
