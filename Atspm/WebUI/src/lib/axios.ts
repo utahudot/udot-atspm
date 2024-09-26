@@ -1,9 +1,9 @@
-import storage from '@/utils/storage'
 import Axios, {
   AxiosInstance,
   AxiosResponse,
   InternalAxiosRequestConfig,
 } from 'axios'
+import Cookies from 'js-cookie'
 import { getEnv } from './getEnv'
 
 let configAxios: AxiosInstance
@@ -40,9 +40,9 @@ function createAxiosInstance(baseURL: string): AxiosInstance {
 }
 
 function authRequestInterceptor(config: InternalAxiosRequestConfig) {
-  const token = storage.getToken()
+  const token = Cookies.get('token')
   if (token) {
-    config.headers.authorization = `${token}`
+    config.headers.Authorization = `Bearer ${token}`
   }
   return config
 }
