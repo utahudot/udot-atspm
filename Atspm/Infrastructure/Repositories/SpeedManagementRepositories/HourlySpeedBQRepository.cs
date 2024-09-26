@@ -209,11 +209,12 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
         }
 
 
-        public async Task<List<MonthlyAverage>> GetMonthlyAveragesAsync(Guid segmentId, DateOnly startDate, DateOnly endDate, string daysOfWeek, int sourceId)
+        public async Task<List<MonthlyAverage>> GetMonthlyAveragesAsync(Guid segmentId, DateOnly startDate, DateOnly endDate, string daysOfWeek)
         {
             string query = $@"
             SELECT 
                 DATE_TRUNC(date, MONTH) AS Month, 
+                SourceId,
                 AVG(Average) AS Average,
                 AVG(FifteenthSpeed) AS FifteenthSpeed,
                 AVG(EightyFifthSpeed) AS EightyFifthSpeed,
@@ -227,10 +228,9 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             FROM `{_datasetId}.{_tableId}`
             WHERE 
                 SegmentId = @segmentId AND
-                SourceId = @sourceId AND
                 date BETWEEN @startDate AND @endDate AND
                 EXTRACT(DAYOFWEEK FROM date) IN ({daysOfWeek})
-            GROUP BY Month
+            GROUP BY Month, SourceId
             ORDER BY Month ASC;";
 
             var parameters = new[]
@@ -238,7 +238,6 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             new BigQueryParameter("segmentId", BigQueryDbType.String, segmentId.ToString()),
             new BigQueryParameter("startDate", BigQueryDbType.Date, startDate.ToDateTime(new TimeOnly(0,0))),
             new BigQueryParameter("endDate", BigQueryDbType.Date, endDate.ToDateTime(new TimeOnly(0,0))),
-            new BigQueryParameter("sourceId", BigQueryDbType.Int64, sourceId)
         };
 
             var queryResults = await _client.ExecuteQueryAsync(query, parameters);
@@ -247,6 +246,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 return queryResults.Select(row => new MonthlyAverage
                 {
                     Month = DateTime.Parse(row["Month"].ToString()),
+                    SourceId = Convert.ToInt32(row["SourceId"]),
                     Average = Convert.ToDouble(row["Average"]),
                     FifteenthSpeed = Convert.ToDouble(row["FifteenthSpeed"]),
                     EightyFifthSpeed = Convert.ToDouble(row["EightyFifthSpeed"]),
@@ -271,6 +271,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             string query = $@"
             SELECT 
                 DATE_TRUNC(date, DAY) AS Date, 
+                SourceId,
                 AVG(Average) AS Average,
                 AVG(FifteenthSpeed) AS FifteenthSpeed,
                 AVG(EightyFifthSpeed) AS EightyFifthSpeed,
@@ -286,7 +287,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 SegmentId = @segmentId AND
                 date BETWEEN @startDate AND @endDate AND
                 EXTRACT(DAYOFWEEK FROM date) IN ({daysOfWeek})
-            GROUP BY Date
+            GROUP BY Date,SourceId
             ORDER BY Date ASC;";
 
             var parameters = new[]
@@ -300,6 +301,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             return queryResults.Select(row => new DailyAverage
             {
                 Date = DateTime.Parse(row["Date"].ToString()),
+                SourceId = Convert.ToInt32(row["SourceId"]),
                 Average = Convert.ToDouble(row["Average"]),
                 FifteenthSpeed = Convert.ToDouble(row["FifteenthSpeed"]),
                 EightyFifthSpeed = Convert.ToDouble(row["EightyFifthSpeed"]),

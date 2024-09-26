@@ -39,22 +39,28 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices.Segmen
 
             // Convert the values to a comma-separated string
             string commaSeparatedDays = string.Join(",", dayOfWeekValues);
-
+            var dailyAveragesForAllSources = await hourlySpeedRepository.GetDailyAveragesAsync(options.SegmentId, options.StartDate, options.EndDate, commaSeparatedDays);
+            var monthlyAveragesForAllSources = await hourlySpeedRepository.GetMonthlyAveragesAsync(options.SegmentId, options.StartDate, options.EndDate, commaSeparatedDays);
             foreach (var sourceId in sources)
             {
-                var monthlyAverages = await hourlySpeedRepository.GetMonthlyAveragesAsync(options.SegmentId, options.StartDate, options.EndDate, commaSeparatedDays, sourceId);
-                var dailyAverages = await hourlySpeedRepository.GetDailyAveragesAsync(options.SegmentId, options.StartDate, options.EndDate, commaSeparatedDays);
+
 
                 routeSpeeds.MonthlyHistoricalRouteData.Add(new MonthlyHistoricalRouteData
                 {
                     SourceId = sourceId,
-                    MonthlyAverages = monthlyAverages
+                    MonthlyAverages = monthlyAveragesForAllSources
+                    .Where(ma => ma.SourceId == sourceId)
+                    .OrderBy(ma => ma.Month)
+                    .ToList()
                 });
 
                 routeSpeeds.DailyHistoricalRouteData.Add(new DailyHistoricalRouteData
                 {
                     SourceId = sourceId,
-                    DailyAverages = dailyAverages
+                    DailyAverages = dailyAveragesForAllSources
+                    .Where(da => da.SourceId == sourceId)
+                    .OrderBy(da => da.Date)
+                    .ToList()
                 });
             }
 
