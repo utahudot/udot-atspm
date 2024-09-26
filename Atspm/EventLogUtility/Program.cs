@@ -15,7 +15,6 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.CommandLine.Builder;
 using System.CommandLine.Hosting;

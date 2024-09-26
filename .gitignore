@@ -95,3 +95,4 @@ dkms.conf
 /ATSPM/WatchDogTests/bin/
 /ATSPM/WebUI/obj/
 *.config
+/Atspm/EventLogUtility/Properties/PublishProfiles
