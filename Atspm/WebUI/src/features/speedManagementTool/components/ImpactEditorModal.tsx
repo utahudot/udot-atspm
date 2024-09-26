@@ -223,6 +223,7 @@ const ImpactEditorModal: React.FC<ImpactEditorModalProps> = ({
             label="Description"
             name="description"
             value={impact.description}
+            error={errors.description}
             onChange={(e) =>
               setImpact({ ...impact, description: e.target.value })
             }
@@ -233,6 +234,7 @@ const ImpactEditorModal: React.FC<ImpactEditorModalProps> = ({
             name="start"
             type="datetime-local"
             value={impact.start || new Date()}
+            error={errors.start}
             onChange={(e) => setImpact({ ...impact, start: e.target.value })}
             fullWidth
             InputLabelProps={{
@@ -244,6 +246,7 @@ const ImpactEditorModal: React.FC<ImpactEditorModalProps> = ({
             name="end"
             type="datetime-local"
             value={impact.end || ''}
+            error={errors.end}
             onChange={(e) => setImpact({ ...impact, end: e.target.value })}
             fullWidth
             InputLabelProps={{
@@ -264,6 +267,7 @@ const ImpactEditorModal: React.FC<ImpactEditorModalProps> = ({
               })
             }
             fullWidth
+            error={errors.startMile}
           />
           <TextField
             label="End Mile"
@@ -277,8 +281,9 @@ const ImpactEditorModal: React.FC<ImpactEditorModalProps> = ({
               })
             }
             fullWidth
+            error={errors.endMile}
           />
-          <FormControl fullWidth>
+          <FormControl fullWidth error={errors.impactTypes}>
             <InputLabel id="impact-types-label">Impact Types</InputLabel>
             <Select
               labelId="impact-types-label"

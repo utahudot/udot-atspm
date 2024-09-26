@@ -6,426 +6,434 @@
  * OpenAPI spec version: 1.0
  */
 export type PostApiViolationsAndExtremeViolationsGetReportDataParams = {
-/**
- * The requested API version
- */
-'api-version'?: string;
-};
+  /**
+   * The requested API version
+   */
+  'api-version'?: string
+}
 
 export type PostApiV1SpeedOverTimeGetReportDataParams = {
-/**
- * The requested API version
- */
-'api-version'?: string;
-};
+  /**
+   * The requested API version
+   */
+  'api-version'?: string
+}
 
 export type PostApiV1SpeedOverDistanceGetReportDataParams = {
-/**
- * The requested API version
- */
-'api-version'?: string;
-};
+  /**
+   * The requested API version
+   */
+  'api-version'?: string
+}
 
 export type PostApiV1SpeedManagementGetHistoricalSpeedsParams = {
-/**
- * The requested API version
- */
-'api-version'?: string;
-};
+  /**
+   * The requested API version
+   */
+  'api-version'?: string
+}
 
 export type GetRouteSpeedsParams = {
-/**
- * The requested API version
- */
-'api-version'?: string;
-};
+  /**
+   * The requested API version
+   */
+  'api-version'?: string
+}
 
 export type PostApiV1SpeedFromImpactSegmentSegmentIdParams = {
-/**
- * The requested API version
- */
-'api-version'?: string;
-};
+  /**
+   * The requested API version
+   */
+  'api-version'?: string
+}
 
 export type PostApiV1SpeedFromImpactImpactImpactIdParams = {
-/**
- * The requested API version
- */
-'api-version'?: string;
-};
+  /**
+   * The requested API version
+   */
+  'api-version'?: string
+}
 
 export type PostApiV1SegmentSegmentIdSpeedsParams = {
-/**
- * The requested API version
- */
-'api-version'?: string;
-};
+  /**
+   * The requested API version
+   */
+  'api-version'?: string
+}
 
 export type PostApiV1SegmentSpeedsParams = {
-/**
- * The requested API version
- */
-'api-version'?: string;
-};
+  /**
+   * The requested API version
+   */
+  'api-version'?: string
+}
 
 export type GetApiV1SegmentSegmentIdParams = {
-/**
- * The requested API version
- */
-'api-version'?: string;
-};
+  /**
+   * The requested API version
+   */
+  'api-version'?: string
+}
 
 export type PostApiV1SegmentParams = {
-/**
- * The requested API version
- */
-'api-version'?: string;
-};
+  /**
+   * The requested API version
+   */
+  'api-version'?: string
+}
 
 export type GetApiV1SegmentParams = {
-/**
- * The requested API version
- */
-'api-version'?: string;
-};
+  /**
+   * The requested API version
+   */
+  'api-version'?: string
+}
 
 export type GetApiV1RegionParams = {
-/**
- * The requested API version
- */
-'api-version'?: string;
-};
+  /**
+   * The requested API version
+   */
+  'api-version'?: string
+}
 
 export type GetApiV1MonthlyAggregationSegmentsSegmentIdParams = {
-/**
- * The requested API version
- */
-'api-version'?: string;
-};
+  /**
+   * The requested API version
+   */
+  'api-version'?: string
+}
 
 export type PostApiV1MonthlyAggregationSegmentParams = {
-/**
- * The requested API version
- */
-'api-version'?: string;
-};
+  /**
+   * The requested API version
+   */
+  'api-version'?: string
+}
 
 export type DeleteApiV1MonthlyAggregationParams = {
-/**
- * The requested API version
- */
-'api-version'?: string;
-};
+  /**
+   * The requested API version
+   */
+  'api-version'?: string
+}
 
 export type PostApiV1MonthlyAggregationParams = {
-/**
- * The requested API version
- */
-'api-version'?: string;
-};
+  /**
+   * The requested API version
+   */
+  'api-version'?: string
+}
 
 export type DeleteApiV1ImpactTypeIdParams = {
-/**
- * The requested API version
- */
-'api-version'?: string;
-};
+  /**
+   * The requested API version
+   */
+  'api-version'?: string
+}
 
 export type PutApiV1ImpactTypeIdParams = {
-/**
- * The requested API version
- */
-'api-version'?: string;
-};
+  /**
+   * The requested API version
+   */
+  'api-version'?: string
+}
 
 export type GetApiV1ImpactTypeIdParams = {
-/**
- * The requested API version
- */
-'api-version'?: string;
-};
+  /**
+   * The requested API version
+   */
+  'api-version'?: string
+}
 
 export type PostApiV1ImpactTypeParams = {
-/**
- * The requested API version
- */
-'api-version'?: string;
-};
+  /**
+   * The requested API version
+   */
+  'api-version'?: string
+}
 
 export type GetApiV1ImpactTypeParams = {
-/**
- * The requested API version
- */
-'api-version'?: string;
-};
+  /**
+   * The requested API version
+   */
+  'api-version'?: string
+}
 
 export type DeleteApiV1ImpactIdImpactTypeImpactTypeIdParams = {
-/**
- * The requested API version
- */
-'api-version'?: string;
-};
+  /**
+   * The requested API version
+   */
+  'api-version'?: string
+}
 
 export type PutApiV1ImpactIdImpactTypeImpactTypeIdParams = {
-/**
- * The requested API version
- */
-'api-version'?: string;
-};
+  /**
+   * The requested API version
+   */
+  'api-version'?: string
+}
 
 export type DeleteApiV1ImpactIdSegmentsSegmentIdParams = {
-/**
- * The requested API version
- */
-'api-version'?: string;
-};
+  /**
+   * The requested API version
+   */
+  'api-version'?: string
+}
 
 export type PutApiV1ImpactIdSegmentsSegmentIdParams = {
-/**
- * The requested API version
- */
-'api-version'?: string;
-};
+  /**
+   * The requested API version
+   */
+  'api-version'?: string
+}
 
 export type DeleteApiV1ImpactIdParams = {
-/**
- * The requested API version
- */
-'api-version'?: string;
-};
+  /**
+   * The requested API version
+   */
+  'api-version'?: string
+}
 
 export type PutApiV1ImpactIdParams = {
-/**
- * The requested API version
- */
-'api-version'?: string;
-};
+  /**
+   * The requested API version
+   */
+  'api-version'?: string
+}
 
 export type GetApiV1ImpactIdParams = {
-/**
- * The requested API version
- */
-'api-version'?: string;
-};
+  /**
+   * The requested API version
+   */
+  'api-version'?: string
+}
 
 export type PostApiV1ImpactParams = {
-/**
- * The requested API version
- */
-'api-version'?: string;
-};
+  /**
+   * The requested API version
+   */
+  'api-version'?: string
+}
 
 export type GetApiV1ImpactParams = {
-/**
- * The requested API version
- */
-'api-version'?: string;
-};
+  /**
+   * The requested API version
+   */
+  'api-version'?: string
+}
 
 export type GetApiV1FunctionalTypeParams = {
-/**
- * The requested API version
- */
-'api-version'?: string;
-};
+  /**
+   * The requested API version
+   */
+  'api-version'?: string
+}
 
 export type PostApiV1DataQualityGetReportDataParams = {
-/**
- * The requested API version
- */
-'api-version'?: string;
-};
+  /**
+   * The requested API version
+   */
+  'api-version'?: string
+}
 
 export type GetApiV1CountyParams = {
-/**
- * The requested API version
- */
-'api-version'?: string;
-};
+  /**
+   * The requested API version
+   */
+  'api-version'?: string
+}
 
 export type PostApiV1CongestionTrackingGetReportDataParams = {
-/**
- * The requested API version
- */
-'api-version'?: string;
-};
+  /**
+   * The requested API version
+   */
+  'api-version'?: string
+}
 
 export type GetApiV1CityParams = {
-/**
- * The requested API version
- */
-'api-version'?: string;
-};
+  /**
+   * The requested API version
+   */
+  'api-version'?: string
+}
 
 export type GetApiV1AccessCategoryParams = {
-/**
- * The requested API version
- */
-'api-version'?: string;
-};
+  /**
+   * The requested API version
+   */
+  'api-version'?: string
+}
 
 export interface ViolationsAndExtremeViolationsOptions {
-  endDate?: string;
-  segmentIds?: string[] | null;
-  startDate?: string;
+  endDate?: string
+  segmentIds?: string[] | null
+  startDate?: string
 }
 
 export interface ViolationsAndExtremeViolationsDto {
-  endingMilePoint?: number;
-  exteremeViolations?: number;
-  flow?: number;
-  segmentId?: string;
-  segmentName?: string | null;
-  speedLimit?: number;
-  startingMilePoint?: number;
-  time?: string;
-  violations?: number;
+  endingMilePoint?: number
+  exteremeViolations?: number
+  flow?: number
+  segmentId?: string
+  segmentName?: string | null
+  speedLimit?: number
+  startingMilePoint?: number
+  time?: string
+  violations?: number
 }
 
-export type TimeOptionsEnum = typeof TimeOptionsEnum[keyof typeof TimeOptionsEnum];
-
+export type TimeOptionsEnum =
+  (typeof TimeOptionsEnum)[keyof typeof TimeOptionsEnum]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const TimeOptionsEnum = {
   NUMBER_0: 0,
   NUMBER_1: 1,
   NUMBER_2: 2,
-} as const;
+} as const
 
 export interface SpeedOverTimeOptions {
-  endDate?: string;
-  endTime?: string | null;
-  segmentId?: string | null;
-  sourceId?: number;
-  startDate?: string;
-  startTime?: string | null;
-  timeOptions?: TimeOptionsEnum;
+  endDate?: string
+  endTime?: string | null
+  segmentId?: string | null
+  sourceId?: number
+  startDate?: string
+  startTime?: string | null
+  timeOptions?: TimeOptionsEnum
+}
+
+export interface SpeedVariabilityOptions {
+  endDate: string
+  segmentId: string | null
+  sourceId: number
+  startDate: string
+  daysOfWeek: DayOfWeek[]
+  IsHolidaysFiltered?: boolean
 }
 
 export interface SpeedOverDistanceOptions {
-  endDate?: string;
-  segmentIds?: string[] | null;
-  startDate?: string;
+  endDate?: string
+  segmentIds?: string[] | null
+  startDate?: string
 }
 
 export interface SpeedOverDistanceDto {
-  average?: number;
-  eightyFifth?: number;
-  endDate?: string;
-  endingMilePoint?: number;
-  segmentId?: string;
-  segmentName?: string | null;
-  speedLimit?: number;
-  startDate?: string;
-  startingMilePoint?: number;
+  average?: number
+  eightyFifth?: number
+  endDate?: string
+  endingMilePoint?: number
+  segmentId?: string
+  segmentName?: string | null
+  speedLimit?: number
+  startDate?: string
+  startingMilePoint?: number
 }
 
 export interface SpeedDataDto {
-  date?: string;
-  series?: AverageAndEightyFifthSeriesData;
+  date?: string
+  series?: AverageAndEightyFifthSeriesData
 }
 
 export interface SpeedOverTimeDto {
-  data?: SpeedDataDto[] | null;
-  endDate?: string;
-  endingMilePoint?: number;
-  segmentId?: string;
-  segmentName?: string | null;
-  speedLimit?: number;
-  startDate?: string;
-  startingMilePoint?: number;
-  timeOptions?: TimeOptionsEnum;
+  data?: SpeedDataDto[] | null
+  endDate?: string
+  endingMilePoint?: number
+  segmentId?: string
+  segmentName?: string | null
+  speedLimit?: number
+  startDate?: string
+  startingMilePoint?: number
+  timeOptions?: TimeOptionsEnum
 }
 
 export interface SegmentRequestDto {
-  endDate?: string;
-  segmentIds?: string[] | null;
-  startDate?: string;
+  endDate?: string
+  segmentIds?: string[] | null
+  startDate?: string
 }
 
 export interface Segment {
-  accessCategory?: string | null;
-  alternateIdentifier?: string | null;
-  city?: string | null;
-  county?: string | null;
-  direction?: string | null;
-  endMilePoint?: number;
-  functionalType?: string | null;
-  id?: string;
-  name?: string | null;
-  offset?: number | null;
-  region?: string | null;
-  routeEntities?: SegmentEntity[] | null;
-  shape?: Geometry;
-  shapeWKT?: string | null;
-  speedLimit?: number;
-  startMilePoint?: number;
-  udotRouteNumber?: string | null;
+  accessCategory?: string | null
+  alternateIdentifier?: string | null
+  city?: string | null
+  county?: string | null
+  direction?: string | null
+  endMilePoint?: number
+  functionalType?: string | null
+  id?: string
+  name?: string | null
+  offset?: number | null
+  region?: string | null
+  routeEntities?: SegmentEntity[] | null
+  shape?: Geometry
+  shapeWKT?: string | null
+  speedLimit?: number
+  startMilePoint?: number
+  udotRouteNumber?: string | null
 }
 
 export interface SpeedFromImpactDto {
-  endDate?: string;
-  hourlySpeeds?: HourlySpeed[] | null;
-  impacts?: Impact[] | null;
-  segments?: Segment[] | null;
-  startDate?: string;
+  endDate?: string
+  hourlySpeeds?: HourlySpeed[] | null
+  impacts?: Impact[] | null
+  segments?: Segment[] | null
+  startDate?: string
 }
 
 export interface SegmentEntity {
-  entityId?: number;
-  entityType?: string | null;
-  length?: number;
-  segment?: Segment;
-  segmentId?: string;
-  sourceId?: number;
+  entityId?: number
+  entityType?: string | null
+  length?: number
+  segment?: Segment
+  segmentId?: string
+  sourceId?: number
 }
 
 export interface RouteSpeedOptions {
-  accessCategory?: string | null;
-  city?: string | null;
-  county?: string | null;
-  daysOfWeek?: DayOfWeek[] | null;
-  endDate?: string;
-  endTime?: string;
-  functionalType?: string | null;
-  region?: string | null;
-  sourceId?: number;
-  startDate?: string;
-  startTime?: string;
-  violationThreshold?: number;
+  accessCategory?: string | null
+  city?: string | null
+  county?: string | null
+  daysOfWeek?: DayOfWeek[] | null
+  endDate?: string
+  endTime?: string
+  functionalType?: string | null
+  region?: string | null
+  sourceId?: number
+  startDate?: string
+  startTime?: string
+  violationThreshold?: number
 }
 
 export interface ProblemDetails {
-  detail?: string | null;
-  instance?: string | null;
-  status?: number | null;
-  title?: string | null;
-  type?: string | null;
-  [key: string]: unknown;
+  detail?: string | null
+  instance?: string | null
+  status?: number | null
+  title?: string | null
+  type?: string | null
+  [key: string]: unknown
 }
 
-export type PrecisionModels = typeof PrecisionModels[keyof typeof PrecisionModels];
-
+export type PrecisionModels =
+  (typeof PrecisionModels)[keyof typeof PrecisionModels]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const PrecisionModels = {
   NUMBER_0: 0,
   NUMBER_1: 1,
   NUMBER_2: 2,
-} as const;
+} as const
 
 export interface PrecisionModel {
-  readonly gridSize?: number;
-  readonly isFloating?: boolean;
-  readonly maximumSignificantDigits?: number;
-  precisionModelType?: PrecisionModels;
-  scale?: number;
+  readonly gridSize?: number
+  readonly isFloating?: boolean
+  readonly maximumSignificantDigits?: number
+  precisionModelType?: PrecisionModels
+  scale?: number
 }
 
-export type PointUserData = unknown | null;
+export type PointUserData = unknown | null
 
-export type Ordinates = typeof Ordinates[keyof typeof Ordinates];
-
+export type Ordinates = (typeof Ordinates)[keyof typeof Ordinates]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const Ordinates = {
@@ -469,10 +477,10 @@ export const Ordinates = {
   NUMBER_MINUS_2147483648: -2147483648,
   NUMBER_MINUS_65536: -65536,
   NUMBER_MINUS_1: -1,
-} as const;
+} as const
 
-export type OgcGeometryType = typeof OgcGeometryType[keyof typeof OgcGeometryType];
-
+export type OgcGeometryType =
+  (typeof OgcGeometryType)[keyof typeof OgcGeometryType]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const OgcGeometryType = {
@@ -492,143 +500,144 @@ export const OgcGeometryType = {
   NUMBER_14: 14,
   NUMBER_15: 15,
   NUMBER_16: 16,
-} as const;
+} as const
 
 export interface NtsGeometryServices {
-  coordinateEqualityComparer?: CoordinateEqualityComparer;
-  defaultCoordinateSequenceFactory?: CoordinateSequenceFactory;
-  defaultPrecisionModel?: PrecisionModel;
-  readonly defaultSRID?: number;
-  geometryOverlay?: GeometryOverlay;
+  coordinateEqualityComparer?: CoordinateEqualityComparer
+  defaultCoordinateSequenceFactory?: CoordinateSequenceFactory
+  defaultPrecisionModel?: PrecisionModel
+  readonly defaultSRID?: number
+  geometryOverlay?: GeometryOverlay
 }
 
 export interface NameAndIdDto {
-  id?: string;
-  name?: string | null;
+  id?: string
+  name?: string | null
 }
 
 export interface MonthlyAggregation {
-  allDayAverageEightyFifthSpeed?: number | null;
-  allDayAverageSpeed?: number | null;
-  allDayExtremeViolations?: number | null;
-  allDayViolations?: number | null;
-  amPeakAverageEightyFifthSpeed?: number | null;
-  amPeakAverageSpeed?: number | null;
-  amPeakExtremeViolations?: number | null;
-  amPeakViolations?: number | null;
-  binStartTime?: string;
-  createdDate?: string | null;
-  dataQuality?: boolean;
-  earlyMorningAverageEightyFifthSpeed?: number | null;
-  earlyMorningAverageSpeed?: number | null;
-  earlyMorningExtremeViolations?: number | null;
-  earlyMorningViolations?: number | null;
-  eveningAverageEightyFifthSpeed?: number | null;
-  eveningAverageSpeed?: number | null;
-  eveningExtremeViolations?: number | null;
-  eveningViolations?: number | null;
-  id?: string | null;
-  midDayAverageEightyFifthSpeed?: number | null;
-  midDayAverageSpeed?: number | null;
-  midDayExtremeViolations?: number | null;
-  midDayViolations?: number | null;
-  offPeakAverageEightyFifthSpeed?: number | null;
-  offPeakAverageSpeed?: number | null;
-  offPeakExtremeViolations?: number | null;
-  offPeakViolations?: number | null;
-  pmPeakAverageEightyFifthSpeed?: number | null;
-  pmPeakAverageSpeed?: number | null;
-  pmPeakExtremeViolations?: number | null;
-  pmPeakViolations?: number | null;
-  segmentId?: string;
-  sourceId?: number;
+  allDayAverageEightyFifthSpeed?: number | null
+  allDayAverageSpeed?: number | null
+  allDayExtremeViolations?: number | null
+  allDayViolations?: number | null
+  amPeakAverageEightyFifthSpeed?: number | null
+  amPeakAverageSpeed?: number | null
+  amPeakExtremeViolations?: number | null
+  amPeakViolations?: number | null
+  binStartTime?: string
+  createdDate?: string | null
+  dataQuality?: boolean
+  earlyMorningAverageEightyFifthSpeed?: number | null
+  earlyMorningAverageSpeed?: number | null
+  earlyMorningExtremeViolations?: number | null
+  earlyMorningViolations?: number | null
+  eveningAverageEightyFifthSpeed?: number | null
+  eveningAverageSpeed?: number | null
+  eveningExtremeViolations?: number | null
+  eveningViolations?: number | null
+  id?: string | null
+  midDayAverageEightyFifthSpeed?: number | null
+  midDayAverageSpeed?: number | null
+  midDayExtremeViolations?: number | null
+  midDayViolations?: number | null
+  offPeakAverageEightyFifthSpeed?: number | null
+  offPeakAverageSpeed?: number | null
+  offPeakExtremeViolations?: number | null
+  offPeakViolations?: number | null
+  pmPeakAverageEightyFifthSpeed?: number | null
+  pmPeakAverageSpeed?: number | null
+  pmPeakExtremeViolations?: number | null
+  pmPeakViolations?: number | null
+  segmentId?: string
+  sourceId?: number
 }
 
 export interface Int64DataPoint {
-  timestamp?: string;
-  value?: number;
+  timestamp?: string
+  value?: number
 }
 
 export interface ImpactType {
-  description?: string | null;
-  id?: string | null;
-  name?: string | null;
+  description?: string | null
+  id?: string | null
+  name?: string | null
 }
 
 export interface Impact {
-  createdBy?: string | null;
-  createdOn?: string | null;
-  deletedBy?: string | null;
-  deletedOn?: string | null;
-  description?: string | null;
-  end?: string | null;
-  endMile?: number;
-  id?: string | null;
-  impactTypeIds?: string[] | null;
-  impactTypes?: ImpactType[] | null;
-  segmentIds?: string[] | null;
-  start?: string;
-  startMile?: number;
-  updatedBy?: string | null;
-  updatedOn?: string | null;
+  createdBy?: string | null
+  createdOn?: string | null
+  deletedBy?: string | null
+  deletedOn?: string | null
+  description?: string | null
+  end?: string | null
+  endMile?: number
+  id?: string | null
+  impactTypeIds?: string[] | null
+  impactTypes?: ImpactType[] | null
+  segmentIds?: string[] | null
+  start?: string
+  startMile?: number
+  updatedBy?: string | null
+  updatedOn?: string | null
 }
 
 export interface HourlySpeed {
-  average?: number;
-  binStartTime?: string;
-  confidenceId?: number;
-  date?: string;
-  eightyFifthSpeed?: number | null;
-  extremeViolation?: number | null;
-  fifteenthSpeed?: number | null;
-  flow?: number | null;
-  ninetyFifthSpeed?: number | null;
-  ninetyNinthSpeed?: number | null;
-  segmentId?: string;
-  sourceId?: number;
-  violation?: number | null;
+  average?: number
+  binStartTime?: string
+  confidenceId?: number
+  date?: string
+  eightyFifthSpeed?: number | null
+  extremeViolation?: number | null
+  fifteenthSpeed?: number | null
+  flow?: number | null
+  ninetyFifthSpeed?: number | null
+  ninetyNinthSpeed?: number | null
+  segmentId?: string
+  sourceId?: number
+  violation?: number | null
 }
 
 export interface HistoricalSpeedOptions {
-  daysOfWeek?: DayOfWeek[] | null;
-  endDate?: string;
-  segmentId?: string;
-  startDate?: string;
+  daysOfWeek?: DayOfWeek[] | null
+  endDate?: string
+  segmentId?: string
+  startDate?: string
 }
 
-export interface GeometryOverlay { [key: string]: any }
+export interface GeometryOverlay {
+  [key: string]: any
+}
 
 export interface GeometryFactory {
-  coordinateSequenceFactory?: CoordinateSequenceFactory;
-  geometryServices?: NtsGeometryServices;
-  precisionModel?: PrecisionModel;
-  readonly srid?: number;
+  coordinateSequenceFactory?: CoordinateSequenceFactory
+  geometryServices?: NtsGeometryServices
+  precisionModel?: PrecisionModel
+  readonly srid?: number
 }
 
-export type GeometryUserData = unknown | null;
+export type GeometryUserData = unknown | null
 
 export interface Envelope {
-  readonly area?: number;
-  centre?: Coordinate;
-  readonly diameter?: number;
-  readonly height?: number;
-  readonly isNull?: boolean;
-  readonly maxExtent?: number;
-  readonly maxX?: number;
-  readonly maxY?: number;
-  readonly minExtent?: number;
-  readonly minX?: number;
-  readonly minY?: number;
-  readonly width?: number;
+  readonly area?: number
+  centre?: Coordinate
+  readonly diameter?: number
+  readonly height?: number
+  readonly isNull?: boolean
+  readonly maxExtent?: number
+  readonly maxX?: number
+  readonly maxY?: number
+  readonly minExtent?: number
+  readonly minX?: number
+  readonly minY?: number
+  readonly width?: number
 }
 
 export interface DoubleDataPoint {
-  timestamp?: string;
-  value?: number;
+  timestamp?: string
+  value?: number
 }
 
-export type Dimension = typeof Dimension[keyof typeof Dimension];
-
+export type Dimension = (typeof Dimension)[keyof typeof Dimension]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const Dimension = {
@@ -639,69 +648,68 @@ export const Dimension = {
   NUMBER_MINUS_3: -3,
   NUMBER_MINUS_2: -2,
   NUMBER_MINUS_1: -1,
-} as const;
+} as const
 
 export interface Geometry {
-  readonly area?: number;
-  boundary?: Geometry;
-  boundaryDimension?: Dimension;
-  centroid?: Point;
-  coordinate?: Coordinate;
-  readonly coordinates?: readonly Coordinate[] | null;
-  dimension?: Dimension;
-  envelope?: Geometry;
-  envelopeInternal?: Envelope;
-  factory?: GeometryFactory;
-  readonly geometryType?: string | null;
-  interiorPoint?: Point;
-  readonly isEmpty?: boolean;
-  readonly isRectangle?: boolean;
-  readonly isSimple?: boolean;
-  readonly isValid?: boolean;
-  readonly length?: number;
-  readonly numGeometries?: number;
-  readonly numPoints?: number;
-  ogcGeometryType?: OgcGeometryType;
-  pointOnSurface?: Point;
-  precisionModel?: PrecisionModel;
-  srid?: number;
-  userData?: GeometryUserData;
+  readonly area?: number
+  boundary?: Geometry
+  boundaryDimension?: Dimension
+  centroid?: Point
+  coordinate?: Coordinate
+  readonly coordinates?: readonly Coordinate[] | null
+  dimension?: Dimension
+  envelope?: Geometry
+  envelopeInternal?: Envelope
+  factory?: GeometryFactory
+  readonly geometryType?: string | null
+  interiorPoint?: Point
+  readonly isEmpty?: boolean
+  readonly isRectangle?: boolean
+  readonly isSimple?: boolean
+  readonly isValid?: boolean
+  readonly length?: number
+  readonly numGeometries?: number
+  readonly numPoints?: number
+  ogcGeometryType?: OgcGeometryType
+  pointOnSurface?: Point
+  precisionModel?: PrecisionModel
+  srid?: number
+  userData?: GeometryUserData
 }
 
 export interface Point {
-  readonly area?: number;
-  boundary?: Geometry;
-  boundaryDimension?: Dimension;
-  centroid?: Point;
-  coordinate?: Coordinate;
-  readonly coordinates?: readonly Coordinate[] | null;
-  coordinateSequence?: CoordinateSequence;
-  dimension?: Dimension;
-  envelope?: Geometry;
-  envelopeInternal?: Envelope;
-  factory?: GeometryFactory;
-  readonly geometryType?: string | null;
-  interiorPoint?: Point;
-  readonly isEmpty?: boolean;
-  readonly isRectangle?: boolean;
-  readonly isSimple?: boolean;
-  readonly isValid?: boolean;
-  readonly length?: number;
-  m?: number;
-  readonly numGeometries?: number;
-  readonly numPoints?: number;
-  ogcGeometryType?: OgcGeometryType;
-  pointOnSurface?: Point;
-  precisionModel?: PrecisionModel;
-  srid?: number;
-  userData?: PointUserData;
-  x?: number;
-  y?: number;
-  z?: number;
+  readonly area?: number
+  boundary?: Geometry
+  boundaryDimension?: Dimension
+  centroid?: Point
+  coordinate?: Coordinate
+  readonly coordinates?: readonly Coordinate[] | null
+  coordinateSequence?: CoordinateSequence
+  dimension?: Dimension
+  envelope?: Geometry
+  envelopeInternal?: Envelope
+  factory?: GeometryFactory
+  readonly geometryType?: string | null
+  interiorPoint?: Point
+  readonly isEmpty?: boolean
+  readonly isRectangle?: boolean
+  readonly isSimple?: boolean
+  readonly isValid?: boolean
+  readonly length?: number
+  m?: number
+  readonly numGeometries?: number
+  readonly numPoints?: number
+  ogcGeometryType?: OgcGeometryType
+  pointOnSurface?: Point
+  precisionModel?: PrecisionModel
+  srid?: number
+  userData?: PointUserData
+  x?: number
+  y?: number
+  z?: number
 }
 
-export type DayOfWeek = typeof DayOfWeek[keyof typeof DayOfWeek];
-
+export type DayOfWeek = (typeof DayOfWeek)[keyof typeof DayOfWeek]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const DayOfWeek = {
@@ -712,75 +720,95 @@ export const DayOfWeek = {
   NUMBER_4: 4,
   NUMBER_5: 5,
   NUMBER_6: 6,
-} as const;
+} as const
 
 export interface DataQualityOptions {
-  endDate?: string;
-  segmentIds?: string[] | null;
-  startDate?: string;
+  endDate?: string
+  segmentIds?: string[] | null
+  startDate?: string
 }
 
 export interface DataQualityDto {
-  dataQuality?: number;
-  endingMilePoint?: number;
-  flow?: number;
-  segmentId?: string;
-  segmentName?: string | null;
-  speedLimit?: number;
-  startingMilePoint?: number;
-  time?: string;
-  violations?: number;
+  dataQuality?: number
+  endingMilePoint?: number
+  flow?: number
+  segmentId?: string
+  segmentName?: string | null
+  speedLimit?: number
+  startingMilePoint?: number
+  time?: string
+  violations?: number
 }
 
 export interface CoordinateSequenceFactory {
-  ordinates?: Ordinates;
+  ordinates?: Ordinates
 }
 
 export interface CoordinateSequence {
-  readonly count?: number;
-  readonly dimension?: number;
-  first?: Coordinate;
-  readonly hasM?: boolean;
-  readonly hasZ?: boolean;
-  last?: Coordinate;
-  readonly measures?: number;
-  readonly mOrdinateIndex?: number;
-  ordinates?: Ordinates;
-  readonly spatial?: number;
-  readonly zOrdinateIndex?: number;
+  readonly count?: number
+  readonly dimension?: number
+  first?: Coordinate
+  readonly hasM?: boolean
+  readonly hasZ?: boolean
+  last?: Coordinate
+  readonly measures?: number
+  readonly mOrdinateIndex?: number
+  ordinates?: Ordinates
+  readonly spatial?: number
+  readonly zOrdinateIndex?: number
 }
 
-export interface CoordinateEqualityComparer { [key: string]: any }
+export interface CoordinateEqualityComparer {
+  [key: string]: any
+}
 
 export interface Coordinate {
-  coordinateValue?: Coordinate;
-  readonly isValid?: boolean;
-  m?: number;
-  x?: number;
-  y?: number;
-  z?: number;
+  coordinateValue?: Coordinate
+  readonly isValid?: boolean
+  m?: number
+  x?: number
+  y?: number
+  z?: number
 }
 
 export interface CongestionTrackingOptions {
-  endDate?: string;
-  segmentId?: string | null;
-  sourceId?: number;
-  startDate?: string;
+  endDate?: string
+  segmentId?: string | null
+  sourceId?: number
+  startDate?: string
 }
 
 export interface CongestionTrackingDto {
-  data?: SpeedDataDto[] | null;
-  endDate?: string;
-  endingMilePoint?: number;
-  segmentId?: string;
-  segmentName?: string | null;
-  speedLimit?: number;
-  startDate?: string;
-  startingMilePoint?: number;
+  data?: SpeedDataDto[] | null
+  endDate?: string
+  endingMilePoint?: number
+  segmentId?: string
+  segmentName?: string | null
+  speedLimit?: number
+  startDate?: string
+  startingMilePoint?: number
+}
+
+export interface SpeedVariabilityDto {
+  data: SpeedVariabilityData[]
+  endDate?: string
+  endingMilePoint: number
+  segmentId?: string
+  segmentName?: string | null
+  speedLimit?: number
+  startDate?: string
+  startingMilePoint: number
+}
+
+export interface SpeedVariabilityData {
+  date: string
+  minSpeed: number
+  maxSpeed: number
+  avgSpeed: number
+  speedVariability: number
 }
 
 export interface AverageAndEightyFifthSeriesData {
-  average?: DoubleDataPoint[] | null;
-  eightyFifth?: Int64DataPoint[] | null;
+  average?: DoubleDataPoint[] | null
+  eightyFifth?: Int64DataPoint[] | null
 }
-

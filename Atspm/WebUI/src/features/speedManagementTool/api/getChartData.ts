@@ -1,6 +1,11 @@
 import { createTooltip } from '@/features/charts/common/transformers'
 import { RouteRenderOption } from '@/features/speedManagementTool/enums'
-import { eachDayOfInterval, eachMonthOfInterval, format } from 'date-fns'
+import {
+  compareAsc,
+  eachDayOfInterval,
+  eachMonthOfInterval,
+  format,
+} from 'date-fns'
 
 interface MonthlyAverage {
   month: number
@@ -56,7 +61,7 @@ export function createMonthlyAverageChart(
       .map((label) => {
         const matchedEntry = source.monthlyAverages.find((entry) => {
           const entryDate = new Date(entry.month)
-          const formattedDate = format(entryDate, 'MM/yy')
+          const formattedDate = format(entryDate, 'MM/yyyy')
           return formattedDate === label
         })
 
@@ -145,7 +150,7 @@ export function createDailyAverageChart(
     const sourceData = xAxisLabels
       .map((label) => {
         const matchedEntry = source.dailyAverages.find((entry) => {
-          const formattedDate = format(new Date(entry.date), 'M/d') // Format date to match xAxisLabels
+          const formattedDate = format(new Date(entry.date), 'M/d/yyyy') // Format date to match xAxisLabels
           return formattedDate === label
         })
 
@@ -208,21 +213,35 @@ export function createDailyAverageChart(
   return option
 }
 
+// Adjusted to handle 'MM/yyyy' and ensure proper sorting
 function generateXAxisLabels(startDate: string, endDate: string): string[] {
   const start = new Date(startDate)
   const end = new Date(endDate)
 
-  return eachMonthOfInterval({ start, end }).map((date) =>
-    format(date, 'MM/yy')
-  )
+  const months = eachMonthOfInterval({ start, end }).map((date) => ({
+    formatted: format(date, 'MM/yyyy'),
+    date: date, // Storing actual date object for sorting
+  }))
+
+  // Sort by actual date object
+  return months
+    .sort((a, b) => compareAsc(a.date, b.date))
+    .map(({ formatted }) => formatted)
 }
 
 function generateDailyXAxisLabels(
   startDate: string,
   endDate: string
 ): string[] {
-  return eachDayOfInterval({
+  const days = eachDayOfInterval({
     start: new Date(startDate),
     end: new Date(endDate),
-  }).map((date) => format(date, 'M/d'))
+  }).map((date) => ({
+    formatted: format(date, 'M/d/yyyy'),
+    date: date,
+  }))
+
+  return days
+    .sort((a, b) => compareAsc(a.date, b.date))
+    .map(({ formatted }) => formatted)
 }

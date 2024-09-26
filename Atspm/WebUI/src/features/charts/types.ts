@@ -22,6 +22,7 @@ export interface ExtendedEChartsOption extends EChartsOption {
   displayProp?: {
     height: number
     description: string
+    [key: string]: any
   }
 }
 

@@ -24,7 +24,11 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices.SpeedO
             {
                 return null;
             }
-            var monthlyAggregations = await monthlyAggregationRepository.MonthlyAggregationsForSegmentInTimePeriod(parameter.SegmentIds, parameter.StartDate, parameter.EndDate);
+
+            DateTime endDate = new DateTime(parameter.EndDate.Year, parameter.EndDate.Month, 1).AddMonths(1).AddDays(-1);
+            DateTime startDate = new DateTime(parameter.StartDate.Year, parameter.StartDate.Month, 1);
+
+            var monthlyAggregations = await monthlyAggregationRepository.MonthlyAggregationsForSegmentInTimePeriod(parameter.SegmentIds, startDate, endDate);
             var aggregationsBySegment = monthlyAggregations.GroupBy(x => x.SegmentId);
             List<Segment> segments = await segmentRepository.GetSegmentsDetailsWithEntity(parameter.SegmentIds);
             foreach (var monthlyAggregation in aggregationsBySegment)
@@ -54,11 +58,66 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices.SpeedO
 
         private static (double Average, long EightyFifth) GetSpeedData(IGrouping<Guid, MonthlyAggregation> monthlyAggregation)
         {
-            var aggregate = monthlyAggregation.FirstOrDefault();
-            var average = aggregate.AllDayAverageSpeed.Value;
-            var eightyFifth = (long)aggregate.AllDayAverageEightyFifthSpeed.Value;
+            List<MonthlyAggregation> flattenedList = monthlyAggregation.ToList();
+
+            var average = GetWeigthtedMonthlyAverageSpeed(flattenedList);
+            var eightyFifth = GetWeigthtedEightyFifthMonthlyAverageSpeed(flattenedList);
 
             return (average, eightyFifth);
+        }
+
+
+        private static int GetWeigthtedMonthlyAverageSpeed(List<MonthlyAggregation> hourlySpeeds)
+        {
+            if (hourlySpeeds == null || hourlySpeeds.Count() == 0)
+            {
+                return 0;
+            }
+            double sumFlow = hourlySpeeds.Sum(hs => hs.AllDayFlow ?? 0);
+            //if flow is all zero do normal average
+            if (sumFlow <= 0)
+            {
+                double totalAverage = (double)hourlySpeeds.Sum(hs => hs.AllDayAverageSpeed);
+                return (int)Math.Round(totalAverage / hourlySpeeds.Count());
+            }
+            var flowSpeed = new List<double>();
+            foreach (var hourlySpeed in hourlySpeeds)
+            {
+                double flow = hourlySpeed.AllDayFlow ?? 0;
+                double speed = (double)hourlySpeed.AllDayAverageSpeed;
+                var flowAndSpeed = flow * speed;
+                flowSpeed.Add(flowAndSpeed);
+            }
+            var totalFlowAndSpeed = flowSpeed.Sum();
+            return (int)Math.Round(totalFlowAndSpeed / sumFlow);
+        }
+
+        private static int GetWeigthtedEightyFifthMonthlyAverageSpeed(List<MonthlyAggregation> hourlySpeeds)
+        {
+            if (hourlySpeeds == null || hourlySpeeds.Count() == 0)
+            {
+                return 0;
+            }
+            //IF we are doing 85th%ile AND source is ATSPM AND the flow is < 4 THEN ignore that row
+            var filteredFlow = hourlySpeeds.Where(hourlySpeed => (!(hourlySpeed.AllDayFlow < 4 && hourlySpeed.SourceId == 1)));
+            double sumFlow = filteredFlow.Sum(hs => hs.AllDayFlow ?? 0);
+            //if flow is all zero do normal average
+            if (sumFlow <= 0)
+            {
+                //var filteredEightyFifth = hourlySpeeds.Where(n => (!(n.EightyFifthSpeed == 0 || n.EightyFifthSpeed == null)));
+                double totalAverage = hourlySpeeds.Sum(hs => hs.AllDayAverageEightyFifthSpeed ?? 0);
+                return (int)Math.Round(totalAverage / hourlySpeeds.Count());
+            }
+            var flowSpeed = new List<double>();
+            foreach (var hourlySpeed in filteredFlow)
+            {
+                double flow = hourlySpeed.AllDayFlow ?? 0;
+                double speed = hourlySpeed.AllDayAverageEightyFifthSpeed ?? 0;
+                var flowAndSpeed = flow * speed;
+                flowSpeed.Add(flowAndSpeed);
+            }
+            var totalFlowAndSpeed = flowSpeed.Sum();
+            return (int)Math.Round(totalFlowAndSpeed / sumFlow);
         }
     }
 }
