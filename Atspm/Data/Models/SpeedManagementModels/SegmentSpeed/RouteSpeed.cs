@@ -24,6 +24,6 @@ namespace Utah.Udot.Atspm.Data.Models.SpeedManagementModels.SegmentSpeed
         public Geometry Shape { get; set; }  // Assuming you have a "Geometry" type to represent st_union
         public long? Flow { get; set; }
         public long SpeedLimit { get; set; }
-
+        public object EstimatedExtremeViolations { get; set; }
     }
 }
