@@ -20,10 +20,10 @@ namespace Utah.Udot.Atspm.Data.Models.SpeedManagementModels.SegmentSpeed
         public long? AverageSpeedAboveSpeedLimit { get; set; }
         // go through 15,average, 85,95, find first value above speed limit that is greater than threshold passed by user,
         // return flow * (100 - selected percentile) = estimated violation
-        public long? EstimatedViolations { get; set; }
+        public Double? EstimatedViolations { get; set; }
         public Geometry Shape { get; set; }  // Assuming you have a "Geometry" type to represent st_union
         public long? Flow { get; set; }
         public long SpeedLimit { get; set; }
-        public object EstimatedExtremeViolations { get; set; }
+        public Double? EstimatedExtremeViolations { get; set; }
     }
 }

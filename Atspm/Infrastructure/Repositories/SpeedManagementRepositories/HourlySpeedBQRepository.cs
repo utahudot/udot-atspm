@@ -493,8 +493,8 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             var percentile85 = row["Percentilespd_85"] != null ? double.Parse(row["Percentilespd_85"].ToString()) : (double?)null;
             var percentile95 = row["Percentilespd_95"] != null ? double.Parse(row["Percentilespd_95"].ToString()) : (double?)null;
             var flow = row["Flow"];
-            var estimatedViolations = row["AvgViolation"];
-            var estimatedExtremeViolations = row["AvgExtremeViolation"];
+            var estimatedViolations = row["AvgViolation"] != null ? double.Parse(row["AvgViolation"].ToString()) : (double?)null;
+            var estimatedExtremeViolations = row["AvgExtremeViolation"] != null ? double.Parse(row["AvgExtremeViolation"].ToString()) : (double?)null;
             var speedLimit = row["SpeedLimit"];
             var name = row["Name"];
             var wkt = (string)row["Shape"];
@@ -511,8 +511,8 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 Percentilespd_85 = percentile85 != null ? (double)percentile85 : null,
                 Percentilespd_95 = percentile95 != null ? (double)percentile95 : null,
                 Flow = flow != null ? (long)flow : null,
-                EstimatedViolations = estimatedViolations != null ? (long)estimatedViolations : null,
-                EstimatedExtremeViolations = estimatedExtremeViolations != null ? (long)estimatedExtremeViolations : null,
+                EstimatedViolations = estimatedViolations != null ? (double?)estimatedViolations : null,
+                EstimatedExtremeViolations = estimatedExtremeViolations != null ? (double?)estimatedExtremeViolations : null,
                 SpeedLimit = speedLimit != null ? (long)speedLimit : 0,
                 Shape = shape,
             };
