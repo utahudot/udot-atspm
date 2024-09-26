@@ -22,85 +22,37 @@ using System.CommandLine;
 using System.CommandLine.Hosting;
 using System.CommandLine.NamingConventionBinder;
 using Utah.Udot.Atspm.Common;
+using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
 
 namespace DatabaseInstaller.Commands
 {
     public class CopyConfigurationCommand : Command, ICommandOption<CopyConfigCommandConfiguration>
     {
-        public CopyConfigurationCommand() : base("copy-config", "Copy configuration data from SQL Server to PostgreSQL")
+        private readonly IProductRepository productRepository;
+
+        public CopyConfigurationCommand(IProductRepository productRepository) : base("copy-config", "Copy configuration data from SQL Server to PostgreSQL")
         {
             AddOption(SourceOption);
             AddOption(TargetOption);
+            this.productRepository = productRepository;
         }
 
         public Option<string> SourceOption { get; set; } = new("--source", "Connection string for the source SQL Server");
         public Option<string> TargetOption { get; set; } = new("--target", "Connection string for the target PostgreSQL database");
 
-        public ModelBinder<CopyConfigCommandConfiguration> GetOptionsBinder()
-        {
-            var binder = new ModelBinder<CopyConfigCommandConfiguration>();
-
-            binder.BindMemberFromValue(b => b.Source, SourceOption);
-            binder.BindMemberFromValue(b => b.Target, TargetOption);
-
-            return binder;
-        }
-
-        //public void BindCommandOptions(HostBuilderContext host, IServiceCollection services)
+        //public ModelBinder<CopyConfigCommandConfiguration> GetOptionsBinder()
         //{
-        //    services.AddSingleton(GetOptionsBinder());
-        //    services.AddOptions<CopyConfigCommandConfiguration>().BindCommandLine();
-        //    services.AddHostedService<CopyConfigCommandHostedService>();
-        //}
-        //public void BindCommandOptions(HostBuilderContext host, IServiceCollection services)
-        //{
-        //    services.AddSingleton(provider =>
-        //    {
-        //        // Get the command-line parsing result
-        //        var invocationContext = provider.GetService<InvocationContext>();
-        //        var parseResult = invocationContext.ParseResult;
+        //    var binder = new ModelBinder<CopyConfigCommandConfiguration>();
 
-        //        // Manually get the values from the parsed command-line arguments
-        //        var sourceConnection = parseResult.GetValueForOption(SourceOption);
-        //        var targetConnection = parseResult.GetValueForOption(TargetOption);
-
-        //        // Log the values for debugging
-        //        Console.WriteLine($"Source Connection: {sourceConnection}");
-        //        Console.WriteLine($"Target Connection: {targetConnection}");
-
-        //        // Create the configuration object manually
-        //        var config = new CopyConfigCommandConfiguration
-        //        {
-        //            Source = sourceConnection,
-        //            Target = targetConnection
-        //        };
-
-        //        return config; // Register the configuration object
-        //    });
-
-        //    // Add the hosted service that will use this configuration
-        //    services.AddHostedService<CopyConfigCommandHostedService>();
-        //}
-
-        //public ModelBinder<EventLogAggregateConfiguration> GetOptionsBinder()
-        //{
-        //    var binder = new ModelBinder<EventLogAggregateConfiguration>();
-
-        //    binder.BindMemberFromValue(b => b.AggregationType, AggregationTypeArgument);
-        //    binder.BindMemberFromValue(b => b.BinSize, BinSizeArgument);
-        //    binder.BindMemberFromValue(b => b.Dates, DateOption);
-        //    binder.BindMemberFromValue(b => b.Included, IncludeOption);
-        //    binder.BindMemberFromValue(b => b.Excluded, ExcludeOption);
+        //    binder.BindMemberFromValue(b => b.Source, SourceOption);
+        //    binder.BindMemberFromValue(b => b.Target, TargetOption);
 
         //    return binder;
         //}
 
-        //public void BindCommandOptions(HostBuilderContext host, IServiceCollection services)
-        //{
-        //    services.AddSingleton(GetOptionsBinder());
-        //    services.AddOptions<EventLogAggregateConfiguration>().BindCommandLine();
-        //    //services.AddHostedService<TestAggregationHostedService>();
-        //}
+
+
+
 
         public void BindCommandOptions(HostBuilderContext host, IServiceCollection services)
         {
@@ -109,34 +61,15 @@ namespace DatabaseInstaller.Commands
 
             binder.BindMemberFromValue(b => b.Source, SourceOption);
             binder.BindMemberFromValue(b => b.Target, TargetOption);
-
-            //var parentBinder = new ModelBinder<CopyConfigCommandConfiguration>();
-
-            //parentBinder.BindMemberFromValue(b => b.Path, PathCommandOption);
-
-            //var childBinder = new ModelBinder<CopyConfigCommandConfiguration>();
-
-            //childBinder.BindMemberFromValue(b => b.IncludedLocations, IncludeOption);
-            //childBinder.BindMemberFromValue(b => b.ExcludedLocations, ExcludeOption);
-            //childBinder.BindMemberFromValue(b => b.IncludedAreas, AreaOption);
-            //childBinder.BindMemberFromValue(b => b.IncludedJurisdictions, JurisdictionOption);
-            //childBinder.BindMemberFromValue(b => b.IncludedRegions, RegionOption);
-            //childBinder.BindMemberFromValue(b => b.IncludedLocationTypes, LocationTypeOption);
-            //childBinder.BindMemberFromValue(b => b.DeviceType, DeviceTypeOption);
-            //childBinder.BindMemberFromValue(b => b.TransportProtocol, TransportProtocolOption);
-            //childBinder.BindMemberFromValue(b => b.TransportProtocol, TransportProtocolOption);
-
-            //services.AddOptions<CopyConfigCommandConfiguration>()
-            //    .Configure<BindingContext>((a, b) =>
-            //    {
-            //        parentBinder.UpdateInstance(a, b);
-            //        childBinder.UpdateInstance(a.DeviceEventLoggingQueryOptions, b);
-            //    });
             services.AddOptions<CopyConfigCommandConfiguration>().BindCommandLine();
 
             services.AddHostedService<CopyConfigCommandHostedService>();
         }
 
+        ModelBinder<CopyConfigCommandConfiguration> ICommandOption<CopyConfigCommandConfiguration>.GetOptionsBinder()
+        {
+            throw new NotImplementedException();
+        }
     }
 
     public class CopyConfigCommandConfiguration
