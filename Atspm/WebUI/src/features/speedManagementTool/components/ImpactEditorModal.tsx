@@ -1,3 +1,4 @@
+import { useGetApiV1ImpactType } from '@/api/speedManagement/aTSPMSpeedManagementApi'
 import { Impact } from '@/features/speedManagementTool/types/impact'
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
 import {
@@ -17,10 +18,9 @@ import {
 } from '@mui/material'
 import { useTheme } from '@mui/material/styles'
 import { useRouter } from 'next/router'
-import React, { useEffect, useState } from 'react'
-import { useGetImpactTypes } from '../api/getImpactTypes'
-import SegmentSelectMap from './SegmentSelectMap'
+import React, { useEffect, useMemo, useState } from 'react'
 import { useGetSegments } from '../api/getSegments'
+import SegmentSelectMap from './SegmentSelectMap'
 interface ImpactEditorModalProps {
   data?: Impact
   open?: boolean
@@ -62,13 +62,39 @@ const ImpactEditorModal: React.FC<ImpactEditorModalProps> = ({
     impactTypeNames: '',
   })
 
+  const [errors, setErrors] = useState({
+    description: false,
+    start: false,
+    end: false,
+    startMile: false,
+    endMile: false,
+    impactTypes: false,
+    segmentIds: false,
+  })
+
   const { data: impactTypeData, isLoading: isLoadingImpactTypes } =
-    useGetImpactTypes()
+    useGetApiV1ImpactType()
   const router = useRouter()
   const theme = useTheme()
 
-  const { data: segmentData, isLoading: isLoadingSegments } = useGetSegments();
+  const { data: segmentData, isLoading: isLoadingSegments } = useGetSegments()
 
+  const filteredSegments = useMemo(() => {
+    return (
+      segmentData?.features
+        ?.filter((feature) => feature.geometry.type === 'LineString')
+        ?.map((feature) => ({
+          ...feature,
+          geometry: {
+            ...feature.geometry,
+            coordinates: feature.geometry.coordinates.map((coord) => [
+              coord[1],
+              coord[0],
+            ]),
+          },
+        })) || []
+    )
+  }, [segmentData])
 
   useEffect(() => {
     if (data) {
@@ -119,10 +145,9 @@ const ImpactEditorModal: React.FC<ImpactEditorModalProps> = ({
     console.log(impact)
     if (impact.id) {
       onEdit(impact)
-      console.log(impact)
     } else {
       onCreate(impact)
-      console.log(impact)
+      onSave(impact)
     }
     onClose()
   }
@@ -133,39 +158,39 @@ const ImpactEditorModal: React.FC<ImpactEditorModalProps> = ({
     endMile: number
   ) => {
     setImpact((prevImpact) => {
-      const currentSegmentIds = prevImpact.segmentIds || [];
+      const currentSegmentIds = prevImpact.segmentIds || []
       const updatedSegmentIds = currentSegmentIds.includes(segmentId)
         ? currentSegmentIds.filter((id) => id !== segmentId)
-        : [...currentSegmentIds, segmentId];
-  
+        : [...currentSegmentIds, segmentId]
+
       // Update start and end miles
       const updatedStartMile = Math.min(
         ...updatedSegmentIds.map((id) => {
           const segment = segmentData.features.find(
             (s) => s.properties.Id === id
-          ); // Fixed typo here
-          return segment ? segment.properties.StartMilePoint : Infinity;
+          ) // Fixed typo here
+          return segment ? segment.properties.StartMilePoint : Infinity
         })
-      );
-  
+      )
+
       const updatedEndMile = Math.max(
         ...updatedSegmentIds.map((id) => {
           const segment = segmentData.features.find(
             (s) => s.properties.Id === id
-          ); // Fixed typo here
-          return segment ? segment.properties.EndMilePoint : -Infinity;
+          ) // Fixed typo here
+          return segment ? segment.properties.EndMilePoint : -Infinity
         })
-      );
-  
+      )
+
       return {
         ...prevImpact,
         segmentIds: updatedSegmentIds,
         startMile: updatedStartMile,
         endMile: updatedEndMile,
-      };
-    });
-  };
-  
+      }
+    })
+  }
+
   return (
     <Dialog
       open={open}
@@ -198,6 +223,7 @@ const ImpactEditorModal: React.FC<ImpactEditorModalProps> = ({
             label="Description"
             name="description"
             value={impact.description}
+            error={errors.description}
             onChange={(e) =>
               setImpact({ ...impact, description: e.target.value })
             }
@@ -208,6 +234,7 @@ const ImpactEditorModal: React.FC<ImpactEditorModalProps> = ({
             name="start"
             type="datetime-local"
             value={impact.start || new Date()}
+            error={errors.start}
             onChange={(e) => setImpact({ ...impact, start: e.target.value })}
             fullWidth
             InputLabelProps={{
@@ -219,6 +246,7 @@ const ImpactEditorModal: React.FC<ImpactEditorModalProps> = ({
             name="end"
             type="datetime-local"
             value={impact.end || ''}
+            error={errors.end}
             onChange={(e) => setImpact({ ...impact, end: e.target.value })}
             fullWidth
             InputLabelProps={{
@@ -239,6 +267,7 @@ const ImpactEditorModal: React.FC<ImpactEditorModalProps> = ({
               })
             }
             fullWidth
+            error={errors.startMile}
           />
           <TextField
             label="End Mile"
@@ -252,8 +281,9 @@ const ImpactEditorModal: React.FC<ImpactEditorModalProps> = ({
               })
             }
             fullWidth
+            error={errors.endMile}
           />
-          <FormControl fullWidth>
+          <FormControl fullWidth error={errors.impactTypes}>
             <InputLabel id="impact-types-label">Impact Types</InputLabel>
             <Select
               labelId="impact-types-label"
@@ -321,7 +351,7 @@ const ImpactEditorModal: React.FC<ImpactEditorModalProps> = ({
       </Box>
       <DialogActions sx={{ justifyContent: 'space-between' }}>
         <Box>
-          {errors.segmentIds && (
+          {errors?.segmentIds && (
             <Alert severity="error" sx={{ marginLeft: 1 }}>
               Please add Segments using the map below
             </Alert>
@@ -338,9 +368,9 @@ const ImpactEditorModal: React.FC<ImpactEditorModalProps> = ({
         </Box>
       </DialogActions>
       <SegmentSelectMap
-        selectedSegmentIds={impact.segmentIds}
+        selectedSegmentIds={impact.segmentIds || []}
         onSegmentSelect={handleSegmentSelect}
-        segmentData={segmentData}
+        segmentData={filteredSegments}
         isLoadingSegments={isLoadingSegments}
       />
     </Dialog>

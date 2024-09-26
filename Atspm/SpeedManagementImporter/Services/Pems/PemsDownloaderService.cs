@@ -5,7 +5,6 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SpeedManagementImporter.Business.Pems;
 using System.Data;
-using System.Diagnostics;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
@@ -52,8 +51,7 @@ namespace SpeedManagementImporter.Services.Pems
             {
 
                 List<Segment> segments = segmentRepository.AllSegmentsWithEntity(sourceId);//.Where(s => s.Id == new Guid("0089d399-3c88-45b8-a448-17d5ba05735a")).ToList();
-                var timer = new Stopwatch();
-                timer.Start();
+                var start = DateTime.Now;
                 for (DateTime date = startDate; date <= endDate; date = date.AddDays(1))
                 {
                     logger.LogInformation($"Starting download for date {date:yyyy-MM-dd}");
@@ -74,9 +72,10 @@ namespace SpeedManagementImporter.Services.Pems
                     await Task.WhenAll(routeTasks);
                     logger.LogInformation($"Finished processing all routes for date {date:yyyy-MM-dd}");
                 }
-                timer.Stop();
+                var end = DateTime.Now;
+                var runTime = end - start;
                 //Log the minutes and seconds taken to download the data
-                logger.LogInformation($"PEMS download process completed in {timer.Elapsed.Minutes} minutes and {timer.Elapsed.Seconds} seconds.");
+                logger.LogInformation($"PEMS download process completed in {runTime.Minutes} minutes and {runTime.Seconds} seconds.");
 
             }
             catch (Exception ex)
@@ -179,11 +178,13 @@ namespace SpeedManagementImporter.Services.Pems
                     //double? weightedAverage = summedFlow > 0 ? summedFlowSpeedProduct / summedFlow : null;
 
                     // Safeguard for speed calculations
-                    var averageSpeed = combinedSpeeds.Count > 0 ? combinedSpeeds.Average() : 0;
-                    double? fifteenthPercentile = combinedSpeeds.Count > 0 ? AtspmMath.Percentile(combinedSpeeds, 15) : null;
-                    double? eightyFifthPercentile = combinedSpeeds.Count > 0 ? AtspmMath.Percentile(combinedSpeeds, 85) : null;
-                    double? ninetyFifthPercentile = combinedSpeeds.Count > 0 ? AtspmMath.Percentile(combinedSpeeds, 95) : null;
-                    double? ninetyNinthPercentile = combinedSpeeds.Count > 0 ? AtspmMath.Percentile(combinedSpeeds, 99) : null;
+                    // Round to the first decimal place to avoid floating point errors
+
+                    var averageSpeed = combinedSpeeds.Count > 0 ? Math.Round(combinedSpeeds.Average(), 1) : 0;
+                    double? fifteenthPercentile = combinedSpeeds.Count > 0 ? Math.Round(AtspmMath.Percentile(combinedSpeeds, 15), 1) : null;
+                    double? eightyFifthPercentile = combinedSpeeds.Count > 0 ? Math.Round(AtspmMath.Percentile(combinedSpeeds, 85), 1) : null;
+                    double? ninetyFifthPercentile = combinedSpeeds.Count > 0 ? Math.Round(AtspmMath.Percentile(combinedSpeeds, 95), 1) : null;
+                    double? ninetyNinthPercentile = combinedSpeeds.Count > 0 ? Math.Round(AtspmMath.Percentile(combinedSpeeds, 99), 1) : null;
                     double? minspeed = combinedSpeeds.Count > 0 ? combinedSpeeds.Min() : null;
                     double? maxspeed = combinedSpeeds.Count > 0 ? combinedSpeeds.Max() : null;
 

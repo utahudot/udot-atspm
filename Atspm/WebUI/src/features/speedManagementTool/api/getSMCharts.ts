@@ -8,6 +8,7 @@ import { default as transformSpeedOverTimeData } from '@/features/charts/speedMa
 import {
   postApiV1CongestionTrackingGetReportData,
   postApiV1DataQualityGetReportData,
+  postApiV1SpeedFromImpactSegmentSegmentId,
   postApiV1SpeedOverDistanceGetReportData,
   postApiV1SpeedOverTimeGetReportData,
   postApiV1SpeedVariabilityGetReportData,
@@ -96,8 +97,13 @@ export function useSMCharts<TChartType extends SM_ChartType>(
         const response = await postApiV1SpeedOverTimeGetReportData(
           chartOptions as SpeedOverTimeOptions
         )
+        const impactResponse = await postApiV1SpeedFromImpactSegmentSegmentId(
+          (chartOptions as SpeedOverTimeOptions).segmentId,
+          {}
+        )
         return transformSpeedOverTimeData(
-          response
+          response,
+          impactResponse
         ) as SMChartsDataMapping[TChartType]
       }
       case SM_ChartType.SPEED_OVER_DISTANCE: {

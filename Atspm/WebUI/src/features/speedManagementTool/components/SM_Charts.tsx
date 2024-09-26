@@ -66,15 +66,15 @@ const SM_Charts = ({ routes }: { routes: SpeedManagementRoute[] }) => {
     : null
 
   const chartTypes: SM_ChartType[] = useMemo(() => {
-    return routes.length === 1
-      ? [
+    return multiselect
+      ? [SM_ChartType.SPEED_OVER_DISTANCE, SM_ChartType.DATA_QUALITY]
+      : [
           SM_ChartType.CONGESTION_TRACKING,
           SM_ChartType.SPEED_OVER_TIME,
           SM_ChartType.DATA_QUALITY,
           SM_ChartType.SPEED_VARIABILITY,
         ]
-      : [SM_ChartType.SPEED_OVER_DISTANCE, SM_ChartType.DATA_QUALITY]
-  }, [routes.length])
+  }, [multiselect])
 
   useEffect(() => {
     // If selectedChart is null or not valid for the current number of routes, set a default
