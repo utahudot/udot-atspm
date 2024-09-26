@@ -3,6 +3,7 @@ import CongestionTrackerChartOptions from '@/features/charts/speedManagementTool
 import DataQualityChartOptions from '@/features/charts/speedManagementTool/dataQuality/components/DataQualityChartOptions'
 import SpeedOverDistanceOptions from '@/features/charts/speedManagementTool/speedOverDistance/components/SpeedOverDistanceChartOptions'
 import SpeedOverTimeOptions from '@/features/charts/speedManagementTool/speedOverTime/components/SpeedOverTimeOptions'
+import SpeedVariabilityOptions from '@/features/charts/speedManagementTool/speedVariability/components/SpeedVariabilityOptions'
 import { getDisplayNameFromChartType } from '@/features/charts/utils'
 import { SM_ChartType } from '@/features/speedManagementTool/api/getSMCharts'
 import {
@@ -22,6 +23,7 @@ const availableCharts = {
   SpeedOverTime: SpeedOverTimeOptions,
   SpeedOverDistance: SpeedOverDistanceOptions,
   DataQuality: DataQualityChartOptions,
+  SpeedVariability: SpeedVariabilityOptions,
 } as const
 
 const SM_ChartOptions = () => {
