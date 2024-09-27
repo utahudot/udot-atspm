@@ -17,7 +17,8 @@ import {
   import { round } from '@/utils/math'
   
   export default function transformSpeedComplianceData(
-    response: SpeedComplianceResponse[]
+    response: SpeedComplianceResponse[],
+    customSpeedLimit?: number | null 
   ) {
     const sortedResponse = response
       .map((segment) => {
@@ -76,8 +77,8 @@ import {
     const tooltip = createTooltip()
   
     // Destructure the series data from mergeSeriesData
-    const { averageSpeedData, eightyFifthPercentileData, speedLimitData } =
-      mergeSeriesData(sortedResponse)
+    const { averageSpeedData, eightyFifthPercentileData, speedLimitData, tableData } =
+      mergeSeriesData(sortedResponse, customSpeedLimit)
   
     const series = [
       {
@@ -118,17 +119,24 @@ import {
       tooltip,
       series,
       dataZoom,
+      tableData
     }
-  
-    console.log('chartOptions', chartOptions)
-  
+    
     return chartOptions
   }
   
-  function mergeSeriesData(response: SpeedComplianceResponse[]) {
+  function mergeSeriesData(response: SpeedComplianceResponse[], customSpeedLimit?: number | null) {
     const averageSpeedData: [number, number | null][] = []
     const eightyFifthPercentileData: [number, number | null][] = []
     const speedLimitData: [number, number | null][] = []
+
+    const tableData = {
+      milePoints: [] as ([number, number] | null)[],
+      speedLimit: [] as (number | null)[],        
+      avgSpeed: [] as (number | null)[],           
+      eightyFifth: [] as (number | null)[],         
+    }
+    
   
     response.forEach((segment, index) => {
       const {
@@ -137,9 +145,23 @@ import {
         average,
         eightyFifth,
         speedLimit,
+        avgVsBaseSpeed
       } = segment
+      const finalSpeedLimit = customSpeedLimit ?? speedLimit
+
+      tableData.milePoints.push(
+        startingMilePoint !== undefined && endingMilePoint !== undefined 
+          ? [startingMilePoint, endingMilePoint] 
+          : null
+      );
+    
+      tableData.speedLimit.push(finalSpeedLimit !== undefined ? finalSpeedLimit : null);
+      tableData.avgSpeed.push(average !== undefined ? average : null);
+      tableData.eightyFifth.push(eightyFifth !== undefined ? eightyFifth : null);
+
+
       const previousSegment = response[index - 1]
-  
+
       // Ensure the startingMilePoint of the first segment is added
       if (index === 0) {
         if (average !== undefined) {
@@ -148,8 +170,8 @@ import {
         if (eightyFifth !== undefined) {
           eightyFifthPercentileData.push([startingMilePoint, eightyFifth])
         }
-        if (speedLimit !== undefined) {
-          speedLimitData.push([startingMilePoint, speedLimit])
+        if (finalSpeedLimit !== undefined) {
+          speedLimitData.push([startingMilePoint, finalSpeedLimit])
         }
       }
   
@@ -167,8 +189,8 @@ import {
         if (eightyFifth !== undefined) {
           eightyFifthPercentileData.push([startingMilePoint, eightyFifth])
         }
-        if (speedLimit !== undefined) {
-          speedLimitData.push([startingMilePoint, speedLimit])
+        if (finalSpeedLimit !== undefined) {
+          speedLimitData.push([startingMilePoint, finalSpeedLimit])
         }
       }
   
@@ -179,15 +201,17 @@ import {
       if (eightyFifth !== undefined) {
         eightyFifthPercentileData.push([endingMilePoint, eightyFifth])
       }
-      if (speedLimit !== undefined) {
-        speedLimitData.push([endingMilePoint, speedLimit])
+      if (finalSpeedLimit !== undefined) {
+        speedLimitData.push([endingMilePoint, finalSpeedLimit])
       }
+      
     })
   
     return {
       averageSpeedData,
       eightyFifthPercentileData,
       speedLimitData,
+      tableData
     }
   }
   

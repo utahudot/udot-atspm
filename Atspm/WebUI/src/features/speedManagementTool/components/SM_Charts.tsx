@@ -7,6 +7,7 @@ import DataQualityChartOptions, {
   DataQualityChartOptionsValues,
 } from '@/features/charts/speedManagementTool/dataQuality/components/DataQualityChartOptions'
 import SpeedComplianceChartOptions, { SpeedComplianceChartOptionsValues } from '@/features/charts/speedManagementTool/speedCompliance/SpeedComplianceChartOptions'
+import SpeedComplianceChartsContainer from '@/features/charts/speedManagementTool/speedCompliance/SpeedComplianceChartsContainer'
 import SpeedOverDistanceOptions, {
   SpeedOverDistanceChartOptionsValues,
 } from '@/features/charts/speedManagementTool/speedOverDistance/components/SpeedOverDistanceChartOptions'
@@ -187,7 +188,7 @@ const SM_Charts = ({ routes }: { routes: SpeedManagementRoute[] }) => {
       case SM_ChartType.SPEED_OVER_DISTANCE:
         return <SpeedOverTimeChartContainer chartData={data} />
       case SM_ChartType.SPEED_COMPLIANCE:
-        return <SpeedOverTimeChartContainer chartData={data} />
+        return <SpeedComplianceChartsContainer chartData={data} />
       case SM_ChartType.DATA_QUALITY:
         return <DataQualityChartContainer chartData={data} />
       default:

@@ -127,11 +127,13 @@ export function useSMCharts<TChartType extends SM_ChartType>(
       case SM_ChartType.SPEED_COMPLIANCE: {
         const response = await postApiV1SpeedComplianceGetReportData(
           chartOptions as SpeedComplianceOptions
-        )
+        );
         return transformSpeedComplianceData(
-          response
-        ) as SMChartsDataMapping[TChartType]
+          response, 
+          (chartOptions as SpeedComplianceOptions).customSpeedLimit
+        ) as SMChartsDataMapping[TChartType];
       }
+      
       case SM_ChartType.DATA_QUALITY:
         const response = await postApiV1DataQualityGetReportData(
           chartOptions as DataQualityOptions
