@@ -40,6 +40,7 @@ import type {
   GetApiV1ImpactTypeParams,
   GetApiV1MonthlyAggregationSegmentsSegmentIdParams,
   GetApiV1RegionParams,
+  GetApiV1SegmentAllSegmentsParams,
   GetApiV1SegmentParams,
   GetApiV1SegmentSegmentIdParams,
   GetRouteSpeedsParams,
@@ -1715,6 +1716,65 @@ const {mutation: mutationOptions} = options ?? {};
       return useMutation(mutationOptions);
     }
     
+export const getApiV1SegmentAllSegments = (
+    params?: GetApiV1SegmentAllSegmentsParams,
+ signal?: AbortSignal
+) => {
+      
+      
+      return speedRequest<unknown>(
+      {url: `/api/v1/Segment/AllSegments`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+  
+
+export const getGetApiV1SegmentAllSegmentsQueryKey = (params?: GetApiV1SegmentAllSegmentsParams,) => {
+    return [`/api/v1/Segment/AllSegments`, ...(params ? [params]: [])] as const;
+    }
+
+    
+export const getGetApiV1SegmentAllSegmentsQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1SegmentAllSegments>>, TError = ProblemDetails>(params?: GetApiV1SegmentAllSegmentsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getApiV1SegmentAllSegments>>, TError, TData>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetApiV1SegmentAllSegmentsQueryKey(params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1SegmentAllSegments>>> = ({ signal }) => getApiV1SegmentAllSegments(params, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1SegmentAllSegments>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetApiV1SegmentAllSegmentsQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1SegmentAllSegments>>>
+export type GetApiV1SegmentAllSegmentsQueryError = ProblemDetails
+
+
+
+export function useGetApiV1SegmentAllSegments<TData = Awaited<ReturnType<typeof getApiV1SegmentAllSegments>>, TError = ProblemDetails>(
+ params?: GetApiV1SegmentAllSegmentsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getApiV1SegmentAllSegments>>, TError, TData>, }
+
+  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetApiV1SegmentAllSegmentsQueryOptions(params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
 export const getApiV1SegmentSegmentId = (
     segmentId: string,
     params?: GetApiV1SegmentSegmentIdParams,

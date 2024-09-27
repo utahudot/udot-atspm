@@ -20,7 +20,7 @@ import {
   DataQualityOptions,
   SpeedOverDistanceOptions,
   SpeedOverTimeOptions,
-  SpeedComplianceOptions
+  SpeedComplianceOptions,
   SpeedVariabilityOptions,
 } from '@/api/speedManagement/aTSPMSpeedManagementApi.schemas'
 import transformDataQualityData from '@/features/charts/speedManagementTool/dataQuality/dataQuality.transformer'

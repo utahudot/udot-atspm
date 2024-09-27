@@ -96,6 +96,13 @@ export type GetApiV1SegmentSegmentIdParams = {
 'api-version'?: string;
 };
 
+export type GetApiV1SegmentAllSegmentsParams = {
+/**
+ * The requested API version
+ */
+'api-version'?: string;
+};
+
 export type PostApiV1SegmentParams = {
 /**
  * The requested API version
@@ -329,7 +336,7 @@ export interface TimeSegmentEffectiveness {
   percentExtremeViolations?: number;
   percentViolations?: number;
   startDate?: string;
-  variablitiy?: number;
+  variability?: number;
 }
 
 export type TimeOptionsEnum = typeof TimeOptionsEnum[keyof typeof TimeOptionsEnum];
@@ -369,6 +376,18 @@ export interface SpeedViolationsDto {
   totalExtremeViolationsCount?: number;
   totalFlow?: number;
   totalViolationsCount?: number;
+}
+
+export interface SpeedVariabilityOptions {
+  /** @nullable */
+  daysOfWeek?: DayOfWeek[] | null;
+  endDate?: string;
+  /** @nullable */
+  isHolidaysFiltered?: boolean | null;
+  /** @nullable */
+  segmentId?: string | null;
+  sourceId?: number;
+  startDate?: string;
 }
 
 export interface SpeedVariabilityDataDto {
@@ -701,9 +720,23 @@ export interface MonthlyAggregation {
   /** @nullable */
   allDayAverageSpeed?: number | null;
   /** @nullable */
+  allDayAvgSpeedVsSpeedLimit?: number | null;
+  /** @nullable */
+  allDayEightyFifthSpeedVsSpeedLimit?: number | null;
+  /** @nullable */
   allDayExtremeViolations?: number | null;
   /** @nullable */
   allDayFlow?: number | null;
+  /** @nullable */
+  allDayMaxSpeed?: number | null;
+  /** @nullable */
+  allDayMinSpeed?: number | null;
+  /** @nullable */
+  allDayPercentExtremeViolations?: number | null;
+  /** @nullable */
+  allDayPercentViolations?: number | null;
+  /** @nullable */
+  allDayVariability?: number | null;
   /** @nullable */
   allDayViolations?: number | null;
   /** @nullable */
@@ -711,9 +744,23 @@ export interface MonthlyAggregation {
   /** @nullable */
   amPeakAverageSpeed?: number | null;
   /** @nullable */
+  amPeakAvgSpeedVsSpeedLimit?: number | null;
+  /** @nullable */
+  amPeakEightyFifthSpeedVsSpeedLimit?: number | null;
+  /** @nullable */
   amPeakExtremeViolations?: number | null;
   /** @nullable */
   amPeakFlow?: number | null;
+  /** @nullable */
+  amPeakMaxSpeed?: number | null;
+  /** @nullable */
+  amPeakMinSpeed?: number | null;
+  /** @nullable */
+  amPeakPercentExtremeViolations?: number | null;
+  /** @nullable */
+  amPeakPercentViolations?: number | null;
+  /** @nullable */
+  amPeakVariability?: number | null;
   /** @nullable */
   amPeakViolations?: number | null;
   binStartTime?: string;
@@ -724,9 +771,23 @@ export interface MonthlyAggregation {
   /** @nullable */
   earlyMorningAverageSpeed?: number | null;
   /** @nullable */
+  earlyMorningAvgSpeedVsSpeedLimit?: number | null;
+  /** @nullable */
+  earlyMorningEightyFifthSpeedVsSpeedLimit?: number | null;
+  /** @nullable */
   earlyMorningExtremeViolations?: number | null;
   /** @nullable */
   earlyMorningFlow?: number | null;
+  /** @nullable */
+  earlyMorningMaxSpeed?: number | null;
+  /** @nullable */
+  earlyMorningMinSpeed?: number | null;
+  /** @nullable */
+  earlyMorningPercentExtremeViolations?: number | null;
+  /** @nullable */
+  earlyMorningPercentViolations?: number | null;
+  /** @nullable */
+  earlyMorningVariability?: number | null;
   /** @nullable */
   earlyMorningViolations?: number | null;
   /** @nullable */
@@ -734,9 +795,23 @@ export interface MonthlyAggregation {
   /** @nullable */
   eveningAverageSpeed?: number | null;
   /** @nullable */
+  eveningAvgSpeedVsSpeedLimit?: number | null;
+  /** @nullable */
+  eveningEightyFifthSpeedVsSpeedLimit?: number | null;
+  /** @nullable */
   eveningExtremeViolations?: number | null;
   /** @nullable */
   eveningFlow?: number | null;
+  /** @nullable */
+  eveningMaxSpeed?: number | null;
+  /** @nullable */
+  eveningMinSpeed?: number | null;
+  /** @nullable */
+  eveningPercentExtremeViolations?: number | null;
+  /** @nullable */
+  eveningPercentViolations?: number | null;
+  /** @nullable */
+  eveningVariability?: number | null;
   /** @nullable */
   eveningViolations?: number | null;
   /** @nullable */
@@ -746,9 +821,23 @@ export interface MonthlyAggregation {
   /** @nullable */
   midDayAverageSpeed?: number | null;
   /** @nullable */
+  midDayAvgSpeedVsSpeedLimit?: number | null;
+  /** @nullable */
+  midDayEightyFifthSpeedVsSpeedLimit?: number | null;
+  /** @nullable */
   midDayExtremeViolations?: number | null;
   /** @nullable */
   midDayFlow?: number | null;
+  /** @nullable */
+  midDayMaxSpeed?: number | null;
+  /** @nullable */
+  midDayMinSpeed?: number | null;
+  /** @nullable */
+  midDayPercentExtremeViolations?: number | null;
+  /** @nullable */
+  midDayPercentViolations?: number | null;
+  /** @nullable */
+  midDayVariability?: number | null;
   /** @nullable */
   midDayViolations?: number | null;
   /** @nullable */
@@ -756,9 +845,23 @@ export interface MonthlyAggregation {
   /** @nullable */
   offPeakAverageSpeed?: number | null;
   /** @nullable */
+  offPeakAvgSpeedVsSpeedLimit?: number | null;
+  /** @nullable */
+  offPeakEightyFifthSpeedVsSpeedLimit?: number | null;
+  /** @nullable */
   offPeakExtremeViolations?: number | null;
   /** @nullable */
   offPeakFlow?: number | null;
+  /** @nullable */
+  offPeakMaxSpeed?: number | null;
+  /** @nullable */
+  offPeakMinSpeed?: number | null;
+  /** @nullable */
+  offPeakPercentExtremeViolations?: number | null;
+  /** @nullable */
+  offPeakPercentViolations?: number | null;
+  /** @nullable */
+  offPeakVariability?: number | null;
   /** @nullable */
   offPeakViolations?: number | null;
   /** @nullable */
@@ -768,9 +871,23 @@ export interface MonthlyAggregation {
   /** @nullable */
   pmPeakAverageSpeed?: number | null;
   /** @nullable */
+  pmPeakAvgSpeedVsSpeedLimit?: number | null;
+  /** @nullable */
+  pmPeakEightyFifthSpeedVsSpeedLimit?: number | null;
+  /** @nullable */
   pmPeakExtremeViolations?: number | null;
   /** @nullable */
   pmPeakFlow?: number | null;
+  /** @nullable */
+  pmPeakMaxSpeed?: number | null;
+  /** @nullable */
+  pmPeakMinSpeed?: number | null;
+  /** @nullable */
+  pmPeakPercentExtremeViolations?: number | null;
+  /** @nullable */
+  pmPeakPercentViolations?: number | null;
+  /** @nullable */
+  pmPeakVariability?: number | null;
   /** @nullable */
   pmPeakViolations?: number | null;
   segmentId?: string;
@@ -943,7 +1060,7 @@ export interface EffectivenessOfStrategiesDto {
   changeInEightyFifthPercentileSpeed?: number;
   changeInPercentExtremeViolations?: number;
   changeInPercentViolations?: number;
-  changeInVariablitiy?: number;
+  changeInVariability?: number;
   segmentId?: string;
   /** @nullable */
   segmentName?: string | null;
@@ -984,18 +1101,6 @@ export const DayOfWeek = {
   NUMBER_5: 5,
   NUMBER_6: 6,
 } as const;
-
-export interface SpeedVariabilityOptions {
-  /** @nullable */
-  daysOfWeek?: DayOfWeek[] | null;
-  endDate?: string;
-  /** @nullable */
-  isHolidaysFiltered?: boolean | null;
-  /** @nullable */
-  segmentId?: string | null;
-  sourceId?: number;
-  startDate?: string;
-}
 
 export interface DataQualitySegment {
   /** @nullable */

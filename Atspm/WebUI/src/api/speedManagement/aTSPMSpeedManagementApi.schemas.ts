@@ -12,40 +12,54 @@ export type PostApiViolationsAndExtremeViolationsGetReportDataParams = {
 'api-version'?: string;
 };
 
+export type PostApiV1SpeedViolationsGetReportDataParams = {
+/**
+ * The requested API version
+ */
+'api-version'?: string;
+};
+
+export type PostApiV1SpeedVariabilityGetReportDataParams = {
+/**
+ * The requested API version
+ */
+'api-version'?: string;
+};
+
 export type PostApiV1SpeedOverTimeGetReportDataParams = {
-  /**
-   * The requested API version
-   */
-  'api-version'?: string
-}
+/**
+ * The requested API version
+ */
+'api-version'?: string;
+};
 
 export type PostApiV1SpeedOverDistanceGetReportDataParams = {
-  /**
-   * The requested API version
-   */
-  'api-version'?: string
-}
+/**
+ * The requested API version
+ */
+'api-version'?: string;
+};
 
 export type PostApiV1SpeedManagementGetHistoricalSpeedsParams = {
-  /**
-   * The requested API version
-   */
-  'api-version'?: string
-}
+/**
+ * The requested API version
+ */
+'api-version'?: string;
+};
 
 export type GetRouteSpeedsParams = {
-  /**
-   * The requested API version
-   */
-  'api-version'?: string
-}
+/**
+ * The requested API version
+ */
+'api-version'?: string;
+};
 
 export type PostApiV1SpeedFromImpactSegmentSegmentIdParams = {
-  /**
-   * The requested API version
-   */
-  'api-version'?: string
-}
+/**
+ * The requested API version
+ */
+'api-version'?: string;
+};
 
 export type PostApiV1SpeedFromImpactImpactImpactIdParams = {
 /**
@@ -54,54 +68,68 @@ export type PostApiV1SpeedFromImpactImpactImpactIdParams = {
 'api-version'?: string;
 };
 
+export type PostApiV1SpeedComplianceGetReportDataParams = {
+/**
+ * The requested API version
+ */
+'api-version'?: string;
+};
+
 export type PostApiV1SegmentSegmentIdSpeedsParams = {
-  /**
-   * The requested API version
-   */
-  'api-version'?: string
-}
+/**
+ * The requested API version
+ */
+'api-version'?: string;
+};
 
 export type PostApiV1SegmentSpeedsParams = {
-  /**
-   * The requested API version
-   */
-  'api-version'?: string
-}
+/**
+ * The requested API version
+ */
+'api-version'?: string;
+};
 
 export type GetApiV1SegmentSegmentIdParams = {
-  /**
-   * The requested API version
-   */
-  'api-version'?: string
-}
+/**
+ * The requested API version
+ */
+'api-version'?: string;
+};
+
+export type GetApiV1SegmentAllSegmentsParams = {
+/**
+ * The requested API version
+ */
+'api-version'?: string;
+};
 
 export type PostApiV1SegmentParams = {
-  /**
-   * The requested API version
-   */
-  'api-version'?: string
-}
+/**
+ * The requested API version
+ */
+'api-version'?: string;
+};
 
 export type GetApiV1SegmentParams = {
-  /**
-   * The requested API version
-   */
-  'api-version'?: string
-}
+/**
+ * The requested API version
+ */
+'api-version'?: string;
+};
 
 export type GetApiV1RegionParams = {
-  /**
-   * The requested API version
-   */
-  'api-version'?: string
-}
+/**
+ * The requested API version
+ */
+'api-version'?: string;
+};
 
 export type GetApiV1MonthlyAggregationSegmentsSegmentIdParams = {
-  /**
-   * The requested API version
-   */
-  'api-version'?: string
-}
+/**
+ * The requested API version
+ */
+'api-version'?: string;
+};
 
 export type PostApiV1MonthlyAggregationSegmentParams = {
 /**
@@ -110,117 +138,124 @@ export type PostApiV1MonthlyAggregationSegmentParams = {
 'api-version'?: string;
 };
 
+export type PostApiV1MonthlyAggregationSourceSourceIdParams = {
+/**
+ * The requested API version
+ */
+'api-version'?: string;
+};
+
 export type DeleteApiV1MonthlyAggregationParams = {
-  /**
-   * The requested API version
-   */
-  'api-version'?: string
-}
+/**
+ * The requested API version
+ */
+'api-version'?: string;
+};
 
 export type PostApiV1MonthlyAggregationParams = {
-  /**
-   * The requested API version
-   */
-  'api-version'?: string
-}
+/**
+ * The requested API version
+ */
+'api-version'?: string;
+};
 
 export type DeleteApiV1ImpactTypeIdParams = {
-  /**
-   * The requested API version
-   */
-  'api-version'?: string
-}
+/**
+ * The requested API version
+ */
+'api-version'?: string;
+};
 
 export type PutApiV1ImpactTypeIdParams = {
-  /**
-   * The requested API version
-   */
-  'api-version'?: string
-}
+/**
+ * The requested API version
+ */
+'api-version'?: string;
+};
 
 export type GetApiV1ImpactTypeIdParams = {
-  /**
-   * The requested API version
-   */
-  'api-version'?: string
-}
+/**
+ * The requested API version
+ */
+'api-version'?: string;
+};
 
 export type PostApiV1ImpactTypeParams = {
-  /**
-   * The requested API version
-   */
-  'api-version'?: string
-}
+/**
+ * The requested API version
+ */
+'api-version'?: string;
+};
 
 export type GetApiV1ImpactTypeParams = {
-  /**
-   * The requested API version
-   */
-  'api-version'?: string
-}
+/**
+ * The requested API version
+ */
+'api-version'?: string;
+};
 
 export type DeleteApiV1ImpactIdImpactTypeImpactTypeIdParams = {
-  /**
-   * The requested API version
-   */
-  'api-version'?: string
-}
+/**
+ * The requested API version
+ */
+'api-version'?: string;
+};
 
 export type PutApiV1ImpactIdImpactTypeImpactTypeIdParams = {
-  /**
-   * The requested API version
-   */
-  'api-version'?: string
-}
+/**
+ * The requested API version
+ */
+'api-version'?: string;
+};
 
 export type DeleteApiV1ImpactIdSegmentsSegmentIdParams = {
-  /**
-   * The requested API version
-   */
-  'api-version'?: string
-}
+/**
+ * The requested API version
+ */
+'api-version'?: string;
+};
 
 export type PutApiV1ImpactIdSegmentsSegmentIdParams = {
-  /**
-   * The requested API version
-   */
-  'api-version'?: string
-}
+/**
+ * The requested API version
+ */
+'api-version'?: string;
+};
 
 export type DeleteApiV1ImpactIdParams = {
-  /**
-   * The requested API version
-   */
-  'api-version'?: string
-}
+/**
+ * The requested API version
+ */
+'api-version'?: string;
+};
 
 export type PutApiV1ImpactIdParams = {
-  /**
-   * The requested API version
-   */
-  'api-version'?: string
-}
+/**
+ * The requested API version
+ */
+'api-version'?: string;
+};
 
 export type GetApiV1ImpactIdParams = {
-  /**
-   * The requested API version
-   */
-  'api-version'?: string
-}
+/**
+ * The requested API version
+ */
+'api-version'?: string;
+};
 
 export type PostApiV1ImpactParams = {
-  /**
-   * The requested API version
-   */
-  'api-version'?: string
-}
+/**
+ * The requested API version
+ */
+'api-version'?: string;
+};
 
 export type GetApiV1ImpactParams = {
-  /**
-   * The requested API version
-   */
-  'api-version'?: string
-}
+/**
+ * The requested API version
+ */
+'api-version'?: string;
+};
 
 export type GetApiV1FunctionalTypeParams = {
 /**
@@ -229,43 +264,51 @@ export type GetApiV1FunctionalTypeParams = {
 'api-version'?: string;
 };
 
+export type PostApiV1EffectivenessOfStrategiesGetReportDataParams = {
+/**
+ * The requested API version
+ */
+'api-version'?: string;
+};
+
 export type PostApiV1DataQualityGetReportDataParams = {
-  /**
-   * The requested API version
-   */
-  'api-version'?: string
-}
+/**
+ * The requested API version
+ */
+'api-version'?: string;
+};
 
 export type GetApiV1CountyParams = {
-  /**
-   * The requested API version
-   */
-  'api-version'?: string
-}
+/**
+ * The requested API version
+ */
+'api-version'?: string;
+};
 
 export type PostApiV1CongestionTrackingGetReportDataParams = {
-  /**
-   * The requested API version
-   */
-  'api-version'?: string
-}
+/**
+ * The requested API version
+ */
+'api-version'?: string;
+};
 
 export type GetApiV1CityParams = {
-  /**
-   * The requested API version
-   */
-  'api-version'?: string
-}
+/**
+ * The requested API version
+ */
+'api-version'?: string;
+};
 
 export type GetApiV1AccessCategoryParams = {
-  /**
-   * The requested API version
-   */
-  'api-version'?: string
-}
+/**
+ * The requested API version
+ */
+'api-version'?: string;
+};
 
 export interface ViolationsAndExtremeViolationsOptions {
   endDate?: string;
+  /** @nullable */
   segmentIds?: string[] | null;
   startDate?: string;
 }
@@ -275,6 +318,7 @@ export interface ViolationsAndExtremeViolationsDto {
   exteremeViolations?: number;
   flow?: number;
   segmentId?: string;
+  /** @nullable */
   segmentName?: string | null;
   speedLimit?: number;
   startingMilePoint?: number;
@@ -292,11 +336,11 @@ export interface TimeSegmentEffectiveness {
   percentExtremeViolations?: number;
   percentViolations?: number;
   startDate?: string;
-  variablitiy?: number;
+  variability?: number;
 }
 
-export type TimeOptionsEnum =
-  (typeof TimeOptionsEnum)[keyof typeof TimeOptionsEnum]
+export type TimeOptionsEnum = typeof TimeOptionsEnum[keyof typeof TimeOptionsEnum];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const TimeOptionsEnum = {
@@ -305,12 +349,77 @@ export const TimeOptionsEnum = {
   NUMBER_2: 2,
 } as const;
 
-export interface SpeedOverTimeOptions {
+export interface SpeedViolationsOptions {
+  /** @nullable */
+  dayOfWeek?: number | null;
   endDate?: string;
+  /** @nullable */
   endTime?: string | null;
+  /** @nullable */
+  segmentIds?: string[] | null;
+  /** @nullable */
+  specificDays?: string[] | null;
+  startDate?: string;
+  /** @nullable */
+  startTime?: string | null;
+}
+
+export interface SpeedViolationsDto {
+  /** @nullable */
+  dailySpeedViolationsDto?: DailySpeedViolationsDto[] | null;
+  percentExtremeViolations?: number;
+  percentViolations?: number;
+  segmentId?: string;
+  /** @nullable */
+  segmentName?: string | null;
+  speedLimit?: number;
+  totalExtremeViolationsCount?: number;
+  totalFlow?: number;
+  totalViolationsCount?: number;
+}
+
+export interface SpeedVariabilityOptions {
+  /** @nullable */
+  daysOfWeek?: DayOfWeek[] | null;
+  endDate?: string;
+  /** @nullable */
+  isHolidaysFiltered?: boolean | null;
+  /** @nullable */
   segmentId?: string | null;
   sourceId?: number;
   startDate?: string;
+}
+
+export interface SpeedVariabilityDataDto {
+  avgSpeed?: number;
+  date?: string;
+  maxSpeed?: number;
+  minSpeed?: number;
+  speedVariability?: number;
+}
+
+export interface SpeedVariabilityDto {
+  /** @nullable */
+  data?: SpeedVariabilityDataDto[] | null;
+  endDate?: string;
+  endingMilePoint?: number;
+  segmentId?: string;
+  /** @nullable */
+  segmentName?: string | null;
+  speedLimit?: number;
+  startDate?: string;
+  startingMilePoint?: number;
+}
+
+export interface SpeedOverTimeOptions {
+  endDate?: string;
+  /** @nullable */
+  endTime?: string | null;
+  /** @nullable */
+  segmentId?: string | null;
+  sourceId?: number;
+  startDate?: string;
+  /** @nullable */
   startTime?: string | null;
   timeOptions?: TimeOptionsEnum;
 }
@@ -331,6 +440,7 @@ export interface SpeedOverTimeDto {
 
 export interface SpeedOverDistanceOptions {
   endDate?: string;
+  /** @nullable */
   segmentIds?: string[] | null;
   startDate?: string;
 }
@@ -341,6 +451,7 @@ export interface SpeedOverDistanceDto {
   endDate?: string;
   endingMilePoint?: number;
   segmentId?: string;
+  /** @nullable */
   segmentName?: string | null;
   speedLimit?: number;
   startDate?: string;
@@ -359,58 +470,74 @@ export interface SpeedFromImpactDto {
 }
 
 export interface SpeedDataDto {
-  date?: string
-  series?: AverageAndEightyFifthSeriesData
+  date?: string;
+  series?: AverageAndEightyFifthSeriesData;
 }
 
-export interface SpeedOverTimeDto {
-  data?: SpeedDataDto[] | null;
+export interface SpeedComplianceOptions {
+  endDate?: string;
+  /** @nullable */
+  segmentIds?: string[] | null;
+  startDate?: string;
+}
+
+export interface SpeedComplianceDto {
+  average?: number;
+  avgVsBaseSpeed?: number;
+  eightyFifth?: number;
+  eightyFifthPercentileVsBaseSpeed?: number;
   endDate?: string;
   endingMilePoint?: number;
   segmentId?: string;
+  /** @nullable */
   segmentName?: string | null;
   speedLimit?: number;
   startDate?: string;
   startingMilePoint?: number;
-  timeOptions?: TimeOptionsEnum;
 }
 
 export interface SegmentRequestDto {
   endDate?: string;
+  /** @nullable */
   segmentIds?: string[] | null;
   startDate?: string;
 }
 
 export interface Segment {
+  /** @nullable */
   accessCategory?: string | null;
+  /** @nullable */
   alternateIdentifier?: string | null;
+  /** @nullable */
   city?: string | null;
+  /** @nullable */
   county?: string | null;
+  /** @nullable */
   direction?: string | null;
   endMilePoint?: number;
+  /** @nullable */
+  entities?: SegmentEntity[] | null;
+  /** @nullable */
   functionalType?: string | null;
   id?: string;
+  /** @nullable */
   name?: string | null;
+  /** @nullable */
   offset?: number | null;
+  /** @nullable */
   region?: string | null;
-  routeEntities?: SegmentEntity[] | null;
   shape?: Geometry;
+  /** @nullable */
   shapeWKT?: string | null;
   speedLimit?: number;
   startMilePoint?: number;
+  /** @nullable */
   udotRouteNumber?: string | null;
-}
-
-export interface SpeedFromImpactDto {
-  endDate?: string;
-  hourlySpeeds?: HourlySpeed[] | null;
-  impacts?: Impact[] | null;
-  segments?: Segment[] | null;
-  startDate?: string;
 }
 
 export interface SegmentEntity {
   entityId?: number;
+  /** @nullable */
   entityType?: string | null;
   length?: number;
   segment?: Segment;
@@ -419,13 +546,19 @@ export interface SegmentEntity {
 }
 
 export interface RouteSpeedOptions {
+  /** @nullable */
   accessCategory?: string | null;
+  /** @nullable */
   city?: string | null;
+  /** @nullable */
   county?: string | null;
+  /** @nullable */
   daysOfWeek?: DayOfWeek[] | null;
   endDate?: string;
   endTime?: string;
+  /** @nullable */
   functionalType?: string | null;
+  /** @nullable */
   region?: string | null;
   sourceId?: number;
   startDate?: string;
@@ -434,35 +567,44 @@ export interface RouteSpeedOptions {
 }
 
 export interface ProblemDetails {
+  /** @nullable */
   detail?: string | null;
+  /** @nullable */
   instance?: string | null;
+  /** @nullable */
   status?: number | null;
+  /** @nullable */
   title?: string | null;
+  /** @nullable */
   type?: string | null;
   [key: string]: unknown;
 }
 
-export type PrecisionModels =
-  (typeof PrecisionModels)[keyof typeof PrecisionModels]
+export type PrecisionModels = typeof PrecisionModels[keyof typeof PrecisionModels];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const PrecisionModels = {
   NUMBER_0: 0,
   NUMBER_1: 1,
   NUMBER_2: 2,
-} as const
+} as const;
 
 export interface PrecisionModel {
-  readonly gridSize?: number
-  readonly isFloating?: boolean
-  readonly maximumSignificantDigits?: number
-  precisionModelType?: PrecisionModels
-  scale?: number
+  readonly gridSize?: number;
+  readonly isFloating?: boolean;
+  readonly maximumSignificantDigits?: number;
+  precisionModelType?: PrecisionModels;
+  scale?: number;
 }
 
+/**
+ * @nullable
+ */
 export type PointUserData = unknown | null;
 
-export type Ordinates = (typeof Ordinates)[keyof typeof Ordinates]
+export type Ordinates = typeof Ordinates[keyof typeof Ordinates];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const Ordinates = {
@@ -506,10 +648,10 @@ export const Ordinates = {
   NUMBER_MINUS_2147483648: -2147483648,
   NUMBER_MINUS_65536: -65536,
   NUMBER_MINUS_1: -1,
-} as const
+} as const;
 
-export type OgcGeometryType =
-  (typeof OgcGeometryType)[keyof typeof OgcGeometryType]
+export type OgcGeometryType = typeof OgcGeometryType[keyof typeof OgcGeometryType];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const OgcGeometryType = {
@@ -529,181 +671,7 @@ export const OgcGeometryType = {
   NUMBER_14: 14,
   NUMBER_15: 15,
   NUMBER_16: 16,
-} as const
-
-export interface NtsGeometryServices {
-  coordinateEqualityComparer?: CoordinateEqualityComparer;
-  defaultCoordinateSequenceFactory?: CoordinateSequenceFactory;
-  defaultPrecisionModel?: PrecisionModel;
-  readonly defaultSRID?: number;
-  geometryOverlay?: GeometryOverlay;
-}
-
-export interface NameAndIdDto {
-  id?: string;
-  name?: string | null;
-}
-
-export interface MonthlyAggregation {
-  allDayAverageEightyFifthSpeed?: number | null;
-  allDayAverageSpeed?: number | null;
-  allDayExtremeViolations?: number | null;
-  allDayViolations?: number | null;
-  amPeakAverageEightyFifthSpeed?: number | null;
-  amPeakAverageSpeed?: number | null;
-  amPeakExtremeViolations?: number | null;
-  amPeakViolations?: number | null;
-  binStartTime?: string;
-  createdDate?: string | null;
-  dataQuality?: boolean;
-  earlyMorningAverageEightyFifthSpeed?: number | null;
-  earlyMorningAverageSpeed?: number | null;
-  earlyMorningExtremeViolations?: number | null;
-  earlyMorningViolations?: number | null;
-  eveningAverageEightyFifthSpeed?: number | null;
-  eveningAverageSpeed?: number | null;
-  eveningExtremeViolations?: number | null;
-  eveningViolations?: number | null;
-  id?: string | null;
-  midDayAverageEightyFifthSpeed?: number | null;
-  midDayAverageSpeed?: number | null;
-  midDayExtremeViolations?: number | null;
-  midDayViolations?: number | null;
-  offPeakAverageEightyFifthSpeed?: number | null;
-  offPeakAverageSpeed?: number | null;
-  offPeakExtremeViolations?: number | null;
-  offPeakViolations?: number | null;
-  pmPeakAverageEightyFifthSpeed?: number | null;
-  pmPeakAverageSpeed?: number | null;
-  pmPeakExtremeViolations?: number | null;
-  pmPeakViolations?: number | null;
-  segmentId?: string;
-  sourceId?: number;
-}
-
-export interface Int64DataPoint {
-  timestamp?: string
-  value?: number
-}
-
-export interface ImpactType {
-  description?: string | null;
-  id?: string | null;
-  name?: string | null;
-}
-
-export interface Impact {
-  createdBy?: string | null;
-  createdOn?: string | null;
-  deletedBy?: string | null;
-  deletedOn?: string | null;
-  description?: string | null;
-  end?: string | null;
-  endMile?: number;
-  id?: string | null;
-  impactTypeIds?: string[] | null;
-  impactTypes?: ImpactType[] | null;
-  segmentIds?: string[] | null;
-  start?: string;
-  startMile?: number;
-  updatedBy?: string | null;
-  updatedOn?: string | null;
-}
-
-export interface HourlySpeed {
-  average?: number;
-  binStartTime?: string;
-  confidenceId?: number;
-  date?: string;
-  eightyFifthSpeed?: number | null;
-  extremeViolation?: number | null;
-  fifteenthSpeed?: number | null;
-  flow?: number | null;
-  ninetyFifthSpeed?: number | null;
-  ninetyNinthSpeed?: number | null;
-  segmentId?: string;
-  sourceId?: number;
-  violation?: number | null;
-}
-
-export interface HistoricalSpeedOptions {
-  daysOfWeek?: DayOfWeek[] | null;
-  endDate?: string;
-  segmentId?: string;
-  startDate?: string;
-}
-
-export interface GeometryOverlay { [key: string]: any }
-
-export interface GeometryFactory {
-  coordinateSequenceFactory?: CoordinateSequenceFactory
-  geometryServices?: NtsGeometryServices
-  precisionModel?: PrecisionModel
-  readonly srid?: number
-}
-
-export type GeometryUserData = unknown | null;
-
-export interface Envelope {
-  readonly area?: number
-  centre?: Coordinate
-  readonly diameter?: number
-  readonly height?: number
-  readonly isNull?: boolean
-  readonly maxExtent?: number
-  readonly maxX?: number
-  readonly maxY?: number
-  readonly minExtent?: number
-  readonly minX?: number
-  readonly minY?: number
-  readonly width?: number
-}
-
-export interface DoubleDataPoint {
-  timestamp?: string;
-  value?: number;
-}
-
-export type Dimension = typeof Dimension[keyof typeof Dimension];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const Dimension = {
-  NUMBER_0: 0,
-  NUMBER_1: 1,
-  NUMBER_2: 2,
-  NUMBER_3: 3,
-  NUMBER_MINUS_3: -3,
-  NUMBER_MINUS_2: -2,
-  NUMBER_MINUS_1: -1,
 } as const;
-
-export interface Geometry {
-  readonly area?: number;
-  boundary?: Geometry;
-  boundaryDimension?: Dimension;
-  centroid?: Point;
-  coordinate?: Coordinate;
-  readonly coordinates?: readonly Coordinate[] | null;
-  dimension?: Dimension;
-  envelope?: Geometry;
-  envelopeInternal?: Envelope;
-  factory?: GeometryFactory;
-  readonly geometryType?: string | null;
-  interiorPoint?: Point;
-  readonly isEmpty?: boolean;
-  readonly isRectangle?: boolean;
-  readonly isSimple?: boolean;
-  readonly isValid?: boolean;
-  readonly length?: number;
-  readonly numGeometries?: number;
-  readonly numPoints?: number;
-  ogcGeometryType?: OgcGeometryType;
-  pointOnSurface?: Point;
-  precisionModel?: PrecisionModel;
-  srid?: number;
-  userData?: GeometryUserData;
-}
 
 export interface Point {
   readonly area?: number;
@@ -711,12 +679,14 @@ export interface Point {
   boundaryDimension?: Dimension;
   centroid?: Point;
   coordinate?: Coordinate;
+  /** @nullable */
   readonly coordinates?: readonly Coordinate[] | null;
   coordinateSequence?: CoordinateSequence;
   dimension?: Dimension;
   envelope?: Geometry;
   envelopeInternal?: Envelope;
   factory?: GeometryFactory;
+  /** @nullable */
   readonly geometryType?: string | null;
   interiorPoint?: Point;
   readonly isEmpty?: boolean;
@@ -731,10 +701,356 @@ export interface Point {
   pointOnSurface?: Point;
   precisionModel?: PrecisionModel;
   srid?: number;
+  /** @nullable */
   userData?: PointUserData;
   x?: number;
   y?: number;
   z?: number;
+}
+
+export interface NameAndIdDto {
+  id?: string;
+  /** @nullable */
+  name?: string | null;
+}
+
+export interface MonthlyAggregation {
+  /** @nullable */
+  allDayAverageEightyFifthSpeed?: number | null;
+  /** @nullable */
+  allDayAverageSpeed?: number | null;
+  /** @nullable */
+  allDayAvgSpeedVsSpeedLimit?: number | null;
+  /** @nullable */
+  allDayEightyFifthSpeedVsSpeedLimit?: number | null;
+  /** @nullable */
+  allDayExtremeViolations?: number | null;
+  /** @nullable */
+  allDayFlow?: number | null;
+  /** @nullable */
+  allDayMaxSpeed?: number | null;
+  /** @nullable */
+  allDayMinSpeed?: number | null;
+  /** @nullable */
+  allDayPercentExtremeViolations?: number | null;
+  /** @nullable */
+  allDayPercentViolations?: number | null;
+  /** @nullable */
+  allDayVariability?: number | null;
+  /** @nullable */
+  allDayViolations?: number | null;
+  /** @nullable */
+  amPeakAverageEightyFifthSpeed?: number | null;
+  /** @nullable */
+  amPeakAverageSpeed?: number | null;
+  /** @nullable */
+  amPeakAvgSpeedVsSpeedLimit?: number | null;
+  /** @nullable */
+  amPeakEightyFifthSpeedVsSpeedLimit?: number | null;
+  /** @nullable */
+  amPeakExtremeViolations?: number | null;
+  /** @nullable */
+  amPeakFlow?: number | null;
+  /** @nullable */
+  amPeakMaxSpeed?: number | null;
+  /** @nullable */
+  amPeakMinSpeed?: number | null;
+  /** @nullable */
+  amPeakPercentExtremeViolations?: number | null;
+  /** @nullable */
+  amPeakPercentViolations?: number | null;
+  /** @nullable */
+  amPeakVariability?: number | null;
+  /** @nullable */
+  amPeakViolations?: number | null;
+  binStartTime?: string;
+  /** @nullable */
+  createdDate?: string | null;
+  /** @nullable */
+  earlyMorningAverageEightyFifthSpeed?: number | null;
+  /** @nullable */
+  earlyMorningAverageSpeed?: number | null;
+  /** @nullable */
+  earlyMorningAvgSpeedVsSpeedLimit?: number | null;
+  /** @nullable */
+  earlyMorningEightyFifthSpeedVsSpeedLimit?: number | null;
+  /** @nullable */
+  earlyMorningExtremeViolations?: number | null;
+  /** @nullable */
+  earlyMorningFlow?: number | null;
+  /** @nullable */
+  earlyMorningMaxSpeed?: number | null;
+  /** @nullable */
+  earlyMorningMinSpeed?: number | null;
+  /** @nullable */
+  earlyMorningPercentExtremeViolations?: number | null;
+  /** @nullable */
+  earlyMorningPercentViolations?: number | null;
+  /** @nullable */
+  earlyMorningVariability?: number | null;
+  /** @nullable */
+  earlyMorningViolations?: number | null;
+  /** @nullable */
+  eveningAverageEightyFifthSpeed?: number | null;
+  /** @nullable */
+  eveningAverageSpeed?: number | null;
+  /** @nullable */
+  eveningAvgSpeedVsSpeedLimit?: number | null;
+  /** @nullable */
+  eveningEightyFifthSpeedVsSpeedLimit?: number | null;
+  /** @nullable */
+  eveningExtremeViolations?: number | null;
+  /** @nullable */
+  eveningFlow?: number | null;
+  /** @nullable */
+  eveningMaxSpeed?: number | null;
+  /** @nullable */
+  eveningMinSpeed?: number | null;
+  /** @nullable */
+  eveningPercentExtremeViolations?: number | null;
+  /** @nullable */
+  eveningPercentViolations?: number | null;
+  /** @nullable */
+  eveningVariability?: number | null;
+  /** @nullable */
+  eveningViolations?: number | null;
+  /** @nullable */
+  id?: string | null;
+  /** @nullable */
+  midDayAverageEightyFifthSpeed?: number | null;
+  /** @nullable */
+  midDayAverageSpeed?: number | null;
+  /** @nullable */
+  midDayAvgSpeedVsSpeedLimit?: number | null;
+  /** @nullable */
+  midDayEightyFifthSpeedVsSpeedLimit?: number | null;
+  /** @nullable */
+  midDayExtremeViolations?: number | null;
+  /** @nullable */
+  midDayFlow?: number | null;
+  /** @nullable */
+  midDayMaxSpeed?: number | null;
+  /** @nullable */
+  midDayMinSpeed?: number | null;
+  /** @nullable */
+  midDayPercentExtremeViolations?: number | null;
+  /** @nullable */
+  midDayPercentViolations?: number | null;
+  /** @nullable */
+  midDayVariability?: number | null;
+  /** @nullable */
+  midDayViolations?: number | null;
+  /** @nullable */
+  offPeakAverageEightyFifthSpeed?: number | null;
+  /** @nullable */
+  offPeakAverageSpeed?: number | null;
+  /** @nullable */
+  offPeakAvgSpeedVsSpeedLimit?: number | null;
+  /** @nullable */
+  offPeakEightyFifthSpeedVsSpeedLimit?: number | null;
+  /** @nullable */
+  offPeakExtremeViolations?: number | null;
+  /** @nullable */
+  offPeakFlow?: number | null;
+  /** @nullable */
+  offPeakMaxSpeed?: number | null;
+  /** @nullable */
+  offPeakMinSpeed?: number | null;
+  /** @nullable */
+  offPeakPercentExtremeViolations?: number | null;
+  /** @nullable */
+  offPeakPercentViolations?: number | null;
+  /** @nullable */
+  offPeakVariability?: number | null;
+  /** @nullable */
+  offPeakViolations?: number | null;
+  /** @nullable */
+  percentObserved?: number | null;
+  /** @nullable */
+  pmPeakAverageEightyFifthSpeed?: number | null;
+  /** @nullable */
+  pmPeakAverageSpeed?: number | null;
+  /** @nullable */
+  pmPeakAvgSpeedVsSpeedLimit?: number | null;
+  /** @nullable */
+  pmPeakEightyFifthSpeedVsSpeedLimit?: number | null;
+  /** @nullable */
+  pmPeakExtremeViolations?: number | null;
+  /** @nullable */
+  pmPeakFlow?: number | null;
+  /** @nullable */
+  pmPeakMaxSpeed?: number | null;
+  /** @nullable */
+  pmPeakMinSpeed?: number | null;
+  /** @nullable */
+  pmPeakPercentExtremeViolations?: number | null;
+  /** @nullable */
+  pmPeakPercentViolations?: number | null;
+  /** @nullable */
+  pmPeakVariability?: number | null;
+  /** @nullable */
+  pmPeakViolations?: number | null;
+  segmentId?: string;
+  sourceId?: number;
+}
+
+export interface Int64DataPoint {
+  timestamp?: string;
+  value?: number;
+}
+
+export interface ImpactType {
+  /** @nullable */
+  description?: string | null;
+  /** @nullable */
+  id?: string | null;
+  /** @nullable */
+  name?: string | null;
+}
+
+export interface Impact {
+  /** @nullable */
+  createdBy?: string | null;
+  /** @nullable */
+  createdOn?: string | null;
+  /** @nullable */
+  deletedBy?: string | null;
+  /** @nullable */
+  deletedOn?: string | null;
+  /** @nullable */
+  description?: string | null;
+  /** @nullable */
+  end?: string | null;
+  endMile?: number;
+  /** @nullable */
+  id?: string | null;
+  /** @nullable */
+  impactTypeIds?: string[] | null;
+  /** @nullable */
+  impactTypes?: ImpactType[] | null;
+  /** @nullable */
+  segmentIds?: string[] | null;
+  start?: string;
+  startMile?: number;
+  /** @nullable */
+  updatedBy?: string | null;
+  /** @nullable */
+  updatedOn?: string | null;
+}
+
+export interface HourlySpeed {
+  average?: number;
+  binStartTime?: string;
+  date?: string;
+  /** @nullable */
+  eightyFifthSpeed?: number | null;
+  /** @nullable */
+  extremeViolation?: number | null;
+  /** @nullable */
+  fifteenthSpeed?: number | null;
+  /** @nullable */
+  flow?: number | null;
+  /** @nullable */
+  maxSpeed?: number | null;
+  /** @nullable */
+  minSpeed?: number | null;
+  /** @nullable */
+  ninetyFifthSpeed?: number | null;
+  /** @nullable */
+  ninetyNinthSpeed?: number | null;
+  /** @nullable */
+  percentObserved?: number | null;
+  segmentId?: string;
+  /** @nullable */
+  sourceDataAnalyzed?: boolean | null;
+  sourceId?: number;
+  /** @nullable */
+  violation?: number | null;
+}
+
+export interface HistoricalSpeedOptions {
+  /** @nullable */
+  daysOfWeek?: DayOfWeek[] | null;
+  endDate?: string;
+  segmentId?: string;
+  startDate?: string;
+}
+
+export interface GeometryOverlay { [key: string]: unknown }
+
+export interface NtsGeometryServices {
+  coordinateEqualityComparer?: CoordinateEqualityComparer;
+  defaultCoordinateSequenceFactory?: CoordinateSequenceFactory;
+  defaultPrecisionModel?: PrecisionModel;
+  readonly defaultSRID?: number;
+  geometryOverlay?: GeometryOverlay;
+}
+
+export interface GeometryFactory {
+  coordinateSequenceFactory?: CoordinateSequenceFactory;
+  geometryServices?: NtsGeometryServices;
+  precisionModel?: PrecisionModel;
+  readonly srid?: number;
+}
+
+/**
+ * @nullable
+ */
+export type GeometryUserData = unknown | null;
+
+export interface Envelope {
+  readonly area?: number;
+  centre?: Coordinate;
+  readonly diameter?: number;
+  readonly height?: number;
+  readonly isNull?: boolean;
+  readonly maxExtent?: number;
+  readonly maxX?: number;
+  readonly maxY?: number;
+  readonly minExtent?: number;
+  readonly minX?: number;
+  readonly minY?: number;
+  readonly width?: number;
+}
+
+export interface Geometry {
+  readonly area?: number;
+  boundary?: Geometry;
+  boundaryDimension?: Dimension;
+  centroid?: Point;
+  coordinate?: Coordinate;
+  /** @nullable */
+  readonly coordinates?: readonly Coordinate[] | null;
+  dimension?: Dimension;
+  envelope?: Geometry;
+  envelopeInternal?: Envelope;
+  factory?: GeometryFactory;
+  /** @nullable */
+  readonly geometryType?: string | null;
+  interiorPoint?: Point;
+  readonly isEmpty?: boolean;
+  readonly isRectangle?: boolean;
+  readonly isSimple?: boolean;
+  readonly isValid?: boolean;
+  readonly length?: number;
+  readonly numGeometries?: number;
+  readonly numPoints?: number;
+  ogcGeometryType?: OgcGeometryType;
+  pointOnSurface?: Point;
+  precisionModel?: PrecisionModel;
+  srid?: number;
+  /** @nullable */
+  userData?: GeometryUserData;
+}
+
+export interface EffectivenessOfStrategiesOptions {
+  /** @nullable */
+  endTime?: string | null;
+  /** @nullable */
+  segmentIds?: string[] | null;
+  /** @nullable */
+  startTime?: string | null;
+  strategyImplementedDate?: string;
 }
 
 export interface EffectivenessOfStrategiesDto {
@@ -744,7 +1060,7 @@ export interface EffectivenessOfStrategiesDto {
   changeInEightyFifthPercentileSpeed?: number;
   changeInPercentExtremeViolations?: number;
   changeInPercentViolations?: number;
-  changeInVariablitiy?: number;
+  changeInVariability?: number;
   segmentId?: string;
   /** @nullable */
   segmentName?: string | null;
@@ -772,7 +1088,8 @@ export const Dimension = {
   NUMBER_MINUS_1: -1,
 } as const;
 
-export type DayOfWeek = (typeof DayOfWeek)[keyof typeof DayOfWeek]
+export type DayOfWeek = typeof DayOfWeek[keyof typeof DayOfWeek];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const DayOfWeek = {
@@ -783,67 +1100,88 @@ export const DayOfWeek = {
   NUMBER_4: 4,
   NUMBER_5: 5,
   NUMBER_6: 6,
-} as const
+} as const;
+
+export interface DataQualitySegment {
+  /** @nullable */
+  dataPoints?: DoubleDataPoint[] | null;
+  endingMilePoint?: number;
+  segmentId?: string;
+  /** @nullable */
+  segmentName?: string | null;
+  startingMilePoint?: number;
+}
+
+export interface DataQualitySource {
+  endDate?: string;
+  /** @nullable */
+  name?: string | null;
+  /** @nullable */
+  segments?: DataQualitySegment[] | null;
+  sourceId?: number;
+  startDate?: string;
+}
 
 export interface DataQualityOptions {
   endDate?: string;
+  /** @nullable */
   segmentIds?: string[] | null;
   startDate?: string;
 }
 
-export interface DataQualityDto {
-  dataQuality?: number;
-  endingMilePoint?: number;
-  flow?: number;
-  segmentId?: string;
-  segmentName?: string | null;
-  speedLimit?: number;
-  startingMilePoint?: number;
-  time?: string;
-  violations?: number;
+export interface DailySpeedViolationsDto {
+  dailyExtremeViolationsCount?: number;
+  dailyFlow?: number;
+  dailyPercentExtremeViolations?: number;
+  dailyPercentViolations?: number;
+  dailyViolationsCount?: number;
+  date?: string;
 }
 
 export interface CoordinateSequenceFactory {
-  ordinates?: Ordinates
+  ordinates?: Ordinates;
 }
 
 export interface CoordinateSequence {
-  readonly count?: number
-  readonly dimension?: number
-  first?: Coordinate
-  readonly hasM?: boolean
-  readonly hasZ?: boolean
-  last?: Coordinate
-  readonly measures?: number
-  readonly mOrdinateIndex?: number
-  ordinates?: Ordinates
-  readonly spatial?: number
-  readonly zOrdinateIndex?: number
+  readonly count?: number;
+  readonly dimension?: number;
+  first?: Coordinate;
+  readonly hasM?: boolean;
+  readonly hasZ?: boolean;
+  last?: Coordinate;
+  readonly measures?: number;
+  readonly mOrdinateIndex?: number;
+  ordinates?: Ordinates;
+  readonly spatial?: number;
+  readonly zOrdinateIndex?: number;
 }
 
-export interface CoordinateEqualityComparer { [key: string]: any }
+export interface CoordinateEqualityComparer { [key: string]: unknown }
 
 export interface Coordinate {
-  coordinateValue?: Coordinate
-  readonly isValid?: boolean
-  m?: number
-  x?: number
-  y?: number
-  z?: number
+  coordinateValue?: Coordinate;
+  readonly isValid?: boolean;
+  m?: number;
+  x?: number;
+  y?: number;
+  z?: number;
 }
 
 export interface CongestionTrackingOptions {
   endDate?: string;
+  /** @nullable */
   segmentId?: string | null;
   sourceId?: number;
   startDate?: string;
 }
 
 export interface CongestionTrackingDto {
+  /** @nullable */
   data?: SpeedDataDto[] | null;
   endDate?: string;
   endingMilePoint?: number;
   segmentId?: string;
+  /** @nullable */
   segmentName?: string | null;
   speedLimit?: number;
   startDate?: string;
@@ -851,19 +1189,9 @@ export interface CongestionTrackingDto {
 }
 
 export interface AverageAndEightyFifthSeriesData {
+  /** @nullable */
   average?: DoubleDataPoint[] | null;
+  /** @nullable */
   eightyFifth?: Int64DataPoint[] | null;
 }
 
-export interface SpeedVariabilityData {
-  date: string
-  minSpeed: number
-  maxSpeed: number
-  avgSpeed: number
-  speedVariability: number
-}
-
-export interface AverageAndEightyFifthSeriesData {
-  average?: DoubleDataPoint[] | null
-  eightyFifth?: Int64DataPoint[] | null
-}
