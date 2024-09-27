@@ -42,7 +42,7 @@ namespace SpeedManagementApi.Controllers
                     //{ "percentilespd_99", routeSpeed.Percentilespd_99 },
                     { "averageSpeedAboveSpeedLimit", routeSpeed.AverageSpeedAboveSpeedLimit },
                     { "estimatedViolations", routeSpeed.EstimatedViolations },
-                    { "estimatedExtremeViolations", routeSpeed.EstimatedViolations },
+                    { "estimatedExtremeViolations", routeSpeed.EstimatedExtremeViolations },
                     { "flow", routeSpeed.Flow },
                     { "speedLimit", routeSpeed.SpeedLimit },
                     //{ "geometry", routeSpeed.Shape }

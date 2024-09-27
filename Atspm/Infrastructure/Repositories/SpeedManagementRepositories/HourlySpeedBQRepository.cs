@@ -544,7 +544,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                                         FilteredSegments AS fs
                                     LEFT JOIN (
                                         SELECT *
-                                        FROM `speedDataset.hourlySpeed`
+                                        FROM `{_datasetId}.hourlySpeed`
                                         WHERE DATE BETWEEN @startDate AND @endDate
                                         AND TIME(BinStartTime) BETWEEN @startTime AND @endTime
                                         AND EXTRACT(DAYOFWEEK FROM DATE) IN ({daysOfWeekCondition})
