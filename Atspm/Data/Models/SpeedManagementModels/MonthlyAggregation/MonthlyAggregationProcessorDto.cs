@@ -6,6 +6,8 @@
         public DateTime startDate { get; set; }
         public DateTime endDate { get; set; }
         public Guid SegmentId { get; set; }
+        public int SourceId { get; set; }
+        public long SpeedLimit { get; set; }
         public MonthlyAggregation monthlyAggregation { get; set; }
     }
 }

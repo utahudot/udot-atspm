@@ -140,7 +140,7 @@ namespace SpeedManagementApi.Processors
             var endDate = DateTime.Now;
 
             //List out the steps 
-            var expiredEvents = new TransformManyBlock<MonthlyAggregation, MonthlyAggregationProcessorDto>(GenerateTwoYearsForASegment);
+            var expiredEvents = new TransformManyBlock<MonthlyAggregation, MonthlyAggregationProcessorDto>(GenerateTwoYearsForASegmentAsync);
             //Set up monthlyAggregationProcessor DTO
             var allTimeData = new TransformBlock<MonthlyAggregationProcessorDto, MonthlyAggregationProcessorDto>(PullOutAllMonthlyDataForSegment, settings);
             var allDay = new TransformBlock<MonthlyAggregationProcessorDto, MonthlyAggregationProcessorDto>(GetHourlySpeedsForAllDay, settings);
@@ -190,23 +190,29 @@ namespace SpeedManagementApi.Processors
             var allSegments = segmentRepository.AllSegmentsWithEntity();
             foreach (var segment in allSegments)
             {
-                yield return new MonthlyAggregationProcessorDto
+                foreach (var source in segment.Entities)
                 {
-                    hourlySpeeds = new List<HourlySpeed>(),
-                    startDate = firstDayOfPreviousMonth,
-                    endDate = lastDayOfPreviousMonth,
-                    SegmentId = segment.Id,
-                    monthlyAggregation = new MonthlyAggregation
+                    yield return new MonthlyAggregationProcessorDto
                     {
-                        Id = Guid.NewGuid(),
-                        CreatedDate = DateTime.SpecifyKind(today, DateTimeKind.Utc),
-                        BinStartTime = firstDayOfPreviousMonth,
+                        hourlySpeeds = new List<HourlySpeed>(),
+                        startDate = firstDayOfPreviousMonth,
+                        endDate = lastDayOfPreviousMonth,
                         SegmentId = segment.Id,
-                        //INSTEAD OF GET ALL SEGMENTS, DO GET SEGMENTS BY SOURCE ID, FOR KENZIE PROBABLY
-                        SourceId = segment.Entities.FirstOrDefault().SourceId,
-                        PercentObserved = 0.00
-                    }
-                };
+                        SourceId = (int)source.SourceId,
+                        monthlyAggregation = new MonthlyAggregation
+                        {
+                            Id = Guid.NewGuid(),
+                            CreatedDate = DateTime.SpecifyKind(today, DateTimeKind.Utc),
+                            BinStartTime = firstDayOfPreviousMonth,
+                            SegmentId = segment.Id,
+                            //INSTEAD OF GET ALL SEGMENTS, DO GET SEGMENTS BY SOURCE ID, FOR KENZIE PROBABLY
+                            SourceId = source.SourceId,
+                            PercentObserved = 0.00
+                        },
+                        SpeedLimit = segment.SpeedLimit
+                    };
+                }
+
             }
         }
 
@@ -224,25 +230,28 @@ namespace SpeedManagementApi.Processors
                     startDate = firstDayOfMonth,
                     endDate = lastDayOfMonth,
                     SegmentId = segment.Id,
+                    SourceId = source,
                     monthlyAggregation = new MonthlyAggregation
                     {
                         Id = Guid.NewGuid(),
                         CreatedDate = DateTime.SpecifyKind(today, DateTimeKind.Utc),
                         BinStartTime = firstDayOfMonth,
                         SegmentId = segment.Id,
-                        SourceId = segment.Entities.FirstOrDefault().SourceId,
+                        SourceId = source,
                         PercentObserved = 0.00
-                    }
+                    },
+                    SpeedLimit = segment.SpeedLimit
                 };
             }
         }
 
-        private IEnumerable<MonthlyAggregationProcessorDto> GenerateTwoYearsForASegment(MonthlyAggregation monthlyAggregation)
+        private async IAsyncEnumerable<MonthlyAggregationProcessorDto> GenerateTwoYearsForASegmentAsync(MonthlyAggregation monthlyAggregation)
         {
             DateTime today = DateTime.Today;
             DateTime lastDayOfPreviousMonth = new DateTime(today.Year, today.Month, 1).AddDays(-1);
             DateTime firstDayOfPreviousMonth = new DateTime(today.Year, today.Month, 1).AddMonths(-1);
             DateTime endCondition = new DateTime(today.Year, today.Month, 1).AddMonths(-1).AddYears(-2);
+            var segment = await segmentRepository.LookupAsync(monthlyAggregation.SegmentId);
 
             while (firstDayOfPreviousMonth >= endCondition)
             {
@@ -251,7 +260,8 @@ namespace SpeedManagementApi.Processors
                     hourlySpeeds = new List<HourlySpeed>(),
                     startDate = firstDayOfPreviousMonth,
                     endDate = lastDayOfPreviousMonth,
-                    SegmentId = monthlyAggregation.SegmentId,
+                    SegmentId = segment.Id,
+                    SpeedLimit = segment.SpeedLimit,
                     monthlyAggregation = new MonthlyAggregation
                     {
                         Id = Guid.NewGuid(),
@@ -289,6 +299,7 @@ namespace SpeedManagementApi.Processors
 
             Guid segmentId = monthlyAggregation.SegmentId;
             monthlyAggregationProcessor.hourlySpeeds = await hourlySpeedService.GetHourlySpeedsForTimePeriod(segmentId, newStartDate, newEndDate, startTime, endTime);
+            monthlyAggregationProcessor.hourlySpeeds = monthlyAggregationProcessor.hourlySpeeds.Where(i => i.SourceDataAnalyzed == true).ToList();
             return monthlyAggregationProcessor;
         }
 
@@ -296,15 +307,25 @@ namespace SpeedManagementApi.Processors
         {
             TimeSpan startTime = new TimeSpan(0, 0, 0); // 12:00 AM
             TimeSpan endTime = new TimeSpan(23, 59, 59); // 11:59 PM
+            var hourlySpeeds = monthlyAggregationProcessor.hourlySpeeds;
 
-            var (averageSpeed, totalViolations, totalExtremeViolations, eightyFifthAverage, flow) = GetAveragesOfTimePeriod(monthlyAggregationProcessor.hourlySpeeds, startTime, endTime);
+            monthlyAggregationProcessor.monthlyAggregation.PercentObserved = hourlySpeeds.Average(hs => hs.PercentObserved);
 
-            monthlyAggregationProcessor.monthlyAggregation.AllDayAverageSpeed = averageSpeed;
-            monthlyAggregationProcessor.monthlyAggregation.AllDayAverageEightyFifthSpeed = eightyFifthAverage;
-            monthlyAggregationProcessor.monthlyAggregation.AllDayViolations = totalViolations;
-            monthlyAggregationProcessor.monthlyAggregation.AllDayExtremeViolations = totalExtremeViolations;
-            monthlyAggregationProcessor.monthlyAggregation.AllDayFlow = flow;
-            monthlyAggregationProcessor.monthlyAggregation.PercentObserved = monthlyAggregationProcessor.hourlySpeeds.Average(hs => hs.PercentObserved);
+            var aggregation = GetAveragesOfTimePeriod(monthlyAggregationProcessor.hourlySpeeds, startTime, endTime, monthlyAggregationProcessor.SpeedLimit);
+
+            monthlyAggregationProcessor.monthlyAggregation.AllDayAverageSpeed = aggregation.averageSpeed;
+            monthlyAggregationProcessor.monthlyAggregation.AllDayAverageEightyFifthSpeed = aggregation.eightyFifthAverage;
+            monthlyAggregationProcessor.monthlyAggregation.AllDayViolations = aggregation.totalViolations;
+            monthlyAggregationProcessor.monthlyAggregation.AllDayExtremeViolations = aggregation.totalExtremeViolations;
+            monthlyAggregationProcessor.monthlyAggregation.AllDayFlow = aggregation.flow;
+
+            monthlyAggregationProcessor.monthlyAggregation.AllDayMinSpeed = aggregation.min;
+            monthlyAggregationProcessor.monthlyAggregation.AllDayMaxSpeed = aggregation.max;
+            monthlyAggregationProcessor.monthlyAggregation.AllDayVariability = aggregation.variability;
+            monthlyAggregationProcessor.monthlyAggregation.AllDayPercentViolations = aggregation.percentViolations;
+            monthlyAggregationProcessor.monthlyAggregation.AllDayPercentExtremeViolations = aggregation.percentExtremeViolations;
+            monthlyAggregationProcessor.monthlyAggregation.AllDayAvgSpeedVsSpeedLimit = aggregation.avgSpeedVsSpeedLimit;
+            monthlyAggregationProcessor.monthlyAggregation.AllDayEightyFifthSpeedVsSpeedLimit = aggregation.eightyFifthSpeedVsSpeedLimit;
             return monthlyAggregationProcessor;
         }
 
@@ -313,13 +334,21 @@ namespace SpeedManagementApi.Processors
             TimeSpan startTime = new TimeSpan(22, 0, 0); // 10:00 PM
             TimeSpan endTime = new TimeSpan(4, 0, 0); // 4:00 AM
 
-            var (averageSpeed, totalViolations, totalExtremeViolations, eightyFifthAverage, flow) = GetAveragesOfTimePeriodWithOvernightMetric(monthlyAggregationProcessor.hourlySpeeds, startTime, endTime);
+            var aggregation = GetAveragesOfTimePeriodWithOvernightMetric(monthlyAggregationProcessor.hourlySpeeds, startTime, endTime, monthlyAggregationProcessor.SpeedLimit);
 
-            monthlyAggregationProcessor.monthlyAggregation.OffPeakAverageSpeed = averageSpeed;
-            monthlyAggregationProcessor.monthlyAggregation.OffPeakAverageEightyFifthSpeed = eightyFifthAverage;
-            monthlyAggregationProcessor.monthlyAggregation.OffPeakViolations = totalViolations;
-            monthlyAggregationProcessor.monthlyAggregation.OffPeakExtremeViolations = totalExtremeViolations;
-            monthlyAggregationProcessor.monthlyAggregation.OffPeakFlow = flow;
+            monthlyAggregationProcessor.monthlyAggregation.OffPeakAverageSpeed = aggregation.averageSpeed;
+            monthlyAggregationProcessor.monthlyAggregation.OffPeakAverageEightyFifthSpeed = aggregation.eightyFifthAverage;
+            monthlyAggregationProcessor.monthlyAggregation.OffPeakViolations = aggregation.totalViolations;
+            monthlyAggregationProcessor.monthlyAggregation.OffPeakExtremeViolations = aggregation.totalExtremeViolations;
+            monthlyAggregationProcessor.monthlyAggregation.OffPeakFlow = aggregation.flow;
+
+            monthlyAggregationProcessor.monthlyAggregation.OffPeakMinSpeed = aggregation.min;
+            monthlyAggregationProcessor.monthlyAggregation.OffPeakMaxSpeed = aggregation.max;
+            monthlyAggregationProcessor.monthlyAggregation.OffPeakVariability = aggregation.variability;
+            monthlyAggregationProcessor.monthlyAggregation.OffPeakPercentViolations = aggregation.percentViolations;
+            monthlyAggregationProcessor.monthlyAggregation.OffPeakPercentExtremeViolations = aggregation.percentExtremeViolations;
+            monthlyAggregationProcessor.monthlyAggregation.OffPeakAvgSpeedVsSpeedLimit = aggregation.avgSpeedVsSpeedLimit;
+            monthlyAggregationProcessor.monthlyAggregation.OffPeakEightyFifthSpeedVsSpeedLimit = aggregation.eightyFifthSpeedVsSpeedLimit;
             return monthlyAggregationProcessor;
         }
 
@@ -328,13 +357,21 @@ namespace SpeedManagementApi.Processors
             TimeSpan startTime = new TimeSpan(6, 0, 0); // 6:00 AM
             TimeSpan endTime = new TimeSpan(9, 0, 0);   // 9:00 AM
 
-            var (averageSpeed, totalViolations, totalExtremeViolations, eightyFifthAverage, flow) = GetAveragesOfTimePeriod(monthlyAggregationProcessor.hourlySpeeds, startTime, endTime);
+            var aggregation = GetAveragesOfTimePeriod(monthlyAggregationProcessor.hourlySpeeds, startTime, endTime, monthlyAggregationProcessor.SpeedLimit);
 
-            monthlyAggregationProcessor.monthlyAggregation.AmPeakAverageSpeed = averageSpeed;
-            monthlyAggregationProcessor.monthlyAggregation.AmPeakAverageEightyFifthSpeed = eightyFifthAverage;
-            monthlyAggregationProcessor.monthlyAggregation.AmPeakViolations = totalViolations;
-            monthlyAggregationProcessor.monthlyAggregation.AmPeakExtremeViolations = totalExtremeViolations;
-            monthlyAggregationProcessor.monthlyAggregation.AmPeakFlow = flow;
+            monthlyAggregationProcessor.monthlyAggregation.AmPeakAverageSpeed = aggregation.averageSpeed;
+            monthlyAggregationProcessor.monthlyAggregation.AmPeakAverageEightyFifthSpeed = aggregation.eightyFifthAverage;
+            monthlyAggregationProcessor.monthlyAggregation.AmPeakViolations = aggregation.totalViolations;
+            monthlyAggregationProcessor.monthlyAggregation.AmPeakExtremeViolations = aggregation.totalExtremeViolations;
+            monthlyAggregationProcessor.monthlyAggregation.AmPeakFlow = aggregation.flow;
+
+            monthlyAggregationProcessor.monthlyAggregation.AmPeakMinSpeed = aggregation.min;
+            monthlyAggregationProcessor.monthlyAggregation.AmPeakMaxSpeed = aggregation.max;
+            monthlyAggregationProcessor.monthlyAggregation.AmPeakVariability = aggregation.variability;
+            monthlyAggregationProcessor.monthlyAggregation.AmPeakPercentViolations = aggregation.percentViolations;
+            monthlyAggregationProcessor.monthlyAggregation.AmPeakPercentExtremeViolations = aggregation.percentExtremeViolations;
+            monthlyAggregationProcessor.monthlyAggregation.AmPeakAvgSpeedVsSpeedLimit = aggregation.avgSpeedVsSpeedLimit;
+            monthlyAggregationProcessor.monthlyAggregation.AmPeakEightyFifthSpeedVsSpeedLimit = aggregation.eightyFifthSpeedVsSpeedLimit;
             return monthlyAggregationProcessor;
         }
 
@@ -343,13 +380,21 @@ namespace SpeedManagementApi.Processors
             TimeSpan startTime = new TimeSpan(16, 0, 0); // 4:00 PM
             TimeSpan endTime = new TimeSpan(18, 0, 0);   // 6:00 PM
 
-            var (averageSpeed, totalViolations, totalExtremeViolations, eightyFifthAverage, flow) = GetAveragesOfTimePeriod(monthlyAggregationProcessor.hourlySpeeds, startTime, endTime);
+            var aggregation = GetAveragesOfTimePeriod(monthlyAggregationProcessor.hourlySpeeds, startTime, endTime, monthlyAggregationProcessor.SpeedLimit);
 
-            monthlyAggregationProcessor.monthlyAggregation.PmPeakAverageSpeed = averageSpeed;
-            monthlyAggregationProcessor.monthlyAggregation.PmPeakAverageEightyFifthSpeed = eightyFifthAverage;
-            monthlyAggregationProcessor.monthlyAggregation.PmPeakViolations = totalViolations;
-            monthlyAggregationProcessor.monthlyAggregation.PmPeakExtremeViolations = totalExtremeViolations;
-            monthlyAggregationProcessor.monthlyAggregation.PmPeakFlow = flow;
+            monthlyAggregationProcessor.monthlyAggregation.PmPeakAverageSpeed = aggregation.averageSpeed;
+            monthlyAggregationProcessor.monthlyAggregation.PmPeakAverageEightyFifthSpeed = aggregation.eightyFifthAverage;
+            monthlyAggregationProcessor.monthlyAggregation.PmPeakViolations = aggregation.totalViolations;
+            monthlyAggregationProcessor.monthlyAggregation.PmPeakExtremeViolations = aggregation.totalExtremeViolations;
+            monthlyAggregationProcessor.monthlyAggregation.PmPeakFlow = aggregation.flow;
+
+            monthlyAggregationProcessor.monthlyAggregation.PmPeakMinSpeed = aggregation.min;
+            monthlyAggregationProcessor.monthlyAggregation.PmPeakMaxSpeed = aggregation.max;
+            monthlyAggregationProcessor.monthlyAggregation.PmPeakVariability = aggregation.variability;
+            monthlyAggregationProcessor.monthlyAggregation.PmPeakPercentViolations = aggregation.percentViolations;
+            monthlyAggregationProcessor.monthlyAggregation.PmPeakPercentExtremeViolations = aggregation.percentExtremeViolations;
+            monthlyAggregationProcessor.monthlyAggregation.PmPeakAvgSpeedVsSpeedLimit = aggregation.avgSpeedVsSpeedLimit;
+            monthlyAggregationProcessor.monthlyAggregation.PmPeakEightyFifthSpeedVsSpeedLimit = aggregation.eightyFifthSpeedVsSpeedLimit;
             return monthlyAggregationProcessor;
         }
 
@@ -358,13 +403,21 @@ namespace SpeedManagementApi.Processors
             TimeSpan startTime = new TimeSpan(9, 0, 0); // 9:00 AM
             TimeSpan endTime = new TimeSpan(16, 0, 0);   // 4:00 PM
 
-            var (averageSpeed, totalViolations, totalExtremeViolations, eightyFifthAverage, flow) = GetAveragesOfTimePeriod(monthlyAggregationProcessor.hourlySpeeds, startTime, endTime);
+            var aggregation = GetAveragesOfTimePeriod(monthlyAggregationProcessor.hourlySpeeds, startTime, endTime, monthlyAggregationProcessor.SpeedLimit);
 
-            monthlyAggregationProcessor.monthlyAggregation.MidDayAverageSpeed = averageSpeed;
-            monthlyAggregationProcessor.monthlyAggregation.MidDayAverageEightyFifthSpeed = eightyFifthAverage;
-            monthlyAggregationProcessor.monthlyAggregation.MidDayViolations = totalViolations;
-            monthlyAggregationProcessor.monthlyAggregation.MidDayExtremeViolations = totalExtremeViolations;
-            monthlyAggregationProcessor.monthlyAggregation.MidDayFlow = flow;
+            monthlyAggregationProcessor.monthlyAggregation.MidDayAverageSpeed = aggregation.averageSpeed;
+            monthlyAggregationProcessor.monthlyAggregation.MidDayAverageEightyFifthSpeed = aggregation.eightyFifthAverage;
+            monthlyAggregationProcessor.monthlyAggregation.MidDayViolations = aggregation.totalViolations;
+            monthlyAggregationProcessor.monthlyAggregation.MidDayExtremeViolations = aggregation.totalExtremeViolations;
+            monthlyAggregationProcessor.monthlyAggregation.MidDayFlow = aggregation.flow;
+
+            monthlyAggregationProcessor.monthlyAggregation.MidDayMinSpeed = aggregation.min;
+            monthlyAggregationProcessor.monthlyAggregation.MidDayMaxSpeed = aggregation.max;
+            monthlyAggregationProcessor.monthlyAggregation.MidDayVariability = aggregation.variability;
+            monthlyAggregationProcessor.monthlyAggregation.MidDayPercentViolations = aggregation.percentViolations;
+            monthlyAggregationProcessor.monthlyAggregation.MidDayPercentExtremeViolations = aggregation.percentExtremeViolations;
+            monthlyAggregationProcessor.monthlyAggregation.MidDayAvgSpeedVsSpeedLimit = aggregation.avgSpeedVsSpeedLimit;
+            monthlyAggregationProcessor.monthlyAggregation.MidDayEightyFifthSpeedVsSpeedLimit = aggregation.eightyFifthSpeedVsSpeedLimit;
             return monthlyAggregationProcessor;
         }
 
@@ -373,13 +426,21 @@ namespace SpeedManagementApi.Processors
             TimeSpan startTime = new TimeSpan(18, 0, 0); // 6:00 PM
             TimeSpan endTime = new TimeSpan(22, 0, 0);   // 10:00 PM
 
-            var (averageSpeed, totalViolations, totalExtremeViolations, eightyFifthAverage, flow) = GetAveragesOfTimePeriod(monthlyAggregationProcessor.hourlySpeeds, startTime, endTime);
+            var aggregation = GetAveragesOfTimePeriod(monthlyAggregationProcessor.hourlySpeeds, startTime, endTime, monthlyAggregationProcessor.SpeedLimit);
 
-            monthlyAggregationProcessor.monthlyAggregation.EveningAverageSpeed = averageSpeed;
-            monthlyAggregationProcessor.monthlyAggregation.EveningAverageEightyFifthSpeed = eightyFifthAverage;
-            monthlyAggregationProcessor.monthlyAggregation.EveningViolations = totalViolations;
-            monthlyAggregationProcessor.monthlyAggregation.EveningExtremeViolations = totalExtremeViolations;
-            monthlyAggregationProcessor.monthlyAggregation.EveningFlow = flow;
+            monthlyAggregationProcessor.monthlyAggregation.EveningAverageSpeed = aggregation.averageSpeed;
+            monthlyAggregationProcessor.monthlyAggregation.EveningAverageEightyFifthSpeed = aggregation.eightyFifthAverage;
+            monthlyAggregationProcessor.monthlyAggregation.EveningViolations = aggregation.totalViolations;
+            monthlyAggregationProcessor.monthlyAggregation.EveningExtremeViolations = aggregation.totalExtremeViolations;
+            monthlyAggregationProcessor.monthlyAggregation.EveningFlow = aggregation.flow;
+
+            monthlyAggregationProcessor.monthlyAggregation.EveningMinSpeed = aggregation.min;
+            monthlyAggregationProcessor.monthlyAggregation.EveningMaxSpeed = aggregation.max;
+            monthlyAggregationProcessor.monthlyAggregation.EveningVariability = aggregation.variability;
+            monthlyAggregationProcessor.monthlyAggregation.EveningPercentViolations = aggregation.percentViolations;
+            monthlyAggregationProcessor.monthlyAggregation.EveningPercentExtremeViolations = aggregation.percentExtremeViolations;
+            monthlyAggregationProcessor.monthlyAggregation.EveningAvgSpeedVsSpeedLimit = aggregation.avgSpeedVsSpeedLimit;
+            monthlyAggregationProcessor.monthlyAggregation.EveningEightyFifthSpeedVsSpeedLimit = aggregation.eightyFifthSpeedVsSpeedLimit;
             return monthlyAggregationProcessor;
         }
 
@@ -388,17 +449,25 @@ namespace SpeedManagementApi.Processors
             TimeSpan startTime = new TimeSpan(4, 0, 0); // 4:00 AM
             TimeSpan endTime = new TimeSpan(6, 0, 0);   // 6:00 AM
 
-            var (averageSpeed, totalViolations, totalExtremeViolations, eightyFifthAverage, flow) = GetAveragesOfTimePeriod(monthlyAggregationProcessor.hourlySpeeds, startTime, endTime);
+            var aggregation = GetAveragesOfTimePeriod(monthlyAggregationProcessor.hourlySpeeds, startTime, endTime, monthlyAggregationProcessor.SpeedLimit);
 
-            monthlyAggregationProcessor.monthlyAggregation.EarlyMorningAverageSpeed = averageSpeed;
-            monthlyAggregationProcessor.monthlyAggregation.EarlyMorningAverageEightyFifthSpeed = eightyFifthAverage;
-            monthlyAggregationProcessor.monthlyAggregation.EarlyMorningViolations = totalViolations;
-            monthlyAggregationProcessor.monthlyAggregation.EarlyMorningExtremeViolations = totalExtremeViolations;
-            monthlyAggregationProcessor.monthlyAggregation.EarlyMorningFlow = flow;
+            monthlyAggregationProcessor.monthlyAggregation.EarlyMorningAverageSpeed = aggregation.averageSpeed;
+            monthlyAggregationProcessor.monthlyAggregation.EarlyMorningAverageEightyFifthSpeed = aggregation.eightyFifthAverage;
+            monthlyAggregationProcessor.monthlyAggregation.EarlyMorningViolations = aggregation.totalViolations;
+            monthlyAggregationProcessor.monthlyAggregation.EarlyMorningExtremeViolations = aggregation.totalExtremeViolations;
+            monthlyAggregationProcessor.monthlyAggregation.EarlyMorningFlow = aggregation.flow;
+
+            monthlyAggregationProcessor.monthlyAggregation.EarlyMorningMinSpeed = aggregation.min;
+            monthlyAggregationProcessor.monthlyAggregation.EarlyMorningMaxSpeed = aggregation.max;
+            monthlyAggregationProcessor.monthlyAggregation.EarlyMorningVariability = aggregation.variability;
+            monthlyAggregationProcessor.monthlyAggregation.EarlyMorningPercentViolations = aggregation.percentViolations;
+            monthlyAggregationProcessor.monthlyAggregation.EarlyMorningPercentExtremeViolations = aggregation.percentExtremeViolations;
+            monthlyAggregationProcessor.monthlyAggregation.EarlyMorningAvgSpeedVsSpeedLimit = aggregation.avgSpeedVsSpeedLimit;
+            monthlyAggregationProcessor.monthlyAggregation.EarlyMorningEightyFifthSpeedVsSpeedLimit = aggregation.eightyFifthSpeedVsSpeedLimit;
             return monthlyAggregationProcessor;
         }
 
-        private (double averageSpeed, long totalViolations, long totalExtremeViolations, double EightyFifthAverage, long flow) GetAveragesOfTimePeriodWithOvernightMetric(List<HourlySpeed> hourlySpeeds, TimeSpan startTime, TimeSpan endTime)
+        private AggregationsOverTimePeriod GetAveragesOfTimePeriodWithOvernightMetric(List<HourlySpeed> hourlySpeeds, TimeSpan startTime, TimeSpan endTime, long speedLimit)
         {
             TimeSpan midnight = new TimeSpan(0, 0, 0); // 12:00 AM
             TimeSpan almostMidnight = new TimeSpan(23, 59, 59); // 11:59 PM
@@ -412,26 +481,49 @@ namespace SpeedManagementApi.Processors
                 .ToList();
 
             filteredSpeeds.AddRange(filteredSpeedsPost);
+
+            var aggregation = new AggregationsOverTimePeriod();
             var flow = filteredSpeeds.Sum(hs => hs.Flow ?? 0);
-            var averageSpeed = GetWeigthtedAverageSpeed(filteredSpeeds);
-            var eightyFifthSpeed = GetWeigthtedEightyFifthAverageSpeed(filteredSpeeds);
+            aggregation.flow = flow;
+            double averageSpeed = GetWeigthtedAverageSpeed(filteredSpeeds);
+            aggregation.averageSpeed = averageSpeed;
+            double eightyFifthSpeed = GetWeigthtedEightyFifthAverageSpeed(filteredSpeeds);
+            aggregation.eightyFifthAverage = eightyFifthSpeed;
             var totalViolations = filteredSpeeds.Sum(hs => hs.Violation.GetValueOrDefault());
+            aggregation.totalViolations = totalViolations;
             var totalExtremeViolations = filteredSpeeds.Sum(hs => hs.ExtremeViolation.GetValueOrDefault());
-            return (averageSpeed, totalViolations, totalExtremeViolations, eightyFifthSpeed, flow);
+            aggregation.totalExtremeViolations = totalExtremeViolations;
+
+            double? min = filteredSpeeds.Min(hs => hs.MinSpeed);
+            aggregation.min = min;
+            double? max = filteredSpeeds.Max(hs => hs.MaxSpeed);
+            aggregation.max = max;
+            double? variability = filteredSpeeds.Count > 0 ? (((double)filteredSpeeds.Max(h => h.MaxSpeed ?? 0)) - ((double)filteredSpeeds.Min(h => h.MinSpeed ?? 0))) : (double?)null;
+            aggregation.variability = variability;
+            double percentViolations = (flow != 0 ? ((double)totalViolations / flow) : 0) * 100;
+            aggregation.percentViolations = percentViolations;
+            double percentExtremeViolations = (flow != 0 ? ((double)totalExtremeViolations / flow) : 0) * 100;
+            aggregation.percentExtremeViolations = percentExtremeViolations;
+            double? avgSpeedVsSpeedLimit = speedLimit != 0 ? (double)averageSpeed - speedLimit : (double?)null;
+            aggregation.avgSpeedVsSpeedLimit = avgSpeedVsSpeedLimit;
+            double? avgEightyFifthSpeedLimit = speedLimit != 0 ? (double)eightyFifthSpeed - speedLimit : (double?)null;
+            aggregation.eightyFifthSpeedVsSpeedLimit = avgEightyFifthSpeedLimit;
+
+            return aggregation;
         }
 
-        private (double averageSpeed, long totalViolations, long totalExtremeViolations, double EightyFifthAverage, long flow) GetAveragesOfTimePeriod(List<HourlySpeed> hourlySpeeds, TimeSpan startTime, TimeSpan endTime)
+        private AggregationsOverTimePeriod GetAveragesOfTimePeriod(List<HourlySpeed> hourlySpeeds, TimeSpan startTime, TimeSpan endTime, long speedLimit)
         {
             if (hourlySpeeds.Count == 0)
             {
-                return (0, 0, 0, 0, 0);
+                return (0, 0, 0, 0, 0, null, null, 0, 0, 0, 0, 0);
             }
             var filteredByTime = hourlySpeeds
                 .Where(hs => hs.BinStartTime.TimeOfDay >= startTime && hs.BinStartTime.TimeOfDay <= endTime)
                 .ToList();
             if (filteredByTime.Count == 0)
             {
-                return (0, 0, 0, 0, 0);
+                return (0, 0, 0, 0, 0, null, null, 0, 0, 0, 0, 0);
             }
 
             // Find the minimum and maximum dates in the filtered list
@@ -443,15 +535,37 @@ namespace SpeedManagementApi.Processors
                 .Where(hs => hs.Date != minDate && hs.Date != maxDate)
                 .ToList();
 
+            var aggregation = new AggregationsOverTimePeriod();
             var flow = filteredSpeeds.Sum(hs => hs.Flow ?? 0);
-            var averageSpeed = GetWeigthtedAverageSpeed(filteredSpeeds);
-            var eightyFifthSpeed = GetWeigthtedEightyFifthAverageSpeed(filteredSpeeds);
+            aggregation.flow = flow;
+            double averageSpeed = GetWeigthtedAverageSpeed(filteredSpeeds);
+            aggregation.averageSpeed = averageSpeed;
+            double eightyFifthSpeed = GetWeigthtedEightyFifthAverageSpeed(filteredSpeeds);
+            aggregation.eightyFifthAverage = eightyFifthSpeed;
             var totalViolations = filteredSpeeds.Sum(hs => hs.Violation.GetValueOrDefault());
+            aggregation.totalViolations = totalViolations;
             var totalExtremeViolations = filteredSpeeds.Sum(hs => hs.ExtremeViolation.GetValueOrDefault());
-            return (averageSpeed, totalViolations, totalExtremeViolations, eightyFifthSpeed, flow);
+            aggregation.totalExtremeViolations = totalExtremeViolations;
+
+            double? min = filteredSpeeds.Min(hs => hs.MinSpeed);
+            aggregation.min = min;
+            double? max = filteredSpeeds.Max(hs => hs.MaxSpeed);
+            aggregation.max = max;
+            double? variability = filteredSpeeds.Count > 0 ? (((double)filteredSpeeds.Max(h => h.MaxSpeed ?? 0)) - ((double)filteredSpeeds.Min(h => h.MinSpeed ?? 0))) : (double?)null;
+            aggregation.variability = variability;
+            double percentViolations = (flow != 0 ? ((double)totalViolations / flow) : 0) * 100;
+            aggregation.percentViolations = percentViolations;
+            double percentExtremeViolations = (flow != 0 ? ((double)totalExtremeViolations / flow) : 0) * 100;
+            aggregation.percentExtremeViolations = percentExtremeViolations;
+            double? avgSpeedVsSpeedLimit = speedLimit != 0 ? (double)averageSpeed - speedLimit : (double?)null;
+            aggregation.avgSpeedVsSpeedLimit = avgSpeedVsSpeedLimit;
+            double? avgEightyFifthSpeedLimit = speedLimit != 0 ? (double)eightyFifthSpeed - speedLimit : (double?)null;
+            aggregation.eightyFifthSpeedVsSpeedLimit = avgEightyFifthSpeedLimit;
+
+            return aggregation;
         }
 
-        private int GetWeigthtedAverageSpeed(List<HourlySpeed> hourlySpeeds)
+        private double GetWeigthtedAverageSpeed(List<HourlySpeed> hourlySpeeds)
         {
             if (hourlySpeeds == null || hourlySpeeds.Count() == 0)
             {
@@ -462,7 +576,7 @@ namespace SpeedManagementApi.Processors
             if (sumFlow <= 0)
             {
                 double totalAverage = hourlySpeeds.Sum(hs => hs.Average);
-                return (int)Math.Round(totalAverage / hourlySpeeds.Count());
+                return (double)totalAverage / hourlySpeeds.Count();
             }
             var flowSpeed = new List<double>();
             foreach (var hourlySpeed in hourlySpeeds)
@@ -473,10 +587,10 @@ namespace SpeedManagementApi.Processors
                 flowSpeed.Add(flowAndSpeed);
             }
             var totalFlowAndSpeed = flowSpeed.Sum();
-            return (int)Math.Round(totalFlowAndSpeed / sumFlow);
+            return (double)totalFlowAndSpeed / sumFlow;
         }
 
-        private int GetWeigthtedEightyFifthAverageSpeed(List<HourlySpeed> hourlySpeeds)
+        private double GetWeigthtedEightyFifthAverageSpeed(List<HourlySpeed> hourlySpeeds)
         {
             if (hourlySpeeds == null || hourlySpeeds.Count() == 0)
             {
@@ -490,7 +604,7 @@ namespace SpeedManagementApi.Processors
             {
                 //var filteredEightyFifth = hourlySpeeds.Where(n => (!(n.EightyFifthSpeed == 0 || n.EightyFifthSpeed == null)));
                 double totalAverage = hourlySpeeds.Sum(hs => hs.EightyFifthSpeed ?? 0);
-                return (int)Math.Round(totalAverage / hourlySpeeds.Count());
+                return (double)totalAverage / hourlySpeeds.Count();
             }
             var flowSpeed = new List<double>();
             foreach (var hourlySpeed in filteredFlow)
@@ -501,8 +615,21 @@ namespace SpeedManagementApi.Processors
                 flowSpeed.Add(flowAndSpeed);
             }
             var totalFlowAndSpeed = flowSpeed.Sum();
-            return (int)Math.Round(totalFlowAndSpeed / sumFlow);
+            return (double)totalFlowAndSpeed / sumFlow;
         }
 
+    }
+
+    internal record struct AggregationsOverTimePeriod(double averageSpeed, long totalViolations, long totalExtremeViolations, double eightyFifthAverage, long flow, double? min, double? max, double? variability, double percentViolations, double percentExtremeViolations, double? avgSpeedVsSpeedLimit, double? eightyFifthSpeedVsSpeedLimit)
+    {
+        public static implicit operator (double averageSpeed, long totalViolations, long totalExtremeViolations, double eightyFifthAverage, long flow, double? min, double? max, double? variability, double percentViolations, double percentExtremeViolations, double? avgSpeedVsSpeedLimit, double? eightyFifthSpeedVsSpeedLimit)(AggregationsOverTimePeriod value)
+        {
+            return (value.averageSpeed, value.totalViolations, value.totalExtremeViolations, value.eightyFifthAverage, value.flow, value.min, value.max, value.variability, value.percentViolations, value.percentExtremeViolations, value.avgSpeedVsSpeedLimit, value.eightyFifthSpeedVsSpeedLimit);
+        }
+
+        public static implicit operator AggregationsOverTimePeriod((double averageSpeed, long totalViolations, long totalExtremeViolations, double EightyFifthAverage, long flow, double? min, double? max, double? variability, double percentViolations, double percentExtremeViolations, double? avgSpeedVsSpeedLimit, double? eightyFifthSpeedVsSpeedLimit) value)
+        {
+            return new AggregationsOverTimePeriod(value.averageSpeed, value.totalViolations, value.totalExtremeViolations, value.EightyFifthAverage, value.flow, value.min, value.max, value.variability, value.percentViolations, value.percentExtremeViolations, value.avgSpeedVsSpeedLimit, value.eightyFifthSpeedVsSpeedLimit);
+        }
     }
 }
