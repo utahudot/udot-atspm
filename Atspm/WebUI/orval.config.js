@@ -1,7 +1,7 @@
 module.exports = {
   speedManagement: {
     input: {
-      target: './speed-spec.json',
+      target: 'https://speedmanagement-api-878850621110.us-west3.run.app/swagger/v1/swagger.json',
     },
     output: {
       target: './src/api/speedManagement',
@@ -19,7 +19,7 @@ module.exports = {
   },
   speedManagementZod: {
     input: {
-      target: './speed-spec.json',
+      target: 'https://speedmanagement-api-878850621110.us-west3.run.app/swagger/v1/swagger.json',
     },
     output: {
       target: './src/api/speedManagement',

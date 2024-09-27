@@ -8,6 +8,7 @@ import { default as transformSpeedOverTimeData } from '@/features/charts/speedMa
 import {
   postApiV1CongestionTrackingGetReportData,
   postApiV1DataQualityGetReportData,
+  postApiV1SpeedComplianceGetReportData,
   postApiV1SpeedFromImpactSegmentSegmentId,
   postApiV1SpeedOverDistanceGetReportData,
   postApiV1SpeedOverTimeGetReportData,
@@ -19,16 +20,20 @@ import {
   DataQualityOptions,
   SpeedOverDistanceOptions,
   SpeedOverTimeOptions,
+  SpeedComplianceOptions
   SpeedVariabilityOptions,
 } from '@/api/speedManagement/aTSPMSpeedManagementApi.schemas'
 import transformDataQualityData from '@/features/charts/speedManagementTool/dataQuality/dataQuality.transformer'
+import transformSpeedComplianceData from '@/features/charts/speedManagementTool/speedCompliance/speedCompliance.transformer'
 import transformSpeedVariabilityData from '@/features/charts/speedManagementTool/speedVariability/speedVariability.transformer'
 
 export enum SM_ChartType {
   CONGESTION_TRACKING = 'Congestion Tracking',
   SPEED_OVER_TIME = 'Speed over Time',
   SPEED_OVER_DISTANCE = 'Speed over Distance',
+  SPEED_COMPLIANCE = 'Speed Compliance',
   DATA_QUALITY = 'Data Quality',
+  
   SPEED_VARIABILITY = 'Speed Variability',
 }
 
@@ -41,6 +46,9 @@ type TransformedSpeedOverTimeData = ReturnType<
 type TransformedSpeedOverDistanceData = ReturnType<
   typeof transformSpeedOverDistanceData
 >
+type TransformedSpeedComplianceData = ReturnType<
+  typeof transformSpeedComplianceData
+>
 type TransformedSpeedVariabilityData = ReturnType<
   typeof transformSpeedVariabilityData
 >
@@ -52,6 +60,7 @@ type ChartOptionsMapping = {
   [SM_ChartType.CONGESTION_TRACKING]: CongestionTrackingOptions
   [SM_ChartType.SPEED_OVER_TIME]: SpeedOverTimeOptions
   [SM_ChartType.SPEED_OVER_DISTANCE]: SpeedOverDistanceOptions
+  [SM_ChartType.SPEED_COMPLIANCE]: SpeedComplianceOptions
   [SM_ChartType.DATA_QUALITY]: DataQualityOptions
   [SM_ChartType.SPEED_VARIABILITY]: SpeedVariabilityOptions
 }
@@ -60,6 +69,7 @@ type SMChartsDataMapping = {
   [SM_ChartType.CONGESTION_TRACKING]: TransformedCongestionTrackerData
   [SM_ChartType.SPEED_OVER_TIME]: TransformedSpeedOverTimeData
   [SM_ChartType.SPEED_OVER_DISTANCE]: TransformedSpeedOverDistanceData
+  [SM_ChartType.SPEED_COMPLIANCE]: TransformedSpeedComplianceData
   [SM_ChartType.DATA_QUALITY]: TransformedDataQualityData
   [SM_ChartType.SPEED_VARIABILITY]: TransformedSpeedVariabilityData
 }
@@ -111,6 +121,14 @@ export function useSMCharts<TChartType extends SM_ChartType>(
           chartOptions as SpeedOverDistanceOptions
         )
         return transformSpeedOverDistanceData(
+          response
+        ) as SMChartsDataMapping[TChartType]
+      }
+      case SM_ChartType.SPEED_COMPLIANCE: {
+        const response = await postApiV1SpeedComplianceGetReportData(
+          chartOptions as SpeedComplianceOptions
+        )
+        return transformSpeedComplianceData(
           response
         ) as SMChartsDataMapping[TChartType]
       }

@@ -6,6 +6,7 @@ import DataQualityChartContainer from '@/features/charts/speedManagementTool/dat
 import DataQualityChartOptions, {
   DataQualityChartOptionsValues,
 } from '@/features/charts/speedManagementTool/dataQuality/components/DataQualityChartOptions'
+import SpeedComplianceChartOptions, { SpeedComplianceChartOptionsValues } from '@/features/charts/speedManagementTool/speedCompliance/SpeedComplianceChartOptions'
 import SpeedOverDistanceOptions, {
   SpeedOverDistanceChartOptionsValues,
 } from '@/features/charts/speedManagementTool/speedOverDistance/components/SpeedOverDistanceChartOptions'
@@ -67,7 +68,7 @@ const SM_Charts = ({ routes }: { routes: SpeedManagementRoute[] }) => {
 
   const chartTypes: SM_ChartType[] = useMemo(() => {
     return multiselect
-      ? [SM_ChartType.SPEED_OVER_DISTANCE, SM_ChartType.DATA_QUALITY]
+      ? [SM_ChartType.SPEED_OVER_DISTANCE,SM_ChartType.SPEED_COMPLIANCE, SM_ChartType.DATA_QUALITY]
       : [
           SM_ChartType.CONGESTION_TRACKING,
           SM_ChartType.SPEED_OVER_TIME,
@@ -134,6 +135,16 @@ const SM_Charts = ({ routes }: { routes: SpeedManagementRoute[] }) => {
             }
           />
         )
+      case SM_ChartType.SPEED_COMPLIANCE:
+        return (
+          <SpeedComplianceChartOptions
+            onOptionsChange={
+              handleOptionsChange as (
+                options: SpeedComplianceChartOptionsValues
+              ) => void
+            }
+          />
+        )
       case SM_ChartType.DATA_QUALITY:
         return (
           <DataQualityChartOptions
@@ -174,6 +185,8 @@ const SM_Charts = ({ routes }: { routes: SpeedManagementRoute[] }) => {
       case SM_ChartType.SPEED_OVER_TIME:
         return <SpeedOverTimeChartContainer chartData={data} />
       case SM_ChartType.SPEED_OVER_DISTANCE:
+        return <SpeedOverTimeChartContainer chartData={data} />
+      case SM_ChartType.SPEED_COMPLIANCE:
         return <SpeedOverTimeChartContainer chartData={data} />
       case SM_ChartType.DATA_QUALITY:
         return <DataQualityChartContainer chartData={data} />
