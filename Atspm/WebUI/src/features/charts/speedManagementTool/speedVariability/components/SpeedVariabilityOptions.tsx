@@ -1,5 +1,6 @@
 import { DayOfWeek } from '@/api/speedManagement/aTSPMSpeedManagementApi.schemas'
 import { MultiSelectCheckbox } from '@/features/aggregateData/components/chartOptions/MultiSelectCheckbox'
+import { DataSource } from '@/features/speedManagementTool/enums'
 import { Box } from '@mui/material'
 import { DatePicker } from '@mui/x-date-pickers'
 import { endOfMonth, isValid, startOfMonth } from 'date-fns'
@@ -10,10 +11,12 @@ export interface SpeedVariabilityOptionsValues {
   endDate: string
   daysOfWeek: DayOfWeek[]
   isHolidaysFiltered?: boolean
+  sourceId: number
 }
 
 interface SpeedVariabilityOptionsProps {
   onOptionsChange: (options: SpeedVariabilityOptionsValues) => void
+  sourceId: number
 }
 
 const daysOfWeekList: string[] = [
@@ -30,6 +33,7 @@ const initialDate = new Date('2023-01-02')
 
 const SpeedVariabilityOptions = ({
   onOptionsChange,
+  sourceId,
 }: SpeedVariabilityOptionsProps) => {
   const [startDate, setStartDate] = useState<Date | null>(
     startOfMonth(initialDate)
@@ -38,16 +42,17 @@ const SpeedVariabilityOptions = ({
   const [daysOfWeek, setDaysOfWeek] = useState<DayOfWeek[]>([
     0, 1, 2, 3, 4, 5, 6,
   ])
-
+  const [selectedSource, setSelectedSource] = useState<DataSource>(sourceId)
   useEffect(() => {
     if (startDate && endDate && daysOfWeek) {
       onOptionsChange({
         startDate: startDate.toISOString().split('T')[0],
         endDate: endDate.toISOString().split('T')[0],
         daysOfWeek,
+        sourceId: selectedSource,
       })
     }
-  }, [startDate, endDate, onOptionsChange, daysOfWeek])
+  }, [startDate, endDate, onOptionsChange, daysOfWeek, selectedSource])
 
   const handleStartDateChange = (date: Date | null) => {
     if (date === null || isValid(date)) {

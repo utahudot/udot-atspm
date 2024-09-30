@@ -6,7 +6,9 @@ import DataQualityChartContainer from '@/features/charts/speedManagementTool/dat
 import DataQualityChartOptions, {
   DataQualityChartOptionsValues,
 } from '@/features/charts/speedManagementTool/dataQuality/components/DataQualityChartOptions'
-import SpeedComplianceChartOptions, { SpeedComplianceChartOptionsValues } from '@/features/charts/speedManagementTool/speedCompliance/SpeedComplianceChartOptions'
+import SpeedComplianceChartOptions, {
+  SpeedComplianceChartOptionsValues,
+} from '@/features/charts/speedManagementTool/speedCompliance/SpeedComplianceChartOptions'
 import SpeedComplianceChartsContainer from '@/features/charts/speedManagementTool/speedCompliance/SpeedComplianceChartsContainer'
 import SpeedOverDistanceOptions, {
   SpeedOverDistanceChartOptionsValues,
@@ -51,7 +53,7 @@ const SM_Charts = ({ routes }: { routes: SpeedManagementRoute[] }) => {
   const [selectedChart, setSelectedChart] = useState<SM_ChartType | null>(null)
   const [chartOptions, setChartOptions] = useState<ChartOptions>(null)
 
-  const { multiselect } = useSpeedManagementStore()
+  const { multiselect, routeSpeedRequest } = useSpeedManagementStore()
 
   const segmentIds = useMemo(
     () => routes.map((route) => route.properties.route_id),
@@ -69,7 +71,11 @@ const SM_Charts = ({ routes }: { routes: SpeedManagementRoute[] }) => {
 
   const chartTypes: SM_ChartType[] = useMemo(() => {
     return multiselect
-      ? [SM_ChartType.SPEED_OVER_DISTANCE,SM_ChartType.SPEED_COMPLIANCE, SM_ChartType.DATA_QUALITY]
+      ? [
+          SM_ChartType.SPEED_OVER_DISTANCE,
+          SM_ChartType.SPEED_COMPLIANCE,
+          SM_ChartType.DATA_QUALITY,
+        ]
       : [
           SM_ChartType.CONGESTION_TRACKING,
           SM_ChartType.SPEED_OVER_TIME,
@@ -114,6 +120,7 @@ const SM_Charts = ({ routes }: { routes: SpeedManagementRoute[] }) => {
                 options: CongestionTrackingOptionsValues
               ) => void
             }
+            sourceId={routeSpeedRequest.sourceId}
           />
         )
       case SM_ChartType.SPEED_OVER_TIME:
@@ -124,6 +131,7 @@ const SM_Charts = ({ routes }: { routes: SpeedManagementRoute[] }) => {
                 options: SpeedOverTimeOptionsValues
               ) => void
             }
+            sourceId={routeSpeedRequest.sourceId}
           />
         )
       case SM_ChartType.SPEED_OVER_DISTANCE:
@@ -164,6 +172,7 @@ const SM_Charts = ({ routes }: { routes: SpeedManagementRoute[] }) => {
                 options: SpeedVariabilityOptionsValues
               ) => void
             }
+            sourceId={routeSpeedRequest.sourceId}
           />
         )
       default:
