@@ -28,6 +28,14 @@ namespace SpeedManagementApi.Controllers
             return;
         }
 
+        // POST: /MonthlyAggregation
+        [HttpPost("source/{sourceId}")]
+        public async Task AggregateCertainMonthforSource(int sourceId, [FromBody] DateTime date)
+        {
+            await aggregateMonthlyEventsProcessor.AggregateCertainMonthforSource(date, sourceId);
+            return;
+        }
+
         // POST: /MonthlyAggregation/segment
         [HttpPost("segment")]
         public async Task AggregateMonthlyEventsForSingleSegmentAsync([FromBody] MonthlyAggregation monthlyAggregation)

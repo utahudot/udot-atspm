@@ -209,11 +209,12 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
         }
 
 
-        public async Task<List<MonthlyAverage>> GetMonthlyAveragesAsync(Guid segmentId, DateOnly startDate, DateOnly endDate, string daysOfWeek, int sourceId)
+        public async Task<List<MonthlyAverage>> GetMonthlyAveragesAsync(Guid segmentId, DateOnly startDate, DateOnly endDate, string daysOfWeek)
         {
             string query = $@"
             SELECT 
                 DATE_TRUNC(date, MONTH) AS Month, 
+                SourceId,
                 AVG(Average) AS Average,
                 AVG(FifteenthSpeed) AS FifteenthSpeed,
                 AVG(EightyFifthSpeed) AS EightyFifthSpeed,
@@ -222,14 +223,14 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 AVG(Violation) AS Violation,
                 AVG(ExtremeViolation) AS ExtremeViolation,
                 MIN(MinSpeed) AS MinSpeed,
-                MAX(MaxSpeed) AS MaxSpeed
+                MAX(MaxSpeed) AS MaxSpeed,
+                AVG(Flow) AS Flow
             FROM `{_datasetId}.{_tableId}`
             WHERE 
                 SegmentId = @segmentId AND
-                SourceId = @sourceId AND
                 date BETWEEN @startDate AND @endDate AND
                 EXTRACT(DAYOFWEEK FROM date) IN ({daysOfWeek})
-            GROUP BY Month
+            GROUP BY Month, SourceId
             ORDER BY Month ASC;";
 
             var parameters = new[]
@@ -237,24 +238,32 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             new BigQueryParameter("segmentId", BigQueryDbType.String, segmentId.ToString()),
             new BigQueryParameter("startDate", BigQueryDbType.Date, startDate.ToDateTime(new TimeOnly(0,0))),
             new BigQueryParameter("endDate", BigQueryDbType.Date, endDate.ToDateTime(new TimeOnly(0,0))),
-            new BigQueryParameter("sourceId", BigQueryDbType.Int64, sourceId)
         };
 
             var queryResults = await _client.ExecuteQueryAsync(query, parameters);
-            return queryResults.Select(row => new MonthlyAverage
+            try
             {
-                Month = DateTime.Parse(row["Month"].ToString()),
-                Average = Convert.ToDouble(row["Average"]),
-                FifteenthSpeed = Convert.ToDouble(row["FifteenthSpeed"]),
-                EightyFifthSpeed = Convert.ToDouble(row["EightyFifthSpeed"]),
-                NinetyFifthSpeed = Convert.ToDouble(row["NinetyFifthSpeed"]),
-                NinetyNinthSpeed = Convert.ToDouble(row["NinetyNinthSpeed"]),
-                Violation = Convert.ToDouble(row["Violation"]),
-                ExtremeViolation = Convert.ToDouble(row["ExtremeViolation"]),
-                Flow = Convert.ToDouble(row["Flow"]),
-                MaxSpeed = Convert.ToDouble(row["MaxSpeed"]),
-                MinSpeed = Convert.ToDouble(row["MinSpeed"]),
-            }).ToList();
+                return queryResults.Select(row => new MonthlyAverage
+                {
+                    Month = DateTime.Parse(row["Month"].ToString()),
+                    SourceId = Convert.ToInt32(row["SourceId"]),
+                    Average = Convert.ToDouble(row["Average"]),
+                    FifteenthSpeed = Convert.ToDouble(row["FifteenthSpeed"]),
+                    EightyFifthSpeed = Convert.ToDouble(row["EightyFifthSpeed"]),
+                    NinetyFifthSpeed = Convert.ToDouble(row["NinetyFifthSpeed"]),
+                    NinetyNinthSpeed = Convert.ToDouble(row["NinetyNinthSpeed"]),
+                    Violation = Convert.ToDouble(row["Violation"]),
+                    ExtremeViolation = Convert.ToDouble(row["ExtremeViolation"]),
+                    Flow = Convert.ToDouble(row["Flow"]),
+                    MaxSpeed = Convert.ToDouble(row["MaxSpeed"]),
+                    MinSpeed = Convert.ToDouble(row["MinSpeed"]),
+                }).ToList();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting monthly averages");
+                throw;
+            }
         }
 
         public async Task<List<DailyAverage>> GetDailyAveragesAsync(Guid segmentId, DateOnly startDate, DateOnly endDate, string daysOfWeek)
@@ -262,6 +271,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             string query = $@"
             SELECT 
                 DATE_TRUNC(date, DAY) AS Date, 
+                SourceId,
                 AVG(Average) AS Average,
                 AVG(FifteenthSpeed) AS FifteenthSpeed,
                 AVG(EightyFifthSpeed) AS EightyFifthSpeed,
@@ -277,7 +287,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 SegmentId = @segmentId AND
                 date BETWEEN @startDate AND @endDate AND
                 EXTRACT(DAYOFWEEK FROM date) IN ({daysOfWeek})
-            GROUP BY Date
+            GROUP BY Date,SourceId
             ORDER BY Date ASC;";
 
             var parameters = new[]
@@ -291,6 +301,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             return queryResults.Select(row => new DailyAverage
             {
                 Date = DateTime.Parse(row["Date"].ToString()),
+                SourceId = Convert.ToInt32(row["SourceId"]),
                 Average = Convert.ToDouble(row["Average"]),
                 FifteenthSpeed = Convert.ToDouble(row["FifteenthSpeed"]),
                 EightyFifthSpeed = Convert.ToDouble(row["EightyFifthSpeed"]),
@@ -359,9 +370,9 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             FROM `{_datasetId}.{_tableId}`
             WHERE 
                 SegmentId = @segmentId AND
+                SourceId = @sourceId AND
                 date BETWEEN @startDate AND @endDate 
-                AND SourceId = @sourceId
-            ORDER BY Date ASC, BinStartTime ASC;";
+                ORDER BY Date ASC, BinStartTime ASC;";
         }
 
         private string GetWeeklyQuery()
@@ -373,8 +384,8 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 TIMESTAMP(DATETIME(Date, BinStartTime)) AS datetime
               FROM `{_datasetId}.{_tableId}`
               WHERE 
-                SourceId = @sourceId
-                AND SegmentId = @segmentId
+                SegmentId = @segmentId
+                AND SourceId = @sourceId
                 AND Date BETWEEN @startDate AND @endDate
             ),
             data_with_custom_week_start AS (
@@ -483,11 +494,9 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             var percentile15 = row["Percentilespd_15"] != null ? double.Parse(row["Percentilespd_15"].ToString()) : (double?)null;
             var percentile85 = row["Percentilespd_85"] != null ? double.Parse(row["Percentilespd_85"].ToString()) : (double?)null;
             var percentile95 = row["Percentilespd_95"] != null ? double.Parse(row["Percentilespd_95"].ToString()) : (double?)null;
-            var sourceDataAnalyzed = row["SourceDataAnalyzed"] != null ? bool.Parse(row["SourceDataAnalyzed"].ToString()) : (bool?)null;
             var flow = row["Flow"];
-            var minSpeed = row["MinSpeed"];
-            var maxSpeed = row["MaxSpeed"];
-            var estimatedViolations = row["EstimatedViolations"];
+            var estimatedViolations = row["AvgViolation"] != null ? double.Parse(row["AvgViolation"].ToString()) : (double?)null;
+            var estimatedExtremeViolations = row["AvgExtremeViolation"] != null ? double.Parse(row["AvgExtremeViolation"].ToString()) : (double?)null;
             var speedLimit = row["SpeedLimit"];
             var name = row["Name"];
             var wkt = (string)row["Shape"];
@@ -504,11 +513,10 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 Percentilespd_85 = percentile85 != null ? (double)percentile85 : null,
                 Percentilespd_95 = percentile95 != null ? (double)percentile95 : null,
                 Flow = flow != null ? (long)flow : null,
-                EstimatedViolations = estimatedViolations != null ? (long)estimatedViolations : null,
+                EstimatedViolations = estimatedViolations != null ? (double?)estimatedViolations : null,
+                EstimatedExtremeViolations = estimatedExtremeViolations != null ? (double?)estimatedExtremeViolations : null,
                 SpeedLimit = speedLimit != null ? (long)speedLimit : 0,
                 Shape = shape,
-                MinSpeed = minSpeed != null ? (double)minSpeed : null,
-                MaxSpeed = maxSpeed != null ? (double)maxSpeed : null
             };
         }
 
@@ -516,32 +524,39 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
         {
             var daysOfWeekCondition = string.Join(", ", options.DaysOfWeek.Select(day => ((int)day + 1).ToString()));
             var filteredSegmentsQuery = GetFilteredSegmentsQuery(options);
+            var completeQuery = new StringBuilder();
+            completeQuery.Append(filteredSegmentsQuery);
+            completeQuery.Append($@",
 
-            var baseQuery = $@"
-                            RouteStats AS (
+                                RouteStats AS (
+                                    SELECT
+                                        fs.Id AS SegmentId,
+                                        fs.SourceId,
+                                        AVG(hs.Average) AS Avg,
+                                        APPROX_QUANTILES(hs.FifteenthSpeed, 100)[ORDINAL(85)] AS Percentilespd_15,
+                                        APPROX_QUANTILES(hs.EightyFifthSpeed, 100)[ORDINAL(85)] AS Percentilespd_85,
+                                        APPROX_QUANTILES(hs.NinetyFifthSpeed, 100)[ORDINAL(85)] AS Percentilespd_95,
+                                        SUM(hs.Flow) AS Flow,
+                                        AVG(hs.Violation) AS AvgViolation,
+                                        AVG(hs.ExtremeViolation) AS AvgExtremeViolation,
+                                        fs.SpeedLimit,
+                                        fs.Name,
+                                        fs.Shape
+                                    FROM
+                                        FilteredSegments AS fs
+                                    LEFT JOIN (
+                                        SELECT *
+                                        FROM `{_datasetId}.hourlySpeed`
+                                        WHERE DATE BETWEEN @startDate AND @endDate
+                                        AND TIME(BinStartTime) BETWEEN @startTime AND @endTime
+                                        AND EXTRACT(DAYOFWEEK FROM DATE) IN ({daysOfWeekCondition})
+                                        AND SourceId = @sourceId
+                                    ) AS hs ON fs.Id = hs.SegmentId
+                                    GROUP BY
+                                        fs.Id, fs.SourceId, fs.SpeedLimit, fs.Name, fs.Shape
+                                )
+
                                 SELECT
-                                    fs.Id AS SegmentId,
-                                    fs.SourceId,
-                                    AVG(hs.Average) AS Avg,
-                                    APPROX_QUANTILES(hs.FifteenthSpeed, 100)[ORDINAL(85)] AS Percentilespd_15,
-                                    APPROX_QUANTILES(hs.EightyFifthSpeed, 100)[ORDINAL(85)] AS Percentilespd_85,
-                                    APPROX_QUANTILES(hs.NinetyFifthSpeed, 100)[ORDINAL(85)] AS Percentilespd_95,
-                                    SUM(hs.Flow) AS Flow,
-                                    fs.SpeedLimit,
-                                    fs.Name,
-                                    fs.Shape
-                                FROM
-                                    FilteredSegments AS fs
-                                LEFT JOIN (
-                                    SELECT *
-                                    FROM `{_datasetId}.{_tableId}`";
-
-            var groupByClause = @"
-                                GROUP BY
-                                    fs.Id, fs.SourceId, fs.SpeedLimit, fs.Name, fs.Shape
-                                )";
-
-            var selectClause = $@"SELECT
                                     rs.SegmentId,
                                     rs.SourceId,
                                     rs.Avg,
@@ -549,99 +564,197 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                                     rs.Percentilespd_85,
                                     rs.Percentilespd_95,
                                     rs.Flow,
+                                    rs.AvgViolation,  -- Hourly average of Violation
+                                    rs.AvgExtremeViolation,  -- Hourly average of ExtremeViolation
                                     rs.SpeedLimit,
                                     rs.Name,
-                                    rs.Shape,
-                                    IFNULL(
-                                        SAFE_CAST(
-                                            ROUND(SUM(
-                                                CASE 
-                                                    WHEN rs.Percentilespd_15 >= rs.SpeedLimit THEN 0.85 * rs.Flow
-                                                    WHEN rs.Avg >= rs.SpeedLimit THEN 0.5 * rs.Flow
-                                                    WHEN rs.Percentilespd_85 >= rs.SpeedLimit THEN 0.15 * rs.Flow
-                                                    WHEN rs.Percentilespd_95 >= rs.SpeedLimit THEN 0.05 * rs.Flow
-                                                    ELSE 0
-                                                END
-                                            ) / NULLIF(SUM(rs.Flow), 0)) AS INT64), 0) AS EstimatedViolations
+                                    rs.Shape
                                 FROM
                                     RouteStats AS rs
                                 GROUP BY
-                                    rs.SegmentId, rs.SourceId, rs.Avg, rs.Percentilespd_15, rs.Percentilespd_85, rs.Percentilespd_95, rs.Flow, rs.SpeedLimit, rs.Name, rs.Shape;";
+                                    rs.SegmentId, rs.SourceId, rs.Avg, rs.Percentilespd_15, rs.Percentilespd_85, rs.Percentilespd_95, rs.Flow, rs.AvgViolation, rs.AvgExtremeViolation, rs.SpeedLimit, rs.Name, rs.Shape;
+                                ");
 
-            string onClause = "ON fs.Id = hs.SegmentId";
+            //var baseQuery1 = $@"
+            //                RouteStats AS (
+            //                    SELECT
+            //                        fs.Id AS SegmentId,
+            //                        fs.SourceId,
+            //                        AVG(hs.Average) AS Avg,
+            //                        APPROX_QUANTILES(hs.FifteenthSpeed, 100)[ORDINAL(85)] AS Percentilespd_15,
+            //                        APPROX_QUANTILES(hs.EightyFifthSpeed, 100)[ORDINAL(85)] AS Percentilespd_85,
+            //                        APPROX_QUANTILES(hs.NinetyFifthSpeed, 100)[ORDINAL(85)] AS Percentilespd_95,
+            //                        SUM(hs.Flow) AS Flow,
+            //                        fs.SpeedLimit,
+            //                        fs.Name,
+            //                        fs.Shape
+            //                    FROM
+            //                        FilteredSegments AS fs
+            //                    LEFT JOIN (
+            //                        SELECT *
+            //                        FROM `{_datasetId}.{_tableId}`";
 
-            string whereClause = $@"
-                                    WHERE DATE BETWEEN @startDate AND @endDate
-                                    AND TIME(BinStartTime) BETWEEN @startTime AND @endTime
-                                    AND EXTRACT(DAYOFWEEK FROM DATE) IN ({daysOfWeekCondition})
-                                    AND SourceId = @sourceId
-                                ) AS hs ";
+            //var groupByClause = @"
+            //                    GROUP BY
+            //                        fs.Id, fs.SourceId, fs.SpeedLimit, fs.Name, fs.Shape
+            //                    )";
 
-            var finalQuery = filteredSegmentsQuery + baseQuery + whereClause + onClause + groupByClause + selectClause;
-            return finalQuery;
+            //var selectClause = $@"SELECT
+            //                        rs.SegmentId,
+            //                        rs.SourceId,
+            //                        rs.Avg,
+            //                        rs.Percentilespd_15,
+            //                        rs.Percentilespd_85,
+            //                        rs.Percentilespd_95,
+            //                        rs.Flow,
+            //                        rs.SpeedLimit,
+            //                        rs.Name,
+            //                        rs.Shape,
+            //                        IFNULL(
+            //                            SAFE_CAST(
+            //                                ROUND(SUM(
+            //                                    CASE 
+            //                                        WHEN rs.Percentilespd_15 >= rs.SpeedLimit THEN 0.85 * rs.Flow
+            //                                        WHEN rs.Avg >= rs.SpeedLimit THEN 0.5 * rs.Flow
+            //                                        WHEN rs.Percentilespd_85 >= rs.SpeedLimit THEN 0.15 * rs.Flow
+            //                                        WHEN rs.Percentilespd_95 >= rs.SpeedLimit THEN 0.05 * rs.Flow
+            //                                        ELSE 0
+            //                                    END
+            //                                ) / NULLIF(SUM(rs.Flow), 0)) AS INT64), 0) AS EstimatedViolations
+            //                    FROM
+            //                        RouteStats AS rs
+            //                    GROUP BY
+            //                        rs.SegmentId, rs.SourceId, rs.Avg, rs.Percentilespd_15, rs.Percentilespd_85, rs.Percentilespd_95, rs.Flow, rs.SpeedLimit, rs.Name, rs.Shape;";
+
+            //string onClause = "ON fs.Id = hs.SegmentId";
+
+            //string whereClause = $@"
+            //                        WHERE DATE BETWEEN @startDate AND @endDate
+            //                        AND TIME(BinStartTime) BETWEEN @startTime AND @endTime
+            //                        AND EXTRACT(DAYOFWEEK FROM DATE) IN ({daysOfWeekCondition})
+            //                        AND SourceId = @sourceId
+            //                    ) AS hs ";
+
+            //var finalQuery = filteredSegmentsQuery + baseQuery + whereClause + onClause + groupByClause + selectClause;
+            return completeQuery.ToString();
         }
 
         private string GetFilteredSegmentsQuery(RouteSpeedOptions options)
         {
             var whereClause = new StringBuilder();
-            bool hasPreviousCondition = true;
 
-            whereClause.AppendLine(" WHERE ");
-            whereClause.AppendLine(" se.SourceId = @sourceId ");
+            // Base WHERE clause with SourceId
+            whereClause.AppendLine(" WHERE se.SourceId = @sourceId ");
 
+            // Conditional WHERE clauses based on the options provided
             if (!string.IsNullOrEmpty(options.City))
             {
-                if (hasPreviousCondition) whereClause.Append(" AND ");
-                whereClause.AppendLine($"s.City = @city");
-                hasPreviousCondition = true;
+                whereClause.AppendLine(" AND s.City = @city ");
             }
 
             if (!string.IsNullOrEmpty(options.County))
             {
-                if (hasPreviousCondition) whereClause.Append(" AND ");
-                whereClause.AppendLine($"s.County = @county");
-                hasPreviousCondition = true;
+                whereClause.AppendLine(" AND s.County = @county ");
             }
 
             if (!string.IsNullOrEmpty(options.Region))
             {
-                if (hasPreviousCondition) whereClause.Append(" AND ");
-                whereClause.AppendLine($"s.Region = @region");
-                hasPreviousCondition = true;
+                whereClause.AppendLine(" AND s.Region = @region ");
             }
 
             if (!string.IsNullOrEmpty(options.AccessCategory))
             {
-                if (hasPreviousCondition) whereClause.Append(" AND ");
-                whereClause.AppendLine($"s.AccessCategory = @accessCategory");
-                hasPreviousCondition = true;
+                whereClause.AppendLine(" AND s.AccessCategory = @accessCategory ");
             }
 
             if (!string.IsNullOrEmpty(options.FunctionalType))
             {
-                if (hasPreviousCondition) whereClause.Append(" AND ");
-                whereClause.AppendLine($"s.FunctionalType = @functionalType");
+                whereClause.AppendLine(" AND s.FunctionalType = @functionalType ");
             }
-            whereClause.AppendLine(" ),");
 
+            // Build the final query with the FilteredSegments CTE
             var filteredSegments = new StringBuilder();
             filteredSegments.Append($@"
-            WITH FilteredSegments AS (
-                SELECT
-                    s.Id,
-                    se.SourceId,
-                    s.SpeedLimit,
-                    s.Name,
-                    ST_AsText(s.Shape) AS Shape
-                FROM
-                    `atspm-406601.speedDataset.segment` AS s
-                JOIN
-                    `atspm-406601.speedDataset.segmentEntity` AS se
-                ON
-                    s.Id = se.SegmentId");
+    WITH FilteredSegments AS (
+        SELECT
+            s.Id,
+            se.SourceId,
+            s.SpeedLimit,
+            s.Name,
+            ST_AsText(s.Shape) AS Shape
+        FROM
+            `{_datasetId}.segment` AS s
+        JOIN
+            `{_datasetId}.segmentEntity` AS se
+        ON
+            s.Id = se.SegmentId");
 
-            return filteredSegments.Append(whereClause).ToString();
+            // Append the whereClause to the query and close the CTE
+            return filteredSegments.Append(whereClause).AppendLine(")").ToString();
         }
+
+
+        //private string GetFilteredSegmentsQuery(RouteSpeedOptions options)
+        //{
+        //    var whereClause = new StringBuilder();
+        //    bool hasPreviousCondition = true;
+
+        //    whereClause.AppendLine(" WHERE ");
+        //    whereClause.AppendLine(" se.SourceId = @sourceId ");
+
+        //    if (!string.IsNullOrEmpty(options.City))
+        //    {
+        //        if (hasPreviousCondition) whereClause.Append(" AND ");
+        //        whereClause.AppendLine($"s.City = @city");
+        //        hasPreviousCondition = true;
+        //    }
+
+        //    if (!string.IsNullOrEmpty(options.County))
+        //    {
+        //        if (hasPreviousCondition) whereClause.Append(" AND ");
+        //        whereClause.AppendLine($"s.County = @county");
+        //        hasPreviousCondition = true;
+        //    }
+
+        //    if (!string.IsNullOrEmpty(options.Region))
+        //    {
+        //        if (hasPreviousCondition) whereClause.Append(" AND ");
+        //        whereClause.AppendLine($"s.Region = @region");
+        //        hasPreviousCondition = true;
+        //    }
+
+        //    if (!string.IsNullOrEmpty(options.AccessCategory))
+        //    {
+        //        if (hasPreviousCondition) whereClause.Append(" AND ");
+        //        whereClause.AppendLine($"s.AccessCategory = @accessCategory");
+        //        hasPreviousCondition = true;
+        //    }
+
+        //    if (!string.IsNullOrEmpty(options.FunctionalType))
+        //    {
+        //        if (hasPreviousCondition) whereClause.Append(" AND ");
+        //        whereClause.AppendLine($"s.FunctionalType = @functionalType");
+        //    }
+        //    whereClause.AppendLine(" ),");
+
+        //    var filteredSegments = new StringBuilder();
+        //    filteredSegments.Append($@"
+        //    WITH FilteredSegments AS (
+        //        SELECT
+        //            s.Id,
+        //            se.SourceId,
+        //            s.SpeedLimit,
+        //            s.Name,
+        //            ST_AsText(s.Shape) AS Shape
+        //        FROM
+        //            `atspm-406601.speedDataset.segment` AS s
+        //        JOIN
+        //            `atspm-406601.speedDataset.segmentEntity` AS se
+        //        ON
+        //            s.Id = se.SegmentId");
+
+        //    return filteredSegments.Append(whereClause).ToString();
+        //}
 
         public override async Task RemoveAsync(HourlySpeed key)
         {
@@ -1023,17 +1136,14 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             var query = $@"
             SELECT * FROM `{_datasetId}.{_tableId}` 
                 WHERE 
-                Date BETWEEN @startDate AND @endDate AND
-                BinStartTime BETWEEN @startTime AND @endTime
+                Date BETWEEN @startDate AND @endDate
                 AND SegmentId IN ({ids})";
 
             var parameters = new List<BigQueryParameter>();
             parameters.AddRange(new BigQueryParameter[]
                 {
                     new BigQueryParameter("startDate", BigQueryDbType.Date, convertedStartDate.ToDateTime(new TimeOnly(0, 0))),
-                    new BigQueryParameter("endDate", BigQueryDbType.Date, convertedEndDate.ToDateTime(new TimeOnly(0, 0))),
-                    new BigQueryParameter("startTime", BigQueryDbType.Time, convertedStartTime.ToTimeSpan()),
-                    new BigQueryParameter("endTime", BigQueryDbType.Time, convertedEndTime.ToTimeSpan())
+                    new BigQueryParameter("endDate", BigQueryDbType.Date, convertedEndDate.ToDateTime(new TimeOnly(0, 0)))
                 });
 
             var result = await _client.ExecuteQueryAsync(query, parameters);

@@ -573,16 +573,16 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 var parameters = new List<BigQueryParameter>();
                 var result = _client.ExecuteQuery(query, parameters).ToList();
 
-                var segments = new Dictionary<Guid, Segment>();
+                var segments = new List<Segment>();
 
                 foreach (var row in result)
                 {
                     var segmentId = Guid.Parse(row["Id"].ToString());
                     var segment = MapSegmentWithEntities(row);
-                    segments.Add(segmentId, segment);
+                    segments.Add(segment);
                 }
 
-                return segments.Values.ToList();
+                return segments;
             }
         }
 

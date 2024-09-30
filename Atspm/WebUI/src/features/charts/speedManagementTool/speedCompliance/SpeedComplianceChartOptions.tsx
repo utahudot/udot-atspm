@@ -1,11 +1,12 @@
-import { Box } from '@mui/material'
+import { Box, TextField } from '@mui/material'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import { isValid, parse } from 'date-fns'
 import { useEffect, useState } from 'react'
 
-export interface SpeedOverDistanceChartOptionsValues {
+export interface SpeedComplianceChartOptionsValues {
   startDate: string
   endDate: string
+  customSpeedLimit?: number | null
 }
 
 const initialStartDateString = '2023-01-01'
@@ -29,15 +30,16 @@ const initialEndDate = isValid(parsedInitialEndDate)
   ? parsedInitialEndDate
   : null
 
-interface SpeedOverDistanceChartOptionsProps {
-  onOptionsChange: (options: SpeedOverDistanceChartOptionsValues) => void
+interface SpeedComplianceChartOptionsProps {
+  onOptionsChange: (options: SpeedComplianceChartOptionsValues) => void
 }
 
-const SpeedOverDistanceChartOptions = ({
+const SpeedComplianceChartOptions = ({
   onOptionsChange,
-}: SpeedOverDistanceChartOptionsProps) => {
+}: SpeedComplianceChartOptionsProps) => {
   const [startDate, setStartDate] = useState<Date | null>(initialStartDate)
   const [endDate, setEndDate] = useState<Date | null>(initialEndDate)
+  const [customSpeedLimit, setCustomSpeedLimit] = useState<number | null>(null)
   const [startDateError, setStartDateError] = useState<boolean>(false)
   const [endDateError, setEndDateError] = useState<boolean>(false)
 
@@ -46,14 +48,17 @@ const SpeedOverDistanceChartOptions = ({
       onOptionsChange({
         startDate: startDate.toISOString().split('T')[0],
         endDate: endDate.toISOString().split('T')[0],
+        customSpeedLimit: customSpeedLimit ?? null,
+
       })
     } else {
       onOptionsChange({
         startDate: '',
         endDate: '',
+        customSpeedLimit: null,
       })
     }
-  }, [startDate, endDate])
+  }, [startDate, endDate, customSpeedLimit])
 
   const handleStartDateChange = (date: Date | null) => {
     if (date && isValid(date)) {
@@ -87,8 +92,18 @@ const SpeedOverDistanceChartOptions = ({
         value={endDate}
         onChange={handleEndDateChange}
       />
+    <TextField 
+        label="Custom Speed Limit" 
+        variant="outlined" 
+        type="number"
+        onChange={(e) =>
+            setCustomSpeedLimit(e.target.value ? parseInt(e.target.value, 10) : null)
+          }        
+          />
+        
+
     </Box>
   )
 }
 
-export default SpeedOverDistanceChartOptions
+export default SpeedComplianceChartOptions

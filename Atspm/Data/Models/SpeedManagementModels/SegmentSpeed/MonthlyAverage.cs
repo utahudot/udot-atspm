@@ -13,5 +13,6 @@
         public double Flow { get; set; }
         public double MaxSpeed { get; set; }
         public double MinSpeed { get; set; }
+        public int SourceId { get; set; }
     }
 }

@@ -1,6 +1,7 @@
 import { DataSource } from '@/features/speedManagementTool/enums'
 import { Box, SelectChangeEvent } from '@mui/material'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
+import { isValid, parse } from 'date-fns'
 import { useEffect, useState } from 'react'
 
 export interface CongestionTrackingOptionsValues {
@@ -11,20 +12,30 @@ export interface CongestionTrackingOptionsValues {
 
 interface CongestionTrackingOptionsProps {
   onOptionsChange: (options: CongestionTrackingOptionsValues) => void
+  sourceId: number
 }
 
-const initialDate = new Date('2024-05-10')
+const initialDateString = '2023-01-01'
+const parsedInitialDate = parse(initialDateString, 'yyyy-MM-dd', new Date())
+const initialDate = isValid(parsedInitialDate) ? parsedInitialDate : null
 
 const CongestionTrackingOptions = ({
   onOptionsChange,
+  sourceId,
 }: CongestionTrackingOptionsProps) => {
   const [selectedDate, setSelectedDate] = useState<Date | null>(initialDate)
-  const [selectedSource, setSelectedSource] = useState<DataSource>(
-    DataSource.PeMS
-  )
+  const [selectedSource, setSelectedSource] = useState<DataSource>(sourceId)
+  const [dateError, setDateError] = useState<boolean>(false)
 
   useEffect(() => {
-    if (!selectedDate) return
+    if (!selectedDate) {
+      onOptionsChange({
+        startDate: '',
+        endDate: '',
+        sourceId: selectedSource,
+      })
+      return
+    }
 
     const startDate = new Date(
       selectedDate.getFullYear(),
@@ -45,7 +56,13 @@ const CongestionTrackingOptions = ({
   }, [selectedDate, selectedSource])
 
   const handleDateChange = (date: Date | null) => {
-    setSelectedDate(date)
+    if (date && isValid(date)) {
+      setSelectedDate(date)
+      setDateError(false)
+    } else {
+      setSelectedDate(null)
+      setDateError(true)
+    }
   }
 
   const handleSourceChange = (event: SelectChangeEvent<number>) => {
@@ -62,6 +79,7 @@ const CongestionTrackingOptions = ({
         value={selectedDate}
         onChange={handleDateChange}
       />
+      {/* Uncomment and update the Select component if needed */}
       {/* <FormControl sx={{ width: '150px' }}>
         <InputLabel id="source-select-label">Source Select</InputLabel>
         <Select

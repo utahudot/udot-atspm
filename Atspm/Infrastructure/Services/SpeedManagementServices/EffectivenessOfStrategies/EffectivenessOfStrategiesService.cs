@@ -45,7 +45,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices.Effect
                         MinSpeed = g.Min(h => h.MinSpeed) ?? 0,
                         AverageSpeed = ((double)(g.Sum(h => h.Average)) / (g.Sum(h => h.Flow))) ?? 0,
                         AverageEightyFifthSpeed = ((double)(g.Sum(h => h.EightyFifthSpeed)) / (g.Sum(h => h.Flow))) ?? 0,
-                        Variablitiy = ((double)g.Max(h => h.MaxSpeed ?? 0)) - ((double)g.Min(h => h.MinSpeed ?? 0)),
+                        Variability = ((double)g.Max(h => h.MaxSpeed ?? 0)) - ((double)g.Min(h => h.MinSpeed ?? 0)),
                         PercentViolations = (g.Sum(h => h.Flow) != 0 ? (double)g.Sum(h => h.Violation) / g.Sum(h => h.Flow) ?? 0 : 0) * 100,
                         PercentExtremeViolations = (g.Sum(h => h.Flow) != 0 ? (double)g.Sum(h => h.ExtremeViolation) / g.Sum(h => h.Flow) ?? 0 : 0) * 100,
                     })
@@ -63,7 +63,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices.Effect
                         MinSpeed = g.Min(h => h.MinSpeed) ?? 0,
                         AverageSpeed = g.Sum(h => h.Flow) != 0 ? g.Sum(h => h.Average * (h.Flow ?? 0)) / g.Sum(h => h.Flow) ?? 0 : 0,
                         AverageEightyFifthSpeed = g.Sum(h => h.Flow) != 0 ? g.Sum(h => h.EightyFifthSpeed ?? 0) / g.Sum(h => h.Flow) ?? 0 : 0,
-                        Variablitiy = ((double)g.Max(h => h.MaxSpeed ?? 0)) - ((double)g.Min(h => h.MinSpeed ?? 0)),
+                        Variability = ((double)g.Max(h => h.MaxSpeed ?? 0)) - ((double)g.Min(h => h.MinSpeed ?? 0)),
                         PercentViolations = (g.Sum(h => h.Flow) != 0 ? (double)(g.Sum(h => h.Violation ?? 0)) / g.Sum(h => h.Flow) ?? 0 : 0) * 100,
                         PercentExtremeViolations = (g.Sum(h => h.Flow) != 0 ? (double)(g.Sum(h => h.ExtremeViolation ?? 0)) / g.Sum(h => h.Flow) ?? 0 : 0) * 100,
                     })
@@ -81,7 +81,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices.Effect
                         MinSpeed = g.Min(h => h.MinSpeed) ?? 0,
                         AverageSpeed = g.Sum(h => h.Flow) != 0 ? g.Sum(h => h.Average * (h.Flow ?? 0)) / g.Sum(h => h.Flow) ?? 0 : 0,
                         AverageEightyFifthSpeed = g.Sum(h => h.Flow) != 0 ? g.Sum(h => h.EightyFifthSpeed ?? 0) / g.Sum(h => h.Flow) ?? 0 : 0,
-                        Variablitiy = ((double)g.Max(h => h.MaxSpeed ?? 0)) - ((double)g.Min(h => h.MinSpeed ?? 0)),
+                        Variability = ((double)g.Max(h => h.MaxSpeed ?? 0)) - ((double)g.Min(h => h.MinSpeed ?? 0)),
                         PercentViolations = (g.Sum(h => h.Flow) != 0 ? (double)(g.Sum(h => h.Violation ?? 0)) / g.Sum(h => h.Flow) ?? 0 : 0) * 100,
                         PercentExtremeViolations = (g.Sum(h => h.Flow) != 0 ? (double)(g.Sum(h => h.ExtremeViolation ?? 0)) / g.Sum(h => h.Flow) ?? 0 : 0) * 100,
                     })
@@ -93,7 +93,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices.Effect
                     SegmentName = segment.Name,
                     ChangeInAverageSpeed = aggregatedAfter.AverageSpeed - aggregatedBefore.AverageSpeed,
                     ChangeInEightyFifthPercentileSpeed = aggregatedAfter.AverageEightyFifthSpeed - aggregatedBefore.AverageEightyFifthSpeed,
-                    ChangeInVariablitiy = aggregatedAfter.Variablitiy - aggregatedBefore.Variablitiy,
+                    ChangeInVariability = aggregatedAfter.Variability - aggregatedBefore.Variability,
                     ChangeInPercentViolations = aggregatedAfter.PercentViolations - aggregatedBefore.PercentViolations,
                     ChangeInPercentExtremeViolations = aggregatedAfter.PercentExtremeViolations - aggregatedBefore.PercentExtremeViolations,
                     SpeedLimit = segment.SpeedLimit,

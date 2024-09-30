@@ -157,11 +157,19 @@ const SM_Popup = ({ routes, open, onClose }: SM_PopupProps) => {
                 <Box display="flex" padding="10px">
                   <InfoBox
                     label="Speed Limit"
-                    value={`${routes[0]?.properties.speedLimit} mph`}
+                    value={
+                      routes[0]?.properties.speedLimit
+                        ? `${routes[0]?.properties.speedLimit} mph`
+                        : 'No Data'
+                    }
                   />
                   <InfoBox
                     label="Average Speed"
-                    value={`${routes[0]?.properties.avg} mph`}
+                    value={
+                      routes[0]?.properties.avg
+                        ? `${routes[0]?.properties.avg} mph`
+                        : 'No Data'
+                    }
                   />
                 </Box>
                 <Divider />

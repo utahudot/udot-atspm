@@ -33,8 +33,6 @@ const locationConfigListToLink: Map<string, string> = new Map([
   [PageNames.Routes, '/admin/routes'],
   [PageNames.Products, '/admin/products'],
   [PageNames.DeviceConfigurations, '/admin/device-configurations'],
-  [PageNames.Impacts, '/admin/impact'],
-  [PageNames.ImpactTypes, '/admin/impact-types'],
 ])
 
 const userConfigToLink: Map<string, string> = new Map([
@@ -45,11 +43,17 @@ const rolesConfigToLink: Map<string, string> = new Map([
   [PageNames.Roles, '/admin/roles'],
 ])
 
+const speedManagementToLink: Map<string, string> = new Map([
+  [PageNames.Impacts, '/admin/impact'],
+  [PageNames.ImpactTypes, '/admin/impact-types'],
+])
+
 const adminAccessToLinks = new Map([
   ['GeneralConfiguration:View', generalConfigListToLink],
   ['LocationConfiguration:View', locationConfigListToLink],
   ['User:View', userConfigToLink],
   ['Role:View', rolesConfigToLink],
+  ['GeneralConfiguration:View', speedManagementToLink],
 ])
 
 export const useGetAdminPagesList = () => {
