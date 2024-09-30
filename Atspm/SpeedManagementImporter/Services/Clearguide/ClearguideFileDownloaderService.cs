@@ -105,7 +105,9 @@ namespace SpeedManagementImporter.Services.Clearguide
                     SourceId = g.First().SourceId,
                     PercentObserved = g.First().PercentObserved,
                     Average = (g.Sum(s => s.Average * s.Length) / g.Sum(s => s.Length)), // Aggregate average speed.
-                    Violation = g.Sum(s => s.Violation) // Sum up the violations.
+                    Violation = g.Sum(s => s.Violation), // Sum up the violations.
+                    MinSpeed = g.Min(s => s.Average),
+                    MaxSpeed = g.Max(s => s.Average)
                 });
         }
     }

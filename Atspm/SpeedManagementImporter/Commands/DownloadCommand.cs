@@ -9,25 +9,34 @@ public class DownloadCommand : Command
     private readonly PemsDownloaderService _pemsDownloader;
     private readonly AtspmDownloaderService _atspmDownloader;
     private readonly ClearguideFileDownloaderService _clearguideDownloader;
+    private readonly ClearguideFileUploader _clearguideFileUploader;
 
     public DownloadCommand(
         PemsDownloaderService pemsDownloader,
         AtspmDownloaderService atspmDownloader,
-        ClearguideFileDownloaderService clearguideDownloader)
+        ClearguideFileDownloaderService clearguideDownloader,
+        ClearguideFileUploader clearguideFileUploader)
         : base("download", "Download data from different sources")
     {
         _pemsDownloader = pemsDownloader;
         _atspmDownloader = atspmDownloader;
         _clearguideDownloader = clearguideDownloader;
+        _clearguideFileUploader = clearguideFileUploader;
+        var filePath = new Option<string?>("--filePath", "filePath");
 
         AddOption(new Option<int>("--sourceId", "sourceId"));
         AddOption(new Option<DateTime>("--startDate", "start date (mm-dd-yyyy)"));
         AddOption(new Option<DateTime>("--endDate", "end date (mm-dd-yyyy)"));
+        if (filePath != null)
+        {
+            AddOption(filePath);
+        }
 
-        this.Handler = CommandHandler.Create<int, DateTime, DateTime>(Execute);
+
+        this.Handler = CommandHandler.Create<int, DateTime, DateTime, string>(Execute);
     }
 
-    private async Task Execute(int sourceId, DateTime startDate, DateTime endDate)
+    private async Task Execute(int sourceId, DateTime startDate, DateTime endDate, string filePath)
     {
         switch (sourceId)
         {
@@ -39,6 +48,9 @@ public class DownloadCommand : Command
                 break;
             case 3:
                 await _clearguideDownloader.Download(startDate, endDate);
+                break;
+            case 4:
+                await _clearguideFileUploader.FileUploaderAsync(filePath);
                 break;
             default:
                 throw new ArgumentException("Invalid sourceId.");

@@ -37,6 +37,7 @@ class Program
         services.AddScoped<PemsDownloaderService>();
         services.AddScoped<AtspmDownloaderService>();
         services.AddScoped<ClearguideFileDownloaderService>();
+        services.AddScoped<ClearguideFileUploader>();
 
         // Set Google Cloud Credentials
         Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", configuration["GoogleApplicationCredentials"]);
@@ -52,9 +53,10 @@ class Program
         var pemsDownloader = serviceProvider.GetRequiredService<PemsDownloaderService>();
         var atspmDownloader = serviceProvider.GetRequiredService<AtspmDownloaderService>();
         var clearguideDownloader = serviceProvider.GetRequiredService<ClearguideFileDownloaderService>();
+        var clearguideUploader = serviceProvider.GetRequiredService<ClearguideFileUploader>();
 
         // Add the download command
-        rootCommand.AddCommand(new DownloadCommand(pemsDownloader, atspmDownloader, clearguideDownloader));
+        rootCommand.AddCommand(new DownloadCommand(pemsDownloader, atspmDownloader, clearguideDownloader, clearguideUploader));
 
         return await rootCommand.InvokeAsync(args);
     }
