@@ -16,6 +16,7 @@
 #endregion
 
 using DatabaseInstaller.Commands;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using System.CommandLine.Builder;
 using System.CommandLine.Hosting;
@@ -31,6 +32,12 @@ cmdBuilder.UseHost(hostBuilder =>
 {
     return Host.CreateDefaultBuilder(hostBuilder)
     .UseConsoleLifetime()
+    .ConfigureAppConfiguration((h, c) =>
+    {
+        c.AddCommandLine(args);
+        c.AddUserSecrets<Program>(optional: true);
+
+    })
     .ConfigureLogging((hostContext, logging) =>
     {
         // Configure logging if needed
@@ -41,11 +48,6 @@ cmdBuilder.UseHost(hostBuilder =>
         services.AddAtspmDbContext(hostContext);
         services.AddAtspmEFConfigRepositories();
         services.AddAtspmEFEventLogRepositories();
-        //services.AddSingleton(new CopyConfigCommandConfiguration
-        //{
-        //    SourceConnection = "Data Source=srwtcmoedb.utah.utad.state.ut.us;Initial Catalog=MOE;User ID=spm;Password=UdotNewMoeDb!9;Connect Timeout=60;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False",
-        //    TargetConnection = "Host=34.106.25.230;Port=5432;Username=admin;Password=Avenue.2006;Database=DatabaseInstaller-Config;Pooling=true;"
-        //});
 
         // Optional: Register any core services your application might need here.
     });

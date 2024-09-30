@@ -22,36 +22,30 @@ using System.CommandLine;
 using System.CommandLine.Hosting;
 using System.CommandLine.NamingConventionBinder;
 using Utah.Udot.Atspm.Common;
-using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
 
 namespace DatabaseInstaller.Commands
 {
     public class CopyConfigurationCommand : Command, ICommandOption<CopyConfigCommandConfiguration>
     {
-        private readonly IProductRepository productRepository;
 
-        public CopyConfigurationCommand(IProductRepository productRepository) : base("copy-config", "Copy configuration data from SQL Server to PostgreSQL")
+        public CopyConfigurationCommand() : base("copy-config", "Copy configuration data from SQL Server to PostgreSQL")
         {
             AddOption(SourceOption);
             AddOption(TargetOption);
-            this.productRepository = productRepository;
         }
 
         public Option<string> SourceOption { get; set; } = new("--source", "Connection string for the source SQL Server");
         public Option<string> TargetOption { get; set; } = new("--target", "Connection string for the target PostgreSQL database");
 
-        //public ModelBinder<CopyConfigCommandConfiguration> GetOptionsBinder()
-        //{
-        //    var binder = new ModelBinder<CopyConfigCommandConfiguration>();
+        public ModelBinder<CopyConfigCommandConfiguration> GetOptionsBinder()
+        {
+            var binder = new ModelBinder<CopyConfigCommandConfiguration>();
 
-        //    binder.BindMemberFromValue(b => b.Source, SourceOption);
-        //    binder.BindMemberFromValue(b => b.Target, TargetOption);
+            binder.BindMemberFromValue(b => b.Source, SourceOption);
+            binder.BindMemberFromValue(b => b.Target, TargetOption);
 
-        //    return binder;
-        //}
-
-
-
+            return binder;
+        }
 
 
         public void BindCommandOptions(HostBuilderContext host, IServiceCollection services)
@@ -64,11 +58,6 @@ namespace DatabaseInstaller.Commands
             services.AddOptions<CopyConfigCommandConfiguration>().BindCommandLine();
 
             services.AddHostedService<CopyConfigCommandHostedService>();
-        }
-
-        ModelBinder<CopyConfigCommandConfiguration> ICommandOption<CopyConfigCommandConfiguration>.GetOptionsBinder()
-        {
-            throw new NotImplementedException();
         }
     }
 
