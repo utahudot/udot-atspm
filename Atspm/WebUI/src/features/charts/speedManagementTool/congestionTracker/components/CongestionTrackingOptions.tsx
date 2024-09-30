@@ -12,6 +12,7 @@ export interface CongestionTrackingOptionsValues {
 
 interface CongestionTrackingOptionsProps {
   onOptionsChange: (options: CongestionTrackingOptionsValues) => void
+  sourceId: number
 }
 
 const initialDateString = '2023-01-01'
@@ -20,11 +21,10 @@ const initialDate = isValid(parsedInitialDate) ? parsedInitialDate : null
 
 const CongestionTrackingOptions = ({
   onOptionsChange,
+  sourceId,
 }: CongestionTrackingOptionsProps) => {
   const [selectedDate, setSelectedDate] = useState<Date | null>(initialDate)
-  const [selectedSource, setSelectedSource] = useState<DataSource>(
-    DataSource.PeMS
-  )
+  const [selectedSource, setSelectedSource] = useState<DataSource>(sourceId)
   const [dateError, setDateError] = useState<boolean>(false)
 
   useEffect(() => {

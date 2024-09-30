@@ -22,6 +22,7 @@ export interface SpeedOverTimeOptionsValues {
 
 interface SpeedOverTimeOptionsProps {
   onOptionsChange: (options: SpeedOverTimeOptionsValues) => void
+  sourceId: number
 }
 
 const initialDateString = '2023-01-01'
@@ -30,6 +31,7 @@ const initialDate = isValid(parsedInitialDate) ? parsedInitialDate : null
 
 const SpeedOverTimeOptions = ({
   onOptionsChange,
+  sourceId,
 }: SpeedOverTimeOptionsProps) => {
   const [startDate, setStartDate] = useState<Date | null>(
     initialDate ? startOfMonth(initialDate) : null
@@ -38,9 +40,7 @@ const SpeedOverTimeOptions = ({
     initialDate ? endOfMonth(initialDate) : null
   )
 
-  const [selectedSource, setSelectedSource] = useState<DataSource>(
-    DataSource.PeMS
-  )
+  const [selectedSource, setSelectedSource] = useState<DataSource>(sourceId)
   const [selectedTimeOptions, setSelectedTimeOptions] = useState<TimeOptions>(
     TimeOptions.Hour
   )
