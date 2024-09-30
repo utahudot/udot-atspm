@@ -35,16 +35,16 @@ export function useGetWatchdogIgnoreEvents() {
 }
 
 export function useCreateWatchdogIgnoreEvents() {
-  const mutation = usePostRequest({ url: route, headers })
+  const mutation = usePostRequest({ url: route, headers, notify: false })
   return mutation
 }
 
 export function useEditWatchdogIgnoreEvents() {
-  const mutation = usePatchRequest({ url: route, headers })
+  const mutation = usePatchRequest({ url: route, headers, notify: false })
   return mutation
 }
 
 export function useDeleteWatchdogIgnoreEvents() {
-  const mutation = useDeleteRequest({ url: route, headers })
+  const mutation = useDeleteRequest({ url: route, headers, notify: false })
   return mutation
 }
