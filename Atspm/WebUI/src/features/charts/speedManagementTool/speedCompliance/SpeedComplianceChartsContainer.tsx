@@ -22,7 +22,7 @@ const SpeedComplianceChartsContainer = ({ chartData }: { chartData: any }) => {
         />
       </Box>
 
-      <Box sx={{ display: 'flex', justifyContent: 'center', m: 10 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'center' }}>
         <TableContainer
           sx={{
             mt: 4,
