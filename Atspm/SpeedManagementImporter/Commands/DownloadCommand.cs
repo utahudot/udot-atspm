@@ -23,6 +23,7 @@ public class DownloadCommand : Command
         _clearguideDownloader = clearguideDownloader;
         _clearguideFileUploader = clearguideFileUploader;
         var filePath = new Option<string?>("--filePath", "filePath");
+        var segments = new Option<List<string>?>("--segments", "segments");
 
         AddOption(new Option<int>("--sourceId", "sourceId"));
         AddOption(new Option<DateTime>("--startDate", "start date (mm-dd-yyyy)"));
@@ -31,23 +32,27 @@ public class DownloadCommand : Command
         {
             AddOption(filePath);
         }
+        if (segments != null)
+        {
+            AddOption(segments);
+        }
 
 
-        this.Handler = CommandHandler.Create<int, DateTime, DateTime, string>(Execute);
+        this.Handler = CommandHandler.Create<int, DateTime, DateTime, string, List<string>>(Execute);
     }
 
-    private async Task Execute(int sourceId, DateTime startDate, DateTime endDate, string filePath)
+    private async Task Execute(int sourceId, DateTime startDate, DateTime endDate, string filePath, List<string> segments)
     {
         switch (sourceId)
         {
             case 1:
-                await _atspmDownloader.Download(startDate, endDate);
+                await _atspmDownloader.Download(startDate, endDate, segments);
                 break;
             case 2:
-                await _pemsDownloader.Download(startDate, endDate);
+                await _pemsDownloader.Download(startDate, endDate, segments);
                 break;
             case 3:
-                await _clearguideDownloader.Download(startDate, endDate);
+                await _clearguideDownloader.Download(startDate, endDate, segments);
                 break;
             case 4:
                 await _clearguideFileUploader.FileUploaderAsync(filePath);

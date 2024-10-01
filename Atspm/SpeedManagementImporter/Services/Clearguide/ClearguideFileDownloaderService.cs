@@ -2,6 +2,7 @@
 using Utah.Udot.Atspm.Data.Models.SpeedManagementModels;
 using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.Common;
 using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.Config;
+using Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositories;
 using Utah.Udot.Atspm.Repositories.SpeedManagementRepositories;
 
 namespace SpeedManagementImporter.Services.Clearguide
@@ -11,19 +12,41 @@ namespace SpeedManagementImporter.Services.Clearguide
         private readonly IHourlySpeedRepository hourlySpeedRepository;
         private readonly ISegmentEntityRepository segmentEntityRepository;
         private readonly ITempDataRepository tempDataRepository;
+        private readonly ISegmentRepository segmentRepository;
         static readonly int sourceId = 3;
         static readonly int confidenceId = 4;
 
-        public ClearguideFileDownloaderService(ISegmentEntityRepository segmentEntityRepository, IHourlySpeedRepository hourlySpeedRepository, ITempDataRepository tempDataRepository)
+        public ClearguideFileDownloaderService(ISegmentEntityRepository segmentEntityRepository, IHourlySpeedRepository hourlySpeedRepository, ITempDataRepository tempDataRepository, ISegmentRepository segmentRepository)
         {
             this.hourlySpeedRepository = hourlySpeedRepository;
             this.segmentEntityRepository = segmentEntityRepository;
             this.tempDataRepository = tempDataRepository;
+            this.segmentRepository = segmentRepository;
         }
 
-        public async Task Download(DateTime startDate, DateTime endDate)
+        public async Task Download(DateTime startDate, DateTime endDate, List<string>? providedSegments)
         {
-            List<SegmentEntityWithSpeed> segmentEntities = await segmentEntityRepository.GetEntitiesWithSpeedForSourceId(sourceId);
+            //Have options to have segments ids provided in the beginning
+            List<Segment> segments = new List<Segment>();
+            if (providedSegments != null && providedSegments.Count > 0)
+            {
+                var segmentIds = providedSegments.Select(s => Guid.Parse(s)).ToList();
+                segments = await segmentRepository.GetSegmentsDetailsWithEntity(segmentIds);
+            }
+            else
+            {
+                segments = segmentRepository.AllSegmentsWithEntity(sourceId);
+            }
+
+            List<SegmentEntityWithSpeed> segmentEntities = segments.SelectMany(segment => segment.Entities.Select(entity => new SegmentEntityWithSpeed{
+                SpeedLimit = segment.SpeedLimit,
+                EntityId = entity.EntityId,
+                SourceId = entity.SourceId,
+                SegmentId = entity.SegmentId,
+                EntityType = entity.EntityType,
+                Length = entity.Length,
+            })).ToList();
+
             var routes = segmentEntities.GroupBy(r => r.SegmentId).ToList();
 
             var entityData = await tempDataRepository.GetHourlyAggregatedDataForAllSegments();
