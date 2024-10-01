@@ -3,20 +3,20 @@ import { MultiSelectCheckbox } from '@/features/aggregateData/components/chartOp
 import { DataSource } from '@/features/speedManagementTool/enums'
 import { Box } from '@mui/material'
 import { DatePicker } from '@mui/x-date-pickers'
-import { endOfMonth, startOfMonth } from 'date-fns'
+import { endOfMonth, isValid, startOfMonth } from 'date-fns'
 import { useEffect, useState } from 'react'
 
 export interface SpeedVariabilityOptionsValues {
   startDate: string
   endDate: string
-  sourceId: number
-  segmentId: string
   daysOfWeek: DayOfWeek[]
   isHolidaysFiltered?: boolean
+  sourceId: number
 }
 
 interface SpeedVariabilityOptionsProps {
   onOptionsChange: (options: SpeedVariabilityOptionsValues) => void
+  sourceId: number
 }
 
 const daysOfWeekList: string[] = [
@@ -33,44 +33,41 @@ const initialDate = new Date('2023-01-02')
 
 const SpeedVariabilityOptions = ({
   onOptionsChange,
+  sourceId,
 }: SpeedVariabilityOptionsProps) => {
   const [startDate, setStartDate] = useState<Date | null>(
     startOfMonth(initialDate)
   )
+  const [endDate, setEndDate] = useState<Date | null>(endOfMonth(initialDate))
   const [daysOfWeek, setDaysOfWeek] = useState<DayOfWeek[]>([
     0, 1, 2, 3, 4, 5, 6,
   ])
-  const [endDate, setEndDate] = useState<Date | null>(endOfMonth(initialDate))
-  const [selectedSegment, setSelectedSegment] = useState<string>('')
-  const [selectedSource, setSelectedSource] = useState<DataSource>(
-    DataSource.PeMS
-  )
-
+  const [selectedSource, setSelectedSource] = useState<DataSource>(sourceId)
   useEffect(() => {
     if (startDate && endDate && daysOfWeek) {
       onOptionsChange({
         startDate: startDate.toISOString().split('T')[0],
         endDate: endDate.toISOString().split('T')[0],
-        sourceId: selectedSource,
         daysOfWeek,
-        segmentId: selectedSegment,
+        sourceId: selectedSource,
       })
     }
-  }, [
-    startDate,
-    endDate,
-    selectedSource,
-    onOptionsChange,
-    daysOfWeek,
-    selectedSegment,
-  ])
+  }, [startDate, endDate, onOptionsChange, daysOfWeek, selectedSource])
 
   const handleStartDateChange = (date: Date | null) => {
-    setStartDate(date)
+    if (date === null || isValid(date)) {
+      setStartDate(date)
+    } else {
+      setStartDate(null)
+    }
   }
 
   const handleEndDateChange = (date: Date | null) => {
-    setEndDate(date)
+    if (date === null || isValid(date)) {
+      setEndDate(date)
+    } else {
+      setEndDate(null)
+    }
   }
 
   const handleDaysOfWeekChange = (days: DayOfWeek[]) => {

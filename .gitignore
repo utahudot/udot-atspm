@@ -103,3 +103,4 @@ dkms.conf
 /ATSPM/WebUI/obj/
 *.config
 /DatabaseInstaller/obj
+/DatabaseInstaller/bin/Debug/net7.0
