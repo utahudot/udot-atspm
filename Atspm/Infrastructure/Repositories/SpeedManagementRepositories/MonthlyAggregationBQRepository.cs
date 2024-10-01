@@ -700,9 +700,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 { "WeekdayEarlyMorningPercentExtremeViolations", item.WeekdayEarlyMorningPercentExtremeViolations },
                 { "WeekdayEarlyMorningAvgSpeedVsSpeedLimit", item.WeekdayEarlyMorningAvgSpeedVsSpeedLimit },
                 { "WeekdayEarlyMorningEightyFifthSpeedVsSpeedLimit", item.WeekdayEarlyMorningEightyFifthSpeedVsSpeedLimit },
-                { "WeekdayEarlyMorningPercentObserved", item.WeekdayEarlyMorningPercentObserved },
-
-                { "PercentObserved", item.PercentObserved }
+                { "WeekdayEarlyMorningPercentObserved", item.WeekdayEarlyMorningPercentObserved }
             };
         }
 
@@ -1212,7 +1210,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 WeekendMidDayPercentExtremeViolations = bigQueryWeekendMidDayPercentExtremeViolations,
                 WeekendMidDayAvgSpeedVsSpeedLimit = bigQueryWeekendMidDayAvgSpeedVsSpeedLimit,
                 WeekendMidDayEightyFifthSpeedVsSpeedLimit = bigQueryWeekendMidDayEightyFifthSpeedVsSpeedLimit,
-                WeekendMidDayPercentObserved = bigQueryWeekendPercentObserved,
+                WeekendMidDayPercentObserved = bigQueryWeekendMidDayPercentObserved,
 
                 WeekdayMidDayAverageSpeed = bigQueryWeekdayMidDayAverageSpeed,
                 WeekdayMidDayAverageEightyFifthSpeed = bigQueryWeekdayMidDayAverageEightyFifthSpeed,
@@ -1226,7 +1224,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 WeekdayMidDayPercentExtremeViolations = bigQueryWeekdayMidDayPercentExtremeViolations,
                 WeekdayMidDayAvgSpeedVsSpeedLimit = bigQueryWeekdayMidDayAvgSpeedVsSpeedLimit,
                 WeekdayMidDayEightyFifthSpeedVsSpeedLimit = bigQueryWeekdayMidDayEightyFifthSpeedVsSpeedLimit,
-                WeekdayMidDayPercentObserved = bigQueryWeekdayPercentObserved,
+                WeekdayMidDayPercentObserved = bigQueryWeekdayMidDayPercentObserved,
 
                 EveningAverageSpeed = bigQueryEveningAverageSpeed,
                 EveningAverageEightyFifthSpeed = bigQueryEveningAverageEightyFifthSpeed,
