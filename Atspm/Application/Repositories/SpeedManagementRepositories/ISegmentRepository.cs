@@ -5,8 +5,8 @@ namespace Utah.Udot.Atspm.Repositories.SpeedManagementRepositories
 {
     public interface ISegmentRepository : IAsyncRepository<Segment>
     {
-        public Task AddRoutesAsync(IEnumerable<Segment> routes);
-        public Task AddRouteAsync(Segment route);
+        public Task AddSegmentsAsync(IEnumerable<Segment> segments);
+        public Task AddSegmentAsync(Segment segment);
         List<Segment> AllSegmentsWithEntity();
         Task<List<Segment>> GetSegmentsDetailsWithEntity(List<Guid> segmentIds);
         Task<List<Segment>> GetSegmentsDetail(List<Guid> segmentIds);

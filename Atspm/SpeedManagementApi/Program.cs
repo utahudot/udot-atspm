@@ -27,7 +27,6 @@ using Utah.Udot.Atspm.Services;
 using Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices;
 using Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices.DataQuality;
 using Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices.EffectivenessOrStrategies;
-using Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices.SegmentSpeed;
 using Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices.SpeedCompliance;
 using Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices.SpeedOverDistance;
 using Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices.SpeedOverTime;
@@ -223,7 +222,7 @@ builder.Host.ConfigureServices((h, s) =>
     Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", builder.Configuration["GoogleApplicationCredentials"]);
 
     s.AddScoped<RouteSpeedService>();
-    s.AddScoped<RouteService>();
+    s.AddScoped<SegmentService>();
     s.AddScoped<ImpactService>();
     s.AddScoped<ImpactTypeService>();
     s.AddScoped<MonthlyAggregationService>();

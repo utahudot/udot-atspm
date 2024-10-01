@@ -7,7 +7,6 @@
         public Guid SegmentId { get; set; }
         public string EntityType { get; set; }
         public double Length { get; set; }
-
         public Segment? Segment { get; set; }
     }
 }
