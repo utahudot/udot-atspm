@@ -12,7 +12,7 @@ const SpeedComplianceChartsContainer = ({ chartData }: { chartData: any }) => {
   let tableData = chartData.tableData
   console.log(chartData)
   return (
-    <Box>
+    <>
       <Box sx={{ display: 'flex', justifyContent: 'center', pt: 2 }}>
         <ApacheEChart
           id="speed-over-time-chart"
@@ -22,7 +22,6 @@ const SpeedComplianceChartsContainer = ({ chartData }: { chartData: any }) => {
         />
       </Box>
 
-      <Box sx={{ display: 'flex', justifyContent: 'center' }}>
         <TableContainer
           sx={{
             mt: 4,
@@ -201,8 +200,7 @@ const SpeedComplianceChartsContainer = ({ chartData }: { chartData: any }) => {
             </TableBody>
           </Table>
         </TableContainer>
-      </Box>
-    </Box>
+    </>
   )
 }
 

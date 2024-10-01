@@ -20,6 +20,7 @@ public class MonthlyAggregation
     public double? AllDayPercentExtremeViolations { get; set; }
     public double? AllDayAvgSpeedVsSpeedLimit { get; set; }
     public double? AllDayEightyFifthSpeedVsSpeedLimit { get; set; }
+    public double? AllDayPercentObserved { get; set; }
 
     public double? WeekendAllDayAverageSpeed { get; set; } //All Day 12:00AM - 11:59PM
     public double? WeekendAllDayAverageEightyFifthSpeed { get; set; }
@@ -33,6 +34,7 @@ public class MonthlyAggregation
     public double? WeekendAllDayPercentExtremeViolations { get; set; }
     public double? WeekendAllDayAvgSpeedVsSpeedLimit { get; set; }
     public double? WeekendAllDayEightyFifthSpeedVsSpeedLimit { get; set; }
+    public double? WeekendAllDayPercentObserved { get; set; }
 
     public double? WeekdayAllDayAverageSpeed { get; set; } // All Day 12:00AM - 11:59PM
     public double? WeekdayAllDayAverageEightyFifthSpeed { get; set; }
@@ -46,6 +48,7 @@ public class MonthlyAggregation
     public double? WeekdayAllDayPercentExtremeViolations { get; set; }
     public double? WeekdayAllDayAvgSpeedVsSpeedLimit { get; set; }
     public double? WeekdayAllDayEightyFifthSpeedVsSpeedLimit { get; set; }
+    public double? WeekdayAllDayPercentObserved { get; set; }
 
 
     public double? OffPeakAverageSpeed { get; set; } //Off Peak 10:00PM - 4:00AM
@@ -60,6 +63,7 @@ public class MonthlyAggregation
     public double? OffPeakPercentExtremeViolations { get; set; }
     public double? OffPeakAvgSpeedVsSpeedLimit { get; set; }
     public double? OffPeakEightyFifthSpeedVsSpeedLimit { get; set; }
+    public double? OffPeakPercentObserved { get; set; }
 
     public double? WeekendOffPeakAverageSpeed { get; set; } // Off Peak times
     public double? WeekendOffPeakAverageEightyFifthSpeed { get; set; }
@@ -73,6 +77,7 @@ public class MonthlyAggregation
     public double? WeekendOffPeakPercentExtremeViolations { get; set; }
     public double? WeekendOffPeakAvgSpeedVsSpeedLimit { get; set; }
     public double? WeekendOffPeakEightyFifthSpeedVsSpeedLimit { get; set; }
+    public double? WeekendOffPeakPercentObserved { get; set; }
 
     public double? WeekdayOffPeakAverageSpeed { get; set; } // Off Peak times
     public double? WeekdayOffPeakAverageEightyFifthSpeed { get; set; }
@@ -86,6 +91,7 @@ public class MonthlyAggregation
     public double? WeekdayOffPeakPercentExtremeViolations { get; set; }
     public double? WeekdayOffPeakAvgSpeedVsSpeedLimit { get; set; }
     public double? WeekdayOffPeakEightyFifthSpeedVsSpeedLimit { get; set; }
+    public double? WeekdayOffPeakPercentObserved { get; set; }
 
 
     public double? AmPeakAverageSpeed { get; set; } //AM Peak 6:00AM - 9:00AM
@@ -100,6 +106,7 @@ public class MonthlyAggregation
     public double? AmPeakPercentExtremeViolations { get; set; }
     public double? AmPeakAvgSpeedVsSpeedLimit { get; set; }
     public double? AmPeakEightyFifthSpeedVsSpeedLimit { get; set; }
+    public double? AmPeakPercentObserved { get; set; }
 
     public double? WeekendAmPeakAverageSpeed { get; set; } // AM Peak times
     public double? WeekendAmPeakAverageEightyFifthSpeed { get; set; }
@@ -113,6 +120,7 @@ public class MonthlyAggregation
     public double? WeekendAmPeakPercentExtremeViolations { get; set; }
     public double? WeekendAmPeakAvgSpeedVsSpeedLimit { get; set; }
     public double? WeekendAmPeakEightyFifthSpeedVsSpeedLimit { get; set; }
+    public double? WeekendAmPeakPercentObserved { get; set; }
 
     public double? WeekdayAmPeakAverageSpeed { get; set; } // AM Peak times
     public double? WeekdayAmPeakAverageEightyFifthSpeed { get; set; }
@@ -126,6 +134,7 @@ public class MonthlyAggregation
     public double? WeekdayAmPeakPercentExtremeViolations { get; set; }
     public double? WeekdayAmPeakAvgSpeedVsSpeedLimit { get; set; }
     public double? WeekdayAmPeakEightyFifthSpeedVsSpeedLimit { get; set; }
+    public double? WeekdayAmPeakPercentObserved { get; set; }
 
 
     public double? PmPeakAverageSpeed { get; set; } //PM Peak 4:00PM - 6:00PM
@@ -140,6 +149,7 @@ public class MonthlyAggregation
     public double? PmPeakPercentExtremeViolations { get; set; }
     public double? PmPeakAvgSpeedVsSpeedLimit { get; set; }
     public double? PmPeakEightyFifthSpeedVsSpeedLimit { get; set; }
+    public double? PmPeakPercentObserved { get; set; }
 
     public double? WeekendPmPeakAverageSpeed { get; set; } // PM Peak times
     public double? WeekendPmPeakAverageEightyFifthSpeed { get; set; }
@@ -153,6 +163,7 @@ public class MonthlyAggregation
     public double? WeekendPmPeakPercentExtremeViolations { get; set; }
     public double? WeekendPmPeakAvgSpeedVsSpeedLimit { get; set; }
     public double? WeekendPmPeakEightyFifthSpeedVsSpeedLimit { get; set; }
+    public double? WeekendPmPeakPercentObserved { get; set; }
 
     public double? WeekdayPmPeakAverageSpeed { get; set; } // PM Peak times
     public double? WeekdayPmPeakAverageEightyFifthSpeed { get; set; }
@@ -166,6 +177,7 @@ public class MonthlyAggregation
     public double? WeekdayPmPeakPercentExtremeViolations { get; set; }
     public double? WeekdayPmPeakAvgSpeedVsSpeedLimit { get; set; }
     public double? WeekdayPmPeakEightyFifthSpeedVsSpeedLimit { get; set; }
+    public double? WeekdayPmPeakPercentObserved { get; set; }
 
 
     public double? MidDayAverageSpeed { get; set; } //Mid Day 9:00AM - 4:00PM
@@ -180,6 +192,7 @@ public class MonthlyAggregation
     public double? MidDayPercentExtremeViolations { get; set; }
     public double? MidDayAvgSpeedVsSpeedLimit { get; set; }
     public double? MidDayEightyFifthSpeedVsSpeedLimit { get; set; }
+    public double? MidDayPercentObserved { get; set; }
 
     public double? WeekendMidDayAverageSpeed { get; set; } // MidDay times
     public double? WeekendMidDayAverageEightyFifthSpeed { get; set; }
@@ -193,6 +206,7 @@ public class MonthlyAggregation
     public double? WeekendMidDayPercentExtremeViolations { get; set; }
     public double? WeekendMidDayAvgSpeedVsSpeedLimit { get; set; }
     public double? WeekendMidDayEightyFifthSpeedVsSpeedLimit { get; set; }
+    public double? WeekendMidDayPercentObserved { get; set; }
 
     public double? WeekdayMidDayAverageSpeed { get; set; } // MidDay times
     public double? WeekdayMidDayAverageEightyFifthSpeed { get; set; }
@@ -206,6 +220,7 @@ public class MonthlyAggregation
     public double? WeekdayMidDayPercentExtremeViolations { get; set; }
     public double? WeekdayMidDayAvgSpeedVsSpeedLimit { get; set; }
     public double? WeekdayMidDayEightyFifthSpeedVsSpeedLimit { get; set; }
+    public double? WeekdayMidDayPercentObserved { get; set; }
 
 
     public double? EveningAverageSpeed { get; set; } //Evening 6:00PM - 10:00PM
@@ -220,6 +235,7 @@ public class MonthlyAggregation
     public double? EveningPercentExtremeViolations { get; set; }
     public double? EveningAvgSpeedVsSpeedLimit { get; set; }
     public double? EveningEightyFifthSpeedVsSpeedLimit { get; set; }
+    public double? EveningPercentObserved { get; set; }
 
     public double? WeekendEveningAverageSpeed { get; set; } // Evening times
     public double? WeekendEveningAverageEightyFifthSpeed { get; set; }
@@ -233,6 +249,7 @@ public class MonthlyAggregation
     public double? WeekendEveningPercentExtremeViolations { get; set; }
     public double? WeekendEveningAvgSpeedVsSpeedLimit { get; set; }
     public double? WeekendEveningEightyFifthSpeedVsSpeedLimit { get; set; }
+    public double? WeekendEveningPercentObserved { get; set; }
 
     public double? WeekdayEveningAverageSpeed { get; set; } // Evening times
     public double? WeekdayEveningAverageEightyFifthSpeed { get; set; }
@@ -246,6 +263,7 @@ public class MonthlyAggregation
     public double? WeekdayEveningPercentExtremeViolations { get; set; }
     public double? WeekdayEveningAvgSpeedVsSpeedLimit { get; set; }
     public double? WeekdayEveningEightyFifthSpeedVsSpeedLimit { get; set; }
+    public double? WeekdayEveningPercentObserved { get; set; }
 
 
     public double? EarlyMorningAverageSpeed { get; set; } //4:00AM - 6:00AM
@@ -260,6 +278,7 @@ public class MonthlyAggregation
     public double? EarlyMorningPercentExtremeViolations { get; set; }
     public double? EarlyMorningAvgSpeedVsSpeedLimit { get; set; }
     public double? EarlyMorningEightyFifthSpeedVsSpeedLimit { get; set; }
+    public double? EarlyMorningPercentObserved { get; set; }
 
     public double? WeekendEarlyMorningAverageSpeed { get; set; } // Early Morning times
     public double? WeekendEarlyMorningAverageEightyFifthSpeed { get; set; }
@@ -273,6 +292,7 @@ public class MonthlyAggregation
     public double? WeekendEarlyMorningPercentExtremeViolations { get; set; }
     public double? WeekendEarlyMorningAvgSpeedVsSpeedLimit { get; set; }
     public double? WeekendEarlyMorningEightyFifthSpeedVsSpeedLimit { get; set; }
+    public double? WeekendEarlyMorningPercentObserved { get; set; }
 
     public double? WeekdayEarlyMorningAverageSpeed { get; set; } // Early Morning times
     public double? WeekdayEarlyMorningAverageEightyFifthSpeed { get; set; }
@@ -286,7 +306,6 @@ public class MonthlyAggregation
     public double? WeekdayEarlyMorningPercentExtremeViolations { get; set; }
     public double? WeekdayEarlyMorningAvgSpeedVsSpeedLimit { get; set; }
     public double? WeekdayEarlyMorningEightyFifthSpeedVsSpeedLimit { get; set; }
+    public double? WeekdayEarlyMorningPercentObserved { get; set; }
 
-
-    public double? PercentObserved { get; set; } //true is reliable false is unreliable
 }
