@@ -746,6 +746,8 @@ namespace SpeedManagementApi.Processors
             aggregation.AvgSpeedVsSpeedLimit = avgSpeedVsSpeedLimit;
             double? avgEightyFifthSpeedLimit = speedLimit != 0 ? (double)eightyFifthSpeed - speedLimit : (double?)null;
             aggregation.EightyFifthSpeedVsSpeedLimit = avgEightyFifthSpeedLimit;
+            double? percentObserved = filteredSpeeds.Average(hs => hs.PercentObserved);
+            aggregation.PercentObserved = percentObserved;
 
             return aggregation;
         }
