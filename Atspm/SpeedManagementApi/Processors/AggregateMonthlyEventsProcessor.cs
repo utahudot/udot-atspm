@@ -206,8 +206,7 @@ namespace SpeedManagementApi.Processors
                             BinStartTime = firstDayOfPreviousMonth,
                             SegmentId = segment.Id,
                             //INSTEAD OF GET ALL SEGMENTS, DO GET SEGMENTS BY SOURCE ID, FOR KENZIE PROBABLY
-                            SourceId = source.SourceId,
-                            PercentObserved = 0.00
+                            SourceId = source.SourceId
                         },
                         SpeedLimit = segment.SpeedLimit
                     };
@@ -237,8 +236,7 @@ namespace SpeedManagementApi.Processors
                         CreatedDate = DateTime.SpecifyKind(today, DateTimeKind.Utc),
                         BinStartTime = firstDayOfMonth,
                         SegmentId = segment.Id,
-                        SourceId = source,
-                        PercentObserved = 0.00
+                        SourceId = source
                     },
                     SpeedLimit = segment.SpeedLimit
                 };
@@ -268,8 +266,7 @@ namespace SpeedManagementApi.Processors
                         CreatedDate = DateTime.SpecifyKind(today, DateTimeKind.Utc),
                         BinStartTime = firstDayOfPreviousMonth,
                         SegmentId = monthlyAggregation.SegmentId,
-                        SourceId = monthlyAggregation.SourceId,
-                        PercentObserved = 0.00
+                        SourceId = monthlyAggregation.SourceId
                     }
                 };
                 lastDayOfPreviousMonth = firstDayOfPreviousMonth.AddDays(-1); ;
@@ -309,8 +306,6 @@ namespace SpeedManagementApi.Processors
             TimeSpan endTime = new TimeSpan(23, 59, 59); // 11:59 PM
             var hourlySpeeds = monthlyAggregationProcessor.hourlySpeeds;
 
-            monthlyAggregationProcessor.monthlyAggregation.PercentObserved = hourlySpeeds.Average(hs => hs.PercentObserved);
-
             var aggregation = GetAveragesOfTimePeriod(monthlyAggregationProcessor.hourlySpeeds, startTime, endTime, monthlyAggregationProcessor.SpeedLimit, DayType.Total);
 
             monthlyAggregationProcessor.monthlyAggregation.AllDayAverageSpeed = aggregation.AverageSpeed;
@@ -325,6 +320,7 @@ namespace SpeedManagementApi.Processors
             monthlyAggregationProcessor.monthlyAggregation.AllDayPercentExtremeViolations = aggregation.PercentExtremeViolations;
             monthlyAggregationProcessor.monthlyAggregation.AllDayAvgSpeedVsSpeedLimit = aggregation.AvgSpeedVsSpeedLimit;
             monthlyAggregationProcessor.monthlyAggregation.AllDayEightyFifthSpeedVsSpeedLimit = aggregation.EightyFifthSpeedVsSpeedLimit;
+            monthlyAggregationProcessor.monthlyAggregation.AllDayPercentObserved = aggregation.PercentObserved;
 
             var aggregationWeekday = GetAveragesOfTimePeriod(monthlyAggregationProcessor.hourlySpeeds, startTime, endTime, monthlyAggregationProcessor.SpeedLimit, DayType.Weekday);
 
@@ -340,6 +336,7 @@ namespace SpeedManagementApi.Processors
             monthlyAggregationProcessor.monthlyAggregation.WeekdayAllDayPercentExtremeViolations = aggregationWeekday.PercentExtremeViolations;
             monthlyAggregationProcessor.monthlyAggregation.WeekdayAllDayAvgSpeedVsSpeedLimit = aggregationWeekday.AvgSpeedVsSpeedLimit;
             monthlyAggregationProcessor.monthlyAggregation.WeekdayAllDayEightyFifthSpeedVsSpeedLimit = aggregationWeekday.EightyFifthSpeedVsSpeedLimit;
+            monthlyAggregationProcessor.monthlyAggregation.WeekdayAllDayPercentObserved = aggregationWeekday.PercentObserved;
 
             var aggregationWeekend = GetAveragesOfTimePeriod(monthlyAggregationProcessor.hourlySpeeds, startTime, endTime, monthlyAggregationProcessor.SpeedLimit, DayType.Weekend);
 
@@ -355,6 +352,7 @@ namespace SpeedManagementApi.Processors
             monthlyAggregationProcessor.monthlyAggregation.WeekendAllDayPercentExtremeViolations = aggregationWeekend.PercentExtremeViolations;
             monthlyAggregationProcessor.monthlyAggregation.WeekendAllDayAvgSpeedVsSpeedLimit = aggregationWeekend.AvgSpeedVsSpeedLimit;
             monthlyAggregationProcessor.monthlyAggregation.WeekendAllDayEightyFifthSpeedVsSpeedLimit = aggregationWeekend.EightyFifthSpeedVsSpeedLimit;
+            monthlyAggregationProcessor.monthlyAggregation.WeekendAllDayPercentObserved = aggregationWeekend.PercentObserved;
 
             return monthlyAggregationProcessor;
         }
@@ -378,6 +376,7 @@ namespace SpeedManagementApi.Processors
             monthlyAggregationProcessor.monthlyAggregation.OffPeakPercentExtremeViolations = aggregation.PercentExtremeViolations;
             monthlyAggregationProcessor.monthlyAggregation.OffPeakAvgSpeedVsSpeedLimit = aggregation.AvgSpeedVsSpeedLimit;
             monthlyAggregationProcessor.monthlyAggregation.OffPeakEightyFifthSpeedVsSpeedLimit = aggregation.EightyFifthSpeedVsSpeedLimit;
+            monthlyAggregationProcessor.monthlyAggregation.OffPeakPercentObserved = aggregation.PercentObserved;
 
             var aggregationWeekday = GetAveragesOfTimePeriodWithOvernightMetric(monthlyAggregationProcessor.hourlySpeeds, startTime, endTime, monthlyAggregationProcessor.SpeedLimit, DayType.Weekday);
 
@@ -393,6 +392,7 @@ namespace SpeedManagementApi.Processors
             monthlyAggregationProcessor.monthlyAggregation.WeekdayOffPeakPercentExtremeViolations = aggregationWeekday.PercentExtremeViolations;
             monthlyAggregationProcessor.monthlyAggregation.WeekdayOffPeakAvgSpeedVsSpeedLimit = aggregationWeekday.AvgSpeedVsSpeedLimit;
             monthlyAggregationProcessor.monthlyAggregation.WeekdayOffPeakEightyFifthSpeedVsSpeedLimit = aggregationWeekday.EightyFifthSpeedVsSpeedLimit;
+            monthlyAggregationProcessor.monthlyAggregation.WeekdayOffPeakPercentObserved = aggregationWeekday.PercentObserved;
 
             var aggregationWeekend = GetAveragesOfTimePeriodWithOvernightMetric(monthlyAggregationProcessor.hourlySpeeds, startTime, endTime, monthlyAggregationProcessor.SpeedLimit, DayType.Weekend);
 
@@ -408,6 +408,7 @@ namespace SpeedManagementApi.Processors
             monthlyAggregationProcessor.monthlyAggregation.WeekendOffPeakPercentExtremeViolations = aggregationWeekend.PercentExtremeViolations;
             monthlyAggregationProcessor.monthlyAggregation.WeekendOffPeakAvgSpeedVsSpeedLimit = aggregationWeekend.AvgSpeedVsSpeedLimit;
             monthlyAggregationProcessor.monthlyAggregation.WeekendOffPeakEightyFifthSpeedVsSpeedLimit = aggregationWeekend.EightyFifthSpeedVsSpeedLimit;
+            monthlyAggregationProcessor.monthlyAggregation.WeekendOffPeakPercentObserved = aggregationWeekend.PercentObserved;
 
             return monthlyAggregationProcessor;
         }
@@ -431,6 +432,7 @@ namespace SpeedManagementApi.Processors
             monthlyAggregationProcessor.monthlyAggregation.AmPeakPercentExtremeViolations = aggregation.PercentExtremeViolations;
             monthlyAggregationProcessor.monthlyAggregation.AmPeakAvgSpeedVsSpeedLimit = aggregation.AvgSpeedVsSpeedLimit;
             monthlyAggregationProcessor.monthlyAggregation.AmPeakEightyFifthSpeedVsSpeedLimit = aggregation.EightyFifthSpeedVsSpeedLimit;
+            monthlyAggregationProcessor.monthlyAggregation.AmPeakPercentObserved = aggregation.PercentObserved;
 
             var aggregationWeekday = GetAveragesOfTimePeriod(monthlyAggregationProcessor.hourlySpeeds, startTime, endTime, monthlyAggregationProcessor.SpeedLimit, DayType.Weekday);
 
@@ -446,6 +448,7 @@ namespace SpeedManagementApi.Processors
             monthlyAggregationProcessor.monthlyAggregation.WeekdayAmPeakPercentExtremeViolations = aggregationWeekday.PercentExtremeViolations;
             monthlyAggregationProcessor.monthlyAggregation.WeekdayAmPeakAvgSpeedVsSpeedLimit = aggregationWeekday.AvgSpeedVsSpeedLimit;
             monthlyAggregationProcessor.monthlyAggregation.WeekdayAmPeakEightyFifthSpeedVsSpeedLimit = aggregationWeekday.EightyFifthSpeedVsSpeedLimit;
+            monthlyAggregationProcessor.monthlyAggregation.WeekdayAmPeakPercentObserved = aggregationWeekday.PercentObserved;
 
             var aggregationWeekend = GetAveragesOfTimePeriod(monthlyAggregationProcessor.hourlySpeeds, startTime, endTime, monthlyAggregationProcessor.SpeedLimit, DayType.Weekend);
 
@@ -461,6 +464,7 @@ namespace SpeedManagementApi.Processors
             monthlyAggregationProcessor.monthlyAggregation.WeekendAmPeakPercentExtremeViolations = aggregationWeekend.PercentExtremeViolations;
             monthlyAggregationProcessor.monthlyAggregation.WeekendAmPeakAvgSpeedVsSpeedLimit = aggregationWeekend.AvgSpeedVsSpeedLimit;
             monthlyAggregationProcessor.monthlyAggregation.WeekendAmPeakEightyFifthSpeedVsSpeedLimit = aggregationWeekend.EightyFifthSpeedVsSpeedLimit;
+            monthlyAggregationProcessor.monthlyAggregation.WeekendAmPeakPercentObserved = aggregationWeekend.PercentObserved;
 
             return monthlyAggregationProcessor;
         }
@@ -484,6 +488,7 @@ namespace SpeedManagementApi.Processors
             monthlyAggregationProcessor.monthlyAggregation.PmPeakPercentExtremeViolations = aggregation.PercentExtremeViolations;
             monthlyAggregationProcessor.monthlyAggregation.PmPeakAvgSpeedVsSpeedLimit = aggregation.AvgSpeedVsSpeedLimit;
             monthlyAggregationProcessor.monthlyAggregation.PmPeakEightyFifthSpeedVsSpeedLimit = aggregation.EightyFifthSpeedVsSpeedLimit;
+            monthlyAggregationProcessor.monthlyAggregation.PmPeakPercentObserved = aggregation.PercentObserved;
 
             var aggregationWeekday = GetAveragesOfTimePeriod(monthlyAggregationProcessor.hourlySpeeds, startTime, endTime, monthlyAggregationProcessor.SpeedLimit, DayType.Weekday);
 
@@ -499,6 +504,7 @@ namespace SpeedManagementApi.Processors
             monthlyAggregationProcessor.monthlyAggregation.WeekdayPmPeakPercentExtremeViolations = aggregationWeekday.PercentExtremeViolations;
             monthlyAggregationProcessor.monthlyAggregation.WeekdayPmPeakAvgSpeedVsSpeedLimit = aggregationWeekday.AvgSpeedVsSpeedLimit;
             monthlyAggregationProcessor.monthlyAggregation.WeekdayPmPeakEightyFifthSpeedVsSpeedLimit = aggregationWeekday.EightyFifthSpeedVsSpeedLimit;
+            monthlyAggregationProcessor.monthlyAggregation.WeekdayPmPeakPercentObserved = aggregationWeekday.PercentObserved;
 
             var aggregationWeekend = GetAveragesOfTimePeriod(monthlyAggregationProcessor.hourlySpeeds, startTime, endTime, monthlyAggregationProcessor.SpeedLimit, DayType.Weekend);
 
@@ -514,6 +520,7 @@ namespace SpeedManagementApi.Processors
             monthlyAggregationProcessor.monthlyAggregation.WeekendPmPeakPercentExtremeViolations = aggregationWeekend.PercentExtremeViolations;
             monthlyAggregationProcessor.monthlyAggregation.WeekendPmPeakAvgSpeedVsSpeedLimit = aggregationWeekend.AvgSpeedVsSpeedLimit;
             monthlyAggregationProcessor.monthlyAggregation.WeekendPmPeakEightyFifthSpeedVsSpeedLimit = aggregationWeekend.EightyFifthSpeedVsSpeedLimit;
+            monthlyAggregationProcessor.monthlyAggregation.WeekendPmPeakPercentObserved = aggregationWeekend.PercentObserved;
 
             return monthlyAggregationProcessor;
         }
@@ -537,6 +544,7 @@ namespace SpeedManagementApi.Processors
             monthlyAggregationProcessor.monthlyAggregation.MidDayPercentExtremeViolations = aggregation.PercentExtremeViolations;
             monthlyAggregationProcessor.monthlyAggregation.MidDayAvgSpeedVsSpeedLimit = aggregation.AvgSpeedVsSpeedLimit;
             monthlyAggregationProcessor.monthlyAggregation.MidDayEightyFifthSpeedVsSpeedLimit = aggregation.EightyFifthSpeedVsSpeedLimit;
+            monthlyAggregationProcessor.monthlyAggregation.MidDayPercentObserved = aggregation.PercentObserved;
 
             var aggregationWeekday = GetAveragesOfTimePeriod(monthlyAggregationProcessor.hourlySpeeds, startTime, endTime, monthlyAggregationProcessor.SpeedLimit, DayType.Weekday);
 
@@ -552,6 +560,7 @@ namespace SpeedManagementApi.Processors
             monthlyAggregationProcessor.monthlyAggregation.WeekdayMidDayPercentExtremeViolations = aggregationWeekday.PercentExtremeViolations;
             monthlyAggregationProcessor.monthlyAggregation.WeekdayMidDayAvgSpeedVsSpeedLimit = aggregationWeekday.AvgSpeedVsSpeedLimit;
             monthlyAggregationProcessor.monthlyAggregation.WeekdayMidDayEightyFifthSpeedVsSpeedLimit = aggregationWeekday.EightyFifthSpeedVsSpeedLimit;
+            monthlyAggregationProcessor.monthlyAggregation.WeekdayMidDayPercentObserved = aggregationWeekday.PercentObserved;
 
             var aggregationWeekend = GetAveragesOfTimePeriod(monthlyAggregationProcessor.hourlySpeeds, startTime, endTime, monthlyAggregationProcessor.SpeedLimit, DayType.Weekend);
 
@@ -567,6 +576,7 @@ namespace SpeedManagementApi.Processors
             monthlyAggregationProcessor.monthlyAggregation.WeekendMidDayPercentExtremeViolations = aggregationWeekend.PercentExtremeViolations;
             monthlyAggregationProcessor.monthlyAggregation.WeekendMidDayAvgSpeedVsSpeedLimit = aggregationWeekend.AvgSpeedVsSpeedLimit;
             monthlyAggregationProcessor.monthlyAggregation.WeekendMidDayEightyFifthSpeedVsSpeedLimit = aggregationWeekend.EightyFifthSpeedVsSpeedLimit;
+            monthlyAggregationProcessor.monthlyAggregation.WeekendMidDayPercentObserved = aggregationWeekend.PercentObserved;
 
             return monthlyAggregationProcessor;
         }
@@ -590,6 +600,7 @@ namespace SpeedManagementApi.Processors
             monthlyAggregationProcessor.monthlyAggregation.EveningPercentExtremeViolations = aggregation.PercentExtremeViolations;
             monthlyAggregationProcessor.monthlyAggregation.EveningAvgSpeedVsSpeedLimit = aggregation.AvgSpeedVsSpeedLimit;
             monthlyAggregationProcessor.monthlyAggregation.EveningEightyFifthSpeedVsSpeedLimit = aggregation.EightyFifthSpeedVsSpeedLimit;
+            monthlyAggregationProcessor.monthlyAggregation.EveningPercentObserved = aggregation.PercentObserved;
 
             var aggregationWeekend = GetAveragesOfTimePeriod(monthlyAggregationProcessor.hourlySpeeds, startTime, endTime, monthlyAggregationProcessor.SpeedLimit, DayType.Weekend);
 
@@ -605,6 +616,7 @@ namespace SpeedManagementApi.Processors
             monthlyAggregationProcessor.monthlyAggregation.WeekendEveningPercentExtremeViolations = aggregationWeekend.PercentExtremeViolations;
             monthlyAggregationProcessor.monthlyAggregation.WeekendEveningAvgSpeedVsSpeedLimit = aggregationWeekend.AvgSpeedVsSpeedLimit;
             monthlyAggregationProcessor.monthlyAggregation.WeekendEveningEightyFifthSpeedVsSpeedLimit = aggregationWeekend.EightyFifthSpeedVsSpeedLimit;
+            monthlyAggregationProcessor.monthlyAggregation.WeekendEveningPercentObserved = aggregationWeekend.PercentObserved;
 
             var aggregationWeekday = GetAveragesOfTimePeriod(monthlyAggregationProcessor.hourlySpeeds, startTime, endTime, monthlyAggregationProcessor.SpeedLimit, DayType.Weekday);
 
@@ -620,6 +632,7 @@ namespace SpeedManagementApi.Processors
             monthlyAggregationProcessor.monthlyAggregation.WeekdayEveningPercentExtremeViolations = aggregationWeekday.PercentExtremeViolations;
             monthlyAggregationProcessor.monthlyAggregation.WeekdayEveningAvgSpeedVsSpeedLimit = aggregationWeekday.AvgSpeedVsSpeedLimit;
             monthlyAggregationProcessor.monthlyAggregation.WeekdayEveningEightyFifthSpeedVsSpeedLimit = aggregationWeekday.EightyFifthSpeedVsSpeedLimit;
+            monthlyAggregationProcessor.monthlyAggregation.WeekdayEveningPercentObserved = aggregationWeekday.PercentObserved;
 
             return monthlyAggregationProcessor;
         }
@@ -643,6 +656,7 @@ namespace SpeedManagementApi.Processors
             monthlyAggregationProcessor.monthlyAggregation.EarlyMorningPercentExtremeViolations = aggregation.PercentExtremeViolations;
             monthlyAggregationProcessor.monthlyAggregation.EarlyMorningAvgSpeedVsSpeedLimit = aggregation.AvgSpeedVsSpeedLimit;
             monthlyAggregationProcessor.monthlyAggregation.EarlyMorningEightyFifthSpeedVsSpeedLimit = aggregation.EightyFifthSpeedVsSpeedLimit;
+            monthlyAggregationProcessor.monthlyAggregation.EarlyMorningPercentObserved = aggregation.PercentObserved;
 
             var aggregationWeekday = GetAveragesOfTimePeriod(monthlyAggregationProcessor.hourlySpeeds, startTime, endTime, monthlyAggregationProcessor.SpeedLimit, DayType.Weekday);
 
@@ -658,6 +672,7 @@ namespace SpeedManagementApi.Processors
             monthlyAggregationProcessor.monthlyAggregation.WeekdayEarlyMorningPercentExtremeViolations = aggregationWeekday.PercentExtremeViolations;
             monthlyAggregationProcessor.monthlyAggregation.WeekdayEarlyMorningAvgSpeedVsSpeedLimit = aggregationWeekday.AvgSpeedVsSpeedLimit;
             monthlyAggregationProcessor.monthlyAggregation.WeekdayEarlyMorningEightyFifthSpeedVsSpeedLimit = aggregationWeekday.EightyFifthSpeedVsSpeedLimit;
+            monthlyAggregationProcessor.monthlyAggregation.WeekdayEarlyMorningPercentObserved = aggregationWeekday.PercentObserved;
 
             var aggregationWeekend = GetAveragesOfTimePeriod(monthlyAggregationProcessor.hourlySpeeds, startTime, endTime, monthlyAggregationProcessor.SpeedLimit, DayType.Weekend);
 
@@ -673,6 +688,7 @@ namespace SpeedManagementApi.Processors
             monthlyAggregationProcessor.monthlyAggregation.WeekendEarlyMorningPercentExtremeViolations = aggregationWeekend.PercentExtremeViolations;
             monthlyAggregationProcessor.monthlyAggregation.WeekendEarlyMorningAvgSpeedVsSpeedLimit = aggregationWeekend.AvgSpeedVsSpeedLimit;
             monthlyAggregationProcessor.monthlyAggregation.WeekendEarlyMorningEightyFifthSpeedVsSpeedLimit = aggregationWeekend.EightyFifthSpeedVsSpeedLimit;
+            monthlyAggregationProcessor.monthlyAggregation.WeekendEarlyMorningPercentObserved = aggregationWeekend.PercentObserved;
 
             return monthlyAggregationProcessor;
         }
@@ -795,6 +811,8 @@ namespace SpeedManagementApi.Processors
             aggregation.AvgSpeedVsSpeedLimit = avgSpeedVsSpeedLimit;
             double? avgEightyFifthSpeedLimit = speedLimit != 0 ? (double)eightyFifthSpeed - speedLimit : (double?)null;
             aggregation.EightyFifthSpeedVsSpeedLimit = avgEightyFifthSpeedLimit;
+            double? percentObserved = filteredSpeeds.Average(hs => hs.PercentObserved);
+            aggregation.PercentObserved = percentObserved;
 
             return aggregation;
         }
