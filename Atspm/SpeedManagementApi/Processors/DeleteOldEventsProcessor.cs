@@ -21,8 +21,8 @@ namespace SpeedManagementApi.Processors
             };
 
             //Here is the list of tasks
-            var expiredEvents = new TransformManyBlock<object, MonthlyAggregation>(input => AllAggregationsOverTimePeriodAsync(), settings);
-            var deleteBlock = new ActionBlock<MonthlyAggregation>(monthlyAggregationService.DeleteMonthlyAggregation, settings);
+            var expiredEvents = new TransformManyBlock<object, MonthlyAggregationSimplified>(input => AllAggregationsOverTimePeriodAsync(), settings);
+            var deleteBlock = new ActionBlock<MonthlyAggregationSimplified>(monthlyAggregationService.DeleteMonthlyAggregation, settings);
 
             DataflowLinkOptions linkOptions = new DataflowLinkOptions() { PropagateCompletion = true };
 
@@ -36,9 +36,9 @@ namespace SpeedManagementApi.Processors
             await deleteBlock.Completion;
         }
 
-        private IEnumerable<MonthlyAggregation> AllAggregationsOverTimePeriodAsync()
+        private IEnumerable<MonthlyAggregationSimplified> AllAggregationsOverTimePeriodAsync()
         {
-            var list = monthlyAggregationService.AllAggregationsOverTimePeriodAsync().Result;
+            var list = monthlyAggregationService.AllAggregationsOverTimePeriodAsync(TimePeriodFilter.AllDay, MonthAggClassification.Total).Result;
             foreach (var item in list)
             {
                 yield return item;

@@ -106,6 +106,17 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             await _client.ExecuteQueryAsync(query, parameters);
         }
 
+        public async Task RemoveKeyAsync(Guid? key)
+        {
+            if (key == null) return;
+            var query = $"DELETE FROM `{_datasetId}.{_tableId}` WHERE Id = @key";
+            var parameters = new List<BigQueryParameter>
+             {
+                 new BigQueryParameter("key", BigQueryDbType.String, key.ToString())
+             };
+            await _client.ExecuteQueryAsync(query, parameters);
+        }
+
         public override void RemoveRange(IEnumerable<MonthlyAggregation> items)
         {
             var ids = string.Join(", ", items.Select(i => i.Id));
@@ -249,54 +260,29 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
 
         public async Task<MonthlyAggregation> SelectByBinTimeSegmentAndSource(DateTime binStartTime, MonthlyAggregation monthlyAggregation)
         {
-            var segmentId = monthlyAggregation.SegmentId;
-            var sourceId = monthlyAggregation.SourceId;
-            var query = $@"
-            SELECT *
-            FROM `{_datasetId}.{_tableId}`
-            WHERE BinStartTime = @binStartTime
-              AND SegmentId = @segmentId
-              AND SourceId = @sourceId";
-
-            var parameters = new List<BigQueryParameter>
+            var query = $@"SELECT " + SelectionQueryWithFilter(timePeriod, monthAggClassification) +
+                $@"FROM `{_datasetId}.{_tableId}` MA
+                JOIN (
+                    SELECT SegmentId as SegId, MAX(BinStartTime) AS LatestBinStartTime
+                    FROM `{_datasetId}.{_tableId}`
+                    GROUP BY SegmentId
+                ) LatestMA
+                ON MA.SegmentId = LatestMA.SegId AND MA.BinStartTime = LatestMA.LatestBinStartTime";
+            var parameters = new List<BigQueryParameter>();
+            var results = await _client.ExecuteQueryAsync(query, parameters);
+            var monthlyAggregations = new List<MonthlyAggregationSimplified>();
+            foreach (var row in results)
             {
-                new BigQueryParameter("binStartTime", BigQueryDbType.DateTime, binStartTime),
-                new BigQueryParameter("segmentId", BigQueryDbType.String, segmentId.ToString()),
-                new BigQueryParameter("sourceId", BigQueryDbType.Int64, sourceId)
-            };
+                monthlyAggregations.Add(MapRowToSimplifiedAggregationEntity(row));
+            }
+            return monthlyAggregations;
 
-            var result = await _client.ExecuteQueryAsync(query, parameters);
-            return MapRowToEntity(result.FirstOrDefault());
         }
+
         /// <inheritdoc/>
-
-        public async Task<MonthlyAggregation> SelectByBinTimeSegment(DateTime binStartTime, MonthlyAggregation monthlyAggregation)
+        public async Task<List<MonthlyAggregationSimplified>> SelectMonthlyAggregationBySegment(Guid segmentId, TimePeriodFilter timePeriod, MonthAggClassification dayType)
         {
-            var segmentId = monthlyAggregation.SegmentId;
-            var query = $@"
-            SELECT *
-            FROM `{_datasetId}.{_tableId}`
-            WHERE BinStartTime = @binStartTime
-              AND SegmentId = @segmentId";
-
-            var parameters = new List<BigQueryParameter>
-            {
-                new BigQueryParameter("binStartTime", BigQueryDbType.DateTime, binStartTime),
-                new BigQueryParameter("segmentId", BigQueryDbType.String, segmentId.ToString())
-            };
-
-            var result = await _client.ExecuteQueryAsync(query, parameters);
-            return MapRowToEntity(result.FirstOrDefault());
-        }
-        /// <inheritdoc/>
-
-
-        public async Task<List<MonthlyAggregation>> SelectMonthlyAggregationBySegment(Guid segmentId)
-        {
-            var query = $@"
-            SELECT *
-            FROM `{_datasetId}.{_tableId}`
-            WHERE SegmentId = @segmentId";
+            var query = $@"SELECT " + SelectionQueryWithFilter(timePeriod, dayType) + $"FROM `{_datasetId}.{_tableId}` WHERE SegmentId = @segmentId";
 
             var parameters = new List<BigQueryParameter>
             {
@@ -304,10 +290,10 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             };
 
             var result = await _client.ExecuteQueryAsync(query, parameters);
-            var monthlyAggregations = new List<MonthlyAggregation>();
+            var monthlyAggregations = new List<MonthlyAggregationSimplified>();
             foreach (var row in result)
             {
-                monthlyAggregations.Add(MapRowToEntity(row));
+                monthlyAggregations.Add(MapRowToSimplifiedAggregationEntity(row));
             }
 
             return monthlyAggregations;
@@ -338,18 +324,17 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             // Construct a comma-separated list of IDs for the IN clause
             string ids = string.Join(",", segmentIds.Select(id => $"'{id}'"));
             //TIMESTAMP('{item.BinStartTime:yyyy-MM-dd HH:mm:ss}')
-            var query = $@"
-            SELECT * FROM `{_datasetId}.{_tableId}` 
+            var query = $@"SELECT " + SelectionQueryWithFilter(timePeriod, dayType) + $@"FROM `{_datasetId}.{_tableId}` 
                 WHERE BinStartTime BETWEEN TIMESTAMP('{startTime:yyyy-MM-dd HH:mm:ss}') AND TIMESTAMP('{endTime:yyyy-MM-dd HH:mm:ss}') 
                 AND SegmentId IN ({ids})";
 
             var parameters = new List<BigQueryParameter>();
 
             var result = await _client.ExecuteQueryAsync(query, parameters);
-            var monthlyAggregations = new List<MonthlyAggregation>();
+            var monthlyAggregations = new List<MonthlyAggregationSimplified>();
             foreach (var row in result)
             {
-                monthlyAggregations.Add(MapRowToEntity(row));
+                monthlyAggregations.Add(MapRowToSimplifiedAggregationEntity(row));
             }
 
             return monthlyAggregations;
@@ -412,14 +397,11 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             return monthlyAggregations;
         }
 
-        public async Task<List<MonthlyAggregation>> AllAggregationsOverTimePeriod()
+        public async Task<List<MonthlyAggregationSimplified>> AllAggregationsOverTimePeriod(TimePeriodFilter timePeriod, MonthAggClassification dayType)
         {
             var thresholdDate = DateTime.UtcNow.AddYears(-2).AddMonths(-1);
 
-            var query = $@"
-                SELECT *
-                FROM `{_datasetId}.{_tableId}`
-                WHERE BinStartTime < @thresholdDate";
+            var query = $@"SELECT " + SelectionQueryWithFilter(timePeriod, dayType) + $"FROM `{_datasetId}.{_tableId}` WHERE BinStartTime < @thresholdDate";
 
             var parameters = new List<BigQueryParameter>
                 {
@@ -427,10 +409,10 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 };
 
             var result = await _client.ExecuteQueryAsync(query, parameters);
-            var monthlyAggregations = new List<MonthlyAggregation>();
+            var monthlyAggregations = new List<MonthlyAggregationSimplified>();
             foreach (var row in result)
             {
-                monthlyAggregations.Add(MapRowToEntity(row));
+                monthlyAggregations.Add(MapRowToSimplifiedAggregationEntity(row));
             }
 
             return monthlyAggregations;
@@ -1044,9 +1026,6 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             var bigQueryWeekdayEarlyMorningAvgSpeedVsSpeedLimit = row["WeekdayEarlyMorningAvgSpeedVsSpeedLimit"] != null ? double.Parse(row["WeekdayEarlyMorningAvgSpeedVsSpeedLimit"].ToString()) : (double?)null;
             var bigQueryWeekdayEarlyMorningEightyFifthSpeedVsSpeedLimit = row["WeekdayEarlyMorningEightyFifthSpeedVsSpeedLimit"] != null ? double.Parse(row["WeekdayEarlyMorningEightyFifthSpeedVsSpeedLimit"].ToString()) : (double?)null;
             var bigQueryWeekdayEarlyMorningPercentObserved = row["WeekdayEarlyMorningPercentObserved"] != null ? double.Parse(row["WeekdayEarlyMorningPercentObserved"].ToString()) : (double?)null;
-
-            var bigQueryPercentObserved = row["PercentObserved"] != null ? double.Parse(row["PercentObserved"].ToString()) : (double?)null;
-
             return new MonthlyAggregation
             {
                 Id = bigQueryId,
@@ -3092,5 +3071,238 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             var query = queryBuilder.ToString();
             return query;
         }
+
+        private string SelectionQueryWithFilter(TimePeriodFilter timePeriod, MonthAggClassification dayType)
+        {
+            var queryString = $"Id, CreatedDate, BinStartTime, SegmentId, SourceId, ";
+            switch (timePeriod)
+            {
+                case TimePeriodFilter.AllDay:
+                    switch (dayType)
+                    {
+                        case MonthAggClassification.Total:
+                            return queryString + $"AllDayAverageSpeed as AverageSpeed, AllDayAverageEightyFifthSpeed as AverageEightyFifthSpeed, " +
+                                $"AllDayViolations as Violations, AllDayExtremeViolations as ExtremeViolations, AllDayFlow as Flow, " +
+                                $"AllDayMinSpeed as MinSpeed, AllDayMaxSpeed as MaxSpeed, AllDayVariability as Variability, " +
+                                $"AllDayPercentViolations as PercentViolations, AllDayPercentExtremeViolations as PercentExtremeViolations, AllDayAvgSpeedVsSpeedLimit as AvgSpeedVsSpeedLimit, " +
+                                $"AllDayEightyFifthSpeedVsSpeedLimit as EightyFifthSpeedVsSpeedLimit, AllDayPercentObserved as PercentObserved ";
+                        case MonthAggClassification.Weekend:
+                            return queryString + $"WeekendAllDayAverageSpeed as AverageSpeed, WeekendAllDayAverageEightyFifthSpeed as AverageEightyFifthSpeed, " +
+                                $"WeekendAllDayViolations as Violations, WeekendAllDayExtremeViolations as ExtremeViolations, WeekendAllDayFlow as Flow, " +
+                                $"WeekendAllDayMinSpeed as MinSpeed, WeekendAllDayMaxSpeed as MaxSpeed, WeekendAllDayVariability as Variability, " +
+                                $"WeekendAllDayPercentViolations as PercentViolations, WeekendAllDayPercentExtremeViolations as PercentExtremeViolations, WeekendAllDayAvgSpeedVsSpeedLimit as AvgSpeedVsSpeedLimit, " +
+                                $"WeekendAllDayEightyFifthSpeedVsSpeedLimit as EightyFifthSpeedVsSpeedLimit, WeekendAllDayPercentObserved as PercentObserved ";
+                        case MonthAggClassification.Weekday:
+                            return queryString + $"WeekdayAllDayAverageSpeed as AverageSpeed, WeekdayAllDayAverageEightyFifthSpeed as AverageEightyFifthSpeed, " +
+                                $"WeekdayAllDayViolations as Violations, WeekdayAllDayExtremeViolations as ExtremeViolations, WeekdayAllDayFlow as Flow, " +
+                                $"WeekdayAllDayMinSpeed as MinSpeed, WeekdayAllDayMaxSpeed as MaxSpeed, WeekdayAllDayVariability as Variability, " +
+                                $"WeekdayAllDayPercentViolations as PercentViolations, WeekdayAllDayPercentExtremeViolations as PercentExtremeViolations, WeekdayAllDayAvgSpeedVsSpeedLimit as AvgSpeedVsSpeedLimit, " +
+                                $"WeekdayAllDayEightyFifthSpeedVsSpeedLimit as EightyFifthSpeedVsSpeedLimit, WeekdayAllDayPercentObserved as PercentObserved ";
+                        default:
+                            throw new ArgumentOutOfRangeException(nameof(dayType), dayType, null);
+                    }
+
+                case TimePeriodFilter.OffPeak:
+                    switch (dayType)
+                    {
+                        case MonthAggClassification.Total:
+                            return queryString + $"OffPeakAverageSpeed as AverageSpeed, OffPeakAverageEightyFifthSpeed as AverageEightyFifthSpeed, " +
+                                $"OffPeakViolations as Violations, OffPeakExtremeViolations as ExtremeViolations, OffPeakFlow as Flow, " +
+                                $"OffPeakMinSpeed as MinSpeed, OffPeakMaxSpeed as MaxSpeed, OffPeakVariability as Variability, " +
+                                $"OffPeakPercentViolations as PercentViolations, OffPeakPercentExtremeViolations as PercentExtremeViolations, OffPeakAvgSpeedVsSpeedLimit as AvgSpeedVsSpeedLimit, " +
+                                $"OffPeakEightyFifthSpeedVsSpeedLimit as EightyFifthSpeedVsSpeedLimit, OffPeakPercentObserved as PercentObserved ";
+                        case MonthAggClassification.Weekend:
+                            return queryString + $"WeekendOffPeakAverageSpeed as AverageSpeed, WeekendOffPeakAverageEightyFifthSpeed as AverageEightyFifthSpeed, " +
+                                $"WeekendOffPeakViolations as Violations, WeekendOffPeakExtremeViolations as ExtremeViolations, WeekendOffPeakFlow as Flow, " +
+                                $"WeekendOffPeakMinSpeed as MinSpeed, WeekendOffPeakMaxSpeed as MaxSpeed, WeekendOffPeakVariability as Variability, " +
+                                $"WeekendOffPeakPercentViolations as PercentViolations, WeekendOffPeakPercentExtremeViolations as PercentExtremeViolations, WeekendOffPeakAvgSpeedVsSpeedLimi as AvgSpeedVsSpeedLimitt, " +
+                                $"WeekendOffPeakEightyFifthSpeedVsSpeedLimit as EightyFifthSpeedVsSpeedLimit, WeekendOffPeakPercentObserved as PercentObserved ";
+                        case MonthAggClassification.Weekday:
+                            return queryString + $"WeekdayOffPeakAverageSpeed as AverageSpeed, WeekdayOffPeakAverageEightyFifthSpeed as AverageEightyFifthSpeed, " +
+                                $"WeekdayOffPeakViolations as Violations, WeekdayOffPeakExtremeViolations as ExtremeViolations, WeekdayOffPeakFlow as Flow, " +
+                                $"WeekdayOffPeakMinSpeed as MinSpeed, WeekdayOffPeakMaxSpeed as MaxSpeed, WeekdayOffPeakVariability as Variability, " +
+                                $"WeekdayOffPeakPercentViolations as PercentViolations, WeekdayOffPeakPercentExtremeViolations as PercentExtremeViolations, WeekdayOffPeakAvgSpeedVsSpeedLimit as AvgSpeedVsSpeedLimit, " +
+                                $"WeekdayOffPeakEightyFifthSpeedVsSpeedLimit as EightyFifthSpeedVsSpeedLimit, WeekdayOffPeakPercentObserved as PercentObserved ";
+                        default:
+                            throw new ArgumentOutOfRangeException(nameof(dayType), dayType, null);
+                    }
+
+                case TimePeriodFilter.AmPeak:
+                    switch (dayType)
+                    {
+                        case MonthAggClassification.Total:
+                            return queryString + $"AmPeakAverageSpeed as AverageSpeed, AmPeakAverageEightyFifthSpeed as AverageEightyFifthSpeed, " +
+                                $"AmPeakViolations as Violations, AmPeakExtremeViolations as ExtremeViolations, AmPeakFlow as Flow, " +
+                                $"AmPeakMinSpeed as MinSpeed, AmPeakMaxSpeed as MaxSpeed, AmPeakVariability as Variability, " +
+                                $"AmPeakPercentViolations as PercentViolations, AmPeakPercentExtremeViolations as PercentExtremeViolations, AmPeakAvgSpeedVsSpeedLimit as AvgSpeedVsSpeedLimit, " +
+                                $"AmPeakEightyFifthSpeedVsSpeedLimit as EightyFifthSpeedVsSpeedLimit, AmPeakPercentObserved as PercentObserved ";
+                        case MonthAggClassification.Weekend:
+                            return queryString + $"WeekendAmPeakAverageSpeed as AverageSpeed, WeekendAmPeakAverageEightyFifthSpeed as AverageEightyFifthSpeed, " +
+                                $"WeekendAmPeakViolations as Violations, WeekendAmPeakExtremeViolations as ExtremeViolations, WeekendAmPeakFlow as Flow, " +
+                                $"WeekendAmPeakMinSpeed as MinSpeed, WeekendAmPeakMaxSpeed as MaxSpeed, WeekendAmPeakVariability as Variability, " +
+                                $"WeekendAmPeakPercentViolations as PercentViolations, WeekendAmPeakPercentExtremeViolations as PercentExtremeViolations, WeekendAmPeakAvgSpeedVsSpeedLimit as AvgSpeedVsSpeedLimit, " +
+                                $"WeekendAmPeakEightyFifthSpeedVsSpeedLimit as EightyFifthSpeedVsSpeedLimit, WeekendAmPeakPercentObserved as PercentObserved ";
+                        case MonthAggClassification.Weekday:
+                            return queryString + $"WeekdayAmPeakAverageSpeed as AverageSpeed, WeekdayAmPeakAverageEightyFifthSpeed as AverageEightyFifthSpeed, " +
+                                $"WeekdayAmPeakViolations as Violations, WeekdayAmPeakExtremeViolations as ExtremeViolations, WeekdayAmPeakFlow as Flow, " +
+                                $"WeekdayAmPeakMinSpeed as MinSpeed, WeekdayAmPeakMaxSpeed as MaxSpeed, WeekdayAmPeakVariability as Variability, " +
+                                $"WeekdayAmPeakPercentViolations as PercentViolations, WeekdayAmPeakPercentExtremeViolations as PercentExtremeViolations, WeekdayAmPeakAvgSpeedVsSpeedLimit as AvgSpeedVsSpeedLimit, " +
+                                $"WeekdayAmPeakEightyFifthSpeedVsSpeedLimit as EightyFifthSpeedVsSpeedLimit, WeekdayAmPeakPercentObserved as PercentObserved ";
+                        default:
+                            throw new ArgumentOutOfRangeException(nameof(dayType), dayType, null);
+                    }
+
+                case TimePeriodFilter.PmPeak:
+                    switch (dayType)
+                    {
+                        case MonthAggClassification.Total:
+                            return queryString + $"PmPeakAverageSpeed as AverageSpeed, PmPeakAverageEightyFifthSpeed as AverageEightyFifthSpeed, " +
+                                $"PmPeakViolations as Violations, PmPeakExtremeViolations as ExtremeViolations, PmPeakFlow as Flow, " +
+                                $"PmPeakMinSpeed as MinSpeed, PmPeakMaxSpeed as MaxSpeed, PmPeakVariability as Variability, " +
+                                $"PmPeakPercentViolations as PercentViolations, PmPeakPercentExtremeViolations as PercentExtremeViolations, PmPeakAvgSpeedVsSpeedLimit as AvgSpeedVsSpeedLimit, " +
+                                $"PmPeakEightyFifthSpeedVsSpeedLimit as EightyFifthSpeedVsSpeedLimit, PmPeakPercentObserved as PercentObserved ";
+                        case MonthAggClassification.Weekend:
+                            return queryString + $"WeekendPmPeakAverageSpeed as AverageSpeed, WeekendPmPeakAverageEightyFifthSpeed as AverageEightyFifthSpeed, " +
+                                $"WeekendPmPeakViolations as Violations, WeekendPmPeakExtremeViolations as ExtremeViolations, WeekendPmPeakFlow as Flow, " +
+                                $"WeekendPmPeakMinSpeed as MinSpeed, WeekendPmPeakMaxSpeed as MaxSpeed, WeekendPmPeakVariability as Variability, " +
+                                $"WeekendPmPeakPercentViolations as PercentViolations, WeekendPmPeakPercentExtremeViolations as PercentExtremeViolations, WeekendPmPeakAvgSpeedVsSpeedLimit as AvgSpeedVsSpeedLimit, " +
+                                $"WeekendPmPeakEightyFifthSpeedVsSpeedLimit as EightyFifthSpeedVsSpeedLimit, WeekendPmPeakPercentObserved as PercentObserved ";
+                        case MonthAggClassification.Weekday:
+                            return queryString + $"WeekdayPmPeakAverageSpeed as AverageSpeed, WeekdayPmPeakAverageEightyFifthSpeed as AverageEightyFifthSpeed, " +
+                                $"WeekdayPmPeakViolations as Violations, WeekdayPmPeakExtremeViolations as ExtremeViolations, WeekdayPmPeakFlow as Flow, " +
+                                $"WeekdayPmPeakMinSpeed as MinSpeed, WeekdayPmPeakMaxSpeed as MaxSpeed, WeekdayPmPeakVariability as Variability, " +
+                                $"WeekdayPmPeakPercentViolations as PercentViolations, WeekdayPmPeakPercentExtremeViolations as PercentExtremeViolations, WeekdayPmPeakAvgSpeedVsSpeedLimit as AvgSpeedVsSpeedLimit, " +
+                                $"WeekdayPmPeakEightyFifthSpeedVsSpeedLimit as EightyFifthSpeedVsSpeedLimit, WeekdayPmPeakPercentObserved as PercentObserved ";
+                        default:
+                            throw new ArgumentOutOfRangeException(nameof(dayType), dayType, null);
+                    }
+
+                case TimePeriodFilter.MidDay:
+                    switch (dayType)
+                    {
+                        case MonthAggClassification.Total:
+                            return queryString + $"MidDayAverageSpeed as AverageSpeed, MidDayAverageEightyFifthSpeed as AverageEightyFifthSpeed, " +
+                                $"MidDayViolations as Violations, MidDayExtremeViolations as ExtremeViolations, MidDayFlow as Flow, " +
+                                $"MidDayMinSpeed as MinSpeed, MidDayMaxSpeed as MaxSpeed, MidDayVariability as Variability, " +
+                                $"MidDayPercentViolations as PercentViolations, MidDayPercentExtremeViolations as PercentExtremeViolations, MidDayAvgSpeedVsSpeedLimit as AvgSpeedVsSpeedLimit, " +
+                                $"MidDayEightyFifthSpeedVsSpeedLimit as EightyFifthSpeedVsSpeedLimit, MidDayPercentObserved as PercentObserved ";
+                        case MonthAggClassification.Weekend:
+                            return queryString + $"WeekendMidDayAverageSpeed as AverageSpeed, WeekendMidDayAverageEightyFifthSpeed as AverageEightyFifthSpeed, " +
+                                $"WeekendMidDayViolations as Violations, WeekendMidDayExtremeViolations as ExtremeViolations, WeekendMidDayFlow as Flow, " +
+                                $"WeekendMidDayMinSpeed as MinSpeed, WeekendMidDayMaxSpeed as MaxSpeed, WeekendMidDayVariability as Variability, " +
+                                $"WeekendMidDayPercentViolations as PercentViolations, WeekendMidDayPercentExtremeViolations as PercentExtremeViolations, WeekendMidDayAvgSpeedVsSpeedLimit as AvgSpeedVsSpeedLimit, " +
+                                $"WeekendMidDayEightyFifthSpeedVsSpeedLimit as EightyFifthSpeedVsSpeedLimit, WeekendMidDayPercentObserved as PercentObserved ";
+                        case MonthAggClassification.Weekday:
+                            return queryString + $"WeekdayMidDayAverageSpeed as AverageSpeed, WeekdayMidDayAverageEightyFifthSpeed as AverageEightyFifthSpeed, " +
+                                $"WeekdayMidDayViolations as Violations, WeekdayMidDayExtremeViolations as ExtremeViolations, WeekdayMidDayFlow as Flow, " +
+                                $"WeekdayMidDayMinSpeed as MinSpeed, WeekdayMidDayMaxSpeed as MaxSpeed, WeekdayMidDayVariability as Variability, " +
+                                $"WeekdayMidDayPercentViolations as PercentViolations, WeekdayMidDayPercentExtremeViolations as PercentExtremeViolations, WeekdayMidDayAvgSpeedVsSpeedLimit as AvgSpeedVsSpeedLimit, " +
+                                $"WeekdayMidDayEightyFifthSpeedVsSpeedLimit as EightyFifthSpeedVsSpeedLimit, WeekdayMidDayPercentObserved as PercentObserved ";
+                        default:
+                            throw new ArgumentOutOfRangeException(nameof(dayType), dayType, null);
+                    }
+
+                case TimePeriodFilter.Evening:
+                    switch (dayType)
+                    {
+                        case MonthAggClassification.Total:
+                            return queryString + $"EveningAverageSpeed as AverageSpeed, EveningAverageEightyFifthSpeed as AverageEightyFifthSpeed, " +
+                                $"EveningViolations as Violations, EveningExtremeViolations as ExtremeViolations, EveningFlow as Flow, " +
+                                $"EveningMinSpeed as MinSpeed, EveningMaxSpeed as MaxSpeed, EveningVariability as Variability, " +
+                                $"EveningPercentViolations as PercentViolations, EveningPercentExtremeViolations as PercentExtremeViolations, EveningAvgSpeedVsSpeedLimit as AvgSpeedVsSpeedLimit, " +
+                                $"EveningEightyFifthSpeedVsSpeedLimit as EightyFifthSpeedVsSpeedLimit, EveningPercentObserved as PercentObserved ";
+                        case MonthAggClassification.Weekend:
+                            return queryString + $"WeekendEveningAverageSpeed as AverageSpeed, WeekendEveningAverageEightyFifthSpeed as AverageEightyFifthSpeed, " +
+                                $"WeekendEveningViolations as Violations, WeekendEveningExtremeViolations as ExtremeViolations, WeekendEveningFlow as Flow, " +
+                                $"WeekendEveningMinSpeed as MinSpeed, WeekendEveningMaxSpeed as MaxSpeed, WeekendEveningVariability as Variability, " +
+                                $"WeekendEveningPercentViolations as PercentViolations, WeekendEveningPercentExtremeViolations as PercentExtremeViolations, WeekendEveningAvgSpeedVsSpeedLimit as AvgSpeedVsSpeedLimit, " +
+                                $"WeekendEveningEightyFifthSpeedVsSpeedLimit as EightyFifthSpeedVsSpeedLimit, WeekendEveningPercentObserved as PercentObserved ";
+                        case MonthAggClassification.Weekday:
+                            return queryString + $"WeekdayEveningAverageSpeed as AverageSpeed, WeekdayEveningAverageEightyFifthSpeed as AverageEightyFifthSpeed, " +
+                                $"WeekdayEveningViolations as Violations, WeekdayEveningExtremeViolations as ExtremeViolations, WeekdayEveningFlow as Flow, " +
+                                $"WeekdayEveningMinSpeed as MinSpeed, WeekdayEveningMaxSpeed as MaxSpeed, WeekdayEveningVariability as Variability, " +
+                                $"WeekdayEveningPercentViolations as PercentViolations, WeekdayEveningPercentExtremeViolations as PercentExtremeViolations, WeekdayEveningAvgSpeedVsSpeedLimit as AvgSpeedVsSpeedLimit, " +
+                                $"WeekdayEveningEightyFifthSpeedVsSpeedLimit as EightyFifthSpeedVsSpeedLimit, WeekdayEveningPercentObserved as PercentObserved ";
+                        default:
+                            throw new ArgumentOutOfRangeException(nameof(dayType), dayType, null);
+                    }
+
+                case TimePeriodFilter.EarlyMorning:
+                    switch (dayType)
+                    {
+                        case MonthAggClassification.Total:
+                            return queryString + $"EarlyMorningAverageSpeed as AverageSpeed, EarlyMorningAverageEightyFifthSpeed as AverageEightyFifthSpeed, " +
+                                $"EarlyMorningViolations as Violations, EarlyMorningExtremeViolations as ExtremeViolations, EarlyMorningFlow as Flow, " +
+                                $"EarlyMorningMinSpeed as MinSpeed, EarlyMorningMaxSpeed as MaxSpeed, EarlyMorningVariability as Variability, " +
+                                $"EarlyMorningPercentViolations as PercentViolations, EarlyMorningPercentExtremeViolations as PercentExtremeViolations, EarlyMorningAvgSpeedVsSpeedLimit as AvgSpeedVsSpeedLimit, " +
+                                $"EarlyMorningEightyFifthSpeedVsSpeedLimit as EightyFifthSpeedVsSpeedLimit, EarlyMorningPercentObserved as PercentObserved ";
+                        case MonthAggClassification.Weekend:
+                            return queryString + $"WeekendEarlyMorningAverageSpeed as AverageSpeed, WeekendEarlyMorningAverageEightyFifthSpeed as AverageEightyFifthSpeed, " +
+                                $"WeekendEarlyMorningViolations as Violations, WeekendEarlyMorningExtremeViolations as ExtremeViolations, WeekendEarlyMorningFlow as Flow, " +
+                                $"WeekendEarlyMorningMinSpeed as MinSpeed, WeekendEarlyMorningMaxSpeed as MaxSpeed, WeekendEarlyMorningVariability as Variability, " +
+                                $"WeekendEarlyMorningPercentViolations as PercentViolations, WeekendEarlyMorningPercentExtremeViolations as PercentExtremeViolations, WeekendEarlyMorningAvgSpeedVsSpeedLimit as AvgSpeedVsSpeedLimit, " +
+                                $"WeekendEarlyMorningEightyFifthSpeedVsSpeedLimit as EightyFifthSpeedVsSpeedLimit, WeekendEarlyMorningPercentObserved as PercentObserved ";
+                        case MonthAggClassification.Weekday:
+                            return queryString + $"WeekdayEarlyMorningAverageSpeed as AverageSpeed, WeekdayEarlyMorningAverageEightyFifthSpeed as AverageEightyFifthSpeed, " +
+                                $"WeekdayEarlyMorningViolations as Violations, WeekdayEarlyMorningExtremeViolations as ExtremeViolations, WeekdayEarlyMorningFlow as Flow, " +
+                                $"WeekdayEarlyMorningMinSpeed as MinSpeed, WeekdayEarlyMorningMaxSpeed as MaxSpeed, WeekdayEarlyMorningVariability as Variability, " +
+                                $"WeekdayEarlyMorningPercentViolations as PercentViolations, WeekdayEarlyMorningPercentExtremeViolations as PercentExtremeViolations, WeekdayEarlyMorningAvgSpeedVsSpeedLimit as AvgSpeedVsSpeedLimit, " +
+                                $"WeekdayEarlyMorningEightyFifthSpeedVsSpeedLimit as EightyFifthSpeedVsSpeedLimit, WeekdayEarlyMorningPercentObserved as PercentObserved ";
+                        default:
+                            throw new ArgumentOutOfRangeException(nameof(dayType), dayType, null);
+                    }
+
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(timePeriod), timePeriod, null);
+            }
+        }
+
+        private MonthlyAggregationSimplified MapRowToSimplifiedAggregationEntity(BigQueryRow row)
+        {
+            var bigQueryId = Guid.Parse(row["Id"].ToString());
+            var bigQueryCreatedDate = DateTime.Parse(row["CreatedDate"].ToString());
+            var bigQueryBinStartTime = DateTime.Parse(row["BinStartTime"].ToString());
+            var bigQuerySegmentId = Guid.Parse(row["SegmentId"].ToString());
+            var bigQuerySourceId = int.Parse(row["SourceId"].ToString());
+
+            var bigQueryAverageSpeed = row["AverageSpeed"] != null ? double.Parse(row["AverageSpeed"].ToString()) : (double?)null;
+            var bigQueryAverageEightyFifthSpeed = row["AverageEightyFifthSpeed"] != null ? double.Parse(row["AverageEightyFifthSpeed"].ToString()) : (double?)null;
+            var bigQueryViolations = row["Violations"] != null ? int.Parse(row["Violations"].ToString()) : (int?)null;
+            var bigQueryExtremeViolations = row["ExtremeViolations"] != null ? int.Parse(row["ExtremeViolations"].ToString()) : (int?)null;
+            var bigQueryFlow = row["Flow"] != null ? int.Parse(row["Flow"].ToString()) : (int?)null;
+            var bigQueryMinSpeed = row["MinSpeed"] != null ? double.Parse(row["MinSpeed"].ToString()) : (double?)null;
+            var bigQueryMaxSpeed = row["MaxSpeed"] != null ? double.Parse(row["MaxSpeed"].ToString()) : (double?)null;
+            var bigQueryVariability = row["Variability"] != null ? double.Parse(row["Variability"].ToString()) : (double?)null;
+            var bigQueryPercentViolations = row["PercentViolations"] != null ? double.Parse(row["PercentViolations"].ToString()) : (double?)null;
+            var bigQueryPercentExtremeViolations = row["PercentExtremeViolations"] != null ? double.Parse(row["PercentExtremeViolations"].ToString()) : (double?)null;
+            var bigQueryAvgSpeedVsSpeedLimit = row["AvgSpeedVsSpeedLimit"] != null ? double.Parse(row["AvgSpeedVsSpeedLimit"].ToString()) : (double?)null;
+            var bigQueryEightyFifthSpeedVsSpeedLimit = row["EightyFifthSpeedVsSpeedLimit"] != null ? double.Parse(row["EightyFifthSpeedVsSpeedLimit"].ToString()) : (double?)null;
+
+            var bigQueryPercentObserved = row["PercentObserved"] != null ? double.Parse(row["PercentObserved"].ToString()) : (double?)null;
+
+            return new MonthlyAggregationSimplified
+            {
+                Id = bigQueryId,
+                CreatedDate = bigQueryCreatedDate,
+                BinStartTime = bigQueryBinStartTime,
+                SegmentId = bigQuerySegmentId,
+                SourceId = bigQuerySourceId,
+
+                AverageSpeed = bigQueryAverageSpeed,
+                AverageEightyFifthSpeed = bigQueryAverageEightyFifthSpeed,
+                Violations = bigQueryViolations,
+                ExtremeViolations = bigQueryExtremeViolations,
+                Flow = bigQueryFlow,
+                MinSpeed = bigQueryMinSpeed,
+                MaxSpeed = bigQueryMaxSpeed,
+                Variability = bigQueryVariability,
+                PercentViolations = bigQueryPercentViolations,
+                PercentExtremeViolations = bigQueryPercentExtremeViolations,
+                AvgSpeedVsSpeedLimit = bigQueryAvgSpeedVsSpeedLimit,
+                EightyFifthSpeedVsSpeedLimit = bigQueryEightyFifthSpeedVsSpeedLimit,
+                PercentObserved = bigQueryPercentObserved
+            };
+        }
+
     }
 }

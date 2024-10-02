@@ -5,15 +5,12 @@ namespace Utah.Udot.Atspm.Repositories.SpeedManagementRepositories
 {
     public interface IMonthlyAggregationRepository : IAsyncRepository<MonthlyAggregation>
     {
-        Task<List<MonthlyAggregation>> AllAggregationsOverTimePeriod();
+        Task<List<MonthlyAggregationSimplified>> AllAggregationsOverTimePeriod(TimePeriodFilter timePeriod, MonthAggClassification dayType);
         Task<MonthlyAggregation> CheckExistanceAsync(MonthlyAggregation item);
-        Task<List<MonthlyAggregation>> MonthlyAggregationsForSegmentInTimePeriod(List<Guid> segmentId, DateTime startTime, DateTime endTime);
-        Task<List<MonthlyAggregation>> SelectBinStartTimesInRange(DateTime startTime, DateTime endTime, MonthlyAggregation monthlyAggregation);
-        Task<List<MonthlyAggregation>> SelectBinStartTimesInRangeFromSource(DateTime startTime, DateTime endTime, MonthlyAggregation monthlyAggregation);
-        Task<MonthlyAggregation> SelectByBinTimeSegment(DateTime binStartTime, MonthlyAggregation monthlyAggregation);
-        Task<MonthlyAggregation> SelectByBinTimeSegmentAndSource(DateTime binStartTime, MonthlyAggregation monthlyAggregation);
-        Task<List<MonthlyAggregation>> SelectMonthlyAggregationBySegment(Guid SegmentId);
-        Task<List<MonthlyAggregation>> SelectMonthlyAggregationBySegmentIds(List<Guid> SegmentId);
+        Task<List<MonthlyAggregationSimplified>> LatestOfEachSegmentId(TimePeriodFilter timePeriod, MonthAggClassification monthAggClassification);
+        Task<List<MonthlyAggregationSimplified>> MonthlyAggregationsForSegmentInTimePeriod(List<Guid> segmentIds, DateTime startTime, DateTime endTime, TimePeriodFilter timePeriod, MonthAggClassification monthAggClassification);
+        Task RemoveKeyAsync(Guid? key);
+        Task<List<MonthlyAggregationSimplified>> SelectMonthlyAggregationBySegment(Guid segmentId, TimePeriodFilter timePeriod, MonthAggClassification monthAggClassification);
         Task UpsertMonthlyAggregationAsync(MonthlyAggregation item);
         Task DeleteBySegment(Guid segmentId);
         Task DeleteBySegments(List<Guid> segments);

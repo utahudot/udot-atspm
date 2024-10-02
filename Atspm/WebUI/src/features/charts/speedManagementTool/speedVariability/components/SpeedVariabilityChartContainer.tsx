@@ -30,7 +30,7 @@ const SpeedVariabilityChartContainer = ({
     })
   }
   return (
-    <Box>
+    <>
       <Box
         sx={{
           display: 'flex',
@@ -91,7 +91,7 @@ const SpeedVariabilityChartContainer = ({
           </TableBody>
         </Table>
       </TableContainer>
-    </Box>
+    </>
   )
 }
 

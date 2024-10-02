@@ -1,12 +1,14 @@
-﻿namespace Utah.Udot.Atspm.Data.Models.SpeedManagementModels.MonthlyAggregation;
+﻿using System.Reflection;
+
+namespace Utah.Udot.Atspm.Data.Models.SpeedManagementModels.MonthlyAggregation;
 
 public class MonthlyAggregationSimplified
 {
-    public Guid? Id { get; set; }
-    public DateTime? CreatedDate { get; set; } //This is the timestamp of when this entry was created.
-    public DateTime? BinStartTime { get; set; } // This is the 
-    public Guid? SegmentId { get; set; }
-    public long? SourceId { get; set; }
+    public Guid Id { get; set; }
+    public DateTime CreatedDate { get; set; } //This is the timestamp of when this entry was created.
+    public DateTime BinStartTime { get; set; } // This is the 
+    public Guid SegmentId { get; set; }
+    public long SourceId { get; set; }
 
     public double? AverageSpeed { get; set; }
     public double? AverageEightyFifthSpeed { get; set; }
@@ -23,27 +25,123 @@ public class MonthlyAggregationSimplified
     public double? PercentObserved { get; set; }
 }
 
-public enum TimePeriod
+public enum TimePeriodFilter
 {
+    [DisplayName("AllDay")]
     AllDay,
+
+    [DisplayName("OffPeak")]
     OffPeak,
+
+    [DisplayName("AMPeak")]
     AmPeak,
+
+    [DisplayName("PMPeak")]
     PmPeak,
+
+    [DisplayName("MidDay")]
     MidDay,
+
+    [DisplayName("Evening")]
     Evening,
+
+    [DisplayName("EarlyMorning")]
     EarlyMorning
 }
 
-public enum DayType
+public enum MonthAggClassification
 {
+    [DisplayName("Total")]
     Total,
+
+    [DisplayName("Weekend")]
     Weekend,
+
+    [DisplayName("Weekday")]
     Weekday
 }
 
-public class MonthlyAggregationReducedTime
+public enum SpeedCategoryFilter
 {
-    public MonthlyAggregationSimplified Total { get; set; }
-    public MonthlyAggregationSimplified Weekday { get; set; }
-    public MonthlyAggregationSimplified Weekend { get; set; }
+    [DisplayName("Average Speed")]
+    AverageSpeed,
+
+    [DisplayName("Average 85th Percentile Speed")]
+    AverageEightyFifthSpeed,
+
+    [DisplayName("Violations")]
+    Violations,
+
+    [DisplayName("Extreme Violations")]
+    ExtremeViolations,
+
+    [DisplayName("Flow")]
+    Flow,
+
+    [DisplayName("Minimum Speed")]
+    MinSpeed,
+
+    [DisplayName("Maximum Speed")]
+    MaxSpeed,
+
+    [DisplayName("Variability")]
+    Variability,
+
+    [DisplayName("Percentage of Violations")]
+    PercentViolations,
+
+    [DisplayName("Percentage of Extreme Violations")]
+    PercentExtremeViolations,
+
+    [DisplayName("Average Speed vs Speed Limit")]
+    AvgSpeedVsSpeedLimit,
+
+    [DisplayName("85th Percentile Speed vs Speed Limit")]
+    EightyFifthSpeedVsSpeedLimit,
+
+    [DisplayName("Percentage Observed")]
+    PercentObserved
+}
+
+public class MonthlyAggregationOptions
+{
+    public SpeedCategoryFilter category { get; set; }
+    public TimePeriodFilter timePeriod { get; set; }
+    public MonthAggClassification aggClassification { get; set; }
+    public DateTime? StartTime { get; set; }
+    public DateTime? EndTime { get; set; }
+    public long SourceId { get; set; }
+    public string Region { get; set; }
+    public string? City { get; set; }
+    public string? County { get; set; }
+}
+
+
+/// <summary>
+/// ENUM HELPERS
+/// </summary>
+[AttributeUsage(AttributeTargets.Field)]
+public class DisplayNameAttribute : Attribute
+{
+    public string Name { get; }
+
+    public DisplayNameAttribute(string name)
+    {
+        Name = name;
+    }
+}
+public static class EnumExtensions
+{
+    public static string GetDisplayName(this Enum value)
+    {
+        var field = value.GetType().GetField(value.ToString());
+        var attribute = field.GetCustomAttribute<DisplayNameAttribute>();
+
+        return attribute != null ? attribute.Name : value.ToString();
+    }
+}
+public class EnumMapping
+{
+    public int Number { get; set; }
+    public string DisplayName { get; set; }
 }

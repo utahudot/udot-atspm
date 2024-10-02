@@ -34,7 +34,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices.SpeedO
                     speedResult = ConvertWeeklyToSpeedData(weeklyResult, parameter.StartDate);
                     break;
                 case TimeOptionsEnum.Month:
-                    var monthlyResult = await monthlyAggregationRepository.SelectMonthlyAggregationBySegment(Guid.Parse(parameter.SegmentId));
+                    var monthlyResult = await monthlyAggregationRepository.SelectMonthlyAggregationBySegment(Guid.Parse(parameter.SegmentId), parameter.timePeriod, parameter.monthAggClassification);
                     speedResult = ConvertMonthlyToSpeedData(monthlyResult);
                     break;
                 default:
@@ -45,7 +45,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices.SpeedO
                 SegmentId = segment.Id,
                 SegmentName = segment.Name,
                 StartDate = parameter.StartDate.ToDateTime(new TimeOnly(0, 0)),
-                EndDate = parameter.EndDate.ToDateTime(new TimeOnly(0,0)),
+                EndDate = parameter.EndDate.ToDateTime(new TimeOnly(0, 0)),
                 SpeedLimit = segment.SpeedLimit,
                 StartingMilePoint = segment.StartMilePoint,
                 EndingMilePoint = segment.EndMilePoint,
@@ -55,7 +55,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices.SpeedO
             return result;
         }
 
-        private static List<SpeedDataDto> ConvertMonthlyToSpeedData(List<MonthlyAggregation> monthlyResult)
+        private static List<SpeedDataDto> ConvertMonthlyToSpeedData(List<MonthlyAggregationSimplified> monthlyResult)
         {
             var data = new List<SpeedDataDto>();
             var averageData = new List<DataPoint<double>>();
@@ -63,7 +63,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices.SpeedO
 
             foreach (var monthlyAggregation in monthlyResult)
             {
-                averageData.Add(new DataPoint<double>(monthlyAggregation.BinStartTime, monthlyAggregation.AllDayAverageSpeed.Value));
+                averageData.Add(new DataPoint<double>(monthlyAggregation.BinStartTime, monthlyAggregation.AverageSpeed.Value));
             }
 
             var series = new AverageAndEightyFifthSeriesData()
