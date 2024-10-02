@@ -1,3 +1,4 @@
+import { SpeedViolationsOptions } from '@/api/speedManagement/aTSPMSpeedManagementApi.schemas.zod'
 import CongestionTrackerChartsContainer from '@/features/charts/speedManagementTool/congestionTracker/components/CongestionTrackerChartsContainer'
 import CongestionTrackingOptions, {
   CongestionTrackingOptionsValues,
@@ -21,6 +22,7 @@ import SpeedVariabilityChartContainer from '@/features/charts/speedManagementToo
 import SpeedVariabilityOptions, {
   SpeedVariabilityOptionsValues,
 } from '@/features/charts/speedManagementTool/speedVariability/components/SpeedVariabilityOptions'
+import SpeedViolationsChartOptions from '@/features/charts/speedManagementTool/speedViolations/components/SpeedViolationsChartOptions'
 import {
   SM_ChartType,
   useSMCharts,
@@ -29,16 +31,7 @@ import useSpeedManagementStore from '@/features/speedManagementTool/speedManagem
 import { SpeedManagementRoute } from '@/features/speedManagementTool/types/routes'
 import PlayArrowIcon from '@mui/icons-material/PlayArrow'
 import { LoadingButton } from '@mui/lab'
-import {
-  Box,
-  Divider,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  SelectChangeEvent,
-  Typography,
-} from '@mui/material'
+import { Box, Divider, List, ListItemButton, Typography } from '@mui/material'
 import { useEffect, useMemo, useState } from 'react'
 
 type ChartOptions =
@@ -47,6 +40,7 @@ type ChartOptions =
   | SpeedOverDistanceChartOptionsValues
   | DataQualityChartOptionsValues
   | SpeedVariabilityOptionsValues
+  | SpeedViolationsOptions
   | null
 
 const SM_Charts = ({ routes }: { routes: SpeedManagementRoute[] }) => {
@@ -63,7 +57,9 @@ const SM_Charts = ({ routes }: { routes: SpeedManagementRoute[] }) => {
   const updatedChartOptions = chartOptions
     ? {
         ...chartOptions,
-        ...(multiselect || selectedChart === SM_ChartType.DATA_QUALITY
+        ...(multiselect ||
+        selectedChart === SM_ChartType.DATA_QUALITY ||
+        selectedChart === SM_ChartType.SPEED_VIOLATIONS
           ? { segmentIds: segmentIds }
           : { segmentId: segmentIds[0] }),
       }
@@ -75,12 +71,14 @@ const SM_Charts = ({ routes }: { routes: SpeedManagementRoute[] }) => {
           SM_ChartType.SPEED_OVER_DISTANCE,
           SM_ChartType.SPEED_COMPLIANCE,
           SM_ChartType.DATA_QUALITY,
+          SM_ChartType.SPEED_VIOLATIONS,
         ]
       : [
           SM_ChartType.CONGESTION_TRACKING,
           SM_ChartType.SPEED_OVER_TIME,
           SM_ChartType.DATA_QUALITY,
           SM_ChartType.SPEED_VARIABILITY,
+          SM_ChartType.SPEED_VIOLATIONS,
         ]
   }, [multiselect])
 
@@ -97,8 +95,8 @@ const SM_Charts = ({ routes }: { routes: SpeedManagementRoute[] }) => {
     updatedChartOptions
   )
 
-  const handleChartChange = (event: SelectChangeEvent<SM_ChartType>) => {
-    setSelectedChart(event.target.value as SM_ChartType)
+  const handleChartChange = (chartType: SM_ChartType) => {
+    setSelectedChart(chartType)
     setChartOptions(null)
   }
 
@@ -175,6 +173,15 @@ const SM_Charts = ({ routes }: { routes: SpeedManagementRoute[] }) => {
             sourceId={routeSpeedRequest.sourceId}
           />
         )
+      case SM_ChartType.SPEED_VIOLATIONS:
+        return (
+          <SpeedViolationsChartOptions
+            onOptionsChange={
+              handleOptionsChange as (options: SpeedViolationsOptions) => void
+            }
+            sourceId={routeSpeedRequest.sourceId}
+          />
+        )
       default:
         return null
     }
@@ -200,6 +207,8 @@ const SM_Charts = ({ routes }: { routes: SpeedManagementRoute[] }) => {
         return <SpeedComplianceChartsContainer chartData={data} />
       case SM_ChartType.DATA_QUALITY:
         return <DataQualityChartContainer chartData={data} />
+      case SM_ChartType.SPEED_VIOLATIONS:
+        return <DataQualityChartContainer chartData={data} />
       default:
         return null
     }
@@ -207,46 +216,43 @@ const SM_Charts = ({ routes }: { routes: SpeedManagementRoute[] }) => {
 
   return (
     <>
-      <Box
-        display="flex"
-        sx={{ py: 2, pl: 3, backgroundColor: 'background.default' }}
-      >
+      <Box display="flex" sx={{ py: 2, pl: 3, height: '100%' }}>
         <Box
           sx={{
             flexShrink: 0,
             minWidth: '300px',
-            mt: 2,
+            overflowY: 'auto',
+            maxHeight: '100%',
           }}
         >
-          <FormControl fullWidth>
-            <InputLabel id="chart-select-label">Chart Select</InputLabel>
-            <Select
-              labelId="chart-select-label"
-              id="chart-select"
-              value={selectedChart || ''}
-              label="Chart Select"
-              onChange={handleChartChange}
-            >
-              {chartTypes.map((chartType) => (
-                <MenuItem key={chartType} value={chartType}>
-                  {chartType}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+          <List>
+            {chartTypes.map((chartType) => (
+              <ListItemButton
+                key={chartType}
+                selected={selectedChart === chartType}
+                onClick={() => handleChartChange(chartType)}
+              >
+                {chartType}
+              </ListItemButton>
+            ))}
+          </List>
         </Box>
         <Divider orientation="vertical" flexItem sx={{ mx: 3 }} />
-        <Box flex={1} sx={{ mt: 2 }}>
-          {renderOptionsComponent()}
-          <Box sx={{ flexShrink: 0 }}>
+        <Box
+          flex={1}
+          sx={{
+            mt: 2,
+            minHeight: '270px',
+            display: 'flex',
+            flexDirection: 'column',
+          }}
+        >
+          <Box sx={{ flexGrow: 1 }}>{renderOptionsComponent()}</Box>
+          <Box sx={{ mt: 2 }}>
             <LoadingButton
               variant="contained"
               onClick={handleRunChart}
-              sx={{ mt: 2 }}
               startIcon={<PlayArrowIcon />}
-              disabled={
-                !selectedChart || (routes.length === 1 && !chartOptions)
-              }
               loading={isLoading}
             >
               Run Chart
