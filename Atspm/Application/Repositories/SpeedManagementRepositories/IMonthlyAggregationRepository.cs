@@ -7,6 +7,7 @@ namespace Utah.Udot.Atspm.Repositories.SpeedManagementRepositories
     {
         Task<List<MonthlyAggregationSimplified>> AllAggregationsOverTimePeriod(TimePeriodFilter timePeriod, MonthAggClassification dayType);
         Task<MonthlyAggregation> CheckExistanceAsync(MonthlyAggregation item);
+        Task<List<MonthlyAggregationSimplified>> GetTopMonthlyAggregationsInCategory(MonthlyAggregationOptions options);
         Task<List<MonthlyAggregationSimplified>> LatestOfEachSegmentId(TimePeriodFilter timePeriod, MonthAggClassification monthAggClassification);
         Task<List<MonthlyAggregationSimplified>> MonthlyAggregationsForSegmentInTimePeriod(List<Guid> segmentIds, DateTime startTime, DateTime endTime, TimePeriodFilter timePeriod, MonthAggClassification monthAggClassification);
         Task RemoveKeyAsync(Guid? key);

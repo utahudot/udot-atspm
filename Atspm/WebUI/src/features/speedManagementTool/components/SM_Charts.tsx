@@ -6,6 +6,10 @@ import DataQualityChartContainer from '@/features/charts/speedManagementTool/dat
 import DataQualityChartOptions, {
   DataQualityChartOptionsValues,
 } from '@/features/charts/speedManagementTool/dataQuality/components/DataQualityChartOptions'
+import EffectivenessOfStrategiesChartsContainer from '@/features/charts/speedManagementTool/effectivenessOfStrategies/EffectivenessOfStrategiesChartContainer'
+import EffectivenessOfStrategiesOptions, {
+  EffectivenessOfStrategiesOptionsValues,
+} from '@/features/charts/speedManagementTool/effectivenessOfStrategies/EffectivenessOfStrategiesOptions'
 import SpeedComplianceChartOptions, {
   SpeedComplianceChartOptionsValues,
 } from '@/features/charts/speedManagementTool/speedCompliance/SpeedComplianceChartOptions'
@@ -47,6 +51,7 @@ type ChartOptions =
   | SpeedOverDistanceChartOptionsValues
   | DataQualityChartOptionsValues
   | SpeedVariabilityOptionsValues
+  | EffectivenessOfStrategiesOptionsValues
   | null
 
 const SM_Charts = ({ routes }: { routes: SpeedManagementRoute[] }) => {
@@ -63,7 +68,9 @@ const SM_Charts = ({ routes }: { routes: SpeedManagementRoute[] }) => {
   const updatedChartOptions = chartOptions
     ? {
         ...chartOptions,
-        ...(multiselect || selectedChart === SM_ChartType.DATA_QUALITY
+        ...(multiselect ||
+        selectedChart === SM_ChartType.DATA_QUALITY ||
+        selectedChart === SM_ChartType.EFFECTIVENESS_OF_STRATEGIES
           ? { segmentIds: segmentIds }
           : { segmentId: segmentIds[0] }),
       }
@@ -75,12 +82,14 @@ const SM_Charts = ({ routes }: { routes: SpeedManagementRoute[] }) => {
           SM_ChartType.SPEED_OVER_DISTANCE,
           SM_ChartType.SPEED_COMPLIANCE,
           SM_ChartType.DATA_QUALITY,
+          SM_ChartType.EFFECTIVENESS_OF_STRATEGIES,
         ]
       : [
           SM_ChartType.CONGESTION_TRACKING,
           SM_ChartType.SPEED_OVER_TIME,
           SM_ChartType.DATA_QUALITY,
           SM_ChartType.SPEED_VARIABILITY,
+          SM_ChartType.EFFECTIVENESS_OF_STRATEGIES,
         ]
   }, [multiselect])
 
@@ -175,6 +184,16 @@ const SM_Charts = ({ routes }: { routes: SpeedManagementRoute[] }) => {
             sourceId={routeSpeedRequest.sourceId}
           />
         )
+      case SM_ChartType.EFFECTIVENESS_OF_STRATEGIES:
+        return (
+          <EffectivenessOfStrategiesOptions
+            onOptionsChange={
+              handleOptionsChange as (
+                options: EffectivenessOfStrategiesOptionsValues
+              ) => void
+            }
+          />
+        )
       default:
         return null
     }
@@ -200,11 +219,13 @@ const SM_Charts = ({ routes }: { routes: SpeedManagementRoute[] }) => {
         return <SpeedComplianceChartsContainer chartData={data} />
       case SM_ChartType.DATA_QUALITY:
         return <DataQualityChartContainer chartData={data} />
+      case SM_ChartType.EFFECTIVENESS_OF_STRATEGIES:
+        return <EffectivenessOfStrategiesChartsContainer chartData={data} />
       default:
         return null
     }
   }
-
+  EffectivenessOfStrategiesChartsContainer
   return (
     <>
       <Box

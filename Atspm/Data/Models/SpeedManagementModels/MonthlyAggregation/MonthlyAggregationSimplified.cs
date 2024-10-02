@@ -108,12 +108,14 @@ public class MonthlyAggregationOptions
     public SpeedCategoryFilter category { get; set; }
     public TimePeriodFilter timePeriod { get; set; }
     public MonthAggClassification aggClassification { get; set; }
-    public DateTime? StartTime { get; set; }
-    public DateTime? EndTime { get; set; }
-    public long SourceId { get; set; }
-    public string Region { get; set; }
-    public string? City { get; set; }
-    public string? County { get; set; }
+    public DateTime StartTime { get; set; }
+    public DateTime EndTime { get; set; }
+    public long? SourceId { get; set; } = null;
+    public string? Region { get; set; } = null;
+    public string? City { get; set; } = null;
+    public string? County { get; set; } = null;
+    public string? Order { get; set; } = "DESC";
+    public int? Limit { get; set; } = 25;
 }
 
 

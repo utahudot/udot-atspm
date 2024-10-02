@@ -37,6 +37,14 @@ namespace SpeedManagementApi.Controllers
         }
 
         // POST: /MonthlyAggregation
+        [HttpPost("hotspots")]
+        public async Task<ActionResult<IReadOnlyList<MonthlyAggregationSimplified>>> GetTopMonthlyAggregationsInCategory(MonthlyAggregationOptions monthlyAggregationOptions)
+        {
+            IReadOnlyList<MonthlyAggregationSimplified> monthlyAggregationsForSegment = await monthlyAggregationService.GetTopMonthlyAggregationsInCategory(monthlyAggregationOptions);
+            return Ok(monthlyAggregationsForSegment);
+        }
+
+        // POST: /MonthlyAggregation
         [HttpPost("source/{sourceId}")]
         public async Task AggregateCertainMonthforSource(int sourceId, [FromBody] DateTime date)
         {
@@ -67,7 +75,6 @@ namespace SpeedManagementApi.Controllers
             IReadOnlyList<MonthlyAggregationSimplified> monthlyAggregationsForSegment = await monthlyAggregationService.ListMonthlyAggregationsForSegment(segmentId, timePeriod, monthAggClassification);
             return Ok(monthlyAggregationsForSegment);
         }
-
 
         [HttpGet("filtering-time-periods")]
         public IActionResult GetFilteringTimePeriodMapping()

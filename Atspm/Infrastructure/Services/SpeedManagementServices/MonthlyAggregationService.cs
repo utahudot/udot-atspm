@@ -26,6 +26,16 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices
             return monthlyAggregations;
         }
 
+        public async Task<IReadOnlyList<MonthlyAggregationSimplified>> GetTopMonthlyAggregationsInCategory(MonthlyAggregationOptions monthlyAggregationOptions)
+        {
+            DateTime firstDayOfMonth = new DateTime(monthlyAggregationOptions.StartTime.Year, monthlyAggregationOptions.StartTime.Month, 1).AddDays(-1);
+            DateTime lastDayOfMonth = new DateTime(monthlyAggregationOptions.EndTime.Year, monthlyAggregationOptions.EndTime.Month, 1).AddMonths(1).AddDays(-1);
+            monthlyAggregationOptions.StartTime = firstDayOfMonth;
+            monthlyAggregationOptions.EndTime = lastDayOfMonth;
+            var monthlyAggregations = await monthlyAggregationRepository.GetTopMonthlyAggregationsInCategory(monthlyAggregationOptions);
+            return monthlyAggregations;
+        }
+
         //public async Task<List<SpeedOverDistanceDto>> MonthlyAggregationsForSegmentInTimePeriod(List<Guid> segmentIds, DateTime startDate, DateTime endDate)
         //{
         //    var thresholdDate = DateTime.UtcNow.AddYears(-2).AddMonths(-1);
