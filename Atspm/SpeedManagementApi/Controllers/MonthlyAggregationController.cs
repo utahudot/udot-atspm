@@ -28,6 +28,14 @@ namespace SpeedManagementApi.Controllers
             return;
         }
 
+        // GET: /MonthlyAggregation
+        [HttpGet("latest/{monthAggClassification}/{timePeriod}")]
+        public async Task<ActionResult<IReadOnlyList<MonthlyAggregationSimplified>>> LatestOfEachSegmentId(FilteringTimePeriod timePeriod, MonthAggClassification monthAggClassification)
+        {
+            IReadOnlyList<MonthlyAggregationSimplified> monthlyAggregationsForSegment = await monthlyAggregationService.LatestOfEachSegmentId(timePeriod, monthAggClassification);
+            return Ok(monthlyAggregationsForSegment);
+        }
+
         // POST: /MonthlyAggregation
         [HttpPost("source/{sourceId}")]
         public async Task AggregateCertainMonthforSource(int sourceId, [FromBody] DateTime date)
@@ -53,11 +61,42 @@ namespace SpeedManagementApi.Controllers
         }
 
         // GET: /MonthlyAggregation/segments/{id}
-        [HttpGet("segments/{segmentId}")]
-        public async Task<ActionResult<IReadOnlyList<MonthlyAggregation>>> GetMonthlyAggregationForSegment(Guid segmentId)
+        [HttpGet("segments/{segmentId}/{monthAggClassification}/{timePeriod}")]
+        public async Task<ActionResult<IReadOnlyList<MonthlyAggregationSimplified>>> GetMonthlyAggregationForSegment(Guid segmentId, FilteringTimePeriod timePeriod, MonthAggClassification monthAggClassification)
         {
-            IReadOnlyList<MonthlyAggregation> monthlyAggregationsForSegment = await monthlyAggregationService.ListMonthlyAggregationsForSegment(segmentId);
+            IReadOnlyList<MonthlyAggregationSimplified> monthlyAggregationsForSegment = await monthlyAggregationService.ListMonthlyAggregationsForSegment(segmentId, timePeriod, monthAggClassification);
             return Ok(monthlyAggregationsForSegment);
+        }
+
+
+        [HttpGet("filtering-time-periods")]
+        public IActionResult GetFilteringTimePeriodMapping()
+        {
+            var mappings = Enum.GetValues(typeof(FilteringTimePeriod))
+                .Cast<FilteringTimePeriod>()
+                .Select(e => new EnumMapping
+                {
+                    Number = (int)e,
+                    LetterName = e.GetDisplayName() // Assuming you've added the DisplayNameAttribute
+                })
+                .ToList();
+
+            return Ok(mappings);
+        }
+
+        [HttpGet("month-agg-classifications")]
+        public IActionResult GetMonthAggClassificationMapping()
+        {
+            var mappings = Enum.GetValues(typeof(MonthAggClassification))
+                .Cast<MonthAggClassification>()
+                .Select(e => new EnumMapping
+                {
+                    Number = (int)e,
+                    LetterName = e.GetDisplayName() // Assuming you've added the DisplayNameAttribute
+                })
+                .ToList();
+
+            return Ok(mappings);
         }
 
     }
