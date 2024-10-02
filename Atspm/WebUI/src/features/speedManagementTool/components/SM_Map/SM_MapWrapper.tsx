@@ -46,7 +46,7 @@ const SM_MapWrapper = () => {
   const { data: speedLimitData } = useUdotSpeedLimitRoutes()
 
   const speedLimitRoutes =
-    speedLimitData?.features.map((feature) => {
+    speedLimitData?.data?.features.map((feature) => {
       return {
         ...feature,
         geometry: {
