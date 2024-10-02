@@ -10,20 +10,19 @@ const SegmentSelectMap = dynamic(() => import('./Map'), {
 interface SegmentSelectMapProps {
   selectedSegmentIds: string[]
   onSegmentSelect: (id: string, startMile: number, endMile: number) => void
-  segmentData: any[]
-  isLoadingSegments: boolean
+  segments: any[] | undefined
 }
 
 const MapWrapper: React.FC<SegmentSelectMapProps> = memo(
-  ({ selectedSegmentIds, segmentData, isLoadingSegments, onSegmentSelect }) => {
-    if (isLoadingSegments || !segmentData) {
+  ({ selectedSegmentIds, segments, onSegmentSelect }) => {
+    if (!segments) {
       return <Typography sx={{ ml: 3 }}>Loading...</Typography>
     }
 
     return (
       <Box sx={{ height: '100%', width: '100%' }}>
         <SegmentSelectMap
-          segments={segmentData}
+          segments={segments}
           selectedSegmentIds={selectedSegmentIds}
           onSegmentSelect={onSegmentSelect}
         />

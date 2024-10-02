@@ -1,6 +1,5 @@
 import { useGetApiV1ImpactType } from '@/api/speedManagement/aTSPMSpeedManagementApi'
 import { Impact } from '@/features/speedManagementTool/types/impact'
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
 import {
   Alert,
   Box,
@@ -17,18 +16,17 @@ import {
   TextField,
 } from '@mui/material'
 import { useTheme } from '@mui/material/styles'
-import { useRouter } from 'next/router'
-import React, { useEffect, useMemo, useState } from 'react'
-import { useGetSegments } from '../api/getSegments'
-import SegmentSelectMap from './SegmentSelectMap'
-interface ImpactEditorModalProps {
-  data?: Impact
-  open?: boolean
-  onClose?: () => void
-  onSave: (impact: Impact) => void
-  onCreate: (inpact: Impact) => void
-  onEdit: (impact: Impact) => void
-}
+import { DatePicker } from '@mui/x-date-pickers'
+import { isDate } from 'date-fns'
+import {
+  forwardRef,
+  memo,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
+import SegmentSelectMapComponent from './SegmentSelectMap'
 
 const ITEM_HEIGHT = 48
 const ITEM_PADDING_TOP = 8
@@ -41,268 +39,280 @@ const MenuProps = {
   },
 }
 
-const ImpactEditorModal: React.FC<ImpactEditorModalProps> = ({
-  data,
-  open,
-  onClose,
-  onSave,
-  onCreate,
-  onEdit,
-}) => {
-  const [impact, setImpact] = useState<Impact>({
-    id: data?.id || null,
-    description: data?.description || '',
-    start: data?.start || null,
-    end: data?.end || null,
-    startMile: data?.startMile || 0,
-    endMile: data?.endMile || 0,
-    impactTypeIds: data?.impactTypeIds || [],
-    impactTypes: data?.impactTypes || [],
-    segmentIds: data?.segmentIds || [],
-    impactTypeNames: '',
-  })
+const MemoizedSegmentSelectMap = memo(SegmentSelectMapComponent)
 
-  const [errors, setErrors] = useState({
-    description: false,
-    start: false,
-    end: false,
-    startMile: false,
-    endMile: false,
-    impactTypes: false,
-    segmentIds: false,
-  })
+interface ImpactEditorModalProps {
+  data?: Impact
+  open?: boolean
+  onClose: () => void
+  onSave: (impact: Impact) => void
+  onCreate: (impact: Impact) => Promise<void>
+  onEdit: (impact: Impact) => Promise<void>
+  segments: any
+}
 
-  const { data: impactTypeData, isLoading: isLoadingImpactTypes } =
-    useGetApiV1ImpactType()
-  const router = useRouter()
-  const theme = useTheme()
-
-  const { data: segmentData, isLoading: isLoadingSegments } = useGetSegments()
-
-  const filteredSegments = useMemo(() => {
-    return (
-      segmentData?.features
-        ?.filter((feature) => feature.geometry.type === 'LineString')
-        ?.map((feature) => ({
-          ...feature,
-          geometry: {
-            ...feature.geometry,
-            coordinates: feature.geometry.coordinates.map((coord) => [
-              coord[1],
-              coord[0],
-            ]),
-          },
-        })) || []
-    )
-  }, [segmentData])
-
-  useEffect(() => {
-    if (data) {
-      setImpact(data)
-    }
-  }, [data])
-
-  const handleChange = (
-    event: SelectChangeEvent<typeof impact.impactTypeIds>
+const ImpactEditorModal = forwardRef(
+  (
+    {
+      data,
+      open = false,
+      onClose,
+      onSave,
+      onCreate,
+      onEdit,
+      segments,
+    }: ImpactEditorModalProps,
+    ref
   ) => {
-    const {
-      target: { value },
-    } = event
+    const theme = useTheme()
+    const { data: impactTypeData } = useGetApiV1ImpactType()
+    // const router = useRouter()
 
-    const selectedIds = value
-      ? typeof value === 'string'
-        ? value.split(',')
-        : value
-      : []
-    const selectedImpactTypes =
-      impactTypeData?.filter(
-        (type) => type.id && selectedIds.includes(type.id)
-      ) || []
-
-    setImpact({
-      ...impact,
-      impactTypeIds: selectedIds,
-      impactTypes: selectedImpactTypes,
+    const [impact, setImpact] = useState<Impact>({
+      id: data?.id || 0,
+      description: data?.description || '',
+      start: data?.start || null,
+      end: data?.end || null,
+      startMile: data?.startMile || 0,
+      endMile: data?.endMile || 0,
+      impactTypeIds: data?.impactTypeIds || [],
+      impactTypes: data?.impactTypes || [],
+      segmentIds: data?.segmentIds || [],
+      impactTypeNames: '',
     })
-  }
 
-  const handleSave = () => {
-    const newErrors = {
-      description: impact.description === '',
-      start: !impact.start,
-      end: !impact.end,
-      startMile: !impact.startMile,
-      endMile: !impact.endMile,
-      impactTypes: !impact.impactTypes,
-      segmentIds: !impact.segmentIds,
-    }
+    const [errors, setErrors] = useState({
+      description: false,
+      start: false,
+      end: false,
+      startMile: false,
+      endMile: false,
+      impactTypes: false,
+      segmentIds: false,
+    })
 
-    setErrors(newErrors)
-
-    if (Object.values(newErrors).some((hasError) => hasError)) {
-      return
-    }
-    console.log(impact)
-    if (impact.id) {
-      onEdit(impact)
-    } else {
-      onCreate(impact)
-      onSave(impact)
-    }
-    onClose()
-  }
-
-  const handleSegmentSelect = (
-    segmentId: string,
-    startMile: number,
-    endMile: number
-  ) => {
-    setImpact((prevImpact) => {
-      const currentSegmentIds = prevImpact.segmentIds || []
-      const updatedSegmentIds = currentSegmentIds.includes(segmentId)
-        ? currentSegmentIds.filter((id) => id !== segmentId)
-        : [...currentSegmentIds, segmentId]
-
-      // Update start and end miles
-      const updatedStartMile = Math.min(
-        ...updatedSegmentIds.map((id) => {
-          const segment = segmentData.features.find(
-            (s) => s.properties.Id === id
-          ) // Fixed typo here
-          return segment ? segment.properties.StartMilePoint : Infinity
+    useEffect(() => {
+      if (data) {
+        setImpact(data)
+      } else {
+        setImpact({
+          id: 0,
+          description: '',
+          start: null,
+          end: null,
+          startMile: 0,
+          endMile: 0,
+          impactTypeIds: [],
+          impactTypes: [],
+          segmentIds: [],
+          impactTypeNames: '',
         })
-      )
-
-      const updatedEndMile = Math.max(
-        ...updatedSegmentIds.map((id) => {
-          const segment = segmentData.features.find(
-            (s) => s.properties.Id === id
-          ) // Fixed typo here
-          return segment ? segment.properties.EndMilePoint : -Infinity
-        })
-      )
-
-      return {
-        ...prevImpact,
-        segmentIds: updatedSegmentIds,
-        startMile: updatedStartMile,
-        endMile: updatedEndMile,
       }
-    })
-  }
+    }, [data])
 
-  return (
-    <Dialog
-      open={open}
-      onClose={onClose}
-      fullScreen
-      maxWidth="md"
-      PaperProps={{
-        sx: {
-          height: '100%',
-          width: '100%',
-          margin: 'auto',
-          maxWidth: 'lg',
-        },
-      }}
-    >
-      <h4 style={{ marginLeft: '15px' }}>
-        {impact.id ? 'Edit Impact' : 'Create New Impact'}
-      </h4>
+    const handleChange = useCallback(
+      (event: SelectChangeEvent<typeof impact.impactTypeIds>) => {
+        const {
+          target: { value },
+        } = event
 
-      <Box
-        sx={{
-          marginX: '1.25rem',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 2,
+        const selectedIds =
+          value && typeof value === 'string' ? value.split(',') : value || []
+
+        const selectedImpactTypes =
+          impactTypeData?.filter(
+            (type) => type.id && selectedIds.includes(type.id)
+          ) || []
+
+        setImpact((prevImpact) => ({
+          ...prevImpact,
+          impactTypeIds: selectedIds,
+          impactTypes: selectedImpactTypes,
+        }))
+      },
+      [impactTypeData]
+    )
+
+    const handleSave = useCallback(async () => {
+      const newErrors = {
+        description: impact.description === '',
+        start: !impact.start,
+        end: !impact.end,
+        startMile: !impact.startMile && impact.startMile !== 0,
+        endMile: !impact.endMile && impact.endMile !== 0,
+        impactTypes: impact.impactTypes.length === 0,
+        segmentIds: impact.segmentIds.length === 0,
+      }
+
+      setErrors(newErrors)
+
+      // If there are any errors, don't proceed
+      if (Object.values(newErrors).some((hasError) => hasError)) {
+        return
+      }
+
+      try {
+        if (impact.id) {
+          await onEdit(impact)
+        } else {
+          await onCreate(impact)
+        }
+        onSave(impact)
+        onClose()
+      } catch (error) {
+        console.error('Error occurred while saving impact:', error)
+      }
+    }, [impact, onClose, onCreate, onEdit, onSave])
+
+    const handleSegmentSelect = useCallback(
+      (segmentId: string) => {
+        setImpact((prevImpact) => {
+          const currentSegmentIds = prevImpact.segmentIds || []
+          let updatedSegmentIds
+
+          if (currentSegmentIds.includes(segmentId)) {
+            updatedSegmentIds = currentSegmentIds.filter(
+              (id) => id !== segmentId
+            )
+          } else {
+            updatedSegmentIds = [...currentSegmentIds, segmentId]
+          }
+
+          // Update start and end miles
+          const updatedStartMile = Math.min(
+            ...updatedSegmentIds.map((id) => {
+              const segment = segments.find((s) => s.properties.Id === id)
+              return segment ? segment.properties.StartMilePoint : Infinity
+            })
+          )
+
+          const updatedEndMile = Math.max(
+            ...updatedSegmentIds.map((id) => {
+              const segment = segments.find((s) => s.properties.Id === id)
+              return segment ? segment.properties.EndMilePoint : -Infinity
+            })
+          )
+
+          return {
+            ...prevImpact,
+            segmentIds: updatedSegmentIds,
+            startMile: updatedStartMile,
+            endMile: updatedEndMile,
+          }
+        })
+      },
+      [segments]
+    )
+
+    const selectedSegmentIds = useMemo(
+      () => impact.segmentIds || [],
+      [impact.segmentIds]
+    )
+
+    return (
+      <Dialog
+        open={open}
+        onClose={onClose}
+        fullScreen
+        maxWidth="md"
+        PaperProps={{
+          sx: {
+            height: '100%',
+            width: '100%',
+            margin: 'auto',
+            maxWidth: 'lg',
+          },
         }}
       >
-        <Box sx={{ display: 'flex', gap: 2 }}>
-          <TextField
-            label="Description"
-            name="description"
-            value={impact.description}
-            error={errors.description}
-            onChange={(e) =>
-              setImpact({ ...impact, description: e.target.value })
-            }
-            fullWidth
-          />
-          <TextField
-            label="Start Date"
-            name="start"
-            type="datetime-local"
-            value={impact.start || new Date()}
-            error={errors.start}
-            onChange={(e) => setImpact({ ...impact, start: e.target.value })}
-            fullWidth
-            InputLabelProps={{
-              shrink: true,
-            }}
-          />
-          <TextField
-            label="End Date"
-            name="end"
-            type="datetime-local"
-            value={impact.end || ''}
-            error={errors.end}
-            onChange={(e) => setImpact({ ...impact, end: e.target.value })}
-            fullWidth
-            InputLabelProps={{
-              shrink: true,
-            }}
-          />
-        </Box>
-        <Box sx={{ display: 'flex', gap: 2 }}>
-          <TextField
-            label="Start Mile"
-            name="startMile"
-            type="number"
-            value={impact.startMile}
-            onChange={(e) =>
-              setImpact({
-                ...impact,
-                startMile: parseFloat(e.target.value),
-              })
-            }
-            fullWidth
-            error={errors.startMile}
-          />
-          <TextField
-            label="End Mile"
-            name="endMile"
-            type="number"
-            value={impact.endMile}
-            onChange={(e) =>
-              setImpact({
-                ...impact,
-                endMile: parseFloat(e.target.value),
-              })
-            }
-            fullWidth
-            error={errors.endMile}
-          />
-          <FormControl fullWidth error={errors.impactTypes}>
-            <InputLabel id="impact-types-label">Impact Types</InputLabel>
-            <Select
-              labelId="impact-types-label"
-              id="impact-types-select"
-              multiple
-              value={
-                impact.impactTypes
-                  ? impact.impactTypes.map((type) => type.id)
-                  : []
-              } // Ensure it's an array
-              onChange={handleChange}
-              input={
-                <OutlinedInput id="select-multiple-chip" label="Impact Types" />
+        <h4 style={{ marginLeft: '15px' }}>
+          {impact.id ? 'Edit Impact' : 'Create New Impact'}
+        </h4>
+
+        <Box
+          sx={{
+            marginX: '1.25rem',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 2,
+          }}
+        >
+          <Box sx={{ display: 'flex', gap: 2 }}>
+            <TextField
+              label="Description"
+              name="description"
+              value={impact.description}
+              error={errors.description}
+              onChange={(e) =>
+                setImpact((prevImpact) => ({
+                  ...prevImpact,
+                  description: e.target.value,
+                }))
               }
-              renderValue={(selected) => {
-                if (!impactTypeData || impactTypeData.length === 0) {
-                  return '' // Show blank if data hasn't loaded
+              fullWidth
+            />
+            <DatePicker
+              label="Start Date"
+              value={isDate(impact.start) ? new Date(impact.start) : null}
+              onChange={(date) =>
+                setImpact((prevImpact) => ({
+                  ...prevImpact,
+                  start: date,
+                }))
+              }
+            />
+            <DatePicker
+              label="End Date"
+              value={isDate(impact.end) ? new Date(impact.end) : null}
+              onChange={(date) =>
+                setImpact((prevImpact) => ({
+                  ...prevImpact,
+                  end: date,
+                }))
+              }
+            />
+          </Box>
+          <Box sx={{ display: 'flex', gap: 2 }}>
+            <TextField
+              label="Start Mile"
+              name="startMile"
+              value={impact.startMile}
+              onChange={(e) =>
+                setImpact((prevImpact) => ({
+                  ...prevImpact,
+                  startMile: parseFloat(e.target.value),
+                }))
+              }
+              fullWidth
+              error={errors.startMile}
+            />
+            <TextField
+              label="End Mile"
+              name="endMile"
+              value={impact.endMile}
+              onChange={(e) =>
+                setImpact((prevImpact) => ({
+                  ...prevImpact,
+                  endMile: parseFloat(e.target.value),
+                }))
+              }
+              fullWidth
+              error={errors.endMile}
+            />
+            <FormControl fullWidth error={errors.impactTypes}>
+              <InputLabel id="impact-types-label">Impact Types</InputLabel>
+              <Select
+                labelId="impact-types-label"
+                id="impact-types-select"
+                multiple
+                value={impact.impactTypeIds || []}
+                onChange={handleChange}
+                input={
+                  <OutlinedInput
+                    id="select-multiple-chip"
+                    label="Impact Types"
+                  />
                 }
-                return (
+                renderValue={(selected) => (
                   <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                     {selected.map((value) => (
                       <Chip
@@ -314,11 +324,10 @@ const ImpactEditorModal: React.FC<ImpactEditorModalProps> = ({
                       />
                     ))}
                   </Box>
-                )
-              }}
-              MenuProps={MenuProps}
-            >
-              <MenuItem onClick={() => router.push('/admin/impact-types')}>
+                )}
+                MenuProps={MenuProps}
+              >
+                {/* <MenuItem onClick={() => router.push('/admin/impact-types')}>
                 <Box
                   sx={{
                     display: 'flex',
@@ -327,54 +336,54 @@ const ImpactEditorModal: React.FC<ImpactEditorModalProps> = ({
                   }}
                 >
                   <AddCircleOutlineIcon style={{ fontSize: 'large' }} />
-                  <Box sx={{ ml: 1 }}> Create Impact Type</Box>
+                  <Box sx={{ ml: 1 }}>Create Impact Type</Box>
                 </Box>
-              </MenuItem>
-              {impactTypeData?.map((type) => (
-                <MenuItem
-                  key={type.id}
-                  value={type.id}
-                  style={{
-                    fontWeight: (impact.impactTypes || []).some(
-                      (impactType) => impactType.id === type.id
-                    )
-                      ? theme.typography.fontWeightMedium
-                      : theme.typography.fontWeightRegular,
-                  }}
-                >
-                  {type.name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+              </MenuItem> */}
+                {impactTypeData?.map((type) => (
+                  <MenuItem
+                    key={type.id}
+                    value={type.id}
+                    style={{
+                      fontWeight: (impact.impactTypes || []).some(
+                        (impactType) => impactType.id === type.id
+                      )
+                        ? theme.typography.fontWeightMedium
+                        : theme.typography.fontWeightRegular,
+                    }}
+                  >
+                    {type.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Box>
         </Box>
-      </Box>
-      <DialogActions sx={{ justifyContent: 'space-between' }}>
-        <Box>
-          {errors?.segmentIds && (
-            <Alert severity="error" sx={{ marginLeft: 1 }}>
-              Please add Segments using the map below
-            </Alert>
-          )}
-        </Box>
+        <DialogActions sx={{ justifyContent: 'space-between' }}>
+          <Box>
+            {errors?.segmentIds && (
+              <Alert severity="error" sx={{ marginLeft: 1 }}>
+                Please add Segments using the map below
+              </Alert>
+            )}
+          </Box>
+          <Box sx={{ display: 'flex', gap: 1 }}>
+            <Button onClick={onClose} color="secondary">
+              Cancel
+            </Button>
+            <Button onClick={handleSave} color="primary">
+              Save
+            </Button>
+          </Box>
+        </DialogActions>
+        <MemoizedSegmentSelectMap
+          selectedSegmentIds={selectedSegmentIds}
+          onSegmentSelect={handleSegmentSelect}
+          segments={segments}
+        />
+      </Dialog>
+    )
+  }
+)
 
-        <Box sx={{ display: 'flex', gap: 1 }}>
-          <Button onClick={onClose} color="secondary">
-            Cancel
-          </Button>
-          <Button onClick={handleSave} color="primary">
-            Save
-          </Button>
-        </Box>
-      </DialogActions>
-      <SegmentSelectMap
-        selectedSegmentIds={impact.segmentIds || []}
-        onSegmentSelect={handleSegmentSelect}
-        segmentData={filteredSegments}
-        isLoadingSegments={isLoadingSegments}
-      />
-    </Dialog>
-  )
-}
-
-export default ImpactEditorModal
+ImpactEditorModal.displayName = 'ImpactEditorModal'
+export default memo(ImpactEditorModal)
