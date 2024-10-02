@@ -7,6 +7,6 @@ public class SpeedOverDistanceOptions
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
     public List<Guid> SegmentIds { get; set; }
-    public FilteringTimePeriod timePeriod { get; set; }
+    public TimePeriodFilter timePeriod { get; set; }
     public MonthAggClassification monthAggClassification { get; set; }
 }

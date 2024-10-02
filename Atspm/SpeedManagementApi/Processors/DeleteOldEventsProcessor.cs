@@ -38,7 +38,7 @@ namespace SpeedManagementApi.Processors
 
         private IEnumerable<MonthlyAggregationSimplified> AllAggregationsOverTimePeriodAsync()
         {
-            var list = monthlyAggregationService.AllAggregationsOverTimePeriodAsync(FilteringTimePeriod.AllDay, MonthAggClassification.Total).Result;
+            var list = monthlyAggregationService.AllAggregationsOverTimePeriodAsync(TimePeriodFilter.AllDay, MonthAggClassification.Total).Result;
             foreach (var item in list)
             {
                 yield return item;

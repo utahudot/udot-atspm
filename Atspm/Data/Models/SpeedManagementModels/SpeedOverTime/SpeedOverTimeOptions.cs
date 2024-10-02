@@ -9,7 +9,7 @@ namespace Utah.Udot.Atspm.Data.Models.SpeedManagementModels.SpeedOverTime
         public DateTime? StartTime { get; set; }
         public DateTime? EndTime { get; set; }
         public string SegmentId { get; set; }
-        public FilteringTimePeriod timePeriod { get; set; }
+        public TimePeriodFilter timePeriod { get; set; }
         public MonthAggClassification monthAggClassification { get; set; }
     }
 }

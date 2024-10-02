@@ -235,7 +235,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             return task.Result;
         }
 
-        public async Task<List<MonthlyAggregationSimplified>> LatestOfEachSegmentId(FilteringTimePeriod timePeriod, MonthAggClassification monthAggClassification)
+        public async Task<List<MonthlyAggregationSimplified>> LatestOfEachSegmentId(TimePeriodFilter timePeriod, MonthAggClassification monthAggClassification)
         {
             var query = $@"SELECT " + SelectionQueryWithFilter(timePeriod, monthAggClassification) +
                 $@"FROM `{_datasetId}.{_tableId}` MA
@@ -257,7 +257,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
         }
 
         /// <inheritdoc/>
-        public async Task<List<MonthlyAggregationSimplified>> SelectMonthlyAggregationBySegment(Guid segmentId, FilteringTimePeriod timePeriod, MonthAggClassification dayType)
+        public async Task<List<MonthlyAggregationSimplified>> SelectMonthlyAggregationBySegment(Guid segmentId, TimePeriodFilter timePeriod, MonthAggClassification dayType)
         {
             var query = $@"SELECT " + SelectionQueryWithFilter(timePeriod, dayType) + $"FROM `{_datasetId}.{_tableId}` WHERE SegmentId = @segmentId";
 
@@ -276,7 +276,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             return monthlyAggregations;
         }
 
-        public async Task<List<MonthlyAggregationSimplified>> MonthlyAggregationsForSegmentInTimePeriod(List<Guid> segmentIds, DateTime startTime, DateTime endTime, FilteringTimePeriod timePeriod, MonthAggClassification dayType)
+        public async Task<List<MonthlyAggregationSimplified>> MonthlyAggregationsForSegmentInTimePeriod(List<Guid> segmentIds, DateTime startTime, DateTime endTime, TimePeriodFilter timePeriod, MonthAggClassification dayType)
         {
             // Construct a comma-separated list of IDs for the IN clause
             string ids = string.Join(",", segmentIds.Select(id => $"'{id}'"));
@@ -354,7 +354,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             return monthlyAggregations;
         }
 
-        public async Task<List<MonthlyAggregationSimplified>> AllAggregationsOverTimePeriod(FilteringTimePeriod timePeriod, MonthAggClassification dayType)
+        public async Task<List<MonthlyAggregationSimplified>> AllAggregationsOverTimePeriod(TimePeriodFilter timePeriod, MonthAggClassification dayType)
         {
             var thresholdDate = DateTime.UtcNow.AddYears(-2).AddMonths(-1);
 
@@ -3029,12 +3029,12 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             return query;
         }
 
-        private string SelectionQueryWithFilter(FilteringTimePeriod timePeriod, MonthAggClassification dayType)
+        private string SelectionQueryWithFilter(TimePeriodFilter timePeriod, MonthAggClassification dayType)
         {
             var queryString = $"Id, CreatedDate, BinStartTime, SegmentId, SourceId, ";
             switch (timePeriod)
             {
-                case FilteringTimePeriod.AllDay:
+                case TimePeriodFilter.AllDay:
                     switch (dayType)
                     {
                         case MonthAggClassification.Total:
@@ -3059,7 +3059,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                             throw new ArgumentOutOfRangeException(nameof(dayType), dayType, null);
                     }
 
-                case FilteringTimePeriod.OffPeak:
+                case TimePeriodFilter.OffPeak:
                     switch (dayType)
                     {
                         case MonthAggClassification.Total:
@@ -3084,7 +3084,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                             throw new ArgumentOutOfRangeException(nameof(dayType), dayType, null);
                     }
 
-                case FilteringTimePeriod.AmPeak:
+                case TimePeriodFilter.AmPeak:
                     switch (dayType)
                     {
                         case MonthAggClassification.Total:
@@ -3109,7 +3109,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                             throw new ArgumentOutOfRangeException(nameof(dayType), dayType, null);
                     }
 
-                case FilteringTimePeriod.PmPeak:
+                case TimePeriodFilter.PmPeak:
                     switch (dayType)
                     {
                         case MonthAggClassification.Total:
@@ -3134,7 +3134,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                             throw new ArgumentOutOfRangeException(nameof(dayType), dayType, null);
                     }
 
-                case FilteringTimePeriod.MidDay:
+                case TimePeriodFilter.MidDay:
                     switch (dayType)
                     {
                         case MonthAggClassification.Total:
@@ -3159,7 +3159,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                             throw new ArgumentOutOfRangeException(nameof(dayType), dayType, null);
                     }
 
-                case FilteringTimePeriod.Evening:
+                case TimePeriodFilter.Evening:
                     switch (dayType)
                     {
                         case MonthAggClassification.Total:
@@ -3184,7 +3184,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                             throw new ArgumentOutOfRangeException(nameof(dayType), dayType, null);
                     }
 
-                case FilteringTimePeriod.EarlyMorning:
+                case TimePeriodFilter.EarlyMorning:
                     switch (dayType)
                     {
                         case MonthAggClassification.Total:

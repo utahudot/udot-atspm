@@ -14,13 +14,13 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices
             this.segmentRepository = segmentRepository;
         }
 
-        public async Task<IReadOnlyList<MonthlyAggregationSimplified>> ListMonthlyAggregationsForSegment(Guid segmentId, FilteringTimePeriod timePeriod, MonthAggClassification dayType)
+        public async Task<IReadOnlyList<MonthlyAggregationSimplified>> ListMonthlyAggregationsForSegment(Guid segmentId, TimePeriodFilter timePeriod, MonthAggClassification dayType)
         {
             var monthlyAggregations = await monthlyAggregationRepository.SelectMonthlyAggregationBySegment(segmentId, timePeriod, dayType);
             return monthlyAggregations;
         }
 
-        public async Task<IReadOnlyList<MonthlyAggregationSimplified>> LatestOfEachSegmentId(FilteringTimePeriod timePeriod, MonthAggClassification dayType)
+        public async Task<IReadOnlyList<MonthlyAggregationSimplified>> LatestOfEachSegmentId(TimePeriodFilter timePeriod, MonthAggClassification dayType)
         {
             var monthlyAggregations = await monthlyAggregationRepository.LatestOfEachSegmentId(timePeriod, dayType);
             return monthlyAggregations;
@@ -74,7 +74,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices
         }
 
         //For the DeleteOldEvents
-        public async Task<List<MonthlyAggregationSimplified>> AllAggregationsOverTimePeriodAsync(FilteringTimePeriod timePeriod, MonthAggClassification dayType)
+        public async Task<List<MonthlyAggregationSimplified>> AllAggregationsOverTimePeriodAsync(TimePeriodFilter timePeriod, MonthAggClassification dayType)
         {
             var other = await monthlyAggregationRepository.AllAggregationsOverTimePeriod(timePeriod, dayType);
             return other;
