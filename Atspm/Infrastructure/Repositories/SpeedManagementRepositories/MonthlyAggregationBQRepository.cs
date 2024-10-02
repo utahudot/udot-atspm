@@ -120,9 +120,26 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
 
         public async Task RemoveKeysAsync(List<Guid>? keys)
         {
-            if (keys == null) return;
             var ids = string.Join(", ", keys);
             var query = $"DELETE FROM `{_datasetId}.{_tableId}` WHERE Id IN ({ids})";
+            var parameters = new List<BigQueryParameter>();
+            await _client.ExecuteQueryAsync(query, parameters);
+        }
+
+        public async Task RemoveBySegmentId(Guid segmentId)
+        {
+            var query = $"DELETE FROM `{_datasetId}.{_tableId}` WHERE SegmentId = @key";
+            var parameters = new List<BigQueryParameter>
+             {
+                 new BigQueryParameter("key", BigQueryDbType.String, segmentId.ToString())
+             };
+            await _client.ExecuteQueryAsync(query, parameters);
+        }
+
+        public async Task RemoveBySegmentIds(List<Guid> segmentIds)
+        {
+            var ids = string.Join(", ", segmentIds);
+            var query = $"DELETE FROM `{_datasetId}.{_tableId}` WHERE SegmentId IN ({ids})";
             var parameters = new List<BigQueryParameter>();
             await _client.ExecuteQueryAsync(query, parameters);
         }
