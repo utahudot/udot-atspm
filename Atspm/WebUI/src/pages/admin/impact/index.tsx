@@ -1,6 +1,7 @@
 import {
   useDeleteApiV1ImpactId,
   useGetApiV1Impact,
+  useGetApiV1SegmentAllSegments,
   usePostApiV1Impact,
   usePutApiV1ImpactId,
 } from '@/api/speedManagement/aTSPMSpeedManagementApi'
@@ -8,36 +9,90 @@ import GenericAdminChart, {
   pageNameToHeaders,
 } from '@/components/GenericAdminChart'
 import { ResponsivePageLayout } from '@/components/ResponsivePage'
-import { PageNames, useViewPage } from '@/features/identity/pagesCheck'
+import {
+  PageNames,
+  useUserHasClaim,
+  useViewPage,
+} from '@/features/identity/pagesCheck'
 import ImpactEditorModal from '@/features/speedManagementTool/components/ImpactEditorModal'
 import { Impact, ImpactType } from '@/features/speedManagementTool/types/impact'
 import { Backdrop, CircularProgress } from '@mui/material'
 import { GridColDef } from '@mui/x-data-grid'
-import { useEffect, useState } from 'react'
+import { useMemo } from 'react'
+
+interface AllSegmentsDto {
+  type: string
+  features: Feature[]
+}
+
+interface Feature {
+  type: string
+  geometry: Geometry
+  properties: Properties
+}
+
+interface Geometry {
+  type: string
+  coordinates: number[][]
+}
+
+interface Properties {
+  AccessCategory: string
+  AlternateIdentifier: string
+  City: string
+  County: string
+  Direction: string
+  EndMilePoint: number
+  FunctionalType: string
+  Id: string
+  Name: string
+  Offset: number
+  Region: string
+  SpeedLimit: number
+  StartMilePoint: number
+  UdotRouteNumber: string
+}
 
 const ImpactAdmin = () => {
   useViewPage(PageNames.Impacts)
 
-  const [data, setData] = useState<any>(null)
   const headers: GridColDef[] = pageNameToHeaders.get(
     PageNames.Impacts
   ) as GridColDef[]
 
-  const createMutation = usePostApiV1Impact()
-  const deleteMutation = useDeleteApiV1ImpactId()
-  const editMutation = usePutApiV1ImpactId()
+  const { mutateAsync: createImpact } = usePostApiV1Impact()
+  const { mutateAsync: deleteImpact } = useDeleteApiV1ImpactId()
+  const { mutateAsync: editImpact } = usePutApiV1ImpactId()
 
-  const { data: impactsData, isLoading, refetch } = useGetApiV1Impact()
+  const hasEditClaim = useUserHasClaim('GeneralConfiguration:Edit')
+  const hasDeleteClaim = useUserHasClaim('GeneralConfiguration:Delete')
 
-  console.log('impactsData', impactsData)
+  const {
+    data: impacts,
+    isLoading,
+    refetch: refetchImpacts,
+  } = useGetApiV1Impact<Impact[]>()
+  const { data: segments } = useGetApiV1SegmentAllSegments<AllSegmentsDto>()
 
-  useEffect(() => {
-    if (impactsData) {
-      setData(impactsData)
-    }
-  }, [impactsData])
+  const filteredSegments = useMemo(() => {
+    if (!segments) return []
+    return (
+      segments?.features
+        ?.filter((feature) => feature?.geometry?.type === 'LineString')
+        ?.map((feature) => ({
+          ...feature,
+          geometry: {
+            ...feature.geometry,
+            coordinates: feature?.geometry?.coordinates.map((coord) => [
+              coord[1],
+              coord[0],
+            ]),
+          },
+        })) || []
+    )
+  }, [segments])
 
-  const HandleCreateImpact = async (impactData: Impact) => {
+  const handleCreateImpact = async (impactData: Impact) => {
     const {
       description,
       start,
@@ -48,33 +103,36 @@ const ImpactAdmin = () => {
       impactTypes,
       segmentIds,
     } = impactData
+
     try {
-      await createMutation.mutateAsync({
-        id: null,
-        description,
-        start,
-        end,
-        startMile,
-        endMile,
-        impactTypeIds,
-        impactTypes,
-        segmentIds,
+      await createImpact({
+        data: {
+          description,
+          start,
+          end,
+          startMile,
+          endMile,
+          impactTypeIds,
+          impactTypes,
+          segmentIds,
+        },
+        onSuccess: () => refetchImpacts(),
       })
     } catch (error) {
       console.error('Mutation Error:', error)
     }
   }
 
-  const HandleDeleteImpact = async (impactData: Impact) => {
+  const handleDeleteImpact = async (impactData: Impact) => {
+    // const { id } = impactData
+    console.log('impactData:', impactData)
+    if (!impactData?.id) return
     const { id } = impactData
-    try {
-      await deleteMutation.mutateAsync(id)
-    } catch (error) {
-      console.error('Mutation Error:', error)
-    }
+    const response = await deleteImpact({ id })
+    console.log('response:', response)
   }
 
-  const HandleEditImpact = async (impactData: Impact) => {
+  const handleEditImpact = async (impactData: Impact) => {
     const {
       id,
       description,
@@ -87,9 +145,8 @@ const ImpactAdmin = () => {
       segmentIds,
     } = impactData
     try {
-      await editMutation.mutateAsync({
-        impactId: id,
-        impactData: {
+      await editImpact({
+        data: {
           description,
           start,
           end,
@@ -99,22 +156,12 @@ const ImpactAdmin = () => {
           impactTypes,
           segmentIds,
         },
+        id,
+        onSuccess: () => refetchImpacts(),
       })
     } catch (error) {
       console.error('Edit Mutation Error:', error)
     }
-  }
-
-  const deleteImpact = (data: Impact) => {
-    HandleDeleteImpact(data)
-  }
-
-  const editImpact = (data: Impact) => {
-    HandleEditImpact(data)
-  }
-
-  const createImpact = (data: Impact) => {
-    HandleCreateImpact(data)
   }
 
   if (isLoading) {
@@ -125,27 +172,30 @@ const ImpactAdmin = () => {
     )
   }
 
-  if (!data) {
+  if (!impacts) {
     return <div>Error returning data</div>
   }
   let impactTypeNames = ''
 
-  const filteredData = data.map((obj: any) => {
-    impactTypeNames = obj.impactTypes
+  const filteredImpacts = impacts.map((impact) => {
+    if (!impact.impactTypes) {
+      impact.impactTypes = []
+    }
+    impactTypeNames = impact.impactTypes
       .map((impactType: ImpactType) => impactType?.name)
       .join(', ')
 
     return {
-      id: obj.id,
-      description: obj.description,
-      start: obj.start,
-      end: obj.end,
-      startMile: obj.startMile,
-      endMile: obj.endMile,
-      impactTypeId: obj.impactTypeId,
-      impactTypes: obj.impactTypes,
+      id: impact.id,
+      description: impact.description,
+      start: impact.start,
+      end: impact.end,
+      startMile: impact.startMile,
+      endMile: impact.endMile,
+      impactTypeId: impact.impactTypeId,
+      impactTypes: impact.impactTypes,
       impactTypesNames: impactTypeNames || 'none',
-      segmentIds: obj.segmentIds,
+      segmentIds: impact.segmentIds,
     }
   })
 
@@ -164,15 +214,20 @@ const ImpactAdmin = () => {
       <GenericAdminChart
         pageName={PageNames.Impacts}
         headers={headers}
-        data={filteredData}
+        data={filteredImpacts}
         baseRowType={baseType}
-        onDelete={deleteImpact}
-        onEdit={editImpact}
-        onCreate={createImpact}
-        hasEditPrivileges={true}
-        hasDeletePrivileges={true}
+        onDelete={handleDeleteImpact}
+        onEdit={handleEditImpact}
+        onCreate={handleCreateImpact}
+        hasEditPrivileges={hasEditClaim}
+        hasDeletePrivileges={hasDeleteClaim}
         customModal={
-          <ImpactEditorModal onCreate={createImpact} onEdit={editImpact} />
+          <ImpactEditorModal
+            onCreate={handleCreateImpact}
+            onEdit={handleEditImpact}
+            onDelete={handleDeleteImpact}
+            segments={filteredSegments}
+          />
         }
       />
     </ResponsivePageLayout>
