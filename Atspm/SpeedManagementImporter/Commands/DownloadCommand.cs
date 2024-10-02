@@ -23,11 +23,15 @@ public class DownloadCommand : Command
         _clearguideDownloader = clearguideDownloader;
         _clearguideFileUploader = clearguideFileUploader;
         var filePath = new Option<string?>("--filePath", "filePath");
-        var segments = new Option<List<string>?>("--segments", "segments");
+        var segments = new Option<List<string>?>(
+            "--segments",
+            description: "segments",
+            parseArgument: result => result.Tokens.Select(t => t.Value.Split(',')).SelectMany(x => x).ToList());
 
         AddOption(new Option<int>("--sourceId", "sourceId"));
         AddOption(new Option<DateTime>("--startDate", "start date (mm-dd-yyyy)"));
         AddOption(new Option<DateTime>("--endDate", "end date (mm-dd-yyyy)"));
+        AddOption(new Option<string>("--operation", "operation"));
         if (filePath != null)
         {
             AddOption(filePath);
@@ -38,27 +42,44 @@ public class DownloadCommand : Command
         }
 
 
-        this.Handler = CommandHandler.Create<int, DateTime, DateTime, string, List<string>>(Execute);
+        this.Handler = CommandHandler.Create<int, DateTime, DateTime, string, string, List<string>>(Execute);
     }
 
-    private async Task Execute(int sourceId, DateTime startDate, DateTime endDate, string filePath, List<string> segments)
+    private async Task Execute(int sourceId, DateTime startDate, DateTime endDate, string operation, string filePath, List<string> segments)
     {
-        switch (sourceId)
+        if (operation.ToLower() == "download")
         {
-            case 1:
-                await _atspmDownloader.Download(startDate, endDate, segments);
-                break;
-            case 2:
-                await _pemsDownloader.Download(startDate, endDate, segments);
-                break;
-            case 3:
-                await _clearguideDownloader.Download(startDate, endDate, segments);
-                break;
-            case 4:
-                await _clearguideFileUploader.FileUploaderAsync(filePath);
-                break;
-            default:
-                throw new ArgumentException("Invalid sourceId.");
+            switch (sourceId)
+            {
+                case 1:
+                    await _atspmDownloader.Download(startDate, endDate, segments);
+                    break;
+                case 2:
+                    await _pemsDownloader.Download(startDate, endDate, segments);
+                    break;
+                case 3:
+                    await _clearguideDownloader.Download(startDate, endDate, segments);
+                    break;
+                case 4:
+                    await _clearguideFileUploader.FileUploaderAsync(filePath, segments);
+                    break;
+                default:
+                    throw new ArgumentException("Invalid sourceId.");
+            }
+        }
+        if (operation.ToLower() == "delete" && segments.Count > 0)
+        {
+            switch (sourceId)
+            {
+                case 2:
+                    await _pemsDownloader.DeleteSegmentData(segments);
+                    break;
+                case 3:
+                    await _clearguideDownloader.DeleteSegmentData(segments);
+                    break;
+                default:
+                    throw new ArgumentException("Invalid sourceId.");
+            }
         }
     }
 

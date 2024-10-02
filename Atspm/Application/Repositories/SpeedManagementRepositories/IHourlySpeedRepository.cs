@@ -17,6 +17,8 @@ namespace Utah.Udot.Atspm.Repositories.SpeedManagementRepositories
         Task<List<HourlySpeed>> GetHourlySpeedsForTimePeriod(Guid segmentId, DateTime startDate, DateTime endDate, DateTime startTime, DateTime endTime);
         Task<List<HourlySpeed>> HourlyAggregationsForSegmentInTimePeriod(List<Guid> segmentIds, DateTime startTime, DateTime endTime);
         Task<List<HourlySpeed>> GetHourlySpeedsWithFiltering(List<Guid> segmentIds, DateTime startDate, DateTime endDate, DateTime? startTime, DateTime? endTime, int? dayOfWeek, List<DateTime> specificDays);
+        public Task DeleteBySegment(Guid segmentId);
+        public Task DeleteBySegments(List<Guid> segments);
         #region ExtensionMethods
 
 

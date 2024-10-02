@@ -14,6 +14,7 @@ using Utah.Udot.Atspm.Data.Models.SpeedManagementModels;
 using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.Config;
 using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.Importer;
 using Utah.Udot.Atspm.Repositories.SpeedManagementRepositories;
+using Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices;
 
 namespace SpeedManagementImporter.Services.Pems
 {
@@ -21,6 +22,7 @@ namespace SpeedManagementImporter.Services.Pems
     {
         private readonly ISegmentRepository segmentRepository;
         private readonly IHourlySpeedRepository hourlySpeedRepository;
+        private readonly MonthlyAggregationService monthlyAggregationService;
         private readonly IConfiguration configuration; // Change from IConfigurationRoot to IConfiguration
         private readonly ILogger<PemsDownloaderService> logger;
         static readonly int sourceId = 2;
@@ -30,12 +32,35 @@ namespace SpeedManagementImporter.Services.Pems
         ISegmentRepository segmentRepository,
         IHourlySpeedRepository hourlySpeedRepository,
         IConfiguration configuration, // Change here
-        ILogger<PemsDownloaderService> logger)
+        ILogger<PemsDownloaderService> logger,
+        MonthlyAggregationService monthlyAggregationService)
         {
             this.segmentRepository = segmentRepository;
             this.hourlySpeedRepository = hourlySpeedRepository;
             this.configuration = configuration; // Change here
             this.logger = logger;
+            this.monthlyAggregationService = monthlyAggregationService;
+        }
+
+        public async Task DeleteSegmentData(List<string> providedSegments)
+        {
+            List<Segment> segments = new List<Segment>();
+            foreach (var segmentId in providedSegments)
+            {
+                var segment = await segmentRepository.LookupAsync(Guid.Parse(segmentId));
+                segments.Add(segment);
+            }
+            var segmentIds = segments.Select(s => s.Id).ToList();
+            if (segmentIds.Count == 1)
+            {
+                await hourlySpeedRepository.DeleteBySegment(segmentIds.FirstOrDefault());
+                await monthlyAggregationService.DeleteMonthlyAggregationBySegmentId(segmentIds.FirstOrDefault());
+            }
+            else
+            {
+                await hourlySpeedRepository.DeleteBySegments(segmentIds);
+                await monthlyAggregationService.DeleteMonthlyAggregationBySegmentIds(segmentIds);
+            }
         }
 
         public async Task Download(DateTime startDate, DateTime endDate, List<string>? providedSegments)

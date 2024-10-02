@@ -13,20 +13,42 @@ namespace SpeedManagementImporter.Services.Clearguide
     {
         private readonly ISegmentEntityRepository segmentEntityRepository;
         private readonly ITempDataRepository tempDataRepository;
+        private readonly ISegmentRepository segmentRepository;
         static readonly int sourceId = 3;
         static readonly int batchSize = 10000;
 
-        public ClearguideFileUploader(ISegmentEntityRepository segmentEntityRepository, ITempDataRepository tempDataRepository)
+        public ClearguideFileUploader(ISegmentEntityRepository segmentEntityRepository, ITempDataRepository tempDataRepository, ISegmentRepository segmentRepository)
         {
             this.segmentEntityRepository = segmentEntityRepository;
             this.tempDataRepository = tempDataRepository;
+            this.segmentRepository = segmentRepository;
         }
 
-        public async Task FileUploaderAsync(string filePath)
+        public async Task FileUploaderAsync(string filePath, List<string>? providedSegments)
         {
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
-            List<SegmentEntityWithSpeed> segmentEntities = await segmentEntityRepository.GetEntitiesWithSpeedForSourceId(sourceId);
+            List<Segment> segments = new List<Segment>();
+            if (providedSegments != null && providedSegments.Count > 0)
+            {
+                var segmentIds = providedSegments.Select(s => Guid.Parse(s)).ToList();
+                segments = await segmentRepository.GetSegmentsDetailsWithEntity(segmentIds);
+            }
+            else
+            {
+                segments = segmentRepository.AllSegmentsWithEntity(sourceId);
+            }
+
+            List<SegmentEntityWithSpeed> segmentEntities = segments.SelectMany(segment => segment.Entities.Select(entity => new SegmentEntityWithSpeed
+            {
+                SpeedLimit = segment.SpeedLimit,
+                EntityId = entity.EntityId,
+                SourceId = entity.SourceId,
+                SegmentId = entity.SegmentId,
+                EntityType = entity.EntityType,
+                Length = entity.Length,
+            })).ToList();
+
             var distinctEntityIds = segmentEntities
                                     .Select(e => e.EntityId)
                                     .Distinct()

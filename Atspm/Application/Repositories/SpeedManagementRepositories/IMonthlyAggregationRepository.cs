@@ -13,6 +13,9 @@ namespace Utah.Udot.Atspm.Repositories.SpeedManagementRepositories
         Task<MonthlyAggregation> SelectByBinTimeSegment(DateTime binStartTime, MonthlyAggregation monthlyAggregation);
         Task<MonthlyAggregation> SelectByBinTimeSegmentAndSource(DateTime binStartTime, MonthlyAggregation monthlyAggregation);
         Task<List<MonthlyAggregation>> SelectMonthlyAggregationBySegment(Guid SegmentId);
+        Task<List<MonthlyAggregation>> SelectMonthlyAggregationBySegmentIds(List<Guid> SegmentId);
         Task UpsertMonthlyAggregationAsync(MonthlyAggregation item);
+        Task DeleteBySegment(Guid segmentId);
+        Task DeleteBySegments(List<Guid> segments);
     }
 }

@@ -59,6 +59,14 @@ namespace SpeedManagementImporter
                 var logger = provider.GetRequiredService<ILogger<TempDataBQRepository>>();
                 return new TempDataBQRepository(client, datasetId, tableId, logger);
             });
+            services.AddScoped<IMonthlyAggregationRepository, MonthlyAggregationBQRepository>(provider =>
+            {
+                var client = provider.GetRequiredService<BigQueryClient>();
+                var datasetId = configuration["BigQuery:DatasetId"];
+                var tableId = configuration["BigQuery:MonthlyAggregationTableId"];
+                var logger = provider.GetRequiredService<ILogger<MonthlyAggregationBQRepository>>();
+                return new MonthlyAggregationBQRepository(client, datasetId, tableId, logger);
+            });
         }
     }
 }

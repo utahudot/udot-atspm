@@ -224,6 +224,25 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             return task.Result;
         }
 
+        public async Task DeleteBySegment(Guid segmentId)
+        {
+            var query = $"DELETE FROM `{_datasetId}.{_tableId}` WHERE SegmentId = @key";
+            var parameters = new List<BigQueryParameter>
+            {
+                 new BigQueryParameter("key", BigQueryDbType.String, segmentId.ToString())
+             };
+            await _client.ExecuteQueryAsync(query, parameters);
+        }
+
+        public async Task DeleteBySegments(List<Guid> segments)
+        {
+            var ids = string.Join(", ", segments);
+            var query = $"DELETE FROM `{_datasetId}.{_tableId}` WHERE SegmentId IN ({ids})";
+            var parameters = new List<BigQueryParameter>();
+
+            await _client.ExecuteQueryAsync(query, parameters);
+        }
+
 
 
         /// <inheritdoc/>
@@ -283,6 +302,26 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             {
                 new BigQueryParameter("segmentId", BigQueryDbType.String, segmentId.ToString())
             };
+
+            var result = await _client.ExecuteQueryAsync(query, parameters);
+            var monthlyAggregations = new List<MonthlyAggregation>();
+            foreach (var row in result)
+            {
+                monthlyAggregations.Add(MapRowToEntity(row));
+            }
+
+            return monthlyAggregations;
+        }
+
+        public async Task<List<MonthlyAggregation>> SelectMonthlyAggregationBySegmentIds(List<Guid> segmentIds)
+        {
+            var ids = string.Join(", ", segmentIds);
+            var query = $@"
+            SELECT *
+            FROM `{_datasetId}.{_tableId}`
+            WHERE SegmentId IN ({ids})";
+
+            var parameters = new List<BigQueryParameter>();
 
             var result = await _client.ExecuteQueryAsync(query, parameters);
             var monthlyAggregations = new List<MonthlyAggregation>();
@@ -3053,6 +3092,5 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             var query = queryBuilder.ToString();
             return query;
         }
-
     }
 }

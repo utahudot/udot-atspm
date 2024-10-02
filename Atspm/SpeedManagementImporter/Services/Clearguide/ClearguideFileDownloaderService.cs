@@ -2,26 +2,50 @@
 using Utah.Udot.Atspm.Data.Models.SpeedManagementModels;
 using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.Common;
 using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.Config;
-using Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositories;
 using Utah.Udot.Atspm.Repositories.SpeedManagementRepositories;
+using Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices;
 
 namespace SpeedManagementImporter.Services.Clearguide
 {
     public class ClearguideFileDownloaderService : IDataDownloader
     {
         private readonly IHourlySpeedRepository hourlySpeedRepository;
+        private readonly MonthlyAggregationService monthlyAggregationService;
         private readonly ISegmentEntityRepository segmentEntityRepository;
         private readonly ITempDataRepository tempDataRepository;
         private readonly ISegmentRepository segmentRepository;
         static readonly int sourceId = 3;
         static readonly int confidenceId = 4;
 
-        public ClearguideFileDownloaderService(ISegmentEntityRepository segmentEntityRepository, IHourlySpeedRepository hourlySpeedRepository, ITempDataRepository tempDataRepository, ISegmentRepository segmentRepository)
+        public ClearguideFileDownloaderService(ISegmentEntityRepository segmentEntityRepository, IHourlySpeedRepository hourlySpeedRepository, ITempDataRepository tempDataRepository, ISegmentRepository segmentRepository, MonthlyAggregationService monthlyAggregationService)
         {
             this.hourlySpeedRepository = hourlySpeedRepository;
             this.segmentEntityRepository = segmentEntityRepository;
             this.tempDataRepository = tempDataRepository;
             this.segmentRepository = segmentRepository;
+            this.monthlyAggregationService = monthlyAggregationService;
+        }
+
+        public async Task DeleteSegmentData(List<string> providedSegments)
+        {
+            List<Segment> segments = new List<Segment>();
+            foreach (var segmentId in providedSegments)
+            {
+                var segment = await segmentRepository.LookupAsync(Guid.Parse(segmentId));
+                if (segment == null) continue;
+                segments.Add(segment);
+            }
+            var segmentIds = segments.Select(s => s.Id).ToList();
+            if (segmentIds.Count == 1)
+            {
+                await hourlySpeedRepository.DeleteBySegment(segmentIds.FirstOrDefault());
+                await monthlyAggregationService.DeleteMonthlyAggregationBySegmentId(segmentIds.FirstOrDefault());
+            }
+            else
+            {
+                await hourlySpeedRepository.DeleteBySegments(segmentIds);
+                await monthlyAggregationService.DeleteMonthlyAggregationBySegmentIds(segmentIds);
+            }
         }
 
         public async Task Download(DateTime startDate, DateTime endDate, List<string>? providedSegments)
@@ -38,7 +62,8 @@ namespace SpeedManagementImporter.Services.Clearguide
                 segments = segmentRepository.AllSegmentsWithEntity(sourceId);
             }
 
-            List<SegmentEntityWithSpeed> segmentEntities = segments.SelectMany(segment => segment.Entities.Select(entity => new SegmentEntityWithSpeed{
+            List<SegmentEntityWithSpeed> segmentEntities = segments.SelectMany(segment => segment.Entities.Select(entity => new SegmentEntityWithSpeed
+            {
                 SpeedLimit = segment.SpeedLimit,
                 EntityId = entity.EntityId,
                 SourceId = entity.SourceId,

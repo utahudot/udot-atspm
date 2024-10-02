@@ -1,7 +1,9 @@
 ﻿using Google.Cloud.BigQuery.V2;
 using Microsoft.Extensions.Logging;
 using NetTopologySuite.Geometries;
+using NetTopologySuite.Index.HPRtree;
 using NetTopologySuite.IO;
+using Org.BouncyCastle.Crypto;
 using System.Text;
 using Utah.Udot.Atspm.Data.Models.SpeedManagementModels;
 using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.Common;
@@ -1156,7 +1158,23 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             return hourlyAggregations;
         }
 
+        public async Task DeleteBySegment(Guid segmentId)
+        {
+            var query = $"DELETE FROM `{_datasetId}.{_tableId}` WHERE SegmentId = @key";
+            var parameters = new List<BigQueryParameter>
+            {
+                 new BigQueryParameter("key", BigQueryDbType.String, segmentId.ToString())
+            };
+            await _client.ExecuteQueryAsync(query, parameters);
+        }
 
+        public async Task DeleteBySegments(List<Guid> segments)
+        {
+            var ids = string.Join(", ", segments);
+            var query = $"DELETE FROM `{_datasetId}.{_tableId}` WHERE SegmentId IN ({ids})";
+            var parameters = new List<BigQueryParameter>();
+            await _client.ExecuteQueryAsync(query, parameters);
+        }
 
         #endregion
 
