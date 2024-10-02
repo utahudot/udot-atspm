@@ -14,12 +14,16 @@ namespace SpeedManagementApi.Controllers
     public class SegmentController : ControllerBase
     {
         private readonly ISegmentRepository segmentRepository;
+        private readonly SegmentService segmentService;
         private readonly HourlySpeedService hourlySpeedService;
+        private readonly DataImporterService dataImporterService;
 
-        public SegmentController(ISegmentRepository segmentRepository, HourlySpeedService hourlySpeedService)
+        public SegmentController(ISegmentRepository segmentRepository, HourlySpeedService hourlySpeedService, SegmentService segmentService, DataImporterService dataImporterService)
         {
             this.segmentRepository = segmentRepository;
             this.hourlySpeedService = hourlySpeedService;
+            this.segmentService = segmentService;
+            this.dataImporterService = dataImporterService;
         }
 
         // GET: /Segment
@@ -272,5 +276,52 @@ namespace SpeedManagementApi.Controllers
             return Ok(currentSegments);
         }
 
+        //[HttpPost("AddDataForSegment/{segment}")]
+        //public async Task<ActionResult> AddDataForSegment(Guid segment, [FromBody] SegmentRequestDto segmentRequestDto)
+        //{
+        //    try
+        //    {
+        //        if (segmentRequestDto.SourceIds.Any())
+        //        {
+        //            await dataImporterService.DownloadDataForSegmentWithSource(segment, segmentRequestDto.SourceIds);
+        //        } else
+        //        {
+        //            await dataImporterService.DownloadDataForSegment(segment);
+        //        }
+        //    }
+        //    catch (Exception ex) { 
+        //        return BadRequest(ex.Message);
+        //    }
+        //    return Ok();
+        //}
+
+        //[HttpPost("AddSegment")]
+        //public async Task<ActionResult<Segment>> AddSegment(Segment segment)
+        //{
+        //    try
+        //    {
+        //        await segmentService.AddSegment(segment);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return BadRequest(ex.Message);
+        //    }
+
+        //    return Ok();
+        //}
+
+        //[HttpDelete("DeleteSegment/{segmentId}")]
+        //public async Task<ActionResult<Segment>> DeleteSegment(Guid segmentId)
+        //{
+            
+        //    return Ok();
+        //}
+
+        //[HttpPut("UpdateSegment/{segmentId}")]
+        //public async Task<ActionResult<Segment>> UpdateSegment(Guid segmentId)
+        //{
+
+        //    return Ok();
+        //}
     }
 }

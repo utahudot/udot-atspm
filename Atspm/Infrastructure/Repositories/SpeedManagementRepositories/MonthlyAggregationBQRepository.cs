@@ -106,6 +106,17 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             await _client.ExecuteQueryAsync(query, parameters);
         }
 
+        public async Task RemoveKeyAsync(Guid? key)
+        {
+            if (key == null) return;
+            var query = $"DELETE FROM `{_datasetId}.{_tableId}` WHERE Id = @key";
+            var parameters = new List<BigQueryParameter>
+             {
+                 new BigQueryParameter("key", BigQueryDbType.String, key.ToString())
+             };
+            await _client.ExecuteQueryAsync(query, parameters);
+        }
+
         public override void RemoveRange(IEnumerable<MonthlyAggregation> items)
         {
             var ids = string.Join(", ", items.Select(i => i.Id));
@@ -224,60 +235,31 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             return task.Result;
         }
 
-
-
-        /// <inheritdoc/>
-
-        public async Task<MonthlyAggregation> SelectByBinTimeSegmentAndSource(DateTime binStartTime, MonthlyAggregation monthlyAggregation)
+        public async Task<List<MonthlyAggregationSimplified>> LatestOfEachSegmentId(FilteringTimePeriod timePeriod, MonthAggClassification monthAggClassification)
         {
-            var segmentId = monthlyAggregation.SegmentId;
-            var sourceId = monthlyAggregation.SourceId;
-            var query = $@"
-            SELECT *
-            FROM `{_datasetId}.{_tableId}`
-            WHERE BinStartTime = @binStartTime
-              AND SegmentId = @segmentId
-              AND SourceId = @sourceId";
-
-            var parameters = new List<BigQueryParameter>
+            var query = $@"SELECT " + SelectionQueryWithFilter(timePeriod, monthAggClassification) +
+                $@"FROM `{_datasetId}.{_tableId}` MA
+                JOIN (
+                    SELECT SegmentId as SegId, MAX(BinStartTime) AS LatestBinStartTime
+                    FROM `{_datasetId}.{_tableId}`
+                    GROUP BY SegmentId
+                ) LatestMA
+                ON MA.SegmentId = LatestMA.SegId AND MA.BinStartTime = LatestMA.LatestBinStartTime";
+            var parameters = new List<BigQueryParameter>();
+            var results = await _client.ExecuteQueryAsync(query, parameters);
+            var monthlyAggregations = new List<MonthlyAggregationSimplified>();
+            foreach (var row in results)
             {
-                new BigQueryParameter("binStartTime", BigQueryDbType.DateTime, binStartTime),
-                new BigQueryParameter("segmentId", BigQueryDbType.String, segmentId.ToString()),
-                new BigQueryParameter("sourceId", BigQueryDbType.Int64, sourceId)
-            };
+                monthlyAggregations.Add(MapRowToSimplifiedAggregationEntity(row));
+            }
+            return monthlyAggregations;
 
-            var result = await _client.ExecuteQueryAsync(query, parameters);
-            return MapRowToEntity(result.FirstOrDefault());
         }
+
         /// <inheritdoc/>
-
-        public async Task<MonthlyAggregation> SelectByBinTimeSegment(DateTime binStartTime, MonthlyAggregation monthlyAggregation)
+        public async Task<List<MonthlyAggregationSimplified>> SelectMonthlyAggregationBySegment(Guid segmentId, FilteringTimePeriod timePeriod, MonthAggClassification dayType)
         {
-            var segmentId = monthlyAggregation.SegmentId;
-            var query = $@"
-            SELECT *
-            FROM `{_datasetId}.{_tableId}`
-            WHERE BinStartTime = @binStartTime
-              AND SegmentId = @segmentId";
-
-            var parameters = new List<BigQueryParameter>
-            {
-                new BigQueryParameter("binStartTime", BigQueryDbType.DateTime, binStartTime),
-                new BigQueryParameter("segmentId", BigQueryDbType.String, segmentId.ToString())
-            };
-
-            var result = await _client.ExecuteQueryAsync(query, parameters);
-            return MapRowToEntity(result.FirstOrDefault());
-        }
-        /// <inheritdoc/>
-
-
-        public async Task<List<MonthlyAggregation>> SelectMonthlyAggregationBySegment(Guid segmentId)
-        {
-            var query = $@"
-            SELECT *
-            FROM `{_datasetId}.{_tableId}`
-            WHERE SegmentId = @segmentId";
+            var query = $@"SELECT " + SelectionQueryWithFilter(timePeriod, dayType) + $"FROM `{_datasetId}.{_tableId}` WHERE SegmentId = @segmentId";
 
             var parameters = new List<BigQueryParameter>
             {
@@ -285,32 +267,31 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             };
 
             var result = await _client.ExecuteQueryAsync(query, parameters);
-            var monthlyAggregations = new List<MonthlyAggregation>();
+            var monthlyAggregations = new List<MonthlyAggregationSimplified>();
             foreach (var row in result)
             {
-                monthlyAggregations.Add(MapRowToEntity(row));
+                monthlyAggregations.Add(MapRowToSimplifiedAggregationEntity(row));
             }
 
             return monthlyAggregations;
         }
 
-        public async Task<List<MonthlyAggregation>> MonthlyAggregationsForSegmentInTimePeriod(List<Guid> segmentIds, DateTime startTime, DateTime endTime)
+        public async Task<List<MonthlyAggregationSimplified>> MonthlyAggregationsForSegmentInTimePeriod(List<Guid> segmentIds, DateTime startTime, DateTime endTime, FilteringTimePeriod timePeriod, MonthAggClassification dayType)
         {
             // Construct a comma-separated list of IDs for the IN clause
             string ids = string.Join(",", segmentIds.Select(id => $"'{id}'"));
             //TIMESTAMP('{item.BinStartTime:yyyy-MM-dd HH:mm:ss}')
-            var query = $@"
-            SELECT * FROM `{_datasetId}.{_tableId}` 
+            var query = $@"SELECT " + SelectionQueryWithFilter(timePeriod, dayType) + $@"FROM `{_datasetId}.{_tableId}` 
                 WHERE BinStartTime BETWEEN TIMESTAMP('{startTime:yyyy-MM-dd HH:mm:ss}') AND TIMESTAMP('{endTime:yyyy-MM-dd HH:mm:ss}') 
                 AND SegmentId IN ({ids})";
 
             var parameters = new List<BigQueryParameter>();
 
             var result = await _client.ExecuteQueryAsync(query, parameters);
-            var monthlyAggregations = new List<MonthlyAggregation>();
+            var monthlyAggregations = new List<MonthlyAggregationSimplified>();
             foreach (var row in result)
             {
-                monthlyAggregations.Add(MapRowToEntity(row));
+                monthlyAggregations.Add(MapRowToSimplifiedAggregationEntity(row));
             }
 
             return monthlyAggregations;
@@ -373,14 +354,11 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             return monthlyAggregations;
         }
 
-        public async Task<List<MonthlyAggregation>> AllAggregationsOverTimePeriod()
+        public async Task<List<MonthlyAggregationSimplified>> AllAggregationsOverTimePeriod(FilteringTimePeriod timePeriod, MonthAggClassification dayType)
         {
             var thresholdDate = DateTime.UtcNow.AddYears(-2).AddMonths(-1);
 
-            var query = $@"
-                SELECT *
-                FROM `{_datasetId}.{_tableId}`
-                WHERE BinStartTime < @thresholdDate";
+            var query = $@"SELECT " + SelectionQueryWithFilter(timePeriod, dayType) + $"FROM `{_datasetId}.{_tableId}` WHERE BinStartTime < @thresholdDate";
 
             var parameters = new List<BigQueryParameter>
                 {
@@ -388,10 +366,10 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 };
 
             var result = await _client.ExecuteQueryAsync(query, parameters);
-            var monthlyAggregations = new List<MonthlyAggregation>();
+            var monthlyAggregations = new List<MonthlyAggregationSimplified>();
             foreach (var row in result)
             {
-                monthlyAggregations.Add(MapRowToEntity(row));
+                monthlyAggregations.Add(MapRowToSimplifiedAggregationEntity(row));
             }
 
             return monthlyAggregations;
@@ -420,6 +398,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 { "AllDayPercentExtremeViolations", item.AllDayPercentExtremeViolations },
                 { "AllDayAvgSpeedVsSpeedLimit", item.AllDayAvgSpeedVsSpeedLimit },
                 { "AllDayEightyFifthSpeedVsSpeedLimit", item.AllDayEightyFifthSpeedVsSpeedLimit },
+                { "AllDayPercentObserved", item.AllDayPercentObserved },
 
                 { "WeekendAllDayAverageSpeed", item.WeekendAllDayAverageSpeed },
                 { "WeekendAllDayAverageEightyFifthSpeed", item.WeekendAllDayAverageEightyFifthSpeed },
@@ -433,6 +412,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 { "WeekendAllDayPercentExtremeViolations", item.WeekendAllDayPercentExtremeViolations },
                 { "WeekendAllDayAvgSpeedVsSpeedLimit", item.WeekendAllDayAvgSpeedVsSpeedLimit },
                 { "WeekendAllDayEightyFifthSpeedVsSpeedLimit", item.WeekendAllDayEightyFifthSpeedVsSpeedLimit },
+                { "WeekendAllDayPercentObserved", item.WeekendAllDayPercentObserved },
 
                 { "WeekdayAllDayAverageSpeed", item.WeekdayAllDayAverageSpeed },
                 { "WeekdayAllDayAverageEightyFifthSpeed", item.WeekdayAllDayAverageEightyFifthSpeed },
@@ -446,6 +426,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 { "WeekdayAllDayPercentExtremeViolations", item.WeekdayAllDayPercentExtremeViolations },
                 { "WeekdayAllDayAvgSpeedVsSpeedLimit", item.WeekdayAllDayAvgSpeedVsSpeedLimit },
                 { "WeekdayAllDayEightyFifthSpeedVsSpeedLimit", item.WeekdayAllDayEightyFifthSpeedVsSpeedLimit },
+                { "WeekdayAllDayPercentObserved", item.WeekdayAllDayPercentObserved },
 
                 { "OffPeakAverageSpeed", item.OffPeakAverageSpeed },
                 { "OffPeakAverageEightyFifthSpeed", item.OffPeakAverageEightyFifthSpeed },
@@ -459,6 +440,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 { "OffPeakPercentExtremeViolations", item.OffPeakPercentExtremeViolations },
                 { "OffPeakAvgSpeedVsSpeedLimit", item.OffPeakAvgSpeedVsSpeedLimit },
                 { "OffPeakEightyFifthSpeedVsSpeedLimit", item.OffPeakEightyFifthSpeedVsSpeedLimit },
+                { "OffPeakPercentObserved", item.OffPeakPercentObserved },
 
                 { "WeekendOffPeakAverageSpeed", item.WeekendOffPeakAverageSpeed },
                 { "WeekendOffPeakAverageEightyFifthSpeed", item.WeekendOffPeakAverageEightyFifthSpeed },
@@ -472,6 +454,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 { "WeekendOffPeakPercentExtremeViolations", item.WeekendOffPeakPercentExtremeViolations },
                 { "WeekendOffPeakAvgSpeedVsSpeedLimit", item.WeekendOffPeakAvgSpeedVsSpeedLimit },
                 { "WeekendOffPeakEightyFifthSpeedVsSpeedLimit", item.WeekendOffPeakEightyFifthSpeedVsSpeedLimit },
+                { "WeekendOffPeakPercentObserved", item.WeekendOffPeakPercentObserved },
 
                 { "WeekdayOffPeakAverageSpeed", item.WeekdayOffPeakAverageSpeed },
                 { "WeekdayOffPeakAverageEightyFifthSpeed", item.WeekdayOffPeakAverageEightyFifthSpeed },
@@ -485,6 +468,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 { "WeekdayOffPeakPercentExtremeViolations", item.WeekdayOffPeakPercentExtremeViolations },
                 { "WeekdayOffPeakAvgSpeedVsSpeedLimit", item.WeekdayOffPeakAvgSpeedVsSpeedLimit },
                 { "WeekdayOffPeakEightyFifthSpeedVsSpeedLimit", item.WeekdayOffPeakEightyFifthSpeedVsSpeedLimit },
+                { "WeekdayOffPeakPercentObserved", item.WeekdayOffPeakPercentObserved },
 
                 { "AmPeakAverageSpeed", item.AmPeakAverageSpeed },
                 { "AmPeakAverageEightyFifthSpeed", item.AmPeakAverageEightyFifthSpeed },
@@ -498,6 +482,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 { "AmPeakPercentExtremeViolations", item.AmPeakPercentExtremeViolations },
                 { "AmPeakAvgSpeedVsSpeedLimit", item.AmPeakAvgSpeedVsSpeedLimit },
                 { "AmPeakEightyFifthSpeedVsSpeedLimit", item.AmPeakEightyFifthSpeedVsSpeedLimit },
+                { "AmPeakPercentObserved", item.AmPeakPercentObserved },
 
                 { "WeekendAmPeakAverageSpeed", item.WeekendAmPeakAverageSpeed },
                 { "WeekendAmPeakAverageEightyFifthSpeed", item.WeekendAmPeakAverageEightyFifthSpeed },
@@ -511,6 +496,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 { "WeekendAmPeakPercentExtremeViolations", item.WeekendAmPeakPercentExtremeViolations },
                 { "WeekendAmPeakAvgSpeedVsSpeedLimit", item.WeekendAmPeakAvgSpeedVsSpeedLimit },
                 { "WeekendAmPeakEightyFifthSpeedVsSpeedLimit", item.WeekendAmPeakEightyFifthSpeedVsSpeedLimit },
+                { "WeekendAmPeakPercentObserved", item.WeekendAmPeakPercentObserved },
 
                 { "WeekdayAmPeakAverageSpeed", item.WeekdayAmPeakAverageSpeed },
                 { "WeekdayAmPeakAverageEightyFifthSpeed", item.WeekdayAmPeakAverageEightyFifthSpeed },
@@ -524,6 +510,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 { "WeekdayAmPeakPercentExtremeViolations", item.WeekdayAmPeakPercentExtremeViolations },
                 { "WeekdayAmPeakAvgSpeedVsSpeedLimit", item.WeekdayAmPeakAvgSpeedVsSpeedLimit },
                 { "WeekdayAmPeakEightyFifthSpeedVsSpeedLimit", item.WeekdayAmPeakEightyFifthSpeedVsSpeedLimit },
+                { "WeekdayAmPeakPercentObserved", item.WeekdayAmPeakPercentObserved },
 
                 { "PmPeakAverageSpeed", item.PmPeakAverageSpeed },
                 { "PmPeakAverageEightyFifthSpeed", item.PmPeakAverageEightyFifthSpeed },
@@ -537,6 +524,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 { "PmPeakPercentExtremeViolations", item.PmPeakPercentExtremeViolations },
                 { "PmPeakAvgSpeedVsSpeedLimit", item.PmPeakAvgSpeedVsSpeedLimit },
                 { "PmPeakEightyFifthSpeedVsSpeedLimit", item.PmPeakEightyFifthSpeedVsSpeedLimit },
+                { "PmPeakPercentObserved", item.PmPeakPercentObserved },
 
                 { "WeekendPmPeakAverageSpeed", item.WeekendPmPeakAverageSpeed },
                 { "WeekendPmPeakAverageEightyFifthSpeed", item.WeekendPmPeakAverageEightyFifthSpeed },
@@ -550,6 +538,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 { "WeekendPmPeakPercentExtremeViolations", item.WeekendPmPeakPercentExtremeViolations },
                 { "WeekendPmPeakAvgSpeedVsSpeedLimit", item.WeekendPmPeakAvgSpeedVsSpeedLimit },
                 { "WeekendPmPeakEightyFifthSpeedVsSpeedLimit", item.WeekendPmPeakEightyFifthSpeedVsSpeedLimit },
+                { "WeekendPmPeakPercentObserved", item.WeekendPmPeakPercentObserved },
 
                 { "WeekdayPmPeakAverageSpeed", item.WeekdayPmPeakAverageSpeed },
                 { "WeekdayPmPeakAverageEightyFifthSpeed", item.WeekdayPmPeakAverageEightyFifthSpeed },
@@ -563,6 +552,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 { "WeekdayPmPeakPercentExtremeViolations", item.WeekdayPmPeakPercentExtremeViolations },
                 { "WeekdayPmPeakAvgSpeedVsSpeedLimit", item.WeekdayPmPeakAvgSpeedVsSpeedLimit },
                 { "WeekdayPmPeakEightyFifthSpeedVsSpeedLimit", item.WeekdayPmPeakEightyFifthSpeedVsSpeedLimit },
+                { "WeekdayPmPeakPercentObserved", item.WeekdayPmPeakPercentObserved },
 
                 { "MidDayAverageSpeed", item.MidDayAverageSpeed },
                 { "MidDayAverageEightyFifthSpeed", item.MidDayAverageEightyFifthSpeed },
@@ -576,6 +566,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 { "MidDayPercentExtremeViolations", item.MidDayPercentExtremeViolations },
                 { "MidDayAvgSpeedVsSpeedLimit", item.MidDayAvgSpeedVsSpeedLimit },
                 { "MidDayEightyFifthSpeedVsSpeedLimit", item.MidDayEightyFifthSpeedVsSpeedLimit },
+                { "MidDayPercentObserved", item.MidDayPercentObserved },
 
                 { "WeekendMidDayAverageSpeed", item.WeekendMidDayAverageSpeed },
                 { "WeekendMidDayAverageEightyFifthSpeed", item.WeekendMidDayAverageEightyFifthSpeed },
@@ -589,6 +580,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 { "WeekendMidDayPercentExtremeViolations", item.WeekendMidDayPercentExtremeViolations },
                 { "WeekendMidDayAvgSpeedVsSpeedLimit", item.WeekendMidDayAvgSpeedVsSpeedLimit },
                 { "WeekendMidDayEightyFifthSpeedVsSpeedLimit", item.WeekendMidDayEightyFifthSpeedVsSpeedLimit },
+                { "WeekendMidDayPercentObserved", item.WeekendMidDayPercentObserved },
 
                 { "WeekdayMidDayAverageSpeed", item.WeekdayMidDayAverageSpeed },
                 { "WeekdayMidDayAverageEightyFifthSpeed", item.WeekdayMidDayAverageEightyFifthSpeed },
@@ -602,6 +594,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 { "WeekdayMidDayPercentExtremeViolations", item.WeekdayMidDayPercentExtremeViolations },
                 { "WeekdayMidDayAvgSpeedVsSpeedLimit", item.WeekdayMidDayAvgSpeedVsSpeedLimit },
                 { "WeekdayMidDayEightyFifthSpeedVsSpeedLimit", item.WeekdayMidDayEightyFifthSpeedVsSpeedLimit },
+                { "WeekdayMidDayPercentObserved", item.WeekdayMidDayPercentObserved },
 
                 { "EveningAverageSpeed", item.EveningAverageSpeed },
                 { "EveningAverageEightyFifthSpeed", item.EveningAverageEightyFifthSpeed },
@@ -615,6 +608,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 { "EveningPercentExtremeViolations", item.EveningPercentExtremeViolations },
                 { "EveningAvgSpeedVsSpeedLimit", item.EveningAvgSpeedVsSpeedLimit },
                 { "EveningEightyFifthSpeedVsSpeedLimit", item.EveningEightyFifthSpeedVsSpeedLimit },
+                { "EveningPercentObserved", item.EveningPercentObserved },
 
                 { "WeekendEveningAverageSpeed", item.WeekendEveningAverageSpeed },
                 { "WeekendEveningAverageEightyFifthSpeed", item.WeekendEveningAverageEightyFifthSpeed },
@@ -628,6 +622,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 { "WeekendEveningPercentExtremeViolations", item.WeekendEveningPercentExtremeViolations },
                 { "WeekendEveningAvgSpeedVsSpeedLimit", item.WeekendEveningAvgSpeedVsSpeedLimit },
                 { "WeekendEveningEightyFifthSpeedVsSpeedLimit", item.WeekendEveningEightyFifthSpeedVsSpeedLimit },
+                { "WeekendEveningPercentObserved", item.WeekendEveningPercentObserved },
 
                 { "WeekdayEveningAverageSpeed", item.WeekdayEveningAverageSpeed },
                 { "WeekdayEveningAverageEightyFifthSpeed", item.WeekdayEveningAverageEightyFifthSpeed },
@@ -641,6 +636,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 { "WeekdayEveningPercentExtremeViolations", item.WeekdayEveningPercentExtremeViolations },
                 { "WeekdayEveningAvgSpeedVsSpeedLimit", item.WeekdayEveningAvgSpeedVsSpeedLimit },
                 { "WeekdayEveningEightyFifthSpeedVsSpeedLimit", item.WeekdayEveningEightyFifthSpeedVsSpeedLimit },
+                { "WeekdayEveningPercentObserved", item.WeekdayEveningPercentObserved },
 
                 { "EarlyMorningAverageSpeed", item.EarlyMorningAverageSpeed },
                 { "EarlyMorningAverageEightyFifthSpeed", item.EarlyMorningAverageEightyFifthSpeed },
@@ -654,6 +650,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 { "EarlyMorningPercentExtremeViolations", item.EarlyMorningPercentExtremeViolations },
                 { "EarlyMorningAvgSpeedVsSpeedLimit", item.EarlyMorningAvgSpeedVsSpeedLimit },
                 { "EarlyMorningEightyFifthSpeedVsSpeedLimit", item.EarlyMorningEightyFifthSpeedVsSpeedLimit },
+                { "EarlyMorningPercentObserved", item.EarlyMorningPercentObserved },
 
                 { "WeekendEarlyMorningAverageSpeed", item.WeekendEarlyMorningAverageSpeed },
                 { "WeekendEarlyMorningAverageEightyFifthSpeed", item.WeekendEarlyMorningAverageEightyFifthSpeed },
@@ -667,6 +664,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 { "WeekendEarlyMorningPercentExtremeViolations", item.WeekendEarlyMorningPercentExtremeViolations },
                 { "WeekendEarlyMorningAvgSpeedVsSpeedLimit", item.WeekendEarlyMorningAvgSpeedVsSpeedLimit },
                 { "WeekendEarlyMorningEightyFifthSpeedVsSpeedLimit", item.WeekendEarlyMorningEightyFifthSpeedVsSpeedLimit },
+                { "WeekendEarlyMorningPercentObserved", item.WeekendEarlyMorningPercentObserved },
 
                 { "WeekdayEarlyMorningAverageSpeed", item.WeekdayEarlyMorningAverageSpeed },
                 { "WeekdayEarlyMorningAverageEightyFifthSpeed", item.WeekdayEarlyMorningAverageEightyFifthSpeed },
@@ -680,8 +678,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 { "WeekdayEarlyMorningPercentExtremeViolations", item.WeekdayEarlyMorningPercentExtremeViolations },
                 { "WeekdayEarlyMorningAvgSpeedVsSpeedLimit", item.WeekdayEarlyMorningAvgSpeedVsSpeedLimit },
                 { "WeekdayEarlyMorningEightyFifthSpeedVsSpeedLimit", item.WeekdayEarlyMorningEightyFifthSpeedVsSpeedLimit },
-
-                { "PercentObserved", item.PercentObserved }
+                { "WeekdayEarlyMorningPercentObserved", item.WeekdayEarlyMorningPercentObserved }
             };
         }
 
@@ -705,6 +702,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             var bigQueryAllDayPercentExtremeViolations = row["AllDayPercentExtremeViolations"] != null ? double.Parse(row["AllDayPercentExtremeViolations"].ToString()) : (double?)null;
             var bigQueryAllDayAvgSpeedVsSpeedLimit = row["AllDayAvgSpeedVsSpeedLimit"] != null ? double.Parse(row["AllDayAvgSpeedVsSpeedLimit"].ToString()) : (double?)null;
             var bigQueryAllDayEightyFifthSpeedVsSpeedLimit = row["AllDayEightyFifthSpeedVsSpeedLimit"] != null ? double.Parse(row["AllDayEightyFifthSpeedVsSpeedLimit"].ToString()) : (double?)null;
+            var bigQueryAllDayPercentObserved = row["AllDayPercentObserved"] != null ? double.Parse(row["AllDayPercentObserved"].ToString()) : (double?)null;
 
             var bigQueryWeekendAllDayAverageSpeed = row["WeekendAllDayAverageSpeed"] != null ? double.Parse(row["WeekendAllDayAverageSpeed"].ToString()) : (double?)null;
             var bigQueryWeekendAllDayAverageEightyFifthSpeed = row["WeekendAllDayAverageEightyFifthSpeed"] != null ? double.Parse(row["WeekendAllDayAverageEightyFifthSpeed"].ToString()) : (double?)null;
@@ -718,6 +716,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             var bigQueryWeekendAllDayPercentExtremeViolations = row["WeekendAllDayPercentExtremeViolations"] != null ? double.Parse(row["WeekendAllDayPercentExtremeViolations"].ToString()) : (double?)null;
             var bigQueryWeekendAllDayAvgSpeedVsSpeedLimit = row["WeekendAllDayAvgSpeedVsSpeedLimit"] != null ? double.Parse(row["WeekendAllDayAvgSpeedVsSpeedLimit"].ToString()) : (double?)null;
             var bigQueryWeekendAllDayEightyFifthSpeedVsSpeedLimit = row["WeekendAllDayEightyFifthSpeedVsSpeedLimit"] != null ? double.Parse(row["WeekendAllDayEightyFifthSpeedVsSpeedLimit"].ToString()) : (double?)null;
+            var bigQueryWeekendAllDayPercentObserved = row["WeekendAllDayPercentObserved"] != null ? double.Parse(row["WeekendAllDayPercentObserved"].ToString()) : (double?)null;
 
             var bigQueryWeekdayAllDayAverageSpeed = row["WeekdayAllDayAverageSpeed"] != null ? double.Parse(row["WeekdayAllDayAverageSpeed"].ToString()) : (double?)null;
             var bigQueryWeekdayAllDayAverageEightyFifthSpeed = row["WeekdayAllDayAverageEightyFifthSpeed"] != null ? double.Parse(row["WeekdayAllDayAverageEightyFifthSpeed"].ToString()) : (double?)null;
@@ -731,6 +730,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             var bigQueryWeekdayAllDayPercentExtremeViolations = row["WeekdayAllDayPercentExtremeViolations"] != null ? double.Parse(row["WeekdayAllDayPercentExtremeViolations"].ToString()) : (double?)null;
             var bigQueryWeekdayAllDayAvgSpeedVsSpeedLimit = row["WeekdayAllDayAvgSpeedVsSpeedLimit"] != null ? double.Parse(row["WeekdayAllDayAvgSpeedVsSpeedLimit"].ToString()) : (double?)null;
             var bigQueryWeekdayAllDayEightyFifthSpeedVsSpeedLimit = row["WeekdayAllDayEightyFifthSpeedVsSpeedLimit"] != null ? double.Parse(row["WeekdayAllDayEightyFifthSpeedVsSpeedLimit"].ToString()) : (double?)null;
+            var bigQueryWeekdayAllDayPercentObserved = row["WeekdayAllDayPercentObserved"] != null ? double.Parse(row["WeekdayAllDayPercentObserved"].ToString()) : (double?)null;
 
             var bigQueryOffPeakAverageSpeed = row["OffPeakAverageSpeed"] != null ? double.Parse(row["OffPeakAverageSpeed"].ToString()) : (double?)null;
             var bigQueryOffPeakAverageEightyFifthSpeed = row["OffPeakAverageEightyFifthSpeed"] != null ? double.Parse(row["OffPeakAverageEightyFifthSpeed"].ToString()) : (double?)null;
@@ -744,6 +744,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             var bigQueryOffPeakPercentExtremeViolations = row["OffPeakPercentExtremeViolations"] != null ? double.Parse(row["OffPeakPercentExtremeViolations"].ToString()) : (double?)null;
             var bigQueryOffPeakAvgSpeedVsSpeedLimit = row["OffPeakAvgSpeedVsSpeedLimit"] != null ? double.Parse(row["OffPeakAvgSpeedVsSpeedLimit"].ToString()) : (double?)null;
             var bigQueryOffPeakEightyFifthSpeedVsSpeedLimit = row["OffPeakEightyFifthSpeedVsSpeedLimit"] != null ? double.Parse(row["OffPeakEightyFifthSpeedVsSpeedLimit"].ToString()) : (double?)null;
+            var bigQueryOffPeakPercentObserved = row["OffPeakPercentObserved"] != null ? double.Parse(row["OffPeakPercentObserved"].ToString()) : (double?)null;
 
             var bigQueryWeekendOffPeakAverageSpeed = row["WeekendOffPeakAverageSpeed"] != null ? double.Parse(row["WeekendOffPeakAverageSpeed"].ToString()) : (double?)null;
             var bigQueryWeekendOffPeakAverageEightyFifthSpeed = row["WeekendOffPeakAverageEightyFifthSpeed"] != null ? double.Parse(row["WeekendOffPeakAverageEightyFifthSpeed"].ToString()) : (double?)null;
@@ -757,6 +758,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             var bigQueryWeekendOffPeakPercentExtremeViolations = row["WeekendOffPeakPercentExtremeViolations"] != null ? double.Parse(row["WeekendOffPeakPercentExtremeViolations"].ToString()) : (double?)null;
             var bigQueryWeekendOffPeakAvgSpeedVsSpeedLimit = row["WeekendOffPeakAvgSpeedVsSpeedLimit"] != null ? double.Parse(row["WeekendOffPeakAvgSpeedVsSpeedLimit"].ToString()) : (double?)null;
             var bigQueryWeekendOffPeakEightyFifthSpeedVsSpeedLimit = row["WeekendOffPeakEightyFifthSpeedVsSpeedLimit"] != null ? double.Parse(row["WeekendOffPeakEightyFifthSpeedVsSpeedLimit"].ToString()) : (double?)null;
+            var bigQueryWeekendOffPeakPercentObserved = row["WeekendOffPeakPercentObserved"] != null ? double.Parse(row["WeekendOffPeakPercentObserved"].ToString()) : (double?)null;
 
             var bigQueryWeekdayOffPeakAverageSpeed = row["WeekdayOffPeakAverageSpeed"] != null ? double.Parse(row["WeekdayOffPeakAverageSpeed"].ToString()) : (double?)null;
             var bigQueryWeekdayOffPeakAverageEightyFifthSpeed = row["WeekdayOffPeakAverageEightyFifthSpeed"] != null ? double.Parse(row["WeekdayOffPeakAverageEightyFifthSpeed"].ToString()) : (double?)null;
@@ -770,6 +772,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             var bigQueryWeekdayOffPeakPercentExtremeViolations = row["WeekdayOffPeakPercentExtremeViolations"] != null ? double.Parse(row["WeekdayOffPeakPercentExtremeViolations"].ToString()) : (double?)null;
             var bigQueryWeekdayOffPeakAvgSpeedVsSpeedLimit = row["WeekdayOffPeakAvgSpeedVsSpeedLimit"] != null ? double.Parse(row["WeekdayOffPeakAvgSpeedVsSpeedLimit"].ToString()) : (double?)null;
             var bigQueryWeekdayOffPeakEightyFifthSpeedVsSpeedLimit = row["WeekdayOffPeakEightyFifthSpeedVsSpeedLimit"] != null ? double.Parse(row["WeekdayOffPeakEightyFifthSpeedVsSpeedLimit"].ToString()) : (double?)null;
+            var bigQueryWeekdayOffPeakPercentObserved = row["WeekdayOffPeakPercentObserved"] != null ? double.Parse(row["WeekdayOffPeakPercentObserved"].ToString()) : (double?)null;
 
             var bigQueryAmPeakAverageSpeed = row["AmPeakAverageSpeed"] != null ? double.Parse(row["AmPeakAverageSpeed"].ToString()) : (double?)null;
             var bigQueryAmPeakAverageEightyFifthSpeed = row["AmPeakAverageEightyFifthSpeed"] != null ? double.Parse(row["AmPeakAverageEightyFifthSpeed"].ToString()) : (double?)null;
@@ -783,6 +786,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             var bigQueryAmPeakPercentExtremeViolations = row["AmPeakPercentExtremeViolations"] != null ? double.Parse(row["AmPeakPercentExtremeViolations"].ToString()) : (double?)null;
             var bigQueryAmPeakAvgSpeedVsSpeedLimit = row["AmPeakAvgSpeedVsSpeedLimit"] != null ? double.Parse(row["AmPeakAvgSpeedVsSpeedLimit"].ToString()) : (double?)null;
             var bigQueryAmPeakEightyFifthSpeedVsSpeedLimit = row["AmPeakEightyFifthSpeedVsSpeedLimit"] != null ? double.Parse(row["AmPeakEightyFifthSpeedVsSpeedLimit"].ToString()) : (double?)null;
+            var bigQueryAmPeakPercentObserved = row["AmPeakPercentObserved"] != null ? double.Parse(row["AmPeakPercentObserved"].ToString()) : (double?)null;
 
             var bigQueryWeekendAmPeakAverageSpeed = row["WeekendAmPeakAverageSpeed"] != null ? double.Parse(row["WeekendAmPeakAverageSpeed"].ToString()) : (double?)null;
             var bigQueryWeekendAmPeakAverageEightyFifthSpeed = row["WeekendAmPeakAverageEightyFifthSpeed"] != null ? double.Parse(row["WeekendAmPeakAverageEightyFifthSpeed"].ToString()) : (double?)null;
@@ -796,6 +800,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             var bigQueryWeekendAmPeakPercentExtremeViolations = row["WeekendAmPeakPercentExtremeViolations"] != null ? double.Parse(row["WeekendAmPeakPercentExtremeViolations"].ToString()) : (double?)null;
             var bigQueryWeekendAmPeakAvgSpeedVsSpeedLimit = row["WeekendAmPeakAvgSpeedVsSpeedLimit"] != null ? double.Parse(row["WeekendAmPeakAvgSpeedVsSpeedLimit"].ToString()) : (double?)null;
             var bigQueryWeekendAmPeakEightyFifthSpeedVsSpeedLimit = row["WeekendAmPeakEightyFifthSpeedVsSpeedLimit"] != null ? double.Parse(row["WeekendAmPeakEightyFifthSpeedVsSpeedLimit"].ToString()) : (double?)null;
+            var bigQueryWeekendAmPeakPercentObserved = row["WeekendAmPeakPercentObserved"] != null ? double.Parse(row["WeekendAmPeakPercentObserved"].ToString()) : (double?)null;
 
             var bigQueryWeekdayAmPeakAverageSpeed = row["WeekdayAmPeakAverageSpeed"] != null ? double.Parse(row["WeekdayAmPeakAverageSpeed"].ToString()) : (double?)null;
             var bigQueryWeekdayAmPeakAverageEightyFifthSpeed = row["WeekdayAmPeakAverageEightyFifthSpeed"] != null ? double.Parse(row["WeekdayAmPeakAverageEightyFifthSpeed"].ToString()) : (double?)null;
@@ -809,6 +814,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             var bigQueryWeekdayAmPeakPercentExtremeViolations = row["WeekdayAmPeakPercentExtremeViolations"] != null ? double.Parse(row["WeekdayAmPeakPercentExtremeViolations"].ToString()) : (double?)null;
             var bigQueryWeekdayAmPeakAvgSpeedVsSpeedLimit = row["WeekdayAmPeakAvgSpeedVsSpeedLimit"] != null ? double.Parse(row["WeekdayAmPeakAvgSpeedVsSpeedLimit"].ToString()) : (double?)null;
             var bigQueryWeekdayAmPeakEightyFifthSpeedVsSpeedLimit = row["WeekdayAmPeakEightyFifthSpeedVsSpeedLimit"] != null ? double.Parse(row["WeekdayAmPeakEightyFifthSpeedVsSpeedLimit"].ToString()) : (double?)null;
+            var bigQueryWeekdayAmPeakPercentObserved = row["WeekdayAmPeakPercentObserved"] != null ? double.Parse(row["WeekdayAmPeakPercentObserved"].ToString()) : (double?)null;
 
             var bigQueryPmPeakAverageSpeed = row["PmPeakAverageSpeed"] != null ? double.Parse(row["PmPeakAverageSpeed"].ToString()) : (double?)null;
             var bigQueryPmPeakAverageEightyFifthSpeed = row["PmPeakAverageEightyFifthSpeed"] != null ? double.Parse(row["PmPeakAverageEightyFifthSpeed"].ToString()) : (double?)null;
@@ -822,6 +828,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             var bigQueryPmPeakPercentExtremeViolations = row["PmPeakPercentExtremeViolations"] != null ? double.Parse(row["PmPeakPercentExtremeViolations"].ToString()) : (double?)null;
             var bigQueryPmPeakAvgSpeedVsSpeedLimit = row["PmPeakAvgSpeedVsSpeedLimit"] != null ? double.Parse(row["PmPeakAvgSpeedVsSpeedLimit"].ToString()) : (double?)null;
             var bigQueryPmPeakEightyFifthSpeedVsSpeedLimit = row["PmPeakEightyFifthSpeedVsSpeedLimit"] != null ? double.Parse(row["PmPeakEightyFifthSpeedVsSpeedLimit"].ToString()) : (double?)null;
+            var bigQueryPmPeakPercentObserved = row["PmPeakPercentObserved"] != null ? double.Parse(row["PmPeakPercentObserved"].ToString()) : (double?)null;
 
             var bigQueryWeekendPmPeakAverageSpeed = row["WeekendPmPeakAverageSpeed"] != null ? double.Parse(row["WeekendPmPeakAverageSpeed"].ToString()) : (double?)null;
             var bigQueryWeekendPmPeakAverageEightyFifthSpeed = row["WeekendPmPeakAverageEightyFifthSpeed"] != null ? double.Parse(row["WeekendPmPeakAverageEightyFifthSpeed"].ToString()) : (double?)null;
@@ -835,6 +842,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             var bigQueryWeekendPmPeakPercentExtremeViolations = row["WeekendPmPeakPercentExtremeViolations"] != null ? double.Parse(row["WeekendPmPeakPercentExtremeViolations"].ToString()) : (double?)null;
             var bigQueryWeekendPmPeakAvgSpeedVsSpeedLimit = row["WeekendPmPeakAvgSpeedVsSpeedLimit"] != null ? double.Parse(row["WeekendPmPeakAvgSpeedVsSpeedLimit"].ToString()) : (double?)null;
             var bigQueryWeekendPmPeakEightyFifthSpeedVsSpeedLimit = row["WeekendPmPeakEightyFifthSpeedVsSpeedLimit"] != null ? double.Parse(row["WeekendPmPeakEightyFifthSpeedVsSpeedLimit"].ToString()) : (double?)null;
+            var bigQueryWeekendPmPeakPercentObserved = row["WeekendPmPeakPercentObserved"] != null ? double.Parse(row["WeekendPmPeakPercentObserved"].ToString()) : (double?)null;
 
             var bigQueryWeekdayPmPeakAverageSpeed = row["WeekdayPmPeakAverageSpeed"] != null ? double.Parse(row["WeekdayPmPeakAverageSpeed"].ToString()) : (double?)null;
             var bigQueryWeekdayPmPeakAverageEightyFifthSpeed = row["WeekdayPmPeakAverageEightyFifthSpeed"] != null ? double.Parse(row["WeekdayPmPeakAverageEightyFifthSpeed"].ToString()) : (double?)null;
@@ -848,6 +856,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             var bigQueryWeekdayPmPeakPercentExtremeViolations = row["WeekdayPmPeakPercentExtremeViolations"] != null ? double.Parse(row["WeekdayPmPeakPercentExtremeViolations"].ToString()) : (double?)null;
             var bigQueryWeekdayPmPeakAvgSpeedVsSpeedLimit = row["WeekdayPmPeakAvgSpeedVsSpeedLimit"] != null ? double.Parse(row["WeekdayPmPeakAvgSpeedVsSpeedLimit"].ToString()) : (double?)null;
             var bigQueryWeekdayPmPeakEightyFifthSpeedVsSpeedLimit = row["WeekdayPmPeakEightyFifthSpeedVsSpeedLimit"] != null ? double.Parse(row["WeekdayPmPeakEightyFifthSpeedVsSpeedLimit"].ToString()) : (double?)null;
+            var bigQueryWeekdayPmPeakPercentObserved = row["WeekdayPmPeakPercentObserved"] != null ? double.Parse(row["WeekdayPmPeakPercentObserved"].ToString()) : (double?)null;
 
             var bigQueryMidDayAverageSpeed = row["MidDayAverageSpeed"] != null ? double.Parse(row["MidDayAverageSpeed"].ToString()) : (double?)null;
             var bigQueryMidDayAverageEightyFifthSpeed = row["MidDayAverageEightyFifthSpeed"] != null ? double.Parse(row["MidDayAverageEightyFifthSpeed"].ToString()) : (double?)null;
@@ -861,6 +870,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             var bigQueryMidDayPercentExtremeViolations = row["MidDayPercentExtremeViolations"] != null ? double.Parse(row["MidDayPercentExtremeViolations"].ToString()) : (double?)null;
             var bigQueryMidDayAvgSpeedVsSpeedLimit = row["MidDayAvgSpeedVsSpeedLimit"] != null ? double.Parse(row["MidDayAvgSpeedVsSpeedLimit"].ToString()) : (double?)null;
             var bigQueryMidDayEightyFifthSpeedVsSpeedLimit = row["MidDayEightyFifthSpeedVsSpeedLimit"] != null ? double.Parse(row["MidDayEightyFifthSpeedVsSpeedLimit"].ToString()) : (double?)null;
+            var bigQueryMidDayPercentObserved = row["MidDayEightyPercentObserved"] != null ? double.Parse(row["MidDayPercentObserved"].ToString()) : (double?)null;
 
             var bigQueryWeekendMidDayAverageSpeed = row["WeekendMidDayAverageSpeed"] != null ? double.Parse(row["WeekendMidDayAverageSpeed"].ToString()) : (double?)null;
             var bigQueryWeekendMidDayAverageEightyFifthSpeed = row["WeekendMidDayAverageEightyFifthSpeed"] != null ? double.Parse(row["WeekendMidDayAverageEightyFifthSpeed"].ToString()) : (double?)null;
@@ -874,6 +884,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             var bigQueryWeekendMidDayPercentExtremeViolations = row["WeekendMidDayPercentExtremeViolations"] != null ? double.Parse(row["WeekendMidDayPercentExtremeViolations"].ToString()) : (double?)null;
             var bigQueryWeekendMidDayAvgSpeedVsSpeedLimit = row["WeekendMidDayAvgSpeedVsSpeedLimit"] != null ? double.Parse(row["WeekendMidDayAvgSpeedVsSpeedLimit"].ToString()) : (double?)null;
             var bigQueryWeekendMidDayEightyFifthSpeedVsSpeedLimit = row["WeekendMidDayEightyFifthSpeedVsSpeedLimit"] != null ? double.Parse(row["WeekendMidDayEightyFifthSpeedVsSpeedLimit"].ToString()) : (double?)null;
+            var bigQueryWeekendMidDayPercentObserved = row["WeekendMidDayPercentObserved"] != null ? double.Parse(row["WeekendMidDayPercentObserved"].ToString()) : (double?)null;
 
             var bigQueryWeekdayMidDayAverageSpeed = row["WeekdayMidDayAverageSpeed"] != null ? double.Parse(row["WeekdayMidDayAverageSpeed"].ToString()) : (double?)null;
             var bigQueryWeekdayMidDayAverageEightyFifthSpeed = row["WeekdayMidDayAverageEightyFifthSpeed"] != null ? double.Parse(row["WeekdayMidDayAverageEightyFifthSpeed"].ToString()) : (double?)null;
@@ -887,6 +898,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             var bigQueryWeekdayMidDayPercentExtremeViolations = row["WeekdayMidDayPercentExtremeViolations"] != null ? double.Parse(row["WeekdayMidDayPercentExtremeViolations"].ToString()) : (double?)null;
             var bigQueryWeekdayMidDayAvgSpeedVsSpeedLimit = row["WeekdayMidDayAvgSpeedVsSpeedLimit"] != null ? double.Parse(row["WeekdayMidDayAvgSpeedVsSpeedLimit"].ToString()) : (double?)null;
             var bigQueryWeekdayMidDayEightyFifthSpeedVsSpeedLimit = row["WeekdayMidDayEightyFifthSpeedVsSpeedLimit"] != null ? double.Parse(row["WeekdayMidDayEightyFifthSpeedVsSpeedLimit"].ToString()) : (double?)null;
+            var bigQueryWeekdayMidDayPercentObserved = row["WeekdayMidDayPercentObserved"] != null ? double.Parse(row["WeekdayMidDayPercentObserved"].ToString()) : (double?)null;
 
             var bigQueryEveningAverageSpeed = row["EveningAverageSpeed"] != null ? double.Parse(row["EveningAverageSpeed"].ToString()) : (double?)null;
             var bigQueryEveningAverageEightyFifthSpeed = row["EveningAverageEightyFifthSpeed"] != null ? double.Parse(row["EveningAverageEightyFifthSpeed"].ToString()) : (double?)null;
@@ -900,6 +912,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             var bigQueryEveningPercentExtremeViolations = row["EveningPercentExtremeViolations"] != null ? double.Parse(row["EveningPercentExtremeViolations"].ToString()) : (double?)null;
             var bigQueryEveningAvgSpeedVsSpeedLimit = row["EveningAvgSpeedVsSpeedLimit"] != null ? double.Parse(row["EveningAvgSpeedVsSpeedLimit"].ToString()) : (double?)null;
             var bigQueryEveningEightyFifthSpeedVsSpeedLimit = row["EveningEightyFifthSpeedVsSpeedLimit"] != null ? double.Parse(row["EveningEightyFifthSpeedVsSpeedLimit"].ToString()) : (double?)null;
+            var bigQueryEveningPercentObserved = row["EveningPercentObserved"] != null ? double.Parse(row["EveningPercentObserved"].ToString()) : (double?)null;
 
             var bigQueryWeekendEveningAverageSpeed = row["WeekendEveningAverageSpeed"] != null ? double.Parse(row["WeekendEveningAverageSpeed"].ToString()) : (double?)null;
             var bigQueryWeekendEveningAverageEightyFifthSpeed = row["WeekendEveningAverageEightyFifthSpeed"] != null ? double.Parse(row["WeekendEveningAverageEightyFifthSpeed"].ToString()) : (double?)null;
@@ -913,6 +926,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             var bigQueryWeekendEveningPercentExtremeViolations = row["WeekendEveningPercentExtremeViolations"] != null ? double.Parse(row["WeekendEveningPercentExtremeViolations"].ToString()) : (double?)null;
             var bigQueryWeekendEveningAvgSpeedVsSpeedLimit = row["WeekendEveningAvgSpeedVsSpeedLimit"] != null ? double.Parse(row["WeekendEveningAvgSpeedVsSpeedLimit"].ToString()) : (double?)null;
             var bigQueryWeekendEveningEightyFifthSpeedVsSpeedLimit = row["WeekendEveningEightyFifthSpeedVsSpeedLimit"] != null ? double.Parse(row["WeekendEveningEightyFifthSpeedVsSpeedLimit"].ToString()) : (double?)null;
+            var bigQueryWeekendEveningPercentObserved = row["WeekendEveningPercentObserved"] != null ? double.Parse(row["WeekendEveningPercentObserved"].ToString()) : (double?)null;
 
             var bigQueryWeekdayEveningAverageSpeed = row["WeekdayEveningAverageSpeed"] != null ? double.Parse(row["WeekdayEveningAverageSpeed"].ToString()) : (double?)null;
             var bigQueryWeekdayEveningAverageEightyFifthSpeed = row["WeekdayEveningAverageEightyFifthSpeed"] != null ? double.Parse(row["WeekdayEveningAverageEightyFifthSpeed"].ToString()) : (double?)null;
@@ -926,6 +940,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             var bigQueryWeekdayEveningPercentExtremeViolations = row["WeekdayEveningPercentExtremeViolations"] != null ? double.Parse(row["WeekdayEveningPercentExtremeViolations"].ToString()) : (double?)null;
             var bigQueryWeekdayEveningAvgSpeedVsSpeedLimit = row["WeekdayEveningAvgSpeedVsSpeedLimit"] != null ? double.Parse(row["WeekdayEveningAvgSpeedVsSpeedLimit"].ToString()) : (double?)null;
             var bigQueryWeekdayEveningEightyFifthSpeedVsSpeedLimit = row["WeekdayEveningEightyFifthSpeedVsSpeedLimit"] != null ? double.Parse(row["WeekdayEveningEightyFifthSpeedVsSpeedLimit"].ToString()) : (double?)null;
+            var bigQueryWeekdayEveningPercentObserved = row["WeekdayEveningPercentObserved"] != null ? double.Parse(row["WeekdayEveningPercentObserved"].ToString()) : (double?)null;
 
             var bigQueryEarlyMorningAverageSpeed = row["EarlyMorningAverageSpeed"] != null ? double.Parse(row["EarlyMorningAverageSpeed"].ToString()) : (double?)null;
             var bigQueryEarlyMorningAverageEightyFifthSpeed = row["EarlyMorningAverageEightyFifthSpeed"] != null ? double.Parse(row["EarlyMorningAverageEightyFifthSpeed"].ToString()) : (double?)null;
@@ -939,6 +954,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             var bigQueryEarlyMorningPercentExtremeViolations = row["EarlyMorningPercentExtremeViolations"] != null ? double.Parse(row["EarlyMorningPercentExtremeViolations"].ToString()) : (double?)null;
             var bigQueryEarlyMorningAvgSpeedVsSpeedLimit = row["EarlyMorningAvgSpeedVsSpeedLimit"] != null ? double.Parse(row["EarlyMorningAvgSpeedVsSpeedLimit"].ToString()) : (double?)null;
             var bigQueryEarlyMorningEightyFifthSpeedVsSpeedLimit = row["EarlyMorningEightyFifthSpeedVsSpeedLimit"] != null ? double.Parse(row["EarlyMorningEightyFifthSpeedVsSpeedLimit"].ToString()) : (double?)null;
+            var bigQueryEarlyMorningPercentObserved = row["EarlyMorningPercentObserved"] != null ? double.Parse(row["EarlyMorningPercentObserved"].ToString()) : (double?)null;
 
             var bigQueryWeekendEarlyMorningAverageSpeed = row["WeekendEarlyMorningAverageSpeed"] != null ? double.Parse(row["WeekendEarlyMorningAverageSpeed"].ToString()) : (double?)null;
             var bigQueryWeekendEarlyMorningAverageEightyFifthSpeed = row["WeekendEarlyMorningAverageEightyFifthSpeed"] != null ? double.Parse(row["WeekendEarlyMorningAverageEightyFifthSpeed"].ToString()) : (double?)null;
@@ -952,6 +968,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             var bigQueryWeekendEarlyMorningPercentExtremeViolations = row["WeekendEarlyMorningPercentExtremeViolations"] != null ? double.Parse(row["WeekendEarlyMorningPercentExtremeViolations"].ToString()) : (double?)null;
             var bigQueryWeekendEarlyMorningAvgSpeedVsSpeedLimit = row["WeekendEarlyMorningAvgSpeedVsSpeedLimit"] != null ? double.Parse(row["WeekendEarlyMorningAvgSpeedVsSpeedLimit"].ToString()) : (double?)null;
             var bigQueryWeekendEarlyMorningEightyFifthSpeedVsSpeedLimit = row["WeekendEarlyMorningEightyFifthSpeedVsSpeedLimit"] != null ? double.Parse(row["WeekendEarlyMorningEightyFifthSpeedVsSpeedLimit"].ToString()) : (double?)null;
+            var bigQueryWeekendEarlyMorningPercentObserved = row["WeekendEarlyMorningPercentObserved"] != null ? double.Parse(row["WeekendEarlyMorningPercentObserved"].ToString()) : (double?)null;
 
             var bigQueryWeekdayEarlyMorningAverageSpeed = row["WeekdayEarlyMorningAverageSpeed"] != null ? double.Parse(row["WeekdayEarlyMorningAverageSpeed"].ToString()) : (double?)null;
             var bigQueryWeekdayEarlyMorningAverageEightyFifthSpeed = row["WeekdayEarlyMorningAverageEightyFifthSpeed"] != null ? double.Parse(row["WeekdayEarlyMorningAverageEightyFifthSpeed"].ToString()) : (double?)null;
@@ -965,9 +982,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             var bigQueryWeekdayEarlyMorningPercentExtremeViolations = row["WeekdayEarlyMorningPercentExtremeViolations"] != null ? double.Parse(row["WeekdayEarlyMorningPercentExtremeViolations"].ToString()) : (double?)null;
             var bigQueryWeekdayEarlyMorningAvgSpeedVsSpeedLimit = row["WeekdayEarlyMorningAvgSpeedVsSpeedLimit"] != null ? double.Parse(row["WeekdayEarlyMorningAvgSpeedVsSpeedLimit"].ToString()) : (double?)null;
             var bigQueryWeekdayEarlyMorningEightyFifthSpeedVsSpeedLimit = row["WeekdayEarlyMorningEightyFifthSpeedVsSpeedLimit"] != null ? double.Parse(row["WeekdayEarlyMorningEightyFifthSpeedVsSpeedLimit"].ToString()) : (double?)null;
-
-            var bigQueryPercentObserved = row["PercentObserved"] != null ? double.Parse(row["PercentObserved"].ToString()) : (double?)null;
-
+            var bigQueryWeekdayEarlyMorningPercentObserved = row["WeekdayEarlyMorningPercentObserved"] != null ? double.Parse(row["WeekdayEarlyMorningPercentObserved"].ToString()) : (double?)null;
             return new MonthlyAggregation
             {
                 Id = bigQueryId,
@@ -988,6 +1003,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 AllDayPercentExtremeViolations = bigQueryAllDayPercentExtremeViolations,
                 AllDayAvgSpeedVsSpeedLimit = bigQueryAllDayAvgSpeedVsSpeedLimit,
                 AllDayEightyFifthSpeedVsSpeedLimit = bigQueryAllDayEightyFifthSpeedVsSpeedLimit,
+                AllDayPercentObserved = bigQueryAllDayPercentObserved,
 
                 WeekendAllDayAverageSpeed = bigQueryWeekendAllDayAverageSpeed,
                 WeekendAllDayAverageEightyFifthSpeed = bigQueryWeekendAllDayAverageEightyFifthSpeed,
@@ -1001,6 +1017,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 WeekendAllDayPercentExtremeViolations = bigQueryWeekendAllDayPercentExtremeViolations,
                 WeekendAllDayAvgSpeedVsSpeedLimit = bigQueryWeekendAllDayAvgSpeedVsSpeedLimit,
                 WeekendAllDayEightyFifthSpeedVsSpeedLimit = bigQueryWeekendAllDayEightyFifthSpeedVsSpeedLimit,
+                WeekendAllDayPercentObserved = bigQueryWeekendAllDayPercentObserved,
 
                 WeekdayAllDayAverageSpeed = bigQueryWeekdayAllDayAverageSpeed,
                 WeekdayAllDayAverageEightyFifthSpeed = bigQueryWeekdayAllDayAverageEightyFifthSpeed,
@@ -1014,6 +1031,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 WeekdayAllDayPercentExtremeViolations = bigQueryWeekdayAllDayPercentExtremeViolations,
                 WeekdayAllDayAvgSpeedVsSpeedLimit = bigQueryWeekdayAllDayAvgSpeedVsSpeedLimit,
                 WeekdayAllDayEightyFifthSpeedVsSpeedLimit = bigQueryWeekdayAllDayEightyFifthSpeedVsSpeedLimit,
+                WeekdayAllDayPercentObserved = bigQueryWeekdayAllDayPercentObserved,
 
                 OffPeakAverageSpeed = bigQueryOffPeakAverageSpeed,
                 OffPeakAverageEightyFifthSpeed = bigQueryOffPeakAverageEightyFifthSpeed,
@@ -1027,6 +1045,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 OffPeakPercentExtremeViolations = bigQueryOffPeakPercentExtremeViolations,
                 OffPeakAvgSpeedVsSpeedLimit = bigQueryOffPeakAvgSpeedVsSpeedLimit,
                 OffPeakEightyFifthSpeedVsSpeedLimit = bigQueryOffPeakEightyFifthSpeedVsSpeedLimit,
+                OffPeakPercentObserved = bigQueryOffPeakPercentObserved,
 
                 WeekendOffPeakAverageSpeed = bigQueryWeekendOffPeakAverageSpeed,
                 WeekendOffPeakAverageEightyFifthSpeed = bigQueryWeekendOffPeakAverageEightyFifthSpeed,
@@ -1040,6 +1059,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 WeekendOffPeakPercentExtremeViolations = bigQueryWeekendOffPeakPercentExtremeViolations,
                 WeekendOffPeakAvgSpeedVsSpeedLimit = bigQueryWeekendOffPeakAvgSpeedVsSpeedLimit,
                 WeekendOffPeakEightyFifthSpeedVsSpeedLimit = bigQueryWeekendOffPeakEightyFifthSpeedVsSpeedLimit,
+                WeekendOffPeakPercentObserved = bigQueryWeekendOffPeakPercentObserved,
 
                 WeekdayOffPeakAverageSpeed = bigQueryWeekdayOffPeakAverageSpeed,
                 WeekdayOffPeakAverageEightyFifthSpeed = bigQueryWeekdayOffPeakAverageEightyFifthSpeed,
@@ -1053,6 +1073,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 WeekdayOffPeakPercentExtremeViolations = bigQueryWeekdayOffPeakPercentExtremeViolations,
                 WeekdayOffPeakAvgSpeedVsSpeedLimit = bigQueryWeekdayOffPeakAvgSpeedVsSpeedLimit,
                 WeekdayOffPeakEightyFifthSpeedVsSpeedLimit = bigQueryWeekdayOffPeakEightyFifthSpeedVsSpeedLimit,
+                WeekdayOffPeakPercentObserved = bigQueryWeekdayOffPeakPercentObserved,
 
                 AmPeakAverageSpeed = bigQueryAmPeakAverageSpeed,
                 AmPeakAverageEightyFifthSpeed = bigQueryAmPeakAverageEightyFifthSpeed,
@@ -1066,6 +1087,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 AmPeakPercentExtremeViolations = bigQueryAmPeakPercentExtremeViolations,
                 AmPeakAvgSpeedVsSpeedLimit = bigQueryAmPeakAvgSpeedVsSpeedLimit,
                 AmPeakEightyFifthSpeedVsSpeedLimit = bigQueryAmPeakEightyFifthSpeedVsSpeedLimit,
+                AmPeakPercentObserved = bigQueryAmPeakPercentObserved,
 
                 WeekendAmPeakAverageSpeed = bigQueryWeekendAmPeakAverageSpeed,
                 WeekendAmPeakAverageEightyFifthSpeed = bigQueryWeekendAmPeakAverageEightyFifthSpeed,
@@ -1079,6 +1101,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 WeekendAmPeakPercentExtremeViolations = bigQueryWeekendAmPeakPercentExtremeViolations,
                 WeekendAmPeakAvgSpeedVsSpeedLimit = bigQueryWeekendAmPeakAvgSpeedVsSpeedLimit,
                 WeekendAmPeakEightyFifthSpeedVsSpeedLimit = bigQueryWeekendAmPeakEightyFifthSpeedVsSpeedLimit,
+                WeekendAmPeakPercentObserved = bigQueryWeekendAmPeakPercentObserved,
 
                 WeekdayAmPeakAverageSpeed = bigQueryWeekdayAmPeakAverageSpeed,
                 WeekdayAmPeakAverageEightyFifthSpeed = bigQueryWeekdayAmPeakAverageEightyFifthSpeed,
@@ -1092,6 +1115,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 WeekdayAmPeakPercentExtremeViolations = bigQueryWeekdayAmPeakPercentExtremeViolations,
                 WeekdayAmPeakAvgSpeedVsSpeedLimit = bigQueryWeekdayAmPeakAvgSpeedVsSpeedLimit,
                 WeekdayAmPeakEightyFifthSpeedVsSpeedLimit = bigQueryWeekdayAmPeakEightyFifthSpeedVsSpeedLimit,
+                WeekdayAmPeakPercentObserved = bigQueryWeekdayAmPeakPercentObserved,
 
                 PmPeakAverageSpeed = bigQueryPmPeakAverageSpeed,
                 PmPeakAverageEightyFifthSpeed = bigQueryPmPeakAverageEightyFifthSpeed,
@@ -1105,6 +1129,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 PmPeakPercentExtremeViolations = bigQueryPmPeakPercentExtremeViolations,
                 PmPeakAvgSpeedVsSpeedLimit = bigQueryPmPeakAvgSpeedVsSpeedLimit,
                 PmPeakEightyFifthSpeedVsSpeedLimit = bigQueryPmPeakEightyFifthSpeedVsSpeedLimit,
+                PmPeakPercentObserved = bigQueryPmPeakPercentObserved,
 
                 WeekendPmPeakAverageSpeed = bigQueryWeekendPmPeakAverageSpeed,
                 WeekendPmPeakAverageEightyFifthSpeed = bigQueryWeekendPmPeakAverageEightyFifthSpeed,
@@ -1118,6 +1143,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 WeekendPmPeakPercentExtremeViolations = bigQueryWeekendPmPeakPercentExtremeViolations,
                 WeekendPmPeakAvgSpeedVsSpeedLimit = bigQueryWeekendPmPeakAvgSpeedVsSpeedLimit,
                 WeekendPmPeakEightyFifthSpeedVsSpeedLimit = bigQueryWeekendPmPeakEightyFifthSpeedVsSpeedLimit,
+                WeekendPmPeakPercentObserved = bigQueryWeekendPmPeakPercentObserved,
 
                 WeekdayPmPeakAverageSpeed = bigQueryWeekdayPmPeakAverageSpeed,
                 WeekdayPmPeakAverageEightyFifthSpeed = bigQueryWeekdayPmPeakAverageEightyFifthSpeed,
@@ -1131,6 +1157,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 WeekdayPmPeakPercentExtremeViolations = bigQueryWeekdayPmPeakPercentExtremeViolations,
                 WeekdayPmPeakAvgSpeedVsSpeedLimit = bigQueryWeekdayPmPeakAvgSpeedVsSpeedLimit,
                 WeekdayPmPeakEightyFifthSpeedVsSpeedLimit = bigQueryWeekdayPmPeakEightyFifthSpeedVsSpeedLimit,
+                WeekdayPmPeakPercentObserved = bigQueryWeekdayPmPeakPercentObserved,
 
                 MidDayAverageSpeed = bigQueryMidDayAverageSpeed,
                 MidDayAverageEightyFifthSpeed = bigQueryMidDayAverageEightyFifthSpeed,
@@ -1144,6 +1171,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 MidDayPercentExtremeViolations = bigQueryMidDayPercentExtremeViolations,
                 MidDayAvgSpeedVsSpeedLimit = bigQueryMidDayAvgSpeedVsSpeedLimit,
                 MidDayEightyFifthSpeedVsSpeedLimit = bigQueryMidDayEightyFifthSpeedVsSpeedLimit,
+                MidDayPercentObserved = bigQueryMidDayPercentObserved,
 
                 WeekendMidDayAverageSpeed = bigQueryWeekendMidDayAverageSpeed,
                 WeekendMidDayAverageEightyFifthSpeed = bigQueryWeekendMidDayAverageEightyFifthSpeed,
@@ -1157,6 +1185,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 WeekendMidDayPercentExtremeViolations = bigQueryWeekendMidDayPercentExtremeViolations,
                 WeekendMidDayAvgSpeedVsSpeedLimit = bigQueryWeekendMidDayAvgSpeedVsSpeedLimit,
                 WeekendMidDayEightyFifthSpeedVsSpeedLimit = bigQueryWeekendMidDayEightyFifthSpeedVsSpeedLimit,
+                WeekendMidDayPercentObserved = bigQueryWeekendMidDayPercentObserved,
 
                 WeekdayMidDayAverageSpeed = bigQueryWeekdayMidDayAverageSpeed,
                 WeekdayMidDayAverageEightyFifthSpeed = bigQueryWeekdayMidDayAverageEightyFifthSpeed,
@@ -1170,6 +1199,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 WeekdayMidDayPercentExtremeViolations = bigQueryWeekdayMidDayPercentExtremeViolations,
                 WeekdayMidDayAvgSpeedVsSpeedLimit = bigQueryWeekdayMidDayAvgSpeedVsSpeedLimit,
                 WeekdayMidDayEightyFifthSpeedVsSpeedLimit = bigQueryWeekdayMidDayEightyFifthSpeedVsSpeedLimit,
+                WeekdayMidDayPercentObserved = bigQueryWeekdayMidDayPercentObserved,
 
                 EveningAverageSpeed = bigQueryEveningAverageSpeed,
                 EveningAverageEightyFifthSpeed = bigQueryEveningAverageEightyFifthSpeed,
@@ -1183,6 +1213,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 EveningPercentExtremeViolations = bigQueryEveningPercentExtremeViolations,
                 EveningAvgSpeedVsSpeedLimit = bigQueryEveningAvgSpeedVsSpeedLimit,
                 EveningEightyFifthSpeedVsSpeedLimit = bigQueryEveningEightyFifthSpeedVsSpeedLimit,
+                EveningPercentObserved = bigQueryEveningPercentObserved,
 
                 WeekendEveningAverageSpeed = bigQueryWeekendEveningAverageSpeed,
                 WeekendEveningAverageEightyFifthSpeed = bigQueryWeekendEveningAverageEightyFifthSpeed,
@@ -1196,6 +1227,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 WeekendEveningPercentExtremeViolations = bigQueryWeekendEveningPercentExtremeViolations,
                 WeekendEveningAvgSpeedVsSpeedLimit = bigQueryWeekendEveningAvgSpeedVsSpeedLimit,
                 WeekendEveningEightyFifthSpeedVsSpeedLimit = bigQueryWeekendEveningEightyFifthSpeedVsSpeedLimit,
+                WeekendEveningPercentObserved = bigQueryWeekendEveningPercentObserved,
 
                 WeekdayEveningAverageSpeed = bigQueryWeekdayEveningAverageSpeed,
                 WeekdayEveningAverageEightyFifthSpeed = bigQueryWeekdayEveningAverageEightyFifthSpeed,
@@ -1209,6 +1241,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 WeekdayEveningPercentExtremeViolations = bigQueryWeekdayEveningPercentExtremeViolations,
                 WeekdayEveningAvgSpeedVsSpeedLimit = bigQueryWeekdayEveningAvgSpeedVsSpeedLimit,
                 WeekdayEveningEightyFifthSpeedVsSpeedLimit = bigQueryWeekdayEveningEightyFifthSpeedVsSpeedLimit,
+                WeekdayEveningPercentObserved = bigQueryWeekdayEveningPercentObserved,
 
                 EarlyMorningAverageSpeed = bigQueryEarlyMorningAverageSpeed,
                 EarlyMorningAverageEightyFifthSpeed = bigQueryEarlyMorningAverageEightyFifthSpeed,
@@ -1222,6 +1255,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 EarlyMorningPercentExtremeViolations = bigQueryEarlyMorningPercentExtremeViolations,
                 EarlyMorningAvgSpeedVsSpeedLimit = bigQueryEarlyMorningAvgSpeedVsSpeedLimit,
                 EarlyMorningEightyFifthSpeedVsSpeedLimit = bigQueryEarlyMorningEightyFifthSpeedVsSpeedLimit,
+                EarlyMorningPercentObserved = bigQueryEarlyMorningPercentObserved,
 
                 WeekendEarlyMorningAverageSpeed = bigQueryWeekendEarlyMorningAverageSpeed,
                 WeekendEarlyMorningAverageEightyFifthSpeed = bigQueryWeekendEarlyMorningAverageEightyFifthSpeed,
@@ -1235,6 +1269,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 WeekendEarlyMorningPercentExtremeViolations = bigQueryWeekendEarlyMorningPercentExtremeViolations,
                 WeekendEarlyMorningAvgSpeedVsSpeedLimit = bigQueryWeekendEarlyMorningAvgSpeedVsSpeedLimit,
                 WeekendEarlyMorningEightyFifthSpeedVsSpeedLimit = bigQueryWeekendEarlyMorningEightyFifthSpeedVsSpeedLimit,
+                WeekendEarlyMorningPercentObserved = bigQueryWeekendEarlyMorningPercentObserved,
 
                 WeekdayEarlyMorningAverageSpeed = bigQueryWeekdayEarlyMorningAverageSpeed,
                 WeekdayEarlyMorningAverageEightyFifthSpeed = bigQueryWeekdayEarlyMorningAverageEightyFifthSpeed,
@@ -1248,8 +1283,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 WeekdayEarlyMorningPercentExtremeViolations = bigQueryWeekdayEarlyMorningPercentExtremeViolations,
                 WeekdayEarlyMorningAvgSpeedVsSpeedLimit = bigQueryWeekdayEarlyMorningAvgSpeedVsSpeedLimit,
                 WeekdayEarlyMorningEightyFifthSpeedVsSpeedLimit = bigQueryWeekdayEarlyMorningEightyFifthSpeedVsSpeedLimit,
-
-                PercentObserved = bigQueryPercentObserved
+                WeekdayEarlyMorningPercentObserved = bigQueryWeekdayEarlyMorningPercentObserved
             };
         }
 
@@ -1262,35 +1296,34 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
         {
             return $"INSERT INTO `{_datasetId}.{_tableId}` " +
                 $"(Id, CreatedDate, BinStartTime, SegmentId, SourceId, " +
-                $"AllDayAverageSpeed, AllDayAverageEightyFifthSpeed, AllDayViolations, AllDayExtremeViolations, AllDayFlow, AllDayMinSpeed, AllDayMaxSpeed, AllDayVariability, AllDayPercentViolations, AllDayPercentExtremeViolations, AllDayAvgSpeedVsSpeedLimit, AllDayEightyFifthSpeedVsSpeedLimit, " +
-                $"WeekendAllDayAverageSpeed, WeekendAllDayAverageEightyFifthSpeed, WeekendAllDayViolations, WeekendAllDayExtremeViolations, WeekendAllDayFlow, WeekendAllDayMinSpeed, WeekendAllDayMaxSpeed, WeekendAllDayVariability, WeekendAllDayPercentViolations, WeekendAllDayPercentExtremeViolations, WeekendAllDayAvgSpeedVsSpeedLimit, WeekendAllDayEightyFifthSpeedVsSpeedLimit, " +
-                $"WeekdayAllDayAverageSpeed, WeekdayAllDayAverageEightyFifthSpeed, WeekdayAllDayViolations, WeekdayAllDayExtremeViolations, WeekdayAllDayFlow, WeekdayAllDayMinSpeed, WeekdayAllDayMaxSpeed, WeekdayAllDayVariability, WeekdayAllDayPercentViolations, WeekdayAllDayPercentExtremeViolations, WeekdayAllDayAvgSpeedVsSpeedLimit, WeekdayAllDayEightyFifthSpeedVsSpeedLimit, " +
+                $"AllDayAverageSpeed, AllDayAverageEightyFifthSpeed, AllDayViolations, AllDayExtremeViolations, AllDayFlow, AllDayMinSpeed, AllDayMaxSpeed, AllDayVariability, AllDayPercentViolations, AllDayPercentExtremeViolations, AllDayAvgSpeedVsSpeedLimit, AllDayEightyFifthSpeedVsSpeedLimit, AllDayPercentObserved, " +
+                $"WeekendAllDayAverageSpeed, WeekendAllDayAverageEightyFifthSpeed, WeekendAllDayViolations, WeekendAllDayExtremeViolations, WeekendAllDayFlow, WeekendAllDayMinSpeed, WeekendAllDayMaxSpeed, WeekendAllDayVariability, WeekendAllDayPercentViolations, WeekendAllDayPercentExtremeViolations, WeekendAllDayAvgSpeedVsSpeedLimit, WeekendAllDayEightyFifthSpeedVsSpeedLimit, WeekendAllDayPercentObserved, " +
+                $"WeekdayAllDayAverageSpeed, WeekdayAllDayAverageEightyFifthSpeed, WeekdayAllDayViolations, WeekdayAllDayExtremeViolations, WeekdayAllDayFlow, WeekdayAllDayMinSpeed, WeekdayAllDayMaxSpeed, WeekdayAllDayVariability, WeekdayAllDayPercentViolations, WeekdayAllDayPercentExtremeViolations, WeekdayAllDayAvgSpeedVsSpeedLimit, WeekdayAllDayEightyFifthSpeedVsSpeedLimit, WeekdayAllDayPercentObserved, " +
 
-                $"OffPeakAverageSpeed, OffPeakAverageEightyFifthSpeed, OffPeakViolations, OffPeakExtremeViolations, OffPeakFlow, OffPeakMinSpeed, OffPeakMaxSpeed, OffPeakVariability, OffPeakPercentViolations, OffPeakPercentExtremeViolations, OffPeakAvgSpeedVsSpeedLimit, OffPeakEightyFifthSpeedVsSpeedLimit, " +
-                $"WeekendOffPeakAverageSpeed, WeekendOffPeakAverageEightyFifthSpeed, WeekendOffPeakViolations, WeekendOffPeakExtremeViolations, WeekendOffPeakFlow, WeekendOffPeakMinSpeed, WeekendOffPeakMaxSpeed, WeekendOffPeakVariability, WeekendOffPeakPercentViolations, WeekendOffPeakPercentExtremeViolations, WeekendOffPeakAvgSpeedVsSpeedLimit, WeekendOffPeakEightyFifthSpeedVsSpeedLimit, " +
-                $"WeekdayOffPeakAverageSpeed, WeekdayOffPeakAverageEightyFifthSpeed, WeekdayOffPeakViolations, WeekdayOffPeakExtremeViolations, WeekdayOffPeakFlow, WeekdayOffPeakMinSpeed, WeekdayOffPeakMaxSpeed, WeekdayOffPeakVariability, WeekdayOffPeakPercentViolations, WeekdayOffPeakPercentExtremeViolations, WeekdayOffPeakAvgSpeedVsSpeedLimit, WeekdayOffPeakEightyFifthSpeedVsSpeedLimit, " +
+                $"OffPeakAverageSpeed, OffPeakAverageEightyFifthSpeed, OffPeakViolations, OffPeakExtremeViolations, OffPeakFlow, OffPeakMinSpeed, OffPeakMaxSpeed, OffPeakVariability, OffPeakPercentViolations, OffPeakPercentExtremeViolations, OffPeakAvgSpeedVsSpeedLimit, OffPeakEightyFifthSpeedVsSpeedLimit, OffPeakPercentObserved, " +
+                $"WeekendOffPeakAverageSpeed, WeekendOffPeakAverageEightyFifthSpeed, WeekendOffPeakViolations, WeekendOffPeakExtremeViolations, WeekendOffPeakFlow, WeekendOffPeakMinSpeed, WeekendOffPeakMaxSpeed, WeekendOffPeakVariability, WeekendOffPeakPercentViolations, WeekendOffPeakPercentExtremeViolations, WeekendOffPeakAvgSpeedVsSpeedLimit, WeekendOffPeakEightyFifthSpeedVsSpeedLimit, WeekendOffPeakPercentObserved, " +
+                $"WeekdayOffPeakAverageSpeed, WeekdayOffPeakAverageEightyFifthSpeed, WeekdayOffPeakViolations, WeekdayOffPeakExtremeViolations, WeekdayOffPeakFlow, WeekdayOffPeakMinSpeed, WeekdayOffPeakMaxSpeed, WeekdayOffPeakVariability, WeekdayOffPeakPercentViolations, WeekdayOffPeakPercentExtremeViolations, WeekdayOffPeakAvgSpeedVsSpeedLimit, WeekdayOffPeakEightyFifthSpeedVsSpeedLimit, WeekdayOffPeakPercentObserved, " +
 
-                $"AmPeakAverageSpeed, AmPeakAverageEightyFifthSpeed, AmPeakViolations, AmPeakExtremeViolations, AmPeakFlow, AmPeakMinSpeed, AmPeakMaxSpeed, AmPeakVariability, AmPeakPercentViolations, AmPeakPercentExtremeViolations, AmPeakAvgSpeedVsSpeedLimit, AmPeakEightyFifthSpeedVsSpeedLimit, " +
-                $"WeekendAmPeakAverageSpeed, WeekendAmPeakAverageEightyFifthSpeed, WeekendAmPeakViolations, WeekendAmPeakExtremeViolations, WeekendAmPeakFlow, WeekendAmPeakMinSpeed, WeekendAmPeakMaxSpeed, WeekendAmPeakVariability, WeekendAmPeakPercentViolations, WeekendAmPeakPercentExtremeViolations, WeekendAmPeakAvgSpeedVsSpeedLimit, WeekendAmPeakEightyFifthSpeedVsSpeedLimit, " +
-                $"WeekdayAmPeakAverageSpeed, WeekdayAmPeakAverageEightyFifthSpeed, WeekdayAmPeakViolations, WeekdayAmPeakExtremeViolations, WeekdayAmPeakFlow, WeekdayAmPeakMinSpeed, WeekdayAmPeakMaxSpeed, WeekdayAmPeakVariability, WeekdayAmPeakPercentViolations, WeekdayAmPeakPercentExtremeViolations, WeekdayAmPeakAvgSpeedVsSpeedLimit, WeekdayAmPeakEightyFifthSpeedVsSpeedLimit, " +
+                $"AmPeakAverageSpeed, AmPeakAverageEightyFifthSpeed, AmPeakViolations, AmPeakExtremeViolations, AmPeakFlow, AmPeakMinSpeed, AmPeakMaxSpeed, AmPeakVariability, AmPeakPercentViolations, AmPeakPercentExtremeViolations, AmPeakAvgSpeedVsSpeedLimit, AmPeakEightyFifthSpeedVsSpeedLimit, AmPeakPercentObserved, " +
+                $"WeekendAmPeakAverageSpeed, WeekendAmPeakAverageEightyFifthSpeed, WeekendAmPeakViolations, WeekendAmPeakExtremeViolations, WeekendAmPeakFlow, WeekendAmPeakMinSpeed, WeekendAmPeakMaxSpeed, WeekendAmPeakVariability, WeekendAmPeakPercentViolations, WeekendAmPeakPercentExtremeViolations, WeekendAmPeakAvgSpeedVsSpeedLimit, WeekendAmPeakEightyFifthSpeedVsSpeedLimit, WeekendAmPeakPercentObserved, " +
+                $"WeekdayAmPeakAverageSpeed, WeekdayAmPeakAverageEightyFifthSpeed, WeekdayAmPeakViolations, WeekdayAmPeakExtremeViolations, WeekdayAmPeakFlow, WeekdayAmPeakMinSpeed, WeekdayAmPeakMaxSpeed, WeekdayAmPeakVariability, WeekdayAmPeakPercentViolations, WeekdayAmPeakPercentExtremeViolations, WeekdayAmPeakAvgSpeedVsSpeedLimit, WeekdayAmPeakEightyFifthSpeedVsSpeedLimit, WeekdayAmPeakPercentObserved, " +
 
-                $"PmPeakAverageSpeed, PmPeakAverageEightyFifthSpeed, PmPeakViolations, PmPeakExtremeViolations, PmPeakFlow, PmPeakMinSpeed, PmPeakMaxSpeed, PmPeakVariability, PmPeakPercentViolations, PmPeakPercentExtremeViolations, PmPeakAvgSpeedVsSpeedLimit, PmPeakEightyFifthSpeedVsSpeedLimit, " +
-                $"WeekendPmPeakAverageSpeed, WeekendPmPeakAverageEightyFifthSpeed, WeekendPmPeakViolations, WeekendPmPeakExtremeViolations, WeekendPmPeakFlow, WeekendPmPeakMinSpeed, WeekendPmPeakMaxSpeed, WeekendPmPeakVariability, WeekendPmPeakPercentViolations, WeekendPmPeakPercentExtremeViolations, WeekendPmPeakAvgSpeedVsSpeedLimit, WeekendPmPeakEightyFifthSpeedVsSpeedLimit, " +
-                $"WeekdayPmPeakAverageSpeed, WeekdayPmPeakAverageEightyFifthSpeed, WeekdayPmPeakViolations, WeekdayPmPeakExtremeViolations, WeekdayPmPeakFlow, WeekdayPmPeakMinSpeed, WeekdayPmPeakMaxSpeed, WeekdayPmPeakVariability, WeekdayPmPeakPercentViolations, WeekdayPmPeakPercentExtremeViolations, WeekdayPmPeakAvgSpeedVsSpeedLimit, WeekdayPmPeakEightyFifthSpeedVsSpeedLimit, " +
+                $"PmPeakAverageSpeed, PmPeakAverageEightyFifthSpeed, PmPeakViolations, PmPeakExtremeViolations, PmPeakFlow, PmPeakMinSpeed, PmPeakMaxSpeed, PmPeakVariability, PmPeakPercentViolations, PmPeakPercentExtremeViolations, PmPeakAvgSpeedVsSpeedLimit, PmPeakEightyFifthSpeedVsSpeedLimit, PmPeakPercentObserved, " +
+                $"WeekendPmPeakAverageSpeed, WeekendPmPeakAverageEightyFifthSpeed, WeekendPmPeakViolations, WeekendPmPeakExtremeViolations, WeekendPmPeakFlow, WeekendPmPeakMinSpeed, WeekendPmPeakMaxSpeed, WeekendPmPeakVariability, WeekendPmPeakPercentViolations, WeekendPmPeakPercentExtremeViolations, WeekendPmPeakAvgSpeedVsSpeedLimit, WeekendPmPeakEightyFifthSpeedVsSpeedLimit, WeekendPmPeakPercentObserved, " +
+                $"WeekdayPmPeakAverageSpeed, WeekdayPmPeakAverageEightyFifthSpeed, WeekdayPmPeakViolations, WeekdayPmPeakExtremeViolations, WeekdayPmPeakFlow, WeekdayPmPeakMinSpeed, WeekdayPmPeakMaxSpeed, WeekdayPmPeakVariability, WeekdayPmPeakPercentViolations, WeekdayPmPeakPercentExtremeViolations, WeekdayPmPeakAvgSpeedVsSpeedLimit, WeekdayPmPeakEightyFifthSpeedVsSpeedLimit, WeekdayPmPeakPercentObserved, " +
 
-                $"MidDayAverageSpeed, MidDayAverageEightyFifthSpeed, MidDayViolations, MidDayExtremeViolations, MidDayFlow, MidDayMinSpeed, MidDayMaxSpeed, MidDayVariability, MidDayPercentViolations, MidDayPercentExtremeViolations, MidDayAvgSpeedVsSpeedLimit, MidDayEightyFifthSpeedVsSpeedLimit, " +
-                $"WeekendMidDayAverageSpeed, WeekendMidDayAverageEightyFifthSpeed, WeekendMidDayViolations, WeekendMidDayExtremeViolations, WeekendMidDayFlow, WeekendMidDayMinSpeed, WeekendMidDayMaxSpeed, WeekendMidDayVariability, WeekendMidDayPercentViolations, WeekendMidDayPercentExtremeViolations, WeekendMidDayAvgSpeedVsSpeedLimit, WeekendMidDayEightyFifthSpeedVsSpeedLimit, " +
-                $"WeekdayMidDayAverageSpeed, WeekdayMidDayAverageEightyFifthSpeed, WeekdayMidDayViolations, WeekdayMidDayExtremeViolations, WeekdayMidDayFlow, WeekdayMidDayMinSpeed, WeekdayMidDayMaxSpeed, WeekdayMidDayVariability, WeekdayMidDayPercentViolations, WeekdayMidDayPercentExtremeViolations, WeekdayMidDayAvgSpeedVsSpeedLimit, WeekdayMidDayEightyFifthSpeedVsSpeedLimit, " +
+                $"MidDayAverageSpeed, MidDayAverageEightyFifthSpeed, MidDayViolations, MidDayExtremeViolations, MidDayFlow, MidDayMinSpeed, MidDayMaxSpeed, MidDayVariability, MidDayPercentViolations, MidDayPercentExtremeViolations, MidDayAvgSpeedVsSpeedLimit, MidDayEightyFifthSpeedVsSpeedLimit, MidDayPercentObserved, " +
+                $"WeekendMidDayAverageSpeed, WeekendMidDayAverageEightyFifthSpeed, WeekendMidDayViolations, WeekendMidDayExtremeViolations, WeekendMidDayFlow, WeekendMidDayMinSpeed, WeekendMidDayMaxSpeed, WeekendMidDayVariability, WeekendMidDayPercentViolations, WeekendMidDayPercentExtremeViolations, WeekendMidDayAvgSpeedVsSpeedLimit, WeekendMidDayEightyFifthSpeedVsSpeedLimit, WeekendMidDayPercentObserved, " +
+                $"WeekdayMidDayAverageSpeed, WeekdayMidDayAverageEightyFifthSpeed, WeekdayMidDayViolations, WeekdayMidDayExtremeViolations, WeekdayMidDayFlow, WeekdayMidDayMinSpeed, WeekdayMidDayMaxSpeed, WeekdayMidDayVariability, WeekdayMidDayPercentViolations, WeekdayMidDayPercentExtremeViolations, WeekdayMidDayAvgSpeedVsSpeedLimit, WeekdayMidDayEightyFifthSpeedVsSpeedLimit, WeekdayMidDayPercentObserved, " +
 
-                $"EveningAverageSpeed, EveningAverageEightyFifthSpeed, EveningViolations, EveningExtremeViolations, EveningFlow, EveningMinSpeed, EveningMaxSpeed, EveningVariability, EveningPercentViolations, EveningPercentExtremeViolations, EveningAvgSpeedVsSpeedLimit, EveningEightyFifthSpeedVsSpeedLimit, " +
-                $"WeekendEveningAverageSpeed, WeekendEveningAverageEightyFifthSpeed, WeekendEveningViolations, WeekendEveningExtremeViolations, WeekendEveningFlow, WeekendEveningMinSpeed, WeekendEveningMaxSpeed, WeekendEveningVariability, WeekendEveningPercentViolations, WeekendEveningPercentExtremeViolations, WeekendEveningAvgSpeedVsSpeedLimit, WeekendEveningEightyFifthSpeedVsSpeedLimit, " +
-                $"WeekdayEveningAverageSpeed, WeekdayEveningAverageEightyFifthSpeed, WeekdayEveningViolations, WeekdayEveningExtremeViolations, WeekdayEveningFlow, WeekdayEveningMinSpeed, WeekdayEveningMaxSpeed, WeekdayEveningVariability, WeekdayEveningPercentViolations, WeekdayEveningPercentExtremeViolations, WeekdayEveningAvgSpeedVsSpeedLimit, WeekdayEveningEightyFifthSpeedVsSpeedLimit, " +
+                $"EveningAverageSpeed, EveningAverageEightyFifthSpeed, EveningViolations, EveningExtremeViolations, EveningFlow, EveningMinSpeed, EveningMaxSpeed, EveningVariability, EveningPercentViolations, EveningPercentExtremeViolations, EveningAvgSpeedVsSpeedLimit, EveningEightyFifthSpeedVsSpeedLimit, EveningPercentObserved, " +
+                $"WeekendEveningAverageSpeed, WeekendEveningAverageEightyFifthSpeed, WeekendEveningViolations, WeekendEveningExtremeViolations, WeekendEveningFlow, WeekendEveningMinSpeed, WeekendEveningMaxSpeed, WeekendEveningVariability, WeekendEveningPercentViolations, WeekendEveningPercentExtremeViolations, WeekendEveningAvgSpeedVsSpeedLimit, WeekendEveningEightyFifthSpeedVsSpeedLimit, WeekendEveningPercentObserved, " +
+                $"WeekdayEveningAverageSpeed, WeekdayEveningAverageEightyFifthSpeed, WeekdayEveningViolations, WeekdayEveningExtremeViolations, WeekdayEveningFlow, WeekdayEveningMinSpeed, WeekdayEveningMaxSpeed, WeekdayEveningVariability, WeekdayEveningPercentViolations, WeekdayEveningPercentExtremeViolations, WeekdayEveningAvgSpeedVsSpeedLimit, WeekdayEveningEightyFifthSpeedVsSpeedLimit, WeekdayEveningPercentObserved, " +
 
-                $"EarlyMorningAverageSpeed, EarlyMorningAverageEightyFifthSpeed, EarlyMorningViolations, EarlyMorningExtremeViolations, EarlyMorningFlow, EarlyMorningMinSpeed, EarlyMorningMaxSpeed, EarlyMorningVariability, EarlyMorningPercentViolations, EarlyMorningPercentExtremeViolations, EarlyMorningAvgSpeedVsSpeedLimit, EarlyMorningEightyFifthSpeedVsSpeedLimit, " +
-                $"WeekendEarlyMorningAverageSpeed, WeekendEarlyMorningAverageEightyFifthSpeed, WeekendEarlyMorningViolations, WeekendEarlyMorningExtremeViolations, WeekendEarlyMorningFlow, WeekendEarlyMorningMinSpeed, WeekendEarlyMorningMaxSpeed, WeekendEarlyMorningVariability, WeekendEarlyMorningPercentViolations, WeekendEarlyMorningPercentExtremeViolations, WeekendEarlyMorningAvgSpeedVsSpeedLimit, WeekendEarlyMorningEightyFifthSpeedVsSpeedLimit, " +
-                $"WeekdayEarlyMorningAverageSpeed, WeekdayEarlyMorningAverageEightyFifthSpeed, WeekdayEarlyMorningViolations, WeekdayEarlyMorningExtremeViolations, WeekdayEarlyMorningFlow, WeekdayEarlyMorningMinSpeed, WeekdayEarlyMorningMaxSpeed, WeekdayEarlyMorningVariability, WeekdayEarlyMorningPercentViolations, WeekdayEarlyMorningPercentExtremeViolations, WeekdayEarlyMorningAvgSpeedVsSpeedLimit, WeekdayEarlyMorningEightyFifthSpeedVsSpeedLimit, " +
+                $"EarlyMorningAverageSpeed, EarlyMorningAverageEightyFifthSpeed, EarlyMorningViolations, EarlyMorningExtremeViolations, EarlyMorningFlow, EarlyMorningMinSpeed, EarlyMorningMaxSpeed, EarlyMorningVariability, EarlyMorningPercentViolations, EarlyMorningPercentExtremeViolations, EarlyMorningAvgSpeedVsSpeedLimit, EarlyMorningEightyFifthSpeedVsSpeedLimit, EarlyMorningPercentObserved, " +
+                $"WeekendEarlyMorningAverageSpeed, WeekendEarlyMorningAverageEightyFifthSpeed, WeekendEarlyMorningViolations, WeekendEarlyMorningExtremeViolations, WeekendEarlyMorningFlow, WeekendEarlyMorningMinSpeed, WeekendEarlyMorningMaxSpeed, WeekendEarlyMorningVariability, WeekendEarlyMorningPercentViolations, WeekendEarlyMorningPercentExtremeViolations, WeekendEarlyMorningAvgSpeedVsSpeedLimit, WeekendEarlyMorningEightyFifthSpeedVsSpeedLimit, WeekendEarlyMorningPercentObserved, " +
+                $"WeekdayEarlyMorningAverageSpeed, WeekdayEarlyMorningAverageEightyFifthSpeed, WeekdayEarlyMorningViolations, WeekdayEarlyMorningExtremeViolations, WeekdayEarlyMorningFlow, WeekdayEarlyMorningMinSpeed, WeekdayEarlyMorningMaxSpeed, WeekdayEarlyMorningVariability, WeekdayEarlyMorningPercentViolations, WeekdayEarlyMorningPercentExtremeViolations, WeekdayEarlyMorningAvgSpeedVsSpeedLimit, WeekdayEarlyMorningEightyFifthSpeedVsSpeedLimit, WeekdayEarlyMorningPercentObserved) " +
 
-                $"PercentObserved) " +
                 $"VALUES (" +
                 $"GENERATE_UUID(), " +
                 $"CURRENT_TIMESTAMP(), " +
@@ -1310,6 +1343,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 $"{(item.AllDayPercentExtremeViolations.HasValue ? ((double)item.AllDayPercentExtremeViolations.Value).ToString() : "NULL")}, " +
                 $"{(item.AllDayAvgSpeedVsSpeedLimit.HasValue ? ((double)item.AllDayAvgSpeedVsSpeedLimit.Value).ToString() : "NULL")}, " +
                 $"{(item.AllDayEightyFifthSpeedVsSpeedLimit.HasValue ? ((double)item.AllDayEightyFifthSpeedVsSpeedLimit.Value).ToString() : "NULL")}, " +
+                $"{(item.AllDayPercentObserved.HasValue ? ((double)item.AllDayPercentObserved.Value).ToString() : "NULL")}, " +
 
                 $"{(item.WeekendAllDayAverageSpeed.HasValue ? ((double)item.WeekendAllDayAverageSpeed.Value).ToString() : "NULL")}, " +
                 $"{(item.WeekendAllDayAverageEightyFifthSpeed.HasValue ? ((double)item.WeekendAllDayAverageEightyFifthSpeed.Value).ToString() : "NULL")}, " +
@@ -1323,6 +1357,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 $"{(item.WeekendAllDayPercentExtremeViolations.HasValue ? ((double)item.WeekendAllDayPercentExtremeViolations.Value).ToString() : "NULL")}, " +
                 $"{(item.WeekendAllDayAvgSpeedVsSpeedLimit.HasValue ? ((double)item.WeekendAllDayAvgSpeedVsSpeedLimit.Value).ToString() : "NULL")}, " +
                 $"{(item.WeekendAllDayEightyFifthSpeedVsSpeedLimit.HasValue ? ((double)item.WeekendAllDayEightyFifthSpeedVsSpeedLimit.Value).ToString() : "NULL")}, " +
+                $"{(item.WeekendAllDayPercentObserved.HasValue ? ((double)item.WeekendAllDayPercentObserved.Value).ToString() : "NULL")}, " +
 
                 $"{(item.WeekdayAllDayAverageSpeed.HasValue ? ((double)item.WeekdayAllDayAverageSpeed.Value).ToString() : "NULL")}, " +
                 $"{(item.WeekdayAllDayAverageEightyFifthSpeed.HasValue ? ((double)item.WeekdayAllDayAverageEightyFifthSpeed.Value).ToString() : "NULL")}, " +
@@ -1336,6 +1371,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 $"{(item.WeekdayAllDayPercentExtremeViolations.HasValue ? ((double)item.WeekdayAllDayPercentExtremeViolations.Value).ToString() : "NULL")}, " +
                 $"{(item.WeekdayAllDayAvgSpeedVsSpeedLimit.HasValue ? ((double)item.WeekdayAllDayAvgSpeedVsSpeedLimit.Value).ToString() : "NULL")}, " +
                 $"{(item.WeekdayAllDayEightyFifthSpeedVsSpeedLimit.HasValue ? ((double)item.WeekdayAllDayEightyFifthSpeedVsSpeedLimit.Value).ToString() : "NULL")}, " +
+                $"{(item.WeekdayAllDayPercentObserved.HasValue ? ((double)item.WeekdayAllDayPercentObserved.Value).ToString() : "NULL")}, " +
 
                 $"{(item.OffPeakAverageSpeed.HasValue ? ((int)item.OffPeakAverageSpeed.Value).ToString() : "NULL")}, " +
                 $"{(item.OffPeakAverageEightyFifthSpeed.HasValue ? ((int)item.OffPeakAverageEightyFifthSpeed.Value).ToString() : "NULL")}, " +
@@ -1349,6 +1385,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 $"{(item.OffPeakPercentExtremeViolations.HasValue ? ((double)item.OffPeakPercentExtremeViolations.Value).ToString() : "NULL")}, " +
                 $"{(item.OffPeakAvgSpeedVsSpeedLimit.HasValue ? ((double)item.OffPeakAvgSpeedVsSpeedLimit.Value).ToString() : "NULL")}, " +
                 $"{(item.OffPeakEightyFifthSpeedVsSpeedLimit.HasValue ? ((double)item.OffPeakEightyFifthSpeedVsSpeedLimit.Value).ToString() : "NULL")}, " +
+                $"{(item.OffPeakPercentObserved.HasValue ? ((double)item.OffPeakPercentObserved.Value).ToString() : "NULL")}, " +
 
                 $"{(item.WeekendOffPeakAverageSpeed.HasValue ? ((double)item.WeekendOffPeakAverageSpeed.Value).ToString() : "NULL")}, " +
                 $"{(item.WeekendOffPeakAverageEightyFifthSpeed.HasValue ? ((double)item.WeekendOffPeakAverageEightyFifthSpeed.Value).ToString() : "NULL")}, " +
@@ -1362,6 +1399,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 $"{(item.WeekendOffPeakPercentExtremeViolations.HasValue ? ((double)item.WeekendOffPeakPercentExtremeViolations.Value).ToString() : "NULL")}, " +
                 $"{(item.WeekendOffPeakAvgSpeedVsSpeedLimit.HasValue ? ((double)item.WeekendOffPeakAvgSpeedVsSpeedLimit.Value).ToString() : "NULL")}, " +
                 $"{(item.WeekendOffPeakEightyFifthSpeedVsSpeedLimit.HasValue ? ((double)item.WeekendOffPeakEightyFifthSpeedVsSpeedLimit.Value).ToString() : "NULL")}, " +
+                $"{(item.WeekendOffPeakPercentObserved.HasValue ? ((double)item.WeekendOffPeakPercentObserved.Value).ToString() : "NULL")}, " +
 
                 $"{(item.WeekdayOffPeakAverageSpeed.HasValue ? ((double)item.WeekdayOffPeakAverageSpeed.Value).ToString() : "NULL")}, " +
                 $"{(item.WeekdayOffPeakAverageEightyFifthSpeed.HasValue ? ((double)item.WeekdayOffPeakAverageEightyFifthSpeed.Value).ToString() : "NULL")}, " +
@@ -1375,6 +1413,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 $"{(item.WeekdayOffPeakPercentExtremeViolations.HasValue ? ((double)item.WeekdayOffPeakPercentExtremeViolations.Value).ToString() : "NULL")}, " +
                 $"{(item.WeekdayOffPeakAvgSpeedVsSpeedLimit.HasValue ? ((double)item.WeekdayOffPeakAvgSpeedVsSpeedLimit.Value).ToString() : "NULL")}, " +
                 $"{(item.WeekdayOffPeakEightyFifthSpeedVsSpeedLimit.HasValue ? ((double)item.WeekdayOffPeakEightyFifthSpeedVsSpeedLimit.Value).ToString() : "NULL")}, " +
+                $"{(item.WeekdayOffPeakPercentObserved.HasValue ? ((double)item.WeekdayOffPeakPercentObserved.Value).ToString() : "NULL")}, " +
 
                 $"{(item.AmPeakAverageSpeed.HasValue ? ((int)item.AmPeakAverageSpeed.Value).ToString() : "NULL")}, " +
                 $"{(item.AmPeakAverageEightyFifthSpeed.HasValue ? ((int)item.AmPeakAverageEightyFifthSpeed.Value).ToString() : "NULL")}, " +
@@ -1388,6 +1427,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 $"{(item.AmPeakPercentExtremeViolations.HasValue ? ((double)item.AmPeakPercentExtremeViolations.Value).ToString() : "NULL")}, " +
                 $"{(item.AmPeakAvgSpeedVsSpeedLimit.HasValue ? ((double)item.AmPeakAvgSpeedVsSpeedLimit.Value).ToString() : "NULL")}, " +
                 $"{(item.AmPeakEightyFifthSpeedVsSpeedLimit.HasValue ? ((double)item.AmPeakEightyFifthSpeedVsSpeedLimit.Value).ToString() : "NULL")}, " +
+                $"{(item.AmPeakPercentObserved.HasValue ? ((double)item.AmPeakPercentObserved.Value).ToString() : "NULL")}, " +
 
                 $"{(item.WeekendAmPeakAverageSpeed.HasValue ? ((double)item.WeekendAmPeakAverageSpeed.Value).ToString() : "NULL")}, " +
                 $"{(item.WeekendAmPeakAverageEightyFifthSpeed.HasValue ? ((double)item.WeekendAmPeakAverageEightyFifthSpeed.Value).ToString() : "NULL")}, " +
@@ -1401,6 +1441,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 $"{(item.WeekendAmPeakPercentExtremeViolations.HasValue ? ((double)item.WeekendAmPeakPercentExtremeViolations.Value).ToString() : "NULL")}, " +
                 $"{(item.WeekendAmPeakAvgSpeedVsSpeedLimit.HasValue ? ((double)item.WeekendAmPeakAvgSpeedVsSpeedLimit.Value).ToString() : "NULL")}, " +
                 $"{(item.WeekendAmPeakEightyFifthSpeedVsSpeedLimit.HasValue ? ((double)item.WeekendAmPeakEightyFifthSpeedVsSpeedLimit.Value).ToString() : "NULL")}, " +
+                $"{(item.WeekendAmPeakPercentObserved.HasValue ? ((double)item.WeekendAmPeakPercentObserved.Value).ToString() : "NULL")}, " +
 
                 $"{(item.WeekdayAmPeakAverageSpeed.HasValue ? ((double)item.WeekdayAmPeakAverageSpeed.Value).ToString() : "NULL")}, " +
                 $"{(item.WeekdayAmPeakAverageEightyFifthSpeed.HasValue ? ((double)item.WeekdayAmPeakAverageEightyFifthSpeed.Value).ToString() : "NULL")}, " +
@@ -1414,6 +1455,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 $"{(item.WeekdayAmPeakPercentExtremeViolations.HasValue ? ((double)item.WeekdayAmPeakPercentExtremeViolations.Value).ToString() : "NULL")}, " +
                 $"{(item.WeekdayAmPeakAvgSpeedVsSpeedLimit.HasValue ? ((double)item.WeekdayAmPeakAvgSpeedVsSpeedLimit.Value).ToString() : "NULL")}, " +
                 $"{(item.WeekdayAmPeakEightyFifthSpeedVsSpeedLimit.HasValue ? ((double)item.WeekdayAmPeakEightyFifthSpeedVsSpeedLimit.Value).ToString() : "NULL")}, " +
+                $"{(item.WeekdayAmPeakPercentObserved.HasValue ? ((double)item.WeekdayAmPeakPercentObserved.Value).ToString() : "NULL")}, " +
 
                 $"{(item.PmPeakAverageSpeed.HasValue ? ((int)item.PmPeakAverageSpeed.Value).ToString() : "NULL")}, " +
                 $"{(item.PmPeakAverageEightyFifthSpeed.HasValue ? ((int)item.PmPeakAverageEightyFifthSpeed.Value).ToString() : "NULL")}, " +
@@ -1427,6 +1469,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 $"{(item.PmPeakPercentExtremeViolations.HasValue ? ((double)item.PmPeakPercentExtremeViolations.Value).ToString() : "NULL")}, " +
                 $"{(item.PmPeakAvgSpeedVsSpeedLimit.HasValue ? ((double)item.PmPeakAvgSpeedVsSpeedLimit.Value).ToString() : "NULL")}, " +
                 $"{(item.PmPeakEightyFifthSpeedVsSpeedLimit.HasValue ? ((double)item.PmPeakEightyFifthSpeedVsSpeedLimit.Value).ToString() : "NULL")}, " +
+                $"{(item.PmPeakPercentObserved.HasValue ? ((double)item.PmPeakPercentObserved.Value).ToString() : "NULL")}, " +
 
                 $"{(item.WeekendPmPeakAverageSpeed.HasValue ? ((double)item.WeekendPmPeakAverageSpeed.Value).ToString() : "NULL")}, " +
                 $"{(item.WeekendPmPeakAverageEightyFifthSpeed.HasValue ? ((double)item.WeekendPmPeakAverageEightyFifthSpeed.Value).ToString() : "NULL")}, " +
@@ -1440,6 +1483,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 $"{(item.WeekendPmPeakPercentExtremeViolations.HasValue ? ((double)item.WeekendPmPeakPercentExtremeViolations.Value).ToString() : "NULL")}, " +
                 $"{(item.WeekendPmPeakAvgSpeedVsSpeedLimit.HasValue ? ((double)item.WeekendPmPeakAvgSpeedVsSpeedLimit.Value).ToString() : "NULL")}, " +
                 $"{(item.WeekendPmPeakEightyFifthSpeedVsSpeedLimit.HasValue ? ((double)item.WeekendPmPeakEightyFifthSpeedVsSpeedLimit.Value).ToString() : "NULL")}, " +
+                $"{(item.WeekendPmPeakPercentObserved.HasValue ? ((double)item.WeekendPmPeakPercentObserved.Value).ToString() : "NULL")}, " +
 
                 $"{(item.WeekdayPmPeakAverageSpeed.HasValue ? ((double)item.WeekdayPmPeakAverageSpeed.Value).ToString() : "NULL")}, " +
                 $"{(item.WeekdayPmPeakAverageEightyFifthSpeed.HasValue ? ((double)item.WeekdayPmPeakAverageEightyFifthSpeed.Value).ToString() : "NULL")}, " +
@@ -1453,6 +1497,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 $"{(item.WeekdayPmPeakPercentExtremeViolations.HasValue ? ((double)item.WeekdayPmPeakPercentExtremeViolations.Value).ToString() : "NULL")}, " +
                 $"{(item.WeekdayPmPeakAvgSpeedVsSpeedLimit.HasValue ? ((double)item.WeekdayPmPeakAvgSpeedVsSpeedLimit.Value).ToString() : "NULL")}, " +
                 $"{(item.WeekdayPmPeakEightyFifthSpeedVsSpeedLimit.HasValue ? ((double)item.WeekdayPmPeakEightyFifthSpeedVsSpeedLimit.Value).ToString() : "NULL")}, " +
+                $"{(item.WeekdayPmPeakPercentObserved.HasValue ? ((double)item.WeekdayPmPeakPercentObserved.Value).ToString() : "NULL")}, " +
 
                 $"{(item.MidDayAverageSpeed.HasValue ? ((int)item.MidDayAverageSpeed.Value).ToString() : "NULL")}, " +
                 $"{(item.MidDayAverageEightyFifthSpeed.HasValue ? ((int)item.MidDayAverageEightyFifthSpeed.Value).ToString() : "NULL")}, " +
@@ -1466,6 +1511,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 $"{(item.MidDayPercentExtremeViolations.HasValue ? ((double)item.MidDayPercentExtremeViolations.Value).ToString() : "NULL")}, " +
                 $"{(item.MidDayAvgSpeedVsSpeedLimit.HasValue ? ((double)item.MidDayAvgSpeedVsSpeedLimit.Value).ToString() : "NULL")}, " +
                 $"{(item.MidDayEightyFifthSpeedVsSpeedLimit.HasValue ? ((double)item.MidDayEightyFifthSpeedVsSpeedLimit.Value).ToString() : "NULL")}, " +
+                $"{(item.MidDayPercentObserved.HasValue ? ((double)item.MidDayPercentObserved.Value).ToString() : "NULL")}, " +
 
                 $"{(item.WeekendMidDayAverageSpeed.HasValue ? ((double)item.WeekendMidDayAverageSpeed.Value).ToString() : "NULL")}, " +
                 $"{(item.WeekendMidDayAverageEightyFifthSpeed.HasValue ? ((double)item.WeekendMidDayAverageEightyFifthSpeed.Value).ToString() : "NULL")}, " +
@@ -1479,6 +1525,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 $"{(item.WeekendMidDayPercentExtremeViolations.HasValue ? ((double)item.WeekendMidDayPercentExtremeViolations.Value).ToString() : "NULL")}, " +
                 $"{(item.WeekendMidDayAvgSpeedVsSpeedLimit.HasValue ? ((double)item.WeekendMidDayAvgSpeedVsSpeedLimit.Value).ToString() : "NULL")}, " +
                 $"{(item.WeekendMidDayEightyFifthSpeedVsSpeedLimit.HasValue ? ((double)item.WeekendMidDayEightyFifthSpeedVsSpeedLimit.Value).ToString() : "NULL")}, " +
+                $"{(item.WeekendMidDayPercentObserved.HasValue ? ((double)item.WeekendMidDayPercentObserved.Value).ToString() : "NULL")}, " +
 
                 $"{(item.WeekdayMidDayAverageSpeed.HasValue ? ((double)item.WeekdayMidDayAverageSpeed.Value).ToString() : "NULL")}, " +
                 $"{(item.WeekdayMidDayAverageEightyFifthSpeed.HasValue ? ((double)item.WeekdayMidDayAverageEightyFifthSpeed.Value).ToString() : "NULL")}, " +
@@ -1492,6 +1539,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 $"{(item.WeekdayMidDayPercentExtremeViolations.HasValue ? ((double)item.WeekdayMidDayPercentExtremeViolations.Value).ToString() : "NULL")}, " +
                 $"{(item.WeekdayMidDayAvgSpeedVsSpeedLimit.HasValue ? ((double)item.WeekdayMidDayAvgSpeedVsSpeedLimit.Value).ToString() : "NULL")}, " +
                 $"{(item.WeekdayMidDayEightyFifthSpeedVsSpeedLimit.HasValue ? ((double)item.WeekdayMidDayEightyFifthSpeedVsSpeedLimit.Value).ToString() : "NULL")}, " +
+                $"{(item.WeekdayMidDayPercentObserved.HasValue ? ((double)item.WeekdayMidDayPercentObserved.Value).ToString() : "NULL")}, " +
 
                 $"{(item.EveningAverageSpeed.HasValue ? ((int)item.EveningAverageSpeed.Value).ToString() : "NULL")}, " +
                 $"{(item.EveningAverageEightyFifthSpeed.HasValue ? ((int)item.EveningAverageEightyFifthSpeed.Value).ToString() : "NULL")}, " +
@@ -1505,6 +1553,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 $"{(item.EveningPercentExtremeViolations.HasValue ? ((double)item.EveningPercentExtremeViolations.Value).ToString() : "NULL")}, " +
                 $"{(item.EveningAvgSpeedVsSpeedLimit.HasValue ? ((double)item.EveningAvgSpeedVsSpeedLimit.Value).ToString() : "NULL")}, " +
                 $"{(item.EveningEightyFifthSpeedVsSpeedLimit.HasValue ? ((double)item.EveningEightyFifthSpeedVsSpeedLimit.Value).ToString() : "NULL")}, " +
+                $"{(item.EveningPercentObserved.HasValue ? ((double)item.EveningPercentObserved.Value).ToString() : "NULL")}, " +
 
                 $"{(item.WeekendEveningAverageSpeed.HasValue ? ((double)item.WeekendEveningAverageSpeed.Value).ToString() : "NULL")}, " +
                 $"{(item.WeekendEveningAverageEightyFifthSpeed.HasValue ? ((double)item.WeekendEveningAverageEightyFifthSpeed.Value).ToString() : "NULL")}, " +
@@ -1518,6 +1567,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 $"{(item.WeekendEveningPercentExtremeViolations.HasValue ? ((double)item.WeekendEveningPercentExtremeViolations.Value).ToString() : "NULL")}, " +
                 $"{(item.WeekendEveningAvgSpeedVsSpeedLimit.HasValue ? ((double)item.WeekendEveningAvgSpeedVsSpeedLimit.Value).ToString() : "NULL")}, " +
                 $"{(item.WeekendEveningEightyFifthSpeedVsSpeedLimit.HasValue ? ((double)item.WeekendEveningEightyFifthSpeedVsSpeedLimit.Value).ToString() : "NULL")}, " +
+                $"{(item.WeekendEveningPercentObserved.HasValue ? ((double)item.WeekendEveningPercentObserved.Value).ToString() : "NULL")}, " +
 
                 $"{(item.WeekdayEveningAverageSpeed.HasValue ? ((double)item.WeekdayEveningAverageSpeed.Value).ToString() : "NULL")}, " +
                 $"{(item.WeekdayEveningAverageEightyFifthSpeed.HasValue ? ((double)item.WeekdayEveningAverageEightyFifthSpeed.Value).ToString() : "NULL")}, " +
@@ -1531,6 +1581,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 $"{(item.WeekdayEveningPercentExtremeViolations.HasValue ? ((double)item.WeekdayEveningPercentExtremeViolations.Value).ToString() : "NULL")}, " +
                 $"{(item.WeekdayEveningAvgSpeedVsSpeedLimit.HasValue ? ((double)item.WeekdayEveningAvgSpeedVsSpeedLimit.Value).ToString() : "NULL")}, " +
                 $"{(item.WeekdayEveningEightyFifthSpeedVsSpeedLimit.HasValue ? ((double)item.WeekdayEveningEightyFifthSpeedVsSpeedLimit.Value).ToString() : "NULL")}, " +
+                $"{(item.WeekdayEveningPercentObserved.HasValue ? ((double)item.WeekdayEveningPercentObserved.Value).ToString() : "NULL")}, " +
 
                 $"{(item.EarlyMorningAverageSpeed.HasValue ? ((int)item.EarlyMorningAverageSpeed.Value).ToString() : "NULL")}, " +
                 $"{(item.EarlyMorningAverageEightyFifthSpeed.HasValue ? ((int)item.EarlyMorningAverageEightyFifthSpeed.Value).ToString() : "NULL")}, " +
@@ -1544,6 +1595,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 $"{(item.EarlyMorningPercentExtremeViolations.HasValue ? ((double)item.EarlyMorningPercentExtremeViolations.Value).ToString() : "NULL")}, " +
                 $"{(item.EarlyMorningAvgSpeedVsSpeedLimit.HasValue ? ((double)item.EarlyMorningAvgSpeedVsSpeedLimit.Value).ToString() : "NULL")}, " +
                 $"{(item.EarlyMorningEightyFifthSpeedVsSpeedLimit.HasValue ? ((double)item.EarlyMorningEightyFifthSpeedVsSpeedLimit.Value).ToString() : "NULL")}, " +
+                $"{(item.EarlyMorningPercentObserved.HasValue ? ((double)item.EarlyMorningPercentObserved.Value).ToString() : "NULL")}, " +
 
                 $"{(item.WeekendEarlyMorningAverageSpeed.HasValue ? ((double)item.WeekendEarlyMorningAverageSpeed.Value).ToString() : "NULL")}, " +
                 $"{(item.WeekendEarlyMorningAverageEightyFifthSpeed.HasValue ? ((double)item.WeekendEarlyMorningAverageEightyFifthSpeed.Value).ToString() : "NULL")}, " +
@@ -1557,6 +1609,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 $"{(item.WeekendEarlyMorningPercentExtremeViolations.HasValue ? ((double)item.WeekendEarlyMorningPercentExtremeViolations.Value).ToString() : "NULL")}, " +
                 $"{(item.WeekendEarlyMorningAvgSpeedVsSpeedLimit.HasValue ? ((double)item.WeekendEarlyMorningAvgSpeedVsSpeedLimit.Value).ToString() : "NULL")}, " +
                 $"{(item.WeekendEarlyMorningEightyFifthSpeedVsSpeedLimit.HasValue ? ((double)item.WeekendEarlyMorningEightyFifthSpeedVsSpeedLimit.Value).ToString() : "NULL")}, " +
+                $"{(item.WeekendEarlyMorningPercentObserved.HasValue ? ((double)item.WeekendEarlyMorningPercentObserved.Value).ToString() : "NULL")}, " +
 
                 $"{(item.WeekdayEarlyMorningAverageSpeed.HasValue ? ((double)item.WeekdayEarlyMorningAverageSpeed.Value).ToString() : "NULL")}, " +
                 $"{(item.WeekdayEarlyMorningAverageEightyFifthSpeed.HasValue ? ((double)item.WeekdayEarlyMorningAverageEightyFifthSpeed.Value).ToString() : "NULL")}, " +
@@ -1570,8 +1623,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 $"{(item.WeekdayEarlyMorningPercentExtremeViolations.HasValue ? ((double)item.WeekdayEarlyMorningPercentExtremeViolations.Value).ToString() : "NULL")}, " +
                 $"{(item.WeekdayEarlyMorningAvgSpeedVsSpeedLimit.HasValue ? ((double)item.WeekdayEarlyMorningAvgSpeedVsSpeedLimit.Value).ToString() : "NULL")}, " +
                 $"{(item.WeekdayEarlyMorningEightyFifthSpeedVsSpeedLimit.HasValue ? ((double)item.WeekdayEarlyMorningEightyFifthSpeedVsSpeedLimit.Value).ToString() : "NULL")}, " +
-
-            $"{item.PercentObserved})";
+                $"{(item.WeekdayEarlyMorningPercentObserved.HasValue ? ((double)item.WeekdayEarlyMorningPercentObserved.Value).ToString() : "NULL")}";
         }
 
         private string updateQuery(MonthlyAggregation item)
@@ -1644,6 +1696,10 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             {
                 queryBuilder.Append($"AllDayEightyFifthSpeedVsSpeedLimit = {item.AllDayEightyFifthSpeedVsSpeedLimit.Value}, ");
             }
+            if (item.AllDayPercentObserved.HasValue)
+            {
+                queryBuilder.Append($"AllDayPercentObserved = {item.AllDayPercentObserved.Value}, ");
+            }
 
             //////WEEKEND//////
             if (item.WeekendAllDayAverageSpeed.HasValue)
@@ -1703,6 +1759,10 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             if (item.WeekendAllDayEightyFifthSpeedVsSpeedLimit.HasValue)
             {
                 queryBuilder.Append($"WeekendAllDayEightyFifthSpeedVsSpeedLimit = {item.WeekendAllDayEightyFifthSpeedVsSpeedLimit.Value}, ");
+            }
+            if (item.WeekendAllDayPercentObserved.HasValue)
+            {
+                queryBuilder.Append($"WeekendAllDayPercentObserved = {item.WeekendAllDayPercentObserved.Value}, ");
             }
 
             //////WEEKDAY//////
@@ -1764,6 +1824,10 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             if (item.WeekdayAllDayEightyFifthSpeedVsSpeedLimit.HasValue)
             {
                 queryBuilder.Append($"WeekdayAllDayEightyFifthSpeedVsSpeedLimit = {item.WeekdayAllDayEightyFifthSpeedVsSpeedLimit.Value}, ");
+            }
+            if (item.WeekdayAllDayPercentObserved.HasValue)
+            {
+                queryBuilder.Append($"WeekdayAllDayPercentObserved = {item.WeekdayAllDayPercentObserved.Value}, ");
             }
 
             ////////////////////////
@@ -1829,6 +1893,10 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             {
                 queryBuilder.Append($"OffPeakEightyFifthSpeedVsSpeedLimit = {item.OffPeakEightyFifthSpeedVsSpeedLimit.Value}, ");
             }
+            if (item.OffPeakPercentObserved.HasValue)
+            {
+                queryBuilder.Append($"OffPeakPercentObserved = {item.OffPeakPercentObserved.Value}, ");
+            }
 
             //////WEEKEND//////
             if (item.WeekendOffPeakAverageSpeed.HasValue)
@@ -1889,6 +1957,10 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             {
                 queryBuilder.Append($"WeekendOffPeakEightyFifthSpeedVsSpeedLimit = {item.WeekendOffPeakEightyFifthSpeedVsSpeedLimit.Value}, ");
             }
+            if (item.WeekendOffPeakPercentObserved.HasValue)
+            {
+                queryBuilder.Append($"WeekendOffPeakPercentObserved = {item.WeekendOffPeakPercentObserved.Value}, ");
+            }
 
             //////WEEKDAY//////
             if (item.WeekdayOffPeakAverageSpeed.HasValue)
@@ -1948,6 +2020,10 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             if (item.WeekdayOffPeakEightyFifthSpeedVsSpeedLimit.HasValue)
             {
                 queryBuilder.Append($"WeekdayOffPeakEightyFifthSpeedVsSpeedLimit = {item.WeekdayOffPeakEightyFifthSpeedVsSpeedLimit.Value}, ");
+            }
+            if (item.WeekdayOffPeakPercentObserved.HasValue)
+            {
+                queryBuilder.Append($"WeekdayOffPeakPercentObserved = {item.WeekdayOffPeakPercentObserved.Value}, ");
             }
 
 
@@ -2014,6 +2090,10 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             {
                 queryBuilder.Append($"AmPeakEightyFifthSpeedVsSpeedLimit = {item.AmPeakEightyFifthSpeedVsSpeedLimit.Value}, ");
             }
+            if (item.AmPeakPercentObserved.HasValue)
+            {
+                queryBuilder.Append($"AmPeakPercentObserved = {item.AmPeakPercentObserved.Value}, ");
+            }
 
             //////WEEKEND//////
             if (item.WeekendAmPeakAverageSpeed.HasValue)
@@ -2073,6 +2153,10 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             if (item.WeekendAmPeakEightyFifthSpeedVsSpeedLimit.HasValue)
             {
                 queryBuilder.Append($"WeekendAmPeakEightyFifthSpeedVsSpeedLimit = {item.WeekendAmPeakEightyFifthSpeedVsSpeedLimit.Value}, ");
+            }
+            if (item.WeekendAmPeakPercentObserved.HasValue)
+            {
+                queryBuilder.Append($"WeekendAmPeakPercentObserved = {item.WeekendAmPeakPercentObserved.Value}, ");
             }
 
             //////WEEKDAY//////
@@ -2134,7 +2218,10 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             {
                 queryBuilder.Append($"WeekdayAmPeakEightyFifthSpeedVsSpeedLimit = {item.WeekdayAmPeakEightyFifthSpeedVsSpeedLimit.Value}, ");
             }
-
+            if (item.WeekdayAmPeakPercentObserved.HasValue)
+            {
+                queryBuilder.Append($"WeekdayAmPeakPercentObserved = {item.WeekdayAmPeakPercentObserved.Value}, ");
+            }
 
             ////////////////////////
             ///////PM PEAK ////////
@@ -2199,6 +2286,10 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             {
                 queryBuilder.Append($"PmPeakEightyFifthSpeedVsSpeedLimit = {item.PmPeakEightyFifthSpeedVsSpeedLimit.Value}, ");
             }
+            if (item.PmPeakPercentObserved.HasValue)
+            {
+                queryBuilder.Append($"PmPeakPercentObserved = {item.PmPeakPercentObserved.Value}, ");
+            }
 
             //////WEEKEND//////
             if (item.WeekendPmPeakAverageSpeed.HasValue)
@@ -2259,6 +2350,10 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             {
                 queryBuilder.Append($"WeekendPmPeakEightyFifthSpeedVsSpeedLimit = {item.WeekendPmPeakEightyFifthSpeedVsSpeedLimit.Value}, ");
             }
+            if (item.WeekendPmPeakPercentObserved.HasValue)
+            {
+                queryBuilder.Append($"WeekendPmPeakPercentObserved = {item.WeekendPmPeakPercentObserved.Value}, ");
+            }
 
             //////WEEKDAY//////
             if (item.WeekdayPmPeakAverageSpeed.HasValue)
@@ -2318,6 +2413,10 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             if (item.WeekdayPmPeakEightyFifthSpeedVsSpeedLimit.HasValue)
             {
                 queryBuilder.Append($"WeekdayPmPeakEightyFifthSpeedVsSpeedLimit = {item.WeekdayPmPeakEightyFifthSpeedVsSpeedLimit.Value}, ");
+            }
+            if (item.WeekdayPmPeakPercentObserved.HasValue)
+            {
+                queryBuilder.Append($"WeekdayPmPeakPercentObserved = {item.WeekdayPmPeakPercentObserved.Value}, ");
             }
 
 
@@ -2384,6 +2483,10 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             {
                 queryBuilder.Append($"MidDayEightyFifthSpeedVsSpeedLimit = {item.MidDayEightyFifthSpeedVsSpeedLimit.Value}, ");
             }
+            if (item.MidDayPercentObserved.HasValue)
+            {
+                queryBuilder.Append($"MidDayPercentObserved = {item.MidDayPercentObserved.Value}, ");
+            }
 
             //////WEEKEND//////
             if (item.WeekendMidDayAverageSpeed.HasValue)
@@ -2444,6 +2547,10 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             {
                 queryBuilder.Append($"WeekendMidDayEightyFifthSpeedVsSpeedLimit = {item.WeekendMidDayEightyFifthSpeedVsSpeedLimit.Value}, ");
             }
+            if (item.WeekendMidDayPercentObserved.HasValue)
+            {
+                queryBuilder.Append($"WeekendMidDayPercentObserved = {item.WeekendMidDayPercentObserved.Value}, ");
+            }
 
             //////WEEKDAY//////
             if (item.WeekdayMidDayAverageSpeed.HasValue)
@@ -2503,6 +2610,10 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             if (item.WeekdayMidDayEightyFifthSpeedVsSpeedLimit.HasValue)
             {
                 queryBuilder.Append($"WeekdayMidDayEightyFifthSpeedVsSpeedLimit = {item.WeekdayMidDayEightyFifthSpeedVsSpeedLimit.Value}, ");
+            }
+            if (item.WeekdayMidDayPercentObserved.HasValue)
+            {
+                queryBuilder.Append($"WeekdayMidDayPercentObserved = {item.WeekdayMidDayPercentObserved.Value}, ");
             }
 
 
@@ -2569,6 +2680,10 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             {
                 queryBuilder.Append($"EveningEightyFifthSpeedVsSpeedLimit = {item.EveningEightyFifthSpeedVsSpeedLimit.Value}, ");
             }
+            if (item.EveningPercentObserved.HasValue)
+            {
+                queryBuilder.Append($"EveningPercentObserved = {item.EveningPercentObserved.Value}, ");
+            }
 
             //////WEEKEND//////
             if (item.WeekendEveningAverageSpeed.HasValue)
@@ -2629,6 +2744,10 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             {
                 queryBuilder.Append($"WeekendEveningEightyFifthSpeedVsSpeedLimit = {item.WeekendEveningEightyFifthSpeedVsSpeedLimit.Value}, ");
             }
+            if (item.WeekendEveningPercentObserved.HasValue)
+            {
+                queryBuilder.Append($"WeekendEveningPercentObserved = {item.WeekendEveningPercentObserved.Value}, ");
+            }
 
             //////WEEKDAY//////
             if (item.WeekdayEveningAverageSpeed.HasValue)
@@ -2688,6 +2807,10 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             if (item.WeekdayEveningEightyFifthSpeedVsSpeedLimit.HasValue)
             {
                 queryBuilder.Append($"WeekdayEveningEightyFifthSpeedVsSpeedLimit = {item.WeekdayEveningEightyFifthSpeedVsSpeedLimit.Value}, ");
+            }
+            if (item.WeekdayEveningPercentObserved.HasValue)
+            {
+                queryBuilder.Append($"WeekdayEveningPercentObserved = {item.WeekdayEveningPercentObserved.Value}, ");
             }
 
 
@@ -2754,6 +2877,10 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             {
                 queryBuilder.Append($"EarlyMorningEightyFifthSpeedVsSpeedLimit = {item.EarlyMorningEightyFifthSpeedVsSpeedLimit.Value}, ");
             }
+            if (item.EarlyMorningPercentObserved.HasValue)
+            {
+                queryBuilder.Append($"EarlyMorningPercentObserved = {item.EarlyMorningPercentObserved.Value}, ");
+            }
 
             //////WEEKEND//////
             if (item.WeekendEarlyMorningAverageSpeed.HasValue)
@@ -2813,6 +2940,10 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             if (item.WeekendEarlyMorningEightyFifthSpeedVsSpeedLimit.HasValue)
             {
                 queryBuilder.Append($"WeekendEarlyMorningEightyFifthSpeedVsSpeedLimit = {item.WeekendEarlyMorningEightyFifthSpeedVsSpeedLimit.Value}, ");
+            }
+            if (item.WeekendEarlyMorningPercentObserved.HasValue)
+            {
+                queryBuilder.Append($"WeekendEarlyMorningPercentObserved = {item.WeekendEarlyMorningPercentObserved.Value}, ");
             }
 
             //////WEEKDAY//////
@@ -2874,13 +3005,10 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             {
                 queryBuilder.Append($"WeekdayEarlyMorningEightyFifthSpeedVsSpeedLimit = {item.WeekdayEarlyMorningEightyFifthSpeedVsSpeedLimit.Value}, ");
             }
-
-
-            ////////////////////////////////////
-            ///////// PERCENT OBSERVED /////////
-            ////////////////////////////////////
-
-            queryBuilder.Append($"PercentObserved = {item.PercentObserved}");
+            if (item.WeekdayEarlyMorningPercentObserved.HasValue)
+            {
+                queryBuilder.Append($"WeekdayEarlyMorningPercentObserved = {item.WeekdayEarlyMorningPercentObserved.Value}, ");
+            }
 
             // Remove the last comma and space if present
             if (queryBuilder[queryBuilder.Length - 2] == ',')
@@ -2899,6 +3027,238 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
 
             var query = queryBuilder.ToString();
             return query;
+        }
+
+        private string SelectionQueryWithFilter(FilteringTimePeriod timePeriod, MonthAggClassification dayType)
+        {
+            var queryString = $"Id, CreatedDate, BinStartTime, SegmentId, SourceId, ";
+            switch (timePeriod)
+            {
+                case FilteringTimePeriod.AllDay:
+                    switch (dayType)
+                    {
+                        case MonthAggClassification.Total:
+                            return queryString + $"AllDayAverageSpeed as AverageSpeed, AllDayAverageEightyFifthSpeed as AverageEightyFifthSpeed, " +
+                                $"AllDayViolations as Violations, AllDayExtremeViolations as ExtremeViolations, AllDayFlow as Flow, " +
+                                $"AllDayMinSpeed as MinSpeed, AllDayMaxSpeed as MaxSpeed, AllDayVariability as Variability, " +
+                                $"AllDayPercentViolations as PercentViolations, AllDayPercentExtremeViolations as PercentExtremeViolations, AllDayAvgSpeedVsSpeedLimit as AvgSpeedVsSpeedLimit, " +
+                                $"AllDayEightyFifthSpeedVsSpeedLimit as EightyFifthSpeedVsSpeedLimit, AllDayPercentObserved as PercentObserved ";
+                        case MonthAggClassification.Weekend:
+                            return queryString + $"WeekendAllDayAverageSpeed as AverageSpeed, WeekendAllDayAverageEightyFifthSpeed as AverageEightyFifthSpeed, " +
+                                $"WeekendAllDayViolations as Violations, WeekendAllDayExtremeViolations as ExtremeViolations, WeekendAllDayFlow as Flow, " +
+                                $"WeekendAllDayMinSpeed as MinSpeed, WeekendAllDayMaxSpeed as MaxSpeed, WeekendAllDayVariability as Variability, " +
+                                $"WeekendAllDayPercentViolations as PercentViolations, WeekendAllDayPercentExtremeViolations as PercentExtremeViolations, WeekendAllDayAvgSpeedVsSpeedLimit as AvgSpeedVsSpeedLimit, " +
+                                $"WeekendAllDayEightyFifthSpeedVsSpeedLimit as EightyFifthSpeedVsSpeedLimit, WeekendAllDayPercentObserved as PercentObserved ";
+                        case MonthAggClassification.Weekday:
+                            return queryString + $"WeekdayAllDayAverageSpeed as AverageSpeed, WeekdayAllDayAverageEightyFifthSpeed as AverageEightyFifthSpeed, " +
+                                $"WeekdayAllDayViolations as Violations, WeekdayAllDayExtremeViolations as ExtremeViolations, WeekdayAllDayFlow as Flow, " +
+                                $"WeekdayAllDayMinSpeed as MinSpeed, WeekdayAllDayMaxSpeed as MaxSpeed, WeekdayAllDayVariability as Variability, " +
+                                $"WeekdayAllDayPercentViolations as PercentViolations, WeekdayAllDayPercentExtremeViolations as PercentExtremeViolations, WeekdayAllDayAvgSpeedVsSpeedLimit as AvgSpeedVsSpeedLimit, " +
+                                $"WeekdayAllDayEightyFifthSpeedVsSpeedLimit as EightyFifthSpeedVsSpeedLimit, WeekdayAllDayPercentObserved as PercentObserved ";
+                        default:
+                            throw new ArgumentOutOfRangeException(nameof(dayType), dayType, null);
+                    }
+
+                case FilteringTimePeriod.OffPeak:
+                    switch (dayType)
+                    {
+                        case MonthAggClassification.Total:
+                            return queryString + $"OffPeakAverageSpeed as AverageSpeed, OffPeakAverageEightyFifthSpeed as AverageEightyFifthSpeed, " +
+                                $"OffPeakViolations as Violations, OffPeakExtremeViolations as ExtremeViolations, OffPeakFlow as Flow, " +
+                                $"OffPeakMinSpeed as MinSpeed, OffPeakMaxSpeed as MaxSpeed, OffPeakVariability as Variability, " +
+                                $"OffPeakPercentViolations as PercentViolations, OffPeakPercentExtremeViolations as PercentExtremeViolations, OffPeakAvgSpeedVsSpeedLimit as AvgSpeedVsSpeedLimit, " +
+                                $"OffPeakEightyFifthSpeedVsSpeedLimit as EightyFifthSpeedVsSpeedLimit, OffPeakPercentObserved as PercentObserved ";
+                        case MonthAggClassification.Weekend:
+                            return queryString + $"WeekendOffPeakAverageSpeed as AverageSpeed, WeekendOffPeakAverageEightyFifthSpeed as AverageEightyFifthSpeed, " +
+                                $"WeekendOffPeakViolations as Violations, WeekendOffPeakExtremeViolations as ExtremeViolations, WeekendOffPeakFlow as Flow, " +
+                                $"WeekendOffPeakMinSpeed as MinSpeed, WeekendOffPeakMaxSpeed as MaxSpeed, WeekendOffPeakVariability as Variability, " +
+                                $"WeekendOffPeakPercentViolations as PercentViolations, WeekendOffPeakPercentExtremeViolations as PercentExtremeViolations, WeekendOffPeakAvgSpeedVsSpeedLimi as AvgSpeedVsSpeedLimitt, " +
+                                $"WeekendOffPeakEightyFifthSpeedVsSpeedLimit as EightyFifthSpeedVsSpeedLimit, WeekendOffPeakPercentObserved as PercentObserved ";
+                        case MonthAggClassification.Weekday:
+                            return queryString + $"WeekdayOffPeakAverageSpeed as AverageSpeed, WeekdayOffPeakAverageEightyFifthSpeed as AverageEightyFifthSpeed, " +
+                                $"WeekdayOffPeakViolations as Violations, WeekdayOffPeakExtremeViolations as ExtremeViolations, WeekdayOffPeakFlow as Flow, " +
+                                $"WeekdayOffPeakMinSpeed as MinSpeed, WeekdayOffPeakMaxSpeed as MaxSpeed, WeekdayOffPeakVariability as Variability, " +
+                                $"WeekdayOffPeakPercentViolations as PercentViolations, WeekdayOffPeakPercentExtremeViolations as PercentExtremeViolations, WeekdayOffPeakAvgSpeedVsSpeedLimit as AvgSpeedVsSpeedLimit, " +
+                                $"WeekdayOffPeakEightyFifthSpeedVsSpeedLimit as EightyFifthSpeedVsSpeedLimit, WeekdayOffPeakPercentObserved as PercentObserved ";
+                        default:
+                            throw new ArgumentOutOfRangeException(nameof(dayType), dayType, null);
+                    }
+
+                case FilteringTimePeriod.AmPeak:
+                    switch (dayType)
+                    {
+                        case MonthAggClassification.Total:
+                            return queryString + $"AmPeakAverageSpeed as AverageSpeed, AmPeakAverageEightyFifthSpeed as AverageEightyFifthSpeed, " +
+                                $"AmPeakViolations as Violations, AmPeakExtremeViolations as ExtremeViolations, AmPeakFlow as Flow, " +
+                                $"AmPeakMinSpeed as MinSpeed, AmPeakMaxSpeed as MaxSpeed, AmPeakVariability as Variability, " +
+                                $"AmPeakPercentViolations as PercentViolations, AmPeakPercentExtremeViolations as PercentExtremeViolations, AmPeakAvgSpeedVsSpeedLimit as AvgSpeedVsSpeedLimit, " +
+                                $"AmPeakEightyFifthSpeedVsSpeedLimit as EightyFifthSpeedVsSpeedLimit, AmPeakPercentObserved as PercentObserved ";
+                        case MonthAggClassification.Weekend:
+                            return queryString + $"WeekendAmPeakAverageSpeed as AverageSpeed, WeekendAmPeakAverageEightyFifthSpeed as AverageEightyFifthSpeed, " +
+                                $"WeekendAmPeakViolations as Violations, WeekendAmPeakExtremeViolations as ExtremeViolations, WeekendAmPeakFlow as Flow, " +
+                                $"WeekendAmPeakMinSpeed as MinSpeed, WeekendAmPeakMaxSpeed as MaxSpeed, WeekendAmPeakVariability as Variability, " +
+                                $"WeekendAmPeakPercentViolations as PercentViolations, WeekendAmPeakPercentExtremeViolations as PercentExtremeViolations, WeekendAmPeakAvgSpeedVsSpeedLimit as AvgSpeedVsSpeedLimit, " +
+                                $"WeekendAmPeakEightyFifthSpeedVsSpeedLimit as EightyFifthSpeedVsSpeedLimit, WeekendAmPeakPercentObserved as PercentObserved ";
+                        case MonthAggClassification.Weekday:
+                            return queryString + $"WeekdayAmPeakAverageSpeed as AverageSpeed, WeekdayAmPeakAverageEightyFifthSpeed as AverageEightyFifthSpeed, " +
+                                $"WeekdayAmPeakViolations as Violations, WeekdayAmPeakExtremeViolations as ExtremeViolations, WeekdayAmPeakFlow as Flow, " +
+                                $"WeekdayAmPeakMinSpeed as MinSpeed, WeekdayAmPeakMaxSpeed as MaxSpeed, WeekdayAmPeakVariability as Variability, " +
+                                $"WeekdayAmPeakPercentViolations as PercentViolations, WeekdayAmPeakPercentExtremeViolations as PercentExtremeViolations, WeekdayAmPeakAvgSpeedVsSpeedLimit as AvgSpeedVsSpeedLimit, " +
+                                $"WeekdayAmPeakEightyFifthSpeedVsSpeedLimit as EightyFifthSpeedVsSpeedLimit, WeekdayAmPeakPercentObserved as PercentObserved ";
+                        default:
+                            throw new ArgumentOutOfRangeException(nameof(dayType), dayType, null);
+                    }
+
+                case FilteringTimePeriod.PmPeak:
+                    switch (dayType)
+                    {
+                        case MonthAggClassification.Total:
+                            return queryString + $"PmPeakAverageSpeed as AverageSpeed, PmPeakAverageEightyFifthSpeed as AverageEightyFifthSpeed, " +
+                                $"PmPeakViolations as Violations, PmPeakExtremeViolations as ExtremeViolations, PmPeakFlow as Flow, " +
+                                $"PmPeakMinSpeed as MinSpeed, PmPeakMaxSpeed as MaxSpeed, PmPeakVariability as Variability, " +
+                                $"PmPeakPercentViolations as PercentViolations, PmPeakPercentExtremeViolations as PercentExtremeViolations, PmPeakAvgSpeedVsSpeedLimit as AvgSpeedVsSpeedLimit, " +
+                                $"PmPeakEightyFifthSpeedVsSpeedLimit as EightyFifthSpeedVsSpeedLimit, PmPeakPercentObserved as PercentObserved ";
+                        case MonthAggClassification.Weekend:
+                            return queryString + $"WeekendPmPeakAverageSpeed as AverageSpeed, WeekendPmPeakAverageEightyFifthSpeed as AverageEightyFifthSpeed, " +
+                                $"WeekendPmPeakViolations as Violations, WeekendPmPeakExtremeViolations as ExtremeViolations, WeekendPmPeakFlow as Flow, " +
+                                $"WeekendPmPeakMinSpeed as MinSpeed, WeekendPmPeakMaxSpeed as MaxSpeed, WeekendPmPeakVariability as Variability, " +
+                                $"WeekendPmPeakPercentViolations as PercentViolations, WeekendPmPeakPercentExtremeViolations as PercentExtremeViolations, WeekendPmPeakAvgSpeedVsSpeedLimit as AvgSpeedVsSpeedLimit, " +
+                                $"WeekendPmPeakEightyFifthSpeedVsSpeedLimit as EightyFifthSpeedVsSpeedLimit, WeekendPmPeakPercentObserved as PercentObserved ";
+                        case MonthAggClassification.Weekday:
+                            return queryString + $"WeekdayPmPeakAverageSpeed as AverageSpeed, WeekdayPmPeakAverageEightyFifthSpeed as AverageEightyFifthSpeed, " +
+                                $"WeekdayPmPeakViolations as Violations, WeekdayPmPeakExtremeViolations as ExtremeViolations, WeekdayPmPeakFlow as Flow, " +
+                                $"WeekdayPmPeakMinSpeed as MinSpeed, WeekdayPmPeakMaxSpeed as MaxSpeed, WeekdayPmPeakVariability as Variability, " +
+                                $"WeekdayPmPeakPercentViolations as PercentViolations, WeekdayPmPeakPercentExtremeViolations as PercentExtremeViolations, WeekdayPmPeakAvgSpeedVsSpeedLimit as AvgSpeedVsSpeedLimit, " +
+                                $"WeekdayPmPeakEightyFifthSpeedVsSpeedLimit as EightyFifthSpeedVsSpeedLimit, WeekdayPmPeakPercentObserved as PercentObserved ";
+                        default:
+                            throw new ArgumentOutOfRangeException(nameof(dayType), dayType, null);
+                    }
+
+                case FilteringTimePeriod.MidDay:
+                    switch (dayType)
+                    {
+                        case MonthAggClassification.Total:
+                            return queryString + $"MidDayAverageSpeed as AverageSpeed, MidDayAverageEightyFifthSpeed as AverageEightyFifthSpeed, " +
+                                $"MidDayViolations as Violations, MidDayExtremeViolations as ExtremeViolations, MidDayFlow as Flow, " +
+                                $"MidDayMinSpeed as MinSpeed, MidDayMaxSpeed as MaxSpeed, MidDayVariability as Variability, " +
+                                $"MidDayPercentViolations as PercentViolations, MidDayPercentExtremeViolations as PercentExtremeViolations, MidDayAvgSpeedVsSpeedLimit as AvgSpeedVsSpeedLimit, " +
+                                $"MidDayEightyFifthSpeedVsSpeedLimit as EightyFifthSpeedVsSpeedLimit, MidDayPercentObserved as PercentObserved ";
+                        case MonthAggClassification.Weekend:
+                            return queryString + $"WeekendMidDayAverageSpeed as AverageSpeed, WeekendMidDayAverageEightyFifthSpeed as AverageEightyFifthSpeed, " +
+                                $"WeekendMidDayViolations as Violations, WeekendMidDayExtremeViolations as ExtremeViolations, WeekendMidDayFlow as Flow, " +
+                                $"WeekendMidDayMinSpeed as MinSpeed, WeekendMidDayMaxSpeed as MaxSpeed, WeekendMidDayVariability as Variability, " +
+                                $"WeekendMidDayPercentViolations as PercentViolations, WeekendMidDayPercentExtremeViolations as PercentExtremeViolations, WeekendMidDayAvgSpeedVsSpeedLimit as AvgSpeedVsSpeedLimit, " +
+                                $"WeekendMidDayEightyFifthSpeedVsSpeedLimit as EightyFifthSpeedVsSpeedLimit, WeekendMidDayPercentObserved as PercentObserved ";
+                        case MonthAggClassification.Weekday:
+                            return queryString + $"WeekdayMidDayAverageSpeed as AverageSpeed, WeekdayMidDayAverageEightyFifthSpeed as AverageEightyFifthSpeed, " +
+                                $"WeekdayMidDayViolations as Violations, WeekdayMidDayExtremeViolations as ExtremeViolations, WeekdayMidDayFlow as Flow, " +
+                                $"WeekdayMidDayMinSpeed as MinSpeed, WeekdayMidDayMaxSpeed as MaxSpeed, WeekdayMidDayVariability as Variability, " +
+                                $"WeekdayMidDayPercentViolations as PercentViolations, WeekdayMidDayPercentExtremeViolations as PercentExtremeViolations, WeekdayMidDayAvgSpeedVsSpeedLimit as AvgSpeedVsSpeedLimit, " +
+                                $"WeekdayMidDayEightyFifthSpeedVsSpeedLimit as EightyFifthSpeedVsSpeedLimit, WeekdayMidDayPercentObserved as PercentObserved ";
+                        default:
+                            throw new ArgumentOutOfRangeException(nameof(dayType), dayType, null);
+                    }
+
+                case FilteringTimePeriod.Evening:
+                    switch (dayType)
+                    {
+                        case MonthAggClassification.Total:
+                            return queryString + $"EveningAverageSpeed as AverageSpeed, EveningAverageEightyFifthSpeed as AverageEightyFifthSpeed, " +
+                                $"EveningViolations as Violations, EveningExtremeViolations as ExtremeViolations, EveningFlow as Flow, " +
+                                $"EveningMinSpeed as MinSpeed, EveningMaxSpeed as MaxSpeed, EveningVariability as Variability, " +
+                                $"EveningPercentViolations as PercentViolations, EveningPercentExtremeViolations as PercentExtremeViolations, EveningAvgSpeedVsSpeedLimit as AvgSpeedVsSpeedLimit, " +
+                                $"EveningEightyFifthSpeedVsSpeedLimit as EightyFifthSpeedVsSpeedLimit, EveningPercentObserved as PercentObserved ";
+                        case MonthAggClassification.Weekend:
+                            return queryString + $"WeekendEveningAverageSpeed as AverageSpeed, WeekendEveningAverageEightyFifthSpeed as AverageEightyFifthSpeed, " +
+                                $"WeekendEveningViolations as Violations, WeekendEveningExtremeViolations as ExtremeViolations, WeekendEveningFlow as Flow, " +
+                                $"WeekendEveningMinSpeed as MinSpeed, WeekendEveningMaxSpeed as MaxSpeed, WeekendEveningVariability as Variability, " +
+                                $"WeekendEveningPercentViolations as PercentViolations, WeekendEveningPercentExtremeViolations as PercentExtremeViolations, WeekendEveningAvgSpeedVsSpeedLimit as AvgSpeedVsSpeedLimit, " +
+                                $"WeekendEveningEightyFifthSpeedVsSpeedLimit as EightyFifthSpeedVsSpeedLimit, WeekendEveningPercentObserved as PercentObserved ";
+                        case MonthAggClassification.Weekday:
+                            return queryString + $"WeekdayEveningAverageSpeed as AverageSpeed, WeekdayEveningAverageEightyFifthSpeed as AverageEightyFifthSpeed, " +
+                                $"WeekdayEveningViolations as Violations, WeekdayEveningExtremeViolations as ExtremeViolations, WeekdayEveningFlow as Flow, " +
+                                $"WeekdayEveningMinSpeed as MinSpeed, WeekdayEveningMaxSpeed as MaxSpeed, WeekdayEveningVariability as Variability, " +
+                                $"WeekdayEveningPercentViolations as PercentViolations, WeekdayEveningPercentExtremeViolations as PercentExtremeViolations, WeekdayEveningAvgSpeedVsSpeedLimit as AvgSpeedVsSpeedLimit, " +
+                                $"WeekdayEveningEightyFifthSpeedVsSpeedLimit as EightyFifthSpeedVsSpeedLimit, WeekdayEveningPercentObserved as PercentObserved ";
+                        default:
+                            throw new ArgumentOutOfRangeException(nameof(dayType), dayType, null);
+                    }
+
+                case FilteringTimePeriod.EarlyMorning:
+                    switch (dayType)
+                    {
+                        case MonthAggClassification.Total:
+                            return queryString + $"EarlyMorningAverageSpeed as AverageSpeed, EarlyMorningAverageEightyFifthSpeed as AverageEightyFifthSpeed, " +
+                                $"EarlyMorningViolations as Violations, EarlyMorningExtremeViolations as ExtremeViolations, EarlyMorningFlow as Flow, " +
+                                $"EarlyMorningMinSpeed as MinSpeed, EarlyMorningMaxSpeed as MaxSpeed, EarlyMorningVariability as Variability, " +
+                                $"EarlyMorningPercentViolations as PercentViolations, EarlyMorningPercentExtremeViolations as PercentExtremeViolations, EarlyMorningAvgSpeedVsSpeedLimit as AvgSpeedVsSpeedLimit, " +
+                                $"EarlyMorningEightyFifthSpeedVsSpeedLimit as EightyFifthSpeedVsSpeedLimit, EarlyMorningPercentObserved as PercentObserved ";
+                        case MonthAggClassification.Weekend:
+                            return queryString + $"WeekendEarlyMorningAverageSpeed as AverageSpeed, WeekendEarlyMorningAverageEightyFifthSpeed as AverageEightyFifthSpeed, " +
+                                $"WeekendEarlyMorningViolations as Violations, WeekendEarlyMorningExtremeViolations as ExtremeViolations, WeekendEarlyMorningFlow as Flow, " +
+                                $"WeekendEarlyMorningMinSpeed as MinSpeed, WeekendEarlyMorningMaxSpeed as MaxSpeed, WeekendEarlyMorningVariability as Variability, " +
+                                $"WeekendEarlyMorningPercentViolations as PercentViolations, WeekendEarlyMorningPercentExtremeViolations as PercentExtremeViolations, WeekendEarlyMorningAvgSpeedVsSpeedLimit as AvgSpeedVsSpeedLimit, " +
+                                $"WeekendEarlyMorningEightyFifthSpeedVsSpeedLimit as EightyFifthSpeedVsSpeedLimit, WeekendEarlyMorningPercentObserved as PercentObserved ";
+                        case MonthAggClassification.Weekday:
+                            return queryString + $"WeekdayEarlyMorningAverageSpeed as AverageSpeed, WeekdayEarlyMorningAverageEightyFifthSpeed as AverageEightyFifthSpeed, " +
+                                $"WeekdayEarlyMorningViolations as Violations, WeekdayEarlyMorningExtremeViolations as ExtremeViolations, WeekdayEarlyMorningFlow as Flow, " +
+                                $"WeekdayEarlyMorningMinSpeed as MinSpeed, WeekdayEarlyMorningMaxSpeed as MaxSpeed, WeekdayEarlyMorningVariability as Variability, " +
+                                $"WeekdayEarlyMorningPercentViolations as PercentViolations, WeekdayEarlyMorningPercentExtremeViolations as PercentExtremeViolations, WeekdayEarlyMorningAvgSpeedVsSpeedLimit as AvgSpeedVsSpeedLimit, " +
+                                $"WeekdayEarlyMorningEightyFifthSpeedVsSpeedLimit as EightyFifthSpeedVsSpeedLimit, WeekdayEarlyMorningPercentObserved as PercentObserved ";
+                        default:
+                            throw new ArgumentOutOfRangeException(nameof(dayType), dayType, null);
+                    }
+
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(timePeriod), timePeriod, null);
+            }
+        }
+
+        private MonthlyAggregationSimplified MapRowToSimplifiedAggregationEntity(BigQueryRow row)
+        {
+            var bigQueryId = Guid.Parse(row["Id"].ToString());
+            var bigQueryCreatedDate = DateTime.Parse(row["CreatedDate"].ToString());
+            var bigQueryBinStartTime = DateTime.Parse(row["BinStartTime"].ToString());
+            var bigQuerySegmentId = Guid.Parse(row["SegmentId"].ToString());
+            var bigQuerySourceId = int.Parse(row["SourceId"].ToString());
+
+            var bigQueryAverageSpeed = row["AverageSpeed"] != null ? double.Parse(row["AverageSpeed"].ToString()) : (double?)null;
+            var bigQueryAverageEightyFifthSpeed = row["AverageEightyFifthSpeed"] != null ? double.Parse(row["AverageEightyFifthSpeed"].ToString()) : (double?)null;
+            var bigQueryViolations = row["Violations"] != null ? int.Parse(row["Violations"].ToString()) : (int?)null;
+            var bigQueryExtremeViolations = row["ExtremeViolations"] != null ? int.Parse(row["ExtremeViolations"].ToString()) : (int?)null;
+            var bigQueryFlow = row["Flow"] != null ? int.Parse(row["Flow"].ToString()) : (int?)null;
+            var bigQueryMinSpeed = row["MinSpeed"] != null ? double.Parse(row["MinSpeed"].ToString()) : (double?)null;
+            var bigQueryMaxSpeed = row["MaxSpeed"] != null ? double.Parse(row["MaxSpeed"].ToString()) : (double?)null;
+            var bigQueryVariability = row["Variability"] != null ? double.Parse(row["Variability"].ToString()) : (double?)null;
+            var bigQueryPercentViolations = row["PercentViolations"] != null ? double.Parse(row["PercentViolations"].ToString()) : (double?)null;
+            var bigQueryPercentExtremeViolations = row["PercentExtremeViolations"] != null ? double.Parse(row["PercentExtremeViolations"].ToString()) : (double?)null;
+            var bigQueryAvgSpeedVsSpeedLimit = row["AvgSpeedVsSpeedLimit"] != null ? double.Parse(row["AvgSpeedVsSpeedLimit"].ToString()) : (double?)null;
+            var bigQueryEightyFifthSpeedVsSpeedLimit = row["EightyFifthSpeedVsSpeedLimit"] != null ? double.Parse(row["EightyFifthSpeedVsSpeedLimit"].ToString()) : (double?)null;
+
+            var bigQueryPercentObserved = row["PercentObserved"] != null ? double.Parse(row["PercentObserved"].ToString()) : (double?)null;
+
+            return new MonthlyAggregationSimplified
+            {
+                Id = bigQueryId,
+                CreatedDate = bigQueryCreatedDate,
+                BinStartTime = bigQueryBinStartTime,
+                SegmentId = bigQuerySegmentId,
+                SourceId = bigQuerySourceId,
+
+                AverageSpeed = bigQueryAverageSpeed,
+                AverageEightyFifthSpeed = bigQueryAverageEightyFifthSpeed,
+                Violations = bigQueryViolations,
+                ExtremeViolations = bigQueryExtremeViolations,
+                Flow = bigQueryFlow,
+                MinSpeed = bigQueryMinSpeed,
+                MaxSpeed = bigQueryMaxSpeed,
+                Variability = bigQueryVariability,
+                PercentViolations = bigQueryPercentViolations,
+                PercentExtremeViolations = bigQueryPercentExtremeViolations,
+                AvgSpeedVsSpeedLimit = bigQueryAvgSpeedVsSpeedLimit,
+                EightyFifthSpeedVsSpeedLimit = bigQueryEightyFifthSpeedVsSpeedLimit,
+                PercentObserved = bigQueryPercentObserved
+            };
         }
 
     }

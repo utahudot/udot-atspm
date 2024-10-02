@@ -148,7 +148,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
         {
             return new BigQueryInsertRow
             {
-                { "Date", item.Date.AsBigQueryDate() },
+                {"Date", item.Date.AsBigQueryDate() },
                 {"BinStartTime", item.BinStartTime.TimeOfDay },
                 {"SegmentId", item.SegmentId.ToString() },
                 {"SourceId", item.SourceId },
@@ -370,6 +370,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             FROM `{_datasetId}.{_tableId}`
             WHERE 
                 SegmentId = @segmentId AND
+                SourceId = @sourceId AND
                 date BETWEEN @startDate AND @endDate 
                 ORDER BY Date ASC, BinStartTime ASC;";
         }
@@ -384,6 +385,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
               FROM `{_datasetId}.{_tableId}`
               WHERE 
                 SegmentId = @segmentId
+                AND SourceId = @sourceId
                 AND Date BETWEEN @startDate AND @endDate
             ),
             data_with_custom_week_start AS (
