@@ -13,5 +13,7 @@ namespace Utah.Udot.Atspm.Repositories.SpeedManagementRepositories
         Task RemoveKeyAsync(Guid? key);
         Task<List<MonthlyAggregationSimplified>> SelectMonthlyAggregationBySegment(Guid segmentId, TimePeriodFilter timePeriod, MonthAggClassification monthAggClassification);
         Task UpsertMonthlyAggregationAsync(MonthlyAggregation item);
+        Task DeleteBySegment(Guid segmentId);
+        Task DeleteBySegments(List<Guid> segments);
     }
 }
