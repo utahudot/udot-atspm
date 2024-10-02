@@ -80,8 +80,4 @@
     <Using Include="Utah.Udot.Atspm.Data.Models" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Models\SpeedManagementModels\SegmentSpeed\" />
-  </ItemGroup>
-
 </Project>

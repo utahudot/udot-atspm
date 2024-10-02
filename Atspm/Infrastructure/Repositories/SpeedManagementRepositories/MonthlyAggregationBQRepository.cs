@@ -1,8 +1,11 @@
 ﻿using Google.Cloud.BigQuery.V2;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+using NetTopologySuite.Geometries;
+using NetTopologySuite.IO;
 using System.Text;
 using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.MonthlyAggregation;
+using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.SegmentSpeed;
 using Utah.Udot.Atspm.Repositories.SpeedManagementRepositories;
 
 namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositories
@@ -395,7 +398,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
 
             var parameters = new List<BigQueryParameter> { };
 
-            if (options.SourceId != null && !(options.SourceId > 0) && (options.SourceId < 4))
+            if (options.SourceId != null && (options.SourceId > 0) && (options.SourceId < 4))
             {
                 query = query + $" AND monthlyAgg.SourceId = @sourceId";
                 parameters.Add(new BigQueryParameter("sourceId", BigQueryDbType.Int64, options.SourceId));
@@ -502,6 +505,53 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             return monthlyAggregations;
         }
 
+        public async Task<List<RouteSpeed>> GetRoutesSpeeds(MonthlyAggregationOptions options)
+        {
+            var query = $@"SELECT " + SelectionQueryWithFilter(options.timePeriod, options.aggClassification, "monthlyAgg")
+                + $", segment.region, segment.city, segment.county, segment.SpeedLimit, segment.Shape, segment.Name" +
+                $@" FROM `{_datasetId}.{_tableId}` as monthlyAgg
+                JOIN (
+                    SELECT SegmentId as SegId, MAX(BinStartTime) AS LatestBinStartTime
+                    FROM `{_datasetId}.{_tableId}`
+                    GROUP BY SegmentId
+                ) LatestMA
+                ON monthlyAgg.SegmentId = LatestMA.SegId AND monthlyAgg.BinStartTime = LatestMA.LatestBinStartTime" +
+                $" JOIN `{_datasetId}.segment` as segment ON monthlyAgg.SegmentId = segment.Id " +
+                "WHERE monthlyAgg.Id IS NOT NULL";
+
+            var parameters = new List<BigQueryParameter> { };
+
+            if (options.SourceId != null && (options.SourceId > 0) && (options.SourceId < 4))
+            {
+                query = query + $" AND monthlyAgg.SourceId = @sourceId";
+                parameters.Add(new BigQueryParameter("sourceId", BigQueryDbType.Int64, options.SourceId));
+            }
+            if (!options.Region.IsNullOrEmpty())
+            {
+                query = query + $" AND segment.Region = @region";
+                parameters.Add(new BigQueryParameter("region", BigQueryDbType.String, options.Region));
+            }
+            if (!options.City.IsNullOrEmpty())
+            {
+                query = query + $" AND segment.City = @city";
+                parameters.Add(new BigQueryParameter("city", BigQueryDbType.String, options.City));
+            }
+            if (!options.County.IsNullOrEmpty())
+            {
+                query = query + $" AND segment.County = @county";
+                parameters.Add(new BigQueryParameter("county", BigQueryDbType.String, options.County));
+            }
+
+            var results = await _client.ExecuteQueryAsync(query, parameters);
+            var monthlyAggregations = new List<RouteSpeed>();
+            foreach (var row in results)
+            {
+                monthlyAggregations.Add(MapRowToRouteSpeedEntity(row));
+            }
+
+            return monthlyAggregations;
+        }
+
         private MonthlyAggregationSimplified MapRowToSimplifiedAggregationEntity(BigQueryRow row)
         {
             var bigQueryId = Guid.Parse(row["Id"].ToString());
@@ -532,6 +582,67 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 BinStartTime = bigQueryBinStartTime,
                 SegmentId = bigQuerySegmentId,
                 SourceId = bigQuerySourceId,
+
+                AverageSpeed = bigQueryAverageSpeed,
+                AverageEightyFifthSpeed = bigQueryAverageEightyFifthSpeed,
+                Violations = bigQueryViolations,
+                ExtremeViolations = bigQueryExtremeViolations,
+                Flow = bigQueryFlow,
+                MinSpeed = bigQueryMinSpeed,
+                MaxSpeed = bigQueryMaxSpeed,
+                Variability = bigQueryVariability,
+                PercentViolations = bigQueryPercentViolations,
+                PercentExtremeViolations = bigQueryPercentExtremeViolations,
+                AvgSpeedVsSpeedLimit = bigQueryAvgSpeedVsSpeedLimit,
+                EightyFifthSpeedVsSpeedLimit = bigQueryEightyFifthSpeedVsSpeedLimit,
+                PercentObserved = bigQueryPercentObserved
+            };
+        }
+        private RouteSpeed MapRowToRouteSpeedEntity(BigQueryRow row)
+        {
+            var reader = new WKTReader();
+            var bigQueryId = Guid.Parse(row["Id"].ToString());
+            var bigQueryCreatedDate = DateTime.Parse(row["CreatedDate"].ToString());
+            var bigQueryBinStartTime = DateTime.Parse(row["BinStartTime"].ToString());
+            var bigQuerySegmentId = Guid.Parse(row["SegmentId"].ToString());
+            var bigQuerySourceId = int.Parse(row["SourceId"].ToString());
+            var bigQueryName = row["Name"].ToString();
+            var wkt = (string)row["Shape"].ToString();
+
+            Geometry shape = wkt != null ? reader.Read(wkt) : null;
+
+            var bigQuerySpeedLimit = int.Parse(row["SpeedLimit"].ToString());
+            var bigQueryRegion = row["region"].ToString();
+            var bigQueryCity = row["city"].ToString();
+            var bigQueryCounty = row["county"].ToString();
+
+            var bigQueryAverageSpeed = row["AverageSpeed"] != null ? double.Parse(row["AverageSpeed"].ToString()) : (double?)null;
+            var bigQueryAverageEightyFifthSpeed = row["AverageEightyFifthSpeed"] != null ? double.Parse(row["AverageEightyFifthSpeed"].ToString()) : (double?)null;
+            var bigQueryViolations = row["Violations"] != null ? int.Parse(row["Violations"].ToString()) : (int?)null;
+            var bigQueryExtremeViolations = row["ExtremeViolations"] != null ? int.Parse(row["ExtremeViolations"].ToString()) : (int?)null;
+            var bigQueryFlow = row["Flow"] != null ? int.Parse(row["Flow"].ToString()) : (int?)null;
+            var bigQueryMinSpeed = row["MinSpeed"] != null ? double.Parse(row["MinSpeed"].ToString()) : (double?)null;
+            var bigQueryMaxSpeed = row["MaxSpeed"] != null ? double.Parse(row["MaxSpeed"].ToString()) : (double?)null;
+            var bigQueryVariability = row["Variability"] != null ? double.Parse(row["Variability"].ToString()) : (double?)null;
+            var bigQueryPercentViolations = row["PercentViolations"] != null ? double.Parse(row["PercentViolations"].ToString()) : (double?)null;
+            var bigQueryPercentExtremeViolations = row["PercentExtremeViolations"] != null ? double.Parse(row["PercentExtremeViolations"].ToString()) : (double?)null;
+            var bigQueryAvgSpeedVsSpeedLimit = row["AvgSpeedVsSpeedLimit"] != null ? double.Parse(row["AvgSpeedVsSpeedLimit"].ToString()) : (double?)null;
+            var bigQueryEightyFifthSpeedVsSpeedLimit = row["EightyFifthSpeedVsSpeedLimit"] != null ? double.Parse(row["EightyFifthSpeedVsSpeedLimit"].ToString()) : (double?)null;
+
+            var bigQueryPercentObserved = row["PercentObserved"] != null ? double.Parse(row["PercentObserved"].ToString()) : (double?)null;
+
+            return new RouteSpeed
+            {
+                CreatedDate = bigQueryCreatedDate,
+                BinStartTime = bigQueryBinStartTime,
+                SegmentId = bigQuerySegmentId,
+                SourceId = bigQuerySourceId,
+                Name = bigQueryName,
+                Shape = shape,
+                SpeedLimit = bigQuerySpeedLimit,
+                Region = bigQueryRegion,
+                City = bigQueryCity,
+                County = bigQueryCounty,
 
                 AverageSpeed = bigQueryAverageSpeed,
                 AverageEightyFifthSpeed = bigQueryAverageEightyFifthSpeed,

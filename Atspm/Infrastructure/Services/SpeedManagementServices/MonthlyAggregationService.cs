@@ -1,4 +1,5 @@
 ﻿using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.MonthlyAggregation;
+using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.SegmentSpeed;
 using Utah.Udot.Atspm.Repositories.SpeedManagementRepositories;
 
 namespace Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices
@@ -28,8 +29,11 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices
 
         public async Task<IReadOnlyList<MonthlyAggregationSimplified>> GetTopMonthlyAggregationsInCategory(MonthlyAggregationOptions monthlyAggregationOptions)
         {
-            DateTime firstDayOfMonth = new DateTime(monthlyAggregationOptions.StartTime.Year, monthlyAggregationOptions.StartTime.Month, 1).AddDays(-1);
-            DateTime lastDayOfMonth = new DateTime(monthlyAggregationOptions.EndTime.Year, monthlyAggregationOptions.EndTime.Month, 1).AddMonths(1).AddDays(-1);
+            var lastMonth = DateTime.Now.AddMonths(-1);
+            DateTime startTime = monthlyAggregationOptions.StartTime ??= lastMonth;
+            DateTime endTime = monthlyAggregationOptions.EndTime ??= lastMonth;
+            DateTime firstDayOfMonth = new DateTime(startTime.Year, startTime.Month, 1).AddDays(-1);
+            DateTime lastDayOfMonth = new DateTime(endTime.Year, endTime.Month, 1).AddMonths(1).AddDays(-1);
             monthlyAggregationOptions.StartTime = firstDayOfMonth;
             monthlyAggregationOptions.EndTime = lastDayOfMonth;
             var monthlyAggregations = await monthlyAggregationRepository.GetTopMonthlyAggregationsInCategory(monthlyAggregationOptions);
@@ -54,6 +58,13 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices
         //    }
         //    return speedOverDistanceDtoList;
         //}
+        public async Task<List<RouteSpeed>> GetRouteSpeedsAsync(MonthlyAggregationOptions options)
+
+        {
+            List<RouteSpeed> routeSpeeds = await monthlyAggregationRepository.GetRoutesSpeeds(options);
+
+            return routeSpeeds;
+        }
 
         public async Task UpsertMonthlyAggregation(MonthlyAggregation monthlyAggregation)
         {

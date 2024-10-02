@@ -1,9 +1,5 @@
 ﻿using Google.Cloud.BigQuery.V2;
 using Microsoft.Extensions.Logging;
-using NetTopologySuite.Geometries;
-using NetTopologySuite.Index.HPRtree;
-using NetTopologySuite.IO;
-using Org.BouncyCastle.Crypto;
 using System.Text;
 using Utah.Udot.Atspm.Data.Models.SpeedManagementModels;
 using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.Common;
@@ -418,44 +414,44 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
               Date;";
         }
 
-        public async Task<List<RouteSpeed>> GetRoutesSpeeds(RouteSpeedOptions options)
-        {
-            var convertedStartDate = DateOnly.FromDateTime(options.StartDate);
-            var convertedEndDate = DateOnly.FromDateTime(options.EndDate);
-            TimeOnly convertedStartTime = TimeOnly.FromDateTime(options.StartTime);
-            TimeOnly convertedEndTime = TimeOnly.FromDateTime(options.EndTime);
-            List<BigQueryParameter> parameters = new List<BigQueryParameter>();
+        //public async Task<List<RouteSpeed>> GetRoutesSpeeds(RouteSpeedOptions options)
+        //{
+        //    var convertedStartDate = DateOnly.FromDateTime(options.StartDate);
+        //    var convertedEndDate = DateOnly.FromDateTime(options.EndDate);
+        //    TimeOnly convertedStartTime = TimeOnly.FromDateTime(options.StartTime);
+        //    TimeOnly convertedEndTime = TimeOnly.FromDateTime(options.EndTime);
+        //    List<BigQueryParameter> parameters = new List<BigQueryParameter>();
 
-            GetOptionalParams(options, parameters);
+        //    GetOptionalParams(options, parameters);
 
-            try
-            {
-                var query = CreateQuery(options);
-                BigQueryResults queryResults;
+        //    try
+        //    {
+        //        var query = CreateQuery(options);
+        //        BigQueryResults queryResults;
 
-                parameters.AddRange(new BigQueryParameter[]
-                {
-                    new BigQueryParameter("startDate", BigQueryDbType.Date, convertedStartDate.ToDateTime(new TimeOnly(0, 0))),
-                    new BigQueryParameter("endDate", BigQueryDbType.Date, convertedEndDate.ToDateTime(new TimeOnly(0, 0))),
-                    new BigQueryParameter("startTime", BigQueryDbType.Time, convertedStartTime.ToTimeSpan()),
-                    new BigQueryParameter("endTime", BigQueryDbType.Time, convertedEndTime.ToTimeSpan()),
-                    new BigQueryParameter("sourceId", BigQueryDbType.Int64, options.SourceId)
-                });
-                queryResults = await _client.ExecuteQueryAsync(query, parameters);
+        //        parameters.AddRange(new BigQueryParameter[]
+        //        {
+        //            new BigQueryParameter("startDate", BigQueryDbType.Date, convertedStartDate.ToDateTime(new TimeOnly(0, 0))),
+        //            new BigQueryParameter("endDate", BigQueryDbType.Date, convertedEndDate.ToDateTime(new TimeOnly(0, 0))),
+        //            new BigQueryParameter("startTime", BigQueryDbType.Time, convertedStartTime.ToTimeSpan()),
+        //            new BigQueryParameter("endTime", BigQueryDbType.Time, convertedEndTime.ToTimeSpan()),
+        //            new BigQueryParameter("sourceId", BigQueryDbType.Int64, options.SourceId)
+        //        });
+        //        queryResults = await _client.ExecuteQueryAsync(query, parameters);
 
-                List<RouteSpeed> results = new List<RouteSpeed>();
-                foreach (BigQueryRow row in queryResults)
-                {
-                    results.Add(TransformRowToRouteSpeed(row));
-                }
+        //        List<RouteSpeed> results = new List<RouteSpeed>();
+        //        foreach (BigQueryRow row in queryResults)
+        //        {
+        //            results.Add(TransformRowToRouteSpeed(row));
+        //        }
 
-                return results;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
+        //        return results;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw ex;
+        //    }
+        //}
 
         private void GetOptionalParams(RouteSpeedOptions options, List<BigQueryParameter> parameters)
         {
@@ -486,41 +482,41 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             return val == null || val.Length == 0;
         }
 
-        private static RouteSpeed TransformRowToRouteSpeed(BigQueryRow row)
-        {
-            var reader = new WKTReader();
-            // Access row data as needed
-            var segmentId = Guid.Parse(row["SegmentId"].ToString());
-            var sourceId = row["SourceId"];
-            var avg = row["Avg"] != null ? double.Parse(row["Avg"].ToString()) : (double?)null;
-            var percentile15 = row["Percentilespd_15"] != null ? double.Parse(row["Percentilespd_15"].ToString()) : (double?)null;
-            var percentile85 = row["Percentilespd_85"] != null ? double.Parse(row["Percentilespd_85"].ToString()) : (double?)null;
-            var percentile95 = row["Percentilespd_95"] != null ? double.Parse(row["Percentilespd_95"].ToString()) : (double?)null;
-            var flow = row["Flow"];
-            var estimatedViolations = row["AvgViolation"] != null ? double.Parse(row["AvgViolation"].ToString()) : (double?)null;
-            var estimatedExtremeViolations = row["AvgExtremeViolation"] != null ? double.Parse(row["AvgExtremeViolation"].ToString()) : (double?)null;
-            var speedLimit = row["SpeedLimit"];
-            var name = row["Name"];
-            var wkt = (string)row["Shape"];
+        //private static RouteSpeed TransformRowToRouteSpeed(BigQueryRow row)
+        //{
+        //    var reader = new WKTReader();
+        //    // Access row data as needed
+        //    var segmentId = Guid.Parse(row["SegmentId"].ToString());
+        //    var sourceId = row["SourceId"];
+        //    var avg = row["Avg"] != null ? double.Parse(row["Avg"].ToString()) : (double?)null;
+        //    var percentile15 = row["Percentilespd_15"] != null ? double.Parse(row["Percentilespd_15"].ToString()) : (double?)null;
+        //    var percentile85 = row["Percentilespd_85"] != null ? double.Parse(row["Percentilespd_85"].ToString()) : (double?)null;
+        //    var percentile95 = row["Percentilespd_95"] != null ? double.Parse(row["Percentilespd_95"].ToString()) : (double?)null;
+        //    var flow = row["Flow"];
+        //    var estimatedViolations = row["AvgViolation"] != null ? double.Parse(row["AvgViolation"].ToString()) : (double?)null;
+        //    var estimatedExtremeViolations = row["AvgExtremeViolation"] != null ? double.Parse(row["AvgExtremeViolation"].ToString()) : (double?)null;
+        //    var speedLimit = row["SpeedLimit"];
+        //    var name = row["Name"];
+        //    var wkt = (string)row["Shape"];
 
-            Geometry shape = wkt != null ? reader.Read(wkt) : null;
+        //    Geometry shape = wkt != null ? reader.Read(wkt) : null;
 
-            return new RouteSpeed
-            {
-                SegmentId = segmentId != null ? segmentId.ToString() : "",
-                SourceId = sourceId != null ? (long)sourceId : 0,
-                Name = name != null ? name.ToString() : "",
-                Avg = avg != null ? Math.Round((double)avg, 2) : null,
-                Percentilespd_15 = percentile15 != null ? (double)percentile15 : null,
-                Percentilespd_85 = percentile85 != null ? (double)percentile85 : null,
-                Percentilespd_95 = percentile95 != null ? (double)percentile95 : null,
-                Flow = flow != null ? (long)flow : null,
-                EstimatedViolations = estimatedViolations != null ? (double?)estimatedViolations : null,
-                EstimatedExtremeViolations = estimatedExtremeViolations != null ? (double?)estimatedExtremeViolations : null,
-                SpeedLimit = speedLimit != null ? (long)speedLimit : 0,
-                Shape = shape,
-            };
-        }
+        //    return new RouteSpeed
+        //    {
+        //        SegmentId = segmentId != null ? segmentId.ToString() : "",
+        //        SourceId = sourceId != null ? (long)sourceId : 0,
+        //        Name = name != null ? name.ToString() : "",
+        //        Avg = avg != null ? Math.Round((double)avg, 2) : null,
+        //        Percentilespd_15 = percentile15 != null ? (double)percentile15 : null,
+        //        Percentilespd_85 = percentile85 != null ? (double)percentile85 : null,
+        //        Percentilespd_95 = percentile95 != null ? (double)percentile95 : null,
+        //        Flow = flow != null ? (long)flow : null,
+        //        EstimatedViolations = estimatedViolations != null ? (double?)estimatedViolations : null,
+        //        EstimatedExtremeViolations = estimatedExtremeViolations != null ? (double?)estimatedExtremeViolations : null,
+        //        SpeedLimit = speedLimit != null ? (long)speedLimit : 0,
+        //        Shape = shape,
+        //    };
+        //}
 
         private string CreateQuery(RouteSpeedOptions options)
         {
