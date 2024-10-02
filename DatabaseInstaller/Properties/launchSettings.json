@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "DatabaseInstaller": {
-      "commandName": "Project",
-      "commandLineArgs": "\r\ncopy-config\r\n"
-    }
-  }
-}

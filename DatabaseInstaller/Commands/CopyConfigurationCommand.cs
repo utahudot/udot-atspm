@@ -50,13 +50,8 @@ namespace DatabaseInstaller.Commands
 
         public void BindCommandOptions(HostBuilderContext host, IServiceCollection services)
         {
-            services.Configure<CopyConfigCommandConfiguration>(host.Configuration.GetSection(nameof(CopyConfigCommandConfiguration)));
-            var binder = new ModelBinder<CopyConfigCommandConfiguration>();
-
-            binder.BindMemberFromValue(b => b.Source, SourceOption);
-            binder.BindMemberFromValue(b => b.Target, TargetOption);
+            services.AddSingleton(GetOptionsBinder());
             services.AddOptions<CopyConfigCommandConfiguration>().BindCommandLine();
-
             services.AddHostedService<CopyConfigCommandHostedService>();
         }
     }

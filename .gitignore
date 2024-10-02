@@ -99,3 +99,4 @@ dkms.conf
 /DatabaseInstaller/obj
 /Atspm/SpeedManagementImporter/obj/Debug/net8.0
 /Atspm/SpeedManagementImporter/obj
+/DatabaseInstaller/Properties/launchSettings.json

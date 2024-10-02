@@ -8,7 +8,6 @@ using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
 
-
 namespace DatabaseInstaller.Services
 {
     public class CopyConfigCommandHostedService : IHostedService
@@ -52,6 +51,7 @@ namespace DatabaseInstaller.Services
             Console.WriteLine($"Source is {_config.Value.Source}");
             Console.WriteLine($"Target is {_config.Value.Target}");
             MigrateProducts().Wait();
+            SyncLocationsFromSource().Wait();
             Console.WriteLine("Data copied and bulk inserted.");
         }
 
@@ -87,86 +87,67 @@ namespace DatabaseInstaller.Services
         {
             // Step 1: Fetch and transform Signals into Locations from the source (SQL Server)
             var locationsFromSource = new List<Location>();
-            var command = new SqlCommand("SELECT * FROM Signal", _sqlConnection);
-            _sqlConnection.Open();
+            using var sqlConnection = new SqlConnection(_config.Value.Source);
+            var command = new SqlCommand("SELECT * FROM Signals", sqlConnection);
+            sqlConnection.Open();
             using (var reader = await command.ExecuteReaderAsync())
             {
                 while (await reader.ReadAsync())
                 {
                     var location = new Location
                     {
-                        // Mapped fields
-                        Id = reader.GetInt32(reader.GetOrdinal("VersionID")),             // VersionId from Signal -> Id on Location
-                        LocationIdentifier = reader.GetString(reader.GetOrdinal("SignalID")), // SignalID from Signal -> LocationIdentifier on Location
+                        Id = reader.GetInt32(reader.GetOrdinal("VersionID")),
+                        LocationIdentifier = reader.GetString(reader.GetOrdinal("SignalID")),
                         PrimaryName = reader.GetString(reader.GetOrdinal("PrimaryName")),
                         SecondaryName = reader.GetString(reader.GetOrdinal("SecondaryName")),
-                        Latitude = reader.GetDouble(reader.GetOrdinal("Latitude")),
-                        Longitude = reader.GetDouble(reader.GetOrdinal("Longitude")),
+                        Latitude = Convert.ToDouble(reader.GetString(reader.GetOrdinal("Latitude"))),
+                        Longitude = Convert.ToDouble(reader.GetString(reader.GetOrdinal("Longitude"))),
                         JurisdictionId = reader.GetInt32(reader.GetOrdinal("JurisdictionID")),
                         RegionId = reader.GetInt32(reader.GetOrdinal("RegionID")),
                         Start = reader.GetDateTime(reader.GetOrdinal("Start")),
-
-                        // Fields with ?
-                        Note = reader.GetString(reader.GetOrdinal("Note")),  // Unsure if the Signal.Note field is applicable
-                        ChartEnabled = true,  // ? (Assumed default value, let me know if this needs to be determined by logic)
-                        PedsAre1to1 = reader.GetBoolean(reader.GetOrdinal("Pedsare1to1")),  // PedsAre1to1 from Signal (is this correct?)
-
-                        // Fields from Location that I don't have mappings for:
-                        VersionAction = LocationVersionActions.Updated,  // ? (Is there a field in Signal that should map to this?)
-                        Devices = new List<Device>(),                    // ? (Will need to be populated separately, I assume)
-                        Approaches = new List<Approach>(),               // ? (Should be populated separately if needed)
-                        Areas = new List<Area>()                         // ? (Need clarification on where to map this from)
+                        Note = reader.GetString(reader.GetOrdinal("Note")),
+                        ChartEnabled = reader.GetBoolean(reader.GetOrdinal("Enabled")),
+                        PedsAre1to1 = reader.GetBoolean(reader.GetOrdinal("Pedsare1to1")),
+                        VersionAction = (LocationVersionActions)reader.GetInt32(reader.GetOrdinal("VersionActionId")),
+                        LocationTypeId = 1,
                     };
                     locationsFromSource.Add(location);
                 }
             }
-            _sqlConnection.Close();
+            sqlConnection.Close();
 
             // Step 2: Fetch existing locations from the target database
-            var existingLocations = await _newDbContext.Locations.ToListAsync();
+            var existingLocations = _locationRepository.GetList().ToList();
 
-            // Step 3: Compare and update locations
+            // Step 3: Compare and update locations only if differences are found
             foreach (var sourceLocation in locationsFromSource)
             {
                 var targetLocation = existingLocations.FirstOrDefault(l => l.Id == sourceLocation.Id);
 
                 if (targetLocation != null)
                 {
-                    // Compare fields and update if different
-                    if (targetLocation.LocationIdentifier != sourceLocation.LocationIdentifier)
-                        targetLocation.LocationIdentifier = sourceLocation.LocationIdentifier;
+                    bool hasDifferences = false;
 
-                    if (targetLocation.PrimaryName != sourceLocation.PrimaryName)
-                        targetLocation.PrimaryName = sourceLocation.PrimaryName;
+                    // Use reflection to automatically compare fields
+                    var sourceProperties = typeof(Location).GetProperties();
+                    foreach (var property in sourceProperties)
+                    {
+                        var sourceValue = property.GetValue(sourceLocation);
+                        var targetValue = property.GetValue(targetLocation);
 
-                    if (targetLocation.SecondaryName != sourceLocation.SecondaryName)
-                        targetLocation.SecondaryName = sourceLocation.SecondaryName;
+                        // If the values are different, flag for update
+                        if (!Equals(sourceValue, targetValue))
+                        {
+                            hasDifferences = true;
+                            property.SetValue(targetLocation, sourceValue);
+                        }
+                    }
 
-                    if (targetLocation.Latitude != sourceLocation.Latitude)
-                        targetLocation.Latitude = sourceLocation.Latitude;
-
-                    if (targetLocation.Longitude != sourceLocation.Longitude)
-                        targetLocation.Longitude = sourceLocation.Longitude;
-
-                    if (targetLocation.JurisdictionId != sourceLocation.JurisdictionId)
-                        targetLocation.JurisdictionId = sourceLocation.JurisdictionId;
-
-                    if (targetLocation.RegionId != sourceLocation.RegionId)
-                        targetLocation.RegionId = sourceLocation.RegionId;
-
-                    if (targetLocation.Note != sourceLocation.Note)  // ?
-                        targetLocation.Note = sourceLocation.Note;
-
-                    if (targetLocation.ChartEnabled != sourceLocation.ChartEnabled)  // ?
-                        targetLocation.ChartEnabled = sourceLocation.ChartEnabled;
-
-                    if (targetLocation.PedsAre1to1 != sourceLocation.PedsAre1to1)
-                        targetLocation.PedsAre1to1 = sourceLocation.PedsAre1to1;
-
-                    if (targetLocation.Start != sourceLocation.Start)
-                        targetLocation.Start = sourceLocation.Start;
-
-                    // Other fields such as Devices, Approaches, and Areas can be populated separately
+                    // Only update the target location if any difference was found
+                    if (hasDifferences)
+                    {
+                        _locationRepository.Update(targetLocation);
+                    }
                 }
             }
 
@@ -176,7 +157,7 @@ namespace DatabaseInstaller.Services
                 if (!existingLocations.Any(l => l.Id == sourceLocation.Id))
                 {
                     // Add new location
-                    _newDbContext.Locations.Add(sourceLocation);
+                    _locationRepository.Add(sourceLocation);
                 }
             }
 
@@ -186,13 +167,12 @@ namespace DatabaseInstaller.Services
                 if (!locationsFromSource.Any(l => l.Id == targetLocation.Id))
                 {
                     // Remove location
-                    _newDbContext.Locations.Remove(targetLocation);
+                    _locationRepository.Remove(targetLocation);
                 }
             }
-
-            // Save all changes to the database
-            await _newDbContext.SaveChangesAsync();
         }
+
+
 
 
 
