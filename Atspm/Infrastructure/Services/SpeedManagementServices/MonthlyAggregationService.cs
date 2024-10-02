@@ -76,22 +76,12 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices
         //For the Deletion by Segment
         public async Task DeleteMonthlyAggregationBySegmentId(Guid segmentId)
         {
-            var monthlyAggregations = await monthlyAggregationRepository.SelectMonthlyAggregationBySegment(segmentId);
-            if (monthlyAggregations.Count == 0)
-            {
-                return;
-            }
-            await monthlyAggregationRepository.RemoveRangeAsync(monthlyAggregations);
+            await monthlyAggregationRepository.RemoveKeyAsync(segmentId);
         }
 
         public async Task DeleteMonthlyAggregationBySegmentIds(List<Guid> segmentIds)
         {
-            var monthlyAggregations = await monthlyAggregationRepository.SelectMonthlyAggregationBySegmentIds(segmentIds);
-            if (monthlyAggregations.Count == 0)
-            {
-                return;
-            }
-            await monthlyAggregationRepository.RemoveRangeAsync(monthlyAggregations);
+            await monthlyAggregationRepository.RemoveKeysAsync(segmentIds);
         }
 
         //For the DeleteOldEvents

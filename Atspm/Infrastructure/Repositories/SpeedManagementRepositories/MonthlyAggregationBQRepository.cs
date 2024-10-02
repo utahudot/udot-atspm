@@ -1,5 +1,6 @@
 ﻿using Google.Cloud.BigQuery.V2;
 using Microsoft.Extensions.Logging;
+using NetTopologySuite.Index.HPRtree;
 using System.Text;
 using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.MonthlyAggregation;
 using Utah.Udot.Atspm.Repositories.SpeedManagementRepositories;
@@ -114,6 +115,15 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
              {
                  new BigQueryParameter("key", BigQueryDbType.String, key.ToString())
              };
+            await _client.ExecuteQueryAsync(query, parameters);
+        }
+
+        public async Task RemoveKeysAsync(List<Guid>? keys)
+        {
+            if (keys == null) return;
+            var ids = string.Join(", ", keys);
+            var query = $"DELETE FROM `{_datasetId}.{_tableId}` WHERE Id IN ({ids})";
+            var parameters = new List<BigQueryParameter>();
             await _client.ExecuteQueryAsync(query, parameters);
         }
 
@@ -235,30 +245,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             return task.Result;
         }
 
-        public async Task DeleteBySegment(Guid segmentId)
-        {
-            var query = $"DELETE FROM `{_datasetId}.{_tableId}` WHERE SegmentId = @key";
-            var parameters = new List<BigQueryParameter>
-            {
-                 new BigQueryParameter("key", BigQueryDbType.String, segmentId.ToString())
-             };
-            await _client.ExecuteQueryAsync(query, parameters);
-        }
-
-        public async Task DeleteBySegments(List<Guid> segments)
-        {
-            var ids = string.Join(", ", segments);
-            var query = $"DELETE FROM `{_datasetId}.{_tableId}` WHERE SegmentId IN ({ids})";
-            var parameters = new List<BigQueryParameter>();
-
-            await _client.ExecuteQueryAsync(query, parameters);
-        }
-
-
-
-        /// <inheritdoc/>
-
-        public async Task<MonthlyAggregation> SelectByBinTimeSegmentAndSource(DateTime binStartTime, MonthlyAggregation monthlyAggregation)
+        public async Task<List<MonthlyAggregationSimplified>> LatestOfEachSegmentId(TimePeriodFilter timePeriod, MonthAggClassification monthAggClassification)
         {
             var query = $@"SELECT " + SelectionQueryWithFilter(timePeriod, monthAggClassification) +
                 $@"FROM `{_datasetId}.{_tableId}` MA
@@ -299,27 +286,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             return monthlyAggregations;
         }
 
-        public async Task<List<MonthlyAggregation>> SelectMonthlyAggregationBySegmentIds(List<Guid> segmentIds)
-        {
-            var ids = string.Join(", ", segmentIds);
-            var query = $@"
-            SELECT *
-            FROM `{_datasetId}.{_tableId}`
-            WHERE SegmentId IN ({ids})";
-
-            var parameters = new List<BigQueryParameter>();
-
-            var result = await _client.ExecuteQueryAsync(query, parameters);
-            var monthlyAggregations = new List<MonthlyAggregation>();
-            foreach (var row in result)
-            {
-                monthlyAggregations.Add(MapRowToEntity(row));
-            }
-
-            return monthlyAggregations;
-        }
-
-        public async Task<List<MonthlyAggregation>> MonthlyAggregationsForSegmentInTimePeriod(List<Guid> segmentIds, DateTime startTime, DateTime endTime)
+        public async Task<List<MonthlyAggregationSimplified>> MonthlyAggregationsForSegmentInTimePeriod(List<Guid> segmentIds, DateTime startTime, DateTime endTime, TimePeriodFilter timePeriod, MonthAggClassification dayType)
         {
             // Construct a comma-separated list of IDs for the IN clause
             string ids = string.Join(",", segmentIds.Select(id => $"'{id}'"));
