@@ -15,7 +15,10 @@ import {
 } from '@/features/charts/utils'
 
 // Transformer for Effectiveness of Strategies chart data
-export default function transformEffectivenessOfStrategiesData(segmentData) {
+export default function transformEffectivenessOfStrategiesData(
+  segmentData,
+  customSpeedLimit?: string
+) {
   const dateRange = formatChartDateTimeRange(
     segmentData[0].weeklyEffectiveness[0].startDate,
     segmentData[0].weeklyEffectiveness[
@@ -39,7 +42,7 @@ export default function transformEffectivenessOfStrategiesData(segmentData) {
     data: segmentData[0].weeklyEffectiveness.map(
       (week) => `${formatDate(week.startDate)}`
     ),
-    name: 'Date',
+    name: '',
     axisLabel: {
       rotate: 45,
       formatter: (value: string) => value,
@@ -72,7 +75,7 @@ export default function transformEffectivenessOfStrategiesData(segmentData) {
     speedLimitData,
     percentViolationsData,
     percentExtremeViolationsData,
-  } = mergeEffectivenessSeriesData(segmentData)
+  } = mergeEffectivenessSeriesData(segmentData, customSpeedLimit)
 
   const series = [
     {
@@ -129,13 +132,14 @@ export default function transformEffectivenessOfStrategiesData(segmentData) {
     tooltip,
     series,
     dataZoom,
+    response: segmentData,
   }
 
   return chartOptions
 }
 
 // Merges series data for the Effectiveness of Strategies chart
-function mergeEffectivenessSeriesData(segmentData) {
+function mergeEffectivenessSeriesData(segmentData, customSpeedLimit?:string) {
   const averageSpeedData: [string, number | null][] = []
   const eightyFifthPercentileData: [string, number | null][] = []
   const speedLimitData: [string, number | null][] = []
@@ -163,7 +167,7 @@ function mergeEffectivenessSeriesData(segmentData) {
         weekLabel,
         averageEightyFifthSpeed !== undefined ? averageEightyFifthSpeed : null,
       ])
-      speedLimitData.push([weekLabel, 55])
+      speedLimitData.push([weekLabel, customSpeedLimit ? customSpeedLimit : segmentData[0].speedLimit])
       percentViolationsData.push([
         weekLabel,
         percentViolations !== undefined ? percentViolations : null,
