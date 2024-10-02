@@ -26,7 +26,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices.SpeedO
             }
 
             DateTime endDate = new DateTime(parameter.EndDate.Year, parameter.EndDate.Month, 1).AddMonths(1).AddDays(-1);
-            DateTime startDate = new DateTime(parameter.StartDate.Year, parameter.StartDate.Month, 1);
+            DateTime startDate = new DateTime(parameter.StartDate.Year, parameter.StartDate.Month, 1).AddDays(-1);
 
             var monthlyAggregations = await monthlyAggregationRepository.MonthlyAggregationsForSegmentInTimePeriod(parameter.SegmentIds, startDate, endDate, parameter.timePeriod, parameter.monthAggClassification);
             var aggregationsBySegment = monthlyAggregations.GroupBy(x => x.SegmentId);
