@@ -22,15 +22,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices
 
         public async Task<IReadOnlyList<Impact>> ListImpacts()
         {
-            var impactsMissingFields = impactRepository.GetList();
-            List<Impact> impacts = new List<Impact>();
-
-            foreach (Impact impactMissingFields in impactsMissingFields)
-            {
-                Impact impact = await PopulateImpactAsync(impactMissingFields);
-                impacts.Add(impact);
-            }
-
+            List<Impact> impacts = impactRepository.GetList().ToList();
             return impacts;
         }
 
@@ -42,29 +34,8 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices
 
         public async Task<List<Impact>> GetImpactsOnSegment(Guid segmentId)
         {
-            var segmentImpacts = await segmentImpactRepository.GetImpactsForSegmentAsync(segmentId);
-            var impactIds = segmentImpacts.Select(it => it.ImpactId).ToList();
-            var impactsMissingFields = await impactRepository.GetInstancesDetails(impactIds);
-            List<Impact> impacts = new List<Impact>();
+            var impacts = await impactRepository.GetImpactsForSegmentAsync(segmentId);
 
-            foreach (Impact impactMissingFields in impactsMissingFields)
-            {
-                Impact impact = await PopulateImpactAsync(impactMissingFields);
-                impacts.Add(impact);
-            }
-            return impacts;
-        }
-
-        public async Task<List<Impact>> GetListOfImpactsFromIds(List<Guid> impactIds)
-        {
-            var impactsMissingFields = await impactRepository.GetInstancesDetails(impactIds);
-            List<Impact> impacts = new List<Impact>();
-
-            foreach (Impact impactMissingFields in impactsMissingFields)
-            {
-                Impact impact = await PopulateImpactAsync(impactMissingFields);
-                impacts.Add(impact);
-            }
             return impacts;
         }
 
@@ -157,34 +128,9 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices
             {
                 return null;
             }
-            IReadOnlyList<SegmentImpact> segmentImpacts = await segmentImpactRepository.GetSegmentsForImpactAsync((Guid)impact.Id);
-            List<Guid> segmentIds = segmentImpacts.Select(i => i.SegmentId).ToList();
-            //List<Data.Models.SpeedManagementConfigModels.Segment> segments = await GetImpactTypesAsync(segmentIds);
-            IReadOnlyList<ImpactImpactType> impactImpactTypes = await impactImpactTypeRepository.GetImpactTypesForImpactAsync((Guid)impact.Id);
-            List<Guid> impactTypeIds = impactImpactTypes.Select(i => i.ImpactTypeId).ToList();
+            var impactOutput = await impactRepository.GetInstanceDetails(impact.Id);
 
-            var impactTypes = await Task.WhenAll(impactTypeIds.Select(async id => await impactTypeRepository.LookupAsync(id)));
-            List<ImpactType> impactTypesList = impactTypes.ToList();
-
-            Impact impactCopy = new Impact
-            {
-                Id = impact.Id,
-                Description = impact.Description,
-                Start = impact.Start,
-                End = impact.End,
-                StartMile = impact.StartMile,
-                EndMile = impact.EndMile,
-                ImpactTypeIds = impactTypeIds,
-                ImpactTypes = impactTypesList,
-                CreatedOn = impact.CreatedOn,
-                CreatedBy = impact.CreatedBy,
-                UpdatedOn = impact.UpdatedOn,
-                UpdatedBy = impact.UpdatedBy,
-                DeletedOn = impact.DeletedOn,
-                DeletedBy = impact.DeletedBy,
-                SegmentIds = segmentIds
-            };
-            return impactCopy;
+            return impactOutput;
         }
 
     }
