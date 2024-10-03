@@ -101,7 +101,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             return monthlyAggregations;
         }
 
-        public async Task<List<HourlySpeed>> GetHourlySpeedsWithFiltering(List<Guid> segmentIds, DateTime startDate, DateTime endDate, DateTime? startTime = null, DateTime? endTime = null, int? dayOfWeek = null, List<DateTime>? specificDays = null)
+        public async Task<List<HourlySpeed>> GetHourlySpeedsWithFiltering(List<Guid> segmentIds, DateTime startDate, DateTime endDate, DateTime? startTime = null, DateTime? endTime = null, List<int>? daysOfWeek = null, List<DateTime>? specificDays = null)
         {
             var ids = string.Join(", ", segmentIds.Select(id => $"'{id}'"));
             string query = $@"SELECT * FROM `{_datasetId}.{_tableId}` WHERE 
@@ -118,9 +118,11 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 var dates = string.Join(", ", specificDays.Select(d => $"'{d.ToString("yyyy-MM-dd")}'"));
                 query = query + $" AND Date IN ({dates})";
             }
-            if (dayOfWeek != null && dayOfWeek < 8 && dayOfWeek > 0)
+
+            if (daysOfWeek != null && daysOfWeek.Count > 0)
             {
-                query = query + $" AND EXTRACT(DAYOFWEEK FROM `Date`) = {dayOfWeek}";
+                var days = string.Join(", ", daysOfWeek);
+                query = query + $" AND EXTRACT(DAYOFWEEK FROM `Date`) IN ({days})";
             }
 
             query = query + " ORDER BY Date ASC, BinStartTime ASC;";

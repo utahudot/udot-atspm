@@ -16,7 +16,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices.SpeedV
 
         public override async Task<List<SpeedViolationsDto>> ExecuteAsync(SpeedViolationsOptions parameter, IProgress<int> progress = null, CancellationToken cancelToken = default)
         {
-            var filteredHours = await hourlySpeedRepository.GetHourlySpeedsWithFiltering(parameter.SegmentIds, parameter.StartDate, parameter.EndDate, parameter.StartTime, parameter.EndTime, parameter.DayOfWeek, parameter.SpecificDays);
+            var filteredHours = await hourlySpeedRepository.GetHourlySpeedsWithFiltering(parameter.SegmentIds, parameter.StartDate, parameter.EndDate, parameter.StartTime, parameter.EndTime, parameter.DaysOfWeek, parameter.SpecificDays);
 
             var groupedBySegmentId = filteredHours.GroupBy(h => h.SegmentId).ToDictionary(g => g.Key, g => g.ToList());
 
