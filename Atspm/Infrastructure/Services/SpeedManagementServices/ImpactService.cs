@@ -29,7 +29,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices
         public async Task<Impact> GetImpactById(Guid id)
         {
             var impact = await impactRepository.LookupAsync(id);
-            return await PopulateImpactAsync(impact);
+            return impact;
         }
 
         public async Task<List<Impact>> GetImpactsOnSegment(Guid segmentId)
@@ -68,8 +68,8 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices
                     })
                     .ToList() : new List<ImpactImpactType>();
 
-            await segmentImpactRepository.UpdateRangeAsync(segmentImpactList);
-            await impactImpactTypeRepository.UpdateRangeAsync(impactTypeList);
+            segmentImpactRepository.UpdateRange(segmentImpactList);
+            impactImpactTypeRepository.UpdateRange(impactTypeList);
             Impact currentImpact = await GetImpactById(impactId);
 
             return currentImpact;

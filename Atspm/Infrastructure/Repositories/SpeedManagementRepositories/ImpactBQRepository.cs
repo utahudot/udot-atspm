@@ -105,26 +105,15 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
 
         public override async Task<Impact> LookupAsync(object key)
         {
-            if (key == null) return null;
-            var query = $"SELECT * FROM `{_datasetId}.{_tableId}` WHERE Id = @key";
-            var parameters = new List<BigQueryParameter>
-            {
-                    new BigQueryParameter("key", BigQueryDbType.String, key.ToString())
-                };
-            var results = await _client.ExecuteQueryAsync(query, parameters);
-            return results.Select(row => MapRowToEntity(row)).FirstOrDefault();
+            Guid guid = Guid.Parse(key.ToString());
+            return await GetInstanceDetails(guid);
         }
 
         public override async Task<Impact> LookupAsync(Impact item)
         {
             if (item.Id == null) return null;
-            var query = $"SELECT * FROM `{_datasetId}.{_tableId}` WHERE Id = @key";
-            var parameters = new List<BigQueryParameter>
-                {
-                    new BigQueryParameter("key", BigQueryDbType.String, item.Id.ToString())
-                };
-            var results = await _client.ExecuteQueryAsync(query, parameters);
-            return results.Select(row => MapRowToEntity(row)).FirstOrDefault();
+            Guid? guid = item.Id;
+            return await GetInstanceDetails(guid);
         }
 
         public override void Remove(Impact item)
