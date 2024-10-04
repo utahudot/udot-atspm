@@ -44,7 +44,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices.Effect
                         MaxSpeed = g.Max(h => h.MaxSpeed) ?? 0,
                         MinSpeed = g.Min(h => h.MinSpeed) ?? 0,
                         AverageSpeed = ((double)(g.Sum(h => h.Average * h.Flow)) / (g.Sum(h => h.Flow))) ?? 0,
-                        AverageEightyFifthSpeed = ((double)(g.Sum(h => h.EightyFifthSpeed)) / (g.Sum(h => h.Flow))) ?? 0,
+                        AverageEightyFifthSpeed = ((double)(g.Sum(h => h.EightyFifthSpeed * h.Flow)) / (g.Sum(h => h.Flow))) ?? 0,
                         Variability = ((double)g.Max(h => h.MaxSpeed ?? 0)) - ((double)g.Min(h => h.MinSpeed ?? 0)),
                         PercentViolations = (g.Sum(h => h.Flow) != 0 ? (double)g.Sum(h => h.Violation) / g.Sum(h => h.Flow) ?? 0 : 0) * 100,
                         PercentExtremeViolations = (g.Sum(h => h.Flow) != 0 ? (double)g.Sum(h => h.ExtremeViolation) / g.Sum(h => h.Flow) ?? 0 : 0) * 100,
