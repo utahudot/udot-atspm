@@ -149,7 +149,13 @@ const EffectivenessOfStrategiesChartsContainer = ({
           overflowX: 'inherit',
         }}
       >
+        <Table>
+          <TableRow>
+          <TableCell colSpan={6} sx={{padding:'20px', border:'none', textAlign: 'center'}}><Typography sx={{fontWeight:"bold"}}>Overalls</Typography></TableCell>
+          </TableRow>
+          </Table>
         <Table size="small" stickyHeader>
+
           <TableHead>
             <TableRow>
               <TableCell></TableCell>
@@ -197,11 +203,14 @@ const EffectivenessOfStrategiesChartsContainer = ({
               </TableCell>
               <TableCell>{differenceMetrics.variability.toFixed(2)}</TableCell>
             </TableRow>
-          </TableBody>
-          <TableCell sx={{padding:'20px', border:'none'}}></TableCell>
-          
+            <TableCell colSpan={6} sx={{padding:'10px', border:'none'}}></TableCell>
 
+          </TableBody>   
+          <TableRow>
+            <TableCell colSpan={6} sx={{padding:'20px', border:'none', textAlign: 'center'}}><Typography sx={{fontWeight:"bold"}}>Before Treatment Application</Typography></TableCell>
+          </TableRow>       
           <TableHead>
+
             <TableRow>
               <TableCell>Date</TableCell>
               <TableCell>Avg Speed (MPH)</TableCell>
@@ -234,9 +243,13 @@ const EffectivenessOfStrategiesChartsContainer = ({
                   <TableCell>{week.variability.toFixed(2)}</TableCell>
                 </TableRow>
               ))}
+                <TableCell colSpan={6} sx={{padding:'10px', border:'none'}}></TableCell>
           </TableBody>
-          <TableCell sx={{padding:'20px', border:'none'}}></TableCell>
+          <TableRow>
+          <TableCell colSpan={6} sx={{padding:'10px', border:'none', textAlign: 'center'}}><Typography sx={{fontWeight:"bold"}}>After Treatment Application</Typography></TableCell>
+          </TableRow>
           <TableHead>
+
             <TableRow>
               <TableCell>Date</TableCell>
               <TableCell>Avg Speed (MPH)</TableCell>
