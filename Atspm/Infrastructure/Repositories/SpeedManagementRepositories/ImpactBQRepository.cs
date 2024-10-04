@@ -24,12 +24,56 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
 
         public override IQueryable<Impact> GetList()
         {
-            var query = $"SELECT * FROM `{_datasetId}.{_tableId}`";
+            string query = $@"SELECT 
+                impact.Id, 
+                impact.Description, 
+                impact.Start, 
+                impact.End, 
+                impact.StartMile, 
+                impact.EndMile, 
+                impact.CreatedOn, 
+                impact.CreatedBy, 
+                impact.UpdatedBy, 
+                impact.UpdatedOn,
+                impact.DeletedOn,
+                impact.DeletedBy,
+                ARRAY_AGG(DISTINCT segmentImpact.SegmentId) AS SegmentIds,
+                ARRAY_AGG(STRUCT(
+                    impactType.Id AS ImpactTypeId, 
+                    impactType.Description AS ImpactTypeDescription, 
+                    impactType.Name AS ImpactTypeName
+                ) ORDER BY impactType.Id) AS ImpactTypes
+            FROM 
+                `{_datasetId}.{_tableId}` AS impact
+            JOIN 
+                `{_datasetId}.impactImpactType` AS impactToImpactType 
+                ON impactToImpactType.ImpactId = impact.Id
+            JOIN 
+                `{_datasetId}.segmentImpact` AS segmentImpact 
+                ON segmentImpact.ImpactId = impact.Id
+            JOIN 
+                `{_datasetId}.impactType` AS impactType 
+                ON impactToImpactType.ImpactTypeId = impactType.Id
+            WHERE 
+                impact.Id IS NOT NULL
+            GROUP BY 
+                impact.Id, 
+                impact.Description, 
+                impact.Start, 
+                impact.End, 
+                impact.StartMile, 
+                impact.EndMile, 
+                impact.CreatedOn, 
+                impact.CreatedBy, 
+                impact.UpdatedBy, 
+                impact.UpdatedOn,
+                impact.DeletedOn,
+                impact.DeletedBy;";
             var parameters = new List<BigQueryParameter>();
 
             var result = _client.ExecuteQuery(query, parameters).ToList();
 
-            return result.Select(row => MapRowToEntity(row)).ToList().AsQueryable();
+            return result.Select(row => MapRowLimitedImpactToEntity(row)).ToList().AsQueryable();
         }
 
         public override Impact Lookup(object key)
@@ -61,26 +105,15 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
 
         public override async Task<Impact> LookupAsync(object key)
         {
-            if (key == null) return null;
-            var query = $"SELECT * FROM `{_datasetId}.{_tableId}` WHERE Id = @key";
-            var parameters = new List<BigQueryParameter>
-            {
-                    new BigQueryParameter("key", BigQueryDbType.String, key.ToString())
-                };
-            var results = await _client.ExecuteQueryAsync(query, parameters);
-            return results.Select(row => MapRowToEntity(row)).FirstOrDefault();
+            Guid guid = Guid.Parse(key.ToString());
+            return await GetInstanceDetails(guid);
         }
 
         public override async Task<Impact> LookupAsync(Impact item)
         {
             if (item.Id == null) return null;
-            var query = $"SELECT * FROM `{_datasetId}.{_tableId}` WHERE Id = @key";
-            var parameters = new List<BigQueryParameter>
-                {
-                    new BigQueryParameter("key", BigQueryDbType.String, item.Id.ToString())
-                };
-            var results = await _client.ExecuteQueryAsync(query, parameters);
-            return results.Select(row => MapRowToEntity(row)).FirstOrDefault();
+            Guid? guid = item.Id;
+            return await GetInstanceDetails(guid);
         }
 
         public override void Remove(Impact item)
@@ -265,22 +298,238 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             // Construct a comma-separated list of IDs for the IN clause
             string ids = string.Join(",", impactIds.Select(id => $"'{id}'"));
 
-            // Query with IN clause
-            string query = $@"
-                SELECT * 
-                FROM `{_datasetId}.{_tableId}` 
-                WHERE Id IN ({ids});";
+            string query = $@"SELECT 
+                impact.Id, 
+                impact.Description, 
+                impact.Start, 
+                impact.End, 
+                impact.StartMile, 
+                impact.EndMile, 
+                impact.CreatedOn, 
+                impact.CreatedBy, 
+                impact.UpdatedBy, 
+                impact.UpdatedOn,
+                impact.DeletedOn,
+                impact.DeletedBy,
+                ARRAY_AGG(DISTINCT segmentImpact.SegmentId) AS SegmentIds,
+                ARRAY_AGG(STRUCT(
+                    impactType.Id AS ImpactTypeId, 
+                    impactType.Description AS ImpactTypeDescription, 
+                    impactType.Name AS ImpactTypeName
+                ) ORDER BY impactType.Id) AS ImpactTypes
+            FROM 
+                `{_datasetId}.{_tableId}` AS impact
+            JOIN 
+                `{_datasetId}.impactImpactType` AS impactToImpactType 
+                ON impactToImpactType.ImpactId = impact.Id
+            JOIN 
+                `{_datasetId}.segmentImpact` AS segmentImpact 
+                ON segmentImpact.ImpactId = impact.Id
+            JOIN 
+                `{_datasetId}.impactType` AS impactType 
+                ON impactToImpactType.ImpactTypeId = impactType.Id
+            WHERE 
+                impact.DeletedOn IS NULL
+            AND
+                impact.Id IN ({ids})
+            GROUP BY 
+                impact.Id, 
+                impact.Description, 
+                impact.Start, 
+                impact.End, 
+                impact.StartMile, 
+                impact.EndMile, 
+                impact.CreatedOn, 
+                impact.CreatedBy, 
+                impact.UpdatedBy, 
+                impact.DeletedBy, 
+                impact.DeletedOn, 
+                impact.UpdatedOn;";
 
             var parameters = new List<BigQueryParameter>();
 
             var results = await _client.ExecuteQueryAsync(query, parameters);
-            return results.Select(row => MapRowToEntity(row)).ToList();
+            return results.Select(row => MapRowLimitedImpactToEntity(row)).ToList();
         }
 
+        public async Task<Impact> GetInstanceDetails(Guid? impactId)
+        {
+            if (impactId == null)
+            {
+                return null;
+            }
+
+            string query = $@"SELECT 
+                impact.Id, 
+                impact.Description, 
+                impact.Start, 
+                impact.End, 
+                impact.StartMile, 
+                impact.EndMile, 
+                impact.CreatedOn, 
+                impact.CreatedBy, 
+                impact.UpdatedBy, 
+                impact.UpdatedOn,
+                impact.DeletedOn,
+                impact.DeletedBy,
+                ARRAY_AGG(DISTINCT segmentImpact.SegmentId) AS SegmentIds,
+                ARRAY_AGG(STRUCT(
+                    impactType.Id AS ImpactTypeId, 
+                    impactType.Description AS ImpactTypeDescription, 
+                    impactType.Name AS ImpactTypeName
+                ) ORDER BY impactType.Id) AS ImpactTypes
+            FROM 
+                `{_datasetId}.{_tableId}` AS impact
+            JOIN 
+                `{_datasetId}.impactImpactType` AS impactToImpactType 
+                ON impactToImpactType.ImpactId = impact.Id
+            JOIN 
+                `{_datasetId}.segmentImpact` AS segmentImpact 
+                ON segmentImpact.ImpactId = impact.Id
+            JOIN 
+                `{_datasetId}.impactType` AS impactType 
+                ON impactToImpactType.ImpactTypeId = impactType.Id
+            WHERE 
+                impact.DeletedOn IS NULL
+            AND
+                impact.Id = '{impactId}'
+            GROUP BY 
+                impact.Id, 
+                impact.Description, 
+                impact.Start, 
+                impact.End, 
+                impact.StartMile, 
+                impact.EndMile, 
+                impact.CreatedOn, 
+                impact.CreatedBy, 
+                impact.UpdatedBy, 
+                impact.DeletedBy, 
+                impact.DeletedOn, 
+                impact.UpdatedOn;";
+
+            var parameters = new List<BigQueryParameter>();
+
+            var results = await _client.ExecuteQueryAsync(query, parameters);
+            return results.Select(row => MapRowLimitedImpactToEntity(row)).FirstOrDefault();
+        }
+
+        public async Task<List<Impact>> GetImpactsForSegmentAsync(Guid segmentId)
+        {
+            string query = $@"SELECT 
+                impact.Id, 
+                impact.Description, 
+                impact.Start, 
+                impact.End, 
+                impact.StartMile, 
+                impact.EndMile, 
+                impact.CreatedOn, 
+                impact.CreatedBy, 
+                impact.UpdatedBy, 
+                impact.UpdatedOn,
+                impact.DeletedOn,
+                impact.DeletedBy,
+                ARRAY_AGG(DISTINCT segmentImpact.SegmentId) AS SegmentIds,
+                ARRAY_AGG(STRUCT(
+                    impactType.Id AS ImpactTypeId, 
+                    impactType.Description AS ImpactTypeDescription, 
+                    impactType.Name AS ImpactTypeName
+                ) ORDER BY impactType.Id) AS ImpactTypes
+            FROM 
+                `{_datasetId}.{_tableId}` AS impact
+            JOIN 
+                `{_datasetId}.impactImpactType` AS impactToImpactType 
+                ON impactToImpactType.ImpactId = impact.Id
+            JOIN 
+                `{_datasetId}.segmentImpact` AS segmentImpact 
+                ON segmentImpact.ImpactId = impact.Id
+            JOIN 
+                `{_datasetId}.impactType` AS impactType 
+                ON impactToImpactType.ImpactTypeId = impactType.Id
+            WHERE 
+                impact.DeletedOn IS NULL
+            AND
+                segmentImpact.segmentId = '{segmentId}'
+            GROUP BY 
+                impact.Id, 
+                impact.Description, 
+                impact.Start, 
+                impact.End, 
+                impact.StartMile, 
+                impact.EndMile, 
+                impact.CreatedOn, 
+                impact.CreatedBy, 
+                impact.UpdatedBy, 
+                impact.DeletedBy, 
+                impact.DeletedOn, 
+                impact.UpdatedOn;";
+
+            var parameters = new List<BigQueryParameter>();
+
+            var results = await _client.ExecuteQueryAsync(query, parameters);
+            return results.Select(row => MapRowLimitedImpactToEntity(row)).ToList();
+        }
 
         ///////////////////// 
         //PRIVATE FUNCTIONS//
         /////////////////////
+
+        private Impact MapRowLimitedImpactToEntity(BigQueryRow row)
+        {
+            var bigQueryId = Guid.Parse(row["Id"].ToString());
+            var bigQueryDescription = row["Description"].ToString();
+            var bigQueryStart = DateTime.Parse(row["Start"].ToString());
+            var bigQueryEnd = row["End"] != null ? DateTime.Parse(row["End"].ToString()) : (DateTime?)null;
+            double bigQueryStartMile = double.Parse(row["StartMile"].ToString());
+            var bigQueryEndMile = double.Parse(row["EndMile"].ToString());
+            var bigQueryCreatedOn = DateTime.Parse(row["CreatedOn"].ToString()); //DateTime
+            var bigQueryCreatedBy = row["CreatedBy"].ToString();
+            var bigQueryUpdatedOn = row["UpdatedOn"] != null ? DateTime.Parse(row["UpdatedOn"].ToString()) : (DateTime?)null; //DateTime?
+            var bigQueryUpdatedBy = row["UpdatedBy"]?.ToString();
+            var bigQueryDeletedOn = row["DeletedOn"] != null ? DateTime.Parse(row["DeletedOn"].ToString()) : (DateTime?)null; //DateTime?
+            var bigQueryDeletedBy = row["DeletedBy"]?.ToString();
+
+            var segmentIdsArray = (string[])row["SegmentIds"];
+            List<Guid> bigQuerySegmentIds = segmentIdsArray
+                .Select(Guid.Parse)  // Convert each string to a Guid
+                .ToList();
+            // Deserialize SegmentIds from a JSON array into List<Guid>
+            //var bigQuerySegmentIds = JsonConvert.DeserializeObject<List<Guid>>(row["SegmentIds"].ToString());
+
+            var impactTypesArray = (Dictionary<string, object>[])row["ImpactTypes"];
+
+            List<ImpactType> bigQueryImpactTypes = impactTypesArray
+                .Select(item => new ImpactType
+                {
+                    Id = Guid.Parse(item["ImpactTypeId"].ToString()), // Assuming ImpactTypeId is a string
+                    Description = item["ImpactTypeDescription"].ToString(),
+                    Name = item["ImpactTypeName"].ToString()
+                })
+                .ToList();
+
+            List<Guid> impactTypeIds = bigQueryImpactTypes
+                .Where(i => i.Id != null) // Filter out null Ids
+                .Select(i => Guid.Parse(i.Id.ToString())) // Convert the remaining Ids to Guid
+                .ToList();
+
+            return new Impact
+            {
+                Id = bigQueryId,
+                Description = bigQueryDescription,
+                Start = bigQueryStart,
+                End = bigQueryEnd,
+                StartMile = bigQueryStartMile,
+                EndMile = bigQueryEndMile,
+                CreatedOn = bigQueryCreatedOn,
+                CreatedBy = bigQueryCreatedBy,
+                UpdatedOn = bigQueryUpdatedOn,
+                UpdatedBy = bigQueryUpdatedBy,
+                DeletedOn = bigQueryDeletedOn,
+                DeletedBy = bigQueryDeletedBy,
+                SegmentIds = bigQuerySegmentIds,
+                ImpactTypeIds = impactTypeIds,
+                ImpactTypes = bigQueryImpactTypes
+            };
+        }
 
         private Tuple<string, List<BigQueryParameter>> UpdateQuery(Impact item)
         {

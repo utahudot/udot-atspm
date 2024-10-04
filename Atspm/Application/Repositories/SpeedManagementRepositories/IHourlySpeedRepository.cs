@@ -9,16 +9,12 @@ namespace Utah.Udot.Atspm.Repositories.SpeedManagementRepositories
     {
         public Task AddHourlySpeedAsync(HourlySpeed hourlySpeed);
         public Task AddHourlySpeedsAsync(List<HourlySpeed> hourlySpeeds);
-        public Task<List<MonthlyAverage>> GetMonthlyAveragesAsync(Guid segmentId, DateOnly startDate, DateOnly endDate, string daysOfWeek);
         public Task<List<DailyAverage>> GetDailyAveragesAsync(Guid segmentId, DateOnly startDate, DateOnly endDate, string daysOfWeek);
-        public Task<List<RouteSpeed>> GetRoutesSpeeds(RouteSpeedOptions options);
         public Task<List<HourlySpeed>> GetHourlySpeedsForSegmentInSource(OptionsBase baseOptions, Guid segmentId);
         public Task<List<HourlySpeed>> GetWeeklySpeedsForSegmentInSource(OptionsBase baseOptions, Guid segmentId);
         Task<List<HourlySpeed>> GetHourlySpeedsForTimePeriod(Guid segmentId, DateTime startDate, DateTime endDate, DateTime startTime, DateTime endTime);
         Task<List<HourlySpeed>> HourlyAggregationsForSegmentInTimePeriod(List<Guid> segmentIds, DateTime startTime, DateTime endTime);
-        Task<List<HourlySpeed>> GetHourlySpeedsWithFiltering(List<Guid> segmentIds, DateTime startDate, DateTime endDate, DateTime? startTime, DateTime? endTime, int? dayOfWeek, List<DateTime> specificDays);
-        public Task DeleteBySegment(Guid segmentId);
-        public Task DeleteBySegments(List<Guid> segments);
+        Task<List<HourlySpeed>> GetHourlySpeedsWithFiltering(List<Guid> segmentIds, DateTime startDate, DateTime endDate, DateTime? startTime, DateTime? endTime, List<int>? daysOfWeek, List<DateTime> specificDays);
         #region ExtensionMethods
 
 

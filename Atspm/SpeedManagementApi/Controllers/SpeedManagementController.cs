@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using NetTopologySuite.Features;
 using NetTopologySuite.IO;
+using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.MonthlyAggregation;
 using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.SegmentSpeed;
 using Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices;
 
@@ -10,18 +11,18 @@ namespace SpeedManagementApi.Controllers
     [Route("api/v1/[controller]")]
     public class SpeedManagementController : ControllerBase
     {
-        private readonly HourlySpeedService hourlySpeedService;
+        private readonly MonthlyAggregationService monthlyAggregationService;
 
-        public SpeedManagementController(HourlySpeedService routeSpeedService)
+        public SpeedManagementController(MonthlyAggregationService monthlyAggregationService)
         {
-            this.hourlySpeedService = routeSpeedService;
+            this.monthlyAggregationService = monthlyAggregationService;
         }
 
         [HttpPost("GetRouteSpeeds", Name = "GetRouteSpeeds")]
-        public async Task<IActionResult> GetRoutesSpeeds([FromBody] RouteSpeedOptions options)
+        public async Task<IActionResult> GetRoutesSpeeds([FromBody] MonthlyAggregationOptions options)
         {
 
-            IEnumerable<RouteSpeed> routeSpeeds = await hourlySpeedService.GetRouteSpeedsAsync(options);
+            IEnumerable<RouteSpeed> routeSpeeds = await monthlyAggregationService.GetRouteSpeedsAsync(options);
 
             var features = new List<Feature>();
             foreach (var routeSpeed in routeSpeeds)
@@ -29,20 +30,28 @@ namespace SpeedManagementApi.Controllers
                 var geometry = routeSpeed.Shape;
                 var properties = new AttributesTable
                 {
-                    { "name", routeSpeed.Name },
+                    { "createdDate", routeSpeed.CreatedDate.ToString("M/d/yyyy, h:mm tt") },
+                    { "binStartTime", routeSpeed.BinStartTime.ToString("M/d/yyyy, h:mm tt") },
                     { "route_id", routeSpeed.SegmentId },
-                    { "startdate", routeSpeed.Startdate?.ToString("M/d/yyyy, h:mm tt") },
-                    { "enddate", routeSpeed.Enddate?.ToString("M/d/yyyy, h:mm tt") },
-                    { "percentilespd_15", routeSpeed.Percentilespd_15 },
-                    { "avg", routeSpeed.Avg },
-                    { "percentilespd_85", routeSpeed.Percentilespd_85 },
-                    { "percentilespd_95", routeSpeed.Percentilespd_95 },
-                    //{ "percentilespd_99", routeSpeed.Percentilespd_99 },
-                    { "averageSpeedAboveSpeedLimit", routeSpeed.AverageSpeedAboveSpeedLimit },
-                    { "estimatedViolations", routeSpeed.EstimatedViolations },
-                    { "estimatedExtremeViolations", routeSpeed.EstimatedExtremeViolations },
-                    { "flow", routeSpeed.Flow },
+                    { "sourceId", routeSpeed.SourceId },
+                    { "name", routeSpeed.Name },
                     { "speedLimit", routeSpeed.SpeedLimit },
+                    { "region", routeSpeed.Region },
+                    { "city", routeSpeed.City },
+                    { "county", routeSpeed.County },
+                    { "averageSpeed", routeSpeed.AverageSpeed },
+                    { "averageEightyFifthSpeed", routeSpeed.AverageEightyFifthSpeed },
+                    { "violations", routeSpeed.Violations },
+                    { "extremeViolations", routeSpeed.ExtremeViolations },
+                    { "flow", routeSpeed.Flow },
+                    { "minSpeed", routeSpeed.MinSpeed },
+                    { "maxSpeed", routeSpeed.MaxSpeed },
+                    { "variability", routeSpeed.Variability },
+                    { "percentViolations", routeSpeed.PercentViolations },
+                    { "percentExtremeViolations", routeSpeed.PercentExtremeViolations },
+                    { "avgSpeedVsSpeedLimit", routeSpeed.AvgSpeedVsSpeedLimit },
+                    { "eightyFifthSpeedVsSpeedLimit", routeSpeed.EightyFifthSpeedVsSpeedLimit },
+                    { "percentObserved", routeSpeed.PercentObserved },
                     //{ "geometry", routeSpeed.Shape }
                     //{ "esri_oid", 2 },
                     //{ "SHAPE__Length", 2 }
@@ -80,19 +89,19 @@ namespace SpeedManagementApi.Controllers
             return Content(geoJson, "application/geo+json");
         }
 
-        [HttpPost("GetHistoricalSpeeds")]
-        public async Task<IActionResult> GetHistoricalData([FromBody] HistoricalSpeedOptions options)
-        {
-            var task = hourlySpeedService.GetHistoricalSpeeds(options);
+        //[HttpPost("GetHistoricalSpeeds")]
+        //public async Task<IActionResult> GetHistoricalData([FromBody] HistoricalSpeedOptions options)
+        //{
+        //    var task = monthlyAggregationService.(options);
+        //    var result = await Task.Run(() => task);GetHistoricalSpeeds
 
-            var result = await Task.Run(() => task);
 
-            if (result != null)
-            {
-                return Ok(result);
-            }
-            else { return BadRequest(); }
-        }
+        //    if (result != null)
+        //    {
+        //        return Ok(result);
+        //    }
+        //    else { return BadRequest(); }
+        //}
 
     }
 }

@@ -120,8 +120,6 @@ export default function transformSpeedOverDistanceData(
     dataZoom,
   }
 
-  console.log('chartOptions', chartOptions)
-
   return chartOptions
 }
 
