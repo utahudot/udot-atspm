@@ -27,7 +27,6 @@ using Utah.Udot.Atspm.Services;
 using Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices;
 using Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices.DataQuality;
 using Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices.EffectivenessOrStrategies;
-using Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices.SegmentSpeed;
 using Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices.SpeedCompliance;
 using Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices.SpeedOverDistance;
 using Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices.SpeedOverTime;
@@ -139,6 +138,15 @@ builder.Host.ConfigureServices((h, s) =>
         var logger = provider.GetRequiredService<ILogger<SegmentBQRepository>>();
         return new SegmentBQRepository(client, datasetId, tableId, projectId, logger);
     });
+    s.AddScoped<ISegmentEntityRepository, SegmentEntityBQRepository>(provider =>
+    {
+        var client = provider.GetRequiredService<BigQueryClient>();
+        var datasetId = builder.Configuration["BigQuery:DatasetId"];
+        var tableId = builder.Configuration["BigQuery:RouteEntityTableId"];
+        var projectId = builder.Configuration["BigQuery:ProjectId"];
+        var logger = provider.GetRequiredService<ILogger<SegmentEntityBQRepository>>();
+        return new SegmentEntityBQRepository(client, datasetId, tableId, logger);
+    });
     s.AddScoped<IImpactRepository, ImpactBQRepository>(provider =>
     {
         var client = provider.GetRequiredService<BigQueryClient>();
@@ -222,8 +230,7 @@ builder.Host.ConfigureServices((h, s) =>
 
     Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", builder.Configuration["GoogleApplicationCredentials"]);
 
-    s.AddScoped<RouteSpeedService>();
-    s.AddScoped<RouteService>();
+    s.AddScoped<SegmentService>();
     s.AddScoped<ImpactService>();
     s.AddScoped<ImpactTypeService>();
     s.AddScoped<MonthlyAggregationService>();

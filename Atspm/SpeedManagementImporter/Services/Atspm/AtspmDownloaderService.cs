@@ -23,7 +23,7 @@ namespace SpeedManagementImporter.Services.Atspm
             sourceConnectionString = this.configuration["Atspm:ConnectionString"];
         }
 
-        public async Task Download(DateTime startDate, DateTime endDate)
+        public async Task Download(DateTime startDate, DateTime endDate, List<string>? providedSegments)
         {
             var routeEntities = await segmentEntityRepository.GetEntitiesWithSpeedForSourceId(sourceId);
             var routes = routeEntities.GroupBy(r => r.SegmentId).ToList();

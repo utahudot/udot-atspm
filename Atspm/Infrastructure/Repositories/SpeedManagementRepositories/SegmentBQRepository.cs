@@ -26,7 +26,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             _logger = log;
         }
 
-        public async Task AddRoutesAsync(IEnumerable<Segment> routes)
+        public async Task AddSegmentsAsync(IEnumerable<Segment> routes)
         {
             var table = _client.GetTable(_datasetId, _tableId);
             List<BigQueryInsertRow> insertRows = new List<BigQueryInsertRow>();
@@ -37,7 +37,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             await table.InsertRowsAsync(insertRows);
         }
 
-        public async Task AddRouteAsync(Segment route)
+        public async Task AddSegmentAsync(Segment route)
         {
             var table = _client.GetTable(_datasetId, _tableId);
             var insertRow = CreateRow(route);
@@ -795,6 +795,5 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             segments.ForEach(seg => seg.Shape = null);
             return segments;
         }
-
     }
 }

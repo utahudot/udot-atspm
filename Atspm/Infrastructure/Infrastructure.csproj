@@ -27,8 +27,11 @@
 
 	<ItemGroup>
 		<Compile Remove="Migrations\**" />
+		<Compile Remove="Services\SpeedManagementServices\SegmentSpeed\**" />
 		<EmbeddedResource Remove="Migrations\**" />
+		<EmbeddedResource Remove="Services\SpeedManagementServices\SegmentSpeed\**" />
 		<None Remove="Migrations\**" />
+		<None Remove="Services\SpeedManagementServices\SegmentSpeed\**" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -124,10 +127,6 @@
 	    <Generator>ResXFileCodeGenerator</Generator>
 	    <LastGenOutput>Resources.Designer.cs</LastGenOutput>
 	  </EmbeddedResource>
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="Services\SpeedManagementServices\SegmentSpeed\" />
 	</ItemGroup>
 
 </Project>

@@ -2,7 +2,7 @@
 using NetTopologySuite.Features;
 using NetTopologySuite.IO;
 using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.SegmentSpeed;
-using Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices.SegmentSpeed;
+using Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices;
 
 namespace SpeedManagementApi.Controllers
 {
@@ -10,20 +10,18 @@ namespace SpeedManagementApi.Controllers
     [Route("api/v1/[controller]")]
     public class SpeedManagementController : ControllerBase
     {
-        private RouteSpeedService routeSpeedService;
-        private RouteService routeService;
+        private readonly HourlySpeedService hourlySpeedService;
 
-        public SpeedManagementController(RouteSpeedService routeSpeedService, RouteService routeService)
+        public SpeedManagementController(HourlySpeedService routeSpeedService)
         {
-            this.routeSpeedService = routeSpeedService;
-            this.routeService = routeService;
+            this.hourlySpeedService = routeSpeedService;
         }
 
         [HttpPost("GetRouteSpeeds", Name = "GetRouteSpeeds")]
         public async Task<IActionResult> GetRoutesSpeeds([FromBody] RouteSpeedOptions options)
         {
 
-            IEnumerable<RouteSpeed> routeSpeeds = await routeSpeedService.GetRouteSpeedsAsync(options);
+            IEnumerable<RouteSpeed> routeSpeeds = await hourlySpeedService.GetRouteSpeedsAsync(options);
 
             var features = new List<Feature>();
             foreach (var routeSpeed in routeSpeeds)
@@ -85,7 +83,7 @@ namespace SpeedManagementApi.Controllers
         [HttpPost("GetHistoricalSpeeds")]
         public async Task<IActionResult> GetHistoricalData([FromBody] HistoricalSpeedOptions options)
         {
-            var task = this.routeSpeedService.GetHistoricalSpeeds(options);
+            var task = hourlySpeedService.GetHistoricalSpeeds(options);
 
             var result = await Task.Run(() => task);
 

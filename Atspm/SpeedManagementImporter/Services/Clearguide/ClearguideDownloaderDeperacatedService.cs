@@ -32,7 +32,7 @@ namespace SpeedManagementImporter.Services.Clearguide
             this.configuration = configuration;
         }
 
-        public async Task Download(DateTime startDate, DateTime endDate)
+        public async Task Download(DateTime startDate, DateTime endDate, List<string>? providedSegments)
         {
 
             List<SegmentEntityWithSpeed> routeEntities = await segmentEntityRepository.GetEntitiesWithSpeedForSourceId(sourceId);

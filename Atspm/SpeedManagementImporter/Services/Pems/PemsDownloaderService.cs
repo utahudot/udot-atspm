@@ -38,7 +38,7 @@ namespace SpeedManagementImporter.Services.Pems
             this.logger = logger;
         }
 
-        public async Task Download(DateTime startDate, DateTime endDate)
+        public async Task Download(DateTime startDate, DateTime endDate, List<string>? providedSegments)
         {
             string apiKey = configuration["Pems:ApiKey"];
             if (apiKey == null)
@@ -49,8 +49,21 @@ namespace SpeedManagementImporter.Services.Pems
 
             try
             {
+                //Have options to have segments ids provided in the beginning
+                List<Segment> segments = new List<Segment>();
+                if (providedSegments != null && providedSegments.Count > 0)
+                {
+                    foreach (var segmentId in providedSegments)
+                    {
+                        var segment = await segmentRepository.LookupAsync(Guid.Parse(segmentId));
+                        segments.Add(segment);
+                    }
+                }
+                else
+                {
+                    segments = segmentRepository.AllSegmentsWithEntity(sourceId);
+                }
 
-                List<Segment> segments = segmentRepository.AllSegmentsWithEntity(sourceId);//.Where(s => s.Id == new Guid("0089d399-3c88-45b8-a448-17d5ba05735a")).ToList();
                 var start = DateTime.Now;
                 for (DateTime date = startDate; date <= endDate; date = date.AddDays(1))
                 {
