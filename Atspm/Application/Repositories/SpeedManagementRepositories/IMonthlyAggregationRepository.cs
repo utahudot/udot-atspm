@@ -1,16 +1,22 @@
 ﻿using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.MonthlyAggregation;
+using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.SegmentSpeed;
 using Utah.Udot.NetStandardToolkit.Services;
 
 namespace Utah.Udot.Atspm.Repositories.SpeedManagementRepositories
 {
     public interface IMonthlyAggregationRepository : IAsyncRepository<MonthlyAggregation>
     {
-        Task<List<MonthlyAggregationSimplified>> AllAggregationsOverTimePeriod(FilteringTimePeriod timePeriod, MonthAggClassification dayType);
+        Task<List<MonthlyAggregationSimplified>> AllAggregationsOverTimePeriod(TimePeriodFilter timePeriod, MonthAggClassification dayType);
         Task<MonthlyAggregation> CheckExistanceAsync(MonthlyAggregation item);
-        Task<List<MonthlyAggregationSimplified>> LatestOfEachSegmentId(FilteringTimePeriod timePeriod, MonthAggClassification monthAggClassification);
-        Task<List<MonthlyAggregationSimplified>> MonthlyAggregationsForSegmentInTimePeriod(List<Guid> segmentIds, DateTime startTime, DateTime endTime, FilteringTimePeriod timePeriod, MonthAggClassification monthAggClassification);
+        Task<List<RouteSpeed>> GetRoutesSpeeds(MonthlyAggregationOptions options);
+        Task<List<MonthlyAggregationSimplified>> GetTopMonthlyAggregationsInCategory(MonthlyAggregationOptions options);
+        Task<List<MonthlyAggregationSimplified>> LatestOfEachSegmentId(TimePeriodFilter timePeriod, MonthAggClassification monthAggClassification);
+        Task<List<MonthlyAggregationSimplified>> MonthlyAggregationsForSegmentInTimePeriod(List<Guid> segmentIds, DateTime startTime, DateTime endTime, TimePeriodFilter timePeriod, MonthAggClassification monthAggClassification);
         Task RemoveKeyAsync(Guid? key);
-        Task<List<MonthlyAggregationSimplified>> SelectMonthlyAggregationBySegment(Guid segmentId, FilteringTimePeriod timePeriod, MonthAggClassification monthAggClassification);
+        Task RemoveKeysAsync(List<Guid>? keys);
+        Task RemoveBySegmentId(Guid segmentId);
+        Task RemoveBySegmentIds(List<Guid> segmentIds);
+        Task<List<MonthlyAggregationSimplified>> SelectMonthlyAggregationBySegment(Guid segmentId, TimePeriodFilter timePeriod, MonthAggClassification monthAggClassification);
         Task UpsertMonthlyAggregationAsync(MonthlyAggregation item);
     }
 }

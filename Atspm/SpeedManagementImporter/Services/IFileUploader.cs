@@ -2,6 +2,6 @@
 {
     public interface IFileUploader
     {
-        public Task FileUploaderAsync(string filePath);
+        public Task FileUploaderAsync(string filePath, List<string>? providedSegments);
     }
 }

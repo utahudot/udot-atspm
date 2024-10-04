@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Google.Cloud.BigQuery.V2;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SpeedManagementImporter;
@@ -6,6 +7,9 @@ using SpeedManagementImporter.Services.Atspm;
 using SpeedManagementImporter.Services.Clearguide;
 using SpeedManagementImporter.Services.Pems;
 using System.CommandLine;
+using Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositories;
+using Utah.Udot.Atspm.Repositories.SpeedManagementRepositories;
+using Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices;
 
 class Program
 {
@@ -38,6 +42,9 @@ class Program
         services.AddScoped<AtspmDownloaderService>();
         services.AddScoped<ClearguideFileDownloaderService>();
         services.AddScoped<ClearguideFileUploader>();
+        services.AddScoped<MonthlyAggregationService>();
+        services.AddScoped<IMonthlyAggregationRepository, MonthlyAggregationBQRepository>();
+        
 
         // Set Google Cloud Credentials
         Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", configuration["GoogleApplicationCredentials"]);

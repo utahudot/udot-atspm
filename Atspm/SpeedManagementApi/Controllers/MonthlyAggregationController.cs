@@ -30,9 +30,17 @@ namespace SpeedManagementApi.Controllers
 
         // GET: /MonthlyAggregation
         [HttpGet("latest/{monthAggClassification}/{timePeriod}")]
-        public async Task<ActionResult<IReadOnlyList<MonthlyAggregationSimplified>>> LatestOfEachSegmentId(FilteringTimePeriod timePeriod, MonthAggClassification monthAggClassification)
+        public async Task<ActionResult<IReadOnlyList<MonthlyAggregationSimplified>>> LatestOfEachSegmentId(TimePeriodFilter timePeriod, MonthAggClassification monthAggClassification)
         {
             IReadOnlyList<MonthlyAggregationSimplified> monthlyAggregationsForSegment = await monthlyAggregationService.LatestOfEachSegmentId(timePeriod, monthAggClassification);
+            return Ok(monthlyAggregationsForSegment);
+        }
+
+        // POST: /MonthlyAggregation
+        [HttpPost("hotspots")]
+        public async Task<ActionResult<IReadOnlyList<MonthlyAggregationSimplified>>> GetTopMonthlyAggregationsInCategory(MonthlyAggregationOptions monthlyAggregationOptions)
+        {
+            IReadOnlyList<MonthlyAggregationSimplified> monthlyAggregationsForSegment = await monthlyAggregationService.GetTopMonthlyAggregationsInCategory(monthlyAggregationOptions);
             return Ok(monthlyAggregationsForSegment);
         }
 
@@ -62,22 +70,21 @@ namespace SpeedManagementApi.Controllers
 
         // GET: /MonthlyAggregation/segments/{id}
         [HttpGet("segments/{segmentId}/{monthAggClassification}/{timePeriod}")]
-        public async Task<ActionResult<IReadOnlyList<MonthlyAggregationSimplified>>> GetMonthlyAggregationForSegment(Guid segmentId, FilteringTimePeriod timePeriod, MonthAggClassification monthAggClassification)
+        public async Task<ActionResult<IReadOnlyList<MonthlyAggregationSimplified>>> GetMonthlyAggregationForSegment(Guid segmentId, TimePeriodFilter timePeriod, MonthAggClassification monthAggClassification)
         {
             IReadOnlyList<MonthlyAggregationSimplified> monthlyAggregationsForSegment = await monthlyAggregationService.ListMonthlyAggregationsForSegment(segmentId, timePeriod, monthAggClassification);
             return Ok(monthlyAggregationsForSegment);
         }
 
-
         [HttpGet("filtering-time-periods")]
         public IActionResult GetFilteringTimePeriodMapping()
         {
-            var mappings = Enum.GetValues(typeof(FilteringTimePeriod))
-                .Cast<FilteringTimePeriod>()
+            var mappings = Enum.GetValues(typeof(TimePeriodFilter))
+                .Cast<TimePeriodFilter>()
                 .Select(e => new EnumMapping
                 {
                     Number = (int)e,
-                    LetterName = e.GetDisplayName() // Assuming you've added the DisplayNameAttribute
+                    DisplayName = e.GetDisplayName()
                 })
                 .ToList();
 
@@ -92,12 +99,26 @@ namespace SpeedManagementApi.Controllers
                 .Select(e => new EnumMapping
                 {
                     Number = (int)e,
-                    LetterName = e.GetDisplayName() // Assuming you've added the DisplayNameAttribute
+                    DisplayName = e.GetDisplayName()
                 })
                 .ToList();
 
             return Ok(mappings);
         }
 
+        [HttpGet("speed-category-filters")]
+        public IActionResult GetSpeedCategoryFilterMapping()
+        {
+            var mappings = Enum.GetValues(typeof(SpeedCategoryFilter))
+                .Cast<SpeedCategoryFilter>()
+                .Select(e => new EnumMapping
+                {
+                    Number = (int)e,
+                    DisplayName = e.GetDisplayName()
+                })
+                .ToList();
+
+            return Ok(mappings);
+        }
     }
 }

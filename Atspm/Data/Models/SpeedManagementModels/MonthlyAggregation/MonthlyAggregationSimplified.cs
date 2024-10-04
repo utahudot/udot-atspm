@@ -25,7 +25,7 @@ public class MonthlyAggregationSimplified
     public double? PercentObserved { get; set; }
 }
 
-public enum FilteringTimePeriod
+public enum TimePeriodFilter
 {
     [DisplayName("AllDay")]
     AllDay,
@@ -61,14 +61,61 @@ public enum MonthAggClassification
     Weekday
 }
 
+public enum SpeedCategoryFilter
+{
+    [DisplayName("Average Speed")]
+    AverageSpeed,
+
+    [DisplayName("Average 85th Percentile Speed")]
+    AverageEightyFifthSpeed,
+
+    [DisplayName("Violations")]
+    Violations,
+
+    [DisplayName("Extreme Violations")]
+    ExtremeViolations,
+
+    [DisplayName("Flow")]
+    Flow,
+
+    [DisplayName("Minimum Speed")]
+    MinSpeed,
+
+    [DisplayName("Maximum Speed")]
+    MaxSpeed,
+
+    [DisplayName("Variability")]
+    Variability,
+
+    [DisplayName("Percentage of Violations")]
+    PercentViolations,
+
+    [DisplayName("Percentage of Extreme Violations")]
+    PercentExtremeViolations,
+
+    [DisplayName("Average Speed vs Speed Limit")]
+    AvgSpeedVsSpeedLimit,
+
+    [DisplayName("85th Percentile Speed vs Speed Limit")]
+    EightyFifthSpeedVsSpeedLimit,
+
+    [DisplayName("Percentage Observed")]
+    PercentObserved
+}
 
 public class MonthlyAggregationOptions
 {
-    public FilteringTimePeriod timePeriod { get; set; }
+    public SpeedCategoryFilter category { get; set; }
+    public TimePeriodFilter timePeriod { get; set; }
     public MonthAggClassification aggClassification { get; set; }
     public DateTime? StartTime { get; set; }
     public DateTime? EndTime { get; set; }
-
+    public long? SourceId { get; set; } = null;
+    public string? Region { get; set; } = null;
+    public string? City { get; set; } = null;
+    public string? County { get; set; } = null;
+    public string? Order { get; set; } = "DESC";
+    public int? Limit { get; set; } = 25;
 }
 
 
@@ -98,5 +145,5 @@ public static class EnumExtensions
 public class EnumMapping
 {
     public int Number { get; set; }
-    public string LetterName { get; set; }
+    public string DisplayName { get; set; }
 }

@@ -8,6 +8,7 @@ import { default as transformSpeedOverTimeData } from '@/features/charts/speedMa
 import {
   postApiV1CongestionTrackingGetReportData,
   postApiV1DataQualityGetReportData,
+  postApiV1EffectivenessOfStrategiesGetReportData,
   postApiV1SpeedComplianceGetReportData,
   postApiV1SpeedFromImpactSegmentSegmentId,
   postApiV1SpeedOverDistanceGetReportData,
@@ -19,6 +20,7 @@ import {
 import {
   CongestionTrackingOptions,
   DataQualityOptions,
+  EffectivenessOfStrategiesOptions,
   SpeedComplianceOptions,
   SpeedOverDistanceOptions,
   SpeedOverTimeOptions,
@@ -29,6 +31,7 @@ import transformDataQualityData from '@/features/charts/speedManagementTool/data
 import transformSpeedComplianceData from '@/features/charts/speedManagementTool/speedCompliance/speedCompliance.transformer'
 import transformSpeedVariabilityData from '@/features/charts/speedManagementTool/speedVariability/speedVariability.transformer'
 import transformSpeedViolationsData from '@/features/charts/speedManagementTool/speedViolations/speedViolations.transformer'
+import transformEffectivenessOfStrategiesData from '@/features/charts/speedManagementTool/effectivenessOfStrategies/effectivenessOfStrategies.transformer'
 
 export enum SM_ChartType {
   CONGESTION_TRACKING = 'Congestion Tracking',
@@ -38,6 +41,7 @@ export enum SM_ChartType {
   DATA_QUALITY = 'Data Quality',
   SPEED_VIOLATIONS = 'Speed Violations',
   SPEED_VARIABILITY = 'Speed Variability',
+  EFFECTIVENESS_OF_STRATEGIES = 'Effectiveness of Strategies',
 }
 
 type TransformedCongestionTrackerData = ReturnType<
@@ -55,6 +59,9 @@ type TransformedSpeedComplianceData = ReturnType<
 type TransformedSpeedVariabilityData = ReturnType<
   typeof transformSpeedVariabilityData
 >
+type TransformedEffectivenessOfStrategiesData = ReturnType<
+  typeof transformEffectivenessOfStrategiesData
+>
 
 type TransformedSpeedViolationsData = ReturnType<
   typeof transformSpeedViolationsData
@@ -71,6 +78,7 @@ type ChartOptionsMapping = {
   [SM_ChartType.DATA_QUALITY]: DataQualityOptions
   [SM_ChartType.SPEED_VARIABILITY]: SpeedVariabilityOptions
   [SM_ChartType.SPEED_VIOLATIONS]: SpeedViolationsOptions
+  [SM_ChartType.EFFECTIVENESS_OF_STRATEGIES]: EffectivenessOfStrategiesOptions
 }
 
 type SMChartsDataMapping = {
@@ -81,6 +89,7 @@ type SMChartsDataMapping = {
   [SM_ChartType.DATA_QUALITY]: TransformedDataQualityData
   [SM_ChartType.SPEED_VARIABILITY]: TransformedSpeedVariabilityData
   [SM_Chart.Type.SPEED_VIOLATIONS]: TransformedSpeedViolationsData
+  [SM_ChartType.EFFECTIVENESS_OF_STRATEGIES]: TransformedEffectivenessOfStrategiesData
 }
 
 type UseSMChartsOptions<TChartType extends SM_ChartType> = Omit<
@@ -147,7 +156,7 @@ export function useSMCharts<TChartType extends SM_ChartType>(
         ) as SMChartsDataMapping[TChartType]
       }
 
-      case SM_ChartType.DATA_QUALITY: {
+      case SM_ChartType.DATA_QUALITY:{
         const response = await postApiV1DataQualityGetReportData(
           chartOptions as DataQualityOptions
         )
@@ -163,6 +172,16 @@ export function useSMCharts<TChartType extends SM_ChartType>(
         return transformSpeedViolationsData(
           response
         ) as SMChartsDataMapping[TChartType]
+        
+      case SM_ChartType.EFFECTIVENESS_OF_STRATEGIES:{
+        const response = await postApiV1EffectivenessOfStrategiesGetReportData(
+          chartOptions as EffectivenessOfStrategiesOptions
+        )
+        return transformEffectivenessOfStrategiesData(
+          response
+        ) as SMChartsDataMapping[TChartType]
+      }
+        
       default:
         throw new Error(`Unsupported chart type: ${chartType}`)
     }

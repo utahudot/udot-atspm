@@ -1,4 +1,5 @@
 ﻿using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.MonthlyAggregation;
+using Utah.Udot.Atspm.Data.Models.SpeedManagementModels.SegmentSpeed;
 using Utah.Udot.Atspm.Repositories.SpeedManagementRepositories;
 
 namespace Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices
@@ -14,15 +15,28 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices
             this.segmentRepository = segmentRepository;
         }
 
-        public async Task<IReadOnlyList<MonthlyAggregationSimplified>> ListMonthlyAggregationsForSegment(Guid segmentId, FilteringTimePeriod timePeriod, MonthAggClassification dayType)
+        public async Task<IReadOnlyList<MonthlyAggregationSimplified>> ListMonthlyAggregationsForSegment(Guid segmentId, TimePeriodFilter timePeriod, MonthAggClassification dayType)
         {
             var monthlyAggregations = await monthlyAggregationRepository.SelectMonthlyAggregationBySegment(segmentId, timePeriod, dayType);
             return monthlyAggregations;
         }
 
-        public async Task<IReadOnlyList<MonthlyAggregationSimplified>> LatestOfEachSegmentId(FilteringTimePeriod timePeriod, MonthAggClassification dayType)
+        public async Task<IReadOnlyList<MonthlyAggregationSimplified>> LatestOfEachSegmentId(TimePeriodFilter timePeriod, MonthAggClassification dayType)
         {
             var monthlyAggregations = await monthlyAggregationRepository.LatestOfEachSegmentId(timePeriod, dayType);
+            return monthlyAggregations;
+        }
+
+        public async Task<IReadOnlyList<MonthlyAggregationSimplified>> GetTopMonthlyAggregationsInCategory(MonthlyAggregationOptions monthlyAggregationOptions)
+        {
+            var lastMonth = DateTime.Now.AddMonths(-1);
+            DateTime startTime = monthlyAggregationOptions.StartTime ??= lastMonth;
+            DateTime endTime = monthlyAggregationOptions.EndTime ??= lastMonth;
+            DateTime firstDayOfMonth = new DateTime(startTime.Year, startTime.Month, 1).AddDays(-1);
+            DateTime lastDayOfMonth = new DateTime(endTime.Year, endTime.Month, 1).AddMonths(1).AddDays(-1);
+            monthlyAggregationOptions.StartTime = firstDayOfMonth;
+            monthlyAggregationOptions.EndTime = lastDayOfMonth;
+            var monthlyAggregations = await monthlyAggregationRepository.GetTopMonthlyAggregationsInCategory(monthlyAggregationOptions);
             return monthlyAggregations;
         }
 
@@ -44,6 +58,13 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices
         //    }
         //    return speedOverDistanceDtoList;
         //}
+        public async Task<List<RouteSpeed>> GetRouteSpeedsAsync(MonthlyAggregationOptions options)
+
+        {
+            List<RouteSpeed> routeSpeeds = await monthlyAggregationRepository.GetRoutesSpeeds(options);
+
+            return routeSpeeds;
+        }
 
         public async Task UpsertMonthlyAggregation(MonthlyAggregation monthlyAggregation)
         {
@@ -73,8 +94,19 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices
             await monthlyAggregationRepository.RemoveKeyAsync(existingMonthlyAggregation.Id);
         }
 
+        //For the Deletion by Segment
+        public async Task DeleteMonthlyAggregationBySegmentId(Guid segmentId)
+        {
+            await monthlyAggregationRepository.RemoveBySegmentId(segmentId);
+        }
+
+        public async Task DeleteMonthlyAggregationBySegmentIds(List<Guid> segmentIds)
+        {
+            await monthlyAggregationRepository.RemoveBySegmentIds(segmentIds);
+        }
+
         //For the DeleteOldEvents
-        public async Task<List<MonthlyAggregationSimplified>> AllAggregationsOverTimePeriodAsync(FilteringTimePeriod timePeriod, MonthAggClassification dayType)
+        public async Task<List<MonthlyAggregationSimplified>> AllAggregationsOverTimePeriodAsync(TimePeriodFilter timePeriod, MonthAggClassification dayType)
         {
             var other = await monthlyAggregationRepository.AllAggregationsOverTimePeriod(timePeriod, dayType);
             return other;
