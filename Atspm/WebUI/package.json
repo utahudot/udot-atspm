@@ -32,7 +32,7 @@
     "@udecode/plate": "^36.3.6",
     "autosuggest-highlight": "^3.3.4",
     "axios": "^1.4.0",
-    "date-fns": "^2.30.0",
+    "date-fns": "^4.1.0",
     "echarts": "^5.4.3",
     "eslint-config-next": "^14.2.4",
     "interweave": "^13.1.0",

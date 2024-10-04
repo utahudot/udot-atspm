@@ -1,9 +1,13 @@
-import { useRoutes } from '@/features/speedManagementTool/api/getRoutes'
+import { useGetRouteSpeeds } from '@/api/speedManagement/aTSPMSpeedManagementApi'
 import { useUdotSpeedLimitRoutes } from '@/features/speedManagementTool/api/getUdotSpeedLimitRoutes'
 import SM_Popup from '@/features/speedManagementTool/components/SM_Modal/SM_Popup'
 import SM_TopBar from '@/features/speedManagementTool/components/SM_Topbar/SM_Topbar'
-import { RouteRenderOption } from '@/features/speedManagementTool/enums'
+import {
+  DataSource,
+  RouteRenderOption,
+} from '@/features/speedManagementTool/enums'
 import useSpeedManagementStore from '@/features/speedManagementTool/speedManagementStore'
+import { RoutesResponse } from '@/features/speedManagementTool/types/routes'
 import CloseIcon from '@mui/icons-material/Close'
 import {
   Box,
@@ -26,22 +30,65 @@ const SpeedManagementMap = dynamic(() => import('./SM_Map'), {
 })
 
 const SM_MapWrapper = () => {
-  const [selectedRouteIds, setSelectedRouteIds] = useState<number[]>([])
+  const [selectedRouteIds, setSelectedRouteIds] = useState<string[]>([])
   const [showPopup, setShowPopup] = useState<boolean>(false)
+  const [routeData, setRouteData] = useState<RoutesResponse>()
   const fullScreenRef = useRef<HTMLDivElement>(null)
 
-  const { submittedRouteSpeedRequest, routeRenderOption, multiselect } =
-    useSpeedManagementStore()
+  const {
+    submittedRouteSpeedRequest,
+    routeSpeedRequest,
+    routeRenderOption,
+    multiselect,
+    setSubmittedRouteSpeedRequest,
+    setMediumMin,
+    setMediumMax,
+    setSliderMax,
+  } = useSpeedManagementStore()
+
+  const [isRequestChanged, setIsRequestChanged] = useState(false)
+
+  useEffect(() => {
+    const change =
+      JSON.stringify(routeSpeedRequest) !==
+      JSON.stringify(submittedRouteSpeedRequest)
+
+    setIsRequestChanged(change)
+  }, [routeSpeedRequest, submittedRouteSpeedRequest])
+
+  const { mutateAsync: fetchRoutes, isLoading } = useGetRouteSpeeds()
+
+  useEffect(() => {
+    if (routeData) {
+      return
+    }
+
+    fetchRoutes({ data: routeSpeedRequest }).then((response) => {
+      setRouteData(response as unknown as RoutesResponse)
+    })
+  }, [])
+
+  const handleOptionClick = () => {
+    setSubmittedRouteSpeedRequest(routeSpeedRequest)
+    if (routeSpeedRequest.sourceId === DataSource.ATSPM) {
+      setMediumMin(80)
+      setMediumMax(300)
+      setSliderMax(500)
+    } else if (routeSpeedRequest.sourceId === DataSource.PeMS) {
+      setMediumMin(150)
+      setMediumMax(400)
+      setSliderMax(600)
+    }
+    fetchRoutes({ data: routeSpeedRequest }).then((response) => {
+      setRouteData(response as unknown as RoutesResponse)
+    })
+  }
 
   useEffect(() => {
     if (!multiselect) {
       setSelectedRouteIds([])
     }
   }, [multiselect])
-
-  const { data: routeData } = useRoutes({
-    options: submittedRouteSpeedRequest,
-  })
 
   const { data: speedLimitData } = useUdotSpeedLimitRoutes()
 
@@ -77,7 +124,7 @@ const SM_MapWrapper = () => {
       properties: feature.properties,
     })) || []
 
-  const handleRouteSelection = (routeId: number) => {
+  const handleRouteSelection = (routeId: string) => {
     if (multiselect) {
       setSelectedRouteIds((prevSelectedRouteIds) =>
         prevSelectedRouteIds.includes(routeId)
@@ -107,7 +154,11 @@ const SM_MapWrapper = () => {
         overflow: 'hidden',
       }}
     >
-      <SM_TopBar />
+      <SM_TopBar
+        handleOptionClick={handleOptionClick}
+        isLoading={isLoading}
+        isRequestChanged={isRequestChanged}
+      />
       <Box sx={{ display: 'flex', flex: 1 }}>
         <Box
           sx={{
@@ -190,17 +241,9 @@ const SM_MapWrapper = () => {
 
       {showPopup && (
         <SM_Popup
-          routes={
-            multiselect
-              ? routes.filter((route) =>
-                  selectedRouteIds.includes(route.properties.route_id)
-                )
-              : [
-                  routes.find(
-                    (route) => route.properties.route_id === selectedRouteIds[0]
-                  ) || { properties: {} },
-                ]
-          }
+          routes={routes.filter((route) =>
+            selectedRouteIds.includes(route.properties.route_id)
+          )}
           onClose={handleClosePopup}
           open={showPopup}
         />

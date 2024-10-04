@@ -1,5 +1,5 @@
 import SM_Charts from '@/features/speedManagementTool/components/SM_Charts'
-import ChartsContainer from '@/features/speedManagementTool/components/SM_Modal/ChartsContainer'
+
 import { getDataSourceName } from '@/features/speedManagementTool/enums'
 import useSpeedManagementStore from '@/features/speedManagementTool/speedManagementStore'
 import { SpeedManagementRoute } from '@/features/speedManagementTool/types/routes'
@@ -42,16 +42,7 @@ const SM_Popup = ({ routes, open, onClose }: SM_PopupProps) => {
     }
   }, [routes])
 
-  const formattedDateRange =
-    routes[0]?.properties.startdate && routes[0]?.properties.enddate
-      ? `for ${new Date(
-          routes[0].properties.startdate
-        ).toLocaleDateString()} - ${new Date(
-          routes[0].properties.enddate
-        ).toLocaleDateString()}`
-      : null
-
-  const getDataSourceColor = (sourceId: number) => {
+  const getDataSourceColor = (sourceId: number | undefined) => {
     switch (sourceId) {
       case 1:
         return '#2196f3'
@@ -136,9 +127,9 @@ const SM_Popup = ({ routes, open, onClose }: SM_PopupProps) => {
                 routes[0]?.properties.name
               )}
             </Typography>
-            {formattedDateRange && (
+            {/* {formattedDateRange && (
               <Typography variant="subtitle1">{formattedDateRange}</Typography>
-            )}
+            )} */}
             <TabList
               onChange={handleTabChange}
               aria-label="SM Popup Tabs"
@@ -166,16 +157,16 @@ const SM_Popup = ({ routes, open, onClose }: SM_PopupProps) => {
                   <InfoBox
                     label="Average Speed"
                     value={
-                      routes[0]?.properties.avg
-                        ? `${routes[0]?.properties.avg} mph`
+                      routes[0]?.properties.averageSpeed
+                        ? `${routes[0]?.properties.averageSpeed.toFixed(2)} mph`
                         : 'No Data'
                     }
                   />
                 </Box>
                 <Divider />
-                <ChartsContainer
+                {/* <ChartsContainer
                   selectedRouteId={routes[0]?.properties.route_id}
-                />
+                /> */}
               </Box>
             </TabPanel>
           )}

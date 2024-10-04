@@ -1,21 +1,22 @@
 import { DayOfWeek } from '@/api/speedManagement/aTSPMSpeedManagementApi.schemas'
 import { MultiSelectCheckbox } from '@/features/aggregateData/components/chartOptions/MultiSelectCheckbox'
 import { Box } from '@mui/material'
-import { DatePicker } from '@mui/x-date-pickers'
-import { endOfMonth, isValid, startOfMonth } from 'date-fns'
+import { DatePicker, TimePicker } from '@mui/x-date-pickers'
+import { endOfMonth, format, isValid, startOfMonth } from 'date-fns'
 import { useEffect, useState } from 'react'
 
-export interface SpeedVariabilityOptionsValues {
+export interface SpeedViolationsChartOptionsValues {
   startDate: string
   endDate: string
+  startTime?: string
+  endTime?: string
   daysOfWeek: DayOfWeek[]
   isHolidaysFiltered?: boolean
   sourceId: number
 }
 
-interface SpeedVariabilityOptionsProps {
-  onOptionsChange: (options: Partial<SpeedVariabilityOptionsValues>) => void
-  sourceId: number
+interface SpeedViolationsChartOptionsProps {
+  onOptionsChange: (options: Partial<SpeedViolationsChartOptionsValues>) => void
 }
 
 const daysOfWeekList: string[] = [
@@ -30,27 +31,37 @@ const daysOfWeekList: string[] = [
 
 const initialDate = new Date('2023-01-02')
 
-const SpeedVariabilityOptions = ({
+const SpeedViolationsChartOptions = ({
   onOptionsChange,
-  sourceId,
-}: SpeedVariabilityOptionsProps) => {
+}: SpeedViolationsChartOptionsProps) => {
   const [startDate, setStartDate] = useState<Date | null>(
     startOfMonth(initialDate)
   )
   const [endDate, setEndDate] = useState<Date | null>(endOfMonth(initialDate))
+  const [startTime, setStartTime] = useState<Date | null>(null)
+  const [endTime, setEndTime] = useState<Date | null>(null)
   const [daysOfWeek, setDaysOfWeek] = useState<DayOfWeek[]>([
     0, 1, 2, 3, 4, 5, 6,
   ])
+
   useEffect(() => {
     if (startDate && endDate && daysOfWeek) {
-      onOptionsChange({
+      const options: Partial<SpeedViolationsChartOptionsValues> = {
         startDate: startDate.toISOString().split('T')[0],
         endDate: endDate.toISOString().split('T')[0],
-        sourceId,
         daysOfWeek,
-      })
+      }
+
+      if (startTime !== null && isValid(startTime)) {
+        options.startTime = format(startTime, "yyyy-MM-dd'T'HH:mm:ss")
+      }
+      if (endTime !== null && isValid(endTime)) {
+        options.endTime = format(endTime, "yyyy-MM-dd'T'HH:mm:ss")
+      }
+
+      onOptionsChange(options)
     }
-  }, [startDate, endDate, onOptionsChange, daysOfWeek])
+  }, [startDate, endDate, startTime, endTime, daysOfWeek])
 
   const handleStartDateChange = (date: Date | null) => {
     if (date === null || isValid(date)) {
@@ -66,6 +77,14 @@ const SpeedVariabilityOptions = ({
     } else {
       setEndDate(null)
     }
+  }
+
+  const handleStartTimeChange = (time: Date | null) => {
+    setStartTime(time)
+  }
+
+  const handleEndTimeChange = (time: Date | null) => {
+    setEndTime(time)
   }
 
   const handleDaysOfWeekChange = (days: DayOfWeek[]) => {
@@ -86,6 +105,20 @@ const SpeedVariabilityOptions = ({
           onChange={handleEndDateChange}
         />
       </Box>
+      <Box display="flex" gap={2}>
+        <TimePicker
+          label="Start Time"
+          value={startTime}
+          onChange={handleStartTimeChange}
+          ampm={false}
+        />
+        <TimePicker
+          label="End Time"
+          value={endTime}
+          onChange={handleEndTimeChange}
+          ampm={false}
+        />
+      </Box>
       <Box width="50%">
         <MultiSelectCheckbox
           itemList={daysOfWeekList}
@@ -99,4 +132,4 @@ const SpeedVariabilityOptions = ({
   )
 }
 
-export default SpeedVariabilityOptions
+export default SpeedViolationsChartOptions
