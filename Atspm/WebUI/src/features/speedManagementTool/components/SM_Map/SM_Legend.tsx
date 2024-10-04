@@ -18,13 +18,8 @@ const SM_Legend = () => {
     if (speed < 55) return 'rgba(245, 114, 0, 1)'
     if (speed < 65) return 'rgba(245, 57, 0, 1)'
     if (speed < 75) return 'rgba(245, 0, 0, 1)'
-    return 'rgba(115, 0, 0, 1)'
-  }
-
-  const getViolationColor = (violation: number) => {
-    if (violation < mediumMin) return ViolationColors.Low
-    if (violation < mediumMax) return ViolationColors.Medium
-    return ViolationColors.High
+    if (speed >= 75) return 'rgba(115, 0, 0, 1)'
+    return '#000'
   }
 
   const createViolationsLegend = useCallback(() => {

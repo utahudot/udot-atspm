@@ -1,20 +1,19 @@
+import { RouteSpeedOptions } from '@/api/speedManagement/aTSPMSpeedManagementApi.schemas.zod'
 import {
-  AnalysisPeriod,
   DataSource,
   RouteRenderOption,
 } from '@/features/speedManagementTool/enums'
-import { RouteSpeedRequest } from '@/features/speedManagementTool/types/routeSpeedRequest'
 import { create } from 'zustand'
 
 interface StoreState {
   routeRenderOption: RouteRenderOption
   setRouteRenderOption: (option: RouteRenderOption) => void
 
-  routeSpeedRequest: RouteSpeedRequest
-  setRouteSpeedRequest: (request: RouteSpeedRequest) => void
+  routeSpeedRequest: RouteSpeedOptions
+  setRouteSpeedRequest: (request: RouteSpeedOptions) => void
 
-  submittedRouteSpeedRequest: RouteSpeedRequest
-  setSubmittedRouteSpeedRequest: (request: RouteSpeedRequest) => void
+  submittedRouteSpeedRequest: RouteSpeedOptions
+  setSubmittedRouteSpeedRequest: (request: RouteSpeedOptions) => void
 
   mediumMin: number
   setMediumMin: (min: number) => void
@@ -41,7 +40,8 @@ const useSpeedManagementStore = create<StoreState>((set) => ({
     startDate: '2023-01-01',
     endDate: '2023-02-01',
     daysOfWeek: [1, 2, 3, 4, 5],
-    analysisPeriod: AnalysisPeriod.AllDay,
+    startTime: '1970-01-01T00:00:00.000Z',
+    endTime: '1970-01-01T23:59:59.000Z',
     violationThreshold: 5,
     region: null,
     county: null,
@@ -55,7 +55,8 @@ const useSpeedManagementStore = create<StoreState>((set) => ({
     startDate: '2023-01-01',
     endDate: '2023-02-01',
     daysOfWeek: [1, 2, 3, 4, 5],
-    analysisPeriod: AnalysisPeriod.AllDay,
+    startTime: '1970-01-01T00:00:00.000Z',
+    endTime: '1970-01-01T23:59:59.000Z',
     violationThreshold: 5,
     region: null,
     county: null,
@@ -64,11 +65,11 @@ const useSpeedManagementStore = create<StoreState>((set) => ({
     functionalType: null,
   },
 
-  setRouteSpeedRequest: (request: RouteSpeedRequest) => {
+  setRouteSpeedRequest: (request: RouteSpeedOptions) => {
     set({ routeSpeedRequest: request })
   },
 
-  setSubmittedRouteSpeedRequest: (request: RouteSpeedRequest) => {
+  setSubmittedRouteSpeedRequest: (request: RouteSpeedOptions) => {
     set({ submittedRouteSpeedRequest: request })
   },
 

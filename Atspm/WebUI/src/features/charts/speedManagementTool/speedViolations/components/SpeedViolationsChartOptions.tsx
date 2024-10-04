@@ -2,7 +2,7 @@ import { DayOfWeek } from '@/api/speedManagement/aTSPMSpeedManagementApi.schemas
 import { MultiSelectCheckbox } from '@/features/aggregateData/components/chartOptions/MultiSelectCheckbox'
 import { Box } from '@mui/material'
 import { DatePicker, TimePicker } from '@mui/x-date-pickers'
-import { endOfMonth, isValid, startOfMonth } from 'date-fns'
+import { endOfMonth, format, isValid, startOfMonth } from 'date-fns'
 import { useEffect, useState } from 'react'
 
 export interface SpeedViolationsChartOptionsValues {
@@ -49,18 +49,19 @@ const SpeedViolationsChartOptions = ({
       const options: Partial<SpeedViolationsChartOptionsValues> = {
         startDate: startDate.toISOString().split('T')[0],
         endDate: endDate.toISOString().split('T')[0],
+        daysOfWeek,
       }
 
-      if (startTime) {
-        options.startTime = startTime.toTimeString().split(' ')[0]
+      if (startTime !== null && isValid(startTime)) {
+        options.startTime = format(startTime, "yyyy-MM-dd'T'HH:mm:ss")
       }
-      if (endTime) {
-        options.endTime = endTime.toTimeString().split(' ')[0]
+      if (endTime !== null && isValid(endTime)) {
+        options.endTime = format(endTime, "yyyy-MM-dd'T'HH:mm:ss")
       }
 
       onOptionsChange(options)
     }
-  }, [startDate, endDate, startTime, endTime, daysOfWeek, onOptionsChange])
+  }, [startDate, endDate, startTime, endTime, daysOfWeek])
 
   const handleStartDateChange = (date: Date | null) => {
     if (date === null || isValid(date)) {
@@ -79,19 +80,11 @@ const SpeedViolationsChartOptions = ({
   }
 
   const handleStartTimeChange = (time: Date | null) => {
-    if (time === null || isValid(time)) {
-      setStartTime(time)
-    } else {
-      setStartTime(null)
-    }
+    setStartTime(time)
   }
 
   const handleEndTimeChange = (time: Date | null) => {
-    if (time === null || isValid(time)) {
-      setEndTime(time)
-    } else {
-      setEndTime(null)
-    }
+    setEndTime(time)
   }
 
   const handleDaysOfWeekChange = (days: DayOfWeek[]) => {

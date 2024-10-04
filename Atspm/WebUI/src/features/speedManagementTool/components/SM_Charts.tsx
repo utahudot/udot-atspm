@@ -22,6 +22,7 @@ import SpeedVariabilityChartContainer from '@/features/charts/speedManagementToo
 import SpeedVariabilityOptions, {
   SpeedVariabilityOptionsValues,
 } from '@/features/charts/speedManagementTool/speedVariability/components/SpeedVariabilityOptions'
+import SpeedViolationsChartContainer from '@/features/charts/speedManagementTool/speedViolations/components/SpeedViolationsChartContainer'
 import SpeedViolationsChartOptions from '@/features/charts/speedManagementTool/speedViolations/components/SpeedViolationsChartOptions'
 import {
   SM_ChartType,
@@ -47,6 +48,8 @@ const SM_Charts = ({ routes }: { routes: SpeedManagementRoute[] }) => {
   const [selectedChart, setSelectedChart] = useState<SM_ChartType | null>(null)
   const [chartOptions, setChartOptions] = useState<ChartOptions>(null)
 
+  console.log('chartOptions', chartOptions)
+
   const { multiselect, routeSpeedRequest } = useSpeedManagementStore()
 
   const segmentIds = useMemo(
@@ -54,16 +57,18 @@ const SM_Charts = ({ routes }: { routes: SpeedManagementRoute[] }) => {
     [routes]
   )
 
-  const updatedChartOptions = chartOptions
-    ? {
-        ...chartOptions,
-        ...(multiselect ||
-        selectedChart === SM_ChartType.DATA_QUALITY ||
-        selectedChart === SM_ChartType.SPEED_VIOLATIONS
-          ? { segmentIds: segmentIds }
-          : { segmentId: segmentIds[0] }),
-      }
-    : null
+  const updatedChartOptions = useMemo(() => {
+    return chartOptions
+      ? {
+          ...chartOptions,
+          ...(multiselect ||
+          selectedChart === SM_ChartType.DATA_QUALITY ||
+          selectedChart === SM_ChartType.SPEED_VIOLATIONS
+            ? { segmentIds: segmentIds }
+            : { segmentId: segmentIds[0] }),
+        }
+      : null
+  }, [chartOptions, multiselect, selectedChart, segmentIds])
 
   const chartTypes: SM_ChartType[] = useMemo(() => {
     return multiselect
@@ -100,9 +105,12 @@ const SM_Charts = ({ routes }: { routes: SpeedManagementRoute[] }) => {
     setChartOptions(null)
   }
 
-  const handleOptionsChange = (options: ChartOptions) => {
-    setChartOptions(options)
-  }
+  const handleOptionsChange = useMemo(
+    () => (options: ChartOptions) => {
+      setChartOptions(options)
+    },
+    []
+  )
 
   const handleRunChart = () => {
     refetch()
@@ -208,7 +216,7 @@ const SM_Charts = ({ routes }: { routes: SpeedManagementRoute[] }) => {
       case SM_ChartType.DATA_QUALITY:
         return <DataQualityChartContainer chartData={data} />
       case SM_ChartType.SPEED_VIOLATIONS:
-        return <DataQualityChartContainer chartData={data} />
+        return <SpeedViolationsChartContainer chartData={data} />
       default:
         return null
     }

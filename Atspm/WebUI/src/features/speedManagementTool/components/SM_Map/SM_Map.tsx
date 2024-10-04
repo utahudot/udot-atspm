@@ -15,8 +15,8 @@ import SpeedLegend from './SM_Legend'
 type SM_MapProps = {
   fullScreenRef?: React.RefObject<HTMLDivElement> | null
   routes: SpeedManagementRoute[]
-  setSelectedRouteId: (routeId: number) => void
-  selectedRouteIds: number[]
+  setSelectedRouteId: (routeId: string) => void
+  selectedRouteIds: string[]
 }
 
 const SM_Map = ({
@@ -61,25 +61,25 @@ const SM_Map = ({
     let field
     switch (routeRenderOption) {
       case RouteRenderOption.Violations:
-        field = 'estimatedViolations'
+        field = 'violations'
         break
       case RouteRenderOption.Posted_Speed:
-        field = 'Speed_Limit'
+        field = 'speedLimit'
         break
       case RouteRenderOption.Average_Speed:
-        field = 'avg'
+        field = 'averageSpeed'
         break
       case RouteRenderOption.Percentile_85th:
-        field = 'percentilespd_85'
+        field = 'averageEightyFifthSpeed'
         break
       case RouteRenderOption.Percentile_95th:
-        field = 'percentilespd_95'
+        field = 'null'
         break
       case RouteRenderOption.Percentile_99th:
-        field = 'percentilespd_99'
+        field = 'null'
         break
       default:
-        field = 'avg'
+        field = 'averageSpeed'
         break
     }
 
@@ -103,6 +103,7 @@ const SM_Map = ({
     if (val < 55) return 'rgba(245, 114, 0, 1)'
     if (val < 65) return 'rgba(245, 57, 0, 1)'
     if (val < 75) return 'rgba(245, 0, 0, 1)'
+    if (val >= 75) return 'rgba(115, 0, 0, 1)'
     return '#000'
   }
 

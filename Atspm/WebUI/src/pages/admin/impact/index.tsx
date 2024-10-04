@@ -29,8 +29,6 @@ const ImpactAdmin = () => {
 
   const { data: impactsData, isLoading, refetch } = useGetApiV1Impact()
 
-  console.log('impactsData', impactsData)
-
   useEffect(() => {
     if (impactsData) {
       setData(impactsData)
