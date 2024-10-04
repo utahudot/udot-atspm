@@ -134,7 +134,7 @@ namespace SpeedManagementImporter.Services.Pems
                     {
                         try
                         {
-                            segmentStatistics.Add(await GetStatisticsForDay(date, entity.EntityId, segment.SpeedLimit, true));
+                            segmentStatistics.Add(await GetStatisticsForDay(date, Int64.Parse(entity.EntityId), segment.SpeedLimit, true));
                         }
                         catch (Exception ex)
                         {

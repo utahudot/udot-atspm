@@ -143,6 +143,24 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             return monthlyAggregations;
         }
 
+        public async Task DeleteBySegment(Guid segmentId)
+        {
+            var query = $"DELETE FROM `{_datasetId}.{_tableId}` WHERE SegmentId = @key";
+            var parameters = new List<BigQueryParameter>
+            {
+                 new BigQueryParameter("key", BigQueryDbType.String, segmentId.ToString())
+            };
+            await _client.ExecuteQueryAsync(query, parameters);
+        }
+
+        public async Task DeleteBySegments(List<Guid> segments)
+        {
+            var ids = string.Join(", ", segments);
+            var query = $"DELETE FROM `{_datasetId}.{_tableId}` WHERE SegmentId IN ({ids})";
+            var parameters = new List<BigQueryParameter>();
+            await _client.ExecuteQueryAsync(query, parameters);
+        }
+
         #region Overrides
         protected override BigQueryInsertRow CreateRow(HourlySpeed item)
         {
@@ -1154,24 +1172,6 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             }
 
             return hourlyAggregations;
-        }
-
-        public async Task DeleteBySegment(Guid segmentId)
-        {
-            var query = $"DELETE FROM `{_datasetId}.{_tableId}` WHERE SegmentId = @key";
-            var parameters = new List<BigQueryParameter>
-            {
-                 new BigQueryParameter("key", BigQueryDbType.String, segmentId.ToString())
-            };
-            await _client.ExecuteQueryAsync(query, parameters);
-        }
-
-        public async Task DeleteBySegments(List<Guid> segments)
-        {
-            var ids = string.Join(", ", segments);
-            var query = $"DELETE FROM `{_datasetId}.{_tableId}` WHERE SegmentId IN ({ids})";
-            var parameters = new List<BigQueryParameter>();
-            await _client.ExecuteQueryAsync(query, parameters);
         }
 
         #endregion

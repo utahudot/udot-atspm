@@ -641,7 +641,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 {
                     var newEntity = new SegmentEntity
                     {
-                        EntityId = Convert.ToInt32((long)row["EntityId"]),
+                        EntityId = row["EntityId"].ToString(),
                         SourceId = Convert.ToInt32((long)row["SourceId"]),
                         SegmentId = segmentId
                     };
@@ -693,7 +693,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             {
                 var newEntity = new SegmentEntity
                 {
-                    EntityId = Convert.ToInt32((long)row["EntityId"]),
+                    EntityId = row["EntityId"].ToString(),
                     SourceId = Convert.ToInt32((long)row["SourceId"]),
                     SegmentId = segmentId
                 };

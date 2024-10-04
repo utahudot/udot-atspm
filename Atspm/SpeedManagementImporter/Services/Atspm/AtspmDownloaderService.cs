@@ -25,8 +25,8 @@ namespace SpeedManagementImporter.Services.Atspm
 
         public async Task Download(DateTime startDate, DateTime endDate, List<string>? providedSegments)
         {
-            var routeEntities = await segmentEntityRepository.GetEntitiesWithSpeedForSourceId(sourceId);
-            var routes = routeEntities.GroupBy(r => r.SegmentId).ToList();
+            var segmentEntities = await segmentEntityRepository.GetEntitiesWithSpeedForSourceId(sourceId);
+            var segments = segmentEntities.GroupBy(r => r.SegmentId).ToList();
 
             var speeds = new ConcurrentBag<HourlySpeed>();
 
@@ -37,9 +37,11 @@ namespace SpeedManagementImporter.Services.Atspm
 
             for (DateTime date = startDate; date < endDate; date = date.AddHours(1))
             {
-                foreach (var route in routes)
+                foreach (var segment in segments)
                 {
                     List<ApproachSpeed> approachSpeeds = new List<ApproachSpeed>();
+                    //EntityId needs to be of type long
+                    var entityIdsForSegment = segment.Select(s => Int64.Parse(s.EntityId)).ToList();
                     string selectQuery = $@"SELECT [BinStartTime]
                                           ,[SignalId]
                                           ,[ApproachId]
@@ -49,7 +51,7 @@ namespace SpeedManagementImporter.Services.Atspm
                                           ,[Speed15th]
                                       FROM [MOE].[dbo].[ApproachSpeedAggregations]
                                       WHERE BinStartTime BETWEEN '{date}' AND '{date.AddHours(1)}'
-                                      AND ApproachId IN ({string.Join(",", route.Select(r => r.EntityId))})";
+                                      AND ApproachId IN ({string.Join(",", entityIdsForSegment)})";
 
                     bool success = false;
                     while (!success)
@@ -97,7 +99,7 @@ namespace SpeedManagementImporter.Services.Atspm
                     double averageSpeed = summedSpeed / summedVolume;
                     double eightyFifthSpeed = approachSpeeds.Select(a => a.SpeedVolume * a.Speed85th).Sum() / summedVolume;
                     double fifteenthSpeed = approachSpeeds.Select(a => a.SpeedVolume * a.Speed15th).Sum() / summedVolume;
-                    var speedLimit = route.Select(route => route.SpeedLimit).FirstOrDefault();
+                    var speedLimit = segment.Select(route => route.SpeedLimit).FirstOrDefault();
                     speeds.Add(new HourlySpeed
                     {
                         Date = date,
@@ -105,7 +107,7 @@ namespace SpeedManagementImporter.Services.Atspm
                         Average = approachSpeeds.Sum(a => a.SummedSpeed) / approachSpeeds.Sum(a => a.SpeedVolume),
                         EightyFifthSpeed = Convert.ToInt32(Math.Round(eightyFifthSpeed)),
                         FifteenthSpeed = Convert.ToInt32(Math.Round(fifteenthSpeed)),
-                        SegmentId = route.Key,
+                        SegmentId = segment.Key,
                         Violation = Convert.ToInt64(speedLimit < eightyFifthSpeed && speedLimit != 0 ? (long)eightyFifthSpeed - speedLimit : 0),
                         Flow = summedVolume,
                         SourceId = sourceId,
