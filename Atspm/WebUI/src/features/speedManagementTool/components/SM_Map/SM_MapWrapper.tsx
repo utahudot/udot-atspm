@@ -1,5 +1,6 @@
 import { useGetRouteSpeeds } from '@/api/speedManagement/aTSPMSpeedManagementApi'
 import { useUdotSpeedLimitRoutes } from '@/features/speedManagementTool/api/getUdotSpeedLimitRoutes'
+import HotspotSidebar from '@/features/speedManagementTool/components/SM_Map/HotspotSidebar'
 import SM_Popup from '@/features/speedManagementTool/components/SM_Modal/SM_Popup'
 import SM_TopBar from '@/features/speedManagementTool/components/SM_Topbar/SM_Topbar'
 import {
@@ -237,6 +238,7 @@ const SM_MapWrapper = () => {
             setSelectedRouteId={handleRouteSelection}
           />
         </Box>
+        <HotspotSidebar />
       </Box>
 
       {showPopup && (
