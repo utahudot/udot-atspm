@@ -17,6 +17,7 @@ type SM_MapProps = {
   routes: SpeedManagementRoute[]
   setSelectedRouteId: (routeId: string) => void
   selectedRouteIds: string[]
+  hotspots?: any
 }
 
 const SM_Map = ({
