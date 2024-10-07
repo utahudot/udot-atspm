@@ -4,13 +4,13 @@ export enum DataSource {
   ClearGuide = 3,
 }
 
-export function getDataSourceName(dataSource: DataSource): string {
+export function getDataSourceName(dataSource: number | undefined) {
   switch (dataSource) {
-    case DataSource.ATSPM:
+    case 1:
       return 'ATSPM'
-    case DataSource.PeMS:
+    case 2:
       return 'PeMS'
-    case DataSource.ClearGuide:
+    case 3:
       return 'ClearGuide'
   }
 }

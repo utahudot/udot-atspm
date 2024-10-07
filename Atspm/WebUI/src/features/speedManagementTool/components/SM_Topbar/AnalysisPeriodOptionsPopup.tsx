@@ -7,17 +7,75 @@ import {
   Radio,
   RadioGroup,
 } from '@mui/material'
+import { useState } from 'react'
 import OptionsPopupWrapper from './OptionsPopupWrapper'
 
 export default function AnalysisPeriodOptionsPopup() {
-  const { routeSpeedRequest, setRouteSpeedRequest } = useStore()
+  const [analysisPeriod, setAnalysisPeriod] = useState<AnalysisPeriod | null>(
+    AnalysisPeriod.AllDay
+  )
 
-  const analysisPeriodString = routeSpeedRequest.analysisPeriod
-    ? AnalysisPeriod[routeSpeedRequest.analysisPeriod]
-    : 'AllDay'
+  const { setRouteSpeedRequest, routeSpeedRequest } = useStore()
+
+  const createUtcTime = (hours: number, minutes = 0, seconds = 0) => {
+    const date = new Date(Date.UTC(1970, 0, 1))
+    date.setUTCHours(hours)
+    date.setUTCMinutes(minutes)
+    date.setUTCSeconds(seconds)
+    date.setUTCMilliseconds(0)
+    return date
+  }
+
+  const handleAnalysisPeriodChange = (newValue: string) => {
+    setAnalysisPeriod(AnalysisPeriod[newValue as keyof typeof AnalysisPeriod])
+
+    let newStartTime: Date | undefined
+    let newEndTime: Date | undefined
+
+    switch (newValue) {
+      case 'AllDay':
+        newStartTime = createUtcTime(0)
+        newEndTime = createUtcTime(23, 59, 59)
+        break
+      case 'OffPeak':
+        newStartTime = createUtcTime(22)
+        newEndTime = createUtcTime(4)
+        break
+      case 'AMPeak':
+        newStartTime = createUtcTime(6)
+        newEndTime = createUtcTime(9)
+        break
+      case 'PMPeak':
+        newStartTime = createUtcTime(16)
+        newEndTime = createUtcTime(18)
+        break
+      case 'MidDay':
+        newStartTime = createUtcTime(9)
+        newEndTime = createUtcTime(16)
+        break
+      case 'Evening':
+        newStartTime = createUtcTime(18)
+        newEndTime = createUtcTime(22)
+        break
+      case 'EarlyMorning':
+        newStartTime = createUtcTime(4)
+        newEndTime = createUtcTime(6)
+        break
+      default:
+        newStartTime = createUtcTime(0)
+        newEndTime = createUtcTime(23, 59, 59)
+        break
+    }
+
+    setRouteSpeedRequest({
+      ...routeSpeedRequest,
+      startTime: newStartTime.toISOString(),
+      endTime: newEndTime.toISOString(),
+    })
+  }
 
   const getAnalysisPeriodLabel = () => {
-    switch (routeSpeedRequest.analysisPeriod) {
+    switch (analysisPeriod) {
       case AnalysisPeriod.AllDay:
         return 'All Day'
       case AnalysisPeriod.OffPeak:
@@ -47,14 +105,9 @@ export default function AnalysisPeriodOptionsPopup() {
         <FormControl component="fieldset">
           <RadioGroup
             aria-label="Analysis Time Period"
-            value={analysisPeriodString}
+            value={analysisPeriod ? AnalysisPeriod[analysisPeriod] : 'AllDay'}
             onChange={(event) => {
-              const newValue = event.target.value
-              setRouteSpeedRequest({
-                ...routeSpeedRequest,
-                analysisPeriod:
-                  AnalysisPeriod[newValue as keyof typeof AnalysisPeriod],
-              })
+              handleAnalysisPeriodChange(event.target.value)
             }}
           >
             <FormControlLabel

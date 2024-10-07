@@ -14,7 +14,7 @@ interface HistoricalDataParams {
   daysOfWeek: number[]
 }
 
-const ChartsContainer = ({ selectedRouteId }: { selectedRouteId: number }) => {
+const ChartsContainer = ({ selectedRouteId }: { selectedRouteId: string }) => {
   const { submittedRouteSpeedRequest, routeRenderOption } = useStore()
 
   const params: HistoricalDataParams = {

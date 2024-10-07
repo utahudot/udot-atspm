@@ -5,6 +5,6 @@ namespace Utah.Udot.Atspm.Repositories.SpeedManagementRepositories
 {
     public interface ITempDataRepository : IAsyncRepository<TempData>
     {
-        public Task<List<TempDataWithDataQuility>> GetHourlyAggregatedDataForAllSegments();
+        public Task<List<TempDataWithDataQuality>> GetHourlyAggregatedDataForAllSegments();
     }
 }

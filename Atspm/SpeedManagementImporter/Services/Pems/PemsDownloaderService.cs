@@ -44,22 +44,22 @@ namespace SpeedManagementImporter.Services.Pems
 
         public async Task DeleteSegmentData(List<string> providedSegments)
         {
-            List<Segment> segments = new List<Segment>();
+            List<Guid> segments = new List<Guid>();
             foreach (var segmentId in providedSegments)
             {
-                var segment = await segmentRepository.LookupAsync(Guid.Parse(segmentId));
+                var segment = Guid.Parse(segmentId);
                 segments.Add(segment);
             }
-            var segmentIds = segments.Select(s => s.Id).ToList();
-            if (segmentIds.Count == 1)
+            //var segmentIds = segments.Select(s => s.Id).ToList();
+            if (segments.Count == 1)
             {
-                await hourlySpeedRepository.DeleteBySegment(segmentIds.FirstOrDefault());
-                await monthlyAggregationService.DeleteMonthlyAggregationBySegmentId(segmentIds.FirstOrDefault());
+                await hourlySpeedRepository.DeleteBySegment(segments.FirstOrDefault());
+                await monthlyAggregationService.DeleteMonthlyAggregationBySegmentId(segments.FirstOrDefault());
             }
             else
             {
-                await hourlySpeedRepository.DeleteBySegments(segmentIds);
-                await monthlyAggregationService.DeleteMonthlyAggregationBySegmentIds(segmentIds);
+                await hourlySpeedRepository.DeleteBySegments(segments);
+                await monthlyAggregationService.DeleteMonthlyAggregationBySegmentIds(segments);
             }
         }
 
@@ -134,7 +134,7 @@ namespace SpeedManagementImporter.Services.Pems
                     {
                         try
                         {
-                            segmentStatistics.Add(await GetStatisticsForDay(date, entity.EntityId, segment.SpeedLimit, true));
+                            segmentStatistics.Add(await GetStatisticsForDay(date, Int64.Parse(entity.EntityId), segment.SpeedLimit, true));
                         }
                         catch (Exception ex)
                         {

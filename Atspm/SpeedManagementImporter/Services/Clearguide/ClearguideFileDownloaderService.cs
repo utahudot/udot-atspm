@@ -113,13 +113,13 @@ namespace SpeedManagementImporter.Services.Clearguide
             await actionBlock.Completion;
         }
 
-        private List<HourlySpeed> DownloadDataToHourlyTable(IGrouping<Guid, SegmentEntityWithSpeed> route, List<TempDataWithDataQuility> entityData)
+        private List<HourlySpeed> DownloadDataToHourlyTable(IGrouping<Guid, SegmentEntityWithSpeed> route, List<TempDataWithDataQuality> entityData)
         {
             var speeds = new List<HourlySpeedWithEntityId>();
             foreach (SegmentEntityWithSpeed routeEntity in route)
             {
                 var dataForEntity = entityData.Where(e => e.EntityId == routeEntity.EntityId).ToList();
-                foreach (TempDataWithDataQuility entity in dataForEntity)
+                foreach (TempDataWithDataQuality entity in dataForEntity)
                 {
                     HourlySpeedWithEntityId speed = new()
                     {

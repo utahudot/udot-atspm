@@ -95,7 +95,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
 
                 var result = new SegmentEntity
                 {
-                    EntityId = (long)entityId,
+                    EntityId = entityId.ToString(),
                     EntityType = entityType.ToString(),
                     SegmentId = segmentId,
                     SourceId = (long)sourceId
@@ -144,7 +144,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
 
                 var result = new SegmentEntityWithSpeedAndAlternateIdentifier
                 {
-                    EntityId = (long)entityId,
+                    EntityId = entityId.ToString(),
                     EntityType = entityType.ToString(),
                     SegmentId = segmentId,
                     SourceId = (long)sourceId,
@@ -189,7 +189,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
 
                 var result = new SegmentEntityWithSpeed
                 {
-                    EntityId = (long)entityId,
+                    EntityId = entityId.ToString(),
                     EntityType = entityType.ToString(),
                     SegmentId = segmentId,
                     SourceId = (long)sourceId,

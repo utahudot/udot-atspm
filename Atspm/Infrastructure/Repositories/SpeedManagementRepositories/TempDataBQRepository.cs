@@ -22,7 +22,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             _table = _client.GetTable(_datasetId, _tableId);
         }
 
-        public async Task<List<TempDataWithDataQuility>> GetHourlyAggregatedDataForAllSegments()
+        public async Task<List<TempDataWithDataQuality>> GetHourlyAggregatedDataForAllSegments()
         {
             var query = $@"
             SELECT
@@ -150,7 +150,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             string[] formats = { "MM/dd/yyyy HH:mm:ss", "M/d/yyyy h:mm:ss tt", "yyyy-MM-ddTHH:mm:ss.fffZ" };
             var binStartTime = DateTime.ParseExact(row["BinStartTime"].ToString(), formats, null);
             var average = Double.Parse(row["Average"].ToString());
-            var entityId = long.Parse(row["EntityId"].ToString());
+            var entityId = row["EntityId"].ToString();
             var filledIn = bool.Parse(row["FilledIn"].ToString());
 
             return new TempData
@@ -162,15 +162,15 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             };
         }
 
-        private TempDataWithDataQuility MapRowToEntityWithDataQuiality(BigQueryRow row)
+        private TempDataWithDataQuality MapRowToEntityWithDataQuiality(BigQueryRow row)
         {
             string[] formats = { "MM/dd/yyyy HH:mm:ss", "M/d/yyyy h:mm:ss tt", "yyyy-MM-ddTHH:mm:ss.fffZ" };
             var binStartTime = DateTime.ParseExact(row["BinStartTime"].ToString(), formats, null);
             var average = Double.Parse(row["Average"].ToString());
-            var entityId = long.Parse(row["EntityId"].ToString());
+            var entityId = row["EntityId"].ToString();
             var dataQuality = Double.Parse(row["DataQuality"].ToString());
 
-            return new TempDataWithDataQuility
+            return new TempDataWithDataQuality
             {
                 BinStartTime = binStartTime,
                 Average = average,

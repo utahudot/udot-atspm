@@ -53,7 +53,7 @@ namespace SpeedManagementImporter.Services.Clearguide
                                     .Select(e => e.EntityId)
                                     .Distinct()
                                     .ToList();
-            var entityIdSet = new HashSet<long>(distinctEntityIds);
+            var entityIdSet = new HashSet<string>(distinctEntityIds);
 
             await UploadFileAsync(entityIdSet, filePath);
             stopwatch.Stop();
@@ -63,7 +63,7 @@ namespace SpeedManagementImporter.Services.Clearguide
         }
 
         //Private Methods//
-        private async Task UploadFileAsync(HashSet<long> entityIdSet, string filePath)
+        private async Task UploadFileAsync(HashSet<string> entityIdSet, string filePath)
         {
             var settings = new ExecutionDataflowBlockOptions
             {
@@ -91,7 +91,7 @@ namespace SpeedManagementImporter.Services.Clearguide
             await saveBatchBlock.Completion;
         }
 
-        private IEnumerable<TempData> ParseCsvFile(string filePath, HashSet<long> entityIdSet)
+        private IEnumerable<TempData> ParseCsvFile(string filePath, HashSet<string> entityIdSet)
         {
             using var reader = new StreamReader(filePath);
             using var csvReader = new CsvReader(reader, CultureInfo.InvariantCulture);
@@ -123,7 +123,7 @@ namespace SpeedManagementImporter.Services.Clearguide
         }
 
         // Method to parse a CSV line and map it to TempData
-        private static TempData ParseCsvLine(string line, HashSet<long> entityIdSet, Dictionary<string, int> headerIndices)
+        private static TempData ParseCsvLine(string line, HashSet<string> entityIdSet, Dictionary<string, int> headerIndices)
         {
             using var reader = new StringReader(line);
             using var csvReader = new CsvReader(reader, CultureInfo.InvariantCulture);
@@ -134,47 +134,41 @@ namespace SpeedManagementImporter.Services.Clearguide
             var freeflowIndex = headerIndices["freeflow_mph"];
 
             csvReader.Read();
-            var sourceIdString = csvReader.GetField(sourceIdIndex);
+            var entityId = csvReader.GetField(sourceIdIndex);
 
-            if (long.TryParse(sourceIdString, NumberStyles.Any, CultureInfo.InvariantCulture, out long sourceId))
+
+            if (entityIdSet.Contains(entityId))
             {
-                if (entityIdSet.Contains(sourceId))
+                // Parse binStartTime as DateTime
+                if (DateTime.TryParse(csvReader.GetField(binStartTimeIndex), CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime binStartTime))
                 {
-                    // Parse binStartTime as DateTime
-                    if (DateTime.TryParse(csvReader.GetField(binStartTimeIndex), CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime binStartTime))
+                    // Parse avg as double
+                    if (double.TryParse(csvReader.GetField(avgIndex), NumberStyles.Any, CultureInfo.InvariantCulture, out double avg))
                     {
-                        // Parse avg as double
-                        if (double.TryParse(csvReader.GetField(avgIndex), NumberStyles.Any, CultureInfo.InvariantCulture, out double avg))
+                        if (double.TryParse(csvReader.GetField(freeflowIndex), NumberStyles.Any, CultureInfo.InvariantCulture, out double freeflow))
                         {
-                            if (double.TryParse(csvReader.GetField(freeflowIndex), NumberStyles.Any, CultureInfo.InvariantCulture, out double freeflow))
+                            return new TempData
                             {
-                                return new TempData
-                                {
-                                    BinStartTime = binStartTime,
-                                    Average = avg,
-                                    EntityId = sourceId,
-                                    FilledIn = avg == freeflow
-                                };
-                            }
-                            else
-                            {
-                                Console.WriteLine($"Failed to parse flow speed: {csvReader.GetField(freeflowIndex)}");
-                            }
+                                BinStartTime = binStartTime,
+                                Average = avg,
+                                EntityId = entityId,
+                                FilledIn = avg == freeflow
+                            };
                         }
                         else
                         {
-                            Console.WriteLine($"Failed to parse average speed: {csvReader.GetField(avgIndex)}");
+                            Console.WriteLine($"Failed to parse flow speed: {csvReader.GetField(freeflowIndex)}");
                         }
                     }
                     else
                     {
-                        Console.WriteLine($"Failed to parse bin start time: {csvReader.GetField(binStartTimeIndex)}");
+                        Console.WriteLine($"Failed to parse average speed: {csvReader.GetField(avgIndex)}");
                     }
                 }
-            }
-            else
-            {
-                Console.WriteLine($"Failed to parse source_id: {sourceIdString}");
+                else
+                {
+                    Console.WriteLine($"Failed to parse bin start time: {csvReader.GetField(binStartTimeIndex)}");
+                }
             }
 
             return null; // Return null if parsing fails or no matching entity is found

@@ -17,9 +17,12 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices.Effect
         public override async Task<List<EffectivenessOfStrategiesDto>> ExecuteAsync(EffectivenessOfStrategiesOptions parameter, IProgress<int> progress = null, CancellationToken cancelToken = default)
         {
             var implementationDate = parameter.StrategyImplementedDate;
-            var startDate = implementationDate.AddDays(-42);
-            DateTime dateSixWeeksAfter = implementationDate.AddDays(42);
-            DateTime endDate = (dateSixWeeksAfter > DateTime.Now.AddDays(-1)) ? DateTime.Now.AddDays(-1) : dateSixWeeksAfter;
+            var startDate = new DateTime(implementationDate.Year, implementationDate.Month, 1).AddMonths(-2);
+            var dateTwoMonthsAfter = new DateTime(implementationDate.Year, implementationDate.Month, 1)
+                .AddMonths(3).AddDays(-1);
+            DateTime endDate = (dateTwoMonthsAfter > DateTime.Now.AddDays(-1)) ? DateTime.Now.AddDays(-1) : dateTwoMonthsAfter;
+
+
 
             var filteredHours = await hourlySpeedRepository.GetHourlySpeedsWithFiltering(parameter.SegmentIds, startDate, endDate, parameter.StartTime, parameter.EndTime, null, null);
 
@@ -44,7 +47,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices.Effect
                         MaxSpeed = g.Max(h => h.MaxSpeed) ?? 0,
                         MinSpeed = g.Min(h => h.MinSpeed) ?? 0,
                         AverageSpeed = ((double)(g.Sum(h => h.Average * h.Flow)) / (g.Sum(h => h.Flow))) ?? 0,
-                        AverageEightyFifthSpeed = ((double)(g.Sum(h => h.EightyFifthSpeed)) / (g.Sum(h => h.Flow))) ?? 0,
+                        AverageEightyFifthSpeed = ((double)(g.Sum(h => h.EightyFifthSpeed * h.Flow)) / (g.Sum(h => h.Flow))) ?? 0,
                         Variability = ((double)g.Max(h => h.MaxSpeed ?? 0)) - ((double)g.Min(h => h.MinSpeed ?? 0)),
                         PercentViolations = (g.Sum(h => h.Flow) != 0 ? (double)g.Sum(h => h.Violation) / g.Sum(h => h.Flow) ?? 0 : 0) * 100,
                         PercentExtremeViolations = (g.Sum(h => h.Flow) != 0 ? (double)g.Sum(h => h.ExtremeViolation) / g.Sum(h => h.Flow) ?? 0 : 0) * 100,

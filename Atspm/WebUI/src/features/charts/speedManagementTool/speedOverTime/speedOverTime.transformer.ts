@@ -18,7 +18,6 @@ export default function transformSpeedOverTimeData(
   response: SpeedOverDistanceResponse,
   impactResponse?: any
 ) {
-  console.log(impactResponse)
   const title = createTitle({
     title: `Speed Over Time\n${
       response.segmentName

@@ -29,20 +29,45 @@ interface MonthlyAverage {
 }
 
 interface Properties {
+  createdDate: string
+  binStartTime: string
+  route_id: string
+  sourceId: number
   name: string
-  route_id: number
-  startdate: string | null
-  enddate: string | null
-  avg: number
-  percentilespd_85: number
-  percentilespd_95: number
-  // percentilespd_99: number
-  averageSpeedAboveSpeedLimit: number
-  estimatedViolations: number
-  flow: number
   speedLimit: number
-  // dataSource: string
+  region: string
+  city: string
+  county: string
+  averageSpeed: number
+  averageEightyFifthSpeed: number
+  violations: number
+  extremeViolations: number
+  flow: number
+  minSpeed: number
+  maxSpeed: number
+  variability: number
+  percentViolations: number
+  percentExtremeViolations: number
+  avgSpeedVsSpeedLimit: number
+  eightyFifthSpeedVsSpeedLimit: number
+  percentObserved: number
 }
+
+// interface Properties {
+//   name: string
+//   route_id: number
+//   startdate: string | null
+//   enddate: string | null
+//   avg: number
+//   percentilespd_85: number
+//   percentilespd_95: number
+//   // percentilespd_99: number
+//   averageSpeedAboveSpeedLimit: number
+//   estimatedViolations: number
+//   flow: number
+//   speedLimit: number
+//   // dataSource: string
+// }
 
 export interface SpeedManagementRoute {
   type: 'Feature'

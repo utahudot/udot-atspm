@@ -141,7 +141,7 @@ namespace SpeedManagementImporter.Services.Clearguide
             }
         }
 
-        private string ConstructApiQuery(long entityId, long startTimestamp, long endTimestamp)
+        private string ConstructApiQuery(string entityId, long startTimestamp, long endTimestamp)
         {
             return $"{API_URL}?customer_key={CUSTOMER_KEY}&link_id={entityId}&s_timestamp={startTimestamp}&e_timestamp={endTimestamp}&metrics={METRIC}&holidays={INCLUDE_HOLIDAYS}&granularity={GRANULARITY}";
         }
