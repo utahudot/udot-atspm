@@ -405,10 +405,10 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             return monthlyAggregations;
         }
 
-        public async Task<List<MonthlyAggregationSimplified>> GetTopMonthlyAggregationsInCategory(MonthlyAggregationOptions options)
+        public async Task<List<RouteSpeed>> GetTopMonthlyAggregationsInCategory(MonthlyAggregationOptions options)
         {
             var query = $@"SELECT " + SelectionQueryWithFilter(options.timePeriod, options.aggClassification, "monthlyAgg")
-                + $", segment.region, segment.city, segment.county " +
+                + $", segment.region, segment.city, segment.county, segment.SpeedLimit, segment.Shape, segment.Name " +
                 $"FROM `{_datasetId}.{_tableId}` as monthlyAgg" +
                 $" JOIN `{_datasetId}.segment` as segment ON monthlyAgg.SegmentId = segment.Id " +
                 $"WHERE BinStartTime BETWEEN TIMESTAMP('{options.StartTime:yyyy-MM-dd HH:mm:ss}') AND TIMESTAMP('{options.EndTime:yyyy-MM-dd HH:mm:ss}')";
@@ -513,10 +513,10 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             query = query + $" NULLS LAST LIMIT {options.Limit};";
 
             var results = await _client.ExecuteQueryAsync(query, parameters);
-            var monthlyAggregations = new List<MonthlyAggregationSimplified>();
+            var monthlyAggregations = new List<RouteSpeed>();
             foreach (var row in results)
             {
-                monthlyAggregations.Add(MapRowToSimplifiedAggregationEntity(row));
+                monthlyAggregations.Add(MapRowToRouteSpeedEntity(row));
             }
 
             return monthlyAggregations;
