@@ -27,7 +27,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices
             return monthlyAggregations;
         }
 
-        public async Task<IReadOnlyList<MonthlyAggregationSimplified>> GetTopMonthlyAggregationsInCategory(MonthlyAggregationOptions monthlyAggregationOptions)
+        public async Task<IReadOnlyList<RouteSpeed>> GetTopMonthlyAggregationsInCategory(MonthlyAggregationOptions monthlyAggregationOptions)
         {
             var lastMonth = DateTime.Now.AddMonths(-1);
             DateTime startTime = monthlyAggregationOptions.StartTime ??= lastMonth;
