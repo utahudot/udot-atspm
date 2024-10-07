@@ -26,6 +26,9 @@ interface StoreState {
 
   multiselect: boolean
   setMultiselect: (multiselect: boolean) => void
+
+  hotspotRoutes: any[]
+  setHotspotRoutes: (routes: any[]) => void
 }
 
 // Create the Zustand store
@@ -84,6 +87,9 @@ const useSpeedManagementStore = create<StoreState>((set) => ({
 
   multiselect: false,
   setMultiselect: (multiselect: boolean) => set({ multiselect }),
+
+  hotspotRoutes: [],
+  setHotspotRoutes: (routes: any[]) => set({ hotspotRoutes: routes }),
 }))
 
 export default useSpeedManagementStore

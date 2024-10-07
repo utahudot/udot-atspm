@@ -1,5 +1,6 @@
-import { SM_Height } from '@/features/speedManagementTool/components/SM_Map'
+import HotspotMarker from '@/features/speedManagementTool/components/SM_Map/HotspotMarker'
 import RouteDisplayToggle from '@/features/speedManagementTool/components/SM_Map/RouteDisplayToggle'
+import { SM_Height } from '@/features/speedManagementTool/components/SM_Map/SM_MapWrapper'
 import { RouteRenderOption } from '@/features/speedManagementTool/enums'
 import useSpeedManagementStore from '@/features/speedManagementTool/speedManagementStore'
 import { SpeedManagementRoute } from '@/features/speedManagementTool/types/routes'
@@ -37,6 +38,7 @@ const SM_Map = ({
     mediumMax,
     multiselect,
     setMultiselect,
+    hotspotRoutes,
   } = useSpeedManagementStore()
 
   useEffect(() => {
@@ -72,12 +74,6 @@ const SM_Map = ({
         break
       case RouteRenderOption.Percentile_85th:
         field = 'averageEightyFifthSpeed'
-        break
-      case RouteRenderOption.Percentile_95th:
-        field = 'null'
-        break
-      case RouteRenderOption.Percentile_99th:
-        field = 'null'
         break
       default:
         field = 'averageSpeed'
@@ -125,6 +121,12 @@ const SM_Map = ({
     if (zoom >= 10) return 3
     if (zoom >= 8) return 2
     return 2
+  }
+
+  const getMidpoint = (coordinates: [number, number][]) => {
+    if (!coordinates.length) return null
+    const midpointIndex = Math.floor(coordinates.length / 2)
+    return coordinates[midpointIndex]
   }
 
   return (
@@ -178,6 +180,7 @@ const SM_Map = ({
                 : getColor(route),
               weight: getPolylineWeight(zoomLevel),
             }}
+            smoothFactor={0}
             positions={route.geometry.coordinates}
             eventHandlers={{
               click: () => setSelectedRouteId(route.properties.route_id),
@@ -198,7 +201,22 @@ const SM_Map = ({
             }}
           />
         ))}
+        {hotspotRoutes?.map((hotspot, index) => {
+          const midpoint = getMidpoint(hotspot.geometry.coordinates)
 
+          if (!midpoint) return null
+
+          return (
+            <React.Fragment key={hotspot.properties.route_id}>
+              <HotspotMarker
+                position={midpoint}
+                rank={index + 1}
+                segmentId={hotspot.properties.route_id}
+                onClick={setSelectedRouteId}
+              />
+            </React.Fragment>
+          )
+        })}
         <SpeedLegend />
       </MapContainer>
     </Box>

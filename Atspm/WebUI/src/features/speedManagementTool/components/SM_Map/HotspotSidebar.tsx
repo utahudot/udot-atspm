@@ -3,7 +3,10 @@ import { SM_Height } from '@/features/speedManagementTool/components/SM_Map'
 import useSpeedManagementStore from '@/features/speedManagementTool/speedManagementStore'
 import {
   Box,
+  Checkbox,
   FormControl,
+  FormControlLabel,
+  FormGroup,
   MenuItem,
   Select,
   Table,
@@ -13,14 +16,14 @@ import {
   TableRow,
   Typography,
 } from '@mui/material'
-import { Fragment, useEffect, useState } from 'react'
+import { Fragment, useCallback, useEffect, useState } from 'react'
 
 const HotspotSidebar = () => {
-  const { submittedRouteSpeedRequest } = useSpeedManagementStore()
+  const { submittedRouteSpeedRequest, hotspotRoutes, setHotspotRoutes } =
+    useSpeedManagementStore()
   const { mutateAsync: fetchHotspotsAsync } =
     usePostApiV1MonthlyAggregationHotspots()
 
-  const [hotspots, setHotspots] = useState([])
   const [order, setOrder] = useState('DESC')
   const [limit, setLimit] = useState(25)
   const [sortBy, setSortBy] = useState('averageSpeed')
@@ -32,25 +35,35 @@ const HotspotSidebar = () => {
     variability: false,
   })
 
-  const fetchHotspots = async () => {
-    const hotspots = await fetchHotspotsAsync({
-      data: {
-        category: 0,
-        timePeriod: 0,
-        aggClassification: 0,
-        startTime: submittedRouteSpeedRequest.startDate,
-        endTime: submittedRouteSpeedRequest.endDate,
-        sourceId: submittedRouteSpeedRequest.sourceId,
-        order,
-        limit,
-      },
-    })
-    setHotspots(hotspots)
-  }
+  const fetchHotspots = useCallback(async () => {
+    try {
+      const hotspots = await fetchHotspotsAsync({
+        data: {
+          category: 0,
+          timePeriod: 0,
+          aggClassification: 0,
+          startTime: submittedRouteSpeedRequest.startDate,
+          endTime: submittedRouteSpeedRequest.endDate,
+          sourceId: submittedRouteSpeedRequest.sourceId,
+          order,
+          limit,
+        },
+      })
+      setHotspotRoutes(hotspots.features)
+    } catch (error) {
+      console.error('Failed to fetch hotspots', error)
+    }
+  }, [
+    fetchHotspotsAsync,
+    order,
+    limit,
+    setHotspotRoutes,
+    submittedRouteSpeedRequest,
+  ])
 
   useEffect(() => {
     fetchHotspots()
-  }, [submittedRouteSpeedRequest, order, limit])
+  }, [submittedRouteSpeedRequest, order, limit, fetchHotspots])
 
   const handleLimitChange = (event) => {
     setLimit(event.target.value)
@@ -98,20 +111,16 @@ const HotspotSidebar = () => {
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 2 }}>
           <Typography variant="body2">Sort by</Typography>
           <FormControl size="small" sx={{ minWidth: 160 }}>
-            {/* <InputLabel id="sort-by-select-label">Sort By</InputLabel> */}
             <Select
               labelId="sort-by-select-label"
               id="sort-by-select"
               value={sortBy}
-              //   label="Sort By"
-
               onChange={handleSortByChange}
             >
               <MenuItem value="averageSpeed">Average Speed</MenuItem>
               <MenuItem value="violations">Violations</MenuItem>
               <MenuItem value="flow">Flow</MenuItem>
               <MenuItem value="variability">Variability</MenuItem>
-              {/* Add more sorting options as required */}
             </Select>
           </FormControl>
 
@@ -129,12 +138,10 @@ const HotspotSidebar = () => {
 
           <Typography variant="body2">Limit:</Typography>
           <FormControl size="small" sx={{ minWidth: 80 }}>
-            {/* <InputLabel id="limit-select-label">Limit</InputLabel> */}
             <Select
               labelId="limit-select-label"
               id="limit-select"
               value={limit}
-              //   label="Limit"
               onChange={handleLimitChange}
             >
               <MenuItem value={10}>10</MenuItem>
@@ -143,7 +150,7 @@ const HotspotSidebar = () => {
             </Select>
           </FormControl>
         </Box>
-        {/* Group Visibility Toggles
+        {/* Group Visibility Toggles */}
         <FormGroup
           row
           sx={{ mt: 2, display: 'flex', flexWrap: 'wrap', gap: 2 }}
@@ -208,12 +215,17 @@ const HotspotSidebar = () => {
             }
             label="Variability"
           />
-        </FormGroup>*/}
+        </FormGroup>
       </Box>
 
       <Table>
         <TableHead>
           <TableRow>
+            <TableCell>
+              <Typography fontSize={'.75rem'} fontWeight={'bold'}>
+                Rank
+              </Typography>
+            </TableCell>
             <TableCell>
               <Typography fontSize={'.75rem'} fontWeight={'bold'}>
                 Hotspot
@@ -255,34 +267,43 @@ const HotspotSidebar = () => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {hotspots.map((hotspot) => (
-            <Fragment key={hotspot.id}>
+          {hotspotRoutes.map((hotspot, index) => (
+            <Fragment key={hotspot.properties.route_id}>
               <TableRow>
-                <TableCell>I215-Counterclockwise - 5 and more stuff</TableCell>
+                <TableCell>{index + 1}</TableCell>
+                <TableCell>
+                  <Typography>{hotspot.properties.name}</Typography>
+                </TableCell>
                 {visibleGroups.speeds && (
                   <>
-                    <TableCell>{hotspot.minSpeed}</TableCell>
-                    <TableCell>{hotspot.maxSpeed}</TableCell>
-                    <TableCell>{Math.round(hotspot.averageSpeed)}</TableCell>
+                    <TableCell>{hotspot.properties.minSpeed}</TableCell>
+                    <TableCell>{hotspot.properties.maxSpeed}</TableCell>
+                    <TableCell>
+                      {Math.round(hotspot.properties.averageSpeed)}
+                    </TableCell>
                   </>
                 )}
                 {visibleGroups.violations && (
                   <>
-                    <TableCell>{hotspot.violations}</TableCell>
-                    <TableCell>{hotspot.extremeViolations}</TableCell>
+                    <TableCell>{hotspot.properties.violations}</TableCell>
+                    <TableCell>
+                      {hotspot.properties.extremeViolations}
+                    </TableCell>
                   </>
                 )}
-                {visibleGroups.flow && <TableCell>{hotspot.flow}</TableCell>}
+                {visibleGroups.flow && (
+                  <TableCell>{hotspot.properties.flow}</TableCell>
+                )}
                 {visibleGroups.variability && (
-                  <TableCell>{hotspot.variability}</TableCell>
+                  <TableCell>{hotspot.properties.variability}</TableCell>
                 )}
                 {visibleGroups.percentages && (
                   <>
                     <TableCell>
-                      {Math.round(hotspot.percentViolations)}
+                      {Math.round(hotspot.properties.percentViolations)}
                     </TableCell>
                     <TableCell>
-                      {Math.round(hotspot.percentExtremeViolations)}
+                      {Math.round(hotspot.properties.percentExtremeViolations)}
                     </TableCell>
                   </>
                 )}

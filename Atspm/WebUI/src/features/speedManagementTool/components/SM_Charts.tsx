@@ -53,8 +53,6 @@ const SM_Charts = ({ routes }: { routes: SpeedManagementRoute[] }) => {
   const [selectedChart, setSelectedChart] = useState<SM_ChartType | null>(null)
   const [chartOptions, setChartOptions] = useState<ChartOptions>(null)
 
-  console.log('chartOptions', chartOptions)
-
   const { multiselect, routeSpeedRequest } = useSpeedManagementStore()
 
   const segmentIds = useMemo(
@@ -68,7 +66,8 @@ const SM_Charts = ({ routes }: { routes: SpeedManagementRoute[] }) => {
           ...chartOptions,
           ...(multiselect ||
           selectedChart === SM_ChartType.DATA_QUALITY ||
-          selectedChart === SM_ChartType.SPEED_VIOLATIONS || selectedChart === SM_ChartType.EFFECTIVENESS_OF_STRATEGIES
+          selectedChart === SM_ChartType.SPEED_VIOLATIONS ||
+          selectedChart === SM_ChartType.EFFECTIVENESS_OF_STRATEGIES
             ? { segmentIds: segmentIds }
             : { segmentId: segmentIds[0] }),
         }
@@ -195,8 +194,8 @@ const SM_Charts = ({ routes }: { routes: SpeedManagementRoute[] }) => {
               handleOptionsChange as (options: SpeedViolationsOptions) => void
             }
             sourceId={routeSpeedRequest.sourceId}
-            />
-          )
+          />
+        )
       case SM_ChartType.EFFECTIVENESS_OF_STRATEGIES:
         return (
           <EffectivenessOfStrategiesOptions
