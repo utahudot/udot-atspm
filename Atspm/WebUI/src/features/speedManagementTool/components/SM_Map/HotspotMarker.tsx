@@ -10,6 +10,7 @@ type RankMarkerProps = {
   rank: number
   segmentId: string
   onClick: (segmentId: string) => void
+  hoveredHotspot: string | null
 }
 
 const RankMarker = ({
@@ -17,11 +18,13 @@ const RankMarker = ({
   rank,
   segmentId,
   onClick,
+  hoveredHotspot,
 }: RankMarkerProps) => {
   const theme = useTheme()
   const hoverColor = darken(theme.palette.primary.main, 0.2)
 
-  // Normal Icon Content
+  const isHovered = hoveredHotspot === segmentId
+
   const iconContentNormal = ReactDOMServer.renderToString(
     <div style={{ position: 'relative' }}>
       <div
@@ -61,7 +64,6 @@ const RankMarker = ({
     </div>
   )
 
-  // Hover Icon Content
   const iconContentHover = ReactDOMServer.renderToString(
     <div style={{ position: 'relative' }}>
       <div
@@ -101,55 +103,38 @@ const RankMarker = ({
     </div>
   )
 
-  // Create Normal Icon
   const iconNormal = L.divIcon({
     html: iconContentNormal,
     className: '',
-    iconAnchor: [12, 30], // Adjusted for center alignment
+    iconAnchor: [12, 30],
   })
 
-  // Create Hover Icon
   const iconHover = L.divIcon({
     html: iconContentHover,
     className: '',
-    iconAnchor: [14, 33], // Adjusted for larger size
+    iconAnchor: [14, 33],
   })
 
-  // Reference to the marker instance
   const markerRef = useRef<L.Marker>(null)
 
   useEffect(() => {
     const marker = markerRef.current
     if (marker) {
-      marker.off('mouseover')
-      marker.off('mouseout')
+      marker.setIcon(isHovered ? iconHover : iconNormal)
 
-      const onMouseOver = () => {
-        marker.setIcon(iconHover)
-        marker.off('mouseover', onMouseOver)
-      }
-
-      const onMouseOut = () => {
-        marker.setIcon(iconNormal)
-        marker.on('mouseover', onMouseOver)
-      }
-
-      marker.on('mouseover', onMouseOver)
-      marker.on('mouseout', onMouseOut)
-
-      return () => {
-        marker.off('mouseover', onMouseOver)
-        marker.off('mouseout', onMouseOut)
+      if (isHovered) {
+        marker.setZIndexOffset(1000)
+      } else {
+        marker.setZIndexOffset(0)
       }
     }
-  }, [iconNormal, iconHover, segmentId])
+  }, [isHovered, iconNormal, iconHover])
 
   return (
     <Marker
       ref={markerRef}
       position={[position[1], position[0]]}
-      icon={iconNormal}
-      riseOnHover
+      icon={isHovered ? iconHover : iconNormal}
       eventHandlers={{
         click: () => onClick(segmentId),
       }}

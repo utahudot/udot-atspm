@@ -169,8 +169,6 @@ const SM_MapWrapper = () => {
             overflow: 'hidden',
             bgcolor: 'background.paper',
             borderTop: 'none',
-            borderLeft: '1px solid',
-            borderBottom: '1px solid',
             borderColor: 'divider',
             maxHeight: SM_Height,
             overflowY: 'auto',

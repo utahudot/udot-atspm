@@ -39,6 +39,7 @@ const SM_Map = ({
     multiselect,
     setMultiselect,
     hotspotRoutes,
+    hoveredHotspot,
   } = useSpeedManagementStore()
 
   useEffect(() => {
@@ -130,7 +131,15 @@ const SM_Map = ({
   }
 
   return (
-    <Box sx={{ height: '100%', width: '100%', position: 'relative' }}>
+    <Box
+      sx={{
+        height: '100%',
+        width: '100%',
+        position: 'relative',
+        borderBottom: '1px solid',
+        borderColor: 'divider',
+      }}
+    >
       <MapContainer
         center={initialLatLong}
         zoom={zoomLevel}
@@ -213,6 +222,7 @@ const SM_Map = ({
                 rank={index + 1}
                 segmentId={hotspot.properties.route_id}
                 onClick={setSelectedRouteId}
+                hoveredHotspot={hoveredHotspot}
               />
             </React.Fragment>
           )

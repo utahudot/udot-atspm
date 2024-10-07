@@ -1,12 +1,16 @@
-import { usePostApiV1MonthlyAggregationHotspots } from '@/api/speedManagement/aTSPMSpeedManagementApi'
+import {
+  useGetApiV1MonthlyAggregationFilteringTimePeriods,
+  useGetApiV1MonthlyAggregationMonthAggClassifications,
+  useGetApiV1MonthlyAggregationSpeedCategoryFilters,
+  usePostApiV1MonthlyAggregationHotspots,
+} from '@/api/speedManagement/aTSPMSpeedManagementApi'
 import { SM_Height } from '@/features/speedManagementTool/components/SM_Map'
 import useSpeedManagementStore from '@/features/speedManagementTool/speedManagementStore'
 import {
   Box,
-  Checkbox,
+  CircularProgress,
   FormControl,
-  FormControlLabel,
-  FormGroup,
+  LinearProgress,
   MenuItem,
   Select,
   Table,
@@ -19,27 +23,40 @@ import {
 import { Fragment, useCallback, useEffect, useState } from 'react'
 
 const HotspotSidebar = () => {
-  const { submittedRouteSpeedRequest, hotspotRoutes, setHotspotRoutes } =
-    useSpeedManagementStore()
+  const {
+    submittedRouteSpeedRequest,
+    hotspotRoutes,
+    setHotspotRoutes,
+    setHoveredHotspot,
+  } = useSpeedManagementStore()
   const { mutateAsync: fetchHotspotsAsync } =
     usePostApiV1MonthlyAggregationHotspots()
 
+  const { data: categoryFilters } =
+    useGetApiV1MonthlyAggregationSpeedCategoryFilters()
+  const { data: aggregationClassifications } =
+    useGetApiV1MonthlyAggregationMonthAggClassifications()
+  const { data: timePeriods } =
+    useGetApiV1MonthlyAggregationFilteringTimePeriods()
+
   const [order, setOrder] = useState('DESC')
   const [limit, setLimit] = useState(25)
-  const [sortBy, setSortBy] = useState('averageSpeed')
+  const [sortBy, setSortBy] = useState(0)
   const [visibleGroups, setVisibleGroups] = useState({
     speeds: true,
-    violations: false,
-    percentages: false,
-    flow: false,
-    variability: false,
+    violations: true,
+    percentages: true,
+    flow: true,
+    variability: true,
   })
+  const [isLoading, setIsLoading] = useState(true)
 
   const fetchHotspots = useCallback(async () => {
     try {
+      setIsLoading(true)
       const hotspots = await fetchHotspotsAsync({
         data: {
-          category: 0,
+          category: sortBy,
           timePeriod: 0,
           aggClassification: 0,
           startTime: submittedRouteSpeedRequest.startDate,
@@ -50,8 +67,10 @@ const HotspotSidebar = () => {
         },
       })
       setHotspotRoutes(hotspots.features)
+      setIsLoading(false)
     } catch (error) {
       console.error('Failed to fetch hotspots', error)
+      setIsLoading(false)
     }
   }, [
     fetchHotspotsAsync,
@@ -59,6 +78,7 @@ const HotspotSidebar = () => {
     limit,
     setHotspotRoutes,
     submittedRouteSpeedRequest,
+    sortBy,
   ])
 
   useEffect(() => {
@@ -84,234 +104,243 @@ const HotspotSidebar = () => {
     })
   }
 
+  const progress = isLoading ? (
+    <LinearProgress sx={{ height: '5px' }} />
+  ) : (
+    <Box height={'5px'} />
+  )
+
   return (
     <Box
+      display={'flex'}
+      flexDirection={'column'}
       sx={{
-        width: '600px',
-        backgroundColor: 'background.paper',
+        maxHeight: SM_Height,
+        width: '700px',
         border: '1px solid',
         borderColor: 'divider',
         borderTop: 'none',
-        maxHeight: SM_Height,
-        overflowY: 'auto',
       }}
     >
       <Box
         sx={{
-          p: 2,
-          borderBottom: '1px solid',
-          marginLeft: '2px',
-          borderColor: 'divider',
-          backgroundColor: 'background.default',
+          backgroundColor: 'background.paper',
           position: 'sticky',
+          top: 0,
         }}
       >
-        <Typography variant="subtitle2">Hotspots</Typography>
-        {/* Sort By, Order, and Limit in One Line */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 2 }}>
-          <Typography variant="body2">Sort by</Typography>
-          <FormControl size="small" sx={{ minWidth: 160 }}>
-            <Select
-              labelId="sort-by-select-label"
-              id="sort-by-select"
-              value={sortBy}
-              onChange={handleSortByChange}
-            >
-              <MenuItem value="averageSpeed">Average Speed</MenuItem>
-              <MenuItem value="violations">Violations</MenuItem>
-              <MenuItem value="flow">Flow</MenuItem>
-              <MenuItem value="variability">Variability</MenuItem>
-            </Select>
-          </FormControl>
-
-          <FormControl size="small" sx={{ minWidth: 100 }}>
-            <Select
-              labelId="order-select-label"
-              id="order-select"
-              value={order}
-              onChange={handleOrderChange}
-            >
-              <MenuItem value="ASC">Asc</MenuItem>
-              <MenuItem value="DESC">Desc</MenuItem>
-            </Select>
-          </FormControl>
-
-          <Typography variant="body2">Limit:</Typography>
-          <FormControl size="small" sx={{ minWidth: 80 }}>
-            <Select
-              labelId="limit-select-label"
-              id="limit-select"
-              value={limit}
-              onChange={handleLimitChange}
-            >
-              <MenuItem value={10}>10</MenuItem>
-              <MenuItem value={25}>25</MenuItem>
-              <MenuItem value={100}>100</MenuItem>
-            </Select>
-          </FormControl>
-        </Box>
-        {/* Group Visibility Toggles */}
-        <FormGroup
-          row
-          sx={{ mt: 2, display: 'flex', flexWrap: 'wrap', gap: 2 }}
+        <Box
+          sx={{
+            p: 2,
+            borderBottom: '1px solid',
+            marginLeft: '2px',
+            borderColor: 'divider',
+            backgroundColor: 'background.default',
+            width: '100%',
+          }}
         >
-          <FormControlLabel
-            labelPlacement="top"
-            control={
-              <Checkbox
-                size="small"
-                checked={visibleGroups.speeds}
-                onChange={handleGroupVisibilityChange}
-                name="speeds"
-              />
-            }
-            label="Speeds (Min, Max, Avg)"
-          />
-          <FormControlLabel
-            labelPlacement="top"
-            control={
-              <Checkbox
-                size="small"
-                checked={visibleGroups.violations}
-                onChange={handleGroupVisibilityChange}
-                name="violations"
-              />
-            }
-            label="Violations (Regular, Extreme)"
-          />
-          <FormControlLabel
-            labelPlacement="top"
-            control={
-              <Checkbox
-                size="small"
-                checked={visibleGroups.percentages}
-                onChange={handleGroupVisibilityChange}
-                name="percentages"
-              />
-            }
-            label="Percentages (Violations, Extreme)"
-          />
-          <FormControlLabel
-            labelPlacement="top"
-            control={
-              <Checkbox
-                size="small"
-                checked={visibleGroups.flow}
-                onChange={handleGroupVisibilityChange}
-                name="flow"
-              />
-            }
-            label="Flow"
-          />
-          <FormControlLabel
-            labelPlacement="top"
-            control={
-              <Checkbox
-                size="small"
-                checked={visibleGroups.variability}
-                onChange={handleGroupVisibilityChange}
-                name="variability"
-              />
-            }
-            label="Variability"
-          />
-        </FormGroup>
+          <Typography variant="subtitle2">Hotspots</Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 2 }}>
+            <Typography variant="body2">Sort by</Typography>
+            <FormControl size="small" sx={{ width: 250 }}>
+              <Select
+                labelId="sort-by-select-label"
+                id="sort-by-select"
+                value={sortBy || 0}
+                onChange={handleSortByChange}
+              >
+                {categoryFilters?.map((filter) => (
+                  <MenuItem key={filter.number} value={filter.number}>
+                    {filter.displayName}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
+            <FormControl size="small" sx={{ minWidth: 100 }}>
+              <Select
+                labelId="order-select-label"
+                id="order-select"
+                value={order}
+                onChange={handleOrderChange}
+              >
+                <MenuItem value="ASC">Asc</MenuItem>
+                <MenuItem value="DESC">Desc</MenuItem>
+              </Select>
+            </FormControl>
+
+            <Typography variant="body2">Limit:</Typography>
+            <FormControl size="small" sx={{ minWidth: 80 }}>
+              <Select
+                labelId="limit-select-label"
+                id="limit-select"
+                value={limit}
+                onChange={handleLimitChange}
+              >
+                <MenuItem value={10}>10</MenuItem>
+                <MenuItem value={25}>25</MenuItem>
+                <MenuItem value={100}>100</MenuItem>
+              </Select>
+            </FormControl>
+            {isLoading && <CircularProgress size={20} />}
+          </Box>
+        </Box>
       </Box>
 
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell>
-              <Typography fontSize={'.75rem'} fontWeight={'bold'}>
-                Rank
-              </Typography>
-            </TableCell>
-            <TableCell>
-              <Typography fontSize={'.75rem'} fontWeight={'bold'}>
-                Hotspot
-              </Typography>
-            </TableCell>
-            {visibleGroups.speeds && (
-              <>
+      <Box sx={{ overflowX: 'auto' }}>
+        <Table
+          stickyHeader
+          sx={{ backgroundColor: 'white', minHeight: '100%' }}
+        >
+          <TableHead>
+            <TableRow>
+              <TableCell>
+                <Typography fontSize={'.70rem'} fontWeight={'bold'}>
+                  Rank
+                </Typography>
+              </TableCell>
+              <TableCell>
+                <Typography
+                  fontSize={'.70rem'}
+                  fontWeight={'bold'}
+                  minWidth={'170px'}
+                >
+                  Hotspot
+                </Typography>
+              </TableCell>
+              {visibleGroups.speeds && (
+                <>
+                  <TableCell>
+                    <Typography fontSize={'.70rem'} fontWeight={'bold'}>
+                      Min Speed
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography fontSize={'.70rem'} fontWeight={'bold'}>
+                      Max Speed
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography fontSize={'.70rem'} fontWeight={'bold'}>
+                      Avg Speed
+                    </Typography>
+                  </TableCell>
+                </>
+              )}
+              {visibleGroups.violations && (
+                <>
+                  <TableCell>
+                    <Typography fontSize={'.70rem'} fontWeight={'bold'}>
+                      Violations
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    {' '}
+                    <Typography fontSize={'.70rem'} fontWeight={'bold'}>
+                      Extreme Violations
+                    </Typography>
+                  </TableCell>
+                </>
+              )}
+              {visibleGroups.percentages && (
+                <>
+                  <TableCell>
+                    <Typography fontSize={'.70rem'} fontWeight={'bold'}>
+                      % Violations
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography fontSize={'.70rem'} fontWeight={'bold'}>
+                      % Extreme Violations
+                    </Typography>
+                  </TableCell>
+                </>
+              )}
+              {visibleGroups.flow && (
                 <TableCell>
-                  <Typography fontSize={'.75rem'} fontWeight={'bold'}>
-                    Min Speed
+                  <Typography fontSize={'.70rem'} fontWeight={'bold'}>
+                    Flow
                   </Typography>
                 </TableCell>
+              )}
+              {visibleGroups.variability && (
                 <TableCell>
-                  <Typography fontSize={'.75rem'} fontWeight={'bold'}>
-                    Max Speed
+                  <Typography fontSize={'.70rem'} fontWeight={'bold'}>
+                    Variability
                   </Typography>
                 </TableCell>
-                <TableCell>
-                  <Typography fontSize={'.75rem'} fontWeight={'bold'}>
-                    Avg Speed
-                  </Typography>
-                </TableCell>
-              </>
-            )}
-            {visibleGroups.violations && (
-              <>
-                <TableCell>Violations</TableCell>
-                <TableCell>Extreme Violations</TableCell>
-              </>
-            )}
-            {visibleGroups.flow && <TableCell>Flow</TableCell>}
-            {visibleGroups.variability && <TableCell>Variability</TableCell>}
-            {visibleGroups.percentages && (
-              <>
-                <TableCell>% Violations</TableCell>
-                <TableCell>% Extreme Violations</TableCell>
-              </>
-            )}
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {hotspotRoutes.map((hotspot, index) => (
-            <Fragment key={hotspot.properties.route_id}>
-              <TableRow>
-                <TableCell>{index + 1}</TableCell>
-                <TableCell>
-                  <Typography>{hotspot.properties.name}</Typography>
-                </TableCell>
-                {visibleGroups.speeds && (
-                  <>
-                    <TableCell>{hotspot.properties.minSpeed}</TableCell>
-                    <TableCell>{hotspot.properties.maxSpeed}</TableCell>
-                    <TableCell>
-                      {Math.round(hotspot.properties.averageSpeed)}
+              )}
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {hotspotRoutes.map((hotspot, index) => (
+              <Fragment key={hotspot.properties.route_id}>
+                <TableRow
+                  hover
+                  onMouseEnter={() =>
+                    setHoveredHotspot(hotspot.properties.route_id)
+                  }
+                  onMouseLeave={() => setHoveredHotspot(null)}
+                >
+                  <TableCell sx={{ borderRight: '1px solid #d0d0d0' }}>
+                    {index + 1}
+                  </TableCell>
+                  <TableCell sx={{ borderRight: '1px solid #d0d0d0' }}>
+                    <Typography>{hotspot.properties.name}</Typography>
+                  </TableCell>
+                  {visibleGroups.speeds && (
+                    <>
+                      <TableCell sx={{ borderRight: '1px solid #d0d0d0' }}>
+                        {hotspot.properties.minSpeed}
+                      </TableCell>
+                      <TableCell sx={{ borderRight: '1px solid #d0d0d0' }}>
+                        {hotspot.properties.maxSpeed}
+                      </TableCell>
+                      <TableCell sx={{ borderRight: '1px solid #d0d0d0' }}>
+                        {Math.round(hotspot.properties.averageSpeed)}
+                      </TableCell>
+                    </>
+                  )}
+                  {visibleGroups.violations && (
+                    <>
+                      <TableCell sx={{ borderRight: '1px solid #d0d0d0' }}>
+                        {hotspot.properties.violations.toLocaleString()}
+                      </TableCell>
+                      <TableCell sx={{ borderRight: '1px solid #d0d0d0' }}>
+                        {hotspot.properties.extremeViolations.toLocaleString()}
+                      </TableCell>
+                    </>
+                  )}
+                  {visibleGroups.percentages && (
+                    <>
+                      <TableCell sx={{ borderRight: '1px solid #d0d0d0' }}>
+                        {Math.round(hotspot.properties.percentViolations)}%
+                      </TableCell>
+                      <TableCell sx={{ borderRight: '1px solid #d0d0d0' }}>
+                        {Math.round(
+                          hotspot.properties.percentExtremeViolations
+                        )}
+                        %
+                      </TableCell>
+                    </>
+                  )}
+                  {visibleGroups.flow && (
+                    <TableCell sx={{ borderRight: '1px solid #d0d0d0' }}>
+                      {hotspot.properties.flow.toLocaleString()}
                     </TableCell>
-                  </>
-                )}
-                {visibleGroups.violations && (
-                  <>
-                    <TableCell>{hotspot.properties.violations}</TableCell>
-                    <TableCell>
-                      {hotspot.properties.extremeViolations}
+                  )}
+                  {visibleGroups.variability && (
+                    <TableCell sx={{ borderRight: '1px solid #d0d0d0' }}>
+                      {Math.round(hotspot.properties.variability)}
                     </TableCell>
-                  </>
-                )}
-                {visibleGroups.flow && (
-                  <TableCell>{hotspot.properties.flow}</TableCell>
-                )}
-                {visibleGroups.variability && (
-                  <TableCell>{hotspot.properties.variability}</TableCell>
-                )}
-                {visibleGroups.percentages && (
-                  <>
-                    <TableCell>
-                      {Math.round(hotspot.properties.percentViolations)}
-                    </TableCell>
-                    <TableCell>
-                      {Math.round(hotspot.properties.percentExtremeViolations)}
-                    </TableCell>
-                  </>
-                )}
-              </TableRow>
-            </Fragment>
-          ))}
-        </TableBody>
-      </Table>
+                  )}
+                </TableRow>
+              </Fragment>
+            ))}
+          </TableBody>
+        </Table>
+      </Box>
+      {/* <Box sx={{ height: 150 }}></Box> */}
     </Box>
   )
 }

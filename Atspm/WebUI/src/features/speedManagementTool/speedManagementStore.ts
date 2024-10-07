@@ -29,6 +29,9 @@ interface StoreState {
 
   hotspotRoutes: any[]
   setHotspotRoutes: (routes: any[]) => void
+
+  hoveredHotspot: any
+  setHoveredHotspot: (hotspot: any) => void
 }
 
 // Create the Zustand store
@@ -90,6 +93,9 @@ const useSpeedManagementStore = create<StoreState>((set) => ({
 
   hotspotRoutes: [],
   setHotspotRoutes: (routes: any[]) => set({ hotspotRoutes: routes }),
+
+  hoveredHotspot: null,
+  setHoveredHotspot: (hotspot: any) => set({ hoveredHotspot: hotspot }),
 }))
 
 export default useSpeedManagementStore
