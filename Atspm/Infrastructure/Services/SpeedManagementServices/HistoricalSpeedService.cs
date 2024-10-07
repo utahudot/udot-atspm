@@ -22,11 +22,9 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices
             var dailySpeeds = new List<DailyHistoricalRouteData>();
 
             var sources = new List<int> { 1, 2, 3 };
-            var dayOfWeekValues = options.DaysOfWeek.Select(day => (int)day);
 
             // Convert the values to a comma-separated string
-            string commaSeparatedDays = string.Join(",", dayOfWeekValues);
-            var dailyAveragesForAllSources = await hourlySpeedRepository.GetDailyAveragesAsync(options.SegmentId, options.StartDate, options.EndDate, commaSeparatedDays);
+            var dailyAveragesForAllSources = await hourlySpeedRepository.GetDailyAveragesAsync(options.SegmentId, options.StartDate, options.EndDate);
             foreach (var sourceId in sources)
             {
                 dailySpeeds.Add(new DailyHistoricalRouteData
@@ -47,10 +45,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices
             var MonthlySpeeds = new List<MonthlyHistoricalRouteData>();
 
             var sources = new List<int> { 1, 2, 3 };
-            var dayOfWeekValues = options.DaysOfWeek.Select(day => (int)day);
 
-            // Convert the values to a comma-separated string
-            string commaSeparatedDays = string.Join(",", dayOfWeekValues);
             var monthlyAveragesForAllSources = await monthlyAggregationService.ListMonthlyAggregationsForSegment(options.SegmentId, TimePeriodFilter.AllDay, MonthAggClassification.Total);
             foreach (var sourceId in sources)
             {

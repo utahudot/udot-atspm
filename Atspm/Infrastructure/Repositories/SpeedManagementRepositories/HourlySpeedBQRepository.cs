@@ -284,7 +284,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             }
         }
 
-        public async Task<List<DailyAverage>> GetDailyAveragesAsync(Guid segmentId, DateOnly startDate, DateOnly endDate, string daysOfWeek)
+        public async Task<List<DailyAverage>> GetDailyAveragesAsync(Guid segmentId, DateOnly startDate, DateOnly endDate)
         {
             string query = $@"
             SELECT 
@@ -303,8 +303,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             FROM `{_datasetId}.{_tableId}`
             WHERE 
                 SegmentId = @segmentId AND
-                date BETWEEN @startDate AND @endDate AND
-                EXTRACT(DAYOFWEEK FROM date) IN ({daysOfWeek})
+                date BETWEEN @startDate AND @endDate
             GROUP BY Date,SourceId
             ORDER BY Date ASC;";
 

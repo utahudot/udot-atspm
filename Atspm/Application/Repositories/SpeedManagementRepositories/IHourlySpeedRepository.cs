@@ -9,7 +9,7 @@ namespace Utah.Udot.Atspm.Repositories.SpeedManagementRepositories
     {
         public Task AddHourlySpeedAsync(HourlySpeed hourlySpeed);
         public Task AddHourlySpeedsAsync(List<HourlySpeed> hourlySpeeds);
-        public Task<List<DailyAverage>> GetDailyAveragesAsync(Guid segmentId, DateOnly startDate, DateOnly endDate, string daysOfWeek);
+        public Task<List<DailyAverage>> GetDailyAveragesAsync(Guid segmentId, DateOnly startDate, DateOnly endDate);
         public Task<List<HourlySpeed>> GetHourlySpeedsForSegmentInSource(OptionsBase baseOptions, Guid segmentId);
         public Task<List<HourlySpeed>> GetWeeklySpeedsForSegmentInSource(OptionsBase baseOptions, Guid segmentId);
         Task<List<HourlySpeed>> GetHourlySpeedsForTimePeriod(Guid segmentId, DateTime startDate, DateTime endDate, DateTime startTime, DateTime endTime);

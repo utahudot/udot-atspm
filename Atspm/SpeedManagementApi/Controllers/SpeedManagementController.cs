@@ -94,7 +94,7 @@ namespace SpeedManagementApi.Controllers
         [HttpPost("GetMonthlyHistoricalSpeeds")]
         public async Task<IActionResult> GetMonthlyHistoricalData([FromBody] HistoricalSpeedOptions options)
         {
-            var result = historicalSpeedService.GetMonthlyHistoricalData(options);
+            var result = await historicalSpeedService.GetMonthlyHistoricalData(options);
 
 
             if (result != null)
@@ -107,7 +107,7 @@ namespace SpeedManagementApi.Controllers
         [HttpPost("GetDailyHistoricalSpeeds")]
         public async Task<IActionResult> GetDailyHistoricalData([FromBody] HistoricalSpeedOptions options)
         {
-            var result = historicalSpeedService.GetDailyHistoricalData(options);
+            var result = await historicalSpeedService.GetDailyHistoricalData(options);
 
 
             if (result != null)

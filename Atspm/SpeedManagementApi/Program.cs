@@ -238,6 +238,7 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddScoped<AggregateMonthlyEventsProcessor>();
     s.AddScoped<DeleteOldEventsProcessor>();
     s.AddScoped<SpeedOverDistanceService>();
+    s.AddScoped<HistoricalSpeedService>();
     s.AddScoped<IReportService<CongestionTrackingOptions, CongestionTrackingDto>, CongestionTrackingService>();
     s.AddScoped<IReportService<SpeedOverTimeOptions, SpeedOverTimeDto>, SpeedOverTimeService>();
     s.AddScoped<IReportService<SpeedOverDistanceOptions, List<SpeedOverDistanceDto>>, SpeedOverDistanceService>();
