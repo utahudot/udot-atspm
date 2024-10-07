@@ -2,7 +2,7 @@
   "profiles": {
     "SpeedManagementImporter": {
       "commandName": "Project",
-      "commandLineArgs": "download\r\n--startDate \"2023-02-01\" \r\n--endDate \"2023-02-01\"\r\n--sourceId 3\r\n--operation \"Download\"\r\n--filePath \"C:\\Users\\jbhatia\\Desktop\\SpeedManagement\\ClearguideData\\SpeedManagement C2023_May28Jun3.csv\""
+      "commandLineArgs": "download\r\n--startDate \"2023-02-01\" \r\n--endDate \"2023-02-01\"\r\n--sourceId 4\r\n--operation \"Download\"\r\n--filePath \"C:\\Users\\jbhatia\\Desktop\\SpeedManagement\\ClearguideData\\SpeedManagement C2023_Jun4Jun10.csv\""
     }
   }
 }

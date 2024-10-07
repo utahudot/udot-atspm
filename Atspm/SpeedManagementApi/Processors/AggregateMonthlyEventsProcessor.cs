@@ -179,6 +179,55 @@ namespace SpeedManagementApi.Processors
 
         }
 
+        //public async Task AggregateMonthlyEventsForSingleSegmentForAGivenTimePeriod(Guid segmentId, DateTime startDate, DateTime endDate)
+        //{
+        //    var settings = new ExecutionDataflowBlockOptions()
+        //    {
+        //        MaxDegreeOfParallelism = 10,
+        //    };
+        //    //var startDate = DateTime.Now;
+        //    //var endDate = DateTime.Now;
+
+        //    //List out the steps 
+        //    var expiredEvents = new TransformManyBlock<MonthlyAggregation, MonthlyAggregationProcessorDto>(input => AllSegmentsFromSourceTimePeriod(input.Item1, input.Item2));
+        //    //Set up monthlyAggregationProcessor DTO
+        //    var allTimeData = new TransformBlock<MonthlyAggregationProcessorDto, MonthlyAggregationProcessorDto>(PullOutAllMonthlyDataForSegment, settings);
+        //    var allDay = new TransformBlock<MonthlyAggregationProcessorDto, MonthlyAggregationProcessorDto>(GetHourlySpeedsForAllDay, settings);
+        //    var offPeak = new TransformBlock<MonthlyAggregationProcessorDto, MonthlyAggregationProcessorDto>(GetHourlySpeedsForOffPeak, settings);
+        //    var amPeak = new TransformBlock<MonthlyAggregationProcessorDto, MonthlyAggregationProcessorDto>(GetHourlySpeedsForAmPeak, settings);
+        //    var pmPeak = new TransformBlock<MonthlyAggregationProcessorDto, MonthlyAggregationProcessorDto>(GetHourlySpeedsForPmPeak, settings);
+        //    var midDay = new TransformBlock<MonthlyAggregationProcessorDto, MonthlyAggregationProcessorDto>(GetHourlySpeedsForMidDay, settings);
+        //    var evening = new TransformBlock<MonthlyAggregationProcessorDto, MonthlyAggregationProcessorDto>(GetHourlySpeedsForEvening, settings);
+        //    var earlyMorning = new TransformBlock<MonthlyAggregationProcessorDto, MonthlyAggregationProcessorDto>(GetHourlySpeedsForEarlyMorning, settings);
+
+
+        //    //Save the information
+        //    var saveBlock = new ActionBlock<MonthlyAggregationProcessorDto>(UpsertMonthlyAggregation, settings);
+
+        //    //This is very important for batching
+        //    DataflowLinkOptions linkOptions = new DataflowLinkOptions() { PropagateCompletion = true };
+
+        //    //Link to the workflow
+        //    expiredEvents.LinkTo(allTimeData, linkOptions);
+        //    allTimeData.LinkTo(allDay, linkOptions);
+        //    allDay.LinkTo(offPeak, linkOptions);
+        //    offPeak.LinkTo(amPeak, linkOptions);
+        //    amPeak.LinkTo(pmPeak, linkOptions);
+        //    pmPeak.LinkTo(midDay, linkOptions);
+        //    midDay.LinkTo(evening, linkOptions);
+        //    evening.LinkTo(earlyMorning, linkOptions);
+        //    earlyMorning.LinkTo(saveBlock, linkOptions);
+
+        //    //Start the workflow
+        //    await expiredEvents.SendAsync(monthlyAggregation);
+        //    expiredEvents.Complete();
+
+        //    await saveBlock.Completion;
+
+        //    // _timer = new Timer(StartWorkflow, null, TimeSpan.Zero, TimeSpan.FromMinutes(1));
+
+        //}
+
         ///////////////////// 
         //PRIVATE FUNCTIONS//
         /////////////////////
@@ -212,6 +261,37 @@ namespace SpeedManagementApi.Processors
                     };
                 }
 
+            }
+        }
+
+        private async IAsyncEnumerable<MonthlyAggregationProcessorDto> GenerateAggregationProcessorForSegmentInTimePeriodAsync(DateTime startDate, DateTime endDate, Guid segmentId, int sourceId)
+        {
+            var today = DateTime.Today;
+            DateTime lastDayOfPreviousMonth = new DateTime(startDate.Year, startDate.Month, 1).AddDays(-1);
+            DateTime firstDayOfPreviousMonth = new DateTime(today.Year, today.Month, 1).AddMonths(-1);
+            DateTime endCondition = new DateTime(startDate.Year, startDate.Month, 1);
+            var segment = await segmentRepository.LookupAsync(segmentId);
+
+            while (firstDayOfPreviousMonth >= endCondition)
+            {
+                yield return new MonthlyAggregationProcessorDto
+                {
+                    hourlySpeeds = new List<HourlySpeed>(),
+                    startDate = firstDayOfPreviousMonth,
+                    endDate = lastDayOfPreviousMonth,
+                    SegmentId = segment.Id,
+                    SpeedLimit = segment.SpeedLimit,
+                    monthlyAggregation = new MonthlyAggregation
+                    {
+                        Id = Guid.NewGuid(),
+                        CreatedDate = DateTime.SpecifyKind(today, DateTimeKind.Utc),
+                        BinStartTime = firstDayOfPreviousMonth,
+                        SegmentId = segmentId,
+                        SourceId = sourceId
+                    }
+                };
+                lastDayOfPreviousMonth = firstDayOfPreviousMonth.AddDays(-1); ;
+                firstDayOfPreviousMonth = firstDayOfPreviousMonth.AddMonths(-1);
             }
         }
 

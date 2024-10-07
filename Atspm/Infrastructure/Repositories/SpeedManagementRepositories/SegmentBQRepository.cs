@@ -91,7 +91,8 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                     s.Offset,
                     se.EntityId,
                     se.SourceId,
-                    se.SegmentId
+                    se.SegmentId,
+                    se.Length
                 FROM 
                     `{_projectId}.{_datasetId}.{_tableId}` s
                 LEFT JOIN 
@@ -138,7 +139,8 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                     s.Offset,
                     se.EntityId,
                     se.SourceId,
-                    se.SegmentId
+                    se.SegmentId,
+                    se.Length
                 FROM 
                     `{_projectId}.{_datasetId}.{_tableId}` s
                 LEFT JOIN 
@@ -185,7 +187,8 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                     s.Offset,
                     se.EntityId,
                     se.SourceId,
-                    se.SegmentId
+                    se.SegmentId,
+                    se.Length
                 FROM 
                     `{_projectId}.{_datasetId}.{_tableId}` s
                 LEFT JOIN 
@@ -229,7 +232,8 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                     s.Offset,
                     se.EntityId,
                     se.SourceId,
-                    se.SegmentId
+                    se.SegmentId,
+                    se.Length
                 FROM 
                     `{_projectId}.{_datasetId}.{_tableId}` s
                 LEFT JOIN 

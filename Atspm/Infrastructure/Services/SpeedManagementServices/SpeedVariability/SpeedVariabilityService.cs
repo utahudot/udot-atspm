@@ -20,7 +20,9 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices.SpeedV
         public override async Task<SpeedVariabilityDto> ExecuteAsync(SpeedVariabilityOptions parameter, IProgress<int> progress = null, CancellationToken cancelToken = default)
         {
             var segment = await segmentRepository.LookupAsync(parameter.SegmentId);
-            var hourlySpeeds = await hourlySpeedRepository.GetHourlySpeedsForSegmentInSource(parameter, segment.Id);
+            var segmentIds = new List<Guid>() { segment.Id };
+            var daysOfWeek = parameter.DaysOfWeek.Select(d => ((int)d)).ToList();
+            var hourlySpeeds = await hourlySpeedRepository.GetHourlySpeedsWithFiltering(segmentIds, parameter.StartDate.ToDateTime(new TimeOnly(0,0)), parameter.EndDate.ToDateTime(new TimeOnly(0, 0)), null, null, daysOfWeek, null);
 
             if (hourlySpeeds == null || hourlySpeeds.Count == 0)
             {
@@ -48,7 +50,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.SpeedManagementServices.SpeedV
             {
                 SegmentId = segment.Id,
                 SegmentName = segment.Name,
-                StartDate = parameter.StartDate.ToDateTime(new TimeOnly(0,0)),
+                StartDate = parameter.StartDate.ToDateTime(new TimeOnly(0, 0)),
                 EndDate = parameter.EndDate.ToDateTime(new TimeOnly(0, 0)),
                 StartingMilePoint = segment.StartMilePoint,
                 EndingMilePoint = segment.EndMilePoint,
