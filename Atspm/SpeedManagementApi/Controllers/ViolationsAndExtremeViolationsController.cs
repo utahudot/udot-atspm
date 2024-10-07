@@ -5,7 +5,7 @@ using Utah.Udot.Atspm.Services;
 namespace SpeedManagementApi.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/v1/[controller]")]
     public class ViolationsAndExtremeViolationsController : SpeedBaseController<ViolationsAndExtremeViolationsOptions, List<ViolationsAndExtremeViolationsDto>>
     {
         public ViolationsAndExtremeViolationsController(IReportService<ViolationsAndExtremeViolationsOptions, List<ViolationsAndExtremeViolationsDto>> reportService) : base(reportService)
