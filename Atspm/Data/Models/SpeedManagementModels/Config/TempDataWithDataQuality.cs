@@ -6,5 +6,7 @@
         public double Average { get; set; }
         public double DataQuality { get; set; }
         public string EntityId { get; set; }
+        public double MinSpeed { get; set; }
+        public double MaxSpeed { get; set; }
     }
 }

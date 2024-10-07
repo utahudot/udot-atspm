@@ -12,10 +12,12 @@ namespace SpeedManagementApi.Controllers
     public class SpeedManagementController : ControllerBase
     {
         private readonly MonthlyAggregationService monthlyAggregationService;
+        private readonly HistoricalSpeedService historicalSpeedService;
 
-        public SpeedManagementController(MonthlyAggregationService monthlyAggregationService)
+        public SpeedManagementController(MonthlyAggregationService monthlyAggregationService, HistoricalSpeedService historicalSpeedService)
         {
             this.monthlyAggregationService = monthlyAggregationService;
+            this.historicalSpeedService = historicalSpeedService;
         }
 
         [HttpPost("GetRouteSpeeds", Name = "GetRouteSpeeds")]
@@ -87,6 +89,32 @@ namespace SpeedManagementApi.Controllers
 
             // Return the GeoJSON as the response
             return Content(geoJson, "application/geo+json");
+        }
+
+        [HttpPost("GetMonthlyHistoricalSpeeds")]
+        public async Task<IActionResult> GetMonthlyHistoricalData([FromBody] HistoricalSpeedOptions options)
+        {
+            var result = historicalSpeedService.GetMonthlyHistoricalData(options);
+
+
+            if (result != null)
+            {
+                return Ok(result);
+            }
+            else { return BadRequest(); }
+        }
+        
+        [HttpPost("GetDailyHistoricalSpeeds")]
+        public async Task<IActionResult> GetDailyHistoricalData([FromBody] HistoricalSpeedOptions options)
+        {
+            var result = historicalSpeedService.GetDailyHistoricalData(options);
+
+
+            if (result != null)
+            {
+                return Ok(result);
+            }
+            else { return BadRequest(); }
         }
 
         //[HttpPost("GetHistoricalSpeeds")]

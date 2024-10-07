@@ -1,4 +1,5 @@
-﻿namespace Utah.Udot.Atspm.Data.Models.SpeedManagementModels.SegmentSpeed
+﻿
+namespace Utah.Udot.Atspm.Data.Models.SpeedManagementModels.SegmentSpeed
 {
     public class MonthlyHistoricalRouteData
     {

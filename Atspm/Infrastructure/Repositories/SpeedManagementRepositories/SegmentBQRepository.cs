@@ -608,7 +608,8 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             s.Offset,
             se.EntityId,
             se.SourceId,
-            se.SegmentId
+            se.SegmentId,
+            se.Length
         FROM 
             `{_datasetId}.{_tableId}` s
         LEFT JOIN 
@@ -643,7 +644,8 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                     {
                         EntityId = row["EntityId"].ToString(),
                         SourceId = Convert.ToInt32((long)row["SourceId"]),
-                        SegmentId = segmentId
+                        SegmentId = segmentId,
+                        Length = row["Length"] != null ? (double)row["Length"] : 0,
                     };
 
                     // Check if the entity already exists in the list before adding it
@@ -695,7 +697,8 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 {
                     EntityId = row["EntityId"].ToString(),
                     SourceId = Convert.ToInt32((long)row["SourceId"]),
-                    SegmentId = segmentId
+                    SegmentId = segmentId,
+                    Length = row["Length"] != null ? (double)row["Length"] : 0,
                 };
 
                 // Check if the entity already exists in the list before adding it

@@ -28,6 +28,8 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             SELECT
               TIMESTAMP_TRUNC(BinStartTime, HOUR) AS BinStartTime,
               AVG(Average) AS Average,
+              MIN(MinSpeed) AS MinSpeed,
+              MAX(MaxSpeed) AS MaxSpeed,
               EntityId,
               SUM(CASE WHEN FilledIn = FALSE THEN 1 ELSE 0 END) / COUNT(FilledIn) AS DataQuality
             FROM `{_datasetId}.{_tableId}` 
@@ -35,7 +37,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             BinStartTime,
             EntityId";
             var results = await _client.ExecuteQueryAsync(query, null);
-            var tempDataWithDataQuality = results.Select(row => MapRowToEntityWithDataQuiality(row)).ToList();
+            var tempDataWithDataQuality = results.Select(MapRowToEntityWithDataQuality).ToList();
             return tempDataWithDataQuality;
         }
 
@@ -141,7 +143,9 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 {"BinStartTime", item.BinStartTime },
                 {"Average", item.Average },
                 {"EntityId", item.EntityId },
-                {"FilledIn", item.FilledIn }
+                {"FilledIn", item.FilledIn },
+                {"MinSpeed", item.MinSpeed },
+                {"MaxSpeed", item.MaxSpeed },
             };
         }
 
@@ -150,6 +154,8 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
             string[] formats = { "MM/dd/yyyy HH:mm:ss", "M/d/yyyy h:mm:ss tt", "yyyy-MM-ddTHH:mm:ss.fffZ" };
             var binStartTime = DateTime.ParseExact(row["BinStartTime"].ToString(), formats, null);
             var average = Double.Parse(row["Average"].ToString());
+            var minSpeed = Double.Parse(row["MinSpeed"].ToString());
+            var maxSpeed = Double.Parse(row["MaxSpeed"].ToString());
             var entityId = row["EntityId"].ToString();
             var filledIn = bool.Parse(row["FilledIn"].ToString());
 
@@ -158,15 +164,19 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 BinStartTime = binStartTime,
                 Average = average,
                 EntityId = entityId,
-                FilledIn = filledIn
+                FilledIn = filledIn,
+                MinSpeed = minSpeed,
+                MaxSpeed = maxSpeed
             };
         }
 
-        private TempDataWithDataQuality MapRowToEntityWithDataQuiality(BigQueryRow row)
+        private TempDataWithDataQuality MapRowToEntityWithDataQuality(BigQueryRow row)
         {
             string[] formats = { "MM/dd/yyyy HH:mm:ss", "M/d/yyyy h:mm:ss tt", "yyyy-MM-ddTHH:mm:ss.fffZ" };
             var binStartTime = DateTime.ParseExact(row["BinStartTime"].ToString(), formats, null);
             var average = Double.Parse(row["Average"].ToString());
+            var minSpeed = Double.Parse(row["MinSpeed"].ToString());
+            var maxSpeed = Double.Parse(row["MaxSpeed"].ToString());
             var entityId = row["EntityId"].ToString();
             var dataQuality = Double.Parse(row["DataQuality"].ToString());
 
@@ -175,7 +185,9 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.SpeedManagementRepositorie
                 BinStartTime = binStartTime,
                 Average = average,
                 EntityId = entityId,
-                DataQuality = dataQuality
+                DataQuality = dataQuality,
+                MinSpeed = minSpeed,
+                MaxSpeed = maxSpeed
             };
         }
     }

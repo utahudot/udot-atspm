@@ -130,6 +130,8 @@ namespace SpeedManagementImporter.Services.Clearguide
                         SourceId = sourceId,
                         PercentObserved = entity.DataQuality * 100,
                         Average = entity.Average,
+                        MinSpeed = entity.MinSpeed,
+                        MaxSpeed = entity.MaxSpeed,
                         Violation = null,
                         ExtremeViolation = null,
                         Length = routeEntity.Length
@@ -154,8 +156,8 @@ namespace SpeedManagementImporter.Services.Clearguide
                     PercentObserved = g.First().PercentObserved,
                     Average = (g.Sum(s => s.Average * s.Length) / g.Sum(s => s.Length)), // Aggregate average speed.
                     Violation = g.Sum(s => s.Violation), // Sum up the violations.
-                    MinSpeed = g.Min(s => s.Average),
-                    MaxSpeed = g.Max(s => s.Average)
+                    MinSpeed = g.Min(s => s.MinSpeed),
+                    MaxSpeed = g.Max(s => s.MaxSpeed)
                 });
         }
     }

@@ -132,9 +132,13 @@ namespace SpeedManagementImporter.Services.Clearguide
             var binStartTimeIndex = headerIndices["local_timestamp"];
             var avgIndex = headerIndices["avg_speed_mph"];
             var freeflowIndex = headerIndices["freeflow_mph"];
+            var minSpeedIndex = headerIndices["min_speed_mph"];
+            var maxSpeedIndex = headerIndices["max_speed_mph"];
 
             csvReader.Read();
             var entityId = csvReader.GetField(sourceIdIndex);
+            var minSpeed = double.Parse(csvReader.GetField(minSpeedIndex));
+            var maxSpeed = double.Parse(csvReader.GetField(maxSpeedIndex));
 
 
             if (entityIdSet.Contains(entityId))
@@ -152,7 +156,9 @@ namespace SpeedManagementImporter.Services.Clearguide
                                 BinStartTime = binStartTime,
                                 Average = avg,
                                 EntityId = entityId,
-                                FilledIn = avg == freeflow
+                                FilledIn = avg == freeflow,
+                                MaxSpeed = maxSpeed,
+                                MinSpeed = minSpeed
                             };
                         }
                         else
