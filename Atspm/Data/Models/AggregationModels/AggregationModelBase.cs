@@ -289,6 +289,25 @@ namespace Utah.Udot.Atspm.Data.Models
         public override string ToString() => JsonConvert.SerializeObject(this);
     }
 
+    public partial class DetectorSpeedAggregation : AggregationModelBase, ILocationLayer
+    {
+        public int EventCount { get; set; }
+        public string DetectorIdentifier { get; set; }
+        public double Average { get; set; }
+        public double? FifteenthSpeed { get; set; }
+        public double? EightyFifthSpeed { get; set; }
+        public double? NinetyFifthSpeed { get; set; }
+        public double? NinetyNinthSpeed { get; set; }
+        public double? MinSpeed { get; set; }
+        public double? MaxSpeed { get; set; }
+        public long? Violations { get; set; }
+        public long? ExtremeViolations { get; set; }
+        public long? FlowCount { get; set; }
+        public long? SpeedFlow { get; set; }
+        public double? PercentObserved { get; set; }
+        public Boolean SourceDataAnalyzed { get; set; }
+    }
+
     public partial class SignalEventCountAggregation : AggregationModelBase, ILocationLayer
     {
         //public string LocationIdentifier { get; set; }

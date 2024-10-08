@@ -45,6 +45,23 @@ namespace Utah.Udot.Atspm.Analysis.Workflows
         }
     }
 
+    public abstract class AggregationSpeedWorkflowBase<T> : WorkflowBase<Tuple<Location, IEnumerable<IndianaEvent>, IEnumerable<SpeedEvent>>, IEnumerable<T>> where T : AggregationModelBase
+    {
+        protected AggregationWorkflowOptions workflowOptions;
+        protected ExecutionDataflowBlockOptions executionBlockOptions;
+
+        /// <inheritdoc/>
+        public AggregationSpeedWorkflowBase(AggregationWorkflowOptions options = default) : base(new DataflowBlockOptions() { CancellationToken = options.CancellationToken })
+        {
+            workflowOptions = options;
+            executionBlockOptions = new ExecutionDataflowBlockOptions()
+            {
+                CancellationToken = options.CancellationToken,
+                MaxDegreeOfParallelism = options.MaxDegreeOfParallelism,
+            };
+        }
+    }
+
     public class DetectorEventCountAggregationWorkflow : AggregationWorkflowBase<DetectorEventCountAggregation>
     {
         /// <inheritdoc/>
@@ -259,7 +276,68 @@ namespace Utah.Udot.Atspm.Analysis.Workflows
         }
     }
 
-    public class AggregateControllerDataWorkflow : WorkflowBase<Tuple<Location, IEnumerable<IndianaEvent>>, IEnumerable<AggregationModelBase>>
+    public class DetectorSpeedAggregationWorkflow : AggregationSpeedWorkflowBase<DetectorSpeedAggregation>
+    {
+        /// <inheritdoc/>
+        public DetectorSpeedAggregationWorkflow(AggregationWorkflowOptions options = default) : base(options)
+        {
+        }
+        public FilterSpeedDetectorData FilterSpeedDetectorData { get; private set; }
+        public BreakOutIndianaEvent BreakOutIndianaEvent { get; private set; }
+        public BreakOutSpeedEvent BreakOutSpeedEvent { get; private set; }
+        public GroupDetectorSpeedEventData GroupDetectorSpeedData { get; private set; }
+        public GroupDetectorIndianaSpeedData GroupDetectorIndianaSpeedData { get; private set; }
+        public JoinBlock<Tuple<Detector, string, IEnumerable<SpeedEvent>>, Tuple<Detector, string, IEnumerable<IndianaEvent>>> DetectorJoin { get; private set; }
+        //public CalculateSpeedData CalculateSpeedData { get; private set; }
+        //public UploadSpeedData UploadSpeedData { get; private set; }
+
+        /// <inheritdoc/>
+        protected override void AddStepsToTracker()
+        {
+            Steps.Add(FilterSpeedDetectorData);
+            Steps.Add(BreakOutIndianaEvent);
+            Steps.Add(BreakOutSpeedEvent);
+            Steps.Add(GroupDetectorSpeedData);
+            Steps.Add(GroupDetectorIndianaSpeedData);
+            Steps.Add(DetectorJoin);
+            //Steps.Add(CalculateSpeedData);
+            //Steps.Add(UploadSpeedData);
+        }
+
+        /// <inheritdoc/>
+        protected override void InstantiateSteps()
+        {
+            //FilterSpeedDetectorData = new(blockOptions);
+            //BreakOutIndianaEvent = new(blockOptions);
+            //BreakOutSpeedEvent = new(blockOptions);
+            //GroupDetectorSpeedData = new(blockOptions);
+            //GroupDetectorIndianaSpeedData = new(blockOptions);
+
+            //DetectorJoin = new();
+            //CalculateSpeedData = new(executionBlockOptions);
+            //UploadSpeedData = new(executionBlockOptions);
+        }
+
+        /// <inheritdoc/>
+        protected override void LinkSteps()
+        {
+            Input.LinkTo(FilterSpeedDetectorData, new DataflowLinkOptions() { PropagateCompletion = true });
+            FilterSpeedDetectorData.LinkTo(BreakOutIndianaEvent, new DataflowLinkOptions() { PropagateCompletion = true });
+            FilterSpeedDetectorData.LinkTo(BreakOutSpeedEvent, new DataflowLinkOptions() { PropagateCompletion = true });
+
+            BreakOutSpeedEvent.LinkTo(GroupDetectorSpeedData, new DataflowLinkOptions() { PropagateCompletion = true });
+            BreakOutIndianaEvent.LinkTo(GroupDetectorIndianaSpeedData, new DataflowLinkOptions() { PropagateCompletion = true });
+
+            GroupDetectorSpeedData.LinkTo(DetectorJoin.Target1);
+            GroupDetectorIndianaSpeedData.LinkTo(DetectorJoin.Target2);
+
+            //GroupPriorityNumber.LinkTo(AggregatePriorityCodes, new DataflowLinkOptions() { PropagateCompletion = true });
+
+            //AggregatePriorityCodes.LinkTo(Output, new DataflowLinkOptions() { PropagateCompletion = true });
+        }
+    }
+
+    public class AggregateControllerDataWorkflow : WorkflowBase<Tuple<Location, IEnumerable<IndianaEvent>, IEnumerable<SpeedEvent>>, IEnumerable<AggregationModelBase>>
     {
         //aggregate detector events
         //public FilteredDetectorData FilteredDetectorData { get; private set; }
