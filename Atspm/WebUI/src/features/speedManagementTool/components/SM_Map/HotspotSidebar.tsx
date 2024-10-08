@@ -10,7 +10,6 @@ import {
   Box,
   CircularProgress,
   FormControl,
-  LinearProgress,
   MenuItem,
   Select,
   Table,
@@ -22,7 +21,11 @@ import {
 } from '@mui/material'
 import { Fragment, useCallback, useEffect, useState } from 'react'
 
-const HotspotSidebar = () => {
+type HotspotSidebarProps = {
+  handleRouteSelection: (routeId: string) => void
+}
+
+const HotspotSidebar = ({ handleRouteSelection }: HotspotSidebarProps) => {
   const {
     submittedRouteSpeedRequest,
     hotspotRoutes,
@@ -62,6 +65,10 @@ const HotspotSidebar = () => {
           startTime: submittedRouteSpeedRequest.startDate,
           endTime: submittedRouteSpeedRequest.endDate,
           sourceId: submittedRouteSpeedRequest.sourceId,
+          region: submittedRouteSpeedRequest.region,
+          county: submittedRouteSpeedRequest.county,
+          city: submittedRouteSpeedRequest.city,
+          daysOfWeek: submittedRouteSpeedRequest.daysOfWeek,
           order,
           limit,
         },
@@ -103,12 +110,6 @@ const HotspotSidebar = () => {
       [event.target.name]: event.target.checked,
     })
   }
-
-  const progress = isLoading ? (
-    <LinearProgress sx={{ height: '5px' }} />
-  ) : (
-    <Box height={'5px'} />
-  )
 
   return (
     <Box
@@ -277,10 +278,16 @@ const HotspotSidebar = () => {
               <Fragment key={hotspot.properties.route_id}>
                 <TableRow
                   hover
+                  onClick={() =>
+                    handleRouteSelection(hotspot.properties.route_id)
+                  }
                   onMouseEnter={() =>
                     setHoveredHotspot(hotspot.properties.route_id)
                   }
                   onMouseLeave={() => setHoveredHotspot(null)}
+                  sx={{
+                    cursor: 'pointer',
+                  }}
                 >
                   <TableCell sx={{ borderRight: '1px solid #d0d0d0' }}>
                     {index + 1}

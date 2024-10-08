@@ -236,7 +236,7 @@ const SM_MapWrapper = () => {
             setSelectedRouteId={handleRouteSelection}
           />
         </Box>
-        <HotspotSidebar />
+        <HotspotSidebar handleRouteSelection={handleRouteSelection} />
       </Box>
 
       {showPopup && (

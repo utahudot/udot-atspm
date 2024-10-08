@@ -2,7 +2,7 @@ import { SpeedManagementRoute } from '@/features/speedManagementTool/types/route
 import { Box } from '@mui/material'
 import L, { Map as LeafletMap } from 'leaflet'
 import { memo, useEffect, useState } from 'react'
-import { MapContainer, Polyline, TileLayer } from 'react-leaflet'
+import { CircleMarker, MapContainer, Polyline, TileLayer } from 'react-leaflet'
 
 type StaticMapProps = {
   routes: SpeedManagementRoute[] // Array of routes
@@ -41,23 +41,58 @@ const StaticMap = ({ routes }: StaticMapProps) => {
         doubleClickZoom={false}
         closePopupOnClick={false}
         dragging={false}
-        // zoomSnap={false}
-        // zoomDelta={false}
         trackResize={false}
         touchZoom={false}
         scrollWheelZoom={false}
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openaip.net/">openAIP Data</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-NC-SA</a>)'
-          url="https://tiles.stadiamaps.com/tiles/stamen-terrain/{z}/{x}/{y}{r}.png"
+          url="https://tiles.stadiamaps.com/tiles/alidade_bright/{z}/{x}/{y}{r}.png"
         />
         {routes.map((route, index) => (
-          <Polyline
-            key={index}
-            positions={route.geometry.coordinates}
-            weight={5}
-            interactive={false}
-          />
+          <>
+            {/* Outer Border Polyline (acts like a polygon border) */}
+            <Polyline
+              key={`border-${index}`}
+              positions={route.geometry.coordinates}
+              weight={9} // Border thickness
+              color="#1859b5" // Border color
+              interactive={false}
+              lineCap="round"
+              lineJoin="round"
+            />
+
+            {/* Actual Polyline */}
+            <Polyline
+              key={`route-${index}`}
+              positions={route.geometry.coordinates}
+              weight={5}
+              interactive={false}
+              lineCap="square"
+              lineJoin="round"
+            />
+            {/* Start Point Marker */}
+            <CircleMarker
+              center={route.geometry.coordinates[0]}
+              radius={5}
+              fillOpacity={1}
+              key={`start-marker-${index}`}
+              color="#1859b5"
+            />
+
+            {/* End Point Marker */}
+            <CircleMarker
+              fillOpacity={1}
+              radius={5}
+              key={`end-marker-${index}`}
+              color="#1859b5"
+              center={
+                route.geometry.coordinates[
+                  route.geometry.coordinates.length - 1
+                ]
+              }
+            />
+          </>
         ))}
       </MapContainer>
     </Box>
