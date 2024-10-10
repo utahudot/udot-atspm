@@ -101,7 +101,7 @@ const TurningMovementCountsTable = ({
     <Box sx={{ mt: 4 }}>
       <Accordion disableGutters>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography variant="h4">Data Table</Typography>
+          <Typography variant="h4" component="h2">Data Table</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <TableContainer>

@@ -1,7 +1,8 @@
 import { StyledPaper } from '@/components/StyledPaper'
-import WatchdogChartsContainer from '@/features/charts/watchdogDashboard/components/WatchDogChartsContainer'
+import WatchdogChartsContainer from '@/features/charts/watchdogDashboard/components/WatchdogChartsContainer'
 import PlayArrowIcon from '@mui/icons-material/PlayArrow'
 import { LoadingButton } from '@mui/lab'
+import { Box } from '@mui/material'
 import {
   format,
   startOfToday,
@@ -10,9 +11,8 @@ import {
   subYears,
 } from 'date-fns'
 import { useState } from 'react'
-import HorizontalDateInput from './HorizontalDateInputs'
 import { useGetWatchdogDashboardData } from '../api/getWatchdogDashboardData'
-import { Box } from '@mui/material'
+import HorizontalDateInput from './HorizontalDateInputs'
 
 const WatchdogSummaryReport = () => {
   const [startDateTime, setStartDateTime] = useState(
@@ -41,7 +41,7 @@ const WatchdogSummaryReport = () => {
     setEndDateTime(date)
   }
 
-if(!isLoading)console.log("KIMBRO", data)
+  if (!isLoading) console.log('KIMBRO', data)
 
   return (
     <>
@@ -71,12 +71,9 @@ if(!isLoading)console.log("KIMBRO", data)
       </LoadingButton>
 
       {error && <Box>Error loading data</Box>}
-      
+
       {!isLoading && data && (
-        <WatchdogChartsContainer
-          data={data}
-          isLoading={isLoading}
-        />
+        <WatchdogChartsContainer data={data} isLoading={isLoading} />
       )}
     </>
   )
