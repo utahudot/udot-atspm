@@ -97,3 +97,4 @@ dkms.conf
 *.config
 /DatabaseInstaller/bin/Debug/net7.0
 /DatabaseInstaller/obj
+/Atspm/SpeedManagementImporter/obj
