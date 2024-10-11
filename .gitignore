@@ -100,3 +100,5 @@ dkms.conf
 /Atspm/SpeedManagementImporter/obj/Debug/net8.0
 /Atspm/SpeedManagementImporter/obj
 /DatabaseInstaller/Properties/launchSettings.json
+/Atspm/.sonarqube
+/Atspm/SpeedManagementImporter/bin/Debug/net7.0
