@@ -11,6 +11,8 @@ namespace DatabaseInstaller.Commands
             AddCommand(updateCommand);
             var copyCommand = new CopyConfigurationCommand();
             AddCommand(copyCommand);
+            var transferCommand = new TransferEvenLogs();
+            AddCommand(transferCommand);
         }
     }
 }
