@@ -42,22 +42,20 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
                 "split-monitor",
                 "yellow-red-activation");
 
-            IncludeOption.AddValidator(r =>
-            {
-                if (r.GetValueForOption(ExcludeOption)?.Count() > 0)
-                    r.ErrorMessage = "Can't use include option when also using exclude option";
-            });
-            ExcludeOption.AddValidator(r =>
-            {
-                if (r.GetValueForOption(IncludeOption)?.Count() > 0)
-                    r.ErrorMessage = "Can't use exclude option when also using include option";
-            });
+            //IncludeOption.AddValidator(r =>
+            //{
+            //    if (r.GetValueForOption(ExcludeOption)?.Count() > 0)
+            //        r.ErrorMessage = "Can't use include option when also using exclude option";
+            //});
+            //ExcludeOption.AddValidator(r =>
+            //{
+            //    if (r.GetValueForOption(IncludeOption)?.Count() > 0)
+            //        r.ErrorMessage = "Can't use exclude option when also using include option";
+            //});
 
             AddArgument(AggregationTypeArgument);
             AddArgument(BinSizeArgument);
             AddOption(DateOption);
-            AddOption(IncludeOption);
-            AddOption(ExcludeOption);
         }
 
         public Argument<string> AggregationTypeArgument { get; set; } = new Argument<string>("type", "Aggregation type to run");
@@ -67,10 +65,6 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
 
         public DateCommandOption DateOption { get; set; } = new();
 
-        public LocationIncludeCommandOption IncludeOption { get; set; } = new();
-
-        public LocationExcludeCommandOption ExcludeOption { get; set; } = new();
-
         public ModelBinder<EventLogAggregateConfiguration> GetOptionsBinder()
         {
             var binder = new ModelBinder<EventLogAggregateConfiguration>();
@@ -78,8 +72,6 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
             binder.BindMemberFromValue(b => b.AggregationType, AggregationTypeArgument);
             binder.BindMemberFromValue(b => b.BinSize, BinSizeArgument);
             binder.BindMemberFromValue(b => b.Dates, DateOption);
-            binder.BindMemberFromValue(b => b.Included, IncludeOption);
-            binder.BindMemberFromValue(b => b.Excluded, ExcludeOption);
 
             return binder;
         }

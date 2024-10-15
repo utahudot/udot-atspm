@@ -26,12 +26,10 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
             AddCommand(AggregationCommand);
             AddCommand(LogCommand);
             AddCommand(ExtractCommand);
-            AddCommand(LocationInfoCommand);
         }
 
         public AggregationCommand AggregationCommand { get; set; } = new AggregationCommand();
         public LogConsoleCommand LogCommand { get; set; } = new LogConsoleCommand();
         public ExtractConsoleCommand ExtractCommand { get; set; } = new ExtractConsoleCommand();
-        public LocationInfoCommand LocationInfoCommand { get; set; } = new LocationInfoCommand();
     }
 }
