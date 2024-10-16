@@ -65,6 +65,8 @@ namespace Utah.Udot.Atspm.Business.RampMetering
 
                 }
             }
+
+            return (startUp, shutDown);
         }
     }
 }
