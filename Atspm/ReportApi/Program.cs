@@ -34,6 +34,7 @@ using Utah.Udot.Atspm.Business.PreempDetail;
 using Utah.Udot.Atspm.Business.PreemptService;
 using Utah.Udot.Atspm.Business.PreemptServiceRequest;
 using Utah.Udot.Atspm.Business.PurdueCoordinationDiagram;
+using Utah.Udot.Atspm.Business.RampMetering;
 using Utah.Udot.Atspm.Business.SplitFail;
 using Utah.Udot.Atspm.Business.SplitMonitor;
 using Utah.Udot.Atspm.Business.TimeSpaceDiagram;
@@ -154,6 +155,7 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddScoped<IReportService<PreemptServiceRequestOptions, PreemptServiceRequestResult>, PreemptRequestReportService>();
     s.AddScoped<IReportService<PurdueCoordinationDiagramOptions, IEnumerable<PurdueCoordinationDiagramResult>>, PurdueCoordinationDiagramReportService>();
     s.AddScoped<IReportService<PurduePhaseTerminationOptions, PhaseTerminationResult>, PurduePhaseTerminationReportService>();
+    s.AddScoped<IReportService<RampMeteringOptions, RampMeteringResult>, RampMeteringReportService>();
     s.AddScoped<IReportService<SplitFailOptions, IEnumerable<SplitFailsResult>>, SplitFailReportService>();
     s.AddScoped<IReportService<SplitMonitorOptions, IEnumerable<SplitMonitorResult>>, SplitMonitorReportService>();
     s.AddScoped<IReportService<TimeSpaceDiagramOptions, IEnumerable<TimeSpaceDiagramResultForPhase>>, TimeSpaceDiagramReportService>();
@@ -228,6 +230,7 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddScoped<LinkPivotService>();
     s.AddScoped<LinkPivotPairService>();
     s.AddScoped<LinkPivotPcdService>();
+    s.AddScoped<RampMeteringService>();
 
     s.AddPathBaseFilter(h);
 
