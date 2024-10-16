@@ -1,5 +1,5 @@
+import { setSecureCookie } from '@/features/identity/utils'
 import { addMinutes } from 'date-fns'
-import Cookies from 'js-cookie'
 import { FormEvent, useEffect, useState } from 'react'
 import { useVerifyUser } from '../../api/verifyUser'
 import { VerifyUserResponseDto } from '../../types/verifyUserResponseDto'
@@ -38,15 +38,11 @@ export const useVerifyUserHandler = (): VerifyUserHandler => {
 
   useEffect(() => {
     if (status === 'success' && data !== undefined) {
-      Cookies.set('resetToken', data.token, {
-        expires: addMinutes(new Date(), 5),
-        // httpOnly: true,
-        secure: true,
-        sameSite: 'strict',
-      })
-      Cookies.set('username', data.username, {
+      setSecureCookie('resetToken', data.token, {
         expires: addMinutes(new Date(), 5),
       })
+
+      setSecureCookie('username', data.username)
       window.location.href = '/change-password'
     }
   }, [data, status])
