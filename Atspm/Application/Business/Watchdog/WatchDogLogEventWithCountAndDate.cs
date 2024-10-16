@@ -1,6 +1,6 @@
 ﻿using Utah.Udot.Atspm.Data.Enums;
 
-namespace Utah.Udot.Atspm.Data.Models
+namespace Utah.Udot.Atspm.Business.Watchdog
 {
     public class WatchDogLogEventWithCountAndDate : WatchDogLogEvent
     {
@@ -10,5 +10,6 @@ namespace Utah.Udot.Atspm.Data.Models
 
         public int EventCount { get; set; }
         public DateTime DateOfFirstInstance { get; set; }
+        public int ConsecutiveOccurenceCount { get; set; }
     }
 }

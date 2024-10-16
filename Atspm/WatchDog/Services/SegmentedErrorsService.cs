@@ -1,4 +1,5 @@
-﻿using Utah.Udot.Atspm.Data.Enums;
+﻿using Utah.Udot.Atspm.Business.Watchdog;
+using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.WatchDog.Models;
 
@@ -22,6 +23,7 @@ namespace Utah.Udot.ATSPM.WatchDog.Services
             var countForDayBeforeScanDate = CreateDayBeforeCountLookup(recordsForDayBeforeScanDate);
 
             var allConvertedRecords = ConvertRecords(recordsForScanDate, countAndDateLookupForLast12Months);
+            var orderedConvertedRecords = allConvertedRecords.OrderByDescending(record => record.ConsecutiveOccurenceCount).ToList();
 
             return CategorizeIssues(allConvertedRecords, countForDayBeforeScanDate);
         }
@@ -47,21 +49,51 @@ namespace Utah.Udot.ATSPM.WatchDog.Services
             }
         }
 
-        private Dictionary<(string LocationIdentifier, WatchDogIssueTypes IssueType, WatchDogComponentTypes ComponentType, int? Phase), (int Count, DateTime DateOfFirstOccurrence)>
+        private static Dictionary<(string LocationIdentifier, WatchDogIssueTypes IssueType, WatchDogComponentTypes ComponentType, int? Phase), (int Count, DateTime DateOfFirstOccurrence, int ConsecutiveOccurrenceCount)>
         CreateCountAndDateLookup(List<WatchDogLogEvent> recordsForLast12Months)
         {
             return recordsForLast12Months
                 .GroupBy(r => (r.LocationIdentifier, r.IssueType, r.ComponentType, r.Phase))
                 .ToDictionary(
                     group => group.Key,
-                    group => (
-                        Count: group.Count(),
-                        DateOfFirstOccurrence: group.Min(e => e.Timestamp)
-                    )
+                    group =>
+                    {
+                        var orderedEvents = group.OrderBy(e => e.Timestamp).ToList();
+                        var firstOccurrence = orderedEvents.First().Timestamp;
+                        var consecutiveCount = CalculateConsecutiveOccurrences(orderedEvents);
+                        return (
+                            Count: group.Count(),
+                            DateOfFirstOccurrence: group.Min(e => e.Timestamp),
+                            ConsecutiveOccurrenceCount: consecutiveCount
+                        );
+                    }
                 );
         }
 
-        private Dictionary<(string LocationIdentifier, WatchDogIssueTypes IssueType, WatchDogComponentTypes ComponentType, int? Phase), int>
+        private static int CalculateConsecutiveOccurrences(List<WatchDogLogEvent> orderedEvents)
+        {
+            int maxConsecutiveDays = 1; // Keep track of the longest streak
+            int currentStreak = 1;
+
+            for (int i = 1; i < orderedEvents.Count; i++)
+            {
+                // Check if the event occurred on the next consecutive day
+                if ((orderedEvents[i].Timestamp - orderedEvents[i - 1].Timestamp).TotalDays == 1)
+                {
+                    currentStreak++;
+                    maxConsecutiveDays = Math.Max(maxConsecutiveDays, currentStreak);
+                }
+                else
+                {
+                    // Reset streak if there is a gap in consecutive days
+                    currentStreak = 1;
+                }
+            }
+
+            return maxConsecutiveDays;
+        }
+
+        private static Dictionary<(string LocationIdentifier, WatchDogIssueTypes IssueType, WatchDogComponentTypes ComponentType, int? Phase), int>
         CreateDayBeforeCountLookup(List<WatchDogLogEvent> recordsForDayBeforeScanDate)
         {
             return recordsForDayBeforeScanDate
@@ -72,19 +104,20 @@ namespace Utah.Udot.ATSPM.WatchDog.Services
                 );
         }
 
-        private List<WatchDogLogEventWithCountAndDate>
-        ConvertRecords(List<WatchDogLogEvent> recordsForScanDate, Dictionary<(string LocationIdentifier, WatchDogIssueTypes IssueType, WatchDogComponentTypes ComponentType, int? Phase), (int Count, DateTime DateOfFirstOccurrence)> countAndDateLookupForLast12Months)
+        private static List<WatchDogLogEventWithCountAndDate>
+        ConvertRecords(List<WatchDogLogEvent> recordsForScanDate, Dictionary<(string LocationIdentifier, WatchDogIssueTypes IssueType, WatchDogComponentTypes ComponentType, int? Phase), (int Count, DateTime DateOfFirstOccurrence, int ConsecutiveOccurrenceCount)> countAndDateLookupForLast12Months)
         {
             return recordsForScanDate
                 .Select(r => new WatchDogLogEventWithCountAndDate(r.LocationId, r.LocationIdentifier, r.Timestamp, r.ComponentType, r.ComponentId, r.IssueType, r.Details, r.Phase)
                 {
                     EventCount = countAndDateLookupForLast12Months.TryGetValue((r.LocationIdentifier, r.IssueType, r.ComponentType, r.Phase), out var data) ? data.Count : 0,
-                    DateOfFirstInstance = countAndDateLookupForLast12Months.TryGetValue((r.LocationIdentifier, r.IssueType, r.ComponentType, r.Phase), out data) ? data.DateOfFirstOccurrence : r.Timestamp
+                    DateOfFirstInstance = countAndDateLookupForLast12Months.TryGetValue((r.LocationIdentifier, r.IssueType, r.ComponentType, r.Phase), out data) ? data.DateOfFirstOccurrence : r.Timestamp,
+                    ConsecutiveOccurenceCount = countAndDateLookupForLast12Months.TryGetValue((r.LocationIdentifier, r.IssueType, r.ComponentType, r.Phase), out data) ? data.ConsecutiveOccurrenceCount : 1
                 })
                 .ToList();
         }
 
-        private (List<WatchDogLogEventWithCountAndDate> newIssues, List<WatchDogLogEventWithCountAndDate> dailyRecurringIssues, List<WatchDogLogEventWithCountAndDate> recurringIssues)
+        private static (List<WatchDogLogEventWithCountAndDate> newIssues, List<WatchDogLogEventWithCountAndDate> dailyRecurringIssues, List<WatchDogLogEventWithCountAndDate> recurringIssues)
         CategorizeIssues(List<WatchDogLogEventWithCountAndDate> allConvertedRecords, Dictionary<(string LocationIdentifier, WatchDogIssueTypes IssueType, WatchDogComponentTypes ComponentType, int? Phase), int> countForDayBeforeScanDate)
         {
             var newIssues = allConvertedRecords

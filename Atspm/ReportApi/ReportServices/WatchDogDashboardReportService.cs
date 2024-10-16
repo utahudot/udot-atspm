@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Utah.Udot.Atspm.Business.Watchdog;
 using Utah.Udot.Atspm.Data.Enums;
-using Utah.Udot.Atspm.Data.Models.WatchDogModels;
 using Utah.Udot.Atspm.Repositories;
 
 namespace Utah.Udot.ATSPM.ReportApi.ReportServices
@@ -141,17 +140,23 @@ namespace Utah.Udot.ATSPM.ReportApi.ReportServices
             var result = new List<WatchDogDetectionTypeGroup>();
 
             var query = watchdogEvents
-                .Join(detectors, logEvent => logEvent.ComponentId, detector => detector.Id, (logEvent, detector) => new DetectionTypeEventWithHardware
+                .Join(detectors, logEvent => logEvent.ComponentId, detector => detector.Id, (logEvent, detector) => new
                 {
-                    DetectionTypeId = detector.DetectionTypes.FirstOrDefault().Id,
-                    DetectionTypeName = detector.DetectionTypes.FirstOrDefault().Description,
-                    DetectionHardware = detector.DetectionHardware
-                });
+                    Detector = detector,
+                    LogEvent = logEvent
+                })
+            .SelectMany(detectorWithEvent => detectorWithEvent.Detector.DetectionTypes.Select(detectionType => new DetectionTypeEventWithHardware
+            {
+                DetectionTypeId = detectionType.Id,
+                DetectionTypeName = detectionType.Description,
+                DetectionHardware = detectorWithEvent.Detector.DetectionHardware
+            })).ToList();
+
 
             var detectionDictionary = query.GroupBy(g => g.DetectionTypeId)
-                .ToDictionary(
-                group => group.Key,
-                group => group);
+                 .ToDictionary(
+                 group => group.Key,
+                 group => group);
 
             foreach (var detectionType in detectionDictionary)
             {

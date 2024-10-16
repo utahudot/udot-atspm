@@ -18,7 +18,6 @@ const transformDetectionTypeData = (data: DetectionTypeData[]): EChartsOption =>
   const series = legendData.map(hardwareName => ({
     name: hardwareName,
     type: 'bar',
-    stack:'total',
 
     label: {
       show: true,
@@ -26,9 +25,9 @@ const transformDetectionTypeData = (data: DetectionTypeData[]): EChartsOption =>
       distance: 15,
       align: 'left',
       verticalAlign: 'middle',
-      rotate: 0,
+      rotate: 90,
       formatter: '{c}  {name|{a}}',
-      fontSize: 16,
+      fontSize: 8,
       color: '#000000',
       rich: {
         name: {}

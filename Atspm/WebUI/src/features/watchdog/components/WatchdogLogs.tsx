@@ -1,434 +1,545 @@
-import { OptionalWatchDogFilters } from '@/components/MapFilters/OptionalWatchDogFilters'
+import { StyledComponentHeader } from '@/components/HeaderStyling/StyledComponentHeader'
+import OptionalWatchDogFilters from '@/components/MapFilters/OptionalWatchDogFilters'
 import { StyledPaper } from '@/components/StyledPaper'
 import SelectDateTime from '@/components/selectTimeSpan/SelectTimeSpan'
-import { useLatestVersionOfAllLocations } from '@/features/locations/api'
-import { Location } from '@/features/locations/types/Location'
+import { Area } from '@/features/areas/types'
 import {
-  getIssueTypes,
-  getWatchdogLogs,
+  LogEventsData,
+  useGetIssueTypes,
+  useGetWatchdogLogs,
 } from '@/features/watchdog/api/getWatchdogLogs'
-import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined'
+import { useCreateWatchdogIgnoreEvents } from '@/features/watchdog/api/watchdogIgnoreEvents'
+import { useNotificationStore } from '@/stores/notifications'
+import { zodResolver } from '@hookform/resolvers/zod'
+import NotificationsPausedIcon from '@mui/icons-material/NotificationsPaused'
+import PlayArrowIcon from '@mui/icons-material/PlayArrow'
 import { LoadingButton } from '@mui/lab'
 import {
   Alert,
   Box,
+  Button,
+  Checkbox,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   Paper,
-  Theme,
-  useMediaQuery,
-  useTheme,
+  Tooltip,
 } from '@mui/material'
-
 import {
   DataGrid,
-  GridCellParams,
   GridColDef,
-  GridToolbar,
+  GridToolbarColumnsButton,
+  GridToolbarContainer,
+  GridToolbarDensitySelector,
   GridToolbarExport,
+  GridToolbarFilterButton,
   gridClasses,
 } from '@mui/x-data-grid'
-import { startOfToday, startOfTomorrow } from 'date-fns'
-import { useEffect, useState } from 'react'
+import { DatePicker } from '@mui/x-date-pickers/DatePicker'
+import { AxiosError } from 'axios'
+import { startOfToday, startOfYesterday } from 'date-fns'
+import { useCallback, useMemo, useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
 
-const tableCellStyle = {
-  '& table': {
-    width: '100%',
-    borderCollapse: 'collapse',
-    border: '1px solid black',
-  },
-  '& th, & td': {
-    border: '1px solid black',
-    padding: '8px',
-    textAlign: 'left',
-  },
+interface transformWatchDogLog {
+  id: number
+  locationId: number
+  locationIdentifier: string | null
+  timestamp: string
+  regionDescription: string
+  jurisdictionName: string
+  areas: string
+  issueType: number
+  phase: string | null
+  details: string
+  componentType: number
+  componentId: number
 }
 
+// Schema for filtering events (table of events)
+const watchdogLogsSchema = z.object({
+  locationIdentifier: z.string().nullable().optional(),
+  startDateTime: z.date(),
+  endDateTime: z.date(),
+  areaId: z.number().nullable().optional(),
+  regionId: z.number().nullable().optional(),
+  jurisdictionId: z.number().nullable().optional(),
+  selectedIssueType: z.number().nullable().optional(),
+})
+
+// Schema for ignoring events
+const ignoreEventSchema = z.object({
+  start: z.date().nullable(),
+  end: z.date().nullable(),
+})
+
 const WatchDogLogs = () => {
-  const today = new Date()
-  const [location, setLocation] = useState<Location | null>(null)
-  const [locations, setLocations] = useState<Location[]>([])
-  const [locationIdentifier, setLocationidentifier] = useState<string | null>(
-    null
-  )
-  const [startDateTime, setStartDateTime] = useState(startOfToday())
-  const [endDateTime, setEndDateTime] = useState(startOfTomorrow())
+  const { addNotification } = useNotificationStore()
 
-  const [areaId, setAreaId] = useState<number | null>(null)
-  const [regionId, setRegionId] = useState<number | null>(null)
-  const [jurisdictionId, setJurisdictionId] = useState<number | null>(null)
-  const { data } = useLatestVersionOfAllLocations()
-  const [isCheckingRecords, setIsCheckingRecords] = useState<boolean>(false)
-  const [wdData, setWData] = useState<any>(null)
-  const [selectedIssueType, setSelectedIssueType] = useState<any>(null)
-  const [issueTypes, setIssueTypes] = useState<any>(null)
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState(null)
+  const { data: issueTypesData } = useGetIssueTypes()
+  const {
+    data: watchdogLogsData,
+    isLoading: isWatchdogLogsLoading,
+    error: watchdogLogsError,
+    mutateAsync: fetchWatchdogLogs,
+  } = useGetWatchdogLogs()
+  const { mutateAsync: addWatchdogIgnoreEvents } =
+    useCreateWatchdogIgnoreEvents()
 
-  const theme = useTheme()
-  const mode = theme.palette.mode
-  const isSmallScreen = useMediaQuery((theme: Theme) =>
-    theme.breakpoints.down('sm')
-  )
-  const isMobileView = useMediaQuery(theme.breakpoints.down('md'))
-
-  const start = startDateTime
-  const end = endDateTime
-
-  const handleStartDateTimeChange = (date: Date) => {
-    setStartDateTime(date)
-  }
-
-  const handleEndDateTimeChange = (date: Date) => {
-    setEndDateTime(date)
-  }
-
-  const userFiltersInput = {
-    start,
-    end,
-    areaId,
-    regionId,
-    jurisdictionId,
-    issueType: selectedIssueType,
-    locationIdentifier,
-  }
-
-  const wrappedCellStyle = (params: GridCellParams) => {
-    return (
-      <div
-        style={{
-          width: '100%',
-          maxHeight: '100px',
-          overflow: 'auto',
-          whiteSpace: 'normal',
-          overflowWrap: 'break-word',
-        }}
-      >
-        {params.value}
-      </div>
-    )
-  }
-
-  const centeredCellStyle = (params: GridCellParams) => {
-    return (
-      <div style={{ textAlign: 'center', width: '100%' }}>{params.value}</div>
-    )
-  }
-
-  const columns: GridColDef[] = [
-    {
-      field: 'LocationIdentifier',
-      headerName: 'Location',
-      flex: 1,
-      minWidth: isSmallScreen ? 190 : 70,
-      headerAlign: 'center',
-      renderCell: centeredCellStyle,
+  const {
+    handleSubmit: handleFilterSubmit,
+    setValue: setFilterValue,
+    watch: watchFilters,
+  } = useForm<z.infer<typeof watchdogLogsSchema>>({
+    resolver: zodResolver(watchdogLogsSchema),
+    defaultValues: {
+      startDateTime: startOfYesterday(),
+      endDateTime: startOfToday(),
     },
-    {
-      field: 'Timestamp',
-      headerName: 'Timestamp',
-      flex: 1,
-      minWidth: isSmallScreen ? 150 : 70,
-      headerAlign: 'center',
-      renderCell: wrappedCellStyle,
-    },
-    {
-      field: 'RegionDescription',
-      headerName: 'Region',
-      flex: 1,
-      minWidth: isSmallScreen ? 150 : 65,
-      headerAlign: 'center',
-      renderCell: centeredCellStyle,
-    },
-    {
-      field: 'JurisdictionName',
-      headerName: 'Jurisdiction',
-      flex: 1,
-      minWidth: isSmallScreen ? 150 : 80,
-      headerAlign: 'center',
-      renderCell: wrappedCellStyle,
-    },
-    {
-      field: 'Areas',
-      headerName: 'Areas',
-      flex: 1,
-      minWidth: isSmallScreen ? 150 : 70,
-      headerAlign: 'center',
-      renderCell: centeredCellStyle,
-    },
-    {
-      field: 'IssueType',
-      headerName: 'Issue Type',
-      flex: 1,
-      minWidth: isSmallScreen ? 150 : 90,
-      headerAlign: 'center',
-      renderCell: centeredCellStyle,
-    },
-    {
-      field: 'Phase',
-      headerName: 'Phase',
-      flex: 1,
-      minWidth: isSmallScreen ? 150 : 30,
-      headerAlign: 'center',
-      renderCell: centeredCellStyle,
-    },
-    {
-      field: 'Details',
-      headerName: 'Details',
-      flex: 2,
-      minWidth: isSmallScreen ? 150 : undefined,
-      headerAlign: 'center',
-      renderCell: wrappedCellStyle,
-    },
-  ]
+  })
 
-  let filteredData = []
-  if (wdData && wdData.logEvents) {
-    filteredData = wdData.logEvents.map((obj: any, key: number) => {
-      let areaName = obj.areas.map((a: Area) => a.name)
-      return {
-        id: key,
-        LocationIdentifier: obj.locationIdentifier,
-        Timestamp: obj.timestamp,
-        RegionDescription: obj.regionDescription,
-        JurisdictionName: obj.jurisdictionName,
-        Areas: areaName,
-        IssueType: `${obj.issueType} - ${issueTypes[obj.issueType]}`,
-        Details: obj.details,
-        Phase: obj.phase,
-      }
-    })
-  }
+  const {
+    handleSubmit: handleIgnoreSubmit,
+    setValue: setIgnoreValue,
+    watch: watchIgnore,
+  } = useForm<z.infer<typeof ignoreEventSchema>>({
+    resolver: zodResolver(ignoreEventSchema),
+    defaultValues: {
+      start: startOfYesterday(),
+      end: null,
+    },
+  })
 
-  const fetchData = async () => {
-    setError(null)
-    setIsCheckingRecords(true)
-    try {
-      const response = await getWatchdogLogs(userFiltersInput)
-      if (response) {
-        setWData(response)
-      }
-    } catch (error) {
-      console.error('Error fetching data:', error)
-      setWData(null)
-      setError(error.response.data)
-    } finally {
-      setIsCheckingRecords(false)
+  // Watching form fields for filters (table)
+  const locationIdentifier = watchFilters('locationIdentifier')
+  const startDateTime = watchFilters('startDateTime')
+  const endDateTime = watchFilters('endDateTime')
+  const areaId = watchFilters('areaId')
+  const regionId = watchFilters('regionId')
+  const jurisdictionId = watchFilters('jurisdictionId')
+  const selectedIssueType = watchFilters('selectedIssueType')
+
+  // Watching form fields for ignoring events
+  const startIgnoreTime = watchIgnore('start')
+  const endIgnoreTime = watchIgnore('end')
+
+  const [clickedRows, setClickedRows] = useState<
+    Record<number, transformWatchDogLog>
+  >({})
+  const [selectedRows, setSelectedRows] = useState<number[]>([])
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [isIconClicked, setIsIconClicked] = useState(false)
+  const [processedRows, setProcessedRows] = useState<transformWatchDogLog[]>([])
+
+  useMemo(() => {
+    const logEvents = (watchdogLogsData as unknown as LogEventsData)?.logEvents
+    if (logEvents) {
+      const rows = logEvents.map((logEvent, index) => ({
+        id: index,
+        locationId: logEvent.locationId,
+        locationIdentifier: logEvent.locationIdentifier,
+        timestamp: logEvent.timestamp,
+        regionDescription: logEvent.regionDescription,
+        jurisdictionName: logEvent.jurisdictionName,
+        areas: logEvent.areas.map((area: Area) => area.name).join(', '),
+        issueType: logEvent.issueType,
+        phase: logEvent.phase,
+        details: logEvent.details,
+        componentType: logEvent.componentType,
+        componentId: logEvent.componentId,
+      }))
+      setProcessedRows(rows)
     }
-  }
+  }, [watchdogLogsData])
 
-  useEffect(() => {
-    const fetchIssueTypes = async () => {
-      try {
-        setIsLoading(true)
-        const response = await getIssueTypes()
+  const issueTypes = useMemo(() => {
+    if (!issueTypesData) return null
+    return issueTypesData.reduce(
+      (acc, issueType) => ({ ...acc, [issueType.id]: issueType.name }),
+      {}
+    )
+  }, [issueTypesData])
 
-        if (Array.isArray(response)) {
-          let issueTypesObj: { [key: string]: string } = {}
-          response.forEach((issueType) => {
-            let formattedName = issueType.name.replace(/([A-Z])/g, ' $1').trim()
-            issueTypesObj[issueType.id] = formattedName
-          })
-          setIssueTypes(issueTypesObj)
-        }
-      } catch (err) {
-        setError(err as Error)
-      } finally {
-        setIsLoading(false)
-      }
-    }
+  const handleIconClick = useCallback(() => {
+    setIsIconClicked(!isIconClicked)
+  }, [isIconClicked])
 
-    fetchIssueTypes()
+  const handleCancelClick = useCallback(() => {
+    setIsIconClicked(false)
+    setSelectedRows([])
+    setClickedRows({})
   }, [])
 
-  useEffect(() => {
-    if (data) {
-      setLocations(data.value)
-    }
-  }, [data])
+  const handleFetchData = handleFilterSubmit(() => {
+    fetchWatchdogLogs({
+      start: startDateTime,
+      end: endDateTime,
+      areaId,
+      regionId,
+      jurisdictionId,
+      issueType: selectedIssueType,
+      locationIdentifier,
+    })
+  })
 
-  useEffect(() => {
-    if (location) {
-      setLocationidentifier(location.locationIdentifier)
+  const handleIgnoreEventsSubmit = handleIgnoreSubmit(async (data) => {
+    setIsDialogOpen(false)
+
+    const response = await Promise.all(
+      selectedRows.map(async (rowId) => {
+        const eventToIgnore = clickedRows?.[rowId]
+        if (!eventToIgnore)
+          return { rowId, success: false, error: 'Event not found' }
+
+        try {
+          await addWatchdogIgnoreEvents({
+            ...data,
+            locationId: eventToIgnore.locationId,
+            locationIdentifier: eventToIgnore.locationIdentifier,
+            issueType: eventToIgnore.issueType?.toString(),
+            componentType: eventToIgnore.componentType?.toString(),
+            componentId: eventToIgnore.componentId,
+            phase: eventToIgnore.phase,
+          })
+          return { rowId, success: true }
+        } catch (error) {
+          return { rowId, success: false, error }
+        }
+      })
+    )
+
+    const succeededRows = response
+      .filter((result) => result.success)
+      .map((result) => result.rowId)
+    const failedRows = response.filter((result) => !result.success)
+
+    if (failedRows.length === 0) {
+      addNotification({
+        title: 'All events ignored successfully',
+        type: 'success',
+      })
     } else {
-      setLocationidentifier(null)
+      addNotification({
+        title: `${failedRows.length} events failed to be ignored`,
+        type: 'error',
+      })
     }
-  }, [location?.locationIdentifier])
 
-  const requiredClaim = 'Watchdog:View'
+    setProcessedRows((prevRows) =>
+      prevRows.filter((row) => !succeededRows.includes(row.id))
+    )
+    setSelectedRows([])
+    setClickedRows({})
+    setIsIconClicked(false)
+  })
 
-  return (
-    <>
-      <Box
-        sx={{
-          display: 'flex',
-          gap: 2,
-          flexDirection: 'row',
-          flexWrap: 'wrap',
-        }}
-      >
-        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
-          <StyledPaper
-            sx={{
-              flexGrow: 1,
-              width: '23.188rem',
-              padding: theme.spacing(3),
-            }}
-          >
-            <SelectDateTime
-              startDateTime={startDateTime}
-              endDateTime={endDateTime}
-              changeStartDate={handleStartDateTimeChange}
-              changeEndDate={handleEndDateTimeChange}
-              noCalendar={isMobileView}
-            />
-          </StyledPaper>
-        </Box>
-        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
-          <StyledPaper
-            sx={{
-              flexGrow: 1,
-              width: '23.188rem',
-              padding: theme.spacing(3),
-            }}
-          >
-            {/* <Typography
-            sx={{
-              color: 'gray',
-              fontSize: '.9rem',
-              padding: '0px 0px 15px 0px',
-            }}
-          >
-            Optional Filters
-          </Typography> */}
-            <OptionalWatchDogFilters
-              issueType={issueTypes}
-              setSelectedIssueType={setSelectedIssueType}
-              setAreaId={setAreaId}
-              setRegionId={setRegionId}
-              setJurisdictionId={setJurisdictionId}
-            />
-          </StyledPaper>
-        </Box>
-      </Box>
+  const handleDialogClose = useCallback(() => {
+    setIsDialogOpen(false)
+  }, [])
+
+  const handleRowSelection = useCallback(
+    (id: number, checked: boolean) => {
+      setSelectedRows((prev) =>
+        checked ? [...prev, id] : prev.filter((rowId) => rowId !== id)
+      )
+
+      setClickedRows((prev) => {
+        const foundRow = processedRows.find((row) => row.id === id)
+
+        return checked && foundRow
+          ? { ...prev, [id]: foundRow }
+          : Object.fromEntries(
+              Object.entries(prev).filter(([key]) => key !== id.toString())
+            )
+      })
+    },
+    [processedRows]
+  )
+
+  const columns: GridColDef[] = useMemo(() => {
+    const baseColumns: GridColDef[] = [
       {
+        field: 'locationIdentifier',
+        headerName: 'Location',
+        flex: 1,
+        headerAlign: 'center',
+      },
+      {
+        field: 'timestamp',
+        headerName: 'Timestamp',
+        flex: 1,
+        headerAlign: 'center',
+      },
+      {
+        field: 'regionDescription',
+        headerName: 'Region',
+        flex: 1,
+        headerAlign: 'center',
+      },
+      {
+        field: 'jurisdictionName',
+        headerName: 'Jurisdiction',
+        flex: 1,
+        headerAlign: 'center',
+      },
+      { field: 'areas', headerName: 'Areas', flex: 1, headerAlign: 'center' },
+      {
+        field: 'issueType',
+        headerName: 'Issue Type',
+        flex: 1,
+        headerAlign: 'center',
+        renderCell: (params) => (
+          <div style={{ textAlign: 'center', width: '100%' }}>
+            {issueTypes
+              ? `${params.value} - ${
+                  issueTypes[params.value as keyof typeof issueTypes]
+                }`
+              : params.value}
+          </div>
+        ),
+      },
+      { field: 'phase', headerName: 'Phase', flex: 1, headerAlign: 'center' },
+      {
+        field: 'details',
+        headerName: 'Details',
+        flex: 2,
+        headerAlign: 'center',
+      },
+    ]
+
+    if (isIconClicked) {
+      const checkboxColumn: GridColDef = {
+        field: 'checkbox',
+        headerName: '',
+        width: 50,
+        renderCell: (params) => (
+          <Checkbox
+            checked={selectedRows.includes(params.id as number)}
+            onChange={(e) =>
+              handleRowSelection(params.id as number, e.target.checked)
+            }
+          />
+        ),
+      }
+      return [checkboxColumn, ...baseColumns]
+    }
+
+    return baseColumns
+  }, [selectedRows, isIconClicked, handleRowSelection, issueTypes])
+
+  const CustomToolbar = useCallback(
+    () => (
+      <GridToolbarContainer>
+        <Box sx={{ flexGrow: 1 }}>
+          <GridToolbarColumnsButton />
+          <GridToolbarFilterButton />
+          <GridToolbarDensitySelector />
+          <GridToolbarExport />
+        </Box>
         <Box
           sx={{
             display: 'flex',
-            width: '100%',
+            alignItems: 'center',
+            position: 'relative',
+            transition: 'transform 0.3s ease',
           }}
         >
-          <LoadingButton
-            loading={isLoading}
-            loadingPosition="start"
-            startIcon={<DescriptionOutlinedIcon />}
-            variant="contained"
-            sx={{ margin: '20px 0', padding: '10px' }}
-            onClick={fetchData}
+          <Button
+            onClick={handleIconClick}
+            sx={{
+              color: 'red',
+              minWidth: 'auto',
+              transform: isIconClicked ? 'translateX(-300px)' : 'translateX(0)',
+              mb: 1,
+            }}
+            aria-label="Ignore Events"
           >
-            Generate Report
-          </LoadingButton>
-          {wdData?.logEvents.length === 0 && (
+            <Tooltip title="Ignore Events" placement="top">
+              <NotificationsPausedIcon />
+            </Tooltip>
+          </Button>
+          {isIconClicked && (
             <Box
               sx={{
                 display: 'flex',
                 alignItems: 'center',
-                marginLeft: '1rem',
+                position: 'absolute',
+                right: 0,
               }}
             >
-              <Alert severity="warning">No data available in date range</Alert>
+              <Button
+                onClick={() => setIsDialogOpen(true)}
+                variant="contained"
+                color="primary"
+                sx={{ marginRight: 1, width: '200px' }}
+                disabled={selectedRows.length === 0}
+              >
+                Ignore Events
+              </Button>
+              <Button
+                onClick={handleCancelClick}
+                variant="outlined"
+                color="primary"
+              >
+                Cancel
+              </Button>
             </Box>
           )}
-          {/* {error && (
-                <Box
-                  sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    marginLeft: '1rem',
-                  }}
-                >
-                  <Alert severity="error">{error}</Alert>
-                </Box>
-              )} */}
         </Box>
-      }
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          minWidth: '375px',
-          padding: '1px',
-          [theme.breakpoints.up('md')]: {
-            maxWidth: '100%',
-          },
-        }}
+      </GridToolbarContainer>
+    ),
+    [isIconClicked, selectedRows, handleIconClick, handleCancelClick]
+  )
+
+  const slots = useMemo(
+    () => ({
+      toolbar: CustomToolbar,
+    }),
+    [CustomToolbar]
+  )
+
+  const startTimeToLocaleString = startDateTime.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  })
+
+  const endTimeToLocaleString = endDateTime.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  })
+
+  const fileName = `WatchdogData-${startTimeToLocaleString}-${endTimeToLocaleString}`
+
+  return (
+    <>
+      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+        <StyledPaper sx={{ width: '23rem', padding: 3 }}>
+          <SelectDateTime
+            startDateTime={startDateTime}
+            endDateTime={endDateTime}
+            changeStartDate={(newValue) =>
+              setFilterValue('startDateTime', newValue)
+            }
+            changeEndDate={(newValue) =>
+              setFilterValue('endDateTime', newValue)
+            }
+          />
+        </StyledPaper>
+        <StyledPaper sx={{ width: '23rem' }}>
+          <StyledComponentHeader header="Optional Filters" />
+          <Box sx={{ padding: 3 }}>
+            <OptionalWatchDogFilters
+              issueType={issueTypes}
+              setSelectedIssueType={(value) =>
+                setFilterValue('selectedIssueType', value)
+              }
+              setAreaId={(value) => setFilterValue('areaId', value)}
+              setRegionId={(value) => setFilterValue('regionId', value)}
+              setJurisdictionId={(value) =>
+                setFilterValue('jurisdictionId', value)
+              }
+              setLocationIdentifier={(value) =>
+                setFilterValue('locationIdentifier', value)
+              }
+            />
+          </Box>
+        </StyledPaper>
+      </Box>
+
+      <LoadingButton
+        loading={isWatchdogLogsLoading}
+        startIcon={<PlayArrowIcon />}
+        loadingPosition="start"
+        variant="contained"
+        onClick={handleFetchData}
+        sx={{ marginY: 3, padding: '10px' }}
       >
-        {filteredData.length > 0 && (
+        Generate Report
+      </LoadingButton>
+
+      {watchdogLogsError && (
+        <Alert severity="error">
+          {(watchdogLogsError as AxiosError).message}
+        </Alert>
+      )}
+
+      <Box sx={{ width: '100%' }}>
+        {processedRows.length > 0 && (
           <Paper>
             <DataGrid
-              getRowHeight={() => 'auto'}
-              rows={filteredData}
+              rows={processedRows}
               columns={columns}
+              getRowId={(row) => row.id}
               disableDensitySelector
-              slots={{ toolbar: GridToolbar }}
-              components={{ Toolbar: GridToolbarExport }}
-              componentsProps={{
+              slots={slots}
+              slotProps={{
                 toolbar: {
-                  csvOptions: {
-                    fileName: `WatchDogData-${start.toLocaleDateString(
-                      'en-US',
-                      {
-                        year: 'numeric',
-                        month: '2-digit',
-                        day: '2-digit',
-                      }
-                    )}-${end.toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: '2-digit',
-                      day: '2-digit',
-                    })}`,
-                  },
-                  printOptions: {
-                    fileName: `WatchDogData-${start.toLocaleDateString(
-                      'en-US',
-                      {
-                        year: 'numeric',
-                        month: '2-digit',
-                        day: '2-digit',
-                      }
-                    )}-${end.toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: '2-digit',
-                      day: '2-digit',
-                    })}`,
-                  },
+                  csvOptions: { fileName },
+                  printOptions: { fileName },
                 },
               }}
-              pageSizeOptions={[{ value: 100, label: '100' }]}
               sx={{
+                '& .MuiDataGrid-row.selected-row': {
+                  backgroundColor: 'lightgrey',
+                },
                 [`& .${gridClasses.cell}`]: {
                   paddingTop: '20px',
                   paddingBottom: '20px',
-                  ...tableCellStyle,
                 },
                 [`& .${gridClasses.columnHeaders}`]: {
                   position: 'sticky',
-                  top: '30px',
-                  backgroundColor: mode === 'light' ? 'white' : '#1F2A40',
-                  zIndex: '1',
+                  backgroundColor: 'white',
+                  zIndex: 1,
                 },
                 [`& .${gridClasses.toolbarContainer}`]: {
                   position: 'sticky',
                   top: '0',
-                  backgroundColor: mode === 'light' ? 'white' : '#1F2A40',
+                  backgroundColor: 'white',
                   zIndex: '1',
-                },
-                [`& .${gridClasses.main}`]: {
-                  overflow: 'inherit',
+                  pb: '5px',
                 },
               }}
+              getRowClassName={(params) =>
+                selectedRows.includes(params.id as number) ? 'selected-row' : ''
+              }
             />
           </Paper>
         )}
       </Box>
+
+      <Dialog open={isDialogOpen} onClose={handleDialogClose}>
+        <DialogTitle>Ignore Events</DialogTitle>
+        <DialogContent>
+          <Box display="flex" flexDirection="column" gap={2} mt={2}>
+            <DatePicker
+              label="Start Date"
+              value={startIgnoreTime}
+              onChange={(newValue) => setIgnoreValue('start', newValue)}
+            />
+            <DatePicker
+              label="End Date"
+              value={endIgnoreTime}
+              onChange={(newValue) => setIgnoreValue('end', newValue)}
+            />
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDialogClose} variant="outlined">
+            Cancel
+          </Button>
+          <Button
+            onClick={handleIgnoreEventsSubmit}
+            variant="contained"
+            color="primary"
+          >
+            Ignore Events
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   )
 }

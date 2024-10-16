@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for ApplicationCore - ATSPM.Application.Business.Watchdog/WatchDogOptions.cs
+// for EventLogUtility - ATSPM.EventLogUtility.Commands/ICommandOption.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,18 +15,18 @@
 // limitations under the License.
 #endregion
 
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using System.CommandLine.NamingConventionBinder;
 
-namespace Utah.Udot.Atspm.Business.Watchdog
+namespace Utah.Udot.Atspm.Common
 {
-    public class WatchDogOptions
+    public interface ICommandOption<T> : ICommandOption
     {
-        public int? AreaId { get; set; }
-        public int? RegionId { get; set; }
-        public int? JurisdictionId { get; set; }
-        public int? IssueType { get; set; }
-        public DateTime Start { get; set; }
-        public DateTime End { get; set; }
-        public string? LocationIdentifier { get; set; }
-        public bool IsFilteredEvents { get; set; } = false;
+        ModelBinder<T> GetOptionsBinder();
+    }
+    public interface ICommandOption
+    {
+        void BindCommandOptions(HostBuilderContext host, IServiceCollection services);
     }
 }

@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for ApplicationCore - ATSPM.Application.Business.Watchdog/WatchDogOptions.cs
+// for ApplicationCore - ATSPM.Application.Repositories.ConfigurationRepositories/IAreaRepository.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,18 +15,24 @@
 // limitations under the License.
 #endregion
 
+using Utah.Udot.NetStandardToolkit.Services;
 
-namespace Utah.Udot.Atspm.Business.Watchdog
+namespace Utah.Udot.Atspm.Repositories.ConfigurationRepositories
 {
-    public class WatchDogOptions
+    /// <summary>
+    /// Area Repository
+    /// </summary>
+    public interface IWatchDogIgnoreEventRepository : IAsyncRepository<WatchDogIgnoreEvent>
     {
-        public int? AreaId { get; set; }
-        public int? RegionId { get; set; }
-        public int? JurisdictionId { get; set; }
-        public int? IssueType { get; set; }
-        public DateTime Start { get; set; }
-        public DateTime End { get; set; }
-        public string? LocationIdentifier { get; set; }
-        public bool IsFilteredEvents { get; set; } = false;
+        #region ExtensionMethods
+
+
+
+        #endregion
+
+        #region Obsolete
+
+
+        #endregion
     }
 }

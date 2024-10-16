@@ -1,5 +1,8 @@
 import { StyledPaper } from '@/components/StyledPaper'
-import WatchdogChartsContainer from '@/features/charts/watchdogDashboard/components/WatchdogChartsContainer'
+import WatchdogChartsContainer from '@/features/charts/watchdogDashboard/components/WatchDogChartsContainer'
+import { useGetDetectionTypeCount } from '@/features/watchdog/api/GetDetectionTypeCount'
+import { useGetDeviceCount } from '@/features/watchdog/api/getDeviceCount'
+import { useGetWatchdogDashboardData } from '@/features/watchdog/api/getWatchdogDashboardData'
 import PlayArrowIcon from '@mui/icons-material/PlayArrow'
 import { LoadingButton } from '@mui/lab'
 import { Box } from '@mui/material'
@@ -11,7 +14,6 @@ import {
   subYears,
 } from 'date-fns'
 import { useState } from 'react'
-import { useGetWatchdogDashboardData } from '../api/getWatchdogDashboardData'
 import HorizontalDateInput from './HorizontalDateInputs'
 
 const WatchdogSummaryReport = () => {
@@ -23,12 +25,35 @@ const WatchdogSummaryReport = () => {
   const formattedStartDate = format(startDateTime, "yyyy-MM-dd'T'HH:mm:ss'Z'")
   const formattedEndDate = format(endDateTime, "yyyy-MM-dd'T'HH:mm:ss'Z'")
 
-  const { data, isLoading, error } = useGetWatchdogDashboardData({
+  const {
+    data: dashboardData,
+    isLoading,
+    error,
+  } = useGetWatchdogDashboardData({
     start: formattedStartDate,
     end: formattedEndDate,
     enabled: fetchData,
   })
 
+  const {
+    data: deviceCount,
+    isLoading: isDeviceCountLoading,
+    error: deviceCountError,
+  } = useGetDeviceCount()
+  const {
+    data: detectionTypeCount,
+    isLoading: isDetectionTypeCountLoading,
+    error: detectionTypeCountError,
+  } = useGetDetectionTypeCount(formattedEndDate)
+  const data = {
+    ...dashboardData,
+    deviceCount: deviceCount,
+    detectionTypeCount: detectionTypeCount,
+  }
+
+  // useEffect(() => {
+  //   console.log("DOGDATA", data)
+  // }, [deviceCount,isDeviceCountLoading, dashboardData, isLoading])
   const handleGenerateSummary = () => {
     setFetchData(true)
   }
@@ -40,8 +65,6 @@ const WatchdogSummaryReport = () => {
   const handleEndDateTimeChange = (date: Date) => {
     setEndDateTime(date)
   }
-
-  if (!isLoading) console.log('KIMBRO', data)
 
   return (
     <>
@@ -72,7 +95,7 @@ const WatchdogSummaryReport = () => {
 
       {error && <Box>Error loading data</Box>}
 
-      {!isLoading && data && (
+      {!isLoading && dashboardData && deviceCount && detectionTypeCount && (
         <WatchdogChartsContainer data={data} isLoading={isLoading} />
       )}
     </>

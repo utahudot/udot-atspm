@@ -41,7 +41,7 @@ const WatchDog = () => {
 
           {/* ConfigurationComponent */}
           <TabPanel value="2" sx={{ padding: '0px' }}>
-            <Box sx={{ paddingTop: '0px' }}>
+            <Box sx={{ paddingTop: '0px',  }}>
               <WatchdogSummaryReport />
             </Box>
           </TabPanel>
