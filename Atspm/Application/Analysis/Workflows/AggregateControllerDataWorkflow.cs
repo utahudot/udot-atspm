@@ -45,22 +45,22 @@ namespace Utah.Udot.Atspm.Analysis.Workflows
         }
     }
 
-    public abstract class AggregationSpeedWorkflowBase<T> : WorkflowBase<Tuple<Location, IEnumerable<IndianaEvent>, IEnumerable<SpeedEvent>>, IEnumerable<T>> where T : AggregationModelBase
-    {
-        protected AggregationWorkflowOptions workflowOptions;
-        protected ExecutionDataflowBlockOptions executionBlockOptions;
+    //public abstract class AggregationSpeedWorkflowBase<T> : WorkflowBase<Tuple<Location, IEnumerable<CompressedEventLogBase>, IEnumerable<T>> where T : AggregationModelBase
+    //{
+    //    protected AggregationWorkflowOptions workflowOptions;
+    //    protected ExecutionDataflowBlockOptions executionBlockOptions;
 
-        /// <inheritdoc/>
-        public AggregationSpeedWorkflowBase(AggregationWorkflowOptions options = default) : base(new DataflowBlockOptions() { CancellationToken = options.CancellationToken })
-        {
-            workflowOptions = options;
-            executionBlockOptions = new ExecutionDataflowBlockOptions()
-            {
-                CancellationToken = options.CancellationToken,
-                MaxDegreeOfParallelism = options.MaxDegreeOfParallelism,
-            };
-        }
-    }
+    //    /// <inheritdoc/>
+    //    public AggregationSpeedWorkflowBase(AggregationWorkflowOptions options = default) : base(new DataflowBlockOptions() { CancellationToken = options.CancellationToken })
+    //    {
+    //        workflowOptions = options;
+    //        executionBlockOptions = new ExecutionDataflowBlockOptions()
+    //        {
+    //            CancellationToken = options.CancellationToken,
+    //            MaxDegreeOfParallelism = options.MaxDegreeOfParallelism,
+    //        };
+    //    }
+    //}
 
     public class DetectorEventCountAggregationWorkflow : AggregationWorkflowBase<DetectorEventCountAggregation>
     {
@@ -276,66 +276,127 @@ namespace Utah.Udot.Atspm.Analysis.Workflows
         }
     }
 
-    public class DetectorSpeedAggregationWorkflow : AggregationSpeedWorkflowBase<DetectorSpeedAggregation>
-    {
-        /// <inheritdoc/>
-        public DetectorSpeedAggregationWorkflow(AggregationWorkflowOptions options = default) : base(options)
-        {
-        }
-        public FilterSpeedDetectorData FilterSpeedDetectorData { get; private set; }
-        public BreakOutIndianaEvent BreakOutIndianaEvent { get; private set; }
-        public BreakOutSpeedEvent BreakOutSpeedEvent { get; private set; }
-        public GroupDetectorSpeedEventData GroupDetectorSpeedData { get; private set; }
-        public GroupDetectorIndianaSpeedData GroupDetectorIndianaSpeedData { get; private set; }
-        public JoinBlock<Tuple<Detector, string, IEnumerable<SpeedEvent>>, Tuple<Detector, string, IEnumerable<IndianaEvent>>> DetectorJoin { get; private set; }
-        //public CalculateSpeedData CalculateSpeedData { get; private set; }
-        //public UploadSpeedData UploadSpeedData { get; private set; }
+    //public class DetectorSpeedAggregationWorkflow : WorkflowBase<Tuple<Location, IEnumerable<CompressedEventLogBase>>, DetectorSpeedAggregation>
+    //{
+    //    /// <inheritdoc/>
+    //    public DetectorSpeedAggregationWorkflow(DataflowBlockOptions options = default) : base(options)
+    //    {
+    //    }
 
-        /// <inheritdoc/>
-        protected override void AddStepsToTracker()
-        {
-            Steps.Add(FilterSpeedDetectorData);
-            Steps.Add(BreakOutIndianaEvent);
-            Steps.Add(BreakOutSpeedEvent);
-            Steps.Add(GroupDetectorSpeedData);
-            Steps.Add(GroupDetectorIndianaSpeedData);
-            Steps.Add(DetectorJoin);
-            //Steps.Add(CalculateSpeedData);
-            //Steps.Add(UploadSpeedData);
-        }
+    //    //BreakoutCompressedEvents
+    //    //FilterIndianaAndSpeedEvents
+    //    public FilterSpeedDetectorData FilterSpeedDetectorData { get; private set; }
 
-        /// <inheritdoc/>
-        protected override void InstantiateSteps()
-        {
-            //FilterSpeedDetectorData = new(blockOptions);
-            //BreakOutIndianaEvent = new(blockOptions);
-            //BreakOutSpeedEvent = new(blockOptions);
-            //GroupDetectorSpeedData = new(blockOptions);
-            //GroupDetectorIndianaSpeedData = new(blockOptions);
+    //    public CalculateSpeedData CalculateSpeedData { get; private set; }
 
-            //DetectorJoin = new();
-            //CalculateSpeedData = new(executionBlockOptions);
-            //UploadSpeedData = new(executionBlockOptions);
-        }
+    //    //Compress Step
+    //    //SaveArchiveEvents (
+    //    //ArchiveDataEvents
+    //    ////////////public UploadSpeedData UploadSpeedData { get; private set; }
 
-        /// <inheritdoc/>
-        protected override void LinkSteps()
-        {
-            Input.LinkTo(FilterSpeedDetectorData, new DataflowLinkOptions() { PropagateCompletion = true });
-            FilterSpeedDetectorData.LinkTo(BreakOutIndianaEvent, new DataflowLinkOptions() { PropagateCompletion = true });
-            FilterSpeedDetectorData.LinkTo(BreakOutSpeedEvent, new DataflowLinkOptions() { PropagateCompletion = true });
+    //    /// <inheritdoc/>
+    //    protected override void AddStepsToTracker()
+    //    {
+    //        Steps.Add(FilterSpeedDetectorData);
+    //        Steps.Add(BreakOutIndianaEvent);
+    //        Steps.Add(BreakOutSpeedEvent);
+    //        Steps.Add(GroupDetectorSpeedData);
+    //        Steps.Add(GroupDetectorIndianaSpeedData);
+    //        Steps.Add(DetectorJoin);
+    //        //Steps.Add(CalculateSpeedData);
+    //        //Steps.Add(UploadSpeedData);
+    //    }
 
-            BreakOutSpeedEvent.LinkTo(GroupDetectorSpeedData, new DataflowLinkOptions() { PropagateCompletion = true });
-            BreakOutIndianaEvent.LinkTo(GroupDetectorIndianaSpeedData, new DataflowLinkOptions() { PropagateCompletion = true });
+    //    /// <inheritdoc/>
+    //    protected override void InstantiateSteps()
+    //    {
+    //        //FilterSpeedDetectorData = new(blockOptions);
+    //        //BreakOutIndianaEvent = new(blockOptions);
+    //        //BreakOutSpeedEvent = new(blockOptions);
+    //        //GroupDetectorSpeedData = new(blockOptions);
+    //        //GroupDetectorIndianaSpeedData = new(blockOptions);
 
-            GroupDetectorSpeedData.LinkTo(DetectorJoin.Target1);
-            GroupDetectorIndianaSpeedData.LinkTo(DetectorJoin.Target2);
+    //        //DetectorJoin = new();
+    //        //CalculateSpeedData = new(executionBlockOptions);
+    //        //UploadSpeedData = new(executionBlockOptions);
+    //    }
 
-            //GroupPriorityNumber.LinkTo(AggregatePriorityCodes, new DataflowLinkOptions() { PropagateCompletion = true });
+    //    /// <inheritdoc/>
+    //    protected override void LinkSteps()
+    //    {
+    //        Input.LinkTo(FilterSpeedDetectorData, new DataflowLinkOptions() { PropagateCompletion = true }, p => p.Any(i => i.DataType == typeof(IndianaEvent)));
+    //        FilterSpeedDetectorData.LinkTo(BreakOutIndianaEvent, new DataflowLinkOptions() { PropagateCompletion = true }, p => p.Any(i => i.DataType == typeof(IndianaEvent)));
+    //        FilterSpeedDetectorData.LinkTo(BreakOutSpeedEvent, new DataflowLinkOptions() { PropagateCompletion = true });//, p => p.Any(i => i.DataType == typeof(SpeedEvent)));
 
-            //AggregatePriorityCodes.LinkTo(Output, new DataflowLinkOptions() { PropagateCompletion = true });
-        }
-    }
+    //        BreakOutSpeedEvent.LinkTo(GroupDetectorSpeedData, new DataflowLinkOptions() { PropagateCompletion = true });
+    //        BreakOutIndianaEvent.LinkTo(GroupDetectorIndianaSpeedData, new DataflowLinkOptions() { PropagateCompletion = true });
+
+    //        GroupDetectorSpeedData.LinkTo(DetectorJoin.Target1);
+    //        GroupDetectorIndianaSpeedData.LinkTo(DetectorJoin.Target2);
+
+    //        //GroupPriorityNumber.LinkTo(AggregatePriorityCodes, new DataflowLinkOptions() { PropagateCompletion = true });
+
+    //        //AggregatePriorityCodes.LinkTo(Output, new DataflowLinkOptions() { PropagateCompletion = true });
+    //    }
+    //}
+
+
+    ///// <summary>
+    ///// returns a <see cref="CompressedEventLogs{T}"/> object to store to a repository that is grouped by:
+    ///// <list type="bullet">
+    ///// <item><see cref="ILocationLayer.LocationIdentifier"/></item>
+    ///// <item><see cref="ITimestamp.Timestamp"/></item>
+    ///// <item><see cref="Device"/></item>
+    ///// <item>Event type derived from <see cref="AggregationModelBase"/></item>
+    ///// </list>
+    ///// </summary>
+    //public class ArchiveAggregations : TransformManyProcessStepBaseAsync<IEnumerable<AggregationModelBase>, CompressedAggregationBase>
+    //{
+    //    /// <summary>
+    //    /// returns a <see cref="CompressedEventLogs{T}"/> object to store to a repository that is grouped by:
+    //    /// <list type="bullet">
+    //    /// <item><see cref="ILocationLayer.LocationIdentifier"/></item>
+    //    /// <item><see cref="ITimestamp.Timestamp"/></item>
+    //    /// <item><see cref="Device"/></item>
+    //    /// <item>Event type derived from <see cref="AggregationModelBase"/></item>
+    //    /// </list>
+    //    /// </summary>
+    //    /// <param name="dataflowBlockOptions"></param>
+    //    public ArchiveAggregations(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
+
+    //    /// <inheritdoc/>
+    //    protected override async IAsyncEnumerable<CompressedAggregationBase> Process(IEnumerable<AggregationModelBase> input, [EnumeratorCancellation] CancellationToken cancelToken = default)
+    //    {
+    //        var result = input.GroupBy(g => (g.LocationIdentifier, g.Start.Date, g.GetType()))
+    //            .Select(s =>
+    //            {
+    //                dynamic list = Activator.CreateInstance(typeof(List<>).MakeGenericType(s.Key.Item3));
+
+    //                foreach (var i in s.Select(s => s))
+    //                {
+    //                    if (list is IList l)
+    //                    {
+    //                        l.Add(i);
+    //                    }
+    //                }
+
+    //                dynamic comp = Activator.CreateInstance(typeof(CompressedAggregations<>).MakeGenericType(s.Key.Item3));
+
+    //                comp.LocationIdentifier = s.Key.LocationIdentifier;
+    //                comp.ArchiveDate = DateOnly.FromDateTime(s.Key.Date);
+    //                comp.DataType = s.Key.Item3;
+    //                //comp.DeviceId = s.Key.Id;
+    //                comp.Data = list;
+
+    //                return comp;
+    //            });
+
+    //        foreach (var r in result)
+    //        {
+    //            yield return r;
+    //        }
+    //    }
+    //}
 
     public class AggregateControllerDataWorkflow : WorkflowBase<Tuple<Location, IEnumerable<IndianaEvent>, IEnumerable<SpeedEvent>>, IEnumerable<AggregationModelBase>>
     {
