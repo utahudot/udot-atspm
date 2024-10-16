@@ -1,4 +1,5 @@
 ﻿using Utah.Udot.Atspm.Business.Common;
+using Utah.Udot.Atspm.Business.TimeSpaceDiagram;
 
 namespace Utah.Udot.Atspm.Business.RampMetering
 {
@@ -10,8 +11,8 @@ namespace Utah.Udot.Atspm.Business.RampMetering
         public List<DataPointDateDouble> MainLineAvgFlow { get; set; }
         public List<DataPointDateDouble> MainlineAvgOcc { get; set; }
         public List<DataPointDateDouble> MainlineAvgSpeed { get; set; }
-        public List<DataPointDateDouble> StartUpWarning { get; set; }
-        public List<DataPointDateDouble> ShutdownWarning { get; set; }
+        public List<TimeSpaceEventBase> StartUpWarning { get; set; }
+        public List<TimeSpaceEventBase> ShutdownWarning { get; set; }
         public List<DescriptionWithDataPoints> LanesActiveRate { get; set; }
         public List<DescriptionWithDataPoints> LanesBaseRate { get; set; }
         public List<DescriptionWithDataPoints> LanesQueueOnEvents { get; set; }

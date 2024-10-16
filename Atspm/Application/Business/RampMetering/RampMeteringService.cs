@@ -40,33 +40,74 @@ namespace Utah.Udot.Atspm.Business.RampMetering
 
             var (startup, shutdown) = GetStartUpAndShutdownEvents(startUpAndShutdownWarningEvents);
 
-            var mainlineAvgSpeeds = mainlineAvgSpeedEvents.Select(e => new DataPointDateDouble(e.Timestamp, (e.EventParam * speedMultiplier))).ToList();
-            var mainlineAvgOccurrence = mainlineAvgOccurrenceEvents.Select(e => new DataPointDateDouble(e.Timestamp, (e.EventParam / 10))).ToList();
-            var mainlineAvgFlow = mainlineAvgFlowEvents.Select(e => new DataPointDateDouble(e.Timestamp, e.EventParam)).ToList();
+            var mainlineAvgSpeedsList = mainlineAvgSpeedEvents.Select(e => new DataPointDateDouble(e.Timestamp, (e.EventParam * speedMultiplier))).ToList();
+            var mainlineAvgOccurrenceList = mainlineAvgOccurrenceEvents.Select(e => new DataPointDateDouble(e.Timestamp, (e.EventParam / 10))).ToList();
+            var mainlineAvgFlowList = mainlineAvgFlowEvents.Select(e => new DataPointDateDouble(e.Timestamp, e.EventParam)).ToList();
+
+            var lanesActiveRateList = GetDescriptionWithDataPoints(activeRateEvents);
+            var lanesBaseRateList = GetDescriptionWithDataPoints(baseRateEvents);
+            var queueOnList = GetDescriptionWithDataPoints(queueOnEvents);
+            var queueOffList = GetDescriptionWithDataPoints(queueOffEvents);
 
             return new RampMeteringResult(location.LocationIdentifier, options.Start, options.End)
             {
-                MainLineAvgFlow = mainlineAvgFlow,
-                MainlineAvgOcc = mainlineAvgOccurrence,
-                MainlineAvgSpeed = mainlineAvgSpeeds,
+                MainLineAvgFlow = mainlineAvgFlowList,
+                MainlineAvgOcc = mainlineAvgOccurrenceList,
+                MainlineAvgSpeed = mainlineAvgSpeedsList,
+                StartUpWarning = startup,
+                ShutdownWarning = shutdown,
+                LanesActiveRate = lanesActiveRateList,
+                LanesBaseRate = lanesBaseRateList,
+                LanesQueueOffEvents = queueOffList,
+                LanesQueueOnEvents = queueOnList,
             };
+        }
+
+        private List<DescriptionWithDataPoints> GetDescriptionWithDataPoints(IEnumerable<IndianaEvent> events)
+        {
+            var descriptWithDataPointsEvents = new List<DescriptionWithDataPoints>();
+            var eventsByCodes = events.GroupBy(e => e.EventCode);
+            int laneNumber = 1;
+
+            foreach (var eventsByCode in eventsByCodes)
+            {
+                var codeEvents = eventsByCode.Select(e => new DataPointDateDouble(e.Timestamp, e.EventParam)).ToList();
+                descriptWithDataPointsEvents.Add(new DescriptionWithDataPoints()
+                {
+                    Description = laneNumber.ToString(),
+                    Value = codeEvents
+                });
+            }
+
+            return descriptWithDataPointsEvents;
         }
 
         private (List<TimeSpaceEventBase>, List<TimeSpaceEventBase>) GetStartUpAndShutdownEvents(IEnumerable<IndianaEvent> events)
         {
-            var startUp = new List<TimeSpaceEventBase>();
-            var shutDown = new List<TimeSpaceEventBase>();
+            var startUpList = new List<TimeSpaceEventBase>();
+            var shutDownList = new List<TimeSpaceEventBase>();
 
             var groupingByParam = events.GroupBy(e => e.EventParam).FirstOrDefault();
             if (groupingByParam != null)
             {
                 for (var i = 0; i < groupingByParam.Count() - 1; i++)
                 {
-
+                    if (groupingByParam.ElementAt(i).EventCode == 1004 && groupingByParam.ElementAt(i+1).EventCode == 1014)
+                    {
+                        var start = groupingByParam.ElementAt(i).Timestamp;
+                        var stop = groupingByParam.ElementAt(i + 1).Timestamp;
+                        var startUp = new TimeSpaceEventBase(start, stop, null);
+                    }
+                    if(groupingByParam.ElementAt(i).EventCode == 1004 && groupingByParam.ElementAt(i + 1).EventCode == 1014)
+                    {
+                        var start = groupingByParam.ElementAt(i).Timestamp;
+                        var stop = groupingByParam.ElementAt(i + 1).Timestamp;
+                        var startUp = new TimeSpaceEventBase(start, stop, null);
+                    }
                 }
             }
 
-            return (startUp, shutDown);
+            return (startUpList, shutDownList);
         }
     }
 }
