@@ -1,4 +1,4 @@
-import { addDays } from 'date-fns'
+import { setSecureCookie } from '@/features/identity/utils'
 import Cookies from 'js-cookie'
 import { useRouter } from 'next/router'
 import { FormEvent, useEffect, useState } from 'react'
@@ -161,9 +161,7 @@ export const useVerifyTokenHandler = (): VerifyTokenHandler => {
     if (verifyResetTokenData) {
       setData(verifyResetTokenData)
       setIsValidToken(true)
-      Cookies.set('token', verifyResetTokenData.token, {
-        expires: addDays(new Date(), 1),
-      })
+      setSecureCookie('token', verifyResetTokenData.token)
     }
   }, [verifyResetTokenData])
 

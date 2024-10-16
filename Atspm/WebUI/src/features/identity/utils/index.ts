@@ -29,3 +29,26 @@ export const doesUserHaveAccess = () => {
   const claims = Cookies.get('claims')
   return !!claims
 }
+
+interface CookieOptions {
+  expires?: Date | number // Expiration can be a Date or number (number of days)
+  secure?: boolean // Secure attribute (defaults to true)
+  sameSite?: 'Strict' | 'Lax' | 'None' // SameSite policy options
+  path?: string // Path attribute (optional)
+  domain?: string // Domain attribute (optional)
+}
+
+export function setSecureCookie(
+  name: string,
+  value: string,
+  options: CookieOptions = {}
+): void {
+  const defaultOptions: CookieOptions = {
+    secure: true,
+    expires: 1, // Default expiration: 1 day
+  }
+
+  const finalOptions = { ...defaultOptions, ...options }
+
+  Cookies.set(name, value, finalOptions)
+}

@@ -1,6 +1,7 @@
 import { ResponsivePageLayout } from '@/components/ResponsivePage'
 import { useLogin } from '@/features/identity/api/getLogin'
 import IdentityDto from '@/features/identity/types/identityDto'
+import { setSecureCookie } from '@/features/identity/utils'
 import { getEnv } from '@/lib/getEnv'
 import { LoadingButton } from '@mui/lab'
 import {
@@ -14,8 +15,6 @@ import {
   TextField,
   Typography,
 } from '@mui/material'
-import { addMinutes } from 'date-fns'
-import Cookies from 'js-cookie'
 import { useEffect, useState } from 'react'
 
 function Login() {
@@ -82,13 +81,9 @@ function Login() {
   }, [password])
 
   if (data?.code === 200) {
-    const inOneMinute = addMinutes(new Date(), 1)
-    Cookies.set('token', data.token, {
-      secure: true,
-      sameSite: 'strict',
-    })
-    Cookies.set('claims', data.claims.join(','))
-    Cookies.set('loggedIn', 'True', { expires: inOneMinute })
+    setSecureCookie('token', data.token)
+    setSecureCookie('claims', data.claims.join(','))
+    setSecureCookie('loggedIn', 'True')
     window.location.href = '/'
   }
 
