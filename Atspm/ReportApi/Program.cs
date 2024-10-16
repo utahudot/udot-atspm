@@ -230,6 +230,7 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddScoped<LinkPivotService>();
     s.AddScoped<LinkPivotPairService>();
     s.AddScoped<LinkPivotPcdService>();
+    s.AddScoped<RampMeteringService>();
 
     s.AddPathBaseFilter(h);
 
