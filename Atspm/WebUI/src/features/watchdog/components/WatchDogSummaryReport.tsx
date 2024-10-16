@@ -1,5 +1,5 @@
 import { StyledPaper } from '@/components/StyledPaper'
-import WatchdogChartsContainer from '@/features/charts/watchdogDashboard/components/WatchDogChartsContainer'
+import WatchdogChartsContainer from '@/features/charts/watchdogDashboard/components/WatchdogChartsContainer'
 import { useGetDetectionTypeCount } from '@/features/watchdog/api/GetDetectionTypeCount'
 import { useGetDeviceCount } from '@/features/watchdog/api/getDeviceCount'
 import { useGetWatchdogDashboardData } from '@/features/watchdog/api/getWatchdogDashboardData'
