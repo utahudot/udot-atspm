@@ -98,12 +98,14 @@ namespace Utah.Udot.Atspm.Business.RampMetering
                         var start = groupingByParam.ElementAt(i).Timestamp;
                         var stop = groupingByParam.ElementAt(i + 1).Timestamp;
                         var startUp = new TimeSpaceEventBase(start, stop, null);
+                        startUpList.Add(startUp);
                     }
-                    if(groupingByParam.ElementAt(i).EventCode == 1004 && groupingByParam.ElementAt(i + 1).EventCode == 1014)
+                    if(groupingByParam.ElementAt(i).EventCode == 1014 && groupingByParam.ElementAt(i + 1).EventCode == 1004)
                     {
                         var start = groupingByParam.ElementAt(i).Timestamp;
                         var stop = groupingByParam.ElementAt(i + 1).Timestamp;
-                        var startUp = new TimeSpaceEventBase(start, stop, null);
+                        var shutDown = new TimeSpaceEventBase(start, stop, null);
+                        shutDownList.Add(shutDown);
                     }
                 }
             }
