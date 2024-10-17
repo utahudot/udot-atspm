@@ -22,8 +22,8 @@ import {
 import { useEffect, useState } from 'react'
 
 export interface SelectDateTimeProps {
-  startDateTime: Date
-  endDateTime: Date
+  startDateTime: Date | null
+  endDateTime: Date | null
   changeStartDate(date: Date): void
   changeEndDate(date: Date): void
   views?: DateOrTimeView[]
@@ -140,6 +140,7 @@ export default function SelectDateTime({
   }
 
   const handleSameDay = () => {
+    if (!startDateTime || !endDateTime) return
     const newEndDate = new Date(startDateTime)
     newEndDate.setHours(startDateTime.getHours())
     newEndDate.setMinutes(endDateTime.getMinutes())

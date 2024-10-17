@@ -27,6 +27,7 @@ export enum ConfigEnum {
   LaneTypes = 'LaneTypes',
   DetectionHardwareTypes = 'DetectionHardwareTypes',
   DetectionTypes = 'DetectionTypes',
+  WatchDogIssueTypes = 'WatchDogIssueTypes',
 }
 
 type EnumMember = {

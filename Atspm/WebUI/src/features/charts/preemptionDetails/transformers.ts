@@ -106,7 +106,6 @@ function transformDetailsData(data: LocationDetail) {
   const series = createSeries()
 
   const barWidth = 5
-  console.log(data)
   if (gateDown !== null) {
     series.push({
       name: 'Gate Down',
@@ -118,8 +117,7 @@ function transformDetailsData(data: LocationDetail) {
   }
 
   if (inputOff.length > 0) {
-    console.log('inputOff')
-    console.log(inputOff)
+
 
     series.push({
       name: 'Input Off',
@@ -128,8 +126,6 @@ function transformDetailsData(data: LocationDetail) {
       color: Color.Black,
     })
   }
-  console.log('GateDown')
-  console.log(gateDown)
 
   if (callMaxOut.length > 0) {
     series.push({

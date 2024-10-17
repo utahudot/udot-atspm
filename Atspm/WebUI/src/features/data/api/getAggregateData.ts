@@ -22,12 +22,11 @@ const route = '/Aggregation/getReportData'
 const headers: AxiosHeaders = new AxiosHeaders({
   'Content-Type': 'application/json',
 })
-const axiosInstance = reportsAxios
 
 export function usePostAggregateData() {
   const mutation = usePostRequest({
     url: route,
-    axiosInstance,
+    axiosInstance: reportsAxios,
     headers,
   })
   return mutation

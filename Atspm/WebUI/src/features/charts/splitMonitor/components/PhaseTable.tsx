@@ -263,7 +263,7 @@ const PhaseTable = ({ phases }: PhaseTableProps) => {
     <Accordion disableGutters>
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <Typography variant="h4">Phase Details</Typography>
+          <Typography variant="h4" component="h2">Phase Details</Typography>
           <IconButton
             color="primary"
             onClick={(e) => handleCopyToClipboard(e)}
@@ -378,7 +378,7 @@ const PhaseTable = ({ phases }: PhaseTableProps) => {
                     </BorderedCell>
                     <BorderedCell>
                       <span style={{ color: 'blue' }}>Force Offs</span> or{' '}
-                      <span style={{ color: 'red' }}>Max Outs</span> (%)
+                      <span style={{ color: '#b00000' }}>Max Outs</span> (%)
                     </BorderedCell>
                     {phase.chart.displayProps.plans.map((plan) =>
                       resolveForceOffsOrMaxOuts(plan)

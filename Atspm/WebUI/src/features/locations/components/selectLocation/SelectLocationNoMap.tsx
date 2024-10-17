@@ -65,7 +65,7 @@ export default function SelectLocationNoMap({
           )
 
           return (
-            <li {...props}>
+            <li {...props} key={option.id}>
               <div>
                 {parts.map((part, index) => (
                   <span

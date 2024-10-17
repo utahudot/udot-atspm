@@ -21,6 +21,7 @@ using Microsoft.AspNetCore.OData.Query;
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
+using Utah.Udot.ATSPM.ConfigApi.Models;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 using static Microsoft.AspNetCore.OData.Query.AllowedQueryOptions;
 
@@ -60,6 +61,34 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
         public IActionResult GetActiveDevicesByLocation(int locationId)
         {
             return Ok(_repository.GetActiveDevicesByLocation(locationId));
+        }
+
+        /// <summary>
+        /// Gets a count of device type for all active devices <see cref="Device"/> where <see cref="Device.DeviceStatus"/> equals <see cref="DeviceStatus.Active"/>
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [EnableQuery(AllowedQueryOptions = Count | Filter | Select | OrderBy | Top | Skip)]
+        [ProducesResponseType(typeof(IEnumerable<DeviceGroup>), Status200OK)]
+        public IActionResult GetActiveDevicesCount()
+        {
+            var devices = _repository.GetActiveDevicesByAllLatestLocations();
+            var deviceGroups = devices.GroupBy(d => new
+            {
+                Manufacturer = d.DeviceConfiguration.Product.Manufacturer,
+                Model = d.DeviceConfiguration.Product.Model,
+                Firmware = d.DeviceConfiguration.Firmware
+            })
+                .Select(g => new ATSPM.ConfigApi.Models.DeviceGroup
+                {
+                    Manufacturer = g.Key.Manufacturer,
+                    Model = g.Key.Model,
+                    Firmware = g.Key.Firmware,
+                    Count = g.Count()
+                })
+                .ToList();
+
+            return Ok(deviceGroups);
         }
 
         #endregion

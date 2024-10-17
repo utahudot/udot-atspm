@@ -27,7 +27,8 @@ import {
   createYAxis,
   transformSeriesData,
 } from '../common/transformers'
-import { ChartType } from '../common/types'
+import { ChartType, MarkAreaData } from '../common/types'
+import { TimeSpaceDetectorEvent } from '../timeSpaceDiagram/types'
 import { TransformedChartResponse } from '../types'
 import {
   Color,
@@ -44,13 +45,11 @@ import {
 export default function transformRampMeteringData(
   response: RawRampMeteringResponse
 ): TransformedChartResponse {
-  const transformedData = response.data.flatMap((data) => {
-    const chartOptions = transformData(data)
-    return chartOptions.map((chart) => {
-      return {
-        chart: chart,
-      }
-    })
+  const chartOptions = transformData(response.data)
+  const transformedData = chartOptions.map((chart) => {
+    return {
+      chart: chart,
+    }
   })
 
   return {
@@ -72,10 +71,10 @@ function transformData(data: RampMeteringData): EChartsOption[] {
     lanesQueueOffEvents,
   } = data
 
-  const titleHeader1 = `Ramp Rate vs. Mainline Occupancy (Active Rate vs Mainline Avg Occupancy)\n${data.locationDescription}`
-  const titleHeader2 = `Queue Override\n${data.locationDescription}`
-  const titleHeader3 = `Ramp Rate vs. Mainline Volume - (Active Rate vs Mainline Avg Flow)\n${data.locationDescription}`
-  const titleHeader4 = `Ramp Rate vs. Mainline Speed  (Active Rate vs Mainline Avg Speed)\n${data.locationDescription}`
+  const titleHeader1 = `Ramp Rate vs. Mainline Occupancy (Active Rate vs Mainline Avg Occupancy)\n${data.locationIdentifier}`
+  const titleHeader2 = `Queue Override\n${data.locationIdentifier}`
+  const titleHeader3 = `Ramp Rate vs. Mainline Volume - (Active Rate vs Mainline Avg Flow)\n${data.locationIdentifier}`
+  const titleHeader4 = `Ramp Rate vs. Mainline Speed  (Active Rate vs Mainline Avg Speed)\n${data.locationIdentifier}`
   const dateRange = formatChartDateTimeRange(data.start, data.end)
 
   const title1 = createTitle({
@@ -102,7 +101,6 @@ function transformData(data: RampMeteringData): EChartsOption[] {
     false,
     {
       name: 'Mainline Occupancy',
-      nameGap: 50,
     },
     { name: 'Meter Rate (vph)' }
   )
@@ -116,7 +114,7 @@ function transformData(data: RampMeteringData): EChartsOption[] {
     {
       name: 'Meter Active Indication',
       min: 0,
-      max: Math.max(...data.startUpWarning.map((val) => val.value)),
+      max: 6,
       interval: 1,
     }
   )
@@ -325,6 +323,8 @@ function transformData(data: RampMeteringData): EChartsOption[] {
     )
   })
 
+  seriesTwo.push(createStartupArea(data.startUpWarning))
+
   // seriesTwo.push(
   //   ...createSeries({
   //     name: 'Start Up Warning',
@@ -421,65 +421,65 @@ function transformData(data: RampMeteringData): EChartsOption[] {
     })
   )
 
-  const queueActives = {
-    markArea: {
-      data: [
-        [
-          {
-            xAxis: '2023-08-24T07:00:00',
-            itemStyle: {
-              color: 'rgba(125, 125, 125, 0.1)',
-            },
-          },
-          {
-            xAxis: '2023-08-24T07:22:22',
-          },
-        ],
-        [
-          {
-            xAxis: '2023-08-24T07:30:43',
-            itemStyle: {
-              color: 'rgba(125, 125, 125, 0.1)',
-            },
-          },
-          {
-            xAxis: '2023-08-24T07:50:00',
-          },
-        ],
-      ],
-    },
+  // const queueActives = {
+  //   markArea: {
+  //     data: [
+  //       [
+  //         {
+  //           xAxis: '2023-08-24T07:00:00',
+  //           itemStyle: {
+  //             color: 'rgba(125, 125, 125, 0.1)',
+  //           },
+  //         },
+  //         {
+  //           xAxis: '2023-08-24T07:22:22',
+  //         },
+  //       ],
+  //       [
+  //         {
+  //           xAxis: '2023-08-24T07:30:43',
+  //           itemStyle: {
+  //             color: 'rgba(125, 125, 125, 0.1)',
+  //           },
+  //         },
+  //         {
+  //           xAxis: '2023-08-24T07:50:00',
+  //         },
+  //       ],
+  //     ],
+  //   },
 
-    type: 'line',
-    yAxisIndex: 1,
-    color: '#00C5FF',
-    lineStyle: {
-      width: 5,
-    },
-    symbol: 'line',
-    symbolSize: 0,
-  }
+  //   type: 'line',
+  //   yAxisIndex: 1,
+  //   color: '#00C5FF',
+  //   lineStyle: {
+  //     width: 5,
+  //   },
+  //   symbol: 'line',
+  //   symbolSize: 0,
+  // }
 
-  const queueActivesTwo = {
-    name: 'Queue Rate Activated',
-    data: [
-      ['2023-08-24T07:25:49', '0.00'],
-      ['2023-08-24T07:26:49', '0.00'],
-      null,
-      ['2023-08-24T07:28:29', '0.00'],
-      ['2023-08-24T07:29:49', '0.00'],
-    ],
-    type: 'line',
-    yAxisIndex: 1,
-    color: '#00C5FF',
-    lineStyle: {
-      width: 5,
-    },
-    symbol: 'line',
-    symbolSize: 0,
-  }
+  // const queueActivesTwo = {
+  //   name: 'Queue Rate Activated',
+  //   data: [
+  //     ['2023-08-24T07:25:49', '0.00'],
+  //     ['2023-08-24T07:26:49', '0.00'],
+  //     null,
+  //     ['2023-08-24T07:28:29', '0.00'],
+  //     ['2023-08-24T07:29:49', '0.00'],
+  //   ],
+  //   type: 'line',
+  //   yAxisIndex: 1,
+  //   color: '#00C5FF',
+  //   lineStyle: {
+  //     width: 5,
+  //   },
+  //   symbol: 'line',
+  //   symbolSize: 0,
+  // }
 
-  seriesTwo.push(queueActives as any)
-  seriesTwo.push(queueActivesTwo as any)
+  // seriesTwo.push(queueActives as any)
+  // seriesTwo.push(queueActivesTwo as any)
 
   const chartOptions: EChartsOption[] = [
     {
@@ -603,4 +603,22 @@ function generateQueueSeriesData(
       data: lineSeriesData,
     },
   ]
+}
+function createStartupArea(events: TimeSpaceDetectorEvent[]): SeriesOption {
+  const markAreaData = events.map((event) => [
+    {
+      xAxis: event.initialX,
+      itemStyle: Color.PlanB,
+    },
+    {
+      xAxis: event.finalX,
+    },
+  ])
+
+  return {
+    type: 'line',
+    markArea: {
+      data: markAreaData as MarkAreaData[],
+    },
+  }
 }

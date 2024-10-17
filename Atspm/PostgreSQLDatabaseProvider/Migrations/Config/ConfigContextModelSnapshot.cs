@@ -2002,7 +2002,7 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
                     b.Property<DateTime>("Date")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp")
-                        .HasDefaultValue(new DateTime(2024, 8, 14, 11, 58, 10, 324, DateTimeKind.Local).AddTicks(596));
+                        .HasDefaultValue(new DateTime(2024, 9, 11, 20, 0, 18, 436, DateTimeKind.Local).AddTicks(213));
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -2029,6 +2029,47 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
                         {
                             t.HasComment("Version History");
                         });
+                });
+
+            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.WatchDogIgnoreEvent", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("ComponentId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("ComponentType")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("End")
+                        .HasColumnType("timestamp");
+
+                    b.Property<int>("IssueType")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("LocationId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("LocationIdentifier")
+                        .IsRequired()
+                        .IsUnicode(false)
+                        .HasColumnType("text");
+
+                    b.Property<int?>("Phase")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("Start")
+                        .HasColumnType("timestamp");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LocationId");
+
+                    b.ToTable("WatchDogIgnoreEvents");
                 });
 
             modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.WatchDogLogEvent", b =>
@@ -2325,6 +2366,17 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Parent");
+                });
+
+            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.WatchDogIgnoreEvent", b =>
+                {
+                    b.HasOne("Utah.Udot.Atspm.Data.Models.Location", "Location")
+                        .WithMany()
+                        .HasForeignKey("LocationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Location");
                 });
 
             modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.Approach", b =>

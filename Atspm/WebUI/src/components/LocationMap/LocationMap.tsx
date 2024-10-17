@@ -51,17 +51,22 @@ const LocationMap = ({
     number | null
   >(null)
   const [filteredLocations, setFilteredLocations] = useState(locations)
-  const [initialLatLong, setInitialLatLong] = useState<[number, number] | null>(
-    null
-  )
+  const [mapInfo, setMapInfo] = useState<{
+    tile_layer: string
+    attribution: string
+    initialLat: number
+    initialLong: number
+  } | null>(null)
 
   useEffect(() => {
     const fetchEnv = async () => {
       const env = await getEnv()
-      setInitialLatLong([
-        parseFloat(env.MAP_DEFAULT_LATITUDE),
-        parseFloat(env.MAP_DEFAULT_LONGITUDE),
-      ])
+      setMapInfo({
+        tile_layer: env.MAP_TILE_LAYER,
+        attribution: env.MAP_TILE_ATTRIBUTION,
+        initialLat: parseFloat(env.MAP_DEFAULT_LATITUDE),
+        initialLong: parseFloat(env.MAP_DEFAULT_LONGITUDE),
+      })
     }
     fetchEnv()
   }, [])
@@ -156,8 +161,8 @@ const LocationMap = ({
     setSelectedLocationTypeId(null)
     setSelectedJurisdictionId(null)
     setSelectedMeasureTypeId(null)
-    if (initialLatLong) {
-      mapRef?.setView(initialLatLong, 6)
+    if (mapInfo?.initialLat && mapInfo?.initialLong) {
+      mapRef?.setView([mapInfo.initialLat, mapInfo.initialLong], 6)
     }
   }
 
@@ -165,13 +170,13 @@ const LocationMap = ({
     setIsPopperOpen(false)
   }
 
-  if (!initialLatLong) {
-    return <div>Loading map...</div> // or some other loading state
+  if (!mapInfo) {
+    return <div>Loading...</div>
   }
 
   return (
     <MapContainer
-      center={center || initialLatLong}
+      center={center || [mapInfo.initialLat, mapInfo.initialLong]}
       zoom={zoom || 6}
       scrollWheelZoom={true}
       style={{
@@ -240,16 +245,12 @@ const LocationMap = ({
           </Popper>
         </Box>
       </ClickAwayListener>
-      <TileLayer
-        attribution='&copy; <a href="https://www.openaip.net/">openAIP Data</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-NC-SA</a>)'
-        url="https://tiles.stadiamaps.com/tiles/osm_bright/{z}/{x}/{y}{r}.png"
-      />
+      <TileLayer attribution={mapInfo.attribution} url={mapInfo.tile_layer} />
       <Markers locations={filteredLocations} setLocation={setLocation} />
       {route && route.length > 0 && (
         <Polyline
           positions={route.map((coord) => [coord[0], coord[1]])}
           weight={5}
-          // color="blue"
         />
       )}
     </MapContainer>
