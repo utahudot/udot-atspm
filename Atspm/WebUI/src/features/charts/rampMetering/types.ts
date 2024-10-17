@@ -42,5 +42,5 @@ export interface RampMeteringData extends BaseChartData {
 
 export interface RawRampMeteringResponse {
   type: ChartType.RampMetering
-  data: RampMeteringData[]
+  data: RampMeteringData
 }
