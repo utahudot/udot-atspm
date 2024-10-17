@@ -16,6 +16,7 @@
 #endregion
 
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using System.CommandLine;
 using System.CommandLine.Hosting;
 using System.CommandLine.NamingConventionBinder;
@@ -99,7 +100,7 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
             return binder;
         }
 
-        public void BindCommandOptions(IServiceCollection services)
+        public void BindCommandOptions(HostBuilderContext host, IServiceCollection services)
         {
             services.AddSingleton(GetOptionsBinder());
             services.AddOptions<EventLogExtractConfiguration>().BindCommandLine();

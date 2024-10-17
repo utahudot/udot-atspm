@@ -15,8 +15,11 @@
 // limitations under the License.
 #endregion
 
+using Utah.Udot.Atspm.Business.Watchdog;
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
+using Utah.Udot.Atspm.Specifications;
+using Utah.Udot.NetStandardToolkit.Extensions;
 
 namespace Utah.Udot.Atspm.Extensions
 {
@@ -92,6 +95,30 @@ namespace Utah.Udot.Atspm.Extensions
             {
                 throw new ArgumentException($"{id} is not a valid Location");
             }
+        }
+
+        public static List<DetectionTypeGroup> GetDetectionTypeCountForVersions(this ILocationRepository repo, DateTime date)
+        {
+            var result = repo.GetList()
+                .Where(Location => Location.Start <= date)
+                .FromSpecification(new ActiveLocationSpecification())
+                .SelectMany(location => location.Approaches
+                    .SelectMany(approach => approach.Detectors
+                        .SelectMany(detector => detector.DetectionTypes
+                            .Select(detectionType => new
+                            {
+                                DetectionTypeDescription = detectionType.Description,
+                                LocationStart = location.Start
+                            }))))
+                .Where(loc => loc.LocationStart <= date)
+                .GroupBy(d => d.DetectionTypeDescription)
+                .Select(g => new DetectionTypeGroup
+                {
+                    Id = g.Key,
+                    Count = g.Count()
+                })
+                .ToList();
+            return result;
         }
 
         #region Obsolete

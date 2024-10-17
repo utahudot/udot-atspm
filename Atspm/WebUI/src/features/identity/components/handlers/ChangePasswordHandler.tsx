@@ -1,4 +1,4 @@
-import { addDays } from 'date-fns'
+import { setSecureCookie } from '@/features/identity/utils'
 import Cookies from 'js-cookie'
 import { useRouter } from 'next/router'
 import { FormEvent, useEffect, useState } from 'react'
@@ -161,9 +161,7 @@ export const useVerifyTokenHandler = (): VerifyTokenHandler => {
     if (verifyResetTokenData) {
       setData(verifyResetTokenData)
       setIsValidToken(true)
-      Cookies.set('token', verifyResetTokenData.token, {
-        expires: addDays(new Date(), 1),
-      })
+      setSecureCookie('token', verifyResetTokenData.token)
     }
   }, [verifyResetTokenData])
 
@@ -171,7 +169,6 @@ export const useVerifyTokenHandler = (): VerifyTokenHandler => {
     const queryParams = new URLSearchParams(router.asPath.split('?')[1])
     const name = queryParams.get('username')
     const code = queryParams.get('token')
-    console.log(name, code)
     if (name && code) {
       setUsername(name)
       setResetToken(code)
@@ -181,7 +178,6 @@ export const useVerifyTokenHandler = (): VerifyTokenHandler => {
   useEffect(() => {
     const code = Cookies.get('resetToken')
     const name = Cookies.get('username')
-    console.log(name, code)
     if (name && code) {
       setUsername(name)
       setResetToken(code)

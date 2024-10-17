@@ -218,7 +218,6 @@ export const useAggregateOptionsHandler = (): AggregateOptionsHandler => {
 
   useEffect(() => {
     if (routeHandler.routeId) {
-      console.log('Route is present')
       setSelectedLocations([])
       setRouteExpandedLocations([])
       refectRouteExpanded()
@@ -243,7 +242,6 @@ export const useAggregateOptionsHandler = (): AggregateOptionsHandler => {
 
   useEffect(() => {
     if (routeStatus === 'success' && routeWithExpandedLocations) {
-      console.log('IN here with route expanded location')
       const locationsExpandedData = routeWithExpandedLocations.routeLocations
       setRouteExpandedLocations(locationsExpandedData)
     }
@@ -298,7 +296,6 @@ export const useAggregateOptionsHandler = (): AggregateOptionsHandler => {
     visualChartType,
     handleRunAnalysis: () => {
       handleSubmit()
-      console.log('Run Analysis!')
     },
     changeSelectedDays(days) {
       setSelectedDays(days)
@@ -323,7 +320,6 @@ export const useAggregateOptionsHandler = (): AggregateOptionsHandler => {
     },
     changeMetricType(metricType) {
       setMetricType(metricType)
-      console.log(metricType)
     },
     changeBinSize(binSize) {
       setBinSize(binSize)

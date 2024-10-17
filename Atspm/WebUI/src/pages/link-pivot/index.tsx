@@ -13,7 +13,6 @@ import { toUTCDateWithTimeStamp } from '@/utils/dateTime'
 import { LoadingButton } from '@mui/lab'
 import { Alert, Box, Paper, Typography } from '@mui/material'
 import { AxiosError } from 'axios'
-import { startOfDay } from 'date-fns'
 import { useEffect, useState } from 'react'
 
 const getDefaultChartOptions = (): LinkPivotAdjustmentOptions => {
@@ -21,15 +20,17 @@ const getDefaultChartOptions = (): LinkPivotAdjustmentOptions => {
   const year = date.getUTCFullYear()
   const month = String(date.getUTCMonth() + 1).padStart(2, '0')
   const day = String(date.getUTCDate()).padStart(2, '0')
+  const startTime = new Date(new Date().setHours(8, 0, 0, 0))
+  const endTime = new Date(new Date().setHours(9, 0, 0, 0))
 
-  const startTime = toUTCDateWithTimeStamp(startOfDay(date))
-  const endTime = toUTCDateWithTimeStamp(startOfDay(date))
+  const formattedStartTime = toUTCDateWithTimeStamp(startTime)
+  const formattedEndTime = toUTCDateWithTimeStamp(endTime)
   const formattedDate = `${year}-${month}-${day}`
   return {
     startDate: formattedDate,
     endDate: formattedDate,
-    startTime,
-    endTime,
+    startTime: formattedStartTime,
+    endTime: formattedEndTime,
     routeId: '',
     cycleLength: 90,
     daysOfWeek: [1, 2, 3, 4, 5],

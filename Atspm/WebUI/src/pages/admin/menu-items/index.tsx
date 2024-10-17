@@ -179,7 +179,6 @@ const MenuItemsAdmin = () => {
 
   const sortedFilteredData = sortMenuItems(filteredData)
 
-  console.log(sortedFilteredData)
   const baseType = {
     name: '',
     icon: '',

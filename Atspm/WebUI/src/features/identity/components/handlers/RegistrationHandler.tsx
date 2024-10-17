@@ -1,4 +1,4 @@
-import Cookies from 'js-cookie'
+import { setSecureCookie } from '@/features/identity/utils'
 import { FormEvent, useEffect, useState } from 'react'
 import { useCreateUser } from '../../api/createUser'
 import IdentityDto from '../../types/identityDto'
@@ -57,9 +57,9 @@ export const useRegistrationHandler = (): RegistrationHandler => {
 
   useEffect(() => {
     if (status === 'success' && data !== undefined) {
-      Cookies.set('token', data.token)
-      Cookies.set('claims', data.claims.join(','))
-      Cookies.set('loggedIn', 'True')
+      setSecureCookie('token', data.token)
+      setSecureCookie('claims', data.claims.join(','))
+      setSecureCookie('loggedIn', 'True')
       window.location.href = '/'
     }
   }, [data, status])

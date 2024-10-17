@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for EventLogUtility - ATSPM.EventLogUtility.Commands/SignalIncludeCommandOption.cs
+// for ApplicationCore - ATSPM.Application.Repositories.ConfigurationRepositories/IAreaRepository.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,16 +15,24 @@
 // limitations under the License.
 #endregion
 
-using System.CommandLine;
+using Utah.Udot.NetStandardToolkit.Services;
 
-namespace Utah.Udot.Atspm.EventLogUtility.Commands
+namespace Utah.Udot.Atspm.Repositories.ConfigurationRepositories
 {
-    public class LocationIncludeCommandOption : Option<IEnumerable<string>>
+    /// <summary>
+    /// Area Repository
+    /// </summary>
+    public interface IWatchDogIgnoreEventRepository : IAsyncRepository<WatchDogIgnoreEvent>
     {
-        public LocationIncludeCommandOption() : base("--include", "List of Location controller numbers to include")
-        {
-            AllowMultipleArgumentsPerToken = true;
-            AddAlias("-i");
-        }
+        #region ExtensionMethods
+
+
+
+        #endregion
+
+        #region Obsolete
+
+
+        #endregion
     }
 }

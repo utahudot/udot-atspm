@@ -101,8 +101,6 @@ const TimeSpaceDiagram = () => {
 
   const routes = routesData?.value?.sort((a, b) => a.name.localeCompare(b.name))
 
-  console.log('chartData', chartData)
-
   const handleGenerateCharts = () => {
     setHasAttemptedGenerate(true)
     if (toolOptions.routeId) {

@@ -27,6 +27,8 @@ using Utah.Udot.Atspm.Infrastructure.Repositories;
 using Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories;
 using Utah.Udot.Atspm.Infrastructure.Repositories.EventLogRepositories;
 using Utah.Udot.Atspm.WatchDog.Services;
+using Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices;
+using Utah.Udot.ATSPM.WatchDog.Services;
 
 namespace Utah.Udot.Atspm.WatchDog
 {
@@ -36,8 +38,12 @@ namespace Utah.Udot.Atspm.WatchDog
         {
             AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
-            var host = Host.CreateDefaultBuilder()
-                .ConfigureAppConfiguration((h, c) => c.AddCommandLine(args))
+            var host = Host.CreateDefaultBuilder(args)
+                .ConfigureAppConfiguration((h, c) => {
+                    c.AddCommandLine(args);
+                    c.AddUserSecrets<Program>(optional: true);
+
+                })
                 .ConfigureServices((h, s) =>
                 {
                     s.AddEmailServices(h);
@@ -45,6 +51,7 @@ namespace Utah.Udot.Atspm.WatchDog
 
                     s.AddAtspmDbContext(h);
                     s.AddScoped<ILocationRepository, LocationEFRepository>();
+                    s.AddScoped<IWatchDogIgnoreEventRepository, WatchDogIgnoreEventEFRepository>();
                     s.AddScoped<IIndianaEventLogRepository, IndianaEventLogEFRepository>();
                     s.AddScoped<IWatchDogEventLogRepository, WatchDogLogEventEFRepository>();
                     s.AddScoped<IRegionsRepository, RegionEFRepository>();
@@ -59,6 +66,8 @@ namespace Utah.Udot.Atspm.WatchDog
                     s.AddScoped<AnalysisPhaseCollectionService>();
                     s.AddScoped<AnalysisPhaseService>();
                     s.AddScoped<PhaseService>();
+                    s.AddScoped<SegmentedErrorsService>();
+                    s.AddScoped<WatchDogIgnoreEventService>();
 
                     // Register the hosted service with the date
                     s.AddHostedService<ScanHostedService>();

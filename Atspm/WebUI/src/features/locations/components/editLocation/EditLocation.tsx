@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react'
 import { Location } from '../../types'
 import EditDevices from './EditDevices'
 import EditLocationHeader from './EditLocationHeader'
+import WatchdogEditor from './WatchdogEditor'
 import {
   ApproachForConfig,
   LocationConfigHandler,
@@ -47,6 +48,7 @@ const EditLocation = ({
         <Tab label="General" value="1" />
         <Tab label="Devices" value="2" />
         <Tab label="Approaches" value="3" />
+        <Tab label="Watchdog" value="4" />
       </TabList>
       <TabPanel value="1" sx={{ padding: '0px' }}>
         <EditGeneralLocation
@@ -87,6 +89,9 @@ const EditLocation = ({
             </Box>
           )}
         </Box>
+      </TabPanel>
+      <TabPanel value="4" sx={{ padding: 0 }}>
+        <WatchdogEditor handler={handler} />
       </TabPanel>
     </TabContext>
   )

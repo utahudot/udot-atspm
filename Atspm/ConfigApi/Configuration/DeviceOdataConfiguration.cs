@@ -47,6 +47,9 @@ namespace Utah.Udot.Atspm.ConfigApi.Configuration
                         c.Parameter<int>("locationId");
                         c.ReturnsFromEntitySet<Device>("Devices");
 
+                        var d = model.Collection.Function("GetActiveDevicesCount");
+                        d.ReturnsFromEntitySet<Device>("DeviceGroup");
+
                         break;
                     }
             }

@@ -13,7 +13,7 @@ namespace Utah.Udot.Atspm.Data.Configuration.Identity
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            await RolesAndClaimsDBInitializer.SeedRolesAndClaims(_serviceProvider);
+            //await RolesAndClaimsDBInitializer.SeedRolesAndClaims(_serviceProvider);
         }
 
         public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
