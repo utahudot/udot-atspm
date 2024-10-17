@@ -51,7 +51,7 @@ namespace Utah.Udot.Atspm.Business.RampMetering
 
             return new RampMeteringResult(location.LocationIdentifier, options.Start, options.End)
             {
-                MainLineAvgFlow = mainlineAvgFlowList,
+                MainlineAvgFlow = mainlineAvgFlowList,
                 MainlineAvgOcc = mainlineAvgOccurrenceList,
                 MainlineAvgSpeed = mainlineAvgSpeedsList,
                 StartUpWarning = startup,
