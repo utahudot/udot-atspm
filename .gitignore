@@ -120,3 +120,4 @@ Thumbs.db
 # SonarQube analysis directory
 **/.sonarqube/
 
+/Atspm/Application/nuget.config
