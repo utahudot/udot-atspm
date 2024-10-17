@@ -23,7 +23,6 @@
 *.lo
 
 # Shared objects (inc. Windows DLLs)
-*.dll
 *.so
 *.so.*
 *.dylib
@@ -78,8 +77,6 @@ appsettings.*.json
 
 # Secret files
 secrets.json
-.env
-.env.*
 
 # Certificates and keys
 *.pfx
@@ -123,5 +120,3 @@ Thumbs.db
 # SonarQube analysis directory
 **/.sonarqube/
 
-# Exclude config files if they contain sensitive information
-*.config
