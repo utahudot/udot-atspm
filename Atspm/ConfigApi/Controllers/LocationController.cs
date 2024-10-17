@@ -19,6 +19,7 @@ using Asp.Versioning;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
+using Utah.Udot.Atspm.Business.Watchdog;
 using Utah.Udot.Atspm.ConfigApi.Models;
 using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Extensions;
@@ -212,6 +213,19 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
         public IActionResult GetLatestVersionOfAllLocations()
         {
             return Ok(_repository.GetLatestVersionOfAllLocations());
+        }
+
+        /// <summary>
+        /// Get count of Device Types using correct version of all <see cref="Location"/>
+        /// </summary>
+        /// <returns>List of <see cref="DetectionTypeGroup"/></returns>
+        [HttpGet]
+        [EnableQuery(AllowedQueryOptions = Count | Filter | Select | OrderBy | Top | Skip)]
+        [ProducesResponseType(typeof(List<DetectionTypeGroup>), Status200OK)]
+        public IActionResult GetDetectionTypeCount([FromQuery] DateTime date)
+        {
+            var result = _repository.GetDetectionTypeCountForVersions(date);
+            return Ok(result);
         }
 
         /// <summary>

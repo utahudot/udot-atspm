@@ -19,7 +19,6 @@ import { useDeleteRequest } from '@/hooks/useDeleteRequest'
 import { useGetRequest } from '@/hooks/useGetRequest'
 import { usePostRequest } from '@/hooks/usePostRequest'
 import { usePutRequest } from '@/hooks/usePutRequest'
-import { configAxios } from '@/lib/axios'
 import { ApiResponse } from '@/types'
 import { AxiosHeaders } from 'axios'
 import Cookies from 'js-cookie'
@@ -31,7 +30,6 @@ const headers: AxiosHeaders = new AxiosHeaders({
   'Content-Type': 'application/json',
   Authorization: `Bearer ${token}`,
 })
-const axiosInstance = configAxios
 
 export function useGetLocation(id: string) {
   return useGetRequest<ApiResponse<LocationExpanded>>({
@@ -42,21 +40,20 @@ export function useGetLocation(id: string) {
 }
 
 export function useCreateLocation() {
-  return usePostRequest({ url: route, axiosInstance, headers })
+  return usePostRequest({ url: route, headers })
 }
 
 export function useEditLocation() {
-  return usePutRequest({ url: route, axiosInstance, headers })
+  return usePutRequest({ url: route, headers })
 }
 
 export function useDeleteVersion() {
-  return useDeleteRequest({ url: route, axiosInstance, headers })
+  return useDeleteRequest({ url: route, headers })
 }
 
 export function useCopyLocationToNewVersion(id: string) {
   return usePostRequest({
     url: `${route}/${id}/CopyLocationToNewVersion`,
-    axiosInstance,
     headers,
   })
 }
@@ -64,7 +61,6 @@ export function useCopyLocationToNewVersion(id: string) {
 export function useSetLocationToBeDeleted(id: string) {
   return usePostRequest({
     url: `${route}/${id}/SetLocationToDeleted`,
-    axiosInstance,
     headers,
     notify: false,
   })
@@ -81,7 +77,6 @@ export const useAllVersionsOfLocation = (
 ) => {
   return useGetRequest({
     route: `${route}/GetAllVersionsOfLocation(identifier=%27${locationIdentifier}%27)`,
-    axiosInstance,
     headers,
     config,
   })
@@ -90,9 +85,8 @@ export const useAllVersionsOfLocation = (
 export const useLatestVersionOfAllLocations = (
   config?: UseQueryOptions<Location, unknown, Location, QueryKey>
 ) => {
-  return useGetRequest({
+  return useGetRequest<ApiResponse<Location>>({
     route: `${route}/GetLocationsForSearch?count=false`,
-    axiosInstance,
     headers,
     config: {
       ...config,

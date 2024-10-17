@@ -26,3 +26,86 @@ export type Watchdog = {
   Phase: string | null
   Name: string
 }
+
+
+//intefaces for watchdog Dashobard 
+export enum IssueType {
+  RecordCount = 1,
+  LowDetectorHits = 2,
+  StuckPed = 3,
+  ForceOffThreshold = 4,
+  MaxOutThreshold = 5,
+  UnconfiguredApproach = 6,
+  UnconfiguredDetector = 7,
+}
+
+interface FirmwareData {
+  name: string;
+  counts: number;
+}
+
+interface ModelData {
+  name: string;
+  firmware: FirmwareData[];
+}
+
+interface ProductData {
+  name: string;
+  model: ModelData[];
+}
+
+export interface IssueTypeGroup {
+  issueType: IssueType;
+  products: ProductData[];
+  name: string;
+}
+
+interface HardwareData {
+  name: string;
+  counts: number;
+}
+
+interface DetectionTypeGroup {
+  detectionType: number;
+  hardware: HardwareData[];
+  name: string;
+}
+
+interface IssueTypeData {
+  name: string;
+  counts: number;
+}
+
+interface ControllerFirmwareData {
+  name: string;
+  issueType: IssueTypeData[];
+}
+
+export interface ControllerModelData {
+  name: string;
+  firmware: ControllerFirmwareData[];
+}
+
+export interface ControllerTypeGroup {
+  name: string;
+  model: ControllerModelData[];
+}
+
+export interface WatchdogDashboardData {
+  issueTypeGroup: IssueTypeGroup[];
+  detectionTypeGroup: DetectionTypeGroup[];
+  controllerTypeGroup: ControllerTypeGroup[];
+}
+
+
+export interface DeviceCount {
+  manufacturer: string;
+  model: string;
+  firmware: string;
+  count: number;
+}
+
+export interface DetectionTypeCount {
+  id: string;
+  count: number;
+}

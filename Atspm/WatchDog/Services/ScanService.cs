@@ -19,6 +19,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.WatchDog.Models;
+using Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices;
+using Utah.Udot.ATSPM.WatchDog.Services;
 
 namespace Utah.Udot.Atspm.WatchDog.Services
 {
@@ -32,11 +34,13 @@ namespace Utah.Udot.Atspm.WatchDog.Services
         private readonly IUserRegionRepository userRegionRepository;
         private readonly IUserJurisdictionRepository userJurisdictionRepository;
         private readonly IUserAreaRepository userAreaRepository;
+        private readonly WatchDogIgnoreEventService ignoreEventService;
 
         private readonly UserManager<ApplicationUser> userManager;
         private readonly RoleManager<IdentityRole> roleManager;
         private readonly WatchDogLogService logService;
         private readonly WatchdogEmailService emailService;
+        private readonly SegmentedErrorsService segmentedErrorsService;
         private readonly ILogger<ScanService> logger;
 
         public ScanService(
@@ -52,7 +56,9 @@ namespace Utah.Udot.Atspm.WatchDog.Services
             RoleManager<IdentityRole> roleManager,
             WatchDogLogService logService,
             WatchdogEmailService emailService,
-            ILogger<ScanService> logger)
+            ILogger<ScanService> logger,
+            SegmentedErrorsService segmentedErrorsService,
+            WatchDogIgnoreEventService ignoreEventService)
         {
             this.LocationRepository = LocationRepository;
             this.watchDogLogEventRepository = watchDogLogEventRepository;
@@ -67,6 +73,8 @@ namespace Utah.Udot.Atspm.WatchDog.Services
             this.logService = logService;
             this.emailService = emailService;
             this.logger = logger;
+            this.segmentedErrorsService = segmentedErrorsService;
+            this.ignoreEventService = ignoreEventService;
         }
         public async Task StartScan(
             LoggingOptions loggingOptions,
@@ -97,6 +105,9 @@ namespace Utah.Udot.Atspm.WatchDog.Services
 
             var users = await GetUsersWithWatchDogClaimAsync();
 
+            var filteredErrors = ignoreEventService.GetFilteredWatchDogEventsForEmail(errors, emailOptions.ScanDate);
+            var (newErrors, dailyRecurringErrors, recurringErrors) = segmentedErrorsService.GetSegmentedErrors(filteredErrors, emailOptions);
+
 
             if (!emailOptions.WeekdayOnly || emailOptions.WeekdayOnly && emailOptions.ScanDate.DayOfWeek != DayOfWeek.Saturday &&
                emailOptions.ScanDate.DayOfWeek != DayOfWeek.Sunday)
@@ -116,9 +127,12 @@ namespace Utah.Udot.Atspm.WatchDog.Services
                                 w.Timestamp < emailOptions.ScanDate).ToList();
                 }
 
+
                 await emailService.SendAllEmails(
                     emailOptions,
-                    errors,
+                    newErrors,
+                    dailyRecurringErrors,
+                    recurringErrors,
                     locations,
                     users,
                     jurisdictions,

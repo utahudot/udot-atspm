@@ -25,7 +25,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Models;
 using Utah.Udot.Atspm.Data;
-using Utah.Udot.Atspm.Data.Configuration.Identity;
 using Utah.Udot.Atspm.Data.Models;
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
@@ -96,7 +95,6 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddScoped<RoleManager<IdentityRole>>();
     s.AddScoped<UserManager<ApplicationUser>>();
     s.AddScoped<UsersService>();
-    s.AddHostedService<SeedHostedService>();
 
     s.AddPathBaseFilter(h);
 

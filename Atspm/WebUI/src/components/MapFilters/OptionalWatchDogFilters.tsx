@@ -1,141 +1,88 @@
 import { useGetAreas } from '@/features/areas/api/areaApi'
-import areaDto from '@/features/areas/types/areaDto'
 import { useGetJurisdiction } from '@/features/jurisdictions/api/jurisdictionApi'
-import jurisdictionDto from '@/features/jurisdictions/types/jurisdictionDto'
 import { useLatestVersionOfAllLocations } from '@/features/locations/api'
 import SelectLocationNoMap from '@/features/locations/components/selectLocation/SelectLocationNoMap'
 import { Location } from '@/features/locations/types/Location'
 import { useGetRegion } from '@/features/region/api/regionApi'
-import { regionDto } from '@/features/region/types/regionDto'
 import { IssueTypeSelect } from '@/features/watchdog/components/issueTypeSelect'
 import { Autocomplete, Box, TextField } from '@mui/material'
-import { useEffect, useState } from 'react'
+import { SyntheticEvent, useState } from 'react'
 
 interface OptionalWatchDogFiltersProps {
-  issueType: string
-  setSelectedIssueType: (issueType: string) => void
+  issueType: Record<string, string> | null
+  setSelectedIssueType: (issueType: number) => void
   setAreaId: (areaId: number | null) => void
   setRegionId: (regionId: number | null) => void
   setJurisdictionId: (jurisdictionId: number | null) => void
+  setLocationIdentifier: (locationIdentifier: string | null) => void
 }
 
-export const OptionalWatchDogFilters = ({
+const OptionalWatchDogFilters = ({
   issueType,
   setSelectedIssueType,
   setAreaId,
   setRegionId,
   setJurisdictionId,
+  setLocationIdentifier,
 }: OptionalWatchDogFiltersProps) => {
-  const [areas, setAreas] = useState<any[]>([])
-  const [regions, setRegions] = useState<any[]>([])
-  const [jurisdictions, setJurisdictions] = useState<any[]>([])
+  const [location, setLocation] = useState<Location | null>(null)
+
   const { data: areasData } = useGetAreas()
   const { data: regionsData } = useGetRegion()
   const { data: jurisdictionsData } = useGetJurisdiction()
-  const { data } = useLatestVersionOfAllLocations()
-  const [location, setLocation] = useState<Location | null>(null)
-  const [locations, setLocations] = useState<Location[]>([])
+  const { data: locationsData } = useLatestVersionOfAllLocations()
 
-  useEffect(() => {
-    if (data) {
-      setLocations(data.value)
-    }
-  }, [data])
+  const areas = areasData?.value || []
+  const regions = regionsData?.value || []
+  const jurisdictions = jurisdictionsData?.value || []
+  const locations = locationsData?.value || []
 
-  useEffect(() => {
-    if (areasData?.value) {
-      setAreas(areasData?.value)
-    }
-  }, [areasData?.value])
-
-  useEffect(() => {
-    if (regionsData?.value) {
-      setRegions(regionsData?.value)
-    }
-  }, [regionsData?.value])
-
-  useEffect(() => {
-    if (jurisdictionsData?.value) {
-      setJurisdictions(jurisdictionsData?.value)
-    }
-  }, [jurisdictionsData?.value])
-
-  const handleRegionChange = (event: any, val: any) => {
-    if (val) {
-      const id = regions?.find((r: Region) => r.description === val)?.id
-      if (id) {
-        setRegionId(id)
-      } else {
-        setRegionId(null)
-      }
-    } else {
-      setRegionId(null)
-    }
+  const handleAreaChange = (_: SyntheticEvent, val: string | null) => {
+    const area = areas.find((a) => a.name === val)
+    setAreaId(area ? area.id : null)
   }
 
-  const handleJurisdictionChange = (event: any, val: any) => {
-    if (val) {
-      const id = jurisdictions?.find((j: Jurisdiction) => j.name === val)?.id
-      if (id) {
-        setJurisdictionId(id)
-      } else {
-        setJurisdictionId(null)
-      }
-    } else {
-      setJurisdictionId(null)
-    }
+  const handleRegionChange = (_: SyntheticEvent, val: string | null) => {
+    const region = regions.find((r) => r.description === val)
+    setRegionId(region ? region.id : null)
   }
 
-  const handleAreaChange = (event: any, val: any) => {
-    if (val) {
-      const id = areas?.find((a: Area) => a.name === val)?.id
-      if (id) {
-        setAreaId(id)
-      } else {
-        setAreaId(null)
-      }
-    } else {
-      setAreaId(null)
-    }
+  const handleJurisdictionChange = (_: SyntheticEvent, val: string | null) => {
+    const jurisdiction = jurisdictions.find((j) => j.name === val)
+    setJurisdictionId(jurisdiction ? jurisdiction.id : null)
+  }
+
+  const handleLocationChange = (location: Location | null) => {
+    setLocation(location)
+    setLocationIdentifier(location ? location.locationIdentifier : null)
   }
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
       <Autocomplete
-        sx={{
-          width: '100%',
-          boxSizing: 'border-box',
-        }}
-        options={areas?.map((area: areaDto) => area.name) || []}
+        sx={{ width: '100%' }}
+        options={areas.map((area) => area.name)}
         renderInput={(params) => <TextField {...params} label="Area" />}
         onChange={handleAreaChange}
       />
       <Autocomplete
         sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
-        options={regions?.map((region: regionDto) => region.description) || []}
+        options={regions.map((region) => region.description)}
         renderInput={(params) => <TextField {...params} label="Region" />}
         onChange={handleRegionChange}
       />
       <Autocomplete
         sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
-        options={
-          jurisdictions?.map(
-            (jurisdiction: jurisdictionDto) => jurisdiction.name
-          ) || []
-        }
+        options={jurisdictions.map((jurisdiction) => jurisdiction.name)}
         renderInput={(params) => <TextField {...params} label="Jurisdiction" />}
         onChange={handleJurisdictionChange}
       />
       <SelectLocationNoMap
         location={location}
-        setLocation={setLocation}
+        setLocation={handleLocationChange}
         locations={locations}
       />
-      <Box
-        sx={{
-          marginTop: '-25px',
-        }}
-      >
+      <Box sx={{ marginTop: '-25px' }}>
         <IssueTypeSelect
           issueTypeData={issueType}
           setSelectedIssueTypeData={setSelectedIssueType}
@@ -144,3 +91,5 @@ export const OptionalWatchDogFilters = ({
     </Box>
   )
 }
+
+export default OptionalWatchDogFilters

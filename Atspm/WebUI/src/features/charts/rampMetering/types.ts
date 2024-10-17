@@ -15,6 +15,7 @@
 // limitations under the License.
 // #endregion
 import { BaseChartData, ChartType, DataPoint } from '../common/types'
+import { TimeSpaceDetectorEvent } from '../timeSpaceDiagram/types'
 import { DetectorEvent } from '../timingAndActuation/types'
 
 export interface DescriptionWithDataPoints {
@@ -33,8 +34,8 @@ export interface RampMeteringData extends BaseChartData {
   mainlineAvgSpeed: DataPoint[]
   lanesActiveRate: DescriptionWithDataPoints[]
   lanesBaseRate: DescriptionWithDataPoints[]
-  startUpWarning: DataPoint[]
-  shutdownWarning: DataPoint[]
+  startUpWarning: TimeSpaceDetectorEvent[]
+  shutdownWarning: TimeSpaceDetectorEvent[]
   // lanesQueueEvents: DescriptionWithDetectorEvents[]
   lanesQueueOnEvents: DescriptionWithDataPoints[]
   lanesQueueOffEvents: DescriptionWithDataPoints[]
@@ -42,5 +43,5 @@ export interface RampMeteringData extends BaseChartData {
 
 export interface RawRampMeteringResponse {
   type: ChartType.RampMetering
-  data: RampMeteringData[]
+  data: RampMeteringData
 }

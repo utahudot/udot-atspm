@@ -50,7 +50,6 @@ import {
 export default function transformGreenTimeUtilizationData(
   response: RawGreenTimeUtilizationResponse
 ): TransformedChartResponse {
-  console.log(response)
   const charts = response.data.map((data) => {
     const chartOptions = transformData(data)
     return {

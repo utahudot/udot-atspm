@@ -67,8 +67,6 @@ const UsersAdmin = () => {
     name: '',
   }
 
-  if (!usersIsLoading) console.log(allUserData)
-
   if (usersIsLoading) {
     return (
       <Backdrop open>

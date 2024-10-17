@@ -23,7 +23,6 @@
 *.lo
 
 # Shared objects (inc. Windows DLLs)
-*.dll
 *.so
 *.so.*
 *.dylib
@@ -50,49 +49,75 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
-/ATSPMf/.vs/ATSPMf/v16
-/.vs
-/ATSPM/.vs
-/ATSPM/obj
-/ATSPM/bin
-/ATSPM/Application/obj
-/ATSPM/Application/bin
-/ATSPM/ApplicationTests/obj
-/ATSPM/ApplicationTests/bin
-/ATSPM/ConfigApi/obj
-/ATSPM/ConfigApi/bin
-/ATSPM/Data/obj
-/ATSPM/Data/bin
-/ATSPM/DataApi/obj
-/ATSPM/DataApi/bin
-/ATSPM/EventLogUtility/obj
-/ATSPM/EventLogUtility/bin
-/ATSPM/IdentityApi/obj/
-/ATSPM/IdentityApi/bin/
-/ATSPM/IdentityTests/obj/
-/ATSPM/IdentityTests/bin/
-/ATSPM/Infrastructure/obj
-/ATSPM/Infrastructure/bin
-/ATSPM/InfrastructureTests/obj
-/ATSPM/InfrastructureTests/bin
-/ATSPM/MySqlDatabaseProvider/obj/
-/ATSPM/MySqlDatabaseProvider/bin/
-/ATSPM/OracleDatabaseProvider/obj/
-/ATSPM/OracleDatabaseProvider/bin/
-/ATSPM/PostgreSQLDatabaseProvider/obj/
-/ATSPM/PostgreSQLDatabaseProvider/bin/
-/ATSPM/SqlDatabaseProvider/obj/
-/ATSPM/SqlDatabaseProvider/bin/
-/ATSPM/SqlLiteDatabaseProvider/obj/
-/ATSPM/SqlLiteDatabaseProvider/bin/
-/ATSPM/ReportApi/obj
-/ATSPM/ReportApi/bin
-/ATSPM/SpeedManagementApi/obj
-/ATSPM/SpeedManagementApi/bin
-/ATSPM/WatchDog/obj/
-/ATSPM/WatchDog/bin/
-/ATSPM/WatchDogTests/obj/
-/ATSPM/WatchDogTests/bin/
-/ATSPM/WebUI/obj/
-*.config
-/Atspm/EventLogUtility/Properties/PublishProfiles
+
+# Build artifacts
+**/bin/
+**/obj/
+
+# Visual Studio files
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# User-specific project files
+*.csproj.user
+*.vbproj.user
+
+# Local configuration files
+**/Properties/launchSettings.json
+appsettings.Development.json
+appsettings.Local.json
+appsettings.*.json
+
+# Publish profiles
+**/Properties/PublishProfiles/*.pubxml
+**/Properties/PublishProfiles/*.pubxml.user
+
+# Secret files
+secrets.json
+
+# Certificates and keys
+*.pfx
+*.p12
+*.snk
+
+# Cloud provider configurations
+.azure/
+.aws/
+.gcp/
+
+# Log and cache files
+*.log
+logs/
+*.cache
+*.tmp
+
+# IDE and tooling files
+*.ncrunchsolution
+_ReSharper.Caches/
+TestResult*/
+
+# Node.js dependencies (if applicable)
+node_modules/
+
+# NPM debug file
+npm-debug.log*
+
+# Yarn dependencies and lock file (if applicable)
+.yarn/
+yarn.lock
+
+# Miscellaneous files
+*.bak
+*.old
+
+# OS-generated files
+.DS_Store
+Thumbs.db
+
+# SonarQube analysis directory
+**/.sonarqube/
+
+/Atspm/Application/nuget.config

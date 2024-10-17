@@ -1,6 +1,7 @@
 import NextImage from '@/components/NextImage'
 import { useLogin } from '@/features/identity/api/getLogin'
 import IdentityDto from '@/features/identity/types/identityDto'
+import { setSecureCookie } from '@/features/identity/utils'
 import { getEnv } from '@/lib/getEnv'
 import { LoadingButton } from '@mui/lab'
 import { Alert, Button, Divider } from '@mui/material'
@@ -10,8 +11,6 @@ import Grid from '@mui/material/Grid'
 import Link from '@mui/material/Link'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
-import { addDays } from 'date-fns'
-import Cookies from 'js-cookie'
 import * as React from 'react'
 import { useEffect, useState } from 'react'
 
@@ -81,15 +80,9 @@ export default function Signin() {
   }, [password])
 
   if (status === 'success' && data !== undefined) {
-    const oneDay = addDays(new Date(), 1)
-    Cookies.set('token', data.token, {
-      expires: oneDay,
-      // httpOnly: true,
-      secure: true,
-      sameSite: 'strict',
-    })
-    Cookies.set('claims', data.claims.join(','), { expires: oneDay })
-    Cookies.set('loggedIn', 'True', { expires: oneDay })
+    setSecureCookie('token', data.token)
+    setSecureCookie('claims', data.claims.join(','))
+    setSecureCookie('loggedIn', 'True')
     window.location.href = '/performance-measures'
   }
 
