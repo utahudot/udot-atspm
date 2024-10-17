@@ -1,0 +1,123 @@
+# Prerequisites
+*.d
+
+# Object files
+*.o
+*.ko
+*.obj
+*.elf
+
+# Linker output
+*.ilk
+*.map
+*.exp
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Libraries
+*.lib
+*.a
+*.la
+*.lo
+
+# Shared objects (inc. Windows DLLs)
+*.so
+*.so.*
+*.dylib
+
+# Executables
+*.exe
+*.out
+*.app
+*.i*86
+*.x86_64
+*.hex
+
+# Debug files
+*.dSYM/
+*.su
+*.idb
+*.pdb
+
+# Kernel Module Compile Results
+*.mod*
+*.cmd
+.tmp_versions/
+modules.order
+Module.symvers
+Mkfile.old
+dkms.conf
+
+# Build artifacts
+**/bin/
+**/obj/
+
+# Visual Studio files
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# User-specific project files
+*.csproj.user
+*.vbproj.user
+
+# Local configuration files
+**/Properties/launchSettings.json
+appsettings.Development.json
+appsettings.Local.json
+appsettings.*.json
+
+# Publish profiles
+**/Properties/PublishProfiles/*.pubxml
+**/Properties/PublishProfiles/*.pubxml.user
+
+# Secret files
+secrets.json
+
+# Certificates and keys
+*.pfx
+*.p12
+*.snk
+
+# Cloud provider configurations
+.azure/
+.aws/
+.gcp/
+
+# Log and cache files
+*.log
+logs/
+*.cache
+*.tmp
+
+# IDE and tooling files
+*.ncrunchsolution
+_ReSharper.Caches/
+TestResult*/
+
+# Node.js dependencies (if applicable)
+node_modules/
+
+# NPM debug file
+npm-debug.log*
+
+# Yarn dependencies and lock file (if applicable)
+.yarn/
+yarn.lock
+
+# Miscellaneous files
+*.bak
+*.old
+
+# OS-generated files
+.DS_Store
+Thumbs.db
+
+# SonarQube analysis directory
+**/.sonarqube/
+
+**/nuget.config
