@@ -8,9 +8,9 @@ namespace Utah.Udot.Atspm.Business.RampMetering
         public RampMeteringResult(string locationId, DateTime start, DateTime end): base(locationId, start, end)
         { }
 
-        public List<DataPointDateDouble> MainLineAvgFlow { get; set; }
-        public List<DataPointDateDouble> MainlineAvgOcc { get; set; }
-        public List<DataPointDateDouble> MainlineAvgSpeed { get; set; }
+        public List<DataPointForDouble> MainlineAvgFlow { get; set; }
+        public List<DataPointForDouble> MainlineAvgOcc { get; set; }
+        public List<DataPointForDouble> MainlineAvgSpeed { get; set; }
         public List<TimeSpaceEventBase> StartUpWarning { get; set; }
         public List<TimeSpaceEventBase> ShutdownWarning { get; set; }
         public List<DescriptionWithDataPoints> LanesActiveRate { get; set; }

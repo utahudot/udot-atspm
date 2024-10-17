@@ -44,13 +44,11 @@ import {
 export default function transformRampMeteringData(
   response: RawRampMeteringResponse
 ): TransformedChartResponse {
-  const transformedData = response.data.flatMap((data) => {
-    const chartOptions = transformData(data)
-    return chartOptions.map((chart) => {
-      return {
-        chart: chart,
-      }
-    })
+  const chartOptions = transformData(response.data)
+  const transformedData = chartOptions.map((chart) => {
+    return {
+      chart: chart,
+    }
   })
 
   return {
@@ -72,10 +70,10 @@ function transformData(data: RampMeteringData): EChartsOption[] {
     lanesQueueOffEvents,
   } = data
 
-  const titleHeader1 = `Ramp Rate vs. Mainline Occupancy (Active Rate vs Mainline Avg Occupancy)\n${data.locationDescription}`
-  const titleHeader2 = `Queue Override\n${data.locationDescription}`
-  const titleHeader3 = `Ramp Rate vs. Mainline Volume - (Active Rate vs Mainline Avg Flow)\n${data.locationDescription}`
-  const titleHeader4 = `Ramp Rate vs. Mainline Speed  (Active Rate vs Mainline Avg Speed)\n${data.locationDescription}`
+  const titleHeader1 = `Ramp Rate vs. Mainline Occupancy (Active Rate vs Mainline Avg Occupancy)\n${data.locationIdentifier}`
+  const titleHeader2 = `Queue Override\n${data.locationIdentifier}`
+  const titleHeader3 = `Ramp Rate vs. Mainline Volume - (Active Rate vs Mainline Avg Flow)\n${data.locationIdentifier}`
+  const titleHeader4 = `Ramp Rate vs. Mainline Speed  (Active Rate vs Mainline Avg Speed)\n${data.locationIdentifier}`
   const dateRange = formatChartDateTimeRange(data.start, data.end)
 
   const title1 = createTitle({
@@ -102,7 +100,6 @@ function transformData(data: RampMeteringData): EChartsOption[] {
     false,
     {
       name: 'Mainline Occupancy',
-      nameGap: 50,
     },
     { name: 'Meter Rate (vph)' }
   )
