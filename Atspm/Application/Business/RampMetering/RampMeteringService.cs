@@ -77,6 +77,7 @@ namespace Utah.Udot.Atspm.Business.RampMetering
                     Description = laneNumber.ToString(),
                     Value = codeEvents
                 });
+                laneNumber++;
             }
 
             return descriptWithDataPointsEvents;
