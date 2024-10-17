@@ -40,9 +40,9 @@ namespace Utah.Udot.Atspm.Business.RampMetering
 
             var (startup, shutdown) = GetStartUpAndShutdownEvents(startUpAndShutdownWarningEvents);
 
-            var mainlineAvgSpeedsList = mainlineAvgSpeedEvents.Select(e => new DataPointDateDouble(e.Timestamp, (e.EventParam * speedMultiplier))).ToList();
-            var mainlineAvgOccurrenceList = mainlineAvgOccurrenceEvents.Select(e => new DataPointDateDouble(e.Timestamp, (e.EventParam / 10))).ToList();
-            var mainlineAvgFlowList = mainlineAvgFlowEvents.Select(e => new DataPointDateDouble(e.Timestamp, e.EventParam)).ToList();
+            var mainlineAvgSpeedsList = mainlineAvgSpeedEvents.Select(e => new DataPointForDouble(e.Timestamp, (e.EventParam * speedMultiplier))).ToList();
+            var mainlineAvgOccurrenceList = mainlineAvgOccurrenceEvents.Select(e => new DataPointForDouble(e.Timestamp, (e.EventParam / 10))).ToList();
+            var mainlineAvgFlowList = mainlineAvgFlowEvents.Select(e => new DataPointForDouble(e.Timestamp, e.EventParam)).ToList();
 
             var lanesActiveRateList = GetDescriptionWithDataPoints(activeRateEvents);
             var lanesBaseRateList = GetDescriptionWithDataPoints(baseRateEvents);
@@ -71,7 +71,7 @@ namespace Utah.Udot.Atspm.Business.RampMetering
 
             foreach (var eventsByCode in eventsByCodes)
             {
-                var codeEvents = eventsByCode.Select(e => new DataPointDateDouble(e.Timestamp, e.EventParam)).ToList();
+                var codeEvents = eventsByCode.Select(e => new DataPointForDouble(e.Timestamp, e.EventParam)).ToList();
                 descriptWithDataPointsEvents.Add(new DescriptionWithDataPoints()
                 {
                     Description = laneNumber.ToString(),
