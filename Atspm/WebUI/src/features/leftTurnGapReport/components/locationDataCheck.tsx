@@ -69,16 +69,19 @@ export const LocationDataCheck = ({
         <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <TextField
             id="cycles-with-ped-outs"
-            value={cyclesWithPedCalls}
             type="number"
+            value={cyclesWithPedCalls}
             onChange={(e) =>
               setCyclesWithPedCalls(
                 (e.target as HTMLInputElement).valueAsNumber
               )
             }
             sx={{ ...textFieldStyle }}
+            inputProps={{
+              'aria-label': '% Cycles with Ped Calls', // Use aria-label for accessibility**
+            }}
           />
-          <label>% Cycles with Ped Calls</label>
+          <label htmlFor="cycles-with-ped-outs">% Cycles with Ped Calls</label>
           {/* <Typography htmlFor="cycles-with-ped-outs">% Cycles with Ped Calls</Typography> */}
         </Box>
 
@@ -91,10 +94,14 @@ export const LocationDataCheck = ({
               setCyclesWithGapOuts((e.target as HTMLInputElement).valueAsNumber)
             }
             sx={{ ...textFieldStyle }}
+            inputProps={{
+              'aria-label': '% Cycles with Gap Outs', // Use aria-label for accessibility**
+            }}
           />
           <label htmlFor="cycles-with-gap-outs">% Cycles with Gap Outs</label>
           {/* <Typography>% Cycles with Gap Outs</Typography> */}
         </Box>
+
         <Box sx={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <TextField
             id="left-turn-volume"
@@ -104,6 +111,9 @@ export const LocationDataCheck = ({
               setLeftTurnVolume((e.target as HTMLInputElement).valueAsNumber)
             }
             sx={{ ...textFieldStyle }}
+            inputProps={{
+              'aria-label': 'Left-turn Volume (vph)', // Use aria-label for accessibility**
+            }}
           />
           <label htmlFor="left-turn-volume">Left-turn Volume (vph)</label>
         </Box>

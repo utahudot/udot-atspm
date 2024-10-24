@@ -41,6 +41,9 @@ export function ApproachVolumeTable({ data }: ApproachVolumeTableProps) {
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <Table sx={{ boxShadow: '1' }}>
+              <caption style={{ position: 'absolute', left: '-10000px', top: 'auto', width: '1px', height: '1px', overflow: 'hidden' }}>
+                  Peak Hour Traffic Data
+              </caption>
               <TableHead>
                 <TableRow>
                   <TableCell component="measure-name"></TableCell>
