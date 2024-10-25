@@ -17,8 +17,8 @@ const defaults = {
 const detectorsHeaders: GridColDef[] = [
   {
     ...defaults,
-    field: 'id',
-    headerName: 'Detector ID',
+    field: 'dectectorIdentifier',
+    headerName: 'Detector Identifier',
   },
   {
     ...defaults,
@@ -182,6 +182,7 @@ function DetectorsInfo({ detectors }: DetectorsInfoProps) {
   const data = detectors.map((detector) => {
     return {
       id: detector.id,
+      dectectorIdentifier: detector.dectectorIdentifier,
       detectorChannel: detector.detectorChannel,
       direction: detector.approach?.directionType?.description,
       phase: detector.approach?.protectedPhaseNumber,

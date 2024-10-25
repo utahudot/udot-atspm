@@ -26,7 +26,10 @@ interface NewLocationModalProps {
 const locationSchema = z.object({
   locationIdentifier: z
     .string()
-    .min(1, { message: 'Location Identifier is required.' }),
+    .min(1, { message: 'Location Identifier is required.' })
+    .max(10, {
+      message: 'Location Identifier must be 10 characters or fewer.',
+    }),
 })
 
 const NewLocationModal = ({
@@ -58,6 +61,8 @@ const NewLocationModal = ({
       loc.locationIdentifier === locationIdentifier
   )
 
+  const locationIsLessThan10Characters = locationIdentifier?.length <= 10
+
   const onSubmit = (data: LocationExpanded) => {
     if (!locationIsUnique) {
       setValue('locationIdentifier', data.locationIdentifier, {
@@ -80,6 +85,7 @@ const NewLocationModal = ({
       chartEnabled: false,
       regionId: 10,
       jurisdictionId: 1,
+      versionAction: 'Initial',
     }
 
     createLocation(defaultValues, {
@@ -88,6 +94,19 @@ const NewLocationModal = ({
       },
       onSettled: closeModal,
     })
+  }
+
+  const errorMessage = () => {
+    if (errors.locationIdentifier) {
+      return errors.locationIdentifier.message
+    }
+    if (!locationIsLessThan10Characters) {
+      return 'Location Identifier must be 10 characters or fewer.'
+    }
+    if (!locationIsUnique) {
+      return 'Location Identifier already exists.'
+    }
+    return ''
   }
 
   return (
@@ -118,12 +137,16 @@ const NewLocationModal = ({
                 {...field}
                 fullWidth
                 autoComplete="off"
-                error={!!errors.locationIdentifier || !locationIsUnique}
+                error={
+                  !!errors.locationIdentifier ||
+                  !locationIsUnique ||
+                  !locationIsLessThan10Characters
+                }
                 color="success"
                 InputProps={{
                   endAdornment: locationIdentifier ? (
                     <InputAdornment position="end">
-                      {locationIsUnique ? (
+                      {locationIsUnique && locationIsLessThan10Characters ? (
                         <CheckCircleOutlineOutlinedIcon color="success" />
                       ) : (
                         <ErrorOutlineIcon color="error" />
@@ -131,13 +154,7 @@ const NewLocationModal = ({
                     </InputAdornment>
                   ) : null,
                 }}
-                helperText={
-                  errors.locationIdentifier
-                    ? errors.locationIdentifier.message
-                    : locationIsUnique
-                      ? ' '
-                      : 'Location Identifier already exists.'
-                }
+                helperText={errorMessage()}
                 label="Location Identifier"
                 sx={{ marginBottom: 1 }}
               />
@@ -155,7 +172,8 @@ const NewLocationModal = ({
             disabled={
               !locationIsUnique ||
               !!errors.locationIdentifier ||
-              !locationIdentifier
+              !locationIdentifier ||
+              !locationIsLessThan10Characters
             }
           >
             Create Location
