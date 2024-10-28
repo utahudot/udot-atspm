@@ -18,12 +18,14 @@ import { DataZoomComponentOption, EChartsOption, SeriesOption } from 'echarts'
 import {
   createGrid,
   createLegend,
+  createPolyLines,
   createSeries,
   createTitle,
   createToolbox,
   createTooltip,
   createXAxis,
   createYAxis,
+  formatDataPointForStepView,
   transformSeriesData,
 } from '../common/transformers'
 import { ChartType, MarkAreaData } from '../common/types'
@@ -248,67 +250,131 @@ function transformData(data: RampMeteringData): EChartsOption[] {
   })
 
   lanesActiveRate.forEach((lane, index) => {
+    const activeRateData = formatDataPointForStepView(lane.value, data.end)
     seriesOne.push(
       ...createSeries({
         name: `Active Rate: ${lane.description}`,
         data: transformSeriesData(lane.value),
-        type: 'line',
+        type: 'custom',
         yAxisIndex: 1,
         color: chartColors[index + 1],
+        clip: true,
+        renderItem(param, api) {
+          if (param.dataIndex === 0) {
+            const polylines = createPolyLines(activeRateData, api)
+
+            return {
+              type: 'group',
+              children: polylines,
+            }
+          }
+        },
       })
     )
   })
+
+  seriesOne.push(createStartupArea(data.startUpWarning, data.start, data.end))
 
   const seriesTwo: SeriesOption[] = []
 
   seriesTwo.push(...generateQueueSeriesData(lanesQueueOnAndOffEvents))
 
   lanesActiveRate.forEach((lane, index) => {
+    const activeRateData = formatDataPointForStepView(lane.value, data.end)
     seriesTwo.push(
       ...createSeries({
         name: `Active Rate: ${lane.description}`,
         data: transformSeriesData(lane.value),
-        type: 'line',
+        type: 'custom',
+        yAxisIndex: 0,
         color: chartColors[index + 1],
+        clip: true,
+        renderItem(param, api) {
+          if (param.dataIndex === 0) {
+            const polylines = createPolyLines(activeRateData, api)
+
+            return {
+              type: 'group',
+              children: polylines,
+            }
+          }
+        },
       })
     )
   })
 
   lanesBaseRate.forEach((lane, index) => {
+    const baseRateData = formatDataPointForStepView(lane.value, data.end)
     seriesTwo.push(
       ...createSeries({
         name: `Base Rate: ${lane.description}`,
         data: transformSeriesData(lane.value),
-        type: 'line',
+        type: 'custom',
+        yAxisIndex: 0,
         color: chartColors[index + 2],
+        clip: true,
+        renderItem(param, api) {
+          if (param.dataIndex === 0) {
+            const polylines = createPolyLines(baseRateData, api)
+
+            return {
+              type: 'group',
+              children: polylines,
+            }
+          }
+        },
       })
     )
   })
 
-  seriesTwo.push(createStartupArea(data.startUpWarning))
+  seriesTwo.push(createStartupArea(data.startUpWarning, data.start, data.end))
 
   const seriesThree: SeriesOption[] = []
 
   lanesActiveRate.forEach((lane, index) => {
+    const activeRateData = formatDataPointForStepView(lane.value, data.end)
     seriesThree.push(
       ...createSeries({
         name: `Active Rate: ${lane.description}`,
         data: transformSeriesData(lane.value),
-        type: 'line',
+        type: 'custom',
         yAxisIndex: 1,
         color: chartColors[index + 1],
+        clip: true,
+        renderItem(param, api) {
+          if (param.dataIndex === 0) {
+            const polylines = createPolyLines(activeRateData, api)
+
+            return {
+              type: 'group',
+              children: polylines,
+            }
+          }
+        },
       })
     )
   })
 
   lanesBaseRate.forEach((lane, index) => {
+    const baseRateData = formatDataPointForStepView(lane.value, data.end)
     seriesThree.push(
       ...createSeries({
         name: `Base Rate: ${lane.description}`,
         data: transformSeriesData(lane.value),
-        type: 'line',
+        type: 'custom',
         yAxisIndex: 1,
         color: chartColors[index + 2],
+        clip: true,
+        renderItem(param, api) {
+          if (param.dataIndex === 0) {
+            const polylines = createPolyLines(baseRateData, api)
+
+            return {
+              type: 'group',
+              children: polylines,
+            }
+          }
+        },
       })
     )
   })
@@ -322,28 +388,54 @@ function transformData(data: RampMeteringData): EChartsOption[] {
     })
   )
 
+  seriesThree.push(createStartupArea(data.startUpWarning, data.start, data.end))
+
   const seriesFour: SeriesOption[] = []
 
   lanesActiveRate.forEach((lane, index) => {
+    const activeRateData = formatDataPointForStepView(lane.value, data.end)
     seriesFour.push(
       ...createSeries({
         name: `Active Rate: ${lane.description}`,
         data: transformSeriesData(lane.value),
-        type: 'line',
+        type: 'custom',
         yAxisIndex: 1,
         color: chartColors[index + 1],
+        clip: true,
+        renderItem(param, api) {
+          if (param.dataIndex === 0) {
+            const polylines = createPolyLines(activeRateData, api)
+
+            return {
+              type: 'group',
+              children: polylines,
+            }
+          }
+        },
       })
     )
   })
 
   lanesBaseRate.forEach((lane, index) => {
+    const baseRateData = formatDataPointForStepView(lane.value, data.end)
     seriesFour.push(
       ...createSeries({
         name: `Base Rate: ${lane.description}`,
         data: transformSeriesData(lane.value),
-        type: 'line',
+        type: 'custom',
         yAxisIndex: 1,
         color: chartColors[index + 2],
+        clip: true,
+        renderItem(param, api) {
+          if (param.dataIndex === 0) {
+            const polylines = createPolyLines(baseRateData, api)
+
+            return {
+              type: 'group',
+              children: polylines,
+            }
+          }
+        },
       })
     )
   })
@@ -356,6 +448,8 @@ function transformData(data: RampMeteringData): EChartsOption[] {
       color: Color.Blue,
     })
   )
+
+  seriesFour.push(createStartupArea(data.startUpWarning, data.start, data.end))
 
   const chartOptions: EChartsOption[] = [
     {
@@ -484,21 +578,58 @@ function generateQueueSeriesData(
   ]
 }
 
-function createStartupArea(events: TimeSpaceDetectorEvent[]): SeriesOption {
-  const markAreaData = events.map((event) => [
-    {
-      xAxis: event.initialX,
-      itemStyle: Color.PlanB,
-    },
-    {
-      xAxis: event.finalX,
-    },
-  ])
+function createStartupArea(
+  events: TimeSpaceDetectorEvent[],
+  startDate: string,
+  endDate: string
+): SeriesOption {
+  // Convert startDate and endDate to Date objects
+  const start = new Date(startDate)
+  const end = new Date(endDate)
+
+  // Parse and sort events by initialX
+  events.sort(
+    (a, b) => new Date(a.initialX).getTime() - new Date(b.initialX).getTime()
+  )
+
+  const markAreaData: MarkAreaData[] = []
+
+  // Add inverse area from startDate to the initialX of the first event
+  if (events.length > 0 && start < new Date(events[0].initialX)) {
+    markAreaData.push([
+      { xAxis: startDate, itemStyle: { color: Color.PlanB } },
+      { xAxis: events[0].initialX },
+    ])
+  }
+
+  // Add inverse areas between consecutive events
+  for (let i = 0; i < events.length - 1; i++) {
+    const currentEventEnd = new Date(events[i].finalX)
+    const nextEventStart = new Date(events[i + 1].initialX)
+
+    if (currentEventEnd < nextEventStart) {
+      markAreaData.push([
+        { xAxis: events[i].finalX, itemStyle: { color: Color.PlanB } },
+        { xAxis: events[i + 1].initialX },
+      ])
+    }
+  }
+
+  // Add inverse area from the finalX of the last event to endDate
+  if (events.length > 0 && new Date(events[events.length - 1].finalX) < end) {
+    markAreaData.push([
+      {
+        xAxis: events[events.length - 1].finalX,
+        itemStyle: { color: Color.PlanB },
+      },
+      { xAxis: endDate },
+    ])
+  }
 
   return {
     type: 'line',
     markArea: {
-      data: markAreaData as MarkAreaData[],
+      data: markAreaData,
     },
   }
 }
