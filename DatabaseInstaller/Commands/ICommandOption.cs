@@ -19,7 +19,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.CommandLine.NamingConventionBinder;
 
-namespace Utah.Udot.Atspm.Common
+namespace DatabaseInstaller.Commands
 {
     public interface ICommandOption<T> : ICommandOption
     {
