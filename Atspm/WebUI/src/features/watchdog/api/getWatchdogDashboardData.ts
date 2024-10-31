@@ -1,10 +1,9 @@
 import { WatchdogDashboardData } from '@/features/watchdog/types'
+import { reportsAxios } from '@/lib/axios'
 import { ExtractFnReturnType, QueryConfig } from '@/lib/react-query'
-import axios from 'axios'
 import { useQuery } from 'react-query'
 
 type QueryFnType = typeof getWatchdogDashboardData
-
 
 type UseGetWatchdogDashboardDataOptions = {
   start: string
@@ -17,12 +16,14 @@ export const getWatchdogDashboardData = async (
   start: string,
   end: string
 ): Promise<WatchdogDashboardData> => {
-  const response = await axios.post('https://localhost:44366/getIssueTypeGroup', {
-    start,
-    end,
-  })
+  const response = await reportsAxios.post(
+    'WatchDogDashboard/getDashboardGroup',
+    {
+      start,
+      end,
+    }
+  )
   return response.data
-
 }
 
 export const useGetWatchdogDashboardData = ({

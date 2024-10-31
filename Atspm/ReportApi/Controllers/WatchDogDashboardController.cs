@@ -1,9 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Asp.Versioning;
+using Microsoft.AspNetCore.Mvc;
 using Utah.Udot.Atspm.Business.Watchdog;
 using Utah.Udot.ATSPM.ReportApi.ReportServices;
 
 namespace Utah.Udot.ATSPM.ReportApi.Controllers
 {
+    [ApiVersion(1.0)]
+    [ApiController]
+    [Route("v{version:apiVersion}/[controller]")]
     public class WatchDogDashboardController : ControllerBase
     {
         private readonly WatchDogDashboardReportService watchDogDashboardReportService;
