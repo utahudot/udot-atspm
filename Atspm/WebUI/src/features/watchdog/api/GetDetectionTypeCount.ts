@@ -9,7 +9,7 @@ const getDetectionTypeCount = async (
   const response = await configAxios.get(
     `Location/GetDetectionTypeCount?date=${date}`
   )
-  return response.data.value
+  return response.value
 }
 
 type QueryFnType = typeof getDetectionTypeCount

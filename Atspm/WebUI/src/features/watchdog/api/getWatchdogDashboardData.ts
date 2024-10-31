@@ -23,7 +23,7 @@ export const getWatchdogDashboardData = async (
       end,
     }
   )
-  return response.data
+  return response
 }
 
 export const useGetWatchdogDashboardData = ({

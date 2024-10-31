@@ -5,7 +5,8 @@ import { useQuery } from 'react-query'
 
 const getDeviceCount = async (): Promise<DeviceCount[]> => {
   const response = await configAxios.get('Device/GetActiveDevicesCount')
-  return response.data
+
+  return response
 }
 
 type QueryFnType = typeof getDeviceCount
