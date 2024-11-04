@@ -43,7 +43,7 @@ export default function ApacheEChart({
   const [isScrolling, setIsScrolling] = useState(false)
   const chartInstance = useRef<ECharts | null>(null)
 
-  const isActive = activeChart === id
+  const isActive = activeChart === id || hideInteractionMessage
 
   const initChart = () => {
     if (chartRef.current !== null) {

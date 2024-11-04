@@ -18,6 +18,7 @@
 using MailKit.Security;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using MimeKit;
 using MimeKit.Text;
 using System.Net.Mail;
@@ -39,7 +40,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.EmailServices
         /// <param name="logger"></param>
         public SmtpEmailService(IOptionsSnapshot<EmailConfiguration> options, ILogger<SmtpEmailService> logger) : base(true)
         {
-            _options = options?.Get(GetType().Name) ?? options?.Value;
+            _options = options.Value;// options?.Get(GetType().Name) ?? options?.Value;
             _logger = logger;
         }
 
@@ -67,21 +68,33 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.EmailServices
                 try
                 {
                     await smtp.ConnectAsync(_options.Host, _options.Port, _options.EnableSsl ? SecureSocketOptions.StartTls : SecureSocketOptions.Auto);
-                    await smtp.AuthenticateAsync(_options.UserName, _options.Password);
+                    if (!String.IsNullOrEmpty(_options.UserName) && !String.IsNullOrEmpty(_options.Password))
+                    {
+                        await smtp.AuthenticateAsync(_options.UserName, _options.Password);
 
-                    if (smtp.IsConnected && smtp.IsAuthenticated)
+
+                        if (smtp.IsConnected && smtp.IsAuthenticated)
+                        {
+                            _logger.LogDebug("SendEmail sending: {email}", email);
+
+                            var response = await smtp.SendAsync(email);
+
+                            _logger.LogInformation("SendEmail response: {response}", response);
+
+                            return true;
+                        }
+                        else
+                        {
+                            _logger.LogWarning("Not connected or authenticated");
+                        }
+                    }
+                    else
                     {
                         _logger.LogDebug("SendEmail sending: {email}", email);
 
                         var response = await smtp.SendAsync(email);
 
                         _logger.LogInformation("SendEmail response: {response}", response);
-
-                        return true;
-                    }
-                    else
-                    {
-                        _logger.LogWarning("Not connected or authenticated");
                     }
 
                     await smtp.DisconnectAsync(true);
