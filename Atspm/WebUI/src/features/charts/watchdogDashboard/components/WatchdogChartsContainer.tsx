@@ -24,7 +24,7 @@ const WatchdogChartsContainer: React.FC<WatchdogChartsContainerProps> = ({
         </Box>
         <Box sx={{ flex: 1 }}>
           <DetectionTypeCountChart
-            data={data?.detectionTypeGroup}
+            data={data?.detectionTypeCount}
             isLoading={isLoading}
           />
         </Box>

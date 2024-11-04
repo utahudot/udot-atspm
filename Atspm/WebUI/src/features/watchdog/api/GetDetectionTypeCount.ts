@@ -7,7 +7,7 @@ const getDetectionTypeCount = async (
   date: string
 ): Promise<DetectionTypeCount[]> => {
   const response = await configAxios.get(
-    `Location/GetDetectionTypeCount?date=${date}`
+    `/Location/GetDetectionTypeCount?date=${date}`
   )
   return response.value
 }
