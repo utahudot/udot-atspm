@@ -6,6 +6,8 @@ import {
   useEditWatchdogIgnoreEvents,
   useGetWatchdogIgnoreEvents,
 } from '@/features/watchdog/api/watchdogIgnoreEvents'
+import { useNotificationStore } from '@/stores/notifications'
+import { toUTCDateStamp } from '@/utils/dateTime'
 import { Box, Button, Divider, Paper, Typography } from '@mui/material'
 import { addDays, format } from 'date-fns'
 import { useEffect, useState } from 'react'
@@ -79,6 +81,7 @@ const watchdogOptions = [
 ]
 
 const WatchdogEditor = ({ handler }: WatchdogEditorProps) => {
+  const { addNotification } = useNotificationStore()
   const [ignoreEvents, setIgnoreEvents] = useState<WatchdogOption[]>([])
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const [selectedOption, setSelectedOption] = useState<null | WatchdogOption>(
@@ -145,18 +148,26 @@ const WatchdogEditor = ({ handler }: WatchdogEditorProps) => {
             locationId: handler.expandedLocation?.id,
             locationIdentifier: handler.expandedLocation?.locationIdentifier,
             issueType: selectedOption.issueType.toString(),
-            start: startDate,
-            end: endDate,
+            start: toUTCDateStamp(startDate),
+            end: toUTCDateStamp(endDate),
           },
           id: existingEvent.id,
+        })
+        addNotification({
+          title: 'Watchdog Ignore Event Updated',
+          type: 'success',
         })
       } else {
         await addWatchdogIgnoreEvents({
           locationId: handler.expandedLocation?.id,
           locationIdentifier: handler.expandedLocation?.locationIdentifier,
           issueType: selectedOption.issueType.toString(),
-          start: startDate,
-          end: endDate,
+          start: toUTCDateStamp(startDate),
+          end: toUTCDateStamp(endDate),
+        })
+        addNotification({
+          title: 'Watchdog Ignore Event Added',
+          type: 'success',
         })
       }
 
@@ -168,7 +179,10 @@ const WatchdogEditor = ({ handler }: WatchdogEditorProps) => {
   const handleRemoveIgnore = async () => {
     if (selectedIgnoreEventId) {
       await deleteWatchdogIgnoreEvents(selectedIgnoreEventId)
-
+      addNotification({
+        title: 'Watchdog Ignore Event Removed',
+        type: 'success',
+      })
       await refetch()
       setAnchorEl(null)
     }

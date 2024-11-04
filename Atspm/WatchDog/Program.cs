@@ -26,9 +26,11 @@ using Utah.Udot.Atspm.Infrastructure.Extensions;
 using Utah.Udot.Atspm.Infrastructure.Repositories;
 using Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories;
 using Utah.Udot.Atspm.Infrastructure.Repositories.EventLogRepositories;
+using Utah.Udot.Atspm.Infrastructure.Services.EmailServices;
 using Utah.Udot.Atspm.WatchDog.Services;
 using Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices;
 using Utah.Udot.ATSPM.WatchDog.Services;
+using Utah.Udot.NetStandardToolkit.Configuration;
 
 namespace Utah.Udot.Atspm.WatchDog
 {
@@ -47,6 +49,7 @@ namespace Utah.Udot.Atspm.WatchDog
                 .ConfigureServices((h, s) =>
                 {
                     s.AddEmailServices(h);
+                    s.AddScoped<IEmailService, SmtpEmailService>();
                     s.AddScoped<WatchdogEmailService>();
 
                     s.AddAtspmDbContext(h);
@@ -76,6 +79,7 @@ namespace Utah.Udot.Atspm.WatchDog
                      .AddDefaultTokenProviders();
 
                     s.Configure<WatchdogConfiguration>(h.Configuration.GetSection(nameof(WatchdogConfiguration)));
+                    s.Configure<EmailConfiguration>(h.Configuration.GetSection("WatchdogConfiguration:EmailConfiguration"));
 
                 })
                 .Build();
