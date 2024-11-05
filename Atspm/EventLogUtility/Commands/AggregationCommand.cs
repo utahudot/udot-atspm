@@ -20,6 +20,7 @@ using Microsoft.Extensions.Hosting;
 using System.CommandLine;
 using System.CommandLine.Hosting;
 using System.CommandLine.NamingConventionBinder;
+using Utah.Udot.Atspm.Infrastructure.Services.HostedServices;
 
 namespace Utah.Udot.Atspm.EventLogUtility.Commands
 {
@@ -54,23 +55,18 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
             //});
 
             AddArgument(AggregationTypeArgument);
-            AddArgument(BinSizeArgument);
             AddOption(DateOption);
         }
 
         public Argument<string> AggregationTypeArgument { get; set; } = new Argument<string>("type", "Aggregation type to run");
 
-        //TODO: add a parse param to handle zero time to too large or a time
-        public Argument<int> BinSizeArgument { get; set; } = new Argument<int>("Size", () => 15, "Size in minutes to aggregate");
-
         public DateCommandOption DateOption { get; set; } = new();
-
+        
         public ModelBinder<EventLogAggregateConfiguration> GetOptionsBinder()
         {
             var binder = new ModelBinder<EventLogAggregateConfiguration>();
 
             binder.BindMemberFromValue(b => b.AggregationType, AggregationTypeArgument);
-            binder.BindMemberFromValue(b => b.BinSize, BinSizeArgument);
             binder.BindMemberFromValue(b => b.Dates, DateOption);
 
             return binder;
@@ -80,7 +76,7 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
         {
             services.AddSingleton(GetOptionsBinder());
             services.AddOptions<EventLogAggregateConfiguration>().BindCommandLine();
-            //services.AddHostedService<TestAggregationHostedService>();
+            services.AddHostedService<EventAggregationHostedService>();
         }
     }
 }

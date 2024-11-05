@@ -21,7 +21,6 @@ namespace Utah.Udot.Atspm.Configuration
     public class EventLogAggregateConfiguration
     {
         public string AggregationType { get; set; }
-        public int BinSize { get; set; } = 15;
         public IEnumerable<DateTime> Dates { get; set; }
     }
 }
