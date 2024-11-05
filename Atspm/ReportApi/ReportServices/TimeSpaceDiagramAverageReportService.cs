@@ -202,8 +202,8 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                 int currentOffset = 0;
                 var currentProgrammedSplitsForTimePeriod = new List<IndianaEvent>();
 
-                var primaryPhaseDetail = phaseService.GetPhases(location).Find(p => p.PhaseNumber == routeLocation.PrimaryPhase && p.IsPermissivePhase != true);
-                var opposingPhaseDetail = phaseService.GetPhases(location).Find(p => p.PhaseNumber == routeLocation.OpposingPhase && p.IsPermissivePhase != true);
+                var primaryPhaseDetail = phaseService.GetPhases(location).Find(p => p.PhaseNumber == routeLocation.PrimaryPhase && p.Approach.DirectionType == routeLocation.PrimaryDirection);
+                var opposingPhaseDetail = phaseService.GetPhases(location).Find(p => p.PhaseNumber == routeLocation.OpposingPhase && p.Approach.DirectionType == routeLocation.OpposingDirection);
                 //var phaseToSearch = routeLocation.PrimaryPhase;
                 //var phaseDetail = _phaseService.GetPhases(location).Find(p => p.PhaseNumber == phaseToSearch);
 
