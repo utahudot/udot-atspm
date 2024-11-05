@@ -1,6 +1,6 @@
 ﻿#region license
-// Copyright 2025 Utah Departement of Transportation
-// for ReportApi - Utah.Udot.Atspm.ReportApi.ReportServices/TimeSpaceDiagramAverageReportService.cs
+// Copyright 2024 Utah Departement of Transportation
+// for ReportApi - ATSPM.ReportApi.ReportServices/TimeSpaceDiagramAverageReportService.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 #endregion
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Utah.Udot.Atspm.Business.TimeSpaceDiagram;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
 
@@ -201,8 +202,8 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                 int currentOffset = 0;
                 var currentProgrammedSplitsForTimePeriod = new List<IndianaEvent>();
 
-                var primaryPhaseDetail = phaseService.GetPhases(location).Find(p => p.Approach.ProtectedPhaseNumber == routeLocation.PrimaryPhase && p.Approach.DirectionType == routeLocation.PrimaryDirection);
-                var opposingPhaseDetail = phaseService.GetPhases(location).Find(p => p.Approach.ProtectedPhaseNumber == routeLocation.OpposingPhase && p.Approach.DirectionType == routeLocation.OpposingDirection);
+                var primaryPhaseDetail = phaseService.GetPhases(location).Find(p => p.PhaseNumber == routeLocation.PrimaryPhase && p.Approach.DirectionType == routeLocation.PrimaryDirection);
+                var opposingPhaseDetail = phaseService.GetPhases(location).Find(p => p.PhaseNumber == routeLocation.OpposingPhase && p.Approach.DirectionType == routeLocation.OpposingDirection);
                 //var phaseToSearch = routeLocation.PrimaryPhase;
                 //var phaseDetail = _phaseService.GetPhases(location).Find(p => p.PhaseNumber == phaseToSearch);
 
@@ -347,7 +348,6 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             return approachEvents;
         }
 
-        //HACK: this needs to be moved into the repository
         private List<RouteLocation> GetLocationsFromRouteId(int routeId)
         {
             var routeLocations = routeLocationsRepository.GetList()
