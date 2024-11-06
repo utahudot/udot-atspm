@@ -20,28 +20,24 @@ using Microsoft.Extensions.Hosting;
 using System.CommandLine;
 using System.CommandLine.Hosting;
 using System.CommandLine.NamingConventionBinder;
+using System.Text.RegularExpressions;
 using Utah.Udot.Atspm.Infrastructure.Services.HostedServices;
 
 namespace Utah.Udot.Atspm.EventLogUtility.Commands
 {
     public class AggregationCommand : Command, ICommandOption<EventLogAggregateConfiguration>
     {
-        public AggregationCommand() : base("aggregate", "Run data aggregation")
+        public AggregationCommand() : base("aggregate-events", "Run event aggregation")
         {
-            AggregationTypeArgument.FromAmong(
-                "approach-cycle",
-                "approach-pcd-cycle",
-                "approach-speed",
-                "approach-splitfail",
-                "detector-event-count",
-                "left-turn-gap",
-                "Location-event-data",
-                "Location-phase-delay",
-                "Location-phase-termination",
-                "Location-plan",
-                "Location-preempt-priority",
-                "split-monitor",
-                "yellow-red-activation");
+            var values = typeof(AggregationModelBase).Assembly.GetTypes()
+                .Where(w => w.IsSubclassOf(typeof(AggregationModelBase)))
+                .Select(s => Regex.Replace(s.Name, @"(?<=[a-z])([A-Z])", @"_$1").ToLower())
+                .Prepend("all")
+                .ToArray();
+
+            AggregationTypeArgument.FromAmong(values);
+
+            DateOption.SetDefaultValue(DateTime.Now.Date.AddDays(-1));
 
             //IncludeOption.AddValidator(r =>
             //{
@@ -58,7 +54,7 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
             AddOption(DateOption);
         }
 
-        public Argument<string> AggregationTypeArgument { get; set; } = new Argument<string>("type", "Aggregation type to run");
+        public Argument<string> AggregationTypeArgument { get; set; } = new Argument<string>("type", () => "all", "Aggregation type to run");
 
         public DateCommandOption DateOption { get; set; } = new();
         
