@@ -19,8 +19,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using System.Diagnostics;
 using System.Threading.Tasks.Dataflow;
+using Utah.Udot.Atspm.Analysis.Workflows;
+using Utah.Udot.Atspm.Data.Models.EventLogModels;
 using Utah.Udot.ATSPM.Infrastructure.Workflows;
 
 namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
@@ -57,11 +60,60 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
 
             using (var scope = _services.CreateAsyncScope())
             {
-                //scope.ServiceProvider.PrintHostInformation();
+                if (scope.ServiceProvider.GetService<IHostEnvironment>().IsDevelopment()) 
+                    scope.ServiceProvider.PrintHostInformation();
 
                 //var workflow = new DeviceEventLogWorkflow(_services, _options.Value.BatchSize, _options.Value.ParallelProcesses, cancellationToken);
 
-                //var repo = scope.ServiceProvider.GetService<IDeviceRepository>();
+
+                var test1 = new UnboxArchivedEvents();
+                var test2 = new DetectorEventCountAggregationWorkflow(new AggregationWorkflowOptions());
+
+                test2.Initialize();
+
+                var result = new ActionBlock<IEnumerable<DetectorEventCountAggregation>>(a => null); //Console.WriteLine($"events: {a.Count()}"));
+
+                test1.LinkTo(test2.Input, new DataflowLinkOptions() { PropagateCompletion = true });
+                test2.Output.LinkTo(result, new DataflowLinkOptions() { PropagateCompletion = true });
+
+
+
+                var eventRepo = scope.ServiceProvider.GetService<IEventLogRepository>();
+                var locationRepo = scope.ServiceProvider.GetService<ILocationRepository>();
+
+                foreach (var date in _options.Value.Dates)
+                {
+                    var locations = locationRepo.GetLatestVersionOfAllLocations(date);
+
+                    foreach (var l in locations)
+                    {
+                        var events = eventRepo.GetArchivedEvents(l.LocationIdentifier, DateOnly.FromDateTime(date), DateOnly.FromDateTime(date));
+
+                        //foreach (var e in events)
+                        //{
+                        //    Console.WriteLine($"location: {l} --- events: {e}");
+                        //}
+
+                        //var result = await test1.SendAsync.ExecuteAsync(Tuple.Create(l, events.AsEnumerable()));
+
+
+                        await test1.SendAsync(Tuple.Create(l, events.AsEnumerable()));
+
+
+                        
+                    }
+                }
+
+                test1.Complete();
+
+                //await Task.WhenAll(test2.Steps.Select(s => s.Completion));
+
+                await result.Completion;
+
+
+
+
+
 
                 //await foreach (var d in repo.GetDevicesForLogging(_options.Value.DeviceEventLoggingQueryOptions))
                 //{

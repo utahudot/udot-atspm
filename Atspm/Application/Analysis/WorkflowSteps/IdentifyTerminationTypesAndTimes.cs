@@ -53,13 +53,13 @@ namespace Utah.Udot.Atspm.Analysis.WorkflowSteps
             //remove IndianaEnumerations.PhaseGreenTermination and get the consecutive terminations
             var consecTerminations = logs.Where(r => r.EventCode != (int)IndianaEnumerations.PhaseGreenTermination).GetLastConsecutiveEvent(_consecutiveCounts).ToList();
 
-            var stuff = new PhaseTerminations(consecTerminations.Union(consecGreenTerminations))
+            var terminations = new PhaseTerminations(consecTerminations.Union(consecGreenTerminations))
             {
                 LocationIdentifier = approach.Location.LocationIdentifier,
                 PhaseNumber = phase,
             };
 
-            var result = Tuple.Create(approach, phase, stuff);
+            var result = Tuple.Create(approach, phase, terminations);
 
             return Task.FromResult(result);
         }

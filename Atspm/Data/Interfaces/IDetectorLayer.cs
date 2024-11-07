@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for ApplicationCore - ATSPM.Application.Analysis.Common/IDetectorEvent.cs
+// for Data - Utah.Udot.Atspm.Data.Interfaces/ILocationDetectorLayer.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,21 +15,22 @@
 // limitations under the License.
 #endregion
 
-using Utah.Udot.Atspm.Data.Enums;
-using Utah.Udot.Atspm.Data.Interfaces;
 
-namespace Utah.Udot.Atspm.Analysis.Common
+namespace Utah.Udot.Atspm.Data.Interfaces
 {
     /// <summary>
-    /// Events that coorelate to <see cref="IndianaEnumerations.VehicleDetectorOn"/>
-    /// and that have been timestamp corrected for detector distances and latency
-    /// using the <see cref="AtspmMath.AdjustTimeStamp"/> calculation.
+    /// For objects that reference detectors
     /// </summary>
-    public interface IDetectorEvent : ILocationPhaseLayer, ILocationDetectorLayer, ITimestamp
+    public interface IDetectorLayer
     {
         /// <summary>
-        /// Direction of travel when the event occured.
+        /// Detector identifier
         /// </summary>
-        DirectionTypes Direction { get; set; }
+        string DectectorIdentifier { get; set; }
+
+        /// <summary>
+        /// Detector channel
+        /// </summary>
+        int DetectorChannel { get; set; }
     }
 }
