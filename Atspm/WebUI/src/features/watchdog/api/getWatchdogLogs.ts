@@ -62,7 +62,7 @@ export const useGetWatchdogLogs = () => {
           }),
         }
       )
-      return response.data
+      return response
     }
   )
 }
