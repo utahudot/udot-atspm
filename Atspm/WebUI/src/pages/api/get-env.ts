@@ -1,4 +1,9 @@
-export default function handler(req, res) {
+import { EnvVariables } from '@/utils/getEnv'
+import { NextApiRequest, NextApiResponse } from 'next'
+export default function handler(
+  req: NextApiRequest,
+  res: NextApiResponse<EnvVariables>
+) {
   res.status(200).json({
     CONFIG_URL: process.env.CONFIG_URL,
     REPORTS_URL: process.env.REPORTS_URL,
@@ -9,5 +14,6 @@ export default function handler(req, res) {
     MAP_DEFAULT_LONGITUDE: process.env.MAP_DEFAULT_LONGITUDE,
     MAP_TILE_LAYER: process.env.MAP_TILE_LAYER,
     MAP_TILE_ATTRIBUTION: process.env.MAP_TILE_ATTRIBUTION,
+    SPONSOR_IMAGE_URL: process.env.POWERED_BY_IMAGE_URL,
   })
 }
