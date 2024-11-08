@@ -41,6 +41,9 @@ export function useGetRequest<T>({
   headers,
   enabled = true,
 }: UseDataOptions<T>) {
+  if (route === '/Watchdog/GetIssueTypes') {
+    console.log('route:', route)
+  }
   return useQuery<T, unknown>(
     [route],
     () => getRequest<T>(route, axiosInstance, headers),
