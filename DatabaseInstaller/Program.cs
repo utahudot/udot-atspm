@@ -17,6 +17,7 @@
 
 using DatabaseInstaller.Commands;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.CommandLine.Builder;
 using System.CommandLine.Hosting;
@@ -50,6 +51,8 @@ cmdBuilder.UseHost(hostBuilder =>
         services.AddAtspmEFEventLogRepositories();
 
         // Optional: Register any core services your application might need here.
+        services.Configure<UpdateCommandConfiguration>(hostContext.Configuration.GetSection("CommandLineOptions"));
+        services.AddScoped<UpdateCommandConfiguration>();
     });
 },
 host =>
