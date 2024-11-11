@@ -126,7 +126,7 @@ function transformData(data: RawLeftTurnGapData) {
       { name: gapNames[2] },
       { name: gapNames[3] },
       {
-        name: `${percentofGreenText} ${gap4Min}s`,
+        name: `${percentofGreenText} ${trendLineGapThreshold}s`,
         icon: SolidLineSeriesSymbol,
       },
     ],
@@ -195,7 +195,7 @@ function transformData(data: RawLeftTurnGapData) {
       tooltip: formattedTooltip as TooltipComponentOption,
     },
     {
-      name: `${percentofGreenText} ${gap4Min}s`,
+      name: `${percentofGreenText} ${trendLineGapThreshold}s`,
       data: transformSeriesData(percentTurnableSeries),
       yAxisIndex: 1,
       type: 'line',
