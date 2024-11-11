@@ -3,14 +3,7 @@ import SelectDataType from '@/features/data/components/selectDataType'
 import SelectLocation from '@/features/locations/components/selectLocation'
 import { Location } from '@/features/locations/types'
 import { LoadingButton } from '@mui/lab'
-import {
-  Alert,
-  Box,
-  CircularProgress,
-  Paper,
-  useMediaQuery,
-  useTheme,
-} from '@mui/material'
+import { Alert, Box, Paper, useMediaQuery, useTheme } from '@mui/material'
 
 import { StyledPaper } from '@/components/StyledPaper'
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
@@ -29,7 +22,7 @@ import { isValid, startOfToday, startOfTomorrow } from 'date-fns'
 
 import SelectDateTime from '@/components/selectTimeSpan'
 import { useGetAggData } from '@/features/data/exportData/api/getAggData'
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 
 const ExportData = () => {
   const theme = useTheme()
@@ -127,14 +120,14 @@ const ExportData = () => {
       let data
       if (selectedDataType == 'All Raw Data') {
         response = await refetchEventLogs()
-        if (response.status === 'error'){
+        if (response.status === 'error') {
           setError(true)
           setIsDownloading(false)
 
           return
         }
         data = response.data
-  
+
         setIsDownloading(false)
       } else {
         response = await refetchAggData()
@@ -196,12 +189,7 @@ const ExportData = () => {
   }
 
   //React Query Fetch
-  const {
-    refetch: refetchEventLogs,
-    data: eventLogsData,
-    isLoading: isLoadingEventLogs,
-    isError: eventLogError,
-  } = useEventLogs({
+  const { refetch: refetchEventLogs } = useEventLogs({
     locationIdentifier: location?.locationIdentifier
       ? location.locationIdentifier
       : '',
@@ -210,12 +198,7 @@ const ExportData = () => {
     ResponseFormat: downloadFormat,
   })
 
-  const {
-    data: aggData,
-    isLoading: aggDataIsLoading,
-    isError: aggDataError,
-    refetch: refetchAggData,
-  } = useGetAggData(
+  const { refetch: refetchAggData } = useGetAggData(
     location?.locationIdentifier,
     selectedDataType,
     isValid(startDateTime) ? dateToTimestamp(startDateTime) : '',
@@ -253,15 +236,9 @@ const ExportData = () => {
                 },
               }}
             >
-              {/* <SelectTimeSpan
-                startDateTime={startDateTime}
-                endDateTime={endDateTime}
-                changeStartDate={handleStartDateTimeChange}
-                changeEndDate={handleEndDateTimeChange}
-                noCalendar={isMobileView}
-              /> */}
               <SelectDateTime
-                // chartType={chartType}
+                dateFormat="MMM d, yyyy"
+                views={['year', 'month', 'day']}
                 startDateTime={startDateTime}
                 endDateTime={endDateTime}
                 changeStartDate={handleStartDateTimeChange}
@@ -289,7 +266,14 @@ const ExportData = () => {
           </Box>
         </Box>
 
-        <Box sx={{ display: 'flex', gap: '10px', marginTop: '10px', marginBottom: "120px" }}>
+        <Box
+          sx={{
+            display: 'flex',
+            gap: '10px',
+            marginTop: '10px',
+            marginBottom: '120px',
+          }}
+        >
           <ButtonGroup
             variant="contained"
             ref={anchorRef}
@@ -299,11 +283,7 @@ const ExportData = () => {
           >
             <LoadingButton
               loadingPosition="start"
-              startIcon={
-                isDownloading ? (
-                  <CircularProgress size={14} style={{ color: 'lightgray' }} />
-                ) : null
-              }
+              loading={isDownloading}
               variant="contained"
               onClick={downloadEventLogs}
               disabled={!location}
@@ -325,7 +305,7 @@ const ExportData = () => {
           <Popper
             sx={{
               zIndex: 1300,
-              paddingLeft:'140px',
+              paddingLeft: '140px',
             }}
             open={open}
             anchorEl={anchorRef.current}
@@ -337,11 +317,11 @@ const ExportData = () => {
               {
                 name: 'preventOverflow',
                 options: {
-                  altAxis: true, 
+                  altAxis: true,
                   altBoundary: true,
                   tether: true,
                   rootBoundary: 'document',
-                  padding: 8, 
+                  padding: 8,
                 },
               },
             ]}
@@ -377,10 +357,10 @@ const ExportData = () => {
                 display: 'flex',
                 marginLeft: '1rem',
                 marginTop: '19px',
-                height: "48px"
+                height: '48px',
               }}
             >
-              <Alert  severity="error">No Data Found</Alert>
+              <Alert severity="error">No Data Found</Alert>
             </Box>
           )}
         </Box>
