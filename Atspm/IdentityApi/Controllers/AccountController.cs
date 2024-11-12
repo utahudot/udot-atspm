@@ -146,10 +146,10 @@ namespace Identity.Controllers
 
             if (result.Code == StatusCodes.Status200OK)
             {
-                return Redirect($"{configuration["AtspmSite"]}/ssoLogin?token={result.Token}&claims={result.Claims.Join(",")}");
+                return Redirect($"{configuration["AtspmSite"]}/sso-login?token={result.Token}&claims={result.Claims.Join(",")}");
             }
 
-            return Redirect($"{configuration["AtspmSite"]}/ssoLogin?error={result.Message}");
+            return Redirect($"{configuration["AtspmSite"]}/sso-login?error={result.Message}");
 
         }
 
