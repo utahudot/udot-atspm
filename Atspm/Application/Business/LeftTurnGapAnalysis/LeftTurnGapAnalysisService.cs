@@ -70,7 +70,7 @@ namespace Utah.Udot.Atspm.Business.LeftTurnGapAnalysis
             if (detectorEvents.Any() && cycleEventsByPhase.Any())
             {
                 var result = GetData(cycleEventsByPhase, detectorEvents, options, detectionTypeStr, approach);
-                result.PhaseDescription = $"{leftTurnPhase.DirectionType.Description} Left Phase {leftTurnPhase.ProtectedPhaseNumber} crossing {approach.DirectionType.Description} {string.Join(',', detectorsToUse.Select(d => d.MovementType.GetDisplayName()))} Phase {approach.ProtectedPhaseNumber}";
+                result.PhaseDescription = $"{leftTurnPhase.DirectionType.Description} Left Turn Crossing {approach.DirectionType.Description} Thru - Phase {approach.ProtectedPhaseNumber}";
                 result.ApproachDescription = approach.Description;
                 result.LocationDescription = approach.Location.LocationDescription();
                 return result;
