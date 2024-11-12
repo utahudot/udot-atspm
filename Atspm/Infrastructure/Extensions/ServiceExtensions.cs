@@ -178,9 +178,9 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
             });
 
             var oidc = host.Configuration.GetSection("Oidc");
-            if (oidc.Exists() && oidc.GetChildren().Any())
+            if (oidc.Value !=null &&oidc.Exists() && oidc.GetChildren().Any())
             {
-                services.AddAuthentication()
+                    services.AddAuthentication()
                 .AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options =>
                 {
                     options.Authority = oidc["Authority"];
