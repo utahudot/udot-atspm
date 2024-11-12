@@ -178,7 +178,10 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
             });
 
             var oidc = host.Configuration.GetSection("Oidc");
-            if (oidc.Value !=null &&oidc.Exists() && oidc.GetChildren().Any())
+            if (oidc.Exists() && !string.IsNullOrEmpty(oidc["Authority"]) &&
+                !string.IsNullOrEmpty(oidc["ClientId"]) &&
+                !string.IsNullOrEmpty(oidc["ClientSecret"]) &&
+                !string.IsNullOrEmpty(oidc["RedirectUri"]))
             {
                     services.AddAuthentication()
                 .AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options =>
