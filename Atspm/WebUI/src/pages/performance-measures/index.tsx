@@ -132,7 +132,7 @@ const Locations = () => {
 
         {/* ConfigurationComponent */}
         <TabPanel value="2" sx={{ padding: '0px' }}>
-          {locationIdentifier && (
+          {locationIdentifier && currentTab === '2' && (
             <LocationsConfigContainer locationIdentifier={locationIdentifier} />
           )}
         </TabPanel>
