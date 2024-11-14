@@ -3,16 +3,11 @@ import WatchdogChartsContainer from '@/features/charts/watchdogDashboard/compone
 import { useGetDetectionTypeCount } from '@/features/watchdog/api/GetDetectionTypeCount'
 import { useGetDeviceCount } from '@/features/watchdog/api/getDeviceCount'
 import { useGetWatchdogDashboardData } from '@/features/watchdog/api/getWatchdogDashboardData'
+import { toUTCDateStamp } from '@/utils/dateTime'
 import PlayArrowIcon from '@mui/icons-material/PlayArrow'
 import { LoadingButton } from '@mui/lab'
 import { Box } from '@mui/material'
-import {
-  format,
-  startOfToday,
-  startOfTomorrow,
-  subDays,
-  subYears,
-} from 'date-fns'
+import { startOfToday, startOfTomorrow, subDays, subYears } from 'date-fns'
 import { useState } from 'react'
 import HorizontalDateInput from './HorizontalDateInputs'
 
@@ -21,41 +16,32 @@ const WatchdogSummaryReport = () => {
     subYears(startOfToday(), 1)
   )
   const [endDateTime, setEndDateTime] = useState(subDays(startOfTomorrow(), 1))
-  const [fetchData, setFetchData] = useState(false)
-  const formattedStartDate = format(startDateTime, "yyyy-MM-dd'T'HH:mm:ss'Z'")
-  const formattedEndDate = format(endDateTime, "yyyy-MM-dd'T'HH:mm:ss'Z'")
 
   const {
     data: dashboardData,
+    refetch: fetchDashboardData,
     isLoading,
     error,
   } = useGetWatchdogDashboardData({
-    start: formattedStartDate,
-    end: formattedEndDate,
-    enabled: fetchData,
+    start: toUTCDateStamp(startDateTime),
+    end: toUTCDateStamp(endDateTime),
+    enabled: false,
   })
 
-  const {
-    data: deviceCount,
-    isLoading: isDeviceCountLoading,
-    error: deviceCountError,
-  } = useGetDeviceCount()
-  const {
-    data: detectionTypeCount,
-    isLoading: isDetectionTypeCountLoading,
-    error: detectionTypeCountError,
-  } = useGetDetectionTypeCount(formattedEndDate)
+  const { data: deviceCount } = useGetDeviceCount()
+
+  const { data: detectionTypeCount } = useGetDetectionTypeCount(
+    toUTCDateStamp(endDateTime)
+  )
+
   const data = {
     ...dashboardData,
-    deviceCount: deviceCount,
-    detectionTypeCount: detectionTypeCount,
+    deviceCount,
+    detectionTypeCount,
   }
 
-  // useEffect(() => {
-  //   console.log("DOGDATA", data)
-  // }, [deviceCount,isDeviceCountLoading, dashboardData, isLoading])
-  const handleGenerateSummary = () => {
-    setFetchData(true)
+  const handleGenerateSummary = async () => {
+    await fetchDashboardData()
   }
 
   const handleStartDateTimeChange = (date: Date) => {

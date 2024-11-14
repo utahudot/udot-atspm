@@ -183,7 +183,7 @@ export default function SelectDateTime({
             sx={{ width: '100%' }}
             value={startDateTime}
             onChange={handleStartDateTimeChange}
-            views={views !== undefined ? views : undefined}
+            views={views}
             label="Start"
             format={dateFormat}
             ampm={false}
@@ -194,9 +194,9 @@ export default function SelectDateTime({
             sx={{ width: '100%', mt: calendarLocation === 'right' ? 0 : 3 }}
             value={endDateTime}
             onChange={handleEndDateTimeChange}
-            views={views !== undefined ? views : undefined}
-            label="End"
             format={dateFormat}
+            views={views}
+            label="End"
             ampm={false}
           />
           {timePeriod && (

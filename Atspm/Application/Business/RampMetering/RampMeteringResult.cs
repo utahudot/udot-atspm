@@ -1,5 +1,6 @@
 ﻿using Utah.Udot.Atspm.Business.Common;
 using Utah.Udot.Atspm.Business.TimeSpaceDiagram;
+using Utah.Udot.Atspm.Business.TimingAndActuation;
 
 namespace Utah.Udot.Atspm.Business.RampMetering
 {
@@ -15,7 +16,6 @@ namespace Utah.Udot.Atspm.Business.RampMetering
         public List<TimeSpaceEventBase> ShutdownWarning { get; set; }
         public List<DescriptionWithDataPoints> LanesActiveRate { get; set; }
         public List<DescriptionWithDataPoints> LanesBaseRate { get; set; }
-        public List<DescriptionWithDataPoints> LanesQueueOnEvents { get; set; }
-        public List<DescriptionWithDataPoints> LanesQueueOffEvents { get; set; }
+        public List<DataPointForDetectorEvent> LanesQueueOnAndOffEvents { get; set; }
     }
 }

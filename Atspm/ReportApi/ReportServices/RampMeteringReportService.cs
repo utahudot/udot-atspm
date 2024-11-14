@@ -23,13 +23,14 @@ namespace Utah.Udot.ATSPM.ReportApi.ReportServices
             {
                 return await Task.FromException<RampMeteringResult>(new NullReferenceException("Location not found"));
             }
-            var controllerEventLogs = controllerEventLogRepository.GetEventsBetweenDates(location.LocationIdentifier, parameter.Start.AddHours(-1), parameter.End.AddHours(1)).ToList();
+            var controllerEventLogs = controllerEventLogRepository.GetEventsBetweenDates(location.LocationIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
             if (controllerEventLogs.IsNullOrEmpty())
             {
                 return await Task.FromException<RampMeteringResult>(new NullReferenceException("No Controller Event Logs found for Location"));
             }
 
             var result = rampMeteringService.GetChartData(location, parameter, controllerEventLogs);
+            result.LocationDescription = location.LocationDescription();
             return result;
         }
     }

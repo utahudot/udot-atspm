@@ -28,6 +28,10 @@ export interface DescriptionWithDetectorEvents {
   value: DetectorEvent[]
 }
 
+export interface QueueDetectorEvent extends DetectorEvent {
+  value: number
+}
+
 export interface RampMeteringData extends BaseChartData {
   mainlineAvgFlow: DataPoint[]
   mainlineAvgOcc: DataPoint[]
@@ -36,9 +40,7 @@ export interface RampMeteringData extends BaseChartData {
   lanesBaseRate: DescriptionWithDataPoints[]
   startUpWarning: TimeSpaceDetectorEvent[]
   shutdownWarning: TimeSpaceDetectorEvent[]
-  // lanesQueueEvents: DescriptionWithDetectorEvents[]
-  lanesQueueOnEvents: DescriptionWithDataPoints[]
-  lanesQueueOffEvents: DescriptionWithDataPoints[]
+  lanesQueueOnAndOffEvents: QueueDetectorEvent[]
 }
 
 export interface RawRampMeteringResponse {

@@ -115,11 +115,7 @@ namespace ATSPM.Application.Analysis.Workflows
         }
     }
 
-    public abstract class PhaseTerminationValueBase
-    {
-        public DateTime StartTime { get; set; }
-        public int PhaseNumber { get; set; }
-    }
+    
 
     public class GapOut : PhaseTerminationValueBase { }
 

@@ -10,6 +10,7 @@ import {
 } from '@/features/watchdog/api/getWatchdogLogs'
 import { useCreateWatchdogIgnoreEvents } from '@/features/watchdog/api/watchdogIgnoreEvents'
 import { useNotificationStore } from '@/stores/notifications'
+import { toUTCDateStamp } from '@/utils/dateTime'
 import { zodResolver } from '@hookform/resolvers/zod'
 import NotificationsPausedIcon from '@mui/icons-material/NotificationsPaused'
 import PlayArrowIcon from '@mui/icons-material/PlayArrow'
@@ -56,6 +57,8 @@ interface transformWatchDogLog {
   details: string
   componentType: number
   componentId: number
+  start: Date
+  end: Date
 }
 
 // Schema for filtering events (table of events)
@@ -190,18 +193,20 @@ const WatchDogLogs = () => {
     const response = await Promise.all(
       selectedRows.map(async (rowId) => {
         const eventToIgnore = clickedRows?.[rowId]
-        if (!eventToIgnore)
+        console.log('eventToIgnore', data)
+        if (!eventToIgnore || !data.start || !data.end)
           return { rowId, success: false, error: 'Event not found' }
 
         try {
           await addWatchdogIgnoreEvents({
-            ...data,
             locationId: eventToIgnore.locationId,
             locationIdentifier: eventToIgnore.locationIdentifier,
             issueType: eventToIgnore.issueType?.toString(),
             componentType: eventToIgnore.componentType?.toString(),
             componentId: eventToIgnore.componentId,
             phase: eventToIgnore.phase,
+            start: toUTCDateStamp(data.start),
+            end: toUTCDateStamp(data.end),
           })
           return { rowId, success: true }
         } catch (error) {

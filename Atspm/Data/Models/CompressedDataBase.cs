@@ -15,6 +15,7 @@
 // limitations under the License.
 #endregion
 
+using Pomelo.EntityFrameworkCore.MySql.Storage.Internal;
 using Utah.Udot.Atspm.Data.Interfaces;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
 
@@ -75,6 +76,11 @@ namespace Utah.Udot.Atspm.Data.Models
             get => base.Data.Cast<EventLogModelBase>().ToList();
             set => base.Data = value;
         }
+
+        public override string ToString()
+        {
+            return $"***{this.LocationIdentifier} - {this.ArchiveDate} - {this.DeviceId} - {this.DataType.Name} - {this.Data?.Count()} - {this.DataType.Name}";
+        }
     }
 
     /// <summary>
@@ -88,11 +94,6 @@ namespace Utah.Udot.Atspm.Data.Models
         {
             get => base.Data.Cast<T>().ToHashSet().ToList();
             set => base.Data = value.Cast<T>().ToHashSet().ToList();
-        }
-
-        public override string ToString()
-        {
-            return $"***{this.LocationIdentifier} - {this.ArchiveDate} - {this.DeviceId} - {this.DataType.Name} - {this.Data?.Count} - {typeof(T).Name}";
         }
     }
 

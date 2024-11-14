@@ -43,7 +43,6 @@ namespace Utah.Udot.Atspm.Analysis.WorkflowSteps
                 f.Unknown = events.UnknownTerminations.Count(c => f.InRange(c));
             });
 
-            //TODO: change this and all aggregations to ireadonlylist
             var result = tl.Segments.AsEnumerable();
 
             return Task.FromResult(result);
