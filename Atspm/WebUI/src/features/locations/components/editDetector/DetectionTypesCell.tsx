@@ -1,6 +1,7 @@
 import { DetectionType, Detector } from '@/features/locations/types'
 import {
   Avatar,
+  AvatarGroup,
   Box,
   Checkbox,
   ListItemText,
@@ -120,22 +121,27 @@ const DetectionTypesCell = ({
         }}
         onClick={handleClick}
       >
-        {Object.entries(options).map(([abbreviation, option]) => (
-          <Tooltip key={option.id} title={option.description}>
-            <Avatar
-              sx={{
-                bgcolor: valueAbbreviations.has(abbreviation)
-                  ? theme.palette.primary.main
-                  : theme.palette.grey[400],
-                width: 26,
-                height: 26,
-                fontSize: '11px',
-              }}
-            >
-              {abbreviation}
-            </Avatar>
-          </Tooltip>
-        ))}
+        <AvatarGroup max={12}>
+          {Object.entries(options).map(([abbreviation, option]) => (
+            <Tooltip key={option.id} title={option.description}>
+              <Avatar
+                sx={{
+                  bgcolor: valueAbbreviations.has(abbreviation)
+                    ? theme.palette.primary.main
+                    : theme.palette.grey[400],
+                  width: 26,
+                  height: 26,
+                  fontSize: '11px',
+                }}
+                slotProps={{
+                  width: { style: { width: 26, height: 26, fontSize: '11px' } },
+                }}
+              >
+                {abbreviation}
+              </Avatar>
+            </Tooltip>
+          ))}
+        </AvatarGroup>
       </Box>
       {!readonly && (
         <Menu

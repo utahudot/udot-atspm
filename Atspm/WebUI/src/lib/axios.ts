@@ -1,25 +1,34 @@
+import { getEnv } from '@/utils/getEnv'
 import axios, { AxiosRequestConfig, InternalAxiosRequestConfig } from 'axios'
 import Cookies from 'js-cookie'
-import { getEnv } from './getEnv'
 
-// Retrieve environment variables synchronously
-const env = getEnv()
+export let configAxios: ReturnType<typeof createAxiosInstance>
+export let reportsAxios: ReturnType<typeof createAxiosInstance>
+export let identityAxios: ReturnType<typeof createAxiosInstance>
+export let dataAxios: ReturnType<typeof createAxiosInstance>
+export let speedAxios: ReturnType<typeof createAxiosInstance>
 
-// Initialize Axios instances synchronously
-export const configAxios = createAxiosInstance(env.CONFIG_URL)
-export const reportsAxios = createAxiosInstance(env.REPORTS_URL)
-export const identityAxios = createAxiosInstance(env.IDENTITY_URL)
-export const dataAxios = createAxiosInstance(env.DATA_URL)
-export const speedAxios = createAxiosInstance(env.SPEED_URL)
+export const initializeAxiosInstances = async () => {
+  const env = await getEnv()
 
-// Function to create an Axios instance with common interceptors
+  if (!env) {
+    return
+  }
+
+  if (env.CONFIG_URL) configAxios = createAxiosInstance(env.CONFIG_URL)
+  if (env.REPORTS_URL) reportsAxios = createAxiosInstance(env.REPORTS_URL)
+  if (env.IDENTITY_URL) identityAxios = createAxiosInstance(env.IDENTITY_URL)
+  if (env.DATA_URL) dataAxios = createAxiosInstance(env.DATA_URL)
+  if (env.SPEED_URL) speedAxios = createAxiosInstance(env.SPEED_URL)
+}
+
 function createAxiosInstance(baseURL: string) {
   const instance = axios.create({ baseURL })
 
   instance.interceptors.request.use(authRequestInterceptor)
   instance.interceptors.response.use(
     (response) => {
-      return response.data // Modify response data if necessary
+      return response.data
     },
     (error) => Promise.reject(error)
   )
@@ -36,8 +45,7 @@ function authRequestInterceptor(config: InternalAxiosRequestConfig) {
   return config
 }
 
-// Define individual request functions for each Axios instance
-export const configRequest = <T>(config: AxiosRequestConfig) => {
+export const configRequest = <T>(config: AxiosRequestConfig): Promise<T> => {
   return configAxios.request<unknown, T>(config)
 }
 
