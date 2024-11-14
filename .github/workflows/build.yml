@@ -79,7 +79,8 @@ jobs:
         with:
           builder: ${{ steps.builder.outputs.name }}
           tags: ${{ steps.meta.outputs.tags }}
-          context: ${{ env.DOCKERFILE_DIR }}
+          context: Atspm/
+          file: ${{ env.DOCKERFILE_DIR }}/Dockerfile
           push: true
           cache-from: type=gha
           cache-to: type=gha,mode=max
