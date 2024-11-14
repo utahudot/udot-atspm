@@ -3,31 +3,32 @@ import { EChartsOption } from 'echarts'
 
 const transformDeviceCountData = (data: DeviceCount[]): EChartsOption => {
   const total = data.reduce((sum, item) => sum + item.count, 0)
-  const seriesData = data.map(item => ({
+
+  const seriesData = data.map((item) => ({
     value: item.count,
-    name: `${item.manufacturer}`
+    name: `${item.model} - ${item.firmware}`,
   }))
 
   return {
     title: {
       text: 'Device Count',
       left: 'center',
-      top: 5
+      top: 5,
     },
     tooltip: {
       trigger: 'item',
-      formatter: '{a} <br/>{b}: {c} ({d}%)'
+      formatter: '{a} <br/>{b}: {c} ({d}%)',
     },
     legend: {
       type: 'scroll',
       orient: 'vertical',
-      top: "37%",
+      top: '37%',
       right: 130,
       itemWidth: 26,
       itemHeight: 15,
       textStyle: {
-        fontSize: 13
-      }
+        fontSize: 13,
+      },
     },
     series: [
       {
@@ -40,8 +41,8 @@ const transformDeviceCountData = (data: DeviceCount[]): EChartsOption => {
           itemStyle: {
             shadowBlur: 10,
             shadowOffsetX: 0,
-            shadowColor: 'rgba(0, 0, 0, 0.5)'
-          }
+            shadowColor: 'rgba(0, 0, 0, 0.5)',
+          },
         },
         label: {
           show: true,
@@ -49,9 +50,9 @@ const transformDeviceCountData = (data: DeviceCount[]): EChartsOption => {
             const percent = ((params.value / total) * 100).toFixed(1)
             return `${params.name}\n${params.value} (${percent}%)`
           },
-          position: 'inside'
-        }
-      }
+          position: 'inside',
+        },
+      },
     ],
     media: [
       {
@@ -61,18 +62,17 @@ const transformDeviceCountData = (data: DeviceCount[]): EChartsOption => {
             orient: 'horizontal',
             top: 'bottom',
             left: 'center',
-            right: 'auto'
+            right: 'auto',
           },
           series: [
             {
               radius: '60%',
               center: ['50%', '50%'],
-    
-            }
-          ]
-        }
-      }
-    ]
+            },
+          ],
+        },
+      },
+    ],
   }
 }
 

@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Utah.Udot.Atspm.Data;
 using Utah.Udot.Atspm.Data.Configuration.Identity;
 using Utah.Udot.Atspm.Data.Models;
@@ -20,12 +21,12 @@ namespace DatabaseInstaller.Services
 
         public UpdateCommandHostedService(
             IServiceProvider serviceProvider,
-            UpdateCommandConfiguration config,
+            IOptions<UpdateCommandConfiguration> config,
             ILogger<UpdateCommandHostedService> logger,
             IHostApplicationLifetime hostApplicationLifetime)
         {
             _serviceProvider = serviceProvider;
-            _config = config;
+            _config = config.Value;
             _logger = logger;
             _hostApplicationLifetime = hostApplicationLifetime;
         }

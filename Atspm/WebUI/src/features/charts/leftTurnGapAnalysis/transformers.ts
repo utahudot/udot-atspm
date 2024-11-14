@@ -31,7 +31,7 @@ import { ChartType } from '@/features/charts/common/types'
 import { TransformedChartResponse } from '@/features/charts/types'
 import {
   Color,
-  SolidLineSeriesSymbol,
+  DashedLineSeriesSymbol,
   formatChartDateTimeRange,
 } from '@/features/charts/utils'
 import {
@@ -126,8 +126,8 @@ function transformData(data: RawLeftTurnGapData) {
       { name: gapNames[2] },
       { name: gapNames[3] },
       {
-        name: `${percentofGreenText} ${gap4Min}s`,
-        icon: SolidLineSeriesSymbol,
+        name: `${percentofGreenText} ${trendLineGapThreshold}s`,
+        icon: DashedLineSeriesSymbol,
       },
     ],
   })
@@ -195,11 +195,12 @@ function transformData(data: RawLeftTurnGapData) {
       tooltip: formattedTooltip as TooltipComponentOption,
     },
     {
-      name: `${percentofGreenText} ${gap4Min}s`,
+      name: `${percentofGreenText} ${trendLineGapThreshold}s`,
       data: transformSeriesData(percentTurnableSeries),
       yAxisIndex: 1,
       type: 'line',
-      color: Color.Blue,
+      color: Color.Black,
+      lineStyle: { type: 'dashed' },
       tooltip: {
         valueFormatter: (value) =>
           `${Math.round(value as number).toLocaleString()}%`,
@@ -208,7 +209,7 @@ function transformData(data: RawLeftTurnGapData) {
   )
 
   const displayProps = createDisplayProps({
-    description: data.phaseDescription,
+    description: data.approachDescription,
   })
 
   const chartOptions: EChartsOption = {
