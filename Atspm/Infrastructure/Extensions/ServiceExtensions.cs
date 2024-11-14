@@ -21,9 +21,11 @@ using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
@@ -491,6 +493,71 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
             services.AddTransient<IStartupFilter, PathBaseStartupFilter>();
 
             return services;
+        }
+
+        /// <summary>
+        /// Used to read confiuration values from mapped container volumes.
+        /// <list type="bullet">
+        /// <listheader>Configuration files providers</listheader>
+        /// <item><see cref="ApplyVolumeJsonConfiguration(IConfigurationBuilder, HostBuilderContext, DirectoryInfo)"/></item>
+        /// <item><see cref="ApplyVolumeTxtConfiguration(IConfigurationBuilder, HostBuilderContext, DirectoryInfo)"/></item>
+        /// </list>
+        /// </summary>
+        /// <param name="hostBuilder"></param>
+        /// <param name="path">Path to where the container volume is mapped</param>
+        /// <returns></returns>
+        public static IHostBuilder ApplyVolumeConfiguration(this IHostBuilder hostBuilder, string path = "Secrets")
+        {
+            var dir = new DirectoryInfo(Path.Combine(Directory.GetCurrentDirectory(), path));
+
+            Console.WriteLine($"Root: {dir.FullName} - Exists: {dir.Exists}");
+
+            if (dir.Exists)
+            {
+                hostBuilder.ConfigureAppConfiguration((h, c) =>
+                {
+                    c.ApplyVolumeJsonConfiguration(h, dir).ApplyVolumeTxtConfiguration(h, dir);
+                });
+            }
+
+            return hostBuilder;
+        }
+
+        /// <summary>
+        /// Used to read configuration values from .json files when using mapped container volumes.
+        /// </summary>
+        /// <param name="configurationBuilder"></param>
+        /// <param name="host"></param>
+        /// <param name="dir">Directory of mapped container volume</param>
+        /// <returns></returns>
+        public static IConfigurationBuilder ApplyVolumeJsonConfiguration(this IConfigurationBuilder configurationBuilder, HostBuilderContext host, DirectoryInfo dir)
+        {
+            foreach (var file in dir.GetFiles("*.json"))
+            {
+                configurationBuilder.AddJsonFile(file.FullName, true, true);
+            }
+
+            return configurationBuilder;
+        }
+
+        /// <summary>
+        /// Used to read configuration values from .txt files when using mapped container volumes.
+        /// </summary>
+        /// <param name="configurationBuilder"></param>
+        /// <param name="host"></param>
+        /// <param name="dir">Directory of mapped container volume</param>
+        /// <returns></returns>
+        public static IConfigurationBuilder ApplyVolumeTxtConfiguration(this IConfigurationBuilder configurationBuilder, HostBuilderContext host, DirectoryInfo dir)
+        {
+            configurationBuilder.AddKeyPerFile(a =>
+            {
+                a.FileProvider = new PhysicalFileProvider(dir.FullName);
+                a.Optional = true;
+                a.ReloadOnChange = true;
+                a.IgnoreCondition = f => !f.EndsWith(".txt");
+            });
+
+            return configurationBuilder;
         }
     }
 
