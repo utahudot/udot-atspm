@@ -76,11 +76,23 @@ jobs:
 
       - name: 📦 Build and push image
         uses: docker/build-push-action@v6
+        if: ${{ matrix.name != 'atspm-webui'}}
         with:
           builder: ${{ steps.builder.outputs.name }}
           tags: ${{ steps.meta.outputs.tags }}
           context: Atspm/
           file: ${{ env.DOCKERFILE_DIR }}/Dockerfile
+          push: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: 📦 Build and push image WebUI
+        uses: docker/build-push-action@v6
+        if: ${{ matrix.name == 'atspm-webui'}}
+        with:
+          builder: ${{ steps.builder.outputs.name }}
+          tags: ${{ steps.meta.outputs.tags }}
+          context: ${{ env.DOCKERFILE_DIR }}
           push: true
           cache-from: type=gha
           cache-to: type=gha,mode=max
