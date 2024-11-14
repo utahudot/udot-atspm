@@ -22,7 +22,7 @@ using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
 namespace Utah.Udot.Atspm.ConfigApi.Controllers
 {
     /// <summary>
-    /// Area Controller
+    /// WatchDogIgnoreEvent Controller
     /// </summary>
     [ApiVersion(1.0)]
     public class WatchDogIgnoreEventController : AtspmConfigControllerBase<WatchDogIgnoreEvent, int>
@@ -36,8 +36,6 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
         }
 
         #region NavigationProperties
-
-
 
         #endregion
 
