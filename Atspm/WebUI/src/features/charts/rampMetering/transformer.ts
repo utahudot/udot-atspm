@@ -14,17 +14,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 // #endregion
-import { EChartsOption, SeriesOption } from 'echarts'
+import { DataZoomComponentOption, EChartsOption, SeriesOption } from 'echarts'
 import {
-  createDataZoom,
   createGrid,
   createLegend,
+  createPolyLines,
   createSeries,
   createTitle,
   createToolbox,
   createTooltip,
   createXAxis,
   createYAxis,
+  formatDataPointForStepView,
   transformSeriesData,
 } from '../common/transformers'
 import { ChartType, MarkAreaData } from '../common/types'
@@ -37,7 +38,7 @@ import {
   triangleSvgSymbol,
 } from '../utils'
 import {
-  DescriptionWithDetectorEvents,
+  QueueDetectorEvent,
   RampMeteringData,
   RawRampMeteringResponse,
 } from './types'
@@ -67,14 +68,13 @@ function transformData(data: RampMeteringData): EChartsOption[] {
     mainlineAvgSpeed,
     lanesActiveRate,
     lanesBaseRate,
-    lanesQueueOnEvents,
-    lanesQueueOffEvents,
+    lanesQueueOnAndOffEvents,
   } = data
 
-  const titleHeader1 = `Ramp Rate vs. Mainline Occupancy (Active Rate vs Mainline Avg Occupancy)\n${data.locationIdentifier}`
-  const titleHeader2 = `Queue Override\n${data.locationIdentifier}`
-  const titleHeader3 = `Ramp Rate vs. Mainline Volume - (Active Rate vs Mainline Avg Flow)\n${data.locationIdentifier}`
-  const titleHeader4 = `Ramp Rate vs. Mainline Speed  (Active Rate vs Mainline Avg Speed)\n${data.locationIdentifier}`
+  const titleHeader1 = `Ramp Rate vs. Mainline Occupancy (Active Rate vs Mainline Avg Occupancy)\n${data.locationDescription}`
+  const titleHeader2 = `Queue Override\n${data.locationDescription}`
+  const titleHeader3 = `Ramp Rate vs. Mainline Volume - (Active Rate vs Mainline Avg Flow)\n${data.locationDescription}`
+  const titleHeader4 = `Ramp Rate vs. Mainline Speed  (Active Rate vs Mainline Avg Speed)\n${data.locationDescription}`
   const dateRange = formatChartDateTimeRange(data.start, data.end)
 
   const title1 = createTitle({
@@ -158,21 +158,17 @@ function transformData(data: RampMeteringData): EChartsOption[] {
     }
   })
 
-  const lanesQueueOnLegends = lanesQueueOnEvents.map((lane) => {
-    return {
-      name: `Queue On: ${lane.description}`,
-      icon: triangleSvgSymbol,
-      itemStyle: { color: '#00C5FF' },
-    }
-  })
+  const queueOnLegend = {
+    name: 'Queue On',
+    icon: triangleSvgSymbol,
+    itemStyle: { color: 'black' },
+  }
 
-  const lanesQueueOffLegends = lanesQueueOffEvents.map((lane) => {
-    return {
-      name: `Queue Off: ${lane.description}`,
-      icon: 'square',
-      itemStyle: { color: '#00C5FF' },
-    }
-  })
+  const queueOffLegend = {
+    name: 'Queue Off',
+    icon: 'square',
+    itemStyle: { color: 'darkgrey' },
+  }
 
   const legendOne = createLegend({
     data: [
@@ -188,17 +184,8 @@ function transformData(data: RampMeteringData): EChartsOption[] {
     data: [
       ...lanesActiveLegends,
       ...lanesBaseLegends,
-      ...lanesQueueOnLegends,
-      ...lanesQueueOffLegends,
-      {
-        name: 'Start Up Warning',
-      },
-      {
-        name: 'Shutdown Warning',
-      },
-      {
-        name: 'Queue Rate Activated',
-      },
+      queueOnLegend,
+      queueOffLegend,
     ],
   })
 
@@ -224,7 +211,26 @@ function transformData(data: RampMeteringData): EChartsOption[] {
     ],
   })
 
-  const dataZoom = createDataZoom()
+  const dataZoom: DataZoomComponentOption[] = [
+    {
+      type: 'slider',
+      filterMode: 'none',
+      minSpan: 0.2,
+    },
+    {
+      type: 'slider',
+      orient: 'vertical',
+      filterMode: 'none',
+      right: 160,
+      yAxisIndex: 0,
+      minSpan: 0.2,
+    },
+    {
+      type: 'inside',
+      filterMode: 'none',
+      minSpan: 0.2,
+    },
+  ]
 
   const toolbox = createToolbox(
     { title: titleHeader1, dateRange },
@@ -244,135 +250,131 @@ function transformData(data: RampMeteringData): EChartsOption[] {
   })
 
   lanesActiveRate.forEach((lane, index) => {
+    const activeRateData = formatDataPointForStepView(lane.value, data.end)
     seriesOne.push(
       ...createSeries({
         name: `Active Rate: ${lane.description}`,
         data: transformSeriesData(lane.value),
-        type: 'line',
+        type: 'custom',
         yAxisIndex: 1,
         color: chartColors[index + 1],
+        clip: true,
+        renderItem(param, api) {
+          if (param.dataIndex === 0) {
+            const polylines = createPolyLines(activeRateData, api)
+
+            return {
+              type: 'group',
+              children: polylines,
+            }
+          }
+        },
       })
     )
   })
+
+  seriesOne.push(createStartupArea(data.startUpWarning, data.start, data.end))
 
   const seriesTwo: SeriesOption[] = []
 
-  // const seriesTwoQueueData = generateQueueSeriesData(lanesQueueEvents)
-
-  // seriesTwo.push(...seriesTwoQueueData)
-
-  lanesQueueOnEvents.forEach((lane) => {
-    seriesTwo.push(
-      ...createSeries({
-        name: `Queue On: ${lane.description}`,
-        data: transformSeriesData(lane.value),
-        type: 'scatter',
-        // tooltip: {
-        //   confine: true,
-        //   valueFormatter: (value) => (value as string[])[0],
-        // },
-        yAxisIndex: 1,
-        symbol: 'triangle',
-        symbolSize: 5,
-        itemStyle: {
-          color: '#00C5FF',
-        },
-      })
-    )
-  })
-
-  lanesQueueOffEvents.forEach((lane) => {
-    seriesTwo.push(
-      ...createSeries({
-        name: `Queue Off: ${lane.description}`,
-        data: transformSeriesData(lane.value),
-        type: 'scatter',
-        yAxisIndex: 1,
-        // tooltip: {
-        //   confine: true,
-        //   valueFormatter: (value) => (value as string[])[0],
-        // },
-        symbol: 'square',
-        symbolSize: 5,
-        itemStyle: {
-          color: '#00C5FF',
-        },
-      })
-    )
-  })
+  seriesTwo.push(...generateQueueSeriesData(lanesQueueOnAndOffEvents))
 
   lanesActiveRate.forEach((lane, index) => {
+    const activeRateData = formatDataPointForStepView(lane.value, data.end)
     seriesTwo.push(
       ...createSeries({
         name: `Active Rate: ${lane.description}`,
         data: transformSeriesData(lane.value),
-        type: 'line',
+        type: 'custom',
+        yAxisIndex: 0,
         color: chartColors[index + 1],
+        clip: true,
+        renderItem(param, api) {
+          if (param.dataIndex === 0) {
+            const polylines = createPolyLines(activeRateData, api)
+
+            return {
+              type: 'group',
+              children: polylines,
+            }
+          }
+        },
       })
     )
   })
 
   lanesBaseRate.forEach((lane, index) => {
+    const baseRateData = formatDataPointForStepView(lane.value, data.end)
     seriesTwo.push(
       ...createSeries({
         name: `Base Rate: ${lane.description}`,
         data: transformSeriesData(lane.value),
-        type: 'line',
+        type: 'custom',
+        yAxisIndex: 0,
         color: chartColors[index + 2],
+        clip: true,
+        renderItem(param, api) {
+          if (param.dataIndex === 0) {
+            const polylines = createPolyLines(baseRateData, api)
+
+            return {
+              type: 'group',
+              children: polylines,
+            }
+          }
+        },
       })
     )
   })
 
-  seriesTwo.push(createStartupArea(data.startUpWarning))
-
-  // seriesTwo.push(
-  //   ...createSeries({
-  //     name: 'Start Up Warning',
-  //     data: transformSeriesData(data.startUpWarning),
-  //     type: 'line',
-  //     yAxisIndex: 1,
-  //     color: Color.Green,
-  //     lineStyle: {
-  //       width: 5,
-  //     },
-  //   })
-  // )
-
-  // seriesTwo.push(
-  //   ...createSeries({
-  //     name: 'Shutdown Warning',
-  //     data: transformSeriesData(data.shutdownWarning),
-  //     type: 'line',
-  //     yAxisIndex: 1,
-  //     color: Color.Red,
-  //     lineStyle: {
-  //       width: 5,
-  //     },
-  //   })
-  // )
+  seriesTwo.push(createStartupArea(data.startUpWarning, data.start, data.end))
 
   const seriesThree: SeriesOption[] = []
 
   lanesActiveRate.forEach((lane, index) => {
+    const activeRateData = formatDataPointForStepView(lane.value, data.end)
     seriesThree.push(
       ...createSeries({
         name: `Active Rate: ${lane.description}`,
         data: transformSeriesData(lane.value),
-        type: 'line',
+        type: 'custom',
         yAxisIndex: 1,
         color: chartColors[index + 1],
+        clip: true,
+        renderItem(param, api) {
+          if (param.dataIndex === 0) {
+            const polylines = createPolyLines(activeRateData, api)
+
+            return {
+              type: 'group',
+              children: polylines,
+            }
+          }
+        },
       })
     )
   })
 
   lanesBaseRate.forEach((lane, index) => {
+    const baseRateData = formatDataPointForStepView(lane.value, data.end)
     seriesThree.push(
       ...createSeries({
         name: `Base Rate: ${lane.description}`,
         data: transformSeriesData(lane.value),
-        type: 'line',
+        type: 'custom',
         yAxisIndex: 1,
         color: chartColors[index + 2],
+        clip: true,
+        renderItem(param, api) {
+          if (param.dataIndex === 0) {
+            const polylines = createPolyLines(baseRateData, api)
+
+            return {
+              type: 'group',
+              children: polylines,
+            }
+          }
+        },
       })
     )
   })
@@ -386,28 +388,54 @@ function transformData(data: RampMeteringData): EChartsOption[] {
     })
   )
 
+  seriesThree.push(createStartupArea(data.startUpWarning, data.start, data.end))
+
   const seriesFour: SeriesOption[] = []
 
   lanesActiveRate.forEach((lane, index) => {
+    const activeRateData = formatDataPointForStepView(lane.value, data.end)
     seriesFour.push(
       ...createSeries({
         name: `Active Rate: ${lane.description}`,
         data: transformSeriesData(lane.value),
-        type: 'line',
+        type: 'custom',
         yAxisIndex: 1,
         color: chartColors[index + 1],
+        clip: true,
+        renderItem(param, api) {
+          if (param.dataIndex === 0) {
+            const polylines = createPolyLines(activeRateData, api)
+
+            return {
+              type: 'group',
+              children: polylines,
+            }
+          }
+        },
       })
     )
   })
 
   lanesBaseRate.forEach((lane, index) => {
+    const baseRateData = formatDataPointForStepView(lane.value, data.end)
     seriesFour.push(
       ...createSeries({
         name: `Base Rate: ${lane.description}`,
         data: transformSeriesData(lane.value),
-        type: 'line',
+        type: 'custom',
         yAxisIndex: 1,
         color: chartColors[index + 2],
+        clip: true,
+        renderItem(param, api) {
+          if (param.dataIndex === 0) {
+            const polylines = createPolyLines(baseRateData, api)
+
+            return {
+              type: 'group',
+              children: polylines,
+            }
+          }
+        },
       })
     )
   })
@@ -421,65 +449,7 @@ function transformData(data: RampMeteringData): EChartsOption[] {
     })
   )
 
-  // const queueActives = {
-  //   markArea: {
-  //     data: [
-  //       [
-  //         {
-  //           xAxis: '2023-08-24T07:00:00',
-  //           itemStyle: {
-  //             color: 'rgba(125, 125, 125, 0.1)',
-  //           },
-  //         },
-  //         {
-  //           xAxis: '2023-08-24T07:22:22',
-  //         },
-  //       ],
-  //       [
-  //         {
-  //           xAxis: '2023-08-24T07:30:43',
-  //           itemStyle: {
-  //             color: 'rgba(125, 125, 125, 0.1)',
-  //           },
-  //         },
-  //         {
-  //           xAxis: '2023-08-24T07:50:00',
-  //         },
-  //       ],
-  //     ],
-  //   },
-
-  //   type: 'line',
-  //   yAxisIndex: 1,
-  //   color: '#00C5FF',
-  //   lineStyle: {
-  //     width: 5,
-  //   },
-  //   symbol: 'line',
-  //   symbolSize: 0,
-  // }
-
-  // const queueActivesTwo = {
-  //   name: 'Queue Rate Activated',
-  //   data: [
-  //     ['2023-08-24T07:25:49', '0.00'],
-  //     ['2023-08-24T07:26:49', '0.00'],
-  //     null,
-  //     ['2023-08-24T07:28:29', '0.00'],
-  //     ['2023-08-24T07:29:49', '0.00'],
-  //   ],
-  //   type: 'line',
-  //   yAxisIndex: 1,
-  //   color: '#00C5FF',
-  //   lineStyle: {
-  //     width: 5,
-  //   },
-  //   symbol: 'line',
-  //   symbolSize: 0,
-  // }
-
-  // seriesTwo.push(queueActives as any)
-  // seriesTwo.push(queueActivesTwo as any)
+  seriesFour.push(createStartupArea(data.startUpWarning, data.start, data.end))
 
   const chartOptions: EChartsOption[] = [
     {
@@ -532,69 +502,72 @@ function transformData(data: RampMeteringData): EChartsOption[] {
 }
 
 function generateQueueSeriesData(
-  laneQueueEvents: DescriptionWithDetectorEvents[]
+  laneQueueEvents: QueueDetectorEvent[]
 ): SeriesOption[] {
-  const onSeriesData: any = []
-  const offSeriesData: any = []
-  const lineSeriesData: any = []
+  const onSeriesData: any[] = []
+  const offSeriesData: any[] = []
+  const lineSeriesData: any[] = []
 
-  laneQueueEvents.forEach((lane) => {
-    lane.value.forEach((event) => {
-      const onPoint = {
-        value: [event.detectorOn, 6, lane.description],
-        symbol: 'triangle',
-        symbolSize: 5,
-        itemStyle: {
-          color: 'black',
+  laneQueueEvents.forEach((event) => {
+    const laneDescription = `Lane ${event.value}`
+
+    const onPoint = {
+      value: [event.detectorOn, event.value, laneDescription],
+      symbol: 'triangle',
+      symbolSize: 5,
+      itemStyle: {
+        color: 'black',
+      },
+    }
+    const offPoint = {
+      value: [event.detectorOff, event.value, laneDescription],
+      symbol: 'square',
+      symbolSize: 5,
+      itemStyle: {
+        color: 'darkgrey',
+      },
+    }
+
+    onSeriesData.push(onPoint)
+    offSeriesData.push(offPoint)
+
+    if (event.detectorOn && event.detectorOff) {
+      lineSeriesData.push([
+        {
+          coord: [event.detectorOn, event.value, laneDescription],
         },
-      }
-      const offPoint = {
-        value: [event.detectorOff, 6, lane.description],
-        symbol: 'square',
-        symbolSize: 5,
-        itemStyle: {
-          color: 'darkgrey',
+        {
+          coord: [event.detectorOff, event.value, laneDescription],
         },
-      }
-
-      onSeriesData.push(onPoint)
-      offSeriesData.push(offPoint)
-
-      if (event.detectorOn && event.detectorOff) {
-        lineSeriesData.push([
-          {
-            coord: [event.detectorOn, 6, lane.description],
-          },
-          {
-            coord: [event.detectorOff, 6, lane.description],
-          },
-        ])
-      }
-    })
+      ])
+    }
   })
 
   return [
     {
       name: 'Queue On',
       type: 'scatter',
+      yAxisIndex: 1,
       tooltip: {
         confine: true,
-        valueFormatter: (value) => (value as string[])[0],
+        valueFormatter: (value) => (value as string[])[2],
       },
       data: onSeriesData,
     },
     {
       name: 'Queue Off',
       type: 'scatter',
+      yAxisIndex: 1,
       tooltip: {
         confine: true,
-        valueFormatter: (value) => (value as string[])[0],
+        valueFormatter: (value) => (value as string[])[2],
       },
       data: offSeriesData,
     },
     {
       name: 'Line Connecting Queue On to Off',
       type: 'lines',
+      yAxisIndex: 1,
       coordinateSystem: 'cartesian2d',
       lineStyle: {
         color: 'black',
@@ -604,21 +577,59 @@ function generateQueueSeriesData(
     },
   ]
 }
-function createStartupArea(events: TimeSpaceDetectorEvent[]): SeriesOption {
-  const markAreaData = events.map((event) => [
-    {
-      xAxis: event.initialX,
-      itemStyle: Color.PlanB,
-    },
-    {
-      xAxis: event.finalX,
-    },
-  ])
+
+function createStartupArea(
+  events: TimeSpaceDetectorEvent[],
+  startDate: string,
+  endDate: string
+): SeriesOption {
+  // Convert startDate and endDate to Date objects
+  const start = new Date(startDate)
+  const end = new Date(endDate)
+
+  // Parse and sort events by initialX
+  events.sort(
+    (a, b) => new Date(a.initialX).getTime() - new Date(b.initialX).getTime()
+  )
+
+  const markAreaData: MarkAreaData[] = []
+
+  // Add inverse area from startDate to the initialX of the first event
+  if (events.length > 0 && start < new Date(events[0].initialX)) {
+    markAreaData.push([
+      { xAxis: startDate, itemStyle: { color: Color.PlanB } },
+      { xAxis: events[0].initialX },
+    ])
+  }
+
+  // Add inverse areas between consecutive events
+  for (let i = 0; i < events.length - 1; i++) {
+    const currentEventEnd = new Date(events[i].finalX)
+    const nextEventStart = new Date(events[i + 1].initialX)
+
+    if (currentEventEnd < nextEventStart) {
+      markAreaData.push([
+        { xAxis: events[i].finalX, itemStyle: { color: Color.PlanB } },
+        { xAxis: events[i + 1].initialX },
+      ])
+    }
+  }
+
+  // Add inverse area from the finalX of the last event to endDate
+  if (events.length > 0 && new Date(events[events.length - 1].finalX) < end) {
+    markAreaData.push([
+      {
+        xAxis: events[events.length - 1].finalX,
+        itemStyle: { color: Color.PlanB },
+      },
+      { xAxis: endDate },
+    ])
+  }
 
   return {
     type: 'line',
     markArea: {
-      data: markAreaData as MarkAreaData[],
+      data: markAreaData,
     },
   }
 }
