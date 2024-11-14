@@ -5,23 +5,25 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
-		<TargetFramework>net7.0</TargetFramework>
+		<TargetFramework>net8.0</TargetFramework>
 		<RootNamespace>$(NameSpacePrefix).Atspm</RootNamespace>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<AssemblyName>$(NameSpacePrefix).Atspm</AssemblyName>
 		<ImplicitUsings>enable</ImplicitUsings>
-		<GeneratePackageOnBuild>False</GeneratePackageOnBuild>
-		<Version>5.0-rc.1</Version>
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<Title>Udot Automated Traffic Performance Measure Infrastructure</Title>
 		<Authors>utah.udot.gov</Authors>
 		<Description>Library that defines implementation and infrastructure for the Automated Traffic Performance Measures platform</Description>
 		<Copyright>Copyright $(Authors)</Copyright>
-		<PackageProjectUrl>https://github.com/udotdevelopment/ATSPM</PackageProjectUrl>
+		<PackageProjectUrl>https://github.com/OpenSourceTransportation/Atspm</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/udotdevelopment/ATSPM</RepositoryUrl>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageTags>C#; .net standard; .net core</PackageTags>
 		<PackageLicenseFile>LICENSE</PackageLicenseFile>
 		<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+		<VersionPrefix>5.0</VersionPrefix>
+		<VersionSuffix>rc.1</VersionSuffix>
+		<Version>$(VersionPrefix)-$(VersionSuffix)</Version>
 	</PropertyGroup>
 
 	<ItemGroup>

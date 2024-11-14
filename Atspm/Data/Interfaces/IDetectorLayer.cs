@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for ApplicationCore - ATSPM.Application.Configuration/EventLogAggregateConfiguration.cs
+// for Data - Utah.Udot.Atspm.Data.Interfaces/ILocationDetectorLayer.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,11 +16,21 @@
 #endregion
 
 
-namespace Utah.Udot.Atspm.Configuration
+namespace Utah.Udot.Atspm.Data.Interfaces
 {
-    public class EventLogAggregateConfiguration
+    /// <summary>
+    /// For objects that reference detectors
+    /// </summary>
+    public interface IDetectorLayer
     {
-        public string AggregationType { get; set; }
-        public IEnumerable<DateTime> Dates { get; set; }
+        /// <summary>
+        /// Detector identifier
+        /// </summary>
+        string DectectorIdentifier { get; set; }
+
+        /// <summary>
+        /// Detector channel
+        /// </summary>
+        int DetectorChannel { get; set; }
     }
 }

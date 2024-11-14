@@ -20,27 +20,24 @@ using Microsoft.Extensions.Hosting;
 using System.CommandLine;
 using System.CommandLine.Hosting;
 using System.CommandLine.NamingConventionBinder;
+using System.Text.RegularExpressions;
+using Utah.Udot.Atspm.Infrastructure.Services.HostedServices;
 
 namespace Utah.Udot.Atspm.EventLogUtility.Commands
 {
     public class AggregationCommand : Command, ICommandOption<EventLogAggregateConfiguration>
     {
-        public AggregationCommand() : base("aggregate", "Run data aggregation")
+        public AggregationCommand() : base("aggregate-events", "Run event aggregation")
         {
-            AggregationTypeArgument.FromAmong(
-                "approach-cycle",
-                "approach-pcd-cycle",
-                "approach-speed",
-                "approach-splitfail",
-                "detector-event-count",
-                "left-turn-gap",
-                "Location-event-data",
-                "Location-phase-delay",
-                "Location-phase-termination",
-                "Location-plan",
-                "Location-preempt-priority",
-                "split-monitor",
-                "yellow-red-activation");
+            var values = typeof(AggregationModelBase).Assembly.GetTypes()
+                .Where(w => w.IsSubclassOf(typeof(AggregationModelBase)))
+                .Select(s => Regex.Replace(s.Name, @"(?<=[a-z])([A-Z])", @"_$1").ToLower())
+                .Prepend("all")
+                .ToArray();
+
+            AggregationTypeArgument.FromAmong(values);
+
+            DateOption.SetDefaultValue(DateTime.Now.Date.AddDays(-1));
 
             //IncludeOption.AddValidator(r =>
             //{
@@ -54,23 +51,18 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
             //});
 
             AddArgument(AggregationTypeArgument);
-            AddArgument(BinSizeArgument);
             AddOption(DateOption);
         }
 
-        public Argument<string> AggregationTypeArgument { get; set; } = new Argument<string>("type", "Aggregation type to run");
-
-        //TODO: add a parse param to handle zero time to too large or a time
-        public Argument<int> BinSizeArgument { get; set; } = new Argument<int>("Size", () => 15, "Size in minutes to aggregate");
+        public Argument<string> AggregationTypeArgument { get; set; } = new Argument<string>("type", () => "all", "Aggregation type to run");
 
         public DateCommandOption DateOption { get; set; } = new();
-
+        
         public ModelBinder<EventLogAggregateConfiguration> GetOptionsBinder()
         {
             var binder = new ModelBinder<EventLogAggregateConfiguration>();
 
             binder.BindMemberFromValue(b => b.AggregationType, AggregationTypeArgument);
-            binder.BindMemberFromValue(b => b.BinSize, BinSizeArgument);
             binder.BindMemberFromValue(b => b.Dates, DateOption);
 
             return binder;
@@ -80,7 +72,7 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
         {
             services.AddSingleton(GetOptionsBinder());
             services.AddOptions<EventLogAggregateConfiguration>().BindCommandLine();
-            //services.AddHostedService<TestAggregationHostedService>();
+            services.AddHostedService<EventAggregationHostedService>();
         }
     }
 }

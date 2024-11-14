@@ -82,8 +82,6 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.EventLogDecoders
 
                         while (i < 7 && br.BaseStream.Position < br.BaseStream.Length)
                         {
-                            cancelToken.ThrowIfCancellationRequested();
-
                             var c = br.ReadChar();
                             if (c == '\n')
                                 i++;
@@ -92,8 +90,6 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.EventLogDecoders
                         // after that, we start reading until we reach the end 
                         while (br.BaseStream.Position + sizeof(byte) * 4 <= br.BaseStream.Length)
                         {
-                            cancelToken.ThrowIfCancellationRequested();
-
                             var log = new IndianaEvent() { LocationIdentifier = locationIdentifider };
 
                             for (var eventPart = 1; eventPart < 4; eventPart++)

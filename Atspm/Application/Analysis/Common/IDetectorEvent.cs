@@ -23,7 +23,7 @@ namespace Utah.Udot.Atspm.Analysis.Common
     /// <summary>
     /// Events that coorelate to <see cref="IndianaEnumerations.VehicleDetectorOn"/>
     /// and that have been timestamp corrected for detector distances and latency
-    /// using the <see cref="Application.AtspmMath.AdjustTimeStamp"/> calculation.
+    /// using the <see cref="AtspmMath.AdjustTimeStamp"/> calculation.
     /// </summary>
     public interface IDetectorEvent : ILocationPhaseLayer, ILocationDetectorLayer, ITimestamp
     {

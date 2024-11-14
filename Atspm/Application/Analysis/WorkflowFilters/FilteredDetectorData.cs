@@ -23,7 +23,7 @@ namespace Utah.Udot.Atspm.Analysis.WorkflowFilters
     /// <summary>
     /// Filters <see cref="ControllerEventLog"/> workflow events to
     /// <list type="bullet">
-    /// <item><see cref="81"/></item>
+    /// <item><see cref="IndianaEnumerations.VehicleDetectorOff"/></item>
     /// <item><see cref="IndianaEnumerations.VehicleDetectorOn"/></item>
     /// </list>
     /// </summary>
@@ -32,7 +32,7 @@ namespace Utah.Udot.Atspm.Analysis.WorkflowFilters
         /// <inheritdoc/>
         public FilteredDetectorData(DataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
         {
-            filteredList.Add(81);
+            filteredList.Add((int)IndianaEnumerations.VehicleDetectorOff);
             filteredList.Add((int)IndianaEnumerations.VehicleDetectorOn);
         }
     }

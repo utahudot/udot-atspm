@@ -8,7 +8,6 @@ WORKDIR /app
 
 # Install dependencies based on the preferred package manager
 COPY package.json ./
-COPY yarn.lock* ./
 COPY package-lock.json* ./
 RUN \
   if [ -f package-lock.json ]; then npm ci --ignore-scripts; \

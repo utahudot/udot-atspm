@@ -85,8 +85,20 @@ function LocationsConfigContainer({
       </Typography>
       <Paper sx={{ width: '300px', mb: 2 }}>
         <FormControl fullWidth>
-          <InputLabel>Version</InputLabel>
-          <Select value={version.id} label="Version" onChange={handleChange}>
+          <InputLabel
+            htmlFor={'location-version-select'}
+            id={'location-version-select-label'}
+          >
+            Version
+          </InputLabel>
+          <Select
+            value={version.id}
+            label="Version"
+            labelId="location-version-select-label"
+            id={'location-version-select'}
+            inputProps={{ id: 'location-version-select' }}
+            onChange={handleChange}
+          >
             {versionData.map((version, index) => (
               <MenuItem key={index} value={version.id}>
                 {formatTimestampToDDMMYYYY(version.start)} - {version.note}
