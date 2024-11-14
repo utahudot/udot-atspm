@@ -21,7 +21,6 @@ using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -509,8 +508,6 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
         public static IHostBuilder ApplyVolumeConfiguration(this IHostBuilder hostBuilder, string path = "Secrets")
         {
             var dir = new DirectoryInfo(Path.Combine(Directory.GetCurrentDirectory(), path));
-
-            Console.WriteLine($"Root: {dir.FullName} - Exists: {dir.Exists}");
 
             if (dir.Exists)
             {
