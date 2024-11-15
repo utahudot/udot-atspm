@@ -34,11 +34,14 @@ jobs:
       matrix:
         service: ["atspm-webui", "atspm-config-api", "atspm-data-api", "atspm-identity-api", "atspm-report-api"]
     steps:
-      - name: GCP Auth
-        uses: 'google-github-actions/auth@v2'
+      - name: 🗝️ Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@v2
         with:
-          workload_identity_provider: ${{ vars.DEPLOY_WORKLOAD_PROVIDER}}
-          service_account: ${{vars.DEPLOY_SA}}
+          create_credentials_file: true
+          token_format: access_token
+          workload_identity_provider: ${{ vars.DEPLOY_WORKLOAD_PROVIDER }}
+          service_account: ${{ vars.DEPLOY_SA }}
 
       - name: 🚀 CloudRun Service Deploy
         uses: 'google-github-actions/deploy-cloudrun@v2'
@@ -60,6 +63,14 @@ jobs:
       matrix:
         job: ["atspm-watchdog", "atspm-eventlogutil"]
     steps:
+      - name: 🗝️ Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          create_credentials_file: true
+          token_format: access_token
+          workload_identity_provider: ${{ vars.DEPLOY_WORKLOAD_PROVIDER }}
+          service_account: ${{ vars.DEPLOY_SA }}
       - name: 🚀 Deploy to Cloud Run Job # TODO: Secrets and VPC/Database Connectivity Right Sizing
         run: |
           if [ ! "$(gcloud run jobs list --project ${{vars.PROJECT_ID}}| grep ${{ matrix.job }})" ]; then
