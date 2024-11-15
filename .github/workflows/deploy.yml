@@ -30,7 +30,7 @@ jobs:
 
 
   deploy_service:
-    name: Deploy - ${{ needs.env.outputs.env }}
+    name: Deploy - ${{ needs.env.outputs.env }} - ${{ matrix.service }}
     needs: env
     runs-on: ubuntu-latest
     environment: ${{ needs.env.outputs.env }}
@@ -59,7 +59,7 @@ jobs:
       
 
   deploy_jobs:
-    name: Deploy - ${{ needs.env.outputs.env }}
+    name: Deploy - ${{ needs.env.outputs.env }} - ${{ matrix.job }}
     needs: env
     runs-on: ubuntu-latest
     environment: ${{ needs.env.outputs.env }}
