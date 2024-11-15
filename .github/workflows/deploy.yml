@@ -8,6 +8,10 @@ on:
     branches:
       - github_actions
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   env:
     name: Determine ENV
