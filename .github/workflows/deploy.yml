@@ -38,6 +38,8 @@ jobs:
       matrix:
         service: ["atspm-webui", "atspm-config-api", "atspm-data-api", "atspm-identity-api", "atspm-report-api"]
     steps:
+      - name: ⬇️ Set up code
+        uses: actions/checkout@v4
       - name: 🗝️ Authenticate to Google Cloud
         id: auth
         uses: google-github-actions/auth@v2
@@ -67,6 +69,8 @@ jobs:
       matrix:
         job: ["atspm-watchdog", "atspm-eventlogutil"]
     steps:
+      - name: ⬇️ Set up code
+        uses: actions/checkout@v4
       - name: 🗝️ Authenticate to Google Cloud
         id: auth
         uses: google-github-actions/auth@v2
@@ -77,7 +81,7 @@ jobs:
           service_account: ${{ vars.DEPLOY_SA }}
       - name: 🚀 Deploy to Cloud Run Job # TODO: Secrets and VPC/Database Connectivity Right Sizing
         run: |
-          if [ ! "$(gcloud run jobs list --project ${{vars.PROJECT_ID}}| grep ${{ matrix.job }})" ]; then
+          if [ ! "$(gcloud run jobs list --project ${{vars.PROJECT_ID}}| grep -w ${{ matrix.job }})" ]; then
               gcloud run jobs create ${{ matrix.job }} --project ${{vars.PROJECT_ID}} \
               --region us-west3 \
               --image ${{ vars.GCP_ARTIFACT_REPO }}/${{ matrix.job }}:latest \
