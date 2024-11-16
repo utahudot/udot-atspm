@@ -35,6 +35,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: ${{ needs.env.outputs.env }}
     strategy:
+      fail-fast: false
       matrix:
         service: ["atspm-webui", "atspm-config-api", "atspm-data-api", "atspm-identity-api", "atspm-report-api"]
     steps:
@@ -66,6 +67,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: ${{ needs.env.outputs.env }}
     strategy:
+      fail-fast: false
       matrix:
         job: ["atspm-watchdog", "atspm-eventlogutil"]
     steps:
