@@ -1,9 +1,8 @@
 ﻿using Utah.Udot.Atspm.Business.Watchdog;
 using Utah.Udot.Atspm.Data.Enums;
-using Utah.Udot.Atspm.Data.Models;
-using Utah.Udot.Atspm.WatchDog.Models;
+using Utah.Udot.Atspm.Repositories;
 
-namespace Utah.Udot.ATSPM.WatchDog.Services
+namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
 {
     public class SegmentedErrorsService
     {

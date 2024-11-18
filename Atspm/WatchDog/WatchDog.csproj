@@ -39,6 +39,7 @@
 		<PackageReference Include="Microsoft.CodeAnalysis" Version="4.9.2" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.1" />
 		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.18.1" />
+		<PackageReference Include="System.CommandLine.Hosting" Version="0.4.0-alpha.22272.1" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -58,6 +59,10 @@
 	  <Using Include="Utah.Udot.Atspm.Repositories.ConfigurationRepositories" />
 	  <Using Include="Utah.Udot.Atspm.Repositories.EventLogRepositories" />
 	  <Using Include="Utah.Udot.NetStandardToolkit.Services" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Models\" />
 	</ItemGroup>
 
 </Project>

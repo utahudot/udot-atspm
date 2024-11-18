@@ -18,13 +18,12 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using System.Collections.Concurrent;
+using Utah.Udot.Atspm.Business.Common;
 using Utah.Udot.Atspm.Data.Enums;
-using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
 using Utah.Udot.Atspm.TempExtensions;
-using Utah.Udot.Atspm.WatchDog.Models;
 
-namespace Utah.Udot.Atspm.WatchDog.Services
+namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
 {
     public partial class WatchDogLogService
     {

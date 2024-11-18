@@ -17,12 +17,9 @@
 
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
-using Utah.Udot.Atspm.Data.Models;
-using Utah.Udot.Atspm.WatchDog.Models;
-using Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices;
-using Utah.Udot.ATSPM.WatchDog.Services;
+using Utah.Udot.Atspm.Repositories;
 
-namespace Utah.Udot.Atspm.WatchDog.Services
+namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
 {
     public class ScanService
     {
