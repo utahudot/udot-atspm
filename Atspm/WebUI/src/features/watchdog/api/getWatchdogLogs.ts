@@ -1,29 +1,11 @@
-// #region license
-// Copyright 2024 Utah Departement of Transportation
-// for WebUI - getWatchdogLogs.ts
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//http://www.apache.org/licenses/LICENSE-2.
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-// #endregion
-import { reportsAxios } from '@/lib/axios'
-
 import { Area } from '@/features/areas/types'
-import { useGetRequest } from '@/hooks/useGetRequest'
-import { usePostRequest } from '@/hooks/usePostRequest'
+import { reportsAxios } from '@/lib/axios'
 import { AxiosHeaders } from 'axios'
+import { useMutation, useQuery } from 'react-query'
 
 export interface WatchdogReportDataRequestBody {
-  start: Date
-  end: Date
+  start: string
+  end: string
   areaId?: number | null
   regionId?: number | null
   jurisdictionId?: number | null
@@ -59,22 +41,28 @@ export interface LogEventsData {
   end: string
 }
 
-export function useGetWatchdogLogs() {
-  const mutation = usePostRequest<LogEventsData, WatchdogReportDataRequestBody>(
-    {
-      url: '/Watchdog/getReportData',
-      axiosInstance: reportsAxios,
-      headers: new AxiosHeaders({
-        'Content-Type': 'application/json',
-      }),
-    }
-  )
-  return mutation
+// React Query GET request for issue types
+export const useGetIssueTypes = () => {
+  return useQuery<WatchDogIssueTypeDTO[]>('issueTypes', async () => {
+    const response = await reportsAxios.get('/Watchdog/GetIssueTypes')
+    return response
+  })
 }
 
-export const useGetIssueTypes = () => {
-  return useGetRequest<WatchDogIssueTypeDTO[]>({
-    route: '/Watchdog/GetIssueTypes',
-    axiosInstance: reportsAxios,
-  })
+// React Query POST request for watchdog logs
+export const useGetWatchdogLogs = () => {
+  return useMutation<LogEventsData, unknown, WatchdogReportDataRequestBody>(
+    async (requestBody) => {
+      const response = await reportsAxios.post(
+        '/Watchdog/getReportData',
+        requestBody,
+        {
+          headers: new AxiosHeaders({
+            'Content-Type': 'application/json',
+          }),
+        }
+      )
+      return response
+    }
+  )
 }

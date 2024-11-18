@@ -16,12 +16,17 @@
 #endregion
 
 using DatabaseInstaller.Commands;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System;
 using System.CommandLine.Builder;
 using System.CommandLine.Hosting;
 using System.CommandLine.Parsing;
 using Utah.Udot.Atspm.Common;
+using Utah.Udot.Atspm.Data;
+using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Infrastructure.Extensions;
 
 var rootCmd = new DatabaseInstallerCommands();
@@ -34,8 +39,8 @@ cmdBuilder.UseHost(hostBuilder =>
     .UseConsoleLifetime()
     .ConfigureAppConfiguration((h, c) =>
     {
-        c.AddCommandLine(args);
         c.AddUserSecrets<Program>(optional: true);
+        c.AddCommandLine(args);
 
     })
     .ConfigureLogging((hostContext, logging) =>
@@ -48,8 +53,14 @@ cmdBuilder.UseHost(hostBuilder =>
         services.AddAtspmDbContext(hostContext);
         services.AddAtspmEFConfigRepositories();
         services.AddAtspmEFEventLogRepositories();
+        services.AddIdentity<ApplicationUser, IdentityRole>()
+        .AddEntityFrameworkStores<IdentityContext>()
+        .AddDefaultTokenProviders();
+
 
         // Optional: Register any core services your application might need here.
+        services.Configure<UpdateCommandConfiguration>(hostContext.Configuration.GetSection("CommandLineOptions"));
+        services.AddScoped<UpdateCommandConfiguration>();
     });
 },
 host =>
