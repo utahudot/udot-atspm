@@ -209,7 +209,7 @@ function transformData(data: RawLeftTurnGapData) {
   )
 
   const displayProps = createDisplayProps({
-    description: data.phaseDescription,
+    description: data.approachDescription,
   })
 
   const chartOptions: EChartsOption = {
