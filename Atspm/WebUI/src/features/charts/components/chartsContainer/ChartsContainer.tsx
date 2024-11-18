@@ -209,7 +209,7 @@ export default function ChartsContainer({
       <Box display={displayStyle(!showConfig)}>
         {chartData && displayCharts()}
       </Box>
-      {location && (
+      {location && showConfig && (
         <Box display={displayStyle(showConfig)}>
           <LocationsConfigContainer locationIdentifier={location} />
         </Box>
