@@ -50,8 +50,6 @@ namespace Utah.Udot.Atspm.WatchDog
                 .ConfigureServices((h, s) =>
                 {
                     s.AddEmailServices(h);
-                    s.AddScoped<IEmailService, SmtpEmailService>();
-                    s.AddScoped<WatchdogEmailService>();
 
                     s.AddAtspmDbContext(h);
                     s.AddScoped<ILocationRepository, LocationEFRepository>();
@@ -86,10 +84,13 @@ namespace Utah.Udot.Atspm.WatchDog
                     s.AddOptions<WatchdogConfiguration>().Bind(h.Configuration.GetSection("WatchdogConfiguration"));
                     s.AddHostedService<ScanHostedService>();
 
+                    //s.AddScoped<IEmailService, SmtpEmailService>();
+                    s.AddScoped<WatchdogEmailService>();
                     //s.Configure<WatchdogConfiguration>(h.Configuration.GetSection(nameof(WatchdogConfiguration)));
                     //s.Configure<WatchdogConfiguration>(h.Configuration);
                     //s.AddScoped<WatchdogConfiguration>();
-                    s.Configure<EmailConfiguration>(h.Configuration.GetSection("WatchdogConfiguration:EmailConfiguration"));
+                    
+                    //s.Configure<EmailConfiguration>(h.Configuration.GetSection("WatchdogConfiguration:EmailConfiguration"));
 
                 })
                 .Build();
