@@ -4,9 +4,6 @@ on:
   release:
     types:
       - published
-  push: # Only here for testing
-    branches:
-      - github_actions
 
 permissions:
   id-token: write
@@ -24,7 +21,7 @@ jobs:
       - name: Dev Deploy
         if: ${{ github.event.release.prerelease || github.event_name == 'push' }}
         run: |
-          echo environment="dev" >> $GITHUB_ENV
+          echo environment="at" >> $GITHUB_ENV
     outputs:
       env: ${{ env.environment }}
 
@@ -54,11 +51,10 @@ jobs:
         uses: 'google-github-actions/deploy-cloudrun@v2'
         with:
           service: ${{ matrix.service }}
-          image: ${{ vars.GCP_ARTIFACT_REPO }}/${{ matrix.service }}:latest # TODO: Is latest what we want? if not how to determine what version of each service
+          image: ${{ vars.GCP_ARTIFACT_REPO }}/${{ matrix.service }}:latest
           project_id: ${{ vars.PROJECT_ID }}
           region: "us-west3"
-          flags: '--service-account=${{ vars.RUN_SA }} --vpc-connector=${{ vars.VPC_CONNECTOR}}' # TODO: VPC-Connector vs SQL Instance
-          # TODO: add secrets
+          flags: '--service-account=${{ vars.RUN_SA }} --vpc-connector=${{ vars.VPC_CONNECTOR}}' # TODO: add secrets
       
 
   deploy_jobs:
@@ -88,17 +84,19 @@ jobs:
               --region us-west3 \
               --image ${{ vars.GCP_ARTIFACT_REPO }}/${{ matrix.job }}:latest \
               --service-account ${{vars.RUN_SA}} \
+              --vpc-connector ${{ vars.VPC_CONNECTOR }} \
               --memory=2Gi \
               --cpu=1 \
-              --max-retries 3 \
+              --max-retries 0 \
               --parallelism 0 
           else
               gcloud run jobs update ${{ matrix.job }} --project ${{vars.PROJECT_ID}} \
               --region us-west3 \
               --image ${{ vars.GCP_ARTIFACT_REPO }}/${{ matrix.job }}:latest \
               --service-account ${{vars.RUN_SA}} \
+              --vpc-connector ${{ vars.VPC_CONNECTOR }} \
               --memory=2Gi \
               --cpu=1 \
-              --max-retries 3 \
+              --max-retries 0 \
               --parallelism 0 
           fi;
