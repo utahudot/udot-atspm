@@ -565,7 +565,7 @@ function generateQueueSeriesData(
       data: offSeriesData,
     },
     {
-      name: 'Line Connecting Queue On to Off',
+      name: 'Queue On',
       type: 'lines',
       yAxisIndex: 1,
       coordinateSystem: 'cartesian2d',
