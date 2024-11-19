@@ -136,8 +136,8 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                     throw new Exception("Issue fetching location from route");
                 }
 
-                var primaryPhaseDetail = phaseService.GetPhases(location).Find(p => p.PhaseNumber == routeLocation.PrimaryPhase && p.Approach.DirectionType == routeLocation.PrimaryDirection);
-                var opposingPhaseDetail = phaseService.GetPhases(location).Find(p => p.PhaseNumber == routeLocation.OpposingPhase && p.Approach.DirectionType == routeLocation.OpposingDirection);
+                var primaryPhaseDetail = phaseService.GetPhases(location).Find(p => p.Approach.ProtectedPhaseNumber == routeLocation.PrimaryPhase && p.Approach.DirectionType == routeLocation.PrimaryDirection);
+                var opposingPhaseDetail = phaseService.GetPhases(location).Find(p => p.Approach.ProtectedPhaseNumber == routeLocation.OpposingPhase && p.Approach.DirectionType == routeLocation.OpposingDirection);
 
                 if (primaryPhaseDetail == null || opposingPhaseDetail == null)
                 {
