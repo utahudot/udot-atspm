@@ -3,7 +3,7 @@ name: Build Containers
 on:
   push:
     branches:
-      - github_actions
+      - main
 
 permissions:
   id-token: write
@@ -36,12 +36,11 @@ jobs:
     steps:
       - name: ⬇️ Set up code
         uses: actions/checkout@v4
-      - name: Get Working Dir
+
+      - name: 📁 Get Working Dir
         run: |
           docker_dir="$(cat .github/filters.json | jq '."${{matrix.name}}"' | tr -d '**\n"')"
           echo DOCKERFILE_DIR=${docker_dir} >> $GITHUB_ENV
-      - name: Test
-        run: ls $DOCKERFILE_DIR
 
       - name: 🗝️ Authenticate to Google Cloud
         id: auth
