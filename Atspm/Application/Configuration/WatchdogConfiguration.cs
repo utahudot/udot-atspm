@@ -116,10 +116,10 @@ namespace Utah.Udot.Atspm.Configuration
         public int MinimumRecords { get; set; } = 500;
         public int MinPhaseTerminations { get; set; } = 50;
         public double PercentThreshold { get; set; } = .9;
-        public int RampMainlineStartHour { get; set; }
-        public int RampMainlineEndHour { get; set; }
-        public int RampStuckQueueStartHour { get; set; }
-        public int RampStuckQueueEndHour { get; set; }
+        public int RampMainlineStartHour { get; set; } = 15;
+        public int RampMainlineEndHour { get; set; } = 19;
+        public int RampStuckQueueStartHour { get; set; } = 1;
+        public int RampStuckQueueEndHour { get; set; } = 4;
 
         public bool EmailAllErrors { get; set; }
         public string DefaultEmailAddress { get; set; }
