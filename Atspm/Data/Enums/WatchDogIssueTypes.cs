@@ -57,5 +57,15 @@ namespace Utah.Udot.Atspm.Data.Enums
         /// Unconfigured detector
         /// </summary>
         UnconfiguredDetector = 7,
+
+        /// <summary>
+        /// Missing Mainline Data
+        /// </summary>
+        MissingMainlineData = 8,
+
+        /// <summary>
+        /// Stuck Queue Detection
+        /// </summary>
+        StuckQueueDetection = 9,
     }
 }
