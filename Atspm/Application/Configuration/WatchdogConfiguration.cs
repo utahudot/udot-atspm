@@ -50,6 +50,10 @@ namespace Utah.Udot.Atspm.Configuration
         public Option<bool> WeekdayOnlyOption { get; set; } = new("--weekdayOnly", "Weekday Only");
         public Option<int> ScanDayStartHourOption { get; set; } = new("--scanDayStartHour", "Scan Day Start Hour");
         public Option<int> ScanDayEndHourOption { get; set; } = new("--scanDayEndHour", "Scan Day End Hour");
+        public Option<int> RampMainlineStartHour { get; set; } = new("--rampMainlineStartHour", "Ramp Mainline Start Hour");
+        public Option<int> RampMainlineEndHour { get; set; } = new("--rampMainlineEndHour", "Ramp Mainline End Hour");
+        public Option<int> RampStuckQueueStartHour { get; set; } = new("--rampStuckQueueStartHour", "Ramp Stuck Queue Start Hour");
+        public Option<int> RampStuckQueueEndHour { get; set; } = new("--rampStuckQueueEndHour", "Ramp Stuck Queue End Hour");
 
 
         public Option<int> ConsecutiveCountOption { get; set; } = new("--consecutiveCount", "Consecutive Count");
@@ -112,6 +116,10 @@ namespace Utah.Udot.Atspm.Configuration
         public int MinimumRecords { get; set; } = 500;
         public int MinPhaseTerminations { get; set; } = 50;
         public double PercentThreshold { get; set; } = .9;
+        public int RampMainlineStartHour { get; set; }
+        public int RampMainlineEndHour { get; set; }
+        public int RampStuckQueueStartHour { get; set; }
+        public int RampStuckQueueEndHour { get; set; }
 
         public bool EmailAllErrors { get; set; }
         public string DefaultEmailAddress { get; set; }
