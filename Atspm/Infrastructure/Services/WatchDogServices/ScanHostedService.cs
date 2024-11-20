@@ -83,7 +83,11 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                     ScanDate = _options.ScanDate,
                     ScanDayEndHour = _options.ScanDayEndHour,
                     ScanDayStartHour = _options.ScanDayStartHour,
-                    WeekdayOnly = _options.WeekdayOnly
+                    WeekdayOnly = _options.WeekdayOnly,
+                    RampMainlineEndHour = _options.RampMainlineEndHour,
+                    RampMainlineStartHour = _options.RampMainlineStartHour,
+                    RampStuckQueueEndHour = _options.RampStuckQueueEndHour,
+                    RampStuckQueueStartHour = _options.RampStuckQueueStartHour,
                 };
                 var emailOptions = new EmailOptions
                 {
