@@ -15,28 +15,23 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Utah.Udot.Atspm.Configuration;
-using Utah.Udot.Atspm.WatchDog.Models;
 
-namespace Utah.Udot.Atspm.WatchDog.Services
+namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
 {
     public class ScanHostedService : IHostedService
     {
         private readonly ScanService _scanService;
         private readonly ILogger<ScanHostedService> _log;
-        private readonly IOptions<WatchdogConfiguration> _options;
-        //private readonly IConfiguration _config;
+        private readonly WatchdogConfiguration _options;
 
         public ScanHostedService(ScanService scanService, ILogger<ScanHostedService> logger, IOptions<WatchdogConfiguration> options)
         {
             _scanService = scanService;
             _log = logger;
-            _options = options;
-            //_config = config;
+            _options = options.Value;
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)
@@ -77,29 +72,33 @@ namespace Utah.Udot.Atspm.WatchDog.Services
 
                 var options = new LoggingOptions
                 {
-                    ConsecutiveCount = _options.Value.ConsecutiveCount,
-                    LowHitThreshold = _options.Value.LowHitThreshold,
-                    MaximumPedestrianEvents = _options.Value.MaximumPedestrianEvents,
-                    MinimumRecords = _options.Value.MinimumRecords,
-                    MinPhaseTerminations = _options.Value.MinPhaseTerminations,
-                    PercentThreshold = _options.Value.PercentThreshold,
-                    PreviousDayPMPeakEnd = _options.Value.PreviousDayPMPeakEnd,
-                    PreviousDayPMPeakStart = _options.Value.PreviousDayPMPeakStart,
-                    ScanDate = _options.Value.ScanDate,
-                    ScanDayEndHour = _options.Value.ScanDayEndHour,
-                    ScanDayStartHour = _options.Value.ScanDayStartHour,
-                    WeekdayOnly = _options.Value.WeekdayOnly
+                    ConsecutiveCount = _options.ConsecutiveCount,
+                    LowHitThreshold = _options.LowHitThreshold,
+                    MaximumPedestrianEvents = _options.MaximumPedestrianEvents,
+                    MinimumRecords = _options.MinimumRecords,
+                    MinPhaseTerminations = _options.MinPhaseTerminations,
+                    PercentThreshold = _options.PercentThreshold,
+                    PreviousDayPMPeakEnd = _options.PreviousDayPMPeakEnd,
+                    PreviousDayPMPeakStart = _options.PreviousDayPMPeakStart,
+                    ScanDate = _options.ScanDate,
+                    ScanDayEndHour = _options.ScanDayEndHour,
+                    ScanDayStartHour = _options.ScanDayStartHour,
+                    WeekdayOnly = _options.WeekdayOnly,
+                    RampMainlineEndHour = _options.RampMainlineEndHour,
+                    RampMainlineStartHour = _options.RampMainlineStartHour,
+                    RampStuckQueueEndHour = _options.RampStuckQueueEndHour,
+                    RampStuckQueueStartHour = _options.RampStuckQueueStartHour,
                 };
                 var emailOptions = new EmailOptions
                 {
-                    PreviousDayPMPeakEnd = _options.Value.PreviousDayPMPeakEnd,
-                    PreviousDayPMPeakStart = _options.Value.PreviousDayPMPeakStart,
-                    ScanDate = _options.Value.ScanDate,
-                    ScanDayEndHour = _options.Value.ScanDayEndHour,
-                    ScanDayStartHour = _options.Value.ScanDayStartHour,
-                    WeekdayOnly = _options.Value.WeekdayOnly,
-                    DefaultEmailAddress = _options.Value.DefaultEmailAddress,
-                    EmailAllErrors = _options.Value.EmailAllErrors
+                    PreviousDayPMPeakEnd = _options.PreviousDayPMPeakEnd,
+                    PreviousDayPMPeakStart = _options.PreviousDayPMPeakStart,
+                    ScanDate = _options.ScanDate,
+                    ScanDayEndHour = _options.ScanDayEndHour,
+                    ScanDayStartHour = _options.ScanDayStartHour,
+                    WeekdayOnly = _options.WeekdayOnly,
+                    DefaultEmailAddress = _options.DefaultEmailAddress,
+                    EmailAllErrors = _options.EmailAllErrors
                 };
 
                 await _scanService.StartScan(options, emailOptions, cancellationToken);

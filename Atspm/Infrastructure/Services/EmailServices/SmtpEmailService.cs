@@ -40,7 +40,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.EmailServices
         /// <param name="logger"></param>
         public SmtpEmailService(IOptionsSnapshot<EmailConfiguration> options, ILogger<SmtpEmailService> logger) : base(true)
         {
-            _options = options.Value;// options?.Get(GetType().Name) ?? options?.Value;
+            _options = options?.Get(GetType().Name) ?? options?.Value;
             _logger = logger;
         }
 
