@@ -223,7 +223,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
             // Categorize errors
             GetEventsByIssueType(errors, out var missingErrorsLogs, out var forceErrorsLogs, out var maxErrorsLogs,
                 out var countErrorsLogs, out var stuckPedErrorsLogs, out var configurationErrorsLogs,
-                out var unconfiguredDetectorErrorsLogs);
+                out var unconfiguredDetectorErrorsLogs, out var mainlineMissingErrorLogs, out var stuckQueueDetectionErrorLogs);
 
             var bodyBuilder = new StringBuilder();
             bodyBuilder.Append($"<h2>{errorTitle}</h2>");
@@ -261,6 +261,9 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
             bodyBuilder.Append(BuildErrorSection("High Pedestrian Activation Errors", $"The following Locations have high pedestrian activation occurrences between {options.ScanDayStartHour}:00 and {options.ScanDayEndHour}:00", stuckPedErrorsLogs, locations, options, logsFromPreviousDay));
             bodyBuilder.Append(BuildErrorSection("Unconfigured Approaches Errors", "", configurationErrorsLogs, locations, options, logsFromPreviousDay));
             bodyBuilder.Append(BuildErrorSection("Unconfigured Detectors Errors", "", unconfiguredDetectorErrorsLogs, locations, options, logsFromPreviousDay));
+            bodyBuilder.Append(BuildErrorSection("Missing Mainline Data Error", $"The following Ramp Locations are missing mainline data during {options.RampMainlineStartHour}:00 and {options.RampMainlineEndHour}:00", mainlineMissingErrorLogs, locations, options, logsFromPreviousDay));
+            bodyBuilder.Append(BuildErrorSection("Stuck Queue Detection Error", $"The following Ramp Locations have stuck queue detections during {options.RampStuckQueueStartHour}:00 and {options.RampStuckQueueEndHour}:00", stuckQueueDetectionErrorLogs, locations, options, logsFromPreviousDay));
+
 
             return bodyBuilder.ToString();
         }
@@ -336,7 +339,9 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
             out List<WatchDogLogEventWithCountAndDate> countErrorsLogs,
             out List<WatchDogLogEventWithCountAndDate> stuckpedErrorsLogs,
             out List<WatchDogLogEventWithCountAndDate> configurationErrorsLogs,
-            out List<WatchDogLogEventWithCountAndDate> unconfiguredDetectorErrorsLogs
+            out List<WatchDogLogEventWithCountAndDate> unconfiguredDetectorErrorsLogs,
+            out List<WatchDogLogEventWithCountAndDate> mainlineMissingErrorLogs,
+            out List<WatchDogLogEventWithCountAndDate> stuckQueueDetectionErrorLogs
             )
         {
             missingErrorsLogs = eventsContainer.Where(e => e.IssueType == WatchDogIssueTypes.RecordCount).ToList();
@@ -346,6 +351,8 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
             stuckpedErrorsLogs = eventsContainer.Where(e => e.IssueType == WatchDogIssueTypes.StuckPed).ToList();
             configurationErrorsLogs = eventsContainer.Where(e => e.IssueType == WatchDogIssueTypes.UnconfiguredApproach).ToList();
             unconfiguredDetectorErrorsLogs = eventsContainer.Where(e => e.IssueType == WatchDogIssueTypes.UnconfiguredDetector).ToList();
+            mainlineMissingErrorLogs = eventsContainer.Where(e => e.IssueType == WatchDogIssueTypes.MissingMainlineData).ToList();
+            stuckQueueDetectionErrorLogs = eventsContainer.Where(e => e.IssueType == WatchDogIssueTypes.StuckQueueDetection).ToList();
         }
 
 
