@@ -122,7 +122,7 @@ function transformData(data: RampMeteringData): EChartsOption[] {
   const yAxisThree = createYAxis(
     false,
     {
-      name: 'Mainline Flow',
+      name: 'Mainline Flow (vph)',
       nameGap: 50,
     },
     { name: 'Meter Rate (vph)' }
@@ -131,7 +131,7 @@ function transformData(data: RampMeteringData): EChartsOption[] {
   const yAxisFour = createYAxis(
     false,
     {
-      name: 'Mainline Speed',
+      name: 'Mainline Speed (mph)',
       nameGap: 50,
     },
     { name: 'Meter Rate (vph)' }

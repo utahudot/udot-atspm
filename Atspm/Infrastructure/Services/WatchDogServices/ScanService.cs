@@ -112,7 +112,6 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                 var recordsFromTheDayBefore = new List<WatchDogLogEvent>();
                 if (!emailOptions.EmailAllErrors)
                 {
-                    //List<WatchDogEvent> RecordsFromTheDayBefore = new List<WatchDogEvent>();
                     //compare to error log to see if this was failing yesterday
                     if (emailOptions.WeekdayOnly && emailOptions.ScanDate.DayOfWeek == DayOfWeek.Monday)
                         recordsFromTheDayBefore =
