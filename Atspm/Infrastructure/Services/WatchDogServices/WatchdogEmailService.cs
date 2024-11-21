@@ -110,7 +110,6 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                         newErrors, dailyRecurringErrors, recurringErrors,
                         LocationsByJurisdiction,
                         logsFromPreviousDay);
-                    //await mailService.SendEmailAsync(options.DefaultEmailAddress, usersByJurisdiction, subject, emailBody);
 
                     await mailService.SendEmailAsync(new MailAddress(options.DefaultEmailAddress), usersByJurisdiction.GetMailingAddresses(), subject, emailBody, true);
                 }
