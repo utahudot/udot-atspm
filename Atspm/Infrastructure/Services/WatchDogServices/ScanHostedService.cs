@@ -38,38 +38,6 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
         {
             try
             {
-                //var prviousDayPMPeakStart = Convert.ToInt32(_config["PreviousDayPMPeakStart"]);
-                //var prviousDayPMPeakEnd = Convert.ToInt32(_config["PreviousDayPMPeakEnd"]);
-                //var weekdayOnly = Convert.ToBoolean(_config["WeekdayOnly"]);
-                //var scanDayEndHour = Convert.ToInt32(_config["ScanDayEndHour"]);
-                //var scanDayStartHour = Convert.ToInt32(_config["ScanDayStartHour"]);
-                //var options = new LoggingOptions
-                //{
-                //    ConsecutiveCount = Convert.ToInt32(_config["ConsecutiveCount"]),
-                //    LowHitThreshold = Convert.ToInt32(_config["LowHitThreshold"]),
-                //    MaximumPedestrianEvents = Convert.ToInt32(_config["MaximumPedestrianEvents"]),
-                //    MinimumRecords = Convert.ToInt32(_config["MinimumRecords"]),
-                //    MinPhaseTerminations = Convert.ToInt32(_config["MinPhaseTerminations"]),
-                //    PercentThreshold = Convert.ToDouble(_config["PercentThreshold"]),
-                //    PreviousDayPMPeakEnd = prviousDayPMPeakEnd,
-                //    PreviousDayPMPeakStart = prviousDayPMPeakStart,
-                //    ScanDate = DateTime.TryParse(_config["ScanDate"], out DateTime date1) ? DateTime.Parse(_config["ScanDate"]) : DateTime.Today.AddDays(-1),
-                //    ScanDayEndHour = scanDayEndHour,
-                //    ScanDayStartHour = scanDayStartHour,
-                //    WeekdayOnly = weekdayOnly
-                //};
-                //var emailOptions = new EmailOptions
-                //{
-                //    PreviousDayPMPeakEnd = prviousDayPMPeakEnd,
-                //    PreviousDayPMPeakStart = prviousDayPMPeakStart,
-                //    ScanDate = DateTime.TryParse(_config["ScanDate"], out DateTime date2) ? DateTime.Parse(_config["ScanDate"]) : DateTime.Today.AddDays(-1),
-                //    ScanDayEndHour = scanDayStartHour,
-                //    ScanDayStartHour = scanDayEndHour,
-                //    WeekdayOnly = weekdayOnly,
-                //    DefaultEmailAddress = _config["DefaultEmailAddress"],
-                //    EmailAllErrors = Convert.ToBoolean(_config["EmailAllErrors"]),
-                //};
-
                 var options = new LoggingOptions
                 {
                     ConsecutiveCount = _options.ConsecutiveCount,
@@ -98,7 +66,11 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                     ScanDayStartHour = _options.ScanDayStartHour,
                     WeekdayOnly = _options.WeekdayOnly,
                     DefaultEmailAddress = _options.DefaultEmailAddress,
-                    EmailAllErrors = _options.EmailAllErrors
+                    EmailAllErrors = _options.EmailAllErrors,
+                    RampMainlineEndHour = _options.RampMainlineEndHour,
+                    RampMainlineStartHour = _options.RampMainlineStartHour,
+                    RampStuckQueueEndHour = _options.RampStuckQueueEndHour,
+                    RampStuckQueueStartHour = _options.RampStuckQueueStartHour,
                 };
 
                 await _scanService.StartScan(options, emailOptions, cancellationToken);

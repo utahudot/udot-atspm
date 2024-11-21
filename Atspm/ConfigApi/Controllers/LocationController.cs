@@ -265,7 +265,8 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
                     ChartEnabled = s.ChartEnabled,
                     LocationTypeId = s.LocationTypeId,
                     Areas = s.Areas.Select(a => a.Id),
-                    Charts = s.Approaches.SelectMany(m => m.Detectors.SelectMany(d => d.DetectionTypes.SelectMany(t => t.MeasureTypes.Select(i => i.Id)))).Distinct()
+                    Charts = s.Approaches.SelectMany(m => m.Detectors.SelectMany(d => d.DetectionTypes.SelectMany(t => t.MeasureTypes.Select(i => i.Id)))).Distinct(),
+                    HasRampDevice = s.Devices.Any(d => d.DeviceType == Data.Enums.DeviceTypes.RampController)
                 })
                 .GroupBy(r => r.locationIdentifier)
                 .Select(g => g.OrderByDescending(r => r.Start).FirstOrDefault())
@@ -276,6 +277,10 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
                 if (location != null && location.Charts != null)
                 {
                     location.Charts = location.Charts.Concat(basicCharts).Order();
+                    if (location.HasRampDevice.HasValue && location.HasRampDevice.Value)
+                    {
+                        location.Charts = location.Charts.Append(37).Order();
+                    }
                 }
             }
 
