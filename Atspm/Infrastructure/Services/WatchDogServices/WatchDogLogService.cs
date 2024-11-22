@@ -93,7 +93,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
         private void CheckRampMeteringDetectors(Location location, LoggingOptions options, List<IndianaEvent> locationEvents, ConcurrentBag<WatchDogLogEvent> errors)
         {
             int rampMeterMeasureId = 37;
-            if (location.GetDetectorsForLocationThatSupportMetric(rampMeterMeasureId).Any())
+            if (location.Devices.Any(d => d.DeviceType == DeviceTypes.RampController))
             {
                 CheckMainlineDetections(location, options, locationEvents, errors, rampMeterMeasureId);
                 CheckStuckQueDetections(location, options, locationEvents, errors, rampMeterMeasureId);

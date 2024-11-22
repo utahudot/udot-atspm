@@ -121,7 +121,8 @@ const SelectChart = ({
       {} as Record<ChartType, React.ComponentType<any>>
     )
 
-    unsortedCharts[ChartType.RampMetering] = RampMeteringChartOptions
+    // if(location.de)
+    // unsortedCharts[ChartType.RampMetering] = RampMeteringChartOptions
 
     const sortedKeys = Object.keys(unsortedCharts).sort((a, b) =>
       a.localeCompare(b)

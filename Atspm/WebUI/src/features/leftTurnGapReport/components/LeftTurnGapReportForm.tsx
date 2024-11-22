@@ -50,8 +50,6 @@ const LeftTurnGapReportForm: React.FC<LeftTurnGapReportFormProps> = ({
     }))
   }
 
-  console.log('approachesData', approachesData)
-
   return (
     <Box
       sx={{
