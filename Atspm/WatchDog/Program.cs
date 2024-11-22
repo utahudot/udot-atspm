@@ -27,9 +27,7 @@ using Utah.Udot.Atspm.Infrastructure.Extensions;
 using Utah.Udot.Atspm.Infrastructure.Repositories;
 using Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories;
 using Utah.Udot.Atspm.Infrastructure.Repositories.EventLogRepositories;
-using Utah.Udot.Atspm.Infrastructure.Services.EmailServices;
 using Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices;
-using Utah.Udot.NetStandardToolkit.Configuration;
 
 namespace Utah.Udot.Atspm.WatchDog
 {
@@ -72,7 +70,6 @@ namespace Utah.Udot.Atspm.WatchDog
                     s.AddScoped<WatchDogIgnoreEventService>();
 
                     // Register the hosted service with the date
-                    //s.AddHostedService<ScanHostedService>();
                     s.AddIdentity<ApplicationUser, IdentityRole>() // Add this line to register Identity
                      .AddEntityFrameworkStores<IdentityContext>() // Specify the EF Core store
                      .AddDefaultTokenProviders();
@@ -84,14 +81,7 @@ namespace Utah.Udot.Atspm.WatchDog
                     s.AddOptions<WatchdogConfiguration>().Bind(h.Configuration.GetSection("WatchdogConfiguration"));
                     s.AddHostedService<ScanHostedService>();
 
-                    //s.AddScoped<IEmailService, SmtpEmailService>();
                     s.AddScoped<WatchdogEmailService>();
-                    //s.Configure<WatchdogConfiguration>(h.Configuration.GetSection(nameof(WatchdogConfiguration)));
-                    //s.Configure<WatchdogConfiguration>(h.Configuration);
-                    //s.AddScoped<WatchdogConfiguration>();
-                    
-                    //s.Configure<EmailConfiguration>(h.Configuration.GetSection("WatchdogConfiguration:EmailConfiguration"));
-
                 })
                 .Build();
 
