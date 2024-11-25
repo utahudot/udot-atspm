@@ -274,6 +274,27 @@ const deviceHeaders: GridColDef[] = [
   },
 ]
 
+const mapLayerHeaders: GridColDef[] = [
+  {
+    field: 'name',
+    headerName: 'Name',
+    editable: true,
+    flex: 1,
+  },
+  {
+    field: 'mapURL',
+    headerName: 'Map Layer Url',
+    editable: true,
+    flex: 1,
+  },
+  {
+    field: 'showByDefault',
+    headerName: 'Show By Default',
+    editable: true,
+    flex: 1,
+  },
+]
+
 export const pageNameToHeaders: Map<string, GridColDef[]> = new Map()
   .set(PageNames.Areas, areaHeaders)
   .set(PageNames.Jurisdiction, jurisdictionHeaders)
@@ -285,3 +306,4 @@ export const pageNameToHeaders: Map<string, GridColDef[]> = new Map()
   .set(PageNames.Users, usersHeaders)
   .set(PageNames.Products, productHeaders)
   .set(PageNames.DeviceConfigurations, deviceHeaders)
+  .set(PageNames.MapLayerHeaders, mapLayerHeaders)
