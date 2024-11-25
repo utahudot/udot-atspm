@@ -112,7 +112,7 @@ function transformData(data: RampMeteringData): EChartsOption[] {
       nameGap: 50,
     },
     {
-      name: 'Meter Active Indication',
+      name: 'Lane Number',
       min: 0,
       max: 6,
       interval: 1,
