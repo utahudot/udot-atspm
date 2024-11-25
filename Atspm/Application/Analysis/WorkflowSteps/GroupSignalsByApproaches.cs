@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for ApplicationCore - ATSPM.Application.Analysis.WorkflowSteps/GroupSignalsByApproaches.cs
+// for Application - Utah.Udot.Atspm.Analysis.WorkflowSteps/GroupSignalsByApproaches.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
