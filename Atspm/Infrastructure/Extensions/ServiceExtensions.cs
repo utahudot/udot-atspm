@@ -508,7 +508,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
         /// <param name="hostBuilder"></param>
         /// <param name="path">Path to where the container volume is mapped</param>
         /// <returns></returns>
-        public static IHostBuilder ApplyVolumeConfiguration(this IHostBuilder hostBuilder, string path = "Secrets")
+        public static IHostBuilder ApplyVolumeConfiguration(this IHostBuilder hostBuilder, string path = "Configuration")
         {
             var dir = new DirectoryInfo(Path.Combine(Directory.GetCurrentDirectory(), path));
 
