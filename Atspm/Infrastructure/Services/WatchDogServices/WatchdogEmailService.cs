@@ -20,10 +20,9 @@ using Microsoft.IdentityModel.Tokens;
 using System.Net.Mail;
 using System.Text;
 using Utah.Udot.Atspm.Business.Watchdog;
-using Utah.Udot.Atspm.Data.Models;
-using Utah.Udot.Atspm.WatchDog.Models;
+using Utah.Udot.Atspm.Data.Enums;
 
-namespace Utah.Udot.Atspm.WatchDog.Services
+namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
 {
     public class WatchdogEmailService
     {
@@ -111,7 +110,6 @@ namespace Utah.Udot.Atspm.WatchDog.Services
                         newErrors, dailyRecurringErrors, recurringErrors,
                         LocationsByJurisdiction,
                         logsFromPreviousDay);
-                    //await mailService.SendEmailAsync(options.DefaultEmailAddress, usersByJurisdiction, subject, emailBody);
 
                     await mailService.SendEmailAsync(new MailAddress(options.DefaultEmailAddress), usersByJurisdiction.GetMailingAddresses(), subject, emailBody, true);
                 }
@@ -224,7 +222,7 @@ namespace Utah.Udot.Atspm.WatchDog.Services
             // Categorize errors
             GetEventsByIssueType(errors, out var missingErrorsLogs, out var forceErrorsLogs, out var maxErrorsLogs,
                 out var countErrorsLogs, out var stuckPedErrorsLogs, out var configurationErrorsLogs,
-                out var unconfiguredDetectorErrorsLogs);
+                out var unconfiguredDetectorErrorsLogs, out var mainlineMissingErrorLogs, out var stuckQueueDetectionErrorLogs);
 
             var bodyBuilder = new StringBuilder();
             bodyBuilder.Append($"<h2>{errorTitle}</h2>");
@@ -262,6 +260,9 @@ namespace Utah.Udot.Atspm.WatchDog.Services
             bodyBuilder.Append(BuildErrorSection("High Pedestrian Activation Errors", $"The following Locations have high pedestrian activation occurrences between {options.ScanDayStartHour}:00 and {options.ScanDayEndHour}:00", stuckPedErrorsLogs, locations, options, logsFromPreviousDay));
             bodyBuilder.Append(BuildErrorSection("Unconfigured Approaches Errors", "", configurationErrorsLogs, locations, options, logsFromPreviousDay));
             bodyBuilder.Append(BuildErrorSection("Unconfigured Detectors Errors", "", unconfiguredDetectorErrorsLogs, locations, options, logsFromPreviousDay));
+            bodyBuilder.Append(BuildErrorSection("Missing Mainline Data Error", $"The following Ramp Locations are missing mainline data during {options.RampMainlineStartHour}:00 and {options.RampMainlineEndHour}:00", mainlineMissingErrorLogs, locations, options, logsFromPreviousDay));
+            bodyBuilder.Append(BuildErrorSection("Stuck Queue Detection Error", $"The following Ramp Locations have stuck queue detections during {options.RampStuckQueueStartHour}:00 and {options.RampStuckQueueEndHour}:00", stuckQueueDetectionErrorLogs, locations, options, logsFromPreviousDay));
+
 
             return bodyBuilder.ToString();
         }
@@ -337,16 +338,20 @@ namespace Utah.Udot.Atspm.WatchDog.Services
             out List<WatchDogLogEventWithCountAndDate> countErrorsLogs,
             out List<WatchDogLogEventWithCountAndDate> stuckpedErrorsLogs,
             out List<WatchDogLogEventWithCountAndDate> configurationErrorsLogs,
-            out List<WatchDogLogEventWithCountAndDate> unconfiguredDetectorErrorsLogs
+            out List<WatchDogLogEventWithCountAndDate> unconfiguredDetectorErrorsLogs,
+            out List<WatchDogLogEventWithCountAndDate> mainlineMissingErrorLogs,
+            out List<WatchDogLogEventWithCountAndDate> stuckQueueDetectionErrorLogs
             )
         {
-            missingErrorsLogs = eventsContainer.Where(e => e.IssueType == Data.Enums.WatchDogIssueTypes.RecordCount).ToList();
-            forceErrorsLogs = eventsContainer.Where(e => e.IssueType == Data.Enums.WatchDogIssueTypes.ForceOffThreshold).ToList();
-            maxErrorsLogs = eventsContainer.Where(e => e.IssueType == Data.Enums.WatchDogIssueTypes.MaxOutThreshold).ToList();
-            countErrorsLogs = eventsContainer.Where(e => e.IssueType == Data.Enums.WatchDogIssueTypes.LowDetectorHits).ToList();
-            stuckpedErrorsLogs = eventsContainer.Where(e => e.IssueType == Data.Enums.WatchDogIssueTypes.StuckPed).ToList();
-            configurationErrorsLogs = eventsContainer.Where(e => e.IssueType == Data.Enums.WatchDogIssueTypes.UnconfiguredApproach).ToList();
-            unconfiguredDetectorErrorsLogs = eventsContainer.Where(e => e.IssueType == Data.Enums.WatchDogIssueTypes.UnconfiguredDetector).ToList();
+            missingErrorsLogs = eventsContainer.Where(e => e.IssueType == WatchDogIssueTypes.RecordCount).ToList();
+            forceErrorsLogs = eventsContainer.Where(e => e.IssueType == WatchDogIssueTypes.ForceOffThreshold).ToList();
+            maxErrorsLogs = eventsContainer.Where(e => e.IssueType == WatchDogIssueTypes.MaxOutThreshold).ToList();
+            countErrorsLogs = eventsContainer.Where(e => e.IssueType == WatchDogIssueTypes.LowDetectorHits).ToList();
+            stuckpedErrorsLogs = eventsContainer.Where(e => e.IssueType == WatchDogIssueTypes.StuckPed).ToList();
+            configurationErrorsLogs = eventsContainer.Where(e => e.IssueType == WatchDogIssueTypes.UnconfiguredApproach).ToList();
+            unconfiguredDetectorErrorsLogs = eventsContainer.Where(e => e.IssueType == WatchDogIssueTypes.UnconfiguredDetector).ToList();
+            mainlineMissingErrorLogs = eventsContainer.Where(e => e.IssueType == WatchDogIssueTypes.MissingMainlineData).ToList();
+            stuckQueueDetectionErrorLogs = eventsContainer.Where(e => e.IssueType == WatchDogIssueTypes.StuckQueueDetection).ToList();
         }
 
 
@@ -376,7 +381,7 @@ namespace Utah.Udot.Atspm.WatchDog.Services
                         {
                             errorMessage += $"<td>{error.Phase}</td>";
                         }
-                        if (error.ComponentType == Data.Enums.WatchDogComponentTypes.Detector)
+                        if (error.ComponentType == WatchDogComponentTypes.Detector)
                         {
                             errorMessage += $"<td>{error.ComponentId}</td>";
                         }

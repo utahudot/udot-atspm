@@ -21,6 +21,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using Utah.Udot.Atspm.Business.Watchdog;
 using Utah.Udot.Atspm.ConfigApi.Models;
+using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Extensions;
 using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
@@ -265,7 +266,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
                     ChartEnabled = s.ChartEnabled,
                     LocationTypeId = s.LocationTypeId,
                     Areas = s.Areas.Select(a => a.Id),
-                    Charts = s.Approaches.SelectMany(m => m.Detectors.SelectMany(d => d.DetectionTypes.SelectMany(t => t.MeasureTypes.Select(i => i.Id)))).Distinct()
+                    Charts = s.Approaches.SelectMany(m => m.Detectors.SelectMany(d => d.DetectionTypes.SelectMany(t => t.MeasureTypes.Select(i => i.Id)))).Distinct(),
                 })
                 .GroupBy(r => r.locationIdentifier)
                 .Select(g => g.OrderByDescending(r => r.Start).FirstOrDefault())
@@ -276,6 +277,10 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
                 if (location != null && location.Charts != null)
                 {
                     location.Charts = location.Charts.Concat(basicCharts).Order();
+                    if (location.LocationTypeId == ((int)LocationTypes.RM))
+                    {
+                        location.Charts = location.Charts.Append(37).Order();
+                    }
                 }
             }
 

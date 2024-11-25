@@ -15,7 +15,8 @@
 // limitations under the License.
 #endregion
 
-namespace Utah.Udot.Atspm.WatchDog.Models
+
+namespace Utah.Udot.Atspm.Configuration
 {
 
     public class LoggingOptions
@@ -32,6 +33,11 @@ namespace Utah.Udot.Atspm.WatchDog.Models
         public int LowHitThreshold { get; set; }
         public int MaximumPedestrianEvents { get; set; }
         public bool WeekdayOnly { get; set; }
+        public int RampMainlineStartHour { get; set; }
+        public int RampMainlineEndHour { get; set; }
+        public int RampStuckQueueStartHour { get; set; }
+        public int RampStuckQueueEndHour { get; set; }
+
 
         public DateTime AnalysisStart => ScanDate.Date + new TimeSpan(ScanDayStartHour, 0, 0);
 

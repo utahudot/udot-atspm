@@ -3,7 +3,11 @@ import { useChartDefaults, useUpdateChartDefaults } from '@/features/charts/api'
 import { ChartType, chartTypeToString } from '@/features/charts/common/types'
 import { chartComponents } from '@/features/charts/components/selectChart'
 import { Default } from '@/features/charts/types'
-import { useUserHasClaim, PageNames, useViewPage } from '@/features/identity/pagesCheck'
+import {
+  PageNames,
+  useUserHasClaim,
+  useViewPage,
+} from '@/features/identity/pagesCheck'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import {
   Accordion,
@@ -14,13 +18,12 @@ import {
   Typography,
 } from '@mui/material'
 
-
 const MeasureDefaults = () => {
-  const pageAccess = useViewPage(PageNames.MeasureDefaults) 
+  const pageAccess = useViewPage(PageNames.MeasureDefaults)
 
   const { data: chartDefaultsData, isLoading } = useChartDefaults()
   const { mutate } = useUpdateChartDefaults()
-  const hasEditClaim = useUserHasClaim('GeneralConfiguration:Edit');
+  const hasEditClaim = useUserHasClaim('GeneralConfiguration:Edit')
 
   if (pageAccess.isLoading) {
     return
@@ -36,7 +39,7 @@ const MeasureDefaults = () => {
   const handleChartOptionsUpdate = (update: Default) => {
     mutate({ value: update.value, id: update.id })
   }
- 
+
   if (isLoading) return <div>Loading...</div>
 
   const renderChartOptionsComponent = (chartType: ChartType) => {
@@ -45,13 +48,11 @@ const MeasureDefaults = () => {
     const chartDefaults = getChartDefaults(
       chartType as keyof typeof chartComponents
     )
-
     if (!ChartComponent) return null
 
     if (isLoading) return <div>Loading...</div>
 
     if (!ChartComponent || chartDefaults === undefined) return null
-
     return (
       <ChartComponent
         chartDefaults={chartDefaults}

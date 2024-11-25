@@ -41,7 +41,6 @@ export const MultiSelectCheckbox = ({
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'space-between',
-            marginLeft: '25px',
             height: '100%',
           }}
         >

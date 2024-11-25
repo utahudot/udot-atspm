@@ -10,7 +10,7 @@ import {
 } from '@/features/watchdog/api/getWatchdogLogs'
 import { useCreateWatchdogIgnoreEvents } from '@/features/watchdog/api/watchdogIgnoreEvents'
 import { useNotificationStore } from '@/stores/notifications'
-import { toUTCDateStamp } from '@/utils/dateTime'
+import { dateToTimestamp, toUTCDateStamp } from '@/utils/dateTime'
 import { zodResolver } from '@hookform/resolvers/zod'
 import NotificationsPausedIcon from '@mui/icons-material/NotificationsPaused'
 import PlayArrowIcon from '@mui/icons-material/PlayArrow'
@@ -177,8 +177,8 @@ const WatchDogLogs = () => {
 
   const handleFetchData = handleFilterSubmit(() => {
     fetchWatchdogLogs({
-      start: startDateTime,
-      end: endDateTime,
+      start: dateToTimestamp(startDateTime),
+      end: dateToTimestamp(endDateTime),
       areaId,
       regionId,
       jurisdictionId,

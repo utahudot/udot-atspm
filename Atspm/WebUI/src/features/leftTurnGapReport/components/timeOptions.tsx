@@ -41,13 +41,9 @@ interface TimeOptionsProps {
 export const TimeOptions = ({
   timeOptions,
   setTimeOptions,
-  startHour,
   setStartHour,
-  endHour,
   setEndHour,
-  startMinute,
   setStartMinute,
-  endMinute,
   setEndMinute,
   setGetAMPMPeakHour,
   setGet24HourPeriod,

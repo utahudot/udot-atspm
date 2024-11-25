@@ -18,13 +18,12 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using System.Collections.Concurrent;
+using Utah.Udot.Atspm.Business.Common;
 using Utah.Udot.Atspm.Data.Enums;
-using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
 using Utah.Udot.Atspm.TempExtensions;
-using Utah.Udot.Atspm.WatchDog.Models;
 
-namespace Utah.Udot.Atspm.WatchDog.Services
+namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
 {
     public partial class WatchDogLogService
     {
@@ -88,6 +87,119 @@ namespace Utah.Udot.Atspm.WatchDog.Services
             var detectorEventCodes = new List<short> { 82, 81 };
             CheckForUnconfiguredDetectors(location, options, locationEvents, errors, detectorEventCodes);
             CheckForLowDetectorHits(location, options, locationEvents, errors, detectorEventCodes);
+            CheckRampMeteringDetectors(location, options, locationEvents, errors);
+        }
+
+        private void CheckRampMeteringDetectors(Location location, LoggingOptions options, List<IndianaEvent> locationEvents, ConcurrentBag<WatchDogLogEvent> errors)
+        {
+            int rampMeterMeasureId = 37;
+            if (location.Devices.Any(d => d.DeviceType == DeviceTypes.RampController))
+            {
+                CheckMainlineDetections(location, options, locationEvents, errors, rampMeterMeasureId);
+                CheckStuckQueDetections(location, options, locationEvents, errors, rampMeterMeasureId);
+            }
+        }
+
+        private void CheckStuckQueDetections(Location location, LoggingOptions options, List<IndianaEvent> locationEvents, ConcurrentBag<WatchDogLogEvent> errors, int rampMeterMeasureId)
+        {
+            var eventCodes = new List<short>();
+            for (short i = 1171; i <= 1201; i+= 2)
+            {
+                eventCodes.Add(i);
+            }
+            var detectors = location.GetDetectorsForLocationThatSupportMetric(rampMeterMeasureId);
+
+            foreach (var detector in detectors)
+            {
+                try
+                {
+                    if (detector.DetectionTypes.Any(d => d.Id == DetectionTypes.IQ || d.Id == DetectionTypes.EQ))
+                    {
+                        var channel = detector.DetectorChannel;
+                        var direction = detector.Approach.DirectionType.Description;
+                        var start = new DateTime();
+                        var end = new DateTime();
+                        if (options.WeekdayOnly && options.ScanDate.DayOfWeek == DayOfWeek.Monday)
+                        {
+                            start = options.ScanDate.AddDays(-3).Date.AddHours(options.RampStuckQueueStartHour);
+                            end = options.ScanDate.AddDays(-3).Date.AddHours(options.RampStuckQueueEndHour);
+                        }
+                        else
+                        {
+                            start = options.ScanDate.AddDays(-1).Date.AddHours(options.RampStuckQueueStartHour);
+                            end = options.ScanDate.AddDays(-1).Date.AddHours(options.RampStuckQueueEndHour);
+                        }
+
+                        var currentVolume = locationEvents.Where(e => e.Timestamp >= start && e.Timestamp <= end && eventCodes.Contains(e.EventCode));
+                        //Compare collected hits to low hit threshold, 
+                        if (currentVolume.Any())
+                        {
+                            var error = new WatchDogLogEvent(
+                                location.Id,
+                                location.LocationIdentifier,
+                                options.ScanDate,
+                                WatchDogComponentTypes.Detector,
+                                detector.Id,
+                                WatchDogIssueTypes.MissingMainlineData,
+                                $"CH: {channel} - Count: {currentVolume.Count().ToString().ToLowerInvariant()}",
+                                null);
+                            if (!errors.Contains(error))
+                                errors.Add(error);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError($"StuckQueueDetections {detector.Id} {ex.Message}");
+                }
+            }
+        }
+
+        private void CheckMainlineDetections(Location location, LoggingOptions options, List<IndianaEvent> locationEvents, ConcurrentBag<WatchDogLogEvent> errors, int rampMeterMeasureId)
+        {
+            var mainlineEventCodes = new List<short> { 1371, 1372, 1372 };
+            var detectors = location.GetDetectorsForLocationThatSupportMetric(rampMeterMeasureId);
+            foreach (var detector in detectors) {
+                try
+                {
+                    if (detector.DetectionTypes.Any(d => d.Id == DetectionTypes.IQ || d.Id == DetectionTypes.EQ)) {
+                        var channel = detector.DetectorChannel;
+                        var direction = detector.Approach.DirectionType.Description;
+                        var start = new DateTime();
+                        var end = new DateTime();
+                        if (options.WeekdayOnly && options.ScanDate.DayOfWeek == DayOfWeek.Monday)
+                        {
+                            start = options.ScanDate.AddDays(-3).Date.AddHours(options.RampMainlineStartHour);
+                            end = options.ScanDate.AddDays(-3).Date.AddHours(options.RampMainlineEndHour);
+                        }
+                        else
+                        {
+                            start = options.ScanDate.AddDays(-1).Date.AddHours(options.RampMainlineStartHour);
+                            end = options.ScanDate.AddDays(-1).Date.AddHours(options.RampMainlineEndHour);
+                        }
+
+                        var currentVolume = locationEvents.Where(e => e.Timestamp >= start && e.Timestamp <= end && mainlineEventCodes.Contains(e.EventCode));
+                        //Compare collected hits to low hit threshold, 
+                        if (!currentVolume.Any())
+                        {
+                            var error = new WatchDogLogEvent(
+                                location.Id,
+                                location.LocationIdentifier,
+                                options.ScanDate,
+                                WatchDogComponentTypes.Detector,
+                                detector.Id,
+                                WatchDogIssueTypes.MissingMainlineData,
+                                $"CH: {channel} - Count: {currentVolume.Count().ToString().ToLowerInvariant()}",
+                                null);
+                            if (!errors.Contains(error))
+                                errors.Add(error);
+                        }
+                    }
+                }
+                catch (Exception ex) {
+                    logger.LogError($"MissingMainlineData {detector.Id} {ex.Message}");
+                }
+            }
         }
 
         private void CheckForLowDetectorHits(Location location, LoggingOptions options, List<IndianaEvent> locationEvents, ConcurrentBag<WatchDogLogEvent> errors, List<short> detectorEventCodes)

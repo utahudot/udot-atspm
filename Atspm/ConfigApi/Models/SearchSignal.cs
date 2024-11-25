@@ -32,5 +32,6 @@ namespace Utah.Udot.Atspm.ConfigApi.Models
         public IEnumerable<int> Charts { get; set; }
         public DateTime Start { get; set; }
         public int LocationTypeId { get; set; }
+        public bool? HasRampDevice { get; set; }
     }
 }

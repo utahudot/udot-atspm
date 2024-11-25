@@ -20,18 +20,6 @@ const textFieldStyle = {
     textAlign: 'center', // Center the text horizontally
     fontSize: '.75rem',
   },
-  '& input[type=number]': {
-    //hides the up and down arrows in the TextField
-    '-moz-appearance': 'textfield',
-    '&::-webkit-outer-spin-button': {
-      '-webkit-appearance': 'none',
-      margin: 0,
-    },
-    '&::-webkit-inner-spin-button': {
-      '-webkit-appearance': 'none',
-      margin: 0,
-    },
-  },
 }
 
 interface ReportInformationProps {
@@ -119,7 +107,6 @@ export const ReportInformation = ({
           <Box sx={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <TextField
               id="accetable-gaps"
-              type="number"
               value={vehiclesPercentageAcceptableGaps}
               onChange={(e) => {
                 setVehiclesPercentageAcceptableGaps(
@@ -153,7 +140,6 @@ export const ReportInformation = ({
           <Box sx={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <TextField
               id="accetable-split-fail"
-              type="number"
               value={acceptableSplitFailPercentage}
               onChange={(e) => {
                 setAcceptableSplitFailPercentage(
