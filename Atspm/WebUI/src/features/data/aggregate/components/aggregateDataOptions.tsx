@@ -122,7 +122,7 @@ export const AggregateDataOptions = ({ handler }: props) => {
 
   const renderBinSizeSlider = () => {
     return (
-      <Box sx={{ paddingLeft: '5%', paddingRight: '20%', minWidth: '250px' }}>
+      <Box sx={{ paddingLeft: '5%', paddingRight: '20%', minWidth: '200px' }}>
         <label
           id="bin-size-slider-label"
           htmlFor="bin-size-slider"
@@ -146,7 +146,7 @@ export const AggregateDataOptions = ({ handler }: props) => {
 
   const renderAggregationTypeSelector = () => {
     return (
-      <Box sx={{ paddingLeft: '5%', paddingRight: '15%', minWidth: '250px' }}>
+      <Box sx={{ paddingLeft: '5%', paddingRight: '15%', minWidth: '200px' }}>
         <Typography sx={{ fontWeight: 'bold' }}>Aggregation Type</Typography>
         <FormControl component="fieldset">
           <RadioGroup
@@ -237,7 +237,7 @@ export const AggregateDataOptions = ({ handler }: props) => {
         display: 'flex',
         flexWrap: 'wrap',
         flexDirection: 'column',
-        maxWidth: '950px',
+        maxWidth: '900px',
         gap: 2,
       }}
     >

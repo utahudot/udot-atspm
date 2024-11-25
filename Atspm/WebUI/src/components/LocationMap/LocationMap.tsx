@@ -9,6 +9,7 @@ import {
   ButtonGroup,
   ClickAwayListener,
   Popper,
+  Skeleton,
   useTheme,
 } from '@mui/material'
 import L, { Map as LeafletMap } from 'leaflet'
@@ -171,7 +172,7 @@ const LocationMap = ({
   }
 
   if (!mapInfo) {
-    return <div>Loading...</div>
+    return <Skeleton variant="rectangular" height={mapHeight ?? 400} />
   }
 
   return (

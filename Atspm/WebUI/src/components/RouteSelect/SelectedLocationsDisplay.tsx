@@ -3,7 +3,6 @@ import {
   ExpandLocationForAggregation,
   ExpandLocationHandler,
 } from '@/features/data/aggregate/handlers/expandLocationHandler'
-import CloseIcon from '@mui/icons-material/Close'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 import {
@@ -22,16 +21,16 @@ import { styled } from '@mui/material/styles'
 
 const CheckboxCell = styled(TableCell)({
   width: '10%',
-  paddingRight: 0, 
-  paddingLeft: 0, 
-  textAlign: 'center',
+  paddingRight: 0,
+  paddingLeft: 0,
+  textAlign: 'right',
 })
 
-interface props {
+interface Props {
   handler: ExpandLocationHandler
 }
 
-const SelectedLocationsDisplay = ({ handler }: props) => {
+const SelectedLocationsDisplay = ({ handler }: Props) => {
   const renderDetectorCollapsibleRows = (
     location: ExpandLocationForAggregation,
     approach: ExpandApproachForAggregation
@@ -39,11 +38,7 @@ const SelectedLocationsDisplay = ({ handler }: props) => {
     return approach.detectors.map((detector, index) => (
       <TableRow key={index}>
         <TableCell></TableCell>
-        <TableCell
-          style={{
-            maxWidth: '200px',
-          }}
-        >
+        <TableCell sx={{ minWidth: '180px' }}>
           {`Detector Channel: ${detector.detChannel} / Lane Number: ${detector.laneNumber} / Lane Type: ${detector.laneType}`}
         </TableCell>
         <CheckboxCell>
@@ -52,7 +47,6 @@ const SelectedLocationsDisplay = ({ handler }: props) => {
             onChange={() =>
               handler.updateDetectorExclude(location, approach, detector)
             }
-            style={{ marginRight: 25 }}
           />
         </CheckboxCell>
       </TableRow>
@@ -63,12 +57,16 @@ const SelectedLocationsDisplay = ({ handler }: props) => {
     location: ExpandLocationForAggregation
   ) => {
     return location.approaches.map((approach, index) => [
-      <TableRow key={index}>
+      <TableRow
+        key={index}
+        sx={{
+          backgroundColor: '#f7f7f7', // Light gray background
+        }}
+      >
         <TableCell>
           <IconButton
             size="small"
             onClick={() => handler.updateApproachOpen(location, approach)}
-            style={{ marginLeft: 10 }}
           >
             {approach.open ? (
               <KeyboardArrowDownIcon />
@@ -78,11 +76,10 @@ const SelectedLocationsDisplay = ({ handler }: props) => {
           </IconButton>
         </TableCell>
         <TableCell>{approach.description}</TableCell>
-        <CheckboxCell sx={{ marginRight: 10 }}>
+        <CheckboxCell>
           <Checkbox
             checked={approach.exclude}
             onChange={() => handler.updateApproachExclude(location, approach)}
-            style={{ marginRight: 10 }}
           />
         </CheckboxCell>
       </TableRow>,
@@ -95,7 +92,7 @@ const SelectedLocationsDisplay = ({ handler }: props) => {
       <TableRow key={index}>
         <TableCell>
           <IconButton
-            aria-label='collapse-button'
+            aria-label="collapse-button"
             size="small"
             onClick={() => handler.updateLocationOpen(location)}
           >
@@ -106,28 +103,20 @@ const SelectedLocationsDisplay = ({ handler }: props) => {
             )}
           </IconButton>
         </TableCell>
-        <TableCell component="th" scope="row">
+        <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
           {`${location.locationIdentifier} - ${location.primaryName} ${location.secondaryName}`}
         </TableCell>
         <CheckboxCell>
           <FormControlLabel
             control={
-          <Checkbox
-            checked={location.exclude}
-            onChange={() => handler.updateLocationExclude(location)}
-          />
+              <Checkbox
+                checked={location.exclude}
+                onChange={() => handler.updateLocationExclude(location)}
+              />
             }
-            aria-label="excludeLocation" />
+            aria-label="excludeLocation"
+          />
         </CheckboxCell>
-        <TableCell style={{ textAlign: 'center' }}>
-          <IconButton
-            aria-label="x-button"
-            size="small"
-            onClick={() => handler.deleteLocation(location)}
-          >
-            <CloseIcon />
-          </IconButton>
-        </TableCell>
       </TableRow>,
       location.open && renderApproachCollapsibleRows(location),
     ])
@@ -150,23 +139,17 @@ const SelectedLocationsDisplay = ({ handler }: props) => {
                 borderRight: '1px solid #e0e0e0',
                 lineHeight: 'inherit',
               },
-            }}>
+            }}
+          >
             <TableCell aria-label="expandable rows"></TableCell>
             <TableCell>
-              <Typography fontWeight="bold">
-                Location
-              </Typography>
+              <Typography fontWeight="bold">Location</Typography>
             </TableCell>
             <CheckboxCell>
-              <Typography fontWeight="bold" marginRight="30px">
+              <Typography fontWeight="bold" marginRight="10px">
                 Exclude
               </Typography>
             </CheckboxCell>
-            <TableCell width="100px">
-              <Typography fontWeight="bold">
-                Remove Location
-              </Typography>
-            </TableCell>
           </TableRow>
         </TableHead>
         <TableBody>{renderCollapsibleRows()}</TableBody>

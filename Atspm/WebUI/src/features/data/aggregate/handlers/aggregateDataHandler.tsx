@@ -89,7 +89,6 @@ export const useAggregateOptionsHandler = (): AggregateOptionsHandler => {
   >(chartTypeOptions[0].id)
   const [binSize, setBinSize] = useState<number>(binSizeMarks[0].value)
   const [locationId, setLocationId] = useState<string>('')
-  const [locationIds, setLocationIds] = useState<string[]>([])
   const [averageOrSum, setAverageOrSum] = useState<number>(0)
   const [selectedLocations, setSelectedLocations] = useState<
     LocationExpanded[]
@@ -119,6 +118,8 @@ export const useAggregateOptionsHandler = (): AggregateOptionsHandler => {
     setSelectedLocations,
     changeLocation: locationHandler.changeLocation,
   })
+
+  const locationIds = selectedLocations.map((location) => location.id)
 
   const getAggregateTypeEnumValue = (enumString: string): number => {
     if (Object.values(AggregationType).includes(enumString)) {
@@ -225,17 +226,13 @@ export const useAggregateOptionsHandler = (): AggregateOptionsHandler => {
   }, [refectRouteExpanded, routeHandler.routeId])
 
   useEffect(() => {
-    if (selectedLocations && selectedLocations.length !== locationIds.length) {
-      setLocationIds(selectedLocations.map((location) => location.id))
-    }
-  }, [locationIds.length, selectedLocations])
-
-  useEffect(() => {
-    if (routeExpandedLocations && locationIds) {
+    if (routeExpandedLocations && routeExpandedLocations.length > 0) {
       const filteredExpandedLocations = routeExpandedLocations.filter(
         (location) => !locationIds.includes(location.id)
       )
-      setSelectedLocations((prev) => [...prev, ...filteredExpandedLocations])
+      if (filteredExpandedLocations.length > 0) {
+        setSelectedLocations((prev) => [...prev, ...filteredExpandedLocations])
+      }
       setRouteExpandedLocations([])
     }
   }, [locationIds, routeExpandedLocations])
