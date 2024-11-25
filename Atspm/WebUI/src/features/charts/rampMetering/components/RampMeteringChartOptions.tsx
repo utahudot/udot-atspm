@@ -1,13 +1,66 @@
-import { Box, Typography } from '@mui/material'
+import { Box, Checkbox, FormControl, Typography } from '@mui/material'
+import { useState } from 'react'
+import { Default } from '../../types'
+import { RampMeteringChartOptionsDefaults } from '../types'
 
-export const RampMeteringChartOptions = () => {
+interface GreenTimeUtilizationChartOptionsProps {
+  chartDefaults: RampMeteringChartOptionsDefaults
+  handleChartOptionsUpdate: (update: Default) => void
+}
+
+export const RampMeteringChartOptions = ({
+  chartDefaults,
+  handleChartOptionsUpdate,
+}: GreenTimeUtilizationChartOptionsProps) => {
+  const [combineLanes, setCombineLanes] = useState(
+    chartDefaults.combineLanes.value
+  )
+
+  const handleChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    checked: boolean
+  ) => {
+    const combineLanesValue = checked
+    const val = combineLanesValue === true ? 'TRUE' : 'FALSE'
+    setCombineLanes(val)
+
+    handleChartOptionsUpdate({
+      id: chartDefaults.combineLanes.id,
+      option: chartDefaults.combineLanes.option,
+      value: val,
+    })
+  }
+
+  const visuallyHidden = {
+    position: 'absolute',
+    width: '1px',
+    height: '1px',
+    padding: 0,
+    margin: '-1px',
+    overflow: 'hidden',
+    clip: 'rect(0, 0, 0, 0)',
+    border: 0,
+  }
+
   return (
     <Box
       sx={{
-        padding: '0.25rem',
+        display: 'flex',
+        justifyContent: 'space-between',
       }}
     >
-      <Typography>No options available for this chart.</Typography>
+      <Typography>Combine Lanes</Typography>
+      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+        <FormControl sx={{ width: '60px' }}>
+          <label htmlFor="combine-lanes" style={visuallyHidden}>
+            Severe Level
+          </label>
+          <Checkbox
+            checked={combineLanes === 'TRUE' ? true : false}
+            onChange={handleChange}
+          />
+        </FormControl>
+      </Box>
     </Box>
   )
 }

@@ -26,9 +26,8 @@ using Utah.Udot.Atspm.Infrastructure.Extensions;
 using Utah.Udot.Atspm.Infrastructure.Repositories;
 using Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories;
 using Utah.Udot.Atspm.Infrastructure.Repositories.EventLogRepositories;
-using Utah.Udot.Atspm.WatchDog.Services;
 using Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices;
-using Utah.Udot.ATSPM.WatchDog.Services;
+using Utah.Udot.ATSPM.WatchDog.Commands;
 
 namespace Utah.Udot.Atspm.WatchDog
 {
@@ -43,10 +42,12 @@ namespace Utah.Udot.Atspm.WatchDog
                 .ConfigureAppConfiguration((h, c) => {
                     c.AddCommandLine(args);
                     c.AddUserSecrets<Program>(optional: true);
+
                 })
                 .ConfigureServices((h, s) =>
                 {
                     s.AddEmailServices(h);
+                    s.AddScoped<IEmailService, SmtpEmailService>();
                     s.AddScoped<WatchdogEmailService>();
 
                     s.AddAtspmDbContext(h);
@@ -70,15 +71,22 @@ namespace Utah.Udot.Atspm.WatchDog
                     s.AddScoped<WatchDogIgnoreEventService>();
 
                     // Register the hosted service with the date
-                    s.AddHostedService<ScanHostedService>();
                     s.AddIdentity<ApplicationUser, IdentityRole>() // Add this line to register Identity
                      .AddEntityFrameworkStores<IdentityContext>() // Specify the EF Core store
                      .AddDefaultTokenProviders();
+                    s.AddSingleton<WatchdogCommand>();
+                    s.AddSingleton<ICommandOption<WatchdogConfiguration>, WatchdogCommand>();
 
-                    s.Configure<WatchdogConfiguration>(h.Configuration.GetSection(nameof(WatchdogConfiguration)));
+                    // Other service registrations
+                    s.AddOptions<WatchdogConfiguration>().Bind(h.Configuration.GetSection("WatchdogConfiguration"));
+                    s.AddHostedService<ScanHostedService>();
+
+                    s.AddScoped<WatchdogEmailService>();
+                    s.Configure<EmailConfiguration>(h.Configuration.GetSection("WatchdogConfiguration:EmailConfiguration"));
 
                 })
                 .Build();
+
 
             await host.StartAsync();
             await host.StopAsync();

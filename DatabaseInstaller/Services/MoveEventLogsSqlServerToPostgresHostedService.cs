@@ -22,6 +22,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System;
 using Utah.Udot.Atspm.Data;
 using Utah.Udot.Atspm.Data.Configuration.Identity;
 using Utah.Udot.Atspm.Data.Models;
@@ -63,17 +64,17 @@ namespace DatabaseInstaller.Services
         {
             try
             {
-                using var scope = _serviceProvider.CreateScope();
-                var serviceProvider = scope.ServiceProvider;
+            //    using var scope = _serviceProvider.CreateScope();
+            //    var serviceProvider = scope.ServiceProvider;
 
-                // SQL Server DbContext to read logs
-                var sqlOptions = new DbContextOptionsBuilder<EventLogContext>()
-                    .UseSqlServer(_config.Value.Source)
-                    .Options;
+            //    // SQL Server DbContext to read logs
+            //    var sqlOptions = new DbContextOptionsBuilder<EventLogContext>()
+            //        .UseSqlServer(_config.Value.Source)
+            //        .Options;
 
-                using var sqlServerContext = new EventLogContext(sqlOptions);
-                var sqlSeverRepository = new IndianaEventLogEFRepository(sqlServerContext, serviceProvider.GetService<ILogger<IndianaEventLogEFRepository>>());
-                var sqltestSeverRepository = new EventLogEFRepository(sqlServerContext, serviceProvider.GetService<ILogger<EventLogEFRepository>>());
+            //    using var sqlServerContext = new EventLogContext(sqlOptions);
+            //    var sqlSeverRepository = new IndianaEventLogEFRepository(sqlServerContext, serviceProvider.GetService<ILogger<IndianaEventLogEFRepository>>());
+            //    var sqltestSeverRepository = new EventLogEFRepository(sqlServerContext, serviceProvider.GetService<ILogger<EventLogEFRepository>>());
 
 
                 // PostgreSQL DbContext to write logs
@@ -83,10 +84,123 @@ namespace DatabaseInstaller.Services
 
                 //using var postgresContext = new EventLogContext(postgresOptions);
                 //var postgresSeverRepository = new IndianaEventLogEFRepository(postgresContext, serviceProvider.GetService<ILogger<IndianaEventLogEFRepository>>());
+                var locations = new List<string>
+               {
+                    "2122",
+"2123",
+"2124",
+"2125",
+"2126",
+"2127",
+"2128",
+"2129",
+"2132",
+"2133",
+"2136",
+"2137",
+"2138",
+"2139",
+"2140",
+"2141",
+"2142",
+"2143",
+"2144",
+"2145",
+"2146",
+"2147",
+"2148",
+"2149",
+"2150",
+"2151",
+"2155",
+"2156",
+"2157",
+"2302",
+"2303",
+"2306",
+"2307",
+"2308",
+"2309",
+"2310",
+"2311",
+"2312",
+"2313",
+"2316",
+"2317",
+"2318",
+"2319",
+"2324",
+"2325",
+"2326",
+"2327",
+"2328",
+"2329",
+"2335",
+"2340",
+"2341",
+"2347",
+"2392",
+"2394",
+"2395",
+"2396",
+"2397",
+"2700",
+"2702",
+"2703",
+"2704",
+"2705",
+"2706",
+"2707",
+"2708",
+"2709",
+"2710",
+"2712",
+"2713",
+"2718",
+"2719",
+"2720",
+"2721",
+"2722",
+"2723",
+"2724",
+"2725",
+"2726",
+"2727",
+"2728",
+"2729",
+"2734",
+"2798"
+                };
+                foreach (var location in locations)
+                {
+                //create a scope to run in using
+                    using (var scope = _serviceProvider.CreateScope())
+                    {
+                        // SQL Server DbContext to read logs
+                        var sqlOptions = new DbContextOptionsBuilder<EventLogContext>()
+                            .UseSqlServer(_config.Value.Source)
+                            .Options;
 
-                var logs = sqltestSeverRepository.GetArchivedEvents("4613", DateOnly.FromDateTime(Convert.ToDateTime("2024-09-25")), DateOnly.FromDateTime(Convert.ToDateTime("2024-10-16")));
+                        using var sqlServerContext = new EventLogContext(sqlOptions);
+                        //var sqlSeverRepository = new IndianaEventLogEFRepository(sqlServerContext, scope.ServiceProvider.GetService<ILogger<IndianaEventLogEFRepository>>());
+                        var sqltestSeverRepository = new EventLogEFRepository(sqlServerContext, scope.ServiceProvider.GetService<ILogger<EventLogEFRepository>>());
+                        var context = scope.ServiceProvider.GetService<EventLogContext>();
+                        var postgresSeverRepository = new EventLogEFRepository(context, scope.ServiceProvider.GetService<ILogger<EventLogEFRepository>>());
+                        Console.WriteLine(context.Database.GetDbConnection().ConnectionString);
 
-                _eventLogRepository.AddRange(logs);
+
+                        try
+                        {
+                            Console.WriteLine($"Getting logs for {location}...");
+                            var logs = sqltestSeverRepository.GetArchivedEvents("2306", DateOnly.FromDateTime(Convert.ToDateTime("2024-11-1")), DateOnly.FromDateTime(Convert.ToDateTime("2024-11-18")));
+                            Console.WriteLine($"Logs for {location} retrieved");
+                            Console.WriteLine($"Saving logs for {location}...");
+                            postgresSeverRepository.AddRange(logs);
+                            Console.WriteLine($"Logs for {location} Saved");
+                        }
+                        catch (Exception ex) { Console.WriteLine(ex.ToString()); }
+                    }
+                }
 
                 // Fetch logs from SQL Server
                 //var logs = sqlSeverRepository.GetEventsBetweenDates("4613", Convert.ToDateTime("2024-09-24"), Convert.ToDateTime("2024-09-25"));

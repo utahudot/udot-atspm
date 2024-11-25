@@ -20,8 +20,8 @@ import { AxiosHeaders } from 'axios'
 import { useMutation, useQuery } from 'react-query'
 
 export interface WatchdogReportDataRequestBody {
-  start: Date
-  end: Date
+  start: string
+  end: string
   areaId?: number | null
   regionId?: number | null
   jurisdictionId?: number | null

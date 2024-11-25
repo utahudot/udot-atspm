@@ -17,7 +17,7 @@
 
 #nullable enable
 
-namespace Utah.Udot.Atspm.WatchDog.Models
+namespace Utah.Udot.Atspm.Configuration
 {
     public class EmailOptions
     {
@@ -26,6 +26,10 @@ namespace Utah.Udot.Atspm.WatchDog.Models
         public int ScanDayEndHour { get; set; }
         public int PreviousDayPMPeakStart { get; set; }
         public int PreviousDayPMPeakEnd { get; set; }
+        public int RampMainlineStartHour { get; set; }
+        public int RampMainlineEndHour { get; set; }
+        public int RampStuckQueueStartHour { get; set; }
+        public int RampStuckQueueEndHour { get; set; }
         public bool EmailAllErrors { get; set; }
         public string DefaultEmailAddress { get; set; }
         public bool WeekdayOnly { get; set; }

@@ -15,6 +15,32 @@ export default function TimingAndActuationChartsResults({
   const theme = useTheme()
   return (
     <>
+      <Box>
+        <Paper
+          sx={{
+            p: 2,
+            pb: 1,
+            my: 1,
+            mt: 3,
+            width: '99%',
+            marginLeft: '2px',
+          }}
+        >
+          <ApacheEChart
+            id="chart-title"
+            option={chartData.data.title}
+            chartType={chartData.type}
+            theme={theme.palette.mode}
+            hideInteractionMessage
+            style={{
+              width: '100%',
+              height: '100px',
+              position: 'relative',
+            }}
+          />
+        </Paper>
+      </Box>
+
       {chartData.data.charts.map((chartWrapper, index) => (
         <Box
           key={index}
@@ -30,7 +56,7 @@ export default function TimingAndActuationChartsResults({
               p: 2,
               pb: 1,
               my: 1,
-              mt: index === 0 ? 3 : 1,
+              mt: 1,
               width: '99%',
               marginLeft: '2px',
               backgroundColor:
@@ -63,8 +89,8 @@ export default function TimingAndActuationChartsResults({
               style={{
                 width: '100%',
                 height:
-                  chartWrapper.chart.displayProps.amountOfChannels * 22 +
-                  (index === 0 ? 200 : 150) +
+                  chartWrapper.chart.displayProps.amountOfChannels * 30 +
+                  150 +
                   'px',
                 position: 'relative',
               }}
