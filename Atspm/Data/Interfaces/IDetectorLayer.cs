@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for ConfigApi - ATSPM.ConfigApi/IgnoreTypeSchemaFilter.cs
+// for Data - Utah.Udot.Atspm.Data.Interfaces/IDetectorLayer.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,19 +15,21 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.OpenApi.Models;
-using Swashbuckle.AspNetCore.SwaggerGen;
-
-namespace Utah.Udot.Atspm.ConfigApi
+namespace Utah.Udot.Atspm.Data.Interfaces
 {
-    public class IgnoreTypeSchemaFilter : ISchemaFilter
+    /// <summary>
+    /// For objects that reference detectors
+    /// </summary>
+    public interface IDetectorLayer
     {
-        public void Apply(OpenApiSchema schema, SchemaFilterContext context)
-        {
-            if (context.Type == typeof(Route)) // Replace Route with the type you want to ignore
-            {
-                schema.Properties.Clear();
-            }
-        }
+        /// <summary>
+        /// Detector identifier
+        /// </summary>
+        string DectectorIdentifier { get; set; }
+
+        /// <summary>
+        /// Detector channel
+        /// </summary>
+        int DetectorChannel { get; set; }
     }
 }

@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for ApplicationCore - ATSPM.Application.Configuration/EventLogAggregateConfiguration.cs
+// for Application - Utah.Udot.Atspm.Configuration/EventLogAggregateConfiguration.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,13 +15,11 @@
 // limitations under the License.
 #endregion
 
-
 namespace Utah.Udot.Atspm.Configuration
 {
     public class EventLogAggregateConfiguration
     {
         public string AggregationType { get; set; }
-        public int BinSize { get; set; } = 15;
         public IEnumerable<DateTime> Dates { get; set; }
     }
 }
