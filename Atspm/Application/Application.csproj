@@ -10,7 +10,7 @@
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<AssemblyName>$(NameSpacePrefix).Atspm</AssemblyName>
 		<ImplicitUsings>enable</ImplicitUsings>
-		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+		<GeneratePackageOnBuild>False</GeneratePackageOnBuild>
 		<Title>Udot Automated Traffic Performance Measure Infrastructure</Title>
 		<Authors>utah.udot.gov</Authors>
 		<Description>Library that defines implementation and infrastructure for the Automated Traffic Performance Measures platform</Description>
@@ -19,8 +19,6 @@
 		<RepositoryUrl>https://github.com/udotdevelopment/ATSPM</RepositoryUrl>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageTags>C#; .net standard; .net core</PackageTags>
-		<PackageLicenseFile>LICENSE</PackageLicenseFile>
-		<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
 		<VersionPrefix>5.0</VersionPrefix>
 		<VersionSuffix>rc.1</VersionSuffix>
 		<Version>$(VersionPrefix)-$(VersionSuffix)</Version>
