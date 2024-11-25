@@ -49,8 +49,8 @@ namespace Utah.Udot.Atspm.Business.RampMetering
             var mainlineAvgOccurrenceList = mainlineAvgOccurrenceEvents.Select(e => new DataPointForDouble(e.Timestamp, (e.EventParam / 10))).ToList();
             var mainlineAvgFlowList = mainlineAvgFlowEvents.Select(e => new DataPointForDouble(e.Timestamp, e.EventParam)).ToList();
 
-            var lanesActiveRateList = GetDescriptionWithDataPoints(activeRateEvents);
-            var lanesBaseRateList = GetDescriptionWithDataPoints(baseRateEvents);
+            var lanesActiveRateList = GetDescriptionWithDataPoints(activeRateEvents, options);
+            var lanesBaseRateList = GetDescriptionWithDataPoints(baseRateEvents, options);
             var queueList = GetQueueEvents(events, options, queueCodes);
 
             return new RampMeteringResult(location.LocationIdentifier, options.Start, options.End)
@@ -105,15 +105,16 @@ namespace Utah.Udot.Atspm.Business.RampMetering
             return dataPoints;
         }
 
-        private static List<DescriptionWithDataPoints> GetDescriptionWithDataPoints(IEnumerable<IndianaEvent> events)
+        private static List<DescriptionWithDataPoints> GetDescriptionWithDataPoints(IEnumerable<IndianaEvent> events, RampMeteringOptions options)
         {
             var descriptWithDataPointsEvents = new List<DescriptionWithDataPoints>();
-            var eventsByCodes = events.GroupBy(e => e.EventCode);
+
+            var groupedEvents = events.GroupBy(e => e.EventCode);
             int laneNumber = 1;
 
-            foreach (var eventsByCode in eventsByCodes)
+            foreach (var group in groupedEvents)
             {
-                var codeEvents = eventsByCode.Select(e => new DataPointForDouble(e.Timestamp, e.EventParam)).ToList();
+                var codeEvents = group.Select(e => new DataPointForDouble(e.Timestamp, e.EventParam)).ToList();
                 descriptWithDataPointsEvents.Add(new DescriptionWithDataPoints()
                 {
                     Description = laneNumber.ToString(),
@@ -122,7 +123,7 @@ namespace Utah.Udot.Atspm.Business.RampMetering
                 laneNumber++;
             }
 
-            return descriptWithDataPointsEvents;
+            return options.CombineLanes ? descriptWithDataPointsEvents.Where(d => d.Description == "1").ToList() : descriptWithDataPointsEvents;
         }
 
         private static (List<TimeSpaceEventBase>, List<TimeSpaceEventBase>) GetStartUpAndShutdownEvents(IEnumerable<IndianaEvent> events, RampMeteringOptions options)
