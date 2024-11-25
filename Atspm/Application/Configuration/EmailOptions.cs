@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for WatchDog - WatchDog.Models/LoggingOptions.cs
+// for WatchDog - WatchDog.Models/EmailOptions.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,34 +14,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+#nullable enable
 
-
-namespace Utah.Udot.Atspm.Data.Models
+namespace Utah.Udot.Atspm.Configuration
 {
-
-    public class LoggingOptions
+    public class EmailOptions
     {
         public DateTime ScanDate { get; set; }
         public int ScanDayStartHour { get; set; }
         public int ScanDayEndHour { get; set; }
-        public int ConsecutiveCount { get; set; }
-        public int MinPhaseTerminations { get; set; }
-        public double PercentThreshold { get; set; }
         public int PreviousDayPMPeakStart { get; set; }
         public int PreviousDayPMPeakEnd { get; set; }
-        public int MinimumRecords { get; set; }
-        public int LowHitThreshold { get; set; }
-        public int MaximumPedestrianEvents { get; set; }
-        public bool WeekdayOnly { get; set; }
         public int RampMainlineStartHour { get; set; }
         public int RampMainlineEndHour { get; set; }
         public int RampStuckQueueStartHour { get; set; }
         public int RampStuckQueueEndHour { get; set; }
-
-
-        public DateTime AnalysisStart => ScanDate.Date + new TimeSpan(ScanDayStartHour, 0, 0);
-
-        public DateTime AnalysisEnd => ScanDate.Date + new TimeSpan(ScanDayEndHour, 0, 0);
+        public bool EmailAllErrors { get; set; }
+        public string DefaultEmailAddress { get; set; }
+        public bool WeekdayOnly { get; set; }
     }
-
 }
