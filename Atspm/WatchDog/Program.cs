@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for WatchDog - WatchDog/Program.cs
+// for WatchDog - Utah.Udot.Atspm.WatchDog/Program.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -37,16 +37,18 @@ namespace Utah.Udot.Atspm.WatchDog
         {
             AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
-
             var host = Host.CreateDefaultBuilder(args)
+                .ApplyVolumeConfiguration()
                 .ConfigureAppConfiguration((h, c) => {
-                    c.AddUserSecrets<Program>(optional: true);
                     c.AddCommandLine(args);
+                    c.AddUserSecrets<Program>(optional: true);
 
                 })
                 .ConfigureServices((h, s) =>
                 {
                     s.AddEmailServices(h);
+                    s.AddScoped<IEmailService, SmtpEmailService>();
+                    s.AddScoped<WatchdogEmailService>();
 
                     s.AddAtspmDbContext(h);
                     s.AddScoped<ILocationRepository, LocationEFRepository>();
@@ -72,7 +74,6 @@ namespace Utah.Udot.Atspm.WatchDog
                     s.AddIdentity<ApplicationUser, IdentityRole>() // Add this line to register Identity
                      .AddEntityFrameworkStores<IdentityContext>() // Specify the EF Core store
                      .AddDefaultTokenProviders();
-
                     s.AddSingleton<WatchdogCommand>();
                     s.AddSingleton<ICommandOption<WatchdogConfiguration>, WatchdogCommand>();
 
@@ -81,6 +82,7 @@ namespace Utah.Udot.Atspm.WatchDog
                     s.AddHostedService<ScanHostedService>();
 
                     s.AddScoped<WatchdogEmailService>();
+                    s.Configure<EmailConfiguration>(h.Configuration.GetSection("WatchdogConfiguration:EmailConfiguration"));
 
                 })
                 .Build();

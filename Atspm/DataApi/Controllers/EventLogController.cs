@@ -55,7 +55,6 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
             return Ok(result);
         }
 
-
         /// <summary>
         /// Get all event logs for location by date
         /// </summary>

@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for ConfigApi - ATSPM.ConfigApi.Controllers/AreaController.cs
+// for ConfigApi - Utah.Udot.Atspm.ConfigApi.Controllers/WatchDogIgnoreEventController.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
 namespace Utah.Udot.Atspm.ConfigApi.Controllers
 {
     /// <summary>
-    /// Area Controller
+    /// WatchDogIgnoreEvent Controller
     /// </summary>
     [ApiVersion(1.0)]
     public class WatchDogIgnoreEventController : AtspmConfigControllerBase<WatchDogIgnoreEvent, int>
@@ -36,8 +36,6 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
         }
 
         #region NavigationProperties
-
-
 
         #endregion
 
