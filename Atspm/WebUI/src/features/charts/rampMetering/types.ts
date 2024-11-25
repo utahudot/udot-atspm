@@ -18,6 +18,10 @@ import { BaseChartData, ChartType, DataPoint } from '../common/types'
 import { TimeSpaceDetectorEvent } from '../timeSpaceDiagram/types'
 import { DetectorEvent } from '../timingAndActuation/types'
 
+export interface RampMeteringChartOptionsDefaults {
+  combineLanes: { id: number; value: string; option: string }
+}
+
 export interface DescriptionWithDataPoints {
   description: string
   value: DataPoint[]
