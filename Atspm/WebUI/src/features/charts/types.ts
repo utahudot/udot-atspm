@@ -74,6 +74,7 @@ export interface TransformedTurningMovementCountsResponse {
 export interface TransformedTimingAndActuationResponse {
   type: ChartType
   data: {
+    title: EChartsOption
     charts: StandardChart[]
     legends: EChartsOption[]
   }
