@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for Identity - Identity.Models.Token/VerifyResetTokenViewModel.cs
+// for IdentityApi - Identity.Models.Token/VerifyResetTokenViewModel.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
