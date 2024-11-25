@@ -15,12 +15,10 @@
 // limitations under the License.
 #endregion
 
-using Google.Api;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Utah.Udot.Atspm.Common;
 using Utah.Udot.Atspm.Configuration;
 using Utah.Udot.Atspm.Data;
 using Utah.Udot.Atspm.Data.Models;
@@ -29,6 +27,7 @@ using Utah.Udot.Atspm.Infrastructure.Repositories;
 using Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories;
 using Utah.Udot.Atspm.Infrastructure.Repositories.EventLogRepositories;
 using Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices;
+using Utah.Udot.ATSPM.WatchDog.Commands;
 
 namespace Utah.Udot.Atspm.WatchDog
 {
@@ -38,7 +37,6 @@ namespace Utah.Udot.Atspm.WatchDog
         {
             AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
-            var rootCmd = new WatchdogCommand();
 
             var host = Host.CreateDefaultBuilder(args)
                 .ConfigureAppConfiguration((h, c) => {
@@ -84,8 +82,6 @@ namespace Utah.Udot.Atspm.WatchDog
 
                     s.AddScoped<WatchdogEmailService>();
 
-                    var command = new WatchdogCommand();
-                    command.BindCommandOptions(h, s);
                 })
                 .Build();
 

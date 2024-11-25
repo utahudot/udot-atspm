@@ -21,7 +21,6 @@ using Microsoft.Extensions.Hosting;
 using System.CommandLine;
 using System.CommandLine.Hosting;
 using System.CommandLine.NamingConventionBinder;
-using Utah.Udot.Atspm.Common;
 
 namespace DatabaseInstaller.Commands
 {
