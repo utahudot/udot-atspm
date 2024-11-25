@@ -89,8 +89,6 @@ namespace Utah.Udot.Atspm.Configuration
             binder.BindMemberFromValue(b => b.PercentThreshold, PercentThresholdOption);
             binder.BindMemberFromValue(b => b.EmailAllErrors, EmailAllErrorsOption);
             binder.BindMemberFromValue(b => b.DefaultEmailAddress, DefaultEmailAddressOption);
-            binder.BindMemberFromValue(b => b.AnalysisStart, AnalysisStartOption);
-            binder.BindMemberFromValue(b => b.AnalysisEnd, AnalysisEndOption);
 
             return binder;
         }

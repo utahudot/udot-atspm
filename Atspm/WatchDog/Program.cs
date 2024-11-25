@@ -15,6 +15,7 @@
 // limitations under the License.
 #endregion
 
+using Google.Api;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -82,6 +83,9 @@ namespace Utah.Udot.Atspm.WatchDog
                     s.AddHostedService<ScanHostedService>();
 
                     s.AddScoped<WatchdogEmailService>();
+
+                    var command = new WatchdogCommand();
+                    command.BindCommandOptions(h, s);
                 })
                 .Build();
 
