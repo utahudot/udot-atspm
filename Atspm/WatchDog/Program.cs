@@ -39,10 +39,10 @@ namespace Utah.Udot.Atspm.WatchDog
             AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
             var host = Host.CreateDefaultBuilder(args)
+                .ApplyVolumeConfiguration()
                 .ConfigureAppConfiguration((h, c) => {
                     c.AddCommandLine(args);
                     c.AddUserSecrets<Program>(optional: true);
-
                 })
                 .ConfigureServices((h, s) =>
                 {

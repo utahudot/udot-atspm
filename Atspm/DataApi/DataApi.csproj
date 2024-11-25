@@ -21,15 +21,10 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<Compile Remove="Controllers\OldEventLogController.cs" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<PackageReference Include="Asp.Versioning.Mvc" Version="7.0.1" />
 		<PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" Version="7.0.1" />
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="7.0.15" />
 		<PackageReference Include="Microsoft.CodeAnalysis" Version="4.9.2" />
-		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.18.1" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
 	</ItemGroup>
 
@@ -39,10 +34,6 @@
 
 	<ItemGroup>
 		<Folder Include="BackgroundServices\" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<None Include="Controllers\OldEventLogController.cs" />
 	</ItemGroup>
 
 	<ItemGroup>
