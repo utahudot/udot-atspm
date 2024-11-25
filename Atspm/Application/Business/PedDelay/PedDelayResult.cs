@@ -1,6 +1,6 @@
 #region license
 // Copyright 2024 Utah Departement of Transportation
-// for ApplicationCore - ATSPM.Application.Business.PedDelay/PedDelayResult.cs
+// for Application - Utah.Udot.Atspm.Business.PedDelay/PedDelayResult.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
