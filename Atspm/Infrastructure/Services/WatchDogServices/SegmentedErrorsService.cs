@@ -1,4 +1,5 @@
-﻿using Utah.Udot.Atspm.Business.Watchdog;
+﻿using Google.Api;
+using Utah.Udot.Atspm.Business.Watchdog;
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Repositories;
 
@@ -16,6 +17,9 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
         public (List<WatchDogLogEventWithCountAndDate> newIssues, List<WatchDogLogEventWithCountAndDate> dailyRecurringIssues, List<WatchDogLogEventWithCountAndDate> recurringIssues)
         GetSegmentedErrors(List<WatchDogLogEvent> recordsForScanDate, EmailOptions emailOptions)
         {
+            //var consecutiveCountResults = GetConsecutiveDays(emailOptions.ScanDate);
+            var watchDogEventSummary = GetYearStats(emailOptions.ScanDate, emailOptions.ScanDate.AddDays(-1));
+            //var recordsWithPreviousDayOccurence = watchDogEventSummary.Where(w => w.OccurredOnSpecificDate == true).ToList();
             var (recordsForLast12Months, recordsForDayBeforeScanDate) = FetchRecords(emailOptions);
 
             var countAndDateLookupForLast12Months = CreateCountAndDateLookup(recordsForLast12Months);
@@ -26,6 +30,69 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
 
             return CategorizeIssues(allConvertedRecords, countForDayBeforeScanDate);
         }
+
+        public List<ConsecutiveDayResult> GetConsecutiveDays(DateTime scanDate)
+        {
+            DateTime previousDate = scanDate.AddDays(-1);
+
+            var consecutiveDaysResult = watchDogLogEventRepository.GetList()
+                .Where(e => e.Timestamp.Date == scanDate.Date || e.Timestamp.Date == previousDate.Date)
+                .GroupBy(e => new
+                {
+                    e.LocationId,
+                    e.ComponentType,
+                    e.ComponentId,
+                    e.Phase,
+                    e.IssueType
+                })
+                .Where(group =>
+                    group.Any(e => e.Timestamp.Date == previousDate.Date) &&
+                    group.Any(e => e.Timestamp.Date == scanDate.Date)) // Ensure events exist for both dates
+                .Select(group => new ConsecutiveDayResult
+                {
+                    LocationId = group.Key.LocationId,
+                    ComponentType = group.Key.ComponentType,
+                    ComponentId = group.Key.ComponentId,
+                    Phase = group.Key.Phase,
+                    IssueType = group.Key.IssueType,
+                    ConsecutiveDays = 2 // Fixed to 2 since we're explicitly checking for two consecutive dates
+                })
+                .ToList();
+
+            return consecutiveDaysResult;
+        }
+        
+        public List<WatchDogEventSummary> GetYearStats(DateTime scanDate, DateTime previousDayDate)
+        {
+            DateTime previousDate = scanDate.AddDays(-1);
+
+            var consecutiveDaysResult = watchDogLogEventRepository.GetList()
+                .Where(e => e.Timestamp >= scanDate.AddMonths(-12) && e.Timestamp < scanDate)
+                .GroupBy(e => new
+                {
+                    e.LocationId,
+                    e.ComponentType,
+                    e.ComponentId,
+                    e.Phase,
+                    e.IssueType
+                })
+                .Select(g => new WatchDogEventSummary
+                {
+                    LocationId = g.Key.LocationId,
+                    ComponentType = g.Key.ComponentType,
+                    ComponentId = g.Key.ComponentId,
+                    Phase = g.Key.Phase,
+                    IssueType = g.Key.IssueType,
+                    OccurrenceCount = g.Count(),
+                    OccurredOnSpecificDate = g.Any(e => e.Timestamp.Date == previousDayDate.Date) ? 1 : 0,
+                    FirstOccurrenceDate = g.Min(e => e.Timestamp.Date)
+                })
+                .OrderByDescending(x => x.OccurrenceCount)
+                .ToList();
+
+            return consecutiveDaysResult;
+        }
+
 
         private (List<WatchDogLogEvent> recordsForLast12Months, List<WatchDogLogEvent> recordsForDayBeforeScanDate)
         FetchRecords(EmailOptions emailOptions)
@@ -134,4 +201,41 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
             return (newIssues, dailyRecurringIssues, recurringIssues);
         }
     }
+    public class ConsecutiveDayResult
+    {
+        public int LocationId { get; set; }           // The ID of the location
+        public WatchDogComponentTypes ComponentType { get; set; }    // The type of the component
+        public int ComponentId { get; set; }         // The ID of the component
+        public int? Phase { get; set; }            // The phase associated with the event
+        public WatchDogIssueTypes IssueType { get; set; }        // The type of issue
+        public int ConsecutiveDays { get; set; }     // The number of consecutive days up to the specific date
+
+        public override string ToString()
+        {
+            return $"LocationId: {LocationId}, ComponentType: {ComponentType}, ComponentId: {ComponentId}, " +
+                   $"Phase: {Phase}, IssueType: {IssueType}, ConsecutiveDays: {ConsecutiveDays}";
+        }
+    }
+
+    public class WatchDogEventSummary
+    {
+        public int LocationId { get; set; }           // The ID of the location
+        public WatchDogComponentTypes ComponentType { get; set; }    // The type of the component
+        public int ComponentId { get; set; }         // The ID of the component
+        public int? Phase { get; set; }            // The phase associated with the event
+        public WatchDogIssueTypes IssueType { get; set; }        // The type of issue
+        public int OccurrenceCount { get; set; }     // The total number of occurrences
+        public int OccurredOnSpecificDate { get; set; } // Whether the event occurred on the specific date (1 for true, 0 for false)
+        public DateTime FirstOccurrenceDate { get; set; } // The date of the first occurrence
+
+        // Optional: ToString() override for debugging or logging purposes
+        public override string ToString()
+        {
+            return $"LocationId: {LocationId}, ComponentType: {ComponentType}, ComponentId: {ComponentId}, " +
+                   $"Phase: {Phase}, IssueType: {IssueType}, OccurrenceCount: {OccurrenceCount}, " +
+                   $"OccurredOnSpecificDate: {OccurredOnSpecificDate}, FirstOccurrenceDate: {FirstOccurrenceDate:yyyy-MM-dd}";
+        }
+    }
+
+
 }
