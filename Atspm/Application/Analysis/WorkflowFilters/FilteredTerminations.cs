@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for ApplicationCore - ATSPM.Application.Analysis.WorkflowFilters/FilteredTerminations.cs
+// for Application - Utah.Udot.Atspm.Analysis.WorkflowFilters/FilteredTerminations.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,15 +17,16 @@
 
 using System.Threading.Tasks.Dataflow;
 using Utah.Udot.Atspm.Data.Enums;
+using Utah.Udot.Atspm.Data.Models.EventLogModels;
 
 namespace Utah.Udot.Atspm.Analysis.WorkflowFilters
 {
     /// <summary>
-    /// Filters <see cref="ControllerEventLog"/> workflow events to
+    /// Filters <see cref="IndianaEvent"/> workflow events to
     /// <list type="bullet">
-    /// <item><see cref="4"/></item>
-    /// <item><see cref="5"/></item>
-    /// <item><see cref="6"/></item>
+    /// <item><see cref="IndianaEnumerations.PhaseGapOut"/></item>
+    /// <item><see cref="IndianaEnumerations.PhaseMaxOut"/></item>
+    /// <item><see cref="IndianaEnumerations.PhaseForceOff"/></item>
     /// <item><see cref="IndianaEnumerations.PhaseGreenTermination"/></item>
     /// </list>
     /// </summary>
@@ -34,9 +35,9 @@ namespace Utah.Udot.Atspm.Analysis.WorkflowFilters
         /// <inheritdoc/>
         public FilteredTerminations(DataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
         {
-            filteredList.Add(4);
-            filteredList.Add(5);
-            filteredList.Add(6);
+            filteredList.Add((int)IndianaEnumerations.PhaseGapOut);
+            filteredList.Add((int)IndianaEnumerations.PhaseMaxOut);
+            filteredList.Add((int)IndianaEnumerations.PhaseForceOff);
             filteredList.Add((int)IndianaEnumerations.PhaseGreenTermination);
         }
     }

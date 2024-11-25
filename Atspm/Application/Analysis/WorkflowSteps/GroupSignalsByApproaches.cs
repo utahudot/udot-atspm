@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for ApplicationCore - ATSPM.Application.Analysis.WorkflowSteps/GroupSignalsByApproaches.cs
+// for Application - Utah.Udot.Atspm.Analysis.WorkflowSteps/GroupSignalsByApproaches.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,8 +24,8 @@ namespace Utah.Udot.Atspm.Analysis.WorkflowSteps
 {
     /// <summary>
     /// Breaks out all <see cref="Approach"/> from <see cref="Location"/>
-    /// and returns separate Tuples of <see cref="Approach"/>/<see cref="ControllerEventLog"/> pairs
-    /// sorted by <see cref="ControllerEventLog.Timestamp"/>.
+    /// and returns separate Tuples of <see cref="Approach"/>/<see cref="IEnumerable{IndianaEvent}"/> pairs
+    /// sorted by <see cref="ITimestamp.Timestamp"/>.
     /// </summary>
     public class GroupLocationsByApproaches : TransformManyProcessStepBase<Tuple<Location, IEnumerable<IndianaEvent>>, Tuple<Approach, IEnumerable<IndianaEvent>>>
     {
@@ -35,10 +35,14 @@ namespace Utah.Udot.Atspm.Analysis.WorkflowSteps
         /// <inheritdoc/>
         protected override Task<IEnumerable<Tuple<Approach, IEnumerable<IndianaEvent>>>> Process(Tuple<Location, IEnumerable<IndianaEvent>> input, CancellationToken cancelToken = default)
         {
-            var Location = input.Item1;
-            var logs = input.Item2;
+            var location = input.Item1;
+            var events = input.Item2
+                .FromSpecification(new EventLogSpecification(location))
+                .Cast<IndianaEvent>()
+                .ToList()
+                .AsEnumerable();
 
-            var result = Location.Approaches.Select(s => Tuple.Create(s, logs.FromSpecification(new IndianaLogLocationFilterSpecification(Location))));
+            var result = location.Approaches.Select(s => Tuple.Create(s, events));
 
             return Task.FromResult(result);
         }
