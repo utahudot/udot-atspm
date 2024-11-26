@@ -93,113 +93,118 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
         private void CheckRampMeteringDetectors(Location location, LoggingOptions options, List<IndianaEvent> locationEvents, ConcurrentBag<WatchDogLogEvent> errors)
         {
             int rampMeterMeasureId = 37;
-            if (location.Devices.Any(d => d.DeviceType == DeviceTypes.RampController))
+            if (location.LocationTypeId == ((short)LocationTypes.RM))
             {
-                CheckMainlineDetections(location, options, locationEvents, errors, rampMeterMeasureId);
-                CheckStuckQueDetections(location, options, locationEvents, errors, rampMeterMeasureId);
+                CheckMainlineDetections(location, options, locationEvents, errors);
+                CheckStuckQueueDetections(location, options, locationEvents, errors);
             }
         }
 
-        private void CheckStuckQueDetections(Location location, LoggingOptions options, List<IndianaEvent> locationEvents, ConcurrentBag<WatchDogLogEvent> errors, int rampMeterMeasureId)
+        private void CheckDetections(
+            Location location,
+            LoggingOptions options,
+            List<IndianaEvent> locationEvents,
+            ConcurrentBag<WatchDogLogEvent> errors,
+            IEnumerable<short> eventCodes,
+            WatchDogIssueTypes issueType,
+            WatchDogComponentTypes componentType,
+            string issueDescription,
+            int startHour,
+            int endHour,
+            bool checkMissing)
         {
-            var eventCodes = new List<short>();
-            for (short i = 1171; i <= 1201; i+= 2)
+            try
             {
-                eventCodes.Add(i);
+                var (start, end) = CalculateStartAndEndTime(options, startHour, endHour);
+
+                var currentVolume = locationEvents.Where(e => e.Timestamp >= start && e.Timestamp <= end && eventCodes.Contains(e.EventCode));
+                var rampDetectors = location.GetDetectorsForLocation()
+                    .Where(d => d.DetectionTypes.Any(dt => dt.Id == DetectionTypes.IQ || dt.Id == DetectionTypes.EQ));
+
+                bool hasIQ = rampDetectors.Any(d => d.DetectionTypes.Any(dt => dt.Id == DetectionTypes.IQ));
+                bool hasEQ = rampDetectors.Any(d => d.DetectionTypes.Any(dt => dt.Id == DetectionTypes.EQ));
+
+                var additionalInfo = GetAdditionalInfo(hasIQ, hasEQ);
+
+                if ((checkMissing && !currentVolume.Any()) || (!checkMissing && currentVolume.Any()))
+                {
+                    var error = new WatchDogLogEvent(
+                        location.Id,
+                        location.LocationIdentifier,
+                        options.ScanDate,
+                        componentType,
+                        location.Id,
+                        issueType,
+                        $"{issueDescription} {currentVolume.Count().ToString().ToLowerInvariant()}{additionalInfo}",
+                        null);
+
+                    if (!errors.Contains(error))
+                        errors.Add(error);
+                }
             }
-            var detectors = location.GetDetectorsForLocationThatSupportMetric(rampMeterMeasureId);
-
-            foreach (var detector in detectors)
+            catch (Exception ex)
             {
-                try
-                {
-                    if (detector.DetectionTypes.Any(d => d.Id == DetectionTypes.IQ || d.Id == DetectionTypes.EQ))
-                    {
-                        var channel = detector.DetectorChannel;
-                        var direction = detector.Approach.DirectionType.Description;
-                        var start = new DateTime();
-                        var end = new DateTime();
-                        if (options.WeekdayOnly && options.ScanDate.DayOfWeek == DayOfWeek.Monday)
-                        {
-                            start = options.ScanDate.AddDays(-3).Date.AddHours(options.RampStuckQueueStartHour);
-                            end = options.ScanDate.AddDays(-3).Date.AddHours(options.RampStuckQueueEndHour);
-                        }
-                        else
-                        {
-                            start = options.ScanDate.AddDays(-1).Date.AddHours(options.RampStuckQueueStartHour);
-                            end = options.ScanDate.AddDays(-1).Date.AddHours(options.RampStuckQueueEndHour);
-                        }
-
-                        var currentVolume = locationEvents.Where(e => e.Timestamp >= start && e.Timestamp <= end && eventCodes.Contains(e.EventCode));
-                        //Compare collected hits to low hit threshold, 
-                        if (currentVolume.Any())
-                        {
-                            var error = new WatchDogLogEvent(
-                                location.Id,
-                                location.LocationIdentifier,
-                                options.ScanDate,
-                                WatchDogComponentTypes.Detector,
-                                detector.Id,
-                                WatchDogIssueTypes.MissingMainlineData,
-                                $"CH: {channel} - Count: {currentVolume.Count().ToString().ToLowerInvariant()}",
-                                null);
-                            if (!errors.Contains(error))
-                                errors.Add(error);
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    logger.LogError($"StuckQueueDetections {detector.Id} {ex.Message}");
-                }
+                logger.LogError($"{issueType} {location.Id} {ex.Message}");
             }
         }
 
-        private void CheckMainlineDetections(Location location, LoggingOptions options, List<IndianaEvent> locationEvents, ConcurrentBag<WatchDogLogEvent> errors, int rampMeterMeasureId)
+        private (DateTime start, DateTime end) CalculateStartAndEndTime(LoggingOptions options, int startHour, int endHour)
         {
-            var mainlineEventCodes = new List<short> { 1371, 1372, 1372 };
-            var detectors = location.GetDetectorsForLocationThatSupportMetric(rampMeterMeasureId);
-            foreach (var detector in detectors) {
-                try
-                {
-                    if (detector.DetectionTypes.Any(d => d.Id == DetectionTypes.IQ || d.Id == DetectionTypes.EQ)) {
-                        var channel = detector.DetectorChannel;
-                        var direction = detector.Approach.DirectionType.Description;
-                        var start = new DateTime();
-                        var end = new DateTime();
-                        if (options.WeekdayOnly && options.ScanDate.DayOfWeek == DayOfWeek.Monday)
-                        {
-                            start = options.ScanDate.AddDays(-3).Date.AddHours(options.RampMainlineStartHour);
-                            end = options.ScanDate.AddDays(-3).Date.AddHours(options.RampMainlineEndHour);
-                        }
-                        else
-                        {
-                            start = options.ScanDate.AddDays(-1).Date.AddHours(options.RampMainlineStartHour);
-                            end = options.ScanDate.AddDays(-1).Date.AddHours(options.RampMainlineEndHour);
-                        }
+            var scanDate = options.ScanDate;
+            var start = options.WeekdayOnly && scanDate.DayOfWeek == DayOfWeek.Monday
+                ? scanDate.AddDays(-3).Date.AddHours(startHour)
+                : scanDate.AddDays(-1).Date.AddHours(startHour);
 
-                        var currentVolume = locationEvents.Where(e => e.Timestamp >= start && e.Timestamp <= end && mainlineEventCodes.Contains(e.EventCode));
-                        //Compare collected hits to low hit threshold, 
-                        if (!currentVolume.Any())
-                        {
-                            var error = new WatchDogLogEvent(
-                                location.Id,
-                                location.LocationIdentifier,
-                                options.ScanDate,
-                                WatchDogComponentTypes.Detector,
-                                detector.Id,
-                                WatchDogIssueTypes.MissingMainlineData,
-                                $"CH: {channel} - Count: {currentVolume.Count().ToString().ToLowerInvariant()}",
-                                null);
-                            if (!errors.Contains(error))
-                                errors.Add(error);
-                        }
-                    }
-                }
-                catch (Exception ex) {
-                    logger.LogError($"MissingMainlineData {detector.Id} {ex.Message}");
-                }
-            }
+            var end = options.WeekdayOnly && scanDate.DayOfWeek == DayOfWeek.Monday
+                ? scanDate.AddDays(-3).Date.AddHours(endHour)
+                : scanDate.AddDays(-1).Date.AddHours(endHour);
+
+            return (start, end);
+        }
+
+        private string GetAdditionalInfo(bool hasIQ, bool hasEQ)
+        {
+            var additionalInfo = "";
+            if (hasIQ)
+                additionalInfo += " Intermediate Queue";
+            if (hasEQ)
+                additionalInfo += (string.IsNullOrEmpty(additionalInfo) ? "" : ",") + " Excessive Queue";
+
+            return additionalInfo;
+        }
+
+        private void CheckStuckQueueDetections(Location location, LoggingOptions options, List<IndianaEvent> locationEvents, ConcurrentBag<WatchDogLogEvent> errors)
+        {
+            var eventCodes = Enumerable.Range(1171, 31).Where(i => i % 2 != 0).Select(i => (short)i).ToList();
+            CheckDetections(
+                location,
+                options,
+                locationEvents,
+                errors,
+                eventCodes,
+                WatchDogIssueTypes.StuckPed,
+                WatchDogComponentTypes.Detector,
+                "Stuck Queue Detections",
+                options.RampStuckQueueStartHour,
+                options.RampStuckQueueEndHour,
+                checkMissing: false);
+        }
+
+        private void CheckMainlineDetections(Location location, LoggingOptions options, List<IndianaEvent> locationEvents, ConcurrentBag<WatchDogLogEvent> errors)
+        {
+            var mainlineEventCodes = new List<short> { 1371, 1372, 1373 };
+            CheckDetections(
+                location,
+                options,
+                locationEvents,
+                errors,
+                mainlineEventCodes,
+                WatchDogIssueTypes.MissingMainlineData,
+                WatchDogComponentTypes.Location,
+                "Missing Mainline Data",
+                options.RampMainlineStartHour,
+                options.RampMainlineEndHour,
+                checkMissing: true);
         }
 
         private void CheckForLowDetectorHits(Location location, LoggingOptions options, List<IndianaEvent> locationEvents, ConcurrentBag<WatchDogLogEvent> errors, List<short> detectorEventCodes)
