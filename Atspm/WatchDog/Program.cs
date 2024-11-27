@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System.CommandLine;
 using System.CommandLine.Builder;
 using System.CommandLine.Hosting;
 using System.CommandLine.Parsing;
@@ -31,11 +32,10 @@ using Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories;
 using Utah.Udot.Atspm.Infrastructure.Repositories.EventLogRepositories;
 using Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices;
 using Utah.Udot.ATSPM.WatchDog.Commands;
-using Utah.Udot.NetStandardToolkit.Configuration;
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
-var rootCmd = new WatchdogCommand();
+var rootCmd = new WatchdogConfigCommand();
 var cmdBuilder = new CommandLineBuilder(rootCmd);
 cmdBuilder.UseDefaults();
 cmdBuilder.UseHost(a =>
@@ -80,12 +80,7 @@ cmdBuilder.UseHost(a =>
         s.AddSingleton<WatchdogCommand>();
         s.AddSingleton<ICommandOption<WatchdogConfiguration>, WatchdogCommand>();
 
-        // Other service registrations
-        s.AddOptions<WatchdogConfiguration>().Bind(h.Configuration.GetSection("WatchdogConfiguration"));
         s.AddHostedService<ScanHostedService>();
-
-        s.AddScoped<WatchdogEmailService>();
-        s.Configure<EmailConfiguration>(h.Configuration.GetSection("WatchdogConfiguration:EmailConfiguration"));
 
     });
 },
