@@ -293,6 +293,12 @@ const MapLayers: GridColDef[] = [
     editable: true,
     flex: 1,
   },
+  {
+    field: 'serviceType',
+    headerName: 'Service Type',
+    editable: true,
+    flex: 1,
+  },
 ]
 
 export const pageNameToHeaders: Map<string, GridColDef[]> = new Map()

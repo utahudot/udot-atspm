@@ -15,7 +15,8 @@ import {
   Popper,
   useTheme,
 } from '@mui/material'
-import { FeatureLayer } from 'esri-leaflet'
+import { DynamicMapLayer, FeatureLayer } from 'esri-leaflet'
+import 'esri-leaflet-renderers'
 import L, { Map as LeafletMap } from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { memo, useEffect, useRef, useState } from 'react'
@@ -73,44 +74,9 @@ const LocationMap = ({
   useEffect(() => {
     if (!mapRef) return
 
-    // Store layer references so we can clean them up
-    const layerRefs: FeatureLayer[] = []
-
-    MapLayersMockData.forEach((layer) => {
-      if (layer.showByDefault) {
-        // Convert the query URL to the service URL
-        // Example: from ".../MapServer/0/query?..." to ".../MapServer/0"
-        const serviceUrl = layer.mapURL.split('/query')[0]
-
-        const featureLayer = new FeatureLayer({
-          url: serviceUrl,
-          // You can add styling options here
-          style: {
-            color: '#3388ff',
-            weight: 2,
-          },
-        }).addTo(mapRef)
-
-        layerRefs.push(featureLayer)
-      }
-    })
-
-    // Cleanup function to remove layers when component unmounts
-    return () => {
-      layerRefs.forEach((layer) => {
-        if (mapRef) {
-          mapRef.removeLayer(layer)
-        }
-      })
-    }
-  }, [mapRef])
-
-  useEffect(() => {
-    if (!mapRef) return
-
     // Clear existing layers
     mapRef.eachLayer((layer) => {
-      if (layer instanceof FeatureLayer) {
+      if (layer instanceof FeatureLayer || layer instanceof DynamicMapLayer) {
         mapRef.removeLayer(layer)
       }
     })
@@ -118,11 +84,20 @@ const LocationMap = ({
     // Add active layers
     MapLayersMockData.forEach((layer) => {
       if (activeLayers.includes(layer.id)) {
-        const serviceUrl = layer.mapURL.split('/query')[0]
-        new FeatureLayer({
-          url: serviceUrl,
-          weight: 2,
-        }).addTo(mapRef)
+        if (layer.serviceType === 'mapserver') {
+          const baseUrl = layer.mapURL.split('/query')[0].replace('/0', '')
+          new DynamicMapLayer({
+            url: baseUrl,
+            opacity: 1,
+            layers: [0],
+          }).addTo(mapRef)
+        } else {
+          // Feature server - just use the URL as is
+          new FeatureLayer({
+            url: layer.mapURL,
+            useCors: false, // Sometimes needed for ArcGIS services
+          }).addTo(mapRef)
+        }
       }
     })
   }, [mapRef, activeLayers])
@@ -358,7 +333,7 @@ const LocationMap = ({
               boxShadow: 3,
               display: 'flex',
               flexDirection: 'column',
-              gap: 1, 
+              gap: 1,
             }}
           >
             {MapLayersMockData.map((layer) => (

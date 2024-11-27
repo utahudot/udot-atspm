@@ -1,13 +1,15 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import {
-  Box,
   Button,
   Checkbox,
   Dialog,
   DialogActions,
   DialogContent,
-  DialogTitle,
+  FormControl,
   FormControlLabel,
+  InputLabel,
+  MenuItem,
+  Select,
   TextField,
   Typography,
 } from '@mui/material'
@@ -22,6 +24,7 @@ interface MapLayer {
   mapURL?: string
   showByDefault: boolean
   blob?: Blob
+  serviceType: 'mapserver' | 'featureserver'
 }
 
 interface MapLayerCreateEditModalProps {
@@ -34,7 +37,8 @@ const mapLayerSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   mapURL: z.string().optional(),
   showByDefault: z.boolean(),
-  blob: z.any().optional(), // Can't strictly type Blob with zod
+  serviceType: z.enum(['mapserver', 'featureserver']),
+  blob: z.any().optional(),
 })
 
 type FormData = z.infer<typeof mapLayerSchema>
@@ -56,6 +60,7 @@ export const MapLayerCreateEditModal: React.FC<
       name: data?.name || '',
       mapURL: data?.mapURL || '',
       showByDefault: data?.showByDefault || false,
+      serviceType: data?.serviceType,
     },
   })
 
@@ -68,13 +73,13 @@ export const MapLayerCreateEditModal: React.FC<
     [setValue]
   )
 
-//   const { getRootProps, getInputProps, isDragActive } = useDropzone({
-//     onDrop,
-//     accept: {
-//       'image/*': ['.png', '.jpg', '.jpeg', '.gif'],
-//     },
-//     maxFiles: 1,
-//   })
+  //   const { getRootProps, getInputProps, isDragActive } = useDropzone({
+  //     onDrop,
+  //     accept: {
+  //       'image/*': ['.png', '.jpg', '.jpeg', '.gif'],
+  //     },
+  //     maxFiles: 1,
+  //   })
 
   const onSubmit = async (data: FormData) => {
     // Placeholder for API call
@@ -90,7 +95,7 @@ export const MapLayerCreateEditModal: React.FC<
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <Typography variant="h4" sx={{ml:3,mt:2}} >
+      <Typography variant="h4" sx={{ ml: 3, mt: 2 }}>
         {isEditMode ? 'Edit Map Layer' : 'Create New Map Layer'}
       </Typography>
 
@@ -123,6 +128,23 @@ export const MapLayerCreateEditModal: React.FC<
                 error={!!errors.mapURL}
                 helperText={errors.mapURL?.message}
               />
+            )}
+          />
+          <Controller
+            name="serviceType"
+            control={control}
+            render={({ field }) => (
+              <FormControl fullWidth margin="normal">
+                <InputLabel>Service Type</InputLabel>
+                <Select
+                  {...field}
+                  label="Service Type"
+                  error={!!errors.serviceType}
+                >
+                  <MenuItem value="featureserver">Feature Server</MenuItem>
+                  <MenuItem value="mapserver">Map Server</MenuItem>
+                </Select>
+              </FormControl>
             )}
           />
 
