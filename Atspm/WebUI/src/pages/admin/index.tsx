@@ -1,6 +1,7 @@
 import GenericAdminChart, {
   pageNameToHeaders,
 } from '@/components/GenericAdminChart'
+import MapLayerCreateEditModal from '@/components/GenericAdminChart/MapLayerCreateEditModal'
 import { ResponsivePageLayout } from '@/components/ResponsivePage'
 import {
   PageNames,
@@ -17,53 +18,37 @@ type MapLayer = {
   name: string
   mapURL: string
   showByDefault: boolean
+  serviceType?: 'mapserver' | 'featureserver' // Add this
   blob: Blob
 }
 
-const mapLayersMockData: MapLayer[] = [
+export const MapLayersMockData: MapLayer[] = [
   {
     id: 1,
-    name: 'Traffic Signals',
-    mapURL: 'https://example.com/traffic-signals',
+    name: 'Udot Traffic Speed',
+    mapURL:
+      'https://maps.udot.utah.gov/central/rest/services/TrafficAndSafety/UDOT_Speed_Limits/MapServer/0/query?where=1%3D1&outFields=*&f=geojson',
     showByDefault: true,
-    blob: new Blob(), // No data added
+    serviceType: 'mapserver',
+    blob: new Blob(),
   },
   {
     id: 2,
-    name: 'Road Construction',
-    mapURL: 'https://example.com/road-construction',
+    name: 'ArcGis Earthquakes since 1970',
+    mapURL:
+      'https://sampleserver6.arcgisonline.com/arcgis/rest/services/Earthquakes_Since1970/FeatureServer/0',
     showByDefault: false,
-    blob: new Blob(),
-  },
-  {
-    id: 3,
-    name: 'Accident Hotspots',
-    mapURL: 'https://example.com/accident-hotspots',
-    showByDefault: true,
-    blob: new Blob(),
-  },
-  {
-    id: 4,
-    name: 'Traffic Density',
-    mapURL: 'https://example.com/traffic-density',
-    showByDefault: false,
-    blob: new Blob(),
-  },
-  {
-    id: 5,
-    name: 'Weather Conditions',
-    mapURL: 'https://example.com/weather-conditions',
-    showByDefault: true,
+    serviceType: 'featureserver',
     blob: new Blob(),
   },
 ]
 
 const Admin = () => {
-  const pageAccess = useViewPage(PageNames.MapLayerHeaders)
+  const pageAccess = useViewPage(PageNames.MapLayers)
   const [currentTab, setCurrentTab] = useState('1')
   const [data, setData] = useState<any>(null)
   const headers: GridColDef[] = pageNameToHeaders.get(
-    PageNames.MapLayerHeaders
+    PageNames.MapLayers
   ) as GridColDef[]
 
   const hasLocationsEditClaim = useUserHasClaim('LocationConfiguration:Edit')
@@ -136,12 +121,13 @@ const Admin = () => {
   //     return <div>Error returning data</div>
   //   }
 
-  const filteredData = mapLayersMockData.map((obj: any) => {
+  const filteredData = MapLayersMockData.map((obj: any) => {
     return {
       id: obj.id,
       name: obj.name,
       mapURL: obj.mapURL,
       showByDefault: obj.showByDefault,
+      serviceType: obj.serviceType
     }
   })
 
@@ -149,10 +135,11 @@ const Admin = () => {
     name: '',
     mapURL: '',
     showByDefault: '',
+    serviceType: '',
   }
 
   return (
-    <ResponsivePageLayout title={'Manage Areas'} noBottomMargin>
+    <ResponsivePageLayout title={'General Admin'} noBottomMargin>
       <TabContext value={currentTab}>
         <TabList
           onChange={handleChange}
@@ -164,7 +151,7 @@ const Admin = () => {
         </TabList>
         <TabPanel value="1" sx={{ padding: '0px' }}>
           <GenericAdminChart
-            pageName={PageNames.MapLayerHeaders}
+            pageName={PageNames.MapLayers}
             headers={headers}
             data={filteredData}
             baseRowType={baseType}
@@ -173,6 +160,7 @@ const Admin = () => {
             onCreate={createMapLayer}
             hasEditPrivileges={hasLocationsEditClaim}
             hasDeletePrivileges={hasLocationsDelteClaim}
+            customModal={<MapLayerCreateEditModal />}
           />
         </TabPanel>
       </TabContext>
