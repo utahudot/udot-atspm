@@ -15,7 +15,7 @@
 // limitations under the License.
 #endregion
 
-namespace Utah.Udot.Atspm.Data.Models.ConfigurationModels.Dtos
+namespace Utah.Udot.Atspm.ValueObjects
 {
     /// <summary>
     /// Location that data is being logged and monitored
@@ -54,6 +54,7 @@ namespace Utah.Udot.Atspm.Data.Models.ConfigurationModels.Dtos
 
     public class TemplateLocationModifiedDto
     {
+        public string Id { get; set; }
         /// <summary>
         /// Location
         /// </summary>
