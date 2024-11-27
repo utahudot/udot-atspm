@@ -21,6 +21,8 @@ using System.CommandLine;
 using System.CommandLine.Hosting;
 using System.CommandLine.NamingConventionBinder;
 using Utah.Udot.Atspm.Configuration;
+using Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices;
+using Utah.Udot.NetStandardToolkit.Configuration;
 
 namespace Utah.Udot.ATSPM.WatchDog.Commands
 {
@@ -95,8 +97,13 @@ namespace Utah.Udot.ATSPM.WatchDog.Commands
 
         public void BindCommandOptions(HostBuilderContext host, IServiceCollection services)
         {
+            services.AddOptions<WatchdogConfiguration>().Bind(host.Configuration.GetSection("WatchdogConfiguration"));
+            services.Configure<EmailConfiguration>(host.Configuration.GetSection("EmailConfiguration"));
+            services.AddScoped<WatchdogEmailService>();
+
             services.AddSingleton(GetOptionsBinder());
             services.AddOptions<WatchdogConfiguration>().BindCommandLine();
+
         }
     }
 }

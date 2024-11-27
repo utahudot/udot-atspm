@@ -15,18 +15,18 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using System.CommandLine.NamingConventionBinder;
+using System.CommandLine;
 
 namespace Utah.Udot.ATSPM.WatchDog.Commands
 {
-    public interface ICommandOption<T> : ICommandOption
+    public class WatchdogConfigCommand : RootCommand
     {
-        ModelBinder<T> GetOptionsBinder();
-    }
-    public interface ICommandOption
-    {
-        void BindCommandOptions(HostBuilderContext host, IServiceCollection services);
+        public WatchdogConfigCommand() {
+            AddCommand(WatchdogCommand);
+            AddCommand(EmailCommand);
+        }
+
+        public WatchdogCommand WatchdogCommand { get; set; } = new WatchdogCommand();
+        public EmailCommand EmailCommand { get; set; } = new EmailCommand();
     }
 }
