@@ -274,7 +274,7 @@ const deviceHeaders: GridColDef[] = [
   },
 ]
 
-const mapLayerHeaders: GridColDef[] = [
+const MapLayers: GridColDef[] = [
   {
     field: 'name',
     headerName: 'Name',
@@ -293,6 +293,12 @@ const mapLayerHeaders: GridColDef[] = [
     editable: true,
     flex: 1,
   },
+  {
+    field: 'serviceType',
+    headerName: 'Service Type',
+    editable: true,
+    flex: 1,
+  },
 ]
 
 export const pageNameToHeaders: Map<string, GridColDef[]> = new Map()
@@ -306,4 +312,4 @@ export const pageNameToHeaders: Map<string, GridColDef[]> = new Map()
   .set(PageNames.Users, usersHeaders)
   .set(PageNames.Products, productHeaders)
   .set(PageNames.DeviceConfigurations, deviceHeaders)
-  .set(PageNames.MapLayerHeaders, mapLayerHeaders)
+  .set(PageNames.MapLayers, MapLayers)
