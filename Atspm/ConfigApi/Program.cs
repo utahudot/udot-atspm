@@ -129,6 +129,7 @@ builder.Host.ConfigureServices((h, s) =>
 
     s.AddScoped<IRouteService, RouteService>();
     s.AddScoped<IApproachService, ApproachService>();
+    s.AddScoped<SignalTemplateService>();
 
     s.AddPathBaseFilter(h);
 

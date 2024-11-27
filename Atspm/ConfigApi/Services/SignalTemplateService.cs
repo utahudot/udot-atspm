@@ -16,10 +16,10 @@
 #endregion
 
 using Utah.Udot.Atspm.Data.Models;
-using Utah.Udot.Atspm.Data.Models.ConfigurationModels.Dtos;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
 using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
 using Utah.Udot.Atspm.Repositories.EventLogRepositories;
+using Utah.Udot.Atspm.ValueObjects;
 
 namespace Utah.Udot.Atspm.ConfigApi.Services
 {
@@ -173,6 +173,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Services
 
             return new TemplateLocationModifiedDto
             {
+                Id = sourceLocation.Id.ToString(),
                 Location = newVersion,
                 LoggedButUnusedProtectedOrPermissivePhases = unattachedProtectedOrPermissivePhases,
                 LoggedButUnusedOverlapPhases = unattachedOverlapPhases,
