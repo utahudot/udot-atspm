@@ -17,6 +17,7 @@
 
 using Utah.Udot.Atspm.Business.Watchdog;
 using Utah.Udot.Atspm.Data.Enums;
+using Utah.Udot.Atspm.Data.Models.ConfigurationModels.Dtos;
 using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
 using Utah.Udot.Atspm.Specifications;
 using Utah.Udot.NetStandardToolkit.Extensions;
@@ -33,11 +34,11 @@ namespace Utah.Udot.Atspm.Extensions
         /// and archives old version
         /// </summary>
         /// <param name="repo"></param>
-        /// <param name="id">Location version to copy</param>
+        /// <param name="locationId">Location version to copy</param>
         /// <returns>New version of copied <see cref="Location"/></returns>
-        public static async Task<Location> CopyLocationToNewVersion(this ILocationRepository repo, int id)
+        public static async Task<Location> CopyLocationToNewVersion(this ILocationRepository repo, int locationId)
         {
-            var sourceLocation = repo.GetVersionByIdDetached(id);
+            var sourceLocation = repo.GetVersionByIdDetached(locationId);
             if (sourceLocation != null)
             {
                 var newVersion = (Location)sourceLocation.Clone();
@@ -71,7 +72,49 @@ namespace Utah.Udot.Atspm.Extensions
             }
             else
             {
-                throw new ArgumentException($"{id} is not a valid Location");
+                throw new ArgumentException($"{locationId} is not a valid Location");
+            }
+        }
+
+        public static async Task<Location> SaveTemplatedLocation(this ILocationRepository repo, int locationId, TemplateLocationDto replacementInformation)
+        {
+            var sourceLocation = repo.GetVersionByIdDetached(locationId);
+            if (sourceLocation != null)
+            {
+                var newVersion = (Location)sourceLocation.Clone();
+                // Detach the original entity
+
+                newVersion.Latitude = replacementInformation.Latitude;
+                newVersion.Longitude = replacementInformation.Longitude;
+                newVersion.PrimaryName = replacementInformation.PrimaryName;
+                newVersion.SecondaryName = replacementInformation.SecondaryName;
+                newVersion.VersionAction = LocationVersionActions.New;
+                newVersion.Start = DateTime.Today;
+                newVersion.Note = replacementInformation.Note == null ? $"Copy of {sourceLocation.Note}" : replacementInformation.Note;
+
+                newVersion.Id = 0;
+
+                //old devices point to the new objects
+
+
+                foreach (var approach in newVersion.Approaches)
+                {
+                    approach.Id = 0;
+                    foreach (var detector in approach.Detectors)
+                    {
+                        detector.Id = 0;
+                    }
+                }
+
+                newVersion.Devices = replacementInformation.Devices;
+
+                await repo.AddAsync(newVersion);
+
+                return newVersion;
+            }
+            else
+            {
+                throw new ArgumentException($"{locationId} is not a valid Location");
             }
         }
 
