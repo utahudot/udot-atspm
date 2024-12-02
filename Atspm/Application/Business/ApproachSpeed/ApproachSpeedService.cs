@@ -16,7 +16,7 @@
 #endregion
 
 using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Tokens;
+using Utah.Udot.Atspm.Extensions;
 using Utah.Udot.Atspm.Business.Common;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
 

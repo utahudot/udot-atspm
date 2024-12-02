@@ -21,13 +21,12 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Utah.Udot.Atspm.Data.Models;
+using Utah.Udot.ATSPM.IdentityApi.Controllers;
 
 namespace Identity.Controllers
 {
-    [ApiController]
     [ApiVersion("1.0")]
-    [Route("api/v{version:apiVersion}/[controller]")]
-    public class ProfileController : ControllerBase
+    public class ProfileController : IdentityControllerBase
     {
         private readonly UserManager<ApplicationUser> _userManager;
 

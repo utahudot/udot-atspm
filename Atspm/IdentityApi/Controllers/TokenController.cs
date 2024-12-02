@@ -23,13 +23,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using System.Text;
 using Utah.Udot.Atspm.Data.Models;
+using Utah.Udot.ATSPM.IdentityApi.Controllers;
 
 namespace Identity.Controllers
 {
-    [ApiController]
     [ApiVersion("1.0")]
-    [Route("api/v{version:apiVersion}/[controller]")]
-    public class TokenController : ControllerBase
+    public class TokenController : IdentityControllerBase
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly TokenService _tokenService;

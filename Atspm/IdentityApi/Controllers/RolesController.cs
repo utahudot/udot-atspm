@@ -24,14 +24,13 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Data;
 using Utah.Udot.Atspm.Data.Models;
+using Utah.Udot.ATSPM.IdentityApi.Controllers;
 
 namespace Identity.Controllers
 {
     //[Authorize()]
-    [ApiController]
     [ApiVersion("1.0")]
-    [Route("api/v{version:apiVersion}/[controller]")]
-    public class RolesController : ControllerBase
+    public class RolesController : IdentityControllerBase
     {
         private readonly RoleManager<IdentityRole> roleManager;
 

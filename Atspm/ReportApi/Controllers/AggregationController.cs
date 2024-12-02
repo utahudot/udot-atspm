@@ -25,8 +25,6 @@ namespace Utah.Udot.Atspm.ReportApi.Controllers
     /// Approach delay report controller.
     /// </summary>
     [ApiVersion(1.0)]
-    [ApiController]
-    [Route("api/v{version:apiVersion}/[controller]")]
     public class AggregationController : ReportControllerBase<AggregationOptions, IEnumerable<AggregationResult>>
     {
         /// <inheritdoc/>
