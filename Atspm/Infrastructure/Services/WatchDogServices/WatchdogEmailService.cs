@@ -16,7 +16,7 @@
 #endregion
 
 using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Tokens;
+using Utah.Udot.Atspm.Extensions;
 using System.Net.Mail;
 using System.Text;
 using Utah.Udot.Atspm.Business.Watchdog;
