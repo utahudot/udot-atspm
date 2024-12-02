@@ -10,18 +10,20 @@
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<AssemblyName>$(NameSpacePrefix).Atspm</AssemblyName>
 		<ImplicitUsings>enable</ImplicitUsings>
-		<GeneratePackageOnBuild>False</GeneratePackageOnBuild>
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<Title>Udot Automated Traffic Performance Measure Infrastructure</Title>
 		<Authors>utah.udot.gov</Authors>
 		<Description>Library that defines implementation and infrastructure for the Automated Traffic Performance Measures platform</Description>
 		<Copyright>Copyright $(Authors)</Copyright>
 		<PackageProjectUrl>https://github.com/OpenSourceTransportation/Atspm</PackageProjectUrl>
-		<RepositoryUrl>https://github.com/udotdevelopment/ATSPM</RepositoryUrl>
-		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<RepositoryUrl>https://github.com/OpenSourceTransportation/Atspm</RepositoryUrl>
 		<PackageTags>C#; .net standard; .net core</PackageTags>
 		<VersionPrefix>5.0</VersionPrefix>
 		<VersionSuffix>rc.1</VersionSuffix>
 		<Version>$(VersionPrefix)-$(VersionSuffix)</Version>
+		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -39,15 +41,14 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Google.Cloud.Diagnostics.Common" Version="5.0.0" />
-		<PackageReference Include="Microsoft.CodeAnalysis" Version="4.9.2" />
-		<PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="7.0.0">
+		<PackageReference Include="Google.Cloud.Diagnostics.Common" Version="5.2.0" />
+		<PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="9.0.0">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="Microsoft.Extensions.Logging" Version="7.0.0" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Console" Version="7.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Console" Version="9.0.0" />
 		<PackageReference Include="System.Linq.Async" Version="6.0.1" />
 	</ItemGroup>
 
@@ -72,25 +73,11 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Include="..\..\LICENSE">
-		  <Pack>True</Pack>
-		  <PackagePath>\</PackagePath>
-		</None>
-		<None Include="..\..\README.md">
-		  <Pack>True</Pack>
-		  <PackagePath>\</PackagePath>
-		</None>
 		<None Include="Analysis\PhaseTerminationAnalysis.cs" />
 		<None Include="Analysis\Workflows\ApproachVolumeWorkflow.cs" />
 		<None Include="Analysis\Workflows\ArrivalsOnRedWorkflow.cs" />
 		<None Include="Analysis\Workflows\PhaseTerminationWorkflow.cs" />
 		<None Include="Analysis\Workflows\PurdueCoordinationWorkflow.cs" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Reference Include="Utah.Udot.NetStandardToolkit">
-	    <HintPath>..\Utah.Udot.NetStandardToolkit.dll</HintPath>
-	  </Reference>
 	</ItemGroup>
 
 	<ItemGroup>
@@ -101,6 +88,13 @@
 	  <Using Include="Utah.Udot.Atspm.Enums" />
 	  <Using Include="Utah.Udot.NetStandardToolkit.Common" />
 	  <Using Include="Utah.Udot.NetStandardToolkit.Workflows" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Update="README.md">
+	    <Pack>True</Pack>
+	    <PackagePath>\</PackagePath>
+	  </None>
 	</ItemGroup>
 
 </Project>

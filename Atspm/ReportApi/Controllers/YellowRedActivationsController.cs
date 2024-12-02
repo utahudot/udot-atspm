@@ -25,8 +25,6 @@ namespace Utah.Udot.Atspm.ReportApi.Controllers
     /// Yellow and red activations report controller
     /// </summary>
     [ApiVersion(1.0)]
-    [ApiController]
-    [Route("v{version:apiVersion}/[controller]")]
     public class YellowRedActivationsController : ReportControllerBase<YellowRedActivationsOptions, IEnumerable<YellowRedActivationsResult>>
     {
         /// <inheritdoc/>

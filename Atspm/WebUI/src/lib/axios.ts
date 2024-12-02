@@ -24,6 +24,8 @@ export let identityAxios: ReturnType<typeof createAxiosInstance>
 export let dataAxios: ReturnType<typeof createAxiosInstance>
 export let speedAxios: ReturnType<typeof createAxiosInstance>
 
+const BASE_PATH = '/api/v1/'
+
 export const initializeAxiosInstances = async () => {
   const env = await getEnv()
 
@@ -31,11 +33,14 @@ export const initializeAxiosInstances = async () => {
     return
   }
 
-  if (env.CONFIG_URL) configAxios = createAxiosInstance(env.CONFIG_URL)
-  if (env.REPORTS_URL) reportsAxios = createAxiosInstance(env.REPORTS_URL)
-  if (env.IDENTITY_URL) identityAxios = createAxiosInstance(env.IDENTITY_URL)
-  if (env.DATA_URL) dataAxios = createAxiosInstance(env.DATA_URL)
-  if (env.SPEED_URL) speedAxios = createAxiosInstance(env.SPEED_URL)
+  if (env.CONFIG_URL)
+    configAxios = createAxiosInstance(env.CONFIG_URL + BASE_PATH)
+  if (env.REPORTS_URL)
+    reportsAxios = createAxiosInstance(env.REPORTS_URL + BASE_PATH)
+  if (env.IDENTITY_URL)
+    identityAxios = createAxiosInstance(env.IDENTITY_URL + BASE_PATH)
+  if (env.DATA_URL) dataAxios = createAxiosInstance(env.DATA_URL + BASE_PATH)
+  if (env.SPEED_URL) speedAxios = createAxiosInstance(env.SPEED_URL + BASE_PATH)
 }
 
 function createAxiosInstance(baseURL: string) {

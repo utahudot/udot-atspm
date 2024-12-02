@@ -21,7 +21,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using Utah.Udot.Atspm.Business.PedDelay;
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models;

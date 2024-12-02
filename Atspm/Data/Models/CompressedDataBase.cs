@@ -15,7 +15,6 @@
 // limitations under the License.
 #endregion
 
-using Pomelo.EntityFrameworkCore.MySql.Storage.Internal;
 using Utah.Udot.Atspm.Data.Interfaces;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
 

@@ -25,8 +25,6 @@ namespace Utah.Udot.Atspm.ReportApi.Controllers
     /// Turning movement count report controller
     /// </summary>
     [ApiVersion(1.0)]
-    [ApiController]
-    [Route("v{version:apiVersion}/[controller]")]
     public class TurningMovementCountsController : ReportControllerBase<TurningMovementCountsOptions, TurningMovementCountsResult>
     {
         /// <inheritdoc/>
