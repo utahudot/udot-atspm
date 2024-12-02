@@ -25,6 +25,8 @@ namespace Utah.Udot.Atspm.ReportApi.Controllers
     /// </summary>
     /// <typeparam name="Tin">Input options</typeparam>
     /// <typeparam name="Tout">Output results</typeparam>
+    [ApiController]
+    [Route("api/v{version:apiVersion}/[controller]")]
     public abstract class ReportControllerBase<Tin, Tout> : ControllerBase
     {
         private readonly IReportService<Tin, Tout> _reportService;

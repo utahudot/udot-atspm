@@ -18,6 +18,7 @@
 using Asp.Versioning;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Utah.Udot.ATSPM.DataApi.Controllers;
 
 namespace Utah.Udot.Atspm.DataApi.Controllers
 {
@@ -25,11 +26,9 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
     /// Event log controller
     /// for querying raw device log data
     /// </summary>
-    [ApiController]
     [ApiVersion("1.0")]
-    [Route("v{version:apiVersion}/[controller]")]
     [Authorize(Policy = "CanViewData")]
-    public class EventLogController : ControllerBase
+    public class EventLogController : DataControllerBase
     {
         private readonly IEventLogRepository _repository;
         private readonly ILogger _log;
