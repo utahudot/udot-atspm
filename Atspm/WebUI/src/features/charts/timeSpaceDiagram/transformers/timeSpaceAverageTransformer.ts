@@ -37,7 +37,7 @@ import { RawTimeSpaceAverageData, RawTimeSpaceDiagramResponse } from '../types'
 import {
   generateCycles,
   generateGreenEventLines,
-  generateOpposingCycleLabels, 
+  generateOpposingCycleLabels,
   generatePrimaryCycleLabels,
   getDistancesLabelOption,
   getLocationsLabelOption,
@@ -108,7 +108,7 @@ function transformData(data: RawTimeSpaceAverageData[]): EChartsOption {
   })
 
   const legends = createLegend({
-    top: 75,
+    top: 195,
     data: [
       {
         name: `Cycles ${primaryDirection}`,
@@ -134,7 +134,7 @@ function transformData(data: RawTimeSpaceAverageData[]): EChartsOption {
   const grid: GridComponentOption = {
     top: 200,
     left: 100,
-    right: 210,
+    right: 325,
     show: true,
     borderWidth: 1,
     // borderColor: Color.Black,
