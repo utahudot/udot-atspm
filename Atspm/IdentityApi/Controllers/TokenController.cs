@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for Identity - Identity.Controllers/TokenController.cs
+// for IdentityApi - Identity.Controllers/TokenController.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
 // limitations under the License.
 #endregion
 
+using Asp.Versioning;
 using Identity.Business.Tokens;
 using Identity.Models.Token;
 using Microsoft.AspNetCore.Identity;
@@ -26,7 +27,8 @@ using Utah.Udot.Atspm.Data.Models;
 namespace Identity.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [ApiVersion("1.0")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     public class TokenController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> _userManager;

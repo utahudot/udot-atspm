@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for ConfigApi - ATSPM.ConfigApi/IgnoreTypeSchemaFilter.cs
+// for EventLogUtility - Utah.Udot.Atspm.EventLogUtility.Commands/EventLogCommands.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,19 +15,18 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.OpenApi.Models;
-using Swashbuckle.AspNetCore.SwaggerGen;
+using System.CommandLine;
 
-namespace Utah.Udot.Atspm.ConfigApi
+namespace Utah.Udot.ATSPM.WatchDog.Commands
 {
-    public class IgnoreTypeSchemaFilter : ISchemaFilter
+    public class WatchdogConfigCommand : RootCommand
     {
-        public void Apply(OpenApiSchema schema, SchemaFilterContext context)
-        {
-            if (context.Type == typeof(Route)) // Replace Route with the type you want to ignore
-            {
-                schema.Properties.Clear();
-            }
+        public WatchdogConfigCommand() {
+            AddCommand(WatchdogCommand);
+            AddCommand(EmailCommand);
         }
+
+        public WatchdogCommand WatchdogCommand { get; set; } = new WatchdogCommand();
+        public EmailCommand EmailCommand { get; set; } = new EmailCommand();
     }
 }
