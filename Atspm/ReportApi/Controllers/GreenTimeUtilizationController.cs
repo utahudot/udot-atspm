@@ -25,8 +25,6 @@ namespace Utah.Udot.Atspm.ReportApi.Controllers
     /// Green time utilization report controller
     /// </summary>
     [ApiVersion(1.0)]
-    [ApiController]
-    [Route("v{version:apiVersion}/[controller]")]
     public class GreenTimeUtilizationController : ReportControllerBase<GreenTimeUtilizationOptions, IEnumerable<GreenTimeUtilizationResult>>
     {
         /// <inheritdoc/>

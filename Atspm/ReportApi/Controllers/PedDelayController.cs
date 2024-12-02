@@ -25,8 +25,6 @@ namespace Utah.Udot.Atspm.ReportApi.Controllers
     /// Ped delay report controller
     /// </summary>
     [ApiVersion(1.0)]
-    [ApiController]
-    [Route("v{version:apiVersion}/[controller]")]
     public class PedDelayController : ReportControllerBase<PedDelayOptions, IEnumerable<PedDelayResult>>
     {
         /// <inheritdoc/>

@@ -15,18 +15,19 @@
 // limitations under the License.
 #endregion
 
+using Asp.Versioning;
 using Identity.Business.Claims;
 using Identity.Models.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Utah.Udot.Atspm.Enums;
+using Utah.Udot.ATSPM.IdentityApi.Controllers;
 
 namespace Identity.Controllers
 {
     [Authorize()]
-    [Route("api/[controller]")]
-    [ApiController]
-    public class ClaimsController : ControllerBase
+    [ApiVersion("1.0")]
+    public class ClaimsController : IdentityControllerBase
     {
         private readonly ClaimsService claimsService;
 

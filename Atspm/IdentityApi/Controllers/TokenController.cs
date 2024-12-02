@@ -15,6 +15,7 @@
 // limitations under the License.
 #endregion
 
+using Asp.Versioning;
 using Identity.Business.Tokens;
 using Identity.Models.Token;
 using Microsoft.AspNetCore.Identity;
@@ -22,12 +23,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using System.Text;
 using Utah.Udot.Atspm.Data.Models;
+using Utah.Udot.ATSPM.IdentityApi.Controllers;
 
 namespace Identity.Controllers
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class TokenController : ControllerBase
+    [ApiVersion("1.0")]
+    public class TokenController : IdentityControllerBase
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly TokenService _tokenService;
