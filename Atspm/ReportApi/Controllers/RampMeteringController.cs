@@ -24,7 +24,7 @@ namespace Utah.Udot.ATSPM.ReportApi.Controllers
 {
     [ApiVersion(1.0)]
     [ApiController]
-    [Route("v{version:apiVersion}/[controller]")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     public class RampMeteringController : ReportControllerBase<RampMeteringOptions, RampMeteringResult>
     {
         public RampMeteringController(IReportService<RampMeteringOptions, RampMeteringResult> reportService, ILogger<RampMeteringController> logger) : base(reportService, logger)

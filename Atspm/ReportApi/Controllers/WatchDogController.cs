@@ -27,7 +27,7 @@ namespace Utah.Udot.Atspm.ReportApi.Controllers
     /// </summary>
     [ApiVersion(1.0)]
     [ApiController]
-    [Route("v{version:apiVersion}/[controller]")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     public class WatchdogController : ReportControllerBase<WatchDogOptions, WatchDogResult>
     {
         /// <inheritdoc/>

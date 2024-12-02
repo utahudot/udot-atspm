@@ -15,6 +15,7 @@
 // limitations under the License.
 #endregion
 
+using Asp.Versioning;
 using Identity.Business.Accounts;
 using Identity.Business.Agency;
 using Identity.Business.Claims;
@@ -80,6 +81,21 @@ builder.Host
         //l.MediaTypeOptions.AddText("application/json");
         l.RequestBodyLogLimit = 4096;
         l.ResponseBodyLogLimit = 4096;
+    });
+
+    s.AddApiVersioning(o =>
+    {
+        o.ReportApiVersions = true;
+        o.DefaultApiVersion = new ApiVersion(1, 0);
+        o.AssumeDefaultVersionWhenUnspecified = true;
+
+        //Sunset policies
+        o.Policies.Sunset(0.1).Effective(DateTimeOffset.Now.AddDays(60)).Link("").Title("These are only available during development").Type("text/html");
+
+    }).AddApiExplorer(o =>
+    {
+        o.GroupNameFormat = "'v'VVV";
+        o.SubstituteApiVersionInUrl = true;
     });
 
     s.AddDbContext<IdentityContext>(h, Microsoft.EntityFrameworkCore.QueryTrackingBehavior.NoTracking);
