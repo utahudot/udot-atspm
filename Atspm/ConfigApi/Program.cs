@@ -34,7 +34,9 @@ AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Host.ConfigureServices((h, s) =>
+builder.Host
+    .ApplyVolumeConfiguration()
+    .ConfigureServices((h, s) =>
 {
     s.AddControllers(o =>
     {
@@ -79,12 +81,6 @@ builder.Host.ConfigureServices((h, s) =>
     {
         o.GroupNameFormat = "'v'VVV";
         o.SubstituteApiVersionInUrl = true;
-
-        //configure query options(which cannot otherwise be configured by OData conventions)
-        //o.QueryOptions.Controller<JurisdictionController>()
-        //                    .Action(c => c.Get(default))
-        //                        .Allow(AllowedQueryOptions.Skip | AllowedQueryOptions.Count)
-        //                        .AllowTop(100);
     });
 
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -117,9 +113,6 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddHttpLogging(l =>
     {
         l.LoggingFields = HttpLoggingFields.All;
-        //l.RequestHeaders.Add("My-Request-Header");
-        //l.ResponseHeaders.Add("My-Response-Header");
-        //l.MediaTypeOptions.AddText("application/json");
         l.RequestBodyLogLimit = 4096;
         l.ResponseBodyLogLimit = 4096;
     });

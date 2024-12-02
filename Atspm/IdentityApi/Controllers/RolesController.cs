@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for Identity - Identity.Controllers/RolesController.cs
+// for IdentityApi - Identity.Controllers/RolesController.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
 // limitations under the License.
 #endregion
 
+using Asp.Versioning;
 using Identity.Business.Claims;
 using Identity.Business.Roles;
 using Identity.Models.Role;
@@ -28,7 +29,8 @@ namespace Identity.Controllers
 {
     //[Authorize()]
     [ApiController]
-    [Route("api/roles")]
+    [ApiVersion("1.0")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     public class RolesController : ControllerBase
     {
         private readonly RoleManager<IdentityRole> roleManager;

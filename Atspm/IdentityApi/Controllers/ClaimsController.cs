@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for Identity - Identity.Controllers/ClaimsController.cs
+// for IdentityApi - Identity.Controllers/ClaimsController.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
 // limitations under the License.
 #endregion
 
+using Asp.Versioning;
 using Identity.Business.Claims;
 using Identity.Models.Claims;
 using Microsoft.AspNetCore.Authorization;
@@ -24,7 +25,8 @@ using Utah.Udot.Atspm.Enums;
 namespace Identity.Controllers
 {
     [Authorize()]
-    [Route("api/[controller]")]
+    [ApiVersion("1.0")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
     public class ClaimsController : ControllerBase
     {

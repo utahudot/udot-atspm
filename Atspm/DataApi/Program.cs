@@ -29,7 +29,9 @@ AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Host.ConfigureServices((h, s) =>
+builder.Host
+    .ApplyVolumeConfiguration()
+    .ConfigureServices((h, s) =>
 {
     s.AddControllers(o =>
     {
@@ -66,12 +68,6 @@ builder.Host.ConfigureServices((h, s) =>
     {
         o.GroupNameFormat = "'v'VVV";
         o.SubstituteApiVersionInUrl = true;
-
-        //configure query options(which cannot otherwise be configured by OData conventions)
-        //o.QueryOptions.Controller<JurisdictionController>()
-        //                    .Action(c => c.Get(default))
-        //                        .Allow(AllowedQueryOptions.Skip | AllowedQueryOptions.Count)
-        //                        .AllowTop(100);
     });
 
     s.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
@@ -118,11 +114,11 @@ builder.Host.ConfigureServices((h, s) =>
 
     s.AddPathBaseFilter(h);
 
-    if (!h.HostingEnvironment.IsDevelopment())
-    {
-        s.AddAtspmAuthentication(h);
-        s.AddAtspmAuthorization();
-    }
+    //if (!h.HostingEnvironment.IsDevelopment())
+    //{
+    //    s.AddAtspmAuthentication(h);
+    //    s.AddAtspmAuthorization();
+    //}
 });
 
 var app = builder.Build();
