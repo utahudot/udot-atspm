@@ -15,18 +15,19 @@
 // limitations under the License.
 #endregion
 
+using Asp.Versioning;
 using Identity.Business.Users;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Utah.Udot.Atspm.Data.Models;
+using Utah.Udot.ATSPM.IdentityApi.Controllers;
 
 namespace Identity.Controllers
 {
     //[Authorize()]
-    [ApiController]
-    [Route("api/users")]
-    public class UsersController : ControllerBase
+    [ApiVersion("1.0")]
+    public class UsersController : IdentityControllerBase
     {
         private readonly UserManager<ApplicationUser> userManager;
         private readonly UsersService usersService;

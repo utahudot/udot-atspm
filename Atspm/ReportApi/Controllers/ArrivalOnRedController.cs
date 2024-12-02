@@ -25,8 +25,6 @@ namespace Utah.Udot.Atspm.ReportApi.Controllers
     /// Arrival on red report controller
     /// </summary>
     [ApiVersion(1.0)]
-    [ApiController]
-    [Route("v{version:apiVersion}/[controller]")]
     public class ArrivalOnRedController : ReportControllerBase<ArrivalOnRedOptions, IEnumerable<ArrivalOnRedResult>>
     {
         /// <inheritdoc/>

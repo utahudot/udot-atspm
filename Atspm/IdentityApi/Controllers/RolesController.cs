@@ -15,6 +15,7 @@
 // limitations under the License.
 #endregion
 
+using Asp.Versioning;
 using Identity.Business.Claims;
 using Identity.Business.Roles;
 using Identity.Models.Role;
@@ -23,13 +24,13 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Data;
 using Utah.Udot.Atspm.Data.Models;
+using Utah.Udot.ATSPM.IdentityApi.Controllers;
 
 namespace Identity.Controllers
 {
     //[Authorize()]
-    [ApiController]
-    [Route("api/roles")]
-    public class RolesController : ControllerBase
+    [ApiVersion("1.0")]
+    public class RolesController : IdentityControllerBase
     {
         private readonly RoleManager<IdentityRole> roleManager;
 
