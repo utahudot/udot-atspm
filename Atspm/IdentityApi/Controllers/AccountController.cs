@@ -15,6 +15,7 @@
 // limitations under the License.
 #endregion
 
+using Asp.Versioning;
 using FluentFTP.Helpers;
 using Identity.Business.Accounts;
 using Identity.Models.Account;
@@ -29,7 +30,8 @@ using Utah.Udot.Atspm.Data.Models;
 namespace Identity.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [ApiVersion("1.0")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     public class AccountController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> userManager;
