@@ -68,7 +68,6 @@ builder.Host
     {
         o.GroupNameFormat = "'v'VVV";
         o.SubstituteApiVersionInUrl = true;
-
         //configure query options(which cannot otherwise be configured by OData conventions)
         //o.QueryOptions.Controller<JurisdictionController>()
         //                    .Action(c => c.Get(default))

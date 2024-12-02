@@ -1,0 +1,102 @@
+name: Deployment
+
+on:
+  release:
+    types:
+      - published
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  env:
+    name: Determine ENV
+    runs-on: ubuntu-latest
+    steps:
+      - name: Prod Deploy
+        if: ${{!github.event.release.prerelease && github.event_name == 'release'}}
+        run: |
+          echo environment="prod" >> $GITHUB_ENV
+      - name: Dev Deploy
+        if: ${{ github.event.release.prerelease || github.event_name == 'push' }}
+        run: |
+          echo environment="at" >> $GITHUB_ENV
+    outputs:
+      env: ${{ env.environment }}
+
+
+  deploy_service:
+    name: Deploy - ${{ needs.env.outputs.env }} - ${{ matrix.service }}
+    needs: env
+    runs-on: ubuntu-latest
+    environment: ${{ needs.env.outputs.env }}
+    strategy:
+      fail-fast: false
+      matrix:
+        service: ["atspm-webui", "atspm-config-api", "atspm-data-api", "atspm-identity-api", "atspm-report-api"]
+    steps:
+      - name: ⬇️ Set up code
+        uses: actions/checkout@v4
+      - name: 🗝️ Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          create_credentials_file: true
+          token_format: access_token
+          workload_identity_provider: ${{ vars.DEPLOY_WORKLOAD_PROVIDER }}
+          service_account: ${{ vars.DEPLOY_SA }}
+
+      - name: 🚀 CloudRun Service Deploy
+        uses: 'google-github-actions/deploy-cloudrun@v2'
+        with:
+          service: ${{ matrix.service }}
+          image: ${{ vars.GCP_ARTIFACT_REPO }}/${{ matrix.service }}:latest
+          project_id: ${{ vars.PROJECT_ID }}
+          region: "us-west3"
+          flags: '--service-account=${{ vars.RUN_SA }} --vpc-connector=${{ vars.VPC_CONNECTOR}}' # TODO: add secrets
+      
+
+  deploy_jobs:
+    name: Deploy - ${{ needs.env.outputs.env }} - ${{ matrix.job }}
+    needs: env
+    runs-on: ubuntu-latest
+    environment: ${{ needs.env.outputs.env }}
+    strategy:
+      fail-fast: false
+      matrix:
+        job: ["atspm-watchdog", "atspm-eventlogutil"]
+    steps:
+      - name: ⬇️ Set up code
+        uses: actions/checkout@v4
+      - name: 🗝️ Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          create_credentials_file: true
+          token_format: access_token
+          workload_identity_provider: ${{ vars.DEPLOY_WORKLOAD_PROVIDER }}
+          service_account: ${{ vars.DEPLOY_SA }}
+      - name: 🚀 Deploy to Cloud Run Job # TODO: Secrets and VPC/Database Connectivity Right Sizing
+        run: |
+          if [ ! "$(gcloud run jobs list --project ${{vars.PROJECT_ID}}| grep -w ${{ matrix.job }})" ]; then
+              gcloud run jobs create ${{ matrix.job }} --project ${{vars.PROJECT_ID}} \
+              --region us-west3 \
+              --image ${{ vars.GCP_ARTIFACT_REPO }}/${{ matrix.job }}:latest \
+              --service-account ${{vars.RUN_SA}} \
+              --vpc-connector ${{ vars.VPC_CONNECTOR }} \
+              --memory=2Gi \
+              --cpu=1 \
+              --max-retries 0 \
+              --parallelism 0 
+          else
+              gcloud run jobs update ${{ matrix.job }} --project ${{vars.PROJECT_ID}} \
+              --region us-west3 \
+              --image ${{ vars.GCP_ARTIFACT_REPO }}/${{ matrix.job }}:latest \
+              --service-account ${{vars.RUN_SA}} \
+              --vpc-connector ${{ vars.VPC_CONNECTOR }} \
+              --memory=2Gi \
+              --cpu=1 \
+              --max-retries 0 \
+              --parallelism 0 
+          fi;
