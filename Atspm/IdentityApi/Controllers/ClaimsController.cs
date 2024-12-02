@@ -21,14 +21,13 @@ using Identity.Models.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Utah.Udot.Atspm.Enums;
+using Utah.Udot.ATSPM.IdentityApi.Controllers;
 
 namespace Identity.Controllers
 {
     [Authorize()]
     [ApiVersion("1.0")]
-    [Route("api/v{version:apiVersion}/[controller]")]
-    [ApiController]
-    public class ClaimsController : ControllerBase
+    public class ClaimsController : IdentityControllerBase
     {
         private readonly ClaimsService claimsService;
 

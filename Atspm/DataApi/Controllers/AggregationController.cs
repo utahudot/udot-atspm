@@ -18,6 +18,7 @@
 using Asp.Versioning;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Utah.Udot.ATSPM.DataApi.Controllers;
 
 namespace Utah.Udot.Atspm.DataApi.Controllers
 {
@@ -25,11 +26,9 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
     /// Aggregation controller
     /// for querying raw aggregation data
     /// </summary>
-    [ApiController]
     [ApiVersion("1.0")]
-    [Route("api/v{version:apiVersion}/[controller]")]
     [Authorize(Policy = "CanViewData")]
-    public class AggregationController : ControllerBase
+    public class AggregationController : DataControllerBase
     {
         private readonly IAggregationRepository _repository;
         private readonly ILogger _log;
@@ -81,7 +80,7 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
             if (result.Count == 0)
                 return NotFound();
 
-            HttpContext.Response.Headers.Add("X-Total-Count", result.Count.ToString());
+            HttpContext.Response.Headers.Append("X-Total-Count", result.Count.ToString());
 
             return Ok(result);
         }
