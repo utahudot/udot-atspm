@@ -15,7 +15,6 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.IdentityModel.Tokens;
 using Utah.Udot.Atspm.Business.WaitTime;
 
 namespace Utah.Udot.Atspm.ReportApi.ReportServices
