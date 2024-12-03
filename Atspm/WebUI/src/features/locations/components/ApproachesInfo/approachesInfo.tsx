@@ -1,11 +1,48 @@
-import { Approach } from '@/features/locations/types'
+import { LocationExpanded } from '@/features/locations/types'
 import CheckBoxIcon from '@mui/icons-material/CheckBox'
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank'
 import { Box } from '@mui/material'
-import { DataGrid, GridColDef, GridToolbar } from '@mui/x-data-grid'
+import { SxProps, Theme } from '@mui/system'
+import {
+  DataGrid,
+  GridColDef,
+  GridToolbarColumnsButton,
+  GridToolbarContainer,
+  GridToolbarExport,
+  GridToolbarFilterButton,
+} from '@mui/x-data-grid'
 
 interface ApproachesInfoProps {
-  approaches: Approach[] | undefined
+  location: LocationExpanded | undefined
+}
+
+const DataGridStyle: SxProps<Theme> = {
+  '@media print': {
+    '& .MuiDataGrid-main': {
+      zoom: '0.63',
+    },
+  },
+} as const
+
+function CustomToolbar({ location }: { location: LocationExpanded }) {
+  const fileName =
+    `${location.primaryName} & ${location.secondaryName} Approaches Configuration`.replace(
+      / /g,
+      '_'
+    )
+  return (
+    <GridToolbarContainer>
+      <GridToolbarColumnsButton />
+      <GridToolbarFilterButton />
+      <GridToolbarExport
+        csvOptions={{ fileName }}
+        printOptions={{
+          hideFooter: true,
+          hideToolbar: true,
+        }}
+      />
+    </GridToolbarContainer>
+  )
 }
 
 const approachesHeaders: GridColDef[] = [
@@ -78,7 +115,6 @@ const approachesHeaders: GridColDef[] = [
     editable: false,
     flex: 1,
   },
-
   {
     field: 'mph',
     headerName: 'Approach Speed (MPH)',
@@ -87,21 +123,23 @@ const approachesHeaders: GridColDef[] = [
   },
 ]
 
-function ApproachesInfo({ approaches }: ApproachesInfoProps) {
-  if (!approaches) {
+function ApproachesInfo({ location }: ApproachesInfoProps) {
+  if (!location) {
     return (
       <div>
         <h3>No approaches found</h3>
       </div>
     )
   }
+
+  const { approaches } = location
+
   const data = approaches.map((approach) => {
     return {
       ...approach,
       directionType: approach.directionType.description,
     }
   })
-
   return (
     <Box sx={{ overflowX: 'auto' }}>
       <DataGrid
@@ -109,9 +147,16 @@ function ApproachesInfo({ approaches }: ApproachesInfoProps) {
         rows={data}
         columns={approachesHeaders}
         getRowId={(row) => row.id}
-        slots={{ toolbar: GridToolbar }}
+        rowSelection={false}
+        slots={{
+          toolbar: CustomToolbar,
+        }}
+        slotProps={{
+          toolbar: { location },
+        }}
         pageSizeOptions={[{ value: 100, label: '100' }]}
         sx={{
+          ...DataGridStyle,
           '& .MuiDataGrid-columnHeaderTitle': {
             whiteSpace: 'normal',
             lineHeight: 'normal',
