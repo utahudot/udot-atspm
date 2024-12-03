@@ -15,7 +15,6 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.IdentityModel.Tokens;
 using Utah.Udot.Atspm.Business.PhaseTermination;
 
 namespace Utah.Udot.Atspm.ReportApi.ReportServices
