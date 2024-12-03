@@ -21,14 +21,13 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Utah.Udot.Atspm.Data.Models;
+using Utah.Udot.ATSPM.IdentityApi.Controllers;
 
 namespace Identity.Controllers
 {
     //[Authorize()]
-    [ApiController]
     [ApiVersion("1.0")]
-    [Route("api/v{version:apiVersion}/[controller]")]
-    public class UsersController : ControllerBase
+    public class UsersController : IdentityControllerBase
     {
         private readonly UserManager<ApplicationUser> userManager;
         private readonly UsersService usersService;

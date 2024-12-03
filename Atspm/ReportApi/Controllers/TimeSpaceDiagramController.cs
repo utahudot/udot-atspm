@@ -25,8 +25,6 @@ namespace Utah.Udot.Atspm.ReportApi.Controllers
     /// Time space diagram report controller
     /// </summary>
     [ApiVersion(1.0)]
-    [ApiController]
-    [Route("api/v{version:apiVersion}/[controller]")]
     public class TimeSpaceDiagramController : ReportControllerBase<TimeSpaceDiagramOptions, IEnumerable<TimeSpaceDiagramResultForPhase>>
     {
         /// <inheritdoc/>

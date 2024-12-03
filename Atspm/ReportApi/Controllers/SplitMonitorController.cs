@@ -25,8 +25,6 @@ namespace Utah.Udot.Atspm.ReportApi.Controllers
     /// Split monitor report controller
     /// </summary>
     [ApiVersion(1.0)]
-    [ApiController]
-    [Route("api/v{version:apiVersion}/[controller]")]
     public class SplitMonitorController : ReportControllerBase<SplitMonitorOptions, IEnumerable<SplitMonitorResult>>
     {
         /// <inheritdoc/>
