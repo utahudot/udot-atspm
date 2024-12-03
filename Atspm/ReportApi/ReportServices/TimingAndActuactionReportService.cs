@@ -15,7 +15,6 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.IdentityModel.Tokens;
 using System.ComponentModel.DataAnnotations;
 using Utah.Udot.Atspm.Business.TimingAndActuation;
 using Utah.Udot.Atspm.Data.Enums;

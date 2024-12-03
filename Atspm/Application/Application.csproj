@@ -27,12 +27,6 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<Compile Remove="Handlers\**" />
-		<EmbeddedResource Remove="Handlers\**" />
-		<None Remove="Handlers\**" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<Compile Remove="Analysis\PhaseTerminationAnalysis.cs" />
 		<Compile Remove="Analysis\Workflows\ApproachVolumeWorkflow.cs" />
 		<Compile Remove="Analysis\Workflows\ArrivalsOnRedWorkflow.cs" />
@@ -81,7 +75,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Using Include=" Utah.Udot.Atspm.Analysis.WorkflowSteps" />
+	  <Using Include="Utah.Udot.Atspm.Analysis.WorkflowSteps" />
 	  <Using Include="Utah.Udot.Atspm.Analysis.Common" />
 	  <Using Include="Utah.Udot.Atspm.Analysis.WorkflowFilters" />
 	  <Using Include="Utah.Udot.Atspm.Data.Models" />
