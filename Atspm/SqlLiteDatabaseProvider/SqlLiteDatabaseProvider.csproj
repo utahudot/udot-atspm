@@ -9,7 +9,7 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<RootNamespace>$(NameSpacePrefix).$(SolutionName).$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
-		<AssemblyName>$(NameSpacePrefix).$(SolutionName).$(MSBuildProjectName)</AssemblyName>
+		<AssemblyName>$(NameSpacePrefix).Atspm.$(MSBuildProjectName)</AssemblyName>
 	</PropertyGroup>
 
 	<ItemGroup>
