@@ -25,8 +25,6 @@ namespace Utah.Udot.Atspm.ReportApi.Controllers
     /// Wait time report controller
     /// </summary>
     [ApiVersion(1.0)]
-    [ApiController]
-    [Route("api/v{version:apiVersion}/[controller]")]
     public class WaitTimeController : ReportControllerBase<WaitTimeOptions, IEnumerable<WaitTimeResult>>
     {
         /// <inheritdoc/>

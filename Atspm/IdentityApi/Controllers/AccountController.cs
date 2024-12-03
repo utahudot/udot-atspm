@@ -26,13 +26,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using System.Text;
 using Utah.Udot.Atspm.Data.Models;
+using Utah.Udot.ATSPM.IdentityApi.Controllers;
 
 namespace Identity.Controllers
 {
-    [ApiController]
     [ApiVersion("1.0")]
-    [Route("api/v{version:apiVersion}/[controller]")]
-    public class AccountController : ControllerBase
+    public class AccountController : IdentityControllerBase
     {
         private readonly UserManager<ApplicationUser> userManager;
         private readonly SignInManager<ApplicationUser> signInManager;

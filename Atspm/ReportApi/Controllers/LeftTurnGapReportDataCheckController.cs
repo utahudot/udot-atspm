@@ -25,8 +25,6 @@ namespace Utah.Udot.Atspm.ReportApi.Controllers
     /// Left turn gap analysis report controller
     /// </summary>
     [ApiVersion(1.0)]
-    [ApiController]
-    [Route("api/v{version:apiVersion}/[controller]")]
     public class LeftTurnGapReportDataCheckController : ReportControllerBase<LeftTurnGapDataCheckOptions, LeftTurnGapDataCheckResult>
     {
         /// <inheritdoc/>

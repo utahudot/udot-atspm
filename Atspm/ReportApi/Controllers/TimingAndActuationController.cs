@@ -25,8 +25,6 @@ namespace Utah.Udot.Atspm.ReportApi.Controllers
     /// Timing and actuation report controller
     /// </summary>
     [ApiVersion(1.0)]
-    [ApiController]
-    [Route("api/v{version:apiVersion}/[controller]")]
     public class TimingAndActuationController : ReportControllerBase<TimingAndActuationsOptions, IEnumerable<TimingAndActuationsForPhaseResult>>
     {
         /// <inheritdoc/>
