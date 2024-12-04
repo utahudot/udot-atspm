@@ -2,12 +2,17 @@ import {
   useCreateLocation,
   useLatestVersionOfAllLocations,
 } from '@/features/locations/api'
+import { useLocationConfigHandler } from '@/features/locations/components/editLocation/editLocationConfigHandler'
+import LocationInput from '@/features/locations/components/selectLocation/LocationInput'
 import { Location, LocationExpanded } from '@/features/locations/types'
 import { zodResolver } from '@hookform/resolvers/zod'
 import CheckCircleOutlineOutlinedIcon from '@mui/icons-material/CheckCircleOutlineOutlined'
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline'
+
 import {
+  Box,
   Button,
+  Checkbox,
   Dialog,
   DialogActions,
   DialogContent,
@@ -15,6 +20,8 @@ import {
   InputAdornment,
   TextField,
 } from '@mui/material'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -33,6 +40,13 @@ const NewLocationModal = ({
   closeModal,
   setLocation,
 }: NewLocationModalProps) => {
+  const [selectedLocation, setSelectedLocation] = useState<Location | null>(
+    null
+  )
+  const [checked, setChecked] = useState<boolean>(false)
+  const locationHandler = useLocationConfigHandler({
+    location: selectedLocation as Location,
+  })
   const {
     control,
     handleSubmit,
@@ -48,7 +62,6 @@ const NewLocationModal = ({
 
   const { mutate: createLocation, isSuccess } = useCreateLocation()
   const { data: allLocationsData } = useLatestVersionOfAllLocations()
-
   const allLocations = allLocationsData?.value
 
   const locationIdentifier = watch('locationIdentifier')
@@ -71,10 +84,10 @@ const NewLocationModal = ({
       locationIdentifier: data.locationIdentifier,
       note: '',
       start: new Date().toISOString(),
-      primaryName: '',
-      secondaryName: '',
-      latitude: 0,
-      longitude: 0,
+      primaryName: data.primaryName || '',
+      secondaryName: data.secondaryName || '',
+      latitude: data.latitude || 0,
+      longitude: data.longitude || 0,
       pedsAre1to1: false,
       locationTypeId: 1,
       chartEnabled: false,
@@ -90,6 +103,32 @@ const NewLocationModal = ({
     })
   }
 
+  const handleCopyLocationCheckBoxChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setChecked(event.target.checked)
+    if (!event.target.checked) {
+      setSelectedLocation(null)
+    }
+  }
+
+  const locations = allLocationsData?.value || []
+
+  const handleCopyLocationChange = (
+    _: React.SyntheticEvent,
+    value: Location | null
+  ) => {
+    setSelectedLocation(value)
+    if (value) {
+      // Pre-fill the form with selected location's data
+      setValue('primaryName', '')
+      setValue('secondaryName', '')
+      setValue('latitude', undefined)
+      setValue('longitude', undefined)
+      setValue('deviceIpAddress', undefined)
+    }
+  }
+  console.log('selectedLocation yo ', locationHandler)
   return (
     <Dialog
       open={true}
@@ -98,6 +137,7 @@ const NewLocationModal = ({
         sx: {
           padding: 2,
           minWidth: 400,
+          maxWidth: 480,
         },
       }}
     >
@@ -110,40 +150,129 @@ const NewLocationModal = ({
       </DialogTitle>
       <form onSubmit={handleSubmit(onSubmit)}>
         <DialogContent>
-          <Controller
-            name="locationIdentifier"
-            control={control}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                fullWidth
-                autoComplete="off"
-                error={!!errors.locationIdentifier || !locationIsUnique}
-                color="success"
-                InputProps={{
-                  endAdornment: locationIdentifier ? (
-                    <InputAdornment position="end">
-                      {locationIsUnique ? (
-                        <CheckCircleOutlineOutlinedIcon color="success" />
-                      ) : (
-                        <ErrorOutlineIcon color="error" />
-                      )}
-                    </InputAdornment>
-                  ) : null,
-                }}
-                helperText={
-                  errors.locationIdentifier
-                    ? errors.locationIdentifier.message
-                    : locationIsUnique
-                      ? ' '
-                      : 'Location Identifier already exists.'
-                }
-                label="Location Identifier"
-                sx={{ marginBottom: 1 }}
+          <Box sx={{ width: '60%', minWidth: '400px' }}>
+            <Controller
+              name="locationIdentifier"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  fullWidth
+                  autoComplete="off"
+                  error={!!errors.locationIdentifier || !locationIsUnique}
+                  color="success"
+                  InputProps={{
+                    endAdornment: locationIdentifier ? (
+                      <InputAdornment position="end">
+                        {locationIsUnique ? (
+                          <CheckCircleOutlineOutlinedIcon color="success" />
+                        ) : (
+                          <ErrorOutlineIcon color="error" />
+                        )}
+                      </InputAdornment>
+                    ) : null,
+                  }}
+                  helperText={
+                    errors.locationIdentifier
+                      ? errors.locationIdentifier.message
+                      : locationIsUnique
+                        ? ' '
+                        : 'Location Identifier already exists.'
+                  }
+                  label="Location Identifier"
+                />
+              )}
+            />
+          </Box>
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={checked}
+                onChange={handleCopyLocationCheckBoxChange}
+                inputProps={{ 'aria-label': 'controlled' }}
               />
-            )}
+            }
+            label={'Copy existing Location'}
           />
+          {checked && (
+            <Box sx={{ width: '60%', minWidth: '400px' }}>
+              <Box sx={{ marginBottom: 1 }}>
+                <LocationInput
+                  location={selectedLocation}
+                  locations={locations}
+                  handleChange={handleCopyLocationChange}
+                  sx={{ marginBottom: 1 }}
+                />
+              </Box>
+              <Controller
+                name="primaryName"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    fullWidth
+                    label="Primary Name"
+                    sx={{ marginBottom: 1 }}
+                  />
+                )}
+              />
+              <Controller
+                name="secondaryName"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    fullWidth
+                    label="Secondary Name"
+                    sx={{ marginBottom: 1 }}
+                  />
+                )}
+              />
+              <Controller
+                name="latitude"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    fullWidth
+                    label="Latitude"
+                    type="number"
+                    sx={{ marginBottom: 1 }}
+                  />
+                )}
+              />
+              <Controller
+                name="longitude"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    fullWidth
+                    label="Longitude"
+                    type="number"
+                    sx={{ marginBottom: 1 }}
+                  />
+                )}
+              />
+              {locationHandler?.expandedLocation?.devices &&
+                locationHandler.expandedLocation.devices.map((device) => (
+                  <Controller
+                    name="deviceIpAddress"
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        fullWidth
+                        label={`Device IP Address - ${device.deviceType}`}
+                        sx={{ marginBottom: 1 }}
+                      />
+                    )}
+                  />
+                ))}
+            </Box>
+          )}
         </DialogContent>
+
         <DialogActions sx={{ p: 2 }}>
           <Button onClick={closeModal} variant="outlined">
             Cancel
