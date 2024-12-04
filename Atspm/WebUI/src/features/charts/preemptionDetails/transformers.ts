@@ -25,6 +25,7 @@ import {
   createTooltip,
   createXAxis,
   createYAxis,
+  formatExportFileName,
 } from '@/features/charts/common/transformers'
 import { ChartType } from '@/features/charts/common/types'
 import { TransformedPreemptDetailsResponse } from '@/features/charts/types'
@@ -89,7 +90,10 @@ function transformDetailsData(data: LocationDetail) {
   const dataZoom = createDataZoom()
 
   const toolbox = createToolbox(
-    { title: titleHeader, dateRange },
+    {
+      title: formatExportFileName(titleHeader, data.start, data.end),
+      dateRange,
+    },
     data.locationIdentifer,
     ChartType.PreemptionDetails
   )
@@ -117,8 +121,6 @@ function transformDetailsData(data: LocationDetail) {
   }
 
   if (inputOff.length > 0) {
-
-
     series.push({
       name: 'Input Off',
       type: 'scatter',
@@ -210,9 +212,9 @@ type PremptStuf = ChartDataEntry[]
 
 function getSeries(key: keyof Cycle, cycles: Cycle[]): PremptStuf {
   return cycles.map((cycle) => {
-    let value: number;
+    let value: number
 
-    if (cycle[key] == null) return 
+    if (cycle[key] == null) return
 
     if (typeof cycle[key] === 'string' && Date.parse(cycle[key] as string)) {
       value =
@@ -272,7 +274,10 @@ function transformSummaryData(data: PreemptServiceSummary) {
   const dataZoom = createDataZoom()
 
   const toolbox = createToolbox(
-    { title: titleHeader, dateRange },
+    {
+      title: formatExportFileName(titleHeader, data.start, data.end),
+      dateRange,
+    },
     data.locationIdentifer,
     ChartType.PreemptionDetails
   )
