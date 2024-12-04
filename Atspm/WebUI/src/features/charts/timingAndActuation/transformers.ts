@@ -17,9 +17,11 @@
 import {
   createDisplayProps,
   createTitle,
+  createToolbox,
   createTooltip,
   createXAxis,
   createYAxis,
+  formatExportFileName,
 } from '@/features/charts/common/transformers'
 import { ChartType } from '@/features/charts/common/types'
 import { TransformedChartResponse } from '@/features/charts/types'
@@ -68,7 +70,7 @@ export default function transformTimingAndActuationData(
   }
 }
 
-function transformData(data: RawTimingAndActuationData, i: number) {
+function transformData(data: RawTimingAndActuationData) {
   const {
     pedestrianIntervals,
     pedestrianEvents,
@@ -79,6 +81,8 @@ function transformData(data: RawTimingAndActuationData, i: number) {
     laneByLanesDetectors,
     end,
   } = data
+
+  console.log('data', data)
 
   const title = { text: data.approachDescription }
 
@@ -129,14 +133,18 @@ function transformData(data: RawTimingAndActuationData, i: number) {
     },
   ]
 
-  const toolbox = {
-    feature: {
-      saveAsImage: {},
-      dataView: {
-        readOnly: true,
-      },
+  const toolbox = createToolbox(
+    {
+      title: formatExportFileName(
+        `Timing_and_Actuation_${data.locationDescription}`,
+        data.start,
+        data.end
+      ),
+      dateRange: {},
     },
-  }
+    data.locationIdentifier,
+    ChartType.PreemptionDetails
+  )
 
   const series: SeriesOption[] = []
 
