@@ -5,7 +5,7 @@ import { Location } from '@/features/locations/types'
 import { Button } from '@mui/material'
 import { memo } from 'react'
 
-interface SelectLocationProps {
+export interface SelectLocationProps {
   location: Location | null
   setLocation: (location: Location) => void
   chartsDisabled?:boolean
