@@ -1,3 +1,4 @@
+import { useApiVVersionApiVersionMapLayer } from '@/api/config/aTSPMConfigurationApi'
 import GenericAdminChart, {
   pageNameToHeaders,
 } from '@/components/GenericAdminChart'
@@ -11,7 +12,7 @@ import {
 import { TabContext, TabList, TabPanel } from '@mui/lab'
 import { Tab } from '@mui/material'
 import { GridColDef } from '@mui/x-data-grid'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 type MapLayer = {
   id: number
@@ -54,14 +55,15 @@ const Admin = () => {
   const hasLocationsEditClaim = useUserHasClaim('LocationConfiguration:Edit')
   const hasLocationsDelteClaim = useUserHasClaim('LocationConfiguration:Delete')
 
-  //   const { data: mapLayerData, isLoading } = useGetApiGetMapLayers()
+  const { data: mapLayerData, isLoading } = useApiVVersionApiVersionMapLayer()
 
-  //   useEffect(() => {
-  //     if (mapLayerData) {
-  //       setData(mapLayerData)
-  //     }
-  //   }, [mapLayerData])
-
+  useEffect(() => {
+    if (mapLayerData) {
+      setData(mapLayerData)
+      console.log("Map Layer", data)
+    }
+  }, [mapLayerData])
+  console.log("Map Layer", mapLayerData)
   //   if (pageAccess.isLoading) {
   //     return
   //   }
@@ -127,7 +129,7 @@ const Admin = () => {
       name: obj.name,
       mapURL: obj.mapURL,
       showByDefault: obj.showByDefault,
-      serviceType: obj.serviceType
+      serviceType: obj.serviceType,
     }
   })
 
