@@ -22,10 +22,11 @@ using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
 namespace Utah.Udot.Atspm.ConfigApi.Controllers
 {
     /// <summary>
-    /// Area Controller
+    /// MapLayer Controller
     /// </summary>
+    /// 
     [ApiVersion(1.0)]
-    public class MapLayerController : AtspmGeneralConfigBase<MapLayer, int>
+    public class MapLayerController : AtspmConfigControllerBase<MapLayer, int>
     {
         private readonly IMapLayerRepository _repository;
 
