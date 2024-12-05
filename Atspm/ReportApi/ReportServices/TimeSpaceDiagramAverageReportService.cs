@@ -16,7 +16,6 @@
 #endregion
 
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using Utah.Udot.Atspm.Business.TimeSpaceDiagram;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
 
@@ -348,6 +347,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             return approachEvents;
         }
 
+        //HACK: this needs to be moved into the repository
         private List<RouteLocation> GetLocationsFromRouteId(int routeId)
         {
             var routeLocations = routeLocationsRepository.GetList()
