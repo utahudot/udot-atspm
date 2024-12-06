@@ -63,7 +63,7 @@ namespace Utah.Udot.Atspm.Data.Models
         /// <summary>
         /// Updated By
         /// </summary>
-        public string UpdatedBy { get; set; }
+        public string? UpdatedBy { get; set; }
 
         /// <summary>
         /// Created On

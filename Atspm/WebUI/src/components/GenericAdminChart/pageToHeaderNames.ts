@@ -279,10 +279,10 @@ const MapLayers: GridColDef[] = [
     field: 'name',
     headerName: 'Name',
     editable: true,
-    flex: 1,
+    flex: .2,
   },
   {
-    field: 'mapURL',
+    field: 'mapLayerUrl',
     headerName: 'Map Layer Url',
     editable: true,
     flex: 1,
@@ -291,13 +291,13 @@ const MapLayers: GridColDef[] = [
     field: 'showByDefault',
     headerName: 'Show By Default',
     editable: true,
-    flex: 1,
+    flex: .2,
   },
   {
     field: 'serviceType',
     headerName: 'Service Type',
     editable: true,
-    flex: 1,
+    flex: .2,
   },
 ]
 

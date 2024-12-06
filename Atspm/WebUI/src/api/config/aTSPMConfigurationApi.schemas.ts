@@ -5,37 +5,22 @@
  * ATSPM Configuration with OData, OpenAPI, Swashbuckle, and API versioning.
  * OpenAPI spec version: 1.0
  */
-export type ApiVVersionApiVersionWatchDogIgnoreEventKeyParams = {
+export type ApiV1WatchDogIgnoreEventKeyParams = {
 select?: string;
 expand?: string;
 };
 
-export type ApiVVersionApiVersionWatchDogIgnoreEventKeyParams = {
+export type ApiV1WatchDogIgnoreEventKeyParams = {
 select?: string;
 expand?: string;
 };
 
-export type ApiVVersionApiVersionWatchDogIgnoreEventKeyParams = {
+export type ApiV1WatchDogIgnoreEventKeyParams = {
 select?: string;
 expand?: string;
 };
 
-export type ApiVVersionApiVersionWatchDogIgnoreEventCountParams = {
-select?: string;
-expand?: string;
-filter?: string;
-orderby?: string;
-top?: number;
-skip?: number;
-count?: boolean;
-};
-
-export type ApiVVersionApiVersionWatchDogIgnoreEventParams = {
-select?: string;
-expand?: string;
-};
-
-export type ApiVVersionApiVersionWatchDogIgnoreEventParams = {
+export type ApiV1WatchDogIgnoreEventCountParams = {
 select?: string;
 expand?: string;
 filter?: string;
@@ -45,22 +30,12 @@ skip?: number;
 count?: boolean;
 };
 
-export type ApiVVersionApiVersionVersionHistoryKeyParams = {
+export type ApiV1WatchDogIgnoreEventParams = {
 select?: string;
 expand?: string;
 };
 
-export type ApiVVersionApiVersionVersionHistoryKeyParams = {
-select?: string;
-expand?: string;
-};
-
-export type ApiVVersionApiVersionVersionHistoryKeyParams = {
-select?: string;
-expand?: string;
-};
-
-export type ApiVVersionApiVersionVersionHistoryCountParams = {
+export type ApiV1WatchDogIgnoreEventParams = {
 select?: string;
 expand?: string;
 filter?: string;
@@ -70,37 +45,22 @@ skip?: number;
 count?: boolean;
 };
 
-export type ApiVVersionApiVersionVersionHistoryParams = {
+export type ApiV1VersionHistoryKeyParams = {
 select?: string;
 expand?: string;
 };
 
-export type ApiVVersionApiVersionVersionHistoryParams = {
-select?: string;
-expand?: string;
-filter?: string;
-orderby?: string;
-top?: number;
-skip?: number;
-count?: boolean;
-};
-
-export type ApiVVersionApiVersionRouteLocationKeyParams = {
+export type ApiV1VersionHistoryKeyParams = {
 select?: string;
 expand?: string;
 };
 
-export type ApiVVersionApiVersionRouteLocationKeyParams = {
+export type ApiV1VersionHistoryKeyParams = {
 select?: string;
 expand?: string;
 };
 
-export type ApiVVersionApiVersionRouteLocationKeyParams = {
-select?: string;
-expand?: string;
-};
-
-export type ApiVVersionApiVersionRouteLocationCountParams = {
+export type ApiV1VersionHistoryCountParams = {
 select?: string;
 expand?: string;
 filter?: string;
@@ -110,37 +70,12 @@ skip?: number;
 count?: boolean;
 };
 
-export type ApiVVersionApiVersionRouteLocationParams = {
+export type ApiV1VersionHistoryParams = {
 select?: string;
 expand?: string;
 };
 
-export type ApiVVersionApiVersionRouteLocationParams = {
-select?: string;
-expand?: string;
-filter?: string;
-orderby?: string;
-top?: number;
-skip?: number;
-count?: boolean;
-};
-
-export type ApiVVersionApiVersionRouteDistanceKeyParams = {
-select?: string;
-expand?: string;
-};
-
-export type ApiVVersionApiVersionRouteDistanceKeyParams = {
-select?: string;
-expand?: string;
-};
-
-export type ApiVVersionApiVersionRouteDistanceKeyParams = {
-select?: string;
-expand?: string;
-};
-
-export type ApiVVersionApiVersionRouteDistanceCountParams = {
+export type ApiV1VersionHistoryParams = {
 select?: string;
 expand?: string;
 filter?: string;
@@ -150,77 +85,22 @@ skip?: number;
 count?: boolean;
 };
 
-export type ApiVVersionApiVersionRouteDistanceParams = {
+export type ApiV1RouteLocationKeyParams = {
 select?: string;
 expand?: string;
 };
 
-export type ApiVVersionApiVersionRouteDistanceParams = {
-select?: string;
-expand?: string;
-filter?: string;
-orderby?: string;
-top?: number;
-skip?: number;
-count?: boolean;
-};
-
-export type ApiVVersionApiVersionRouteDistanceGetRouteDistanceByLocationIdentifiersLocationALocationALocationBLocationBParams = {
-select?: string;
-};
-
-export type ApiVVersionApiVersionRouteDistanceKeyNextLocationsCountParams = {
-select?: string;
-filter?: string;
-orderby?: string;
-top?: number;
-skip?: number;
-count?: boolean;
-};
-
-export type ApiVVersionApiVersionRouteDistanceKeyNextLocationsParams = {
-select?: string;
-filter?: string;
-orderby?: string;
-top?: number;
-skip?: number;
-count?: boolean;
-};
-
-export type ApiVVersionApiVersionRouteDistanceKeyPreviousLocationsCountParams = {
-select?: string;
-filter?: string;
-orderby?: string;
-top?: number;
-skip?: number;
-count?: boolean;
-};
-
-export type ApiVVersionApiVersionRouteDistanceKeyPreviousLocationsParams = {
-select?: string;
-filter?: string;
-orderby?: string;
-top?: number;
-skip?: number;
-count?: boolean;
-};
-
-export type ApiVVersionApiVersionRouteKeyParams = {
+export type ApiV1RouteLocationKeyParams = {
 select?: string;
 expand?: string;
 };
 
-export type ApiVVersionApiVersionRouteKeyParams = {
+export type ApiV1RouteLocationKeyParams = {
 select?: string;
 expand?: string;
 };
 
-export type ApiVVersionApiVersionRouteKeyParams = {
-select?: string;
-expand?: string;
-};
-
-export type ApiVVersionApiVersionRouteCountParams = {
+export type ApiV1RouteLocationCountParams = {
 select?: string;
 expand?: string;
 filter?: string;
@@ -230,12 +110,132 @@ skip?: number;
 count?: boolean;
 };
 
-export type ApiVVersionApiVersionRouteParams = {
+export type ApiV1RouteLocationParams = {
 select?: string;
 expand?: string;
 };
 
-export type ApiVVersionApiVersionRouteParams = {
+export type ApiV1RouteLocationParams = {
+select?: string;
+expand?: string;
+filter?: string;
+orderby?: string;
+top?: number;
+skip?: number;
+count?: boolean;
+};
+
+export type ApiV1RouteDistanceKeyParams = {
+select?: string;
+expand?: string;
+};
+
+export type ApiV1RouteDistanceKeyParams = {
+select?: string;
+expand?: string;
+};
+
+export type ApiV1RouteDistanceKeyParams = {
+select?: string;
+expand?: string;
+};
+
+export type ApiV1RouteDistanceCountParams = {
+select?: string;
+expand?: string;
+filter?: string;
+orderby?: string;
+top?: number;
+skip?: number;
+count?: boolean;
+};
+
+export type ApiV1RouteDistanceParams = {
+select?: string;
+expand?: string;
+};
+
+export type ApiV1RouteDistanceParams = {
+select?: string;
+expand?: string;
+filter?: string;
+orderby?: string;
+top?: number;
+skip?: number;
+count?: boolean;
+};
+
+export type ApiV1RouteDistanceGetRouteDistanceByLocationIdentifiersLocationALocationALocationBLocationBParams = {
+select?: string;
+};
+
+export type ApiV1RouteDistanceKeyNextLocationsCountParams = {
+select?: string;
+filter?: string;
+orderby?: string;
+top?: number;
+skip?: number;
+count?: boolean;
+};
+
+export type ApiV1RouteDistanceKeyNextLocationsParams = {
+select?: string;
+filter?: string;
+orderby?: string;
+top?: number;
+skip?: number;
+count?: boolean;
+};
+
+export type ApiV1RouteDistanceKeyPreviousLocationsCountParams = {
+select?: string;
+filter?: string;
+orderby?: string;
+top?: number;
+skip?: number;
+count?: boolean;
+};
+
+export type ApiV1RouteDistanceKeyPreviousLocationsParams = {
+select?: string;
+filter?: string;
+orderby?: string;
+top?: number;
+skip?: number;
+count?: boolean;
+};
+
+export type ApiV1RouteKeyParams = {
+select?: string;
+expand?: string;
+};
+
+export type ApiV1RouteKeyParams = {
+select?: string;
+expand?: string;
+};
+
+export type ApiV1RouteKeyParams = {
+select?: string;
+expand?: string;
+};
+
+export type ApiV1RouteCountParams = {
+select?: string;
+expand?: string;
+filter?: string;
+orderby?: string;
+top?: number;
+skip?: number;
+count?: boolean;
+};
+
+export type ApiV1RouteParams = {
+select?: string;
+expand?: string;
+};
+
+export type ApiV1RouteParams = {
 select?: string;
 expand?: string;
 filter?: string;
@@ -258,7 +258,7 @@ select?: string;
 expand?: string;
 };
 
-export type ApiVVersionApiVersionRouteKeyRouteLocationsCountParams = {
+export type ApiV1RouteKeyRouteLocationsCountParams = {
 select?: string;
 filter?: string;
 orderby?: string;
@@ -267,7 +267,7 @@ skip?: number;
 count?: boolean;
 };
 
-export type ApiVVersionApiVersionRouteKeyRouteLocationsParams = {
+export type ApiV1RouteKeyRouteLocationsParams = {
 select?: string;
 filter?: string;
 orderby?: string;
@@ -276,32 +276,7 @@ skip?: number;
 count?: boolean;
 };
 
-export type ApiVVersionApiVersionRegionCountParams = {
-select?: string;
-expand?: string;
-filter?: string;
-orderby?: string;
-top?: number;
-skip?: number;
-count?: boolean;
-};
-
-export type ApiVVersionApiVersionRegionKeyParams = {
-select?: string;
-expand?: string;
-};
-
-export type ApiVVersionApiVersionRegionKeyParams = {
-select?: string;
-expand?: string;
-};
-
-export type ApiVVersionApiVersionRegionKeyParams = {
-select?: string;
-expand?: string;
-};
-
-export type ApiVVersionApiVersionRegionParams = {
+export type ApiV1RegionCountParams = {
 select?: string;
 expand?: string;
 filter?: string;
@@ -311,45 +286,22 @@ skip?: number;
 count?: boolean;
 };
 
-export type ApiVVersionApiVersionRegionParams = {
+export type ApiV1RegionKeyParams = {
 select?: string;
 expand?: string;
 };
 
-export type ApiVVersionApiVersionRegionKeyLocationsCountParams = {
-select?: string;
-filter?: string;
-orderby?: string;
-top?: number;
-skip?: number;
-count?: boolean;
-};
-
-export type ApiVVersionApiVersionRegionKeyLocationsParams = {
-select?: string;
-filter?: string;
-orderby?: string;
-top?: number;
-skip?: number;
-count?: boolean;
-};
-
-export type ApiVVersionApiVersionProductKeyParams = {
+export type ApiV1RegionKeyParams = {
 select?: string;
 expand?: string;
 };
 
-export type ApiVVersionApiVersionProductKeyParams = {
+export type ApiV1RegionKeyParams = {
 select?: string;
 expand?: string;
 };
 
-export type ApiVVersionApiVersionProductKeyParams = {
-select?: string;
-expand?: string;
-};
-
-export type ApiVVersionApiVersionProductCountParams = {
+export type ApiV1RegionParams = {
 select?: string;
 expand?: string;
 filter?: string;
@@ -359,12 +311,45 @@ skip?: number;
 count?: boolean;
 };
 
-export type ApiVVersionApiVersionProductParams = {
+export type ApiV1RegionParams = {
 select?: string;
 expand?: string;
 };
 
-export type ApiVVersionApiVersionProductParams = {
+export type ApiV1RegionKeyLocationsCountParams = {
+select?: string;
+filter?: string;
+orderby?: string;
+top?: number;
+skip?: number;
+count?: boolean;
+};
+
+export type ApiV1RegionKeyLocationsParams = {
+select?: string;
+filter?: string;
+orderby?: string;
+top?: number;
+skip?: number;
+count?: boolean;
+};
+
+export type ApiV1ProductKeyParams = {
+select?: string;
+expand?: string;
+};
+
+export type ApiV1ProductKeyParams = {
+select?: string;
+expand?: string;
+};
+
+export type ApiV1ProductKeyParams = {
+select?: string;
+expand?: string;
+};
+
+export type ApiV1ProductCountParams = {
 select?: string;
 expand?: string;
 filter?: string;
@@ -374,22 +359,12 @@ skip?: number;
 count?: boolean;
 };
 
-export type ApiVVersionApiVersionMenuItemsKeyParams = {
+export type ApiV1ProductParams = {
 select?: string;
 expand?: string;
 };
 
-export type ApiVVersionApiVersionMenuItemsKeyParams = {
-select?: string;
-expand?: string;
-};
-
-export type ApiVVersionApiVersionMenuItemsKeyParams = {
-select?: string;
-expand?: string;
-};
-
-export type ApiVVersionApiVersionMenuItemsCountParams = {
+export type ApiV1ProductParams = {
 select?: string;
 expand?: string;
 filter?: string;
@@ -399,37 +374,22 @@ skip?: number;
 count?: boolean;
 };
 
-export type ApiVVersionApiVersionMenuItemsParams = {
+export type ApiV1MenuItemsKeyParams = {
 select?: string;
 expand?: string;
 };
 
-export type ApiVVersionApiVersionMenuItemsParams = {
-select?: string;
-expand?: string;
-filter?: string;
-orderby?: string;
-top?: number;
-skip?: number;
-count?: boolean;
-};
-
-export type ApiVVersionApiVersionMeasureTypeKeyParams = {
+export type ApiV1MenuItemsKeyParams = {
 select?: string;
 expand?: string;
 };
 
-export type ApiVVersionApiVersionMeasureTypeKeyParams = {
+export type ApiV1MenuItemsKeyParams = {
 select?: string;
 expand?: string;
 };
 
-export type ApiVVersionApiVersionMeasureTypeKeyParams = {
-select?: string;
-expand?: string;
-};
-
-export type ApiVVersionApiVersionMeasureTypeCountParams = {
+export type ApiV1MenuItemsCountParams = {
 select?: string;
 expand?: string;
 filter?: string;
@@ -439,73 +399,12 @@ skip?: number;
 count?: boolean;
 };
 
-export type ApiVVersionApiVersionMeasureTypeParams = {
+export type ApiV1MenuItemsParams = {
 select?: string;
 expand?: string;
 };
 
-export type ApiVVersionApiVersionMeasureTypeParams = {
-select?: string;
-expand?: string;
-filter?: string;
-orderby?: string;
-top?: number;
-skip?: number;
-count?: boolean;
-};
-
-export type ApiVVersionApiVersionMeasureTypeKeyMeasureCommentsCountParams = {
-select?: string;
-filter?: string;
-orderby?: string;
-top?: number;
-skip?: number;
-count?: boolean;
-};
-
-export type ApiVVersionApiVersionMeasureTypeKeyMeasureCommentsParams = {
-select?: string;
-filter?: string;
-orderby?: string;
-top?: number;
-skip?: number;
-count?: boolean;
-};
-
-export type ApiVVersionApiVersionMeasureTypeKeyDetectionTypesCountParams = {
-select?: string;
-filter?: string;
-orderby?: string;
-top?: number;
-skip?: number;
-count?: boolean;
-};
-
-export type ApiVVersionApiVersionMeasureTypeKeyDetectionTypesParams = {
-select?: string;
-filter?: string;
-orderby?: string;
-top?: number;
-skip?: number;
-count?: boolean;
-};
-
-export type ApiVVersionApiVersionMeasureOptionKeyParams = {
-select?: string;
-expand?: string;
-};
-
-export type ApiVVersionApiVersionMeasureOptionKeyParams = {
-select?: string;
-expand?: string;
-};
-
-export type ApiVVersionApiVersionMeasureOptionKeyParams = {
-select?: string;
-expand?: string;
-};
-
-export type ApiVVersionApiVersionMeasureOptionCountParams = {
+export type ApiV1MenuItemsParams = {
 select?: string;
 expand?: string;
 filter?: string;
@@ -515,37 +414,22 @@ skip?: number;
 count?: boolean;
 };
 
-export type ApiVVersionApiVersionMeasureOptionParams = {
+export type ApiV1MeasureTypeKeyParams = {
 select?: string;
 expand?: string;
 };
 
-export type ApiVVersionApiVersionMeasureOptionParams = {
-select?: string;
-expand?: string;
-filter?: string;
-orderby?: string;
-top?: number;
-skip?: number;
-count?: boolean;
-};
-
-export type ApiVVersionApiVersionMeasureCommentKeyParams = {
+export type ApiV1MeasureTypeKeyParams = {
 select?: string;
 expand?: string;
 };
 
-export type ApiVVersionApiVersionMeasureCommentKeyParams = {
+export type ApiV1MeasureTypeKeyParams = {
 select?: string;
 expand?: string;
 };
 
-export type ApiVVersionApiVersionMeasureCommentKeyParams = {
-select?: string;
-expand?: string;
-};
-
-export type ApiVVersionApiVersionMeasureCommentCountParams = {
+export type ApiV1MeasureTypeCountParams = {
 select?: string;
 expand?: string;
 filter?: string;
@@ -555,55 +439,12 @@ skip?: number;
 count?: boolean;
 };
 
-export type ApiVVersionApiVersionMeasureCommentParams = {
+export type ApiV1MeasureTypeParams = {
 select?: string;
 expand?: string;
 };
 
-export type ApiVVersionApiVersionMeasureCommentParams = {
-select?: string;
-expand?: string;
-filter?: string;
-orderby?: string;
-top?: number;
-skip?: number;
-count?: boolean;
-};
-
-export type ApiVVersionApiVersionMeasureCommentKeyMeasureTypesCountParams = {
-select?: string;
-filter?: string;
-orderby?: string;
-top?: number;
-skip?: number;
-count?: boolean;
-};
-
-export type ApiVVersionApiVersionMeasureCommentKeyMeasureTypesParams = {
-select?: string;
-filter?: string;
-orderby?: string;
-top?: number;
-skip?: number;
-count?: boolean;
-};
-
-export type ApiVVersionApiVersionMapLayerKeyParams = {
-select?: string;
-expand?: string;
-};
-
-export type ApiVVersionApiVersionMapLayerKeyParams = {
-select?: string;
-expand?: string;
-};
-
-export type ApiVVersionApiVersionMapLayerKeyParams = {
-select?: string;
-expand?: string;
-};
-
-export type ApiVVersionApiVersionMapLayerCountParams = {
+export type ApiV1MeasureTypeParams = {
 select?: string;
 expand?: string;
 filter?: string;
@@ -613,12 +454,58 @@ skip?: number;
 count?: boolean;
 };
 
-export type ApiVVersionApiVersionMapLayerParams = {
+export type ApiV1MeasureTypeKeyMeasureCommentsCountParams = {
+select?: string;
+filter?: string;
+orderby?: string;
+top?: number;
+skip?: number;
+count?: boolean;
+};
+
+export type ApiV1MeasureTypeKeyMeasureCommentsParams = {
+select?: string;
+filter?: string;
+orderby?: string;
+top?: number;
+skip?: number;
+count?: boolean;
+};
+
+export type ApiV1MeasureTypeKeyDetectionTypesCountParams = {
+select?: string;
+filter?: string;
+orderby?: string;
+top?: number;
+skip?: number;
+count?: boolean;
+};
+
+export type ApiV1MeasureTypeKeyDetectionTypesParams = {
+select?: string;
+filter?: string;
+orderby?: string;
+top?: number;
+skip?: number;
+count?: boolean;
+};
+
+export type ApiV1MeasureOptionKeyParams = {
 select?: string;
 expand?: string;
 };
 
-export type ApiVVersionApiVersionMapLayerParams = {
+export type ApiV1MeasureOptionKeyParams = {
+select?: string;
+expand?: string;
+};
+
+export type ApiV1MeasureOptionKeyParams = {
+select?: string;
+expand?: string;
+};
+
+export type ApiV1MeasureOptionCountParams = {
 select?: string;
 expand?: string;
 filter?: string;
@@ -628,22 +515,12 @@ skip?: number;
 count?: boolean;
 };
 
-export type ApiVVersionApiVersionLocationTypeKeyParams = {
+export type ApiV1MeasureOptionParams = {
 select?: string;
 expand?: string;
 };
 
-export type ApiVVersionApiVersionLocationTypeKeyParams = {
-select?: string;
-expand?: string;
-};
-
-export type ApiVVersionApiVersionLocationTypeKeyParams = {
-select?: string;
-expand?: string;
-};
-
-export type ApiVVersionApiVersionLocationTypeCountParams = {
+export type ApiV1MeasureOptionParams = {
 select?: string;
 expand?: string;
 filter?: string;
@@ -653,55 +530,22 @@ skip?: number;
 count?: boolean;
 };
 
-export type ApiVVersionApiVersionLocationTypeParams = {
+export type ApiV1MeasureCommentKeyParams = {
 select?: string;
 expand?: string;
 };
 
-export type ApiVVersionApiVersionLocationTypeParams = {
-select?: string;
-expand?: string;
-filter?: string;
-orderby?: string;
-top?: number;
-skip?: number;
-count?: boolean;
-};
-
-export type ApiVVersionApiVersionLocationTypeKeyLocationsCountParams = {
-select?: string;
-filter?: string;
-orderby?: string;
-top?: number;
-skip?: number;
-count?: boolean;
-};
-
-export type ApiVVersionApiVersionLocationTypeKeyLocationsParams = {
-select?: string;
-filter?: string;
-orderby?: string;
-top?: number;
-skip?: number;
-count?: boolean;
-};
-
-export type ApiVVersionApiVersionLocationKeyParams = {
+export type ApiV1MeasureCommentKeyParams = {
 select?: string;
 expand?: string;
 };
 
-export type ApiVVersionApiVersionLocationKeyParams = {
+export type ApiV1MeasureCommentKeyParams = {
 select?: string;
 expand?: string;
 };
 
-export type ApiVVersionApiVersionLocationKeyParams = {
-select?: string;
-expand?: string;
-};
-
-export type ApiVVersionApiVersionLocationCountParams = {
+export type ApiV1MeasureCommentCountParams = {
 select?: string;
 expand?: string;
 filter?: string;
@@ -711,12 +555,12 @@ skip?: number;
 count?: boolean;
 };
 
-export type ApiVVersionApiVersionLocationParams = {
+export type ApiV1MeasureCommentParams = {
 select?: string;
 expand?: string;
 };
 
-export type ApiVVersionApiVersionLocationParams = {
+export type ApiV1MeasureCommentParams = {
 select?: string;
 expand?: string;
 filter?: string;
@@ -726,7 +570,163 @@ skip?: number;
 count?: boolean;
 };
 
-export type ApiVVersionApiVersionLocationGetLocationsForSearchParams = {
+export type ApiV1MeasureCommentKeyMeasureTypesCountParams = {
+select?: string;
+filter?: string;
+orderby?: string;
+top?: number;
+skip?: number;
+count?: boolean;
+};
+
+export type ApiV1MeasureCommentKeyMeasureTypesParams = {
+select?: string;
+filter?: string;
+orderby?: string;
+top?: number;
+skip?: number;
+count?: boolean;
+};
+
+export type ApiV1MapLayerKeyParams = {
+select?: string;
+expand?: string;
+};
+
+export type ApiV1MapLayerKeyParams = {
+select?: string;
+expand?: string;
+};
+
+export type ApiV1MapLayerKeyParams = {
+select?: string;
+expand?: string;
+};
+
+export type ApiV1MapLayerCountParams = {
+select?: string;
+expand?: string;
+filter?: string;
+orderby?: string;
+top?: number;
+skip?: number;
+count?: boolean;
+};
+
+export type ApiV1MapLayerParams = {
+select?: string;
+expand?: string;
+};
+
+export type ApiV1MapLayerParams = {
+select?: string;
+expand?: string;
+filter?: string;
+orderby?: string;
+top?: number;
+skip?: number;
+count?: boolean;
+};
+
+export type ApiV1LocationTypeKeyParams = {
+select?: string;
+expand?: string;
+};
+
+export type ApiV1LocationTypeKeyParams = {
+select?: string;
+expand?: string;
+};
+
+export type ApiV1LocationTypeKeyParams = {
+select?: string;
+expand?: string;
+};
+
+export type ApiV1LocationTypeCountParams = {
+select?: string;
+expand?: string;
+filter?: string;
+orderby?: string;
+top?: number;
+skip?: number;
+count?: boolean;
+};
+
+export type ApiV1LocationTypeParams = {
+select?: string;
+expand?: string;
+};
+
+export type ApiV1LocationTypeParams = {
+select?: string;
+expand?: string;
+filter?: string;
+orderby?: string;
+top?: number;
+skip?: number;
+count?: boolean;
+};
+
+export type ApiV1LocationTypeKeyLocationsCountParams = {
+select?: string;
+filter?: string;
+orderby?: string;
+top?: number;
+skip?: number;
+count?: boolean;
+};
+
+export type ApiV1LocationTypeKeyLocationsParams = {
+select?: string;
+filter?: string;
+orderby?: string;
+top?: number;
+skip?: number;
+count?: boolean;
+};
+
+export type ApiV1LocationKeyParams = {
+select?: string;
+expand?: string;
+};
+
+export type ApiV1LocationKeyParams = {
+select?: string;
+expand?: string;
+};
+
+export type ApiV1LocationKeyParams = {
+select?: string;
+expand?: string;
+};
+
+export type ApiV1LocationCountParams = {
+select?: string;
+expand?: string;
+filter?: string;
+orderby?: string;
+top?: number;
+skip?: number;
+count?: boolean;
+};
+
+export type ApiV1LocationParams = {
+select?: string;
+expand?: string;
+};
+
+export type ApiV1LocationParams = {
+select?: string;
+expand?: string;
+filter?: string;
+orderby?: string;
+top?: number;
+skip?: number;
+count?: boolean;
+};
+
+export type ApiV1LocationGetLocationsForSearchParams = {
 /**
  * Locations by area
  */
@@ -751,7 +751,7 @@ skip?: number;
 count?: boolean;
 };
 
-export type ApiVVersionApiVersionLocationGetDetectionTypeCountParams = {
+export type ApiV1LocationGetDetectionTypeCountParams = {
 date?: string;
 select?: string;
 filter?: string;
@@ -761,7 +761,7 @@ skip?: number;
 count?: boolean;
 };
 
-export type ApiVVersionApiVersionLocationGetLatestVersionOfAllLocationsParams = {
+export type ApiV1LocationGetLatestVersionOfAllLocationsParams = {
 select?: string;
 filter?: string;
 orderby?: string;
@@ -770,7 +770,7 @@ skip?: number;
 count?: boolean;
 };
 
-export type ApiVVersionApiVersionLocationGetAllVersionsOfLocationIdentifierIdentifierParams = {
+export type ApiV1LocationGetAllVersionsOfLocationIdentifierIdentifierParams = {
 select?: string;
 filter?: string;
 orderby?: string;
@@ -779,42 +779,32 @@ skip?: number;
 count?: boolean;
 };
 
-export type ApiVVersionApiVersionLocationGetLatestVersionOfLocationIdentifierIdentifierParams = {
+export type ApiV1LocationGetLatestVersionOfLocationIdentifierIdentifierParams = {
 select?: string;
 expand?: string;
 };
 
-export type ApiVVersionApiVersionLocationKeySetLocationToDeletedParams = {
+export type ApiV1LocationKeySetLocationToDeletedParams = {
 select?: string;
 expand?: string;
 };
 
-export type ApiVVersionApiVersionLocationKeySaveTemplatedLocationParams = {
+export type ApiV1LocationKeySaveTemplatedLocationParams = {
 select?: string;
 expand?: string;
 };
 
-export type ApiVVersionApiVersionLocationKeySyncLocationParams = {
+export type ApiV1LocationKeySyncLocationParams = {
 select?: string;
 expand?: string;
 };
 
-export type ApiVVersionApiVersionLocationKeyCopyLocationToNewVersionParams = {
+export type ApiV1LocationKeyCopyLocationToNewVersionParams = {
 select?: string;
 expand?: string;
 };
 
-export type ApiVVersionApiVersionLocationKeyDevicesCountParams = {
-select?: string;
-expand?: string;
-filter?: string;
-orderby?: string;
-top?: number;
-skip?: number;
-count?: boolean;
-};
-
-export type ApiVVersionApiVersionLocationKeyDevicesParams = {
+export type ApiV1LocationKeyDevicesCountParams = {
 select?: string;
 expand?: string;
 filter?: string;
@@ -824,7 +814,7 @@ skip?: number;
 count?: boolean;
 };
 
-export type ApiVVersionApiVersionLocationKeyAreasCountParams = {
+export type ApiV1LocationKeyDevicesParams = {
 select?: string;
 expand?: string;
 filter?: string;
@@ -834,7 +824,7 @@ skip?: number;
 count?: boolean;
 };
 
-export type ApiVVersionApiVersionLocationKeyAreasParams = {
+export type ApiV1LocationKeyAreasCountParams = {
 select?: string;
 expand?: string;
 filter?: string;
@@ -844,7 +834,7 @@ skip?: number;
 count?: boolean;
 };
 
-export type ApiVVersionApiVersionLocationKeyApproachesCountParams = {
+export type ApiV1LocationKeyAreasParams = {
 select?: string;
 expand?: string;
 filter?: string;
@@ -854,7 +844,7 @@ skip?: number;
 count?: boolean;
 };
 
-export type ApiVVersionApiVersionLocationKeyApproachesParams = {
+export type ApiV1LocationKeyApproachesCountParams = {
 select?: string;
 expand?: string;
 filter?: string;
@@ -864,7 +854,7 @@ skip?: number;
 count?: boolean;
 };
 
-export type ApiVVersionApiVersionJurisdictionCountParams = {
+export type ApiV1LocationKeyApproachesParams = {
 select?: string;
 expand?: string;
 filter?: string;
@@ -874,22 +864,7 @@ skip?: number;
 count?: boolean;
 };
 
-export type ApiVVersionApiVersionJurisdictionKeyParams = {
-select?: string;
-expand?: string;
-};
-
-export type ApiVVersionApiVersionJurisdictionKeyParams = {
-select?: string;
-expand?: string;
-};
-
-export type ApiVVersionApiVersionJurisdictionKeyParams = {
-select?: string;
-expand?: string;
-};
-
-export type ApiVVersionApiVersionJurisdictionParams = {
+export type ApiV1JurisdictionCountParams = {
 select?: string;
 expand?: string;
 filter?: string;
@@ -899,30 +874,22 @@ skip?: number;
 count?: boolean;
 };
 
-export type ApiVVersionApiVersionJurisdictionParams = {
+export type ApiV1JurisdictionKeyParams = {
 select?: string;
 expand?: string;
 };
 
-export type ApiVVersionApiVersionJurisdictionKeyLocationsCountParams = {
+export type ApiV1JurisdictionKeyParams = {
 select?: string;
-filter?: string;
-orderby?: string;
-top?: number;
-skip?: number;
-count?: boolean;
+expand?: string;
 };
 
-export type ApiVVersionApiVersionJurisdictionKeyLocationsParams = {
+export type ApiV1JurisdictionKeyParams = {
 select?: string;
-filter?: string;
-orderby?: string;
-top?: number;
-skip?: number;
-count?: boolean;
+expand?: string;
 };
 
-export type ApiVVersionApiVersionFaqCountParams = {
+export type ApiV1JurisdictionParams = {
 select?: string;
 expand?: string;
 filter?: string;
@@ -932,22 +899,30 @@ skip?: number;
 count?: boolean;
 };
 
-export type ApiVVersionApiVersionFaqKeyParams = {
+export type ApiV1JurisdictionParams = {
 select?: string;
 expand?: string;
 };
 
-export type ApiVVersionApiVersionFaqKeyParams = {
+export type ApiV1JurisdictionKeyLocationsCountParams = {
 select?: string;
-expand?: string;
+filter?: string;
+orderby?: string;
+top?: number;
+skip?: number;
+count?: boolean;
 };
 
-export type ApiVVersionApiVersionFaqKeyParams = {
+export type ApiV1JurisdictionKeyLocationsParams = {
 select?: string;
-expand?: string;
+filter?: string;
+orderby?: string;
+top?: number;
+skip?: number;
+count?: boolean;
 };
 
-export type ApiVVersionApiVersionFaqParams = {
+export type ApiV1FaqCountParams = {
 select?: string;
 expand?: string;
 filter?: string;
@@ -957,27 +932,22 @@ skip?: number;
 count?: boolean;
 };
 
-export type ApiVVersionApiVersionFaqParams = {
+export type ApiV1FaqKeyParams = {
 select?: string;
 expand?: string;
 };
 
-export type ApiVVersionApiVersionDirectionTypeKeyParams = {
+export type ApiV1FaqKeyParams = {
 select?: string;
 expand?: string;
 };
 
-export type ApiVVersionApiVersionDirectionTypeKeyParams = {
+export type ApiV1FaqKeyParams = {
 select?: string;
 expand?: string;
 };
 
-export type ApiVVersionApiVersionDirectionTypeKeyParams = {
-select?: string;
-expand?: string;
-};
-
-export type ApiVVersionApiVersionDirectionTypeCountParams = {
+export type ApiV1FaqParams = {
 select?: string;
 expand?: string;
 filter?: string;
@@ -987,91 +957,27 @@ skip?: number;
 count?: boolean;
 };
 
-export type ApiVVersionApiVersionDirectionTypeParams = {
+export type ApiV1FaqParams = {
 select?: string;
 expand?: string;
 };
 
-export type ApiVVersionApiVersionDirectionTypeParams = {
-select?: string;
-expand?: string;
-filter?: string;
-orderby?: string;
-top?: number;
-skip?: number;
-count?: boolean;
-};
-
-export type ApiVVersionApiVersionDirectionTypeKeyOpposingDirectionsCountParams = {
-select?: string;
-filter?: string;
-orderby?: string;
-top?: number;
-skip?: number;
-count?: boolean;
-};
-
-export type ApiVVersionApiVersionDirectionTypeKeyOpposingDirectionsParams = {
-select?: string;
-filter?: string;
-orderby?: string;
-top?: number;
-skip?: number;
-count?: boolean;
-};
-
-export type ApiVVersionApiVersionDirectionTypeKeyPrimaryDirectionsCountParams = {
-select?: string;
-filter?: string;
-orderby?: string;
-top?: number;
-skip?: number;
-count?: boolean;
-};
-
-export type ApiVVersionApiVersionDirectionTypeKeyPrimaryDirectionsParams = {
-select?: string;
-filter?: string;
-orderby?: string;
-top?: number;
-skip?: number;
-count?: boolean;
-};
-
-export type ApiVVersionApiVersionDirectionTypeKeyApproachesCountParams = {
-select?: string;
-filter?: string;
-orderby?: string;
-top?: number;
-skip?: number;
-count?: boolean;
-};
-
-export type ApiVVersionApiVersionDirectionTypeKeyApproachesParams = {
-select?: string;
-filter?: string;
-orderby?: string;
-top?: number;
-skip?: number;
-count?: boolean;
-};
-
-export type ApiVVersionApiVersionDeviceConfigurationKeyParams = {
+export type ApiV1DirectionTypeKeyParams = {
 select?: string;
 expand?: string;
 };
 
-export type ApiVVersionApiVersionDeviceConfigurationKeyParams = {
+export type ApiV1DirectionTypeKeyParams = {
 select?: string;
 expand?: string;
 };
 
-export type ApiVVersionApiVersionDeviceConfigurationKeyParams = {
+export type ApiV1DirectionTypeKeyParams = {
 select?: string;
 expand?: string;
 };
 
-export type ApiVVersionApiVersionDeviceConfigurationCountParams = {
+export type ApiV1DirectionTypeCountParams = {
 select?: string;
 expand?: string;
 filter?: string;
@@ -1081,55 +987,12 @@ skip?: number;
 count?: boolean;
 };
 
-export type ApiVVersionApiVersionDeviceConfigurationParams = {
+export type ApiV1DirectionTypeParams = {
 select?: string;
 expand?: string;
 };
 
-export type ApiVVersionApiVersionDeviceConfigurationParams = {
-select?: string;
-expand?: string;
-filter?: string;
-orderby?: string;
-top?: number;
-skip?: number;
-count?: boolean;
-};
-
-export type ApiVVersionApiVersionDeviceConfigurationKeyDevicesCountParams = {
-select?: string;
-filter?: string;
-orderby?: string;
-top?: number;
-skip?: number;
-count?: boolean;
-};
-
-export type ApiVVersionApiVersionDeviceConfigurationKeyDevicesParams = {
-select?: string;
-filter?: string;
-orderby?: string;
-top?: number;
-skip?: number;
-count?: boolean;
-};
-
-export type ApiVVersionApiVersionDeviceKeyParams = {
-select?: string;
-expand?: string;
-};
-
-export type ApiVVersionApiVersionDeviceKeyParams = {
-select?: string;
-expand?: string;
-};
-
-export type ApiVVersionApiVersionDeviceKeyParams = {
-select?: string;
-expand?: string;
-};
-
-export type ApiVVersionApiVersionDeviceCountParams = {
+export type ApiV1DirectionTypeParams = {
 select?: string;
 expand?: string;
 filter?: string;
@@ -1139,12 +1002,76 @@ skip?: number;
 count?: boolean;
 };
 
-export type ApiVVersionApiVersionDeviceParams = {
+export type ApiV1DirectionTypeKeyOpposingDirectionsCountParams = {
+select?: string;
+filter?: string;
+orderby?: string;
+top?: number;
+skip?: number;
+count?: boolean;
+};
+
+export type ApiV1DirectionTypeKeyOpposingDirectionsParams = {
+select?: string;
+filter?: string;
+orderby?: string;
+top?: number;
+skip?: number;
+count?: boolean;
+};
+
+export type ApiV1DirectionTypeKeyPrimaryDirectionsCountParams = {
+select?: string;
+filter?: string;
+orderby?: string;
+top?: number;
+skip?: number;
+count?: boolean;
+};
+
+export type ApiV1DirectionTypeKeyPrimaryDirectionsParams = {
+select?: string;
+filter?: string;
+orderby?: string;
+top?: number;
+skip?: number;
+count?: boolean;
+};
+
+export type ApiV1DirectionTypeKeyApproachesCountParams = {
+select?: string;
+filter?: string;
+orderby?: string;
+top?: number;
+skip?: number;
+count?: boolean;
+};
+
+export type ApiV1DirectionTypeKeyApproachesParams = {
+select?: string;
+filter?: string;
+orderby?: string;
+top?: number;
+skip?: number;
+count?: boolean;
+};
+
+export type ApiV1DeviceConfigurationKeyParams = {
 select?: string;
 expand?: string;
 };
 
-export type ApiVVersionApiVersionDeviceParams = {
+export type ApiV1DeviceConfigurationKeyParams = {
+select?: string;
+expand?: string;
+};
+
+export type ApiV1DeviceConfigurationKeyParams = {
+select?: string;
+expand?: string;
+};
+
+export type ApiV1DeviceConfigurationCountParams = {
 select?: string;
 expand?: string;
 filter?: string;
@@ -1154,40 +1081,12 @@ skip?: number;
 count?: boolean;
 };
 
-export type ApiVVersionApiVersionDeviceGetActiveDevicesCountParams = {
-select?: string;
-filter?: string;
-orderby?: string;
-top?: number;
-skip?: number;
-count?: boolean;
-};
-
-export type ApiVVersionApiVersionDeviceGetActiveDevicesByLocationLocationIdLocationIdParams = {
-select?: string;
-filter?: string;
-orderby?: string;
-top?: number;
-skip?: number;
-count?: boolean;
-};
-
-export type ApiVVersionApiVersionDetectorCommentKeyParams = {
+export type ApiV1DeviceConfigurationParams = {
 select?: string;
 expand?: string;
 };
 
-export type ApiVVersionApiVersionDetectorCommentKeyParams = {
-select?: string;
-expand?: string;
-};
-
-export type ApiVVersionApiVersionDetectorCommentKeyParams = {
-select?: string;
-expand?: string;
-};
-
-export type ApiVVersionApiVersionDetectorCommentCountParams = {
+export type ApiV1DeviceConfigurationParams = {
 select?: string;
 expand?: string;
 filter?: string;
@@ -1197,12 +1096,40 @@ skip?: number;
 count?: boolean;
 };
 
-export type ApiVVersionApiVersionDetectorCommentParams = {
+export type ApiV1DeviceConfigurationKeyDevicesCountParams = {
+select?: string;
+filter?: string;
+orderby?: string;
+top?: number;
+skip?: number;
+count?: boolean;
+};
+
+export type ApiV1DeviceConfigurationKeyDevicesParams = {
+select?: string;
+filter?: string;
+orderby?: string;
+top?: number;
+skip?: number;
+count?: boolean;
+};
+
+export type ApiV1DeviceKeyParams = {
 select?: string;
 expand?: string;
 };
 
-export type ApiVVersionApiVersionDetectorCommentParams = {
+export type ApiV1DeviceKeyParams = {
+select?: string;
+expand?: string;
+};
+
+export type ApiV1DeviceKeyParams = {
+select?: string;
+expand?: string;
+};
+
+export type ApiV1DeviceCountParams = {
 select?: string;
 expand?: string;
 filter?: string;
@@ -1212,22 +1139,12 @@ skip?: number;
 count?: boolean;
 };
 
-export type ApiVVersionApiVersionDetectorKeyParams = {
+export type ApiV1DeviceParams = {
 select?: string;
 expand?: string;
 };
 
-export type ApiVVersionApiVersionDetectorKeyParams = {
-select?: string;
-expand?: string;
-};
-
-export type ApiVVersionApiVersionDetectorKeyParams = {
-select?: string;
-expand?: string;
-};
-
-export type ApiVVersionApiVersionDetectorCountParams = {
+export type ApiV1DeviceParams = {
 select?: string;
 expand?: string;
 filter?: string;
@@ -1237,12 +1154,40 @@ skip?: number;
 count?: boolean;
 };
 
-export type ApiVVersionApiVersionDetectorParams = {
+export type ApiV1DeviceGetActiveDevicesCountParams = {
+select?: string;
+filter?: string;
+orderby?: string;
+top?: number;
+skip?: number;
+count?: boolean;
+};
+
+export type ApiV1DeviceGetActiveDevicesByLocationLocationIdLocationIdParams = {
+select?: string;
+filter?: string;
+orderby?: string;
+top?: number;
+skip?: number;
+count?: boolean;
+};
+
+export type ApiV1DetectorCommentKeyParams = {
 select?: string;
 expand?: string;
 };
 
-export type ApiVVersionApiVersionDetectorParams = {
+export type ApiV1DetectorCommentKeyParams = {
+select?: string;
+expand?: string;
+};
+
+export type ApiV1DetectorCommentKeyParams = {
+select?: string;
+expand?: string;
+};
+
+export type ApiV1DetectorCommentCountParams = {
 select?: string;
 expand?: string;
 filter?: string;
@@ -1252,58 +1197,12 @@ skip?: number;
 count?: boolean;
 };
 
-export type ApiVVersionApiVersionDetectorKeyDetectionTypesCountParams = {
-select?: string;
-filter?: string;
-orderby?: string;
-top?: number;
-skip?: number;
-count?: boolean;
-};
-
-export type ApiVVersionApiVersionDetectorKeyDetectionTypesParams = {
-select?: string;
-filter?: string;
-orderby?: string;
-top?: number;
-skip?: number;
-count?: boolean;
-};
-
-export type ApiVVersionApiVersionDetectorKeyDetectorCommentsCountParams = {
-select?: string;
-filter?: string;
-orderby?: string;
-top?: number;
-skip?: number;
-count?: boolean;
-};
-
-export type ApiVVersionApiVersionDetectorKeyDetectorCommentsParams = {
-select?: string;
-filter?: string;
-orderby?: string;
-top?: number;
-skip?: number;
-count?: boolean;
-};
-
-export type ApiVVersionApiVersionDetectionTypeKeyParams = {
+export type ApiV1DetectorCommentParams = {
 select?: string;
 expand?: string;
 };
 
-export type ApiVVersionApiVersionDetectionTypeKeyParams = {
-select?: string;
-expand?: string;
-};
-
-export type ApiVVersionApiVersionDetectionTypeKeyParams = {
-select?: string;
-expand?: string;
-};
-
-export type ApiVVersionApiVersionDetectionTypeCountParams = {
+export type ApiV1DetectorCommentParams = {
 select?: string;
 expand?: string;
 filter?: string;
@@ -1313,58 +1212,22 @@ skip?: number;
 count?: boolean;
 };
 
-export type ApiVVersionApiVersionDetectionTypeParams = {
+export type ApiV1DetectorKeyParams = {
 select?: string;
 expand?: string;
 };
 
-export type ApiVVersionApiVersionDetectionTypeParams = {
+export type ApiV1DetectorKeyParams = {
 select?: string;
 expand?: string;
-filter?: string;
-orderby?: string;
-top?: number;
-skip?: number;
-count?: boolean;
 };
 
-export type ApiVVersionApiVersionDetectionTypeKeyMeasureTypesCountParams = {
+export type ApiV1DetectorKeyParams = {
 select?: string;
-filter?: string;
-orderby?: string;
-top?: number;
-skip?: number;
-count?: boolean;
+expand?: string;
 };
 
-export type ApiVVersionApiVersionDetectionTypeKeyMeasureTypesParams = {
-select?: string;
-filter?: string;
-orderby?: string;
-top?: number;
-skip?: number;
-count?: boolean;
-};
-
-export type ApiVVersionApiVersionDetectionTypeKeyDetectorsCountParams = {
-select?: string;
-filter?: string;
-orderby?: string;
-top?: number;
-skip?: number;
-count?: boolean;
-};
-
-export type ApiVVersionApiVersionDetectionTypeKeyDetectorsParams = {
-select?: string;
-filter?: string;
-orderby?: string;
-top?: number;
-skip?: number;
-count?: boolean;
-};
-
-export type ApiVVersionApiVersionAreaCountParams = {
+export type ApiV1DetectorCountParams = {
 select?: string;
 expand?: string;
 filter?: string;
@@ -1374,22 +1237,12 @@ skip?: number;
 count?: boolean;
 };
 
-export type ApiVVersionApiVersionAreaKeyParams = {
+export type ApiV1DetectorParams = {
 select?: string;
 expand?: string;
 };
 
-export type ApiVVersionApiVersionAreaKeyParams = {
-select?: string;
-expand?: string;
-};
-
-export type ApiVVersionApiVersionAreaKeyParams = {
-select?: string;
-expand?: string;
-};
-
-export type ApiVVersionApiVersionAreaParams = {
+export type ApiV1DetectorParams = {
 select?: string;
 expand?: string;
 filter?: string;
@@ -1399,12 +1252,7 @@ skip?: number;
 count?: boolean;
 };
 
-export type ApiVVersionApiVersionAreaParams = {
-select?: string;
-expand?: string;
-};
-
-export type ApiVVersionApiVersionAreaKeyLocationsCountParams = {
+export type ApiV1DetectorKeyDetectionTypesCountParams = {
 select?: string;
 filter?: string;
 orderby?: string;
@@ -1413,7 +1261,7 @@ skip?: number;
 count?: boolean;
 };
 
-export type ApiVVersionApiVersionAreaKeyLocationsParams = {
+export type ApiV1DetectorKeyDetectionTypesParams = {
 select?: string;
 filter?: string;
 orderby?: string;
@@ -1422,7 +1270,40 @@ skip?: number;
 count?: boolean;
 };
 
-export type ApiVVersionApiVersionApproachCountParams = {
+export type ApiV1DetectorKeyDetectorCommentsCountParams = {
+select?: string;
+filter?: string;
+orderby?: string;
+top?: number;
+skip?: number;
+count?: boolean;
+};
+
+export type ApiV1DetectorKeyDetectorCommentsParams = {
+select?: string;
+filter?: string;
+orderby?: string;
+top?: number;
+skip?: number;
+count?: boolean;
+};
+
+export type ApiV1DetectionTypeKeyParams = {
+select?: string;
+expand?: string;
+};
+
+export type ApiV1DetectionTypeKeyParams = {
+select?: string;
+expand?: string;
+};
+
+export type ApiV1DetectionTypeKeyParams = {
+select?: string;
+expand?: string;
+};
+
+export type ApiV1DetectionTypeCountParams = {
 select?: string;
 expand?: string;
 filter?: string;
@@ -1432,22 +1313,12 @@ skip?: number;
 count?: boolean;
 };
 
-export type ApiVVersionApiVersionApproachKeyParams = {
+export type ApiV1DetectionTypeParams = {
 select?: string;
 expand?: string;
 };
 
-export type ApiVVersionApiVersionApproachKeyParams = {
-select?: string;
-expand?: string;
-};
-
-export type ApiVVersionApiVersionApproachKeyParams = {
-select?: string;
-expand?: string;
-};
-
-export type ApiVVersionApiVersionApproachParams = {
+export type ApiV1DetectionTypeParams = {
 select?: string;
 expand?: string;
 filter?: string;
@@ -1457,7 +1328,136 @@ skip?: number;
 count?: boolean;
 };
 
-export type ApiVVersionApiVersionApproachParams = {
+export type ApiV1DetectionTypeKeyMeasureTypesCountParams = {
+select?: string;
+filter?: string;
+orderby?: string;
+top?: number;
+skip?: number;
+count?: boolean;
+};
+
+export type ApiV1DetectionTypeKeyMeasureTypesParams = {
+select?: string;
+filter?: string;
+orderby?: string;
+top?: number;
+skip?: number;
+count?: boolean;
+};
+
+export type ApiV1DetectionTypeKeyDetectorsCountParams = {
+select?: string;
+filter?: string;
+orderby?: string;
+top?: number;
+skip?: number;
+count?: boolean;
+};
+
+export type ApiV1DetectionTypeKeyDetectorsParams = {
+select?: string;
+filter?: string;
+orderby?: string;
+top?: number;
+skip?: number;
+count?: boolean;
+};
+
+export type ApiV1AreaCountParams = {
+select?: string;
+expand?: string;
+filter?: string;
+orderby?: string;
+top?: number;
+skip?: number;
+count?: boolean;
+};
+
+export type ApiV1AreaKeyParams = {
+select?: string;
+expand?: string;
+};
+
+export type ApiV1AreaKeyParams = {
+select?: string;
+expand?: string;
+};
+
+export type ApiV1AreaKeyParams = {
+select?: string;
+expand?: string;
+};
+
+export type ApiV1AreaParams = {
+select?: string;
+expand?: string;
+filter?: string;
+orderby?: string;
+top?: number;
+skip?: number;
+count?: boolean;
+};
+
+export type ApiV1AreaParams = {
+select?: string;
+expand?: string;
+};
+
+export type ApiV1AreaKeyLocationsCountParams = {
+select?: string;
+filter?: string;
+orderby?: string;
+top?: number;
+skip?: number;
+count?: boolean;
+};
+
+export type ApiV1AreaKeyLocationsParams = {
+select?: string;
+filter?: string;
+orderby?: string;
+top?: number;
+skip?: number;
+count?: boolean;
+};
+
+export type ApiV1ApproachCountParams = {
+select?: string;
+expand?: string;
+filter?: string;
+orderby?: string;
+top?: number;
+skip?: number;
+count?: boolean;
+};
+
+export type ApiV1ApproachKeyParams = {
+select?: string;
+expand?: string;
+};
+
+export type ApiV1ApproachKeyParams = {
+select?: string;
+expand?: string;
+};
+
+export type ApiV1ApproachKeyParams = {
+select?: string;
+expand?: string;
+};
+
+export type ApiV1ApproachParams = {
+select?: string;
+expand?: string;
+filter?: string;
+orderby?: string;
+top?: number;
+skip?: number;
+count?: boolean;
+};
+
+export type ApiV1ApproachParams = {
 select?: string;
 expand?: string;
 };
@@ -1474,7 +1474,7 @@ select?: string;
 expand?: string;
 };
 
-export type ApiVVersionApiVersionApproachKeyDetectorsCountParams = {
+export type ApiV1ApproachKeyDetectorsCountParams = {
 select?: string;
 filter?: string;
 orderby?: string;
@@ -1483,7 +1483,7 @@ skip?: number;
 count?: boolean;
 };
 
-export type ApiVVersionApiVersionApproachKeyDetectorsParams = {
+export type ApiV1ApproachKeyDetectorsParams = {
 select?: string;
 filter?: string;
 orderby?: string;

@@ -5,10 +5,6 @@
  * ATSPM Configuration with OData, OpenAPI, Swashbuckle, and API versioning.
  * OpenAPI spec version: 1.0
  */
-import {
-  useMutation,
-  useQuery
-} from 'react-query'
 import type {
   MutationFunction,
   QueryFunction,
@@ -16,118 +12,120 @@ import type {
   UseMutationOptions,
   UseMutationResult,
   UseQueryOptions,
-  UseQueryResult
+  UseQueryResult,
 } from 'react-query'
+import { useMutation, useQuery } from 'react-query'
+import { configRequest } from '../../lib/axios'
 import type {
-  ApiVVersionApiVersionApproachCountParams,
-  ApiVVersionApiVersionApproachKeyDetectorsCountParams,
-  ApiVVersionApiVersionApproachKeyDetectorsParams,
-  ApiVVersionApiVersionApproachKeyParams,
-  ApiVVersionApiVersionApproachParams,
-  ApiVVersionApiVersionAreaCountParams,
-  ApiVVersionApiVersionAreaKeyLocationsCountParams,
-  ApiVVersionApiVersionAreaKeyLocationsParams,
-  ApiVVersionApiVersionAreaKeyParams,
-  ApiVVersionApiVersionAreaParams,
-  ApiVVersionApiVersionDetectionTypeCountParams,
-  ApiVVersionApiVersionDetectionTypeKeyDetectorsCountParams,
-  ApiVVersionApiVersionDetectionTypeKeyDetectorsParams,
-  ApiVVersionApiVersionDetectionTypeKeyMeasureTypesCountParams,
-  ApiVVersionApiVersionDetectionTypeKeyMeasureTypesParams,
-  ApiVVersionApiVersionDetectionTypeParams,
-  ApiVVersionApiVersionDetectorCommentCountParams,
-  ApiVVersionApiVersionDetectorCommentParams,
-  ApiVVersionApiVersionDetectorCountParams,
-  ApiVVersionApiVersionDetectorKeyDetectionTypesCountParams,
-  ApiVVersionApiVersionDetectorKeyDetectionTypesParams,
-  ApiVVersionApiVersionDetectorKeyDetectorCommentsCountParams,
-  ApiVVersionApiVersionDetectorKeyDetectorCommentsParams,
-  ApiVVersionApiVersionDetectorParams,
-  ApiVVersionApiVersionDeviceConfigurationCountParams,
-  ApiVVersionApiVersionDeviceConfigurationKeyDevicesCountParams,
-  ApiVVersionApiVersionDeviceConfigurationKeyDevicesParams,
-  ApiVVersionApiVersionDeviceConfigurationParams,
-  ApiVVersionApiVersionDeviceCountParams,
-  ApiVVersionApiVersionDeviceGetActiveDevicesByLocationLocationIdLocationIdParams,
-  ApiVVersionApiVersionDeviceGetActiveDevicesCountParams,
-  ApiVVersionApiVersionDeviceParams,
-  ApiVVersionApiVersionDirectionTypeCountParams,
-  ApiVVersionApiVersionDirectionTypeKeyApproachesCountParams,
-  ApiVVersionApiVersionDirectionTypeKeyApproachesParams,
-  ApiVVersionApiVersionDirectionTypeKeyOpposingDirectionsCountParams,
-  ApiVVersionApiVersionDirectionTypeKeyOpposingDirectionsParams,
-  ApiVVersionApiVersionDirectionTypeKeyPrimaryDirectionsCountParams,
-  ApiVVersionApiVersionDirectionTypeKeyPrimaryDirectionsParams,
-  ApiVVersionApiVersionDirectionTypeParams,
-  ApiVVersionApiVersionFaqCountParams,
-  ApiVVersionApiVersionFaqKeyParams,
-  ApiVVersionApiVersionFaqParams,
-  ApiVVersionApiVersionJurisdictionCountParams,
-  ApiVVersionApiVersionJurisdictionKeyLocationsCountParams,
-  ApiVVersionApiVersionJurisdictionKeyLocationsParams,
-  ApiVVersionApiVersionJurisdictionKeyParams,
-  ApiVVersionApiVersionJurisdictionParams,
-  ApiVVersionApiVersionLocationCountParams,
-  ApiVVersionApiVersionLocationGetAllVersionsOfLocationIdentifierIdentifierParams,
-  ApiVVersionApiVersionLocationGetDetectionTypeCountParams,
-  ApiVVersionApiVersionLocationGetLatestVersionOfAllLocationsParams,
-  ApiVVersionApiVersionLocationGetLatestVersionOfLocationIdentifierIdentifierParams,
-  ApiVVersionApiVersionLocationGetLocationsForSearchParams,
-  ApiVVersionApiVersionLocationKeyApproachesCountParams,
-  ApiVVersionApiVersionLocationKeyApproachesParams,
-  ApiVVersionApiVersionLocationKeyAreasCountParams,
-  ApiVVersionApiVersionLocationKeyAreasParams,
-  ApiVVersionApiVersionLocationKeyCopyLocationToNewVersionParams,
-  ApiVVersionApiVersionLocationKeyDevicesCountParams,
-  ApiVVersionApiVersionLocationKeyDevicesParams,
-  ApiVVersionApiVersionLocationKeySaveTemplatedLocationParams,
-  ApiVVersionApiVersionLocationKeySetLocationToDeletedParams,
-  ApiVVersionApiVersionLocationKeySyncLocationParams,
-  ApiVVersionApiVersionLocationParams,
-  ApiVVersionApiVersionLocationTypeCountParams,
-  ApiVVersionApiVersionLocationTypeKeyLocationsCountParams,
-  ApiVVersionApiVersionLocationTypeKeyLocationsParams,
-  ApiVVersionApiVersionLocationTypeParams,
-  ApiVVersionApiVersionMapLayerCountParams,
-  ApiVVersionApiVersionMapLayerParams,
-  ApiVVersionApiVersionMeasureCommentCountParams,
-  ApiVVersionApiVersionMeasureCommentKeyMeasureTypesCountParams,
-  ApiVVersionApiVersionMeasureCommentKeyMeasureTypesParams,
-  ApiVVersionApiVersionMeasureCommentParams,
-  ApiVVersionApiVersionMeasureOptionCountParams,
-  ApiVVersionApiVersionMeasureOptionParams,
-  ApiVVersionApiVersionMeasureTypeCountParams,
-  ApiVVersionApiVersionMeasureTypeKeyDetectionTypesCountParams,
-  ApiVVersionApiVersionMeasureTypeKeyDetectionTypesParams,
-  ApiVVersionApiVersionMeasureTypeKeyMeasureCommentsCountParams,
-  ApiVVersionApiVersionMeasureTypeKeyMeasureCommentsParams,
-  ApiVVersionApiVersionMeasureTypeParams,
-  ApiVVersionApiVersionMenuItemsCountParams,
-  ApiVVersionApiVersionMenuItemsParams,
-  ApiVVersionApiVersionProductCountParams,
-  ApiVVersionApiVersionProductParams,
-  ApiVVersionApiVersionRegionCountParams,
-  ApiVVersionApiVersionRegionKeyLocationsCountParams,
-  ApiVVersionApiVersionRegionKeyLocationsParams,
-  ApiVVersionApiVersionRegionKeyParams,
-  ApiVVersionApiVersionRegionParams,
-  ApiVVersionApiVersionRouteCountParams,
-  ApiVVersionApiVersionRouteDistanceCountParams,
-  ApiVVersionApiVersionRouteDistanceGetRouteDistanceByLocationIdentifiersLocationALocationALocationBLocationBParams,
-  ApiVVersionApiVersionRouteDistanceKeyNextLocationsCountParams,
-  ApiVVersionApiVersionRouteDistanceKeyNextLocationsParams,
-  ApiVVersionApiVersionRouteDistanceKeyPreviousLocationsCountParams,
-  ApiVVersionApiVersionRouteDistanceKeyPreviousLocationsParams,
-  ApiVVersionApiVersionRouteDistanceParams,
-  ApiVVersionApiVersionRouteKeyRouteLocationsCountParams,
-  ApiVVersionApiVersionRouteKeyRouteLocationsParams,
-  ApiVVersionApiVersionRouteLocationCountParams,
-  ApiVVersionApiVersionRouteLocationParams,
-  ApiVVersionApiVersionRouteParams,
-  ApiVVersionApiVersionVersionHistoryCountParams,
-  ApiVVersionApiVersionVersionHistoryParams,
-  ApiVVersionApiVersionWatchDogIgnoreEventCountParams,
-  ApiVVersionApiVersionWatchDogIgnoreEventParams,
+  ApiV1ApproachCountParams,
+  ApiV1ApproachKeyDetectorsCountParams,
+  ApiV1ApproachKeyDetectorsParams,
+  ApiV1ApproachKeyParams,
+  ApiV1ApproachParams,
+  ApiV1AreaCountParams,
+  ApiV1AreaKeyLocationsCountParams,
+  ApiV1AreaKeyLocationsParams,
+  ApiV1AreaKeyParams,
+  ApiV1AreaParams,
+  ApiV1DetectionTypeCountParams,
+  ApiV1DetectionTypeKeyDetectorsCountParams,
+  ApiV1DetectionTypeKeyDetectorsParams,
+  ApiV1DetectionTypeKeyMeasureTypesCountParams,
+  ApiV1DetectionTypeKeyMeasureTypesParams,
+  ApiV1DetectionTypeParams,
+  ApiV1DetectorCommentCountParams,
+  ApiV1DetectorCommentParams,
+  ApiV1DetectorCountParams,
+  ApiV1DetectorKeyDetectionTypesCountParams,
+  ApiV1DetectorKeyDetectionTypesParams,
+  ApiV1DetectorKeyDetectorCommentsCountParams,
+  ApiV1DetectorKeyDetectorCommentsParams,
+  ApiV1DetectorParams,
+  ApiV1DeviceConfigurationCountParams,
+  ApiV1DeviceConfigurationKeyDevicesCountParams,
+  ApiV1DeviceConfigurationKeyDevicesParams,
+  ApiV1DeviceConfigurationParams,
+  ApiV1DeviceCountParams,
+  ApiV1DeviceGetActiveDevicesByLocationLocationIdLocationIdParams,
+  ApiV1DeviceGetActiveDevicesCountParams,
+  ApiV1DeviceParams,
+  ApiV1DirectionTypeCountParams,
+  ApiV1DirectionTypeKeyApproachesCountParams,
+  ApiV1DirectionTypeKeyApproachesParams,
+  ApiV1DirectionTypeKeyOpposingDirectionsCountParams,
+  ApiV1DirectionTypeKeyOpposingDirectionsParams,
+  ApiV1DirectionTypeKeyPrimaryDirectionsCountParams,
+  ApiV1DirectionTypeKeyPrimaryDirectionsParams,
+  ApiV1DirectionTypeParams,
+  ApiV1FaqCountParams,
+  ApiV1FaqKeyParams,
+  ApiV1FaqParams,
+  ApiV1JurisdictionCountParams,
+  ApiV1JurisdictionKeyLocationsCountParams,
+  ApiV1JurisdictionKeyLocationsParams,
+  ApiV1JurisdictionKeyParams,
+  ApiV1JurisdictionParams,
+  ApiV1LocationCountParams,
+  ApiV1LocationGetAllVersionsOfLocationIdentifierIdentifierParams,
+  ApiV1LocationGetDetectionTypeCountParams,
+  ApiV1LocationGetLatestVersionOfAllLocationsParams,
+  ApiV1LocationGetLatestVersionOfLocationIdentifierIdentifierParams,
+  ApiV1LocationGetLocationsForSearchParams,
+  ApiV1LocationKeyApproachesCountParams,
+  ApiV1LocationKeyApproachesParams,
+  ApiV1LocationKeyAreasCountParams,
+  ApiV1LocationKeyAreasParams,
+  ApiV1LocationKeyCopyLocationToNewVersionParams,
+  ApiV1LocationKeyDevicesCountParams,
+  ApiV1LocationKeyDevicesParams,
+  ApiV1LocationKeySaveTemplatedLocationParams,
+  ApiV1LocationKeySetLocationToDeletedParams,
+  ApiV1LocationKeySyncLocationParams,
+  ApiV1LocationParams,
+  ApiV1LocationTypeCountParams,
+  ApiV1LocationTypeKeyLocationsCountParams,
+  ApiV1LocationTypeKeyLocationsParams,
+  ApiV1LocationTypeParams,
+  ApiV1MapLayerCountParams,
+  ApiV1MapLayerParams,
+  ApiV1MeasureCommentCountParams,
+  ApiV1MeasureCommentKeyMeasureTypesCountParams,
+  ApiV1MeasureCommentKeyMeasureTypesParams,
+  ApiV1MeasureCommentParams,
+  ApiV1MeasureOptionCountParams,
+  ApiV1MeasureOptionParams,
+  ApiV1MeasureTypeCountParams,
+  ApiV1MeasureTypeKeyDetectionTypesCountParams,
+  ApiV1MeasureTypeKeyDetectionTypesParams,
+  ApiV1MeasureTypeKeyMeasureCommentsCountParams,
+  ApiV1MeasureTypeKeyMeasureCommentsParams,
+  ApiV1MeasureTypeParams,
+  ApiV1MenuItemsCountParams,
+  ApiV1MenuItemsParams,
+  ApiV1ProductCountParams,
+  ApiV1ProductParams,
+  ApiV1RegionCountParams,
+  ApiV1RegionKeyLocationsCountParams,
+  ApiV1RegionKeyLocationsParams,
+  ApiV1RegionKeyParams,
+  ApiV1RegionParams,
+  ApiV1RouteCountParams,
+  ApiV1RouteDistanceCountParams,
+  ApiV1RouteDistanceGetRouteDistanceByLocationIdentifiersLocationALocationALocationBLocationBParams,
+  ApiV1RouteDistanceKeyNextLocationsCountParams,
+  ApiV1RouteDistanceKeyNextLocationsParams,
+  ApiV1RouteDistanceKeyPreviousLocationsCountParams,
+  ApiV1RouteDistanceKeyPreviousLocationsParams,
+  ApiV1RouteDistanceParams,
+  ApiV1RouteKeyRouteLocationsCountParams,
+  ApiV1RouteKeyRouteLocationsParams,
+  ApiV1RouteLocationCountParams,
+  ApiV1RouteLocationParams,
+  ApiV1RouteParams,
+  ApiV1VersionHistoryCountParams,
+  ApiV1VersionHistoryParams,
+  ApiV1WatchDogIgnoreEventCountParams,
+  ApiV1WatchDogIgnoreEventParams,
   GetApiV1GetApproachDtoIdParams,
   GetApiV1GetRouteViewIdParams,
   LocationDefaultLocationSaveTemplatedLocationParameters,
@@ -163,8424 +161,11868 @@ import type {
   UtahUdotAtspmDataModelsRouteDistance,
   UtahUdotAtspmDataModelsRouteLocation,
   UtahUdotAtspmDataModelsVersionHistory,
-  UtahUdotAtspmDataModelsWatchDogIgnoreEvent
+  UtahUdotAtspmDataModelsWatchDogIgnoreEvent,
 } from './aTSPMConfigurationApi.schemas'
-import { configRequest } from '../../lib/axios';
-
-
 
 /**
  * @summary Utah.Udot.Atspm.Data.Models.Detector navigation property action
  */
-export const apiVVersionApiVersionApproachKeyDetectors = (
-    key: number,
-    params?: ApiVVersionApiVersionApproachKeyDetectorsParams,
- signal?: AbortSignal
+export const apiV1ApproachKeyDetectors = (
+  key: number,
+  params?: ApiV1ApproachKeyDetectorsParams,
+  signal?: AbortSignal
 ) => {
-      
-      
-      return configRequest<UtahUdotAtspmDataModelsDetector[]>(
-      {url: `/api/v1/Approach/${key}/detectors`, method: 'GET',
-        params, signal
-    },
-      );
-    }
-  
-
-export const getApiVVersionApiVersionApproachKeyDetectorsQueryKey = (key: number,
-    params?: ApiVVersionApiVersionApproachKeyDetectorsParams,) => {
-    return [`/api/v1/Approach/${key}/detectors`, ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getApiVVersionApiVersionApproachKeyDetectorsQueryOptions = <TData = Awaited<ReturnType<typeof apiVVersionApiVersionApproachKeyDetectors>>, TError = void>(key: number,
-    params?: ApiVVersionApiVersionApproachKeyDetectorsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionApproachKeyDetectors>>, TError, TData>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getApiVVersionApiVersionApproachKeyDetectorsQueryKey(key,params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiVVersionApiVersionApproachKeyDetectors>>> = ({ signal }) => apiVVersionApiVersionApproachKeyDetectors(key,params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(key), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionApproachKeyDetectors>>, TError, TData> & { queryKey: QueryKey }
+  return configRequest<UtahUdotAtspmDataModelsDetector[]>({
+    url: `/api/v1/Approach/${key}/detectors`,
+    method: 'GET',
+    params,
+    signal,
+  })
 }
 
-export type ApiVVersionApiVersionApproachKeyDetectorsQueryResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionApproachKeyDetectors>>>
-export type ApiVVersionApiVersionApproachKeyDetectorsQueryError = void
-
-
-/**
- * @summary Utah.Udot.Atspm.Data.Models.Detector navigation property action
- */
-
-export function useApiVVersionApiVersionApproachKeyDetectors<TData = Awaited<ReturnType<typeof apiVVersionApiVersionApproachKeyDetectors>>, TError = void>(
- key: number,
-    params?: ApiVVersionApiVersionApproachKeyDetectorsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionApproachKeyDetectors>>, TError, TData>, }
-
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
-
-  const queryOptions = getApiVVersionApiVersionApproachKeyDetectorsQueryOptions(key,params,options)
-
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+export const getApiV1ApproachKeyDetectorsQueryKey = (
+  key: number,
+  params?: ApiV1ApproachKeyDetectorsParams
+) => {
+  return [
+    `/api/v1/Approach/${key}/detectors`,
+    ...(params ? [params] : []),
+  ] as const
 }
 
-
-
-
-/**
- * @summary Utah.Udot.Atspm.Data.Models.Detector navigation property action
- */
-export const apiVVersionApiVersionApproachKeyDetectorsCount = (
-    key: number,
-    params?: ApiVVersionApiVersionApproachKeyDetectorsCountParams,
- signal?: AbortSignal
+export const getApiV1ApproachKeyDetectorsQueryOptions = <
+  TData = Awaited<ReturnType<typeof apiV1ApproachKeyDetectors>>,
+  TError = void,
+>(
+  key: number,
+  params?: ApiV1ApproachKeyDetectorsParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1ApproachKeyDetectors>>,
+      TError,
+      TData
+    >
+  }
 ) => {
-      
-      
-      return configRequest<UtahUdotAtspmDataModelsDetector[]>(
-      {url: `/api/v1/Approach/${key}/detectors/$count`, method: 'GET',
-        params, signal
-    },
-      );
-    }
-  
+  const { query: queryOptions } = options ?? {}
 
-export const getApiVVersionApiVersionApproachKeyDetectorsCountQueryKey = (key: number,
-    params?: ApiVVersionApiVersionApproachKeyDetectorsCountParams,) => {
-    return [`/api/v1/Approach/${key}/detectors/$count`, ...(params ? [params]: [])] as const;
-    }
+  const queryKey =
+    queryOptions?.queryKey ?? getApiV1ApproachKeyDetectorsQueryKey(key, params)
 
-    
-export const getApiVVersionApiVersionApproachKeyDetectorsCountQueryOptions = <TData = Awaited<ReturnType<typeof apiVVersionApiVersionApproachKeyDetectorsCount>>, TError = void>(key: number,
-    params?: ApiVVersionApiVersionApproachKeyDetectorsCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionApproachKeyDetectorsCount>>, TError, TData>, }
-) => {
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof apiV1ApproachKeyDetectors>>
+  > = ({ signal }) => apiV1ApproachKeyDetectors(key, params, signal)
 
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getApiVVersionApiVersionApproachKeyDetectorsCountQueryKey(key,params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiVVersionApiVersionApproachKeyDetectorsCount>>> = ({ signal }) => apiVVersionApiVersionApproachKeyDetectorsCount(key,params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(key), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionApproachKeyDetectorsCount>>, TError, TData> & { queryKey: QueryKey }
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!key,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof apiV1ApproachKeyDetectors>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
 }
 
-export type ApiVVersionApiVersionApproachKeyDetectorsCountQueryResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionApproachKeyDetectorsCount>>>
-export type ApiVVersionApiVersionApproachKeyDetectorsCountQueryError = void
-
+export type ApiV1ApproachKeyDetectorsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1ApproachKeyDetectors>>
+>
+export type ApiV1ApproachKeyDetectorsQueryError = void
 
 /**
  * @summary Utah.Udot.Atspm.Data.Models.Detector navigation property action
  */
 
-export function useApiVVersionApiVersionApproachKeyDetectorsCount<TData = Awaited<ReturnType<typeof apiVVersionApiVersionApproachKeyDetectorsCount>>, TError = void>(
- key: number,
-    params?: ApiVVersionApiVersionApproachKeyDetectorsCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionApproachKeyDetectorsCount>>, TError, TData>, }
+export function useApiV1ApproachKeyDetectors<
+  TData = Awaited<ReturnType<typeof apiV1ApproachKeyDetectors>>,
+  TError = void,
+>(
+  key: number,
+  params?: ApiV1ApproachKeyDetectorsParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1ApproachKeyDetectors>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getApiV1ApproachKeyDetectorsQueryOptions(
+    key,
+    params,
+    options
+  )
 
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
 
-  const queryOptions = getApiVVersionApiVersionApproachKeyDetectorsCountQueryOptions(key,params,options)
+  query.queryKey = queryOptions.queryKey
 
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+  return query
 }
 
+/**
+ * @summary Utah.Udot.Atspm.Data.Models.Detector navigation property action
+ */
+export const apiV1ApproachKeyDetectorsCount = (
+  key: number,
+  params?: ApiV1ApproachKeyDetectorsCountParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<UtahUdotAtspmDataModelsDetector[]>({
+    url: `/api/v1/Approach/${key}/detectors/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
 
+export const getApiV1ApproachKeyDetectorsCountQueryKey = (
+  key: number,
+  params?: ApiV1ApproachKeyDetectorsCountParams
+) => {
+  return [
+    `/api/v1/Approach/${key}/detectors/$count`,
+    ...(params ? [params] : []),
+  ] as const
+}
 
+export const getApiV1ApproachKeyDetectorsCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof apiV1ApproachKeyDetectorsCount>>,
+  TError = void,
+>(
+  key: number,
+  params?: ApiV1ApproachKeyDetectorsCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1ApproachKeyDetectorsCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getApiV1ApproachKeyDetectorsCountQueryKey(key, params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof apiV1ApproachKeyDetectorsCount>>
+  > = ({ signal }) => apiV1ApproachKeyDetectorsCount(key, params, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!key,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof apiV1ApproachKeyDetectorsCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type ApiV1ApproachKeyDetectorsCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1ApproachKeyDetectorsCount>>
+>
+export type ApiV1ApproachKeyDetectorsCountQueryError = void
+
+/**
+ * @summary Utah.Udot.Atspm.Data.Models.Detector navigation property action
+ */
+
+export function useApiV1ApproachKeyDetectorsCount<
+  TData = Awaited<ReturnType<typeof apiV1ApproachKeyDetectorsCount>>,
+  TError = void,
+>(
+  key: number,
+  params?: ApiV1ApproachKeyDetectorsCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1ApproachKeyDetectorsCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getApiV1ApproachKeyDetectorsCountQueryOptions(
+    key,
+    params,
+    options
+  )
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
 
 export const postApiV1UpsertApproach = (
-    utahUdotAtspmConfigApiModelsApproachDto: UtahUdotAtspmConfigApiModelsApproachDto,
-    params: PostApiV1UpsertApproachParams,
- ) => {
-      
-      
-      return configRequest<void>(
-      {url: `/api/v1/UpsertApproach`, method: 'POST',
-      headers: {'Content-Type': 'application/json;odata.metadata=minimal;odata.streaming=true', },
-      data: utahUdotAtspmConfigApiModelsApproachDto,
-        params
-    },
-      );
-    }
-  
-
-
-export const getPostApiV1UpsertApproachMutationOptions = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1UpsertApproach>>, TError,{data: UtahUdotAtspmConfigApiModelsApproachDto;params: PostApiV1UpsertApproachParams}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof postApiV1UpsertApproach>>, TError,{data: UtahUdotAtspmConfigApiModelsApproachDto;params: PostApiV1UpsertApproachParams}, TContext> => {
-const {mutation: mutationOptions} = options ?? {};
-
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiV1UpsertApproach>>, {data: UtahUdotAtspmConfigApiModelsApproachDto;params: PostApiV1UpsertApproachParams}> = (props) => {
-          const {data,params} = props ?? {};
-
-          return  postApiV1UpsertApproach(data,params,)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type PostApiV1UpsertApproachMutationResult = NonNullable<Awaited<ReturnType<typeof postApiV1UpsertApproach>>>
-    export type PostApiV1UpsertApproachMutationBody = UtahUdotAtspmConfigApiModelsApproachDto
-    export type PostApiV1UpsertApproachMutationError = void
-
-    export const usePostApiV1UpsertApproach = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1UpsertApproach>>, TError,{data: UtahUdotAtspmConfigApiModelsApproachDto;params: PostApiV1UpsertApproachParams}, TContext>, }
-): UseMutationResult<
-        Awaited<ReturnType<typeof postApiV1UpsertApproach>>,
-        TError,
-        {data: UtahUdotAtspmConfigApiModelsApproachDto;params: PostApiV1UpsertApproachParams},
-        TContext
-      > => {
-
-      const mutationOptions = getPostApiV1UpsertApproachMutationOptions(options);
-
-      return useMutation(mutationOptions);
-    }
-    
-export const getApiV1GetApproachDtoId = (
-    id: number,
-    params: GetApiV1GetApproachDtoIdParams,
- signal?: AbortSignal
+  utahUdotAtspmConfigApiModelsApproachDto: UtahUdotAtspmConfigApiModelsApproachDto,
+  params: PostApiV1UpsertApproachParams
 ) => {
-      
-      
-      return configRequest<void>(
-      {url: `/api/v1/GetApproachDto/${id}`, method: 'GET',
-        params, signal
+  return configRequest<void>({
+    url: `/api/v1/UpsertApproach`,
+    method: 'POST',
+    headers: {
+      'Content-Type':
+        'application/json;odata.metadata=minimal;odata.streaming=true',
     },
-      );
-    }
-  
-
-export const getGetApiV1GetApproachDtoIdQueryKey = (id: number,
-    params: GetApiV1GetApproachDtoIdParams,) => {
-    return [`/api/v1/GetApproachDto/${id}`, ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getGetApiV1GetApproachDtoIdQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1GetApproachDtoId>>, TError = void>(id: number,
-    params: GetApiV1GetApproachDtoIdParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getApiV1GetApproachDtoId>>, TError, TData>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getGetApiV1GetApproachDtoIdQueryKey(id,params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1GetApproachDtoId>>> = ({ signal }) => getApiV1GetApproachDtoId(id,params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1GetApproachDtoId>>, TError, TData> & { queryKey: QueryKey }
+    data: utahUdotAtspmConfigApiModelsApproachDto,
+    params,
+  })
 }
 
-export type GetApiV1GetApproachDtoIdQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1GetApproachDtoId>>>
+export const getPostApiV1UpsertApproachMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postApiV1UpsertApproach>>,
+    TError,
+    {
+      data: UtahUdotAtspmConfigApiModelsApproachDto
+      params: PostApiV1UpsertApproachParams
+    },
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof postApiV1UpsertApproach>>,
+  TError,
+  {
+    data: UtahUdotAtspmConfigApiModelsApproachDto
+    params: PostApiV1UpsertApproachParams
+  },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof postApiV1UpsertApproach>>,
+    {
+      data: UtahUdotAtspmConfigApiModelsApproachDto
+      params: PostApiV1UpsertApproachParams
+    }
+  > = (props) => {
+    const { data, params } = props ?? {}
+
+    return postApiV1UpsertApproach(data, params)
+  }
+
+  return { mutationFn, ...mutationOptions }
+}
+
+export type PostApiV1UpsertApproachMutationResult = NonNullable<
+  Awaited<ReturnType<typeof postApiV1UpsertApproach>>
+>
+export type PostApiV1UpsertApproachMutationBody =
+  UtahUdotAtspmConfigApiModelsApproachDto
+export type PostApiV1UpsertApproachMutationError = void
+
+export const usePostApiV1UpsertApproach = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postApiV1UpsertApproach>>,
+    TError,
+    {
+      data: UtahUdotAtspmConfigApiModelsApproachDto
+      params: PostApiV1UpsertApproachParams
+    },
+    TContext
+  >
+}): UseMutationResult<
+  Awaited<ReturnType<typeof postApiV1UpsertApproach>>,
+  TError,
+  {
+    data: UtahUdotAtspmConfigApiModelsApproachDto
+    params: PostApiV1UpsertApproachParams
+  },
+  TContext
+> => {
+  const mutationOptions = getPostApiV1UpsertApproachMutationOptions(options)
+
+  return useMutation(mutationOptions)
+}
+
+export const getApiV1GetApproachDtoId = (
+  id: number,
+  params: GetApiV1GetApproachDtoIdParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<void>({
+    url: `/api/v1/GetApproachDto/${id}`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getGetApiV1GetApproachDtoIdQueryKey = (
+  id: number,
+  params: GetApiV1GetApproachDtoIdParams
+) => {
+  return [`/api/v1/GetApproachDto/${id}`, ...(params ? [params] : [])] as const
+}
+
+export const getGetApiV1GetApproachDtoIdQueryOptions = <
+  TData = Awaited<ReturnType<typeof getApiV1GetApproachDtoId>>,
+  TError = void,
+>(
+  id: number,
+  params: GetApiV1GetApproachDtoIdParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getApiV1GetApproachDtoId>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ?? getGetApiV1GetApproachDtoIdQueryKey(id, params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getApiV1GetApproachDtoId>>
+  > = ({ signal }) => getApiV1GetApproachDtoId(id, params, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!id,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getApiV1GetApproachDtoId>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type GetApiV1GetApproachDtoIdQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getApiV1GetApproachDtoId>>
+>
 export type GetApiV1GetApproachDtoIdQueryError = void
 
+export function useGetApiV1GetApproachDtoId<
+  TData = Awaited<ReturnType<typeof getApiV1GetApproachDtoId>>,
+  TError = void,
+>(
+  id: number,
+  params: GetApiV1GetApproachDtoIdParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getApiV1GetApproachDtoId>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetApiV1GetApproachDtoIdQueryOptions(
+    id,
+    params,
+    options
+  )
 
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
 
-export function useGetApiV1GetApproachDtoId<TData = Awaited<ReturnType<typeof getApiV1GetApproachDtoId>>, TError = void>(
- id: number,
-    params: GetApiV1GetApproachDtoIdParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getApiV1GetApproachDtoId>>, TError, TData>, }
+  query.queryKey = queryOptions.queryKey
 
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
-
-  const queryOptions = getGetApiV1GetApproachDtoIdQueryOptions(id,params,options)
-
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+  return query
 }
-
-
-
 
 /**
  * @summary Collection of objects from oData query.
  */
-export const apiVVersionApiVersionApproach = (
-    params?: ApiVVersionApiVersionApproachParams,
- signal?: AbortSignal
+export const apiV1Approach = (
+  params?: ApiV1ApproachParams,
+  signal?: AbortSignal
 ) => {
-      
-      
-      return configRequest<UtahUdotAtspmDataModelsApproach[]>(
-      {url: `/api/v1/Approach`, method: 'GET',
-        params, signal
+  return configRequest<UtahUdotAtspmDataModelsApproach[]>({
+    url: `/api/v1/Approach`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getApiV1ApproachQueryKey = (params?: ApiV1ApproachParams) => {
+  return [`/api/v1/Approach`, ...(params ? [params] : [])] as const
+}
+
+export const getApiV1ApproachQueryOptions = <
+  TData = Awaited<ReturnType<typeof apiV1Approach>>,
+  TError = void,
+>(
+  params?: ApiV1ApproachParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1Approach>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey = queryOptions?.queryKey ?? getApiV1ApproachQueryKey(params)
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof apiV1Approach>>> = ({
+    signal,
+  }) => apiV1Approach(params, signal)
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof apiV1Approach>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type ApiV1ApproachQueryResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1Approach>>
+>
+export type ApiV1ApproachQueryError = void
+
+/**
+ * @summary Collection of objects from oData query.
+ */
+
+export function useApiV1Approach<
+  TData = Awaited<ReturnType<typeof apiV1Approach>>,
+  TError = void,
+>(
+  params?: ApiV1ApproachParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1Approach>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getApiV1ApproachQueryOptions(params, options)
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+export const apiV1ApproachKey = (
+  key: number,
+  utahUdotAtspmDataModelsApproach: UtahUdotAtspmDataModelsApproach,
+  params?: ApiV1ApproachKeyParams
+) => {
+  return configRequest<void>({
+    url: `/api/v1/Approach/${key}`,
+    method: 'PUT',
+    headers: {
+      'Content-Type':
+        'application/json;odata.metadata=minimal;odata.streaming=true',
     },
-      );
-    }
-  
-
-export const getApiVVersionApiVersionApproachQueryKey = (params?: ApiVVersionApiVersionApproachParams,) => {
-    return [`/api/v1/Approach`, ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getApiVVersionApiVersionApproachQueryOptions = <TData = Awaited<ReturnType<typeof apiVVersionApiVersionApproach>>, TError = void>(params?: ApiVVersionApiVersionApproachParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionApproach>>, TError, TData>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getApiVVersionApiVersionApproachQueryKey(params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiVVersionApiVersionApproach>>> = ({ signal }) => apiVVersionApiVersionApproach(params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionApproach>>, TError, TData> & { queryKey: QueryKey }
+    data: utahUdotAtspmDataModelsApproach,
+    params,
+  })
 }
 
-export type ApiVVersionApiVersionApproachQueryResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionApproach>>>
-export type ApiVVersionApiVersionApproachQueryError = void
-
-
-/**
- * @summary Collection of objects from oData query.
- */
-
-export function useApiVVersionApiVersionApproach<TData = Awaited<ReturnType<typeof apiVVersionApiVersionApproach>>, TError = void>(
- params?: ApiVVersionApiVersionApproachParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionApproach>>, TError, TData>, }
-
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
-
-  const queryOptions = getApiVVersionApiVersionApproachQueryOptions(params,options)
-
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
-}
-
-
-
-
-export const apiVVersionApiVersionApproachKey = (
-    key: number,
-    utahUdotAtspmDataModelsApproach: UtahUdotAtspmDataModelsApproach,
-    params?: ApiVVersionApiVersionApproachKeyParams,
- ) => {
-      
-      
-      return configRequest<void>(
-      {url: `/api/v1/Approach/${key}`, method: 'PUT',
-      headers: {'Content-Type': 'application/json;odata.metadata=minimal;odata.streaming=true', },
-      data: utahUdotAtspmDataModelsApproach,
-        params
+export const getApiV1ApproachKeyMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1ApproachKey>>,
+    TError,
+    {
+      key: number
+      data: UtahUdotAtspmDataModelsApproach
+      params?: ApiV1ApproachKeyParams
     },
-      );
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof apiV1ApproachKey>>,
+  TError,
+  {
+    key: number
+    data: UtahUdotAtspmDataModelsApproach
+    params?: ApiV1ApproachKeyParams
+  },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof apiV1ApproachKey>>,
+    {
+      key: number
+      data: UtahUdotAtspmDataModelsApproach
+      params?: ApiV1ApproachKeyParams
     }
-  
+  > = (props) => {
+    const { key, data, params } = props ?? {}
 
+    return apiV1ApproachKey(key, data, params)
+  }
 
-export const getApiVVersionApiVersionApproachKeyMutationOptions = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionApproachKey>>, TError,{key: number;data: UtahUdotAtspmDataModelsApproach;params?: ApiVVersionApiVersionApproachKeyParams}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionApproachKey>>, TError,{key: number;data: UtahUdotAtspmDataModelsApproach;params?: ApiVVersionApiVersionApproachKeyParams}, TContext> => {
-const {mutation: mutationOptions} = options ?? {};
+  return { mutationFn, ...mutationOptions }
+}
 
-      
+export type ApiV1ApproachKeyMutationResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1ApproachKey>>
+>
+export type ApiV1ApproachKeyMutationBody = UtahUdotAtspmDataModelsApproach
+export type ApiV1ApproachKeyMutationError = void
 
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof apiVVersionApiVersionApproachKey>>, {key: number;data: UtahUdotAtspmDataModelsApproach;params?: ApiVVersionApiVersionApproachKeyParams}> = (props) => {
-          const {key,data,params} = props ?? {};
-
-          return  apiVVersionApiVersionApproachKey(key,data,params,)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type ApiVVersionApiVersionApproachKeyMutationResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionApproachKey>>>
-    export type ApiVVersionApiVersionApproachKeyMutationBody = UtahUdotAtspmDataModelsApproach
-    export type ApiVVersionApiVersionApproachKeyMutationError = void
-
-    export const useApiVVersionApiVersionApproachKey = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionApproachKey>>, TError,{key: number;data: UtahUdotAtspmDataModelsApproach;params?: ApiVVersionApiVersionApproachKeyParams}, TContext>, }
-): UseMutationResult<
-        Awaited<ReturnType<typeof apiVVersionApiVersionApproachKey>>,
-        TError,
-        {key: number;data: UtahUdotAtspmDataModelsApproach;params?: ApiVVersionApiVersionApproachKeyParams},
-        TContext
-      > => {
-
-      const mutationOptions = getApiVVersionApiVersionApproachKeyMutationOptions(options);
-
-      return useMutation(mutationOptions);
-    }
-    
-/**
- * @summary Collection of objects from oData query.
- */
-export const apiVVersionApiVersionApproachCount = (
-    params?: ApiVVersionApiVersionApproachCountParams,
- signal?: AbortSignal
-) => {
-      
-      
-      return configRequest<UtahUdotAtspmDataModelsApproach[]>(
-      {url: `/api/v1/Approach/$count`, method: 'GET',
-        params, signal
+export const useApiV1ApproachKey = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1ApproachKey>>,
+    TError,
+    {
+      key: number
+      data: UtahUdotAtspmDataModelsApproach
+      params?: ApiV1ApproachKeyParams
     },
-      );
-    }
-  
+    TContext
+  >
+}): UseMutationResult<
+  Awaited<ReturnType<typeof apiV1ApproachKey>>,
+  TError,
+  {
+    key: number
+    data: UtahUdotAtspmDataModelsApproach
+    params?: ApiV1ApproachKeyParams
+  },
+  TContext
+> => {
+  const mutationOptions = getApiV1ApproachKeyMutationOptions(options)
 
-export const getApiVVersionApiVersionApproachCountQueryKey = (params?: ApiVVersionApiVersionApproachCountParams,) => {
-    return [`/api/v1/Approach/$count`, ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getApiVVersionApiVersionApproachCountQueryOptions = <TData = Awaited<ReturnType<typeof apiVVersionApiVersionApproachCount>>, TError = void>(params?: ApiVVersionApiVersionApproachCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionApproachCount>>, TError, TData>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getApiVVersionApiVersionApproachCountQueryKey(params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiVVersionApiVersionApproachCount>>> = ({ signal }) => apiVVersionApiVersionApproachCount(params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionApproachCount>>, TError, TData> & { queryKey: QueryKey }
+  return useMutation(mutationOptions)
 }
 
-export type ApiVVersionApiVersionApproachCountQueryResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionApproachCount>>>
-export type ApiVVersionApiVersionApproachCountQueryError = void
+/**
+ * @summary Collection of objects from oData query.
+ */
+export const apiV1ApproachCount = (
+  params?: ApiV1ApproachCountParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<UtahUdotAtspmDataModelsApproach[]>({
+    url: `/api/v1/Approach/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
 
+export const getApiV1ApproachCountQueryKey = (
+  params?: ApiV1ApproachCountParams
+) => {
+  return [`/api/v1/Approach/$count`, ...(params ? [params] : [])] as const
+}
+
+export const getApiV1ApproachCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof apiV1ApproachCount>>,
+  TError = void,
+>(
+  params?: ApiV1ApproachCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1ApproachCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ?? getApiV1ApproachCountQueryKey(params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof apiV1ApproachCount>>
+  > = ({ signal }) => apiV1ApproachCount(params, signal)
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof apiV1ApproachCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type ApiV1ApproachCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1ApproachCount>>
+>
+export type ApiV1ApproachCountQueryError = void
 
 /**
  * @summary Collection of objects from oData query.
  */
 
-export function useApiVVersionApiVersionApproachCount<TData = Awaited<ReturnType<typeof apiVVersionApiVersionApproachCount>>, TError = void>(
- params?: ApiVVersionApiVersionApproachCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionApproachCount>>, TError, TData>, }
+export function useApiV1ApproachCount<
+  TData = Awaited<ReturnType<typeof apiV1ApproachCount>>,
+  TError = void,
+>(
+  params?: ApiV1ApproachCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1ApproachCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getApiV1ApproachCountQueryOptions(params, options)
 
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
 
-  const queryOptions = getApiVVersionApiVersionApproachCountQueryOptions(params,options)
+  query.queryKey = queryOptions.queryKey
 
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+  return query
 }
-
-
-
 
 /**
  * @summary Utah.Udot.Atspm.Data.Models.Location navigation property action
  */
-export const apiVVersionApiVersionAreaKeyLocations = (
-    key: number,
-    params?: ApiVVersionApiVersionAreaKeyLocationsParams,
- signal?: AbortSignal
+export const apiV1AreaKeyLocations = (
+  key: number,
+  params?: ApiV1AreaKeyLocationsParams,
+  signal?: AbortSignal
 ) => {
-      
-      
-      return configRequest<UtahUdotAtspmDataModelsLocation[]>(
-      {url: `/api/v1/Area/${key}/locations`, method: 'GET',
-        params, signal
-    },
-      );
-    }
-  
-
-export const getApiVVersionApiVersionAreaKeyLocationsQueryKey = (key: number,
-    params?: ApiVVersionApiVersionAreaKeyLocationsParams,) => {
-    return [`/api/v1/Area/${key}/locations`, ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getApiVVersionApiVersionAreaKeyLocationsQueryOptions = <TData = Awaited<ReturnType<typeof apiVVersionApiVersionAreaKeyLocations>>, TError = void>(key: number,
-    params?: ApiVVersionApiVersionAreaKeyLocationsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionAreaKeyLocations>>, TError, TData>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getApiVVersionApiVersionAreaKeyLocationsQueryKey(key,params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiVVersionApiVersionAreaKeyLocations>>> = ({ signal }) => apiVVersionApiVersionAreaKeyLocations(key,params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(key), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionAreaKeyLocations>>, TError, TData> & { queryKey: QueryKey }
+  return configRequest<UtahUdotAtspmDataModelsLocation[]>({
+    url: `/api/v1/Area/${key}/locations`,
+    method: 'GET',
+    params,
+    signal,
+  })
 }
 
-export type ApiVVersionApiVersionAreaKeyLocationsQueryResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionAreaKeyLocations>>>
-export type ApiVVersionApiVersionAreaKeyLocationsQueryError = void
+export const getApiV1AreaKeyLocationsQueryKey = (
+  key: number,
+  params?: ApiV1AreaKeyLocationsParams
+) => {
+  return [`/api/v1/Area/${key}/locations`, ...(params ? [params] : [])] as const
+}
 
+export const getApiV1AreaKeyLocationsQueryOptions = <
+  TData = Awaited<ReturnType<typeof apiV1AreaKeyLocations>>,
+  TError = void,
+>(
+  key: number,
+  params?: ApiV1AreaKeyLocationsParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1AreaKeyLocations>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ?? getApiV1AreaKeyLocationsQueryKey(key, params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof apiV1AreaKeyLocations>>
+  > = ({ signal }) => apiV1AreaKeyLocations(key, params, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!key,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof apiV1AreaKeyLocations>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type ApiV1AreaKeyLocationsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1AreaKeyLocations>>
+>
+export type ApiV1AreaKeyLocationsQueryError = void
 
 /**
  * @summary Utah.Udot.Atspm.Data.Models.Location navigation property action
  */
 
-export function useApiVVersionApiVersionAreaKeyLocations<TData = Awaited<ReturnType<typeof apiVVersionApiVersionAreaKeyLocations>>, TError = void>(
- key: number,
-    params?: ApiVVersionApiVersionAreaKeyLocationsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionAreaKeyLocations>>, TError, TData>, }
+export function useApiV1AreaKeyLocations<
+  TData = Awaited<ReturnType<typeof apiV1AreaKeyLocations>>,
+  TError = void,
+>(
+  key: number,
+  params?: ApiV1AreaKeyLocationsParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1AreaKeyLocations>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getApiV1AreaKeyLocationsQueryOptions(
+    key,
+    params,
+    options
+  )
 
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
 
-  const queryOptions = getApiVVersionApiVersionAreaKeyLocationsQueryOptions(key,params,options)
+  query.queryKey = queryOptions.queryKey
 
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+  return query
 }
-
-
-
 
 /**
  * @summary Utah.Udot.Atspm.Data.Models.Location navigation property action
  */
-export const apiVVersionApiVersionAreaKeyLocationsCount = (
-    key: number,
-    params?: ApiVVersionApiVersionAreaKeyLocationsCountParams,
- signal?: AbortSignal
+export const apiV1AreaKeyLocationsCount = (
+  key: number,
+  params?: ApiV1AreaKeyLocationsCountParams,
+  signal?: AbortSignal
 ) => {
-      
-      
-      return configRequest<UtahUdotAtspmDataModelsLocation[]>(
-      {url: `/api/v1/Area/${key}/locations/$count`, method: 'GET',
-        params, signal
-    },
-      );
-    }
-  
-
-export const getApiVVersionApiVersionAreaKeyLocationsCountQueryKey = (key: number,
-    params?: ApiVVersionApiVersionAreaKeyLocationsCountParams,) => {
-    return [`/api/v1/Area/${key}/locations/$count`, ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getApiVVersionApiVersionAreaKeyLocationsCountQueryOptions = <TData = Awaited<ReturnType<typeof apiVVersionApiVersionAreaKeyLocationsCount>>, TError = void>(key: number,
-    params?: ApiVVersionApiVersionAreaKeyLocationsCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionAreaKeyLocationsCount>>, TError, TData>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getApiVVersionApiVersionAreaKeyLocationsCountQueryKey(key,params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiVVersionApiVersionAreaKeyLocationsCount>>> = ({ signal }) => apiVVersionApiVersionAreaKeyLocationsCount(key,params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(key), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionAreaKeyLocationsCount>>, TError, TData> & { queryKey: QueryKey }
+  return configRequest<UtahUdotAtspmDataModelsLocation[]>({
+    url: `/api/v1/Area/${key}/locations/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
 }
 
-export type ApiVVersionApiVersionAreaKeyLocationsCountQueryResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionAreaKeyLocationsCount>>>
-export type ApiVVersionApiVersionAreaKeyLocationsCountQueryError = void
+export const getApiV1AreaKeyLocationsCountQueryKey = (
+  key: number,
+  params?: ApiV1AreaKeyLocationsCountParams
+) => {
+  return [
+    `/api/v1/Area/${key}/locations/$count`,
+    ...(params ? [params] : []),
+  ] as const
+}
 
+export const getApiV1AreaKeyLocationsCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof apiV1AreaKeyLocationsCount>>,
+  TError = void,
+>(
+  key: number,
+  params?: ApiV1AreaKeyLocationsCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1AreaKeyLocationsCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ?? getApiV1AreaKeyLocationsCountQueryKey(key, params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof apiV1AreaKeyLocationsCount>>
+  > = ({ signal }) => apiV1AreaKeyLocationsCount(key, params, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!key,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof apiV1AreaKeyLocationsCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type ApiV1AreaKeyLocationsCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1AreaKeyLocationsCount>>
+>
+export type ApiV1AreaKeyLocationsCountQueryError = void
 
 /**
  * @summary Utah.Udot.Atspm.Data.Models.Location navigation property action
  */
 
-export function useApiVVersionApiVersionAreaKeyLocationsCount<TData = Awaited<ReturnType<typeof apiVVersionApiVersionAreaKeyLocationsCount>>, TError = void>(
- key: number,
-    params?: ApiVVersionApiVersionAreaKeyLocationsCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionAreaKeyLocationsCount>>, TError, TData>, }
+export function useApiV1AreaKeyLocationsCount<
+  TData = Awaited<ReturnType<typeof apiV1AreaKeyLocationsCount>>,
+  TError = void,
+>(
+  key: number,
+  params?: ApiV1AreaKeyLocationsCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1AreaKeyLocationsCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getApiV1AreaKeyLocationsCountQueryOptions(
+    key,
+    params,
+    options
+  )
 
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
 
-  const queryOptions = getApiVVersionApiVersionAreaKeyLocationsCountQueryOptions(key,params,options)
+  query.queryKey = queryOptions.queryKey
 
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+  return query
 }
-
-
-
 
 /**
  * @summary Collection of objects from oData query.
  */
-export const apiVVersionApiVersionArea = (
-    params?: ApiVVersionApiVersionAreaParams,
- signal?: AbortSignal
+export const apiV1Area = (params?: ApiV1AreaParams, signal?: AbortSignal) => {
+  return configRequest<UtahUdotAtspmDataModelsArea[]>({
+    url: `/api/v1/Area`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getApiV1AreaQueryKey = (params?: ApiV1AreaParams) => {
+  return [`/api/v1/Area`, ...(params ? [params] : [])] as const
+}
+
+export const getApiV1AreaQueryOptions = <
+  TData = Awaited<ReturnType<typeof apiV1Area>>,
+  TError = void,
+>(
+  params?: ApiV1AreaParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1Area>>,
+      TError,
+      TData
+    >
+  }
 ) => {
-      
-      
-      return configRequest<UtahUdotAtspmDataModelsArea[]>(
-      {url: `/api/v1/Area`, method: 'GET',
-        params, signal
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey = queryOptions?.queryKey ?? getApiV1AreaQueryKey(params)
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof apiV1Area>>> = ({
+    signal,
+  }) => apiV1Area(params, signal)
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof apiV1Area>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type ApiV1AreaQueryResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1Area>>
+>
+export type ApiV1AreaQueryError = void
+
+/**
+ * @summary Collection of objects from oData query.
+ */
+
+export function useApiV1Area<
+  TData = Awaited<ReturnType<typeof apiV1Area>>,
+  TError = void,
+>(
+  params?: ApiV1AreaParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1Area>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getApiV1AreaQueryOptions(params, options)
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+export const apiV1AreaKey = (
+  key: number,
+  utahUdotAtspmDataModelsArea: UtahUdotAtspmDataModelsArea,
+  params?: ApiV1AreaKeyParams
+) => {
+  return configRequest<void>({
+    url: `/api/v1/Area/${key}`,
+    method: 'PUT',
+    headers: {
+      'Content-Type':
+        'application/json;odata.metadata=minimal;odata.streaming=true',
     },
-      );
-    }
-  
-
-export const getApiVVersionApiVersionAreaQueryKey = (params?: ApiVVersionApiVersionAreaParams,) => {
-    return [`/api/v1/Area`, ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getApiVVersionApiVersionAreaQueryOptions = <TData = Awaited<ReturnType<typeof apiVVersionApiVersionArea>>, TError = void>(params?: ApiVVersionApiVersionAreaParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionArea>>, TError, TData>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getApiVVersionApiVersionAreaQueryKey(params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiVVersionApiVersionArea>>> = ({ signal }) => apiVVersionApiVersionArea(params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionArea>>, TError, TData> & { queryKey: QueryKey }
+    data: utahUdotAtspmDataModelsArea,
+    params,
+  })
 }
 
-export type ApiVVersionApiVersionAreaQueryResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionArea>>>
-export type ApiVVersionApiVersionAreaQueryError = void
-
-
-/**
- * @summary Collection of objects from oData query.
- */
-
-export function useApiVVersionApiVersionArea<TData = Awaited<ReturnType<typeof apiVVersionApiVersionArea>>, TError = void>(
- params?: ApiVVersionApiVersionAreaParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionArea>>, TError, TData>, }
-
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
-
-  const queryOptions = getApiVVersionApiVersionAreaQueryOptions(params,options)
-
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
-}
-
-
-
-
-export const apiVVersionApiVersionAreaKey = (
-    key: number,
-    utahUdotAtspmDataModelsArea: UtahUdotAtspmDataModelsArea,
-    params?: ApiVVersionApiVersionAreaKeyParams,
- ) => {
-      
-      
-      return configRequest<void>(
-      {url: `/api/v1/Area/${key}`, method: 'PUT',
-      headers: {'Content-Type': 'application/json;odata.metadata=minimal;odata.streaming=true', },
-      data: utahUdotAtspmDataModelsArea,
-        params
+export const getApiV1AreaKeyMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1AreaKey>>,
+    TError,
+    {
+      key: number
+      data: UtahUdotAtspmDataModelsArea
+      params?: ApiV1AreaKeyParams
     },
-      );
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof apiV1AreaKey>>,
+  TError,
+  {
+    key: number
+    data: UtahUdotAtspmDataModelsArea
+    params?: ApiV1AreaKeyParams
+  },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof apiV1AreaKey>>,
+    {
+      key: number
+      data: UtahUdotAtspmDataModelsArea
+      params?: ApiV1AreaKeyParams
     }
-  
+  > = (props) => {
+    const { key, data, params } = props ?? {}
 
+    return apiV1AreaKey(key, data, params)
+  }
 
-export const getApiVVersionApiVersionAreaKeyMutationOptions = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionAreaKey>>, TError,{key: number;data: UtahUdotAtspmDataModelsArea;params?: ApiVVersionApiVersionAreaKeyParams}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionAreaKey>>, TError,{key: number;data: UtahUdotAtspmDataModelsArea;params?: ApiVVersionApiVersionAreaKeyParams}, TContext> => {
-const {mutation: mutationOptions} = options ?? {};
+  return { mutationFn, ...mutationOptions }
+}
 
-      
+export type ApiV1AreaKeyMutationResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1AreaKey>>
+>
+export type ApiV1AreaKeyMutationBody = UtahUdotAtspmDataModelsArea
+export type ApiV1AreaKeyMutationError = void
 
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof apiVVersionApiVersionAreaKey>>, {key: number;data: UtahUdotAtspmDataModelsArea;params?: ApiVVersionApiVersionAreaKeyParams}> = (props) => {
-          const {key,data,params} = props ?? {};
-
-          return  apiVVersionApiVersionAreaKey(key,data,params,)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type ApiVVersionApiVersionAreaKeyMutationResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionAreaKey>>>
-    export type ApiVVersionApiVersionAreaKeyMutationBody = UtahUdotAtspmDataModelsArea
-    export type ApiVVersionApiVersionAreaKeyMutationError = void
-
-    export const useApiVVersionApiVersionAreaKey = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionAreaKey>>, TError,{key: number;data: UtahUdotAtspmDataModelsArea;params?: ApiVVersionApiVersionAreaKeyParams}, TContext>, }
-): UseMutationResult<
-        Awaited<ReturnType<typeof apiVVersionApiVersionAreaKey>>,
-        TError,
-        {key: number;data: UtahUdotAtspmDataModelsArea;params?: ApiVVersionApiVersionAreaKeyParams},
-        TContext
-      > => {
-
-      const mutationOptions = getApiVVersionApiVersionAreaKeyMutationOptions(options);
-
-      return useMutation(mutationOptions);
-    }
-    
-/**
- * @summary Collection of objects from oData query.
- */
-export const apiVVersionApiVersionAreaCount = (
-    params?: ApiVVersionApiVersionAreaCountParams,
- signal?: AbortSignal
-) => {
-      
-      
-      return configRequest<UtahUdotAtspmDataModelsArea[]>(
-      {url: `/api/v1/Area/$count`, method: 'GET',
-        params, signal
+export const useApiV1AreaKey = <TError = void, TContext = unknown>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1AreaKey>>,
+    TError,
+    {
+      key: number
+      data: UtahUdotAtspmDataModelsArea
+      params?: ApiV1AreaKeyParams
     },
-      );
-    }
-  
+    TContext
+  >
+}): UseMutationResult<
+  Awaited<ReturnType<typeof apiV1AreaKey>>,
+  TError,
+  {
+    key: number
+    data: UtahUdotAtspmDataModelsArea
+    params?: ApiV1AreaKeyParams
+  },
+  TContext
+> => {
+  const mutationOptions = getApiV1AreaKeyMutationOptions(options)
 
-export const getApiVVersionApiVersionAreaCountQueryKey = (params?: ApiVVersionApiVersionAreaCountParams,) => {
-    return [`/api/v1/Area/$count`, ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getApiVVersionApiVersionAreaCountQueryOptions = <TData = Awaited<ReturnType<typeof apiVVersionApiVersionAreaCount>>, TError = void>(params?: ApiVVersionApiVersionAreaCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionAreaCount>>, TError, TData>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getApiVVersionApiVersionAreaCountQueryKey(params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiVVersionApiVersionAreaCount>>> = ({ signal }) => apiVVersionApiVersionAreaCount(params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionAreaCount>>, TError, TData> & { queryKey: QueryKey }
+  return useMutation(mutationOptions)
 }
 
-export type ApiVVersionApiVersionAreaCountQueryResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionAreaCount>>>
-export type ApiVVersionApiVersionAreaCountQueryError = void
+/**
+ * @summary Collection of objects from oData query.
+ */
+export const apiV1AreaCount = (
+  params?: ApiV1AreaCountParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<UtahUdotAtspmDataModelsArea[]>({
+    url: `/api/v1/Area/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
 
+export const getApiV1AreaCountQueryKey = (params?: ApiV1AreaCountParams) => {
+  return [`/api/v1/Area/$count`, ...(params ? [params] : [])] as const
+}
+
+export const getApiV1AreaCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof apiV1AreaCount>>,
+  TError = void,
+>(
+  params?: ApiV1AreaCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1AreaCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey = queryOptions?.queryKey ?? getApiV1AreaCountQueryKey(params)
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof apiV1AreaCount>>> = ({
+    signal,
+  }) => apiV1AreaCount(params, signal)
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof apiV1AreaCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type ApiV1AreaCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1AreaCount>>
+>
+export type ApiV1AreaCountQueryError = void
 
 /**
  * @summary Collection of objects from oData query.
  */
 
-export function useApiVVersionApiVersionAreaCount<TData = Awaited<ReturnType<typeof apiVVersionApiVersionAreaCount>>, TError = void>(
- params?: ApiVVersionApiVersionAreaCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionAreaCount>>, TError, TData>, }
+export function useApiV1AreaCount<
+  TData = Awaited<ReturnType<typeof apiV1AreaCount>>,
+  TError = void,
+>(
+  params?: ApiV1AreaCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1AreaCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getApiV1AreaCountQueryOptions(params, options)
 
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
 
-  const queryOptions = getApiVVersionApiVersionAreaCountQueryOptions(params,options)
+  query.queryKey = queryOptions.queryKey
 
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+  return query
 }
-
-
-
 
 /**
  * @summary Utah.Udot.Atspm.Data.Models.Detector navigation property action
  */
-export const apiVVersionApiVersionDetectionTypeKeyDetectors = (
-    key: number,
-    params?: ApiVVersionApiVersionDetectionTypeKeyDetectorsParams,
- signal?: AbortSignal
+export const apiV1DetectionTypeKeyDetectors = (
+  key: number,
+  params?: ApiV1DetectionTypeKeyDetectorsParams,
+  signal?: AbortSignal
 ) => {
-      
-      
-      return configRequest<UtahUdotAtspmDataModelsDetector[]>(
-      {url: `/api/v1/DetectionType/${key}/detectors`, method: 'GET',
-        params, signal
-    },
-      );
-    }
-  
-
-export const getApiVVersionApiVersionDetectionTypeKeyDetectorsQueryKey = (key: number,
-    params?: ApiVVersionApiVersionDetectionTypeKeyDetectorsParams,) => {
-    return [`/api/v1/DetectionType/${key}/detectors`, ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getApiVVersionApiVersionDetectionTypeKeyDetectorsQueryOptions = <TData = Awaited<ReturnType<typeof apiVVersionApiVersionDetectionTypeKeyDetectors>>, TError = void>(key: number,
-    params?: ApiVVersionApiVersionDetectionTypeKeyDetectorsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDetectionTypeKeyDetectors>>, TError, TData>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getApiVVersionApiVersionDetectionTypeKeyDetectorsQueryKey(key,params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiVVersionApiVersionDetectionTypeKeyDetectors>>> = ({ signal }) => apiVVersionApiVersionDetectionTypeKeyDetectors(key,params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(key), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDetectionTypeKeyDetectors>>, TError, TData> & { queryKey: QueryKey }
+  return configRequest<UtahUdotAtspmDataModelsDetector[]>({
+    url: `/api/v1/DetectionType/${key}/detectors`,
+    method: 'GET',
+    params,
+    signal,
+  })
 }
 
-export type ApiVVersionApiVersionDetectionTypeKeyDetectorsQueryResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionDetectionTypeKeyDetectors>>>
-export type ApiVVersionApiVersionDetectionTypeKeyDetectorsQueryError = void
+export const getApiV1DetectionTypeKeyDetectorsQueryKey = (
+  key: number,
+  params?: ApiV1DetectionTypeKeyDetectorsParams
+) => {
+  return [
+    `/api/v1/DetectionType/${key}/detectors`,
+    ...(params ? [params] : []),
+  ] as const
+}
 
+export const getApiV1DetectionTypeKeyDetectorsQueryOptions = <
+  TData = Awaited<ReturnType<typeof apiV1DetectionTypeKeyDetectors>>,
+  TError = void,
+>(
+  key: number,
+  params?: ApiV1DetectionTypeKeyDetectorsParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1DetectionTypeKeyDetectors>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getApiV1DetectionTypeKeyDetectorsQueryKey(key, params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof apiV1DetectionTypeKeyDetectors>>
+  > = ({ signal }) => apiV1DetectionTypeKeyDetectors(key, params, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!key,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof apiV1DetectionTypeKeyDetectors>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type ApiV1DetectionTypeKeyDetectorsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1DetectionTypeKeyDetectors>>
+>
+export type ApiV1DetectionTypeKeyDetectorsQueryError = void
 
 /**
  * @summary Utah.Udot.Atspm.Data.Models.Detector navigation property action
  */
 
-export function useApiVVersionApiVersionDetectionTypeKeyDetectors<TData = Awaited<ReturnType<typeof apiVVersionApiVersionDetectionTypeKeyDetectors>>, TError = void>(
- key: number,
-    params?: ApiVVersionApiVersionDetectionTypeKeyDetectorsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDetectionTypeKeyDetectors>>, TError, TData>, }
+export function useApiV1DetectionTypeKeyDetectors<
+  TData = Awaited<ReturnType<typeof apiV1DetectionTypeKeyDetectors>>,
+  TError = void,
+>(
+  key: number,
+  params?: ApiV1DetectionTypeKeyDetectorsParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1DetectionTypeKeyDetectors>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getApiV1DetectionTypeKeyDetectorsQueryOptions(
+    key,
+    params,
+    options
+  )
 
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
 
-  const queryOptions = getApiVVersionApiVersionDetectionTypeKeyDetectorsQueryOptions(key,params,options)
+  query.queryKey = queryOptions.queryKey
 
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+  return query
 }
-
-
-
 
 /**
  * @summary Utah.Udot.Atspm.Data.Models.Detector navigation property action
  */
-export const apiVVersionApiVersionDetectionTypeKeyDetectorsCount = (
-    key: number,
-    params?: ApiVVersionApiVersionDetectionTypeKeyDetectorsCountParams,
- signal?: AbortSignal
+export const apiV1DetectionTypeKeyDetectorsCount = (
+  key: number,
+  params?: ApiV1DetectionTypeKeyDetectorsCountParams,
+  signal?: AbortSignal
 ) => {
-      
-      
-      return configRequest<UtahUdotAtspmDataModelsDetector[]>(
-      {url: `/api/v1/DetectionType/${key}/detectors/$count`, method: 'GET',
-        params, signal
-    },
-      );
-    }
-  
-
-export const getApiVVersionApiVersionDetectionTypeKeyDetectorsCountQueryKey = (key: number,
-    params?: ApiVVersionApiVersionDetectionTypeKeyDetectorsCountParams,) => {
-    return [`/api/v1/DetectionType/${key}/detectors/$count`, ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getApiVVersionApiVersionDetectionTypeKeyDetectorsCountQueryOptions = <TData = Awaited<ReturnType<typeof apiVVersionApiVersionDetectionTypeKeyDetectorsCount>>, TError = void>(key: number,
-    params?: ApiVVersionApiVersionDetectionTypeKeyDetectorsCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDetectionTypeKeyDetectorsCount>>, TError, TData>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getApiVVersionApiVersionDetectionTypeKeyDetectorsCountQueryKey(key,params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiVVersionApiVersionDetectionTypeKeyDetectorsCount>>> = ({ signal }) => apiVVersionApiVersionDetectionTypeKeyDetectorsCount(key,params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(key), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDetectionTypeKeyDetectorsCount>>, TError, TData> & { queryKey: QueryKey }
+  return configRequest<UtahUdotAtspmDataModelsDetector[]>({
+    url: `/api/v1/DetectionType/${key}/detectors/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
 }
 
-export type ApiVVersionApiVersionDetectionTypeKeyDetectorsCountQueryResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionDetectionTypeKeyDetectorsCount>>>
-export type ApiVVersionApiVersionDetectionTypeKeyDetectorsCountQueryError = void
+export const getApiV1DetectionTypeKeyDetectorsCountQueryKey = (
+  key: number,
+  params?: ApiV1DetectionTypeKeyDetectorsCountParams
+) => {
+  return [
+    `/api/v1/DetectionType/${key}/detectors/$count`,
+    ...(params ? [params] : []),
+  ] as const
+}
 
+export const getApiV1DetectionTypeKeyDetectorsCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof apiV1DetectionTypeKeyDetectorsCount>>,
+  TError = void,
+>(
+  key: number,
+  params?: ApiV1DetectionTypeKeyDetectorsCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1DetectionTypeKeyDetectorsCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getApiV1DetectionTypeKeyDetectorsCountQueryKey(key, params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof apiV1DetectionTypeKeyDetectorsCount>>
+  > = ({ signal }) => apiV1DetectionTypeKeyDetectorsCount(key, params, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!key,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof apiV1DetectionTypeKeyDetectorsCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type ApiV1DetectionTypeKeyDetectorsCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1DetectionTypeKeyDetectorsCount>>
+>
+export type ApiV1DetectionTypeKeyDetectorsCountQueryError = void
 
 /**
  * @summary Utah.Udot.Atspm.Data.Models.Detector navigation property action
  */
 
-export function useApiVVersionApiVersionDetectionTypeKeyDetectorsCount<TData = Awaited<ReturnType<typeof apiVVersionApiVersionDetectionTypeKeyDetectorsCount>>, TError = void>(
- key: number,
-    params?: ApiVVersionApiVersionDetectionTypeKeyDetectorsCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDetectionTypeKeyDetectorsCount>>, TError, TData>, }
+export function useApiV1DetectionTypeKeyDetectorsCount<
+  TData = Awaited<ReturnType<typeof apiV1DetectionTypeKeyDetectorsCount>>,
+  TError = void,
+>(
+  key: number,
+  params?: ApiV1DetectionTypeKeyDetectorsCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1DetectionTypeKeyDetectorsCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getApiV1DetectionTypeKeyDetectorsCountQueryOptions(
+    key,
+    params,
+    options
+  )
 
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
 
-  const queryOptions = getApiVVersionApiVersionDetectionTypeKeyDetectorsCountQueryOptions(key,params,options)
+  query.queryKey = queryOptions.queryKey
 
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+  return query
 }
-
-
-
 
 /**
  * @summary Utah.Udot.Atspm.Data.Models.MeasureType navigation property action
  */
-export const apiVVersionApiVersionDetectionTypeKeyMeasureTypes = (
-    key: number,
-    params?: ApiVVersionApiVersionDetectionTypeKeyMeasureTypesParams,
- signal?: AbortSignal
+export const apiV1DetectionTypeKeyMeasureTypes = (
+  key: number,
+  params?: ApiV1DetectionTypeKeyMeasureTypesParams,
+  signal?: AbortSignal
 ) => {
-      
-      
-      return configRequest<UtahUdotAtspmDataModelsMeasureType[]>(
-      {url: `/api/v1/DetectionType/${key}/measureTypes`, method: 'GET',
-        params, signal
-    },
-      );
-    }
-  
-
-export const getApiVVersionApiVersionDetectionTypeKeyMeasureTypesQueryKey = (key: number,
-    params?: ApiVVersionApiVersionDetectionTypeKeyMeasureTypesParams,) => {
-    return [`/api/v1/DetectionType/${key}/measureTypes`, ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getApiVVersionApiVersionDetectionTypeKeyMeasureTypesQueryOptions = <TData = Awaited<ReturnType<typeof apiVVersionApiVersionDetectionTypeKeyMeasureTypes>>, TError = void>(key: number,
-    params?: ApiVVersionApiVersionDetectionTypeKeyMeasureTypesParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDetectionTypeKeyMeasureTypes>>, TError, TData>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getApiVVersionApiVersionDetectionTypeKeyMeasureTypesQueryKey(key,params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiVVersionApiVersionDetectionTypeKeyMeasureTypes>>> = ({ signal }) => apiVVersionApiVersionDetectionTypeKeyMeasureTypes(key,params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(key), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDetectionTypeKeyMeasureTypes>>, TError, TData> & { queryKey: QueryKey }
+  return configRequest<UtahUdotAtspmDataModelsMeasureType[]>({
+    url: `/api/v1/DetectionType/${key}/measureTypes`,
+    method: 'GET',
+    params,
+    signal,
+  })
 }
 
-export type ApiVVersionApiVersionDetectionTypeKeyMeasureTypesQueryResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionDetectionTypeKeyMeasureTypes>>>
-export type ApiVVersionApiVersionDetectionTypeKeyMeasureTypesQueryError = void
-
-
-/**
- * @summary Utah.Udot.Atspm.Data.Models.MeasureType navigation property action
- */
-
-export function useApiVVersionApiVersionDetectionTypeKeyMeasureTypes<TData = Awaited<ReturnType<typeof apiVVersionApiVersionDetectionTypeKeyMeasureTypes>>, TError = void>(
- key: number,
-    params?: ApiVVersionApiVersionDetectionTypeKeyMeasureTypesParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDetectionTypeKeyMeasureTypes>>, TError, TData>, }
-
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
-
-  const queryOptions = getApiVVersionApiVersionDetectionTypeKeyMeasureTypesQueryOptions(key,params,options)
-
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+export const getApiV1DetectionTypeKeyMeasureTypesQueryKey = (
+  key: number,
+  params?: ApiV1DetectionTypeKeyMeasureTypesParams
+) => {
+  return [
+    `/api/v1/DetectionType/${key}/measureTypes`,
+    ...(params ? [params] : []),
+  ] as const
 }
 
-
-
-
-/**
- * @summary Utah.Udot.Atspm.Data.Models.MeasureType navigation property action
- */
-export const apiVVersionApiVersionDetectionTypeKeyMeasureTypesCount = (
-    key: number,
-    params?: ApiVVersionApiVersionDetectionTypeKeyMeasureTypesCountParams,
- signal?: AbortSignal
+export const getApiV1DetectionTypeKeyMeasureTypesQueryOptions = <
+  TData = Awaited<ReturnType<typeof apiV1DetectionTypeKeyMeasureTypes>>,
+  TError = void,
+>(
+  key: number,
+  params?: ApiV1DetectionTypeKeyMeasureTypesParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1DetectionTypeKeyMeasureTypes>>,
+      TError,
+      TData
+    >
+  }
 ) => {
-      
-      
-      return configRequest<UtahUdotAtspmDataModelsMeasureType[]>(
-      {url: `/api/v1/DetectionType/${key}/measureTypes/$count`, method: 'GET',
-        params, signal
-    },
-      );
-    }
-  
+  const { query: queryOptions } = options ?? {}
 
-export const getApiVVersionApiVersionDetectionTypeKeyMeasureTypesCountQueryKey = (key: number,
-    params?: ApiVVersionApiVersionDetectionTypeKeyMeasureTypesCountParams,) => {
-    return [`/api/v1/DetectionType/${key}/measureTypes/$count`, ...(params ? [params]: [])] as const;
-    }
+  const queryKey =
+    queryOptions?.queryKey ??
+    getApiV1DetectionTypeKeyMeasureTypesQueryKey(key, params)
 
-    
-export const getApiVVersionApiVersionDetectionTypeKeyMeasureTypesCountQueryOptions = <TData = Awaited<ReturnType<typeof apiVVersionApiVersionDetectionTypeKeyMeasureTypesCount>>, TError = void>(key: number,
-    params?: ApiVVersionApiVersionDetectionTypeKeyMeasureTypesCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDetectionTypeKeyMeasureTypesCount>>, TError, TData>, }
-) => {
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof apiV1DetectionTypeKeyMeasureTypes>>
+  > = ({ signal }) => apiV1DetectionTypeKeyMeasureTypes(key, params, signal)
 
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getApiVVersionApiVersionDetectionTypeKeyMeasureTypesCountQueryKey(key,params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiVVersionApiVersionDetectionTypeKeyMeasureTypesCount>>> = ({ signal }) => apiVVersionApiVersionDetectionTypeKeyMeasureTypesCount(key,params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(key), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDetectionTypeKeyMeasureTypesCount>>, TError, TData> & { queryKey: QueryKey }
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!key,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof apiV1DetectionTypeKeyMeasureTypes>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
 }
 
-export type ApiVVersionApiVersionDetectionTypeKeyMeasureTypesCountQueryResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionDetectionTypeKeyMeasureTypesCount>>>
-export type ApiVVersionApiVersionDetectionTypeKeyMeasureTypesCountQueryError = void
-
+export type ApiV1DetectionTypeKeyMeasureTypesQueryResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1DetectionTypeKeyMeasureTypes>>
+>
+export type ApiV1DetectionTypeKeyMeasureTypesQueryError = void
 
 /**
  * @summary Utah.Udot.Atspm.Data.Models.MeasureType navigation property action
  */
 
-export function useApiVVersionApiVersionDetectionTypeKeyMeasureTypesCount<TData = Awaited<ReturnType<typeof apiVVersionApiVersionDetectionTypeKeyMeasureTypesCount>>, TError = void>(
- key: number,
-    params?: ApiVVersionApiVersionDetectionTypeKeyMeasureTypesCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDetectionTypeKeyMeasureTypesCount>>, TError, TData>, }
+export function useApiV1DetectionTypeKeyMeasureTypes<
+  TData = Awaited<ReturnType<typeof apiV1DetectionTypeKeyMeasureTypes>>,
+  TError = void,
+>(
+  key: number,
+  params?: ApiV1DetectionTypeKeyMeasureTypesParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1DetectionTypeKeyMeasureTypes>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getApiV1DetectionTypeKeyMeasureTypesQueryOptions(
+    key,
+    params,
+    options
+  )
 
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
 
-  const queryOptions = getApiVVersionApiVersionDetectionTypeKeyMeasureTypesCountQueryOptions(key,params,options)
+  query.queryKey = queryOptions.queryKey
 
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+  return query
 }
 
+/**
+ * @summary Utah.Udot.Atspm.Data.Models.MeasureType navigation property action
+ */
+export const apiV1DetectionTypeKeyMeasureTypesCount = (
+  key: number,
+  params?: ApiV1DetectionTypeKeyMeasureTypesCountParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<UtahUdotAtspmDataModelsMeasureType[]>({
+    url: `/api/v1/DetectionType/${key}/measureTypes/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
 
+export const getApiV1DetectionTypeKeyMeasureTypesCountQueryKey = (
+  key: number,
+  params?: ApiV1DetectionTypeKeyMeasureTypesCountParams
+) => {
+  return [
+    `/api/v1/DetectionType/${key}/measureTypes/$count`,
+    ...(params ? [params] : []),
+  ] as const
+}
 
+export const getApiV1DetectionTypeKeyMeasureTypesCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof apiV1DetectionTypeKeyMeasureTypesCount>>,
+  TError = void,
+>(
+  key: number,
+  params?: ApiV1DetectionTypeKeyMeasureTypesCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1DetectionTypeKeyMeasureTypesCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getApiV1DetectionTypeKeyMeasureTypesCountQueryKey(key, params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof apiV1DetectionTypeKeyMeasureTypesCount>>
+  > = ({ signal }) =>
+    apiV1DetectionTypeKeyMeasureTypesCount(key, params, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!key,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof apiV1DetectionTypeKeyMeasureTypesCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type ApiV1DetectionTypeKeyMeasureTypesCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1DetectionTypeKeyMeasureTypesCount>>
+>
+export type ApiV1DetectionTypeKeyMeasureTypesCountQueryError = void
+
+/**
+ * @summary Utah.Udot.Atspm.Data.Models.MeasureType navigation property action
+ */
+
+export function useApiV1DetectionTypeKeyMeasureTypesCount<
+  TData = Awaited<ReturnType<typeof apiV1DetectionTypeKeyMeasureTypesCount>>,
+  TError = void,
+>(
+  key: number,
+  params?: ApiV1DetectionTypeKeyMeasureTypesCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1DetectionTypeKeyMeasureTypesCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getApiV1DetectionTypeKeyMeasureTypesCountQueryOptions(
+    key,
+    params,
+    options
+  )
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
 
 /**
  * @summary Insert object of specified type
  */
-export const apiVVersionApiVersionDetectionType = (
-    utahUdotAtspmDataModelsDetectionType: UtahUdotAtspmDataModelsDetectionType,
-    params?: ApiVVersionApiVersionDetectionTypeParams,
- ) => {
-      
-      
-      return configRequest<void>(
-      {url: `/api/v1/DetectionType`, method: 'POST',
-      headers: {'Content-Type': 'application/json;odata.metadata=minimal;odata.streaming=true', },
-      data: utahUdotAtspmDataModelsDetectionType,
-        params
+export const apiV1DetectionType = (
+  utahUdotAtspmDataModelsDetectionType: UtahUdotAtspmDataModelsDetectionType,
+  params?: ApiV1DetectionTypeParams
+) => {
+  return configRequest<void>({
+    url: `/api/v1/DetectionType`,
+    method: 'POST',
+    headers: {
+      'Content-Type':
+        'application/json;odata.metadata=minimal;odata.streaming=true',
     },
-      );
+    data: utahUdotAtspmDataModelsDetectionType,
+    params,
+  })
+}
+
+export const getApiV1DetectionTypeMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1DetectionType>>,
+    TError,
+    {
+      data: UtahUdotAtspmDataModelsDetectionType
+      params?: ApiV1DetectionTypeParams
+    },
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof apiV1DetectionType>>,
+  TError,
+  {
+    data: UtahUdotAtspmDataModelsDetectionType
+    params?: ApiV1DetectionTypeParams
+  },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof apiV1DetectionType>>,
+    {
+      data: UtahUdotAtspmDataModelsDetectionType
+      params?: ApiV1DetectionTypeParams
     }
-  
+  > = (props) => {
+    const { data, params } = props ?? {}
 
+    return apiV1DetectionType(data, params)
+  }
 
-export const getApiVVersionApiVersionDetectionTypeMutationOptions = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDetectionType>>, TError,{data: UtahUdotAtspmDataModelsDetectionType;params?: ApiVVersionApiVersionDetectionTypeParams}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDetectionType>>, TError,{data: UtahUdotAtspmDataModelsDetectionType;params?: ApiVVersionApiVersionDetectionTypeParams}, TContext> => {
-const {mutation: mutationOptions} = options ?? {};
+  return { mutationFn, ...mutationOptions }
+}
 
-      
+export type ApiV1DetectionTypeMutationResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1DetectionType>>
+>
+export type ApiV1DetectionTypeMutationBody =
+  UtahUdotAtspmDataModelsDetectionType
+export type ApiV1DetectionTypeMutationError = void
 
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof apiVVersionApiVersionDetectionType>>, {data: UtahUdotAtspmDataModelsDetectionType;params?: ApiVVersionApiVersionDetectionTypeParams}> = (props) => {
-          const {data,params} = props ?? {};
-
-          return  apiVVersionApiVersionDetectionType(data,params,)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type ApiVVersionApiVersionDetectionTypeMutationResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionDetectionType>>>
-    export type ApiVVersionApiVersionDetectionTypeMutationBody = UtahUdotAtspmDataModelsDetectionType
-    export type ApiVVersionApiVersionDetectionTypeMutationError = void
-
-    /**
+/**
  * @summary Insert object of specified type
  */
-export const useApiVVersionApiVersionDetectionType = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDetectionType>>, TError,{data: UtahUdotAtspmDataModelsDetectionType;params?: ApiVVersionApiVersionDetectionTypeParams}, TContext>, }
-): UseMutationResult<
-        Awaited<ReturnType<typeof apiVVersionApiVersionDetectionType>>,
-        TError,
-        {data: UtahUdotAtspmDataModelsDetectionType;params?: ApiVVersionApiVersionDetectionTypeParams},
-        TContext
-      > => {
-
-      const mutationOptions = getApiVVersionApiVersionDetectionTypeMutationOptions(options);
-
-      return useMutation(mutationOptions);
-    }
-    
-/**
- * @summary Collection of objects from oData query.
- */
-export const apiVVersionApiVersionDetectionTypeCount = (
-    params?: ApiVVersionApiVersionDetectionTypeCountParams,
- signal?: AbortSignal
-) => {
-      
-      
-      return configRequest<UtahUdotAtspmDataModelsDetectionType[]>(
-      {url: `/api/v1/DetectionType/$count`, method: 'GET',
-        params, signal
+export const useApiV1DetectionType = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1DetectionType>>,
+    TError,
+    {
+      data: UtahUdotAtspmDataModelsDetectionType
+      params?: ApiV1DetectionTypeParams
     },
-      );
-    }
-  
+    TContext
+  >
+}): UseMutationResult<
+  Awaited<ReturnType<typeof apiV1DetectionType>>,
+  TError,
+  {
+    data: UtahUdotAtspmDataModelsDetectionType
+    params?: ApiV1DetectionTypeParams
+  },
+  TContext
+> => {
+  const mutationOptions = getApiV1DetectionTypeMutationOptions(options)
 
-export const getApiVVersionApiVersionDetectionTypeCountQueryKey = (params?: ApiVVersionApiVersionDetectionTypeCountParams,) => {
-    return [`/api/v1/DetectionType/$count`, ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getApiVVersionApiVersionDetectionTypeCountQueryOptions = <TData = Awaited<ReturnType<typeof apiVVersionApiVersionDetectionTypeCount>>, TError = void>(params?: ApiVVersionApiVersionDetectionTypeCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDetectionTypeCount>>, TError, TData>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getApiVVersionApiVersionDetectionTypeCountQueryKey(params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiVVersionApiVersionDetectionTypeCount>>> = ({ signal }) => apiVVersionApiVersionDetectionTypeCount(params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDetectionTypeCount>>, TError, TData> & { queryKey: QueryKey }
+  return useMutation(mutationOptions)
 }
-
-export type ApiVVersionApiVersionDetectionTypeCountQueryResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionDetectionTypeCount>>>
-export type ApiVVersionApiVersionDetectionTypeCountQueryError = void
-
 
 /**
  * @summary Collection of objects from oData query.
  */
-
-export function useApiVVersionApiVersionDetectionTypeCount<TData = Awaited<ReturnType<typeof apiVVersionApiVersionDetectionTypeCount>>, TError = void>(
- params?: ApiVVersionApiVersionDetectionTypeCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDetectionTypeCount>>, TError, TData>, }
-
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
-
-  const queryOptions = getApiVVersionApiVersionDetectionTypeCountQueryOptions(params,options)
-
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+export const apiV1DetectionTypeCount = (
+  params?: ApiV1DetectionTypeCountParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<UtahUdotAtspmDataModelsDetectionType[]>({
+    url: `/api/v1/DetectionType/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
 }
 
+export const getApiV1DetectionTypeCountQueryKey = (
+  params?: ApiV1DetectionTypeCountParams
+) => {
+  return [`/api/v1/DetectionType/$count`, ...(params ? [params] : [])] as const
+}
 
+export const getApiV1DetectionTypeCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof apiV1DetectionTypeCount>>,
+  TError = void,
+>(
+  params?: ApiV1DetectionTypeCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1DetectionTypeCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
 
+  const queryKey =
+    queryOptions?.queryKey ?? getApiV1DetectionTypeCountQueryKey(params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof apiV1DetectionTypeCount>>
+  > = ({ signal }) => apiV1DetectionTypeCount(params, signal)
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof apiV1DetectionTypeCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type ApiV1DetectionTypeCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1DetectionTypeCount>>
+>
+export type ApiV1DetectionTypeCountQueryError = void
+
+/**
+ * @summary Collection of objects from oData query.
+ */
+
+export function useApiV1DetectionTypeCount<
+  TData = Awaited<ReturnType<typeof apiV1DetectionTypeCount>>,
+  TError = void,
+>(
+  params?: ApiV1DetectionTypeCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1DetectionTypeCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getApiV1DetectionTypeCountQueryOptions(params, options)
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
 
 /**
  * @summary Delete object of specified type
  */
-export const apiVVersionApiVersionDetectionTypeKey = (
-    key: UtahUdotAtspmDataEnumsDetectionTypes,
- ) => {
-      
-      
-      return configRequest<void>(
-      {url: `/api/v1/DetectionType/${key}`, method: 'DELETE'
-    },
-      );
-    }
-  
+export const apiV1DetectionTypeKey = (
+  key: UtahUdotAtspmDataEnumsDetectionTypes
+) => {
+  return configRequest<void>({
+    url: `/api/v1/DetectionType/${key}`,
+    method: 'DELETE',
+  })
+}
 
+export const getApiV1DetectionTypeKeyMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1DetectionTypeKey>>,
+    TError,
+    { key: UtahUdotAtspmDataEnumsDetectionTypes },
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof apiV1DetectionTypeKey>>,
+  TError,
+  { key: UtahUdotAtspmDataEnumsDetectionTypes },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
 
-export const getApiVVersionApiVersionDetectionTypeKeyMutationOptions = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDetectionTypeKey>>, TError,{key: UtahUdotAtspmDataEnumsDetectionTypes}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDetectionTypeKey>>, TError,{key: UtahUdotAtspmDataEnumsDetectionTypes}, TContext> => {
-const {mutation: mutationOptions} = options ?? {};
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof apiV1DetectionTypeKey>>,
+    { key: UtahUdotAtspmDataEnumsDetectionTypes }
+  > = (props) => {
+    const { key } = props ?? {}
 
-      
+    return apiV1DetectionTypeKey(key)
+  }
 
+  return { mutationFn, ...mutationOptions }
+}
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof apiVVersionApiVersionDetectionTypeKey>>, {key: UtahUdotAtspmDataEnumsDetectionTypes}> = (props) => {
-          const {key} = props ?? {};
+export type ApiV1DetectionTypeKeyMutationResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1DetectionTypeKey>>
+>
 
-          return  apiVVersionApiVersionDetectionTypeKey(key,)
-        }
+export type ApiV1DetectionTypeKeyMutationError = void
 
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type ApiVVersionApiVersionDetectionTypeKeyMutationResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionDetectionTypeKey>>>
-    
-    export type ApiVVersionApiVersionDetectionTypeKeyMutationError = void
-
-    /**
+/**
  * @summary Delete object of specified type
  */
-export const useApiVVersionApiVersionDetectionTypeKey = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDetectionTypeKey>>, TError,{key: UtahUdotAtspmDataEnumsDetectionTypes}, TContext>, }
-): UseMutationResult<
-        Awaited<ReturnType<typeof apiVVersionApiVersionDetectionTypeKey>>,
-        TError,
-        {key: UtahUdotAtspmDataEnumsDetectionTypes},
-        TContext
-      > => {
+export const useApiV1DetectionTypeKey = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1DetectionTypeKey>>,
+    TError,
+    { key: UtahUdotAtspmDataEnumsDetectionTypes },
+    TContext
+  >
+}): UseMutationResult<
+  Awaited<ReturnType<typeof apiV1DetectionTypeKey>>,
+  TError,
+  { key: UtahUdotAtspmDataEnumsDetectionTypes },
+  TContext
+> => {
+  const mutationOptions = getApiV1DetectionTypeKeyMutationOptions(options)
 
-      const mutationOptions = getApiVVersionApiVersionDetectionTypeKeyMutationOptions(options);
-
-      return useMutation(mutationOptions);
-    }
-    
-/**
- * @summary Utah.Udot.Atspm.Data.Models.DetectorComment navigation property action
- */
-export const apiVVersionApiVersionDetectorKeyDetectorComments = (
-    key: number,
-    params?: ApiVVersionApiVersionDetectorKeyDetectorCommentsParams,
- signal?: AbortSignal
-) => {
-      
-      
-      return configRequest<UtahUdotAtspmDataModelsDetectorComment[]>(
-      {url: `/api/v1/Detector/${key}/detectorComments`, method: 'GET',
-        params, signal
-    },
-      );
-    }
-  
-
-export const getApiVVersionApiVersionDetectorKeyDetectorCommentsQueryKey = (key: number,
-    params?: ApiVVersionApiVersionDetectorKeyDetectorCommentsParams,) => {
-    return [`/api/v1/Detector/${key}/detectorComments`, ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getApiVVersionApiVersionDetectorKeyDetectorCommentsQueryOptions = <TData = Awaited<ReturnType<typeof apiVVersionApiVersionDetectorKeyDetectorComments>>, TError = void>(key: number,
-    params?: ApiVVersionApiVersionDetectorKeyDetectorCommentsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDetectorKeyDetectorComments>>, TError, TData>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getApiVVersionApiVersionDetectorKeyDetectorCommentsQueryKey(key,params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiVVersionApiVersionDetectorKeyDetectorComments>>> = ({ signal }) => apiVVersionApiVersionDetectorKeyDetectorComments(key,params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(key), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDetectorKeyDetectorComments>>, TError, TData> & { queryKey: QueryKey }
+  return useMutation(mutationOptions)
 }
-
-export type ApiVVersionApiVersionDetectorKeyDetectorCommentsQueryResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionDetectorKeyDetectorComments>>>
-export type ApiVVersionApiVersionDetectorKeyDetectorCommentsQueryError = void
-
 
 /**
  * @summary Utah.Udot.Atspm.Data.Models.DetectorComment navigation property action
  */
-
-export function useApiVVersionApiVersionDetectorKeyDetectorComments<TData = Awaited<ReturnType<typeof apiVVersionApiVersionDetectorKeyDetectorComments>>, TError = void>(
- key: number,
-    params?: ApiVVersionApiVersionDetectorKeyDetectorCommentsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDetectorKeyDetectorComments>>, TError, TData>, }
-
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
-
-  const queryOptions = getApiVVersionApiVersionDetectorKeyDetectorCommentsQueryOptions(key,params,options)
-
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+export const apiV1DetectorKeyDetectorComments = (
+  key: number,
+  params?: ApiV1DetectorKeyDetectorCommentsParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<UtahUdotAtspmDataModelsDetectorComment[]>({
+    url: `/api/v1/Detector/${key}/detectorComments`,
+    method: 'GET',
+    params,
+    signal,
+  })
 }
 
-
-
-
-/**
- * @summary Utah.Udot.Atspm.Data.Models.DetectorComment navigation property action
- */
-export const apiVVersionApiVersionDetectorKeyDetectorCommentsCount = (
-    key: number,
-    params?: ApiVVersionApiVersionDetectorKeyDetectorCommentsCountParams,
- signal?: AbortSignal
+export const getApiV1DetectorKeyDetectorCommentsQueryKey = (
+  key: number,
+  params?: ApiV1DetectorKeyDetectorCommentsParams
 ) => {
-      
-      
-      return configRequest<UtahUdotAtspmDataModelsDetectorComment[]>(
-      {url: `/api/v1/Detector/${key}/detectorComments/$count`, method: 'GET',
-        params, signal
-    },
-      );
-    }
-  
-
-export const getApiVVersionApiVersionDetectorKeyDetectorCommentsCountQueryKey = (key: number,
-    params?: ApiVVersionApiVersionDetectorKeyDetectorCommentsCountParams,) => {
-    return [`/api/v1/Detector/${key}/detectorComments/$count`, ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getApiVVersionApiVersionDetectorKeyDetectorCommentsCountQueryOptions = <TData = Awaited<ReturnType<typeof apiVVersionApiVersionDetectorKeyDetectorCommentsCount>>, TError = void>(key: number,
-    params?: ApiVVersionApiVersionDetectorKeyDetectorCommentsCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDetectorKeyDetectorCommentsCount>>, TError, TData>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getApiVVersionApiVersionDetectorKeyDetectorCommentsCountQueryKey(key,params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiVVersionApiVersionDetectorKeyDetectorCommentsCount>>> = ({ signal }) => apiVVersionApiVersionDetectorKeyDetectorCommentsCount(key,params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(key), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDetectorKeyDetectorCommentsCount>>, TError, TData> & { queryKey: QueryKey }
+  return [
+    `/api/v1/Detector/${key}/detectorComments`,
+    ...(params ? [params] : []),
+  ] as const
 }
 
-export type ApiVVersionApiVersionDetectorKeyDetectorCommentsCountQueryResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionDetectorKeyDetectorCommentsCount>>>
-export type ApiVVersionApiVersionDetectorKeyDetectorCommentsCountQueryError = void
+export const getApiV1DetectorKeyDetectorCommentsQueryOptions = <
+  TData = Awaited<ReturnType<typeof apiV1DetectorKeyDetectorComments>>,
+  TError = void,
+>(
+  key: number,
+  params?: ApiV1DetectorKeyDetectorCommentsParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1DetectorKeyDetectorComments>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
 
+  const queryKey =
+    queryOptions?.queryKey ??
+    getApiV1DetectorKeyDetectorCommentsQueryKey(key, params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof apiV1DetectorKeyDetectorComments>>
+  > = ({ signal }) => apiV1DetectorKeyDetectorComments(key, params, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!key,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof apiV1DetectorKeyDetectorComments>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type ApiV1DetectorKeyDetectorCommentsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1DetectorKeyDetectorComments>>
+>
+export type ApiV1DetectorKeyDetectorCommentsQueryError = void
 
 /**
  * @summary Utah.Udot.Atspm.Data.Models.DetectorComment navigation property action
  */
 
-export function useApiVVersionApiVersionDetectorKeyDetectorCommentsCount<TData = Awaited<ReturnType<typeof apiVVersionApiVersionDetectorKeyDetectorCommentsCount>>, TError = void>(
- key: number,
-    params?: ApiVVersionApiVersionDetectorKeyDetectorCommentsCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDetectorKeyDetectorCommentsCount>>, TError, TData>, }
+export function useApiV1DetectorKeyDetectorComments<
+  TData = Awaited<ReturnType<typeof apiV1DetectorKeyDetectorComments>>,
+  TError = void,
+>(
+  key: number,
+  params?: ApiV1DetectorKeyDetectorCommentsParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1DetectorKeyDetectorComments>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getApiV1DetectorKeyDetectorCommentsQueryOptions(
+    key,
+    params,
+    options
+  )
 
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
 
-  const queryOptions = getApiVVersionApiVersionDetectorKeyDetectorCommentsCountQueryOptions(key,params,options)
+  query.queryKey = queryOptions.queryKey
 
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+  return query
 }
 
+/**
+ * @summary Utah.Udot.Atspm.Data.Models.DetectorComment navigation property action
+ */
+export const apiV1DetectorKeyDetectorCommentsCount = (
+  key: number,
+  params?: ApiV1DetectorKeyDetectorCommentsCountParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<UtahUdotAtspmDataModelsDetectorComment[]>({
+    url: `/api/v1/Detector/${key}/detectorComments/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
 
+export const getApiV1DetectorKeyDetectorCommentsCountQueryKey = (
+  key: number,
+  params?: ApiV1DetectorKeyDetectorCommentsCountParams
+) => {
+  return [
+    `/api/v1/Detector/${key}/detectorComments/$count`,
+    ...(params ? [params] : []),
+  ] as const
+}
 
+export const getApiV1DetectorKeyDetectorCommentsCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof apiV1DetectorKeyDetectorCommentsCount>>,
+  TError = void,
+>(
+  key: number,
+  params?: ApiV1DetectorKeyDetectorCommentsCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1DetectorKeyDetectorCommentsCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getApiV1DetectorKeyDetectorCommentsCountQueryKey(key, params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof apiV1DetectorKeyDetectorCommentsCount>>
+  > = ({ signal }) => apiV1DetectorKeyDetectorCommentsCount(key, params, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!key,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof apiV1DetectorKeyDetectorCommentsCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type ApiV1DetectorKeyDetectorCommentsCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1DetectorKeyDetectorCommentsCount>>
+>
+export type ApiV1DetectorKeyDetectorCommentsCountQueryError = void
+
+/**
+ * @summary Utah.Udot.Atspm.Data.Models.DetectorComment navigation property action
+ */
+
+export function useApiV1DetectorKeyDetectorCommentsCount<
+  TData = Awaited<ReturnType<typeof apiV1DetectorKeyDetectorCommentsCount>>,
+  TError = void,
+>(
+  key: number,
+  params?: ApiV1DetectorKeyDetectorCommentsCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1DetectorKeyDetectorCommentsCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getApiV1DetectorKeyDetectorCommentsCountQueryOptions(
+    key,
+    params,
+    options
+  )
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
 
 /**
  * @summary Utah.Udot.Atspm.Data.Models.DetectionType navigation property action
  */
-export const apiVVersionApiVersionDetectorKeyDetectionTypes = (
-    key: number,
-    params?: ApiVVersionApiVersionDetectorKeyDetectionTypesParams,
- signal?: AbortSignal
+export const apiV1DetectorKeyDetectionTypes = (
+  key: number,
+  params?: ApiV1DetectorKeyDetectionTypesParams,
+  signal?: AbortSignal
 ) => {
-      
-      
-      return configRequest<UtahUdotAtspmDataModelsDetectionType[]>(
-      {url: `/api/v1/Detector/${key}/detectionTypes`, method: 'GET',
-        params, signal
-    },
-      );
-    }
-  
-
-export const getApiVVersionApiVersionDetectorKeyDetectionTypesQueryKey = (key: number,
-    params?: ApiVVersionApiVersionDetectorKeyDetectionTypesParams,) => {
-    return [`/api/v1/Detector/${key}/detectionTypes`, ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getApiVVersionApiVersionDetectorKeyDetectionTypesQueryOptions = <TData = Awaited<ReturnType<typeof apiVVersionApiVersionDetectorKeyDetectionTypes>>, TError = void>(key: number,
-    params?: ApiVVersionApiVersionDetectorKeyDetectionTypesParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDetectorKeyDetectionTypes>>, TError, TData>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getApiVVersionApiVersionDetectorKeyDetectionTypesQueryKey(key,params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiVVersionApiVersionDetectorKeyDetectionTypes>>> = ({ signal }) => apiVVersionApiVersionDetectorKeyDetectionTypes(key,params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(key), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDetectorKeyDetectionTypes>>, TError, TData> & { queryKey: QueryKey }
+  return configRequest<UtahUdotAtspmDataModelsDetectionType[]>({
+    url: `/api/v1/Detector/${key}/detectionTypes`,
+    method: 'GET',
+    params,
+    signal,
+  })
 }
 
-export type ApiVVersionApiVersionDetectorKeyDetectionTypesQueryResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionDetectorKeyDetectionTypes>>>
-export type ApiVVersionApiVersionDetectorKeyDetectionTypesQueryError = void
+export const getApiV1DetectorKeyDetectionTypesQueryKey = (
+  key: number,
+  params?: ApiV1DetectorKeyDetectionTypesParams
+) => {
+  return [
+    `/api/v1/Detector/${key}/detectionTypes`,
+    ...(params ? [params] : []),
+  ] as const
+}
 
+export const getApiV1DetectorKeyDetectionTypesQueryOptions = <
+  TData = Awaited<ReturnType<typeof apiV1DetectorKeyDetectionTypes>>,
+  TError = void,
+>(
+  key: number,
+  params?: ApiV1DetectorKeyDetectionTypesParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1DetectorKeyDetectionTypes>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getApiV1DetectorKeyDetectionTypesQueryKey(key, params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof apiV1DetectorKeyDetectionTypes>>
+  > = ({ signal }) => apiV1DetectorKeyDetectionTypes(key, params, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!key,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof apiV1DetectorKeyDetectionTypes>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type ApiV1DetectorKeyDetectionTypesQueryResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1DetectorKeyDetectionTypes>>
+>
+export type ApiV1DetectorKeyDetectionTypesQueryError = void
 
 /**
  * @summary Utah.Udot.Atspm.Data.Models.DetectionType navigation property action
  */
 
-export function useApiVVersionApiVersionDetectorKeyDetectionTypes<TData = Awaited<ReturnType<typeof apiVVersionApiVersionDetectorKeyDetectionTypes>>, TError = void>(
- key: number,
-    params?: ApiVVersionApiVersionDetectorKeyDetectionTypesParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDetectorKeyDetectionTypes>>, TError, TData>, }
+export function useApiV1DetectorKeyDetectionTypes<
+  TData = Awaited<ReturnType<typeof apiV1DetectorKeyDetectionTypes>>,
+  TError = void,
+>(
+  key: number,
+  params?: ApiV1DetectorKeyDetectionTypesParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1DetectorKeyDetectionTypes>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getApiV1DetectorKeyDetectionTypesQueryOptions(
+    key,
+    params,
+    options
+  )
 
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
 
-  const queryOptions = getApiVVersionApiVersionDetectorKeyDetectionTypesQueryOptions(key,params,options)
+  query.queryKey = queryOptions.queryKey
 
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+  return query
 }
-
-
-
 
 /**
  * @summary Utah.Udot.Atspm.Data.Models.DetectionType navigation property action
  */
-export const apiVVersionApiVersionDetectorKeyDetectionTypesCount = (
-    key: number,
-    params?: ApiVVersionApiVersionDetectorKeyDetectionTypesCountParams,
- signal?: AbortSignal
+export const apiV1DetectorKeyDetectionTypesCount = (
+  key: number,
+  params?: ApiV1DetectorKeyDetectionTypesCountParams,
+  signal?: AbortSignal
 ) => {
-      
-      
-      return configRequest<UtahUdotAtspmDataModelsDetectionType[]>(
-      {url: `/api/v1/Detector/${key}/detectionTypes/$count`, method: 'GET',
-        params, signal
-    },
-      );
-    }
-  
-
-export const getApiVVersionApiVersionDetectorKeyDetectionTypesCountQueryKey = (key: number,
-    params?: ApiVVersionApiVersionDetectorKeyDetectionTypesCountParams,) => {
-    return [`/api/v1/Detector/${key}/detectionTypes/$count`, ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getApiVVersionApiVersionDetectorKeyDetectionTypesCountQueryOptions = <TData = Awaited<ReturnType<typeof apiVVersionApiVersionDetectorKeyDetectionTypesCount>>, TError = void>(key: number,
-    params?: ApiVVersionApiVersionDetectorKeyDetectionTypesCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDetectorKeyDetectionTypesCount>>, TError, TData>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getApiVVersionApiVersionDetectorKeyDetectionTypesCountQueryKey(key,params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiVVersionApiVersionDetectorKeyDetectionTypesCount>>> = ({ signal }) => apiVVersionApiVersionDetectorKeyDetectionTypesCount(key,params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(key), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDetectorKeyDetectionTypesCount>>, TError, TData> & { queryKey: QueryKey }
+  return configRequest<UtahUdotAtspmDataModelsDetectionType[]>({
+    url: `/api/v1/Detector/${key}/detectionTypes/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
 }
 
-export type ApiVVersionApiVersionDetectorKeyDetectionTypesCountQueryResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionDetectorKeyDetectionTypesCount>>>
-export type ApiVVersionApiVersionDetectorKeyDetectionTypesCountQueryError = void
+export const getApiV1DetectorKeyDetectionTypesCountQueryKey = (
+  key: number,
+  params?: ApiV1DetectorKeyDetectionTypesCountParams
+) => {
+  return [
+    `/api/v1/Detector/${key}/detectionTypes/$count`,
+    ...(params ? [params] : []),
+  ] as const
+}
 
+export const getApiV1DetectorKeyDetectionTypesCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof apiV1DetectorKeyDetectionTypesCount>>,
+  TError = void,
+>(
+  key: number,
+  params?: ApiV1DetectorKeyDetectionTypesCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1DetectorKeyDetectionTypesCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getApiV1DetectorKeyDetectionTypesCountQueryKey(key, params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof apiV1DetectorKeyDetectionTypesCount>>
+  > = ({ signal }) => apiV1DetectorKeyDetectionTypesCount(key, params, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!key,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof apiV1DetectorKeyDetectionTypesCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type ApiV1DetectorKeyDetectionTypesCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1DetectorKeyDetectionTypesCount>>
+>
+export type ApiV1DetectorKeyDetectionTypesCountQueryError = void
 
 /**
  * @summary Utah.Udot.Atspm.Data.Models.DetectionType navigation property action
  */
 
-export function useApiVVersionApiVersionDetectorKeyDetectionTypesCount<TData = Awaited<ReturnType<typeof apiVVersionApiVersionDetectorKeyDetectionTypesCount>>, TError = void>(
- key: number,
-    params?: ApiVVersionApiVersionDetectorKeyDetectionTypesCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDetectorKeyDetectionTypesCount>>, TError, TData>, }
+export function useApiV1DetectorKeyDetectionTypesCount<
+  TData = Awaited<ReturnType<typeof apiV1DetectorKeyDetectionTypesCount>>,
+  TError = void,
+>(
+  key: number,
+  params?: ApiV1DetectorKeyDetectionTypesCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1DetectorKeyDetectionTypesCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getApiV1DetectorKeyDetectionTypesCountQueryOptions(
+    key,
+    params,
+    options
+  )
 
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
 
-  const queryOptions = getApiVVersionApiVersionDetectorKeyDetectionTypesCountQueryOptions(key,params,options)
+  query.queryKey = queryOptions.queryKey
 
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+  return query
 }
-
-
-
 
 /**
  * @summary Insert object of specified type
  */
-export const apiVVersionApiVersionDetector = (
-    utahUdotAtspmDataModelsDetector: UtahUdotAtspmDataModelsDetector,
-    params?: ApiVVersionApiVersionDetectorParams,
- ) => {
-      
-      
-      return configRequest<void>(
-      {url: `/api/v1/Detector`, method: 'POST',
-      headers: {'Content-Type': 'application/json;odata.metadata=minimal;odata.streaming=true', },
-      data: utahUdotAtspmDataModelsDetector,
-        params
-    },
-      );
-    }
-  
-
-
-export const getApiVVersionApiVersionDetectorMutationOptions = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDetector>>, TError,{data: UtahUdotAtspmDataModelsDetector;params?: ApiVVersionApiVersionDetectorParams}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDetector>>, TError,{data: UtahUdotAtspmDataModelsDetector;params?: ApiVVersionApiVersionDetectorParams}, TContext> => {
-const {mutation: mutationOptions} = options ?? {};
-
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof apiVVersionApiVersionDetector>>, {data: UtahUdotAtspmDataModelsDetector;params?: ApiVVersionApiVersionDetectorParams}> = (props) => {
-          const {data,params} = props ?? {};
-
-          return  apiVVersionApiVersionDetector(data,params,)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type ApiVVersionApiVersionDetectorMutationResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionDetector>>>
-    export type ApiVVersionApiVersionDetectorMutationBody = UtahUdotAtspmDataModelsDetector
-    export type ApiVVersionApiVersionDetectorMutationError = void
-
-    /**
- * @summary Insert object of specified type
- */
-export const useApiVVersionApiVersionDetector = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDetector>>, TError,{data: UtahUdotAtspmDataModelsDetector;params?: ApiVVersionApiVersionDetectorParams}, TContext>, }
-): UseMutationResult<
-        Awaited<ReturnType<typeof apiVVersionApiVersionDetector>>,
-        TError,
-        {data: UtahUdotAtspmDataModelsDetector;params?: ApiVVersionApiVersionDetectorParams},
-        TContext
-      > => {
-
-      const mutationOptions = getApiVVersionApiVersionDetectorMutationOptions(options);
-
-      return useMutation(mutationOptions);
-    }
-    
-/**
- * @summary Collection of objects from oData query.
- */
-export const apiVVersionApiVersionDetectorCount = (
-    params?: ApiVVersionApiVersionDetectorCountParams,
- signal?: AbortSignal
+export const apiV1Detector = (
+  utahUdotAtspmDataModelsDetector: UtahUdotAtspmDataModelsDetector,
+  params?: ApiV1DetectorParams
 ) => {
-      
-      
-      return configRequest<UtahUdotAtspmDataModelsDetector[]>(
-      {url: `/api/v1/Detector/$count`, method: 'GET',
-        params, signal
+  return configRequest<void>({
+    url: `/api/v1/Detector`,
+    method: 'POST',
+    headers: {
+      'Content-Type':
+        'application/json;odata.metadata=minimal;odata.streaming=true',
     },
-      );
-    }
-  
-
-export const getApiVVersionApiVersionDetectorCountQueryKey = (params?: ApiVVersionApiVersionDetectorCountParams,) => {
-    return [`/api/v1/Detector/$count`, ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getApiVVersionApiVersionDetectorCountQueryOptions = <TData = Awaited<ReturnType<typeof apiVVersionApiVersionDetectorCount>>, TError = void>(params?: ApiVVersionApiVersionDetectorCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDetectorCount>>, TError, TData>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getApiVVersionApiVersionDetectorCountQueryKey(params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiVVersionApiVersionDetectorCount>>> = ({ signal }) => apiVVersionApiVersionDetectorCount(params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDetectorCount>>, TError, TData> & { queryKey: QueryKey }
+    data: utahUdotAtspmDataModelsDetector,
+    params,
+  })
 }
 
-export type ApiVVersionApiVersionDetectorCountQueryResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionDetectorCount>>>
-export type ApiVVersionApiVersionDetectorCountQueryError = void
+export const getApiV1DetectorMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1Detector>>,
+    TError,
+    { data: UtahUdotAtspmDataModelsDetector; params?: ApiV1DetectorParams },
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof apiV1Detector>>,
+  TError,
+  { data: UtahUdotAtspmDataModelsDetector; params?: ApiV1DetectorParams },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
 
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof apiV1Detector>>,
+    { data: UtahUdotAtspmDataModelsDetector; params?: ApiV1DetectorParams }
+  > = (props) => {
+    const { data, params } = props ?? {}
+
+    return apiV1Detector(data, params)
+  }
+
+  return { mutationFn, ...mutationOptions }
+}
+
+export type ApiV1DetectorMutationResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1Detector>>
+>
+export type ApiV1DetectorMutationBody = UtahUdotAtspmDataModelsDetector
+export type ApiV1DetectorMutationError = void
+
+/**
+ * @summary Insert object of specified type
+ */
+export const useApiV1Detector = <TError = void, TContext = unknown>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1Detector>>,
+    TError,
+    { data: UtahUdotAtspmDataModelsDetector; params?: ApiV1DetectorParams },
+    TContext
+  >
+}): UseMutationResult<
+  Awaited<ReturnType<typeof apiV1Detector>>,
+  TError,
+  { data: UtahUdotAtspmDataModelsDetector; params?: ApiV1DetectorParams },
+  TContext
+> => {
+  const mutationOptions = getApiV1DetectorMutationOptions(options)
+
+  return useMutation(mutationOptions)
+}
 
 /**
  * @summary Collection of objects from oData query.
  */
-
-export function useApiVVersionApiVersionDetectorCount<TData = Awaited<ReturnType<typeof apiVVersionApiVersionDetectorCount>>, TError = void>(
- params?: ApiVVersionApiVersionDetectorCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDetectorCount>>, TError, TData>, }
-
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
-
-  const queryOptions = getApiVVersionApiVersionDetectorCountQueryOptions(params,options)
-
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+export const apiV1DetectorCount = (
+  params?: ApiV1DetectorCountParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<UtahUdotAtspmDataModelsDetector[]>({
+    url: `/api/v1/Detector/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
 }
 
-
-
-
-/**
- * @summary Delete object of specified type
- */
-export const apiVVersionApiVersionDetectorKey = (
-    key: number,
- ) => {
-      
-      
-      return configRequest<void>(
-      {url: `/api/v1/Detector/${key}`, method: 'DELETE'
-    },
-      );
-    }
-  
-
-
-export const getApiVVersionApiVersionDetectorKeyMutationOptions = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDetectorKey>>, TError,{key: number}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDetectorKey>>, TError,{key: number}, TContext> => {
-const {mutation: mutationOptions} = options ?? {};
-
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof apiVVersionApiVersionDetectorKey>>, {key: number}> = (props) => {
-          const {key} = props ?? {};
-
-          return  apiVVersionApiVersionDetectorKey(key,)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type ApiVVersionApiVersionDetectorKeyMutationResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionDetectorKey>>>
-    
-    export type ApiVVersionApiVersionDetectorKeyMutationError = void
-
-    /**
- * @summary Delete object of specified type
- */
-export const useApiVVersionApiVersionDetectorKey = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDetectorKey>>, TError,{key: number}, TContext>, }
-): UseMutationResult<
-        Awaited<ReturnType<typeof apiVVersionApiVersionDetectorKey>>,
-        TError,
-        {key: number},
-        TContext
-      > => {
-
-      const mutationOptions = getApiVVersionApiVersionDetectorKeyMutationOptions(options);
-
-      return useMutation(mutationOptions);
-    }
-    
-/**
- * @summary Insert object of specified type
- */
-export const apiVVersionApiVersionDetectorComment = (
-    utahUdotAtspmDataModelsDetectorComment: UtahUdotAtspmDataModelsDetectorComment,
-    params?: ApiVVersionApiVersionDetectorCommentParams,
- ) => {
-      
-      
-      return configRequest<void>(
-      {url: `/api/v1/DetectorComment`, method: 'POST',
-      headers: {'Content-Type': 'application/json;odata.metadata=minimal;odata.streaming=true', },
-      data: utahUdotAtspmDataModelsDetectorComment,
-        params
-    },
-      );
-    }
-  
-
-
-export const getApiVVersionApiVersionDetectorCommentMutationOptions = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDetectorComment>>, TError,{data: UtahUdotAtspmDataModelsDetectorComment;params?: ApiVVersionApiVersionDetectorCommentParams}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDetectorComment>>, TError,{data: UtahUdotAtspmDataModelsDetectorComment;params?: ApiVVersionApiVersionDetectorCommentParams}, TContext> => {
-const {mutation: mutationOptions} = options ?? {};
-
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof apiVVersionApiVersionDetectorComment>>, {data: UtahUdotAtspmDataModelsDetectorComment;params?: ApiVVersionApiVersionDetectorCommentParams}> = (props) => {
-          const {data,params} = props ?? {};
-
-          return  apiVVersionApiVersionDetectorComment(data,params,)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type ApiVVersionApiVersionDetectorCommentMutationResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionDetectorComment>>>
-    export type ApiVVersionApiVersionDetectorCommentMutationBody = UtahUdotAtspmDataModelsDetectorComment
-    export type ApiVVersionApiVersionDetectorCommentMutationError = void
-
-    /**
- * @summary Insert object of specified type
- */
-export const useApiVVersionApiVersionDetectorComment = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDetectorComment>>, TError,{data: UtahUdotAtspmDataModelsDetectorComment;params?: ApiVVersionApiVersionDetectorCommentParams}, TContext>, }
-): UseMutationResult<
-        Awaited<ReturnType<typeof apiVVersionApiVersionDetectorComment>>,
-        TError,
-        {data: UtahUdotAtspmDataModelsDetectorComment;params?: ApiVVersionApiVersionDetectorCommentParams},
-        TContext
-      > => {
-
-      const mutationOptions = getApiVVersionApiVersionDetectorCommentMutationOptions(options);
-
-      return useMutation(mutationOptions);
-    }
-    
-/**
- * @summary Collection of objects from oData query.
- */
-export const apiVVersionApiVersionDetectorCommentCount = (
-    params?: ApiVVersionApiVersionDetectorCommentCountParams,
- signal?: AbortSignal
+export const getApiV1DetectorCountQueryKey = (
+  params?: ApiV1DetectorCountParams
 ) => {
-      
-      
-      return configRequest<UtahUdotAtspmDataModelsDetectorComment[]>(
-      {url: `/api/v1/DetectorComment/$count`, method: 'GET',
-        params, signal
-    },
-      );
-    }
-  
-
-export const getApiVVersionApiVersionDetectorCommentCountQueryKey = (params?: ApiVVersionApiVersionDetectorCommentCountParams,) => {
-    return [`/api/v1/DetectorComment/$count`, ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getApiVVersionApiVersionDetectorCommentCountQueryOptions = <TData = Awaited<ReturnType<typeof apiVVersionApiVersionDetectorCommentCount>>, TError = void>(params?: ApiVVersionApiVersionDetectorCommentCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDetectorCommentCount>>, TError, TData>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getApiVVersionApiVersionDetectorCommentCountQueryKey(params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiVVersionApiVersionDetectorCommentCount>>> = ({ signal }) => apiVVersionApiVersionDetectorCommentCount(params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDetectorCommentCount>>, TError, TData> & { queryKey: QueryKey }
+  return [`/api/v1/Detector/$count`, ...(params ? [params] : [])] as const
 }
 
-export type ApiVVersionApiVersionDetectorCommentCountQueryResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionDetectorCommentCount>>>
-export type ApiVVersionApiVersionDetectorCommentCountQueryError = void
+export const getApiV1DetectorCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof apiV1DetectorCount>>,
+  TError = void,
+>(
+  params?: ApiV1DetectorCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1DetectorCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
 
+  const queryKey =
+    queryOptions?.queryKey ?? getApiV1DetectorCountQueryKey(params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof apiV1DetectorCount>>
+  > = ({ signal }) => apiV1DetectorCount(params, signal)
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof apiV1DetectorCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type ApiV1DetectorCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1DetectorCount>>
+>
+export type ApiV1DetectorCountQueryError = void
 
 /**
  * @summary Collection of objects from oData query.
  */
 
-export function useApiVVersionApiVersionDetectorCommentCount<TData = Awaited<ReturnType<typeof apiVVersionApiVersionDetectorCommentCount>>, TError = void>(
- params?: ApiVVersionApiVersionDetectorCommentCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDetectorCommentCount>>, TError, TData>, }
+export function useApiV1DetectorCount<
+  TData = Awaited<ReturnType<typeof apiV1DetectorCount>>,
+  TError = void,
+>(
+  params?: ApiV1DetectorCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1DetectorCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getApiV1DetectorCountQueryOptions(params, options)
 
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
 
-  const queryOptions = getApiVVersionApiVersionDetectorCommentCountQueryOptions(params,options)
+  query.queryKey = queryOptions.queryKey
 
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+  return query
 }
-
-
-
 
 /**
  * @summary Delete object of specified type
  */
-export const apiVVersionApiVersionDetectorCommentKey = (
-    key: number,
- ) => {
-      
-      
-      return configRequest<void>(
-      {url: `/api/v1/DetectorComment/${key}`, method: 'DELETE'
-    },
-      );
-    }
-  
+export const apiV1DetectorKey = (key: number) => {
+  return configRequest<void>({
+    url: `/api/v1/Detector/${key}`,
+    method: 'DELETE',
+  })
+}
 
+export const getApiV1DetectorKeyMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1DetectorKey>>,
+    TError,
+    { key: number },
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof apiV1DetectorKey>>,
+  TError,
+  { key: number },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
 
-export const getApiVVersionApiVersionDetectorCommentKeyMutationOptions = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDetectorCommentKey>>, TError,{key: number}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDetectorCommentKey>>, TError,{key: number}, TContext> => {
-const {mutation: mutationOptions} = options ?? {};
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof apiV1DetectorKey>>,
+    { key: number }
+  > = (props) => {
+    const { key } = props ?? {}
 
-      
+    return apiV1DetectorKey(key)
+  }
 
+  return { mutationFn, ...mutationOptions }
+}
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof apiVVersionApiVersionDetectorCommentKey>>, {key: number}> = (props) => {
-          const {key} = props ?? {};
+export type ApiV1DetectorKeyMutationResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1DetectorKey>>
+>
 
-          return  apiVVersionApiVersionDetectorCommentKey(key,)
-        }
+export type ApiV1DetectorKeyMutationError = void
 
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type ApiVVersionApiVersionDetectorCommentKeyMutationResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionDetectorCommentKey>>>
-    
-    export type ApiVVersionApiVersionDetectorCommentKeyMutationError = void
-
-    /**
+/**
  * @summary Delete object of specified type
  */
-export const useApiVVersionApiVersionDetectorCommentKey = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDetectorCommentKey>>, TError,{key: number}, TContext>, }
-): UseMutationResult<
-        Awaited<ReturnType<typeof apiVVersionApiVersionDetectorCommentKey>>,
-        TError,
-        {key: number},
-        TContext
-      > => {
+export const useApiV1DetectorKey = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1DetectorKey>>,
+    TError,
+    { key: number },
+    TContext
+  >
+}): UseMutationResult<
+  Awaited<ReturnType<typeof apiV1DetectorKey>>,
+  TError,
+  { key: number },
+  TContext
+> => {
+  const mutationOptions = getApiV1DetectorKeyMutationOptions(options)
 
-      const mutationOptions = getApiVVersionApiVersionDetectorCommentKeyMutationOptions(options);
+  return useMutation(mutationOptions)
+}
 
-      return useMutation(mutationOptions);
+/**
+ * @summary Insert object of specified type
+ */
+export const apiV1DetectorComment = (
+  utahUdotAtspmDataModelsDetectorComment: UtahUdotAtspmDataModelsDetectorComment,
+  params?: ApiV1DetectorCommentParams
+) => {
+  return configRequest<void>({
+    url: `/api/v1/DetectorComment`,
+    method: 'POST',
+    headers: {
+      'Content-Type':
+        'application/json;odata.metadata=minimal;odata.streaming=true',
+    },
+    data: utahUdotAtspmDataModelsDetectorComment,
+    params,
+  })
+}
+
+export const getApiV1DetectorCommentMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1DetectorComment>>,
+    TError,
+    {
+      data: UtahUdotAtspmDataModelsDetectorComment
+      params?: ApiV1DetectorCommentParams
+    },
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof apiV1DetectorComment>>,
+  TError,
+  {
+    data: UtahUdotAtspmDataModelsDetectorComment
+    params?: ApiV1DetectorCommentParams
+  },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof apiV1DetectorComment>>,
+    {
+      data: UtahUdotAtspmDataModelsDetectorComment
+      params?: ApiV1DetectorCommentParams
     }
-    
+  > = (props) => {
+    const { data, params } = props ?? {}
+
+    return apiV1DetectorComment(data, params)
+  }
+
+  return { mutationFn, ...mutationOptions }
+}
+
+export type ApiV1DetectorCommentMutationResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1DetectorComment>>
+>
+export type ApiV1DetectorCommentMutationBody =
+  UtahUdotAtspmDataModelsDetectorComment
+export type ApiV1DetectorCommentMutationError = void
+
+/**
+ * @summary Insert object of specified type
+ */
+export const useApiV1DetectorComment = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1DetectorComment>>,
+    TError,
+    {
+      data: UtahUdotAtspmDataModelsDetectorComment
+      params?: ApiV1DetectorCommentParams
+    },
+    TContext
+  >
+}): UseMutationResult<
+  Awaited<ReturnType<typeof apiV1DetectorComment>>,
+  TError,
+  {
+    data: UtahUdotAtspmDataModelsDetectorComment
+    params?: ApiV1DetectorCommentParams
+  },
+  TContext
+> => {
+  const mutationOptions = getApiV1DetectorCommentMutationOptions(options)
+
+  return useMutation(mutationOptions)
+}
+
+/**
+ * @summary Collection of objects from oData query.
+ */
+export const apiV1DetectorCommentCount = (
+  params?: ApiV1DetectorCommentCountParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<UtahUdotAtspmDataModelsDetectorComment[]>({
+    url: `/api/v1/DetectorComment/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getApiV1DetectorCommentCountQueryKey = (
+  params?: ApiV1DetectorCommentCountParams
+) => {
+  return [
+    `/api/v1/DetectorComment/$count`,
+    ...(params ? [params] : []),
+  ] as const
+}
+
+export const getApiV1DetectorCommentCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof apiV1DetectorCommentCount>>,
+  TError = void,
+>(
+  params?: ApiV1DetectorCommentCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1DetectorCommentCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ?? getApiV1DetectorCommentCountQueryKey(params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof apiV1DetectorCommentCount>>
+  > = ({ signal }) => apiV1DetectorCommentCount(params, signal)
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof apiV1DetectorCommentCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type ApiV1DetectorCommentCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1DetectorCommentCount>>
+>
+export type ApiV1DetectorCommentCountQueryError = void
+
+/**
+ * @summary Collection of objects from oData query.
+ */
+
+export function useApiV1DetectorCommentCount<
+  TData = Awaited<ReturnType<typeof apiV1DetectorCommentCount>>,
+  TError = void,
+>(
+  params?: ApiV1DetectorCommentCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1DetectorCommentCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getApiV1DetectorCommentCountQueryOptions(params, options)
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
+ * @summary Delete object of specified type
+ */
+export const apiV1DetectorCommentKey = (key: number) => {
+  return configRequest<void>({
+    url: `/api/v1/DetectorComment/${key}`,
+    method: 'DELETE',
+  })
+}
+
+export const getApiV1DetectorCommentKeyMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1DetectorCommentKey>>,
+    TError,
+    { key: number },
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof apiV1DetectorCommentKey>>,
+  TError,
+  { key: number },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof apiV1DetectorCommentKey>>,
+    { key: number }
+  > = (props) => {
+    const { key } = props ?? {}
+
+    return apiV1DetectorCommentKey(key)
+  }
+
+  return { mutationFn, ...mutationOptions }
+}
+
+export type ApiV1DetectorCommentKeyMutationResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1DetectorCommentKey>>
+>
+
+export type ApiV1DetectorCommentKeyMutationError = void
+
+/**
+ * @summary Delete object of specified type
+ */
+export const useApiV1DetectorCommentKey = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1DetectorCommentKey>>,
+    TError,
+    { key: number },
+    TContext
+  >
+}): UseMutationResult<
+  Awaited<ReturnType<typeof apiV1DetectorCommentKey>>,
+  TError,
+  { key: number },
+  TContext
+> => {
+  const mutationOptions = getApiV1DetectorCommentKeyMutationOptions(options)
+
+  return useMutation(mutationOptions)
+}
+
 /**
  * @summary Gets all Utah.Udot.Atspm.Data.Models.Device from locationId where Utah.Udot.Atspm.Data.Models.Device.DeviceStatus equals Utah.Udot.Atspm.Data.Enums.DeviceStatus.Active
  */
-export const apiVVersionApiVersionDeviceGetActiveDevicesByLocationLocationIdLocationId = (
+export const apiV1DeviceGetActiveDevicesByLocationLocationIdLocationId = (
+  locationId: number,
+  params?: ApiV1DeviceGetActiveDevicesByLocationLocationIdLocationIdParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<UtahUdotAtspmDataModelsDevice[]>({
+    url: `/api/v1/Device/GetActiveDevicesByLocation(locationId=${locationId})`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getApiV1DeviceGetActiveDevicesByLocationLocationIdLocationIdQueryKey =
+  (
     locationId: number,
-    params?: ApiVVersionApiVersionDeviceGetActiveDevicesByLocationLocationIdLocationIdParams,
- signal?: AbortSignal
-) => {
-      
-      
-      return configRequest<UtahUdotAtspmDataModelsDevice[]>(
-      {url: `/api/v1/Device/GetActiveDevicesByLocation(locationId=${locationId})`, method: 'GET',
-        params, signal
-    },
-      );
+    params?: ApiV1DeviceGetActiveDevicesByLocationLocationIdLocationIdParams
+  ) => {
+    return [
+      `/api/v1/Device/GetActiveDevicesByLocation(locationId=${locationId})`,
+      ...(params ? [params] : []),
+    ] as const
+  }
+
+export const getApiV1DeviceGetActiveDevicesByLocationLocationIdLocationIdQueryOptions =
+  <
+    TData = Awaited<
+      ReturnType<
+        typeof apiV1DeviceGetActiveDevicesByLocationLocationIdLocationId
+      >
+    >,
+    TError = void,
+  >(
+    locationId: number,
+    params?: ApiV1DeviceGetActiveDevicesByLocationLocationIdLocationIdParams,
+    options?: {
+      query?: UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof apiV1DeviceGetActiveDevicesByLocationLocationIdLocationId
+          >
+        >,
+        TError,
+        TData
+      >
     }
-  
+  ) => {
+    const { query: queryOptions } = options ?? {}
 
-export const getApiVVersionApiVersionDeviceGetActiveDevicesByLocationLocationIdLocationIdQueryKey = (locationId: number,
-    params?: ApiVVersionApiVersionDeviceGetActiveDevicesByLocationLocationIdLocationIdParams,) => {
-    return [`/api/v1/Device/GetActiveDevicesByLocation(locationId=${locationId})`, ...(params ? [params]: [])] as const;
-    }
+    const queryKey =
+      queryOptions?.queryKey ??
+      getApiV1DeviceGetActiveDevicesByLocationLocationIdLocationIdQueryKey(
+        locationId,
+        params
+      )
 
-    
-export const getApiVVersionApiVersionDeviceGetActiveDevicesByLocationLocationIdLocationIdQueryOptions = <TData = Awaited<ReturnType<typeof apiVVersionApiVersionDeviceGetActiveDevicesByLocationLocationIdLocationId>>, TError = void>(locationId: number,
-    params?: ApiVVersionApiVersionDeviceGetActiveDevicesByLocationLocationIdLocationIdParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDeviceGetActiveDevicesByLocationLocationIdLocationId>>, TError, TData>, }
-) => {
+    const queryFn: QueryFunction<
+      Awaited<
+        ReturnType<
+          typeof apiV1DeviceGetActiveDevicesByLocationLocationIdLocationId
+        >
+      >
+    > = ({ signal }) =>
+      apiV1DeviceGetActiveDevicesByLocationLocationIdLocationId(
+        locationId,
+        params,
+        signal
+      )
 
-const {query: queryOptions} = options ?? {};
+    return {
+      queryKey,
+      queryFn,
+      enabled: !!locationId,
+      ...queryOptions,
+    } as UseQueryOptions<
+      Awaited<
+        ReturnType<
+          typeof apiV1DeviceGetActiveDevicesByLocationLocationIdLocationId
+        >
+      >,
+      TError,
+      TData
+    > & { queryKey: QueryKey }
+  }
 
-  const queryKey =  queryOptions?.queryKey ?? getApiVVersionApiVersionDeviceGetActiveDevicesByLocationLocationIdLocationIdQueryKey(locationId,params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiVVersionApiVersionDeviceGetActiveDevicesByLocationLocationIdLocationId>>> = ({ signal }) => apiVVersionApiVersionDeviceGetActiveDevicesByLocationLocationIdLocationId(locationId,params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(locationId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDeviceGetActiveDevicesByLocationLocationIdLocationId>>, TError, TData> & { queryKey: QueryKey }
-}
-
-export type ApiVVersionApiVersionDeviceGetActiveDevicesByLocationLocationIdLocationIdQueryResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionDeviceGetActiveDevicesByLocationLocationIdLocationId>>>
-export type ApiVVersionApiVersionDeviceGetActiveDevicesByLocationLocationIdLocationIdQueryError = void
-
+export type ApiV1DeviceGetActiveDevicesByLocationLocationIdLocationIdQueryResult =
+  NonNullable<
+    Awaited<
+      ReturnType<
+        typeof apiV1DeviceGetActiveDevicesByLocationLocationIdLocationId
+      >
+    >
+  >
+export type ApiV1DeviceGetActiveDevicesByLocationLocationIdLocationIdQueryError =
+  void
 
 /**
  * @summary Gets all Utah.Udot.Atspm.Data.Models.Device from locationId where Utah.Udot.Atspm.Data.Models.Device.DeviceStatus equals Utah.Udot.Atspm.Data.Enums.DeviceStatus.Active
  */
 
-export function useApiVVersionApiVersionDeviceGetActiveDevicesByLocationLocationIdLocationId<TData = Awaited<ReturnType<typeof apiVVersionApiVersionDeviceGetActiveDevicesByLocationLocationIdLocationId>>, TError = void>(
- locationId: number,
-    params?: ApiVVersionApiVersionDeviceGetActiveDevicesByLocationLocationIdLocationIdParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDeviceGetActiveDevicesByLocationLocationIdLocationId>>, TError, TData>, }
+export function useApiV1DeviceGetActiveDevicesByLocationLocationIdLocationId<
+  TData = Awaited<
+    ReturnType<typeof apiV1DeviceGetActiveDevicesByLocationLocationIdLocationId>
+  >,
+  TError = void,
+>(
+  locationId: number,
+  params?: ApiV1DeviceGetActiveDevicesByLocationLocationIdLocationIdParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<
+        ReturnType<
+          typeof apiV1DeviceGetActiveDevicesByLocationLocationIdLocationId
+        >
+      >,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions =
+    getApiV1DeviceGetActiveDevicesByLocationLocationIdLocationIdQueryOptions(
+      locationId,
+      params,
+      options
+    )
 
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
 
-  const queryOptions = getApiVVersionApiVersionDeviceGetActiveDevicesByLocationLocationIdLocationIdQueryOptions(locationId,params,options)
+  query.queryKey = queryOptions.queryKey
 
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+  return query
 }
-
-
-
 
 /**
  * @summary Gets a count of device type for all active devices Utah.Udot.Atspm.Data.Models.Device where Utah.Udot.Atspm.Data.Models.Device.DeviceStatus equals Utah.Udot.Atspm.Data.Enums.DeviceStatus.Active
  */
-export const apiVVersionApiVersionDeviceGetActiveDevicesCount = (
-    params?: ApiVVersionApiVersionDeviceGetActiveDevicesCountParams,
- signal?: AbortSignal
+export const apiV1DeviceGetActiveDevicesCount = (
+  params?: ApiV1DeviceGetActiveDevicesCountParams,
+  signal?: AbortSignal
 ) => {
-      
-      
-      return configRequest<UtahUdotATSPMConfigApiModelsDeviceGroup[]>(
-      {url: `/api/v1/Device/GetActiveDevicesCount`, method: 'GET',
-        params, signal
-    },
-      );
-    }
-  
-
-export const getApiVVersionApiVersionDeviceGetActiveDevicesCountQueryKey = (params?: ApiVVersionApiVersionDeviceGetActiveDevicesCountParams,) => {
-    return [`/api/v1/Device/GetActiveDevicesCount`, ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getApiVVersionApiVersionDeviceGetActiveDevicesCountQueryOptions = <TData = Awaited<ReturnType<typeof apiVVersionApiVersionDeviceGetActiveDevicesCount>>, TError = void>(params?: ApiVVersionApiVersionDeviceGetActiveDevicesCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDeviceGetActiveDevicesCount>>, TError, TData>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getApiVVersionApiVersionDeviceGetActiveDevicesCountQueryKey(params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiVVersionApiVersionDeviceGetActiveDevicesCount>>> = ({ signal }) => apiVVersionApiVersionDeviceGetActiveDevicesCount(params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDeviceGetActiveDevicesCount>>, TError, TData> & { queryKey: QueryKey }
+  return configRequest<UtahUdotATSPMConfigApiModelsDeviceGroup[]>({
+    url: `/api/v1/Device/GetActiveDevicesCount`,
+    method: 'GET',
+    params,
+    signal,
+  })
 }
 
-export type ApiVVersionApiVersionDeviceGetActiveDevicesCountQueryResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionDeviceGetActiveDevicesCount>>>
-export type ApiVVersionApiVersionDeviceGetActiveDevicesCountQueryError = void
+export const getApiV1DeviceGetActiveDevicesCountQueryKey = (
+  params?: ApiV1DeviceGetActiveDevicesCountParams
+) => {
+  return [
+    `/api/v1/Device/GetActiveDevicesCount`,
+    ...(params ? [params] : []),
+  ] as const
+}
 
+export const getApiV1DeviceGetActiveDevicesCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof apiV1DeviceGetActiveDevicesCount>>,
+  TError = void,
+>(
+  params?: ApiV1DeviceGetActiveDevicesCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1DeviceGetActiveDevicesCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getApiV1DeviceGetActiveDevicesCountQueryKey(params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof apiV1DeviceGetActiveDevicesCount>>
+  > = ({ signal }) => apiV1DeviceGetActiveDevicesCount(params, signal)
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof apiV1DeviceGetActiveDevicesCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type ApiV1DeviceGetActiveDevicesCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1DeviceGetActiveDevicesCount>>
+>
+export type ApiV1DeviceGetActiveDevicesCountQueryError = void
 
 /**
  * @summary Gets a count of device type for all active devices Utah.Udot.Atspm.Data.Models.Device where Utah.Udot.Atspm.Data.Models.Device.DeviceStatus equals Utah.Udot.Atspm.Data.Enums.DeviceStatus.Active
  */
 
-export function useApiVVersionApiVersionDeviceGetActiveDevicesCount<TData = Awaited<ReturnType<typeof apiVVersionApiVersionDeviceGetActiveDevicesCount>>, TError = void>(
- params?: ApiVVersionApiVersionDeviceGetActiveDevicesCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDeviceGetActiveDevicesCount>>, TError, TData>, }
+export function useApiV1DeviceGetActiveDevicesCount<
+  TData = Awaited<ReturnType<typeof apiV1DeviceGetActiveDevicesCount>>,
+  TError = void,
+>(
+  params?: ApiV1DeviceGetActiveDevicesCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1DeviceGetActiveDevicesCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getApiV1DeviceGetActiveDevicesCountQueryOptions(
+    params,
+    options
+  )
 
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
 
-  const queryOptions = getApiVVersionApiVersionDeviceGetActiveDevicesCountQueryOptions(params,options)
+  query.queryKey = queryOptions.queryKey
 
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+  return query
 }
-
-
-
 
 /**
  * @summary Insert object of specified type
  */
-export const apiVVersionApiVersionDevice = (
-    utahUdotAtspmDataModelsDevice: UtahUdotAtspmDataModelsDevice,
-    params?: ApiVVersionApiVersionDeviceParams,
- ) => {
-      
-      
-      return configRequest<void>(
-      {url: `/api/v1/Device`, method: 'POST',
-      headers: {'Content-Type': 'application/json;odata.metadata=minimal;odata.streaming=true', },
-      data: utahUdotAtspmDataModelsDevice,
-        params
+export const apiV1Device = (
+  utahUdotAtspmDataModelsDevice: UtahUdotAtspmDataModelsDevice,
+  params?: ApiV1DeviceParams
+) => {
+  return configRequest<void>({
+    url: `/api/v1/Device`,
+    method: 'POST',
+    headers: {
+      'Content-Type':
+        'application/json;odata.metadata=minimal;odata.streaming=true',
     },
-      );
-    }
-  
+    data: utahUdotAtspmDataModelsDevice,
+    params,
+  })
+}
 
+export const getApiV1DeviceMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1Device>>,
+    TError,
+    { data: UtahUdotAtspmDataModelsDevice; params?: ApiV1DeviceParams },
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof apiV1Device>>,
+  TError,
+  { data: UtahUdotAtspmDataModelsDevice; params?: ApiV1DeviceParams },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
 
-export const getApiVVersionApiVersionDeviceMutationOptions = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDevice>>, TError,{data: UtahUdotAtspmDataModelsDevice;params?: ApiVVersionApiVersionDeviceParams}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDevice>>, TError,{data: UtahUdotAtspmDataModelsDevice;params?: ApiVVersionApiVersionDeviceParams}, TContext> => {
-const {mutation: mutationOptions} = options ?? {};
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof apiV1Device>>,
+    { data: UtahUdotAtspmDataModelsDevice; params?: ApiV1DeviceParams }
+  > = (props) => {
+    const { data, params } = props ?? {}
 
-      
+    return apiV1Device(data, params)
+  }
 
+  return { mutationFn, ...mutationOptions }
+}
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof apiVVersionApiVersionDevice>>, {data: UtahUdotAtspmDataModelsDevice;params?: ApiVVersionApiVersionDeviceParams}> = (props) => {
-          const {data,params} = props ?? {};
+export type ApiV1DeviceMutationResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1Device>>
+>
+export type ApiV1DeviceMutationBody = UtahUdotAtspmDataModelsDevice
+export type ApiV1DeviceMutationError = void
 
-          return  apiVVersionApiVersionDevice(data,params,)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type ApiVVersionApiVersionDeviceMutationResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionDevice>>>
-    export type ApiVVersionApiVersionDeviceMutationBody = UtahUdotAtspmDataModelsDevice
-    export type ApiVVersionApiVersionDeviceMutationError = void
-
-    /**
+/**
  * @summary Insert object of specified type
  */
-export const useApiVVersionApiVersionDevice = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDevice>>, TError,{data: UtahUdotAtspmDataModelsDevice;params?: ApiVVersionApiVersionDeviceParams}, TContext>, }
-): UseMutationResult<
-        Awaited<ReturnType<typeof apiVVersionApiVersionDevice>>,
-        TError,
-        {data: UtahUdotAtspmDataModelsDevice;params?: ApiVVersionApiVersionDeviceParams},
-        TContext
-      > => {
+export const useApiV1Device = <TError = void, TContext = unknown>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1Device>>,
+    TError,
+    { data: UtahUdotAtspmDataModelsDevice; params?: ApiV1DeviceParams },
+    TContext
+  >
+}): UseMutationResult<
+  Awaited<ReturnType<typeof apiV1Device>>,
+  TError,
+  { data: UtahUdotAtspmDataModelsDevice; params?: ApiV1DeviceParams },
+  TContext
+> => {
+  const mutationOptions = getApiV1DeviceMutationOptions(options)
 
-      const mutationOptions = getApiVVersionApiVersionDeviceMutationOptions(options);
-
-      return useMutation(mutationOptions);
-    }
-    
-/**
- * @summary Collection of objects from oData query.
- */
-export const apiVVersionApiVersionDeviceCount = (
-    params?: ApiVVersionApiVersionDeviceCountParams,
- signal?: AbortSignal
-) => {
-      
-      
-      return configRequest<UtahUdotAtspmDataModelsDevice[]>(
-      {url: `/api/v1/Device/$count`, method: 'GET',
-        params, signal
-    },
-      );
-    }
-  
-
-export const getApiVVersionApiVersionDeviceCountQueryKey = (params?: ApiVVersionApiVersionDeviceCountParams,) => {
-    return [`/api/v1/Device/$count`, ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getApiVVersionApiVersionDeviceCountQueryOptions = <TData = Awaited<ReturnType<typeof apiVVersionApiVersionDeviceCount>>, TError = void>(params?: ApiVVersionApiVersionDeviceCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDeviceCount>>, TError, TData>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getApiVVersionApiVersionDeviceCountQueryKey(params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiVVersionApiVersionDeviceCount>>> = ({ signal }) => apiVVersionApiVersionDeviceCount(params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDeviceCount>>, TError, TData> & { queryKey: QueryKey }
+  return useMutation(mutationOptions)
 }
-
-export type ApiVVersionApiVersionDeviceCountQueryResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionDeviceCount>>>
-export type ApiVVersionApiVersionDeviceCountQueryError = void
-
 
 /**
  * @summary Collection of objects from oData query.
  */
-
-export function useApiVVersionApiVersionDeviceCount<TData = Awaited<ReturnType<typeof apiVVersionApiVersionDeviceCount>>, TError = void>(
- params?: ApiVVersionApiVersionDeviceCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDeviceCount>>, TError, TData>, }
-
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
-
-  const queryOptions = getApiVVersionApiVersionDeviceCountQueryOptions(params,options)
-
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+export const apiV1DeviceCount = (
+  params?: ApiV1DeviceCountParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<UtahUdotAtspmDataModelsDevice[]>({
+    url: `/api/v1/Device/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
 }
 
+export const getApiV1DeviceCountQueryKey = (
+  params?: ApiV1DeviceCountParams
+) => {
+  return [`/api/v1/Device/$count`, ...(params ? [params] : [])] as const
+}
 
+export const getApiV1DeviceCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof apiV1DeviceCount>>,
+  TError = void,
+>(
+  params?: ApiV1DeviceCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1DeviceCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
 
+  const queryKey = queryOptions?.queryKey ?? getApiV1DeviceCountQueryKey(params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof apiV1DeviceCount>>
+  > = ({ signal }) => apiV1DeviceCount(params, signal)
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof apiV1DeviceCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type ApiV1DeviceCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1DeviceCount>>
+>
+export type ApiV1DeviceCountQueryError = void
+
+/**
+ * @summary Collection of objects from oData query.
+ */
+
+export function useApiV1DeviceCount<
+  TData = Awaited<ReturnType<typeof apiV1DeviceCount>>,
+  TError = void,
+>(
+  params?: ApiV1DeviceCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1DeviceCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getApiV1DeviceCountQueryOptions(params, options)
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
 
 /**
  * @summary Delete object of specified type
  */
-export const apiVVersionApiVersionDeviceKey = (
-    key: number,
- ) => {
-      
-      
-      return configRequest<void>(
-      {url: `/api/v1/Device/${key}`, method: 'DELETE'
-    },
-      );
-    }
-  
+export const apiV1DeviceKey = (key: number) => {
+  return configRequest<void>({ url: `/api/v1/Device/${key}`, method: 'DELETE' })
+}
 
+export const getApiV1DeviceKeyMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1DeviceKey>>,
+    TError,
+    { key: number },
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof apiV1DeviceKey>>,
+  TError,
+  { key: number },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
 
-export const getApiVVersionApiVersionDeviceKeyMutationOptions = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDeviceKey>>, TError,{key: number}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDeviceKey>>, TError,{key: number}, TContext> => {
-const {mutation: mutationOptions} = options ?? {};
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof apiV1DeviceKey>>,
+    { key: number }
+  > = (props) => {
+    const { key } = props ?? {}
 
-      
+    return apiV1DeviceKey(key)
+  }
 
+  return { mutationFn, ...mutationOptions }
+}
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof apiVVersionApiVersionDeviceKey>>, {key: number}> = (props) => {
-          const {key} = props ?? {};
+export type ApiV1DeviceKeyMutationResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1DeviceKey>>
+>
 
-          return  apiVVersionApiVersionDeviceKey(key,)
-        }
+export type ApiV1DeviceKeyMutationError = void
 
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type ApiVVersionApiVersionDeviceKeyMutationResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionDeviceKey>>>
-    
-    export type ApiVVersionApiVersionDeviceKeyMutationError = void
-
-    /**
+/**
  * @summary Delete object of specified type
  */
-export const useApiVVersionApiVersionDeviceKey = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDeviceKey>>, TError,{key: number}, TContext>, }
-): UseMutationResult<
-        Awaited<ReturnType<typeof apiVVersionApiVersionDeviceKey>>,
-        TError,
-        {key: number},
-        TContext
-      > => {
+export const useApiV1DeviceKey = <TError = void, TContext = unknown>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1DeviceKey>>,
+    TError,
+    { key: number },
+    TContext
+  >
+}): UseMutationResult<
+  Awaited<ReturnType<typeof apiV1DeviceKey>>,
+  TError,
+  { key: number },
+  TContext
+> => {
+  const mutationOptions = getApiV1DeviceKeyMutationOptions(options)
 
-      const mutationOptions = getApiVVersionApiVersionDeviceKeyMutationOptions(options);
-
-      return useMutation(mutationOptions);
-    }
-    
-/**
- * @summary Utah.Udot.Atspm.Data.Models.Device navigation property action
- */
-export const apiVVersionApiVersionDeviceConfigurationKeyDevices = (
-    key: number,
-    params?: ApiVVersionApiVersionDeviceConfigurationKeyDevicesParams,
- signal?: AbortSignal
-) => {
-      
-      
-      return configRequest<UtahUdotAtspmDataModelsDevice[]>(
-      {url: `/api/v1/DeviceConfiguration/${key}/devices`, method: 'GET',
-        params, signal
-    },
-      );
-    }
-  
-
-export const getApiVVersionApiVersionDeviceConfigurationKeyDevicesQueryKey = (key: number,
-    params?: ApiVVersionApiVersionDeviceConfigurationKeyDevicesParams,) => {
-    return [`/api/v1/DeviceConfiguration/${key}/devices`, ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getApiVVersionApiVersionDeviceConfigurationKeyDevicesQueryOptions = <TData = Awaited<ReturnType<typeof apiVVersionApiVersionDeviceConfigurationKeyDevices>>, TError = void>(key: number,
-    params?: ApiVVersionApiVersionDeviceConfigurationKeyDevicesParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDeviceConfigurationKeyDevices>>, TError, TData>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getApiVVersionApiVersionDeviceConfigurationKeyDevicesQueryKey(key,params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiVVersionApiVersionDeviceConfigurationKeyDevices>>> = ({ signal }) => apiVVersionApiVersionDeviceConfigurationKeyDevices(key,params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(key), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDeviceConfigurationKeyDevices>>, TError, TData> & { queryKey: QueryKey }
+  return useMutation(mutationOptions)
 }
-
-export type ApiVVersionApiVersionDeviceConfigurationKeyDevicesQueryResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionDeviceConfigurationKeyDevices>>>
-export type ApiVVersionApiVersionDeviceConfigurationKeyDevicesQueryError = void
-
-
-/**
- * @summary Utah.Udot.Atspm.Data.Models.Device navigation property action
- */
-
-export function useApiVVersionApiVersionDeviceConfigurationKeyDevices<TData = Awaited<ReturnType<typeof apiVVersionApiVersionDeviceConfigurationKeyDevices>>, TError = void>(
- key: number,
-    params?: ApiVVersionApiVersionDeviceConfigurationKeyDevicesParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDeviceConfigurationKeyDevices>>, TError, TData>, }
-
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
-
-  const queryOptions = getApiVVersionApiVersionDeviceConfigurationKeyDevicesQueryOptions(key,params,options)
-
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
-}
-
-
-
 
 /**
  * @summary Utah.Udot.Atspm.Data.Models.Device navigation property action
  */
-export const apiVVersionApiVersionDeviceConfigurationKeyDevicesCount = (
-    key: number,
-    params?: ApiVVersionApiVersionDeviceConfigurationKeyDevicesCountParams,
- signal?: AbortSignal
+export const apiV1DeviceConfigurationKeyDevices = (
+  key: number,
+  params?: ApiV1DeviceConfigurationKeyDevicesParams,
+  signal?: AbortSignal
 ) => {
-      
-      
-      return configRequest<UtahUdotAtspmDataModelsDevice[]>(
-      {url: `/api/v1/DeviceConfiguration/${key}/devices/$count`, method: 'GET',
-        params, signal
-    },
-      );
-    }
-  
-
-export const getApiVVersionApiVersionDeviceConfigurationKeyDevicesCountQueryKey = (key: number,
-    params?: ApiVVersionApiVersionDeviceConfigurationKeyDevicesCountParams,) => {
-    return [`/api/v1/DeviceConfiguration/${key}/devices/$count`, ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getApiVVersionApiVersionDeviceConfigurationKeyDevicesCountQueryOptions = <TData = Awaited<ReturnType<typeof apiVVersionApiVersionDeviceConfigurationKeyDevicesCount>>, TError = void>(key: number,
-    params?: ApiVVersionApiVersionDeviceConfigurationKeyDevicesCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDeviceConfigurationKeyDevicesCount>>, TError, TData>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getApiVVersionApiVersionDeviceConfigurationKeyDevicesCountQueryKey(key,params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiVVersionApiVersionDeviceConfigurationKeyDevicesCount>>> = ({ signal }) => apiVVersionApiVersionDeviceConfigurationKeyDevicesCount(key,params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(key), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDeviceConfigurationKeyDevicesCount>>, TError, TData> & { queryKey: QueryKey }
+  return configRequest<UtahUdotAtspmDataModelsDevice[]>({
+    url: `/api/v1/DeviceConfiguration/${key}/devices`,
+    method: 'GET',
+    params,
+    signal,
+  })
 }
 
-export type ApiVVersionApiVersionDeviceConfigurationKeyDevicesCountQueryResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionDeviceConfigurationKeyDevicesCount>>>
-export type ApiVVersionApiVersionDeviceConfigurationKeyDevicesCountQueryError = void
+export const getApiV1DeviceConfigurationKeyDevicesQueryKey = (
+  key: number,
+  params?: ApiV1DeviceConfigurationKeyDevicesParams
+) => {
+  return [
+    `/api/v1/DeviceConfiguration/${key}/devices`,
+    ...(params ? [params] : []),
+  ] as const
+}
 
+export const getApiV1DeviceConfigurationKeyDevicesQueryOptions = <
+  TData = Awaited<ReturnType<typeof apiV1DeviceConfigurationKeyDevices>>,
+  TError = void,
+>(
+  key: number,
+  params?: ApiV1DeviceConfigurationKeyDevicesParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1DeviceConfigurationKeyDevices>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getApiV1DeviceConfigurationKeyDevicesQueryKey(key, params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof apiV1DeviceConfigurationKeyDevices>>
+  > = ({ signal }) => apiV1DeviceConfigurationKeyDevices(key, params, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!key,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof apiV1DeviceConfigurationKeyDevices>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type ApiV1DeviceConfigurationKeyDevicesQueryResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1DeviceConfigurationKeyDevices>>
+>
+export type ApiV1DeviceConfigurationKeyDevicesQueryError = void
 
 /**
  * @summary Utah.Udot.Atspm.Data.Models.Device navigation property action
  */
 
-export function useApiVVersionApiVersionDeviceConfigurationKeyDevicesCount<TData = Awaited<ReturnType<typeof apiVVersionApiVersionDeviceConfigurationKeyDevicesCount>>, TError = void>(
- key: number,
-    params?: ApiVVersionApiVersionDeviceConfigurationKeyDevicesCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDeviceConfigurationKeyDevicesCount>>, TError, TData>, }
+export function useApiV1DeviceConfigurationKeyDevices<
+  TData = Awaited<ReturnType<typeof apiV1DeviceConfigurationKeyDevices>>,
+  TError = void,
+>(
+  key: number,
+  params?: ApiV1DeviceConfigurationKeyDevicesParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1DeviceConfigurationKeyDevices>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getApiV1DeviceConfigurationKeyDevicesQueryOptions(
+    key,
+    params,
+    options
+  )
 
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
 
-  const queryOptions = getApiVVersionApiVersionDeviceConfigurationKeyDevicesCountQueryOptions(key,params,options)
+  query.queryKey = queryOptions.queryKey
 
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+  return query
 }
 
+/**
+ * @summary Utah.Udot.Atspm.Data.Models.Device navigation property action
+ */
+export const apiV1DeviceConfigurationKeyDevicesCount = (
+  key: number,
+  params?: ApiV1DeviceConfigurationKeyDevicesCountParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<UtahUdotAtspmDataModelsDevice[]>({
+    url: `/api/v1/DeviceConfiguration/${key}/devices/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
 
+export const getApiV1DeviceConfigurationKeyDevicesCountQueryKey = (
+  key: number,
+  params?: ApiV1DeviceConfigurationKeyDevicesCountParams
+) => {
+  return [
+    `/api/v1/DeviceConfiguration/${key}/devices/$count`,
+    ...(params ? [params] : []),
+  ] as const
+}
 
+export const getApiV1DeviceConfigurationKeyDevicesCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof apiV1DeviceConfigurationKeyDevicesCount>>,
+  TError = void,
+>(
+  key: number,
+  params?: ApiV1DeviceConfigurationKeyDevicesCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1DeviceConfigurationKeyDevicesCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getApiV1DeviceConfigurationKeyDevicesCountQueryKey(key, params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof apiV1DeviceConfigurationKeyDevicesCount>>
+  > = ({ signal }) =>
+    apiV1DeviceConfigurationKeyDevicesCount(key, params, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!key,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof apiV1DeviceConfigurationKeyDevicesCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type ApiV1DeviceConfigurationKeyDevicesCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1DeviceConfigurationKeyDevicesCount>>
+>
+export type ApiV1DeviceConfigurationKeyDevicesCountQueryError = void
+
+/**
+ * @summary Utah.Udot.Atspm.Data.Models.Device navigation property action
+ */
+
+export function useApiV1DeviceConfigurationKeyDevicesCount<
+  TData = Awaited<ReturnType<typeof apiV1DeviceConfigurationKeyDevicesCount>>,
+  TError = void,
+>(
+  key: number,
+  params?: ApiV1DeviceConfigurationKeyDevicesCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1DeviceConfigurationKeyDevicesCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getApiV1DeviceConfigurationKeyDevicesCountQueryOptions(
+    key,
+    params,
+    options
+  )
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
 
 /**
  * @summary Insert object of specified type
  */
-export const apiVVersionApiVersionDeviceConfiguration = (
-    utahUdotAtspmDataModelsDeviceConfiguration: UtahUdotAtspmDataModelsDeviceConfiguration,
-    params?: ApiVVersionApiVersionDeviceConfigurationParams,
- ) => {
-      
-      
-      return configRequest<void>(
-      {url: `/api/v1/DeviceConfiguration`, method: 'POST',
-      headers: {'Content-Type': 'application/json;odata.metadata=minimal;odata.streaming=true', },
-      data: utahUdotAtspmDataModelsDeviceConfiguration,
-        params
+export const apiV1DeviceConfiguration = (
+  utahUdotAtspmDataModelsDeviceConfiguration: UtahUdotAtspmDataModelsDeviceConfiguration,
+  params?: ApiV1DeviceConfigurationParams
+) => {
+  return configRequest<void>({
+    url: `/api/v1/DeviceConfiguration`,
+    method: 'POST',
+    headers: {
+      'Content-Type':
+        'application/json;odata.metadata=minimal;odata.streaming=true',
     },
-      );
-    }
-  
+    data: utahUdotAtspmDataModelsDeviceConfiguration,
+    params,
+  })
+}
 
-
-export const getApiVVersionApiVersionDeviceConfigurationMutationOptions = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDeviceConfiguration>>, TError,{data: UtahUdotAtspmDataModelsDeviceConfiguration;params?: ApiVVersionApiVersionDeviceConfigurationParams}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDeviceConfiguration>>, TError,{data: UtahUdotAtspmDataModelsDeviceConfiguration;params?: ApiVVersionApiVersionDeviceConfigurationParams}, TContext> => {
-const {mutation: mutationOptions} = options ?? {};
-
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof apiVVersionApiVersionDeviceConfiguration>>, {data: UtahUdotAtspmDataModelsDeviceConfiguration;params?: ApiVVersionApiVersionDeviceConfigurationParams}> = (props) => {
-          const {data,params} = props ?? {};
-
-          return  apiVVersionApiVersionDeviceConfiguration(data,params,)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type ApiVVersionApiVersionDeviceConfigurationMutationResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionDeviceConfiguration>>>
-    export type ApiVVersionApiVersionDeviceConfigurationMutationBody = UtahUdotAtspmDataModelsDeviceConfiguration
-    export type ApiVVersionApiVersionDeviceConfigurationMutationError = void
-
-    /**
- * @summary Insert object of specified type
- */
-export const useApiVVersionApiVersionDeviceConfiguration = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDeviceConfiguration>>, TError,{data: UtahUdotAtspmDataModelsDeviceConfiguration;params?: ApiVVersionApiVersionDeviceConfigurationParams}, TContext>, }
-): UseMutationResult<
-        Awaited<ReturnType<typeof apiVVersionApiVersionDeviceConfiguration>>,
-        TError,
-        {data: UtahUdotAtspmDataModelsDeviceConfiguration;params?: ApiVVersionApiVersionDeviceConfigurationParams},
-        TContext
-      > => {
-
-      const mutationOptions = getApiVVersionApiVersionDeviceConfigurationMutationOptions(options);
-
-      return useMutation(mutationOptions);
-    }
-    
-/**
- * @summary Collection of objects from oData query.
- */
-export const apiVVersionApiVersionDeviceConfigurationCount = (
-    params?: ApiVVersionApiVersionDeviceConfigurationCountParams,
- signal?: AbortSignal
-) => {
-      
-      
-      return configRequest<UtahUdotAtspmDataModelsDeviceConfiguration[]>(
-      {url: `/api/v1/DeviceConfiguration/$count`, method: 'GET',
-        params, signal
+export const getApiV1DeviceConfigurationMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1DeviceConfiguration>>,
+    TError,
+    {
+      data: UtahUdotAtspmDataModelsDeviceConfiguration
+      params?: ApiV1DeviceConfigurationParams
     },
-      );
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof apiV1DeviceConfiguration>>,
+  TError,
+  {
+    data: UtahUdotAtspmDataModelsDeviceConfiguration
+    params?: ApiV1DeviceConfigurationParams
+  },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof apiV1DeviceConfiguration>>,
+    {
+      data: UtahUdotAtspmDataModelsDeviceConfiguration
+      params?: ApiV1DeviceConfigurationParams
     }
-  
+  > = (props) => {
+    const { data, params } = props ?? {}
 
-export const getApiVVersionApiVersionDeviceConfigurationCountQueryKey = (params?: ApiVVersionApiVersionDeviceConfigurationCountParams,) => {
-    return [`/api/v1/DeviceConfiguration/$count`, ...(params ? [params]: [])] as const;
-    }
+    return apiV1DeviceConfiguration(data, params)
+  }
 
-    
-export const getApiVVersionApiVersionDeviceConfigurationCountQueryOptions = <TData = Awaited<ReturnType<typeof apiVVersionApiVersionDeviceConfigurationCount>>, TError = void>(params?: ApiVVersionApiVersionDeviceConfigurationCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDeviceConfigurationCount>>, TError, TData>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getApiVVersionApiVersionDeviceConfigurationCountQueryKey(params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiVVersionApiVersionDeviceConfigurationCount>>> = ({ signal }) => apiVVersionApiVersionDeviceConfigurationCount(params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDeviceConfigurationCount>>, TError, TData> & { queryKey: QueryKey }
+  return { mutationFn, ...mutationOptions }
 }
 
-export type ApiVVersionApiVersionDeviceConfigurationCountQueryResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionDeviceConfigurationCount>>>
-export type ApiVVersionApiVersionDeviceConfigurationCountQueryError = void
-
-
-/**
- * @summary Collection of objects from oData query.
- */
-
-export function useApiVVersionApiVersionDeviceConfigurationCount<TData = Awaited<ReturnType<typeof apiVVersionApiVersionDeviceConfigurationCount>>, TError = void>(
- params?: ApiVVersionApiVersionDeviceConfigurationCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDeviceConfigurationCount>>, TError, TData>, }
-
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
-
-  const queryOptions = getApiVVersionApiVersionDeviceConfigurationCountQueryOptions(params,options)
-
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
-}
-
-
-
-
-/**
- * @summary Delete object of specified type
- */
-export const apiVVersionApiVersionDeviceConfigurationKey = (
-    key: number,
- ) => {
-      
-      
-      return configRequest<void>(
-      {url: `/api/v1/DeviceConfiguration/${key}`, method: 'DELETE'
-    },
-      );
-    }
-  
-
-
-export const getApiVVersionApiVersionDeviceConfigurationKeyMutationOptions = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDeviceConfigurationKey>>, TError,{key: number}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDeviceConfigurationKey>>, TError,{key: number}, TContext> => {
-const {mutation: mutationOptions} = options ?? {};
-
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof apiVVersionApiVersionDeviceConfigurationKey>>, {key: number}> = (props) => {
-          const {key} = props ?? {};
-
-          return  apiVVersionApiVersionDeviceConfigurationKey(key,)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type ApiVVersionApiVersionDeviceConfigurationKeyMutationResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionDeviceConfigurationKey>>>
-    
-    export type ApiVVersionApiVersionDeviceConfigurationKeyMutationError = void
-
-    /**
- * @summary Delete object of specified type
- */
-export const useApiVVersionApiVersionDeviceConfigurationKey = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDeviceConfigurationKey>>, TError,{key: number}, TContext>, }
-): UseMutationResult<
-        Awaited<ReturnType<typeof apiVVersionApiVersionDeviceConfigurationKey>>,
-        TError,
-        {key: number},
-        TContext
-      > => {
-
-      const mutationOptions = getApiVVersionApiVersionDeviceConfigurationKeyMutationOptions(options);
-
-      return useMutation(mutationOptions);
-    }
-    
-/**
- * @summary Utah.Udot.Atspm.Data.Models.Approach navigation property action
- */
-export const apiVVersionApiVersionDirectionTypeKeyApproaches = (
-    key: UtahUdotAtspmDataEnumsDirectionTypes,
-    params?: ApiVVersionApiVersionDirectionTypeKeyApproachesParams,
- signal?: AbortSignal
-) => {
-      
-      
-      return configRequest<UtahUdotAtspmDataModelsApproach[]>(
-      {url: `/api/v1/DirectionType/${key}/approaches`, method: 'GET',
-        params, signal
-    },
-      );
-    }
-  
-
-export const getApiVVersionApiVersionDirectionTypeKeyApproachesQueryKey = (key: UtahUdotAtspmDataEnumsDirectionTypes,
-    params?: ApiVVersionApiVersionDirectionTypeKeyApproachesParams,) => {
-    return [`/api/v1/DirectionType/${key}/approaches`, ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getApiVVersionApiVersionDirectionTypeKeyApproachesQueryOptions = <TData = Awaited<ReturnType<typeof apiVVersionApiVersionDirectionTypeKeyApproaches>>, TError = void>(key: UtahUdotAtspmDataEnumsDirectionTypes,
-    params?: ApiVVersionApiVersionDirectionTypeKeyApproachesParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDirectionTypeKeyApproaches>>, TError, TData>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getApiVVersionApiVersionDirectionTypeKeyApproachesQueryKey(key,params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiVVersionApiVersionDirectionTypeKeyApproaches>>> = ({ signal }) => apiVVersionApiVersionDirectionTypeKeyApproaches(key,params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(key), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDirectionTypeKeyApproaches>>, TError, TData> & { queryKey: QueryKey }
-}
-
-export type ApiVVersionApiVersionDirectionTypeKeyApproachesQueryResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionDirectionTypeKeyApproaches>>>
-export type ApiVVersionApiVersionDirectionTypeKeyApproachesQueryError = void
-
-
-/**
- * @summary Utah.Udot.Atspm.Data.Models.Approach navigation property action
- */
-
-export function useApiVVersionApiVersionDirectionTypeKeyApproaches<TData = Awaited<ReturnType<typeof apiVVersionApiVersionDirectionTypeKeyApproaches>>, TError = void>(
- key: UtahUdotAtspmDataEnumsDirectionTypes,
-    params?: ApiVVersionApiVersionDirectionTypeKeyApproachesParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDirectionTypeKeyApproaches>>, TError, TData>, }
-
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
-
-  const queryOptions = getApiVVersionApiVersionDirectionTypeKeyApproachesQueryOptions(key,params,options)
-
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
-}
-
-
-
-
-/**
- * @summary Utah.Udot.Atspm.Data.Models.Approach navigation property action
- */
-export const apiVVersionApiVersionDirectionTypeKeyApproachesCount = (
-    key: UtahUdotAtspmDataEnumsDirectionTypes,
-    params?: ApiVVersionApiVersionDirectionTypeKeyApproachesCountParams,
- signal?: AbortSignal
-) => {
-      
-      
-      return configRequest<UtahUdotAtspmDataModelsApproach[]>(
-      {url: `/api/v1/DirectionType/${key}/approaches/$count`, method: 'GET',
-        params, signal
-    },
-      );
-    }
-  
-
-export const getApiVVersionApiVersionDirectionTypeKeyApproachesCountQueryKey = (key: UtahUdotAtspmDataEnumsDirectionTypes,
-    params?: ApiVVersionApiVersionDirectionTypeKeyApproachesCountParams,) => {
-    return [`/api/v1/DirectionType/${key}/approaches/$count`, ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getApiVVersionApiVersionDirectionTypeKeyApproachesCountQueryOptions = <TData = Awaited<ReturnType<typeof apiVVersionApiVersionDirectionTypeKeyApproachesCount>>, TError = void>(key: UtahUdotAtspmDataEnumsDirectionTypes,
-    params?: ApiVVersionApiVersionDirectionTypeKeyApproachesCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDirectionTypeKeyApproachesCount>>, TError, TData>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getApiVVersionApiVersionDirectionTypeKeyApproachesCountQueryKey(key,params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiVVersionApiVersionDirectionTypeKeyApproachesCount>>> = ({ signal }) => apiVVersionApiVersionDirectionTypeKeyApproachesCount(key,params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(key), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDirectionTypeKeyApproachesCount>>, TError, TData> & { queryKey: QueryKey }
-}
-
-export type ApiVVersionApiVersionDirectionTypeKeyApproachesCountQueryResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionDirectionTypeKeyApproachesCount>>>
-export type ApiVVersionApiVersionDirectionTypeKeyApproachesCountQueryError = void
-
-
-/**
- * @summary Utah.Udot.Atspm.Data.Models.Approach navigation property action
- */
-
-export function useApiVVersionApiVersionDirectionTypeKeyApproachesCount<TData = Awaited<ReturnType<typeof apiVVersionApiVersionDirectionTypeKeyApproachesCount>>, TError = void>(
- key: UtahUdotAtspmDataEnumsDirectionTypes,
-    params?: ApiVVersionApiVersionDirectionTypeKeyApproachesCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDirectionTypeKeyApproachesCount>>, TError, TData>, }
-
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
-
-  const queryOptions = getApiVVersionApiVersionDirectionTypeKeyApproachesCountQueryOptions(key,params,options)
-
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
-}
-
-
-
-
-/**
- * @summary Utah.Udot.Atspm.Data.Models.RouteLocation navigation property action
- */
-export const apiVVersionApiVersionDirectionTypeKeyPrimaryDirections = (
-    key: UtahUdotAtspmDataEnumsDirectionTypes,
-    params?: ApiVVersionApiVersionDirectionTypeKeyPrimaryDirectionsParams,
- signal?: AbortSignal
-) => {
-      
-      
-      return configRequest<UtahUdotAtspmDataModelsRouteLocation[]>(
-      {url: `/api/v1/DirectionType/${key}/primaryDirections`, method: 'GET',
-        params, signal
-    },
-      );
-    }
-  
-
-export const getApiVVersionApiVersionDirectionTypeKeyPrimaryDirectionsQueryKey = (key: UtahUdotAtspmDataEnumsDirectionTypes,
-    params?: ApiVVersionApiVersionDirectionTypeKeyPrimaryDirectionsParams,) => {
-    return [`/api/v1/DirectionType/${key}/primaryDirections`, ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getApiVVersionApiVersionDirectionTypeKeyPrimaryDirectionsQueryOptions = <TData = Awaited<ReturnType<typeof apiVVersionApiVersionDirectionTypeKeyPrimaryDirections>>, TError = void>(key: UtahUdotAtspmDataEnumsDirectionTypes,
-    params?: ApiVVersionApiVersionDirectionTypeKeyPrimaryDirectionsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDirectionTypeKeyPrimaryDirections>>, TError, TData>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getApiVVersionApiVersionDirectionTypeKeyPrimaryDirectionsQueryKey(key,params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiVVersionApiVersionDirectionTypeKeyPrimaryDirections>>> = ({ signal }) => apiVVersionApiVersionDirectionTypeKeyPrimaryDirections(key,params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(key), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDirectionTypeKeyPrimaryDirections>>, TError, TData> & { queryKey: QueryKey }
-}
-
-export type ApiVVersionApiVersionDirectionTypeKeyPrimaryDirectionsQueryResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionDirectionTypeKeyPrimaryDirections>>>
-export type ApiVVersionApiVersionDirectionTypeKeyPrimaryDirectionsQueryError = void
-
-
-/**
- * @summary Utah.Udot.Atspm.Data.Models.RouteLocation navigation property action
- */
-
-export function useApiVVersionApiVersionDirectionTypeKeyPrimaryDirections<TData = Awaited<ReturnType<typeof apiVVersionApiVersionDirectionTypeKeyPrimaryDirections>>, TError = void>(
- key: UtahUdotAtspmDataEnumsDirectionTypes,
-    params?: ApiVVersionApiVersionDirectionTypeKeyPrimaryDirectionsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDirectionTypeKeyPrimaryDirections>>, TError, TData>, }
-
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
-
-  const queryOptions = getApiVVersionApiVersionDirectionTypeKeyPrimaryDirectionsQueryOptions(key,params,options)
-
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
-}
-
-
-
-
-/**
- * @summary Utah.Udot.Atspm.Data.Models.RouteLocation navigation property action
- */
-export const apiVVersionApiVersionDirectionTypeKeyPrimaryDirectionsCount = (
-    key: UtahUdotAtspmDataEnumsDirectionTypes,
-    params?: ApiVVersionApiVersionDirectionTypeKeyPrimaryDirectionsCountParams,
- signal?: AbortSignal
-) => {
-      
-      
-      return configRequest<UtahUdotAtspmDataModelsRouteLocation[]>(
-      {url: `/api/v1/DirectionType/${key}/primaryDirections/$count`, method: 'GET',
-        params, signal
-    },
-      );
-    }
-  
-
-export const getApiVVersionApiVersionDirectionTypeKeyPrimaryDirectionsCountQueryKey = (key: UtahUdotAtspmDataEnumsDirectionTypes,
-    params?: ApiVVersionApiVersionDirectionTypeKeyPrimaryDirectionsCountParams,) => {
-    return [`/api/v1/DirectionType/${key}/primaryDirections/$count`, ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getApiVVersionApiVersionDirectionTypeKeyPrimaryDirectionsCountQueryOptions = <TData = Awaited<ReturnType<typeof apiVVersionApiVersionDirectionTypeKeyPrimaryDirectionsCount>>, TError = void>(key: UtahUdotAtspmDataEnumsDirectionTypes,
-    params?: ApiVVersionApiVersionDirectionTypeKeyPrimaryDirectionsCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDirectionTypeKeyPrimaryDirectionsCount>>, TError, TData>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getApiVVersionApiVersionDirectionTypeKeyPrimaryDirectionsCountQueryKey(key,params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiVVersionApiVersionDirectionTypeKeyPrimaryDirectionsCount>>> = ({ signal }) => apiVVersionApiVersionDirectionTypeKeyPrimaryDirectionsCount(key,params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(key), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDirectionTypeKeyPrimaryDirectionsCount>>, TError, TData> & { queryKey: QueryKey }
-}
-
-export type ApiVVersionApiVersionDirectionTypeKeyPrimaryDirectionsCountQueryResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionDirectionTypeKeyPrimaryDirectionsCount>>>
-export type ApiVVersionApiVersionDirectionTypeKeyPrimaryDirectionsCountQueryError = void
-
-
-/**
- * @summary Utah.Udot.Atspm.Data.Models.RouteLocation navigation property action
- */
-
-export function useApiVVersionApiVersionDirectionTypeKeyPrimaryDirectionsCount<TData = Awaited<ReturnType<typeof apiVVersionApiVersionDirectionTypeKeyPrimaryDirectionsCount>>, TError = void>(
- key: UtahUdotAtspmDataEnumsDirectionTypes,
-    params?: ApiVVersionApiVersionDirectionTypeKeyPrimaryDirectionsCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDirectionTypeKeyPrimaryDirectionsCount>>, TError, TData>, }
-
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
-
-  const queryOptions = getApiVVersionApiVersionDirectionTypeKeyPrimaryDirectionsCountQueryOptions(key,params,options)
-
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
-}
-
-
-
-
-/**
- * @summary Utah.Udot.Atspm.Data.Models.RouteLocation navigation property action
- */
-export const apiVVersionApiVersionDirectionTypeKeyOpposingDirections = (
-    key: UtahUdotAtspmDataEnumsDirectionTypes,
-    params?: ApiVVersionApiVersionDirectionTypeKeyOpposingDirectionsParams,
- signal?: AbortSignal
-) => {
-      
-      
-      return configRequest<UtahUdotAtspmDataModelsRouteLocation[]>(
-      {url: `/api/v1/DirectionType/${key}/opposingDirections`, method: 'GET',
-        params, signal
-    },
-      );
-    }
-  
-
-export const getApiVVersionApiVersionDirectionTypeKeyOpposingDirectionsQueryKey = (key: UtahUdotAtspmDataEnumsDirectionTypes,
-    params?: ApiVVersionApiVersionDirectionTypeKeyOpposingDirectionsParams,) => {
-    return [`/api/v1/DirectionType/${key}/opposingDirections`, ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getApiVVersionApiVersionDirectionTypeKeyOpposingDirectionsQueryOptions = <TData = Awaited<ReturnType<typeof apiVVersionApiVersionDirectionTypeKeyOpposingDirections>>, TError = void>(key: UtahUdotAtspmDataEnumsDirectionTypes,
-    params?: ApiVVersionApiVersionDirectionTypeKeyOpposingDirectionsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDirectionTypeKeyOpposingDirections>>, TError, TData>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getApiVVersionApiVersionDirectionTypeKeyOpposingDirectionsQueryKey(key,params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiVVersionApiVersionDirectionTypeKeyOpposingDirections>>> = ({ signal }) => apiVVersionApiVersionDirectionTypeKeyOpposingDirections(key,params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(key), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDirectionTypeKeyOpposingDirections>>, TError, TData> & { queryKey: QueryKey }
-}
-
-export type ApiVVersionApiVersionDirectionTypeKeyOpposingDirectionsQueryResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionDirectionTypeKeyOpposingDirections>>>
-export type ApiVVersionApiVersionDirectionTypeKeyOpposingDirectionsQueryError = void
-
-
-/**
- * @summary Utah.Udot.Atspm.Data.Models.RouteLocation navigation property action
- */
-
-export function useApiVVersionApiVersionDirectionTypeKeyOpposingDirections<TData = Awaited<ReturnType<typeof apiVVersionApiVersionDirectionTypeKeyOpposingDirections>>, TError = void>(
- key: UtahUdotAtspmDataEnumsDirectionTypes,
-    params?: ApiVVersionApiVersionDirectionTypeKeyOpposingDirectionsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDirectionTypeKeyOpposingDirections>>, TError, TData>, }
-
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
-
-  const queryOptions = getApiVVersionApiVersionDirectionTypeKeyOpposingDirectionsQueryOptions(key,params,options)
-
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
-}
-
-
-
-
-/**
- * @summary Utah.Udot.Atspm.Data.Models.RouteLocation navigation property action
- */
-export const apiVVersionApiVersionDirectionTypeKeyOpposingDirectionsCount = (
-    key: UtahUdotAtspmDataEnumsDirectionTypes,
-    params?: ApiVVersionApiVersionDirectionTypeKeyOpposingDirectionsCountParams,
- signal?: AbortSignal
-) => {
-      
-      
-      return configRequest<UtahUdotAtspmDataModelsRouteLocation[]>(
-      {url: `/api/v1/DirectionType/${key}/opposingDirections/$count`, method: 'GET',
-        params, signal
-    },
-      );
-    }
-  
-
-export const getApiVVersionApiVersionDirectionTypeKeyOpposingDirectionsCountQueryKey = (key: UtahUdotAtspmDataEnumsDirectionTypes,
-    params?: ApiVVersionApiVersionDirectionTypeKeyOpposingDirectionsCountParams,) => {
-    return [`/api/v1/DirectionType/${key}/opposingDirections/$count`, ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getApiVVersionApiVersionDirectionTypeKeyOpposingDirectionsCountQueryOptions = <TData = Awaited<ReturnType<typeof apiVVersionApiVersionDirectionTypeKeyOpposingDirectionsCount>>, TError = void>(key: UtahUdotAtspmDataEnumsDirectionTypes,
-    params?: ApiVVersionApiVersionDirectionTypeKeyOpposingDirectionsCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDirectionTypeKeyOpposingDirectionsCount>>, TError, TData>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getApiVVersionApiVersionDirectionTypeKeyOpposingDirectionsCountQueryKey(key,params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiVVersionApiVersionDirectionTypeKeyOpposingDirectionsCount>>> = ({ signal }) => apiVVersionApiVersionDirectionTypeKeyOpposingDirectionsCount(key,params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(key), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDirectionTypeKeyOpposingDirectionsCount>>, TError, TData> & { queryKey: QueryKey }
-}
-
-export type ApiVVersionApiVersionDirectionTypeKeyOpposingDirectionsCountQueryResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionDirectionTypeKeyOpposingDirectionsCount>>>
-export type ApiVVersionApiVersionDirectionTypeKeyOpposingDirectionsCountQueryError = void
-
-
-/**
- * @summary Utah.Udot.Atspm.Data.Models.RouteLocation navigation property action
- */
-
-export function useApiVVersionApiVersionDirectionTypeKeyOpposingDirectionsCount<TData = Awaited<ReturnType<typeof apiVVersionApiVersionDirectionTypeKeyOpposingDirectionsCount>>, TError = void>(
- key: UtahUdotAtspmDataEnumsDirectionTypes,
-    params?: ApiVVersionApiVersionDirectionTypeKeyOpposingDirectionsCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDirectionTypeKeyOpposingDirectionsCount>>, TError, TData>, }
-
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
-
-  const queryOptions = getApiVVersionApiVersionDirectionTypeKeyOpposingDirectionsCountQueryOptions(key,params,options)
-
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
-}
-
-
-
+export type ApiV1DeviceConfigurationMutationResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1DeviceConfiguration>>
+>
+export type ApiV1DeviceConfigurationMutationBody =
+  UtahUdotAtspmDataModelsDeviceConfiguration
+export type ApiV1DeviceConfigurationMutationError = void
 
 /**
  * @summary Insert object of specified type
  */
-export const apiVVersionApiVersionDirectionType = (
-    utahUdotAtspmDataModelsDirectionType: UtahUdotAtspmDataModelsDirectionType,
-    params?: ApiVVersionApiVersionDirectionTypeParams,
- ) => {
-      
-      
-      return configRequest<void>(
-      {url: `/api/v1/DirectionType`, method: 'POST',
-      headers: {'Content-Type': 'application/json;odata.metadata=minimal;odata.streaming=true', },
-      data: utahUdotAtspmDataModelsDirectionType,
-        params
+export const useApiV1DeviceConfiguration = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1DeviceConfiguration>>,
+    TError,
+    {
+      data: UtahUdotAtspmDataModelsDeviceConfiguration
+      params?: ApiV1DeviceConfigurationParams
     },
-      );
-    }
-  
+    TContext
+  >
+}): UseMutationResult<
+  Awaited<ReturnType<typeof apiV1DeviceConfiguration>>,
+  TError,
+  {
+    data: UtahUdotAtspmDataModelsDeviceConfiguration
+    params?: ApiV1DeviceConfigurationParams
+  },
+  TContext
+> => {
+  const mutationOptions = getApiV1DeviceConfigurationMutationOptions(options)
 
+  return useMutation(mutationOptions)
+}
 
-export const getApiVVersionApiVersionDirectionTypeMutationOptions = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDirectionType>>, TError,{data: UtahUdotAtspmDataModelsDirectionType;params?: ApiVVersionApiVersionDirectionTypeParams}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDirectionType>>, TError,{data: UtahUdotAtspmDataModelsDirectionType;params?: ApiVVersionApiVersionDirectionTypeParams}, TContext> => {
-const {mutation: mutationOptions} = options ?? {};
+/**
+ * @summary Collection of objects from oData query.
+ */
+export const apiV1DeviceConfigurationCount = (
+  params?: ApiV1DeviceConfigurationCountParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<UtahUdotAtspmDataModelsDeviceConfiguration[]>({
+    url: `/api/v1/DeviceConfiguration/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
 
-      
+export const getApiV1DeviceConfigurationCountQueryKey = (
+  params?: ApiV1DeviceConfigurationCountParams
+) => {
+  return [
+    `/api/v1/DeviceConfiguration/$count`,
+    ...(params ? [params] : []),
+  ] as const
+}
 
+export const getApiV1DeviceConfigurationCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof apiV1DeviceConfigurationCount>>,
+  TError = void,
+>(
+  params?: ApiV1DeviceConfigurationCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1DeviceConfigurationCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof apiVVersionApiVersionDirectionType>>, {data: UtahUdotAtspmDataModelsDirectionType;params?: ApiVVersionApiVersionDirectionTypeParams}> = (props) => {
-          const {data,params} = props ?? {};
+  const queryKey =
+    queryOptions?.queryKey ?? getApiV1DeviceConfigurationCountQueryKey(params)
 
-          return  apiVVersionApiVersionDirectionType(data,params,)
-        }
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof apiV1DeviceConfigurationCount>>
+  > = ({ signal }) => apiV1DeviceConfigurationCount(params, signal)
 
-        
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof apiV1DeviceConfigurationCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
 
+export type ApiV1DeviceConfigurationCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1DeviceConfigurationCount>>
+>
+export type ApiV1DeviceConfigurationCountQueryError = void
 
-  return  { mutationFn, ...mutationOptions }}
+/**
+ * @summary Collection of objects from oData query.
+ */
 
-    export type ApiVVersionApiVersionDirectionTypeMutationResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionDirectionType>>>
-    export type ApiVVersionApiVersionDirectionTypeMutationBody = UtahUdotAtspmDataModelsDirectionType
-    export type ApiVVersionApiVersionDirectionTypeMutationError = void
+export function useApiV1DeviceConfigurationCount<
+  TData = Awaited<ReturnType<typeof apiV1DeviceConfigurationCount>>,
+  TError = void,
+>(
+  params?: ApiV1DeviceConfigurationCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1DeviceConfigurationCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getApiV1DeviceConfigurationCountQueryOptions(
+    params,
+    options
+  )
 
-    /**
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
+ * @summary Delete object of specified type
+ */
+export const apiV1DeviceConfigurationKey = (key: number) => {
+  return configRequest<void>({
+    url: `/api/v1/DeviceConfiguration/${key}`,
+    method: 'DELETE',
+  })
+}
+
+export const getApiV1DeviceConfigurationKeyMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1DeviceConfigurationKey>>,
+    TError,
+    { key: number },
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof apiV1DeviceConfigurationKey>>,
+  TError,
+  { key: number },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof apiV1DeviceConfigurationKey>>,
+    { key: number }
+  > = (props) => {
+    const { key } = props ?? {}
+
+    return apiV1DeviceConfigurationKey(key)
+  }
+
+  return { mutationFn, ...mutationOptions }
+}
+
+export type ApiV1DeviceConfigurationKeyMutationResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1DeviceConfigurationKey>>
+>
+
+export type ApiV1DeviceConfigurationKeyMutationError = void
+
+/**
+ * @summary Delete object of specified type
+ */
+export const useApiV1DeviceConfigurationKey = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1DeviceConfigurationKey>>,
+    TError,
+    { key: number },
+    TContext
+  >
+}): UseMutationResult<
+  Awaited<ReturnType<typeof apiV1DeviceConfigurationKey>>,
+  TError,
+  { key: number },
+  TContext
+> => {
+  const mutationOptions = getApiV1DeviceConfigurationKeyMutationOptions(options)
+
+  return useMutation(mutationOptions)
+}
+
+/**
+ * @summary Utah.Udot.Atspm.Data.Models.Approach navigation property action
+ */
+export const apiV1DirectionTypeKeyApproaches = (
+  key: UtahUdotAtspmDataEnumsDirectionTypes,
+  params?: ApiV1DirectionTypeKeyApproachesParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<UtahUdotAtspmDataModelsApproach[]>({
+    url: `/api/v1/DirectionType/${key}/approaches`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getApiV1DirectionTypeKeyApproachesQueryKey = (
+  key: UtahUdotAtspmDataEnumsDirectionTypes,
+  params?: ApiV1DirectionTypeKeyApproachesParams
+) => {
+  return [
+    `/api/v1/DirectionType/${key}/approaches`,
+    ...(params ? [params] : []),
+  ] as const
+}
+
+export const getApiV1DirectionTypeKeyApproachesQueryOptions = <
+  TData = Awaited<ReturnType<typeof apiV1DirectionTypeKeyApproaches>>,
+  TError = void,
+>(
+  key: UtahUdotAtspmDataEnumsDirectionTypes,
+  params?: ApiV1DirectionTypeKeyApproachesParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1DirectionTypeKeyApproaches>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getApiV1DirectionTypeKeyApproachesQueryKey(key, params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof apiV1DirectionTypeKeyApproaches>>
+  > = ({ signal }) => apiV1DirectionTypeKeyApproaches(key, params, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!key,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof apiV1DirectionTypeKeyApproaches>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type ApiV1DirectionTypeKeyApproachesQueryResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1DirectionTypeKeyApproaches>>
+>
+export type ApiV1DirectionTypeKeyApproachesQueryError = void
+
+/**
+ * @summary Utah.Udot.Atspm.Data.Models.Approach navigation property action
+ */
+
+export function useApiV1DirectionTypeKeyApproaches<
+  TData = Awaited<ReturnType<typeof apiV1DirectionTypeKeyApproaches>>,
+  TError = void,
+>(
+  key: UtahUdotAtspmDataEnumsDirectionTypes,
+  params?: ApiV1DirectionTypeKeyApproachesParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1DirectionTypeKeyApproaches>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getApiV1DirectionTypeKeyApproachesQueryOptions(
+    key,
+    params,
+    options
+  )
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
+ * @summary Utah.Udot.Atspm.Data.Models.Approach navigation property action
+ */
+export const apiV1DirectionTypeKeyApproachesCount = (
+  key: UtahUdotAtspmDataEnumsDirectionTypes,
+  params?: ApiV1DirectionTypeKeyApproachesCountParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<UtahUdotAtspmDataModelsApproach[]>({
+    url: `/api/v1/DirectionType/${key}/approaches/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getApiV1DirectionTypeKeyApproachesCountQueryKey = (
+  key: UtahUdotAtspmDataEnumsDirectionTypes,
+  params?: ApiV1DirectionTypeKeyApproachesCountParams
+) => {
+  return [
+    `/api/v1/DirectionType/${key}/approaches/$count`,
+    ...(params ? [params] : []),
+  ] as const
+}
+
+export const getApiV1DirectionTypeKeyApproachesCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof apiV1DirectionTypeKeyApproachesCount>>,
+  TError = void,
+>(
+  key: UtahUdotAtspmDataEnumsDirectionTypes,
+  params?: ApiV1DirectionTypeKeyApproachesCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1DirectionTypeKeyApproachesCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getApiV1DirectionTypeKeyApproachesCountQueryKey(key, params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof apiV1DirectionTypeKeyApproachesCount>>
+  > = ({ signal }) => apiV1DirectionTypeKeyApproachesCount(key, params, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!key,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof apiV1DirectionTypeKeyApproachesCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type ApiV1DirectionTypeKeyApproachesCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1DirectionTypeKeyApproachesCount>>
+>
+export type ApiV1DirectionTypeKeyApproachesCountQueryError = void
+
+/**
+ * @summary Utah.Udot.Atspm.Data.Models.Approach navigation property action
+ */
+
+export function useApiV1DirectionTypeKeyApproachesCount<
+  TData = Awaited<ReturnType<typeof apiV1DirectionTypeKeyApproachesCount>>,
+  TError = void,
+>(
+  key: UtahUdotAtspmDataEnumsDirectionTypes,
+  params?: ApiV1DirectionTypeKeyApproachesCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1DirectionTypeKeyApproachesCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getApiV1DirectionTypeKeyApproachesCountQueryOptions(
+    key,
+    params,
+    options
+  )
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
+ * @summary Utah.Udot.Atspm.Data.Models.RouteLocation navigation property action
+ */
+export const apiV1DirectionTypeKeyPrimaryDirections = (
+  key: UtahUdotAtspmDataEnumsDirectionTypes,
+  params?: ApiV1DirectionTypeKeyPrimaryDirectionsParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<UtahUdotAtspmDataModelsRouteLocation[]>({
+    url: `/api/v1/DirectionType/${key}/primaryDirections`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getApiV1DirectionTypeKeyPrimaryDirectionsQueryKey = (
+  key: UtahUdotAtspmDataEnumsDirectionTypes,
+  params?: ApiV1DirectionTypeKeyPrimaryDirectionsParams
+) => {
+  return [
+    `/api/v1/DirectionType/${key}/primaryDirections`,
+    ...(params ? [params] : []),
+  ] as const
+}
+
+export const getApiV1DirectionTypeKeyPrimaryDirectionsQueryOptions = <
+  TData = Awaited<ReturnType<typeof apiV1DirectionTypeKeyPrimaryDirections>>,
+  TError = void,
+>(
+  key: UtahUdotAtspmDataEnumsDirectionTypes,
+  params?: ApiV1DirectionTypeKeyPrimaryDirectionsParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1DirectionTypeKeyPrimaryDirections>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getApiV1DirectionTypeKeyPrimaryDirectionsQueryKey(key, params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof apiV1DirectionTypeKeyPrimaryDirections>>
+  > = ({ signal }) =>
+    apiV1DirectionTypeKeyPrimaryDirections(key, params, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!key,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof apiV1DirectionTypeKeyPrimaryDirections>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type ApiV1DirectionTypeKeyPrimaryDirectionsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1DirectionTypeKeyPrimaryDirections>>
+>
+export type ApiV1DirectionTypeKeyPrimaryDirectionsQueryError = void
+
+/**
+ * @summary Utah.Udot.Atspm.Data.Models.RouteLocation navigation property action
+ */
+
+export function useApiV1DirectionTypeKeyPrimaryDirections<
+  TData = Awaited<ReturnType<typeof apiV1DirectionTypeKeyPrimaryDirections>>,
+  TError = void,
+>(
+  key: UtahUdotAtspmDataEnumsDirectionTypes,
+  params?: ApiV1DirectionTypeKeyPrimaryDirectionsParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1DirectionTypeKeyPrimaryDirections>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getApiV1DirectionTypeKeyPrimaryDirectionsQueryOptions(
+    key,
+    params,
+    options
+  )
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
+ * @summary Utah.Udot.Atspm.Data.Models.RouteLocation navigation property action
+ */
+export const apiV1DirectionTypeKeyPrimaryDirectionsCount = (
+  key: UtahUdotAtspmDataEnumsDirectionTypes,
+  params?: ApiV1DirectionTypeKeyPrimaryDirectionsCountParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<UtahUdotAtspmDataModelsRouteLocation[]>({
+    url: `/api/v1/DirectionType/${key}/primaryDirections/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getApiV1DirectionTypeKeyPrimaryDirectionsCountQueryKey = (
+  key: UtahUdotAtspmDataEnumsDirectionTypes,
+  params?: ApiV1DirectionTypeKeyPrimaryDirectionsCountParams
+) => {
+  return [
+    `/api/v1/DirectionType/${key}/primaryDirections/$count`,
+    ...(params ? [params] : []),
+  ] as const
+}
+
+export const getApiV1DirectionTypeKeyPrimaryDirectionsCountQueryOptions = <
+  TData = Awaited<
+    ReturnType<typeof apiV1DirectionTypeKeyPrimaryDirectionsCount>
+  >,
+  TError = void,
+>(
+  key: UtahUdotAtspmDataEnumsDirectionTypes,
+  params?: ApiV1DirectionTypeKeyPrimaryDirectionsCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1DirectionTypeKeyPrimaryDirectionsCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getApiV1DirectionTypeKeyPrimaryDirectionsCountQueryKey(key, params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof apiV1DirectionTypeKeyPrimaryDirectionsCount>>
+  > = ({ signal }) =>
+    apiV1DirectionTypeKeyPrimaryDirectionsCount(key, params, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!key,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof apiV1DirectionTypeKeyPrimaryDirectionsCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type ApiV1DirectionTypeKeyPrimaryDirectionsCountQueryResult =
+  NonNullable<
+    Awaited<ReturnType<typeof apiV1DirectionTypeKeyPrimaryDirectionsCount>>
+  >
+export type ApiV1DirectionTypeKeyPrimaryDirectionsCountQueryError = void
+
+/**
+ * @summary Utah.Udot.Atspm.Data.Models.RouteLocation navigation property action
+ */
+
+export function useApiV1DirectionTypeKeyPrimaryDirectionsCount<
+  TData = Awaited<
+    ReturnType<typeof apiV1DirectionTypeKeyPrimaryDirectionsCount>
+  >,
+  TError = void,
+>(
+  key: UtahUdotAtspmDataEnumsDirectionTypes,
+  params?: ApiV1DirectionTypeKeyPrimaryDirectionsCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1DirectionTypeKeyPrimaryDirectionsCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions =
+    getApiV1DirectionTypeKeyPrimaryDirectionsCountQueryOptions(
+      key,
+      params,
+      options
+    )
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
+ * @summary Utah.Udot.Atspm.Data.Models.RouteLocation navigation property action
+ */
+export const apiV1DirectionTypeKeyOpposingDirections = (
+  key: UtahUdotAtspmDataEnumsDirectionTypes,
+  params?: ApiV1DirectionTypeKeyOpposingDirectionsParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<UtahUdotAtspmDataModelsRouteLocation[]>({
+    url: `/api/v1/DirectionType/${key}/opposingDirections`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getApiV1DirectionTypeKeyOpposingDirectionsQueryKey = (
+  key: UtahUdotAtspmDataEnumsDirectionTypes,
+  params?: ApiV1DirectionTypeKeyOpposingDirectionsParams
+) => {
+  return [
+    `/api/v1/DirectionType/${key}/opposingDirections`,
+    ...(params ? [params] : []),
+  ] as const
+}
+
+export const getApiV1DirectionTypeKeyOpposingDirectionsQueryOptions = <
+  TData = Awaited<ReturnType<typeof apiV1DirectionTypeKeyOpposingDirections>>,
+  TError = void,
+>(
+  key: UtahUdotAtspmDataEnumsDirectionTypes,
+  params?: ApiV1DirectionTypeKeyOpposingDirectionsParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1DirectionTypeKeyOpposingDirections>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getApiV1DirectionTypeKeyOpposingDirectionsQueryKey(key, params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof apiV1DirectionTypeKeyOpposingDirections>>
+  > = ({ signal }) =>
+    apiV1DirectionTypeKeyOpposingDirections(key, params, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!key,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof apiV1DirectionTypeKeyOpposingDirections>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type ApiV1DirectionTypeKeyOpposingDirectionsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1DirectionTypeKeyOpposingDirections>>
+>
+export type ApiV1DirectionTypeKeyOpposingDirectionsQueryError = void
+
+/**
+ * @summary Utah.Udot.Atspm.Data.Models.RouteLocation navigation property action
+ */
+
+export function useApiV1DirectionTypeKeyOpposingDirections<
+  TData = Awaited<ReturnType<typeof apiV1DirectionTypeKeyOpposingDirections>>,
+  TError = void,
+>(
+  key: UtahUdotAtspmDataEnumsDirectionTypes,
+  params?: ApiV1DirectionTypeKeyOpposingDirectionsParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1DirectionTypeKeyOpposingDirections>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getApiV1DirectionTypeKeyOpposingDirectionsQueryOptions(
+    key,
+    params,
+    options
+  )
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
+ * @summary Utah.Udot.Atspm.Data.Models.RouteLocation navigation property action
+ */
+export const apiV1DirectionTypeKeyOpposingDirectionsCount = (
+  key: UtahUdotAtspmDataEnumsDirectionTypes,
+  params?: ApiV1DirectionTypeKeyOpposingDirectionsCountParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<UtahUdotAtspmDataModelsRouteLocation[]>({
+    url: `/api/v1/DirectionType/${key}/opposingDirections/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getApiV1DirectionTypeKeyOpposingDirectionsCountQueryKey = (
+  key: UtahUdotAtspmDataEnumsDirectionTypes,
+  params?: ApiV1DirectionTypeKeyOpposingDirectionsCountParams
+) => {
+  return [
+    `/api/v1/DirectionType/${key}/opposingDirections/$count`,
+    ...(params ? [params] : []),
+  ] as const
+}
+
+export const getApiV1DirectionTypeKeyOpposingDirectionsCountQueryOptions = <
+  TData = Awaited<
+    ReturnType<typeof apiV1DirectionTypeKeyOpposingDirectionsCount>
+  >,
+  TError = void,
+>(
+  key: UtahUdotAtspmDataEnumsDirectionTypes,
+  params?: ApiV1DirectionTypeKeyOpposingDirectionsCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1DirectionTypeKeyOpposingDirectionsCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getApiV1DirectionTypeKeyOpposingDirectionsCountQueryKey(key, params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof apiV1DirectionTypeKeyOpposingDirectionsCount>>
+  > = ({ signal }) =>
+    apiV1DirectionTypeKeyOpposingDirectionsCount(key, params, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!key,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof apiV1DirectionTypeKeyOpposingDirectionsCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type ApiV1DirectionTypeKeyOpposingDirectionsCountQueryResult =
+  NonNullable<
+    Awaited<ReturnType<typeof apiV1DirectionTypeKeyOpposingDirectionsCount>>
+  >
+export type ApiV1DirectionTypeKeyOpposingDirectionsCountQueryError = void
+
+/**
+ * @summary Utah.Udot.Atspm.Data.Models.RouteLocation navigation property action
+ */
+
+export function useApiV1DirectionTypeKeyOpposingDirectionsCount<
+  TData = Awaited<
+    ReturnType<typeof apiV1DirectionTypeKeyOpposingDirectionsCount>
+  >,
+  TError = void,
+>(
+  key: UtahUdotAtspmDataEnumsDirectionTypes,
+  params?: ApiV1DirectionTypeKeyOpposingDirectionsCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1DirectionTypeKeyOpposingDirectionsCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions =
+    getApiV1DirectionTypeKeyOpposingDirectionsCountQueryOptions(
+      key,
+      params,
+      options
+    )
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
  * @summary Insert object of specified type
  */
-export const useApiVVersionApiVersionDirectionType = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDirectionType>>, TError,{data: UtahUdotAtspmDataModelsDirectionType;params?: ApiVVersionApiVersionDirectionTypeParams}, TContext>, }
-): UseMutationResult<
-        Awaited<ReturnType<typeof apiVVersionApiVersionDirectionType>>,
-        TError,
-        {data: UtahUdotAtspmDataModelsDirectionType;params?: ApiVVersionApiVersionDirectionTypeParams},
-        TContext
-      > => {
-
-      const mutationOptions = getApiVVersionApiVersionDirectionTypeMutationOptions(options);
-
-      return useMutation(mutationOptions);
-    }
-    
-/**
- * @summary Collection of objects from oData query.
- */
-export const apiVVersionApiVersionDirectionTypeCount = (
-    params?: ApiVVersionApiVersionDirectionTypeCountParams,
- signal?: AbortSignal
+export const apiV1DirectionType = (
+  utahUdotAtspmDataModelsDirectionType: UtahUdotAtspmDataModelsDirectionType,
+  params?: ApiV1DirectionTypeParams
 ) => {
-      
-      
-      return configRequest<UtahUdotAtspmDataModelsDirectionType[]>(
-      {url: `/api/v1/DirectionType/$count`, method: 'GET',
-        params, signal
+  return configRequest<void>({
+    url: `/api/v1/DirectionType`,
+    method: 'POST',
+    headers: {
+      'Content-Type':
+        'application/json;odata.metadata=minimal;odata.streaming=true',
     },
-      );
-    }
-  
-
-export const getApiVVersionApiVersionDirectionTypeCountQueryKey = (params?: ApiVVersionApiVersionDirectionTypeCountParams,) => {
-    return [`/api/v1/DirectionType/$count`, ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getApiVVersionApiVersionDirectionTypeCountQueryOptions = <TData = Awaited<ReturnType<typeof apiVVersionApiVersionDirectionTypeCount>>, TError = void>(params?: ApiVVersionApiVersionDirectionTypeCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDirectionTypeCount>>, TError, TData>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getApiVVersionApiVersionDirectionTypeCountQueryKey(params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiVVersionApiVersionDirectionTypeCount>>> = ({ signal }) => apiVVersionApiVersionDirectionTypeCount(params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDirectionTypeCount>>, TError, TData> & { queryKey: QueryKey }
+    data: utahUdotAtspmDataModelsDirectionType,
+    params,
+  })
 }
 
-export type ApiVVersionApiVersionDirectionTypeCountQueryResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionDirectionTypeCount>>>
-export type ApiVVersionApiVersionDirectionTypeCountQueryError = void
+export const getApiV1DirectionTypeMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1DirectionType>>,
+    TError,
+    {
+      data: UtahUdotAtspmDataModelsDirectionType
+      params?: ApiV1DirectionTypeParams
+    },
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof apiV1DirectionType>>,
+  TError,
+  {
+    data: UtahUdotAtspmDataModelsDirectionType
+    params?: ApiV1DirectionTypeParams
+  },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
 
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof apiV1DirectionType>>,
+    {
+      data: UtahUdotAtspmDataModelsDirectionType
+      params?: ApiV1DirectionTypeParams
+    }
+  > = (props) => {
+    const { data, params } = props ?? {}
+
+    return apiV1DirectionType(data, params)
+  }
+
+  return { mutationFn, ...mutationOptions }
+}
+
+export type ApiV1DirectionTypeMutationResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1DirectionType>>
+>
+export type ApiV1DirectionTypeMutationBody =
+  UtahUdotAtspmDataModelsDirectionType
+export type ApiV1DirectionTypeMutationError = void
+
+/**
+ * @summary Insert object of specified type
+ */
+export const useApiV1DirectionType = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1DirectionType>>,
+    TError,
+    {
+      data: UtahUdotAtspmDataModelsDirectionType
+      params?: ApiV1DirectionTypeParams
+    },
+    TContext
+  >
+}): UseMutationResult<
+  Awaited<ReturnType<typeof apiV1DirectionType>>,
+  TError,
+  {
+    data: UtahUdotAtspmDataModelsDirectionType
+    params?: ApiV1DirectionTypeParams
+  },
+  TContext
+> => {
+  const mutationOptions = getApiV1DirectionTypeMutationOptions(options)
+
+  return useMutation(mutationOptions)
+}
+
+/**
+ * @summary Collection of objects from oData query.
+ */
+export const apiV1DirectionTypeCount = (
+  params?: ApiV1DirectionTypeCountParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<UtahUdotAtspmDataModelsDirectionType[]>({
+    url: `/api/v1/DirectionType/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getApiV1DirectionTypeCountQueryKey = (
+  params?: ApiV1DirectionTypeCountParams
+) => {
+  return [`/api/v1/DirectionType/$count`, ...(params ? [params] : [])] as const
+}
+
+export const getApiV1DirectionTypeCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof apiV1DirectionTypeCount>>,
+  TError = void,
+>(
+  params?: ApiV1DirectionTypeCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1DirectionTypeCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ?? getApiV1DirectionTypeCountQueryKey(params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof apiV1DirectionTypeCount>>
+  > = ({ signal }) => apiV1DirectionTypeCount(params, signal)
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof apiV1DirectionTypeCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type ApiV1DirectionTypeCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1DirectionTypeCount>>
+>
+export type ApiV1DirectionTypeCountQueryError = void
 
 /**
  * @summary Collection of objects from oData query.
  */
 
-export function useApiVVersionApiVersionDirectionTypeCount<TData = Awaited<ReturnType<typeof apiVVersionApiVersionDirectionTypeCount>>, TError = void>(
- params?: ApiVVersionApiVersionDirectionTypeCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDirectionTypeCount>>, TError, TData>, }
+export function useApiV1DirectionTypeCount<
+  TData = Awaited<ReturnType<typeof apiV1DirectionTypeCount>>,
+  TError = void,
+>(
+  params?: ApiV1DirectionTypeCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1DirectionTypeCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getApiV1DirectionTypeCountQueryOptions(params, options)
 
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
 
-  const queryOptions = getApiVVersionApiVersionDirectionTypeCountQueryOptions(params,options)
+  query.queryKey = queryOptions.queryKey
 
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+  return query
 }
-
-
-
 
 /**
  * @summary Delete object of specified type
  */
-export const apiVVersionApiVersionDirectionTypeKey = (
-    key: UtahUdotAtspmDataEnumsDirectionTypes,
- ) => {
-      
-      
-      return configRequest<void>(
-      {url: `/api/v1/DirectionType/${key}`, method: 'DELETE'
-    },
-      );
-    }
-  
+export const apiV1DirectionTypeKey = (
+  key: UtahUdotAtspmDataEnumsDirectionTypes
+) => {
+  return configRequest<void>({
+    url: `/api/v1/DirectionType/${key}`,
+    method: 'DELETE',
+  })
+}
 
+export const getApiV1DirectionTypeKeyMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1DirectionTypeKey>>,
+    TError,
+    { key: UtahUdotAtspmDataEnumsDirectionTypes },
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof apiV1DirectionTypeKey>>,
+  TError,
+  { key: UtahUdotAtspmDataEnumsDirectionTypes },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
 
-export const getApiVVersionApiVersionDirectionTypeKeyMutationOptions = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDirectionTypeKey>>, TError,{key: UtahUdotAtspmDataEnumsDirectionTypes}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDirectionTypeKey>>, TError,{key: UtahUdotAtspmDataEnumsDirectionTypes}, TContext> => {
-const {mutation: mutationOptions} = options ?? {};
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof apiV1DirectionTypeKey>>,
+    { key: UtahUdotAtspmDataEnumsDirectionTypes }
+  > = (props) => {
+    const { key } = props ?? {}
 
-      
+    return apiV1DirectionTypeKey(key)
+  }
 
+  return { mutationFn, ...mutationOptions }
+}
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof apiVVersionApiVersionDirectionTypeKey>>, {key: UtahUdotAtspmDataEnumsDirectionTypes}> = (props) => {
-          const {key} = props ?? {};
+export type ApiV1DirectionTypeKeyMutationResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1DirectionTypeKey>>
+>
 
-          return  apiVVersionApiVersionDirectionTypeKey(key,)
-        }
+export type ApiV1DirectionTypeKeyMutationError = void
 
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type ApiVVersionApiVersionDirectionTypeKeyMutationResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionDirectionTypeKey>>>
-    
-    export type ApiVVersionApiVersionDirectionTypeKeyMutationError = void
-
-    /**
+/**
  * @summary Delete object of specified type
  */
-export const useApiVVersionApiVersionDirectionTypeKey = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionDirectionTypeKey>>, TError,{key: UtahUdotAtspmDataEnumsDirectionTypes}, TContext>, }
-): UseMutationResult<
-        Awaited<ReturnType<typeof apiVVersionApiVersionDirectionTypeKey>>,
-        TError,
-        {key: UtahUdotAtspmDataEnumsDirectionTypes},
-        TContext
-      > => {
+export const useApiV1DirectionTypeKey = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1DirectionTypeKey>>,
+    TError,
+    { key: UtahUdotAtspmDataEnumsDirectionTypes },
+    TContext
+  >
+}): UseMutationResult<
+  Awaited<ReturnType<typeof apiV1DirectionTypeKey>>,
+  TError,
+  { key: UtahUdotAtspmDataEnumsDirectionTypes },
+  TContext
+> => {
+  const mutationOptions = getApiV1DirectionTypeKeyMutationOptions(options)
 
-      const mutationOptions = getApiVVersionApiVersionDirectionTypeKeyMutationOptions(options);
+  return useMutation(mutationOptions)
+}
 
-      return useMutation(mutationOptions);
-    }
-    
 /**
  * @summary Collection of objects from oData query.
  */
-export const apiVVersionApiVersionFaq = (
-    params?: ApiVVersionApiVersionFaqParams,
- signal?: AbortSignal
+export const apiV1Faq = (params?: ApiV1FaqParams, signal?: AbortSignal) => {
+  return configRequest<UtahUdotAtspmDataModelsFaq[]>({
+    url: `/api/v1/Faq`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getApiV1FaqQueryKey = (params?: ApiV1FaqParams) => {
+  return [`/api/v1/Faq`, ...(params ? [params] : [])] as const
+}
+
+export const getApiV1FaqQueryOptions = <
+  TData = Awaited<ReturnType<typeof apiV1Faq>>,
+  TError = void,
+>(
+  params?: ApiV1FaqParams,
+  options?: {
+    query?: UseQueryOptions<Awaited<ReturnType<typeof apiV1Faq>>, TError, TData>
+  }
 ) => {
-      
-      
-      return configRequest<UtahUdotAtspmDataModelsFaq[]>(
-      {url: `/api/v1/Faq`, method: 'GET',
-        params, signal
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey = queryOptions?.queryKey ?? getApiV1FaqQueryKey(params)
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof apiV1Faq>>> = ({
+    signal,
+  }) => apiV1Faq(params, signal)
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof apiV1Faq>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type ApiV1FaqQueryResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1Faq>>
+>
+export type ApiV1FaqQueryError = void
+
+/**
+ * @summary Collection of objects from oData query.
+ */
+
+export function useApiV1Faq<
+  TData = Awaited<ReturnType<typeof apiV1Faq>>,
+  TError = void,
+>(
+  params?: ApiV1FaqParams,
+  options?: {
+    query?: UseQueryOptions<Awaited<ReturnType<typeof apiV1Faq>>, TError, TData>
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getApiV1FaqQueryOptions(params, options)
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+export const apiV1FaqKey = (
+  key: number,
+  utahUdotAtspmDataModelsFaq: UtahUdotAtspmDataModelsFaq,
+  params?: ApiV1FaqKeyParams
+) => {
+  return configRequest<void>({
+    url: `/api/v1/Faq/${key}`,
+    method: 'PUT',
+    headers: {
+      'Content-Type':
+        'application/json;odata.metadata=minimal;odata.streaming=true',
     },
-      );
-    }
-  
-
-export const getApiVVersionApiVersionFaqQueryKey = (params?: ApiVVersionApiVersionFaqParams,) => {
-    return [`/api/v1/Faq`, ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getApiVVersionApiVersionFaqQueryOptions = <TData = Awaited<ReturnType<typeof apiVVersionApiVersionFaq>>, TError = void>(params?: ApiVVersionApiVersionFaqParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionFaq>>, TError, TData>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getApiVVersionApiVersionFaqQueryKey(params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiVVersionApiVersionFaq>>> = ({ signal }) => apiVVersionApiVersionFaq(params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionFaq>>, TError, TData> & { queryKey: QueryKey }
+    data: utahUdotAtspmDataModelsFaq,
+    params,
+  })
 }
 
-export type ApiVVersionApiVersionFaqQueryResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionFaq>>>
-export type ApiVVersionApiVersionFaqQueryError = void
-
-
-/**
- * @summary Collection of objects from oData query.
- */
-
-export function useApiVVersionApiVersionFaq<TData = Awaited<ReturnType<typeof apiVVersionApiVersionFaq>>, TError = void>(
- params?: ApiVVersionApiVersionFaqParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionFaq>>, TError, TData>, }
-
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
-
-  const queryOptions = getApiVVersionApiVersionFaqQueryOptions(params,options)
-
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
-}
-
-
-
-
-export const apiVVersionApiVersionFaqKey = (
-    key: number,
-    utahUdotAtspmDataModelsFaq: UtahUdotAtspmDataModelsFaq,
-    params?: ApiVVersionApiVersionFaqKeyParams,
- ) => {
-      
-      
-      return configRequest<void>(
-      {url: `/api/v1/Faq/${key}`, method: 'PUT',
-      headers: {'Content-Type': 'application/json;odata.metadata=minimal;odata.streaming=true', },
-      data: utahUdotAtspmDataModelsFaq,
-        params
+export const getApiV1FaqKeyMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1FaqKey>>,
+    TError,
+    {
+      key: number
+      data: UtahUdotAtspmDataModelsFaq
+      params?: ApiV1FaqKeyParams
     },
-      );
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof apiV1FaqKey>>,
+  TError,
+  { key: number; data: UtahUdotAtspmDataModelsFaq; params?: ApiV1FaqKeyParams },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof apiV1FaqKey>>,
+    {
+      key: number
+      data: UtahUdotAtspmDataModelsFaq
+      params?: ApiV1FaqKeyParams
     }
-  
+  > = (props) => {
+    const { key, data, params } = props ?? {}
 
+    return apiV1FaqKey(key, data, params)
+  }
 
-export const getApiVVersionApiVersionFaqKeyMutationOptions = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionFaqKey>>, TError,{key: number;data: UtahUdotAtspmDataModelsFaq;params?: ApiVVersionApiVersionFaqKeyParams}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionFaqKey>>, TError,{key: number;data: UtahUdotAtspmDataModelsFaq;params?: ApiVVersionApiVersionFaqKeyParams}, TContext> => {
-const {mutation: mutationOptions} = options ?? {};
+  return { mutationFn, ...mutationOptions }
+}
 
-      
+export type ApiV1FaqKeyMutationResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1FaqKey>>
+>
+export type ApiV1FaqKeyMutationBody = UtahUdotAtspmDataModelsFaq
+export type ApiV1FaqKeyMutationError = void
 
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof apiVVersionApiVersionFaqKey>>, {key: number;data: UtahUdotAtspmDataModelsFaq;params?: ApiVVersionApiVersionFaqKeyParams}> = (props) => {
-          const {key,data,params} = props ?? {};
-
-          return  apiVVersionApiVersionFaqKey(key,data,params,)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type ApiVVersionApiVersionFaqKeyMutationResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionFaqKey>>>
-    export type ApiVVersionApiVersionFaqKeyMutationBody = UtahUdotAtspmDataModelsFaq
-    export type ApiVVersionApiVersionFaqKeyMutationError = void
-
-    export const useApiVVersionApiVersionFaqKey = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionFaqKey>>, TError,{key: number;data: UtahUdotAtspmDataModelsFaq;params?: ApiVVersionApiVersionFaqKeyParams}, TContext>, }
-): UseMutationResult<
-        Awaited<ReturnType<typeof apiVVersionApiVersionFaqKey>>,
-        TError,
-        {key: number;data: UtahUdotAtspmDataModelsFaq;params?: ApiVVersionApiVersionFaqKeyParams},
-        TContext
-      > => {
-
-      const mutationOptions = getApiVVersionApiVersionFaqKeyMutationOptions(options);
-
-      return useMutation(mutationOptions);
-    }
-    
-/**
- * @summary Collection of objects from oData query.
- */
-export const apiVVersionApiVersionFaqCount = (
-    params?: ApiVVersionApiVersionFaqCountParams,
- signal?: AbortSignal
-) => {
-      
-      
-      return configRequest<UtahUdotAtspmDataModelsFaq[]>(
-      {url: `/api/v1/Faq/$count`, method: 'GET',
-        params, signal
+export const useApiV1FaqKey = <TError = void, TContext = unknown>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1FaqKey>>,
+    TError,
+    {
+      key: number
+      data: UtahUdotAtspmDataModelsFaq
+      params?: ApiV1FaqKeyParams
     },
-      );
-    }
-  
+    TContext
+  >
+}): UseMutationResult<
+  Awaited<ReturnType<typeof apiV1FaqKey>>,
+  TError,
+  { key: number; data: UtahUdotAtspmDataModelsFaq; params?: ApiV1FaqKeyParams },
+  TContext
+> => {
+  const mutationOptions = getApiV1FaqKeyMutationOptions(options)
 
-export const getApiVVersionApiVersionFaqCountQueryKey = (params?: ApiVVersionApiVersionFaqCountParams,) => {
-    return [`/api/v1/Faq/$count`, ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getApiVVersionApiVersionFaqCountQueryOptions = <TData = Awaited<ReturnType<typeof apiVVersionApiVersionFaqCount>>, TError = void>(params?: ApiVVersionApiVersionFaqCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionFaqCount>>, TError, TData>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getApiVVersionApiVersionFaqCountQueryKey(params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiVVersionApiVersionFaqCount>>> = ({ signal }) => apiVVersionApiVersionFaqCount(params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionFaqCount>>, TError, TData> & { queryKey: QueryKey }
+  return useMutation(mutationOptions)
 }
 
-export type ApiVVersionApiVersionFaqCountQueryResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionFaqCount>>>
-export type ApiVVersionApiVersionFaqCountQueryError = void
+/**
+ * @summary Collection of objects from oData query.
+ */
+export const apiV1FaqCount = (
+  params?: ApiV1FaqCountParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<UtahUdotAtspmDataModelsFaq[]>({
+    url: `/api/v1/Faq/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
 
+export const getApiV1FaqCountQueryKey = (params?: ApiV1FaqCountParams) => {
+  return [`/api/v1/Faq/$count`, ...(params ? [params] : [])] as const
+}
+
+export const getApiV1FaqCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof apiV1FaqCount>>,
+  TError = void,
+>(
+  params?: ApiV1FaqCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1FaqCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey = queryOptions?.queryKey ?? getApiV1FaqCountQueryKey(params)
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof apiV1FaqCount>>> = ({
+    signal,
+  }) => apiV1FaqCount(params, signal)
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof apiV1FaqCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type ApiV1FaqCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1FaqCount>>
+>
+export type ApiV1FaqCountQueryError = void
 
 /**
  * @summary Collection of objects from oData query.
  */
 
-export function useApiVVersionApiVersionFaqCount<TData = Awaited<ReturnType<typeof apiVVersionApiVersionFaqCount>>, TError = void>(
- params?: ApiVVersionApiVersionFaqCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionFaqCount>>, TError, TData>, }
+export function useApiV1FaqCount<
+  TData = Awaited<ReturnType<typeof apiV1FaqCount>>,
+  TError = void,
+>(
+  params?: ApiV1FaqCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1FaqCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getApiV1FaqCountQueryOptions(params, options)
 
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
 
-  const queryOptions = getApiVVersionApiVersionFaqCountQueryOptions(params,options)
+  query.queryKey = queryOptions.queryKey
 
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+  return query
 }
-
-
-
 
 /**
  * @summary Utah.Udot.Atspm.Data.Models.Location navigation property action
  */
-export const apiVVersionApiVersionJurisdictionKeyLocations = (
-    key: number,
-    params?: ApiVVersionApiVersionJurisdictionKeyLocationsParams,
- signal?: AbortSignal
+export const apiV1JurisdictionKeyLocations = (
+  key: number,
+  params?: ApiV1JurisdictionKeyLocationsParams,
+  signal?: AbortSignal
 ) => {
-      
-      
-      return configRequest<UtahUdotAtspmDataModelsLocation[]>(
-      {url: `/api/v1/Jurisdiction/${key}/locations`, method: 'GET',
-        params, signal
-    },
-      );
-    }
-  
-
-export const getApiVVersionApiVersionJurisdictionKeyLocationsQueryKey = (key: number,
-    params?: ApiVVersionApiVersionJurisdictionKeyLocationsParams,) => {
-    return [`/api/v1/Jurisdiction/${key}/locations`, ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getApiVVersionApiVersionJurisdictionKeyLocationsQueryOptions = <TData = Awaited<ReturnType<typeof apiVVersionApiVersionJurisdictionKeyLocations>>, TError = void>(key: number,
-    params?: ApiVVersionApiVersionJurisdictionKeyLocationsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionJurisdictionKeyLocations>>, TError, TData>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getApiVVersionApiVersionJurisdictionKeyLocationsQueryKey(key,params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiVVersionApiVersionJurisdictionKeyLocations>>> = ({ signal }) => apiVVersionApiVersionJurisdictionKeyLocations(key,params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(key), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionJurisdictionKeyLocations>>, TError, TData> & { queryKey: QueryKey }
+  return configRequest<UtahUdotAtspmDataModelsLocation[]>({
+    url: `/api/v1/Jurisdiction/${key}/locations`,
+    method: 'GET',
+    params,
+    signal,
+  })
 }
 
-export type ApiVVersionApiVersionJurisdictionKeyLocationsQueryResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionJurisdictionKeyLocations>>>
-export type ApiVVersionApiVersionJurisdictionKeyLocationsQueryError = void
+export const getApiV1JurisdictionKeyLocationsQueryKey = (
+  key: number,
+  params?: ApiV1JurisdictionKeyLocationsParams
+) => {
+  return [
+    `/api/v1/Jurisdiction/${key}/locations`,
+    ...(params ? [params] : []),
+  ] as const
+}
 
+export const getApiV1JurisdictionKeyLocationsQueryOptions = <
+  TData = Awaited<ReturnType<typeof apiV1JurisdictionKeyLocations>>,
+  TError = void,
+>(
+  key: number,
+  params?: ApiV1JurisdictionKeyLocationsParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1JurisdictionKeyLocations>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getApiV1JurisdictionKeyLocationsQueryKey(key, params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof apiV1JurisdictionKeyLocations>>
+  > = ({ signal }) => apiV1JurisdictionKeyLocations(key, params, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!key,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof apiV1JurisdictionKeyLocations>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type ApiV1JurisdictionKeyLocationsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1JurisdictionKeyLocations>>
+>
+export type ApiV1JurisdictionKeyLocationsQueryError = void
 
 /**
  * @summary Utah.Udot.Atspm.Data.Models.Location navigation property action
  */
 
-export function useApiVVersionApiVersionJurisdictionKeyLocations<TData = Awaited<ReturnType<typeof apiVVersionApiVersionJurisdictionKeyLocations>>, TError = void>(
- key: number,
-    params?: ApiVVersionApiVersionJurisdictionKeyLocationsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionJurisdictionKeyLocations>>, TError, TData>, }
+export function useApiV1JurisdictionKeyLocations<
+  TData = Awaited<ReturnType<typeof apiV1JurisdictionKeyLocations>>,
+  TError = void,
+>(
+  key: number,
+  params?: ApiV1JurisdictionKeyLocationsParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1JurisdictionKeyLocations>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getApiV1JurisdictionKeyLocationsQueryOptions(
+    key,
+    params,
+    options
+  )
 
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
 
-  const queryOptions = getApiVVersionApiVersionJurisdictionKeyLocationsQueryOptions(key,params,options)
+  query.queryKey = queryOptions.queryKey
 
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+  return query
 }
-
-
-
 
 /**
  * @summary Utah.Udot.Atspm.Data.Models.Location navigation property action
  */
-export const apiVVersionApiVersionJurisdictionKeyLocationsCount = (
-    key: number,
-    params?: ApiVVersionApiVersionJurisdictionKeyLocationsCountParams,
- signal?: AbortSignal
+export const apiV1JurisdictionKeyLocationsCount = (
+  key: number,
+  params?: ApiV1JurisdictionKeyLocationsCountParams,
+  signal?: AbortSignal
 ) => {
-      
-      
-      return configRequest<UtahUdotAtspmDataModelsLocation[]>(
-      {url: `/api/v1/Jurisdiction/${key}/locations/$count`, method: 'GET',
-        params, signal
-    },
-      );
-    }
-  
-
-export const getApiVVersionApiVersionJurisdictionKeyLocationsCountQueryKey = (key: number,
-    params?: ApiVVersionApiVersionJurisdictionKeyLocationsCountParams,) => {
-    return [`/api/v1/Jurisdiction/${key}/locations/$count`, ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getApiVVersionApiVersionJurisdictionKeyLocationsCountQueryOptions = <TData = Awaited<ReturnType<typeof apiVVersionApiVersionJurisdictionKeyLocationsCount>>, TError = void>(key: number,
-    params?: ApiVVersionApiVersionJurisdictionKeyLocationsCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionJurisdictionKeyLocationsCount>>, TError, TData>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getApiVVersionApiVersionJurisdictionKeyLocationsCountQueryKey(key,params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiVVersionApiVersionJurisdictionKeyLocationsCount>>> = ({ signal }) => apiVVersionApiVersionJurisdictionKeyLocationsCount(key,params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(key), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionJurisdictionKeyLocationsCount>>, TError, TData> & { queryKey: QueryKey }
+  return configRequest<UtahUdotAtspmDataModelsLocation[]>({
+    url: `/api/v1/Jurisdiction/${key}/locations/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
 }
 
-export type ApiVVersionApiVersionJurisdictionKeyLocationsCountQueryResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionJurisdictionKeyLocationsCount>>>
-export type ApiVVersionApiVersionJurisdictionKeyLocationsCountQueryError = void
+export const getApiV1JurisdictionKeyLocationsCountQueryKey = (
+  key: number,
+  params?: ApiV1JurisdictionKeyLocationsCountParams
+) => {
+  return [
+    `/api/v1/Jurisdiction/${key}/locations/$count`,
+    ...(params ? [params] : []),
+  ] as const
+}
 
+export const getApiV1JurisdictionKeyLocationsCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof apiV1JurisdictionKeyLocationsCount>>,
+  TError = void,
+>(
+  key: number,
+  params?: ApiV1JurisdictionKeyLocationsCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1JurisdictionKeyLocationsCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getApiV1JurisdictionKeyLocationsCountQueryKey(key, params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof apiV1JurisdictionKeyLocationsCount>>
+  > = ({ signal }) => apiV1JurisdictionKeyLocationsCount(key, params, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!key,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof apiV1JurisdictionKeyLocationsCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type ApiV1JurisdictionKeyLocationsCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1JurisdictionKeyLocationsCount>>
+>
+export type ApiV1JurisdictionKeyLocationsCountQueryError = void
 
 /**
  * @summary Utah.Udot.Atspm.Data.Models.Location navigation property action
  */
 
-export function useApiVVersionApiVersionJurisdictionKeyLocationsCount<TData = Awaited<ReturnType<typeof apiVVersionApiVersionJurisdictionKeyLocationsCount>>, TError = void>(
- key: number,
-    params?: ApiVVersionApiVersionJurisdictionKeyLocationsCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionJurisdictionKeyLocationsCount>>, TError, TData>, }
+export function useApiV1JurisdictionKeyLocationsCount<
+  TData = Awaited<ReturnType<typeof apiV1JurisdictionKeyLocationsCount>>,
+  TError = void,
+>(
+  key: number,
+  params?: ApiV1JurisdictionKeyLocationsCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1JurisdictionKeyLocationsCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getApiV1JurisdictionKeyLocationsCountQueryOptions(
+    key,
+    params,
+    options
+  )
 
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
 
-  const queryOptions = getApiVVersionApiVersionJurisdictionKeyLocationsCountQueryOptions(key,params,options)
+  query.queryKey = queryOptions.queryKey
 
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+  return query
 }
-
-
-
 
 /**
  * @summary Collection of objects from oData query.
  */
-export const apiVVersionApiVersionJurisdiction = (
-    params?: ApiVVersionApiVersionJurisdictionParams,
- signal?: AbortSignal
+export const apiV1Jurisdiction = (
+  params?: ApiV1JurisdictionParams,
+  signal?: AbortSignal
 ) => {
-      
-      
-      return configRequest<UtahUdotAtspmDataModelsJurisdiction[]>(
-      {url: `/api/v1/Jurisdiction`, method: 'GET',
-        params, signal
-    },
-      );
-    }
-  
-
-export const getApiVVersionApiVersionJurisdictionQueryKey = (params?: ApiVVersionApiVersionJurisdictionParams,) => {
-    return [`/api/v1/Jurisdiction`, ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getApiVVersionApiVersionJurisdictionQueryOptions = <TData = Awaited<ReturnType<typeof apiVVersionApiVersionJurisdiction>>, TError = void>(params?: ApiVVersionApiVersionJurisdictionParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionJurisdiction>>, TError, TData>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getApiVVersionApiVersionJurisdictionQueryKey(params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiVVersionApiVersionJurisdiction>>> = ({ signal }) => apiVVersionApiVersionJurisdiction(params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionJurisdiction>>, TError, TData> & { queryKey: QueryKey }
+  return configRequest<UtahUdotAtspmDataModelsJurisdiction[]>({
+    url: `/api/v1/Jurisdiction`,
+    method: 'GET',
+    params,
+    signal,
+  })
 }
 
-export type ApiVVersionApiVersionJurisdictionQueryResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionJurisdiction>>>
-export type ApiVVersionApiVersionJurisdictionQueryError = void
-
-
-/**
- * @summary Collection of objects from oData query.
- */
-
-export function useApiVVersionApiVersionJurisdiction<TData = Awaited<ReturnType<typeof apiVVersionApiVersionJurisdiction>>, TError = void>(
- params?: ApiVVersionApiVersionJurisdictionParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionJurisdiction>>, TError, TData>, }
-
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
-
-  const queryOptions = getApiVVersionApiVersionJurisdictionQueryOptions(params,options)
-
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+export const getApiV1JurisdictionQueryKey = (
+  params?: ApiV1JurisdictionParams
+) => {
+  return [`/api/v1/Jurisdiction`, ...(params ? [params] : [])] as const
 }
 
-
-
-
-export const apiVVersionApiVersionJurisdictionKey = (
-    key: number,
-    utahUdotAtspmDataModelsJurisdiction: UtahUdotAtspmDataModelsJurisdiction,
-    params?: ApiVVersionApiVersionJurisdictionKeyParams,
- ) => {
-      
-      
-      return configRequest<void>(
-      {url: `/api/v1/Jurisdiction/${key}`, method: 'PUT',
-      headers: {'Content-Type': 'application/json;odata.metadata=minimal;odata.streaming=true', },
-      data: utahUdotAtspmDataModelsJurisdiction,
-        params
-    },
-      );
-    }
-  
-
-
-export const getApiVVersionApiVersionJurisdictionKeyMutationOptions = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionJurisdictionKey>>, TError,{key: number;data: UtahUdotAtspmDataModelsJurisdiction;params?: ApiVVersionApiVersionJurisdictionKeyParams}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionJurisdictionKey>>, TError,{key: number;data: UtahUdotAtspmDataModelsJurisdiction;params?: ApiVVersionApiVersionJurisdictionKeyParams}, TContext> => {
-const {mutation: mutationOptions} = options ?? {};
-
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof apiVVersionApiVersionJurisdictionKey>>, {key: number;data: UtahUdotAtspmDataModelsJurisdiction;params?: ApiVVersionApiVersionJurisdictionKeyParams}> = (props) => {
-          const {key,data,params} = props ?? {};
-
-          return  apiVVersionApiVersionJurisdictionKey(key,data,params,)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type ApiVVersionApiVersionJurisdictionKeyMutationResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionJurisdictionKey>>>
-    export type ApiVVersionApiVersionJurisdictionKeyMutationBody = UtahUdotAtspmDataModelsJurisdiction
-    export type ApiVVersionApiVersionJurisdictionKeyMutationError = void
-
-    export const useApiVVersionApiVersionJurisdictionKey = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionJurisdictionKey>>, TError,{key: number;data: UtahUdotAtspmDataModelsJurisdiction;params?: ApiVVersionApiVersionJurisdictionKeyParams}, TContext>, }
-): UseMutationResult<
-        Awaited<ReturnType<typeof apiVVersionApiVersionJurisdictionKey>>,
-        TError,
-        {key: number;data: UtahUdotAtspmDataModelsJurisdiction;params?: ApiVVersionApiVersionJurisdictionKeyParams},
-        TContext
-      > => {
-
-      const mutationOptions = getApiVVersionApiVersionJurisdictionKeyMutationOptions(options);
-
-      return useMutation(mutationOptions);
-    }
-    
-/**
- * @summary Collection of objects from oData query.
- */
-export const apiVVersionApiVersionJurisdictionCount = (
-    params?: ApiVVersionApiVersionJurisdictionCountParams,
- signal?: AbortSignal
+export const getApiV1JurisdictionQueryOptions = <
+  TData = Awaited<ReturnType<typeof apiV1Jurisdiction>>,
+  TError = void,
+>(
+  params?: ApiV1JurisdictionParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1Jurisdiction>>,
+      TError,
+      TData
+    >
+  }
 ) => {
-      
-      
-      return configRequest<UtahUdotAtspmDataModelsJurisdiction[]>(
-      {url: `/api/v1/Jurisdiction/$count`, method: 'GET',
-        params, signal
-    },
-      );
-    }
-  
+  const { query: queryOptions } = options ?? {}
 
-export const getApiVVersionApiVersionJurisdictionCountQueryKey = (params?: ApiVVersionApiVersionJurisdictionCountParams,) => {
-    return [`/api/v1/Jurisdiction/$count`, ...(params ? [params]: [])] as const;
-    }
+  const queryKey =
+    queryOptions?.queryKey ?? getApiV1JurisdictionQueryKey(params)
 
-    
-export const getApiVVersionApiVersionJurisdictionCountQueryOptions = <TData = Awaited<ReturnType<typeof apiVVersionApiVersionJurisdictionCount>>, TError = void>(params?: ApiVVersionApiVersionJurisdictionCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionJurisdictionCount>>, TError, TData>, }
-) => {
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof apiV1Jurisdiction>>
+  > = ({ signal }) => apiV1Jurisdiction(params, signal)
 
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getApiVVersionApiVersionJurisdictionCountQueryKey(params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiVVersionApiVersionJurisdictionCount>>> = ({ signal }) => apiVVersionApiVersionJurisdictionCount(params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionJurisdictionCount>>, TError, TData> & { queryKey: QueryKey }
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof apiV1Jurisdiction>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
 }
 
-export type ApiVVersionApiVersionJurisdictionCountQueryResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionJurisdictionCount>>>
-export type ApiVVersionApiVersionJurisdictionCountQueryError = void
-
+export type ApiV1JurisdictionQueryResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1Jurisdiction>>
+>
+export type ApiV1JurisdictionQueryError = void
 
 /**
  * @summary Collection of objects from oData query.
  */
 
-export function useApiVVersionApiVersionJurisdictionCount<TData = Awaited<ReturnType<typeof apiVVersionApiVersionJurisdictionCount>>, TError = void>(
- params?: ApiVVersionApiVersionJurisdictionCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionJurisdictionCount>>, TError, TData>, }
+export function useApiV1Jurisdiction<
+  TData = Awaited<ReturnType<typeof apiV1Jurisdiction>>,
+  TError = void,
+>(
+  params?: ApiV1JurisdictionParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1Jurisdiction>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getApiV1JurisdictionQueryOptions(params, options)
 
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
 
-  const queryOptions = getApiVVersionApiVersionJurisdictionCountQueryOptions(params,options)
+  query.queryKey = queryOptions.queryKey
 
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+  return query
 }
 
+export const apiV1JurisdictionKey = (
+  key: number,
+  utahUdotAtspmDataModelsJurisdiction: UtahUdotAtspmDataModelsJurisdiction,
+  params?: ApiV1JurisdictionKeyParams
+) => {
+  return configRequest<void>({
+    url: `/api/v1/Jurisdiction/${key}`,
+    method: 'PUT',
+    headers: {
+      'Content-Type':
+        'application/json;odata.metadata=minimal;odata.streaming=true',
+    },
+    data: utahUdotAtspmDataModelsJurisdiction,
+    params,
+  })
+}
 
+export const getApiV1JurisdictionKeyMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1JurisdictionKey>>,
+    TError,
+    {
+      key: number
+      data: UtahUdotAtspmDataModelsJurisdiction
+      params?: ApiV1JurisdictionKeyParams
+    },
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof apiV1JurisdictionKey>>,
+  TError,
+  {
+    key: number
+    data: UtahUdotAtspmDataModelsJurisdiction
+    params?: ApiV1JurisdictionKeyParams
+  },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
 
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof apiV1JurisdictionKey>>,
+    {
+      key: number
+      data: UtahUdotAtspmDataModelsJurisdiction
+      params?: ApiV1JurisdictionKeyParams
+    }
+  > = (props) => {
+    const { key, data, params } = props ?? {}
+
+    return apiV1JurisdictionKey(key, data, params)
+  }
+
+  return { mutationFn, ...mutationOptions }
+}
+
+export type ApiV1JurisdictionKeyMutationResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1JurisdictionKey>>
+>
+export type ApiV1JurisdictionKeyMutationBody =
+  UtahUdotAtspmDataModelsJurisdiction
+export type ApiV1JurisdictionKeyMutationError = void
+
+export const useApiV1JurisdictionKey = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1JurisdictionKey>>,
+    TError,
+    {
+      key: number
+      data: UtahUdotAtspmDataModelsJurisdiction
+      params?: ApiV1JurisdictionKeyParams
+    },
+    TContext
+  >
+}): UseMutationResult<
+  Awaited<ReturnType<typeof apiV1JurisdictionKey>>,
+  TError,
+  {
+    key: number
+    data: UtahUdotAtspmDataModelsJurisdiction
+    params?: ApiV1JurisdictionKeyParams
+  },
+  TContext
+> => {
+  const mutationOptions = getApiV1JurisdictionKeyMutationOptions(options)
+
+  return useMutation(mutationOptions)
+}
+
+/**
+ * @summary Collection of objects from oData query.
+ */
+export const apiV1JurisdictionCount = (
+  params?: ApiV1JurisdictionCountParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<UtahUdotAtspmDataModelsJurisdiction[]>({
+    url: `/api/v1/Jurisdiction/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getApiV1JurisdictionCountQueryKey = (
+  params?: ApiV1JurisdictionCountParams
+) => {
+  return [`/api/v1/Jurisdiction/$count`, ...(params ? [params] : [])] as const
+}
+
+export const getApiV1JurisdictionCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof apiV1JurisdictionCount>>,
+  TError = void,
+>(
+  params?: ApiV1JurisdictionCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1JurisdictionCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ?? getApiV1JurisdictionCountQueryKey(params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof apiV1JurisdictionCount>>
+  > = ({ signal }) => apiV1JurisdictionCount(params, signal)
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof apiV1JurisdictionCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type ApiV1JurisdictionCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1JurisdictionCount>>
+>
+export type ApiV1JurisdictionCountQueryError = void
+
+/**
+ * @summary Collection of objects from oData query.
+ */
+
+export function useApiV1JurisdictionCount<
+  TData = Awaited<ReturnType<typeof apiV1JurisdictionCount>>,
+  TError = void,
+>(
+  params?: ApiV1JurisdictionCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1JurisdictionCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getApiV1JurisdictionCountQueryOptions(params, options)
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
 
 /**
  * @summary Utah.Udot.Atspm.Data.Models.Approach navigation property action
  */
-export const apiVVersionApiVersionLocationKeyApproaches = (
-    key: number,
-    params?: ApiVVersionApiVersionLocationKeyApproachesParams,
- signal?: AbortSignal
+export const apiV1LocationKeyApproaches = (
+  key: number,
+  params?: ApiV1LocationKeyApproachesParams,
+  signal?: AbortSignal
 ) => {
-      
-      
-      return configRequest<UtahUdotAtspmDataModelsApproach[]>(
-      {url: `/api/v1/Location/${key}/approaches`, method: 'GET',
-        params, signal
-    },
-      );
-    }
-  
-
-export const getApiVVersionApiVersionLocationKeyApproachesQueryKey = (key: number,
-    params?: ApiVVersionApiVersionLocationKeyApproachesParams,) => {
-    return [`/api/v1/Location/${key}/approaches`, ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getApiVVersionApiVersionLocationKeyApproachesQueryOptions = <TData = Awaited<ReturnType<typeof apiVVersionApiVersionLocationKeyApproaches>>, TError = void>(key: number,
-    params?: ApiVVersionApiVersionLocationKeyApproachesParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionLocationKeyApproaches>>, TError, TData>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getApiVVersionApiVersionLocationKeyApproachesQueryKey(key,params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiVVersionApiVersionLocationKeyApproaches>>> = ({ signal }) => apiVVersionApiVersionLocationKeyApproaches(key,params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(key), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionLocationKeyApproaches>>, TError, TData> & { queryKey: QueryKey }
+  return configRequest<UtahUdotAtspmDataModelsApproach[]>({
+    url: `/api/v1/Location/${key}/approaches`,
+    method: 'GET',
+    params,
+    signal,
+  })
 }
 
-export type ApiVVersionApiVersionLocationKeyApproachesQueryResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionLocationKeyApproaches>>>
-export type ApiVVersionApiVersionLocationKeyApproachesQueryError = void
+export const getApiV1LocationKeyApproachesQueryKey = (
+  key: number,
+  params?: ApiV1LocationKeyApproachesParams
+) => {
+  return [
+    `/api/v1/Location/${key}/approaches`,
+    ...(params ? [params] : []),
+  ] as const
+}
 
+export const getApiV1LocationKeyApproachesQueryOptions = <
+  TData = Awaited<ReturnType<typeof apiV1LocationKeyApproaches>>,
+  TError = void,
+>(
+  key: number,
+  params?: ApiV1LocationKeyApproachesParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1LocationKeyApproaches>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ?? getApiV1LocationKeyApproachesQueryKey(key, params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof apiV1LocationKeyApproaches>>
+  > = ({ signal }) => apiV1LocationKeyApproaches(key, params, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!key,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof apiV1LocationKeyApproaches>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type ApiV1LocationKeyApproachesQueryResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1LocationKeyApproaches>>
+>
+export type ApiV1LocationKeyApproachesQueryError = void
 
 /**
  * @summary Utah.Udot.Atspm.Data.Models.Approach navigation property action
  */
 
-export function useApiVVersionApiVersionLocationKeyApproaches<TData = Awaited<ReturnType<typeof apiVVersionApiVersionLocationKeyApproaches>>, TError = void>(
- key: number,
-    params?: ApiVVersionApiVersionLocationKeyApproachesParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionLocationKeyApproaches>>, TError, TData>, }
+export function useApiV1LocationKeyApproaches<
+  TData = Awaited<ReturnType<typeof apiV1LocationKeyApproaches>>,
+  TError = void,
+>(
+  key: number,
+  params?: ApiV1LocationKeyApproachesParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1LocationKeyApproaches>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getApiV1LocationKeyApproachesQueryOptions(
+    key,
+    params,
+    options
+  )
 
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
 
-  const queryOptions = getApiVVersionApiVersionLocationKeyApproachesQueryOptions(key,params,options)
+  query.queryKey = queryOptions.queryKey
 
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+  return query
 }
-
-
-
 
 /**
  * @summary Utah.Udot.Atspm.Data.Models.Approach navigation property action
  */
-export const apiVVersionApiVersionLocationKeyApproachesCount = (
-    key: number,
-    params?: ApiVVersionApiVersionLocationKeyApproachesCountParams,
- signal?: AbortSignal
+export const apiV1LocationKeyApproachesCount = (
+  key: number,
+  params?: ApiV1LocationKeyApproachesCountParams,
+  signal?: AbortSignal
 ) => {
-      
-      
-      return configRequest<UtahUdotAtspmDataModelsApproach[]>(
-      {url: `/api/v1/Location/${key}/approaches/$count`, method: 'GET',
-        params, signal
-    },
-      );
-    }
-  
-
-export const getApiVVersionApiVersionLocationKeyApproachesCountQueryKey = (key: number,
-    params?: ApiVVersionApiVersionLocationKeyApproachesCountParams,) => {
-    return [`/api/v1/Location/${key}/approaches/$count`, ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getApiVVersionApiVersionLocationKeyApproachesCountQueryOptions = <TData = Awaited<ReturnType<typeof apiVVersionApiVersionLocationKeyApproachesCount>>, TError = void>(key: number,
-    params?: ApiVVersionApiVersionLocationKeyApproachesCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionLocationKeyApproachesCount>>, TError, TData>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getApiVVersionApiVersionLocationKeyApproachesCountQueryKey(key,params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiVVersionApiVersionLocationKeyApproachesCount>>> = ({ signal }) => apiVVersionApiVersionLocationKeyApproachesCount(key,params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(key), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionLocationKeyApproachesCount>>, TError, TData> & { queryKey: QueryKey }
+  return configRequest<UtahUdotAtspmDataModelsApproach[]>({
+    url: `/api/v1/Location/${key}/approaches/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
 }
 
-export type ApiVVersionApiVersionLocationKeyApproachesCountQueryResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionLocationKeyApproachesCount>>>
-export type ApiVVersionApiVersionLocationKeyApproachesCountQueryError = void
+export const getApiV1LocationKeyApproachesCountQueryKey = (
+  key: number,
+  params?: ApiV1LocationKeyApproachesCountParams
+) => {
+  return [
+    `/api/v1/Location/${key}/approaches/$count`,
+    ...(params ? [params] : []),
+  ] as const
+}
 
+export const getApiV1LocationKeyApproachesCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof apiV1LocationKeyApproachesCount>>,
+  TError = void,
+>(
+  key: number,
+  params?: ApiV1LocationKeyApproachesCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1LocationKeyApproachesCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getApiV1LocationKeyApproachesCountQueryKey(key, params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof apiV1LocationKeyApproachesCount>>
+  > = ({ signal }) => apiV1LocationKeyApproachesCount(key, params, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!key,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof apiV1LocationKeyApproachesCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type ApiV1LocationKeyApproachesCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1LocationKeyApproachesCount>>
+>
+export type ApiV1LocationKeyApproachesCountQueryError = void
 
 /**
  * @summary Utah.Udot.Atspm.Data.Models.Approach navigation property action
  */
 
-export function useApiVVersionApiVersionLocationKeyApproachesCount<TData = Awaited<ReturnType<typeof apiVVersionApiVersionLocationKeyApproachesCount>>, TError = void>(
- key: number,
-    params?: ApiVVersionApiVersionLocationKeyApproachesCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionLocationKeyApproachesCount>>, TError, TData>, }
+export function useApiV1LocationKeyApproachesCount<
+  TData = Awaited<ReturnType<typeof apiV1LocationKeyApproachesCount>>,
+  TError = void,
+>(
+  key: number,
+  params?: ApiV1LocationKeyApproachesCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1LocationKeyApproachesCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getApiV1LocationKeyApproachesCountQueryOptions(
+    key,
+    params,
+    options
+  )
 
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
 
-  const queryOptions = getApiVVersionApiVersionLocationKeyApproachesCountQueryOptions(key,params,options)
+  query.queryKey = queryOptions.queryKey
 
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+  return query
 }
-
-
-
 
 /**
  * @summary Utah.Udot.Atspm.Data.Models.Area navigation property action
  */
-export const apiVVersionApiVersionLocationKeyAreas = (
-    key: number,
-    params?: ApiVVersionApiVersionLocationKeyAreasParams,
- signal?: AbortSignal
+export const apiV1LocationKeyAreas = (
+  key: number,
+  params?: ApiV1LocationKeyAreasParams,
+  signal?: AbortSignal
 ) => {
-      
-      
-      return configRequest<UtahUdotAtspmDataModelsArea[]>(
-      {url: `/api/v1/Location/${key}/areas`, method: 'GET',
-        params, signal
-    },
-      );
-    }
-  
-
-export const getApiVVersionApiVersionLocationKeyAreasQueryKey = (key: number,
-    params?: ApiVVersionApiVersionLocationKeyAreasParams,) => {
-    return [`/api/v1/Location/${key}/areas`, ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getApiVVersionApiVersionLocationKeyAreasQueryOptions = <TData = Awaited<ReturnType<typeof apiVVersionApiVersionLocationKeyAreas>>, TError = void>(key: number,
-    params?: ApiVVersionApiVersionLocationKeyAreasParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionLocationKeyAreas>>, TError, TData>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getApiVVersionApiVersionLocationKeyAreasQueryKey(key,params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiVVersionApiVersionLocationKeyAreas>>> = ({ signal }) => apiVVersionApiVersionLocationKeyAreas(key,params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(key), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionLocationKeyAreas>>, TError, TData> & { queryKey: QueryKey }
+  return configRequest<UtahUdotAtspmDataModelsArea[]>({
+    url: `/api/v1/Location/${key}/areas`,
+    method: 'GET',
+    params,
+    signal,
+  })
 }
 
-export type ApiVVersionApiVersionLocationKeyAreasQueryResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionLocationKeyAreas>>>
-export type ApiVVersionApiVersionLocationKeyAreasQueryError = void
-
-
-/**
- * @summary Utah.Udot.Atspm.Data.Models.Area navigation property action
- */
-
-export function useApiVVersionApiVersionLocationKeyAreas<TData = Awaited<ReturnType<typeof apiVVersionApiVersionLocationKeyAreas>>, TError = void>(
- key: number,
-    params?: ApiVVersionApiVersionLocationKeyAreasParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionLocationKeyAreas>>, TError, TData>, }
-
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
-
-  const queryOptions = getApiVVersionApiVersionLocationKeyAreasQueryOptions(key,params,options)
-
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+export const getApiV1LocationKeyAreasQueryKey = (
+  key: number,
+  params?: ApiV1LocationKeyAreasParams
+) => {
+  return [`/api/v1/Location/${key}/areas`, ...(params ? [params] : [])] as const
 }
 
-
-
-
-/**
- * @summary Utah.Udot.Atspm.Data.Models.Area navigation property action
- */
-export const apiVVersionApiVersionLocationKeyAreasCount = (
-    key: number,
-    params?: ApiVVersionApiVersionLocationKeyAreasCountParams,
- signal?: AbortSignal
+export const getApiV1LocationKeyAreasQueryOptions = <
+  TData = Awaited<ReturnType<typeof apiV1LocationKeyAreas>>,
+  TError = void,
+>(
+  key: number,
+  params?: ApiV1LocationKeyAreasParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1LocationKeyAreas>>,
+      TError,
+      TData
+    >
+  }
 ) => {
-      
-      
-      return configRequest<UtahUdotAtspmDataModelsArea[]>(
-      {url: `/api/v1/Location/${key}/areas/$count`, method: 'GET',
-        params, signal
-    },
-      );
-    }
-  
+  const { query: queryOptions } = options ?? {}
 
-export const getApiVVersionApiVersionLocationKeyAreasCountQueryKey = (key: number,
-    params?: ApiVVersionApiVersionLocationKeyAreasCountParams,) => {
-    return [`/api/v1/Location/${key}/areas/$count`, ...(params ? [params]: [])] as const;
-    }
+  const queryKey =
+    queryOptions?.queryKey ?? getApiV1LocationKeyAreasQueryKey(key, params)
 
-    
-export const getApiVVersionApiVersionLocationKeyAreasCountQueryOptions = <TData = Awaited<ReturnType<typeof apiVVersionApiVersionLocationKeyAreasCount>>, TError = void>(key: number,
-    params?: ApiVVersionApiVersionLocationKeyAreasCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionLocationKeyAreasCount>>, TError, TData>, }
-) => {
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof apiV1LocationKeyAreas>>
+  > = ({ signal }) => apiV1LocationKeyAreas(key, params, signal)
 
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getApiVVersionApiVersionLocationKeyAreasCountQueryKey(key,params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiVVersionApiVersionLocationKeyAreasCount>>> = ({ signal }) => apiVVersionApiVersionLocationKeyAreasCount(key,params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(key), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionLocationKeyAreasCount>>, TError, TData> & { queryKey: QueryKey }
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!key,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof apiV1LocationKeyAreas>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
 }
 
-export type ApiVVersionApiVersionLocationKeyAreasCountQueryResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionLocationKeyAreasCount>>>
-export type ApiVVersionApiVersionLocationKeyAreasCountQueryError = void
-
+export type ApiV1LocationKeyAreasQueryResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1LocationKeyAreas>>
+>
+export type ApiV1LocationKeyAreasQueryError = void
 
 /**
  * @summary Utah.Udot.Atspm.Data.Models.Area navigation property action
  */
 
-export function useApiVVersionApiVersionLocationKeyAreasCount<TData = Awaited<ReturnType<typeof apiVVersionApiVersionLocationKeyAreasCount>>, TError = void>(
- key: number,
-    params?: ApiVVersionApiVersionLocationKeyAreasCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionLocationKeyAreasCount>>, TError, TData>, }
+export function useApiV1LocationKeyAreas<
+  TData = Awaited<ReturnType<typeof apiV1LocationKeyAreas>>,
+  TError = void,
+>(
+  key: number,
+  params?: ApiV1LocationKeyAreasParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1LocationKeyAreas>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getApiV1LocationKeyAreasQueryOptions(
+    key,
+    params,
+    options
+  )
 
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
 
-  const queryOptions = getApiVVersionApiVersionLocationKeyAreasCountQueryOptions(key,params,options)
+  query.queryKey = queryOptions.queryKey
 
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+  return query
 }
 
+/**
+ * @summary Utah.Udot.Atspm.Data.Models.Area navigation property action
+ */
+export const apiV1LocationKeyAreasCount = (
+  key: number,
+  params?: ApiV1LocationKeyAreasCountParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<UtahUdotAtspmDataModelsArea[]>({
+    url: `/api/v1/Location/${key}/areas/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
 
+export const getApiV1LocationKeyAreasCountQueryKey = (
+  key: number,
+  params?: ApiV1LocationKeyAreasCountParams
+) => {
+  return [
+    `/api/v1/Location/${key}/areas/$count`,
+    ...(params ? [params] : []),
+  ] as const
+}
 
+export const getApiV1LocationKeyAreasCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof apiV1LocationKeyAreasCount>>,
+  TError = void,
+>(
+  key: number,
+  params?: ApiV1LocationKeyAreasCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1LocationKeyAreasCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ?? getApiV1LocationKeyAreasCountQueryKey(key, params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof apiV1LocationKeyAreasCount>>
+  > = ({ signal }) => apiV1LocationKeyAreasCount(key, params, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!key,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof apiV1LocationKeyAreasCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type ApiV1LocationKeyAreasCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1LocationKeyAreasCount>>
+>
+export type ApiV1LocationKeyAreasCountQueryError = void
+
+/**
+ * @summary Utah.Udot.Atspm.Data.Models.Area navigation property action
+ */
+
+export function useApiV1LocationKeyAreasCount<
+  TData = Awaited<ReturnType<typeof apiV1LocationKeyAreasCount>>,
+  TError = void,
+>(
+  key: number,
+  params?: ApiV1LocationKeyAreasCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1LocationKeyAreasCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getApiV1LocationKeyAreasCountQueryOptions(
+    key,
+    params,
+    options
+  )
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
 
 /**
  * @summary Utah.Udot.Atspm.Data.Models.Device navigation property action
  */
-export const apiVVersionApiVersionLocationKeyDevices = (
-    key: number,
-    params?: ApiVVersionApiVersionLocationKeyDevicesParams,
- signal?: AbortSignal
+export const apiV1LocationKeyDevices = (
+  key: number,
+  params?: ApiV1LocationKeyDevicesParams,
+  signal?: AbortSignal
 ) => {
-      
-      
-      return configRequest<UtahUdotAtspmDataModelsDevice[]>(
-      {url: `/api/v1/Location/${key}/devices`, method: 'GET',
-        params, signal
-    },
-      );
-    }
-  
-
-export const getApiVVersionApiVersionLocationKeyDevicesQueryKey = (key: number,
-    params?: ApiVVersionApiVersionLocationKeyDevicesParams,) => {
-    return [`/api/v1/Location/${key}/devices`, ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getApiVVersionApiVersionLocationKeyDevicesQueryOptions = <TData = Awaited<ReturnType<typeof apiVVersionApiVersionLocationKeyDevices>>, TError = void>(key: number,
-    params?: ApiVVersionApiVersionLocationKeyDevicesParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionLocationKeyDevices>>, TError, TData>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getApiVVersionApiVersionLocationKeyDevicesQueryKey(key,params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiVVersionApiVersionLocationKeyDevices>>> = ({ signal }) => apiVVersionApiVersionLocationKeyDevices(key,params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(key), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionLocationKeyDevices>>, TError, TData> & { queryKey: QueryKey }
+  return configRequest<UtahUdotAtspmDataModelsDevice[]>({
+    url: `/api/v1/Location/${key}/devices`,
+    method: 'GET',
+    params,
+    signal,
+  })
 }
 
-export type ApiVVersionApiVersionLocationKeyDevicesQueryResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionLocationKeyDevices>>>
-export type ApiVVersionApiVersionLocationKeyDevicesQueryError = void
+export const getApiV1LocationKeyDevicesQueryKey = (
+  key: number,
+  params?: ApiV1LocationKeyDevicesParams
+) => {
+  return [
+    `/api/v1/Location/${key}/devices`,
+    ...(params ? [params] : []),
+  ] as const
+}
 
+export const getApiV1LocationKeyDevicesQueryOptions = <
+  TData = Awaited<ReturnType<typeof apiV1LocationKeyDevices>>,
+  TError = void,
+>(
+  key: number,
+  params?: ApiV1LocationKeyDevicesParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1LocationKeyDevices>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ?? getApiV1LocationKeyDevicesQueryKey(key, params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof apiV1LocationKeyDevices>>
+  > = ({ signal }) => apiV1LocationKeyDevices(key, params, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!key,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof apiV1LocationKeyDevices>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type ApiV1LocationKeyDevicesQueryResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1LocationKeyDevices>>
+>
+export type ApiV1LocationKeyDevicesQueryError = void
 
 /**
  * @summary Utah.Udot.Atspm.Data.Models.Device navigation property action
  */
 
-export function useApiVVersionApiVersionLocationKeyDevices<TData = Awaited<ReturnType<typeof apiVVersionApiVersionLocationKeyDevices>>, TError = void>(
- key: number,
-    params?: ApiVVersionApiVersionLocationKeyDevicesParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionLocationKeyDevices>>, TError, TData>, }
+export function useApiV1LocationKeyDevices<
+  TData = Awaited<ReturnType<typeof apiV1LocationKeyDevices>>,
+  TError = void,
+>(
+  key: number,
+  params?: ApiV1LocationKeyDevicesParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1LocationKeyDevices>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getApiV1LocationKeyDevicesQueryOptions(
+    key,
+    params,
+    options
+  )
 
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
 
-  const queryOptions = getApiVVersionApiVersionLocationKeyDevicesQueryOptions(key,params,options)
+  query.queryKey = queryOptions.queryKey
 
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+  return query
 }
-
-
-
 
 /**
  * @summary Utah.Udot.Atspm.Data.Models.Device navigation property action
  */
-export const apiVVersionApiVersionLocationKeyDevicesCount = (
-    key: number,
-    params?: ApiVVersionApiVersionLocationKeyDevicesCountParams,
- signal?: AbortSignal
+export const apiV1LocationKeyDevicesCount = (
+  key: number,
+  params?: ApiV1LocationKeyDevicesCountParams,
+  signal?: AbortSignal
 ) => {
-      
-      
-      return configRequest<UtahUdotAtspmDataModelsDevice[]>(
-      {url: `/api/v1/Location/${key}/devices/$count`, method: 'GET',
-        params, signal
-    },
-      );
-    }
-  
-
-export const getApiVVersionApiVersionLocationKeyDevicesCountQueryKey = (key: number,
-    params?: ApiVVersionApiVersionLocationKeyDevicesCountParams,) => {
-    return [`/api/v1/Location/${key}/devices/$count`, ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getApiVVersionApiVersionLocationKeyDevicesCountQueryOptions = <TData = Awaited<ReturnType<typeof apiVVersionApiVersionLocationKeyDevicesCount>>, TError = void>(key: number,
-    params?: ApiVVersionApiVersionLocationKeyDevicesCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionLocationKeyDevicesCount>>, TError, TData>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getApiVVersionApiVersionLocationKeyDevicesCountQueryKey(key,params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiVVersionApiVersionLocationKeyDevicesCount>>> = ({ signal }) => apiVVersionApiVersionLocationKeyDevicesCount(key,params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(key), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionLocationKeyDevicesCount>>, TError, TData> & { queryKey: QueryKey }
+  return configRequest<UtahUdotAtspmDataModelsDevice[]>({
+    url: `/api/v1/Location/${key}/devices/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
 }
 
-export type ApiVVersionApiVersionLocationKeyDevicesCountQueryResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionLocationKeyDevicesCount>>>
-export type ApiVVersionApiVersionLocationKeyDevicesCountQueryError = void
+export const getApiV1LocationKeyDevicesCountQueryKey = (
+  key: number,
+  params?: ApiV1LocationKeyDevicesCountParams
+) => {
+  return [
+    `/api/v1/Location/${key}/devices/$count`,
+    ...(params ? [params] : []),
+  ] as const
+}
 
+export const getApiV1LocationKeyDevicesCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof apiV1LocationKeyDevicesCount>>,
+  TError = void,
+>(
+  key: number,
+  params?: ApiV1LocationKeyDevicesCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1LocationKeyDevicesCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getApiV1LocationKeyDevicesCountQueryKey(key, params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof apiV1LocationKeyDevicesCount>>
+  > = ({ signal }) => apiV1LocationKeyDevicesCount(key, params, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!key,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof apiV1LocationKeyDevicesCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type ApiV1LocationKeyDevicesCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1LocationKeyDevicesCount>>
+>
+export type ApiV1LocationKeyDevicesCountQueryError = void
 
 /**
  * @summary Utah.Udot.Atspm.Data.Models.Device navigation property action
  */
 
-export function useApiVVersionApiVersionLocationKeyDevicesCount<TData = Awaited<ReturnType<typeof apiVVersionApiVersionLocationKeyDevicesCount>>, TError = void>(
- key: number,
-    params?: ApiVVersionApiVersionLocationKeyDevicesCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionLocationKeyDevicesCount>>, TError, TData>, }
+export function useApiV1LocationKeyDevicesCount<
+  TData = Awaited<ReturnType<typeof apiV1LocationKeyDevicesCount>>,
+  TError = void,
+>(
+  key: number,
+  params?: ApiV1LocationKeyDevicesCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1LocationKeyDevicesCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getApiV1LocationKeyDevicesCountQueryOptions(
+    key,
+    params,
+    options
+  )
 
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
 
-  const queryOptions = getApiVVersionApiVersionLocationKeyDevicesCountQueryOptions(key,params,options)
+  query.queryKey = queryOptions.queryKey
 
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+  return query
 }
 
+/**
+ * @summary Copies Utah.Udot.Atspm.Data.Models.Location and associated Utah.Udot.Atspm.Data.Models.Approach to new version
+ */
+export const apiV1LocationKeyCopyLocationToNewVersion = (
+  key: number,
+  params?: ApiV1LocationKeyCopyLocationToNewVersionParams
+) => {
+  return configRequest<UtahUdotAtspmDataModelsLocation>({
+    url: `/api/v1/Location/${key}/CopyLocationToNewVersion`,
+    method: 'POST',
+    params,
+  })
+}
 
+export const getApiV1LocationKeyCopyLocationToNewVersionMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1LocationKeyCopyLocationToNewVersion>>,
+    TError,
+    { key: number; params?: ApiV1LocationKeyCopyLocationToNewVersionParams },
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof apiV1LocationKeyCopyLocationToNewVersion>>,
+  TError,
+  { key: number; params?: ApiV1LocationKeyCopyLocationToNewVersionParams },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
 
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof apiV1LocationKeyCopyLocationToNewVersion>>,
+    { key: number; params?: ApiV1LocationKeyCopyLocationToNewVersionParams }
+  > = (props) => {
+    const { key, params } = props ?? {}
+
+    return apiV1LocationKeyCopyLocationToNewVersion(key, params)
+  }
+
+  return { mutationFn, ...mutationOptions }
+}
+
+export type ApiV1LocationKeyCopyLocationToNewVersionMutationResult =
+  NonNullable<
+    Awaited<ReturnType<typeof apiV1LocationKeyCopyLocationToNewVersion>>
+  >
+
+export type ApiV1LocationKeyCopyLocationToNewVersionMutationError = void
 
 /**
  * @summary Copies Utah.Udot.Atspm.Data.Models.Location and associated Utah.Udot.Atspm.Data.Models.Approach to new version
  */
-export const apiVVersionApiVersionLocationKeyCopyLocationToNewVersion = (
-    key: number,
-    params?: ApiVVersionApiVersionLocationKeyCopyLocationToNewVersionParams,
- ) => {
-      
-      
-      return configRequest<UtahUdotAtspmDataModelsLocation>(
-      {url: `/api/v1/Location/${key}/CopyLocationToNewVersion`, method: 'POST',
-        params
-    },
-      );
-    }
-  
+export const useApiV1LocationKeyCopyLocationToNewVersion = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1LocationKeyCopyLocationToNewVersion>>,
+    TError,
+    { key: number; params?: ApiV1LocationKeyCopyLocationToNewVersionParams },
+    TContext
+  >
+}): UseMutationResult<
+  Awaited<ReturnType<typeof apiV1LocationKeyCopyLocationToNewVersion>>,
+  TError,
+  { key: number; params?: ApiV1LocationKeyCopyLocationToNewVersionParams },
+  TContext
+> => {
+  const mutationOptions =
+    getApiV1LocationKeyCopyLocationToNewVersionMutationOptions(options)
 
+  return useMutation(mutationOptions)
+}
 
-export const getApiVVersionApiVersionLocationKeyCopyLocationToNewVersionMutationOptions = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionLocationKeyCopyLocationToNewVersion>>, TError,{key: number;params?: ApiVVersionApiVersionLocationKeyCopyLocationToNewVersionParams}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionLocationKeyCopyLocationToNewVersion>>, TError,{key: number;params?: ApiVVersionApiVersionLocationKeyCopyLocationToNewVersionParams}, TContext> => {
-const {mutation: mutationOptions} = options ?? {};
-
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof apiVVersionApiVersionLocationKeyCopyLocationToNewVersion>>, {key: number;params?: ApiVVersionApiVersionLocationKeyCopyLocationToNewVersionParams}> = (props) => {
-          const {key,params} = props ?? {};
-
-          return  apiVVersionApiVersionLocationKeyCopyLocationToNewVersion(key,params,)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type ApiVVersionApiVersionLocationKeyCopyLocationToNewVersionMutationResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionLocationKeyCopyLocationToNewVersion>>>
-    
-    export type ApiVVersionApiVersionLocationKeyCopyLocationToNewVersionMutationError = void
-
-    /**
- * @summary Copies Utah.Udot.Atspm.Data.Models.Location and associated Utah.Udot.Atspm.Data.Models.Approach to new version
- */
-export const useApiVVersionApiVersionLocationKeyCopyLocationToNewVersion = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionLocationKeyCopyLocationToNewVersion>>, TError,{key: number;params?: ApiVVersionApiVersionLocationKeyCopyLocationToNewVersionParams}, TContext>, }
-): UseMutationResult<
-        Awaited<ReturnType<typeof apiVVersionApiVersionLocationKeyCopyLocationToNewVersion>>,
-        TError,
-        {key: number;params?: ApiVVersionApiVersionLocationKeyCopyLocationToNewVersionParams},
-        TContext
-      > => {
-
-      const mutationOptions = getApiVVersionApiVersionLocationKeyCopyLocationToNewVersionMutationOptions(options);
-
-      return useMutation(mutationOptions);
-    }
-    
 /**
  * @summary Copies Utah.Udot.Atspm.Data.Models.Location and associated Utah.Udot.Atspm.Data.Models.Approach to new version
  */
-export const apiVVersionApiVersionLocationKeySyncLocation = (
-    key: number,
-    params?: ApiVVersionApiVersionLocationKeySyncLocationParams,
- ) => {
-      
-      
-      return configRequest<UtahUdotAtspmDataModelsLocation>(
-      {url: `/api/v1/Location/${key}/SyncLocation`, method: 'POST',
-        params
-    },
-      );
-    }
-  
+export const apiV1LocationKeySyncLocation = (
+  key: number,
+  params?: ApiV1LocationKeySyncLocationParams
+) => {
+  return configRequest<UtahUdotAtspmDataModelsLocation>({
+    url: `/api/v1/Location/${key}/SyncLocation`,
+    method: 'POST',
+    params,
+  })
+}
 
+export const getApiV1LocationKeySyncLocationMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1LocationKeySyncLocation>>,
+    TError,
+    { key: number; params?: ApiV1LocationKeySyncLocationParams },
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof apiV1LocationKeySyncLocation>>,
+  TError,
+  { key: number; params?: ApiV1LocationKeySyncLocationParams },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
 
-export const getApiVVersionApiVersionLocationKeySyncLocationMutationOptions = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionLocationKeySyncLocation>>, TError,{key: number;params?: ApiVVersionApiVersionLocationKeySyncLocationParams}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionLocationKeySyncLocation>>, TError,{key: number;params?: ApiVVersionApiVersionLocationKeySyncLocationParams}, TContext> => {
-const {mutation: mutationOptions} = options ?? {};
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof apiV1LocationKeySyncLocation>>,
+    { key: number; params?: ApiV1LocationKeySyncLocationParams }
+  > = (props) => {
+    const { key, params } = props ?? {}
 
-      
+    return apiV1LocationKeySyncLocation(key, params)
+  }
 
+  return { mutationFn, ...mutationOptions }
+}
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof apiVVersionApiVersionLocationKeySyncLocation>>, {key: number;params?: ApiVVersionApiVersionLocationKeySyncLocationParams}> = (props) => {
-          const {key,params} = props ?? {};
+export type ApiV1LocationKeySyncLocationMutationResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1LocationKeySyncLocation>>
+>
 
-          return  apiVVersionApiVersionLocationKeySyncLocation(key,params,)
-        }
+export type ApiV1LocationKeySyncLocationMutationError = void
 
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type ApiVVersionApiVersionLocationKeySyncLocationMutationResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionLocationKeySyncLocation>>>
-    
-    export type ApiVVersionApiVersionLocationKeySyncLocationMutationError = void
-
-    /**
+/**
  * @summary Copies Utah.Udot.Atspm.Data.Models.Location and associated Utah.Udot.Atspm.Data.Models.Approach to new version
  */
-export const useApiVVersionApiVersionLocationKeySyncLocation = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionLocationKeySyncLocation>>, TError,{key: number;params?: ApiVVersionApiVersionLocationKeySyncLocationParams}, TContext>, }
-): UseMutationResult<
-        Awaited<ReturnType<typeof apiVVersionApiVersionLocationKeySyncLocation>>,
-        TError,
-        {key: number;params?: ApiVVersionApiVersionLocationKeySyncLocationParams},
-        TContext
-      > => {
+export const useApiV1LocationKeySyncLocation = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1LocationKeySyncLocation>>,
+    TError,
+    { key: number; params?: ApiV1LocationKeySyncLocationParams },
+    TContext
+  >
+}): UseMutationResult<
+  Awaited<ReturnType<typeof apiV1LocationKeySyncLocation>>,
+  TError,
+  { key: number; params?: ApiV1LocationKeySyncLocationParams },
+  TContext
+> => {
+  const mutationOptions =
+    getApiV1LocationKeySyncLocationMutationOptions(options)
 
-      const mutationOptions = getApiVVersionApiVersionLocationKeySyncLocationMutationOptions(options);
+  return useMutation(mutationOptions)
+}
 
-      return useMutation(mutationOptions);
-    }
-    
 /**
  * @summary Templates Utah.Udot.Atspm.Data.Models.Location and associated Utah.Udot.Atspm.Data.Models.Approach to new version
  */
-export const apiVVersionApiVersionLocationKeySaveTemplatedLocation = (
-    key: number,
-    locationDefaultLocationSaveTemplatedLocationParameters: LocationDefaultLocationSaveTemplatedLocationParameters,
-    params?: ApiVVersionApiVersionLocationKeySaveTemplatedLocationParams,
- ) => {
-      
-      
-      return configRequest<UtahUdotAtspmDataModelsLocation>(
-      {url: `/api/v1/Location/${key}/SaveTemplatedLocation`, method: 'POST',
-      headers: {'Content-Type': 'application/json;odata.metadata=minimal;odata.streaming=true', },
-      data: locationDefaultLocationSaveTemplatedLocationParameters,
-        params
+export const apiV1LocationKeySaveTemplatedLocation = (
+  key: number,
+  locationDefaultLocationSaveTemplatedLocationParameters: LocationDefaultLocationSaveTemplatedLocationParameters,
+  params?: ApiV1LocationKeySaveTemplatedLocationParams
+) => {
+  return configRequest<UtahUdotAtspmDataModelsLocation>({
+    url: `/api/v1/Location/${key}/SaveTemplatedLocation`,
+    method: 'POST',
+    headers: {
+      'Content-Type':
+        'application/json;odata.metadata=minimal;odata.streaming=true',
     },
-      );
+    data: locationDefaultLocationSaveTemplatedLocationParameters,
+    params,
+  })
+}
+
+export const getApiV1LocationKeySaveTemplatedLocationMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1LocationKeySaveTemplatedLocation>>,
+    TError,
+    {
+      key: number
+      data: LocationDefaultLocationSaveTemplatedLocationParameters
+      params?: ApiV1LocationKeySaveTemplatedLocationParams
+    },
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof apiV1LocationKeySaveTemplatedLocation>>,
+  TError,
+  {
+    key: number
+    data: LocationDefaultLocationSaveTemplatedLocationParameters
+    params?: ApiV1LocationKeySaveTemplatedLocationParams
+  },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof apiV1LocationKeySaveTemplatedLocation>>,
+    {
+      key: number
+      data: LocationDefaultLocationSaveTemplatedLocationParameters
+      params?: ApiV1LocationKeySaveTemplatedLocationParams
     }
-  
+  > = (props) => {
+    const { key, data, params } = props ?? {}
 
+    return apiV1LocationKeySaveTemplatedLocation(key, data, params)
+  }
 
-export const getApiVVersionApiVersionLocationKeySaveTemplatedLocationMutationOptions = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionLocationKeySaveTemplatedLocation>>, TError,{key: number;data: LocationDefaultLocationSaveTemplatedLocationParameters;params?: ApiVVersionApiVersionLocationKeySaveTemplatedLocationParams}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionLocationKeySaveTemplatedLocation>>, TError,{key: number;data: LocationDefaultLocationSaveTemplatedLocationParameters;params?: ApiVVersionApiVersionLocationKeySaveTemplatedLocationParams}, TContext> => {
-const {mutation: mutationOptions} = options ?? {};
+  return { mutationFn, ...mutationOptions }
+}
 
-      
+export type ApiV1LocationKeySaveTemplatedLocationMutationResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1LocationKeySaveTemplatedLocation>>
+>
+export type ApiV1LocationKeySaveTemplatedLocationMutationBody =
+  LocationDefaultLocationSaveTemplatedLocationParameters
+export type ApiV1LocationKeySaveTemplatedLocationMutationError = void
 
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof apiVVersionApiVersionLocationKeySaveTemplatedLocation>>, {key: number;data: LocationDefaultLocationSaveTemplatedLocationParameters;params?: ApiVVersionApiVersionLocationKeySaveTemplatedLocationParams}> = (props) => {
-          const {key,data,params} = props ?? {};
-
-          return  apiVVersionApiVersionLocationKeySaveTemplatedLocation(key,data,params,)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type ApiVVersionApiVersionLocationKeySaveTemplatedLocationMutationResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionLocationKeySaveTemplatedLocation>>>
-    export type ApiVVersionApiVersionLocationKeySaveTemplatedLocationMutationBody = LocationDefaultLocationSaveTemplatedLocationParameters
-    export type ApiVVersionApiVersionLocationKeySaveTemplatedLocationMutationError = void
-
-    /**
+/**
  * @summary Templates Utah.Udot.Atspm.Data.Models.Location and associated Utah.Udot.Atspm.Data.Models.Approach to new version
  */
-export const useApiVVersionApiVersionLocationKeySaveTemplatedLocation = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionLocationKeySaveTemplatedLocation>>, TError,{key: number;data: LocationDefaultLocationSaveTemplatedLocationParameters;params?: ApiVVersionApiVersionLocationKeySaveTemplatedLocationParams}, TContext>, }
-): UseMutationResult<
-        Awaited<ReturnType<typeof apiVVersionApiVersionLocationKeySaveTemplatedLocation>>,
-        TError,
-        {key: number;data: LocationDefaultLocationSaveTemplatedLocationParameters;params?: ApiVVersionApiVersionLocationKeySaveTemplatedLocationParams},
-        TContext
-      > => {
+export const useApiV1LocationKeySaveTemplatedLocation = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1LocationKeySaveTemplatedLocation>>,
+    TError,
+    {
+      key: number
+      data: LocationDefaultLocationSaveTemplatedLocationParameters
+      params?: ApiV1LocationKeySaveTemplatedLocationParams
+    },
+    TContext
+  >
+}): UseMutationResult<
+  Awaited<ReturnType<typeof apiV1LocationKeySaveTemplatedLocation>>,
+  TError,
+  {
+    key: number
+    data: LocationDefaultLocationSaveTemplatedLocationParameters
+    params?: ApiV1LocationKeySaveTemplatedLocationParams
+  },
+  TContext
+> => {
+  const mutationOptions =
+    getApiV1LocationKeySaveTemplatedLocationMutationOptions(options)
 
-      const mutationOptions = getApiVVersionApiVersionLocationKeySaveTemplatedLocationMutationOptions(options);
+  return useMutation(mutationOptions)
+}
 
-      return useMutation(mutationOptions);
-    }
-    
 /**
  * @summary Marks Utah.Udot.Atspm.Data.Models.Location to deleted
  */
-export const apiVVersionApiVersionLocationKeySetLocationToDeleted = (
-    key: number,
-    params?: ApiVVersionApiVersionLocationKeySetLocationToDeletedParams,
- ) => {
-      
-      
-      return configRequest<void>(
-      {url: `/api/v1/Location/${key}/SetLocationToDeleted`, method: 'POST',
-        params
-    },
-      );
-    }
-  
+export const apiV1LocationKeySetLocationToDeleted = (
+  key: number,
+  params?: ApiV1LocationKeySetLocationToDeletedParams
+) => {
+  return configRequest<void>({
+    url: `/api/v1/Location/${key}/SetLocationToDeleted`,
+    method: 'POST',
+    params,
+  })
+}
 
+export const getApiV1LocationKeySetLocationToDeletedMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1LocationKeySetLocationToDeleted>>,
+    TError,
+    { key: number; params?: ApiV1LocationKeySetLocationToDeletedParams },
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof apiV1LocationKeySetLocationToDeleted>>,
+  TError,
+  { key: number; params?: ApiV1LocationKeySetLocationToDeletedParams },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
 
-export const getApiVVersionApiVersionLocationKeySetLocationToDeletedMutationOptions = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionLocationKeySetLocationToDeleted>>, TError,{key: number;params?: ApiVVersionApiVersionLocationKeySetLocationToDeletedParams}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionLocationKeySetLocationToDeleted>>, TError,{key: number;params?: ApiVVersionApiVersionLocationKeySetLocationToDeletedParams}, TContext> => {
-const {mutation: mutationOptions} = options ?? {};
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof apiV1LocationKeySetLocationToDeleted>>,
+    { key: number; params?: ApiV1LocationKeySetLocationToDeletedParams }
+  > = (props) => {
+    const { key, params } = props ?? {}
 
-      
+    return apiV1LocationKeySetLocationToDeleted(key, params)
+  }
 
+  return { mutationFn, ...mutationOptions }
+}
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof apiVVersionApiVersionLocationKeySetLocationToDeleted>>, {key: number;params?: ApiVVersionApiVersionLocationKeySetLocationToDeletedParams}> = (props) => {
-          const {key,params} = props ?? {};
+export type ApiV1LocationKeySetLocationToDeletedMutationResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1LocationKeySetLocationToDeleted>>
+>
 
-          return  apiVVersionApiVersionLocationKeySetLocationToDeleted(key,params,)
-        }
+export type ApiV1LocationKeySetLocationToDeletedMutationError = void
 
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type ApiVVersionApiVersionLocationKeySetLocationToDeletedMutationResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionLocationKeySetLocationToDeleted>>>
-    
-    export type ApiVVersionApiVersionLocationKeySetLocationToDeletedMutationError = void
-
-    /**
+/**
  * @summary Marks Utah.Udot.Atspm.Data.Models.Location to deleted
  */
-export const useApiVVersionApiVersionLocationKeySetLocationToDeleted = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionLocationKeySetLocationToDeleted>>, TError,{key: number;params?: ApiVVersionApiVersionLocationKeySetLocationToDeletedParams}, TContext>, }
-): UseMutationResult<
-        Awaited<ReturnType<typeof apiVVersionApiVersionLocationKeySetLocationToDeleted>>,
-        TError,
-        {key: number;params?: ApiVVersionApiVersionLocationKeySetLocationToDeletedParams},
-        TContext
-      > => {
+export const useApiV1LocationKeySetLocationToDeleted = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1LocationKeySetLocationToDeleted>>,
+    TError,
+    { key: number; params?: ApiV1LocationKeySetLocationToDeletedParams },
+    TContext
+  >
+}): UseMutationResult<
+  Awaited<ReturnType<typeof apiV1LocationKeySetLocationToDeleted>>,
+  TError,
+  { key: number; params?: ApiV1LocationKeySetLocationToDeletedParams },
+  TContext
+> => {
+  const mutationOptions =
+    getApiV1LocationKeySetLocationToDeletedMutationOptions(options)
 
-      const mutationOptions = getApiVVersionApiVersionLocationKeySetLocationToDeletedMutationOptions(options);
+  return useMutation(mutationOptions)
+}
 
-      return useMutation(mutationOptions);
-    }
-    
 /**
  * @summary Get latest version of Utah.Udot.Atspm.Data.Models.Location and related entities that match identifier
  */
-export const apiVVersionApiVersionLocationGetLatestVersionOfLocationIdentifierIdentifier = (
+export const apiV1LocationGetLatestVersionOfLocationIdentifierIdentifier = (
+  identifier: string,
+  params?: ApiV1LocationGetLatestVersionOfLocationIdentifierIdentifierParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<UtahUdotAtspmDataModelsLocation>({
+    url: `/api/v1/Location/GetLatestVersionOfLocation(identifier=${identifier})`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getApiV1LocationGetLatestVersionOfLocationIdentifierIdentifierQueryKey =
+  (
     identifier: string,
-    params?: ApiVVersionApiVersionLocationGetLatestVersionOfLocationIdentifierIdentifierParams,
- signal?: AbortSignal
-) => {
-      
-      
-      return configRequest<UtahUdotAtspmDataModelsLocation>(
-      {url: `/api/v1/Location/GetLatestVersionOfLocation(identifier=${identifier})`, method: 'GET',
-        params, signal
-    },
-      );
+    params?: ApiV1LocationGetLatestVersionOfLocationIdentifierIdentifierParams
+  ) => {
+    return [
+      `/api/v1/Location/GetLatestVersionOfLocation(identifier=${identifier})`,
+      ...(params ? [params] : []),
+    ] as const
+  }
+
+export const getApiV1LocationGetLatestVersionOfLocationIdentifierIdentifierQueryOptions =
+  <
+    TData = Awaited<
+      ReturnType<
+        typeof apiV1LocationGetLatestVersionOfLocationIdentifierIdentifier
+      >
+    >,
+    TError = void,
+  >(
+    identifier: string,
+    params?: ApiV1LocationGetLatestVersionOfLocationIdentifierIdentifierParams,
+    options?: {
+      query?: UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof apiV1LocationGetLatestVersionOfLocationIdentifierIdentifier
+          >
+        >,
+        TError,
+        TData
+      >
     }
-  
+  ) => {
+    const { query: queryOptions } = options ?? {}
 
-export const getApiVVersionApiVersionLocationGetLatestVersionOfLocationIdentifierIdentifierQueryKey = (identifier: string,
-    params?: ApiVVersionApiVersionLocationGetLatestVersionOfLocationIdentifierIdentifierParams,) => {
-    return [`/api/v1/Location/GetLatestVersionOfLocation(identifier=${identifier})`, ...(params ? [params]: [])] as const;
-    }
+    const queryKey =
+      queryOptions?.queryKey ??
+      getApiV1LocationGetLatestVersionOfLocationIdentifierIdentifierQueryKey(
+        identifier,
+        params
+      )
 
-    
-export const getApiVVersionApiVersionLocationGetLatestVersionOfLocationIdentifierIdentifierQueryOptions = <TData = Awaited<ReturnType<typeof apiVVersionApiVersionLocationGetLatestVersionOfLocationIdentifierIdentifier>>, TError = void>(identifier: string,
-    params?: ApiVVersionApiVersionLocationGetLatestVersionOfLocationIdentifierIdentifierParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionLocationGetLatestVersionOfLocationIdentifierIdentifier>>, TError, TData>, }
-) => {
+    const queryFn: QueryFunction<
+      Awaited<
+        ReturnType<
+          typeof apiV1LocationGetLatestVersionOfLocationIdentifierIdentifier
+        >
+      >
+    > = ({ signal }) =>
+      apiV1LocationGetLatestVersionOfLocationIdentifierIdentifier(
+        identifier,
+        params,
+        signal
+      )
 
-const {query: queryOptions} = options ?? {};
+    return {
+      queryKey,
+      queryFn,
+      enabled: !!identifier,
+      ...queryOptions,
+    } as UseQueryOptions<
+      Awaited<
+        ReturnType<
+          typeof apiV1LocationGetLatestVersionOfLocationIdentifierIdentifier
+        >
+      >,
+      TError,
+      TData
+    > & { queryKey: QueryKey }
+  }
 
-  const queryKey =  queryOptions?.queryKey ?? getApiVVersionApiVersionLocationGetLatestVersionOfLocationIdentifierIdentifierQueryKey(identifier,params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiVVersionApiVersionLocationGetLatestVersionOfLocationIdentifierIdentifier>>> = ({ signal }) => apiVVersionApiVersionLocationGetLatestVersionOfLocationIdentifierIdentifier(identifier,params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(identifier), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionLocationGetLatestVersionOfLocationIdentifierIdentifier>>, TError, TData> & { queryKey: QueryKey }
-}
-
-export type ApiVVersionApiVersionLocationGetLatestVersionOfLocationIdentifierIdentifierQueryResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionLocationGetLatestVersionOfLocationIdentifierIdentifier>>>
-export type ApiVVersionApiVersionLocationGetLatestVersionOfLocationIdentifierIdentifierQueryError = void
-
+export type ApiV1LocationGetLatestVersionOfLocationIdentifierIdentifierQueryResult =
+  NonNullable<
+    Awaited<
+      ReturnType<
+        typeof apiV1LocationGetLatestVersionOfLocationIdentifierIdentifier
+      >
+    >
+  >
+export type ApiV1LocationGetLatestVersionOfLocationIdentifierIdentifierQueryError =
+  void
 
 /**
  * @summary Get latest version of Utah.Udot.Atspm.Data.Models.Location and related entities that match identifier
  */
 
-export function useApiVVersionApiVersionLocationGetLatestVersionOfLocationIdentifierIdentifier<TData = Awaited<ReturnType<typeof apiVVersionApiVersionLocationGetLatestVersionOfLocationIdentifierIdentifier>>, TError = void>(
- identifier: string,
-    params?: ApiVVersionApiVersionLocationGetLatestVersionOfLocationIdentifierIdentifierParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionLocationGetLatestVersionOfLocationIdentifierIdentifier>>, TError, TData>, }
+export function useApiV1LocationGetLatestVersionOfLocationIdentifierIdentifier<
+  TData = Awaited<
+    ReturnType<
+      typeof apiV1LocationGetLatestVersionOfLocationIdentifierIdentifier
+    >
+  >,
+  TError = void,
+>(
+  identifier: string,
+  params?: ApiV1LocationGetLatestVersionOfLocationIdentifierIdentifierParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<
+        ReturnType<
+          typeof apiV1LocationGetLatestVersionOfLocationIdentifierIdentifier
+        >
+      >,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions =
+    getApiV1LocationGetLatestVersionOfLocationIdentifierIdentifierQueryOptions(
+      identifier,
+      params,
+      options
+    )
 
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
 
-  const queryOptions = getApiVVersionApiVersionLocationGetLatestVersionOfLocationIdentifierIdentifierQueryOptions(identifier,params,options)
+  query.queryKey = queryOptions.queryKey
 
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+  return query
 }
-
-
-
 
 /**
  * @summary Get all active Utah.Udot.Atspm.Data.Models.Location that match identifier
  */
-export const apiVVersionApiVersionLocationGetAllVersionsOfLocationIdentifierIdentifier = (
-    identifier: string,
-    params?: ApiVVersionApiVersionLocationGetAllVersionsOfLocationIdentifierIdentifierParams,
- signal?: AbortSignal
+export const apiV1LocationGetAllVersionsOfLocationIdentifierIdentifier = (
+  identifier: string,
+  params?: ApiV1LocationGetAllVersionsOfLocationIdentifierIdentifierParams,
+  signal?: AbortSignal
 ) => {
-      
-      
-      return configRequest<UtahUdotAtspmDataModelsLocation[]>(
-      {url: `/api/v1/Location/GetAllVersionsOfLocation(identifier=${identifier})`, method: 'GET',
-        params, signal
-    },
-      );
-    }
-  
-
-export const getApiVVersionApiVersionLocationGetAllVersionsOfLocationIdentifierIdentifierQueryKey = (identifier: string,
-    params?: ApiVVersionApiVersionLocationGetAllVersionsOfLocationIdentifierIdentifierParams,) => {
-    return [`/api/v1/Location/GetAllVersionsOfLocation(identifier=${identifier})`, ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getApiVVersionApiVersionLocationGetAllVersionsOfLocationIdentifierIdentifierQueryOptions = <TData = Awaited<ReturnType<typeof apiVVersionApiVersionLocationGetAllVersionsOfLocationIdentifierIdentifier>>, TError = void>(identifier: string,
-    params?: ApiVVersionApiVersionLocationGetAllVersionsOfLocationIdentifierIdentifierParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionLocationGetAllVersionsOfLocationIdentifierIdentifier>>, TError, TData>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getApiVVersionApiVersionLocationGetAllVersionsOfLocationIdentifierIdentifierQueryKey(identifier,params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiVVersionApiVersionLocationGetAllVersionsOfLocationIdentifierIdentifier>>> = ({ signal }) => apiVVersionApiVersionLocationGetAllVersionsOfLocationIdentifierIdentifier(identifier,params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(identifier), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionLocationGetAllVersionsOfLocationIdentifierIdentifier>>, TError, TData> & { queryKey: QueryKey }
+  return configRequest<UtahUdotAtspmDataModelsLocation[]>({
+    url: `/api/v1/Location/GetAllVersionsOfLocation(identifier=${identifier})`,
+    method: 'GET',
+    params,
+    signal,
+  })
 }
 
-export type ApiVVersionApiVersionLocationGetAllVersionsOfLocationIdentifierIdentifierQueryResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionLocationGetAllVersionsOfLocationIdentifierIdentifier>>>
-export type ApiVVersionApiVersionLocationGetAllVersionsOfLocationIdentifierIdentifierQueryError = void
+export const getApiV1LocationGetAllVersionsOfLocationIdentifierIdentifierQueryKey =
+  (
+    identifier: string,
+    params?: ApiV1LocationGetAllVersionsOfLocationIdentifierIdentifierParams
+  ) => {
+    return [
+      `/api/v1/Location/GetAllVersionsOfLocation(identifier=${identifier})`,
+      ...(params ? [params] : []),
+    ] as const
+  }
 
+export const getApiV1LocationGetAllVersionsOfLocationIdentifierIdentifierQueryOptions =
+  <
+    TData = Awaited<
+      ReturnType<
+        typeof apiV1LocationGetAllVersionsOfLocationIdentifierIdentifier
+      >
+    >,
+    TError = void,
+  >(
+    identifier: string,
+    params?: ApiV1LocationGetAllVersionsOfLocationIdentifierIdentifierParams,
+    options?: {
+      query?: UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof apiV1LocationGetAllVersionsOfLocationIdentifierIdentifier
+          >
+        >,
+        TError,
+        TData
+      >
+    }
+  ) => {
+    const { query: queryOptions } = options ?? {}
+
+    const queryKey =
+      queryOptions?.queryKey ??
+      getApiV1LocationGetAllVersionsOfLocationIdentifierIdentifierQueryKey(
+        identifier,
+        params
+      )
+
+    const queryFn: QueryFunction<
+      Awaited<
+        ReturnType<
+          typeof apiV1LocationGetAllVersionsOfLocationIdentifierIdentifier
+        >
+      >
+    > = ({ signal }) =>
+      apiV1LocationGetAllVersionsOfLocationIdentifierIdentifier(
+        identifier,
+        params,
+        signal
+      )
+
+    return {
+      queryKey,
+      queryFn,
+      enabled: !!identifier,
+      ...queryOptions,
+    } as UseQueryOptions<
+      Awaited<
+        ReturnType<
+          typeof apiV1LocationGetAllVersionsOfLocationIdentifierIdentifier
+        >
+      >,
+      TError,
+      TData
+    > & { queryKey: QueryKey }
+  }
+
+export type ApiV1LocationGetAllVersionsOfLocationIdentifierIdentifierQueryResult =
+  NonNullable<
+    Awaited<
+      ReturnType<
+        typeof apiV1LocationGetAllVersionsOfLocationIdentifierIdentifier
+      >
+    >
+  >
+export type ApiV1LocationGetAllVersionsOfLocationIdentifierIdentifierQueryError =
+  void
 
 /**
  * @summary Get all active Utah.Udot.Atspm.Data.Models.Location that match identifier
  */
 
-export function useApiVVersionApiVersionLocationGetAllVersionsOfLocationIdentifierIdentifier<TData = Awaited<ReturnType<typeof apiVVersionApiVersionLocationGetAllVersionsOfLocationIdentifierIdentifier>>, TError = void>(
- identifier: string,
-    params?: ApiVVersionApiVersionLocationGetAllVersionsOfLocationIdentifierIdentifierParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionLocationGetAllVersionsOfLocationIdentifierIdentifier>>, TError, TData>, }
+export function useApiV1LocationGetAllVersionsOfLocationIdentifierIdentifier<
+  TData = Awaited<
+    ReturnType<typeof apiV1LocationGetAllVersionsOfLocationIdentifierIdentifier>
+  >,
+  TError = void,
+>(
+  identifier: string,
+  params?: ApiV1LocationGetAllVersionsOfLocationIdentifierIdentifierParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<
+        ReturnType<
+          typeof apiV1LocationGetAllVersionsOfLocationIdentifierIdentifier
+        >
+      >,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions =
+    getApiV1LocationGetAllVersionsOfLocationIdentifierIdentifierQueryOptions(
+      identifier,
+      params,
+      options
+    )
 
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
 
-  const queryOptions = getApiVVersionApiVersionLocationGetAllVersionsOfLocationIdentifierIdentifierQueryOptions(identifier,params,options)
+  query.queryKey = queryOptions.queryKey
 
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+  return query
 }
-
-
-
 
 /**
  * @summary Get latest version of all Utah.Udot.Atspm.Data.Models.Location
  */
-export const apiVVersionApiVersionLocationGetLatestVersionOfAllLocations = (
-    params?: ApiVVersionApiVersionLocationGetLatestVersionOfAllLocationsParams,
- signal?: AbortSignal
+export const apiV1LocationGetLatestVersionOfAllLocations = (
+  params?: ApiV1LocationGetLatestVersionOfAllLocationsParams,
+  signal?: AbortSignal
 ) => {
-      
-      
-      return configRequest<UtahUdotAtspmDataModelsLocation[]>(
-      {url: `/api/v1/Location/GetLatestVersionOfAllLocations`, method: 'GET',
-        params, signal
-    },
-      );
-    }
-  
-
-export const getApiVVersionApiVersionLocationGetLatestVersionOfAllLocationsQueryKey = (params?: ApiVVersionApiVersionLocationGetLatestVersionOfAllLocationsParams,) => {
-    return [`/api/v1/Location/GetLatestVersionOfAllLocations`, ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getApiVVersionApiVersionLocationGetLatestVersionOfAllLocationsQueryOptions = <TData = Awaited<ReturnType<typeof apiVVersionApiVersionLocationGetLatestVersionOfAllLocations>>, TError = void>(params?: ApiVVersionApiVersionLocationGetLatestVersionOfAllLocationsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionLocationGetLatestVersionOfAllLocations>>, TError, TData>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getApiVVersionApiVersionLocationGetLatestVersionOfAllLocationsQueryKey(params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiVVersionApiVersionLocationGetLatestVersionOfAllLocations>>> = ({ signal }) => apiVVersionApiVersionLocationGetLatestVersionOfAllLocations(params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionLocationGetLatestVersionOfAllLocations>>, TError, TData> & { queryKey: QueryKey }
+  return configRequest<UtahUdotAtspmDataModelsLocation[]>({
+    url: `/api/v1/Location/GetLatestVersionOfAllLocations`,
+    method: 'GET',
+    params,
+    signal,
+  })
 }
 
-export type ApiVVersionApiVersionLocationGetLatestVersionOfAllLocationsQueryResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionLocationGetLatestVersionOfAllLocations>>>
-export type ApiVVersionApiVersionLocationGetLatestVersionOfAllLocationsQueryError = void
+export const getApiV1LocationGetLatestVersionOfAllLocationsQueryKey = (
+  params?: ApiV1LocationGetLatestVersionOfAllLocationsParams
+) => {
+  return [
+    `/api/v1/Location/GetLatestVersionOfAllLocations`,
+    ...(params ? [params] : []),
+  ] as const
+}
 
+export const getApiV1LocationGetLatestVersionOfAllLocationsQueryOptions = <
+  TData = Awaited<
+    ReturnType<typeof apiV1LocationGetLatestVersionOfAllLocations>
+  >,
+  TError = void,
+>(
+  params?: ApiV1LocationGetLatestVersionOfAllLocationsParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1LocationGetLatestVersionOfAllLocations>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getApiV1LocationGetLatestVersionOfAllLocationsQueryKey(params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof apiV1LocationGetLatestVersionOfAllLocations>>
+  > = ({ signal }) =>
+    apiV1LocationGetLatestVersionOfAllLocations(params, signal)
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof apiV1LocationGetLatestVersionOfAllLocations>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type ApiV1LocationGetLatestVersionOfAllLocationsQueryResult =
+  NonNullable<
+    Awaited<ReturnType<typeof apiV1LocationGetLatestVersionOfAllLocations>>
+  >
+export type ApiV1LocationGetLatestVersionOfAllLocationsQueryError = void
 
 /**
  * @summary Get latest version of all Utah.Udot.Atspm.Data.Models.Location
  */
 
-export function useApiVVersionApiVersionLocationGetLatestVersionOfAllLocations<TData = Awaited<ReturnType<typeof apiVVersionApiVersionLocationGetLatestVersionOfAllLocations>>, TError = void>(
- params?: ApiVVersionApiVersionLocationGetLatestVersionOfAllLocationsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionLocationGetLatestVersionOfAllLocations>>, TError, TData>, }
+export function useApiV1LocationGetLatestVersionOfAllLocations<
+  TData = Awaited<
+    ReturnType<typeof apiV1LocationGetLatestVersionOfAllLocations>
+  >,
+  TError = void,
+>(
+  params?: ApiV1LocationGetLatestVersionOfAllLocationsParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1LocationGetLatestVersionOfAllLocations>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions =
+    getApiV1LocationGetLatestVersionOfAllLocationsQueryOptions(params, options)
 
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
 
-  const queryOptions = getApiVVersionApiVersionLocationGetLatestVersionOfAllLocationsQueryOptions(params,options)
+  query.queryKey = queryOptions.queryKey
 
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+  return query
 }
-
-
-
 
 /**
  * @summary Get count of Device Types using correct version of all Utah.Udot.Atspm.Data.Models.Location
  */
-export const apiVVersionApiVersionLocationGetDetectionTypeCount = (
-    params?: ApiVVersionApiVersionLocationGetDetectionTypeCountParams,
- signal?: AbortSignal
+export const apiV1LocationGetDetectionTypeCount = (
+  params?: ApiV1LocationGetDetectionTypeCountParams,
+  signal?: AbortSignal
 ) => {
-      
-      
-      return configRequest<UtahUdotAtspmBusinessWatchdogDetectionTypeGroup[]>(
-      {url: `/api/v1/Location/GetDetectionTypeCount`, method: 'GET',
-        params, signal
-    },
-      );
-    }
-  
-
-export const getApiVVersionApiVersionLocationGetDetectionTypeCountQueryKey = (params?: ApiVVersionApiVersionLocationGetDetectionTypeCountParams,) => {
-    return [`/api/v1/Location/GetDetectionTypeCount`, ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getApiVVersionApiVersionLocationGetDetectionTypeCountQueryOptions = <TData = Awaited<ReturnType<typeof apiVVersionApiVersionLocationGetDetectionTypeCount>>, TError = void>(params?: ApiVVersionApiVersionLocationGetDetectionTypeCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionLocationGetDetectionTypeCount>>, TError, TData>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getApiVVersionApiVersionLocationGetDetectionTypeCountQueryKey(params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiVVersionApiVersionLocationGetDetectionTypeCount>>> = ({ signal }) => apiVVersionApiVersionLocationGetDetectionTypeCount(params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionLocationGetDetectionTypeCount>>, TError, TData> & { queryKey: QueryKey }
+  return configRequest<UtahUdotAtspmBusinessWatchdogDetectionTypeGroup[]>({
+    url: `/api/v1/Location/GetDetectionTypeCount`,
+    method: 'GET',
+    params,
+    signal,
+  })
 }
 
-export type ApiVVersionApiVersionLocationGetDetectionTypeCountQueryResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionLocationGetDetectionTypeCount>>>
-export type ApiVVersionApiVersionLocationGetDetectionTypeCountQueryError = void
+export const getApiV1LocationGetDetectionTypeCountQueryKey = (
+  params?: ApiV1LocationGetDetectionTypeCountParams
+) => {
+  return [
+    `/api/v1/Location/GetDetectionTypeCount`,
+    ...(params ? [params] : []),
+  ] as const
+}
 
+export const getApiV1LocationGetDetectionTypeCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof apiV1LocationGetDetectionTypeCount>>,
+  TError = void,
+>(
+  params?: ApiV1LocationGetDetectionTypeCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1LocationGetDetectionTypeCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getApiV1LocationGetDetectionTypeCountQueryKey(params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof apiV1LocationGetDetectionTypeCount>>
+  > = ({ signal }) => apiV1LocationGetDetectionTypeCount(params, signal)
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof apiV1LocationGetDetectionTypeCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type ApiV1LocationGetDetectionTypeCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1LocationGetDetectionTypeCount>>
+>
+export type ApiV1LocationGetDetectionTypeCountQueryError = void
 
 /**
  * @summary Get count of Device Types using correct version of all Utah.Udot.Atspm.Data.Models.Location
  */
 
-export function useApiVVersionApiVersionLocationGetDetectionTypeCount<TData = Awaited<ReturnType<typeof apiVVersionApiVersionLocationGetDetectionTypeCount>>, TError = void>(
- params?: ApiVVersionApiVersionLocationGetDetectionTypeCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionLocationGetDetectionTypeCount>>, TError, TData>, }
+export function useApiV1LocationGetDetectionTypeCount<
+  TData = Awaited<ReturnType<typeof apiV1LocationGetDetectionTypeCount>>,
+  TError = void,
+>(
+  params?: ApiV1LocationGetDetectionTypeCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1LocationGetDetectionTypeCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getApiV1LocationGetDetectionTypeCountQueryOptions(
+    params,
+    options
+  )
 
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
 
-  const queryOptions = getApiVVersionApiVersionLocationGetDetectionTypeCountQueryOptions(params,options)
+  query.queryKey = queryOptions.queryKey
 
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+  return query
 }
-
-
-
 
 /**
  * @summary Gets an optimized list of Utah.Udot.Atspm.ConfigApi.Models.SearchLocation to use for Location selection
  */
-export const apiVVersionApiVersionLocationGetLocationsForSearch = (
-    params?: ApiVVersionApiVersionLocationGetLocationsForSearchParams,
- signal?: AbortSignal
+export const apiV1LocationGetLocationsForSearch = (
+  params?: ApiV1LocationGetLocationsForSearchParams,
+  signal?: AbortSignal
 ) => {
-      
-      
-      return configRequest<UtahUdotAtspmConfigApiModelsSearchLocation[]>(
-      {url: `/api/v1/Location/GetLocationsForSearch`, method: 'GET',
-        params, signal
-    },
-      );
-    }
-  
-
-export const getApiVVersionApiVersionLocationGetLocationsForSearchQueryKey = (params?: ApiVVersionApiVersionLocationGetLocationsForSearchParams,) => {
-    return [`/api/v1/Location/GetLocationsForSearch`, ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getApiVVersionApiVersionLocationGetLocationsForSearchQueryOptions = <TData = Awaited<ReturnType<typeof apiVVersionApiVersionLocationGetLocationsForSearch>>, TError = void>(params?: ApiVVersionApiVersionLocationGetLocationsForSearchParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionLocationGetLocationsForSearch>>, TError, TData>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getApiVVersionApiVersionLocationGetLocationsForSearchQueryKey(params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiVVersionApiVersionLocationGetLocationsForSearch>>> = ({ signal }) => apiVVersionApiVersionLocationGetLocationsForSearch(params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionLocationGetLocationsForSearch>>, TError, TData> & { queryKey: QueryKey }
+  return configRequest<UtahUdotAtspmConfigApiModelsSearchLocation[]>({
+    url: `/api/v1/Location/GetLocationsForSearch`,
+    method: 'GET',
+    params,
+    signal,
+  })
 }
 
-export type ApiVVersionApiVersionLocationGetLocationsForSearchQueryResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionLocationGetLocationsForSearch>>>
-export type ApiVVersionApiVersionLocationGetLocationsForSearchQueryError = void
+export const getApiV1LocationGetLocationsForSearchQueryKey = (
+  params?: ApiV1LocationGetLocationsForSearchParams
+) => {
+  return [
+    `/api/v1/Location/GetLocationsForSearch`,
+    ...(params ? [params] : []),
+  ] as const
+}
 
+export const getApiV1LocationGetLocationsForSearchQueryOptions = <
+  TData = Awaited<ReturnType<typeof apiV1LocationGetLocationsForSearch>>,
+  TError = void,
+>(
+  params?: ApiV1LocationGetLocationsForSearchParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1LocationGetLocationsForSearch>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getApiV1LocationGetLocationsForSearchQueryKey(params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof apiV1LocationGetLocationsForSearch>>
+  > = ({ signal }) => apiV1LocationGetLocationsForSearch(params, signal)
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof apiV1LocationGetLocationsForSearch>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type ApiV1LocationGetLocationsForSearchQueryResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1LocationGetLocationsForSearch>>
+>
+export type ApiV1LocationGetLocationsForSearchQueryError = void
 
 /**
  * @summary Gets an optimized list of Utah.Udot.Atspm.ConfigApi.Models.SearchLocation to use for Location selection
  */
 
-export function useApiVVersionApiVersionLocationGetLocationsForSearch<TData = Awaited<ReturnType<typeof apiVVersionApiVersionLocationGetLocationsForSearch>>, TError = void>(
- params?: ApiVVersionApiVersionLocationGetLocationsForSearchParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionLocationGetLocationsForSearch>>, TError, TData>, }
+export function useApiV1LocationGetLocationsForSearch<
+  TData = Awaited<ReturnType<typeof apiV1LocationGetLocationsForSearch>>,
+  TError = void,
+>(
+  params?: ApiV1LocationGetLocationsForSearchParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1LocationGetLocationsForSearch>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getApiV1LocationGetLocationsForSearchQueryOptions(
+    params,
+    options
+  )
 
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
 
-  const queryOptions = getApiVVersionApiVersionLocationGetLocationsForSearchQueryOptions(params,options)
+  query.queryKey = queryOptions.queryKey
 
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+  return query
 }
-
-
-
 
 /**
  * @summary Insert object of specified type
  */
-export const apiVVersionApiVersionLocation = (
-    utahUdotAtspmDataModelsLocation: UtahUdotAtspmDataModelsLocation,
-    params?: ApiVVersionApiVersionLocationParams,
- ) => {
-      
-      
-      return configRequest<void>(
-      {url: `/api/v1/Location`, method: 'POST',
-      headers: {'Content-Type': 'application/json;odata.metadata=minimal;odata.streaming=true', },
-      data: utahUdotAtspmDataModelsLocation,
-        params
+export const apiV1Location = (
+  utahUdotAtspmDataModelsLocation: UtahUdotAtspmDataModelsLocation,
+  params?: ApiV1LocationParams
+) => {
+  return configRequest<void>({
+    url: `/api/v1/Location`,
+    method: 'POST',
+    headers: {
+      'Content-Type':
+        'application/json;odata.metadata=minimal;odata.streaming=true',
     },
-      );
-    }
-  
+    data: utahUdotAtspmDataModelsLocation,
+    params,
+  })
+}
 
+export const getApiV1LocationMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1Location>>,
+    TError,
+    { data: UtahUdotAtspmDataModelsLocation; params?: ApiV1LocationParams },
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof apiV1Location>>,
+  TError,
+  { data: UtahUdotAtspmDataModelsLocation; params?: ApiV1LocationParams },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
 
-export const getApiVVersionApiVersionLocationMutationOptions = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionLocation>>, TError,{data: UtahUdotAtspmDataModelsLocation;params?: ApiVVersionApiVersionLocationParams}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionLocation>>, TError,{data: UtahUdotAtspmDataModelsLocation;params?: ApiVVersionApiVersionLocationParams}, TContext> => {
-const {mutation: mutationOptions} = options ?? {};
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof apiV1Location>>,
+    { data: UtahUdotAtspmDataModelsLocation; params?: ApiV1LocationParams }
+  > = (props) => {
+    const { data, params } = props ?? {}
 
-      
+    return apiV1Location(data, params)
+  }
 
+  return { mutationFn, ...mutationOptions }
+}
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof apiVVersionApiVersionLocation>>, {data: UtahUdotAtspmDataModelsLocation;params?: ApiVVersionApiVersionLocationParams}> = (props) => {
-          const {data,params} = props ?? {};
+export type ApiV1LocationMutationResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1Location>>
+>
+export type ApiV1LocationMutationBody = UtahUdotAtspmDataModelsLocation
+export type ApiV1LocationMutationError = void
 
-          return  apiVVersionApiVersionLocation(data,params,)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type ApiVVersionApiVersionLocationMutationResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionLocation>>>
-    export type ApiVVersionApiVersionLocationMutationBody = UtahUdotAtspmDataModelsLocation
-    export type ApiVVersionApiVersionLocationMutationError = void
-
-    /**
+/**
  * @summary Insert object of specified type
  */
-export const useApiVVersionApiVersionLocation = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionLocation>>, TError,{data: UtahUdotAtspmDataModelsLocation;params?: ApiVVersionApiVersionLocationParams}, TContext>, }
-): UseMutationResult<
-        Awaited<ReturnType<typeof apiVVersionApiVersionLocation>>,
-        TError,
-        {data: UtahUdotAtspmDataModelsLocation;params?: ApiVVersionApiVersionLocationParams},
-        TContext
-      > => {
+export const useApiV1Location = <TError = void, TContext = unknown>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1Location>>,
+    TError,
+    { data: UtahUdotAtspmDataModelsLocation; params?: ApiV1LocationParams },
+    TContext
+  >
+}): UseMutationResult<
+  Awaited<ReturnType<typeof apiV1Location>>,
+  TError,
+  { data: UtahUdotAtspmDataModelsLocation; params?: ApiV1LocationParams },
+  TContext
+> => {
+  const mutationOptions = getApiV1LocationMutationOptions(options)
 
-      const mutationOptions = getApiVVersionApiVersionLocationMutationOptions(options);
-
-      return useMutation(mutationOptions);
-    }
-    
-/**
- * @summary Collection of objects from oData query.
- */
-export const apiVVersionApiVersionLocationCount = (
-    params?: ApiVVersionApiVersionLocationCountParams,
- signal?: AbortSignal
-) => {
-      
-      
-      return configRequest<UtahUdotAtspmDataModelsLocation[]>(
-      {url: `/api/v1/Location/$count`, method: 'GET',
-        params, signal
-    },
-      );
-    }
-  
-
-export const getApiVVersionApiVersionLocationCountQueryKey = (params?: ApiVVersionApiVersionLocationCountParams,) => {
-    return [`/api/v1/Location/$count`, ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getApiVVersionApiVersionLocationCountQueryOptions = <TData = Awaited<ReturnType<typeof apiVVersionApiVersionLocationCount>>, TError = void>(params?: ApiVVersionApiVersionLocationCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionLocationCount>>, TError, TData>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getApiVVersionApiVersionLocationCountQueryKey(params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiVVersionApiVersionLocationCount>>> = ({ signal }) => apiVVersionApiVersionLocationCount(params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionLocationCount>>, TError, TData> & { queryKey: QueryKey }
+  return useMutation(mutationOptions)
 }
-
-export type ApiVVersionApiVersionLocationCountQueryResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionLocationCount>>>
-export type ApiVVersionApiVersionLocationCountQueryError = void
-
 
 /**
  * @summary Collection of objects from oData query.
  */
-
-export function useApiVVersionApiVersionLocationCount<TData = Awaited<ReturnType<typeof apiVVersionApiVersionLocationCount>>, TError = void>(
- params?: ApiVVersionApiVersionLocationCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionLocationCount>>, TError, TData>, }
-
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
-
-  const queryOptions = getApiVVersionApiVersionLocationCountQueryOptions(params,options)
-
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+export const apiV1LocationCount = (
+  params?: ApiV1LocationCountParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<UtahUdotAtspmDataModelsLocation[]>({
+    url: `/api/v1/Location/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
 }
 
+export const getApiV1LocationCountQueryKey = (
+  params?: ApiV1LocationCountParams
+) => {
+  return [`/api/v1/Location/$count`, ...(params ? [params] : [])] as const
+}
 
+export const getApiV1LocationCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof apiV1LocationCount>>,
+  TError = void,
+>(
+  params?: ApiV1LocationCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1LocationCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
 
+  const queryKey =
+    queryOptions?.queryKey ?? getApiV1LocationCountQueryKey(params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof apiV1LocationCount>>
+  > = ({ signal }) => apiV1LocationCount(params, signal)
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof apiV1LocationCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type ApiV1LocationCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1LocationCount>>
+>
+export type ApiV1LocationCountQueryError = void
+
+/**
+ * @summary Collection of objects from oData query.
+ */
+
+export function useApiV1LocationCount<
+  TData = Awaited<ReturnType<typeof apiV1LocationCount>>,
+  TError = void,
+>(
+  params?: ApiV1LocationCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1LocationCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getApiV1LocationCountQueryOptions(params, options)
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
 
 /**
  * @summary Delete object of specified type
  */
-export const apiVVersionApiVersionLocationKey = (
-    key: number,
- ) => {
-      
-      
-      return configRequest<void>(
-      {url: `/api/v1/Location/${key}`, method: 'DELETE'
-    },
-      );
-    }
-  
+export const apiV1LocationKey = (key: number) => {
+  return configRequest<void>({
+    url: `/api/v1/Location/${key}`,
+    method: 'DELETE',
+  })
+}
 
+export const getApiV1LocationKeyMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1LocationKey>>,
+    TError,
+    { key: number },
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof apiV1LocationKey>>,
+  TError,
+  { key: number },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
 
-export const getApiVVersionApiVersionLocationKeyMutationOptions = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionLocationKey>>, TError,{key: number}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionLocationKey>>, TError,{key: number}, TContext> => {
-const {mutation: mutationOptions} = options ?? {};
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof apiV1LocationKey>>,
+    { key: number }
+  > = (props) => {
+    const { key } = props ?? {}
 
-      
+    return apiV1LocationKey(key)
+  }
 
+  return { mutationFn, ...mutationOptions }
+}
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof apiVVersionApiVersionLocationKey>>, {key: number}> = (props) => {
-          const {key} = props ?? {};
+export type ApiV1LocationKeyMutationResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1LocationKey>>
+>
 
-          return  apiVVersionApiVersionLocationKey(key,)
-        }
+export type ApiV1LocationKeyMutationError = void
 
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type ApiVVersionApiVersionLocationKeyMutationResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionLocationKey>>>
-    
-    export type ApiVVersionApiVersionLocationKeyMutationError = void
-
-    /**
+/**
  * @summary Delete object of specified type
  */
-export const useApiVVersionApiVersionLocationKey = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionLocationKey>>, TError,{key: number}, TContext>, }
-): UseMutationResult<
-        Awaited<ReturnType<typeof apiVVersionApiVersionLocationKey>>,
-        TError,
-        {key: number},
-        TContext
-      > => {
+export const useApiV1LocationKey = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1LocationKey>>,
+    TError,
+    { key: number },
+    TContext
+  >
+}): UseMutationResult<
+  Awaited<ReturnType<typeof apiV1LocationKey>>,
+  TError,
+  { key: number },
+  TContext
+> => {
+  const mutationOptions = getApiV1LocationKeyMutationOptions(options)
 
-      const mutationOptions = getApiVVersionApiVersionLocationKeyMutationOptions(options);
-
-      return useMutation(mutationOptions);
-    }
-    
-/**
- * @summary Utah.Udot.Atspm.Data.Models.Location navigation property action
- */
-export const apiVVersionApiVersionLocationTypeKeyLocations = (
-    key: number,
-    params?: ApiVVersionApiVersionLocationTypeKeyLocationsParams,
- signal?: AbortSignal
-) => {
-      
-      
-      return configRequest<UtahUdotAtspmDataModelsLocation[]>(
-      {url: `/api/v1/LocationType/${key}/locations`, method: 'GET',
-        params, signal
-    },
-      );
-    }
-  
-
-export const getApiVVersionApiVersionLocationTypeKeyLocationsQueryKey = (key: number,
-    params?: ApiVVersionApiVersionLocationTypeKeyLocationsParams,) => {
-    return [`/api/v1/LocationType/${key}/locations`, ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getApiVVersionApiVersionLocationTypeKeyLocationsQueryOptions = <TData = Awaited<ReturnType<typeof apiVVersionApiVersionLocationTypeKeyLocations>>, TError = void>(key: number,
-    params?: ApiVVersionApiVersionLocationTypeKeyLocationsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionLocationTypeKeyLocations>>, TError, TData>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getApiVVersionApiVersionLocationTypeKeyLocationsQueryKey(key,params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiVVersionApiVersionLocationTypeKeyLocations>>> = ({ signal }) => apiVVersionApiVersionLocationTypeKeyLocations(key,params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(key), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionLocationTypeKeyLocations>>, TError, TData> & { queryKey: QueryKey }
+  return useMutation(mutationOptions)
 }
-
-export type ApiVVersionApiVersionLocationTypeKeyLocationsQueryResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionLocationTypeKeyLocations>>>
-export type ApiVVersionApiVersionLocationTypeKeyLocationsQueryError = void
-
-
-/**
- * @summary Utah.Udot.Atspm.Data.Models.Location navigation property action
- */
-
-export function useApiVVersionApiVersionLocationTypeKeyLocations<TData = Awaited<ReturnType<typeof apiVVersionApiVersionLocationTypeKeyLocations>>, TError = void>(
- key: number,
-    params?: ApiVVersionApiVersionLocationTypeKeyLocationsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionLocationTypeKeyLocations>>, TError, TData>, }
-
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
-
-  const queryOptions = getApiVVersionApiVersionLocationTypeKeyLocationsQueryOptions(key,params,options)
-
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
-}
-
-
-
 
 /**
  * @summary Utah.Udot.Atspm.Data.Models.Location navigation property action
  */
-export const apiVVersionApiVersionLocationTypeKeyLocationsCount = (
-    key: number,
-    params?: ApiVVersionApiVersionLocationTypeKeyLocationsCountParams,
- signal?: AbortSignal
+export const apiV1LocationTypeKeyLocations = (
+  key: number,
+  params?: ApiV1LocationTypeKeyLocationsParams,
+  signal?: AbortSignal
 ) => {
-      
-      
-      return configRequest<UtahUdotAtspmDataModelsLocation[]>(
-      {url: `/api/v1/LocationType/${key}/locations/$count`, method: 'GET',
-        params, signal
-    },
-      );
-    }
-  
-
-export const getApiVVersionApiVersionLocationTypeKeyLocationsCountQueryKey = (key: number,
-    params?: ApiVVersionApiVersionLocationTypeKeyLocationsCountParams,) => {
-    return [`/api/v1/LocationType/${key}/locations/$count`, ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getApiVVersionApiVersionLocationTypeKeyLocationsCountQueryOptions = <TData = Awaited<ReturnType<typeof apiVVersionApiVersionLocationTypeKeyLocationsCount>>, TError = void>(key: number,
-    params?: ApiVVersionApiVersionLocationTypeKeyLocationsCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionLocationTypeKeyLocationsCount>>, TError, TData>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getApiVVersionApiVersionLocationTypeKeyLocationsCountQueryKey(key,params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiVVersionApiVersionLocationTypeKeyLocationsCount>>> = ({ signal }) => apiVVersionApiVersionLocationTypeKeyLocationsCount(key,params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(key), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionLocationTypeKeyLocationsCount>>, TError, TData> & { queryKey: QueryKey }
+  return configRequest<UtahUdotAtspmDataModelsLocation[]>({
+    url: `/api/v1/LocationType/${key}/locations`,
+    method: 'GET',
+    params,
+    signal,
+  })
 }
 
-export type ApiVVersionApiVersionLocationTypeKeyLocationsCountQueryResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionLocationTypeKeyLocationsCount>>>
-export type ApiVVersionApiVersionLocationTypeKeyLocationsCountQueryError = void
+export const getApiV1LocationTypeKeyLocationsQueryKey = (
+  key: number,
+  params?: ApiV1LocationTypeKeyLocationsParams
+) => {
+  return [
+    `/api/v1/LocationType/${key}/locations`,
+    ...(params ? [params] : []),
+  ] as const
+}
 
+export const getApiV1LocationTypeKeyLocationsQueryOptions = <
+  TData = Awaited<ReturnType<typeof apiV1LocationTypeKeyLocations>>,
+  TError = void,
+>(
+  key: number,
+  params?: ApiV1LocationTypeKeyLocationsParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1LocationTypeKeyLocations>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getApiV1LocationTypeKeyLocationsQueryKey(key, params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof apiV1LocationTypeKeyLocations>>
+  > = ({ signal }) => apiV1LocationTypeKeyLocations(key, params, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!key,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof apiV1LocationTypeKeyLocations>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type ApiV1LocationTypeKeyLocationsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1LocationTypeKeyLocations>>
+>
+export type ApiV1LocationTypeKeyLocationsQueryError = void
 
 /**
  * @summary Utah.Udot.Atspm.Data.Models.Location navigation property action
  */
 
-export function useApiVVersionApiVersionLocationTypeKeyLocationsCount<TData = Awaited<ReturnType<typeof apiVVersionApiVersionLocationTypeKeyLocationsCount>>, TError = void>(
- key: number,
-    params?: ApiVVersionApiVersionLocationTypeKeyLocationsCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionLocationTypeKeyLocationsCount>>, TError, TData>, }
+export function useApiV1LocationTypeKeyLocations<
+  TData = Awaited<ReturnType<typeof apiV1LocationTypeKeyLocations>>,
+  TError = void,
+>(
+  key: number,
+  params?: ApiV1LocationTypeKeyLocationsParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1LocationTypeKeyLocations>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getApiV1LocationTypeKeyLocationsQueryOptions(
+    key,
+    params,
+    options
+  )
 
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
 
-  const queryOptions = getApiVVersionApiVersionLocationTypeKeyLocationsCountQueryOptions(key,params,options)
+  query.queryKey = queryOptions.queryKey
 
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+  return query
 }
 
+/**
+ * @summary Utah.Udot.Atspm.Data.Models.Location navigation property action
+ */
+export const apiV1LocationTypeKeyLocationsCount = (
+  key: number,
+  params?: ApiV1LocationTypeKeyLocationsCountParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<UtahUdotAtspmDataModelsLocation[]>({
+    url: `/api/v1/LocationType/${key}/locations/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
 
+export const getApiV1LocationTypeKeyLocationsCountQueryKey = (
+  key: number,
+  params?: ApiV1LocationTypeKeyLocationsCountParams
+) => {
+  return [
+    `/api/v1/LocationType/${key}/locations/$count`,
+    ...(params ? [params] : []),
+  ] as const
+}
 
+export const getApiV1LocationTypeKeyLocationsCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof apiV1LocationTypeKeyLocationsCount>>,
+  TError = void,
+>(
+  key: number,
+  params?: ApiV1LocationTypeKeyLocationsCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1LocationTypeKeyLocationsCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getApiV1LocationTypeKeyLocationsCountQueryKey(key, params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof apiV1LocationTypeKeyLocationsCount>>
+  > = ({ signal }) => apiV1LocationTypeKeyLocationsCount(key, params, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!key,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof apiV1LocationTypeKeyLocationsCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type ApiV1LocationTypeKeyLocationsCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1LocationTypeKeyLocationsCount>>
+>
+export type ApiV1LocationTypeKeyLocationsCountQueryError = void
+
+/**
+ * @summary Utah.Udot.Atspm.Data.Models.Location navigation property action
+ */
+
+export function useApiV1LocationTypeKeyLocationsCount<
+  TData = Awaited<ReturnType<typeof apiV1LocationTypeKeyLocationsCount>>,
+  TError = void,
+>(
+  key: number,
+  params?: ApiV1LocationTypeKeyLocationsCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1LocationTypeKeyLocationsCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getApiV1LocationTypeKeyLocationsCountQueryOptions(
+    key,
+    params,
+    options
+  )
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
 
 /**
  * @summary Insert object of specified type
  */
-export const apiVVersionApiVersionLocationType = (
-    utahUdotAtspmDataModelsLocationType: UtahUdotAtspmDataModelsLocationType,
-    params?: ApiVVersionApiVersionLocationTypeParams,
- ) => {
-      
-      
-      return configRequest<void>(
-      {url: `/api/v1/LocationType`, method: 'POST',
-      headers: {'Content-Type': 'application/json;odata.metadata=minimal;odata.streaming=true', },
-      data: utahUdotAtspmDataModelsLocationType,
-        params
+export const apiV1LocationType = (
+  utahUdotAtspmDataModelsLocationType: UtahUdotAtspmDataModelsLocationType,
+  params?: ApiV1LocationTypeParams
+) => {
+  return configRequest<void>({
+    url: `/api/v1/LocationType`,
+    method: 'POST',
+    headers: {
+      'Content-Type':
+        'application/json;odata.metadata=minimal;odata.streaming=true',
     },
-      );
+    data: utahUdotAtspmDataModelsLocationType,
+    params,
+  })
+}
+
+export const getApiV1LocationTypeMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1LocationType>>,
+    TError,
+    {
+      data: UtahUdotAtspmDataModelsLocationType
+      params?: ApiV1LocationTypeParams
+    },
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof apiV1LocationType>>,
+  TError,
+  {
+    data: UtahUdotAtspmDataModelsLocationType
+    params?: ApiV1LocationTypeParams
+  },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof apiV1LocationType>>,
+    {
+      data: UtahUdotAtspmDataModelsLocationType
+      params?: ApiV1LocationTypeParams
     }
-  
+  > = (props) => {
+    const { data, params } = props ?? {}
 
+    return apiV1LocationType(data, params)
+  }
 
-export const getApiVVersionApiVersionLocationTypeMutationOptions = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionLocationType>>, TError,{data: UtahUdotAtspmDataModelsLocationType;params?: ApiVVersionApiVersionLocationTypeParams}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionLocationType>>, TError,{data: UtahUdotAtspmDataModelsLocationType;params?: ApiVVersionApiVersionLocationTypeParams}, TContext> => {
-const {mutation: mutationOptions} = options ?? {};
+  return { mutationFn, ...mutationOptions }
+}
 
-      
+export type ApiV1LocationTypeMutationResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1LocationType>>
+>
+export type ApiV1LocationTypeMutationBody = UtahUdotAtspmDataModelsLocationType
+export type ApiV1LocationTypeMutationError = void
 
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof apiVVersionApiVersionLocationType>>, {data: UtahUdotAtspmDataModelsLocationType;params?: ApiVVersionApiVersionLocationTypeParams}> = (props) => {
-          const {data,params} = props ?? {};
-
-          return  apiVVersionApiVersionLocationType(data,params,)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type ApiVVersionApiVersionLocationTypeMutationResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionLocationType>>>
-    export type ApiVVersionApiVersionLocationTypeMutationBody = UtahUdotAtspmDataModelsLocationType
-    export type ApiVVersionApiVersionLocationTypeMutationError = void
-
-    /**
+/**
  * @summary Insert object of specified type
  */
-export const useApiVVersionApiVersionLocationType = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionLocationType>>, TError,{data: UtahUdotAtspmDataModelsLocationType;params?: ApiVVersionApiVersionLocationTypeParams}, TContext>, }
-): UseMutationResult<
-        Awaited<ReturnType<typeof apiVVersionApiVersionLocationType>>,
-        TError,
-        {data: UtahUdotAtspmDataModelsLocationType;params?: ApiVVersionApiVersionLocationTypeParams},
-        TContext
-      > => {
+export const useApiV1LocationType = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1LocationType>>,
+    TError,
+    {
+      data: UtahUdotAtspmDataModelsLocationType
+      params?: ApiV1LocationTypeParams
+    },
+    TContext
+  >
+}): UseMutationResult<
+  Awaited<ReturnType<typeof apiV1LocationType>>,
+  TError,
+  {
+    data: UtahUdotAtspmDataModelsLocationType
+    params?: ApiV1LocationTypeParams
+  },
+  TContext
+> => {
+  const mutationOptions = getApiV1LocationTypeMutationOptions(options)
 
-      const mutationOptions = getApiVVersionApiVersionLocationTypeMutationOptions(options);
+  return useMutation(mutationOptions)
+}
 
-      return useMutation(mutationOptions);
-    }
-    
 /**
  * @summary Collection of objects from oData query.
  */
-export const apiVVersionApiVersionLocationTypeCount = (
-    params?: ApiVVersionApiVersionLocationTypeCountParams,
- signal?: AbortSignal
+export const apiV1LocationTypeCount = (
+  params?: ApiV1LocationTypeCountParams,
+  signal?: AbortSignal
 ) => {
-      
-      
-      return configRequest<UtahUdotAtspmDataModelsLocationType[]>(
-      {url: `/api/v1/LocationType/$count`, method: 'GET',
-        params, signal
-    },
-      );
-    }
-  
-
-export const getApiVVersionApiVersionLocationTypeCountQueryKey = (params?: ApiVVersionApiVersionLocationTypeCountParams,) => {
-    return [`/api/v1/LocationType/$count`, ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getApiVVersionApiVersionLocationTypeCountQueryOptions = <TData = Awaited<ReturnType<typeof apiVVersionApiVersionLocationTypeCount>>, TError = void>(params?: ApiVVersionApiVersionLocationTypeCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionLocationTypeCount>>, TError, TData>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getApiVVersionApiVersionLocationTypeCountQueryKey(params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiVVersionApiVersionLocationTypeCount>>> = ({ signal }) => apiVVersionApiVersionLocationTypeCount(params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionLocationTypeCount>>, TError, TData> & { queryKey: QueryKey }
+  return configRequest<UtahUdotAtspmDataModelsLocationType[]>({
+    url: `/api/v1/LocationType/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
 }
 
-export type ApiVVersionApiVersionLocationTypeCountQueryResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionLocationTypeCount>>>
-export type ApiVVersionApiVersionLocationTypeCountQueryError = void
-
-
-/**
- * @summary Collection of objects from oData query.
- */
-
-export function useApiVVersionApiVersionLocationTypeCount<TData = Awaited<ReturnType<typeof apiVVersionApiVersionLocationTypeCount>>, TError = void>(
- params?: ApiVVersionApiVersionLocationTypeCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionLocationTypeCount>>, TError, TData>, }
-
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
-
-  const queryOptions = getApiVVersionApiVersionLocationTypeCountQueryOptions(params,options)
-
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+export const getApiV1LocationTypeCountQueryKey = (
+  params?: ApiV1LocationTypeCountParams
+) => {
+  return [`/api/v1/LocationType/$count`, ...(params ? [params] : [])] as const
 }
 
-
-
-
-/**
- * @summary Delete object of specified type
- */
-export const apiVVersionApiVersionLocationTypeKey = (
-    key: number,
- ) => {
-      
-      
-      return configRequest<void>(
-      {url: `/api/v1/LocationType/${key}`, method: 'DELETE'
-    },
-      );
-    }
-  
-
-
-export const getApiVVersionApiVersionLocationTypeKeyMutationOptions = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionLocationTypeKey>>, TError,{key: number}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionLocationTypeKey>>, TError,{key: number}, TContext> => {
-const {mutation: mutationOptions} = options ?? {};
-
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof apiVVersionApiVersionLocationTypeKey>>, {key: number}> = (props) => {
-          const {key} = props ?? {};
-
-          return  apiVVersionApiVersionLocationTypeKey(key,)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type ApiVVersionApiVersionLocationTypeKeyMutationResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionLocationTypeKey>>>
-    
-    export type ApiVVersionApiVersionLocationTypeKeyMutationError = void
-
-    /**
- * @summary Delete object of specified type
- */
-export const useApiVVersionApiVersionLocationTypeKey = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionLocationTypeKey>>, TError,{key: number}, TContext>, }
-): UseMutationResult<
-        Awaited<ReturnType<typeof apiVVersionApiVersionLocationTypeKey>>,
-        TError,
-        {key: number},
-        TContext
-      > => {
-
-      const mutationOptions = getApiVVersionApiVersionLocationTypeKeyMutationOptions(options);
-
-      return useMutation(mutationOptions);
-    }
-    
-/**
- * @summary Insert object of specified type
- */
-export const apiVVersionApiVersionMapLayer = (
-    utahUdotAtspmDataModelsMapLayer: UtahUdotAtspmDataModelsMapLayer,
-    params?: ApiVVersionApiVersionMapLayerParams,
- ) => {
-      
-      
-      return configRequest<void>(
-      {url: `/api/v1/MapLayer`, method: 'POST',
-      headers: {'Content-Type': 'application/json;odata.metadata=minimal;odata.streaming=true', },
-      data: utahUdotAtspmDataModelsMapLayer,
-        params
-    },
-      );
-    }
-  
-
-
-export const getApiVVersionApiVersionMapLayerMutationOptions = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionMapLayer>>, TError,{data: UtahUdotAtspmDataModelsMapLayer;params?: ApiVVersionApiVersionMapLayerParams}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionMapLayer>>, TError,{data: UtahUdotAtspmDataModelsMapLayer;params?: ApiVVersionApiVersionMapLayerParams}, TContext> => {
-const {mutation: mutationOptions} = options ?? {};
-
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof apiVVersionApiVersionMapLayer>>, {data: UtahUdotAtspmDataModelsMapLayer;params?: ApiVVersionApiVersionMapLayerParams}> = (props) => {
-          const {data,params} = props ?? {};
-
-          return  apiVVersionApiVersionMapLayer(data,params,)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type ApiVVersionApiVersionMapLayerMutationResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionMapLayer>>>
-    export type ApiVVersionApiVersionMapLayerMutationBody = UtahUdotAtspmDataModelsMapLayer
-    export type ApiVVersionApiVersionMapLayerMutationError = void
-
-    /**
- * @summary Insert object of specified type
- */
-export const useApiVVersionApiVersionMapLayer = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionMapLayer>>, TError,{data: UtahUdotAtspmDataModelsMapLayer;params?: ApiVVersionApiVersionMapLayerParams}, TContext>, }
-): UseMutationResult<
-        Awaited<ReturnType<typeof apiVVersionApiVersionMapLayer>>,
-        TError,
-        {data: UtahUdotAtspmDataModelsMapLayer;params?: ApiVVersionApiVersionMapLayerParams},
-        TContext
-      > => {
-
-      const mutationOptions = getApiVVersionApiVersionMapLayerMutationOptions(options);
-
-      return useMutation(mutationOptions);
-    }
-    
-/**
- * @summary Collection of objects from oData query.
- */
-export const apiVVersionApiVersionMapLayerCount = (
-    params?: ApiVVersionApiVersionMapLayerCountParams,
- signal?: AbortSignal
+export const getApiV1LocationTypeCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof apiV1LocationTypeCount>>,
+  TError = void,
+>(
+  params?: ApiV1LocationTypeCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1LocationTypeCount>>,
+      TError,
+      TData
+    >
+  }
 ) => {
-      
-      
-      return configRequest<UtahUdotAtspmDataModelsMapLayer[]>(
-      {url: `/api/v1/MapLayer/$count`, method: 'GET',
-        params, signal
-    },
-      );
-    }
-  
+  const { query: queryOptions } = options ?? {}
 
-export const getApiVVersionApiVersionMapLayerCountQueryKey = (params?: ApiVVersionApiVersionMapLayerCountParams,) => {
-    return [`/api/v1/MapLayer/$count`, ...(params ? [params]: [])] as const;
-    }
+  const queryKey =
+    queryOptions?.queryKey ?? getApiV1LocationTypeCountQueryKey(params)
 
-    
-export const getApiVVersionApiVersionMapLayerCountQueryOptions = <TData = Awaited<ReturnType<typeof apiVVersionApiVersionMapLayerCount>>, TError = void>(params?: ApiVVersionApiVersionMapLayerCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionMapLayerCount>>, TError, TData>, }
-) => {
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof apiV1LocationTypeCount>>
+  > = ({ signal }) => apiV1LocationTypeCount(params, signal)
 
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getApiVVersionApiVersionMapLayerCountQueryKey(params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiVVersionApiVersionMapLayerCount>>> = ({ signal }) => apiVVersionApiVersionMapLayerCount(params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionMapLayerCount>>, TError, TData> & { queryKey: QueryKey }
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof apiV1LocationTypeCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
 }
 
-export type ApiVVersionApiVersionMapLayerCountQueryResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionMapLayerCount>>>
-export type ApiVVersionApiVersionMapLayerCountQueryError = void
-
+export type ApiV1LocationTypeCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1LocationTypeCount>>
+>
+export type ApiV1LocationTypeCountQueryError = void
 
 /**
  * @summary Collection of objects from oData query.
  */
 
-export function useApiVVersionApiVersionMapLayerCount<TData = Awaited<ReturnType<typeof apiVVersionApiVersionMapLayerCount>>, TError = void>(
- params?: ApiVVersionApiVersionMapLayerCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionMapLayerCount>>, TError, TData>, }
+export function useApiV1LocationTypeCount<
+  TData = Awaited<ReturnType<typeof apiV1LocationTypeCount>>,
+  TError = void,
+>(
+  params?: ApiV1LocationTypeCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1LocationTypeCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getApiV1LocationTypeCountQueryOptions(params, options)
 
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
 
-  const queryOptions = getApiVVersionApiVersionMapLayerCountQueryOptions(params,options)
+  query.queryKey = queryOptions.queryKey
 
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+  return query
 }
-
-
-
 
 /**
  * @summary Delete object of specified type
  */
-export const apiVVersionApiVersionMapLayerKey = (
-    key: number,
- ) => {
-      
-      
-      return configRequest<void>(
-      {url: `/api/v1/MapLayer/${key}`, method: 'DELETE'
-    },
-      );
-    }
-  
+export const apiV1LocationTypeKey = (key: number) => {
+  return configRequest<void>({
+    url: `/api/v1/LocationType/${key}`,
+    method: 'DELETE',
+  })
+}
 
+export const getApiV1LocationTypeKeyMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1LocationTypeKey>>,
+    TError,
+    { key: number },
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof apiV1LocationTypeKey>>,
+  TError,
+  { key: number },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
 
-export const getApiVVersionApiVersionMapLayerKeyMutationOptions = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionMapLayerKey>>, TError,{key: number}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionMapLayerKey>>, TError,{key: number}, TContext> => {
-const {mutation: mutationOptions} = options ?? {};
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof apiV1LocationTypeKey>>,
+    { key: number }
+  > = (props) => {
+    const { key } = props ?? {}
 
-      
+    return apiV1LocationTypeKey(key)
+  }
 
+  return { mutationFn, ...mutationOptions }
+}
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof apiVVersionApiVersionMapLayerKey>>, {key: number}> = (props) => {
-          const {key} = props ?? {};
+export type ApiV1LocationTypeKeyMutationResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1LocationTypeKey>>
+>
 
-          return  apiVVersionApiVersionMapLayerKey(key,)
-        }
+export type ApiV1LocationTypeKeyMutationError = void
 
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type ApiVVersionApiVersionMapLayerKeyMutationResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionMapLayerKey>>>
-    
-    export type ApiVVersionApiVersionMapLayerKeyMutationError = void
-
-    /**
+/**
  * @summary Delete object of specified type
  */
-export const useApiVVersionApiVersionMapLayerKey = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionMapLayerKey>>, TError,{key: number}, TContext>, }
-): UseMutationResult<
-        Awaited<ReturnType<typeof apiVVersionApiVersionMapLayerKey>>,
-        TError,
-        {key: number},
-        TContext
-      > => {
+export const useApiV1LocationTypeKey = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1LocationTypeKey>>,
+    TError,
+    { key: number },
+    TContext
+  >
+}): UseMutationResult<
+  Awaited<ReturnType<typeof apiV1LocationTypeKey>>,
+  TError,
+  { key: number },
+  TContext
+> => {
+  const mutationOptions = getApiV1LocationTypeKeyMutationOptions(options)
 
-      const mutationOptions = getApiVVersionApiVersionMapLayerKeyMutationOptions(options);
+  return useMutation(mutationOptions)
+}
 
-      return useMutation(mutationOptions);
-    }
-    
+/**
+ * @summary Insert object of specified type
+ */
+export const apiV1MapLayer = (
+  utahUdotAtspmDataModelsMapLayer: UtahUdotAtspmDataModelsMapLayer,
+  params?: ApiV1MapLayerParams
+) => {
+  return configRequest<void>({
+    url: `/MapLayer`,
+    method: 'POST',
+    headers: {
+      'Content-Type':
+        'application/json;odata.metadata=minimal;odata.streaming=true',
+    },
+    data: utahUdotAtspmDataModelsMapLayer,
+    params,
+  })
+}
+
+export const getApiV1MapLayerMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1MapLayer>>,
+    TError,
+    { data: UtahUdotAtspmDataModelsMapLayer; params?: ApiV1MapLayerParams },
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof apiV1MapLayer>>,
+  TError,
+  { data: UtahUdotAtspmDataModelsMapLayer; params?: ApiV1MapLayerParams },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof apiV1MapLayer>>,
+    { data: UtahUdotAtspmDataModelsMapLayer; params?: ApiV1MapLayerParams }
+  > = (props) => {
+    const { data, params } = props ?? {}
+
+    return apiV1MapLayer(data, params)
+  }
+
+  return { mutationFn, ...mutationOptions }
+}
+
+export type ApiV1MapLayerMutationResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1MapLayer>>
+>
+export type ApiV1MapLayerMutationBody = UtahUdotAtspmDataModelsMapLayer
+export type ApiV1MapLayerMutationError = void
+
+/**
+ * @summary Insert object of specified type
+ */
+export const useApiV1MapLayer = <TError = void, TContext = unknown>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1MapLayer>>,
+    TError,
+    { data: UtahUdotAtspmDataModelsMapLayer; params?: ApiV1MapLayerParams },
+    TContext
+  >
+}): UseMutationResult<
+  Awaited<ReturnType<typeof apiV1MapLayer>>,
+  TError,
+  { data: UtahUdotAtspmDataModelsMapLayer; params?: ApiV1MapLayerParams },
+  TContext
+> => {
+  const mutationOptions = getApiV1MapLayerMutationOptions(options)
+
+  return useMutation(mutationOptions)
+}
+
+/**
+ * @summary Collection of objects from oData query.
+ */
+export const apiV1MapLayerCount = (
+  params?: ApiV1MapLayerCountParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<UtahUdotAtspmDataModelsMapLayer[]>({
+    url: `MapLayer`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getApiV1MapLayerCountQueryKey = (
+  params?: ApiV1MapLayerCountParams
+) => {
+  return [`v1/MapLayer/$count`, ...(params ? [params] : [])] as const
+}
+
+export const getApiV1MapLayerCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof apiV1MapLayerCount>>,
+  TError = void,
+>(
+  params?: ApiV1MapLayerCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1MapLayerCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ?? getApiV1MapLayerCountQueryKey(params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof apiV1MapLayerCount>>
+  > = ({ signal }) => apiV1MapLayerCount(params, signal)
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof apiV1MapLayerCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type ApiV1MapLayerCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1MapLayerCount>>
+>
+export type ApiV1MapLayerCountQueryError = void
+
+/**
+ * @summary Collection of objects from oData query.
+ */
+
+export function useApiV1MapLayerCount<
+  TData = Awaited<ReturnType<typeof apiV1MapLayerCount>>,
+  TError = void,
+>(
+  params?: ApiV1MapLayerCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1MapLayerCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getApiV1MapLayerCountQueryOptions(params, options)
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
+ * @summary Delete object of specified type
+ */
+export const apiV1MapLayerKey = (key: number) => {
+  return configRequest<void>({
+    url: `/MapLayer/${key}`,
+    method: 'DELETE',
+  })
+}
+
+export const getApiV1MapLayerKeyMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1MapLayerKey>>,
+    TError,
+    { key: number },
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof apiV1MapLayerKey>>,
+  TError,
+  { key: number },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof apiV1MapLayerKey>>,
+    { key: number }
+  > = (props) => {
+    const { key } = props ?? {}
+
+    return apiV1MapLayerKey(key)
+  }
+
+  return { mutationFn, ...mutationOptions }
+}
+
+export type ApiV1MapLayerKeyMutationResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1MapLayerKey>>
+>
+
+export type ApiV1MapLayerKeyMutationError = void
+
+/**
+ * @summary Delete object of specified type
+ */
+export const useApiV1MapLayerKey = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1MapLayerKey>>,
+    TError,
+    { key: number },
+    TContext
+  >
+}): UseMutationResult<
+  Awaited<ReturnType<typeof apiV1MapLayerKey>>,
+  TError,
+  { key: number },
+  TContext
+> => {
+  const mutationOptions = getApiV1MapLayerKeyMutationOptions(options)
+
+  return useMutation(mutationOptions)
+}
+
 /**
  * @summary Utah.Udot.Atspm.Data.Models.MeasureType navigation property action
  */
-export const apiVVersionApiVersionMeasureCommentKeyMeasureTypes = (
-    key: number,
-    params?: ApiVVersionApiVersionMeasureCommentKeyMeasureTypesParams,
- signal?: AbortSignal
+export const apiV1MeasureCommentKeyMeasureTypes = (
+  key: number,
+  params?: ApiV1MeasureCommentKeyMeasureTypesParams,
+  signal?: AbortSignal
 ) => {
-      
-      
-      return configRequest<UtahUdotAtspmDataModelsMeasureType[]>(
-      {url: `/api/v1/MeasureComment/${key}/measureTypes`, method: 'GET',
-        params, signal
-    },
-      );
-    }
-  
-
-export const getApiVVersionApiVersionMeasureCommentKeyMeasureTypesQueryKey = (key: number,
-    params?: ApiVVersionApiVersionMeasureCommentKeyMeasureTypesParams,) => {
-    return [`/api/v1/MeasureComment/${key}/measureTypes`, ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getApiVVersionApiVersionMeasureCommentKeyMeasureTypesQueryOptions = <TData = Awaited<ReturnType<typeof apiVVersionApiVersionMeasureCommentKeyMeasureTypes>>, TError = void>(key: number,
-    params?: ApiVVersionApiVersionMeasureCommentKeyMeasureTypesParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionMeasureCommentKeyMeasureTypes>>, TError, TData>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getApiVVersionApiVersionMeasureCommentKeyMeasureTypesQueryKey(key,params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiVVersionApiVersionMeasureCommentKeyMeasureTypes>>> = ({ signal }) => apiVVersionApiVersionMeasureCommentKeyMeasureTypes(key,params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(key), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionMeasureCommentKeyMeasureTypes>>, TError, TData> & { queryKey: QueryKey }
+  return configRequest<UtahUdotAtspmDataModelsMeasureType[]>({
+    url: `/api/v1/MeasureComment/${key}/measureTypes`,
+    method: 'GET',
+    params,
+    signal,
+  })
 }
 
-export type ApiVVersionApiVersionMeasureCommentKeyMeasureTypesQueryResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionMeasureCommentKeyMeasureTypes>>>
-export type ApiVVersionApiVersionMeasureCommentKeyMeasureTypesQueryError = void
+export const getApiV1MeasureCommentKeyMeasureTypesQueryKey = (
+  key: number,
+  params?: ApiV1MeasureCommentKeyMeasureTypesParams
+) => {
+  return [
+    `/api/v1/MeasureComment/${key}/measureTypes`,
+    ...(params ? [params] : []),
+  ] as const
+}
 
+export const getApiV1MeasureCommentKeyMeasureTypesQueryOptions = <
+  TData = Awaited<ReturnType<typeof apiV1MeasureCommentKeyMeasureTypes>>,
+  TError = void,
+>(
+  key: number,
+  params?: ApiV1MeasureCommentKeyMeasureTypesParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1MeasureCommentKeyMeasureTypes>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getApiV1MeasureCommentKeyMeasureTypesQueryKey(key, params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof apiV1MeasureCommentKeyMeasureTypes>>
+  > = ({ signal }) => apiV1MeasureCommentKeyMeasureTypes(key, params, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!key,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof apiV1MeasureCommentKeyMeasureTypes>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type ApiV1MeasureCommentKeyMeasureTypesQueryResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1MeasureCommentKeyMeasureTypes>>
+>
+export type ApiV1MeasureCommentKeyMeasureTypesQueryError = void
 
 /**
  * @summary Utah.Udot.Atspm.Data.Models.MeasureType navigation property action
  */
 
-export function useApiVVersionApiVersionMeasureCommentKeyMeasureTypes<TData = Awaited<ReturnType<typeof apiVVersionApiVersionMeasureCommentKeyMeasureTypes>>, TError = void>(
- key: number,
-    params?: ApiVVersionApiVersionMeasureCommentKeyMeasureTypesParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionMeasureCommentKeyMeasureTypes>>, TError, TData>, }
+export function useApiV1MeasureCommentKeyMeasureTypes<
+  TData = Awaited<ReturnType<typeof apiV1MeasureCommentKeyMeasureTypes>>,
+  TError = void,
+>(
+  key: number,
+  params?: ApiV1MeasureCommentKeyMeasureTypesParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1MeasureCommentKeyMeasureTypes>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getApiV1MeasureCommentKeyMeasureTypesQueryOptions(
+    key,
+    params,
+    options
+  )
 
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
 
-  const queryOptions = getApiVVersionApiVersionMeasureCommentKeyMeasureTypesQueryOptions(key,params,options)
+  query.queryKey = queryOptions.queryKey
 
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+  return query
 }
-
-
-
 
 /**
  * @summary Utah.Udot.Atspm.Data.Models.MeasureType navigation property action
  */
-export const apiVVersionApiVersionMeasureCommentKeyMeasureTypesCount = (
-    key: number,
-    params?: ApiVVersionApiVersionMeasureCommentKeyMeasureTypesCountParams,
- signal?: AbortSignal
+export const apiV1MeasureCommentKeyMeasureTypesCount = (
+  key: number,
+  params?: ApiV1MeasureCommentKeyMeasureTypesCountParams,
+  signal?: AbortSignal
 ) => {
-      
-      
-      return configRequest<UtahUdotAtspmDataModelsMeasureType[]>(
-      {url: `/api/v1/MeasureComment/${key}/measureTypes/$count`, method: 'GET',
-        params, signal
-    },
-      );
-    }
-  
-
-export const getApiVVersionApiVersionMeasureCommentKeyMeasureTypesCountQueryKey = (key: number,
-    params?: ApiVVersionApiVersionMeasureCommentKeyMeasureTypesCountParams,) => {
-    return [`/api/v1/MeasureComment/${key}/measureTypes/$count`, ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getApiVVersionApiVersionMeasureCommentKeyMeasureTypesCountQueryOptions = <TData = Awaited<ReturnType<typeof apiVVersionApiVersionMeasureCommentKeyMeasureTypesCount>>, TError = void>(key: number,
-    params?: ApiVVersionApiVersionMeasureCommentKeyMeasureTypesCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionMeasureCommentKeyMeasureTypesCount>>, TError, TData>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getApiVVersionApiVersionMeasureCommentKeyMeasureTypesCountQueryKey(key,params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiVVersionApiVersionMeasureCommentKeyMeasureTypesCount>>> = ({ signal }) => apiVVersionApiVersionMeasureCommentKeyMeasureTypesCount(key,params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(key), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionMeasureCommentKeyMeasureTypesCount>>, TError, TData> & { queryKey: QueryKey }
+  return configRequest<UtahUdotAtspmDataModelsMeasureType[]>({
+    url: `/api/v1/MeasureComment/${key}/measureTypes/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
 }
 
-export type ApiVVersionApiVersionMeasureCommentKeyMeasureTypesCountQueryResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionMeasureCommentKeyMeasureTypesCount>>>
-export type ApiVVersionApiVersionMeasureCommentKeyMeasureTypesCountQueryError = void
+export const getApiV1MeasureCommentKeyMeasureTypesCountQueryKey = (
+  key: number,
+  params?: ApiV1MeasureCommentKeyMeasureTypesCountParams
+) => {
+  return [
+    `/api/v1/MeasureComment/${key}/measureTypes/$count`,
+    ...(params ? [params] : []),
+  ] as const
+}
 
+export const getApiV1MeasureCommentKeyMeasureTypesCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof apiV1MeasureCommentKeyMeasureTypesCount>>,
+  TError = void,
+>(
+  key: number,
+  params?: ApiV1MeasureCommentKeyMeasureTypesCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1MeasureCommentKeyMeasureTypesCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getApiV1MeasureCommentKeyMeasureTypesCountQueryKey(key, params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof apiV1MeasureCommentKeyMeasureTypesCount>>
+  > = ({ signal }) =>
+    apiV1MeasureCommentKeyMeasureTypesCount(key, params, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!key,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof apiV1MeasureCommentKeyMeasureTypesCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type ApiV1MeasureCommentKeyMeasureTypesCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1MeasureCommentKeyMeasureTypesCount>>
+>
+export type ApiV1MeasureCommentKeyMeasureTypesCountQueryError = void
 
 /**
  * @summary Utah.Udot.Atspm.Data.Models.MeasureType navigation property action
  */
 
-export function useApiVVersionApiVersionMeasureCommentKeyMeasureTypesCount<TData = Awaited<ReturnType<typeof apiVVersionApiVersionMeasureCommentKeyMeasureTypesCount>>, TError = void>(
- key: number,
-    params?: ApiVVersionApiVersionMeasureCommentKeyMeasureTypesCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionMeasureCommentKeyMeasureTypesCount>>, TError, TData>, }
+export function useApiV1MeasureCommentKeyMeasureTypesCount<
+  TData = Awaited<ReturnType<typeof apiV1MeasureCommentKeyMeasureTypesCount>>,
+  TError = void,
+>(
+  key: number,
+  params?: ApiV1MeasureCommentKeyMeasureTypesCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1MeasureCommentKeyMeasureTypesCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getApiV1MeasureCommentKeyMeasureTypesCountQueryOptions(
+    key,
+    params,
+    options
+  )
 
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
 
-  const queryOptions = getApiVVersionApiVersionMeasureCommentKeyMeasureTypesCountQueryOptions(key,params,options)
+  query.queryKey = queryOptions.queryKey
 
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+  return query
 }
-
-
-
 
 /**
  * @summary Insert object of specified type
  */
-export const apiVVersionApiVersionMeasureComment = (
-    utahUdotAtspmDataModelsMeasureComment: UtahUdotAtspmDataModelsMeasureComment,
-    params?: ApiVVersionApiVersionMeasureCommentParams,
- ) => {
-      
-      
-      return configRequest<void>(
-      {url: `/api/v1/MeasureComment`, method: 'POST',
-      headers: {'Content-Type': 'application/json;odata.metadata=minimal;odata.streaming=true', },
-      data: utahUdotAtspmDataModelsMeasureComment,
-        params
+export const apiV1MeasureComment = (
+  utahUdotAtspmDataModelsMeasureComment: UtahUdotAtspmDataModelsMeasureComment,
+  params?: ApiV1MeasureCommentParams
+) => {
+  return configRequest<void>({
+    url: `/api/v1/MeasureComment`,
+    method: 'POST',
+    headers: {
+      'Content-Type':
+        'application/json;odata.metadata=minimal;odata.streaming=true',
     },
-      );
+    data: utahUdotAtspmDataModelsMeasureComment,
+    params,
+  })
+}
+
+export const getApiV1MeasureCommentMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1MeasureComment>>,
+    TError,
+    {
+      data: UtahUdotAtspmDataModelsMeasureComment
+      params?: ApiV1MeasureCommentParams
+    },
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof apiV1MeasureComment>>,
+  TError,
+  {
+    data: UtahUdotAtspmDataModelsMeasureComment
+    params?: ApiV1MeasureCommentParams
+  },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof apiV1MeasureComment>>,
+    {
+      data: UtahUdotAtspmDataModelsMeasureComment
+      params?: ApiV1MeasureCommentParams
     }
-  
+  > = (props) => {
+    const { data, params } = props ?? {}
 
+    return apiV1MeasureComment(data, params)
+  }
 
-export const getApiVVersionApiVersionMeasureCommentMutationOptions = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionMeasureComment>>, TError,{data: UtahUdotAtspmDataModelsMeasureComment;params?: ApiVVersionApiVersionMeasureCommentParams}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionMeasureComment>>, TError,{data: UtahUdotAtspmDataModelsMeasureComment;params?: ApiVVersionApiVersionMeasureCommentParams}, TContext> => {
-const {mutation: mutationOptions} = options ?? {};
+  return { mutationFn, ...mutationOptions }
+}
 
-      
+export type ApiV1MeasureCommentMutationResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1MeasureComment>>
+>
+export type ApiV1MeasureCommentMutationBody =
+  UtahUdotAtspmDataModelsMeasureComment
+export type ApiV1MeasureCommentMutationError = void
 
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof apiVVersionApiVersionMeasureComment>>, {data: UtahUdotAtspmDataModelsMeasureComment;params?: ApiVVersionApiVersionMeasureCommentParams}> = (props) => {
-          const {data,params} = props ?? {};
-
-          return  apiVVersionApiVersionMeasureComment(data,params,)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type ApiVVersionApiVersionMeasureCommentMutationResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionMeasureComment>>>
-    export type ApiVVersionApiVersionMeasureCommentMutationBody = UtahUdotAtspmDataModelsMeasureComment
-    export type ApiVVersionApiVersionMeasureCommentMutationError = void
-
-    /**
+/**
  * @summary Insert object of specified type
  */
-export const useApiVVersionApiVersionMeasureComment = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionMeasureComment>>, TError,{data: UtahUdotAtspmDataModelsMeasureComment;params?: ApiVVersionApiVersionMeasureCommentParams}, TContext>, }
-): UseMutationResult<
-        Awaited<ReturnType<typeof apiVVersionApiVersionMeasureComment>>,
-        TError,
-        {data: UtahUdotAtspmDataModelsMeasureComment;params?: ApiVVersionApiVersionMeasureCommentParams},
-        TContext
-      > => {
+export const useApiV1MeasureComment = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1MeasureComment>>,
+    TError,
+    {
+      data: UtahUdotAtspmDataModelsMeasureComment
+      params?: ApiV1MeasureCommentParams
+    },
+    TContext
+  >
+}): UseMutationResult<
+  Awaited<ReturnType<typeof apiV1MeasureComment>>,
+  TError,
+  {
+    data: UtahUdotAtspmDataModelsMeasureComment
+    params?: ApiV1MeasureCommentParams
+  },
+  TContext
+> => {
+  const mutationOptions = getApiV1MeasureCommentMutationOptions(options)
 
-      const mutationOptions = getApiVVersionApiVersionMeasureCommentMutationOptions(options);
+  return useMutation(mutationOptions)
+}
 
-      return useMutation(mutationOptions);
-    }
-    
 /**
  * @summary Collection of objects from oData query.
  */
-export const apiVVersionApiVersionMeasureCommentCount = (
-    params?: ApiVVersionApiVersionMeasureCommentCountParams,
- signal?: AbortSignal
+export const apiV1MeasureCommentCount = (
+  params?: ApiV1MeasureCommentCountParams,
+  signal?: AbortSignal
 ) => {
-      
-      
-      return configRequest<UtahUdotAtspmDataModelsMeasureComment[]>(
-      {url: `/api/v1/MeasureComment/$count`, method: 'GET',
-        params, signal
-    },
-      );
-    }
-  
-
-export const getApiVVersionApiVersionMeasureCommentCountQueryKey = (params?: ApiVVersionApiVersionMeasureCommentCountParams,) => {
-    return [`/api/v1/MeasureComment/$count`, ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getApiVVersionApiVersionMeasureCommentCountQueryOptions = <TData = Awaited<ReturnType<typeof apiVVersionApiVersionMeasureCommentCount>>, TError = void>(params?: ApiVVersionApiVersionMeasureCommentCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionMeasureCommentCount>>, TError, TData>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getApiVVersionApiVersionMeasureCommentCountQueryKey(params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiVVersionApiVersionMeasureCommentCount>>> = ({ signal }) => apiVVersionApiVersionMeasureCommentCount(params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionMeasureCommentCount>>, TError, TData> & { queryKey: QueryKey }
+  return configRequest<UtahUdotAtspmDataModelsMeasureComment[]>({
+    url: `/api/v1/MeasureComment/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
 }
 
-export type ApiVVersionApiVersionMeasureCommentCountQueryResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionMeasureCommentCount>>>
-export type ApiVVersionApiVersionMeasureCommentCountQueryError = void
-
-
-/**
- * @summary Collection of objects from oData query.
- */
-
-export function useApiVVersionApiVersionMeasureCommentCount<TData = Awaited<ReturnType<typeof apiVVersionApiVersionMeasureCommentCount>>, TError = void>(
- params?: ApiVVersionApiVersionMeasureCommentCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionMeasureCommentCount>>, TError, TData>, }
-
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
-
-  const queryOptions = getApiVVersionApiVersionMeasureCommentCountQueryOptions(params,options)
-
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+export const getApiV1MeasureCommentCountQueryKey = (
+  params?: ApiV1MeasureCommentCountParams
+) => {
+  return [`/api/v1/MeasureComment/$count`, ...(params ? [params] : [])] as const
 }
 
-
-
-
-/**
- * @summary Delete object of specified type
- */
-export const apiVVersionApiVersionMeasureCommentKey = (
-    key: number,
- ) => {
-      
-      
-      return configRequest<void>(
-      {url: `/api/v1/MeasureComment/${key}`, method: 'DELETE'
-    },
-      );
-    }
-  
-
-
-export const getApiVVersionApiVersionMeasureCommentKeyMutationOptions = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionMeasureCommentKey>>, TError,{key: number}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionMeasureCommentKey>>, TError,{key: number}, TContext> => {
-const {mutation: mutationOptions} = options ?? {};
-
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof apiVVersionApiVersionMeasureCommentKey>>, {key: number}> = (props) => {
-          const {key} = props ?? {};
-
-          return  apiVVersionApiVersionMeasureCommentKey(key,)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type ApiVVersionApiVersionMeasureCommentKeyMutationResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionMeasureCommentKey>>>
-    
-    export type ApiVVersionApiVersionMeasureCommentKeyMutationError = void
-
-    /**
- * @summary Delete object of specified type
- */
-export const useApiVVersionApiVersionMeasureCommentKey = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionMeasureCommentKey>>, TError,{key: number}, TContext>, }
-): UseMutationResult<
-        Awaited<ReturnType<typeof apiVVersionApiVersionMeasureCommentKey>>,
-        TError,
-        {key: number},
-        TContext
-      > => {
-
-      const mutationOptions = getApiVVersionApiVersionMeasureCommentKeyMutationOptions(options);
-
-      return useMutation(mutationOptions);
-    }
-    
-/**
- * @summary Insert object of specified type
- */
-export const apiVVersionApiVersionMeasureOption = (
-    utahUdotAtspmDataModelsMeasureOption: UtahUdotAtspmDataModelsMeasureOption,
-    params?: ApiVVersionApiVersionMeasureOptionParams,
- ) => {
-      
-      
-      return configRequest<void>(
-      {url: `/api/v1/MeasureOption`, method: 'POST',
-      headers: {'Content-Type': 'application/json;odata.metadata=minimal;odata.streaming=true', },
-      data: utahUdotAtspmDataModelsMeasureOption,
-        params
-    },
-      );
-    }
-  
-
-
-export const getApiVVersionApiVersionMeasureOptionMutationOptions = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionMeasureOption>>, TError,{data: UtahUdotAtspmDataModelsMeasureOption;params?: ApiVVersionApiVersionMeasureOptionParams}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionMeasureOption>>, TError,{data: UtahUdotAtspmDataModelsMeasureOption;params?: ApiVVersionApiVersionMeasureOptionParams}, TContext> => {
-const {mutation: mutationOptions} = options ?? {};
-
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof apiVVersionApiVersionMeasureOption>>, {data: UtahUdotAtspmDataModelsMeasureOption;params?: ApiVVersionApiVersionMeasureOptionParams}> = (props) => {
-          const {data,params} = props ?? {};
-
-          return  apiVVersionApiVersionMeasureOption(data,params,)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type ApiVVersionApiVersionMeasureOptionMutationResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionMeasureOption>>>
-    export type ApiVVersionApiVersionMeasureOptionMutationBody = UtahUdotAtspmDataModelsMeasureOption
-    export type ApiVVersionApiVersionMeasureOptionMutationError = void
-
-    /**
- * @summary Insert object of specified type
- */
-export const useApiVVersionApiVersionMeasureOption = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionMeasureOption>>, TError,{data: UtahUdotAtspmDataModelsMeasureOption;params?: ApiVVersionApiVersionMeasureOptionParams}, TContext>, }
-): UseMutationResult<
-        Awaited<ReturnType<typeof apiVVersionApiVersionMeasureOption>>,
-        TError,
-        {data: UtahUdotAtspmDataModelsMeasureOption;params?: ApiVVersionApiVersionMeasureOptionParams},
-        TContext
-      > => {
-
-      const mutationOptions = getApiVVersionApiVersionMeasureOptionMutationOptions(options);
-
-      return useMutation(mutationOptions);
-    }
-    
-/**
- * @summary Collection of objects from oData query.
- */
-export const apiVVersionApiVersionMeasureOptionCount = (
-    params?: ApiVVersionApiVersionMeasureOptionCountParams,
- signal?: AbortSignal
+export const getApiV1MeasureCommentCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof apiV1MeasureCommentCount>>,
+  TError = void,
+>(
+  params?: ApiV1MeasureCommentCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1MeasureCommentCount>>,
+      TError,
+      TData
+    >
+  }
 ) => {
-      
-      
-      return configRequest<UtahUdotAtspmDataModelsMeasureOption[]>(
-      {url: `/api/v1/MeasureOption/$count`, method: 'GET',
-        params, signal
-    },
-      );
-    }
-  
+  const { query: queryOptions } = options ?? {}
 
-export const getApiVVersionApiVersionMeasureOptionCountQueryKey = (params?: ApiVVersionApiVersionMeasureOptionCountParams,) => {
-    return [`/api/v1/MeasureOption/$count`, ...(params ? [params]: [])] as const;
-    }
+  const queryKey =
+    queryOptions?.queryKey ?? getApiV1MeasureCommentCountQueryKey(params)
 
-    
-export const getApiVVersionApiVersionMeasureOptionCountQueryOptions = <TData = Awaited<ReturnType<typeof apiVVersionApiVersionMeasureOptionCount>>, TError = void>(params?: ApiVVersionApiVersionMeasureOptionCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionMeasureOptionCount>>, TError, TData>, }
-) => {
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof apiV1MeasureCommentCount>>
+  > = ({ signal }) => apiV1MeasureCommentCount(params, signal)
 
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getApiVVersionApiVersionMeasureOptionCountQueryKey(params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiVVersionApiVersionMeasureOptionCount>>> = ({ signal }) => apiVVersionApiVersionMeasureOptionCount(params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionMeasureOptionCount>>, TError, TData> & { queryKey: QueryKey }
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof apiV1MeasureCommentCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
 }
 
-export type ApiVVersionApiVersionMeasureOptionCountQueryResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionMeasureOptionCount>>>
-export type ApiVVersionApiVersionMeasureOptionCountQueryError = void
-
+export type ApiV1MeasureCommentCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1MeasureCommentCount>>
+>
+export type ApiV1MeasureCommentCountQueryError = void
 
 /**
  * @summary Collection of objects from oData query.
  */
 
-export function useApiVVersionApiVersionMeasureOptionCount<TData = Awaited<ReturnType<typeof apiVVersionApiVersionMeasureOptionCount>>, TError = void>(
- params?: ApiVVersionApiVersionMeasureOptionCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionMeasureOptionCount>>, TError, TData>, }
+export function useApiV1MeasureCommentCount<
+  TData = Awaited<ReturnType<typeof apiV1MeasureCommentCount>>,
+  TError = void,
+>(
+  params?: ApiV1MeasureCommentCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1MeasureCommentCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getApiV1MeasureCommentCountQueryOptions(params, options)
 
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
 
-  const queryOptions = getApiVVersionApiVersionMeasureOptionCountQueryOptions(params,options)
+  query.queryKey = queryOptions.queryKey
 
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+  return query
 }
-
-
-
 
 /**
  * @summary Delete object of specified type
  */
-export const apiVVersionApiVersionMeasureOptionKey = (
-    key: number,
- ) => {
-      
-      
-      return configRequest<void>(
-      {url: `/api/v1/MeasureOption/${key}`, method: 'DELETE'
-    },
-      );
-    }
-  
+export const apiV1MeasureCommentKey = (key: number) => {
+  return configRequest<void>({
+    url: `/api/v1/MeasureComment/${key}`,
+    method: 'DELETE',
+  })
+}
 
+export const getApiV1MeasureCommentKeyMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1MeasureCommentKey>>,
+    TError,
+    { key: number },
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof apiV1MeasureCommentKey>>,
+  TError,
+  { key: number },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
 
-export const getApiVVersionApiVersionMeasureOptionKeyMutationOptions = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionMeasureOptionKey>>, TError,{key: number}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionMeasureOptionKey>>, TError,{key: number}, TContext> => {
-const {mutation: mutationOptions} = options ?? {};
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof apiV1MeasureCommentKey>>,
+    { key: number }
+  > = (props) => {
+    const { key } = props ?? {}
 
-      
+    return apiV1MeasureCommentKey(key)
+  }
 
+  return { mutationFn, ...mutationOptions }
+}
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof apiVVersionApiVersionMeasureOptionKey>>, {key: number}> = (props) => {
-          const {key} = props ?? {};
+export type ApiV1MeasureCommentKeyMutationResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1MeasureCommentKey>>
+>
 
-          return  apiVVersionApiVersionMeasureOptionKey(key,)
-        }
+export type ApiV1MeasureCommentKeyMutationError = void
 
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type ApiVVersionApiVersionMeasureOptionKeyMutationResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionMeasureOptionKey>>>
-    
-    export type ApiVVersionApiVersionMeasureOptionKeyMutationError = void
-
-    /**
+/**
  * @summary Delete object of specified type
  */
-export const useApiVVersionApiVersionMeasureOptionKey = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionMeasureOptionKey>>, TError,{key: number}, TContext>, }
-): UseMutationResult<
-        Awaited<ReturnType<typeof apiVVersionApiVersionMeasureOptionKey>>,
-        TError,
-        {key: number},
-        TContext
-      > => {
+export const useApiV1MeasureCommentKey = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1MeasureCommentKey>>,
+    TError,
+    { key: number },
+    TContext
+  >
+}): UseMutationResult<
+  Awaited<ReturnType<typeof apiV1MeasureCommentKey>>,
+  TError,
+  { key: number },
+  TContext
+> => {
+  const mutationOptions = getApiV1MeasureCommentKeyMutationOptions(options)
 
-      const mutationOptions = getApiVVersionApiVersionMeasureOptionKeyMutationOptions(options);
+  return useMutation(mutationOptions)
+}
 
-      return useMutation(mutationOptions);
-    }
-    
 /**
- * @summary Utah.Udot.Atspm.Data.Models.DetectionType navigation property action
+ * @summary Insert object of specified type
  */
-export const apiVVersionApiVersionMeasureTypeKeyDetectionTypes = (
-    key: number,
-    params?: ApiVVersionApiVersionMeasureTypeKeyDetectionTypesParams,
- signal?: AbortSignal
+export const apiV1MeasureOption = (
+  utahUdotAtspmDataModelsMeasureOption: UtahUdotAtspmDataModelsMeasureOption,
+  params?: ApiV1MeasureOptionParams
 ) => {
-      
-      
-      return configRequest<UtahUdotAtspmDataModelsDetectionType[]>(
-      {url: `/api/v1/MeasureType/${key}/detectionTypes`, method: 'GET',
-        params, signal
+  return configRequest<void>({
+    url: `/api/v1/MeasureOption`,
+    method: 'POST',
+    headers: {
+      'Content-Type':
+        'application/json;odata.metadata=minimal;odata.streaming=true',
     },
-      );
-    }
-  
-
-export const getApiVVersionApiVersionMeasureTypeKeyDetectionTypesQueryKey = (key: number,
-    params?: ApiVVersionApiVersionMeasureTypeKeyDetectionTypesParams,) => {
-    return [`/api/v1/MeasureType/${key}/detectionTypes`, ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getApiVVersionApiVersionMeasureTypeKeyDetectionTypesQueryOptions = <TData = Awaited<ReturnType<typeof apiVVersionApiVersionMeasureTypeKeyDetectionTypes>>, TError = void>(key: number,
-    params?: ApiVVersionApiVersionMeasureTypeKeyDetectionTypesParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionMeasureTypeKeyDetectionTypes>>, TError, TData>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getApiVVersionApiVersionMeasureTypeKeyDetectionTypesQueryKey(key,params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiVVersionApiVersionMeasureTypeKeyDetectionTypes>>> = ({ signal }) => apiVVersionApiVersionMeasureTypeKeyDetectionTypes(key,params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(key), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionMeasureTypeKeyDetectionTypes>>, TError, TData> & { queryKey: QueryKey }
+    data: utahUdotAtspmDataModelsMeasureOption,
+    params,
+  })
 }
 
-export type ApiVVersionApiVersionMeasureTypeKeyDetectionTypesQueryResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionMeasureTypeKeyDetectionTypes>>>
-export type ApiVVersionApiVersionMeasureTypeKeyDetectionTypesQueryError = void
-
-
-/**
- * @summary Utah.Udot.Atspm.Data.Models.DetectionType navigation property action
- */
-
-export function useApiVVersionApiVersionMeasureTypeKeyDetectionTypes<TData = Awaited<ReturnType<typeof apiVVersionApiVersionMeasureTypeKeyDetectionTypes>>, TError = void>(
- key: number,
-    params?: ApiVVersionApiVersionMeasureTypeKeyDetectionTypesParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionMeasureTypeKeyDetectionTypes>>, TError, TData>, }
-
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
-
-  const queryOptions = getApiVVersionApiVersionMeasureTypeKeyDetectionTypesQueryOptions(key,params,options)
-
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
-}
-
-
-
-
-/**
- * @summary Utah.Udot.Atspm.Data.Models.DetectionType navigation property action
- */
-export const apiVVersionApiVersionMeasureTypeKeyDetectionTypesCount = (
-    key: number,
-    params?: ApiVVersionApiVersionMeasureTypeKeyDetectionTypesCountParams,
- signal?: AbortSignal
-) => {
-      
-      
-      return configRequest<UtahUdotAtspmDataModelsDetectionType[]>(
-      {url: `/api/v1/MeasureType/${key}/detectionTypes/$count`, method: 'GET',
-        params, signal
+export const getApiV1MeasureOptionMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1MeasureOption>>,
+    TError,
+    {
+      data: UtahUdotAtspmDataModelsMeasureOption
+      params?: ApiV1MeasureOptionParams
     },
-      );
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof apiV1MeasureOption>>,
+  TError,
+  {
+    data: UtahUdotAtspmDataModelsMeasureOption
+    params?: ApiV1MeasureOptionParams
+  },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof apiV1MeasureOption>>,
+    {
+      data: UtahUdotAtspmDataModelsMeasureOption
+      params?: ApiV1MeasureOptionParams
     }
-  
+  > = (props) => {
+    const { data, params } = props ?? {}
 
-export const getApiVVersionApiVersionMeasureTypeKeyDetectionTypesCountQueryKey = (key: number,
-    params?: ApiVVersionApiVersionMeasureTypeKeyDetectionTypesCountParams,) => {
-    return [`/api/v1/MeasureType/${key}/detectionTypes/$count`, ...(params ? [params]: [])] as const;
-    }
+    return apiV1MeasureOption(data, params)
+  }
 
-    
-export const getApiVVersionApiVersionMeasureTypeKeyDetectionTypesCountQueryOptions = <TData = Awaited<ReturnType<typeof apiVVersionApiVersionMeasureTypeKeyDetectionTypesCount>>, TError = void>(key: number,
-    params?: ApiVVersionApiVersionMeasureTypeKeyDetectionTypesCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionMeasureTypeKeyDetectionTypesCount>>, TError, TData>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getApiVVersionApiVersionMeasureTypeKeyDetectionTypesCountQueryKey(key,params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiVVersionApiVersionMeasureTypeKeyDetectionTypesCount>>> = ({ signal }) => apiVVersionApiVersionMeasureTypeKeyDetectionTypesCount(key,params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(key), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionMeasureTypeKeyDetectionTypesCount>>, TError, TData> & { queryKey: QueryKey }
+  return { mutationFn, ...mutationOptions }
 }
 
-export type ApiVVersionApiVersionMeasureTypeKeyDetectionTypesCountQueryResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionMeasureTypeKeyDetectionTypesCount>>>
-export type ApiVVersionApiVersionMeasureTypeKeyDetectionTypesCountQueryError = void
+export type ApiV1MeasureOptionMutationResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1MeasureOption>>
+>
+export type ApiV1MeasureOptionMutationBody =
+  UtahUdotAtspmDataModelsMeasureOption
+export type ApiV1MeasureOptionMutationError = void
 
+/**
+ * @summary Insert object of specified type
+ */
+export const useApiV1MeasureOption = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1MeasureOption>>,
+    TError,
+    {
+      data: UtahUdotAtspmDataModelsMeasureOption
+      params?: ApiV1MeasureOptionParams
+    },
+    TContext
+  >
+}): UseMutationResult<
+  Awaited<ReturnType<typeof apiV1MeasureOption>>,
+  TError,
+  {
+    data: UtahUdotAtspmDataModelsMeasureOption
+    params?: ApiV1MeasureOptionParams
+  },
+  TContext
+> => {
+  const mutationOptions = getApiV1MeasureOptionMutationOptions(options)
+
+  return useMutation(mutationOptions)
+}
+
+/**
+ * @summary Collection of objects from oData query.
+ */
+export const apiV1MeasureOptionCount = (
+  params?: ApiV1MeasureOptionCountParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<UtahUdotAtspmDataModelsMeasureOption[]>({
+    url: `/api/v1/MeasureOption/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getApiV1MeasureOptionCountQueryKey = (
+  params?: ApiV1MeasureOptionCountParams
+) => {
+  return [`/api/v1/MeasureOption/$count`, ...(params ? [params] : [])] as const
+}
+
+export const getApiV1MeasureOptionCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof apiV1MeasureOptionCount>>,
+  TError = void,
+>(
+  params?: ApiV1MeasureOptionCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1MeasureOptionCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ?? getApiV1MeasureOptionCountQueryKey(params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof apiV1MeasureOptionCount>>
+  > = ({ signal }) => apiV1MeasureOptionCount(params, signal)
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof apiV1MeasureOptionCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type ApiV1MeasureOptionCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1MeasureOptionCount>>
+>
+export type ApiV1MeasureOptionCountQueryError = void
+
+/**
+ * @summary Collection of objects from oData query.
+ */
+
+export function useApiV1MeasureOptionCount<
+  TData = Awaited<ReturnType<typeof apiV1MeasureOptionCount>>,
+  TError = void,
+>(
+  params?: ApiV1MeasureOptionCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1MeasureOptionCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getApiV1MeasureOptionCountQueryOptions(params, options)
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
+ * @summary Delete object of specified type
+ */
+export const apiV1MeasureOptionKey = (key: number) => {
+  return configRequest<void>({
+    url: `/api/v1/MeasureOption/${key}`,
+    method: 'DELETE',
+  })
+}
+
+export const getApiV1MeasureOptionKeyMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1MeasureOptionKey>>,
+    TError,
+    { key: number },
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof apiV1MeasureOptionKey>>,
+  TError,
+  { key: number },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof apiV1MeasureOptionKey>>,
+    { key: number }
+  > = (props) => {
+    const { key } = props ?? {}
+
+    return apiV1MeasureOptionKey(key)
+  }
+
+  return { mutationFn, ...mutationOptions }
+}
+
+export type ApiV1MeasureOptionKeyMutationResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1MeasureOptionKey>>
+>
+
+export type ApiV1MeasureOptionKeyMutationError = void
+
+/**
+ * @summary Delete object of specified type
+ */
+export const useApiV1MeasureOptionKey = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1MeasureOptionKey>>,
+    TError,
+    { key: number },
+    TContext
+  >
+}): UseMutationResult<
+  Awaited<ReturnType<typeof apiV1MeasureOptionKey>>,
+  TError,
+  { key: number },
+  TContext
+> => {
+  const mutationOptions = getApiV1MeasureOptionKeyMutationOptions(options)
+
+  return useMutation(mutationOptions)
+}
+
+/**
+ * @summary Utah.Udot.Atspm.Data.Models.DetectionType navigation property action
+ */
+export const apiV1MeasureTypeKeyDetectionTypes = (
+  key: number,
+  params?: ApiV1MeasureTypeKeyDetectionTypesParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<UtahUdotAtspmDataModelsDetectionType[]>({
+    url: `/api/v1/MeasureType/${key}/detectionTypes`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getApiV1MeasureTypeKeyDetectionTypesQueryKey = (
+  key: number,
+  params?: ApiV1MeasureTypeKeyDetectionTypesParams
+) => {
+  return [
+    `/api/v1/MeasureType/${key}/detectionTypes`,
+    ...(params ? [params] : []),
+  ] as const
+}
+
+export const getApiV1MeasureTypeKeyDetectionTypesQueryOptions = <
+  TData = Awaited<ReturnType<typeof apiV1MeasureTypeKeyDetectionTypes>>,
+  TError = void,
+>(
+  key: number,
+  params?: ApiV1MeasureTypeKeyDetectionTypesParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1MeasureTypeKeyDetectionTypes>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getApiV1MeasureTypeKeyDetectionTypesQueryKey(key, params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof apiV1MeasureTypeKeyDetectionTypes>>
+  > = ({ signal }) => apiV1MeasureTypeKeyDetectionTypes(key, params, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!key,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof apiV1MeasureTypeKeyDetectionTypes>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type ApiV1MeasureTypeKeyDetectionTypesQueryResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1MeasureTypeKeyDetectionTypes>>
+>
+export type ApiV1MeasureTypeKeyDetectionTypesQueryError = void
 
 /**
  * @summary Utah.Udot.Atspm.Data.Models.DetectionType navigation property action
  */
 
-export function useApiVVersionApiVersionMeasureTypeKeyDetectionTypesCount<TData = Awaited<ReturnType<typeof apiVVersionApiVersionMeasureTypeKeyDetectionTypesCount>>, TError = void>(
- key: number,
-    params?: ApiVVersionApiVersionMeasureTypeKeyDetectionTypesCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionMeasureTypeKeyDetectionTypesCount>>, TError, TData>, }
+export function useApiV1MeasureTypeKeyDetectionTypes<
+  TData = Awaited<ReturnType<typeof apiV1MeasureTypeKeyDetectionTypes>>,
+  TError = void,
+>(
+  key: number,
+  params?: ApiV1MeasureTypeKeyDetectionTypesParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1MeasureTypeKeyDetectionTypes>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getApiV1MeasureTypeKeyDetectionTypesQueryOptions(
+    key,
+    params,
+    options
+  )
 
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
 
-  const queryOptions = getApiVVersionApiVersionMeasureTypeKeyDetectionTypesCountQueryOptions(key,params,options)
+  query.queryKey = queryOptions.queryKey
 
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+  return query
 }
 
+/**
+ * @summary Utah.Udot.Atspm.Data.Models.DetectionType navigation property action
+ */
+export const apiV1MeasureTypeKeyDetectionTypesCount = (
+  key: number,
+  params?: ApiV1MeasureTypeKeyDetectionTypesCountParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<UtahUdotAtspmDataModelsDetectionType[]>({
+    url: `/api/v1/MeasureType/${key}/detectionTypes/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
 
+export const getApiV1MeasureTypeKeyDetectionTypesCountQueryKey = (
+  key: number,
+  params?: ApiV1MeasureTypeKeyDetectionTypesCountParams
+) => {
+  return [
+    `/api/v1/MeasureType/${key}/detectionTypes/$count`,
+    ...(params ? [params] : []),
+  ] as const
+}
 
+export const getApiV1MeasureTypeKeyDetectionTypesCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof apiV1MeasureTypeKeyDetectionTypesCount>>,
+  TError = void,
+>(
+  key: number,
+  params?: ApiV1MeasureTypeKeyDetectionTypesCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1MeasureTypeKeyDetectionTypesCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getApiV1MeasureTypeKeyDetectionTypesCountQueryKey(key, params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof apiV1MeasureTypeKeyDetectionTypesCount>>
+  > = ({ signal }) =>
+    apiV1MeasureTypeKeyDetectionTypesCount(key, params, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!key,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof apiV1MeasureTypeKeyDetectionTypesCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type ApiV1MeasureTypeKeyDetectionTypesCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1MeasureTypeKeyDetectionTypesCount>>
+>
+export type ApiV1MeasureTypeKeyDetectionTypesCountQueryError = void
+
+/**
+ * @summary Utah.Udot.Atspm.Data.Models.DetectionType navigation property action
+ */
+
+export function useApiV1MeasureTypeKeyDetectionTypesCount<
+  TData = Awaited<ReturnType<typeof apiV1MeasureTypeKeyDetectionTypesCount>>,
+  TError = void,
+>(
+  key: number,
+  params?: ApiV1MeasureTypeKeyDetectionTypesCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1MeasureTypeKeyDetectionTypesCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getApiV1MeasureTypeKeyDetectionTypesCountQueryOptions(
+    key,
+    params,
+    options
+  )
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
 
 /**
  * @summary Utah.Udot.Atspm.Data.Models.MeasureComment navigation property action
  */
-export const apiVVersionApiVersionMeasureTypeKeyMeasureComments = (
-    key: number,
-    params?: ApiVVersionApiVersionMeasureTypeKeyMeasureCommentsParams,
- signal?: AbortSignal
+export const apiV1MeasureTypeKeyMeasureComments = (
+  key: number,
+  params?: ApiV1MeasureTypeKeyMeasureCommentsParams,
+  signal?: AbortSignal
 ) => {
-      
-      
-      return configRequest<UtahUdotAtspmDataModelsMeasureComment[]>(
-      {url: `/api/v1/MeasureType/${key}/measureComments`, method: 'GET',
-        params, signal
-    },
-      );
-    }
-  
-
-export const getApiVVersionApiVersionMeasureTypeKeyMeasureCommentsQueryKey = (key: number,
-    params?: ApiVVersionApiVersionMeasureTypeKeyMeasureCommentsParams,) => {
-    return [`/api/v1/MeasureType/${key}/measureComments`, ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getApiVVersionApiVersionMeasureTypeKeyMeasureCommentsQueryOptions = <TData = Awaited<ReturnType<typeof apiVVersionApiVersionMeasureTypeKeyMeasureComments>>, TError = void>(key: number,
-    params?: ApiVVersionApiVersionMeasureTypeKeyMeasureCommentsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionMeasureTypeKeyMeasureComments>>, TError, TData>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getApiVVersionApiVersionMeasureTypeKeyMeasureCommentsQueryKey(key,params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiVVersionApiVersionMeasureTypeKeyMeasureComments>>> = ({ signal }) => apiVVersionApiVersionMeasureTypeKeyMeasureComments(key,params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(key), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionMeasureTypeKeyMeasureComments>>, TError, TData> & { queryKey: QueryKey }
+  return configRequest<UtahUdotAtspmDataModelsMeasureComment[]>({
+    url: `/api/v1/MeasureType/${key}/measureComments`,
+    method: 'GET',
+    params,
+    signal,
+  })
 }
 
-export type ApiVVersionApiVersionMeasureTypeKeyMeasureCommentsQueryResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionMeasureTypeKeyMeasureComments>>>
-export type ApiVVersionApiVersionMeasureTypeKeyMeasureCommentsQueryError = void
+export const getApiV1MeasureTypeKeyMeasureCommentsQueryKey = (
+  key: number,
+  params?: ApiV1MeasureTypeKeyMeasureCommentsParams
+) => {
+  return [
+    `/api/v1/MeasureType/${key}/measureComments`,
+    ...(params ? [params] : []),
+  ] as const
+}
 
+export const getApiV1MeasureTypeKeyMeasureCommentsQueryOptions = <
+  TData = Awaited<ReturnType<typeof apiV1MeasureTypeKeyMeasureComments>>,
+  TError = void,
+>(
+  key: number,
+  params?: ApiV1MeasureTypeKeyMeasureCommentsParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1MeasureTypeKeyMeasureComments>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getApiV1MeasureTypeKeyMeasureCommentsQueryKey(key, params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof apiV1MeasureTypeKeyMeasureComments>>
+  > = ({ signal }) => apiV1MeasureTypeKeyMeasureComments(key, params, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!key,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof apiV1MeasureTypeKeyMeasureComments>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type ApiV1MeasureTypeKeyMeasureCommentsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1MeasureTypeKeyMeasureComments>>
+>
+export type ApiV1MeasureTypeKeyMeasureCommentsQueryError = void
 
 /**
  * @summary Utah.Udot.Atspm.Data.Models.MeasureComment navigation property action
  */
 
-export function useApiVVersionApiVersionMeasureTypeKeyMeasureComments<TData = Awaited<ReturnType<typeof apiVVersionApiVersionMeasureTypeKeyMeasureComments>>, TError = void>(
- key: number,
-    params?: ApiVVersionApiVersionMeasureTypeKeyMeasureCommentsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionMeasureTypeKeyMeasureComments>>, TError, TData>, }
+export function useApiV1MeasureTypeKeyMeasureComments<
+  TData = Awaited<ReturnType<typeof apiV1MeasureTypeKeyMeasureComments>>,
+  TError = void,
+>(
+  key: number,
+  params?: ApiV1MeasureTypeKeyMeasureCommentsParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1MeasureTypeKeyMeasureComments>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getApiV1MeasureTypeKeyMeasureCommentsQueryOptions(
+    key,
+    params,
+    options
+  )
 
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
 
-  const queryOptions = getApiVVersionApiVersionMeasureTypeKeyMeasureCommentsQueryOptions(key,params,options)
+  query.queryKey = queryOptions.queryKey
 
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+  return query
 }
-
-
-
 
 /**
  * @summary Utah.Udot.Atspm.Data.Models.MeasureComment navigation property action
  */
-export const apiVVersionApiVersionMeasureTypeKeyMeasureCommentsCount = (
-    key: number,
-    params?: ApiVVersionApiVersionMeasureTypeKeyMeasureCommentsCountParams,
- signal?: AbortSignal
+export const apiV1MeasureTypeKeyMeasureCommentsCount = (
+  key: number,
+  params?: ApiV1MeasureTypeKeyMeasureCommentsCountParams,
+  signal?: AbortSignal
 ) => {
-      
-      
-      return configRequest<UtahUdotAtspmDataModelsMeasureComment[]>(
-      {url: `/api/v1/MeasureType/${key}/measureComments/$count`, method: 'GET',
-        params, signal
-    },
-      );
-    }
-  
-
-export const getApiVVersionApiVersionMeasureTypeKeyMeasureCommentsCountQueryKey = (key: number,
-    params?: ApiVVersionApiVersionMeasureTypeKeyMeasureCommentsCountParams,) => {
-    return [`/api/v1/MeasureType/${key}/measureComments/$count`, ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getApiVVersionApiVersionMeasureTypeKeyMeasureCommentsCountQueryOptions = <TData = Awaited<ReturnType<typeof apiVVersionApiVersionMeasureTypeKeyMeasureCommentsCount>>, TError = void>(key: number,
-    params?: ApiVVersionApiVersionMeasureTypeKeyMeasureCommentsCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionMeasureTypeKeyMeasureCommentsCount>>, TError, TData>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getApiVVersionApiVersionMeasureTypeKeyMeasureCommentsCountQueryKey(key,params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiVVersionApiVersionMeasureTypeKeyMeasureCommentsCount>>> = ({ signal }) => apiVVersionApiVersionMeasureTypeKeyMeasureCommentsCount(key,params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(key), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionMeasureTypeKeyMeasureCommentsCount>>, TError, TData> & { queryKey: QueryKey }
+  return configRequest<UtahUdotAtspmDataModelsMeasureComment[]>({
+    url: `/api/v1/MeasureType/${key}/measureComments/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
 }
 
-export type ApiVVersionApiVersionMeasureTypeKeyMeasureCommentsCountQueryResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionMeasureTypeKeyMeasureCommentsCount>>>
-export type ApiVVersionApiVersionMeasureTypeKeyMeasureCommentsCountQueryError = void
+export const getApiV1MeasureTypeKeyMeasureCommentsCountQueryKey = (
+  key: number,
+  params?: ApiV1MeasureTypeKeyMeasureCommentsCountParams
+) => {
+  return [
+    `/api/v1/MeasureType/${key}/measureComments/$count`,
+    ...(params ? [params] : []),
+  ] as const
+}
 
+export const getApiV1MeasureTypeKeyMeasureCommentsCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof apiV1MeasureTypeKeyMeasureCommentsCount>>,
+  TError = void,
+>(
+  key: number,
+  params?: ApiV1MeasureTypeKeyMeasureCommentsCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1MeasureTypeKeyMeasureCommentsCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getApiV1MeasureTypeKeyMeasureCommentsCountQueryKey(key, params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof apiV1MeasureTypeKeyMeasureCommentsCount>>
+  > = ({ signal }) =>
+    apiV1MeasureTypeKeyMeasureCommentsCount(key, params, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!key,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof apiV1MeasureTypeKeyMeasureCommentsCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type ApiV1MeasureTypeKeyMeasureCommentsCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1MeasureTypeKeyMeasureCommentsCount>>
+>
+export type ApiV1MeasureTypeKeyMeasureCommentsCountQueryError = void
 
 /**
  * @summary Utah.Udot.Atspm.Data.Models.MeasureComment navigation property action
  */
 
-export function useApiVVersionApiVersionMeasureTypeKeyMeasureCommentsCount<TData = Awaited<ReturnType<typeof apiVVersionApiVersionMeasureTypeKeyMeasureCommentsCount>>, TError = void>(
- key: number,
-    params?: ApiVVersionApiVersionMeasureTypeKeyMeasureCommentsCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionMeasureTypeKeyMeasureCommentsCount>>, TError, TData>, }
+export function useApiV1MeasureTypeKeyMeasureCommentsCount<
+  TData = Awaited<ReturnType<typeof apiV1MeasureTypeKeyMeasureCommentsCount>>,
+  TError = void,
+>(
+  key: number,
+  params?: ApiV1MeasureTypeKeyMeasureCommentsCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1MeasureTypeKeyMeasureCommentsCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getApiV1MeasureTypeKeyMeasureCommentsCountQueryOptions(
+    key,
+    params,
+    options
+  )
 
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
 
-  const queryOptions = getApiVVersionApiVersionMeasureTypeKeyMeasureCommentsCountQueryOptions(key,params,options)
+  query.queryKey = queryOptions.queryKey
 
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+  return query
 }
-
-
-
 
 /**
  * @summary Insert object of specified type
  */
-export const apiVVersionApiVersionMeasureType = (
-    utahUdotAtspmDataModelsMeasureType: UtahUdotAtspmDataModelsMeasureType,
-    params?: ApiVVersionApiVersionMeasureTypeParams,
- ) => {
-      
-      
-      return configRequest<void>(
-      {url: `/api/v1/MeasureType`, method: 'POST',
-      headers: {'Content-Type': 'application/json;odata.metadata=minimal;odata.streaming=true', },
-      data: utahUdotAtspmDataModelsMeasureType,
-        params
-    },
-      );
-    }
-  
-
-
-export const getApiVVersionApiVersionMeasureTypeMutationOptions = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionMeasureType>>, TError,{data: UtahUdotAtspmDataModelsMeasureType;params?: ApiVVersionApiVersionMeasureTypeParams}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionMeasureType>>, TError,{data: UtahUdotAtspmDataModelsMeasureType;params?: ApiVVersionApiVersionMeasureTypeParams}, TContext> => {
-const {mutation: mutationOptions} = options ?? {};
-
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof apiVVersionApiVersionMeasureType>>, {data: UtahUdotAtspmDataModelsMeasureType;params?: ApiVVersionApiVersionMeasureTypeParams}> = (props) => {
-          const {data,params} = props ?? {};
-
-          return  apiVVersionApiVersionMeasureType(data,params,)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type ApiVVersionApiVersionMeasureTypeMutationResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionMeasureType>>>
-    export type ApiVVersionApiVersionMeasureTypeMutationBody = UtahUdotAtspmDataModelsMeasureType
-    export type ApiVVersionApiVersionMeasureTypeMutationError = void
-
-    /**
- * @summary Insert object of specified type
- */
-export const useApiVVersionApiVersionMeasureType = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionMeasureType>>, TError,{data: UtahUdotAtspmDataModelsMeasureType;params?: ApiVVersionApiVersionMeasureTypeParams}, TContext>, }
-): UseMutationResult<
-        Awaited<ReturnType<typeof apiVVersionApiVersionMeasureType>>,
-        TError,
-        {data: UtahUdotAtspmDataModelsMeasureType;params?: ApiVVersionApiVersionMeasureTypeParams},
-        TContext
-      > => {
-
-      const mutationOptions = getApiVVersionApiVersionMeasureTypeMutationOptions(options);
-
-      return useMutation(mutationOptions);
-    }
-    
-/**
- * @summary Collection of objects from oData query.
- */
-export const apiVVersionApiVersionMeasureTypeCount = (
-    params?: ApiVVersionApiVersionMeasureTypeCountParams,
- signal?: AbortSignal
+export const apiV1MeasureType = (
+  utahUdotAtspmDataModelsMeasureType: UtahUdotAtspmDataModelsMeasureType,
+  params?: ApiV1MeasureTypeParams
 ) => {
-      
-      
-      return configRequest<UtahUdotAtspmDataModelsMeasureType[]>(
-      {url: `/api/v1/MeasureType/$count`, method: 'GET',
-        params, signal
+  return configRequest<void>({
+    url: `/api/v1/MeasureType`,
+    method: 'POST',
+    headers: {
+      'Content-Type':
+        'application/json;odata.metadata=minimal;odata.streaming=true',
     },
-      );
-    }
-  
-
-export const getApiVVersionApiVersionMeasureTypeCountQueryKey = (params?: ApiVVersionApiVersionMeasureTypeCountParams,) => {
-    return [`/api/v1/MeasureType/$count`, ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getApiVVersionApiVersionMeasureTypeCountQueryOptions = <TData = Awaited<ReturnType<typeof apiVVersionApiVersionMeasureTypeCount>>, TError = void>(params?: ApiVVersionApiVersionMeasureTypeCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionMeasureTypeCount>>, TError, TData>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getApiVVersionApiVersionMeasureTypeCountQueryKey(params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiVVersionApiVersionMeasureTypeCount>>> = ({ signal }) => apiVVersionApiVersionMeasureTypeCount(params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionMeasureTypeCount>>, TError, TData> & { queryKey: QueryKey }
+    data: utahUdotAtspmDataModelsMeasureType,
+    params,
+  })
 }
 
-export type ApiVVersionApiVersionMeasureTypeCountQueryResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionMeasureTypeCount>>>
-export type ApiVVersionApiVersionMeasureTypeCountQueryError = void
+export const getApiV1MeasureTypeMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1MeasureType>>,
+    TError,
+    {
+      data: UtahUdotAtspmDataModelsMeasureType
+      params?: ApiV1MeasureTypeParams
+    },
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof apiV1MeasureType>>,
+  TError,
+  { data: UtahUdotAtspmDataModelsMeasureType; params?: ApiV1MeasureTypeParams },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
 
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof apiV1MeasureType>>,
+    {
+      data: UtahUdotAtspmDataModelsMeasureType
+      params?: ApiV1MeasureTypeParams
+    }
+  > = (props) => {
+    const { data, params } = props ?? {}
+
+    return apiV1MeasureType(data, params)
+  }
+
+  return { mutationFn, ...mutationOptions }
+}
+
+export type ApiV1MeasureTypeMutationResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1MeasureType>>
+>
+export type ApiV1MeasureTypeMutationBody = UtahUdotAtspmDataModelsMeasureType
+export type ApiV1MeasureTypeMutationError = void
+
+/**
+ * @summary Insert object of specified type
+ */
+export const useApiV1MeasureType = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1MeasureType>>,
+    TError,
+    {
+      data: UtahUdotAtspmDataModelsMeasureType
+      params?: ApiV1MeasureTypeParams
+    },
+    TContext
+  >
+}): UseMutationResult<
+  Awaited<ReturnType<typeof apiV1MeasureType>>,
+  TError,
+  { data: UtahUdotAtspmDataModelsMeasureType; params?: ApiV1MeasureTypeParams },
+  TContext
+> => {
+  const mutationOptions = getApiV1MeasureTypeMutationOptions(options)
+
+  return useMutation(mutationOptions)
+}
 
 /**
  * @summary Collection of objects from oData query.
  */
-
-export function useApiVVersionApiVersionMeasureTypeCount<TData = Awaited<ReturnType<typeof apiVVersionApiVersionMeasureTypeCount>>, TError = void>(
- params?: ApiVVersionApiVersionMeasureTypeCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionMeasureTypeCount>>, TError, TData>, }
-
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
-
-  const queryOptions = getApiVVersionApiVersionMeasureTypeCountQueryOptions(params,options)
-
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+export const apiV1MeasureTypeCount = (
+  params?: ApiV1MeasureTypeCountParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<UtahUdotAtspmDataModelsMeasureType[]>({
+    url: `/api/v1/MeasureType/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
 }
 
-
-
-
-/**
- * @summary Delete object of specified type
- */
-export const apiVVersionApiVersionMeasureTypeKey = (
-    key: number,
- ) => {
-      
-      
-      return configRequest<void>(
-      {url: `/api/v1/MeasureType/${key}`, method: 'DELETE'
-    },
-      );
-    }
-  
-
-
-export const getApiVVersionApiVersionMeasureTypeKeyMutationOptions = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionMeasureTypeKey>>, TError,{key: number}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionMeasureTypeKey>>, TError,{key: number}, TContext> => {
-const {mutation: mutationOptions} = options ?? {};
-
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof apiVVersionApiVersionMeasureTypeKey>>, {key: number}> = (props) => {
-          const {key} = props ?? {};
-
-          return  apiVVersionApiVersionMeasureTypeKey(key,)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type ApiVVersionApiVersionMeasureTypeKeyMutationResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionMeasureTypeKey>>>
-    
-    export type ApiVVersionApiVersionMeasureTypeKeyMutationError = void
-
-    /**
- * @summary Delete object of specified type
- */
-export const useApiVVersionApiVersionMeasureTypeKey = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionMeasureTypeKey>>, TError,{key: number}, TContext>, }
-): UseMutationResult<
-        Awaited<ReturnType<typeof apiVVersionApiVersionMeasureTypeKey>>,
-        TError,
-        {key: number},
-        TContext
-      > => {
-
-      const mutationOptions = getApiVVersionApiVersionMeasureTypeKeyMutationOptions(options);
-
-      return useMutation(mutationOptions);
-    }
-    
-/**
- * @summary Insert object of specified type
- */
-export const apiVVersionApiVersionMenuItems = (
-    utahUdotAtspmDataModelsMenuItem: UtahUdotAtspmDataModelsMenuItem,
-    params?: ApiVVersionApiVersionMenuItemsParams,
- ) => {
-      
-      
-      return configRequest<void>(
-      {url: `/api/v1/MenuItems`, method: 'POST',
-      headers: {'Content-Type': 'application/json;odata.metadata=minimal;odata.streaming=true', },
-      data: utahUdotAtspmDataModelsMenuItem,
-        params
-    },
-      );
-    }
-  
-
-
-export const getApiVVersionApiVersionMenuItemsMutationOptions = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionMenuItems>>, TError,{data: UtahUdotAtspmDataModelsMenuItem;params?: ApiVVersionApiVersionMenuItemsParams}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionMenuItems>>, TError,{data: UtahUdotAtspmDataModelsMenuItem;params?: ApiVVersionApiVersionMenuItemsParams}, TContext> => {
-const {mutation: mutationOptions} = options ?? {};
-
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof apiVVersionApiVersionMenuItems>>, {data: UtahUdotAtspmDataModelsMenuItem;params?: ApiVVersionApiVersionMenuItemsParams}> = (props) => {
-          const {data,params} = props ?? {};
-
-          return  apiVVersionApiVersionMenuItems(data,params,)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type ApiVVersionApiVersionMenuItemsMutationResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionMenuItems>>>
-    export type ApiVVersionApiVersionMenuItemsMutationBody = UtahUdotAtspmDataModelsMenuItem
-    export type ApiVVersionApiVersionMenuItemsMutationError = void
-
-    /**
- * @summary Insert object of specified type
- */
-export const useApiVVersionApiVersionMenuItems = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionMenuItems>>, TError,{data: UtahUdotAtspmDataModelsMenuItem;params?: ApiVVersionApiVersionMenuItemsParams}, TContext>, }
-): UseMutationResult<
-        Awaited<ReturnType<typeof apiVVersionApiVersionMenuItems>>,
-        TError,
-        {data: UtahUdotAtspmDataModelsMenuItem;params?: ApiVVersionApiVersionMenuItemsParams},
-        TContext
-      > => {
-
-      const mutationOptions = getApiVVersionApiVersionMenuItemsMutationOptions(options);
-
-      return useMutation(mutationOptions);
-    }
-    
-/**
- * @summary Collection of objects from oData query.
- */
-export const apiVVersionApiVersionMenuItemsCount = (
-    params?: ApiVVersionApiVersionMenuItemsCountParams,
- signal?: AbortSignal
+export const getApiV1MeasureTypeCountQueryKey = (
+  params?: ApiV1MeasureTypeCountParams
 ) => {
-      
-      
-      return configRequest<UtahUdotAtspmDataModelsMenuItem[]>(
-      {url: `/api/v1/MenuItems/$count`, method: 'GET',
-        params, signal
-    },
-      );
-    }
-  
-
-export const getApiVVersionApiVersionMenuItemsCountQueryKey = (params?: ApiVVersionApiVersionMenuItemsCountParams,) => {
-    return [`/api/v1/MenuItems/$count`, ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getApiVVersionApiVersionMenuItemsCountQueryOptions = <TData = Awaited<ReturnType<typeof apiVVersionApiVersionMenuItemsCount>>, TError = void>(params?: ApiVVersionApiVersionMenuItemsCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionMenuItemsCount>>, TError, TData>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getApiVVersionApiVersionMenuItemsCountQueryKey(params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiVVersionApiVersionMenuItemsCount>>> = ({ signal }) => apiVVersionApiVersionMenuItemsCount(params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionMenuItemsCount>>, TError, TData> & { queryKey: QueryKey }
+  return [`/api/v1/MeasureType/$count`, ...(params ? [params] : [])] as const
 }
 
-export type ApiVVersionApiVersionMenuItemsCountQueryResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionMenuItemsCount>>>
-export type ApiVVersionApiVersionMenuItemsCountQueryError = void
+export const getApiV1MeasureTypeCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof apiV1MeasureTypeCount>>,
+  TError = void,
+>(
+  params?: ApiV1MeasureTypeCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1MeasureTypeCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
 
+  const queryKey =
+    queryOptions?.queryKey ?? getApiV1MeasureTypeCountQueryKey(params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof apiV1MeasureTypeCount>>
+  > = ({ signal }) => apiV1MeasureTypeCount(params, signal)
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof apiV1MeasureTypeCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type ApiV1MeasureTypeCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1MeasureTypeCount>>
+>
+export type ApiV1MeasureTypeCountQueryError = void
 
 /**
  * @summary Collection of objects from oData query.
  */
 
-export function useApiVVersionApiVersionMenuItemsCount<TData = Awaited<ReturnType<typeof apiVVersionApiVersionMenuItemsCount>>, TError = void>(
- params?: ApiVVersionApiVersionMenuItemsCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionMenuItemsCount>>, TError, TData>, }
+export function useApiV1MeasureTypeCount<
+  TData = Awaited<ReturnType<typeof apiV1MeasureTypeCount>>,
+  TError = void,
+>(
+  params?: ApiV1MeasureTypeCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1MeasureTypeCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getApiV1MeasureTypeCountQueryOptions(params, options)
 
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
 
-  const queryOptions = getApiVVersionApiVersionMenuItemsCountQueryOptions(params,options)
+  query.queryKey = queryOptions.queryKey
 
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+  return query
 }
-
-
-
 
 /**
  * @summary Delete object of specified type
  */
-export const apiVVersionApiVersionMenuItemsKey = (
-    key: number,
- ) => {
-      
-      
-      return configRequest<void>(
-      {url: `/api/v1/MenuItems/${key}`, method: 'DELETE'
-    },
-      );
-    }
-  
-
-
-export const getApiVVersionApiVersionMenuItemsKeyMutationOptions = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionMenuItemsKey>>, TError,{key: number}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionMenuItemsKey>>, TError,{key: number}, TContext> => {
-const {mutation: mutationOptions} = options ?? {};
-
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof apiVVersionApiVersionMenuItemsKey>>, {key: number}> = (props) => {
-          const {key} = props ?? {};
-
-          return  apiVVersionApiVersionMenuItemsKey(key,)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type ApiVVersionApiVersionMenuItemsKeyMutationResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionMenuItemsKey>>>
-    
-    export type ApiVVersionApiVersionMenuItemsKeyMutationError = void
-
-    /**
- * @summary Delete object of specified type
- */
-export const useApiVVersionApiVersionMenuItemsKey = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionMenuItemsKey>>, TError,{key: number}, TContext>, }
-): UseMutationResult<
-        Awaited<ReturnType<typeof apiVVersionApiVersionMenuItemsKey>>,
-        TError,
-        {key: number},
-        TContext
-      > => {
-
-      const mutationOptions = getApiVVersionApiVersionMenuItemsKeyMutationOptions(options);
-
-      return useMutation(mutationOptions);
-    }
-    
-/**
- * @summary Insert object of specified type
- */
-export const apiVVersionApiVersionProduct = (
-    utahUdotAtspmDataModelsProduct: UtahUdotAtspmDataModelsProduct,
-    params?: ApiVVersionApiVersionProductParams,
- ) => {
-      
-      
-      return configRequest<void>(
-      {url: `/api/v1/Product`, method: 'POST',
-      headers: {'Content-Type': 'application/json;odata.metadata=minimal;odata.streaming=true', },
-      data: utahUdotAtspmDataModelsProduct,
-        params
-    },
-      );
-    }
-  
-
-
-export const getApiVVersionApiVersionProductMutationOptions = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionProduct>>, TError,{data: UtahUdotAtspmDataModelsProduct;params?: ApiVVersionApiVersionProductParams}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionProduct>>, TError,{data: UtahUdotAtspmDataModelsProduct;params?: ApiVVersionApiVersionProductParams}, TContext> => {
-const {mutation: mutationOptions} = options ?? {};
-
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof apiVVersionApiVersionProduct>>, {data: UtahUdotAtspmDataModelsProduct;params?: ApiVVersionApiVersionProductParams}> = (props) => {
-          const {data,params} = props ?? {};
-
-          return  apiVVersionApiVersionProduct(data,params,)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type ApiVVersionApiVersionProductMutationResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionProduct>>>
-    export type ApiVVersionApiVersionProductMutationBody = UtahUdotAtspmDataModelsProduct
-    export type ApiVVersionApiVersionProductMutationError = void
-
-    /**
- * @summary Insert object of specified type
- */
-export const useApiVVersionApiVersionProduct = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionProduct>>, TError,{data: UtahUdotAtspmDataModelsProduct;params?: ApiVVersionApiVersionProductParams}, TContext>, }
-): UseMutationResult<
-        Awaited<ReturnType<typeof apiVVersionApiVersionProduct>>,
-        TError,
-        {data: UtahUdotAtspmDataModelsProduct;params?: ApiVVersionApiVersionProductParams},
-        TContext
-      > => {
-
-      const mutationOptions = getApiVVersionApiVersionProductMutationOptions(options);
-
-      return useMutation(mutationOptions);
-    }
-    
-/**
- * @summary Collection of objects from oData query.
- */
-export const apiVVersionApiVersionProductCount = (
-    params?: ApiVVersionApiVersionProductCountParams,
- signal?: AbortSignal
-) => {
-      
-      
-      return configRequest<UtahUdotAtspmDataModelsProduct[]>(
-      {url: `/api/v1/Product/$count`, method: 'GET',
-        params, signal
-    },
-      );
-    }
-  
-
-export const getApiVVersionApiVersionProductCountQueryKey = (params?: ApiVVersionApiVersionProductCountParams,) => {
-    return [`/api/v1/Product/$count`, ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getApiVVersionApiVersionProductCountQueryOptions = <TData = Awaited<ReturnType<typeof apiVVersionApiVersionProductCount>>, TError = void>(params?: ApiVVersionApiVersionProductCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionProductCount>>, TError, TData>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getApiVVersionApiVersionProductCountQueryKey(params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiVVersionApiVersionProductCount>>> = ({ signal }) => apiVVersionApiVersionProductCount(params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionProductCount>>, TError, TData> & { queryKey: QueryKey }
+export const apiV1MeasureTypeKey = (key: number) => {
+  return configRequest<void>({
+    url: `/api/v1/MeasureType/${key}`,
+    method: 'DELETE',
+  })
 }
 
-export type ApiVVersionApiVersionProductCountQueryResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionProductCount>>>
-export type ApiVVersionApiVersionProductCountQueryError = void
+export const getApiV1MeasureTypeKeyMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1MeasureTypeKey>>,
+    TError,
+    { key: number },
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof apiV1MeasureTypeKey>>,
+  TError,
+  { key: number },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
 
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof apiV1MeasureTypeKey>>,
+    { key: number }
+  > = (props) => {
+    const { key } = props ?? {}
+
+    return apiV1MeasureTypeKey(key)
+  }
+
+  return { mutationFn, ...mutationOptions }
+}
+
+export type ApiV1MeasureTypeKeyMutationResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1MeasureTypeKey>>
+>
+
+export type ApiV1MeasureTypeKeyMutationError = void
+
+/**
+ * @summary Delete object of specified type
+ */
+export const useApiV1MeasureTypeKey = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1MeasureTypeKey>>,
+    TError,
+    { key: number },
+    TContext
+  >
+}): UseMutationResult<
+  Awaited<ReturnType<typeof apiV1MeasureTypeKey>>,
+  TError,
+  { key: number },
+  TContext
+> => {
+  const mutationOptions = getApiV1MeasureTypeKeyMutationOptions(options)
+
+  return useMutation(mutationOptions)
+}
+
+/**
+ * @summary Insert object of specified type
+ */
+export const apiV1MenuItems = (
+  utahUdotAtspmDataModelsMenuItem: UtahUdotAtspmDataModelsMenuItem,
+  params?: ApiV1MenuItemsParams
+) => {
+  return configRequest<void>({
+    url: `/api/v1/MenuItems`,
+    method: 'POST',
+    headers: {
+      'Content-Type':
+        'application/json;odata.metadata=minimal;odata.streaming=true',
+    },
+    data: utahUdotAtspmDataModelsMenuItem,
+    params,
+  })
+}
+
+export const getApiV1MenuItemsMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1MenuItems>>,
+    TError,
+    { data: UtahUdotAtspmDataModelsMenuItem; params?: ApiV1MenuItemsParams },
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof apiV1MenuItems>>,
+  TError,
+  { data: UtahUdotAtspmDataModelsMenuItem; params?: ApiV1MenuItemsParams },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof apiV1MenuItems>>,
+    { data: UtahUdotAtspmDataModelsMenuItem; params?: ApiV1MenuItemsParams }
+  > = (props) => {
+    const { data, params } = props ?? {}
+
+    return apiV1MenuItems(data, params)
+  }
+
+  return { mutationFn, ...mutationOptions }
+}
+
+export type ApiV1MenuItemsMutationResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1MenuItems>>
+>
+export type ApiV1MenuItemsMutationBody = UtahUdotAtspmDataModelsMenuItem
+export type ApiV1MenuItemsMutationError = void
+
+/**
+ * @summary Insert object of specified type
+ */
+export const useApiV1MenuItems = <TError = void, TContext = unknown>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1MenuItems>>,
+    TError,
+    { data: UtahUdotAtspmDataModelsMenuItem; params?: ApiV1MenuItemsParams },
+    TContext
+  >
+}): UseMutationResult<
+  Awaited<ReturnType<typeof apiV1MenuItems>>,
+  TError,
+  { data: UtahUdotAtspmDataModelsMenuItem; params?: ApiV1MenuItemsParams },
+  TContext
+> => {
+  const mutationOptions = getApiV1MenuItemsMutationOptions(options)
+
+  return useMutation(mutationOptions)
+}
 
 /**
  * @summary Collection of objects from oData query.
  */
-
-export function useApiVVersionApiVersionProductCount<TData = Awaited<ReturnType<typeof apiVVersionApiVersionProductCount>>, TError = void>(
- params?: ApiVVersionApiVersionProductCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionProductCount>>, TError, TData>, }
-
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
-
-  const queryOptions = getApiVVersionApiVersionProductCountQueryOptions(params,options)
-
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+export const apiV1MenuItemsCount = (
+  params?: ApiV1MenuItemsCountParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<UtahUdotAtspmDataModelsMenuItem[]>({
+    url: `/api/v1/MenuItems/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
 }
 
+export const getApiV1MenuItemsCountQueryKey = (
+  params?: ApiV1MenuItemsCountParams
+) => {
+  return [`/api/v1/MenuItems/$count`, ...(params ? [params] : [])] as const
+}
 
+export const getApiV1MenuItemsCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof apiV1MenuItemsCount>>,
+  TError = void,
+>(
+  params?: ApiV1MenuItemsCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1MenuItemsCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
 
+  const queryKey =
+    queryOptions?.queryKey ?? getApiV1MenuItemsCountQueryKey(params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof apiV1MenuItemsCount>>
+  > = ({ signal }) => apiV1MenuItemsCount(params, signal)
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof apiV1MenuItemsCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type ApiV1MenuItemsCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1MenuItemsCount>>
+>
+export type ApiV1MenuItemsCountQueryError = void
+
+/**
+ * @summary Collection of objects from oData query.
+ */
+
+export function useApiV1MenuItemsCount<
+  TData = Awaited<ReturnType<typeof apiV1MenuItemsCount>>,
+  TError = void,
+>(
+  params?: ApiV1MenuItemsCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1MenuItemsCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getApiV1MenuItemsCountQueryOptions(params, options)
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
 
 /**
  * @summary Delete object of specified type
  */
-export const apiVVersionApiVersionProductKey = (
-    key: number,
- ) => {
-      
-      
-      return configRequest<void>(
-      {url: `/api/v1/Product/${key}`, method: 'DELETE'
-    },
-      );
-    }
-  
+export const apiV1MenuItemsKey = (key: number) => {
+  return configRequest<void>({
+    url: `/api/v1/MenuItems/${key}`,
+    method: 'DELETE',
+  })
+}
 
+export const getApiV1MenuItemsKeyMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1MenuItemsKey>>,
+    TError,
+    { key: number },
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof apiV1MenuItemsKey>>,
+  TError,
+  { key: number },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
 
-export const getApiVVersionApiVersionProductKeyMutationOptions = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionProductKey>>, TError,{key: number}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionProductKey>>, TError,{key: number}, TContext> => {
-const {mutation: mutationOptions} = options ?? {};
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof apiV1MenuItemsKey>>,
+    { key: number }
+  > = (props) => {
+    const { key } = props ?? {}
 
-      
+    return apiV1MenuItemsKey(key)
+  }
 
+  return { mutationFn, ...mutationOptions }
+}
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof apiVVersionApiVersionProductKey>>, {key: number}> = (props) => {
-          const {key} = props ?? {};
+export type ApiV1MenuItemsKeyMutationResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1MenuItemsKey>>
+>
 
-          return  apiVVersionApiVersionProductKey(key,)
-        }
+export type ApiV1MenuItemsKeyMutationError = void
 
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type ApiVVersionApiVersionProductKeyMutationResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionProductKey>>>
-    
-    export type ApiVVersionApiVersionProductKeyMutationError = void
-
-    /**
+/**
  * @summary Delete object of specified type
  */
-export const useApiVVersionApiVersionProductKey = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionProductKey>>, TError,{key: number}, TContext>, }
-): UseMutationResult<
-        Awaited<ReturnType<typeof apiVVersionApiVersionProductKey>>,
-        TError,
-        {key: number},
-        TContext
-      > => {
+export const useApiV1MenuItemsKey = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1MenuItemsKey>>,
+    TError,
+    { key: number },
+    TContext
+  >
+}): UseMutationResult<
+  Awaited<ReturnType<typeof apiV1MenuItemsKey>>,
+  TError,
+  { key: number },
+  TContext
+> => {
+  const mutationOptions = getApiV1MenuItemsKeyMutationOptions(options)
 
-      const mutationOptions = getApiVVersionApiVersionProductKeyMutationOptions(options);
+  return useMutation(mutationOptions)
+}
 
-      return useMutation(mutationOptions);
-    }
-    
+/**
+ * @summary Insert object of specified type
+ */
+export const apiV1Product = (
+  utahUdotAtspmDataModelsProduct: UtahUdotAtspmDataModelsProduct,
+  params?: ApiV1ProductParams
+) => {
+  return configRequest<void>({
+    url: `/api/v1/Product`,
+    method: 'POST',
+    headers: {
+      'Content-Type':
+        'application/json;odata.metadata=minimal;odata.streaming=true',
+    },
+    data: utahUdotAtspmDataModelsProduct,
+    params,
+  })
+}
+
+export const getApiV1ProductMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1Product>>,
+    TError,
+    { data: UtahUdotAtspmDataModelsProduct; params?: ApiV1ProductParams },
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof apiV1Product>>,
+  TError,
+  { data: UtahUdotAtspmDataModelsProduct; params?: ApiV1ProductParams },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof apiV1Product>>,
+    { data: UtahUdotAtspmDataModelsProduct; params?: ApiV1ProductParams }
+  > = (props) => {
+    const { data, params } = props ?? {}
+
+    return apiV1Product(data, params)
+  }
+
+  return { mutationFn, ...mutationOptions }
+}
+
+export type ApiV1ProductMutationResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1Product>>
+>
+export type ApiV1ProductMutationBody = UtahUdotAtspmDataModelsProduct
+export type ApiV1ProductMutationError = void
+
+/**
+ * @summary Insert object of specified type
+ */
+export const useApiV1Product = <TError = void, TContext = unknown>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1Product>>,
+    TError,
+    { data: UtahUdotAtspmDataModelsProduct; params?: ApiV1ProductParams },
+    TContext
+  >
+}): UseMutationResult<
+  Awaited<ReturnType<typeof apiV1Product>>,
+  TError,
+  { data: UtahUdotAtspmDataModelsProduct; params?: ApiV1ProductParams },
+  TContext
+> => {
+  const mutationOptions = getApiV1ProductMutationOptions(options)
+
+  return useMutation(mutationOptions)
+}
+
+/**
+ * @summary Collection of objects from oData query.
+ */
+export const apiV1ProductCount = (
+  params?: ApiV1ProductCountParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<UtahUdotAtspmDataModelsProduct[]>({
+    url: `/api/v1/Product/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getApiV1ProductCountQueryKey = (
+  params?: ApiV1ProductCountParams
+) => {
+  return [`/api/v1/Product/$count`, ...(params ? [params] : [])] as const
+}
+
+export const getApiV1ProductCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof apiV1ProductCount>>,
+  TError = void,
+>(
+  params?: ApiV1ProductCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1ProductCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ?? getApiV1ProductCountQueryKey(params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof apiV1ProductCount>>
+  > = ({ signal }) => apiV1ProductCount(params, signal)
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof apiV1ProductCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type ApiV1ProductCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1ProductCount>>
+>
+export type ApiV1ProductCountQueryError = void
+
+/**
+ * @summary Collection of objects from oData query.
+ */
+
+export function useApiV1ProductCount<
+  TData = Awaited<ReturnType<typeof apiV1ProductCount>>,
+  TError = void,
+>(
+  params?: ApiV1ProductCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1ProductCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getApiV1ProductCountQueryOptions(params, options)
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
+ * @summary Delete object of specified type
+ */
+export const apiV1ProductKey = (key: number) => {
+  return configRequest<void>({
+    url: `/api/v1/Product/${key}`,
+    method: 'DELETE',
+  })
+}
+
+export const getApiV1ProductKeyMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1ProductKey>>,
+    TError,
+    { key: number },
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof apiV1ProductKey>>,
+  TError,
+  { key: number },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof apiV1ProductKey>>,
+    { key: number }
+  > = (props) => {
+    const { key } = props ?? {}
+
+    return apiV1ProductKey(key)
+  }
+
+  return { mutationFn, ...mutationOptions }
+}
+
+export type ApiV1ProductKeyMutationResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1ProductKey>>
+>
+
+export type ApiV1ProductKeyMutationError = void
+
+/**
+ * @summary Delete object of specified type
+ */
+export const useApiV1ProductKey = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1ProductKey>>,
+    TError,
+    { key: number },
+    TContext
+  >
+}): UseMutationResult<
+  Awaited<ReturnType<typeof apiV1ProductKey>>,
+  TError,
+  { key: number },
+  TContext
+> => {
+  const mutationOptions = getApiV1ProductKeyMutationOptions(options)
+
+  return useMutation(mutationOptions)
+}
+
 /**
  * @summary Utah.Udot.Atspm.Data.Models.Location navigation property action
  */
-export const apiVVersionApiVersionRegionKeyLocations = (
-    key: number,
-    params?: ApiVVersionApiVersionRegionKeyLocationsParams,
- signal?: AbortSignal
+export const apiV1RegionKeyLocations = (
+  key: number,
+  params?: ApiV1RegionKeyLocationsParams,
+  signal?: AbortSignal
 ) => {
-      
-      
-      return configRequest<UtahUdotAtspmDataModelsLocation[]>(
-      {url: `/api/v1/Region/${key}/locations`, method: 'GET',
-        params, signal
-    },
-      );
-    }
-  
-
-export const getApiVVersionApiVersionRegionKeyLocationsQueryKey = (key: number,
-    params?: ApiVVersionApiVersionRegionKeyLocationsParams,) => {
-    return [`/api/v1/Region/${key}/locations`, ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getApiVVersionApiVersionRegionKeyLocationsQueryOptions = <TData = Awaited<ReturnType<typeof apiVVersionApiVersionRegionKeyLocations>>, TError = void>(key: number,
-    params?: ApiVVersionApiVersionRegionKeyLocationsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionRegionKeyLocations>>, TError, TData>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getApiVVersionApiVersionRegionKeyLocationsQueryKey(key,params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiVVersionApiVersionRegionKeyLocations>>> = ({ signal }) => apiVVersionApiVersionRegionKeyLocations(key,params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(key), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionRegionKeyLocations>>, TError, TData> & { queryKey: QueryKey }
+  return configRequest<UtahUdotAtspmDataModelsLocation[]>({
+    url: `/api/v1/Region/${key}/locations`,
+    method: 'GET',
+    params,
+    signal,
+  })
 }
 
-export type ApiVVersionApiVersionRegionKeyLocationsQueryResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionRegionKeyLocations>>>
-export type ApiVVersionApiVersionRegionKeyLocationsQueryError = void
+export const getApiV1RegionKeyLocationsQueryKey = (
+  key: number,
+  params?: ApiV1RegionKeyLocationsParams
+) => {
+  return [
+    `/api/v1/Region/${key}/locations`,
+    ...(params ? [params] : []),
+  ] as const
+}
 
+export const getApiV1RegionKeyLocationsQueryOptions = <
+  TData = Awaited<ReturnType<typeof apiV1RegionKeyLocations>>,
+  TError = void,
+>(
+  key: number,
+  params?: ApiV1RegionKeyLocationsParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1RegionKeyLocations>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ?? getApiV1RegionKeyLocationsQueryKey(key, params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof apiV1RegionKeyLocations>>
+  > = ({ signal }) => apiV1RegionKeyLocations(key, params, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!key,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof apiV1RegionKeyLocations>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type ApiV1RegionKeyLocationsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1RegionKeyLocations>>
+>
+export type ApiV1RegionKeyLocationsQueryError = void
 
 /**
  * @summary Utah.Udot.Atspm.Data.Models.Location navigation property action
  */
 
-export function useApiVVersionApiVersionRegionKeyLocations<TData = Awaited<ReturnType<typeof apiVVersionApiVersionRegionKeyLocations>>, TError = void>(
- key: number,
-    params?: ApiVVersionApiVersionRegionKeyLocationsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionRegionKeyLocations>>, TError, TData>, }
+export function useApiV1RegionKeyLocations<
+  TData = Awaited<ReturnType<typeof apiV1RegionKeyLocations>>,
+  TError = void,
+>(
+  key: number,
+  params?: ApiV1RegionKeyLocationsParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1RegionKeyLocations>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getApiV1RegionKeyLocationsQueryOptions(
+    key,
+    params,
+    options
+  )
 
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
 
-  const queryOptions = getApiVVersionApiVersionRegionKeyLocationsQueryOptions(key,params,options)
+  query.queryKey = queryOptions.queryKey
 
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+  return query
 }
-
-
-
 
 /**
  * @summary Utah.Udot.Atspm.Data.Models.Location navigation property action
  */
-export const apiVVersionApiVersionRegionKeyLocationsCount = (
-    key: number,
-    params?: ApiVVersionApiVersionRegionKeyLocationsCountParams,
- signal?: AbortSignal
+export const apiV1RegionKeyLocationsCount = (
+  key: number,
+  params?: ApiV1RegionKeyLocationsCountParams,
+  signal?: AbortSignal
 ) => {
-      
-      
-      return configRequest<UtahUdotAtspmDataModelsLocation[]>(
-      {url: `/api/v1/Region/${key}/locations/$count`, method: 'GET',
-        params, signal
-    },
-      );
-    }
-  
-
-export const getApiVVersionApiVersionRegionKeyLocationsCountQueryKey = (key: number,
-    params?: ApiVVersionApiVersionRegionKeyLocationsCountParams,) => {
-    return [`/api/v1/Region/${key}/locations/$count`, ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getApiVVersionApiVersionRegionKeyLocationsCountQueryOptions = <TData = Awaited<ReturnType<typeof apiVVersionApiVersionRegionKeyLocationsCount>>, TError = void>(key: number,
-    params?: ApiVVersionApiVersionRegionKeyLocationsCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionRegionKeyLocationsCount>>, TError, TData>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getApiVVersionApiVersionRegionKeyLocationsCountQueryKey(key,params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiVVersionApiVersionRegionKeyLocationsCount>>> = ({ signal }) => apiVVersionApiVersionRegionKeyLocationsCount(key,params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(key), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionRegionKeyLocationsCount>>, TError, TData> & { queryKey: QueryKey }
+  return configRequest<UtahUdotAtspmDataModelsLocation[]>({
+    url: `/api/v1/Region/${key}/locations/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
 }
 
-export type ApiVVersionApiVersionRegionKeyLocationsCountQueryResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionRegionKeyLocationsCount>>>
-export type ApiVVersionApiVersionRegionKeyLocationsCountQueryError = void
+export const getApiV1RegionKeyLocationsCountQueryKey = (
+  key: number,
+  params?: ApiV1RegionKeyLocationsCountParams
+) => {
+  return [
+    `/api/v1/Region/${key}/locations/$count`,
+    ...(params ? [params] : []),
+  ] as const
+}
 
+export const getApiV1RegionKeyLocationsCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof apiV1RegionKeyLocationsCount>>,
+  TError = void,
+>(
+  key: number,
+  params?: ApiV1RegionKeyLocationsCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1RegionKeyLocationsCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getApiV1RegionKeyLocationsCountQueryKey(key, params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof apiV1RegionKeyLocationsCount>>
+  > = ({ signal }) => apiV1RegionKeyLocationsCount(key, params, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!key,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof apiV1RegionKeyLocationsCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type ApiV1RegionKeyLocationsCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1RegionKeyLocationsCount>>
+>
+export type ApiV1RegionKeyLocationsCountQueryError = void
 
 /**
  * @summary Utah.Udot.Atspm.Data.Models.Location navigation property action
  */
 
-export function useApiVVersionApiVersionRegionKeyLocationsCount<TData = Awaited<ReturnType<typeof apiVVersionApiVersionRegionKeyLocationsCount>>, TError = void>(
- key: number,
-    params?: ApiVVersionApiVersionRegionKeyLocationsCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionRegionKeyLocationsCount>>, TError, TData>, }
+export function useApiV1RegionKeyLocationsCount<
+  TData = Awaited<ReturnType<typeof apiV1RegionKeyLocationsCount>>,
+  TError = void,
+>(
+  key: number,
+  params?: ApiV1RegionKeyLocationsCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1RegionKeyLocationsCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getApiV1RegionKeyLocationsCountQueryOptions(
+    key,
+    params,
+    options
+  )
 
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
 
-  const queryOptions = getApiVVersionApiVersionRegionKeyLocationsCountQueryOptions(key,params,options)
+  query.queryKey = queryOptions.queryKey
 
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+  return query
 }
-
-
-
 
 /**
  * @summary Collection of objects from oData query.
  */
-export const apiVVersionApiVersionRegion = (
-    params?: ApiVVersionApiVersionRegionParams,
- signal?: AbortSignal
+export const apiV1Region = (
+  params?: ApiV1RegionParams,
+  signal?: AbortSignal
 ) => {
-      
-      
-      return configRequest<UtahUdotAtspmDataModelsRegion[]>(
-      {url: `/api/v1/Region`, method: 'GET',
-        params, signal
+  return configRequest<UtahUdotAtspmDataModelsRegion[]>({
+    url: `/api/v1/Region`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getApiV1RegionQueryKey = (params?: ApiV1RegionParams) => {
+  return [`/api/v1/Region`, ...(params ? [params] : [])] as const
+}
+
+export const getApiV1RegionQueryOptions = <
+  TData = Awaited<ReturnType<typeof apiV1Region>>,
+  TError = void,
+>(
+  params?: ApiV1RegionParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1Region>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey = queryOptions?.queryKey ?? getApiV1RegionQueryKey(params)
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof apiV1Region>>> = ({
+    signal,
+  }) => apiV1Region(params, signal)
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof apiV1Region>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type ApiV1RegionQueryResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1Region>>
+>
+export type ApiV1RegionQueryError = void
+
+/**
+ * @summary Collection of objects from oData query.
+ */
+
+export function useApiV1Region<
+  TData = Awaited<ReturnType<typeof apiV1Region>>,
+  TError = void,
+>(
+  params?: ApiV1RegionParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1Region>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getApiV1RegionQueryOptions(params, options)
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+export const apiV1RegionKey = (
+  key: number,
+  utahUdotAtspmDataModelsRegion: UtahUdotAtspmDataModelsRegion,
+  params?: ApiV1RegionKeyParams
+) => {
+  return configRequest<void>({
+    url: `/api/v1/Region/${key}`,
+    method: 'PUT',
+    headers: {
+      'Content-Type':
+        'application/json;odata.metadata=minimal;odata.streaming=true',
     },
-      );
-    }
-  
-
-export const getApiVVersionApiVersionRegionQueryKey = (params?: ApiVVersionApiVersionRegionParams,) => {
-    return [`/api/v1/Region`, ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getApiVVersionApiVersionRegionQueryOptions = <TData = Awaited<ReturnType<typeof apiVVersionApiVersionRegion>>, TError = void>(params?: ApiVVersionApiVersionRegionParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionRegion>>, TError, TData>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getApiVVersionApiVersionRegionQueryKey(params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiVVersionApiVersionRegion>>> = ({ signal }) => apiVVersionApiVersionRegion(params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionRegion>>, TError, TData> & { queryKey: QueryKey }
+    data: utahUdotAtspmDataModelsRegion,
+    params,
+  })
 }
 
-export type ApiVVersionApiVersionRegionQueryResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionRegion>>>
-export type ApiVVersionApiVersionRegionQueryError = void
-
-
-/**
- * @summary Collection of objects from oData query.
- */
-
-export function useApiVVersionApiVersionRegion<TData = Awaited<ReturnType<typeof apiVVersionApiVersionRegion>>, TError = void>(
- params?: ApiVVersionApiVersionRegionParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionRegion>>, TError, TData>, }
-
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
-
-  const queryOptions = getApiVVersionApiVersionRegionQueryOptions(params,options)
-
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
-}
-
-
-
-
-export const apiVVersionApiVersionRegionKey = (
-    key: number,
-    utahUdotAtspmDataModelsRegion: UtahUdotAtspmDataModelsRegion,
-    params?: ApiVVersionApiVersionRegionKeyParams,
- ) => {
-      
-      
-      return configRequest<void>(
-      {url: `/api/v1/Region/${key}`, method: 'PUT',
-      headers: {'Content-Type': 'application/json;odata.metadata=minimal;odata.streaming=true', },
-      data: utahUdotAtspmDataModelsRegion,
-        params
+export const getApiV1RegionKeyMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1RegionKey>>,
+    TError,
+    {
+      key: number
+      data: UtahUdotAtspmDataModelsRegion
+      params?: ApiV1RegionKeyParams
     },
-      );
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof apiV1RegionKey>>,
+  TError,
+  {
+    key: number
+    data: UtahUdotAtspmDataModelsRegion
+    params?: ApiV1RegionKeyParams
+  },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof apiV1RegionKey>>,
+    {
+      key: number
+      data: UtahUdotAtspmDataModelsRegion
+      params?: ApiV1RegionKeyParams
     }
-  
+  > = (props) => {
+    const { key, data, params } = props ?? {}
 
+    return apiV1RegionKey(key, data, params)
+  }
 
-export const getApiVVersionApiVersionRegionKeyMutationOptions = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionRegionKey>>, TError,{key: number;data: UtahUdotAtspmDataModelsRegion;params?: ApiVVersionApiVersionRegionKeyParams}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionRegionKey>>, TError,{key: number;data: UtahUdotAtspmDataModelsRegion;params?: ApiVVersionApiVersionRegionKeyParams}, TContext> => {
-const {mutation: mutationOptions} = options ?? {};
+  return { mutationFn, ...mutationOptions }
+}
 
-      
+export type ApiV1RegionKeyMutationResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1RegionKey>>
+>
+export type ApiV1RegionKeyMutationBody = UtahUdotAtspmDataModelsRegion
+export type ApiV1RegionKeyMutationError = void
 
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof apiVVersionApiVersionRegionKey>>, {key: number;data: UtahUdotAtspmDataModelsRegion;params?: ApiVVersionApiVersionRegionKeyParams}> = (props) => {
-          const {key,data,params} = props ?? {};
-
-          return  apiVVersionApiVersionRegionKey(key,data,params,)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type ApiVVersionApiVersionRegionKeyMutationResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionRegionKey>>>
-    export type ApiVVersionApiVersionRegionKeyMutationBody = UtahUdotAtspmDataModelsRegion
-    export type ApiVVersionApiVersionRegionKeyMutationError = void
-
-    export const useApiVVersionApiVersionRegionKey = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionRegionKey>>, TError,{key: number;data: UtahUdotAtspmDataModelsRegion;params?: ApiVVersionApiVersionRegionKeyParams}, TContext>, }
-): UseMutationResult<
-        Awaited<ReturnType<typeof apiVVersionApiVersionRegionKey>>,
-        TError,
-        {key: number;data: UtahUdotAtspmDataModelsRegion;params?: ApiVVersionApiVersionRegionKeyParams},
-        TContext
-      > => {
-
-      const mutationOptions = getApiVVersionApiVersionRegionKeyMutationOptions(options);
-
-      return useMutation(mutationOptions);
-    }
-    
-/**
- * @summary Collection of objects from oData query.
- */
-export const apiVVersionApiVersionRegionCount = (
-    params?: ApiVVersionApiVersionRegionCountParams,
- signal?: AbortSignal
-) => {
-      
-      
-      return configRequest<UtahUdotAtspmDataModelsRegion[]>(
-      {url: `/api/v1/Region/$count`, method: 'GET',
-        params, signal
+export const useApiV1RegionKey = <TError = void, TContext = unknown>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1RegionKey>>,
+    TError,
+    {
+      key: number
+      data: UtahUdotAtspmDataModelsRegion
+      params?: ApiV1RegionKeyParams
     },
-      );
-    }
-  
+    TContext
+  >
+}): UseMutationResult<
+  Awaited<ReturnType<typeof apiV1RegionKey>>,
+  TError,
+  {
+    key: number
+    data: UtahUdotAtspmDataModelsRegion
+    params?: ApiV1RegionKeyParams
+  },
+  TContext
+> => {
+  const mutationOptions = getApiV1RegionKeyMutationOptions(options)
 
-export const getApiVVersionApiVersionRegionCountQueryKey = (params?: ApiVVersionApiVersionRegionCountParams,) => {
-    return [`/api/v1/Region/$count`, ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getApiVVersionApiVersionRegionCountQueryOptions = <TData = Awaited<ReturnType<typeof apiVVersionApiVersionRegionCount>>, TError = void>(params?: ApiVVersionApiVersionRegionCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionRegionCount>>, TError, TData>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getApiVVersionApiVersionRegionCountQueryKey(params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiVVersionApiVersionRegionCount>>> = ({ signal }) => apiVVersionApiVersionRegionCount(params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionRegionCount>>, TError, TData> & { queryKey: QueryKey }
+  return useMutation(mutationOptions)
 }
 
-export type ApiVVersionApiVersionRegionCountQueryResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionRegionCount>>>
-export type ApiVVersionApiVersionRegionCountQueryError = void
+/**
+ * @summary Collection of objects from oData query.
+ */
+export const apiV1RegionCount = (
+  params?: ApiV1RegionCountParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<UtahUdotAtspmDataModelsRegion[]>({
+    url: `/api/v1/Region/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
 
+export const getApiV1RegionCountQueryKey = (
+  params?: ApiV1RegionCountParams
+) => {
+  return [`/api/v1/Region/$count`, ...(params ? [params] : [])] as const
+}
+
+export const getApiV1RegionCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof apiV1RegionCount>>,
+  TError = void,
+>(
+  params?: ApiV1RegionCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1RegionCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey = queryOptions?.queryKey ?? getApiV1RegionCountQueryKey(params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof apiV1RegionCount>>
+  > = ({ signal }) => apiV1RegionCount(params, signal)
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof apiV1RegionCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type ApiV1RegionCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1RegionCount>>
+>
+export type ApiV1RegionCountQueryError = void
 
 /**
  * @summary Collection of objects from oData query.
  */
 
-export function useApiVVersionApiVersionRegionCount<TData = Awaited<ReturnType<typeof apiVVersionApiVersionRegionCount>>, TError = void>(
- params?: ApiVVersionApiVersionRegionCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionRegionCount>>, TError, TData>, }
+export function useApiV1RegionCount<
+  TData = Awaited<ReturnType<typeof apiV1RegionCount>>,
+  TError = void,
+>(
+  params?: ApiV1RegionCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1RegionCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getApiV1RegionCountQueryOptions(params, options)
 
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
 
-  const queryOptions = getApiVVersionApiVersionRegionCountQueryOptions(params,options)
+  query.queryKey = queryOptions.queryKey
 
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+  return query
 }
-
-
-
 
 /**
  * @summary Utah.Udot.Atspm.Data.Models.RouteLocation navigation property action
  */
-export const apiVVersionApiVersionRouteKeyRouteLocations = (
-    key: number,
-    params?: ApiVVersionApiVersionRouteKeyRouteLocationsParams,
- signal?: AbortSignal
+export const apiV1RouteKeyRouteLocations = (
+  key: number,
+  params?: ApiV1RouteKeyRouteLocationsParams,
+  signal?: AbortSignal
 ) => {
-      
-      
-      return configRequest<UtahUdotAtspmDataModelsRouteLocation[]>(
-      {url: `/api/v1/Route/${key}/routeLocations`, method: 'GET',
-        params, signal
-    },
-      );
-    }
-  
-
-export const getApiVVersionApiVersionRouteKeyRouteLocationsQueryKey = (key: number,
-    params?: ApiVVersionApiVersionRouteKeyRouteLocationsParams,) => {
-    return [`/api/v1/Route/${key}/routeLocations`, ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getApiVVersionApiVersionRouteKeyRouteLocationsQueryOptions = <TData = Awaited<ReturnType<typeof apiVVersionApiVersionRouteKeyRouteLocations>>, TError = void>(key: number,
-    params?: ApiVVersionApiVersionRouteKeyRouteLocationsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionRouteKeyRouteLocations>>, TError, TData>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getApiVVersionApiVersionRouteKeyRouteLocationsQueryKey(key,params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiVVersionApiVersionRouteKeyRouteLocations>>> = ({ signal }) => apiVVersionApiVersionRouteKeyRouteLocations(key,params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(key), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionRouteKeyRouteLocations>>, TError, TData> & { queryKey: QueryKey }
+  return configRequest<UtahUdotAtspmDataModelsRouteLocation[]>({
+    url: `/api/v1/Route/${key}/routeLocations`,
+    method: 'GET',
+    params,
+    signal,
+  })
 }
 
-export type ApiVVersionApiVersionRouteKeyRouteLocationsQueryResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionRouteKeyRouteLocations>>>
-export type ApiVVersionApiVersionRouteKeyRouteLocationsQueryError = void
+export const getApiV1RouteKeyRouteLocationsQueryKey = (
+  key: number,
+  params?: ApiV1RouteKeyRouteLocationsParams
+) => {
+  return [
+    `/api/v1/Route/${key}/routeLocations`,
+    ...(params ? [params] : []),
+  ] as const
+}
 
+export const getApiV1RouteKeyRouteLocationsQueryOptions = <
+  TData = Awaited<ReturnType<typeof apiV1RouteKeyRouteLocations>>,
+  TError = void,
+>(
+  key: number,
+  params?: ApiV1RouteKeyRouteLocationsParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1RouteKeyRouteLocations>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getApiV1RouteKeyRouteLocationsQueryKey(key, params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof apiV1RouteKeyRouteLocations>>
+  > = ({ signal }) => apiV1RouteKeyRouteLocations(key, params, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!key,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof apiV1RouteKeyRouteLocations>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type ApiV1RouteKeyRouteLocationsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1RouteKeyRouteLocations>>
+>
+export type ApiV1RouteKeyRouteLocationsQueryError = void
 
 /**
  * @summary Utah.Udot.Atspm.Data.Models.RouteLocation navigation property action
  */
 
-export function useApiVVersionApiVersionRouteKeyRouteLocations<TData = Awaited<ReturnType<typeof apiVVersionApiVersionRouteKeyRouteLocations>>, TError = void>(
- key: number,
-    params?: ApiVVersionApiVersionRouteKeyRouteLocationsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionRouteKeyRouteLocations>>, TError, TData>, }
+export function useApiV1RouteKeyRouteLocations<
+  TData = Awaited<ReturnType<typeof apiV1RouteKeyRouteLocations>>,
+  TError = void,
+>(
+  key: number,
+  params?: ApiV1RouteKeyRouteLocationsParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1RouteKeyRouteLocations>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getApiV1RouteKeyRouteLocationsQueryOptions(
+    key,
+    params,
+    options
+  )
 
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
 
-  const queryOptions = getApiVVersionApiVersionRouteKeyRouteLocationsQueryOptions(key,params,options)
+  query.queryKey = queryOptions.queryKey
 
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+  return query
 }
-
-
-
 
 /**
  * @summary Utah.Udot.Atspm.Data.Models.RouteLocation navigation property action
  */
-export const apiVVersionApiVersionRouteKeyRouteLocationsCount = (
-    key: number,
-    params?: ApiVVersionApiVersionRouteKeyRouteLocationsCountParams,
- signal?: AbortSignal
+export const apiV1RouteKeyRouteLocationsCount = (
+  key: number,
+  params?: ApiV1RouteKeyRouteLocationsCountParams,
+  signal?: AbortSignal
 ) => {
-      
-      
-      return configRequest<UtahUdotAtspmDataModelsRouteLocation[]>(
-      {url: `/api/v1/Route/${key}/routeLocations/$count`, method: 'GET',
-        params, signal
-    },
-      );
-    }
-  
-
-export const getApiVVersionApiVersionRouteKeyRouteLocationsCountQueryKey = (key: number,
-    params?: ApiVVersionApiVersionRouteKeyRouteLocationsCountParams,) => {
-    return [`/api/v1/Route/${key}/routeLocations/$count`, ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getApiVVersionApiVersionRouteKeyRouteLocationsCountQueryOptions = <TData = Awaited<ReturnType<typeof apiVVersionApiVersionRouteKeyRouteLocationsCount>>, TError = void>(key: number,
-    params?: ApiVVersionApiVersionRouteKeyRouteLocationsCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionRouteKeyRouteLocationsCount>>, TError, TData>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getApiVVersionApiVersionRouteKeyRouteLocationsCountQueryKey(key,params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiVVersionApiVersionRouteKeyRouteLocationsCount>>> = ({ signal }) => apiVVersionApiVersionRouteKeyRouteLocationsCount(key,params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(key), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionRouteKeyRouteLocationsCount>>, TError, TData> & { queryKey: QueryKey }
+  return configRequest<UtahUdotAtspmDataModelsRouteLocation[]>({
+    url: `/api/v1/Route/${key}/routeLocations/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
 }
 
-export type ApiVVersionApiVersionRouteKeyRouteLocationsCountQueryResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionRouteKeyRouteLocationsCount>>>
-export type ApiVVersionApiVersionRouteKeyRouteLocationsCountQueryError = void
+export const getApiV1RouteKeyRouteLocationsCountQueryKey = (
+  key: number,
+  params?: ApiV1RouteKeyRouteLocationsCountParams
+) => {
+  return [
+    `/api/v1/Route/${key}/routeLocations/$count`,
+    ...(params ? [params] : []),
+  ] as const
+}
 
+export const getApiV1RouteKeyRouteLocationsCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof apiV1RouteKeyRouteLocationsCount>>,
+  TError = void,
+>(
+  key: number,
+  params?: ApiV1RouteKeyRouteLocationsCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1RouteKeyRouteLocationsCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getApiV1RouteKeyRouteLocationsCountQueryKey(key, params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof apiV1RouteKeyRouteLocationsCount>>
+  > = ({ signal }) => apiV1RouteKeyRouteLocationsCount(key, params, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!key,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof apiV1RouteKeyRouteLocationsCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type ApiV1RouteKeyRouteLocationsCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1RouteKeyRouteLocationsCount>>
+>
+export type ApiV1RouteKeyRouteLocationsCountQueryError = void
 
 /**
  * @summary Utah.Udot.Atspm.Data.Models.RouteLocation navigation property action
  */
 
-export function useApiVVersionApiVersionRouteKeyRouteLocationsCount<TData = Awaited<ReturnType<typeof apiVVersionApiVersionRouteKeyRouteLocationsCount>>, TError = void>(
- key: number,
-    params?: ApiVVersionApiVersionRouteKeyRouteLocationsCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionRouteKeyRouteLocationsCount>>, TError, TData>, }
+export function useApiV1RouteKeyRouteLocationsCount<
+  TData = Awaited<ReturnType<typeof apiV1RouteKeyRouteLocationsCount>>,
+  TError = void,
+>(
+  key: number,
+  params?: ApiV1RouteKeyRouteLocationsCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1RouteKeyRouteLocationsCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getApiV1RouteKeyRouteLocationsCountQueryOptions(
+    key,
+    params,
+    options
+  )
 
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
 
-  const queryOptions = getApiVVersionApiVersionRouteKeyRouteLocationsCountQueryOptions(key,params,options)
+  query.queryKey = queryOptions.queryKey
 
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+  return query
 }
-
-
-
 
 /**
  * @summary Creates a route with its associated route locations
  */
 export const postApiV1UpsertRoute = (
-    utahUdotAtspmConfigApiModelsRouteDto: UtahUdotAtspmConfigApiModelsRouteDto,
-    params: PostApiV1UpsertRouteParams,
- ) => {
-      
-      
-      return configRequest<void>(
-      {url: `/api/v1/UpsertRoute`, method: 'POST',
-      headers: {'Content-Type': 'application/json;odata.metadata=minimal;odata.streaming=true', },
-      data: utahUdotAtspmConfigApiModelsRouteDto,
-        params
+  utahUdotAtspmConfigApiModelsRouteDto: UtahUdotAtspmConfigApiModelsRouteDto,
+  params: PostApiV1UpsertRouteParams
+) => {
+  return configRequest<void>({
+    url: `/api/v1/UpsertRoute`,
+    method: 'POST',
+    headers: {
+      'Content-Type':
+        'application/json;odata.metadata=minimal;odata.streaming=true',
     },
-      );
+    data: utahUdotAtspmConfigApiModelsRouteDto,
+    params,
+  })
+}
+
+export const getPostApiV1UpsertRouteMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postApiV1UpsertRoute>>,
+    TError,
+    {
+      data: UtahUdotAtspmConfigApiModelsRouteDto
+      params: PostApiV1UpsertRouteParams
+    },
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof postApiV1UpsertRoute>>,
+  TError,
+  {
+    data: UtahUdotAtspmConfigApiModelsRouteDto
+    params: PostApiV1UpsertRouteParams
+  },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof postApiV1UpsertRoute>>,
+    {
+      data: UtahUdotAtspmConfigApiModelsRouteDto
+      params: PostApiV1UpsertRouteParams
     }
-  
+  > = (props) => {
+    const { data, params } = props ?? {}
 
+    return postApiV1UpsertRoute(data, params)
+  }
 
-export const getPostApiV1UpsertRouteMutationOptions = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1UpsertRoute>>, TError,{data: UtahUdotAtspmConfigApiModelsRouteDto;params: PostApiV1UpsertRouteParams}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof postApiV1UpsertRoute>>, TError,{data: UtahUdotAtspmConfigApiModelsRouteDto;params: PostApiV1UpsertRouteParams}, TContext> => {
-const {mutation: mutationOptions} = options ?? {};
+  return { mutationFn, ...mutationOptions }
+}
 
-      
+export type PostApiV1UpsertRouteMutationResult = NonNullable<
+  Awaited<ReturnType<typeof postApiV1UpsertRoute>>
+>
+export type PostApiV1UpsertRouteMutationBody =
+  UtahUdotAtspmConfigApiModelsRouteDto
+export type PostApiV1UpsertRouteMutationError = void
 
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiV1UpsertRoute>>, {data: UtahUdotAtspmConfigApiModelsRouteDto;params: PostApiV1UpsertRouteParams}> = (props) => {
-          const {data,params} = props ?? {};
-
-          return  postApiV1UpsertRoute(data,params,)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type PostApiV1UpsertRouteMutationResult = NonNullable<Awaited<ReturnType<typeof postApiV1UpsertRoute>>>
-    export type PostApiV1UpsertRouteMutationBody = UtahUdotAtspmConfigApiModelsRouteDto
-    export type PostApiV1UpsertRouteMutationError = void
-
-    /**
+/**
  * @summary Creates a route with its associated route locations
  */
-export const usePostApiV1UpsertRoute = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1UpsertRoute>>, TError,{data: UtahUdotAtspmConfigApiModelsRouteDto;params: PostApiV1UpsertRouteParams}, TContext>, }
-): UseMutationResult<
-        Awaited<ReturnType<typeof postApiV1UpsertRoute>>,
-        TError,
-        {data: UtahUdotAtspmConfigApiModelsRouteDto;params: PostApiV1UpsertRouteParams},
-        TContext
-      > => {
-
-      const mutationOptions = getPostApiV1UpsertRouteMutationOptions(options);
-
-      return useMutation(mutationOptions);
-    }
-    
-export const getApiV1GetRouteViewId = (
-    id: number,
-    params: GetApiV1GetRouteViewIdParams,
- signal?: AbortSignal
-) => {
-      
-      
-      return configRequest<void>(
-      {url: `/api/v1/GetRouteView/${id}`, method: 'GET',
-        params, signal
+export const usePostApiV1UpsertRoute = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postApiV1UpsertRoute>>,
+    TError,
+    {
+      data: UtahUdotAtspmConfigApiModelsRouteDto
+      params: PostApiV1UpsertRouteParams
     },
-      );
-    }
-  
+    TContext
+  >
+}): UseMutationResult<
+  Awaited<ReturnType<typeof postApiV1UpsertRoute>>,
+  TError,
+  {
+    data: UtahUdotAtspmConfigApiModelsRouteDto
+    params: PostApiV1UpsertRouteParams
+  },
+  TContext
+> => {
+  const mutationOptions = getPostApiV1UpsertRouteMutationOptions(options)
 
-export const getGetApiV1GetRouteViewIdQueryKey = (id: number,
-    params: GetApiV1GetRouteViewIdParams,) => {
-    return [`/api/v1/GetRouteView/${id}`, ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getGetApiV1GetRouteViewIdQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1GetRouteViewId>>, TError = void>(id: number,
-    params: GetApiV1GetRouteViewIdParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getApiV1GetRouteViewId>>, TError, TData>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getGetApiV1GetRouteViewIdQueryKey(id,params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1GetRouteViewId>>> = ({ signal }) => getApiV1GetRouteViewId(id,params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1GetRouteViewId>>, TError, TData> & { queryKey: QueryKey }
+  return useMutation(mutationOptions)
 }
 
-export type GetApiV1GetRouteViewIdQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1GetRouteViewId>>>
+export const getApiV1GetRouteViewId = (
+  id: number,
+  params: GetApiV1GetRouteViewIdParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<void>({
+    url: `/api/v1/GetRouteView/${id}`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getGetApiV1GetRouteViewIdQueryKey = (
+  id: number,
+  params: GetApiV1GetRouteViewIdParams
+) => {
+  return [`/api/v1/GetRouteView/${id}`, ...(params ? [params] : [])] as const
+}
+
+export const getGetApiV1GetRouteViewIdQueryOptions = <
+  TData = Awaited<ReturnType<typeof getApiV1GetRouteViewId>>,
+  TError = void,
+>(
+  id: number,
+  params: GetApiV1GetRouteViewIdParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getApiV1GetRouteViewId>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ?? getGetApiV1GetRouteViewIdQueryKey(id, params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getApiV1GetRouteViewId>>
+  > = ({ signal }) => getApiV1GetRouteViewId(id, params, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!id,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getApiV1GetRouteViewId>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type GetApiV1GetRouteViewIdQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getApiV1GetRouteViewId>>
+>
 export type GetApiV1GetRouteViewIdQueryError = void
 
+export function useGetApiV1GetRouteViewId<
+  TData = Awaited<ReturnType<typeof getApiV1GetRouteViewId>>,
+  TError = void,
+>(
+  id: number,
+  params: GetApiV1GetRouteViewIdParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getApiV1GetRouteViewId>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetApiV1GetRouteViewIdQueryOptions(
+    id,
+    params,
+    options
+  )
 
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
 
-export function useGetApiV1GetRouteViewId<TData = Awaited<ReturnType<typeof getApiV1GetRouteViewId>>, TError = void>(
- id: number,
-    params: GetApiV1GetRouteViewIdParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getApiV1GetRouteViewId>>, TError, TData>, }
+  query.queryKey = queryOptions.queryKey
 
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
-
-  const queryOptions = getGetApiV1GetRouteViewIdQueryOptions(id,params,options)
-
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+  return query
 }
-
-
-
 
 /**
  * @summary Insert object of specified type
  */
-export const apiVVersionApiVersionRoute = (
-    utahUdotAtspmDataModelsRoute: UtahUdotAtspmDataModelsRoute,
-    params?: ApiVVersionApiVersionRouteParams,
- ) => {
-      
-      
-      return configRequest<void>(
-      {url: `/api/v1/Route`, method: 'POST',
-      headers: {'Content-Type': 'application/json;odata.metadata=minimal;odata.streaming=true', },
-      data: utahUdotAtspmDataModelsRoute,
-        params
+export const apiV1Route = (
+  utahUdotAtspmDataModelsRoute: UtahUdotAtspmDataModelsRoute,
+  params?: ApiV1RouteParams
+) => {
+  return configRequest<void>({
+    url: `/api/v1/Route`,
+    method: 'POST',
+    headers: {
+      'Content-Type':
+        'application/json;odata.metadata=minimal;odata.streaming=true',
     },
-      );
-    }
-  
+    data: utahUdotAtspmDataModelsRoute,
+    params,
+  })
+}
 
+export const getApiV1RouteMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1Route>>,
+    TError,
+    { data: UtahUdotAtspmDataModelsRoute; params?: ApiV1RouteParams },
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof apiV1Route>>,
+  TError,
+  { data: UtahUdotAtspmDataModelsRoute; params?: ApiV1RouteParams },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
 
-export const getApiVVersionApiVersionRouteMutationOptions = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionRoute>>, TError,{data: UtahUdotAtspmDataModelsRoute;params?: ApiVVersionApiVersionRouteParams}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionRoute>>, TError,{data: UtahUdotAtspmDataModelsRoute;params?: ApiVVersionApiVersionRouteParams}, TContext> => {
-const {mutation: mutationOptions} = options ?? {};
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof apiV1Route>>,
+    { data: UtahUdotAtspmDataModelsRoute; params?: ApiV1RouteParams }
+  > = (props) => {
+    const { data, params } = props ?? {}
 
-      
+    return apiV1Route(data, params)
+  }
 
+  return { mutationFn, ...mutationOptions }
+}
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof apiVVersionApiVersionRoute>>, {data: UtahUdotAtspmDataModelsRoute;params?: ApiVVersionApiVersionRouteParams}> = (props) => {
-          const {data,params} = props ?? {};
+export type ApiV1RouteMutationResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1Route>>
+>
+export type ApiV1RouteMutationBody = UtahUdotAtspmDataModelsRoute
+export type ApiV1RouteMutationError = void
 
-          return  apiVVersionApiVersionRoute(data,params,)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type ApiVVersionApiVersionRouteMutationResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionRoute>>>
-    export type ApiVVersionApiVersionRouteMutationBody = UtahUdotAtspmDataModelsRoute
-    export type ApiVVersionApiVersionRouteMutationError = void
-
-    /**
+/**
  * @summary Insert object of specified type
  */
-export const useApiVVersionApiVersionRoute = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionRoute>>, TError,{data: UtahUdotAtspmDataModelsRoute;params?: ApiVVersionApiVersionRouteParams}, TContext>, }
-): UseMutationResult<
-        Awaited<ReturnType<typeof apiVVersionApiVersionRoute>>,
-        TError,
-        {data: UtahUdotAtspmDataModelsRoute;params?: ApiVVersionApiVersionRouteParams},
-        TContext
-      > => {
+export const useApiV1Route = <TError = void, TContext = unknown>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1Route>>,
+    TError,
+    { data: UtahUdotAtspmDataModelsRoute; params?: ApiV1RouteParams },
+    TContext
+  >
+}): UseMutationResult<
+  Awaited<ReturnType<typeof apiV1Route>>,
+  TError,
+  { data: UtahUdotAtspmDataModelsRoute; params?: ApiV1RouteParams },
+  TContext
+> => {
+  const mutationOptions = getApiV1RouteMutationOptions(options)
 
-      const mutationOptions = getApiVVersionApiVersionRouteMutationOptions(options);
-
-      return useMutation(mutationOptions);
-    }
-    
-/**
- * @summary Collection of objects from oData query.
- */
-export const apiVVersionApiVersionRouteCount = (
-    params?: ApiVVersionApiVersionRouteCountParams,
- signal?: AbortSignal
-) => {
-      
-      
-      return configRequest<UtahUdotAtspmDataModelsRoute[]>(
-      {url: `/api/v1/Route/$count`, method: 'GET',
-        params, signal
-    },
-      );
-    }
-  
-
-export const getApiVVersionApiVersionRouteCountQueryKey = (params?: ApiVVersionApiVersionRouteCountParams,) => {
-    return [`/api/v1/Route/$count`, ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getApiVVersionApiVersionRouteCountQueryOptions = <TData = Awaited<ReturnType<typeof apiVVersionApiVersionRouteCount>>, TError = void>(params?: ApiVVersionApiVersionRouteCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionRouteCount>>, TError, TData>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getApiVVersionApiVersionRouteCountQueryKey(params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiVVersionApiVersionRouteCount>>> = ({ signal }) => apiVVersionApiVersionRouteCount(params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionRouteCount>>, TError, TData> & { queryKey: QueryKey }
+  return useMutation(mutationOptions)
 }
-
-export type ApiVVersionApiVersionRouteCountQueryResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionRouteCount>>>
-export type ApiVVersionApiVersionRouteCountQueryError = void
-
 
 /**
  * @summary Collection of objects from oData query.
  */
-
-export function useApiVVersionApiVersionRouteCount<TData = Awaited<ReturnType<typeof apiVVersionApiVersionRouteCount>>, TError = void>(
- params?: ApiVVersionApiVersionRouteCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionRouteCount>>, TError, TData>, }
-
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
-
-  const queryOptions = getApiVVersionApiVersionRouteCountQueryOptions(params,options)
-
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+export const apiV1RouteCount = (
+  params?: ApiV1RouteCountParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<UtahUdotAtspmDataModelsRoute[]>({
+    url: `/api/v1/Route/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
 }
 
+export const getApiV1RouteCountQueryKey = (params?: ApiV1RouteCountParams) => {
+  return [`/api/v1/Route/$count`, ...(params ? [params] : [])] as const
+}
 
+export const getApiV1RouteCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof apiV1RouteCount>>,
+  TError = void,
+>(
+  params?: ApiV1RouteCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1RouteCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
 
+  const queryKey = queryOptions?.queryKey ?? getApiV1RouteCountQueryKey(params)
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof apiV1RouteCount>>> = ({
+    signal,
+  }) => apiV1RouteCount(params, signal)
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof apiV1RouteCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type ApiV1RouteCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1RouteCount>>
+>
+export type ApiV1RouteCountQueryError = void
+
+/**
+ * @summary Collection of objects from oData query.
+ */
+
+export function useApiV1RouteCount<
+  TData = Awaited<ReturnType<typeof apiV1RouteCount>>,
+  TError = void,
+>(
+  params?: ApiV1RouteCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1RouteCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getApiV1RouteCountQueryOptions(params, options)
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
 
 /**
  * @summary Delete object of specified type
  */
-export const apiVVersionApiVersionRouteKey = (
-    key: number,
- ) => {
-      
-      
-      return configRequest<void>(
-      {url: `/api/v1/Route/${key}`, method: 'DELETE'
-    },
-      );
-    }
-  
+export const apiV1RouteKey = (key: number) => {
+  return configRequest<void>({ url: `/api/v1/Route/${key}`, method: 'DELETE' })
+}
 
+export const getApiV1RouteKeyMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1RouteKey>>,
+    TError,
+    { key: number },
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof apiV1RouteKey>>,
+  TError,
+  { key: number },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
 
-export const getApiVVersionApiVersionRouteKeyMutationOptions = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionRouteKey>>, TError,{key: number}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionRouteKey>>, TError,{key: number}, TContext> => {
-const {mutation: mutationOptions} = options ?? {};
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof apiV1RouteKey>>,
+    { key: number }
+  > = (props) => {
+    const { key } = props ?? {}
 
-      
+    return apiV1RouteKey(key)
+  }
 
+  return { mutationFn, ...mutationOptions }
+}
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof apiVVersionApiVersionRouteKey>>, {key: number}> = (props) => {
-          const {key} = props ?? {};
+export type ApiV1RouteKeyMutationResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1RouteKey>>
+>
 
-          return  apiVVersionApiVersionRouteKey(key,)
-        }
+export type ApiV1RouteKeyMutationError = void
 
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type ApiVVersionApiVersionRouteKeyMutationResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionRouteKey>>>
-    
-    export type ApiVVersionApiVersionRouteKeyMutationError = void
-
-    /**
+/**
  * @summary Delete object of specified type
  */
-export const useApiVVersionApiVersionRouteKey = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionRouteKey>>, TError,{key: number}, TContext>, }
-): UseMutationResult<
-        Awaited<ReturnType<typeof apiVVersionApiVersionRouteKey>>,
-        TError,
-        {key: number},
-        TContext
-      > => {
+export const useApiV1RouteKey = <TError = void, TContext = unknown>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1RouteKey>>,
+    TError,
+    { key: number },
+    TContext
+  >
+}): UseMutationResult<
+  Awaited<ReturnType<typeof apiV1RouteKey>>,
+  TError,
+  { key: number },
+  TContext
+> => {
+  const mutationOptions = getApiV1RouteKeyMutationOptions(options)
 
-      const mutationOptions = getApiVVersionApiVersionRouteKeyMutationOptions(options);
-
-      return useMutation(mutationOptions);
-    }
-    
-/**
- * @summary Utah.Udot.Atspm.Data.Models.RouteLocation navigation property action
- */
-export const apiVVersionApiVersionRouteDistanceKeyPreviousLocations = (
-    key: number,
-    params?: ApiVVersionApiVersionRouteDistanceKeyPreviousLocationsParams,
- signal?: AbortSignal
-) => {
-      
-      
-      return configRequest<UtahUdotAtspmDataModelsRouteLocation[]>(
-      {url: `/api/v1/RouteDistance/${key}/previousLocations`, method: 'GET',
-        params, signal
-    },
-      );
-    }
-  
-
-export const getApiVVersionApiVersionRouteDistanceKeyPreviousLocationsQueryKey = (key: number,
-    params?: ApiVVersionApiVersionRouteDistanceKeyPreviousLocationsParams,) => {
-    return [`/api/v1/RouteDistance/${key}/previousLocations`, ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getApiVVersionApiVersionRouteDistanceKeyPreviousLocationsQueryOptions = <TData = Awaited<ReturnType<typeof apiVVersionApiVersionRouteDistanceKeyPreviousLocations>>, TError = void>(key: number,
-    params?: ApiVVersionApiVersionRouteDistanceKeyPreviousLocationsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionRouteDistanceKeyPreviousLocations>>, TError, TData>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getApiVVersionApiVersionRouteDistanceKeyPreviousLocationsQueryKey(key,params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiVVersionApiVersionRouteDistanceKeyPreviousLocations>>> = ({ signal }) => apiVVersionApiVersionRouteDistanceKeyPreviousLocations(key,params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(key), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionRouteDistanceKeyPreviousLocations>>, TError, TData> & { queryKey: QueryKey }
+  return useMutation(mutationOptions)
 }
-
-export type ApiVVersionApiVersionRouteDistanceKeyPreviousLocationsQueryResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionRouteDistanceKeyPreviousLocations>>>
-export type ApiVVersionApiVersionRouteDistanceKeyPreviousLocationsQueryError = void
-
 
 /**
  * @summary Utah.Udot.Atspm.Data.Models.RouteLocation navigation property action
  */
-
-export function useApiVVersionApiVersionRouteDistanceKeyPreviousLocations<TData = Awaited<ReturnType<typeof apiVVersionApiVersionRouteDistanceKeyPreviousLocations>>, TError = void>(
- key: number,
-    params?: ApiVVersionApiVersionRouteDistanceKeyPreviousLocationsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionRouteDistanceKeyPreviousLocations>>, TError, TData>, }
-
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
-
-  const queryOptions = getApiVVersionApiVersionRouteDistanceKeyPreviousLocationsQueryOptions(key,params,options)
-
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+export const apiV1RouteDistanceKeyPreviousLocations = (
+  key: number,
+  params?: ApiV1RouteDistanceKeyPreviousLocationsParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<UtahUdotAtspmDataModelsRouteLocation[]>({
+    url: `/api/v1/RouteDistance/${key}/previousLocations`,
+    method: 'GET',
+    params,
+    signal,
+  })
 }
 
-
-
-
-/**
- * @summary Utah.Udot.Atspm.Data.Models.RouteLocation navigation property action
- */
-export const apiVVersionApiVersionRouteDistanceKeyPreviousLocationsCount = (
-    key: number,
-    params?: ApiVVersionApiVersionRouteDistanceKeyPreviousLocationsCountParams,
- signal?: AbortSignal
+export const getApiV1RouteDistanceKeyPreviousLocationsQueryKey = (
+  key: number,
+  params?: ApiV1RouteDistanceKeyPreviousLocationsParams
 ) => {
-      
-      
-      return configRequest<UtahUdotAtspmDataModelsRouteLocation[]>(
-      {url: `/api/v1/RouteDistance/${key}/previousLocations/$count`, method: 'GET',
-        params, signal
-    },
-      );
-    }
-  
-
-export const getApiVVersionApiVersionRouteDistanceKeyPreviousLocationsCountQueryKey = (key: number,
-    params?: ApiVVersionApiVersionRouteDistanceKeyPreviousLocationsCountParams,) => {
-    return [`/api/v1/RouteDistance/${key}/previousLocations/$count`, ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getApiVVersionApiVersionRouteDistanceKeyPreviousLocationsCountQueryOptions = <TData = Awaited<ReturnType<typeof apiVVersionApiVersionRouteDistanceKeyPreviousLocationsCount>>, TError = void>(key: number,
-    params?: ApiVVersionApiVersionRouteDistanceKeyPreviousLocationsCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionRouteDistanceKeyPreviousLocationsCount>>, TError, TData>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getApiVVersionApiVersionRouteDistanceKeyPreviousLocationsCountQueryKey(key,params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiVVersionApiVersionRouteDistanceKeyPreviousLocationsCount>>> = ({ signal }) => apiVVersionApiVersionRouteDistanceKeyPreviousLocationsCount(key,params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(key), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionRouteDistanceKeyPreviousLocationsCount>>, TError, TData> & { queryKey: QueryKey }
+  return [
+    `/api/v1/RouteDistance/${key}/previousLocations`,
+    ...(params ? [params] : []),
+  ] as const
 }
 
-export type ApiVVersionApiVersionRouteDistanceKeyPreviousLocationsCountQueryResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionRouteDistanceKeyPreviousLocationsCount>>>
-export type ApiVVersionApiVersionRouteDistanceKeyPreviousLocationsCountQueryError = void
+export const getApiV1RouteDistanceKeyPreviousLocationsQueryOptions = <
+  TData = Awaited<ReturnType<typeof apiV1RouteDistanceKeyPreviousLocations>>,
+  TError = void,
+>(
+  key: number,
+  params?: ApiV1RouteDistanceKeyPreviousLocationsParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1RouteDistanceKeyPreviousLocations>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
 
+  const queryKey =
+    queryOptions?.queryKey ??
+    getApiV1RouteDistanceKeyPreviousLocationsQueryKey(key, params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof apiV1RouteDistanceKeyPreviousLocations>>
+  > = ({ signal }) =>
+    apiV1RouteDistanceKeyPreviousLocations(key, params, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!key,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof apiV1RouteDistanceKeyPreviousLocations>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type ApiV1RouteDistanceKeyPreviousLocationsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1RouteDistanceKeyPreviousLocations>>
+>
+export type ApiV1RouteDistanceKeyPreviousLocationsQueryError = void
 
 /**
  * @summary Utah.Udot.Atspm.Data.Models.RouteLocation navigation property action
  */
 
-export function useApiVVersionApiVersionRouteDistanceKeyPreviousLocationsCount<TData = Awaited<ReturnType<typeof apiVVersionApiVersionRouteDistanceKeyPreviousLocationsCount>>, TError = void>(
- key: number,
-    params?: ApiVVersionApiVersionRouteDistanceKeyPreviousLocationsCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionRouteDistanceKeyPreviousLocationsCount>>, TError, TData>, }
+export function useApiV1RouteDistanceKeyPreviousLocations<
+  TData = Awaited<ReturnType<typeof apiV1RouteDistanceKeyPreviousLocations>>,
+  TError = void,
+>(
+  key: number,
+  params?: ApiV1RouteDistanceKeyPreviousLocationsParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1RouteDistanceKeyPreviousLocations>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getApiV1RouteDistanceKeyPreviousLocationsQueryOptions(
+    key,
+    params,
+    options
+  )
 
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
 
-  const queryOptions = getApiVVersionApiVersionRouteDistanceKeyPreviousLocationsCountQueryOptions(key,params,options)
+  query.queryKey = queryOptions.queryKey
 
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+  return query
 }
-
-
-
 
 /**
  * @summary Utah.Udot.Atspm.Data.Models.RouteLocation navigation property action
  */
-export const apiVVersionApiVersionRouteDistanceKeyNextLocations = (
-    key: number,
-    params?: ApiVVersionApiVersionRouteDistanceKeyNextLocationsParams,
- signal?: AbortSignal
+export const apiV1RouteDistanceKeyPreviousLocationsCount = (
+  key: number,
+  params?: ApiV1RouteDistanceKeyPreviousLocationsCountParams,
+  signal?: AbortSignal
 ) => {
-      
-      
-      return configRequest<UtahUdotAtspmDataModelsRouteLocation[]>(
-      {url: `/api/v1/RouteDistance/${key}/nextLocations`, method: 'GET',
-        params, signal
-    },
-      );
-    }
-  
-
-export const getApiVVersionApiVersionRouteDistanceKeyNextLocationsQueryKey = (key: number,
-    params?: ApiVVersionApiVersionRouteDistanceKeyNextLocationsParams,) => {
-    return [`/api/v1/RouteDistance/${key}/nextLocations`, ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getApiVVersionApiVersionRouteDistanceKeyNextLocationsQueryOptions = <TData = Awaited<ReturnType<typeof apiVVersionApiVersionRouteDistanceKeyNextLocations>>, TError = void>(key: number,
-    params?: ApiVVersionApiVersionRouteDistanceKeyNextLocationsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionRouteDistanceKeyNextLocations>>, TError, TData>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getApiVVersionApiVersionRouteDistanceKeyNextLocationsQueryKey(key,params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiVVersionApiVersionRouteDistanceKeyNextLocations>>> = ({ signal }) => apiVVersionApiVersionRouteDistanceKeyNextLocations(key,params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(key), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionRouteDistanceKeyNextLocations>>, TError, TData> & { queryKey: QueryKey }
+  return configRequest<UtahUdotAtspmDataModelsRouteLocation[]>({
+    url: `/api/v1/RouteDistance/${key}/previousLocations/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
 }
 
-export type ApiVVersionApiVersionRouteDistanceKeyNextLocationsQueryResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionRouteDistanceKeyNextLocations>>>
-export type ApiVVersionApiVersionRouteDistanceKeyNextLocationsQueryError = void
-
-
-/**
- * @summary Utah.Udot.Atspm.Data.Models.RouteLocation navigation property action
- */
-
-export function useApiVVersionApiVersionRouteDistanceKeyNextLocations<TData = Awaited<ReturnType<typeof apiVVersionApiVersionRouteDistanceKeyNextLocations>>, TError = void>(
- key: number,
-    params?: ApiVVersionApiVersionRouteDistanceKeyNextLocationsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionRouteDistanceKeyNextLocations>>, TError, TData>, }
-
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
-
-  const queryOptions = getApiVVersionApiVersionRouteDistanceKeyNextLocationsQueryOptions(key,params,options)
-
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+export const getApiV1RouteDistanceKeyPreviousLocationsCountQueryKey = (
+  key: number,
+  params?: ApiV1RouteDistanceKeyPreviousLocationsCountParams
+) => {
+  return [
+    `/api/v1/RouteDistance/${key}/previousLocations/$count`,
+    ...(params ? [params] : []),
+  ] as const
 }
 
-
-
-
-/**
- * @summary Utah.Udot.Atspm.Data.Models.RouteLocation navigation property action
- */
-export const apiVVersionApiVersionRouteDistanceKeyNextLocationsCount = (
-    key: number,
-    params?: ApiVVersionApiVersionRouteDistanceKeyNextLocationsCountParams,
- signal?: AbortSignal
+export const getApiV1RouteDistanceKeyPreviousLocationsCountQueryOptions = <
+  TData = Awaited<
+    ReturnType<typeof apiV1RouteDistanceKeyPreviousLocationsCount>
+  >,
+  TError = void,
+>(
+  key: number,
+  params?: ApiV1RouteDistanceKeyPreviousLocationsCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1RouteDistanceKeyPreviousLocationsCount>>,
+      TError,
+      TData
+    >
+  }
 ) => {
-      
-      
-      return configRequest<UtahUdotAtspmDataModelsRouteLocation[]>(
-      {url: `/api/v1/RouteDistance/${key}/nextLocations/$count`, method: 'GET',
-        params, signal
-    },
-      );
-    }
-  
+  const { query: queryOptions } = options ?? {}
 
-export const getApiVVersionApiVersionRouteDistanceKeyNextLocationsCountQueryKey = (key: number,
-    params?: ApiVVersionApiVersionRouteDistanceKeyNextLocationsCountParams,) => {
-    return [`/api/v1/RouteDistance/${key}/nextLocations/$count`, ...(params ? [params]: [])] as const;
-    }
+  const queryKey =
+    queryOptions?.queryKey ??
+    getApiV1RouteDistanceKeyPreviousLocationsCountQueryKey(key, params)
 
-    
-export const getApiVVersionApiVersionRouteDistanceKeyNextLocationsCountQueryOptions = <TData = Awaited<ReturnType<typeof apiVVersionApiVersionRouteDistanceKeyNextLocationsCount>>, TError = void>(key: number,
-    params?: ApiVVersionApiVersionRouteDistanceKeyNextLocationsCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionRouteDistanceKeyNextLocationsCount>>, TError, TData>, }
-) => {
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof apiV1RouteDistanceKeyPreviousLocationsCount>>
+  > = ({ signal }) =>
+    apiV1RouteDistanceKeyPreviousLocationsCount(key, params, signal)
 
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getApiVVersionApiVersionRouteDistanceKeyNextLocationsCountQueryKey(key,params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiVVersionApiVersionRouteDistanceKeyNextLocationsCount>>> = ({ signal }) => apiVVersionApiVersionRouteDistanceKeyNextLocationsCount(key,params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(key), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionRouteDistanceKeyNextLocationsCount>>, TError, TData> & { queryKey: QueryKey }
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!key,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof apiV1RouteDistanceKeyPreviousLocationsCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
 }
 
-export type ApiVVersionApiVersionRouteDistanceKeyNextLocationsCountQueryResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionRouteDistanceKeyNextLocationsCount>>>
-export type ApiVVersionApiVersionRouteDistanceKeyNextLocationsCountQueryError = void
-
+export type ApiV1RouteDistanceKeyPreviousLocationsCountQueryResult =
+  NonNullable<
+    Awaited<ReturnType<typeof apiV1RouteDistanceKeyPreviousLocationsCount>>
+  >
+export type ApiV1RouteDistanceKeyPreviousLocationsCountQueryError = void
 
 /**
  * @summary Utah.Udot.Atspm.Data.Models.RouteLocation navigation property action
  */
 
-export function useApiVVersionApiVersionRouteDistanceKeyNextLocationsCount<TData = Awaited<ReturnType<typeof apiVVersionApiVersionRouteDistanceKeyNextLocationsCount>>, TError = void>(
- key: number,
-    params?: ApiVVersionApiVersionRouteDistanceKeyNextLocationsCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionRouteDistanceKeyNextLocationsCount>>, TError, TData>, }
+export function useApiV1RouteDistanceKeyPreviousLocationsCount<
+  TData = Awaited<
+    ReturnType<typeof apiV1RouteDistanceKeyPreviousLocationsCount>
+  >,
+  TError = void,
+>(
+  key: number,
+  params?: ApiV1RouteDistanceKeyPreviousLocationsCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1RouteDistanceKeyPreviousLocationsCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions =
+    getApiV1RouteDistanceKeyPreviousLocationsCountQueryOptions(
+      key,
+      params,
+      options
+    )
 
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
 
-  const queryOptions = getApiVVersionApiVersionRouteDistanceKeyNextLocationsCountQueryOptions(key,params,options)
+  query.queryKey = queryOptions.queryKey
 
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+  return query
 }
 
+/**
+ * @summary Utah.Udot.Atspm.Data.Models.RouteLocation navigation property action
+ */
+export const apiV1RouteDistanceKeyNextLocations = (
+  key: number,
+  params?: ApiV1RouteDistanceKeyNextLocationsParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<UtahUdotAtspmDataModelsRouteLocation[]>({
+    url: `/api/v1/RouteDistance/${key}/nextLocations`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
 
+export const getApiV1RouteDistanceKeyNextLocationsQueryKey = (
+  key: number,
+  params?: ApiV1RouteDistanceKeyNextLocationsParams
+) => {
+  return [
+    `/api/v1/RouteDistance/${key}/nextLocations`,
+    ...(params ? [params] : []),
+  ] as const
+}
 
+export const getApiV1RouteDistanceKeyNextLocationsQueryOptions = <
+  TData = Awaited<ReturnType<typeof apiV1RouteDistanceKeyNextLocations>>,
+  TError = void,
+>(
+  key: number,
+  params?: ApiV1RouteDistanceKeyNextLocationsParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1RouteDistanceKeyNextLocations>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getApiV1RouteDistanceKeyNextLocationsQueryKey(key, params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof apiV1RouteDistanceKeyNextLocations>>
+  > = ({ signal }) => apiV1RouteDistanceKeyNextLocations(key, params, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!key,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof apiV1RouteDistanceKeyNextLocations>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type ApiV1RouteDistanceKeyNextLocationsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1RouteDistanceKeyNextLocations>>
+>
+export type ApiV1RouteDistanceKeyNextLocationsQueryError = void
+
+/**
+ * @summary Utah.Udot.Atspm.Data.Models.RouteLocation navigation property action
+ */
+
+export function useApiV1RouteDistanceKeyNextLocations<
+  TData = Awaited<ReturnType<typeof apiV1RouteDistanceKeyNextLocations>>,
+  TError = void,
+>(
+  key: number,
+  params?: ApiV1RouteDistanceKeyNextLocationsParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1RouteDistanceKeyNextLocations>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getApiV1RouteDistanceKeyNextLocationsQueryOptions(
+    key,
+    params,
+    options
+  )
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
+ * @summary Utah.Udot.Atspm.Data.Models.RouteLocation navigation property action
+ */
+export const apiV1RouteDistanceKeyNextLocationsCount = (
+  key: number,
+  params?: ApiV1RouteDistanceKeyNextLocationsCountParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<UtahUdotAtspmDataModelsRouteLocation[]>({
+    url: `/api/v1/RouteDistance/${key}/nextLocations/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getApiV1RouteDistanceKeyNextLocationsCountQueryKey = (
+  key: number,
+  params?: ApiV1RouteDistanceKeyNextLocationsCountParams
+) => {
+  return [
+    `/api/v1/RouteDistance/${key}/nextLocations/$count`,
+    ...(params ? [params] : []),
+  ] as const
+}
+
+export const getApiV1RouteDistanceKeyNextLocationsCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof apiV1RouteDistanceKeyNextLocationsCount>>,
+  TError = void,
+>(
+  key: number,
+  params?: ApiV1RouteDistanceKeyNextLocationsCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1RouteDistanceKeyNextLocationsCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getApiV1RouteDistanceKeyNextLocationsCountQueryKey(key, params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof apiV1RouteDistanceKeyNextLocationsCount>>
+  > = ({ signal }) =>
+    apiV1RouteDistanceKeyNextLocationsCount(key, params, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!key,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof apiV1RouteDistanceKeyNextLocationsCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type ApiV1RouteDistanceKeyNextLocationsCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1RouteDistanceKeyNextLocationsCount>>
+>
+export type ApiV1RouteDistanceKeyNextLocationsCountQueryError = void
+
+/**
+ * @summary Utah.Udot.Atspm.Data.Models.RouteLocation navigation property action
+ */
+
+export function useApiV1RouteDistanceKeyNextLocationsCount<
+  TData = Awaited<ReturnType<typeof apiV1RouteDistanceKeyNextLocationsCount>>,
+  TError = void,
+>(
+  key: number,
+  params?: ApiV1RouteDistanceKeyNextLocationsCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1RouteDistanceKeyNextLocationsCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getApiV1RouteDistanceKeyNextLocationsCountQueryOptions(
+    key,
+    params,
+    options
+  )
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
 
 /**
  * @summary Gets the Utah.Udot.Atspm.Data.Models.RouteDistance that contains locationA and locationB
  */
-export const apiVVersionApiVersionRouteDistanceGetRouteDistanceByLocationIdentifiersLocationALocationALocationBLocationB = (
+export const apiV1RouteDistanceGetRouteDistanceByLocationIdentifiersLocationALocationALocationBLocationB =
+  (
     locationA: string,
     locationB: string,
-    params?: ApiVVersionApiVersionRouteDistanceGetRouteDistanceByLocationIdentifiersLocationALocationALocationBLocationBParams,
- signal?: AbortSignal
-) => {
-      
-      
-      return configRequest<UtahUdotAtspmDataModelsRouteDistance | void>(
-      {url: `/api/v1/RouteDistance/GetRouteDistanceByLocationIdentifiers(locationA=${locationA},locationB=${locationB})`, method: 'GET',
-        params, signal
-    },
-      );
-    }
-  
+    params?: ApiV1RouteDistanceGetRouteDistanceByLocationIdentifiersLocationALocationALocationBLocationBParams,
+    signal?: AbortSignal
+  ) => {
+    return configRequest<UtahUdotAtspmDataModelsRouteDistance | void>({
+      url: `/api/v1/RouteDistance/GetRouteDistanceByLocationIdentifiers(locationA=${locationA},locationB=${locationB})`,
+      method: 'GET',
+      params,
+      signal,
+    })
+  }
 
-export const getApiVVersionApiVersionRouteDistanceGetRouteDistanceByLocationIdentifiersLocationALocationALocationBLocationBQueryKey = (locationA: string,
+export const getApiV1RouteDistanceGetRouteDistanceByLocationIdentifiersLocationALocationALocationBLocationBQueryKey =
+  (
+    locationA: string,
     locationB: string,
-    params?: ApiVVersionApiVersionRouteDistanceGetRouteDistanceByLocationIdentifiersLocationALocationALocationBLocationBParams,) => {
-    return [`/api/v1/RouteDistance/GetRouteDistanceByLocationIdentifiers(locationA=${locationA},locationB=${locationB})`, ...(params ? [params]: [])] as const;
-    }
+    params?: ApiV1RouteDistanceGetRouteDistanceByLocationIdentifiersLocationALocationALocationBLocationBParams
+  ) => {
+    return [
+      `/api/v1/RouteDistance/GetRouteDistanceByLocationIdentifiers(locationA=${locationA},locationB=${locationB})`,
+      ...(params ? [params] : []),
+    ] as const
+  }
 
-    
-export const getApiVVersionApiVersionRouteDistanceGetRouteDistanceByLocationIdentifiersLocationALocationALocationBLocationBQueryOptions = <TData = Awaited<ReturnType<typeof apiVVersionApiVersionRouteDistanceGetRouteDistanceByLocationIdentifiersLocationALocationALocationBLocationB>>, TError = void>(locationA: string,
+export const getApiV1RouteDistanceGetRouteDistanceByLocationIdentifiersLocationALocationALocationBLocationBQueryOptions =
+  <
+    TData = Awaited<
+      ReturnType<
+        typeof apiV1RouteDistanceGetRouteDistanceByLocationIdentifiersLocationALocationALocationBLocationB
+      >
+    >,
+    TError = void,
+  >(
+    locationA: string,
     locationB: string,
-    params?: ApiVVersionApiVersionRouteDistanceGetRouteDistanceByLocationIdentifiersLocationALocationALocationBLocationBParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionRouteDistanceGetRouteDistanceByLocationIdentifiersLocationALocationALocationBLocationB>>, TError, TData>, }
-) => {
+    params?: ApiV1RouteDistanceGetRouteDistanceByLocationIdentifiersLocationALocationALocationBLocationBParams,
+    options?: {
+      query?: UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof apiV1RouteDistanceGetRouteDistanceByLocationIdentifiersLocationALocationALocationBLocationB
+          >
+        >,
+        TError,
+        TData
+      >
+    }
+  ) => {
+    const { query: queryOptions } = options ?? {}
 
-const {query: queryOptions} = options ?? {};
+    const queryKey =
+      queryOptions?.queryKey ??
+      getApiV1RouteDistanceGetRouteDistanceByLocationIdentifiersLocationALocationALocationBLocationBQueryKey(
+        locationA,
+        locationB,
+        params
+      )
 
-  const queryKey =  queryOptions?.queryKey ?? getApiVVersionApiVersionRouteDistanceGetRouteDistanceByLocationIdentifiersLocationALocationALocationBLocationBQueryKey(locationA,locationB,params);
+    const queryFn: QueryFunction<
+      Awaited<
+        ReturnType<
+          typeof apiV1RouteDistanceGetRouteDistanceByLocationIdentifiersLocationALocationALocationBLocationB
+        >
+      >
+    > = ({ signal }) =>
+      apiV1RouteDistanceGetRouteDistanceByLocationIdentifiersLocationALocationALocationBLocationB(
+        locationA,
+        locationB,
+        params,
+        signal
+      )
 
-  
+    return {
+      queryKey,
+      queryFn,
+      enabled: !!(locationA && locationB),
+      ...queryOptions,
+    } as UseQueryOptions<
+      Awaited<
+        ReturnType<
+          typeof apiV1RouteDistanceGetRouteDistanceByLocationIdentifiersLocationALocationALocationBLocationB
+        >
+      >,
+      TError,
+      TData
+    > & { queryKey: QueryKey }
+  }
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiVVersionApiVersionRouteDistanceGetRouteDistanceByLocationIdentifiersLocationALocationALocationBLocationB>>> = ({ signal }) => apiVVersionApiVersionRouteDistanceGetRouteDistanceByLocationIdentifiersLocationALocationALocationBLocationB(locationA,locationB,params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(locationA && locationB), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionRouteDistanceGetRouteDistanceByLocationIdentifiersLocationALocationALocationBLocationB>>, TError, TData> & { queryKey: QueryKey }
-}
-
-export type ApiVVersionApiVersionRouteDistanceGetRouteDistanceByLocationIdentifiersLocationALocationALocationBLocationBQueryResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionRouteDistanceGetRouteDistanceByLocationIdentifiersLocationALocationALocationBLocationB>>>
-export type ApiVVersionApiVersionRouteDistanceGetRouteDistanceByLocationIdentifiersLocationALocationALocationBLocationBQueryError = void
-
+export type ApiV1RouteDistanceGetRouteDistanceByLocationIdentifiersLocationALocationALocationBLocationBQueryResult =
+  NonNullable<
+    Awaited<
+      ReturnType<
+        typeof apiV1RouteDistanceGetRouteDistanceByLocationIdentifiersLocationALocationALocationBLocationB
+      >
+    >
+  >
+export type ApiV1RouteDistanceGetRouteDistanceByLocationIdentifiersLocationALocationALocationBLocationBQueryError =
+  void
 
 /**
  * @summary Gets the Utah.Udot.Atspm.Data.Models.RouteDistance that contains locationA and locationB
  */
 
-export function useApiVVersionApiVersionRouteDistanceGetRouteDistanceByLocationIdentifiersLocationALocationALocationBLocationB<TData = Awaited<ReturnType<typeof apiVVersionApiVersionRouteDistanceGetRouteDistanceByLocationIdentifiersLocationALocationALocationBLocationB>>, TError = void>(
- locationA: string,
-    locationB: string,
-    params?: ApiVVersionApiVersionRouteDistanceGetRouteDistanceByLocationIdentifiersLocationALocationALocationBLocationBParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionRouteDistanceGetRouteDistanceByLocationIdentifiersLocationALocationALocationBLocationB>>, TError, TData>, }
+export function useApiV1RouteDistanceGetRouteDistanceByLocationIdentifiersLocationALocationALocationBLocationB<
+  TData = Awaited<
+    ReturnType<
+      typeof apiV1RouteDistanceGetRouteDistanceByLocationIdentifiersLocationALocationALocationBLocationB
+    >
+  >,
+  TError = void,
+>(
+  locationA: string,
+  locationB: string,
+  params?: ApiV1RouteDistanceGetRouteDistanceByLocationIdentifiersLocationALocationALocationBLocationBParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<
+        ReturnType<
+          typeof apiV1RouteDistanceGetRouteDistanceByLocationIdentifiersLocationALocationALocationBLocationB
+        >
+      >,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions =
+    getApiV1RouteDistanceGetRouteDistanceByLocationIdentifiersLocationALocationALocationBLocationBQueryOptions(
+      locationA,
+      locationB,
+      params,
+      options
+    )
 
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
 
-  const queryOptions = getApiVVersionApiVersionRouteDistanceGetRouteDistanceByLocationIdentifiersLocationALocationALocationBLocationBQueryOptions(locationA,locationB,params,options)
+  query.queryKey = queryOptions.queryKey
 
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+  return query
 }
-
-
-
 
 /**
  * @summary Insert object of specified type
  */
-export const apiVVersionApiVersionRouteDistance = (
-    utahUdotAtspmDataModelsRouteDistance: UtahUdotAtspmDataModelsRouteDistance,
-    params?: ApiVVersionApiVersionRouteDistanceParams,
- ) => {
-      
-      
-      return configRequest<void>(
-      {url: `/api/v1/RouteDistance`, method: 'POST',
-      headers: {'Content-Type': 'application/json;odata.metadata=minimal;odata.streaming=true', },
-      data: utahUdotAtspmDataModelsRouteDistance,
-        params
+export const apiV1RouteDistance = (
+  utahUdotAtspmDataModelsRouteDistance: UtahUdotAtspmDataModelsRouteDistance,
+  params?: ApiV1RouteDistanceParams
+) => {
+  return configRequest<void>({
+    url: `/api/v1/RouteDistance`,
+    method: 'POST',
+    headers: {
+      'Content-Type':
+        'application/json;odata.metadata=minimal;odata.streaming=true',
     },
-      );
+    data: utahUdotAtspmDataModelsRouteDistance,
+    params,
+  })
+}
+
+export const getApiV1RouteDistanceMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1RouteDistance>>,
+    TError,
+    {
+      data: UtahUdotAtspmDataModelsRouteDistance
+      params?: ApiV1RouteDistanceParams
+    },
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof apiV1RouteDistance>>,
+  TError,
+  {
+    data: UtahUdotAtspmDataModelsRouteDistance
+    params?: ApiV1RouteDistanceParams
+  },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof apiV1RouteDistance>>,
+    {
+      data: UtahUdotAtspmDataModelsRouteDistance
+      params?: ApiV1RouteDistanceParams
     }
-  
+  > = (props) => {
+    const { data, params } = props ?? {}
 
+    return apiV1RouteDistance(data, params)
+  }
 
-export const getApiVVersionApiVersionRouteDistanceMutationOptions = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionRouteDistance>>, TError,{data: UtahUdotAtspmDataModelsRouteDistance;params?: ApiVVersionApiVersionRouteDistanceParams}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionRouteDistance>>, TError,{data: UtahUdotAtspmDataModelsRouteDistance;params?: ApiVVersionApiVersionRouteDistanceParams}, TContext> => {
-const {mutation: mutationOptions} = options ?? {};
+  return { mutationFn, ...mutationOptions }
+}
 
-      
+export type ApiV1RouteDistanceMutationResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1RouteDistance>>
+>
+export type ApiV1RouteDistanceMutationBody =
+  UtahUdotAtspmDataModelsRouteDistance
+export type ApiV1RouteDistanceMutationError = void
 
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof apiVVersionApiVersionRouteDistance>>, {data: UtahUdotAtspmDataModelsRouteDistance;params?: ApiVVersionApiVersionRouteDistanceParams}> = (props) => {
-          const {data,params} = props ?? {};
-
-          return  apiVVersionApiVersionRouteDistance(data,params,)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type ApiVVersionApiVersionRouteDistanceMutationResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionRouteDistance>>>
-    export type ApiVVersionApiVersionRouteDistanceMutationBody = UtahUdotAtspmDataModelsRouteDistance
-    export type ApiVVersionApiVersionRouteDistanceMutationError = void
-
-    /**
+/**
  * @summary Insert object of specified type
  */
-export const useApiVVersionApiVersionRouteDistance = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionRouteDistance>>, TError,{data: UtahUdotAtspmDataModelsRouteDistance;params?: ApiVVersionApiVersionRouteDistanceParams}, TContext>, }
-): UseMutationResult<
-        Awaited<ReturnType<typeof apiVVersionApiVersionRouteDistance>>,
-        TError,
-        {data: UtahUdotAtspmDataModelsRouteDistance;params?: ApiVVersionApiVersionRouteDistanceParams},
-        TContext
-      > => {
+export const useApiV1RouteDistance = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1RouteDistance>>,
+    TError,
+    {
+      data: UtahUdotAtspmDataModelsRouteDistance
+      params?: ApiV1RouteDistanceParams
+    },
+    TContext
+  >
+}): UseMutationResult<
+  Awaited<ReturnType<typeof apiV1RouteDistance>>,
+  TError,
+  {
+    data: UtahUdotAtspmDataModelsRouteDistance
+    params?: ApiV1RouteDistanceParams
+  },
+  TContext
+> => {
+  const mutationOptions = getApiV1RouteDistanceMutationOptions(options)
 
-      const mutationOptions = getApiVVersionApiVersionRouteDistanceMutationOptions(options);
+  return useMutation(mutationOptions)
+}
 
-      return useMutation(mutationOptions);
-    }
-    
 /**
  * @summary Collection of objects from oData query.
  */
-export const apiVVersionApiVersionRouteDistanceCount = (
-    params?: ApiVVersionApiVersionRouteDistanceCountParams,
- signal?: AbortSignal
+export const apiV1RouteDistanceCount = (
+  params?: ApiV1RouteDistanceCountParams,
+  signal?: AbortSignal
 ) => {
-      
-      
-      return configRequest<UtahUdotAtspmDataModelsRouteDistance[]>(
-      {url: `/api/v1/RouteDistance/$count`, method: 'GET',
-        params, signal
-    },
-      );
-    }
-  
-
-export const getApiVVersionApiVersionRouteDistanceCountQueryKey = (params?: ApiVVersionApiVersionRouteDistanceCountParams,) => {
-    return [`/api/v1/RouteDistance/$count`, ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getApiVVersionApiVersionRouteDistanceCountQueryOptions = <TData = Awaited<ReturnType<typeof apiVVersionApiVersionRouteDistanceCount>>, TError = void>(params?: ApiVVersionApiVersionRouteDistanceCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionRouteDistanceCount>>, TError, TData>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getApiVVersionApiVersionRouteDistanceCountQueryKey(params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiVVersionApiVersionRouteDistanceCount>>> = ({ signal }) => apiVVersionApiVersionRouteDistanceCount(params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionRouteDistanceCount>>, TError, TData> & { queryKey: QueryKey }
+  return configRequest<UtahUdotAtspmDataModelsRouteDistance[]>({
+    url: `/api/v1/RouteDistance/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
 }
 
-export type ApiVVersionApiVersionRouteDistanceCountQueryResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionRouteDistanceCount>>>
-export type ApiVVersionApiVersionRouteDistanceCountQueryError = void
-
-
-/**
- * @summary Collection of objects from oData query.
- */
-
-export function useApiVVersionApiVersionRouteDistanceCount<TData = Awaited<ReturnType<typeof apiVVersionApiVersionRouteDistanceCount>>, TError = void>(
- params?: ApiVVersionApiVersionRouteDistanceCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionRouteDistanceCount>>, TError, TData>, }
-
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
-
-  const queryOptions = getApiVVersionApiVersionRouteDistanceCountQueryOptions(params,options)
-
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+export const getApiV1RouteDistanceCountQueryKey = (
+  params?: ApiV1RouteDistanceCountParams
+) => {
+  return [`/api/v1/RouteDistance/$count`, ...(params ? [params] : [])] as const
 }
 
-
-
-
-/**
- * @summary Delete object of specified type
- */
-export const apiVVersionApiVersionRouteDistanceKey = (
-    key: number,
- ) => {
-      
-      
-      return configRequest<void>(
-      {url: `/api/v1/RouteDistance/${key}`, method: 'DELETE'
-    },
-      );
-    }
-  
-
-
-export const getApiVVersionApiVersionRouteDistanceKeyMutationOptions = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionRouteDistanceKey>>, TError,{key: number}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionRouteDistanceKey>>, TError,{key: number}, TContext> => {
-const {mutation: mutationOptions} = options ?? {};
-
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof apiVVersionApiVersionRouteDistanceKey>>, {key: number}> = (props) => {
-          const {key} = props ?? {};
-
-          return  apiVVersionApiVersionRouteDistanceKey(key,)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type ApiVVersionApiVersionRouteDistanceKeyMutationResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionRouteDistanceKey>>>
-    
-    export type ApiVVersionApiVersionRouteDistanceKeyMutationError = void
-
-    /**
- * @summary Delete object of specified type
- */
-export const useApiVVersionApiVersionRouteDistanceKey = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionRouteDistanceKey>>, TError,{key: number}, TContext>, }
-): UseMutationResult<
-        Awaited<ReturnType<typeof apiVVersionApiVersionRouteDistanceKey>>,
-        TError,
-        {key: number},
-        TContext
-      > => {
-
-      const mutationOptions = getApiVVersionApiVersionRouteDistanceKeyMutationOptions(options);
-
-      return useMutation(mutationOptions);
-    }
-    
-/**
- * @summary Insert object of specified type
- */
-export const apiVVersionApiVersionRouteLocation = (
-    utahUdotAtspmDataModelsRouteLocation: UtahUdotAtspmDataModelsRouteLocation,
-    params?: ApiVVersionApiVersionRouteLocationParams,
- ) => {
-      
-      
-      return configRequest<void>(
-      {url: `/api/v1/RouteLocation`, method: 'POST',
-      headers: {'Content-Type': 'application/json;odata.metadata=minimal;odata.streaming=true', },
-      data: utahUdotAtspmDataModelsRouteLocation,
-        params
-    },
-      );
-    }
-  
-
-
-export const getApiVVersionApiVersionRouteLocationMutationOptions = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionRouteLocation>>, TError,{data: UtahUdotAtspmDataModelsRouteLocation;params?: ApiVVersionApiVersionRouteLocationParams}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionRouteLocation>>, TError,{data: UtahUdotAtspmDataModelsRouteLocation;params?: ApiVVersionApiVersionRouteLocationParams}, TContext> => {
-const {mutation: mutationOptions} = options ?? {};
-
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof apiVVersionApiVersionRouteLocation>>, {data: UtahUdotAtspmDataModelsRouteLocation;params?: ApiVVersionApiVersionRouteLocationParams}> = (props) => {
-          const {data,params} = props ?? {};
-
-          return  apiVVersionApiVersionRouteLocation(data,params,)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type ApiVVersionApiVersionRouteLocationMutationResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionRouteLocation>>>
-    export type ApiVVersionApiVersionRouteLocationMutationBody = UtahUdotAtspmDataModelsRouteLocation
-    export type ApiVVersionApiVersionRouteLocationMutationError = void
-
-    /**
- * @summary Insert object of specified type
- */
-export const useApiVVersionApiVersionRouteLocation = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionRouteLocation>>, TError,{data: UtahUdotAtspmDataModelsRouteLocation;params?: ApiVVersionApiVersionRouteLocationParams}, TContext>, }
-): UseMutationResult<
-        Awaited<ReturnType<typeof apiVVersionApiVersionRouteLocation>>,
-        TError,
-        {data: UtahUdotAtspmDataModelsRouteLocation;params?: ApiVVersionApiVersionRouteLocationParams},
-        TContext
-      > => {
-
-      const mutationOptions = getApiVVersionApiVersionRouteLocationMutationOptions(options);
-
-      return useMutation(mutationOptions);
-    }
-    
-/**
- * @summary Collection of objects from oData query.
- */
-export const apiVVersionApiVersionRouteLocationCount = (
-    params?: ApiVVersionApiVersionRouteLocationCountParams,
- signal?: AbortSignal
+export const getApiV1RouteDistanceCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof apiV1RouteDistanceCount>>,
+  TError = void,
+>(
+  params?: ApiV1RouteDistanceCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1RouteDistanceCount>>,
+      TError,
+      TData
+    >
+  }
 ) => {
-      
-      
-      return configRequest<UtahUdotAtspmDataModelsRouteLocation[]>(
-      {url: `/api/v1/RouteLocation/$count`, method: 'GET',
-        params, signal
-    },
-      );
-    }
-  
+  const { query: queryOptions } = options ?? {}
 
-export const getApiVVersionApiVersionRouteLocationCountQueryKey = (params?: ApiVVersionApiVersionRouteLocationCountParams,) => {
-    return [`/api/v1/RouteLocation/$count`, ...(params ? [params]: [])] as const;
-    }
+  const queryKey =
+    queryOptions?.queryKey ?? getApiV1RouteDistanceCountQueryKey(params)
 
-    
-export const getApiVVersionApiVersionRouteLocationCountQueryOptions = <TData = Awaited<ReturnType<typeof apiVVersionApiVersionRouteLocationCount>>, TError = void>(params?: ApiVVersionApiVersionRouteLocationCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionRouteLocationCount>>, TError, TData>, }
-) => {
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof apiV1RouteDistanceCount>>
+  > = ({ signal }) => apiV1RouteDistanceCount(params, signal)
 
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getApiVVersionApiVersionRouteLocationCountQueryKey(params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiVVersionApiVersionRouteLocationCount>>> = ({ signal }) => apiVVersionApiVersionRouteLocationCount(params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionRouteLocationCount>>, TError, TData> & { queryKey: QueryKey }
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof apiV1RouteDistanceCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
 }
 
-export type ApiVVersionApiVersionRouteLocationCountQueryResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionRouteLocationCount>>>
-export type ApiVVersionApiVersionRouteLocationCountQueryError = void
-
+export type ApiV1RouteDistanceCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1RouteDistanceCount>>
+>
+export type ApiV1RouteDistanceCountQueryError = void
 
 /**
  * @summary Collection of objects from oData query.
  */
 
-export function useApiVVersionApiVersionRouteLocationCount<TData = Awaited<ReturnType<typeof apiVVersionApiVersionRouteLocationCount>>, TError = void>(
- params?: ApiVVersionApiVersionRouteLocationCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionRouteLocationCount>>, TError, TData>, }
+export function useApiV1RouteDistanceCount<
+  TData = Awaited<ReturnType<typeof apiV1RouteDistanceCount>>,
+  TError = void,
+>(
+  params?: ApiV1RouteDistanceCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1RouteDistanceCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getApiV1RouteDistanceCountQueryOptions(params, options)
 
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
 
-  const queryOptions = getApiVVersionApiVersionRouteLocationCountQueryOptions(params,options)
+  query.queryKey = queryOptions.queryKey
 
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+  return query
 }
 
+/**
+ * @summary Delete object of specified type
+ */
+export const apiV1RouteDistanceKey = (key: number) => {
+  return configRequest<void>({
+    url: `/api/v1/RouteDistance/${key}`,
+    method: 'DELETE',
+  })
+}
 
+export const getApiV1RouteDistanceKeyMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1RouteDistanceKey>>,
+    TError,
+    { key: number },
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof apiV1RouteDistanceKey>>,
+  TError,
+  { key: number },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
 
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof apiV1RouteDistanceKey>>,
+    { key: number }
+  > = (props) => {
+    const { key } = props ?? {}
+
+    return apiV1RouteDistanceKey(key)
+  }
+
+  return { mutationFn, ...mutationOptions }
+}
+
+export type ApiV1RouteDistanceKeyMutationResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1RouteDistanceKey>>
+>
+
+export type ApiV1RouteDistanceKeyMutationError = void
 
 /**
  * @summary Delete object of specified type
  */
-export const apiVVersionApiVersionRouteLocationKey = (
-    key: number,
- ) => {
-      
-      
-      return configRequest<void>(
-      {url: `/api/v1/RouteLocation/${key}`, method: 'DELETE'
-    },
-      );
-    }
-  
+export const useApiV1RouteDistanceKey = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1RouteDistanceKey>>,
+    TError,
+    { key: number },
+    TContext
+  >
+}): UseMutationResult<
+  Awaited<ReturnType<typeof apiV1RouteDistanceKey>>,
+  TError,
+  { key: number },
+  TContext
+> => {
+  const mutationOptions = getApiV1RouteDistanceKeyMutationOptions(options)
 
+  return useMutation(mutationOptions)
+}
 
-export const getApiVVersionApiVersionRouteLocationKeyMutationOptions = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionRouteLocationKey>>, TError,{key: number}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionRouteLocationKey>>, TError,{key: number}, TContext> => {
-const {mutation: mutationOptions} = options ?? {};
-
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof apiVVersionApiVersionRouteLocationKey>>, {key: number}> = (props) => {
-          const {key} = props ?? {};
-
-          return  apiVVersionApiVersionRouteLocationKey(key,)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type ApiVVersionApiVersionRouteLocationKeyMutationResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionRouteLocationKey>>>
-    
-    export type ApiVVersionApiVersionRouteLocationKeyMutationError = void
-
-    /**
- * @summary Delete object of specified type
- */
-export const useApiVVersionApiVersionRouteLocationKey = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionRouteLocationKey>>, TError,{key: number}, TContext>, }
-): UseMutationResult<
-        Awaited<ReturnType<typeof apiVVersionApiVersionRouteLocationKey>>,
-        TError,
-        {key: number},
-        TContext
-      > => {
-
-      const mutationOptions = getApiVVersionApiVersionRouteLocationKeyMutationOptions(options);
-
-      return useMutation(mutationOptions);
-    }
-    
 /**
  * @summary Insert object of specified type
  */
-export const apiVVersionApiVersionVersionHistory = (
-    utahUdotAtspmDataModelsVersionHistory: UtahUdotAtspmDataModelsVersionHistory,
-    params?: ApiVVersionApiVersionVersionHistoryParams,
- ) => {
-      
-      
-      return configRequest<void>(
-      {url: `/api/v1/VersionHistory`, method: 'POST',
-      headers: {'Content-Type': 'application/json;odata.metadata=minimal;odata.streaming=true', },
-      data: utahUdotAtspmDataModelsVersionHistory,
-        params
+export const apiV1RouteLocation = (
+  utahUdotAtspmDataModelsRouteLocation: UtahUdotAtspmDataModelsRouteLocation,
+  params?: ApiV1RouteLocationParams
+) => {
+  return configRequest<void>({
+    url: `/api/v1/RouteLocation`,
+    method: 'POST',
+    headers: {
+      'Content-Type':
+        'application/json;odata.metadata=minimal;odata.streaming=true',
     },
-      );
+    data: utahUdotAtspmDataModelsRouteLocation,
+    params,
+  })
+}
+
+export const getApiV1RouteLocationMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1RouteLocation>>,
+    TError,
+    {
+      data: UtahUdotAtspmDataModelsRouteLocation
+      params?: ApiV1RouteLocationParams
+    },
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof apiV1RouteLocation>>,
+  TError,
+  {
+    data: UtahUdotAtspmDataModelsRouteLocation
+    params?: ApiV1RouteLocationParams
+  },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof apiV1RouteLocation>>,
+    {
+      data: UtahUdotAtspmDataModelsRouteLocation
+      params?: ApiV1RouteLocationParams
     }
-  
+  > = (props) => {
+    const { data, params } = props ?? {}
 
+    return apiV1RouteLocation(data, params)
+  }
 
-export const getApiVVersionApiVersionVersionHistoryMutationOptions = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionVersionHistory>>, TError,{data: UtahUdotAtspmDataModelsVersionHistory;params?: ApiVVersionApiVersionVersionHistoryParams}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionVersionHistory>>, TError,{data: UtahUdotAtspmDataModelsVersionHistory;params?: ApiVVersionApiVersionVersionHistoryParams}, TContext> => {
-const {mutation: mutationOptions} = options ?? {};
+  return { mutationFn, ...mutationOptions }
+}
 
-      
+export type ApiV1RouteLocationMutationResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1RouteLocation>>
+>
+export type ApiV1RouteLocationMutationBody =
+  UtahUdotAtspmDataModelsRouteLocation
+export type ApiV1RouteLocationMutationError = void
 
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof apiVVersionApiVersionVersionHistory>>, {data: UtahUdotAtspmDataModelsVersionHistory;params?: ApiVVersionApiVersionVersionHistoryParams}> = (props) => {
-          const {data,params} = props ?? {};
-
-          return  apiVVersionApiVersionVersionHistory(data,params,)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type ApiVVersionApiVersionVersionHistoryMutationResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionVersionHistory>>>
-    export type ApiVVersionApiVersionVersionHistoryMutationBody = UtahUdotAtspmDataModelsVersionHistory
-    export type ApiVVersionApiVersionVersionHistoryMutationError = void
-
-    /**
+/**
  * @summary Insert object of specified type
  */
-export const useApiVVersionApiVersionVersionHistory = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionVersionHistory>>, TError,{data: UtahUdotAtspmDataModelsVersionHistory;params?: ApiVVersionApiVersionVersionHistoryParams}, TContext>, }
-): UseMutationResult<
-        Awaited<ReturnType<typeof apiVVersionApiVersionVersionHistory>>,
-        TError,
-        {data: UtahUdotAtspmDataModelsVersionHistory;params?: ApiVVersionApiVersionVersionHistoryParams},
-        TContext
-      > => {
+export const useApiV1RouteLocation = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1RouteLocation>>,
+    TError,
+    {
+      data: UtahUdotAtspmDataModelsRouteLocation
+      params?: ApiV1RouteLocationParams
+    },
+    TContext
+  >
+}): UseMutationResult<
+  Awaited<ReturnType<typeof apiV1RouteLocation>>,
+  TError,
+  {
+    data: UtahUdotAtspmDataModelsRouteLocation
+    params?: ApiV1RouteLocationParams
+  },
+  TContext
+> => {
+  const mutationOptions = getApiV1RouteLocationMutationOptions(options)
 
-      const mutationOptions = getApiVVersionApiVersionVersionHistoryMutationOptions(options);
+  return useMutation(mutationOptions)
+}
 
-      return useMutation(mutationOptions);
-    }
-    
 /**
  * @summary Collection of objects from oData query.
  */
-export const apiVVersionApiVersionVersionHistoryCount = (
-    params?: ApiVVersionApiVersionVersionHistoryCountParams,
- signal?: AbortSignal
+export const apiV1RouteLocationCount = (
+  params?: ApiV1RouteLocationCountParams,
+  signal?: AbortSignal
 ) => {
-      
-      
-      return configRequest<UtahUdotAtspmDataModelsVersionHistory[]>(
-      {url: `/api/v1/VersionHistory/$count`, method: 'GET',
-        params, signal
-    },
-      );
-    }
-  
-
-export const getApiVVersionApiVersionVersionHistoryCountQueryKey = (params?: ApiVVersionApiVersionVersionHistoryCountParams,) => {
-    return [`/api/v1/VersionHistory/$count`, ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getApiVVersionApiVersionVersionHistoryCountQueryOptions = <TData = Awaited<ReturnType<typeof apiVVersionApiVersionVersionHistoryCount>>, TError = void>(params?: ApiVVersionApiVersionVersionHistoryCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionVersionHistoryCount>>, TError, TData>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getApiVVersionApiVersionVersionHistoryCountQueryKey(params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiVVersionApiVersionVersionHistoryCount>>> = ({ signal }) => apiVVersionApiVersionVersionHistoryCount(params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionVersionHistoryCount>>, TError, TData> & { queryKey: QueryKey }
+  return configRequest<UtahUdotAtspmDataModelsRouteLocation[]>({
+    url: `/api/v1/RouteLocation/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
 }
 
-export type ApiVVersionApiVersionVersionHistoryCountQueryResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionVersionHistoryCount>>>
-export type ApiVVersionApiVersionVersionHistoryCountQueryError = void
-
-
-/**
- * @summary Collection of objects from oData query.
- */
-
-export function useApiVVersionApiVersionVersionHistoryCount<TData = Awaited<ReturnType<typeof apiVVersionApiVersionVersionHistoryCount>>, TError = void>(
- params?: ApiVVersionApiVersionVersionHistoryCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionVersionHistoryCount>>, TError, TData>, }
-
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
-
-  const queryOptions = getApiVVersionApiVersionVersionHistoryCountQueryOptions(params,options)
-
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+export const getApiV1RouteLocationCountQueryKey = (
+  params?: ApiV1RouteLocationCountParams
+) => {
+  return [`/api/v1/RouteLocation/$count`, ...(params ? [params] : [])] as const
 }
 
-
-
-
-/**
- * @summary Delete object of specified type
- */
-export const apiVVersionApiVersionVersionHistoryKey = (
-    key: number,
- ) => {
-      
-      
-      return configRequest<void>(
-      {url: `/api/v1/VersionHistory/${key}`, method: 'DELETE'
-    },
-      );
-    }
-  
-
-
-export const getApiVVersionApiVersionVersionHistoryKeyMutationOptions = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionVersionHistoryKey>>, TError,{key: number}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionVersionHistoryKey>>, TError,{key: number}, TContext> => {
-const {mutation: mutationOptions} = options ?? {};
-
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof apiVVersionApiVersionVersionHistoryKey>>, {key: number}> = (props) => {
-          const {key} = props ?? {};
-
-          return  apiVVersionApiVersionVersionHistoryKey(key,)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type ApiVVersionApiVersionVersionHistoryKeyMutationResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionVersionHistoryKey>>>
-    
-    export type ApiVVersionApiVersionVersionHistoryKeyMutationError = void
-
-    /**
- * @summary Delete object of specified type
- */
-export const useApiVVersionApiVersionVersionHistoryKey = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionVersionHistoryKey>>, TError,{key: number}, TContext>, }
-): UseMutationResult<
-        Awaited<ReturnType<typeof apiVVersionApiVersionVersionHistoryKey>>,
-        TError,
-        {key: number},
-        TContext
-      > => {
-
-      const mutationOptions = getApiVVersionApiVersionVersionHistoryKeyMutationOptions(options);
-
-      return useMutation(mutationOptions);
-    }
-    
-/**
- * @summary Insert object of specified type
- */
-export const apiVVersionApiVersionWatchDogIgnoreEvent = (
-    utahUdotAtspmDataModelsWatchDogIgnoreEvent: UtahUdotAtspmDataModelsWatchDogIgnoreEvent,
-    params?: ApiVVersionApiVersionWatchDogIgnoreEventParams,
- ) => {
-      
-      
-      return configRequest<void>(
-      {url: `/api/v1/WatchDogIgnoreEvent`, method: 'POST',
-      headers: {'Content-Type': 'application/json;odata.metadata=minimal;odata.streaming=true', },
-      data: utahUdotAtspmDataModelsWatchDogIgnoreEvent,
-        params
-    },
-      );
-    }
-  
-
-
-export const getApiVVersionApiVersionWatchDogIgnoreEventMutationOptions = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionWatchDogIgnoreEvent>>, TError,{data: UtahUdotAtspmDataModelsWatchDogIgnoreEvent;params?: ApiVVersionApiVersionWatchDogIgnoreEventParams}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionWatchDogIgnoreEvent>>, TError,{data: UtahUdotAtspmDataModelsWatchDogIgnoreEvent;params?: ApiVVersionApiVersionWatchDogIgnoreEventParams}, TContext> => {
-const {mutation: mutationOptions} = options ?? {};
-
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof apiVVersionApiVersionWatchDogIgnoreEvent>>, {data: UtahUdotAtspmDataModelsWatchDogIgnoreEvent;params?: ApiVVersionApiVersionWatchDogIgnoreEventParams}> = (props) => {
-          const {data,params} = props ?? {};
-
-          return  apiVVersionApiVersionWatchDogIgnoreEvent(data,params,)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type ApiVVersionApiVersionWatchDogIgnoreEventMutationResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionWatchDogIgnoreEvent>>>
-    export type ApiVVersionApiVersionWatchDogIgnoreEventMutationBody = UtahUdotAtspmDataModelsWatchDogIgnoreEvent
-    export type ApiVVersionApiVersionWatchDogIgnoreEventMutationError = void
-
-    /**
- * @summary Insert object of specified type
- */
-export const useApiVVersionApiVersionWatchDogIgnoreEvent = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionWatchDogIgnoreEvent>>, TError,{data: UtahUdotAtspmDataModelsWatchDogIgnoreEvent;params?: ApiVVersionApiVersionWatchDogIgnoreEventParams}, TContext>, }
-): UseMutationResult<
-        Awaited<ReturnType<typeof apiVVersionApiVersionWatchDogIgnoreEvent>>,
-        TError,
-        {data: UtahUdotAtspmDataModelsWatchDogIgnoreEvent;params?: ApiVVersionApiVersionWatchDogIgnoreEventParams},
-        TContext
-      > => {
-
-      const mutationOptions = getApiVVersionApiVersionWatchDogIgnoreEventMutationOptions(options);
-
-      return useMutation(mutationOptions);
-    }
-    
-/**
- * @summary Collection of objects from oData query.
- */
-export const apiVVersionApiVersionWatchDogIgnoreEventCount = (
-    params?: ApiVVersionApiVersionWatchDogIgnoreEventCountParams,
- signal?: AbortSignal
+export const getApiV1RouteLocationCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof apiV1RouteLocationCount>>,
+  TError = void,
+>(
+  params?: ApiV1RouteLocationCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1RouteLocationCount>>,
+      TError,
+      TData
+    >
+  }
 ) => {
-      
-      
-      return configRequest<UtahUdotAtspmDataModelsWatchDogIgnoreEvent[]>(
-      {url: `/api/v1/WatchDogIgnoreEvent/$count`, method: 'GET',
-        params, signal
-    },
-      );
-    }
-  
+  const { query: queryOptions } = options ?? {}
 
-export const getApiVVersionApiVersionWatchDogIgnoreEventCountQueryKey = (params?: ApiVVersionApiVersionWatchDogIgnoreEventCountParams,) => {
-    return [`/api/v1/WatchDogIgnoreEvent/$count`, ...(params ? [params]: [])] as const;
-    }
+  const queryKey =
+    queryOptions?.queryKey ?? getApiV1RouteLocationCountQueryKey(params)
 
-    
-export const getApiVVersionApiVersionWatchDogIgnoreEventCountQueryOptions = <TData = Awaited<ReturnType<typeof apiVVersionApiVersionWatchDogIgnoreEventCount>>, TError = void>(params?: ApiVVersionApiVersionWatchDogIgnoreEventCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionWatchDogIgnoreEventCount>>, TError, TData>, }
-) => {
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof apiV1RouteLocationCount>>
+  > = ({ signal }) => apiV1RouteLocationCount(params, signal)
 
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getApiVVersionApiVersionWatchDogIgnoreEventCountQueryKey(params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiVVersionApiVersionWatchDogIgnoreEventCount>>> = ({ signal }) => apiVVersionApiVersionWatchDogIgnoreEventCount(params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionWatchDogIgnoreEventCount>>, TError, TData> & { queryKey: QueryKey }
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof apiV1RouteLocationCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
 }
 
-export type ApiVVersionApiVersionWatchDogIgnoreEventCountQueryResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionWatchDogIgnoreEventCount>>>
-export type ApiVVersionApiVersionWatchDogIgnoreEventCountQueryError = void
-
+export type ApiV1RouteLocationCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1RouteLocationCount>>
+>
+export type ApiV1RouteLocationCountQueryError = void
 
 /**
  * @summary Collection of objects from oData query.
  */
 
-export function useApiVVersionApiVersionWatchDogIgnoreEventCount<TData = Awaited<ReturnType<typeof apiVVersionApiVersionWatchDogIgnoreEventCount>>, TError = void>(
- params?: ApiVVersionApiVersionWatchDogIgnoreEventCountParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof apiVVersionApiVersionWatchDogIgnoreEventCount>>, TError, TData>, }
+export function useApiV1RouteLocationCount<
+  TData = Awaited<ReturnType<typeof apiV1RouteLocationCount>>,
+  TError = void,
+>(
+  params?: ApiV1RouteLocationCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1RouteLocationCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getApiV1RouteLocationCountQueryOptions(params, options)
 
-  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
 
-  const queryOptions = getApiVVersionApiVersionWatchDogIgnoreEventCountQueryOptions(params,options)
+  query.queryKey = queryOptions.queryKey
 
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+  return query
 }
-
-
-
 
 /**
  * @summary Delete object of specified type
  */
-export const apiVVersionApiVersionWatchDogIgnoreEventKey = (
-    key: number,
- ) => {
-      
-      
-      return configRequest<void>(
-      {url: `/api/v1/WatchDogIgnoreEvent/${key}`, method: 'DELETE'
-    },
-      );
-    }
-  
+export const apiV1RouteLocationKey = (key: number) => {
+  return configRequest<void>({
+    url: `/api/v1/RouteLocation/${key}`,
+    method: 'DELETE',
+  })
+}
 
+export const getApiV1RouteLocationKeyMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1RouteLocationKey>>,
+    TError,
+    { key: number },
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof apiV1RouteLocationKey>>,
+  TError,
+  { key: number },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
 
-export const getApiVVersionApiVersionWatchDogIgnoreEventKeyMutationOptions = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionWatchDogIgnoreEventKey>>, TError,{key: number}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionWatchDogIgnoreEventKey>>, TError,{key: number}, TContext> => {
-const {mutation: mutationOptions} = options ?? {};
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof apiV1RouteLocationKey>>,
+    { key: number }
+  > = (props) => {
+    const { key } = props ?? {}
 
-      
+    return apiV1RouteLocationKey(key)
+  }
 
+  return { mutationFn, ...mutationOptions }
+}
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof apiVVersionApiVersionWatchDogIgnoreEventKey>>, {key: number}> = (props) => {
-          const {key} = props ?? {};
+export type ApiV1RouteLocationKeyMutationResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1RouteLocationKey>>
+>
 
-          return  apiVVersionApiVersionWatchDogIgnoreEventKey(key,)
-        }
+export type ApiV1RouteLocationKeyMutationError = void
 
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type ApiVVersionApiVersionWatchDogIgnoreEventKeyMutationResult = NonNullable<Awaited<ReturnType<typeof apiVVersionApiVersionWatchDogIgnoreEventKey>>>
-    
-    export type ApiVVersionApiVersionWatchDogIgnoreEventKeyMutationError = void
-
-    /**
+/**
  * @summary Delete object of specified type
  */
-export const useApiVVersionApiVersionWatchDogIgnoreEventKey = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiVVersionApiVersionWatchDogIgnoreEventKey>>, TError,{key: number}, TContext>, }
-): UseMutationResult<
-        Awaited<ReturnType<typeof apiVVersionApiVersionWatchDogIgnoreEventKey>>,
-        TError,
-        {key: number},
-        TContext
-      > => {
+export const useApiV1RouteLocationKey = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1RouteLocationKey>>,
+    TError,
+    { key: number },
+    TContext
+  >
+}): UseMutationResult<
+  Awaited<ReturnType<typeof apiV1RouteLocationKey>>,
+  TError,
+  { key: number },
+  TContext
+> => {
+  const mutationOptions = getApiV1RouteLocationKeyMutationOptions(options)
 
-      const mutationOptions = getApiVVersionApiVersionWatchDogIgnoreEventKeyMutationOptions(options);
+  return useMutation(mutationOptions)
+}
 
-      return useMutation(mutationOptions);
+/**
+ * @summary Insert object of specified type
+ */
+export const apiV1VersionHistory = (
+  utahUdotAtspmDataModelsVersionHistory: UtahUdotAtspmDataModelsVersionHistory,
+  params?: ApiV1VersionHistoryParams
+) => {
+  return configRequest<void>({
+    url: `/api/v1/VersionHistory`,
+    method: 'POST',
+    headers: {
+      'Content-Type':
+        'application/json;odata.metadata=minimal;odata.streaming=true',
+    },
+    data: utahUdotAtspmDataModelsVersionHistory,
+    params,
+  })
+}
+
+export const getApiV1VersionHistoryMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1VersionHistory>>,
+    TError,
+    {
+      data: UtahUdotAtspmDataModelsVersionHistory
+      params?: ApiV1VersionHistoryParams
+    },
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof apiV1VersionHistory>>,
+  TError,
+  {
+    data: UtahUdotAtspmDataModelsVersionHistory
+    params?: ApiV1VersionHistoryParams
+  },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof apiV1VersionHistory>>,
+    {
+      data: UtahUdotAtspmDataModelsVersionHistory
+      params?: ApiV1VersionHistoryParams
     }
-    
+  > = (props) => {
+    const { data, params } = props ?? {}
+
+    return apiV1VersionHistory(data, params)
+  }
+
+  return { mutationFn, ...mutationOptions }
+}
+
+export type ApiV1VersionHistoryMutationResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1VersionHistory>>
+>
+export type ApiV1VersionHistoryMutationBody =
+  UtahUdotAtspmDataModelsVersionHistory
+export type ApiV1VersionHistoryMutationError = void
+
+/**
+ * @summary Insert object of specified type
+ */
+export const useApiV1VersionHistory = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1VersionHistory>>,
+    TError,
+    {
+      data: UtahUdotAtspmDataModelsVersionHistory
+      params?: ApiV1VersionHistoryParams
+    },
+    TContext
+  >
+}): UseMutationResult<
+  Awaited<ReturnType<typeof apiV1VersionHistory>>,
+  TError,
+  {
+    data: UtahUdotAtspmDataModelsVersionHistory
+    params?: ApiV1VersionHistoryParams
+  },
+  TContext
+> => {
+  const mutationOptions = getApiV1VersionHistoryMutationOptions(options)
+
+  return useMutation(mutationOptions)
+}
+
+/**
+ * @summary Collection of objects from oData query.
+ */
+export const apiV1VersionHistoryCount = (
+  params?: ApiV1VersionHistoryCountParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<UtahUdotAtspmDataModelsVersionHistory[]>({
+    url: `/api/v1/VersionHistory/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getApiV1VersionHistoryCountQueryKey = (
+  params?: ApiV1VersionHistoryCountParams
+) => {
+  return [`/api/v1/VersionHistory/$count`, ...(params ? [params] : [])] as const
+}
+
+export const getApiV1VersionHistoryCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof apiV1VersionHistoryCount>>,
+  TError = void,
+>(
+  params?: ApiV1VersionHistoryCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1VersionHistoryCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ?? getApiV1VersionHistoryCountQueryKey(params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof apiV1VersionHistoryCount>>
+  > = ({ signal }) => apiV1VersionHistoryCount(params, signal)
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof apiV1VersionHistoryCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type ApiV1VersionHistoryCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1VersionHistoryCount>>
+>
+export type ApiV1VersionHistoryCountQueryError = void
+
+/**
+ * @summary Collection of objects from oData query.
+ */
+
+export function useApiV1VersionHistoryCount<
+  TData = Awaited<ReturnType<typeof apiV1VersionHistoryCount>>,
+  TError = void,
+>(
+  params?: ApiV1VersionHistoryCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1VersionHistoryCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getApiV1VersionHistoryCountQueryOptions(params, options)
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
+ * @summary Delete object of specified type
+ */
+export const apiV1VersionHistoryKey = (key: number) => {
+  return configRequest<void>({
+    url: `/api/v1/VersionHistory/${key}`,
+    method: 'DELETE',
+  })
+}
+
+export const getApiV1VersionHistoryKeyMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1VersionHistoryKey>>,
+    TError,
+    { key: number },
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof apiV1VersionHistoryKey>>,
+  TError,
+  { key: number },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof apiV1VersionHistoryKey>>,
+    { key: number }
+  > = (props) => {
+    const { key } = props ?? {}
+
+    return apiV1VersionHistoryKey(key)
+  }
+
+  return { mutationFn, ...mutationOptions }
+}
+
+export type ApiV1VersionHistoryKeyMutationResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1VersionHistoryKey>>
+>
+
+export type ApiV1VersionHistoryKeyMutationError = void
+
+/**
+ * @summary Delete object of specified type
+ */
+export const useApiV1VersionHistoryKey = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1VersionHistoryKey>>,
+    TError,
+    { key: number },
+    TContext
+  >
+}): UseMutationResult<
+  Awaited<ReturnType<typeof apiV1VersionHistoryKey>>,
+  TError,
+  { key: number },
+  TContext
+> => {
+  const mutationOptions = getApiV1VersionHistoryKeyMutationOptions(options)
+
+  return useMutation(mutationOptions)
+}
+
+/**
+ * @summary Insert object of specified type
+ */
+export const apiV1WatchDogIgnoreEvent = (
+  utahUdotAtspmDataModelsWatchDogIgnoreEvent: UtahUdotAtspmDataModelsWatchDogIgnoreEvent,
+  params?: ApiV1WatchDogIgnoreEventParams
+) => {
+  return configRequest<void>({
+    url: `/api/v1/WatchDogIgnoreEvent`,
+    method: 'POST',
+    headers: {
+      'Content-Type':
+        'application/json;odata.metadata=minimal;odata.streaming=true',
+    },
+    data: utahUdotAtspmDataModelsWatchDogIgnoreEvent,
+    params,
+  })
+}
+
+export const getApiV1WatchDogIgnoreEventMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1WatchDogIgnoreEvent>>,
+    TError,
+    {
+      data: UtahUdotAtspmDataModelsWatchDogIgnoreEvent
+      params?: ApiV1WatchDogIgnoreEventParams
+    },
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof apiV1WatchDogIgnoreEvent>>,
+  TError,
+  {
+    data: UtahUdotAtspmDataModelsWatchDogIgnoreEvent
+    params?: ApiV1WatchDogIgnoreEventParams
+  },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof apiV1WatchDogIgnoreEvent>>,
+    {
+      data: UtahUdotAtspmDataModelsWatchDogIgnoreEvent
+      params?: ApiV1WatchDogIgnoreEventParams
+    }
+  > = (props) => {
+    const { data, params } = props ?? {}
+
+    return apiV1WatchDogIgnoreEvent(data, params)
+  }
+
+  return { mutationFn, ...mutationOptions }
+}
+
+export type ApiV1WatchDogIgnoreEventMutationResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1WatchDogIgnoreEvent>>
+>
+export type ApiV1WatchDogIgnoreEventMutationBody =
+  UtahUdotAtspmDataModelsWatchDogIgnoreEvent
+export type ApiV1WatchDogIgnoreEventMutationError = void
+
+/**
+ * @summary Insert object of specified type
+ */
+export const useApiV1WatchDogIgnoreEvent = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1WatchDogIgnoreEvent>>,
+    TError,
+    {
+      data: UtahUdotAtspmDataModelsWatchDogIgnoreEvent
+      params?: ApiV1WatchDogIgnoreEventParams
+    },
+    TContext
+  >
+}): UseMutationResult<
+  Awaited<ReturnType<typeof apiV1WatchDogIgnoreEvent>>,
+  TError,
+  {
+    data: UtahUdotAtspmDataModelsWatchDogIgnoreEvent
+    params?: ApiV1WatchDogIgnoreEventParams
+  },
+  TContext
+> => {
+  const mutationOptions = getApiV1WatchDogIgnoreEventMutationOptions(options)
+
+  return useMutation(mutationOptions)
+}
+
+/**
+ * @summary Collection of objects from oData query.
+ */
+export const apiV1WatchDogIgnoreEventCount = (
+  params?: ApiV1WatchDogIgnoreEventCountParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<UtahUdotAtspmDataModelsWatchDogIgnoreEvent[]>({
+    url: `/api/v1/WatchDogIgnoreEvent/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getApiV1WatchDogIgnoreEventCountQueryKey = (
+  params?: ApiV1WatchDogIgnoreEventCountParams
+) => {
+  return [
+    `/api/v1/WatchDogIgnoreEvent/$count`,
+    ...(params ? [params] : []),
+  ] as const
+}
+
+export const getApiV1WatchDogIgnoreEventCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof apiV1WatchDogIgnoreEventCount>>,
+  TError = void,
+>(
+  params?: ApiV1WatchDogIgnoreEventCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1WatchDogIgnoreEventCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ?? getApiV1WatchDogIgnoreEventCountQueryKey(params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof apiV1WatchDogIgnoreEventCount>>
+  > = ({ signal }) => apiV1WatchDogIgnoreEventCount(params, signal)
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof apiV1WatchDogIgnoreEventCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type ApiV1WatchDogIgnoreEventCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1WatchDogIgnoreEventCount>>
+>
+export type ApiV1WatchDogIgnoreEventCountQueryError = void
+
+/**
+ * @summary Collection of objects from oData query.
+ */
+
+export function useApiV1WatchDogIgnoreEventCount<
+  TData = Awaited<ReturnType<typeof apiV1WatchDogIgnoreEventCount>>,
+  TError = void,
+>(
+  params?: ApiV1WatchDogIgnoreEventCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof apiV1WatchDogIgnoreEventCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getApiV1WatchDogIgnoreEventCountQueryOptions(
+    params,
+    options
+  )
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
+ * @summary Delete object of specified type
+ */
+export const apiV1WatchDogIgnoreEventKey = (key: number) => {
+  return configRequest<void>({
+    url: `/api/v1/WatchDogIgnoreEvent/${key}`,
+    method: 'DELETE',
+  })
+}
+
+export const getApiV1WatchDogIgnoreEventKeyMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1WatchDogIgnoreEventKey>>,
+    TError,
+    { key: number },
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof apiV1WatchDogIgnoreEventKey>>,
+  TError,
+  { key: number },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof apiV1WatchDogIgnoreEventKey>>,
+    { key: number }
+  > = (props) => {
+    const { key } = props ?? {}
+
+    return apiV1WatchDogIgnoreEventKey(key)
+  }
+
+  return { mutationFn, ...mutationOptions }
+}
+
+export type ApiV1WatchDogIgnoreEventKeyMutationResult = NonNullable<
+  Awaited<ReturnType<typeof apiV1WatchDogIgnoreEventKey>>
+>
+
+export type ApiV1WatchDogIgnoreEventKeyMutationError = void
+
+/**
+ * @summary Delete object of specified type
+ */
+export const useApiV1WatchDogIgnoreEventKey = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1WatchDogIgnoreEventKey>>,
+    TError,
+    { key: number },
+    TContext
+  >
+}): UseMutationResult<
+  Awaited<ReturnType<typeof apiV1WatchDogIgnoreEventKey>>,
+  TError,
+  { key: number },
+  TContext
+> => {
+  const mutationOptions = getApiV1WatchDogIgnoreEventKeyMutationOptions(options)
+
+  return useMutation(mutationOptions)
+}

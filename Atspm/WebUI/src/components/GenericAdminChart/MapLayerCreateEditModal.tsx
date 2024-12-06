@@ -21,9 +21,8 @@ import { z } from 'zod'
 interface MapLayer {
   id: number
   name: string
-  mapURL?: string
+  mapLayerUrl?: string
   showByDefault: boolean
-  blob?: Blob
   serviceType: 'mapserver' | 'featureserver'
 }
 
@@ -31,23 +30,24 @@ interface MapLayerCreateEditModalProps {
   open: boolean
   onClose: () => void
   data: MapLayer | null
+  onCreate: (mapLayer: MapLayer) => void
+  onEdit: (mapLayer: MapLayer) => void
+  onSave: (mapLayer: MapLayer) => void
 }
 
 const mapLayerSchema = z.object({
   name: z.string().min(1, 'Name is required'),
-  mapURL: z.string().optional(),
+  mapLayerUrl: z.string().optional(),
   showByDefault: z.boolean(),
   serviceType: z.enum(['mapserver', 'featureserver']),
-  blob: z.any().optional(),
 })
 
 type FormData = z.infer<typeof mapLayerSchema>
 
 export const MapLayerCreateEditModal: React.FC<
   MapLayerCreateEditModalProps
-> = ({ open, onClose, data }) => {
-  const isEditMode = !!data
-
+> = ({ open, onClose, data, onCreate, onSave, onEdit }) => {
+  const isEditMode = data.id ? true : false
   const {
     control,
     handleSubmit,
@@ -58,40 +58,27 @@ export const MapLayerCreateEditModal: React.FC<
     resolver: zodResolver(mapLayerSchema),
     defaultValues: {
       name: data?.name || '',
-      mapURL: data?.mapURL || '',
+      mapLayerUrl: data?.mapLayerUrl || '',
       showByDefault: data?.showByDefault || false,
       serviceType: data?.serviceType,
     },
   })
 
-  const onDrop = React.useCallback(
-    (acceptedFiles: File[]) => {
-      if (acceptedFiles?.[0]) {
-        setValue('blob', acceptedFiles[0])
+
+  const onSubmit = async (formData: FormData) => {
+    try {
+      if (isEditMode) {
+        console.log('Updating map layer:', { ...formData, id: data?.id })
+        // Add update logic if needed
+      } else {
+        await onCreate(formData)
       }
-    },
-    [setValue]
-  )
-
-  //   const { getRootProps, getInputProps, isDragActive } = useDropzone({
-  //     onDrop,
-  //     accept: {
-  //       'image/*': ['.png', '.jpg', '.jpeg', '.gif'],
-  //     },
-  //     maxFiles: 1,
-  //   })
-
-  const onSubmit = async (data: FormData) => {
-    // Placeholder for API call
-    if (isEditMode) {
-      console.log('Updating map layer:', { ...data, id: data.id })
-    } else {
-      console.log('Creating new map layer:', data)
+      onClose()
+    } catch (error) {
+      console.error('Error saving MapLayer:', error)
     }
-    onClose()
   }
 
-  const selectedFile = watch('blob')
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
@@ -117,7 +104,7 @@ export const MapLayerCreateEditModal: React.FC<
           />
 
           <Controller
-            name="mapURL"
+            name="mapLayerUrl"
             control={control}
             render={({ field }) => (
               <TextField
@@ -125,8 +112,8 @@ export const MapLayerCreateEditModal: React.FC<
                 label="Map URL (Optional)"
                 fullWidth
                 margin="normal"
-                error={!!errors.mapURL}
-                helperText={errors.mapURL?.message}
+                error={!!errors.mapLayerUrl}
+                helperText={errors.mapLayerUrl?.message}
               />
             )}
           />
