@@ -33,16 +33,14 @@ export const initializeAxiosInstances = async () => {
     return
   }
 
-  if (process.env.CONFIG_URL)
-    configAxios = createAxiosInstance(process.env.CONFIG_URL + BASE_PATH)
-  if (process.env.REPORTS_URL)
-    reportsAxios = createAxiosInstance(process.env.REPORTS_URL + BASE_PATH)
-  if (process.env.IDENTITY_URL)
-    identityAxios = createAxiosInstance(process.env.IDENTITY_URL + BASE_PATH)
-  if (process.env.DATA_URL)
-    dataAxios = createAxiosInstance(process.env.DATA_URL + BASE_PATH)
-  if (process.env.SPEED_URL)
-    speedAxios = createAxiosInstance(process.env.SPEED_URL + BASE_PATH)
+  if (env.CONFIG_URL)
+    configAxios = createAxiosInstance(env.CONFIG_URL + BASE_PATH)
+  if (env.REPORTS_URL)
+    reportsAxios = createAxiosInstance(env.REPORTS_URL + BASE_PATH)
+  if (env.IDENTITY_URL)
+    identityAxios = createAxiosInstance(env.IDENTITY_URL + BASE_PATH)
+  if (env.DATA_URL) dataAxios = createAxiosInstance(env.DATA_URL + BASE_PATH)
+  if (env.SPEED_URL) speedAxios = createAxiosInstance(env.SPEED_URL + BASE_PATH)
 }
 
 function createAxiosInstance(baseURL: string) {
