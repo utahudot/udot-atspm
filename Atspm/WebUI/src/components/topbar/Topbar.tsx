@@ -10,7 +10,6 @@ import QuestionAnswerOutlinedIcon from '@mui/icons-material/QuestionAnswerOutlin
 import { Box, Button, IconButton, Paper, Typography } from '@mui/material'
 import Image from 'next/image'
 import NextLink from 'next/link'
-import router from 'next/router'
 import { useEffect, useState } from 'react'
 import DropDownButton from './DropdownButton'
 import UserMenu from './UserMenu'
@@ -31,7 +30,7 @@ export default function Topbar() {
   }
 
   const handleNavigation = (path: string) => {
-    router.push(path)
+    window.open(path, '_blank')
   }
 
   const menuItems = menuItemsData ? transformMenuItems(menuItemsData.value) : []
