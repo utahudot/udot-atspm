@@ -38,6 +38,13 @@ namespace Utah.Udot.Atspm.ConfigApi.Services
             _eventLogRepository = eventLogRepository;
         }
 
+        //public ApproachDto SyncNewLocationEvents(int locationId)
+        //{
+        //    //Sync that puts data into the database (trigger the event logging workflow for the signal) successful or failure message.
+        //    //var workflow = new DetectorHourlySpeedAggregationWorkflow();
+        //    //await workflow.Input.SendAsync(locationId);
+        //}
+
         //Sync signal: From the data in the database return a list of phases and detector channels that are in the logs and compare the newly created signal.
         //Remove any phases or channels that dont exist on the signal, provide a list of non configured event phases. 
         public TemplateLocationModifiedDto SyncNewLocationDetectorsAndApproaches(int locationId)

@@ -101,13 +101,13 @@ builder.Host.ConfigureServices((h, s) =>
         o.CustomSchemaIds(type => type.FullName);
     });
 
-    var allowedHosts = builder.Configuration.GetSection("AllowedHosts").Get<string>();
+    var allowedHosts = builder.Configuration.GetSection("AllowedHosts").Get<string>() ?? "*";
     s.AddCors(options =>
     {
         options.AddPolicy("CorsPolicy",
         builder =>
         {
-            builder.WithOrigins(allowedHosts.Split(','))
+            builder.AllowAnyOrigin()
                    .AllowAnyMethod()
                    .AllowAnyHeader();
         });

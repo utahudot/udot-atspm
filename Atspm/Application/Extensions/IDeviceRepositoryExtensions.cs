@@ -1,4 +1,5 @@
-﻿using Utah.Udot.Atspm.Configuration;
+﻿using Microsoft.EntityFrameworkCore;
+using Utah.Udot.Atspm.Configuration;
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
 
@@ -22,7 +23,8 @@ namespace Utah.Udot.Atspm.Extensions
                 .Where(w => queryOptions.DeviceType == DeviceTypes.Unknown ? true : w.DeviceType == queryOptions.DeviceType)
                 .Where(w => queryOptions.DeviceStatus == DeviceStatus.Unknown ? true : w.DeviceStatus == queryOptions.DeviceStatus)
                 .Where(w => queryOptions.TransportProtocol == TransportProtocols.Unknown ? true : w.DeviceConfiguration.Protocol == queryOptions.TransportProtocol)
-                .ToList()
+                .AsQueryable()
+                .AsAsyncEnumerable()
                 .Where(w => (queryOptions.IncludedLocations?.Count() > 0) ? queryOptions.IncludedLocations.Any(a => w.Location.LocationIdentifier == a) : true)
                 .Where(w => (queryOptions.ExcludedLocations?.Count() > 0) ? !queryOptions.ExcludedLocations.Any(a => w.Location.LocationIdentifier == a) : true)
                 .Where(w => (queryOptions.IncludedAreas?.Count() > 0) ? queryOptions.IncludedAreas.Any(l => w.Location.Areas.Any(a => a.Name == l)) : true)
@@ -30,7 +32,7 @@ namespace Utah.Udot.Atspm.Extensions
                 .Where(w => (queryOptions.IncludedJurisdictions?.Count() > 0) ? queryOptions.IncludedJurisdictions.Any(a => w.Location.Jurisdiction.Name == a) : true)
                 .Where(w => (queryOptions.IncludedLocationTypes?.Count() > 0) ? queryOptions.IncludedLocationTypes.Any(a => w.Location.LocationType.Name == a) : true);
 
-            return result.ToAsyncEnumerable();
+            return result;
         }
     }
 }
