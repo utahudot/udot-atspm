@@ -18,10 +18,13 @@
 using Asp.Versioning;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.OData;
 using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Utah.Udot.Atspm.ConfigApi.Configuration;
@@ -99,11 +102,44 @@ builder.Host
         // integrate xml comments
         o.IncludeXmlComments(filePath);
 
+        o.EnableAnnotations();
+        o.CustomOperationIds(a =>
+        {
+            var result = a.ParameterDescriptions.Where(w => w.Source == BindingSource.Path).ToList();
+
+            StringBuilder test = new StringBuilder();
+
+            foreach (var id in result)
+            {
+                if (test.Length < 1)
+                    test.Append("From");
+                else
+                    test.Append("And");
+
+                test.Append(id.Name.Capitalize());
+
+                //Console.WriteLine($"{a.ActionDescriptor.RouteValues["controller"]}{a.ActionDescriptor.RouteValues["action"]}From{id.Name.Capitalize()}");
+            }
+
+            var value = $"{a.ActionDescriptor.RouteValues["controller"]}{a.ActionDescriptor.RouteValues["action"]}{test}";
+            Console.WriteLine(value);
+
+            return value;
+        });
+
         // Use the full name to avoid schema ID conflicts
-        o.CustomSchemaIds(type => type.FullName);
+        //o.CustomSchemaIds(type => type.FullName);
+        //o.CustomOperationIds(api => api.RelativePath);
+        //o.CustomOperationIds(e =>
+        //{
+        //    //var test = e.ActionDescriptor.RouteValues;
+
+        //    return $"api/v{e.GetApiVersion()}/{e.ActionDescriptor.RouteValues["controller"]}";
+        //});
+
     });
 
-    var allowedHosts = builder.Configuration.GetSection("AllowedHosts").Get<string>();
+    var allowedHosts = builder.Configuration.GetSection("AllowedHosts").Get<string>() ?? "*";
     s.AddCors(options =>
     {
         options.AddPolicy("CorsPolicy",

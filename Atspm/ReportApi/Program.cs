@@ -18,8 +18,10 @@
 using Asp.Versioning;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using System.Text;
 using Utah.Udot.Atspm.Business.AppoachDelay;
 using Utah.Udot.Atspm.Business.ApproachSpeed;
 using Utah.Udot.Atspm.Business.ApproachVolume;
@@ -105,6 +107,30 @@ builder.Host
 
         // integrate xml comments
         o.IncludeXmlComments(filePath);
+
+        o.CustomOperationIds(a =>
+        {
+            var result = a.ParameterDescriptions.Where(w => w.Source == BindingSource.Path).ToList();
+
+            StringBuilder test = new StringBuilder();
+
+            foreach (var id in result)
+            {
+                if (test.Length < 1)
+                    test.Append("From");
+                else
+                    test.Append("And");
+
+                test.Append(id.Name.Capitalize());
+
+                //Console.WriteLine($"{a.ActionDescriptor.RouteValues["controller"]}{a.ActionDescriptor.RouteValues["action"]}From{id.Name.Capitalize()}");
+            }
+
+            var value = $"{a.ActionDescriptor.RouteValues["controller"]}{a.ActionDescriptor.RouteValues["action"]}{test}";
+            Console.WriteLine(value);
+
+            return value;
+        });
     });
 
     var allowedHosts = builder.Configuration.GetSection("AllowedHosts").Get<string>();

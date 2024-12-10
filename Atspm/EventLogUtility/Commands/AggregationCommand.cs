@@ -21,10 +21,38 @@ using System.CommandLine;
 using System.CommandLine.Hosting;
 using System.CommandLine.NamingConventionBinder;
 using System.Text.RegularExpressions;
+using Utah.Udot.Atspm.Configuration;
 using Utah.Udot.Atspm.Infrastructure.Services.HostedServices;
 
 namespace Utah.Udot.Atspm.EventLogUtility.Commands
 {
+    //public class LogCommandModelBinder : ModelBinder<DeviceEventLoggingConfiguration>
+    //{
+    //    public LogCommandModelBinder(LogConsoleCommand cmd)
+    //    {
+    //        BindMemberFromValue(b => b.Path, cmd.PathCommandOption);
+    //        BindMemberFromValue(b => b.BatchSize, cmd.BatchSizeOption);
+    //        BindMemberFromValue(b => b.ParallelProcesses, cmd.PrallelProcessesOption);
+    //    }
+    //}
+
+    //public class LogCommandQueryBinder : ModelBinder<DeviceEventLoggingQueryOptions>
+    //{
+    //    public LogCommandQueryBinder(LogConsoleCommand cmd)
+    //    {
+    //        BindMemberFromValue(b => b.IncludedLocations, cmd.IncludeOption);
+    //        BindMemberFromValue(b => b.ExcludedLocations, cmd.ExcludeOption);
+    //        BindMemberFromValue(b => b.IncludedAreas, cmd.AreaOption);
+    //        BindMemberFromValue(b => b.IncludedJurisdictions, cmd.JurisdictionOption);
+    //        BindMemberFromValue(b => b.IncludedRegions, cmd.RegionOption);
+    //        BindMemberFromValue(b => b.IncludedLocationTypes, cmd.LocationTypeOption);
+    //        BindMemberFromValue(b => b.DeviceType, cmd.DeviceTypeOption);
+    //        BindMemberFromValue(b => b.TransportProtocol, cmd.TransportProtocolOption);
+    //        BindMemberFromValue(b => b.TransportProtocol, cmd.TransportProtocolOption);
+    //    }
+    //}
+
+
     public class AggregationCommand : Command, ICommandOption<EventLogAggregateConfiguration>
     {
         public AggregationCommand() : base("aggregate-events", "Run event aggregation")

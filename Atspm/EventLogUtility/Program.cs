@@ -15,6 +15,7 @@
 // limitations under the License.
 #endregion
 
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.CommandLine.Builder;
 using System.CommandLine.Hosting;
@@ -50,6 +51,8 @@ cmdBuilder.UseHost(a =>
         s.AddDeviceDownloaders(h);
         s.AddEventLogDecoders();
         s.AddEventLogImporters(h);
+
+        //s.Configure<DeviceEventLoggingConfiguration>(h.Configuration.GetSection(nameof(DeviceEventLoggingConfiguration)));
     });
 },
 h =>
