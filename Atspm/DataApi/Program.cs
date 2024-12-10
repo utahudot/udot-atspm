@@ -19,8 +19,10 @@ using Asp.Versioning;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using System.Text;
 using Utah.Udot.Atspm.DataApi.Configuration;
 using Utah.Udot.Atspm.DataApi.CustomOperations;
 using Utah.Udot.Atspm.DataApi.Formatters;
@@ -88,6 +90,33 @@ builder.Host
          o.OperationFilter<TimestampFormatHeader>();
          o.DocumentFilter<GenerateAggregationSchemas>();
          o.DocumentFilter<GenerateEventSchemas>();
+
+         o.EnableAnnotations();
+         //o.CustomOperationIds(a => $"{a.ActionDescriptor.RouteValues["controller"]}{a.ActionDescriptor.RouteValues["action"]}");
+         o.CustomOperationIds(a =>
+         {
+             var result = a.ParameterDescriptions.Where(w => w.Source == BindingSource.Path).ToList();
+
+             StringBuilder test = new StringBuilder();
+
+             foreach (var id in result)
+             {
+                 if (test.Length < 1)
+                     test.Append("From");
+                 else
+                     test.Append("And");
+
+                 test.Append(id.Name.Capitalize());
+
+                 //Console.WriteLine($"{a.ActionDescriptor.RouteValues["controller"]}{a.ActionDescriptor.RouteValues["action"]}From{id.Name.Capitalize()}");
+             }
+
+             var value = $"{a.ActionDescriptor.RouteValues["controller"]}{a.ActionDescriptor.RouteValues["action"]}{test}";
+             Console.WriteLine(value);
+
+             return value;
+         });
+
      });
 
     var allowedHosts = builder.Configuration.GetSection("AllowedHosts").Get<string>();

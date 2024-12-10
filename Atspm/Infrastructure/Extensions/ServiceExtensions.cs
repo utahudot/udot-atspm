@@ -532,7 +532,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
         /// <returns></returns>
         public static IConfigurationBuilder ApplyVolumeJsonConfiguration(this IConfigurationBuilder configurationBuilder, HostBuilderContext host, DirectoryInfo dir)
         {
-            foreach (var file in dir.GetFiles("*.json"))
+            foreach (var file in dir.GetFiles("*.json", SearchOption.AllDirectories))
             {
                 configurationBuilder.AddJsonFile(file.FullName, true, true);
             }
