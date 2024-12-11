@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for ApplicationCoreTests - ApplicationCoreTests.Analysis.WorkflowSteps/GroupDetectorsByDetectorEventTests.cs
+// for ApplicationTests - Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps/GroupDetectorsByDetectorEventTests.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.

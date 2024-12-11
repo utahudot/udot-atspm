@@ -26,6 +26,7 @@ import {
   createTooltip,
   createXAxis,
   createYAxis,
+  formatExportFileName,
   transformSeriesData,
 } from '@/features/charts/common/transformers'
 import { ChartType, PlanOptions } from '@/features/charts/common/types'
@@ -136,7 +137,10 @@ function transformData(data: RawYellowAndRedActuationsData) {
   ]
 
   const toolbox = createToolbox(
-    { title: titleHeader, dateRange },
+    {
+      title: formatExportFileName(titleHeader, data.start, data.end),
+      dateRange,
+    },
     data.locationIdentifier,
     ChartType.YellowAndRedActuations
   )

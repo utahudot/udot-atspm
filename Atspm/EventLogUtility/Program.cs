@@ -25,13 +25,20 @@ using Utah.Udot.Atspm.Infrastructure.Extensions;
 var rootCmd = new EventLogCommands();
 var cmdBuilder = new CommandLineBuilder(rootCmd);
 cmdBuilder.UseDefaults();
-
 cmdBuilder.UseHost(a =>
 {
     return Host.CreateDefaultBuilder(a)
-    .UseConsoleLifetime()
+    //.UseConsoleLifetime()
+    .ApplyVolumeConfiguration()
     .ConfigureLogging((h, l) =>
     {
+        //l.AddGoogle(new LoggingServiceOptions
+        //{
+        //    //ProjectId = "",
+        //    ServiceName = AppDomain.CurrentDomain.FriendlyName,
+        //    Version = Assembly.GetEntryAssembly().GetName().Version.ToString(),
+        //    Options = LoggingOptions.Create(LogLevel.Debug, AppDomain.CurrentDomain.FriendlyName)
+        //});
     })
     .ConfigureServices((h, s) =>
     {

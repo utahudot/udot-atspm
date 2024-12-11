@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for ApplicationCore - %Namespace%/PhaseTerminationWorkflow.cs
+// for Application - %Namespace%/PhaseTerminationWorkflow.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -115,11 +115,7 @@ namespace ATSPM.Application.Analysis.Workflows
         }
     }
 
-    public abstract class PhaseTerminationValueBase
-    {
-        public DateTime StartTime { get; set; }
-        public int PhaseNumber { get; set; }
-    }
+    
 
     public class GapOut : PhaseTerminationValueBase { }
 

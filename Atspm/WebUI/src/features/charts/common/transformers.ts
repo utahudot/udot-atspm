@@ -24,6 +24,7 @@ import {
   ToolType,
 } from '@/features/charts/common/types'
 import { Color } from '@/features/charts/utils'
+import { format } from 'date-fns'
 import {
   CustomSeriesRenderItemAPI,
   DataZoomComponentOption,
@@ -309,37 +310,38 @@ export function createDataZoom() {
   return dataZoom
 }
 
+export function formatExportFileName(
+  title: string,
+  startDate: string,
+  endDate: string
+) {
+  // Clean the title
+  const cleanedTitle = title
+    .replace(/#/g, '') // Remove the pound sign
+    .replace(/-/g, '_') // Replace hyphens with underscores
+    .replace(/&/g, '_') // Replace '&' with underscores
+    .replace(/ /g, '_') // Replace spaces with underscores
+    .replace(/[:/]/g, '_') // Replace ':' and '/' with underscores
+    .replace(/_+/g, '_') // Replace multiple underscores with a single underscore
+    .replace(/^_+|_+$/g, '') // Remove leading or trailing underscores
+
+  return (
+    cleanedTitle +
+    '_' +
+    format(startDate, 'yyyy-MM-dd_HH-mm') +
+    '_to_' +
+    format(endDate, 'yyyy-MM-dd_HH-mm')
+  )
+}
+
 export function createToolbox(
   { title, dateRange }: titleProps,
   locationIdentifier: string,
   type: ChartType | ToolType
 ) {
-  // const toolbox: ToolboxComponentOption = {
-  //   feature: {
-  //     saveAsImage: {},
-  //     feature: {
-  //       dataZoom: {
-  //         yAxisIndex: 'none',
-  //       },
-  //     },
-  //     dataView: specialCasesCharts.includes(type)
-  //       ? undefined
-  //       : {
-  //           readOnly: true,
-  //           optionToContent: function (opt) {
-  //             return generateDataView(
-  //               opt,
-  //               { title, dateRange },
-  //               locationIdentifier
-  //             )
-  //           },
-  //         },
-  //   },
-  // }
-
   const toolbox: ToolboxComponentOption = {
     feature: {
-      saveAsImage: {},
+      saveAsImage: { name: title },
       dataView: {
         readOnly: true,
       },

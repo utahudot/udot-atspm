@@ -112,7 +112,7 @@ function transformData(data: RampMeteringData): EChartsOption[] {
       nameGap: 50,
     },
     {
-      name: 'Meter Active Indication',
+      name: 'Lane Number',
       min: 0,
       max: 6,
       interval: 1,
@@ -145,15 +145,23 @@ function transformData(data: RampMeteringData): EChartsOption[] {
   })
 
   const lanesActiveLegends = lanesActiveRate.map((lane) => {
+    const description =
+      lanesActiveRate.length === 1
+        ? 'Active Rate'
+        : `Active Rate: ${lane.description}`
     return {
-      name: `Active Rate: ${lane.description}`,
+      name: description,
       icon: SolidLineSeriesSymbol,
     }
   })
 
   const lanesBaseLegends = lanesBaseRate.map((lane) => {
+    const description =
+      lanesBaseRate.length === 1
+        ? 'Base Rate'
+        : `Base Rate: ${lane.description}`
     return {
-      name: `Base Rate: ${lane.description}`,
+      name: description,
       icon: SolidLineSeriesSymbol,
     }
   })
@@ -251,9 +259,13 @@ function transformData(data: RampMeteringData): EChartsOption[] {
 
   lanesActiveRate.forEach((lane, index) => {
     const activeRateData = formatDataPointForStepView(lane.value, data.end)
+    const description =
+      lanesActiveRate.length === 1
+        ? 'Active Rate'
+        : `Active Rate: ${lane.description}`
     seriesOne.push(
       ...createSeries({
-        name: `Active Rate: ${lane.description}`,
+        name: description,
         data: transformSeriesData(lane.value),
         type: 'custom',
         yAxisIndex: 1,
@@ -281,9 +293,13 @@ function transformData(data: RampMeteringData): EChartsOption[] {
 
   lanesActiveRate.forEach((lane, index) => {
     const activeRateData = formatDataPointForStepView(lane.value, data.end)
+    const description =
+      lanesActiveRate.length === 1
+        ? 'Active Rate'
+        : `Active Rate: ${lane.description}`
     seriesTwo.push(
       ...createSeries({
-        name: `Active Rate: ${lane.description}`,
+        name: description,
         data: transformSeriesData(lane.value),
         type: 'custom',
         yAxisIndex: 0,
@@ -305,9 +321,13 @@ function transformData(data: RampMeteringData): EChartsOption[] {
 
   lanesBaseRate.forEach((lane, index) => {
     const baseRateData = formatDataPointForStepView(lane.value, data.end)
+    const description =
+      lanesBaseRate.length === 1
+        ? 'Base Rate'
+        : `Base Rate: ${lane.description}`
     seriesTwo.push(
       ...createSeries({
-        name: `Base Rate: ${lane.description}`,
+        name: description,
         data: transformSeriesData(lane.value),
         type: 'custom',
         yAxisIndex: 0,
@@ -333,9 +353,13 @@ function transformData(data: RampMeteringData): EChartsOption[] {
 
   lanesActiveRate.forEach((lane, index) => {
     const activeRateData = formatDataPointForStepView(lane.value, data.end)
+    const description =
+      lanesActiveRate.length === 1
+        ? 'Active Rate'
+        : `Active Rate: ${lane.description}`
     seriesThree.push(
       ...createSeries({
-        name: `Active Rate: ${lane.description}`,
+        name: description,
         data: transformSeriesData(lane.value),
         type: 'custom',
         yAxisIndex: 1,
@@ -357,9 +381,13 @@ function transformData(data: RampMeteringData): EChartsOption[] {
 
   lanesBaseRate.forEach((lane, index) => {
     const baseRateData = formatDataPointForStepView(lane.value, data.end)
+    const description =
+      lanesBaseRate.length === 1
+        ? 'Base Rate'
+        : `Base Rate: ${lane.description}`
     seriesThree.push(
       ...createSeries({
-        name: `Base Rate: ${lane.description}`,
+        name: description,
         data: transformSeriesData(lane.value),
         type: 'custom',
         yAxisIndex: 1,
@@ -394,9 +422,13 @@ function transformData(data: RampMeteringData): EChartsOption[] {
 
   lanesActiveRate.forEach((lane, index) => {
     const activeRateData = formatDataPointForStepView(lane.value, data.end)
+    const description =
+      lanesActiveRate.length === 1
+        ? 'Active Rate'
+        : `Active Rate: ${lane.description}`
     seriesFour.push(
       ...createSeries({
-        name: `Active Rate: ${lane.description}`,
+        name: description,
         data: transformSeriesData(lane.value),
         type: 'custom',
         yAxisIndex: 1,
@@ -418,9 +450,13 @@ function transformData(data: RampMeteringData): EChartsOption[] {
 
   lanesBaseRate.forEach((lane, index) => {
     const baseRateData = formatDataPointForStepView(lane.value, data.end)
+    const description =
+      lanesBaseRate.length === 1
+        ? 'Base Rate'
+        : `Base Rate: ${lane.description}`
     seriesFour.push(
       ...createSeries({
-        name: `Base Rate: ${lane.description}`,
+        name: description,
         data: transformSeriesData(lane.value),
         type: 'custom',
         yAxisIndex: 1,

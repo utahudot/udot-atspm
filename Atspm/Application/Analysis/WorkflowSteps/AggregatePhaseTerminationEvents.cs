@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for ApplicationCore - ATSPM.Application.Analysis.WorkflowSteps/AggregatePhaseTerminationEvents.cs
+// for Application - Utah.Udot.Atspm.Analysis.WorkflowSteps/AggregatePhaseTerminationEvents.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -43,7 +43,6 @@ namespace Utah.Udot.Atspm.Analysis.WorkflowSteps
                 f.Unknown = events.UnknownTerminations.Count(c => f.InRange(c));
             });
 
-            //TODO: change this and all aggregations to ireadonlylist
             var result = tl.Segments.AsEnumerable();
 
             return Task.FromResult(result);

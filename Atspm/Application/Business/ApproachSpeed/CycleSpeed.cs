@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for ApplicationCore - ATSPM.Application.Business.ApproachSpeed/CycleSpeed.cs
+// for Application - Utah.Udot.Atspm.Business.ApproachSpeed/CycleSpeed.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,9 +15,8 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.IdentityModel.Tokens;
-using Utah.Udot.Atspm.Business.Common;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
+using Utah.Udot.Atspm.Extensions;
 
 namespace Utah.Udot.Atspm.Business.ApproachSpeed
 {

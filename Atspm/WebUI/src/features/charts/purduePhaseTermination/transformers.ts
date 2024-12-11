@@ -25,6 +25,7 @@ import {
   createTooltip,
   createXAxis,
   createYAxis,
+  formatExportFileName,
 } from '@/features/charts/common/transformers'
 import { ChartType } from '@/features/charts/common/types'
 import {
@@ -134,7 +135,10 @@ function transformData(data: RawPurduePhaseTerminationData) {
   ]
 
   const toolbox = createToolbox(
-    { title: titleHeader, dateRange },
+    {
+      title: formatExportFileName(titleHeader, data.start, data.end),
+      dateRange,
+    },
     data.locationIdentifier,
     ChartType.PurduePhaseTermination
   )

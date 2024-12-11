@@ -1,6 +1,6 @@
 ﻿#region license
-// Copyright 2024 Utah Department of Transportation
-// for DatabaseInstaller.Commands/UpdateCommand.cs
+// Copyright 2024 Utah Departement of Transportation
+// for DatabaseInstaller - DatabaseInstaller.Commands/MoveEventLogsSqlServerToPostgresCommand.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ using Microsoft.Extensions.Hosting;
 using System.CommandLine;
 using System.CommandLine.Hosting;
 using System.CommandLine.NamingConventionBinder;
-using Utah.Udot.Atspm.Common;
 
 namespace DatabaseInstaller.Commands
 {

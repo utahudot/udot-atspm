@@ -17,9 +17,11 @@
 import {
   createDisplayProps,
   createTitle,
+  createToolbox,
   createTooltip,
   createXAxis,
   createYAxis,
+  formatExportFileName,
 } from '@/features/charts/common/transformers'
 import { ChartType } from '@/features/charts/common/types'
 import { TransformedChartResponse } from '@/features/charts/types'
@@ -27,7 +29,6 @@ import {
   Color,
   SolidLineSeriesSymbol,
   formatChartDateTimeRange,
-  triangleSvgSymbol,
 } from '@/features/charts/utils'
 import {
   DataZoomComponentOption,
@@ -55,18 +56,21 @@ export default function transformTimingAndActuationData(
 
   const legendItems = getAllEventDetails()
 
+  const title = createTitleOnlyChart(response.data[0])
+
   const legendChartOptions = createLegendOnlyChart(legendItems)
 
   return {
     type: ChartType.TimingAndActuation,
     data: {
+      title,
       charts,
       legends: legendChartOptions,
     },
   }
 }
 
-function transformData(data: RawTimingAndActuationData, i: number) {
+function transformData(data: RawTimingAndActuationData) {
   const {
     pedestrianIntervals,
     pedestrianEvents,
@@ -78,18 +82,9 @@ function transformData(data: RawTimingAndActuationData, i: number) {
     end,
   } = data
 
-  let title
-  if (i === 0) {
-    const titleHeader = `Timing and Actuation\n${data.locationDescription} - ${data.approachDescription}`
-    const dateRange = formatChartDateTimeRange(data.start, data.end)
+  console.log('data', data)
 
-    title = createTitle({
-      title: titleHeader,
-      dateRange,
-    })
-  } else {
-    title = { text: data.approachDescription }
-  }
+  const title = { text: data.approachDescription }
 
   const xAxis = createXAxis(data.start, data.end)
 
@@ -112,7 +107,7 @@ function transformData(data: RawTimingAndActuationData, i: number) {
   })
 
   const grid: GridComponentOption = {
-    top: i === 0 ? 100 : 30,
+    top: 30,
     bottom: 90,
     right: 60,
     left: 210,
@@ -138,14 +133,18 @@ function transformData(data: RawTimingAndActuationData, i: number) {
     },
   ]
 
-  const toolbox = {
-    feature: {
-      saveAsImage: {},
-      dataView: {
-        readOnly: true,
-      },
+  const toolbox = createToolbox(
+    {
+      title: formatExportFileName(
+        `Timing_and_Actuation_${data.locationDescription}`,
+        data.start,
+        data.end
+      ),
+      dateRange: {},
     },
-  }
+    data.locationIdentifier,
+    ChartType.PreemptionDetails
+  )
 
   const series: SeriesOption[] = []
 
@@ -184,7 +183,7 @@ function transformData(data: RawTimingAndActuationData, i: number) {
   legendData.push(
     {
       name: 'Detector On (82)',
-      icon: triangleSvgSymbol,
+      icon: 'circle',
       itemStyle: { color: 'black' },
     },
     {
@@ -251,35 +250,42 @@ export function generateCycles(
   cycleAllEvents: Cycle[] | null,
   end: string
 ): SeriesOption[] {
-  const seriesOptions: SeriesOption[] = []
+  const seriesMap = new Map<string, SeriesOption>()
 
-  if (!cycleAllEvents) return seriesOptions
+  if (!cycleAllEvents) return []
 
   for (let i = 0; i < cycleAllEvents.length; i++) {
     const event = cycleAllEvents[i]
-    const { color } = getEventDetails(event.value)
+    const { color, name } = getEventDetails(event.value)
     const startTime = new Date(event.start).toISOString()
     const endTime =
       i < cycleAllEvents.length - 1
         ? new Date(cycleAllEvents[i + 1].start).toISOString()
         : new Date(end).toISOString()
 
-    seriesOptions.push({
-      name: getEventDetails(event.value).name,
-      type: 'scatter',
-      cursor: 'default',
-      silent: true,
-      markArea: {
+    if (!seriesMap.has(color)) {
+      // If the color doesn't exist, create a new series
+      seriesMap.set(color, {
+        name,
+        type: 'scatter',
+        cursor: 'default',
         silent: true,
-        itemStyle: {
-          color,
+
+        markArea: {
+          silent: true,
+          itemStyle: {
+            color,
+          },
+          data: [],
         },
-        data: [[{ xAxis: startTime }, { xAxis: endTime }]],
-      },
-    })
+      })
+    }
+
+    const series = seriesMap.get(color)
+    series!.markArea.data.push([{ xAxis: startTime }, { xAxis: endTime }])
   }
 
-  return seriesOptions
+  return Array.from(seriesMap.values())
 }
 
 function extractDetectorsNames(data: RawTimingAndActuationData): string[] {
@@ -334,25 +340,13 @@ function generateDetectorSeriesData(
   const lineSeriesData = []
 
   detectors.forEach((detector) => {
-    detector.events.forEach((event) => {
-      const onPoint = {
-        value: [event.detectorOn, detector.name],
-        symbol: 'triangle',
-        symbolSize: 5,
-        itemStyle: {
-          color: 'black',
-        },
-      }
-      const offPoint = {
-        value: [event.detectorOff, detector.name],
-        symbol: 'square',
-        symbolSize: 5,
-        itemStyle: {
-          color: 'darkgrey',
-        },
-      }
-
+    detector.events.forEach((event, i) => {
+      const onPoint = [event.detectorOn, detector.name]
       onSeriesData.push(onPoint)
+
+      if (!detector.name.includes('Stop')) return
+
+      const offPoint = [event.detectorOff, detector.name]
       offSeriesData.push(offPoint)
 
       if (event.detectorOn && event.detectorOff) {
@@ -376,20 +370,33 @@ function generateDetectorSeriesData(
         confine: true,
         valueFormatter: (value) => (value as string[])[0],
       },
+      large: true,
+      symbol: 'circle',
+      symbolSize: 5,
+      itemStyle: {
+        color: 'black',
+      },
       data: onSeriesData,
     },
     {
       name: 'Detector Off (81)',
       type: 'scatter',
+      large: true,
       tooltip: {
         confine: true,
         valueFormatter: (value) => (value as string[])[0],
+      },
+      symbol: 'square',
+      symbolSize: 5,
+      itemStyle: {
+        color: 'darkgrey',
       },
       data: offSeriesData,
     },
     {
       name: 'Line Connecting Detector On to Detector Off',
       type: 'lines',
+      large: true,
       coordinateSystem: 'cartesian2d',
       lineStyle: {
         color: 'black',
@@ -403,38 +410,46 @@ function generateDetectorSeriesData(
 function generatePedestrianIntervalLines(
   pedestrianIntervals: { start: string; value: number }[]
 ): SeriesOption[] {
-  return pedestrianIntervals.map((interval, index, array) => {
-    const { color } = getEventDetails(interval.value)
+  const seriesMap = new Map<string, SeriesOption>()
+
+  pedestrianIntervals.forEach((interval, index, array) => {
+    const { color, name } = getEventDetails(interval.value)
     const startCoord = new Date(interval.start).toISOString()
     const endCoord =
       index < array.length - 1
         ? new Date(array[index + 1].start).toISOString()
         : 'max'
 
-    return {
-      name: getEventDetails(interval.value).name,
-      type: 'line',
-      markLine: {
-        silent: true,
-        symbol: ['none', 'none'],
-        lineStyle: {
-          type: 'solid',
-          color: color,
-          width: 20,
+    if (!seriesMap.has(color)) {
+      // If the color doesn't exist, create a new series
+      seriesMap.set(color, {
+        name,
+        type: 'line',
+        markLine: {
+          silent: true,
+          symbol: ['none', 'none'],
+          lineStyle: {
+            type: 'solid',
+            color: color,
+            width: 20,
+          },
+          data: [],
         },
-        data: [
-          [
-            {
-              coord: [startCoord, 'Pedestrian Intervals'],
-            },
-            {
-              coord: [endCoord, 'Pedestrian Intervals'],
-            },
-          ],
-        ],
-      },
+      })
     }
+
+    const series = seriesMap.get(color)
+    series!.markLine.data.push([
+      {
+        coord: [startCoord, 'Pedestrian Intervals'],
+      },
+      {
+        coord: [endCoord, 'Pedestrian Intervals'],
+      },
+    ])
   })
+
+  return Array.from(seriesMap.values())
 }
 
 function createLegend(
@@ -444,17 +459,34 @@ function createLegend(
     itemStyle?: { color: string }
   }>
 ) {
+  const uniqueNames = new Set<string | number>()
+
+  const uniqueData = data.reduce(
+    (acc, item) => {
+      if (item.name && !uniqueNames.has(item.name)) {
+        uniqueNames.add(item.name)
+        acc.push({
+          name: item.name as string,
+          icon: item.icon || ('roundRect' as const),
+          itemStyle: {
+            color: item.itemStyle?.color,
+          },
+        })
+      }
+      return acc
+    },
+    [] as Array<{
+      name: string
+      icon: string
+      itemStyle: { color: string | undefined }
+    }>
+  )
+
   return {
     orient: 'vertical' as const,
     left: 'right' as const,
     show: false,
-    data: data.map((item) => ({
-      name: item.name as string,
-      icon: item.icon || ('roundRect' as const),
-      itemStyle: {
-        color: item.itemStyle?.color,
-      },
-    })),
+    data: uniqueData,
   }
 }
 
@@ -512,7 +544,7 @@ const EVENT_GROUPS = [
     codes: [82],
     name: 'Detector On (82)',
     color: CycleColor.Black,
-    icon: triangleSvgSymbol,
+    icon: 'circle',
   },
   {
     codes: [81],
@@ -526,6 +558,18 @@ function getAllEventDetails() {
   return Object.values(EVENT_GROUPS).filter(
     (detail) => detail.name !== 'Unknown Event'
   )
+}
+
+function createTitleOnlyChart(data: RawTimingAndActuationData) {
+  const titleHeader = `Timing and Actuation\n${data.locationDescription} - ${data.approachDescription}`
+  const dateRange = formatChartDateTimeRange(data.start, data.end)
+
+  return {
+    title: createTitle({
+      title: titleHeader,
+      dateRange,
+    }),
+  }
 }
 
 function createLegendOnlyChart() {
