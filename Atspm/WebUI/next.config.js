@@ -51,4 +51,7 @@ module.exports = withBundleAnalyzer({
   eslint: {
     ignoreDuringBuilds: true,
   },
+  experimental: {
+    instrumentationHook: true,
+  },
 })

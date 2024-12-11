@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for ApplicationCore - ATSPM.Application.Analysis.WorkflowSteps/IdentifyTerminationTypesAndTimes.cs
+// for Application - Utah.Udot.Atspm.Analysis.WorkflowSteps/IdentifyTerminationTypesAndTimes.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,6 +21,12 @@ using Utah.Udot.Atspm.Data.Models.EventLogModels;
 
 namespace Utah.Udot.Atspm.Analysis.WorkflowSteps
 {
+    public abstract class PhaseTerminationEventBase
+    {
+        public DateTime StartTime { get; set; }
+        public int PhaseNumber { get; set; }
+    }
+
     public class IdentifyTerminationTypesAndTimes : TransformProcessStepBase<Tuple<Approach, int, IEnumerable<IndianaEvent>>, Tuple<Approach, int, PhaseTerminations>>
     {
         private readonly int _consecutiveCounts;
@@ -47,19 +53,19 @@ namespace Utah.Udot.Atspm.Analysis.WorkflowSteps
                 .Where(w => filters.Contains(w.EventCode))
                 .OrderBy(o => o.Timestamp).ToList();
 
-            //if there are two consecutive )IndianaEnumerations.PhaseGreenTermination then the second denotes an unknown termination
+            //if there are two consecutive IndianaEnumerations.PhaseGreenTermination then the second denotes an unknown termination
             var consecGreenTerminations = logs.GetLastConsecutiveEvent(2).Where(w => w.EventCode == (int)IndianaEnumerations.PhaseGreenTermination).ToList();
 
             //remove IndianaEnumerations.PhaseGreenTermination and get the consecutive terminations
             var consecTerminations = logs.Where(r => r.EventCode != (int)IndianaEnumerations.PhaseGreenTermination).GetLastConsecutiveEvent(_consecutiveCounts).ToList();
 
-            var stuff = new PhaseTerminations(consecTerminations.Union(consecGreenTerminations))
+            var terminations = new PhaseTerminations(consecTerminations.Union(consecGreenTerminations))
             {
                 LocationIdentifier = approach.Location.LocationIdentifier,
                 PhaseNumber = phase,
             };
 
-            var result = Tuple.Create(approach, phase, stuff);
+            var result = Tuple.Create(approach, phase, terminations);
 
             return Task.FromResult(result);
         }

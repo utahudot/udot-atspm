@@ -1,3 +1,19 @@
+// #region license
+// Copyright 2024 Utah Departement of Transportation
+// for WebUI - axios.ts
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//http://www.apache.org/licenses/LICENSE-2.
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+// #endregion
 import { getEnv } from '@/utils/getEnv'
 import axios, { AxiosRequestConfig, InternalAxiosRequestConfig } from 'axios'
 import Cookies from 'js-cookie'
@@ -8,6 +24,8 @@ export let identityAxios: ReturnType<typeof createAxiosInstance>
 export let dataAxios: ReturnType<typeof createAxiosInstance>
 export let speedAxios: ReturnType<typeof createAxiosInstance>
 
+const BASE_PATH = '/api/v1/'
+
 export const initializeAxiosInstances = async () => {
   const env = await getEnv()
 
@@ -15,11 +33,14 @@ export const initializeAxiosInstances = async () => {
     return
   }
 
-  if (env.CONFIG_URL) configAxios = createAxiosInstance(env.CONFIG_URL)
-  if (env.REPORTS_URL) reportsAxios = createAxiosInstance(env.REPORTS_URL)
-  if (env.IDENTITY_URL) identityAxios = createAxiosInstance(env.IDENTITY_URL)
-  if (env.DATA_URL) dataAxios = createAxiosInstance(env.DATA_URL)
-  if (env.SPEED_URL) speedAxios = createAxiosInstance(env.SPEED_URL)
+  if (env.CONFIG_URL)
+    configAxios = createAxiosInstance(env.CONFIG_URL + BASE_PATH)
+  if (env.REPORTS_URL)
+    reportsAxios = createAxiosInstance(env.REPORTS_URL + BASE_PATH)
+  if (env.IDENTITY_URL)
+    identityAxios = createAxiosInstance(env.IDENTITY_URL + BASE_PATH)
+  if (env.DATA_URL) dataAxios = createAxiosInstance(env.DATA_URL + BASE_PATH)
+  if (env.SPEED_URL) speedAxios = createAxiosInstance(env.SPEED_URL + BASE_PATH)
 }
 
 function createAxiosInstance(baseURL: string) {

@@ -19,8 +19,12 @@ import { create } from 'zustand'
 interface ChartsStore {
   activeChart: number | string | null
   setActiveChart: (activeChart: number | string | null) => void
+  syncZoom: boolean
+  setSyncZoom: (syncZoom: boolean) => void
 }
 export const useChartsStore = create<ChartsStore>((set) => ({
   activeChart: null,
   setActiveChart: (activeChart: number | string | null) => set({ activeChart }),
+  syncZoom: false,
+  setSyncZoom: (syncZoom: boolean) => set({ syncZoom }),
 }))

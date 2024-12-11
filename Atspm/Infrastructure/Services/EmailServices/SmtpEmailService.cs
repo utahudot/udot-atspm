@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for Infrastructure - ATSPM.Infrastructure.Services.EmailServices/SmtpEmailService.cs
+// for Infrastructure - Utah.Udot.Atspm.Infrastructure.Services.EmailServices/SmtpEmailService.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@
 using MailKit.Security;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 using MimeKit;
 using MimeKit.Text;
 using System.Net.Mail;
@@ -68,33 +67,21 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.EmailServices
                 try
                 {
                     await smtp.ConnectAsync(_options.Host, _options.Port, _options.EnableSsl ? SecureSocketOptions.StartTls : SecureSocketOptions.Auto);
-                    if (!String.IsNullOrEmpty(_options.UserName) && !String.IsNullOrEmpty(_options.Password))
-                    {
-                        await smtp.AuthenticateAsync(_options.UserName, _options.Password);
+                    await smtp.AuthenticateAsync(_options.UserName, _options.Password);
 
-
-                        if (smtp.IsConnected && smtp.IsAuthenticated)
-                        {
-                            _logger.LogDebug("SendEmail sending: {email}", email);
-
-                            var response = await smtp.SendAsync(email);
-
-                            _logger.LogInformation("SendEmail response: {response}", response);
-
-                            return true;
-                        }
-                        else
-                        {
-                            _logger.LogWarning("Not connected or authenticated");
-                        }
-                    }
-                    else
+                    if (smtp.IsConnected && smtp.IsAuthenticated)
                     {
                         _logger.LogDebug("SendEmail sending: {email}", email);
 
                         var response = await smtp.SendAsync(email);
 
                         _logger.LogInformation("SendEmail response: {response}", response);
+
+                        return true;
+                    }
+                    else
+                    {
+                        _logger.LogWarning("Not connected or authenticated");
                     }
 
                     await smtp.DisconnectAsync(true);

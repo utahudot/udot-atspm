@@ -74,10 +74,6 @@ function LocationsConfigContainer({
 
   const location = configData[0]
 
-  const detectors = location?.approaches?.flatMap(
-    (approach) => approach.detectors
-  )
-
   return (
     <Box>
       <Typography variant="h4" fontWeight={'bold'} my={2}>
@@ -130,7 +126,7 @@ function LocationsConfigContainer({
           </Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <ApproachesInfo approaches={location.approaches} />
+          <ApproachesInfo location={location} />
         </AccordionDetails>
       </Accordion>
       <Accordion
@@ -143,7 +139,7 @@ function LocationsConfigContainer({
           </Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <DetectorsInfo detectors={detectors} />
+          <DetectorsInfo location={location} />
         </AccordionDetails>
       </Accordion>
     </Box>

@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for ConfigApi - ATSPM.ConfigApi.Configuration/MeasureCommentsOdataConfiguration.cs
+// for ConfigApi - Utah.Udot.Atspm.ConfigApi.Configuration/MeasureCommentsOdataConfiguration.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.

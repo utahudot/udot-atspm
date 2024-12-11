@@ -29,6 +29,7 @@ import {
   createXAxis,
   createYAxis,
   formatDataPointForStepView,
+  formatExportFileName,
   transformSeriesData,
 } from '@/features/charts/common/transformers'
 import { ChartType, PlanOptions } from '@/features/charts/common/types'
@@ -130,7 +131,10 @@ function transformData(data: RawPurdueSplitFailureData) {
   const dataZoom = createDataZoom()
 
   const toolbox = createToolbox(
-    { title: titleHeader, dateRange },
+    {
+      title: formatExportFileName(titleHeader, data.start, data.end),
+      dateRange,
+    },
     data.locationIdentifier,
     ChartType.PurdueSplitFailure
   )

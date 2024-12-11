@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for ApplicationCore - ATSPM.Application.Business.Common/CycleService.cs
+// for Application - Utah.Udot.Atspm.Business.Common/CycleService.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,12 +15,12 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.IdentityModel.Tokens;
 using Utah.Udot.Atspm.Business.ApproachSpeed;
 using Utah.Udot.Atspm.Business.PreemptService;
 using Utah.Udot.Atspm.Business.SplitFail;
 using Utah.Udot.Atspm.Business.YellowRedActivations;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
+using Utah.Udot.Atspm.Extensions;
 
 namespace Utah.Udot.Atspm.Business.Common
 {

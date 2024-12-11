@@ -22,8 +22,10 @@ import {
   createPolyLines,
   createSeries,
   createTitle,
+  createToolbox,
   createYAxis,
   formatDataPointForStepView,
+  formatExportFileName,
   transformSeriesData,
 } from '@/features/charts/common/transformers'
 import { ChartType, DataPoint } from '@/features/charts/common/types'
@@ -42,7 +44,6 @@ import {
 import {
   DataZoomComponentOption,
   EChartsOption,
-  ToolboxComponentOption,
   VisualMapComponentOption,
   XAXisComponentOption,
 } from 'echarts'
@@ -105,12 +106,14 @@ function transformData(data: RawGreenTimeUtilizationData) {
 
   const tooltip = {}
 
-  const toolbox: ToolboxComponentOption = {
-    feature: {
-      saveAsImage: {},
-      dataView: { readOnly: true },
+  const toolbox = createToolbox(
+    {
+      title: formatExportFileName(titleHeader, data.start, data.end),
+      dateRange,
     },
-  }
+    data.locationIdentifier,
+    ChartType.GreenTimeUtilization
+  )
 
   const dataZoom: DataZoomComponentOption[] = [
     {
