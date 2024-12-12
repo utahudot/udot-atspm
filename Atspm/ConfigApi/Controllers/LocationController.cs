@@ -168,7 +168,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
                 string secondary = ourParams["secondaryName"].ToString();
                 string note = ourParams["note"].ToString();
                 //(List<Device>)ourParams["devices"];
-                List<Device> devices = (List<Device>)ourParams["devices"];
+                List<Device> devices = (ourParams["devices"] as IEnumerable<Device>)?.ToList();
 
 
                 TemplateLocationDto templateLocationDto = new TemplateLocationDto

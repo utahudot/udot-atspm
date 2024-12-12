@@ -91,7 +91,9 @@ namespace Utah.Udot.Atspm.ConfigApi.Configuration
                         h.Parameter<string>("primaryName");
                         h.Parameter<string>("secondaryName");
                         h.Parameter<string>("note");
-                        h.Parameter<List<Device>>("devices");
+                        //h.Parameter<List<Device>>("devices");
+                        //h.Parameter<Device>("devices");
+                        h.CollectionParameter<Device>("devices");
                         //h.ReturnsFromEntitySet<Location>("Location");
 
                         var i = model.Action("SyncLocation").ReturnsFromEntitySet<TemplateLocationModifiedDto>("templateLocationModifiedDto");
