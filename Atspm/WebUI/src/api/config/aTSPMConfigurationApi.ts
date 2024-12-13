@@ -7633,6 +7633,73 @@ export const apiV1MeasureCommentKeyMeasureTypes = (
   })
 }
 
+// Dan Generated this code manually as Orval wouldn't for some reason
+export const apiV1MapLayerPutKey = (
+  key: number,
+  data: UtahUdotAtspmDataModelsMapLayer
+) => {
+  return configRequest<void>({
+    url: `/MapLayer/${key}`,
+    method: 'PUT',
+    headers: {
+      'Content-Type':
+        'application/json;odata.metadata=minimal;odata.streaming=true',
+    },
+    data,
+  })
+}
+
+export const getApiV1MapLayerPutKeyMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1MapLayerPutKey>>,
+    TError,
+    { key: number; data: UtahUdotAtspmDataModelsMapLayer },
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof apiV1MapLayerPutKey>>,
+  TError,
+  { key: number; data: UtahUdotAtspmDataModelsMapLayer },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof apiV1MapLayerPutKey>>,
+    { key: number; data: UtahUdotAtspmDataModelsMapLayer }
+  > = (props) => {
+    const { key, data } = props ?? {}
+    return apiV1MapLayerPutKey(key, data)
+  }
+
+  return { mutationFn, ...mutationOptions }
+}
+
+export const useApiV1MapLayerPutKey = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof apiV1MapLayerPutKey>>,
+    TError,
+    { key: number; data: UtahUdotAtspmDataModelsMapLayer },
+    TContext
+  >
+}): UseMutationResult<
+  Awaited<ReturnType<typeof apiV1MapLayerPutKey>>,
+  TError,
+  { key: number; data: UtahUdotAtspmDataModelsMapLayer },
+  TContext
+> => {
+  const mutationOptions = getApiV1MapLayerPutKeyMutationOptions(options)
+
+  return useMutation(mutationOptions)
+}
+
+// -------------------------
+
 export const getApiV1MeasureCommentKeyMeasureTypesQueryKey = (
   key: number,
   params?: ApiV1MeasureCommentKeyMeasureTypesParams

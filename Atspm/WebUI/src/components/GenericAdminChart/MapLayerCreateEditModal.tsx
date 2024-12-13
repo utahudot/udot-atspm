@@ -19,12 +19,19 @@ import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
 
 interface MapLayer {
-  id: number
+  id?: number | undefined
   name: string
   mapLayerUrl?: string
   showByDefault: boolean
   serviceType: 'mapserver' | 'featureserver'
+  createdOn?: string
+  createdBy?: string
+  updatedOn?: string
+  updatedBy?: string
+  deletedOn?: string | null
+  deletedBy?: string | null
 }
+
 
 interface MapLayerCreateEditModalProps {
   open: boolean
@@ -47,12 +54,10 @@ type FormData = z.infer<typeof mapLayerSchema>
 export const MapLayerCreateEditModal: React.FC<
   MapLayerCreateEditModalProps
 > = ({ open, onClose, data, onCreate, onSave, onEdit }) => {
-  const isEditMode = data.id ? true : false
+  const isEditMode = data?.id ? true : false
   const {
     control,
     handleSubmit,
-    setValue,
-    watch,
     formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(mapLayerSchema),
@@ -64,21 +69,30 @@ export const MapLayerCreateEditModal: React.FC<
     },
   })
 
-
   const onSubmit = async (formData: FormData) => {
     try {
       if (isEditMode) {
-        console.log('Updating map layer:', { ...formData, id: data?.id })
-        // Add update logic if needed
+        const currentDateTime = new Date().toISOString()
+        const updatedMapLayer = {
+          ...formData,
+          id: data?.id,
+          createdOn: data?.createdOn || currentDateTime,
+          createdBy: data?.createdBy || '',
+          updatedOn: currentDateTime,
+          updatedBy: '',
+          deletedOn: null,
+          deletedBy: null,
+        }
+        await onEdit(updatedMapLayer)
       } else {
         await onCreate(formData)
+        onSave
       }
       onClose()
     } catch (error) {
-      console.error('Error saving MapLayer:', error)
+      console.error('Api Error on MapLayer:', error)
     }
   }
-
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
