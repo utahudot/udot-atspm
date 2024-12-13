@@ -370,6 +370,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
             services.AddScoped<IWatchDogEventLogRepository, WatchDogLogEventEFRepository>();
             services.AddScoped<IWatchDogIgnoreEventRepository, WatchDogIgnoreEventEFRepository>();
             services.AddScoped<IEventLogRepository, EventLogEFRepository>();
+            services.AddScoped<IMapLayerRepository, MapLayerEFRepository>();
 
             return services;
         }
@@ -385,11 +386,11 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
 
             services.AddScoped<IIndianaEventLogRepository, IndianaEventLogEFRepository>();
             services.AddScoped<ISpeedEventLogRepository, SpeedEventLogEFRepository>();
+
             services.AddScoped<IDeviceRepository, DeviceEFRepository>();
             services.AddScoped<IDeviceDownloader, DeviceDownloader>();
             services.AddScoped<IEventLogImporter, EventLogFileImporter>();
             services.AddScoped<IEventLogRepository, EventLogEFRepository>();
-
 
             return services;
         }

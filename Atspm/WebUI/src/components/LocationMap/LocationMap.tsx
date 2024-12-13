@@ -1,8 +1,8 @@
+import { useApiV1MapLayerCount } from '@/api/config/aTSPMConfigurationApi'
 import Markers from '@/components/LocationMap/Markers'
 import MapFilters from '@/components/MapFilters'
 import { Location } from '@/features/locations/types'
 import { getEnv } from '@/lib/getEnv'
-import { MapLayersMockData } from '@/pages/admin'
 import ClearIcon from '@mui/icons-material/Clear'
 import LayersIcon from '@mui/icons-material/Layers'
 import {
@@ -65,11 +65,19 @@ const LocationMap = ({
   } | null>(null)
   const [isLayersPopperOpen, setIsLayersPopperOpen] = useState(false)
   const layersButtonRef = useRef(null)
-  const [activeLayers, setActiveLayers] = useState<number[]>(
-    MapLayersMockData.filter((layer) => layer.showByDefault).map(
-      (layer) => layer.id
-    )
-  )
+
+  const { data: mapLayerData, isLoading } = useApiV1MapLayerCount()
+  const [activeLayers, setActiveLayers] = useState<number[]>([])
+
+  useEffect(() => {
+    if (mapLayerData?.value) {
+      setActiveLayers(
+        mapLayerData.value
+          .filter((layer) => layer.showByDefault)
+          .map((layer) => layer.id)
+      )
+    }
+  }, [mapLayerData])
 
   useEffect(() => {
     if (!mapRef) return
@@ -82,10 +90,10 @@ const LocationMap = ({
     })
 
     // Add active layers
-    MapLayersMockData.forEach((layer) => {
+    mapLayerData?.value.forEach((layer) => {
       if (activeLayers.includes(layer.id)) {
         if (layer.serviceType === 'mapserver') {
-          const baseUrl = layer.mapURL.split('/query')[0].replace('/0', '')
+          const baseUrl = layer.mapLayerUrl.split('/query')[0].replace('/0', '')
           new DynamicMapLayer({
             url: baseUrl,
             opacity: 1,
@@ -94,7 +102,7 @@ const LocationMap = ({
         } else {
           // Feature server - just use the URL as is
           new FeatureLayer({
-            url: layer.mapURL,
+            url: layer.mapLayerUrl,
             useCors: false, // Sometimes needed for ArcGIS services
           }).addTo(mapRef)
         }
@@ -336,7 +344,7 @@ const LocationMap = ({
               gap: 1,
             }}
           >
-            {MapLayersMockData.map((layer) => (
+            {mapLayerData?.value.map((layer) => (
               <FormControlLabel
                 key={layer.id}
                 control={
