@@ -84,6 +84,7 @@ namespace Utah.Udot.Atspm.Extensions
                 var newVersion = (Location)sourceLocation.Clone();
                 // Detach the original entity
 
+                newVersion.LocationIdentifier = replacementInformation.LocationIdentifier;
                 newVersion.Latitude = replacementInformation.Latitude;
                 newVersion.Longitude = replacementInformation.Longitude;
                 newVersion.PrimaryName = replacementInformation.PrimaryName;
