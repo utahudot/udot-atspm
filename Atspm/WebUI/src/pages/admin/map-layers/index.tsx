@@ -1,3 +1,9 @@
+import {
+  useApiV1MapLayer,
+  useApiV1MapLayerCount,
+  useApiV1MapLayerKey,
+  useApiV1MapLayerPutKey,
+} from '@/api/config/aTSPMConfigurationApi'
 import GenericAdminChart, {
   pageNameToHeaders,
 } from '@/components/GenericAdminChart'
@@ -9,41 +15,19 @@ import {
   useViewPage,
 } from '@/features/identity/pagesCheck'
 import { TabContext, TabList, TabPanel } from '@mui/lab'
-import { Tab } from '@mui/material'
+import { Backdrop, CircularProgress, Tab } from '@mui/material'
 import { GridColDef } from '@mui/x-data-grid'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 type MapLayer = {
   id: number
   name: string
-  mapURL: string
+  mapLayerUrl: string
   showByDefault: boolean
-  serviceType?: 'mapserver' | 'featureserver' // Add this
-  blob: Blob
+  serviceType?: 'mapserver' | 'featureserver'
 }
 
-export const MapLayersMockData: MapLayer[] = [
-  {
-    id: 1,
-    name: 'Udot Traffic Speed',
-    mapURL:
-      'https://maps.udot.utah.gov/central/rest/services/TrafficAndSafety/UDOT_Speed_Limits/MapServer/0/query?where=1%3D1&outFields=*&f=geojson',
-    showByDefault: false,
-    serviceType: 'mapserver',
-    blob: new Blob(),
-  },
-  {
-    id: 2,
-    name: 'ArcGis Earthquakes since 1970',
-    mapURL:
-      'https://sampleserver6.arcgisonline.com/arcgis/rest/services/Earthquakes_Since1970/FeatureServer/0',
-    showByDefault: false,
-    serviceType: 'featureserver',
-    blob: new Blob(),
-  },
-]
-
-const Admin = () => {
+const MapLayers = () => {
   const pageAccess = useViewPage(PageNames.MapLayers)
   const [currentTab, setCurrentTab] = useState('1')
   const [data, setData] = useState<any>(null)
@@ -54,47 +38,51 @@ const Admin = () => {
   const hasLocationsEditClaim = useUserHasClaim('LocationConfiguration:Edit')
   const hasLocationsDelteClaim = useUserHasClaim('LocationConfiguration:Delete')
 
-  //   const { data: mapLayerData, isLoading } = useGetApiGetMapLayers()
-
-  //   useEffect(() => {
-  //     if (mapLayerData) {
-  //       setData(mapLayerData)
-  //     }
-  //   }, [mapLayerData])
-
-  //   if (pageAccess.isLoading) {
-  //     return
-  //   }
+  const { data: mapLayerData, isLoading } = useApiV1MapLayerCount()
+  const createMutation = useApiV1MapLayer()
+  const editMutation = useApiV1MapLayerPutKey()
+  const deleteMutation = useApiV1MapLayerKey()
+  useEffect(() => {
+    if (mapLayerData) {
+      setData(mapLayerData)
+    }
+  }, [mapLayerData])
+  if (pageAccess.isLoading) {
+    return
+  }
 
   const handleChange = (_: React.SyntheticEvent, newValue: string) => {
     setCurrentTab(newValue)
   }
 
   const HandleCreateMapLayer = async (mapLayerData: MapLayer) => {
-    // const { id, name, mapURL,showByDefault,blob } = mapLayerData
-    // try {
-    //   await createMutation.mutateAsync({ id, name })
-    // } catch (error) {
-    //   console.error('Mutation Error:', error)
-    // }
+    try {
+      await createMutation.mutateAsync({ data: mapLayerData })
+    } catch (error) {
+      console.error('Mutation Error:', error)
+    }
   }
 
   const HandleDeleteMapLayer = async (mapLayerData: MapLayer) => {
     const { id } = mapLayerData
-    // try {
-    //   await deleteMutation.mutateAsync(id)
-    // } catch (error) {
-    //   console.error('Mutation Error:', error)
-    // }
+    console.log(id)
+    try {
+      await deleteMutation.mutateAsync({ key: id })
+    } catch (error) {
+      console.error('Mutation Error:', error)
+    }
   }
 
   const HandleEditMapLayer = async (mapLayerData: MapLayer) => {
-    const { id, name } = mapLayerData
-    // try {
-    //   await editMutation.mutateAsync({ data: { name }, id })
-    // } catch (error) {
-    //   console.error('Mutation Error:', error)
-    // }
+    console.log('HandleEditMapLayer')
+    try {
+      await editMutation.mutateAsync({
+        key: mapLayerData.id,
+        data: mapLayerData,
+      })
+    } catch (error) {
+      console.error('Mutation Error:', error)
+    }
   }
 
   const deleteMapLayer = (data: MapLayer) => {
@@ -109,23 +97,23 @@ const Admin = () => {
     HandleCreateMapLayer(data)
   }
 
-  //   if (isLoading) {
-  //     return (
-  //       <Backdrop open>
-  //         <CircularProgress color="inherit" />
-  //       </Backdrop>
-  //     )
-  //   }
+  if (isLoading) {
+    return (
+      <Backdrop open>
+        <CircularProgress color="inherit" />
+      </Backdrop>
+    )
+  }
 
-  //   if (!data) {
-  //     return <div>Error returning data</div>
-  //   }
+  if (!data) {
+    return <div>Error returning data</div>
+  }
 
-  const filteredData = MapLayersMockData.map((obj: any) => {
+  const filteredData = data?.value.map((obj: any) => {
     return {
       id: obj.id,
       name: obj.name,
-      mapURL: obj.mapURL,
+      mapLayerUrl: obj.mapLayerUrl,
       showByDefault: obj.showByDefault,
       serviceType: obj.serviceType,
     }
@@ -133,7 +121,7 @@ const Admin = () => {
 
   const baseType = {
     name: '',
-    mapURL: '',
+    mapLayerUrl: '',
     showByDefault: '',
     serviceType: '',
   }
@@ -160,7 +148,13 @@ const Admin = () => {
             onCreate={createMapLayer}
             hasEditPrivileges={hasLocationsEditClaim}
             hasDeletePrivileges={hasLocationsDelteClaim}
-            customModal={<MapLayerCreateEditModal />}
+            customModal={
+              <MapLayerCreateEditModal
+                onCreate={createMapLayer}
+                onEdit={editMapLayer}
+                onDelete={deleteMapLayer}
+              />
+            }
           />
         </TabPanel>
       </TabContext>
@@ -168,4 +162,4 @@ const Admin = () => {
   )
 }
 
-export default Admin
+export default MapLayers

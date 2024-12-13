@@ -1,12 +1,13 @@
 module.exports = {
   config: {
     input: {
-      target: './orval-spec.json',
+      target: './config-spec.json',
     },
     output: {
       target: './src/api/config',
       client: 'react-query',
       templates: './orval-templates',
+      mock: true,
       mode: 'split',
       override: {
         mutator: {
