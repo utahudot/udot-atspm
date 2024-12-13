@@ -133,11 +133,8 @@ builder.Host.ConfigureServices((h, s) =>
 
     s.AddPathBaseFilter(h);
 
-    if (!h.HostingEnvironment.IsDevelopment())
-    {
-        s.AddAtspmAuthentication(h);
-        s.AddAtspmAuthorization();
-    }
+    s.AddAtspmAuthentication(h);
+    s.AddAtspmAuthorization();
 });
 
 var app = builder.Build();

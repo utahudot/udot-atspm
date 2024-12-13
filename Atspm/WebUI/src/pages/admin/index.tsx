@@ -28,7 +28,7 @@ export const MapLayersMockData: MapLayer[] = [
     name: 'Udot Traffic Speed',
     mapURL:
       'https://maps.udot.utah.gov/central/rest/services/TrafficAndSafety/UDOT_Speed_Limits/MapServer/0/query?where=1%3D1&outFields=*&f=geojson',
-    showByDefault: true,
+    showByDefault: false,
     serviceType: 'mapserver',
     blob: new Blob(),
   },
@@ -127,7 +127,7 @@ const Admin = () => {
       name: obj.name,
       mapURL: obj.mapURL,
       showByDefault: obj.showByDefault,
-      serviceType: obj.serviceType
+      serviceType: obj.serviceType,
     }
   })
 
