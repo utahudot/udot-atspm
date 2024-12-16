@@ -81,42 +81,13 @@ builder.Host
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     s.AddSwaggerGen(o =>
      {
-         var fileName = typeof(Program).Assembly.GetName().Name + ".xml";
-         var filePath = Path.Combine(AppContext.BaseDirectory, fileName);
-
-         // integrate xml comments
-         o.IncludeXmlComments(filePath);
+         o.IncludeXmlComments(typeof(Program));
+         o.CustomOperationIds((controller, verb, action) => $"{verb}{controller}{action}");
+         o.EnableAnnotations();
 
          o.OperationFilter<TimestampFormatHeader>();
          o.DocumentFilter<GenerateAggregationSchemas>();
          o.DocumentFilter<GenerateEventSchemas>();
-
-         o.EnableAnnotations();
-         //o.CustomOperationIds(a => $"{a.ActionDescriptor.RouteValues["controller"]}{a.ActionDescriptor.RouteValues["action"]}");
-         o.CustomOperationIds(a =>
-         {
-             var result = a.ParameterDescriptions.Where(w => w.Source == BindingSource.Path).ToList();
-
-             StringBuilder test = new StringBuilder();
-
-             foreach (var id in result)
-             {
-                 if (test.Length < 1)
-                     test.Append("From");
-                 else
-                     test.Append("And");
-
-                 test.Append(id.Name.Capitalize());
-
-                 //Console.WriteLine($"{a.ActionDescriptor.RouteValues["controller"]}{a.ActionDescriptor.RouteValues["action"]}From{id.Name.Capitalize()}");
-             }
-
-             var value = $"{a.ActionDescriptor.RouteValues["controller"]}{a.ActionDescriptor.RouteValues["action"]}{test}";
-             Console.WriteLine(value);
-
-             return value;
-         });
-
      });
 
     var allowedHosts = builder.Configuration.GetSection("AllowedHosts").Get<string>();

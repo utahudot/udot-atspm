@@ -24,7 +24,9 @@ using Identity.Business.Users;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.OpenApi.Models;
+using System.Text;
 using Utah.Udot.Atspm.Data;
 using Utah.Udot.Atspm.Data.Models;
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
@@ -42,10 +44,11 @@ builder.Host
         s.AddProblemDetails();
         s.AddSwaggerGen(o =>
         {
-            var fileName = typeof(Program).Assembly.GetName().Name + ".xml";
-            var filePath = Path.Combine(AppContext.BaseDirectory, fileName);
-            // integrate xml comments
-            o.IncludeXmlComments(filePath);
+            o.IncludeXmlComments(typeof(Program));
+            o.CustomOperationIds((controller, verb, action) => $"{verb}{controller}{action}");
+            o.EnableAnnotations();
+
+            //TODO: Multi-documenets needs to be implemented on this
             o.SwaggerDoc("v1", new OpenApiInfo
             {
                 Title = "Atspm Authentication Api",
@@ -54,7 +57,7 @@ builder.Host
                 License = new OpenApiLicense() { Name = "MIT", Url = new Uri("https://opensource.org/licenses/MIT") }
             });
         });
-        var allowedHosts = builder.Configuration.GetSection("AllowedHosts").Get<string>();
+        var allowedHosts = builder.Configuration.GetSection("AllowedHosts").Get<string>() ?? "*";
         s.AddCors(options =>
         {
             options.AddPolicy("CorsPolicy",
