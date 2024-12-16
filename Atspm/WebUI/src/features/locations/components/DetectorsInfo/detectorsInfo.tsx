@@ -2,11 +2,52 @@ import DetectionTypesCell from '@/features/locations/components/editDetector/Det
 import { hardwareTypeOptions } from '@/features/locations/components/editDetector/HardwareTypeCell'
 import { laneTypeOptions } from '@/features/locations/components/editDetector/LaneTypeCell'
 import { movementTypeOptions } from '@/features/locations/components/editDetector/MovementTypeCell'
-import { Detector } from '@/features/locations/types'
+import { LocationExpanded } from '@/features/locations/types'
 import CheckBoxIcon from '@mui/icons-material/CheckBox'
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank'
 import { Box } from '@mui/material'
-import { DataGrid, GridColDef, GridToolbar } from '@mui/x-data-grid'
+import { SxProps, Theme } from '@mui/system'
+import {
+  DataGrid,
+  GridColDef,
+  GridToolbarColumnsButton,
+  GridToolbarContainer,
+  GridToolbarExport,
+  GridToolbarFilterButton,
+} from '@mui/x-data-grid'
+
+const DataGridStyle: SxProps<Theme> = {
+  '@media print': {
+    '& .MuiDataGrid-main': {
+      zoom: '.58',
+    },
+  },
+} as const
+
+interface CustomToolbarProps {
+  location: LocationExpanded
+}
+
+function CustomToolbar({ location }: CustomToolbarProps) {
+  const fileName =
+    `${location.primaryName} & ${location.secondaryName} Detectors Configuration`.replace(
+      / /g,
+      '_'
+    )
+  return (
+    <GridToolbarContainer>
+      <GridToolbarColumnsButton />
+      <GridToolbarFilterButton />
+      <GridToolbarExport
+        csvOptions={{ fileName }}
+        printOptions={{
+          hideFooter: true,
+          hideToolbar: true,
+        }}
+      />
+    </GridToolbarContainer>
+  )
+}
 
 const defaults = {
   editable: false,
@@ -58,7 +99,7 @@ const detectorsHeaders: GridColDef[] = [
     minWidth: 230,
     renderCell: (params) => {
       if (!params.value) return null
-      return <DetectionTypesCell detector={params.value as Detector} readonly />
+      return <DetectionTypesCell detectionTypes={params.value} readonly />
     },
   },
   {
@@ -113,7 +154,7 @@ const detectorsHeaders: GridColDef[] = [
     minWidth: 150,
     renderCell: (params) => {
       const laneType = laneTypeOptions.find(
-        (option) => option.id === params.value
+        (option) => option.description === params.value
       )
       return (
         <Box display={'flex'} alignItems={'center'}>
@@ -144,15 +185,16 @@ const detectorsHeaders: GridColDef[] = [
   {
     ...defaults,
     field: 'minSpeedFilter',
-    headerName: 'Min Speed Filter	',
+    headerName: 'Min Speed Filter',
     minWidth: 70,
   },
   {
     ...defaults,
     field: 'comment',
     headerName: 'Comment',
+    disableExport: true,
     renderCell: (params) => {
-      const comments = params.value.split(',') as string[]
+      const comments = params.value?.split(',') as string[]
       return (
         <Box display={'grid'} alignItems={'center'}>
           {comments.map((comment) => (
@@ -167,11 +209,15 @@ const detectorsHeaders: GridColDef[] = [
 ]
 
 interface DetectorsInfoProps {
-  detectors: Detector[] | undefined
+  location: LocationExpanded | undefined
 }
 
-function DetectorsInfo({ detectors }: DetectorsInfoProps) {
-  if (!detectors) {
+function DetectorsInfo({ location }: DetectorsInfoProps) {
+  const detectors = location?.approaches?.flatMap(
+    (approach) => approach.detectors || []
+  )
+
+  if (!location || !location?.approaches || !detectors?.length) {
     return (
       <div>
         <h3>No detectors found</h3>
@@ -188,19 +234,23 @@ function DetectorsInfo({ detectors }: DetectorsInfoProps) {
       phase: detector.approach?.protectedPhaseNumber,
       permPhase: detector.approach?.permissivePhaseNumber,
       overlap: detector.approach?.isProtectedPhaseOverlap,
-      detectionTypes: detector,
+      detectionTypes: detector.detectionTypes
+        .map((dt) => dt.description)
+        .join(', '),
       detectionHardware: detector.detectionHardware,
       latencyCorrection: detector.latencyCorrection,
       movementType: detector.movementType,
       laneNumber: detector.laneNumber,
-      laneType: detector.laneType,
+      laneType: laneTypeOptions.find(
+        (o) => o.abbreviation === detector.laneType
+      )?.description,
       distanceFromStopBar: detector.distanceFromStopBar,
       decisionPoint: detector.decisionPoint,
       movementDelay: detector.movementDelay,
       minSpeedFilter: detector.minSpeedFilter,
       comment: detector.detectorComments
         ?.map((comment) => comment.comment)
-        .join(','),
+        .join(', '),
     }
   })
 
@@ -211,9 +261,16 @@ function DetectorsInfo({ detectors }: DetectorsInfoProps) {
         rows={data}
         columns={detectorsHeaders}
         getRowId={(row) => row.id}
-        slots={{ toolbar: GridToolbar }}
+        rowSelection={false}
+        slots={{
+          toolbar: CustomToolbar,
+        }}
+        slotProps={{
+          toolbar: { location },
+        }}
         pageSizeOptions={[{ value: 100, label: '100' }]}
         sx={{
+          ...DataGridStyle,
           '& .MuiDataGrid-columnHeaderTitle': {
             whiteSpace: 'normal',
             lineHeight: 'normal',
