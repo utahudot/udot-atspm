@@ -79,9 +79,9 @@ jobs:
           service_account: ${{ vars.DEPLOY_SA }}
       - name: 🚀 Deploy to Cloud Run Job # TODO: Secrets and VPC/Database Connectivity Right Sizing
         run: |
-          [[ ${{ matrix.job }} == "atspm-eventagg" ]] && image="atspm-eventagg" || image=${{ matrix.job }}
-          if [ ! "$(gcloud run jobs list --project ${{vars.PROJECT_ID}}| grep -w $image)" ]; then
-              gcloud run jobs create $image --project ${{vars.PROJECT_ID}} \
+          [[ ${{ matrix.job }} == "atspm-eventagg" ]] && image="atspm-eventlogutil" || image=${{ matrix.job }}
+          if [ ! "$(gcloud run jobs list --project ${{vars.PROJECT_ID}}| grep -w ${{ matrix.job }})" ]; then
+              gcloud run jobs create ${{ matrix.job }} --project ${{vars.PROJECT_ID}} \
               --region us-west3 \
               --image ${{ vars.GCP_ARTIFACT_REPO }}/$image:latest \
               --service-account ${{vars.RUN_SA}} \
@@ -91,7 +91,7 @@ jobs:
               --max-retries 0 \
               --parallelism 0 
           else
-              gcloud run jobs update $image --project ${{vars.PROJECT_ID}} \
+              gcloud run jobs update ${{ matrix.job }} --project ${{vars.PROJECT_ID}} \
               --region us-west3 \
               --image ${{ vars.GCP_ARTIFACT_REPO }}/$image:latest \
               --service-account ${{vars.RUN_SA}} \
