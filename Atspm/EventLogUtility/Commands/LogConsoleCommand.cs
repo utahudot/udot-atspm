@@ -25,27 +25,25 @@ using Utah.Udot.Atspm.Infrastructure.Services.HostedServices;
 
 namespace Utah.Udot.Atspm.EventLogUtility.Commands
 {
-
-
-    public class DownloadCommand : Command, ICommandOption
-    {
-        public DownloadCommand() : base("download", "Download data from devices")
-        {
+    //public class DownloadCommand : Command, ICommandOption
+    //{
+    //    public DownloadCommand() : base("download", "Download data from devices")
+    //    {
             
-        }
+    //    }
 
-        public void BindCommandOptions(HostBuilderContext host, IServiceCollection services)
-        {
-            Console.WriteLine($"********************BindCommandOptions!********************");
+    //    public void BindCommandOptions(HostBuilderContext host, IServiceCollection services)
+    //    {
+    //        Console.WriteLine($"********************BindCommandOptions!********************");
 
-            var parent = this.Parents.FirstOrDefault();
+    //        var parent = this.Parents.FirstOrDefault();
 
-            if (parent is LogConsoleCommand opt)
-            {
-                opt.BindCommandOptions(host, services);
-            }
-        }
-    }
+    //        if (parent is LogConsoleCommand opt)
+    //        {
+    //            opt.BindCommandOptions(host, services);
+    //        }
+    //    }
+    //}
     
     public class LogConsoleCommand : Command, ICommandOption
     {
@@ -80,7 +78,7 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
             AddGlobalOption(TransportProtocolOption);
             AddGlobalOption(DeviceStatusCommandOption);
 
-            this.AddCommand(new DownloadCommand());
+            //this.AddCommand(new DownloadCommand());
         }
 
         public Argument<bool?> DeleteRemoteFileArg { get; set; } = new Argument<bool?>("delete local", "Delete the remote file on the device after downloading");

@@ -119,11 +119,11 @@ builder.Host
 
     s.AddPathBaseFilter(h);
 
-    //if (!h.HostingEnvironment.IsDevelopment())
-    //{
-    //    s.AddAtspmAuthentication(h);
-    //    s.AddAtspmAuthorization();
-    //}
+    if (!h.HostingEnvironment.IsDevelopment())
+    {
+        s.AddAtspmAuthentication(h);
+        s.AddAtspmAuthorization();
+    }
 });
 
 var app = builder.Build();
