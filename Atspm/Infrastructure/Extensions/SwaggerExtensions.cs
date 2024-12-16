@@ -6,9 +6,9 @@ using System.Text;
 namespace Utah.Udot.Atspm.Infrastructure.Extensions
 {
     /// <summary>
-    /// Asp.net helper extensions for Atspn api's
+    /// <see cref="Swashbuckle.AspNetCore"/> helper extensions
     /// </summary>
-    public static class ApiExtensions
+    public static class SwaggerExtensions
     {
         /// <summary>
         /// Gets assembly from <paramref name="type"/> and inject human-friendly descriptions for Operations, Parameters and Schemas based on XML Comment files
