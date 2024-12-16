@@ -19,8 +19,10 @@ using Asp.Versioning;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using System.Text;
 using Utah.Udot.Atspm.DataApi.Configuration;
 using Utah.Udot.Atspm.DataApi.CustomOperations;
 using Utah.Udot.Atspm.DataApi.Formatters;
@@ -79,18 +81,16 @@ builder.Host
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     s.AddSwaggerGen(o =>
      {
-         var fileName = typeof(Program).Assembly.GetName().Name + ".xml";
-         var filePath = Path.Combine(AppContext.BaseDirectory, fileName);
-
-         // integrate xml comments
-         o.IncludeXmlComments(filePath);
+         o.IncludeXmlComments(typeof(Program));
+         o.CustomOperationIds((controller, verb, action) => $"{verb}{controller}{action}");
+         o.EnableAnnotations();
 
          o.OperationFilter<TimestampFormatHeader>();
          o.DocumentFilter<GenerateAggregationSchemas>();
          o.DocumentFilter<GenerateEventSchemas>();
      });
 
-    var allowedHosts = builder.Configuration.GetSection("AllowedHosts").Get<string>();
+    var allowedHosts = builder.Configuration.GetSection("AllowedHosts").Get<string>() ?? "*";
     s.AddCors(options =>
     {
         options.AddPolicy("CorsPolicy",
@@ -119,11 +119,7 @@ builder.Host
 
     s.AddPathBaseFilter(h);
 
-    //if (!h.HostingEnvironment.IsDevelopment())
-    //{
-    //    s.AddAtspmAuthentication(h);
-    //    s.AddAtspmAuthorization();
-    //}
+    s.AddAtspmIdentity(h);
 });
 
 var app = builder.Build();
