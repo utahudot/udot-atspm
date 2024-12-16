@@ -27,6 +27,7 @@ import {
   createTooltip,
   createXAxis,
   createYAxis,
+  formatExportFileName,
   transformSeriesData,
 } from '@/features/charts/common/transformers'
 import { ChartType } from '@/features/charts/common/types'
@@ -122,7 +123,10 @@ function transformData(data: RawTurningMovementCountsData) {
   const dataZoom = createDataZoom()
 
   const toolbox = createToolbox(
-    { title: titleHeader, dateRange },
+    {
+      title: formatExportFileName(titleHeader, data.start, data.end),
+      dateRange,
+    },
     data.locationIdentifier,
     ChartType.TurningMovementCounts
   )

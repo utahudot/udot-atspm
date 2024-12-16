@@ -1,4 +1,4 @@
-import { DetectionType, Detector } from '@/features/locations/types'
+import { DetectionType } from '@/features/locations/types'
 import {
   Avatar,
   AvatarGroup,
@@ -65,25 +65,51 @@ const options: Record<string, DetectionType> = {
 }
 
 interface DetectionTypesProps {
-  detector: Detector
-  onUpdate?: (newDetectionTypes: DetectionType[]) => void
+  detectionTypes: string
+  onUpdate?: (newDetectionTypes: string[]) => void
   readonly?: boolean
 }
 
 const DetectionTypesCell = ({
-  detector,
+  detectionTypes,
   onUpdate,
   readonly,
 }: DetectionTypesProps) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const theme = useTheme()
 
+  const descriptionToAbbreviation = React.useMemo(
+    () =>
+      Object.values(options).reduce(
+        (acc, option) => {
+          acc[option.description] = option.abbreviation
+          return acc
+        },
+        {} as Record<string, string>
+      ),
+    []
+  )
+
+  const abbreviationToDescription = React.useMemo(
+    () =>
+      Object.values(options).reduce(
+        (acc, option) => {
+          acc[option.abbreviation] = option.description
+          return acc
+        },
+        {} as Record<string, string>
+      ),
+    []
+  )
+
   const valueAbbreviations = new Set(
-    detector.detectionTypes?.map((dt) => dt.abbreviation)
+    detectionTypes.split(', ').map((desc) => descriptionToAbbreviation[desc])
   )
 
   const handleClick = (event: React.MouseEvent<HTMLDivElement>) => {
-    setAnchorEl(event.currentTarget)
+    if (!readonly) {
+      setAnchorEl(event.currentTarget)
+    }
   }
 
   const handleClose = () => {
@@ -91,19 +117,14 @@ const DetectionTypesCell = ({
   }
 
   const handleSelect = (abbreviation: string) => {
-    const selectedOption = Object.values(options).find(
-      (option) => option.abbreviation === abbreviation
-    )
-    if (selectedOption) {
-      const isSelected = valueAbbreviations.has(abbreviation)
-      const newDetectionTypes = isSelected
-        ? detector.detectionTypes.filter(
-            (dt) => dt.abbreviation !== abbreviation
-          )
-        : [...detector.detectionTypes, selectedOption]
+    const description = abbreviationToDescription[abbreviation]
+    const isSelected = valueAbbreviations.has(abbreviation)
 
-      if (onUpdate) onUpdate(newDetectionTypes)
-    }
+    const newDetectionTypes = isSelected
+      ? detectionTypes.filter((desc) => desc !== description)
+      : [...detectionTypes, description]
+
+    if (onUpdate) onUpdate(newDetectionTypes)
   }
 
   return (
@@ -117,7 +138,7 @@ const DetectionTypesCell = ({
           gap: 1,
           alignItems: 'center',
           flexWrap: 'wrap',
-          cursor: 'pointer',
+          cursor: readonly ? 'default' : 'pointer',
         }}
         onClick={handleClick}
       >
@@ -132,6 +153,8 @@ const DetectionTypesCell = ({
                   width: 26,
                   height: 26,
                   fontSize: '11px',
+                  WebkitPrintColorAdjust: 'exact',
+                  printColorAdjust: 'exact',
                 }}
                 slotProps={{
                   width: { style: { width: 26, height: 26, fontSize: '11px' } },
