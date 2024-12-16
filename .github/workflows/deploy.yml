@@ -79,7 +79,7 @@ jobs:
           service_account: ${{ vars.DEPLOY_SA }}
       - name: 🚀 Deploy to Cloud Run Job # TODO: Secrets and VPC/Database Connectivity Right Sizing
         run: |
-          [[ ${{ matrix.job }} == "atspm-eventagg" ]] && image="atspm-eventlogutil" || image=${{ matrix.job }}
+          [[ ${{ matrix.job }} == "atspm-eventagg" ]] && image="atspm-eventagg" || image=${{ matrix.job }}
           if [ ! "$(gcloud run jobs list --project ${{vars.PROJECT_ID}}| grep -w $image)" ]; then
               gcloud run jobs create $image --project ${{vars.PROJECT_ID}} \
               --region us-west3 \
