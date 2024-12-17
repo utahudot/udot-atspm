@@ -28,9 +28,15 @@ interface HasId {
   name: string
 }
 
-interface ModalProps {
+interface DeleteModalProps {
   id: number
   name: string
+  open: boolean
+  onClose: () => void
+}
+interface EditModalProps<T> {
+  id: number
+  data: T | null
   open: boolean
   onClose: () => void
 }
@@ -42,12 +48,13 @@ interface CreateModalProps {
 
 interface AdminChartProps<T extends HasId> {
   headers: string[]
+  headerKeys: string[]
   data: T[]
   pageName: string
   hasEditPrivileges: boolean
   hasDeletePrivileges: boolean
-  editModal: ReactElement<ModalProps>
-  deleteModal: ReactElement<ModalProps>
+  editModal: ReactElement<EditModalProps<T>>
+  deleteModal: ReactElement<DeleteModalProps>
   createModal: ReactElement<CreateModalProps>
 }
 
@@ -55,6 +62,7 @@ type Order = 'asc' | 'desc'
 
 const AdminTable = <T extends HasId>({
   headers,
+  headerKeys,
   data,
   pageName,
   hasEditPrivileges,
@@ -124,7 +132,7 @@ const AdminTable = <T extends HasId>({
 
   const editModalWithId = cloneElement(editModal, {
     id: selectedRow?.id,
-    name: selectedRow?.name,
+    data: selectedRow,
     open: isEditModalOpen,
     onClose: handleClose,
   })
@@ -133,6 +141,9 @@ const AdminTable = <T extends HasId>({
     open: isCreateModalOpen,
     onClose: handleClose,
   })
+
+  console.log('Headers:', headers)
+  console.log('Data:', data)
 
   return (
     <Box
@@ -199,9 +210,9 @@ const AdminTable = <T extends HasId>({
             <TableBody>
               {sortedData.map((row) => (
                 <TableRow hover key={row.id}>
-                  {headers.map((header) => (
+                  {headerKeys.map((header) => (
                     <TableCell key={header}>
-                      {row[header.toLowerCase() as keyof T] as string | number}
+                      {row[header as keyof T] as string | number}
                     </TableCell>
                   ))}
                   {(hasEditPrivileges || hasDeletePrivileges) && (

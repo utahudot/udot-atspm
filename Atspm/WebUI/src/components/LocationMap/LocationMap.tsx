@@ -1,4 +1,4 @@
-import { useApiV1MapLayerCount } from '@/api/config/aTSPMConfigurationApi'
+import { useGetMapLayer } from '@/api/config/aTSPMConfigurationApi'
 import Markers from '@/components/LocationMap/Markers'
 import MapFilters from '@/components/MapFilters'
 import { Location } from '@/features/locations/types'
@@ -66,7 +66,7 @@ const LocationMap = ({
   const [isLayersPopperOpen, setIsLayersPopperOpen] = useState(false)
   const layersButtonRef = useRef(null)
 
-  const { data: mapLayerData, isLoading } = useApiV1MapLayerCount()
+  const { data: mapLayerData, isLoading } = useGetMapLayer()
   const [activeLayers, setActiveLayers] = useState<number[]>([])
 
   useEffect(() => {

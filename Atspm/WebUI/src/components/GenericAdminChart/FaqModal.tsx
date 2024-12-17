@@ -1,5 +1,5 @@
 import TextEditor from '@/components/TextEditor/JoditTextEditor'
-
+import { zodResolver } from '@hookform/resolvers/zod'
 import { Faq } from '@/features/faq/types'
 import {
   Box,
@@ -13,74 +13,70 @@ import {
   OutlinedInput,
 } from '@mui/material'
 import { useEffect, useState } from 'react'
+import { SubmitHandler, useForm } from 'react-hook-form'
+import { z } from 'zod'
+
+const schema = z.object({
+  header: z.string().min(1, { message: 'Name is required' }),
+  body: z.string().optional(),
+  displayOrder: z.number().optional(),
+})
+
+type FormData = z.infer<typeof schema>
 
 interface ModalProps {
-  open: boolean
+  data?: Faq
+  isOpen: boolean
   onClose: () => void
-  data: Faq | null
   onSave: (faq: Faq) => void
-  onCreate: (faq: Faq) => void
-  onEdit: (faq: Faq) => void
 }
 
-export const modalButtonLocation = {
-  display: 'flex',
-  justifyContent: 'flex-end',
-  alignItems: 'flex-end',
-  paddingTop: '25px',
-  width: '100%',
-}
 
-const FaqModal: React.FC<ModalProps> = ({
-  open,
+const FaqEditorModal: React.FC<ModalProps> = ({
+  data: faq,
+  isOpen,
   onClose,
-  data,
-  onCreate,
   onSave,
-  onEdit,
 }) => {
-  const [faqId, setFaqId] = useState(data?.id || '')
-  const [faqHeader, setFaqHeader] = useState(data?.header || '')
-  const [faqBody, setFaqBody] = useState(data?.body || '')
+  const [faqId, setFaqId] = useState(faq?.id || '')
+  const [faqHeader, setFaqHeader] = useState(faq?.header || '')
+  const [faqBody, setFaqBody] = useState(faq?.body || '')
   const [faqDisplayOrder, setFaqDisplayOrder] = useState(
-    data?.displayOrder || 0
+    faq?.displayOrder || 0
   )
   const [createOrEditText, setCreateOrEditText] = useState('')
 
 
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormData>({
+    resolver: zodResolver(schema),
+    defaultValues: {
+      header: faq?.header || '',
+      body: faq?.body || '',
+      displayOrder: faq?.displayOrder || 0,
+    },
+  })
 
-  const handleSubmit = async () => {
-    const dataGridRow = {
-      id: faqId,
-      header: faqHeader,
-      body: faqBody,
-      displayOrder: faqDisplayOrder,
-    }
-
-    try {
-      if (data.id) {
-        await onEdit(dataGridRow)
-      } else {
-        await onCreate(dataGridRow)
-      }
-      onSave(dataGridRow)
-      onClose()
-    } catch (error) {
-      console.error('Error occurred while editing/creating data:', error)
-    }
+  const onSubmit: SubmitHandler<FormData> = (data) => {
+    const updatedfaq = { ...faq, ...data } as Faq
+    onSave(updatedfaq)
+    onClose()
   }
 
 useEffect(()=>{
-  if (data?.id !== undefined) {
+  if (faq?.id !== undefined) {
     setCreateOrEditText('Edit');
   } else {
     setCreateOrEditText('Create');
   }
-},[data])
+},[faq])
 
   return (
-    <Dialog open={open} key={open ? 'open' : 'closed'} maxWidth="md" fullWidth>
-      <DialogTitle sx={{ fontSize: '1.3rem', margin: '1rem' }} id="role-permissions-label">{createOrEditText} FAQ</DialogTitle>
+    <Dialog open={isOpen} onClose={onClose} key={isOpen ? 'open' : 'closed'} maxWidth="md" fullWidth>
+      <DialogTitle id="form-dialog-title">{createOrEditText} FAQ</DialogTitle>
 
       <DialogContent>
         <Box
@@ -118,7 +114,7 @@ useEffect(()=>{
         <Box sx={{ marginRight: '1rem', marginBottom: '.5rem' }}>
           <Button onClick={onClose}>Cancel</Button>
           <Button variant="contained" onClick={handleSubmit}>
-            {data?.id ? 'Edit FAQ' : 'Create FAQ'}
+            {faq?.id ? 'Edit FAQ' : 'Create FAQ'}
           </Button>
         </Box>
       </DialogActions>
@@ -126,4 +122,4 @@ useEffect(()=>{
   )
 }
 
-export default FaqModal
+export default FaqEditorModal

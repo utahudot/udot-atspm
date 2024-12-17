@@ -1,10 +1,10 @@
+import { usePatchAreaFromKey } from '@/api/config/aTSPMConfigurationApi'
 import AdminTable from '@/components/AdminTable/AdminTable'
 import DeleteModal from '@/components/AdminTable/DeleteModal'
 import { ResponsivePageLayout } from '@/components/ResponsivePage'
 import {
   useCreateArea,
   useDeleteArea,
-  useEditArea,
   useGetAreas,
 } from '@/features/areas/api/areaApi'
 import AreaEditorModal from '@/features/areas/components/AreaEditorModal'
@@ -17,10 +17,8 @@ import {
 import { useLatestVersionOfAllLocations } from '@/features/locations/api'
 import { Location } from '@/features/locations/types'
 import { Backdrop, CircularProgress } from '@mui/material'
-
 const AreasAdmin = () => {
   const pageAccess = useViewPage(PageNames.Areas)
-
   const hasLocationsEditClaim = useUserHasClaim('LocationConfiguration:Edit')
   const hasLocationsDeleteClaim = useUserHasClaim(
     'LocationConfiguration:Delete'
@@ -28,7 +26,7 @@ const AreasAdmin = () => {
 
   const { mutateAsync: createArea } = useCreateArea()
   const { mutateAsync: deleteArea } = useDeleteArea()
-  const { mutateAsync: updateArea } = useEditArea()
+  const { mutateAsync: updateArea } = usePatchAreaFromKey()
 
   const { data: locationsData } = useLatestVersionOfAllLocations()
   const { data: areaData, isLoading, refetch: refetchAreas } = useGetAreas()
@@ -52,10 +50,13 @@ const AreasAdmin = () => {
   }
 
   const handleEditArea = async (areaData: Area) => {
-    console.log(areaData)
-    // const { id, name } = areaData
-    // await updateArea({ data: { name }, id })
-    // refetchAreas()
+    const { id, name } = areaData
+    await updateArea({ data: { name }, key: id })
+    refetchAreas()
+  }
+
+  const onModalClose = () => {
+    //do something?? potentially just delete
   }
 
   const filterAssociatedObjects = (areaId: number, objects: Location[]) => {
@@ -87,18 +88,30 @@ const AreasAdmin = () => {
   }))
 
   const headers = ['Name']
+  const headerKeys = ['name']
 
   return (
     <ResponsivePageLayout title="Manage Areas" noBottomMargin>
       <AdminTable
         pageName="Area"
         headers={headers}
+        headerKeys={headerKeys}
         data={filteredData}
         hasEditPrivileges={hasLocationsEditClaim}
         hasDeletePrivileges={hasLocationsDeleteClaim}
-        editModal={<AreaEditorModal isOpen={true} onSave={handleEditArea} />}
+        editModal={
+          <AreaEditorModal
+            isOpen={true}
+            onSave={handleEditArea}
+            onClose={onModalClose}
+          />
+        }
         createModal={
-          <AreaEditorModal isOpen={true} onSave={handleCreateArea} />
+          <AreaEditorModal
+            isOpen={true}
+            onSave={handleCreateArea}
+            onClose={onModalClose}
+          />
         }
         deleteModal={
           <DeleteModal

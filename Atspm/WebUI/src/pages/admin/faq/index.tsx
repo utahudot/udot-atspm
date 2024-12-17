@@ -1,7 +1,6 @@
-import GenericAdminChart from '@/components/GenericAdminChart'
-import {
-  pageNameToHeaders,
-} from '@/components/GenericAdminChart'
+import AdminTable from '@/components/AdminTable/AdminTable'
+import DeleteModal from '@/components/AdminTable/DeleteModal'
+import FaqModal from '@/components/GenericAdminChart/FaqModal'
 import { ResponsivePageLayout } from '@/components/ResponsivePage'
 import {
   useCreateFaqs,
@@ -10,46 +9,37 @@ import {
   useGetFaqs,
 } from '@/features/faq/api'
 import { Faq } from '@/features/faq/types'
-import { PageNames, useUserHasClaim, useViewPage } from '@/features/identity/pagesCheck'
+import {
+  PageNames,
+  useUserHasClaim,
+  useViewPage,
+} from '@/features/identity/pagesCheck'
 import { Backdrop, CircularProgress } from '@mui/material'
-import { GridColDef } from '@mui/x-data-grid'
-import { useEffect, useState } from 'react'
-import FaqModal from '@/components/GenericAdminChart/FaqModal'
 
 const FaqAdmin = () => {
-  const pageAccess = useViewPage(PageNames.FAQs) 
-  const [data, setData] = useState<any>(null)
-  const headers: GridColDef[] = pageNameToHeaders.get(
-    PageNames.FAQs
-  ) as GridColDef[]
+  const pageAccess = useViewPage(PageNames.FAQs)
 
-  const hasEditClaim = useUserHasClaim('GeneralConfiguration:Edit');
-  const hasDeleteClaim = useUserHasClaim('GeneralConfiguration:Delete');
+  const hasGeneralEditClaim = useUserHasClaim('GeneralConfiguration:Edit')
+  const hasGeneralDeleteClaim = useUserHasClaim('GeneralConfiguration:Delete')
 
-  const createMutation = useCreateFaqs()
-  const deleteMutation = useDeleteFaqs()
-  const editMutation = useEditFaqs()
+  const { mutateAsync: createMutation } = useCreateFaqs()
+  const { mutateAsync: deleteMutation } = useDeleteFaqs()
+  const { mutateAsync: editMutation } = useEditFaqs()
 
   const { data: faqData, isLoading, refetch: refetchFaqData } = useGetFaqs()
-
-  useEffect(() => {
-    if (faqData) {
-      setData(faqData)
-    }
-  }, [faqData])
+  const faqs = faqData?.value
 
   if (pageAccess.isLoading) {
     return
   }
 
-
   const HandleCreateFaq = async (faqData: Faq) => {
     const { header, body, displayOrder } = faqData
     try {
-      await createMutation.mutateAsync({
+      await createMutation({
         header,
         body,
-        displayOrder
+        displayOrder,
       })
       refetchFaqData()
     } catch (error) {
@@ -57,10 +47,10 @@ const FaqAdmin = () => {
     }
   }
 
-  const HandleDeleteFaq = async (faqData: Faq) => {
-    const { id } = faqData
+  const HandleDeleteFaq = async (id: number) => {
     try {
-      await deleteMutation.mutateAsync(id)
+      await deleteMutation(id)
+      refetchFaqData()
     } catch (error) {
       console.error('Mutation Error:', error)
     }
@@ -69,7 +59,7 @@ const FaqAdmin = () => {
   const HandleEditFaq = async (faqData: Faq) => {
     const { id, header, body, displayOrder } = faqData
     try {
-      await editMutation.mutateAsync({
+      await editMutation({
         data: { header, body, displayOrder },
         id,
       })
@@ -78,16 +68,8 @@ const FaqAdmin = () => {
     }
   }
 
-  const deleteFaq = (data: Faq) => {
-    HandleDeleteFaq(data)
-  }
-
-  const editFaq = (data: Faq) => {
-    HandleEditFaq(data)
-  }
-
-  const createFaq = (data: Faq) => {
-    HandleCreateFaq(data)
+  const onModalClose = () => {
+    //do something?? potentially just delete
   }
 
   if (isLoading) {
@@ -98,11 +80,11 @@ const FaqAdmin = () => {
     )
   }
 
-  if (!data) {
+  if (!faqs) {
     return <div>Error returning data</div>
   }
 
-  const filteredData = data.value.map((obj: Faq) => {
+  const filteredData = faqs.map((obj: Faq) => {
     return {
       id: obj.id,
       header: obj.header,
@@ -111,29 +93,40 @@ const FaqAdmin = () => {
     }
   })
 
-  const baseType = {
-    header: '',
-    body: '',
-    displayOrder: '',
-  }
+  const headers = ['Header', 'Body', 'Display Order']
+  const headerKeys = ['header', 'body', 'displayOrder']
 
   return (
-    <ResponsivePageLayout title={'Manage FAQs'} noBottomMargin>
-      <GenericAdminChart
+    <ResponsivePageLayout title="Manage FAQs" noBottomMargin>
+      <AdminTable
+        pageName="Faqs"
         headers={headers}
+        headerKeys={headerKeys}
         data={filteredData}
-        baseRowType={baseType}
-        onDelete={deleteFaq}
-        onEdit={editFaq}
-        onCreate={createFaq}
-        pageName={PageNames.FAQs}
-        hasEditPrivileges={hasEditClaim}
-        hasDeletePrivileges={hasDeleteClaim}
-        customModal={
+        hasEditPrivileges={hasGeneralEditClaim}
+        hasDeletePrivileges={hasGeneralDeleteClaim}
+        editModal={
           <FaqModal
-            onCreate={HandleCreateFaq}
-            onEdit={editFaq}
-            onDelete={deleteFaq}
+            isOpen={true}
+            onSave={HandleEditFaq}
+            onClose={onModalClose}
+          />
+        }
+        createModal={
+          <FaqModal
+            isOpen={true}
+            onSave={HandleCreateFaq}
+            onClose={onModalClose}
+          />
+        }
+        deleteModal={
+          <DeleteModal
+            id={0}
+            name={''}
+            objectType="Faqs"
+            open={false}
+            onClose={() => {}}
+            onConfirm={HandleDeleteFaq}
           />
         }
       />
