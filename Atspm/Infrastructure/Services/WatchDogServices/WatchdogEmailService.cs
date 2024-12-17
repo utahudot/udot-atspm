@@ -187,7 +187,6 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
 
         public async Task<string> CreateEmailBody(
             EmailOptions emailOptions,
-            LoggingOptions loggingOptions,
             List<WatchDogLogEventWithCountAndDate> newErrors,
             List<WatchDogLogEventWithCountAndDate> dailyRecurringErrors,
             List<WatchDogLogEventWithCountAndDate> recurringErrors,
@@ -213,7 +212,6 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
             string sectionDescription,
             List<WatchDogLogEventWithCountAndDate> errors,
             EmailOptions emailOptions,
-            LoggingOptions loggingOptions,
             List<Location> locations,
             List<WatchDogLogEvent> logsFromPreviousDay,
             bool showEventCount = true,
@@ -260,7 +258,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
             bodyBuilder.Append(body);
 
             // Build HTML sections for each error type
-            bodyBuilder.Append(BuildErrorSection("Missing Records Errors", $"The following Locations had too few records in the database on {loggingOptions.AnalysisStart.Date.ToShortDateString()}", missingErrorsLogs, locations, emailOptions, logsFromPreviousDay, showEventCount, showConsecutiveCount, showDateOfFirstOccurence));
+            bodyBuilder.Append(BuildErrorSection("Missing Records Errors", $"The following Locations had too few records in the database on {emailOptions.ScanDate.Date.ToShortDateString()}", missingErrorsLogs, locations, emailOptions, logsFromPreviousDay, showEventCount, showConsecutiveCount, showDateOfFirstOccurence));
             bodyBuilder.Append(BuildErrorSection("Force Off Errors", $"The following Locations had too many force off occurrences between {emailOptions.ScanDayStartHour}:00 and {emailOptions.ScanDayEndHour}:00", forceErrorsLogs, locations, emailOptions, logsFromPreviousDay, showEventCount, showConsecutiveCount, showDateOfFirstOccurence));
             bodyBuilder.Append(BuildErrorSection("Max Out Errors", $"The following Locations had too many max out occurrences between {emailOptions.ScanDayStartHour}:00 and {emailOptions.ScanDayEndHour}:00", maxErrorsLogs, locations, emailOptions, logsFromPreviousDay, showEventCount, showConsecutiveCount, showDateOfFirstOccurence));
             bodyBuilder.Append(BuildErrorSection("Low Detection Count Errors", $"The following Locations had unusually low advanced detection counts on {emailOptions.ScanDate.Date.ToShortDateString()}", countErrorsLogs, locations, emailOptions, logsFromPreviousDay, showEventCount, showConsecutiveCount, showDateOfFirstOccurence));
