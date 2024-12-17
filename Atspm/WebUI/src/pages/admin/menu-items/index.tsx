@@ -86,8 +86,7 @@ const MenuItemsAdmin = () => {
         { data: sanitizedMenuItem, id },
         {
           onSuccess: () => {
-            refetchMenuItems().then(()=>{console.log(menuItemsData)})
-            
+            refetchMenuItems()
           },
         }
       )
@@ -168,10 +167,7 @@ const MenuItemsAdmin = () => {
             ...child,
             parentIdName: nameMap[child.parentId] || null,
           }))
-        return [
-          { ...base, parentIdName: null },
-          ...sortedChildren,
-        ]
+        return [{ ...base, parentIdName: null }, ...sortedChildren]
       })
 
     return sortedMenuItems

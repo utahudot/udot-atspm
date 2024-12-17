@@ -21,7 +21,7 @@
 namespace Utah.Udot.Atspm.Data.Models
 {
     /// <summary>
-    /// Area
+    /// Map Layer
     /// </summary>
     public partial class MapLayer: AtspmConfigModelBase<int>
     {
