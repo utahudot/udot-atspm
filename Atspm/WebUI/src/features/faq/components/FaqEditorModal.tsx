@@ -38,19 +38,13 @@ const FaqEditorModal: React.FC<ModalProps> = ({
   onClose,
   onSave,
 }) => {
-  const [faqId, setFaqId] = useState(faq?.id || '')
-  const [faqHeader, setFaqHeader] = useState(faq?.header || '')
-  const [faqBody, setFaqBody] = useState(faq?.body || '')
-  const [faqDisplayOrder, setFaqDisplayOrder] = useState(
-    faq?.displayOrder || 0
-  )
   const [createOrEditText, setCreateOrEditText] = useState('')
-
 
   const {
     register,
     handleSubmit,
     formState: { errors },
+    setValue,
   } = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -60,19 +54,19 @@ const FaqEditorModal: React.FC<ModalProps> = ({
     },
   })
 
+  useEffect(()=>{
+    if (faq?.id !== undefined) {
+      setCreateOrEditText('Edit');
+    } else {
+      setCreateOrEditText('Create');
+    }
+  },[faq])
+
   const onSubmit: SubmitHandler<FormData> = (data) => {
     const updatedfaq = { ...faq, ...data } as Faq
     onSave(updatedfaq)
     onClose()
   }
-
-useEffect(()=>{
-  if (faq?.id !== undefined) {
-    setCreateOrEditText('Edit');
-  } else {
-    setCreateOrEditText('Create');
-  }
-},[faq])
 
   return (
     <Dialog open={isOpen} onClose={onClose} key={isOpen ? 'open' : 'closed'} maxWidth="md" fullWidth>
@@ -87,33 +81,37 @@ useEffect(()=>{
             marginBottom: 2,
           }}
         >
-          <FormControl fullWidth margin="normal" sx={{ flex: 7 }}>
+          <FormControl fullWidth margin="normal" sx={{ flex: 7 }} error={!!errors.header}>
             <InputLabel htmlFor="faq-header">Header</InputLabel>
             <OutlinedInput
               id="faq-header"
-              value={faqHeader}
-              onChange={(e) => setFaqHeader(e.target.value)}
+              {...register('header')}
               label="Header"
+              error={!!errors.header}
             />
+            {errors.header && <span>{errors.header.message}</span>}
           </FormControl>
-          <FormControl fullWidth margin="normal" sx={{ flex: 1 }}>
+          <FormControl fullWidth margin="normal" sx={{ flex: 1 }} error={!!errors.displayOrder}>
             <InputLabel htmlFor="faq-display-order">Display Order</InputLabel>
             <OutlinedInput
               id="faq-display-order"
-              value={faqDisplayOrder}
-              onChange={(e) => setFaqDisplayOrder(e.target.value)}
+              {...register('displayOrder', { valueAsNumber: true })}
               label="Display Order"
               type="number"
               inputProps={{ style: { textAlign: 'center' } }}
             />
+            {errors.displayOrder && <span>{errors.displayOrder.message}</span>}
           </FormControl>
         </Box>
-        <TextEditor data={faqBody} onChange={setFaqBody} />
+        <TextEditor 
+          data={faq?.body || ''} 
+          onChange={(value: string) => setValue('body', value)}
+        />
       </DialogContent>
       <DialogActions>
         <Box sx={{ marginRight: '1rem', marginBottom: '.5rem' }}>
           <Button onClick={onClose}>Cancel</Button>
-          <Button variant="contained" onClick={handleSubmit}>
+          <Button variant="contained" onClick={handleSubmit(onSubmit)}>
             {faq?.id ? 'Edit FAQ' : 'Create FAQ'}
           </Button>
         </Box>

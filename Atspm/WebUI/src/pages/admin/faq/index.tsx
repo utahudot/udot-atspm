@@ -1,6 +1,6 @@
 import AdminTable from '@/components/AdminTable/AdminTable'
 import DeleteModal from '@/components/AdminTable/DeleteModal'
-import FaqModal from '@/components/GenericAdminChart/FaqModal'
+import FaqEditorModal from '@/features/faq/components/FaqEditorModal'
 import { ResponsivePageLayout } from '@/components/ResponsivePage'
 import {
   useCreateFaqs,
@@ -63,6 +63,7 @@ const FaqAdmin = () => {
         data: { header, body, displayOrder },
         id,
       })
+      refetchFaqData()
     } catch (error) {
       console.error('Mutation Error:', error)
     }
@@ -106,14 +107,14 @@ const FaqAdmin = () => {
         hasEditPrivileges={hasGeneralEditClaim}
         hasDeletePrivileges={hasGeneralDeleteClaim}
         editModal={
-          <FaqModal
+          <FaqEditorModal
             isOpen={true}
             onSave={HandleEditFaq}
             onClose={onModalClose}
           />
         }
         createModal={
-          <FaqModal
+          <FaqEditorModal
             isOpen={true}
             onSave={HandleCreateFaq}
             onClose={onModalClose}
