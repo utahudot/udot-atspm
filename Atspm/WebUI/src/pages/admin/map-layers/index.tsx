@@ -1,9 +1,10 @@
 import {
-  useApiV1MapLayer,
-  useApiV1MapLayerCount,
-  useApiV1MapLayerKey,
-  useApiV1MapLayerPutKey,
+  useDeleteMapLayerFromKey,
+  useGetMapLayer,
+  usePatchMapLayerFromKey,
+  usePostMapLayer,
 } from '@/api/config/aTSPMConfigurationApi'
+import { MapLayer } from '@/api/config/aTSPMConfigurationApi.schemas'
 import GenericAdminChart, {
   pageNameToHeaders,
 } from '@/components/GenericAdminChart'
@@ -19,14 +20,6 @@ import { Backdrop, CircularProgress, Tab } from '@mui/material'
 import { GridColDef } from '@mui/x-data-grid'
 import { useEffect, useState } from 'react'
 
-type MapLayer = {
-  id: number
-  name: string
-  mapLayerUrl: string
-  showByDefault: boolean
-  serviceType?: 'mapserver' | 'featureserver'
-}
-
 const MapLayers = () => {
   const pageAccess = useViewPage(PageNames.MapLayers)
   const [currentTab, setCurrentTab] = useState('1')
@@ -38,15 +31,20 @@ const MapLayers = () => {
   const hasLocationsEditClaim = useUserHasClaim('LocationConfiguration:Edit')
   const hasLocationsDelteClaim = useUserHasClaim('LocationConfiguration:Delete')
 
-  const { data: mapLayerData, isLoading } = useApiV1MapLayerCount()
-  const createMutation = useApiV1MapLayer()
-  const editMutation = useApiV1MapLayerPutKey()
-  const deleteMutation = useApiV1MapLayerKey()
+  const {
+    data: mapLayerData,
+    isLoading,
+    refetch: fetchMapLayers,
+  } = useGetMapLayer()
+  const { mutate: addMapLayer } = usePostMapLayer()
+  const { mutate: updateMapLayer } = usePatchMapLayerFromKey()
+  const { mutate: removeMapLayer } = useDeleteMapLayerFromKey()
   useEffect(() => {
     if (mapLayerData) {
       setData(mapLayerData)
     }
   }, [mapLayerData])
+
   if (pageAccess.isLoading) {
     return
   }
@@ -55,46 +53,40 @@ const MapLayers = () => {
     setCurrentTab(newValue)
   }
 
-  const HandleCreateMapLayer = async (mapLayerData: MapLayer) => {
+  const handleCreateMapLayer = async (mapLayerData: MapLayer) => {
     try {
-      await createMutation.mutateAsync({ data: mapLayerData })
+      await addMapLayer({ data: mapLayerData })
     } catch (error) {
       console.error('Mutation Error:', error)
     }
   }
 
-  const HandleDeleteMapLayer = async (mapLayerData: MapLayer) => {
+  const handleDeleteMapLayer = async (mapLayerData: MapLayer) => {
     const { id } = mapLayerData
     console.log(id)
     try {
-      await deleteMutation.mutateAsync({ key: id })
+      await removeMapLayer({ key: id })
     } catch (error) {
       console.error('Mutation Error:', error)
     }
   }
 
-  const HandleEditMapLayer = async (mapLayerData: MapLayer) => {
-    console.log('HandleEditMapLayer')
+  const handleEditMapLayer = async (mapLayerData: MapLayer) => {
     try {
-      await editMutation.mutateAsync({
-        key: mapLayerData.id,
-        data: mapLayerData,
-      })
+      await updateMapLayer(
+        {
+          key: mapLayerData.id,
+          data: mapLayerData,
+        },
+        {
+          onSuccess: () => {
+            fetchMapLayers()
+          },
+        }
+      )
     } catch (error) {
       console.error('Mutation Error:', error)
     }
-  }
-
-  const deleteMapLayer = (data: MapLayer) => {
-    HandleDeleteMapLayer(data)
-  }
-
-  const editMapLayer = (data: MapLayer) => {
-    HandleEditMapLayer(data)
-  }
-
-  const createMapLayer = (data: MapLayer) => {
-    HandleCreateMapLayer(data)
   }
 
   if (isLoading) {
@@ -126,6 +118,8 @@ const MapLayers = () => {
     serviceType: '',
   }
 
+  console.log('filteredData', filteredData)
+
   return (
     <ResponsivePageLayout title={'General Admin'} noBottomMargin>
       <TabContext value={currentTab}>
@@ -143,16 +137,16 @@ const MapLayers = () => {
             headers={headers}
             data={filteredData}
             baseRowType={baseType}
-            onDelete={deleteMapLayer}
-            onEdit={editMapLayer}
-            onCreate={createMapLayer}
+            onDelete={handleDeleteMapLayer}
+            onEdit={handleEditMapLayer}
+            onCreate={handleCreateMapLayer}
             hasEditPrivileges={hasLocationsEditClaim}
             hasDeletePrivileges={hasLocationsDelteClaim}
             customModal={
               <MapLayerCreateEditModal
-                onCreate={createMapLayer}
-                onEdit={editMapLayer}
-                onDelete={deleteMapLayer}
+                onCreate={handleCreateMapLayer}
+                onEdit={handleEditMapLayer}
+                onDelete={handleDeleteMapLayer}
               />
             }
           />

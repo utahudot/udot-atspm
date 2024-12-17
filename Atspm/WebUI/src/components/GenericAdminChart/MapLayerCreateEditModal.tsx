@@ -1,3 +1,4 @@
+import { MapLayer } from '@/api/config/aTSPMConfigurationApi.schemas'
 import { zodResolver } from '@hookform/resolvers/zod'
 import {
   Button,
@@ -5,33 +6,50 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  FormControl,
   FormControlLabel,
-  InputLabel,
-  MenuItem,
-  Select,
+  Radio,
+  RadioGroup,
   TextField,
   Typography,
 } from '@mui/material'
-import React from 'react'
-// import { useDropzone } from 'react-dropzone'
-import { Controller, useForm } from 'react-hook-form'
+import { useEffect, useState } from 'react'
+import { Controller, useForm, useWatch } from 'react-hook-form'
 import { z } from 'zod'
 
-interface MapLayer {
-  id?: number | undefined
-  name: string
-  mapLayerUrl?: string
-  showByDefault: boolean
-  serviceType: 'mapserver' | 'featureserver'
-  createdOn?: string
-  createdBy?: string
-  updatedOn?: string
-  updatedBy?: string
-  deletedOn?: string | null
-  deletedBy?: string | null
-}
+// Schema with dynamic URL validation
+const mapLayerSchema = z
+  .object({
+    name: z.string().min(1, 'Name is required'),
+    mapLayerUrl: z.string(),
+    showByDefault: z.boolean(),
+    serviceType: z.enum(['mapserver', 'featureserver']),
+  })
+  .superRefine((data, ctx) => {
+    const { serviceType, mapLayerUrl } = data
 
+    // Validation for Feature Server
+    if (
+      serviceType === 'featureserver' &&
+      !/\/FeatureServer\/\d+$/.test(mapLayerUrl)
+    ) {
+      ctx.addIssue({
+        path: ['mapLayerUrl'],
+        code: z.ZodIssueCode.custom,
+        message: 'FeatureServer URL must end with "/FeatureServer/{layerId}".',
+      })
+    }
+
+    // Validation for Map Server
+    if (serviceType === 'mapserver' && !/\/MapServer$/.test(mapLayerUrl)) {
+      ctx.addIssue({
+        path: ['mapLayerUrl'],
+        code: z.ZodIssueCode.custom,
+        message: 'MapServer URL must end with "/MapServer".',
+      })
+    }
+  })
+
+type FormData = z.infer<typeof mapLayerSchema>
 
 interface MapLayerCreateEditModalProps {
   open: boolean
@@ -42,61 +60,55 @@ interface MapLayerCreateEditModalProps {
   onSave: (mapLayer: MapLayer) => void
 }
 
-const mapLayerSchema = z.object({
-  name: z.string().min(1, 'Name is required'),
-  mapLayerUrl: z.string().optional(),
-  showByDefault: z.boolean(),
-  serviceType: z.enum(['mapserver', 'featureserver']),
-})
-
-type FormData = z.infer<typeof mapLayerSchema>
-
-export const MapLayerCreateEditModal: React.FC<
-  MapLayerCreateEditModalProps
-> = ({ open, onClose, data, onCreate, onSave, onEdit }) => {
-  const isEditMode = data?.id ? true : false
+export const MapLayerCreateEditModal = ({
+  open,
+  onClose,
+  data,
+  onCreate,
+  onEdit,
+  onSave,
+}: MapLayerCreateEditModalProps) => {
+  const isEditMode = !!data
   const {
     control,
     handleSubmit,
     formState: { errors },
+    setValue,
   } = useForm<FormData>({
     resolver: zodResolver(mapLayerSchema),
     defaultValues: {
       name: data?.name || '',
       mapLayerUrl: data?.mapLayerUrl || '',
       showByDefault: data?.showByDefault || false,
-      serviceType: data?.serviceType,
+      serviceType: data?.serviceType || 'featureserver',
     },
   })
 
-  const onSubmit = async (formData: FormData) => {
-    try {
-      if (isEditMode) {
-        const currentDateTime = new Date().toISOString()
-        const updatedMapLayer = {
-          ...formData,
-          id: data?.id,
-          createdOn: data?.createdOn || currentDateTime,
-          createdBy: data?.createdBy || '',
-          updatedOn: currentDateTime,
-          updatedBy: '',
-          deletedOn: null,
-          deletedBy: null,
-        }
-        await onEdit(updatedMapLayer)
-      } else {
-        await onCreate(formData)
-        onSave
-      }
-      onClose()
-    } catch (error) {
-      console.error('Api Error on MapLayer:', error)
+  const serviceType = useWatch({ control, name: 'serviceType' })
+
+  const [urlPlaceholder, setUrlPlaceholder] = useState('')
+
+  useEffect(() => {
+    if (serviceType === 'featureserver') {
+      setUrlPlaceholder('e.g., https://maps.example.com/.../FeatureServer/2')
+    } else {
+      setUrlPlaceholder('e.g., https://maps.example.com/.../MapServer')
     }
+    setValue('mapLayerUrl', '') // Reset URL when service type changes
+  }, [serviceType, setValue])
+
+  const onSubmit = (formData: FormData) => {
+    if (isEditMode) {
+      onEdit(formData)
+    } else {
+      onCreate(formData)
+    }
+    onClose()
   }
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <Typography variant="h4" sx={{ ml: 3, mt: 2 }}>
+      <Typography variant="h5" sx={{ ml: 3, mt: 2 }}>
         {isEditMode ? 'Edit Map Layer' : 'Create New Map Layer'}
       </Typography>
 
@@ -118,60 +130,51 @@ export const MapLayerCreateEditModal: React.FC<
           />
 
           <Controller
+            name="serviceType"
+            control={control}
+            render={({ field }) => (
+              <>
+                <Typography variant="body1" sx={{ mt: 2 }}>
+                  Select Service Type:
+                </Typography>
+                <RadioGroup
+                  {...field}
+                  row
+                  onChange={(e) => field.onChange(e.target.value)}
+                >
+                  <FormControlLabel
+                    value="featureserver"
+                    control={<Radio />}
+                    label="Feature Server"
+                  />
+                  <FormControlLabel
+                    value="mapserver"
+                    control={<Radio />}
+                    label="Map Server"
+                  />
+                </RadioGroup>
+              </>
+            )}
+          />
+
+          <Controller
             name="mapLayerUrl"
             control={control}
             render={({ field }) => (
               <TextField
                 {...field}
-                label="Map URL (Optional)"
+                label="Map Layer URL"
+                placeholder={urlPlaceholder}
                 fullWidth
                 margin="normal"
                 error={!!errors.mapLayerUrl}
-                helperText={errors.mapLayerUrl?.message}
+                helperText={
+                  errors.mapLayerUrl?.message ||
+                  'URL must match the selected service type.'
+                }
               />
             )}
           />
-          <Controller
-            name="serviceType"
-            control={control}
-            render={({ field }) => (
-              <FormControl fullWidth margin="normal">
-                <InputLabel>Service Type</InputLabel>
-                <Select
-                  {...field}
-                  label="Service Type"
-                  error={!!errors.serviceType}
-                >
-                  <MenuItem value="featureserver">Feature Server</MenuItem>
-                  <MenuItem value="mapserver">Map Server</MenuItem>
-                </Select>
-              </FormControl>
-            )}
-          />
-
-          {/* <Box
-            {...getRootProps()}
-            sx={{
-              mt: 2,
-              p: 3,
-              border: '2px dashed',
-              borderColor: isDragActive ? 'primary.main' : 'grey.300',
-              borderRadius: 1,
-              cursor: 'pointer',
-              '&:hover': {
-                borderColor: 'primary.main',
-              },
-            }}
-          >
-            <input {...getInputProps()} />
-            <Typography align="center" color="textSecondary">
-              {isDragActive
-                ? 'Drop the file here'
-                : selectedFile
-                  ? `Selected file: ${(selectedFile as File).name}`
-                  : 'Drag and drop a file here, or click to select a file'}
-            </Typography>
-          </Box> */}
 
           <Controller
             name="showByDefault"

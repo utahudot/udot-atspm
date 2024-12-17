@@ -1,4 +1,4 @@
-import { useApiV1MapLayerCount } from '@/api/config/aTSPMConfigurationApi'
+import { useGetMapLayer } from '@/api/config/aTSPMConfigurationApi'
 import Markers from '@/components/LocationMap/Markers'
 import MapFilters from '@/components/MapFilters'
 import { Location } from '@/features/locations/types'
@@ -22,7 +22,7 @@ import 'leaflet/dist/leaflet.css'
 import { memo, useEffect, useRef, useState } from 'react'
 import { MapContainer, Polyline, TileLayer } from 'react-leaflet'
 
-type MapProps = {
+interface MapProps {
   location: Location | null
   setLocation: (location: Location) => void
   locations: Location[]
@@ -30,6 +30,14 @@ type MapProps = {
   center?: [number, number]
   zoom?: number
   mapHeight?: number | string
+}
+
+interface FilterProps {
+  areaId: number | null
+  regionId: number | null
+  locationTypeId: number | null
+  jurisdictionId: number | null
+  measureTypeId: number | null
 }
 
 const LocationMap = ({
@@ -45,17 +53,13 @@ const LocationMap = ({
   const [mapRef, setMapRef] = useState<LeafletMap | null>(null)
   const [isPopperOpen, setIsPopperOpen] = useState(false)
   const filtersButtonRef = useRef(null)
-  const [selectedAreaId, setSelectedAreaId] = useState<number | null>(null)
-  const [selectedRegionId, setSelectedRegionId] = useState<number | null>(null)
-  const [selectedLocationTypeId, setSelectedLocationTypeId] = useState<
-    number | null
-  >(null)
-  const [selectedJurisdictionId, setSelectedJurisdictionId] = useState<
-    number | null
-  >(null)
-  const [selectedMeasureTypeId, setSelectedMeasureTypeId] = useState<
-    number | null
-  >(null)
+  const [filters, setFilters] = useState<FilterProps>({
+    areaId: null,
+    regionId: null,
+    locationTypeId: null,
+    jurisdictionId: null,
+    measureTypeId: null,
+  })
   const [filteredLocations, setFilteredLocations] = useState(locations)
   const [mapInfo, setMapInfo] = useState<{
     tile_layer: string
@@ -66,7 +70,7 @@ const LocationMap = ({
   const [isLayersPopperOpen, setIsLayersPopperOpen] = useState(false)
   const layersButtonRef = useRef(null)
 
-  const { data: mapLayerData, isLoading } = useApiV1MapLayerCount()
+  const { data: mapLayerData } = useGetMapLayer()
   const [activeLayers, setActiveLayers] = useState<number[]>([])
 
   useEffect(() => {
@@ -93,11 +97,9 @@ const LocationMap = ({
     mapLayerData?.value.forEach((layer) => {
       if (activeLayers.includes(layer.id)) {
         if (layer.serviceType === 'mapserver') {
-          const baseUrl = layer.mapLayerUrl.split('/query')[0].replace('/0', '')
           new DynamicMapLayer({
-            url: baseUrl,
+            url: layer.mapLayerUrl,
             opacity: 1,
-            layers: [0],
           }).addTo(mapRef)
         } else {
           // Feature server - just use the URL as is
@@ -108,9 +110,8 @@ const LocationMap = ({
         }
       }
     })
-  }, [mapRef, activeLayers])
+  }, [mapRef, activeLayers, mapLayerData])
 
-  // Add this handler
   const handleLayerToggle = (layerId: number) => {
     setActiveLayers((prev) =>
       prev.includes(layerId)
@@ -132,7 +133,6 @@ const LocationMap = ({
     fetchEnv()
   }, [])
 
-  // Pan to the selected location
   useEffect(() => {
     if (location && mapRef) {
       const markerToPanTo = filteredLocations?.find(
@@ -146,7 +146,6 @@ const LocationMap = ({
     }
   }, [location, filteredLocations, mapRef])
 
-  // Resize the map when the container resizes
   useEffect(() => {
     if (!mapRef) return
 
@@ -164,28 +163,21 @@ const LocationMap = ({
     }
   }, [mapRef])
 
-  // Filter locations based on selected filters
   useEffect(() => {
-    const filtered = locations.filter(
-      (location) =>
-        (!selectedAreaId || location.areas?.includes(selectedAreaId)) &&
-        (!selectedRegionId || location.regionId === selectedRegionId) &&
-        (!selectedLocationTypeId ||
-          location.locationTypeId === selectedLocationTypeId) &&
-        (!selectedMeasureTypeId ||
-          location.charts?.includes(selectedMeasureTypeId)) &&
-        (!selectedJurisdictionId ||
-          location.jurisdictionId === selectedJurisdictionId)
-    )
+    const filtered = locations.filter((location) => {
+      return (
+        (!filters.areaId || location.areas?.includes(filters.areaId)) &&
+        (!filters.regionId || location.regionId === filters.regionId) &&
+        (!filters.locationTypeId ||
+          location.locationTypeId === filters.locationTypeId) &&
+        (!filters.measureTypeId ||
+          location.charts?.includes(filters.measureTypeId)) &&
+        (!filters.jurisdictionId ||
+          location.jurisdictionId === filters.jurisdictionId)
+      )
+    })
     setFilteredLocations(filtered)
-  }, [
-    locations,
-    selectedAreaId,
-    selectedRegionId,
-    selectedLocationTypeId,
-    selectedJurisdictionId,
-    selectedMeasureTypeId,
-  ])
+  }, [filters, locations])
 
   useEffect(() => {
     if (
@@ -205,23 +197,24 @@ const LocationMap = ({
           .map((loc) => [loc.latitude, loc.longitude])
       )
 
-      // Check if bounds are valid before fitting the map to these bounds
       if (bounds.isValid()) {
         mapRef.fitBounds(bounds)
       }
     }
   }, [mapRef, filteredLocations, locations])
 
-  const handleFiltersClick = () => {
-    setIsPopperOpen(!isPopperOpen)
+  const handleFiltersChange = (newFilters: Partial<typeof filters>) => {
+    setFilters((prevFilters) => ({ ...prevFilters, ...newFilters }))
   }
 
   const handleFiltersClearClick = () => {
-    setSelectedAreaId(null)
-    setSelectedRegionId(null)
-    setSelectedLocationTypeId(null)
-    setSelectedJurisdictionId(null)
-    setSelectedMeasureTypeId(null)
+    setFilters({
+      areaId: null,
+      regionId: null,
+      locationTypeId: null,
+      jurisdictionId: null,
+      measureTypeId: null,
+    })
     if (mapInfo?.initialLat && mapInfo?.initialLong) {
       mapRef?.setView([mapInfo.initialLat, mapInfo.initialLong], 6)
     }
@@ -260,7 +253,10 @@ const LocationMap = ({
               zIndex: 1000,
             }}
           >
-            <Button variant="contained" onClick={handleFiltersClick}>
+            <Button
+              variant="contained"
+              onClick={() => setIsPopperOpen(!isPopperOpen)}
+            >
               Filters
             </Button>
             <Button
@@ -269,13 +265,7 @@ const LocationMap = ({
               size="small"
               aria-label="Clear filters"
               onClick={handleFiltersClearClick}
-              disabled={
-                !selectedAreaId &&
-                !selectedRegionId &&
-                !selectedLocationTypeId &&
-                !selectedJurisdictionId &&
-                !selectedMeasureTypeId
-              }
+              disabled={Object.values(filters).every((value) => value === null)}
               sx={{
                 '&:disabled': { backgroundColor: theme.palette.grey[300] },
               }}
@@ -290,16 +280,8 @@ const LocationMap = ({
             style={{ zIndex: 1000 }}
           >
             <MapFilters
-              setSelectedAreaId={setSelectedAreaId}
-              setSelectedRegionId={setSelectedRegionId}
-              setSelectedLocationTypeId={setSelectedLocationTypeId}
-              setSelectedJurisdictionId={setSelectedJurisdictionId}
-              setSelectedMeasureTypeId={setSelectedMeasureTypeId}
-              selectedAreaId={selectedAreaId}
-              selectedRegionId={selectedRegionId}
-              selectedLocationTypeId={selectedLocationTypeId}
-              selectedJurisdictionId={selectedJurisdictionId}
-              selectedMeasureTypeId={selectedMeasureTypeId}
+              filters={filters}
+              onFiltersChange={handleFiltersChange}
               locationsTotal={locations.length}
               locationsFiltered={filteredLocations.length}
             />

@@ -34,85 +34,134 @@ import type {
   GetActiveDevicesByLocationDeviceFromLocationIdParams,
   GetActiveDevicesCountDeviceParams,
   GetAllVersionsOfLocationLocationFromIdentifierParams,
+  GetApproachCountParams,
   GetApproachDtoApproachFromIdParams,
   GetApproachFromKeyParams,
   GetApproachParams,
+  GetApproachesDirectionTypeFromKeyCountParams,
   GetApproachesDirectionTypeFromKeyParams,
+  GetApproachesLocationFromKeyCountParams,
   GetApproachesLocationFromKeyParams,
+  GetAreaCountParams,
   GetAreaFromKeyParams,
   GetAreaParams,
+  GetAreasLocationFromKeyCountParams,
   GetAreasLocationFromKeyParams,
   GetDetectionTypeCountLocationParams,
+  GetDetectionTypeCountParams,
   GetDetectionTypeFromKeyParams,
   GetDetectionTypeParams,
+  GetDetectionTypesDetectorFromKeyCountParams,
   GetDetectionTypesDetectorFromKeyParams,
+  GetDetectionTypesMeasureTypeFromKeyCountParams,
   GetDetectionTypesMeasureTypeFromKeyParams,
+  GetDetectorCommentCountParams,
   GetDetectorCommentFromKeyParams,
   GetDetectorCommentParams,
+  GetDetectorCommentsDetectorFromKeyCountParams,
   GetDetectorCommentsDetectorFromKeyParams,
+  GetDetectorCountParams,
   GetDetectorFromKeyParams,
   GetDetectorParams,
+  GetDetectorsApproachFromKeyCountParams,
   GetDetectorsApproachFromKeyParams,
+  GetDetectorsDetectionTypeFromKeyCountParams,
   GetDetectorsDetectionTypeFromKeyParams,
+  GetDeviceConfigurationCountParams,
   GetDeviceConfigurationFromKeyParams,
   GetDeviceConfigurationParams,
+  GetDeviceCountParams,
   GetDeviceFromKeyParams,
   GetDeviceParams,
+  GetDevicesDeviceConfigurationFromKeyCountParams,
   GetDevicesDeviceConfigurationFromKeyParams,
+  GetDevicesLocationFromKeyCountParams,
   GetDevicesLocationFromKeyParams,
+  GetDirectionTypeCountParams,
   GetDirectionTypeFromKeyParams,
   GetDirectionTypeParams,
+  GetFaqCountParams,
   GetFaqFromKeyParams,
   GetFaqParams,
+  GetJurisdictionCountParams,
   GetJurisdictionFromKeyParams,
   GetJurisdictionParams,
   GetLatestVersionOfAllLocationsLocationParams,
   GetLatestVersionOfLocationLocationFromIdentifierParams,
+  GetLocationCountParams,
   GetLocationFromKeyParams,
   GetLocationParams,
+  GetLocationTypeCountParams,
   GetLocationTypeFromKeyParams,
   GetLocationTypeParams,
+  GetLocationsAreaFromKeyCountParams,
   GetLocationsAreaFromKeyParams,
   GetLocationsForSearchLocationParams,
+  GetLocationsJurisdictionFromKeyCountParams,
   GetLocationsJurisdictionFromKeyParams,
+  GetLocationsLocationTypeFromKeyCountParams,
   GetLocationsLocationTypeFromKeyParams,
+  GetLocationsRegionFromKeyCountParams,
   GetLocationsRegionFromKeyParams,
+  GetMapLayerCountParams,
+  GetMapLayerFromKeyParams,
+  GetMapLayerParams,
+  GetMeasureCommentCountParams,
   GetMeasureCommentFromKeyParams,
   GetMeasureCommentParams,
+  GetMeasureCommentsMeasureTypeFromKeyCountParams,
   GetMeasureCommentsMeasureTypeFromKeyParams,
+  GetMeasureOptionCountParams,
   GetMeasureOptionFromKeyParams,
   GetMeasureOptionParams,
+  GetMeasureTypeCountParams,
   GetMeasureTypeFromKeyParams,
   GetMeasureTypeParams,
+  GetMeasureTypesDetectionTypeFromKeyCountParams,
   GetMeasureTypesDetectionTypeFromKeyParams,
+  GetMeasureTypesMeasureCommentFromKeyCountParams,
   GetMeasureTypesMeasureCommentFromKeyParams,
+  GetMenuItemsCountParams,
   GetMenuItemsFromKeyParams,
   GetMenuItemsParams,
+  GetNextLocationsRouteDistanceFromKeyCountParams,
   GetNextLocationsRouteDistanceFromKeyParams,
+  GetOpposingDirectionsDirectionTypeFromKeyCountParams,
   GetOpposingDirectionsDirectionTypeFromKeyParams,
+  GetPreviousLocationsRouteDistanceFromKeyCountParams,
   GetPreviousLocationsRouteDistanceFromKeyParams,
+  GetPrimaryDirectionsDirectionTypeFromKeyCountParams,
   GetPrimaryDirectionsDirectionTypeFromKeyParams,
+  GetProductCountParams,
   GetProductFromKeyParams,
   GetProductParams,
+  GetRegionCountParams,
   GetRegionFromKeyParams,
   GetRegionParams,
+  GetRouteCountParams,
   GetRouteDistanceByLocationIdentifiersRouteDistanceFromLocationAAndLocationBParams,
+  GetRouteDistanceCountParams,
   GetRouteDistanceFromKeyParams,
   GetRouteDistanceParams,
   GetRouteFromKeyParams,
+  GetRouteLocationCountParams,
   GetRouteLocationFromKeyParams,
   GetRouteLocationParams,
+  GetRouteLocationsRouteFromKeyCountParams,
   GetRouteLocationsRouteFromKeyParams,
   GetRouteParams,
   GetRouteViewRouteFromIdParams,
+  GetVersionHistoryCountParams,
   GetVersionHistoryFromKeyParams,
   GetVersionHistoryParams,
+  GetWatchDogIgnoreEventCountParams,
   GetWatchDogIgnoreEventFromKeyParams,
   GetWatchDogIgnoreEventParams,
   Jurisdiction,
   Location,
   LocationSaveTemplatedLocationParameters,
   LocationType,
+  MapLayer,
   MeasureComment,
   MeasureOption,
   MeasureType,
@@ -129,6 +178,7 @@ import type {
   PatchJurisdictionFromKeyParams,
   PatchLocationFromKeyParams,
   PatchLocationTypeFromKeyParams,
+  PatchMapLayerFromKeyParams,
   PatchMeasureCommentFromKeyParams,
   PatchMeasureOptionFromKeyParams,
   PatchMeasureTypeFromKeyParams,
@@ -152,6 +202,7 @@ import type {
   PostJurisdictionParams,
   PostLocationParams,
   PostLocationTypeParams,
+  PostMapLayerParams,
   PostMeasureCommentParams,
   PostMeasureOptionParams,
   PostMeasureTypeParams,
@@ -176,6 +227,7 @@ import type {
   PutJurisdictionFromKeyParams,
   PutLocationFromKeyParams,
   PutLocationTypeFromKeyParams,
+  PutMapLayerFromKeyParams,
   PutMeasureCommentFromKeyParams,
   PutMeasureOptionFromKeyParams,
   PutMeasureTypeFromKeyParams,
@@ -211,7 +263,7 @@ export const getDetectorsApproachFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<Detector[]>({
-    url: `/api/v1/Approach/${key}/detectors/$count`,
+    url: `/Approach/${key}/detectors`,
     method: 'GET',
     params,
     signal,
@@ -222,10 +274,7 @@ export const getGetDetectorsApproachFromKeyQueryKey = (
   key: number,
   params?: GetDetectorsApproachFromKeyParams
 ) => {
-  return [
-    `/api/v1/Approach/${key}/detectors/$count`,
-    ...(params ? [params] : []),
-  ] as const
+  return [`/Approach/${key}/detectors`, ...(params ? [params] : [])] as const
 }
 
 export const getGetDetectorsApproachFromKeyQueryOptions = <
@@ -301,12 +350,111 @@ export const useGetDetectorsApproachFromKey = <
   return query
 }
 
+/**
+ * @summary Utah.Udot.Atspm.Data.Models.Detector navigation property action
+ */
+export const getDetectorsApproachFromKeyCount = (
+  key: number,
+  params?: GetDetectorsApproachFromKeyCountParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<Detector[]>({
+    url: `/Approach/${key}/detectors/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getGetDetectorsApproachFromKeyCountQueryKey = (
+  key: number,
+  params?: GetDetectorsApproachFromKeyCountParams
+) => {
+  return [
+    `/Approach/${key}/detectors/$count`,
+    ...(params ? [params] : []),
+  ] as const
+}
+
+export const getGetDetectorsApproachFromKeyCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof getDetectorsApproachFromKeyCount>>,
+  TError = void,
+>(
+  key: number,
+  params?: GetDetectorsApproachFromKeyCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getDetectorsApproachFromKeyCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getGetDetectorsApproachFromKeyCountQueryKey(key, params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getDetectorsApproachFromKeyCount>>
+  > = ({ signal }) => getDetectorsApproachFromKeyCount(key, params, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!key,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getDetectorsApproachFromKeyCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type GetDetectorsApproachFromKeyCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getDetectorsApproachFromKeyCount>>
+>
+export type GetDetectorsApproachFromKeyCountQueryError = void
+
+/**
+ * @summary Utah.Udot.Atspm.Data.Models.Detector navigation property action
+ */
+export const useGetDetectorsApproachFromKeyCount = <
+  TData = Awaited<ReturnType<typeof getDetectorsApproachFromKeyCount>>,
+  TError = void,
+>(
+  key: number,
+  params?: GetDetectorsApproachFromKeyCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getDetectorsApproachFromKeyCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getGetDetectorsApproachFromKeyCountQueryOptions(
+    key,
+    params,
+    options
+  )
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
 export const upsertApproachApproach = (
   approachDto: ApproachDto,
   params: UpsertApproachApproachParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/UpsertApproach`,
+    url: `/UpsertApproach`,
     method: 'POST',
     headers: {
       'Content-Type':
@@ -375,7 +523,7 @@ export const getApproachDtoApproachFromId = (
   signal?: AbortSignal
 ) => {
   return configRequest<void>({
-    url: `/api/v1/GetApproachDto/${id}`,
+    url: `/GetApproachDto/${id}`,
     method: 'GET',
     params,
     signal,
@@ -386,7 +534,7 @@ export const getGetApproachDtoApproachFromIdQueryKey = (
   id: number,
   params: GetApproachDtoApproachFromIdParams
 ) => {
-  return [`/api/v1/GetApproachDto/${id}`, ...(params ? [params] : [])] as const
+  return [`/GetApproachDto/${id}`, ...(params ? [params] : [])] as const
 }
 
 export const getGetApproachDtoApproachFromIdQueryOptions = <
@@ -464,7 +612,7 @@ export const postApproach = (
   params?: PostApproachParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/Approach`,
+    url: `/Approach`,
     method: 'POST',
     headers: {
       'Content-Type':
@@ -535,7 +683,7 @@ export const getApproach = (
   signal?: AbortSignal
 ) => {
   return configRequest<Approach[]>({
-    url: `/api/v1/Approach/$count`,
+    url: `/Approach`,
     method: 'GET',
     params,
     signal,
@@ -543,7 +691,7 @@ export const getApproach = (
 }
 
 export const getGetApproachQueryKey = (params?: GetApproachParams) => {
-  return [`/api/v1/Approach/$count`, ...(params ? [params] : [])] as const
+  return [`/Approach`, ...(params ? [params] : [])] as const
 }
 
 export const getGetApproachQueryOptions = <
@@ -612,7 +760,7 @@ export const patchApproachFromKey = (
   params?: PatchApproachFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/Approach/${key}`,
+    url: `/Approach/${key}`,
     method: 'PATCH',
     headers: {
       'Content-Type':
@@ -676,10 +824,7 @@ export const usePatchApproachFromKey = <
 }
 
 export const deleteApproachFromKey = (key: number) => {
-  return configRequest<void>({
-    url: `/api/v1/Approach/${key}`,
-    method: 'DELETE',
-  })
+  return configRequest<void>({ url: `/Approach/${key}`, method: 'DELETE' })
 }
 
 export const getDeleteApproachFromKeyMutationOptions = <
@@ -743,7 +888,7 @@ export const getApproachFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<Approach>({
-    url: `/api/v1/Approach/${key}`,
+    url: `/Approach/${key}`,
     method: 'GET',
     params,
     signal,
@@ -754,7 +899,7 @@ export const getGetApproachFromKeyQueryKey = (
   key: number,
   params?: GetApproachFromKeyParams
 ) => {
-  return [`/api/v1/Approach/${key}`, ...(params ? [params] : [])] as const
+  return [`/Approach/${key}`, ...(params ? [params] : [])] as const
 }
 
 export const getGetApproachFromKeyQueryOptions = <
@@ -831,7 +976,7 @@ export const putApproachFromKey = (
   params?: PutApproachFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/Approach/${key}`,
+    url: `/Approach/${key}`,
     method: 'PUT',
     headers: {
       'Content-Type':
@@ -895,6 +1040,87 @@ export const usePutApproachFromKey = <
 }
 
 /**
+ * @summary Collection of objects from oData query.
+ */
+export const getApproachCount = (
+  params?: GetApproachCountParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<Approach[]>({
+    url: `/Approach/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getGetApproachCountQueryKey = (
+  params?: GetApproachCountParams
+) => {
+  return [`/Approach/$count`, ...(params ? [params] : [])] as const
+}
+
+export const getGetApproachCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof getApproachCount>>,
+  TError = void,
+>(
+  params?: GetApproachCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getApproachCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey = queryOptions?.queryKey ?? getGetApproachCountQueryKey(params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getApproachCount>>
+  > = ({ signal }) => getApproachCount(params, signal)
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getApproachCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type GetApproachCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getApproachCount>>
+>
+export type GetApproachCountQueryError = void
+
+/**
+ * @summary Collection of objects from oData query.
+ */
+export const useGetApproachCount = <
+  TData = Awaited<ReturnType<typeof getApproachCount>>,
+  TError = void,
+>(
+  params?: GetApproachCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getApproachCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getGetApproachCountQueryOptions(params, options)
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
  * @summary Utah.Udot.Atspm.Data.Models.Location navigation property action
  */
 export const getLocationsAreaFromKey = (
@@ -903,7 +1129,7 @@ export const getLocationsAreaFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<Location[]>({
-    url: `/api/v1/Area/${key}/locations/$count`,
+    url: `/Area/${key}/locations`,
     method: 'GET',
     params,
     signal,
@@ -914,10 +1140,7 @@ export const getGetLocationsAreaFromKeyQueryKey = (
   key: number,
   params?: GetLocationsAreaFromKeyParams
 ) => {
-  return [
-    `/api/v1/Area/${key}/locations/$count`,
-    ...(params ? [params] : []),
-  ] as const
+  return [`/Area/${key}/locations`, ...(params ? [params] : [])] as const
 }
 
 export const getGetLocationsAreaFromKeyQueryOptions = <
@@ -992,9 +1215,105 @@ export const useGetLocationsAreaFromKey = <
   return query
 }
 
+/**
+ * @summary Utah.Udot.Atspm.Data.Models.Location navigation property action
+ */
+export const getLocationsAreaFromKeyCount = (
+  key: number,
+  params?: GetLocationsAreaFromKeyCountParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<Location[]>({
+    url: `/Area/${key}/locations/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getGetLocationsAreaFromKeyCountQueryKey = (
+  key: number,
+  params?: GetLocationsAreaFromKeyCountParams
+) => {
+  return [`/Area/${key}/locations/$count`, ...(params ? [params] : [])] as const
+}
+
+export const getGetLocationsAreaFromKeyCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof getLocationsAreaFromKeyCount>>,
+  TError = void,
+>(
+  key: number,
+  params?: GetLocationsAreaFromKeyCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getLocationsAreaFromKeyCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getGetLocationsAreaFromKeyCountQueryKey(key, params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getLocationsAreaFromKeyCount>>
+  > = ({ signal }) => getLocationsAreaFromKeyCount(key, params, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!key,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getLocationsAreaFromKeyCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type GetLocationsAreaFromKeyCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getLocationsAreaFromKeyCount>>
+>
+export type GetLocationsAreaFromKeyCountQueryError = void
+
+/**
+ * @summary Utah.Udot.Atspm.Data.Models.Location navigation property action
+ */
+export const useGetLocationsAreaFromKeyCount = <
+  TData = Awaited<ReturnType<typeof getLocationsAreaFromKeyCount>>,
+  TError = void,
+>(
+  key: number,
+  params?: GetLocationsAreaFromKeyCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getLocationsAreaFromKeyCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getGetLocationsAreaFromKeyCountQueryOptions(
+    key,
+    params,
+    options
+  )
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
 export const postArea = (area: Area, params?: PostAreaParams) => {
   return configRequest<void>({
-    url: `/api/v1/Area`,
+    url: `/Area`,
     method: 'POST',
     headers: {
       'Content-Type':
@@ -1058,16 +1377,11 @@ export const usePostArea = <TError = unknown, TContext = unknown>(options?: {
  * @summary Collection of objects from oData query.
  */
 export const getArea = (params?: GetAreaParams, signal?: AbortSignal) => {
-  return configRequest<Area[]>({
-    url: `/api/v1/Area/$count`,
-    method: 'GET',
-    params,
-    signal,
-  })
+  return configRequest<Area[]>({ url: `/Area`, method: 'GET', params, signal })
 }
 
 export const getGetAreaQueryKey = (params?: GetAreaParams) => {
-  return [`/api/v1/Area/$count`, ...(params ? [params] : [])] as const
+  return [`/Area`, ...(params ? [params] : [])] as const
 }
 
 export const getGetAreaQueryOptions = <
@@ -1128,7 +1442,7 @@ export const patchAreaFromKey = (
   params?: PatchAreaFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/Area/${key}`,
+    url: `/Area/${key}`,
     method: 'PATCH',
     headers: {
       'Content-Type':
@@ -1192,7 +1506,7 @@ export const usePatchAreaFromKey = <
 }
 
 export const deleteAreaFromKey = (key: number) => {
-  return configRequest<void>({ url: `/api/v1/Area/${key}`, method: 'DELETE' })
+  return configRequest<void>({ url: `/Area/${key}`, method: 'DELETE' })
 }
 
 export const getDeleteAreaFromKeyMutationOptions = <
@@ -1256,7 +1570,7 @@ export const getAreaFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<Area>({
-    url: `/api/v1/Area/${key}`,
+    url: `/Area/${key}`,
     method: 'GET',
     params,
     signal,
@@ -1267,7 +1581,7 @@ export const getGetAreaFromKeyQueryKey = (
   key: number,
   params?: GetAreaFromKeyParams
 ) => {
-  return [`/api/v1/Area/${key}`, ...(params ? [params] : [])] as const
+  return [`/Area/${key}`, ...(params ? [params] : [])] as const
 }
 
 export const getGetAreaFromKeyQueryOptions = <
@@ -1344,7 +1658,7 @@ export const putAreaFromKey = (
   params?: PutAreaFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/Area/${key}`,
+    url: `/Area/${key}`,
     method: 'PUT',
     headers: {
       'Content-Type':
@@ -1408,6 +1722,85 @@ export const usePutAreaFromKey = <
 }
 
 /**
+ * @summary Collection of objects from oData query.
+ */
+export const getAreaCount = (
+  params?: GetAreaCountParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<Area[]>({
+    url: `/Area/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getGetAreaCountQueryKey = (params?: GetAreaCountParams) => {
+  return [`/Area/$count`, ...(params ? [params] : [])] as const
+}
+
+export const getGetAreaCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof getAreaCount>>,
+  TError = void,
+>(
+  params?: GetAreaCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getAreaCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey = queryOptions?.queryKey ?? getGetAreaCountQueryKey(params)
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getAreaCount>>> = ({
+    signal,
+  }) => getAreaCount(params, signal)
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getAreaCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type GetAreaCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getAreaCount>>
+>
+export type GetAreaCountQueryError = void
+
+/**
+ * @summary Collection of objects from oData query.
+ */
+export const useGetAreaCount = <
+  TData = Awaited<ReturnType<typeof getAreaCount>>,
+  TError = void,
+>(
+  params?: GetAreaCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getAreaCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getGetAreaCountQueryOptions(params, options)
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
  * @summary Utah.Udot.Atspm.Data.Models.Detector navigation property action
  */
 export const getDetectorsDetectionTypeFromKey = (
@@ -1416,7 +1809,7 @@ export const getDetectorsDetectionTypeFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<Detector[]>({
-    url: `/api/v1/DetectionType/${key}/detectors/$count`,
+    url: `/DetectionType/${key}/detectors`,
     method: 'GET',
     params,
     signal,
@@ -1428,7 +1821,7 @@ export const getGetDetectorsDetectionTypeFromKeyQueryKey = (
   params?: GetDetectorsDetectionTypeFromKeyParams
 ) => {
   return [
-    `/api/v1/DetectionType/${key}/detectors/$count`,
+    `/DetectionType/${key}/detectors`,
     ...(params ? [params] : []),
   ] as const
 }
@@ -1507,6 +1900,105 @@ export const useGetDetectorsDetectionTypeFromKey = <
 }
 
 /**
+ * @summary Utah.Udot.Atspm.Data.Models.Detector navigation property action
+ */
+export const getDetectorsDetectionTypeFromKeyCount = (
+  key: number,
+  params?: GetDetectorsDetectionTypeFromKeyCountParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<Detector[]>({
+    url: `/DetectionType/${key}/detectors/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getGetDetectorsDetectionTypeFromKeyCountQueryKey = (
+  key: number,
+  params?: GetDetectorsDetectionTypeFromKeyCountParams
+) => {
+  return [
+    `/DetectionType/${key}/detectors/$count`,
+    ...(params ? [params] : []),
+  ] as const
+}
+
+export const getGetDetectorsDetectionTypeFromKeyCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof getDetectorsDetectionTypeFromKeyCount>>,
+  TError = void,
+>(
+  key: number,
+  params?: GetDetectorsDetectionTypeFromKeyCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getDetectorsDetectionTypeFromKeyCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getGetDetectorsDetectionTypeFromKeyCountQueryKey(key, params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getDetectorsDetectionTypeFromKeyCount>>
+  > = ({ signal }) => getDetectorsDetectionTypeFromKeyCount(key, params, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!key,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getDetectorsDetectionTypeFromKeyCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type GetDetectorsDetectionTypeFromKeyCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getDetectorsDetectionTypeFromKeyCount>>
+>
+export type GetDetectorsDetectionTypeFromKeyCountQueryError = void
+
+/**
+ * @summary Utah.Udot.Atspm.Data.Models.Detector navigation property action
+ */
+export const useGetDetectorsDetectionTypeFromKeyCount = <
+  TData = Awaited<ReturnType<typeof getDetectorsDetectionTypeFromKeyCount>>,
+  TError = void,
+>(
+  key: number,
+  params?: GetDetectorsDetectionTypeFromKeyCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getDetectorsDetectionTypeFromKeyCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getGetDetectorsDetectionTypeFromKeyCountQueryOptions(
+    key,
+    params,
+    options
+  )
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
  * @summary Utah.Udot.Atspm.Data.Models.MeasureType navigation property action
  */
 export const getMeasureTypesDetectionTypeFromKey = (
@@ -1515,7 +2007,7 @@ export const getMeasureTypesDetectionTypeFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<MeasureType[]>({
-    url: `/api/v1/DetectionType/${key}/measureTypes/$count`,
+    url: `/DetectionType/${key}/measureTypes`,
     method: 'GET',
     params,
     signal,
@@ -1527,7 +2019,7 @@ export const getGetMeasureTypesDetectionTypeFromKeyQueryKey = (
   params?: GetMeasureTypesDetectionTypeFromKeyParams
 ) => {
   return [
-    `/api/v1/DetectionType/${key}/measureTypes/$count`,
+    `/DetectionType/${key}/measureTypes`,
     ...(params ? [params] : []),
   ] as const
 }
@@ -1606,6 +2098,106 @@ export const useGetMeasureTypesDetectionTypeFromKey = <
 }
 
 /**
+ * @summary Utah.Udot.Atspm.Data.Models.MeasureType navigation property action
+ */
+export const getMeasureTypesDetectionTypeFromKeyCount = (
+  key: number,
+  params?: GetMeasureTypesDetectionTypeFromKeyCountParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<MeasureType[]>({
+    url: `/DetectionType/${key}/measureTypes/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getGetMeasureTypesDetectionTypeFromKeyCountQueryKey = (
+  key: number,
+  params?: GetMeasureTypesDetectionTypeFromKeyCountParams
+) => {
+  return [
+    `/DetectionType/${key}/measureTypes/$count`,
+    ...(params ? [params] : []),
+  ] as const
+}
+
+export const getGetMeasureTypesDetectionTypeFromKeyCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof getMeasureTypesDetectionTypeFromKeyCount>>,
+  TError = void,
+>(
+  key: number,
+  params?: GetMeasureTypesDetectionTypeFromKeyCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getMeasureTypesDetectionTypeFromKeyCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getGetMeasureTypesDetectionTypeFromKeyCountQueryKey(key, params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getMeasureTypesDetectionTypeFromKeyCount>>
+  > = ({ signal }) =>
+    getMeasureTypesDetectionTypeFromKeyCount(key, params, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!key,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getMeasureTypesDetectionTypeFromKeyCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type GetMeasureTypesDetectionTypeFromKeyCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getMeasureTypesDetectionTypeFromKeyCount>>
+>
+export type GetMeasureTypesDetectionTypeFromKeyCountQueryError = void
+
+/**
+ * @summary Utah.Udot.Atspm.Data.Models.MeasureType navigation property action
+ */
+export const useGetMeasureTypesDetectionTypeFromKeyCount = <
+  TData = Awaited<ReturnType<typeof getMeasureTypesDetectionTypeFromKeyCount>>,
+  TError = void,
+>(
+  key: number,
+  params?: GetMeasureTypesDetectionTypeFromKeyCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getMeasureTypesDetectionTypeFromKeyCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getGetMeasureTypesDetectionTypeFromKeyCountQueryOptions(
+    key,
+    params,
+    options
+  )
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
  * @summary Collection of objects from oData query.
  */
 export const getDetectionType = (
@@ -1613,7 +2205,7 @@ export const getDetectionType = (
   signal?: AbortSignal
 ) => {
   return configRequest<DetectionType[]>({
-    url: `/api/v1/DetectionType/$count`,
+    url: `/DetectionType`,
     method: 'GET',
     params,
     signal,
@@ -1623,7 +2215,7 @@ export const getDetectionType = (
 export const getGetDetectionTypeQueryKey = (
   params?: GetDetectionTypeParams
 ) => {
-  return [`/api/v1/DetectionType/$count`, ...(params ? [params] : [])] as const
+  return [`/DetectionType`, ...(params ? [params] : [])] as const
 }
 
 export const getGetDetectionTypeQueryOptions = <
@@ -1694,7 +2286,7 @@ export const postDetectionType = (
   params?: PostDetectionTypeParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/DetectionType`,
+    url: `/DetectionType`,
     method: 'POST',
     headers: {
       'Content-Type':
@@ -1761,6 +2353,88 @@ export const usePostDetectionType = <
 }
 
 /**
+ * @summary Collection of objects from oData query.
+ */
+export const getDetectionTypeCount = (
+  params?: GetDetectionTypeCountParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<DetectionType[]>({
+    url: `/DetectionType/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getGetDetectionTypeCountQueryKey = (
+  params?: GetDetectionTypeCountParams
+) => {
+  return [`/DetectionType/$count`, ...(params ? [params] : [])] as const
+}
+
+export const getGetDetectionTypeCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof getDetectionTypeCount>>,
+  TError = void,
+>(
+  params?: GetDetectionTypeCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getDetectionTypeCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ?? getGetDetectionTypeCountQueryKey(params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getDetectionTypeCount>>
+  > = ({ signal }) => getDetectionTypeCount(params, signal)
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getDetectionTypeCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type GetDetectionTypeCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getDetectionTypeCount>>
+>
+export type GetDetectionTypeCountQueryError = void
+
+/**
+ * @summary Collection of objects from oData query.
+ */
+export const useGetDetectionTypeCount = <
+  TData = Awaited<ReturnType<typeof getDetectionTypeCount>>,
+  TError = void,
+>(
+  params?: GetDetectionTypeCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getDetectionTypeCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getGetDetectionTypeCountQueryOptions(params, options)
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
  * @summary object with key from oData query.
  */
 export const getDetectionTypeFromKey = (
@@ -1769,7 +2443,7 @@ export const getDetectionTypeFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<DetectionType>({
-    url: `/api/v1/DetectionType/${key}`,
+    url: `/DetectionType/${key}`,
     method: 'GET',
     params,
     signal,
@@ -1780,7 +2454,7 @@ export const getGetDetectionTypeFromKeyQueryKey = (
   key: DetectionTypes,
   params?: GetDetectionTypeFromKeyParams
 ) => {
-  return [`/api/v1/DetectionType/${key}`, ...(params ? [params] : [])] as const
+  return [`/DetectionType/${key}`, ...(params ? [params] : [])] as const
 }
 
 export const getGetDetectionTypeFromKeyQueryOptions = <
@@ -1861,7 +2535,7 @@ export const putDetectionTypeFromKey = (
   params?: PutDetectionTypeFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/DetectionType/${key}`,
+    url: `/DetectionType/${key}`,
     method: 'PUT',
     headers: {
       'Content-Type':
@@ -1949,7 +2623,7 @@ export const patchDetectionTypeFromKey = (
   params?: PatchDetectionTypeFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/DetectionType/${key}`,
+    url: `/DetectionType/${key}`,
     method: 'PATCH',
     headers: {
       'Content-Type':
@@ -2035,10 +2709,7 @@ export const usePatchDetectionTypeFromKey = <
  * @summary Delete object of specified type
  */
 export const deleteDetectionTypeFromKey = (key: DetectionTypes) => {
-  return configRequest<void>({
-    url: `/api/v1/DetectionType/${key}`,
-    method: 'DELETE',
-  })
+  return configRequest<void>({ url: `/DetectionType/${key}`, method: 'DELETE' })
 }
 
 export const getDeleteDetectionTypeFromKeyMutationOptions = <
@@ -2105,7 +2776,7 @@ export const getDetectorCommentsDetectorFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<DetectorComment[]>({
-    url: `/api/v1/Detector/${key}/detectorComments/$count`,
+    url: `/Detector/${key}/detectorComments`,
     method: 'GET',
     params,
     signal,
@@ -2117,7 +2788,7 @@ export const getGetDetectorCommentsDetectorFromKeyQueryKey = (
   params?: GetDetectorCommentsDetectorFromKeyParams
 ) => {
   return [
-    `/api/v1/Detector/${key}/detectorComments/$count`,
+    `/Detector/${key}/detectorComments`,
     ...(params ? [params] : []),
   ] as const
 }
@@ -2196,6 +2867,106 @@ export const useGetDetectorCommentsDetectorFromKey = <
 }
 
 /**
+ * @summary Utah.Udot.Atspm.Data.Models.DetectorComment navigation property action
+ */
+export const getDetectorCommentsDetectorFromKeyCount = (
+  key: number,
+  params?: GetDetectorCommentsDetectorFromKeyCountParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<DetectorComment[]>({
+    url: `/Detector/${key}/detectorComments/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getGetDetectorCommentsDetectorFromKeyCountQueryKey = (
+  key: number,
+  params?: GetDetectorCommentsDetectorFromKeyCountParams
+) => {
+  return [
+    `/Detector/${key}/detectorComments/$count`,
+    ...(params ? [params] : []),
+  ] as const
+}
+
+export const getGetDetectorCommentsDetectorFromKeyCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof getDetectorCommentsDetectorFromKeyCount>>,
+  TError = void,
+>(
+  key: number,
+  params?: GetDetectorCommentsDetectorFromKeyCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getDetectorCommentsDetectorFromKeyCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getGetDetectorCommentsDetectorFromKeyCountQueryKey(key, params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getDetectorCommentsDetectorFromKeyCount>>
+  > = ({ signal }) =>
+    getDetectorCommentsDetectorFromKeyCount(key, params, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!key,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getDetectorCommentsDetectorFromKeyCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type GetDetectorCommentsDetectorFromKeyCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getDetectorCommentsDetectorFromKeyCount>>
+>
+export type GetDetectorCommentsDetectorFromKeyCountQueryError = void
+
+/**
+ * @summary Utah.Udot.Atspm.Data.Models.DetectorComment navigation property action
+ */
+export const useGetDetectorCommentsDetectorFromKeyCount = <
+  TData = Awaited<ReturnType<typeof getDetectorCommentsDetectorFromKeyCount>>,
+  TError = void,
+>(
+  key: number,
+  params?: GetDetectorCommentsDetectorFromKeyCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getDetectorCommentsDetectorFromKeyCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getGetDetectorCommentsDetectorFromKeyCountQueryOptions(
+    key,
+    params,
+    options
+  )
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
  * @summary Utah.Udot.Atspm.Data.Models.DetectionType navigation property action
  */
 export const getDetectionTypesDetectorFromKey = (
@@ -2204,7 +2975,7 @@ export const getDetectionTypesDetectorFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<DetectionType[]>({
-    url: `/api/v1/Detector/${key}/detectionTypes/$count`,
+    url: `/Detector/${key}/detectionTypes`,
     method: 'GET',
     params,
     signal,
@@ -2216,7 +2987,7 @@ export const getGetDetectionTypesDetectorFromKeyQueryKey = (
   params?: GetDetectionTypesDetectorFromKeyParams
 ) => {
   return [
-    `/api/v1/Detector/${key}/detectionTypes/$count`,
+    `/Detector/${key}/detectionTypes`,
     ...(params ? [params] : []),
   ] as const
 }
@@ -2295,6 +3066,105 @@ export const useGetDetectionTypesDetectorFromKey = <
 }
 
 /**
+ * @summary Utah.Udot.Atspm.Data.Models.DetectionType navigation property action
+ */
+export const getDetectionTypesDetectorFromKeyCount = (
+  key: number,
+  params?: GetDetectionTypesDetectorFromKeyCountParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<DetectionType[]>({
+    url: `/Detector/${key}/detectionTypes/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getGetDetectionTypesDetectorFromKeyCountQueryKey = (
+  key: number,
+  params?: GetDetectionTypesDetectorFromKeyCountParams
+) => {
+  return [
+    `/Detector/${key}/detectionTypes/$count`,
+    ...(params ? [params] : []),
+  ] as const
+}
+
+export const getGetDetectionTypesDetectorFromKeyCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof getDetectionTypesDetectorFromKeyCount>>,
+  TError = void,
+>(
+  key: number,
+  params?: GetDetectionTypesDetectorFromKeyCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getDetectionTypesDetectorFromKeyCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getGetDetectionTypesDetectorFromKeyCountQueryKey(key, params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getDetectionTypesDetectorFromKeyCount>>
+  > = ({ signal }) => getDetectionTypesDetectorFromKeyCount(key, params, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!key,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getDetectionTypesDetectorFromKeyCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type GetDetectionTypesDetectorFromKeyCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getDetectionTypesDetectorFromKeyCount>>
+>
+export type GetDetectionTypesDetectorFromKeyCountQueryError = void
+
+/**
+ * @summary Utah.Udot.Atspm.Data.Models.DetectionType navigation property action
+ */
+export const useGetDetectionTypesDetectorFromKeyCount = <
+  TData = Awaited<ReturnType<typeof getDetectionTypesDetectorFromKeyCount>>,
+  TError = void,
+>(
+  key: number,
+  params?: GetDetectionTypesDetectorFromKeyCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getDetectionTypesDetectorFromKeyCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getGetDetectionTypesDetectorFromKeyCountQueryOptions(
+    key,
+    params,
+    options
+  )
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
  * @summary Collection of objects from oData query.
  */
 export const getDetector = (
@@ -2302,7 +3172,7 @@ export const getDetector = (
   signal?: AbortSignal
 ) => {
   return configRequest<Detector[]>({
-    url: `/api/v1/Detector/$count`,
+    url: `/Detector`,
     method: 'GET',
     params,
     signal,
@@ -2310,7 +3180,7 @@ export const getDetector = (
 }
 
 export const getGetDetectorQueryKey = (params?: GetDetectorParams) => {
-  return [`/api/v1/Detector/$count`, ...(params ? [params] : [])] as const
+  return [`/Detector`, ...(params ? [params] : [])] as const
 }
 
 export const getGetDetectorQueryOptions = <
@@ -2381,7 +3251,7 @@ export const postDetector = (
   params?: PostDetectorParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/Detector`,
+    url: `/Detector`,
     method: 'POST',
     headers: {
       'Content-Type':
@@ -2448,6 +3318,87 @@ export const usePostDetector = <
 }
 
 /**
+ * @summary Collection of objects from oData query.
+ */
+export const getDetectorCount = (
+  params?: GetDetectorCountParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<Detector[]>({
+    url: `/Detector/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getGetDetectorCountQueryKey = (
+  params?: GetDetectorCountParams
+) => {
+  return [`/Detector/$count`, ...(params ? [params] : [])] as const
+}
+
+export const getGetDetectorCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof getDetectorCount>>,
+  TError = void,
+>(
+  params?: GetDetectorCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getDetectorCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey = queryOptions?.queryKey ?? getGetDetectorCountQueryKey(params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getDetectorCount>>
+  > = ({ signal }) => getDetectorCount(params, signal)
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getDetectorCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type GetDetectorCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getDetectorCount>>
+>
+export type GetDetectorCountQueryError = void
+
+/**
+ * @summary Collection of objects from oData query.
+ */
+export const useGetDetectorCount = <
+  TData = Awaited<ReturnType<typeof getDetectorCount>>,
+  TError = void,
+>(
+  params?: GetDetectorCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getDetectorCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getGetDetectorCountQueryOptions(params, options)
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
  * @summary object with key from oData query.
  */
 export const getDetectorFromKey = (
@@ -2456,7 +3407,7 @@ export const getDetectorFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<Detector>({
-    url: `/api/v1/Detector/${key}`,
+    url: `/Detector/${key}`,
     method: 'GET',
     params,
     signal,
@@ -2467,7 +3418,7 @@ export const getGetDetectorFromKeyQueryKey = (
   key: number,
   params?: GetDetectorFromKeyParams
 ) => {
-  return [`/api/v1/Detector/${key}`, ...(params ? [params] : [])] as const
+  return [`/Detector/${key}`, ...(params ? [params] : [])] as const
 }
 
 export const getGetDetectorFromKeyQueryOptions = <
@@ -2544,7 +3495,7 @@ export const putDetectorFromKey = (
   params?: PutDetectorFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/Detector/${key}`,
+    url: `/Detector/${key}`,
     method: 'PUT',
     headers: {
       'Content-Type':
@@ -2616,7 +3567,7 @@ export const patchDetectorFromKey = (
   params?: PatchDetectorFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/Detector/${key}`,
+    url: `/Detector/${key}`,
     method: 'PATCH',
     headers: {
       'Content-Type':
@@ -2686,10 +3637,7 @@ export const usePatchDetectorFromKey = <
  * @summary Delete object of specified type
  */
 export const deleteDetectorFromKey = (key: number) => {
-  return configRequest<void>({
-    url: `/api/v1/Detector/${key}`,
-    method: 'DELETE',
-  })
+  return configRequest<void>({ url: `/Detector/${key}`, method: 'DELETE' })
 }
 
 export const getDeleteDetectorFromKeyMutationOptions = <
@@ -2755,7 +3703,7 @@ export const getDetectorComment = (
   signal?: AbortSignal
 ) => {
   return configRequest<DetectorComment[]>({
-    url: `/api/v1/DetectorComment/$count`,
+    url: `/DetectorComment`,
     method: 'GET',
     params,
     signal,
@@ -2765,10 +3713,7 @@ export const getDetectorComment = (
 export const getGetDetectorCommentQueryKey = (
   params?: GetDetectorCommentParams
 ) => {
-  return [
-    `/api/v1/DetectorComment/$count`,
-    ...(params ? [params] : []),
-  ] as const
+  return [`/DetectorComment`, ...(params ? [params] : [])] as const
 }
 
 export const getGetDetectorCommentQueryOptions = <
@@ -2840,7 +3785,7 @@ export const postDetectorComment = (
   params?: PostDetectorCommentParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/DetectorComment`,
+    url: `/DetectorComment`,
     method: 'POST',
     headers: {
       'Content-Type':
@@ -2907,6 +3852,88 @@ export const usePostDetectorComment = <
 }
 
 /**
+ * @summary Collection of objects from oData query.
+ */
+export const getDetectorCommentCount = (
+  params?: GetDetectorCommentCountParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<DetectorComment[]>({
+    url: `/DetectorComment/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getGetDetectorCommentCountQueryKey = (
+  params?: GetDetectorCommentCountParams
+) => {
+  return [`/DetectorComment/$count`, ...(params ? [params] : [])] as const
+}
+
+export const getGetDetectorCommentCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof getDetectorCommentCount>>,
+  TError = void,
+>(
+  params?: GetDetectorCommentCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getDetectorCommentCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ?? getGetDetectorCommentCountQueryKey(params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getDetectorCommentCount>>
+  > = ({ signal }) => getDetectorCommentCount(params, signal)
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getDetectorCommentCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type GetDetectorCommentCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getDetectorCommentCount>>
+>
+export type GetDetectorCommentCountQueryError = void
+
+/**
+ * @summary Collection of objects from oData query.
+ */
+export const useGetDetectorCommentCount = <
+  TData = Awaited<ReturnType<typeof getDetectorCommentCount>>,
+  TError = void,
+>(
+  params?: GetDetectorCommentCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getDetectorCommentCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getGetDetectorCommentCountQueryOptions(params, options)
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
  * @summary object with key from oData query.
  */
 export const getDetectorCommentFromKey = (
@@ -2915,7 +3942,7 @@ export const getDetectorCommentFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<DetectorComment>({
-    url: `/api/v1/DetectorComment/${key}`,
+    url: `/DetectorComment/${key}`,
     method: 'GET',
     params,
     signal,
@@ -2926,10 +3953,7 @@ export const getGetDetectorCommentFromKeyQueryKey = (
   key: number,
   params?: GetDetectorCommentFromKeyParams
 ) => {
-  return [
-    `/api/v1/DetectorComment/${key}`,
-    ...(params ? [params] : []),
-  ] as const
+  return [`/DetectorComment/${key}`, ...(params ? [params] : [])] as const
 }
 
 export const getGetDetectorCommentFromKeyQueryOptions = <
@@ -3010,7 +4034,7 @@ export const putDetectorCommentFromKey = (
   params?: PutDetectorCommentFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/DetectorComment/${key}`,
+    url: `/DetectorComment/${key}`,
     method: 'PUT',
     headers: {
       'Content-Type':
@@ -3098,7 +4122,7 @@ export const patchDetectorCommentFromKey = (
   params?: PatchDetectorCommentFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/DetectorComment/${key}`,
+    url: `/DetectorComment/${key}`,
     method: 'PATCH',
     headers: {
       'Content-Type':
@@ -3185,7 +4209,7 @@ export const usePatchDetectorCommentFromKey = <
  */
 export const deleteDetectorCommentFromKey = (key: number) => {
   return configRequest<void>({
-    url: `/api/v1/DetectorComment/${key}`,
+    url: `/DetectorComment/${key}`,
     method: 'DELETE',
   })
 }
@@ -3255,7 +4279,7 @@ export const getActiveDevicesByLocationDeviceFromLocationId = (
   signal?: AbortSignal
 ) => {
   return configRequest<Device[]>({
-    url: `/api/v1/Device/GetActiveDevicesByLocation(locationId=${locationId})`,
+    url: `/Device/GetActiveDevicesByLocation(locationId=${locationId})`,
     method: 'GET',
     params,
     signal,
@@ -3267,7 +4291,7 @@ export const getGetActiveDevicesByLocationDeviceFromLocationIdQueryKey = (
   params?: GetActiveDevicesByLocationDeviceFromLocationIdParams
 ) => {
   return [
-    `/api/v1/Device/GetActiveDevicesByLocation(locationId=${locationId})`,
+    `/Device/GetActiveDevicesByLocation(locationId=${locationId})`,
     ...(params ? [params] : []),
   ] as const
 }
@@ -3367,7 +4391,7 @@ export const getActiveDevicesCountDevice = (
   signal?: AbortSignal
 ) => {
   return configRequest<DeviceGroup[]>({
-    url: `/api/v1/Device/GetActiveDevicesCount`,
+    url: `/Device/GetActiveDevicesCount`,
     method: 'GET',
     params,
     signal,
@@ -3377,10 +4401,7 @@ export const getActiveDevicesCountDevice = (
 export const getGetActiveDevicesCountDeviceQueryKey = (
   params?: GetActiveDevicesCountDeviceParams
 ) => {
-  return [
-    `/api/v1/Device/GetActiveDevicesCount`,
-    ...(params ? [params] : []),
-  ] as const
+  return [`/Device/GetActiveDevicesCount`, ...(params ? [params] : [])] as const
 }
 
 export const getGetActiveDevicesCountDeviceQueryOptions = <
@@ -3452,7 +4473,7 @@ export const useGetActiveDevicesCountDevice = <
  */
 export const getDevice = (params?: GetDeviceParams, signal?: AbortSignal) => {
   return configRequest<Device[]>({
-    url: `/api/v1/Device/$count`,
+    url: `/Device`,
     method: 'GET',
     params,
     signal,
@@ -3460,7 +4481,7 @@ export const getDevice = (params?: GetDeviceParams, signal?: AbortSignal) => {
 }
 
 export const getGetDeviceQueryKey = (params?: GetDeviceParams) => {
-  return [`/api/v1/Device/$count`, ...(params ? [params] : [])] as const
+  return [`/Device`, ...(params ? [params] : [])] as const
 }
 
 export const getGetDeviceQueryOptions = <
@@ -3528,7 +4549,7 @@ export const useGetDevice = <
  */
 export const postDevice = (device: Device, params?: PostDeviceParams) => {
   return configRequest<void>({
-    url: `/api/v1/Device`,
+    url: `/Device`,
     method: 'POST',
     headers: {
       'Content-Type':
@@ -3592,6 +4613,85 @@ export const usePostDevice = <TError = unknown, TContext = unknown>(options?: {
 }
 
 /**
+ * @summary Collection of objects from oData query.
+ */
+export const getDeviceCount = (
+  params?: GetDeviceCountParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<Device[]>({
+    url: `/Device/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getGetDeviceCountQueryKey = (params?: GetDeviceCountParams) => {
+  return [`/Device/$count`, ...(params ? [params] : [])] as const
+}
+
+export const getGetDeviceCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof getDeviceCount>>,
+  TError = void,
+>(
+  params?: GetDeviceCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getDeviceCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey = queryOptions?.queryKey ?? getGetDeviceCountQueryKey(params)
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getDeviceCount>>> = ({
+    signal,
+  }) => getDeviceCount(params, signal)
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getDeviceCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type GetDeviceCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getDeviceCount>>
+>
+export type GetDeviceCountQueryError = void
+
+/**
+ * @summary Collection of objects from oData query.
+ */
+export const useGetDeviceCount = <
+  TData = Awaited<ReturnType<typeof getDeviceCount>>,
+  TError = void,
+>(
+  params?: GetDeviceCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getDeviceCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getGetDeviceCountQueryOptions(params, options)
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
  * @summary object with key from oData query.
  */
 export const getDeviceFromKey = (
@@ -3600,7 +4700,7 @@ export const getDeviceFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<Device>({
-    url: `/api/v1/Device/${key}`,
+    url: `/Device/${key}`,
     method: 'GET',
     params,
     signal,
@@ -3611,7 +4711,7 @@ export const getGetDeviceFromKeyQueryKey = (
   key: number,
   params?: GetDeviceFromKeyParams
 ) => {
-  return [`/api/v1/Device/${key}`, ...(params ? [params] : [])] as const
+  return [`/Device/${key}`, ...(params ? [params] : [])] as const
 }
 
 export const getGetDeviceFromKeyQueryOptions = <
@@ -3688,7 +4788,7 @@ export const putDeviceFromKey = (
   params?: PutDeviceFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/Device/${key}`,
+    url: `/Device/${key}`,
     method: 'PUT',
     headers: {
       'Content-Type':
@@ -3760,7 +4860,7 @@ export const patchDeviceFromKey = (
   params?: PatchDeviceFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/Device/${key}`,
+    url: `/Device/${key}`,
     method: 'PATCH',
     headers: {
       'Content-Type':
@@ -3830,7 +4930,7 @@ export const usePatchDeviceFromKey = <
  * @summary Delete object of specified type
  */
 export const deleteDeviceFromKey = (key: number) => {
-  return configRequest<void>({ url: `/api/v1/Device/${key}`, method: 'DELETE' })
+  return configRequest<void>({ url: `/Device/${key}`, method: 'DELETE' })
 }
 
 export const getDeleteDeviceFromKeyMutationOptions = <
@@ -3897,7 +4997,7 @@ export const getDevicesDeviceConfigurationFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<Device[]>({
-    url: `/api/v1/DeviceConfiguration/${key}/devices/$count`,
+    url: `/DeviceConfiguration/${key}/devices`,
     method: 'GET',
     params,
     signal,
@@ -3909,7 +5009,7 @@ export const getGetDevicesDeviceConfigurationFromKeyQueryKey = (
   params?: GetDevicesDeviceConfigurationFromKeyParams
 ) => {
   return [
-    `/api/v1/DeviceConfiguration/${key}/devices/$count`,
+    `/DeviceConfiguration/${key}/devices`,
     ...(params ? [params] : []),
   ] as const
 }
@@ -3988,6 +5088,106 @@ export const useGetDevicesDeviceConfigurationFromKey = <
 }
 
 /**
+ * @summary Utah.Udot.Atspm.Data.Models.Device navigation property action
+ */
+export const getDevicesDeviceConfigurationFromKeyCount = (
+  key: number,
+  params?: GetDevicesDeviceConfigurationFromKeyCountParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<Device[]>({
+    url: `/DeviceConfiguration/${key}/devices/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getGetDevicesDeviceConfigurationFromKeyCountQueryKey = (
+  key: number,
+  params?: GetDevicesDeviceConfigurationFromKeyCountParams
+) => {
+  return [
+    `/DeviceConfiguration/${key}/devices/$count`,
+    ...(params ? [params] : []),
+  ] as const
+}
+
+export const getGetDevicesDeviceConfigurationFromKeyCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof getDevicesDeviceConfigurationFromKeyCount>>,
+  TError = void,
+>(
+  key: number,
+  params?: GetDevicesDeviceConfigurationFromKeyCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getDevicesDeviceConfigurationFromKeyCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getGetDevicesDeviceConfigurationFromKeyCountQueryKey(key, params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getDevicesDeviceConfigurationFromKeyCount>>
+  > = ({ signal }) =>
+    getDevicesDeviceConfigurationFromKeyCount(key, params, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!key,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getDevicesDeviceConfigurationFromKeyCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type GetDevicesDeviceConfigurationFromKeyCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getDevicesDeviceConfigurationFromKeyCount>>
+>
+export type GetDevicesDeviceConfigurationFromKeyCountQueryError = void
+
+/**
+ * @summary Utah.Udot.Atspm.Data.Models.Device navigation property action
+ */
+export const useGetDevicesDeviceConfigurationFromKeyCount = <
+  TData = Awaited<ReturnType<typeof getDevicesDeviceConfigurationFromKeyCount>>,
+  TError = void,
+>(
+  key: number,
+  params?: GetDevicesDeviceConfigurationFromKeyCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getDevicesDeviceConfigurationFromKeyCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getGetDevicesDeviceConfigurationFromKeyCountQueryOptions(
+    key,
+    params,
+    options
+  )
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
  * @summary Collection of objects from oData query.
  */
 export const getDeviceConfiguration = (
@@ -3995,7 +5195,7 @@ export const getDeviceConfiguration = (
   signal?: AbortSignal
 ) => {
   return configRequest<DeviceConfiguration[]>({
-    url: `/api/v1/DeviceConfiguration/$count`,
+    url: `/DeviceConfiguration`,
     method: 'GET',
     params,
     signal,
@@ -4005,10 +5205,7 @@ export const getDeviceConfiguration = (
 export const getGetDeviceConfigurationQueryKey = (
   params?: GetDeviceConfigurationParams
 ) => {
-  return [
-    `/api/v1/DeviceConfiguration/$count`,
-    ...(params ? [params] : []),
-  ] as const
+  return [`/DeviceConfiguration`, ...(params ? [params] : [])] as const
 }
 
 export const getGetDeviceConfigurationQueryOptions = <
@@ -4080,7 +5277,7 @@ export const postDeviceConfiguration = (
   params?: PostDeviceConfigurationParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/DeviceConfiguration`,
+    url: `/DeviceConfiguration`,
     method: 'POST',
     headers: {
       'Content-Type':
@@ -4147,6 +5344,91 @@ export const usePostDeviceConfiguration = <
 }
 
 /**
+ * @summary Collection of objects from oData query.
+ */
+export const getDeviceConfigurationCount = (
+  params?: GetDeviceConfigurationCountParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<DeviceConfiguration[]>({
+    url: `/DeviceConfiguration/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getGetDeviceConfigurationCountQueryKey = (
+  params?: GetDeviceConfigurationCountParams
+) => {
+  return [`/DeviceConfiguration/$count`, ...(params ? [params] : [])] as const
+}
+
+export const getGetDeviceConfigurationCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof getDeviceConfigurationCount>>,
+  TError = void,
+>(
+  params?: GetDeviceConfigurationCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getDeviceConfigurationCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ?? getGetDeviceConfigurationCountQueryKey(params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getDeviceConfigurationCount>>
+  > = ({ signal }) => getDeviceConfigurationCount(params, signal)
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getDeviceConfigurationCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type GetDeviceConfigurationCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getDeviceConfigurationCount>>
+>
+export type GetDeviceConfigurationCountQueryError = void
+
+/**
+ * @summary Collection of objects from oData query.
+ */
+export const useGetDeviceConfigurationCount = <
+  TData = Awaited<ReturnType<typeof getDeviceConfigurationCount>>,
+  TError = void,
+>(
+  params?: GetDeviceConfigurationCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getDeviceConfigurationCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getGetDeviceConfigurationCountQueryOptions(
+    params,
+    options
+  )
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
  * @summary object with key from oData query.
  */
 export const getDeviceConfigurationFromKey = (
@@ -4155,7 +5437,7 @@ export const getDeviceConfigurationFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<DeviceConfiguration>({
-    url: `/api/v1/DeviceConfiguration/${key}`,
+    url: `/DeviceConfiguration/${key}`,
     method: 'GET',
     params,
     signal,
@@ -4166,10 +5448,7 @@ export const getGetDeviceConfigurationFromKeyQueryKey = (
   key: number,
   params?: GetDeviceConfigurationFromKeyParams
 ) => {
-  return [
-    `/api/v1/DeviceConfiguration/${key}`,
-    ...(params ? [params] : []),
-  ] as const
+  return [`/DeviceConfiguration/${key}`, ...(params ? [params] : [])] as const
 }
 
 export const getGetDeviceConfigurationFromKeyQueryOptions = <
@@ -4251,7 +5530,7 @@ export const putDeviceConfigurationFromKey = (
   params?: PutDeviceConfigurationFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/DeviceConfiguration/${key}`,
+    url: `/DeviceConfiguration/${key}`,
     method: 'PUT',
     headers: {
       'Content-Type':
@@ -4340,7 +5619,7 @@ export const patchDeviceConfigurationFromKey = (
   params?: PatchDeviceConfigurationFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/DeviceConfiguration/${key}`,
+    url: `/DeviceConfiguration/${key}`,
     method: 'PATCH',
     headers: {
       'Content-Type':
@@ -4428,7 +5707,7 @@ export const usePatchDeviceConfigurationFromKey = <
  */
 export const deleteDeviceConfigurationFromKey = (key: number) => {
   return configRequest<void>({
-    url: `/api/v1/DeviceConfiguration/${key}`,
+    url: `/DeviceConfiguration/${key}`,
     method: 'DELETE',
   })
 }
@@ -4498,7 +5777,7 @@ export const getApproachesDirectionTypeFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<Approach[]>({
-    url: `/api/v1/DirectionType/${key}/approaches/$count`,
+    url: `/DirectionType/${key}/approaches`,
     method: 'GET',
     params,
     signal,
@@ -4510,7 +5789,7 @@ export const getGetApproachesDirectionTypeFromKeyQueryKey = (
   params?: GetApproachesDirectionTypeFromKeyParams
 ) => {
   return [
-    `/api/v1/DirectionType/${key}/approaches/$count`,
+    `/DirectionType/${key}/approaches`,
     ...(params ? [params] : []),
   ] as const
 }
@@ -4589,6 +5868,106 @@ export const useGetApproachesDirectionTypeFromKey = <
 }
 
 /**
+ * @summary Utah.Udot.Atspm.Data.Models.Approach navigation property action
+ */
+export const getApproachesDirectionTypeFromKeyCount = (
+  key: DirectionTypes,
+  params?: GetApproachesDirectionTypeFromKeyCountParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<Approach[]>({
+    url: `/DirectionType/${key}/approaches/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getGetApproachesDirectionTypeFromKeyCountQueryKey = (
+  key: DirectionTypes,
+  params?: GetApproachesDirectionTypeFromKeyCountParams
+) => {
+  return [
+    `/DirectionType/${key}/approaches/$count`,
+    ...(params ? [params] : []),
+  ] as const
+}
+
+export const getGetApproachesDirectionTypeFromKeyCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof getApproachesDirectionTypeFromKeyCount>>,
+  TError = void,
+>(
+  key: DirectionTypes,
+  params?: GetApproachesDirectionTypeFromKeyCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getApproachesDirectionTypeFromKeyCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getGetApproachesDirectionTypeFromKeyCountQueryKey(key, params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getApproachesDirectionTypeFromKeyCount>>
+  > = ({ signal }) =>
+    getApproachesDirectionTypeFromKeyCount(key, params, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!key,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getApproachesDirectionTypeFromKeyCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type GetApproachesDirectionTypeFromKeyCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getApproachesDirectionTypeFromKeyCount>>
+>
+export type GetApproachesDirectionTypeFromKeyCountQueryError = void
+
+/**
+ * @summary Utah.Udot.Atspm.Data.Models.Approach navigation property action
+ */
+export const useGetApproachesDirectionTypeFromKeyCount = <
+  TData = Awaited<ReturnType<typeof getApproachesDirectionTypeFromKeyCount>>,
+  TError = void,
+>(
+  key: DirectionTypes,
+  params?: GetApproachesDirectionTypeFromKeyCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getApproachesDirectionTypeFromKeyCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getGetApproachesDirectionTypeFromKeyCountQueryOptions(
+    key,
+    params,
+    options
+  )
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
  * @summary Utah.Udot.Atspm.Data.Models.RouteLocation navigation property action
  */
 export const getPrimaryDirectionsDirectionTypeFromKey = (
@@ -4597,7 +5976,7 @@ export const getPrimaryDirectionsDirectionTypeFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<RouteLocation[]>({
-    url: `/api/v1/DirectionType/${key}/primaryDirections/$count`,
+    url: `/DirectionType/${key}/primaryDirections`,
     method: 'GET',
     params,
     signal,
@@ -4609,7 +5988,7 @@ export const getGetPrimaryDirectionsDirectionTypeFromKeyQueryKey = (
   params?: GetPrimaryDirectionsDirectionTypeFromKeyParams
 ) => {
   return [
-    `/api/v1/DirectionType/${key}/primaryDirections/$count`,
+    `/DirectionType/${key}/primaryDirections`,
     ...(params ? [params] : []),
   ] as const
 }
@@ -4691,13 +6070,119 @@ export const useGetPrimaryDirectionsDirectionTypeFromKey = <
 /**
  * @summary Utah.Udot.Atspm.Data.Models.RouteLocation navigation property action
  */
+export const getPrimaryDirectionsDirectionTypeFromKeyCount = (
+  key: DirectionTypes,
+  params?: GetPrimaryDirectionsDirectionTypeFromKeyCountParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<RouteLocation[]>({
+    url: `/DirectionType/${key}/primaryDirections/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getGetPrimaryDirectionsDirectionTypeFromKeyCountQueryKey = (
+  key: DirectionTypes,
+  params?: GetPrimaryDirectionsDirectionTypeFromKeyCountParams
+) => {
+  return [
+    `/DirectionType/${key}/primaryDirections/$count`,
+    ...(params ? [params] : []),
+  ] as const
+}
+
+export const getGetPrimaryDirectionsDirectionTypeFromKeyCountQueryOptions = <
+  TData = Awaited<
+    ReturnType<typeof getPrimaryDirectionsDirectionTypeFromKeyCount>
+  >,
+  TError = void,
+>(
+  key: DirectionTypes,
+  params?: GetPrimaryDirectionsDirectionTypeFromKeyCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getPrimaryDirectionsDirectionTypeFromKeyCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getGetPrimaryDirectionsDirectionTypeFromKeyCountQueryKey(key, params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getPrimaryDirectionsDirectionTypeFromKeyCount>>
+  > = ({ signal }) =>
+    getPrimaryDirectionsDirectionTypeFromKeyCount(key, params, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!key,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getPrimaryDirectionsDirectionTypeFromKeyCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type GetPrimaryDirectionsDirectionTypeFromKeyCountQueryResult =
+  NonNullable<
+    Awaited<ReturnType<typeof getPrimaryDirectionsDirectionTypeFromKeyCount>>
+  >
+export type GetPrimaryDirectionsDirectionTypeFromKeyCountQueryError = void
+
+/**
+ * @summary Utah.Udot.Atspm.Data.Models.RouteLocation navigation property action
+ */
+export const useGetPrimaryDirectionsDirectionTypeFromKeyCount = <
+  TData = Awaited<
+    ReturnType<typeof getPrimaryDirectionsDirectionTypeFromKeyCount>
+  >,
+  TError = void,
+>(
+  key: DirectionTypes,
+  params?: GetPrimaryDirectionsDirectionTypeFromKeyCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getPrimaryDirectionsDirectionTypeFromKeyCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions =
+    getGetPrimaryDirectionsDirectionTypeFromKeyCountQueryOptions(
+      key,
+      params,
+      options
+    )
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
+ * @summary Utah.Udot.Atspm.Data.Models.RouteLocation navigation property action
+ */
 export const getOpposingDirectionsDirectionTypeFromKey = (
   key: DirectionTypes,
   params?: GetOpposingDirectionsDirectionTypeFromKeyParams,
   signal?: AbortSignal
 ) => {
   return configRequest<RouteLocation[]>({
-    url: `/api/v1/DirectionType/${key}/opposingDirections/$count`,
+    url: `/DirectionType/${key}/opposingDirections`,
     method: 'GET',
     params,
     signal,
@@ -4709,7 +6194,7 @@ export const getGetOpposingDirectionsDirectionTypeFromKeyQueryKey = (
   params?: GetOpposingDirectionsDirectionTypeFromKeyParams
 ) => {
   return [
-    `/api/v1/DirectionType/${key}/opposingDirections/$count`,
+    `/DirectionType/${key}/opposingDirections`,
     ...(params ? [params] : []),
   ] as const
 }
@@ -4789,6 +6274,116 @@ export const useGetOpposingDirectionsDirectionTypeFromKey = <
 }
 
 /**
+ * @summary Utah.Udot.Atspm.Data.Models.RouteLocation navigation property action
+ */
+export const getOpposingDirectionsDirectionTypeFromKeyCount = (
+  key: DirectionTypes,
+  params?: GetOpposingDirectionsDirectionTypeFromKeyCountParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<RouteLocation[]>({
+    url: `/DirectionType/${key}/opposingDirections/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getGetOpposingDirectionsDirectionTypeFromKeyCountQueryKey = (
+  key: DirectionTypes,
+  params?: GetOpposingDirectionsDirectionTypeFromKeyCountParams
+) => {
+  return [
+    `/DirectionType/${key}/opposingDirections/$count`,
+    ...(params ? [params] : []),
+  ] as const
+}
+
+export const getGetOpposingDirectionsDirectionTypeFromKeyCountQueryOptions = <
+  TData = Awaited<
+    ReturnType<typeof getOpposingDirectionsDirectionTypeFromKeyCount>
+  >,
+  TError = void,
+>(
+  key: DirectionTypes,
+  params?: GetOpposingDirectionsDirectionTypeFromKeyCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<
+        ReturnType<typeof getOpposingDirectionsDirectionTypeFromKeyCount>
+      >,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getGetOpposingDirectionsDirectionTypeFromKeyCountQueryKey(key, params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getOpposingDirectionsDirectionTypeFromKeyCount>>
+  > = ({ signal }) =>
+    getOpposingDirectionsDirectionTypeFromKeyCount(key, params, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!key,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getOpposingDirectionsDirectionTypeFromKeyCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type GetOpposingDirectionsDirectionTypeFromKeyCountQueryResult =
+  NonNullable<
+    Awaited<ReturnType<typeof getOpposingDirectionsDirectionTypeFromKeyCount>>
+  >
+export type GetOpposingDirectionsDirectionTypeFromKeyCountQueryError = void
+
+/**
+ * @summary Utah.Udot.Atspm.Data.Models.RouteLocation navigation property action
+ */
+export const useGetOpposingDirectionsDirectionTypeFromKeyCount = <
+  TData = Awaited<
+    ReturnType<typeof getOpposingDirectionsDirectionTypeFromKeyCount>
+  >,
+  TError = void,
+>(
+  key: DirectionTypes,
+  params?: GetOpposingDirectionsDirectionTypeFromKeyCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<
+        ReturnType<typeof getOpposingDirectionsDirectionTypeFromKeyCount>
+      >,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions =
+    getGetOpposingDirectionsDirectionTypeFromKeyCountQueryOptions(
+      key,
+      params,
+      options
+    )
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
  * @summary Collection of objects from oData query.
  */
 export const getDirectionType = (
@@ -4796,7 +6391,7 @@ export const getDirectionType = (
   signal?: AbortSignal
 ) => {
   return configRequest<DirectionType[]>({
-    url: `/api/v1/DirectionType/$count`,
+    url: `/DirectionType`,
     method: 'GET',
     params,
     signal,
@@ -4806,7 +6401,7 @@ export const getDirectionType = (
 export const getGetDirectionTypeQueryKey = (
   params?: GetDirectionTypeParams
 ) => {
-  return [`/api/v1/DirectionType/$count`, ...(params ? [params] : [])] as const
+  return [`/DirectionType`, ...(params ? [params] : [])] as const
 }
 
 export const getGetDirectionTypeQueryOptions = <
@@ -4877,7 +6472,7 @@ export const postDirectionType = (
   params?: PostDirectionTypeParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/DirectionType`,
+    url: `/DirectionType`,
     method: 'POST',
     headers: {
       'Content-Type':
@@ -4944,6 +6539,88 @@ export const usePostDirectionType = <
 }
 
 /**
+ * @summary Collection of objects from oData query.
+ */
+export const getDirectionTypeCount = (
+  params?: GetDirectionTypeCountParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<DirectionType[]>({
+    url: `/DirectionType/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getGetDirectionTypeCountQueryKey = (
+  params?: GetDirectionTypeCountParams
+) => {
+  return [`/DirectionType/$count`, ...(params ? [params] : [])] as const
+}
+
+export const getGetDirectionTypeCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof getDirectionTypeCount>>,
+  TError = void,
+>(
+  params?: GetDirectionTypeCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getDirectionTypeCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ?? getGetDirectionTypeCountQueryKey(params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getDirectionTypeCount>>
+  > = ({ signal }) => getDirectionTypeCount(params, signal)
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getDirectionTypeCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type GetDirectionTypeCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getDirectionTypeCount>>
+>
+export type GetDirectionTypeCountQueryError = void
+
+/**
+ * @summary Collection of objects from oData query.
+ */
+export const useGetDirectionTypeCount = <
+  TData = Awaited<ReturnType<typeof getDirectionTypeCount>>,
+  TError = void,
+>(
+  params?: GetDirectionTypeCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getDirectionTypeCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getGetDirectionTypeCountQueryOptions(params, options)
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
  * @summary object with key from oData query.
  */
 export const getDirectionTypeFromKey = (
@@ -4952,7 +6629,7 @@ export const getDirectionTypeFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<DirectionType>({
-    url: `/api/v1/DirectionType/${key}`,
+    url: `/DirectionType/${key}`,
     method: 'GET',
     params,
     signal,
@@ -4963,7 +6640,7 @@ export const getGetDirectionTypeFromKeyQueryKey = (
   key: DirectionTypes,
   params?: GetDirectionTypeFromKeyParams
 ) => {
-  return [`/api/v1/DirectionType/${key}`, ...(params ? [params] : [])] as const
+  return [`/DirectionType/${key}`, ...(params ? [params] : [])] as const
 }
 
 export const getGetDirectionTypeFromKeyQueryOptions = <
@@ -5044,7 +6721,7 @@ export const putDirectionTypeFromKey = (
   params?: PutDirectionTypeFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/DirectionType/${key}`,
+    url: `/DirectionType/${key}`,
     method: 'PUT',
     headers: {
       'Content-Type':
@@ -5132,7 +6809,7 @@ export const patchDirectionTypeFromKey = (
   params?: PatchDirectionTypeFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/DirectionType/${key}`,
+    url: `/DirectionType/${key}`,
     method: 'PATCH',
     headers: {
       'Content-Type':
@@ -5218,10 +6895,7 @@ export const usePatchDirectionTypeFromKey = <
  * @summary Delete object of specified type
  */
 export const deleteDirectionTypeFromKey = (key: DirectionTypes) => {
-  return configRequest<void>({
-    url: `/api/v1/DirectionType/${key}`,
-    method: 'DELETE',
-  })
+  return configRequest<void>({ url: `/DirectionType/${key}`, method: 'DELETE' })
 }
 
 export const getDeleteDirectionTypeFromKeyMutationOptions = <
@@ -5281,7 +6955,7 @@ export const useDeleteDirectionTypeFromKey = <
 
 export const postFaq = (faq: Faq, params?: PostFaqParams) => {
   return configRequest<void>({
-    url: `/api/v1/Faq`,
+    url: `/Faq`,
     method: 'POST',
     headers: {
       'Content-Type':
@@ -5345,16 +7019,11 @@ export const usePostFaq = <TError = unknown, TContext = unknown>(options?: {
  * @summary Collection of objects from oData query.
  */
 export const getFaq = (params?: GetFaqParams, signal?: AbortSignal) => {
-  return configRequest<Faq[]>({
-    url: `/api/v1/Faq/$count`,
-    method: 'GET',
-    params,
-    signal,
-  })
+  return configRequest<Faq[]>({ url: `/Faq`, method: 'GET', params, signal })
 }
 
 export const getGetFaqQueryKey = (params?: GetFaqParams) => {
-  return [`/api/v1/Faq/$count`, ...(params ? [params] : [])] as const
+  return [`/Faq`, ...(params ? [params] : [])] as const
 }
 
 export const getGetFaqQueryOptions = <
@@ -5413,7 +7082,7 @@ export const patchFaqFromKey = (
   params?: PatchFaqFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/Faq/${key}`,
+    url: `/Faq/${key}`,
     method: 'PATCH',
     headers: {
       'Content-Type':
@@ -5477,7 +7146,7 @@ export const usePatchFaqFromKey = <
 }
 
 export const deleteFaqFromKey = (key: number) => {
-  return configRequest<void>({ url: `/api/v1/Faq/${key}`, method: 'DELETE' })
+  return configRequest<void>({ url: `/Faq/${key}`, method: 'DELETE' })
 }
 
 export const getDeleteFaqFromKeyMutationOptions = <
@@ -5541,7 +7210,7 @@ export const getFaqFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<Faq>({
-    url: `/api/v1/Faq/${key}`,
+    url: `/Faq/${key}`,
     method: 'GET',
     params,
     signal,
@@ -5552,7 +7221,7 @@ export const getGetFaqFromKeyQueryKey = (
   key: number,
   params?: GetFaqFromKeyParams
 ) => {
-  return [`/api/v1/Faq/${key}`, ...(params ? [params] : [])] as const
+  return [`/Faq/${key}`, ...(params ? [params] : [])] as const
 }
 
 export const getGetFaqFromKeyQueryOptions = <
@@ -5629,7 +7298,7 @@ export const putFaqFromKey = (
   params?: PutFaqFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/Faq/${key}`,
+    url: `/Faq/${key}`,
     method: 'PUT',
     headers: {
       'Content-Type':
@@ -5693,6 +7362,85 @@ export const usePutFaqFromKey = <
 }
 
 /**
+ * @summary Collection of objects from oData query.
+ */
+export const getFaqCount = (
+  params?: GetFaqCountParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<Faq[]>({
+    url: `/Faq/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getGetFaqCountQueryKey = (params?: GetFaqCountParams) => {
+  return [`/Faq/$count`, ...(params ? [params] : [])] as const
+}
+
+export const getGetFaqCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof getFaqCount>>,
+  TError = void,
+>(
+  params?: GetFaqCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getFaqCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey = queryOptions?.queryKey ?? getGetFaqCountQueryKey(params)
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getFaqCount>>> = ({
+    signal,
+  }) => getFaqCount(params, signal)
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getFaqCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type GetFaqCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getFaqCount>>
+>
+export type GetFaqCountQueryError = void
+
+/**
+ * @summary Collection of objects from oData query.
+ */
+export const useGetFaqCount = <
+  TData = Awaited<ReturnType<typeof getFaqCount>>,
+  TError = void,
+>(
+  params?: GetFaqCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getFaqCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getGetFaqCountQueryOptions(params, options)
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
  * @summary Utah.Udot.Atspm.Data.Models.Location navigation property action
  */
 export const getLocationsJurisdictionFromKey = (
@@ -5701,7 +7449,7 @@ export const getLocationsJurisdictionFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<Location[]>({
-    url: `/api/v1/Jurisdiction/${key}/locations/$count`,
+    url: `/Jurisdiction/${key}/locations`,
     method: 'GET',
     params,
     signal,
@@ -5713,7 +7461,7 @@ export const getGetLocationsJurisdictionFromKeyQueryKey = (
   params?: GetLocationsJurisdictionFromKeyParams
 ) => {
   return [
-    `/api/v1/Jurisdiction/${key}/locations/$count`,
+    `/Jurisdiction/${key}/locations`,
     ...(params ? [params] : []),
   ] as const
 }
@@ -5791,12 +7539,111 @@ export const useGetLocationsJurisdictionFromKey = <
   return query
 }
 
+/**
+ * @summary Utah.Udot.Atspm.Data.Models.Location navigation property action
+ */
+export const getLocationsJurisdictionFromKeyCount = (
+  key: number,
+  params?: GetLocationsJurisdictionFromKeyCountParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<Location[]>({
+    url: `/Jurisdiction/${key}/locations/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getGetLocationsJurisdictionFromKeyCountQueryKey = (
+  key: number,
+  params?: GetLocationsJurisdictionFromKeyCountParams
+) => {
+  return [
+    `/Jurisdiction/${key}/locations/$count`,
+    ...(params ? [params] : []),
+  ] as const
+}
+
+export const getGetLocationsJurisdictionFromKeyCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof getLocationsJurisdictionFromKeyCount>>,
+  TError = void,
+>(
+  key: number,
+  params?: GetLocationsJurisdictionFromKeyCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getLocationsJurisdictionFromKeyCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getGetLocationsJurisdictionFromKeyCountQueryKey(key, params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getLocationsJurisdictionFromKeyCount>>
+  > = ({ signal }) => getLocationsJurisdictionFromKeyCount(key, params, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!key,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getLocationsJurisdictionFromKeyCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type GetLocationsJurisdictionFromKeyCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getLocationsJurisdictionFromKeyCount>>
+>
+export type GetLocationsJurisdictionFromKeyCountQueryError = void
+
+/**
+ * @summary Utah.Udot.Atspm.Data.Models.Location navigation property action
+ */
+export const useGetLocationsJurisdictionFromKeyCount = <
+  TData = Awaited<ReturnType<typeof getLocationsJurisdictionFromKeyCount>>,
+  TError = void,
+>(
+  key: number,
+  params?: GetLocationsJurisdictionFromKeyCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getLocationsJurisdictionFromKeyCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getGetLocationsJurisdictionFromKeyCountQueryOptions(
+    key,
+    params,
+    options
+  )
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
 export const postJurisdiction = (
   jurisdiction: Jurisdiction,
   params?: PostJurisdictionParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/Jurisdiction`,
+    url: `/Jurisdiction`,
     method: 'POST',
     headers: {
       'Content-Type':
@@ -5867,7 +7714,7 @@ export const getJurisdiction = (
   signal?: AbortSignal
 ) => {
   return configRequest<Jurisdiction[]>({
-    url: `/api/v1/Jurisdiction/$count`,
+    url: `/Jurisdiction`,
     method: 'GET',
     params,
     signal,
@@ -5875,7 +7722,7 @@ export const getJurisdiction = (
 }
 
 export const getGetJurisdictionQueryKey = (params?: GetJurisdictionParams) => {
-  return [`/api/v1/Jurisdiction/$count`, ...(params ? [params] : [])] as const
+  return [`/Jurisdiction`, ...(params ? [params] : [])] as const
 }
 
 export const getGetJurisdictionQueryOptions = <
@@ -5944,7 +7791,7 @@ export const patchJurisdictionFromKey = (
   params?: PatchJurisdictionFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/Jurisdiction/${key}`,
+    url: `/Jurisdiction/${key}`,
     method: 'PATCH',
     headers: {
       'Content-Type':
@@ -6016,10 +7863,7 @@ export const usePatchJurisdictionFromKey = <
 }
 
 export const deleteJurisdictionFromKey = (key: number) => {
-  return configRequest<void>({
-    url: `/api/v1/Jurisdiction/${key}`,
-    method: 'DELETE',
-  })
+  return configRequest<void>({ url: `/Jurisdiction/${key}`, method: 'DELETE' })
 }
 
 export const getDeleteJurisdictionFromKeyMutationOptions = <
@@ -6083,7 +7927,7 @@ export const getJurisdictionFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<Jurisdiction>({
-    url: `/api/v1/Jurisdiction/${key}`,
+    url: `/Jurisdiction/${key}`,
     method: 'GET',
     params,
     signal,
@@ -6094,7 +7938,7 @@ export const getGetJurisdictionFromKeyQueryKey = (
   key: number,
   params?: GetJurisdictionFromKeyParams
 ) => {
-  return [`/api/v1/Jurisdiction/${key}`, ...(params ? [params] : [])] as const
+  return [`/Jurisdiction/${key}`, ...(params ? [params] : [])] as const
 }
 
 export const getGetJurisdictionFromKeyQueryOptions = <
@@ -6175,7 +8019,7 @@ export const putJurisdictionFromKey = (
   params?: PutJurisdictionFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/Jurisdiction/${key}`,
+    url: `/Jurisdiction/${key}`,
     method: 'PUT',
     headers: {
       'Content-Type':
@@ -6239,6 +8083,88 @@ export const usePutJurisdictionFromKey = <
 }
 
 /**
+ * @summary Collection of objects from oData query.
+ */
+export const getJurisdictionCount = (
+  params?: GetJurisdictionCountParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<Jurisdiction[]>({
+    url: `/Jurisdiction/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getGetJurisdictionCountQueryKey = (
+  params?: GetJurisdictionCountParams
+) => {
+  return [`/Jurisdiction/$count`, ...(params ? [params] : [])] as const
+}
+
+export const getGetJurisdictionCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof getJurisdictionCount>>,
+  TError = void,
+>(
+  params?: GetJurisdictionCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getJurisdictionCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ?? getGetJurisdictionCountQueryKey(params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getJurisdictionCount>>
+  > = ({ signal }) => getJurisdictionCount(params, signal)
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getJurisdictionCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type GetJurisdictionCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getJurisdictionCount>>
+>
+export type GetJurisdictionCountQueryError = void
+
+/**
+ * @summary Collection of objects from oData query.
+ */
+export const useGetJurisdictionCount = <
+  TData = Awaited<ReturnType<typeof getJurisdictionCount>>,
+  TError = void,
+>(
+  params?: GetJurisdictionCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getJurisdictionCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getGetJurisdictionCountQueryOptions(params, options)
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
  * @summary Utah.Udot.Atspm.Data.Models.Approach navigation property action
  */
 export const getApproachesLocationFromKey = (
@@ -6247,7 +8173,7 @@ export const getApproachesLocationFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<Approach[]>({
-    url: `/api/v1/Location/${key}/approaches/$count`,
+    url: `/Location/${key}/approaches`,
     method: 'GET',
     params,
     signal,
@@ -6258,10 +8184,7 @@ export const getGetApproachesLocationFromKeyQueryKey = (
   key: number,
   params?: GetApproachesLocationFromKeyParams
 ) => {
-  return [
-    `/api/v1/Location/${key}/approaches/$count`,
-    ...(params ? [params] : []),
-  ] as const
+  return [`/Location/${key}/approaches`, ...(params ? [params] : [])] as const
 }
 
 export const getGetApproachesLocationFromKeyQueryOptions = <
@@ -6338,6 +8261,105 @@ export const useGetApproachesLocationFromKey = <
 }
 
 /**
+ * @summary Utah.Udot.Atspm.Data.Models.Approach navigation property action
+ */
+export const getApproachesLocationFromKeyCount = (
+  key: number,
+  params?: GetApproachesLocationFromKeyCountParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<Approach[]>({
+    url: `/Location/${key}/approaches/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getGetApproachesLocationFromKeyCountQueryKey = (
+  key: number,
+  params?: GetApproachesLocationFromKeyCountParams
+) => {
+  return [
+    `/Location/${key}/approaches/$count`,
+    ...(params ? [params] : []),
+  ] as const
+}
+
+export const getGetApproachesLocationFromKeyCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof getApproachesLocationFromKeyCount>>,
+  TError = void,
+>(
+  key: number,
+  params?: GetApproachesLocationFromKeyCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getApproachesLocationFromKeyCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getGetApproachesLocationFromKeyCountQueryKey(key, params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getApproachesLocationFromKeyCount>>
+  > = ({ signal }) => getApproachesLocationFromKeyCount(key, params, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!key,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getApproachesLocationFromKeyCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type GetApproachesLocationFromKeyCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getApproachesLocationFromKeyCount>>
+>
+export type GetApproachesLocationFromKeyCountQueryError = void
+
+/**
+ * @summary Utah.Udot.Atspm.Data.Models.Approach navigation property action
+ */
+export const useGetApproachesLocationFromKeyCount = <
+  TData = Awaited<ReturnType<typeof getApproachesLocationFromKeyCount>>,
+  TError = void,
+>(
+  key: number,
+  params?: GetApproachesLocationFromKeyCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getApproachesLocationFromKeyCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getGetApproachesLocationFromKeyCountQueryOptions(
+    key,
+    params,
+    options
+  )
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
  * @summary Utah.Udot.Atspm.Data.Models.Area navigation property action
  */
 export const getAreasLocationFromKey = (
@@ -6346,7 +8368,7 @@ export const getAreasLocationFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<Area[]>({
-    url: `/api/v1/Location/${key}/areas/$count`,
+    url: `/Location/${key}/areas`,
     method: 'GET',
     params,
     signal,
@@ -6357,10 +8379,7 @@ export const getGetAreasLocationFromKeyQueryKey = (
   key: number,
   params?: GetAreasLocationFromKeyParams
 ) => {
-  return [
-    `/api/v1/Location/${key}/areas/$count`,
-    ...(params ? [params] : []),
-  ] as const
+  return [`/Location/${key}/areas`, ...(params ? [params] : [])] as const
 }
 
 export const getGetAreasLocationFromKeyQueryOptions = <
@@ -6436,6 +8455,102 @@ export const useGetAreasLocationFromKey = <
 }
 
 /**
+ * @summary Utah.Udot.Atspm.Data.Models.Area navigation property action
+ */
+export const getAreasLocationFromKeyCount = (
+  key: number,
+  params?: GetAreasLocationFromKeyCountParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<Area[]>({
+    url: `/Location/${key}/areas/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getGetAreasLocationFromKeyCountQueryKey = (
+  key: number,
+  params?: GetAreasLocationFromKeyCountParams
+) => {
+  return [`/Location/${key}/areas/$count`, ...(params ? [params] : [])] as const
+}
+
+export const getGetAreasLocationFromKeyCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof getAreasLocationFromKeyCount>>,
+  TError = void,
+>(
+  key: number,
+  params?: GetAreasLocationFromKeyCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getAreasLocationFromKeyCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getGetAreasLocationFromKeyCountQueryKey(key, params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getAreasLocationFromKeyCount>>
+  > = ({ signal }) => getAreasLocationFromKeyCount(key, params, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!key,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getAreasLocationFromKeyCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type GetAreasLocationFromKeyCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getAreasLocationFromKeyCount>>
+>
+export type GetAreasLocationFromKeyCountQueryError = void
+
+/**
+ * @summary Utah.Udot.Atspm.Data.Models.Area navigation property action
+ */
+export const useGetAreasLocationFromKeyCount = <
+  TData = Awaited<ReturnType<typeof getAreasLocationFromKeyCount>>,
+  TError = void,
+>(
+  key: number,
+  params?: GetAreasLocationFromKeyCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getAreasLocationFromKeyCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getGetAreasLocationFromKeyCountQueryOptions(
+    key,
+    params,
+    options
+  )
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
  * @summary Utah.Udot.Atspm.Data.Models.Device navigation property action
  */
 export const getDevicesLocationFromKey = (
@@ -6444,7 +8559,7 @@ export const getDevicesLocationFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<Device[]>({
-    url: `/api/v1/Location/${key}/devices/$count`,
+    url: `/Location/${key}/devices`,
     method: 'GET',
     params,
     signal,
@@ -6455,10 +8570,7 @@ export const getGetDevicesLocationFromKeyQueryKey = (
   key: number,
   params?: GetDevicesLocationFromKeyParams
 ) => {
-  return [
-    `/api/v1/Location/${key}/devices/$count`,
-    ...(params ? [params] : []),
-  ] as const
+  return [`/Location/${key}/devices`, ...(params ? [params] : [])] as const
 }
 
 export const getGetDevicesLocationFromKeyQueryOptions = <
@@ -6534,6 +8646,105 @@ export const useGetDevicesLocationFromKey = <
 }
 
 /**
+ * @summary Utah.Udot.Atspm.Data.Models.Device navigation property action
+ */
+export const getDevicesLocationFromKeyCount = (
+  key: number,
+  params?: GetDevicesLocationFromKeyCountParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<Device[]>({
+    url: `/Location/${key}/devices/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getGetDevicesLocationFromKeyCountQueryKey = (
+  key: number,
+  params?: GetDevicesLocationFromKeyCountParams
+) => {
+  return [
+    `/Location/${key}/devices/$count`,
+    ...(params ? [params] : []),
+  ] as const
+}
+
+export const getGetDevicesLocationFromKeyCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof getDevicesLocationFromKeyCount>>,
+  TError = void,
+>(
+  key: number,
+  params?: GetDevicesLocationFromKeyCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getDevicesLocationFromKeyCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getGetDevicesLocationFromKeyCountQueryKey(key, params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getDevicesLocationFromKeyCount>>
+  > = ({ signal }) => getDevicesLocationFromKeyCount(key, params, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!key,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getDevicesLocationFromKeyCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type GetDevicesLocationFromKeyCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getDevicesLocationFromKeyCount>>
+>
+export type GetDevicesLocationFromKeyCountQueryError = void
+
+/**
+ * @summary Utah.Udot.Atspm.Data.Models.Device navigation property action
+ */
+export const useGetDevicesLocationFromKeyCount = <
+  TData = Awaited<ReturnType<typeof getDevicesLocationFromKeyCount>>,
+  TError = void,
+>(
+  key: number,
+  params?: GetDevicesLocationFromKeyCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getDevicesLocationFromKeyCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getGetDevicesLocationFromKeyCountQueryOptions(
+    key,
+    params,
+    options
+  )
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
  * @summary Copies Utah.Udot.Atspm.Data.Models.Location and associated Utah.Udot.Atspm.Data.Models.Approach to new version
  */
 export const copyLocationToNewVersionLocationFromKey = (
@@ -6541,7 +8752,7 @@ export const copyLocationToNewVersionLocationFromKey = (
   params?: CopyLocationToNewVersionLocationFromKeyParams
 ) => {
   return configRequest<Location>({
-    url: `/api/v1/Location/${key}/CopyLocationToNewVersion`,
+    url: `/Location/${key}/CopyLocationToNewVersion`,
     method: 'POST',
     params,
   })
@@ -6611,7 +8822,7 @@ export const syncLocationLocationFromKey = (
   params?: SyncLocationLocationFromKeyParams
 ) => {
   return configRequest<Location>({
-    url: `/api/v1/Location/${key}/SyncLocation`,
+    url: `/Location/${key}/SyncLocation`,
     method: 'POST',
     params,
   })
@@ -6773,7 +8984,7 @@ export const setLocationToDeletedLocationFromKey = (
   params?: SetLocationToDeletedLocationFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/Location/${key}/SetLocationToDeleted`,
+    url: `/Location/${key}/SetLocationToDeleted`,
     method: 'POST',
     params,
   })
@@ -6844,7 +9055,7 @@ export const getLatestVersionOfLocationLocationFromIdentifier = (
   signal?: AbortSignal
 ) => {
   return configRequest<Location>({
-    url: `/api/v1/Location/GetLatestVersionOfLocation(identifier=${identifier})`,
+    url: `/Location/GetLatestVersionOfLocation(identifier=${identifier})`,
     method: 'GET',
     params,
     signal,
@@ -6856,7 +9067,7 @@ export const getGetLatestVersionOfLocationLocationFromIdentifierQueryKey = (
   params?: GetLatestVersionOfLocationLocationFromIdentifierParams
 ) => {
   return [
-    `/api/v1/Location/GetLatestVersionOfLocation(identifier=${identifier})`,
+    `/Location/GetLatestVersionOfLocation(identifier=${identifier})`,
     ...(params ? [params] : []),
   ] as const
 }
@@ -6959,7 +9170,7 @@ export const getAllVersionsOfLocationLocationFromIdentifier = (
   signal?: AbortSignal
 ) => {
   return configRequest<Location[]>({
-    url: `/api/v1/Location/GetAllVersionsOfLocation(identifier=${identifier})`,
+    url: `/Location/GetAllVersionsOfLocation(identifier=${identifier})`,
     method: 'GET',
     params,
     signal,
@@ -6971,7 +9182,7 @@ export const getGetAllVersionsOfLocationLocationFromIdentifierQueryKey = (
   params?: GetAllVersionsOfLocationLocationFromIdentifierParams
 ) => {
   return [
-    `/api/v1/Location/GetAllVersionsOfLocation(identifier=${identifier})`,
+    `/Location/GetAllVersionsOfLocation(identifier=${identifier})`,
     ...(params ? [params] : []),
   ] as const
 }
@@ -7071,7 +9282,7 @@ export const getLatestVersionOfAllLocationsLocation = (
   signal?: AbortSignal
 ) => {
   return configRequest<Location[]>({
-    url: `/api/v1/Location/GetLatestVersionOfAllLocations`,
+    url: `/Location/GetLatestVersionOfAllLocations`,
     method: 'GET',
     params,
     signal,
@@ -7082,7 +9293,7 @@ export const getGetLatestVersionOfAllLocationsLocationQueryKey = (
   params?: GetLatestVersionOfAllLocationsLocationParams
 ) => {
   return [
-    `/api/v1/Location/GetLatestVersionOfAllLocations`,
+    `/Location/GetLatestVersionOfAllLocations`,
     ...(params ? [params] : []),
   ] as const
 }
@@ -7160,7 +9371,7 @@ export const getDetectionTypeCountLocation = (
   signal?: AbortSignal
 ) => {
   return configRequest<DetectionTypeGroup[]>({
-    url: `/api/v1/Location/GetDetectionTypeCount`,
+    url: `/Location/GetDetectionTypeCount`,
     method: 'GET',
     params,
     signal,
@@ -7171,7 +9382,7 @@ export const getGetDetectionTypeCountLocationQueryKey = (
   params?: GetDetectionTypeCountLocationParams
 ) => {
   return [
-    `/api/v1/Location/GetDetectionTypeCount`,
+    `/Location/GetDetectionTypeCount`,
     ...(params ? [params] : []),
   ] as const
 }
@@ -7248,7 +9459,7 @@ export const getLocationsForSearchLocation = (
   signal?: AbortSignal
 ) => {
   return configRequest<SearchLocation[]>({
-    url: `/api/v1/Location/GetLocationsForSearch`,
+    url: `/Location/GetLocationsForSearch`,
     method: 'GET',
     params,
     signal,
@@ -7259,7 +9470,7 @@ export const getGetLocationsForSearchLocationQueryKey = (
   params?: GetLocationsForSearchLocationParams
 ) => {
   return [
-    `/api/v1/Location/GetLocationsForSearch`,
+    `/Location/GetLocationsForSearch`,
     ...(params ? [params] : []),
   ] as const
 }
@@ -7336,7 +9547,7 @@ export const getLocation = (
   signal?: AbortSignal
 ) => {
   return configRequest<Location[]>({
-    url: `/api/v1/Location/$count`,
+    url: `/Location`,
     method: 'GET',
     params,
     signal,
@@ -7344,7 +9555,7 @@ export const getLocation = (
 }
 
 export const getGetLocationQueryKey = (params?: GetLocationParams) => {
-  return [`/api/v1/Location/$count`, ...(params ? [params] : [])] as const
+  return [`/Location`, ...(params ? [params] : [])] as const
 }
 
 export const getGetLocationQueryOptions = <
@@ -7415,7 +9626,7 @@ export const postLocation = (
   params?: PostLocationParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/Location`,
+    url: `/Location`,
     method: 'POST',
     headers: {
       'Content-Type':
@@ -7482,6 +9693,87 @@ export const usePostLocation = <
 }
 
 /**
+ * @summary Collection of objects from oData query.
+ */
+export const getLocationCount = (
+  params?: GetLocationCountParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<Location[]>({
+    url: `/Location/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getGetLocationCountQueryKey = (
+  params?: GetLocationCountParams
+) => {
+  return [`/Location/$count`, ...(params ? [params] : [])] as const
+}
+
+export const getGetLocationCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof getLocationCount>>,
+  TError = void,
+>(
+  params?: GetLocationCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getLocationCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey = queryOptions?.queryKey ?? getGetLocationCountQueryKey(params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getLocationCount>>
+  > = ({ signal }) => getLocationCount(params, signal)
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getLocationCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type GetLocationCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getLocationCount>>
+>
+export type GetLocationCountQueryError = void
+
+/**
+ * @summary Collection of objects from oData query.
+ */
+export const useGetLocationCount = <
+  TData = Awaited<ReturnType<typeof getLocationCount>>,
+  TError = void,
+>(
+  params?: GetLocationCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getLocationCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getGetLocationCountQueryOptions(params, options)
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
  * @summary object with key from oData query.
  */
 export const getLocationFromKey = (
@@ -7490,7 +9782,7 @@ export const getLocationFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<Location>({
-    url: `/api/v1/Location/${key}`,
+    url: `/Location/${key}`,
     method: 'GET',
     params,
     signal,
@@ -7501,7 +9793,7 @@ export const getGetLocationFromKeyQueryKey = (
   key: number,
   params?: GetLocationFromKeyParams
 ) => {
-  return [`/api/v1/Location/${key}`, ...(params ? [params] : [])] as const
+  return [`/Location/${key}`, ...(params ? [params] : [])] as const
 }
 
 export const getGetLocationFromKeyQueryOptions = <
@@ -7578,7 +9870,7 @@ export const putLocationFromKey = (
   params?: PutLocationFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/Location/${key}`,
+    url: `/Location/${key}`,
     method: 'PUT',
     headers: {
       'Content-Type':
@@ -7650,7 +9942,7 @@ export const patchLocationFromKey = (
   params?: PatchLocationFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/Location/${key}`,
+    url: `/Location/${key}`,
     method: 'PATCH',
     headers: {
       'Content-Type':
@@ -7720,10 +10012,7 @@ export const usePatchLocationFromKey = <
  * @summary Delete object of specified type
  */
 export const deleteLocationFromKey = (key: number) => {
-  return configRequest<void>({
-    url: `/api/v1/Location/${key}`,
-    method: 'DELETE',
-  })
+  return configRequest<void>({ url: `/Location/${key}`, method: 'DELETE' })
 }
 
 export const getDeleteLocationFromKeyMutationOptions = <
@@ -7790,7 +10079,7 @@ export const getLocationsLocationTypeFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<Location[]>({
-    url: `/api/v1/LocationType/${key}/locations/$count`,
+    url: `/LocationType/${key}/locations`,
     method: 'GET',
     params,
     signal,
@@ -7802,7 +10091,7 @@ export const getGetLocationsLocationTypeFromKeyQueryKey = (
   params?: GetLocationsLocationTypeFromKeyParams
 ) => {
   return [
-    `/api/v1/LocationType/${key}/locations/$count`,
+    `/LocationType/${key}/locations`,
     ...(params ? [params] : []),
   ] as const
 }
@@ -7881,6 +10170,105 @@ export const useGetLocationsLocationTypeFromKey = <
 }
 
 /**
+ * @summary Utah.Udot.Atspm.Data.Models.Location navigation property action
+ */
+export const getLocationsLocationTypeFromKeyCount = (
+  key: number,
+  params?: GetLocationsLocationTypeFromKeyCountParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<Location[]>({
+    url: `/LocationType/${key}/locations/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getGetLocationsLocationTypeFromKeyCountQueryKey = (
+  key: number,
+  params?: GetLocationsLocationTypeFromKeyCountParams
+) => {
+  return [
+    `/LocationType/${key}/locations/$count`,
+    ...(params ? [params] : []),
+  ] as const
+}
+
+export const getGetLocationsLocationTypeFromKeyCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof getLocationsLocationTypeFromKeyCount>>,
+  TError = void,
+>(
+  key: number,
+  params?: GetLocationsLocationTypeFromKeyCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getLocationsLocationTypeFromKeyCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getGetLocationsLocationTypeFromKeyCountQueryKey(key, params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getLocationsLocationTypeFromKeyCount>>
+  > = ({ signal }) => getLocationsLocationTypeFromKeyCount(key, params, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!key,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getLocationsLocationTypeFromKeyCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type GetLocationsLocationTypeFromKeyCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getLocationsLocationTypeFromKeyCount>>
+>
+export type GetLocationsLocationTypeFromKeyCountQueryError = void
+
+/**
+ * @summary Utah.Udot.Atspm.Data.Models.Location navigation property action
+ */
+export const useGetLocationsLocationTypeFromKeyCount = <
+  TData = Awaited<ReturnType<typeof getLocationsLocationTypeFromKeyCount>>,
+  TError = void,
+>(
+  key: number,
+  params?: GetLocationsLocationTypeFromKeyCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getLocationsLocationTypeFromKeyCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getGetLocationsLocationTypeFromKeyCountQueryOptions(
+    key,
+    params,
+    options
+  )
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
  * @summary Collection of objects from oData query.
  */
 export const getLocationType = (
@@ -7888,7 +10276,7 @@ export const getLocationType = (
   signal?: AbortSignal
 ) => {
   return configRequest<LocationType[]>({
-    url: `/api/v1/LocationType/$count`,
+    url: `/LocationType`,
     method: 'GET',
     params,
     signal,
@@ -7896,7 +10284,7 @@ export const getLocationType = (
 }
 
 export const getGetLocationTypeQueryKey = (params?: GetLocationTypeParams) => {
-  return [`/api/v1/LocationType/$count`, ...(params ? [params] : [])] as const
+  return [`/LocationType`, ...(params ? [params] : [])] as const
 }
 
 export const getGetLocationTypeQueryOptions = <
@@ -7967,7 +10355,7 @@ export const postLocationType = (
   params?: PostLocationTypeParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/LocationType`,
+    url: `/LocationType`,
     method: 'POST',
     headers: {
       'Content-Type':
@@ -8034,6 +10422,88 @@ export const usePostLocationType = <
 }
 
 /**
+ * @summary Collection of objects from oData query.
+ */
+export const getLocationTypeCount = (
+  params?: GetLocationTypeCountParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<LocationType[]>({
+    url: `/LocationType/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getGetLocationTypeCountQueryKey = (
+  params?: GetLocationTypeCountParams
+) => {
+  return [`/LocationType/$count`, ...(params ? [params] : [])] as const
+}
+
+export const getGetLocationTypeCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof getLocationTypeCount>>,
+  TError = void,
+>(
+  params?: GetLocationTypeCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getLocationTypeCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ?? getGetLocationTypeCountQueryKey(params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getLocationTypeCount>>
+  > = ({ signal }) => getLocationTypeCount(params, signal)
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getLocationTypeCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type GetLocationTypeCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getLocationTypeCount>>
+>
+export type GetLocationTypeCountQueryError = void
+
+/**
+ * @summary Collection of objects from oData query.
+ */
+export const useGetLocationTypeCount = <
+  TData = Awaited<ReturnType<typeof getLocationTypeCount>>,
+  TError = void,
+>(
+  params?: GetLocationTypeCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getLocationTypeCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getGetLocationTypeCountQueryOptions(params, options)
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
  * @summary object with key from oData query.
  */
 export const getLocationTypeFromKey = (
@@ -8042,7 +10512,7 @@ export const getLocationTypeFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<LocationType>({
-    url: `/api/v1/LocationType/${key}`,
+    url: `/LocationType/${key}`,
     method: 'GET',
     params,
     signal,
@@ -8053,7 +10523,7 @@ export const getGetLocationTypeFromKeyQueryKey = (
   key: number,
   params?: GetLocationTypeFromKeyParams
 ) => {
-  return [`/api/v1/LocationType/${key}`, ...(params ? [params] : [])] as const
+  return [`/LocationType/${key}`, ...(params ? [params] : [])] as const
 }
 
 export const getGetLocationTypeFromKeyQueryOptions = <
@@ -8134,7 +10604,7 @@ export const putLocationTypeFromKey = (
   params?: PutLocationTypeFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/LocationType/${key}`,
+    url: `/LocationType/${key}`,
     method: 'PUT',
     headers: {
       'Content-Type':
@@ -8206,7 +10676,7 @@ export const patchLocationTypeFromKey = (
   params?: PatchLocationTypeFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/LocationType/${key}`,
+    url: `/LocationType/${key}`,
     method: 'PATCH',
     headers: {
       'Content-Type':
@@ -8284,10 +10754,7 @@ export const usePatchLocationTypeFromKey = <
  * @summary Delete object of specified type
  */
 export const deleteLocationTypeFromKey = (key: number) => {
-  return configRequest<void>({
-    url: `/api/v1/LocationType/${key}`,
-    method: 'DELETE',
-  })
+  return configRequest<void>({ url: `/LocationType/${key}`, method: 'DELETE' })
 }
 
 export const getDeleteLocationTypeFromKeyMutationOptions = <
@@ -8346,6 +10813,537 @@ export const useDeleteLocationTypeFromKey = <
 }
 
 /**
+ * @summary Collection of objects from oData query.
+ */
+export const getMapLayer = (
+  params?: GetMapLayerParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<MapLayer[]>({
+    url: `/MapLayer`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getGetMapLayerQueryKey = (params?: GetMapLayerParams) => {
+  return [`/MapLayer`, ...(params ? [params] : [])] as const
+}
+
+export const getGetMapLayerQueryOptions = <
+  TData = Awaited<ReturnType<typeof getMapLayer>>,
+  TError = void,
+>(
+  params?: GetMapLayerParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getMapLayer>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey = queryOptions?.queryKey ?? getGetMapLayerQueryKey(params)
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getMapLayer>>> = ({
+    signal,
+  }) => getMapLayer(params, signal)
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getMapLayer>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type GetMapLayerQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getMapLayer>>
+>
+export type GetMapLayerQueryError = void
+
+/**
+ * @summary Collection of objects from oData query.
+ */
+export const useGetMapLayer = <
+  TData = Awaited<ReturnType<typeof getMapLayer>>,
+  TError = void,
+>(
+  params?: GetMapLayerParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getMapLayer>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getGetMapLayerQueryOptions(params, options)
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
+ * @summary Insert object of specified type
+ */
+export const postMapLayer = (
+  mapLayer: MapLayer,
+  params?: PostMapLayerParams
+) => {
+  return configRequest<void>({
+    url: `/MapLayer`,
+    method: 'POST',
+    headers: {
+      'Content-Type':
+        'application/json;odata.metadata=minimal;odata.streaming=true',
+    },
+    data: mapLayer,
+    params,
+  })
+}
+
+export const getPostMapLayerMutationOptions = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postMapLayer>>,
+    TError,
+    { data: MapLayer; params?: PostMapLayerParams },
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof postMapLayer>>,
+  TError,
+  { data: MapLayer; params?: PostMapLayerParams },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof postMapLayer>>,
+    { data: MapLayer; params?: PostMapLayerParams }
+  > = (props) => {
+    const { data, params } = props ?? {}
+
+    return postMapLayer(data, params)
+  }
+
+  return { mutationFn, ...mutationOptions }
+}
+
+export type PostMapLayerMutationResult = NonNullable<
+  Awaited<ReturnType<typeof postMapLayer>>
+>
+export type PostMapLayerMutationBody = MapLayer
+export type PostMapLayerMutationError = unknown
+
+/**
+ * @summary Insert object of specified type
+ */
+export const usePostMapLayer = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postMapLayer>>,
+    TError,
+    { data: MapLayer; params?: PostMapLayerParams },
+    TContext
+  >
+}) => {
+  const mutationOptions = getPostMapLayerMutationOptions(options)
+
+  return useMutation(mutationOptions)
+}
+
+/**
+ * @summary Collection of objects from oData query.
+ */
+export const getMapLayerCount = (
+  params?: GetMapLayerCountParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<MapLayer[]>({
+    url: `/MapLayer/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getGetMapLayerCountQueryKey = (
+  params?: GetMapLayerCountParams
+) => {
+  return [`/MapLayer/$count`, ...(params ? [params] : [])] as const
+}
+
+export const getGetMapLayerCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof getMapLayerCount>>,
+  TError = void,
+>(
+  params?: GetMapLayerCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getMapLayerCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey = queryOptions?.queryKey ?? getGetMapLayerCountQueryKey(params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getMapLayerCount>>
+  > = ({ signal }) => getMapLayerCount(params, signal)
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getMapLayerCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type GetMapLayerCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getMapLayerCount>>
+>
+export type GetMapLayerCountQueryError = void
+
+/**
+ * @summary Collection of objects from oData query.
+ */
+export const useGetMapLayerCount = <
+  TData = Awaited<ReturnType<typeof getMapLayerCount>>,
+  TError = void,
+>(
+  params?: GetMapLayerCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getMapLayerCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getGetMapLayerCountQueryOptions(params, options)
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
+ * @summary object with key from oData query.
+ */
+export const getMapLayerFromKey = (
+  key: number,
+  params?: GetMapLayerFromKeyParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<MapLayer>({
+    url: `/MapLayer/${key}`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getGetMapLayerFromKeyQueryKey = (
+  key: number,
+  params?: GetMapLayerFromKeyParams
+) => {
+  return [`/MapLayer/${key}`, ...(params ? [params] : [])] as const
+}
+
+export const getGetMapLayerFromKeyQueryOptions = <
+  TData = Awaited<ReturnType<typeof getMapLayerFromKey>>,
+  TError = void,
+>(
+  key: number,
+  params?: GetMapLayerFromKeyParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getMapLayerFromKey>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ?? getGetMapLayerFromKeyQueryKey(key, params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getMapLayerFromKey>>
+  > = ({ signal }) => getMapLayerFromKey(key, params, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!key,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getMapLayerFromKey>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type GetMapLayerFromKeyQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getMapLayerFromKey>>
+>
+export type GetMapLayerFromKeyQueryError = void
+
+/**
+ * @summary object with key from oData query.
+ */
+export const useGetMapLayerFromKey = <
+  TData = Awaited<ReturnType<typeof getMapLayerFromKey>>,
+  TError = void,
+>(
+  key: number,
+  params?: GetMapLayerFromKeyParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getMapLayerFromKey>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getGetMapLayerFromKeyQueryOptions(key, params, options)
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+export const putMapLayerFromKey = (
+  key: number,
+  mapLayer: MapLayer,
+  params?: PutMapLayerFromKeyParams
+) => {
+  return configRequest<void>({
+    url: `/MapLayer/${key}`,
+    method: 'PUT',
+    headers: {
+      'Content-Type':
+        'application/json;odata.metadata=minimal;odata.streaming=true',
+    },
+    data: mapLayer,
+    params,
+  })
+}
+
+export const getPutMapLayerFromKeyMutationOptions = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof putMapLayerFromKey>>,
+    TError,
+    { key: number; data: MapLayer; params?: PutMapLayerFromKeyParams },
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof putMapLayerFromKey>>,
+  TError,
+  { key: number; data: MapLayer; params?: PutMapLayerFromKeyParams },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof putMapLayerFromKey>>,
+    { key: number; data: MapLayer; params?: PutMapLayerFromKeyParams }
+  > = (props) => {
+    const { key, data, params } = props ?? {}
+
+    return putMapLayerFromKey(key, data, params)
+  }
+
+  return { mutationFn, ...mutationOptions }
+}
+
+export type PutMapLayerFromKeyMutationResult = NonNullable<
+  Awaited<ReturnType<typeof putMapLayerFromKey>>
+>
+export type PutMapLayerFromKeyMutationBody = MapLayer
+export type PutMapLayerFromKeyMutationError = unknown
+
+export const usePutMapLayerFromKey = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof putMapLayerFromKey>>,
+    TError,
+    { key: number; data: MapLayer; params?: PutMapLayerFromKeyParams },
+    TContext
+  >
+}) => {
+  const mutationOptions = getPutMapLayerFromKeyMutationOptions(options)
+
+  return useMutation(mutationOptions)
+}
+
+/**
+ * @summary Update object of specified type
+ */
+export const patchMapLayerFromKey = (
+  key: number,
+  mapLayer: MapLayer,
+  params?: PatchMapLayerFromKeyParams
+) => {
+  return configRequest<void>({
+    url: `/MapLayer/${key}`,
+    method: 'PATCH',
+    headers: {
+      'Content-Type':
+        'application/json;odata.metadata=minimal;odata.streaming=true',
+    },
+    data: mapLayer,
+    params,
+  })
+}
+
+export const getPatchMapLayerFromKeyMutationOptions = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof patchMapLayerFromKey>>,
+    TError,
+    { key: number; data: MapLayer; params?: PatchMapLayerFromKeyParams },
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof patchMapLayerFromKey>>,
+  TError,
+  { key: number; data: MapLayer; params?: PatchMapLayerFromKeyParams },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof patchMapLayerFromKey>>,
+    { key: number; data: MapLayer; params?: PatchMapLayerFromKeyParams }
+  > = (props) => {
+    const { key, data, params } = props ?? {}
+
+    return patchMapLayerFromKey(key, data, params)
+  }
+
+  return { mutationFn, ...mutationOptions }
+}
+
+export type PatchMapLayerFromKeyMutationResult = NonNullable<
+  Awaited<ReturnType<typeof patchMapLayerFromKey>>
+>
+export type PatchMapLayerFromKeyMutationBody = MapLayer
+export type PatchMapLayerFromKeyMutationError = unknown
+
+/**
+ * @summary Update object of specified type
+ */
+export const usePatchMapLayerFromKey = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof patchMapLayerFromKey>>,
+    TError,
+    { key: number; data: MapLayer; params?: PatchMapLayerFromKeyParams },
+    TContext
+  >
+}) => {
+  const mutationOptions = getPatchMapLayerFromKeyMutationOptions(options)
+
+  return useMutation(mutationOptions)
+}
+
+/**
+ * @summary Delete object of specified type
+ */
+export const deleteMapLayerFromKey = (key: number) => {
+  return configRequest<void>({ url: `/MapLayer/${key}`, method: 'DELETE' })
+}
+
+export const getDeleteMapLayerFromKeyMutationOptions = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteMapLayerFromKey>>,
+    TError,
+    { key: number },
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof deleteMapLayerFromKey>>,
+  TError,
+  { key: number },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof deleteMapLayerFromKey>>,
+    { key: number }
+  > = (props) => {
+    const { key } = props ?? {}
+
+    return deleteMapLayerFromKey(key)
+  }
+
+  return { mutationFn, ...mutationOptions }
+}
+
+export type DeleteMapLayerFromKeyMutationResult = NonNullable<
+  Awaited<ReturnType<typeof deleteMapLayerFromKey>>
+>
+
+export type DeleteMapLayerFromKeyMutationError = unknown
+
+/**
+ * @summary Delete object of specified type
+ */
+export const useDeleteMapLayerFromKey = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteMapLayerFromKey>>,
+    TError,
+    { key: number },
+    TContext
+  >
+}) => {
+  const mutationOptions = getDeleteMapLayerFromKeyMutationOptions(options)
+
+  return useMutation(mutationOptions)
+}
+
+/**
  * @summary Utah.Udot.Atspm.Data.Models.MeasureType navigation property action
  */
 export const getMeasureTypesMeasureCommentFromKey = (
@@ -8354,7 +11352,7 @@ export const getMeasureTypesMeasureCommentFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<MeasureType[]>({
-    url: `/api/v1/MeasureComment/${key}/measureTypes/$count`,
+    url: `/MeasureComment/${key}/measureTypes`,
     method: 'GET',
     params,
     signal,
@@ -8366,7 +11364,7 @@ export const getGetMeasureTypesMeasureCommentFromKeyQueryKey = (
   params?: GetMeasureTypesMeasureCommentFromKeyParams
 ) => {
   return [
-    `/api/v1/MeasureComment/${key}/measureTypes/$count`,
+    `/MeasureComment/${key}/measureTypes`,
     ...(params ? [params] : []),
   ] as const
 }
@@ -8445,6 +11443,106 @@ export const useGetMeasureTypesMeasureCommentFromKey = <
 }
 
 /**
+ * @summary Utah.Udot.Atspm.Data.Models.MeasureType navigation property action
+ */
+export const getMeasureTypesMeasureCommentFromKeyCount = (
+  key: number,
+  params?: GetMeasureTypesMeasureCommentFromKeyCountParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<MeasureType[]>({
+    url: `/MeasureComment/${key}/measureTypes/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getGetMeasureTypesMeasureCommentFromKeyCountQueryKey = (
+  key: number,
+  params?: GetMeasureTypesMeasureCommentFromKeyCountParams
+) => {
+  return [
+    `/MeasureComment/${key}/measureTypes/$count`,
+    ...(params ? [params] : []),
+  ] as const
+}
+
+export const getGetMeasureTypesMeasureCommentFromKeyCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof getMeasureTypesMeasureCommentFromKeyCount>>,
+  TError = void,
+>(
+  key: number,
+  params?: GetMeasureTypesMeasureCommentFromKeyCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getMeasureTypesMeasureCommentFromKeyCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getGetMeasureTypesMeasureCommentFromKeyCountQueryKey(key, params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getMeasureTypesMeasureCommentFromKeyCount>>
+  > = ({ signal }) =>
+    getMeasureTypesMeasureCommentFromKeyCount(key, params, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!key,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getMeasureTypesMeasureCommentFromKeyCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type GetMeasureTypesMeasureCommentFromKeyCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getMeasureTypesMeasureCommentFromKeyCount>>
+>
+export type GetMeasureTypesMeasureCommentFromKeyCountQueryError = void
+
+/**
+ * @summary Utah.Udot.Atspm.Data.Models.MeasureType navigation property action
+ */
+export const useGetMeasureTypesMeasureCommentFromKeyCount = <
+  TData = Awaited<ReturnType<typeof getMeasureTypesMeasureCommentFromKeyCount>>,
+  TError = void,
+>(
+  key: number,
+  params?: GetMeasureTypesMeasureCommentFromKeyCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getMeasureTypesMeasureCommentFromKeyCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getGetMeasureTypesMeasureCommentFromKeyCountQueryOptions(
+    key,
+    params,
+    options
+  )
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
  * @summary Collection of objects from oData query.
  */
 export const getMeasureComment = (
@@ -8452,7 +11550,7 @@ export const getMeasureComment = (
   signal?: AbortSignal
 ) => {
   return configRequest<MeasureComment[]>({
-    url: `/api/v1/MeasureComment/$count`,
+    url: `/MeasureComment`,
     method: 'GET',
     params,
     signal,
@@ -8462,7 +11560,7 @@ export const getMeasureComment = (
 export const getGetMeasureCommentQueryKey = (
   params?: GetMeasureCommentParams
 ) => {
-  return [`/api/v1/MeasureComment/$count`, ...(params ? [params] : [])] as const
+  return [`/MeasureComment`, ...(params ? [params] : [])] as const
 }
 
 export const getGetMeasureCommentQueryOptions = <
@@ -8534,7 +11632,7 @@ export const postMeasureComment = (
   params?: PostMeasureCommentParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/MeasureComment`,
+    url: `/MeasureComment`,
     method: 'POST',
     headers: {
       'Content-Type':
@@ -8601,6 +11699,88 @@ export const usePostMeasureComment = <
 }
 
 /**
+ * @summary Collection of objects from oData query.
+ */
+export const getMeasureCommentCount = (
+  params?: GetMeasureCommentCountParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<MeasureComment[]>({
+    url: `/MeasureComment/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getGetMeasureCommentCountQueryKey = (
+  params?: GetMeasureCommentCountParams
+) => {
+  return [`/MeasureComment/$count`, ...(params ? [params] : [])] as const
+}
+
+export const getGetMeasureCommentCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof getMeasureCommentCount>>,
+  TError = void,
+>(
+  params?: GetMeasureCommentCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getMeasureCommentCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ?? getGetMeasureCommentCountQueryKey(params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getMeasureCommentCount>>
+  > = ({ signal }) => getMeasureCommentCount(params, signal)
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getMeasureCommentCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type GetMeasureCommentCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getMeasureCommentCount>>
+>
+export type GetMeasureCommentCountQueryError = void
+
+/**
+ * @summary Collection of objects from oData query.
+ */
+export const useGetMeasureCommentCount = <
+  TData = Awaited<ReturnType<typeof getMeasureCommentCount>>,
+  TError = void,
+>(
+  params?: GetMeasureCommentCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getMeasureCommentCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getGetMeasureCommentCountQueryOptions(params, options)
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
  * @summary object with key from oData query.
  */
 export const getMeasureCommentFromKey = (
@@ -8609,7 +11789,7 @@ export const getMeasureCommentFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<MeasureComment>({
-    url: `/api/v1/MeasureComment/${key}`,
+    url: `/MeasureComment/${key}`,
     method: 'GET',
     params,
     signal,
@@ -8620,7 +11800,7 @@ export const getGetMeasureCommentFromKeyQueryKey = (
   key: number,
   params?: GetMeasureCommentFromKeyParams
 ) => {
-  return [`/api/v1/MeasureComment/${key}`, ...(params ? [params] : [])] as const
+  return [`/MeasureComment/${key}`, ...(params ? [params] : [])] as const
 }
 
 export const getGetMeasureCommentFromKeyQueryOptions = <
@@ -8701,7 +11881,7 @@ export const putMeasureCommentFromKey = (
   params?: PutMeasureCommentFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/MeasureComment/${key}`,
+    url: `/MeasureComment/${key}`,
     method: 'PUT',
     headers: {
       'Content-Type':
@@ -8789,7 +11969,7 @@ export const patchMeasureCommentFromKey = (
   params?: PatchMeasureCommentFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/MeasureComment/${key}`,
+    url: `/MeasureComment/${key}`,
     method: 'PATCH',
     headers: {
       'Content-Type':
@@ -8876,7 +12056,7 @@ export const usePatchMeasureCommentFromKey = <
  */
 export const deleteMeasureCommentFromKey = (key: number) => {
   return configRequest<void>({
-    url: `/api/v1/MeasureComment/${key}`,
+    url: `/MeasureComment/${key}`,
     method: 'DELETE',
   })
 }
@@ -8944,7 +12124,7 @@ export const getMeasureOption = (
   signal?: AbortSignal
 ) => {
   return configRequest<MeasureOption[]>({
-    url: `/api/v1/MeasureOption/$count`,
+    url: `/MeasureOption`,
     method: 'GET',
     params,
     signal,
@@ -8954,7 +12134,7 @@ export const getMeasureOption = (
 export const getGetMeasureOptionQueryKey = (
   params?: GetMeasureOptionParams
 ) => {
-  return [`/api/v1/MeasureOption/$count`, ...(params ? [params] : [])] as const
+  return [`/MeasureOption`, ...(params ? [params] : [])] as const
 }
 
 export const getGetMeasureOptionQueryOptions = <
@@ -9025,7 +12205,7 @@ export const postMeasureOption = (
   params?: PostMeasureOptionParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/MeasureOption`,
+    url: `/MeasureOption`,
     method: 'POST',
     headers: {
       'Content-Type':
@@ -9092,6 +12272,88 @@ export const usePostMeasureOption = <
 }
 
 /**
+ * @summary Collection of objects from oData query.
+ */
+export const getMeasureOptionCount = (
+  params?: GetMeasureOptionCountParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<MeasureOption[]>({
+    url: `/MeasureOption/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getGetMeasureOptionCountQueryKey = (
+  params?: GetMeasureOptionCountParams
+) => {
+  return [`/MeasureOption/$count`, ...(params ? [params] : [])] as const
+}
+
+export const getGetMeasureOptionCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof getMeasureOptionCount>>,
+  TError = void,
+>(
+  params?: GetMeasureOptionCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getMeasureOptionCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ?? getGetMeasureOptionCountQueryKey(params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getMeasureOptionCount>>
+  > = ({ signal }) => getMeasureOptionCount(params, signal)
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getMeasureOptionCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type GetMeasureOptionCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getMeasureOptionCount>>
+>
+export type GetMeasureOptionCountQueryError = void
+
+/**
+ * @summary Collection of objects from oData query.
+ */
+export const useGetMeasureOptionCount = <
+  TData = Awaited<ReturnType<typeof getMeasureOptionCount>>,
+  TError = void,
+>(
+  params?: GetMeasureOptionCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getMeasureOptionCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getGetMeasureOptionCountQueryOptions(params, options)
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
  * @summary object with key from oData query.
  */
 export const getMeasureOptionFromKey = (
@@ -9100,7 +12362,7 @@ export const getMeasureOptionFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<MeasureOption>({
-    url: `/api/v1/MeasureOption/${key}`,
+    url: `/MeasureOption/${key}`,
     method: 'GET',
     params,
     signal,
@@ -9111,7 +12373,7 @@ export const getGetMeasureOptionFromKeyQueryKey = (
   key: number,
   params?: GetMeasureOptionFromKeyParams
 ) => {
-  return [`/api/v1/MeasureOption/${key}`, ...(params ? [params] : [])] as const
+  return [`/MeasureOption/${key}`, ...(params ? [params] : [])] as const
 }
 
 export const getGetMeasureOptionFromKeyQueryOptions = <
@@ -9192,7 +12454,7 @@ export const putMeasureOptionFromKey = (
   params?: PutMeasureOptionFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/MeasureOption/${key}`,
+    url: `/MeasureOption/${key}`,
     method: 'PUT',
     headers: {
       'Content-Type':
@@ -9272,7 +12534,7 @@ export const patchMeasureOptionFromKey = (
   params?: PatchMeasureOptionFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/MeasureOption/${key}`,
+    url: `/MeasureOption/${key}`,
     method: 'PATCH',
     headers: {
       'Content-Type':
@@ -9358,10 +12620,7 @@ export const usePatchMeasureOptionFromKey = <
  * @summary Delete object of specified type
  */
 export const deleteMeasureOptionFromKey = (key: number) => {
-  return configRequest<void>({
-    url: `/api/v1/MeasureOption/${key}`,
-    method: 'DELETE',
-  })
+  return configRequest<void>({ url: `/MeasureOption/${key}`, method: 'DELETE' })
 }
 
 export const getDeleteMeasureOptionFromKeyMutationOptions = <
@@ -9428,7 +12687,7 @@ export const getDetectionTypesMeasureTypeFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<DetectionType[]>({
-    url: `/api/v1/MeasureType/${key}/detectionTypes/$count`,
+    url: `/MeasureType/${key}/detectionTypes`,
     method: 'GET',
     params,
     signal,
@@ -9440,7 +12699,7 @@ export const getGetDetectionTypesMeasureTypeFromKeyQueryKey = (
   params?: GetDetectionTypesMeasureTypeFromKeyParams
 ) => {
   return [
-    `/api/v1/MeasureType/${key}/detectionTypes/$count`,
+    `/MeasureType/${key}/detectionTypes`,
     ...(params ? [params] : []),
   ] as const
 }
@@ -9519,6 +12778,106 @@ export const useGetDetectionTypesMeasureTypeFromKey = <
 }
 
 /**
+ * @summary Utah.Udot.Atspm.Data.Models.DetectionType navigation property action
+ */
+export const getDetectionTypesMeasureTypeFromKeyCount = (
+  key: number,
+  params?: GetDetectionTypesMeasureTypeFromKeyCountParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<DetectionType[]>({
+    url: `/MeasureType/${key}/detectionTypes/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getGetDetectionTypesMeasureTypeFromKeyCountQueryKey = (
+  key: number,
+  params?: GetDetectionTypesMeasureTypeFromKeyCountParams
+) => {
+  return [
+    `/MeasureType/${key}/detectionTypes/$count`,
+    ...(params ? [params] : []),
+  ] as const
+}
+
+export const getGetDetectionTypesMeasureTypeFromKeyCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof getDetectionTypesMeasureTypeFromKeyCount>>,
+  TError = void,
+>(
+  key: number,
+  params?: GetDetectionTypesMeasureTypeFromKeyCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getDetectionTypesMeasureTypeFromKeyCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getGetDetectionTypesMeasureTypeFromKeyCountQueryKey(key, params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getDetectionTypesMeasureTypeFromKeyCount>>
+  > = ({ signal }) =>
+    getDetectionTypesMeasureTypeFromKeyCount(key, params, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!key,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getDetectionTypesMeasureTypeFromKeyCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type GetDetectionTypesMeasureTypeFromKeyCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getDetectionTypesMeasureTypeFromKeyCount>>
+>
+export type GetDetectionTypesMeasureTypeFromKeyCountQueryError = void
+
+/**
+ * @summary Utah.Udot.Atspm.Data.Models.DetectionType navigation property action
+ */
+export const useGetDetectionTypesMeasureTypeFromKeyCount = <
+  TData = Awaited<ReturnType<typeof getDetectionTypesMeasureTypeFromKeyCount>>,
+  TError = void,
+>(
+  key: number,
+  params?: GetDetectionTypesMeasureTypeFromKeyCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getDetectionTypesMeasureTypeFromKeyCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getGetDetectionTypesMeasureTypeFromKeyCountQueryOptions(
+    key,
+    params,
+    options
+  )
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
  * @summary Utah.Udot.Atspm.Data.Models.MeasureComment navigation property action
  */
 export const getMeasureCommentsMeasureTypeFromKey = (
@@ -9527,7 +12886,7 @@ export const getMeasureCommentsMeasureTypeFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<MeasureComment[]>({
-    url: `/api/v1/MeasureType/${key}/measureComments/$count`,
+    url: `/MeasureType/${key}/measureComments`,
     method: 'GET',
     params,
     signal,
@@ -9539,7 +12898,7 @@ export const getGetMeasureCommentsMeasureTypeFromKeyQueryKey = (
   params?: GetMeasureCommentsMeasureTypeFromKeyParams
 ) => {
   return [
-    `/api/v1/MeasureType/${key}/measureComments/$count`,
+    `/MeasureType/${key}/measureComments`,
     ...(params ? [params] : []),
   ] as const
 }
@@ -9618,6 +12977,106 @@ export const useGetMeasureCommentsMeasureTypeFromKey = <
 }
 
 /**
+ * @summary Utah.Udot.Atspm.Data.Models.MeasureComment navigation property action
+ */
+export const getMeasureCommentsMeasureTypeFromKeyCount = (
+  key: number,
+  params?: GetMeasureCommentsMeasureTypeFromKeyCountParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<MeasureComment[]>({
+    url: `/MeasureType/${key}/measureComments/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getGetMeasureCommentsMeasureTypeFromKeyCountQueryKey = (
+  key: number,
+  params?: GetMeasureCommentsMeasureTypeFromKeyCountParams
+) => {
+  return [
+    `/MeasureType/${key}/measureComments/$count`,
+    ...(params ? [params] : []),
+  ] as const
+}
+
+export const getGetMeasureCommentsMeasureTypeFromKeyCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof getMeasureCommentsMeasureTypeFromKeyCount>>,
+  TError = void,
+>(
+  key: number,
+  params?: GetMeasureCommentsMeasureTypeFromKeyCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getMeasureCommentsMeasureTypeFromKeyCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getGetMeasureCommentsMeasureTypeFromKeyCountQueryKey(key, params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getMeasureCommentsMeasureTypeFromKeyCount>>
+  > = ({ signal }) =>
+    getMeasureCommentsMeasureTypeFromKeyCount(key, params, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!key,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getMeasureCommentsMeasureTypeFromKeyCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type GetMeasureCommentsMeasureTypeFromKeyCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getMeasureCommentsMeasureTypeFromKeyCount>>
+>
+export type GetMeasureCommentsMeasureTypeFromKeyCountQueryError = void
+
+/**
+ * @summary Utah.Udot.Atspm.Data.Models.MeasureComment navigation property action
+ */
+export const useGetMeasureCommentsMeasureTypeFromKeyCount = <
+  TData = Awaited<ReturnType<typeof getMeasureCommentsMeasureTypeFromKeyCount>>,
+  TError = void,
+>(
+  key: number,
+  params?: GetMeasureCommentsMeasureTypeFromKeyCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getMeasureCommentsMeasureTypeFromKeyCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getGetMeasureCommentsMeasureTypeFromKeyCountQueryOptions(
+    key,
+    params,
+    options
+  )
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
  * @summary Collection of objects from oData query.
  */
 export const getMeasureType = (
@@ -9625,7 +13084,7 @@ export const getMeasureType = (
   signal?: AbortSignal
 ) => {
   return configRequest<MeasureType[]>({
-    url: `/api/v1/MeasureType/$count`,
+    url: `/MeasureType`,
     method: 'GET',
     params,
     signal,
@@ -9633,7 +13092,7 @@ export const getMeasureType = (
 }
 
 export const getGetMeasureTypeQueryKey = (params?: GetMeasureTypeParams) => {
-  return [`/api/v1/MeasureType/$count`, ...(params ? [params] : [])] as const
+  return [`/MeasureType`, ...(params ? [params] : [])] as const
 }
 
 export const getGetMeasureTypeQueryOptions = <
@@ -9704,7 +13163,7 @@ export const postMeasureType = (
   params?: PostMeasureTypeParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/MeasureType`,
+    url: `/MeasureType`,
     method: 'POST',
     headers: {
       'Content-Type':
@@ -9771,6 +13230,88 @@ export const usePostMeasureType = <
 }
 
 /**
+ * @summary Collection of objects from oData query.
+ */
+export const getMeasureTypeCount = (
+  params?: GetMeasureTypeCountParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<MeasureType[]>({
+    url: `/MeasureType/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getGetMeasureTypeCountQueryKey = (
+  params?: GetMeasureTypeCountParams
+) => {
+  return [`/MeasureType/$count`, ...(params ? [params] : [])] as const
+}
+
+export const getGetMeasureTypeCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof getMeasureTypeCount>>,
+  TError = void,
+>(
+  params?: GetMeasureTypeCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getMeasureTypeCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ?? getGetMeasureTypeCountQueryKey(params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getMeasureTypeCount>>
+  > = ({ signal }) => getMeasureTypeCount(params, signal)
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getMeasureTypeCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type GetMeasureTypeCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getMeasureTypeCount>>
+>
+export type GetMeasureTypeCountQueryError = void
+
+/**
+ * @summary Collection of objects from oData query.
+ */
+export const useGetMeasureTypeCount = <
+  TData = Awaited<ReturnType<typeof getMeasureTypeCount>>,
+  TError = void,
+>(
+  params?: GetMeasureTypeCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getMeasureTypeCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getGetMeasureTypeCountQueryOptions(params, options)
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
  * @summary object with key from oData query.
  */
 export const getMeasureTypeFromKey = (
@@ -9779,7 +13320,7 @@ export const getMeasureTypeFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<MeasureType>({
-    url: `/api/v1/MeasureType/${key}`,
+    url: `/MeasureType/${key}`,
     method: 'GET',
     params,
     signal,
@@ -9790,7 +13331,7 @@ export const getGetMeasureTypeFromKeyQueryKey = (
   key: number,
   params?: GetMeasureTypeFromKeyParams
 ) => {
-  return [`/api/v1/MeasureType/${key}`, ...(params ? [params] : [])] as const
+  return [`/MeasureType/${key}`, ...(params ? [params] : [])] as const
 }
 
 export const getGetMeasureTypeFromKeyQueryOptions = <
@@ -9871,7 +13412,7 @@ export const putMeasureTypeFromKey = (
   params?: PutMeasureTypeFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/MeasureType/${key}`,
+    url: `/MeasureType/${key}`,
     method: 'PUT',
     headers: {
       'Content-Type':
@@ -9943,7 +13484,7 @@ export const patchMeasureTypeFromKey = (
   params?: PatchMeasureTypeFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/MeasureType/${key}`,
+    url: `/MeasureType/${key}`,
     method: 'PATCH',
     headers: {
       'Content-Type':
@@ -10013,10 +13554,7 @@ export const usePatchMeasureTypeFromKey = <
  * @summary Delete object of specified type
  */
 export const deleteMeasureTypeFromKey = (key: number) => {
-  return configRequest<void>({
-    url: `/api/v1/MeasureType/${key}`,
-    method: 'DELETE',
-  })
+  return configRequest<void>({ url: `/MeasureType/${key}`, method: 'DELETE' })
 }
 
 export const getDeleteMeasureTypeFromKeyMutationOptions = <
@@ -10082,7 +13620,7 @@ export const getMenuItems = (
   signal?: AbortSignal
 ) => {
   return configRequest<MenuItem[]>({
-    url: `/api/v1/MenuItems/$count`,
+    url: `/MenuItems`,
     method: 'GET',
     params,
     signal,
@@ -10090,7 +13628,7 @@ export const getMenuItems = (
 }
 
 export const getGetMenuItemsQueryKey = (params?: GetMenuItemsParams) => {
-  return [`/api/v1/MenuItems/$count`, ...(params ? [params] : [])] as const
+  return [`/MenuItems`, ...(params ? [params] : [])] as const
 }
 
 export const getGetMenuItemsQueryOptions = <
@@ -10161,7 +13699,7 @@ export const postMenuItems = (
   params?: PostMenuItemsParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/MenuItems`,
+    url: `/MenuItems`,
     method: 'POST',
     headers: {
       'Content-Type':
@@ -10228,6 +13766,88 @@ export const usePostMenuItems = <
 }
 
 /**
+ * @summary Collection of objects from oData query.
+ */
+export const getMenuItemsCount = (
+  params?: GetMenuItemsCountParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<MenuItem[]>({
+    url: `/MenuItems/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getGetMenuItemsCountQueryKey = (
+  params?: GetMenuItemsCountParams
+) => {
+  return [`/MenuItems/$count`, ...(params ? [params] : [])] as const
+}
+
+export const getGetMenuItemsCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof getMenuItemsCount>>,
+  TError = void,
+>(
+  params?: GetMenuItemsCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getMenuItemsCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ?? getGetMenuItemsCountQueryKey(params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getMenuItemsCount>>
+  > = ({ signal }) => getMenuItemsCount(params, signal)
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getMenuItemsCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type GetMenuItemsCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getMenuItemsCount>>
+>
+export type GetMenuItemsCountQueryError = void
+
+/**
+ * @summary Collection of objects from oData query.
+ */
+export const useGetMenuItemsCount = <
+  TData = Awaited<ReturnType<typeof getMenuItemsCount>>,
+  TError = void,
+>(
+  params?: GetMenuItemsCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getMenuItemsCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getGetMenuItemsCountQueryOptions(params, options)
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
  * @summary object with key from oData query.
  */
 export const getMenuItemsFromKey = (
@@ -10236,7 +13856,7 @@ export const getMenuItemsFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<MenuItem>({
-    url: `/api/v1/MenuItems/${key}`,
+    url: `/MenuItems/${key}`,
     method: 'GET',
     params,
     signal,
@@ -10247,7 +13867,7 @@ export const getGetMenuItemsFromKeyQueryKey = (
   key: number,
   params?: GetMenuItemsFromKeyParams
 ) => {
-  return [`/api/v1/MenuItems/${key}`, ...(params ? [params] : [])] as const
+  return [`/MenuItems/${key}`, ...(params ? [params] : [])] as const
 }
 
 export const getGetMenuItemsFromKeyQueryOptions = <
@@ -10324,7 +13944,7 @@ export const putMenuItemsFromKey = (
   params?: PutMenuItemsFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/MenuItems/${key}`,
+    url: `/MenuItems/${key}`,
     method: 'PUT',
     headers: {
       'Content-Type':
@@ -10396,7 +14016,7 @@ export const patchMenuItemsFromKey = (
   params?: PatchMenuItemsFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/MenuItems/${key}`,
+    url: `/MenuItems/${key}`,
     method: 'PATCH',
     headers: {
       'Content-Type':
@@ -10466,10 +14086,7 @@ export const usePatchMenuItemsFromKey = <
  * @summary Delete object of specified type
  */
 export const deleteMenuItemsFromKey = (key: number) => {
-  return configRequest<void>({
-    url: `/api/v1/MenuItems/${key}`,
-    method: 'DELETE',
-  })
+  return configRequest<void>({ url: `/MenuItems/${key}`, method: 'DELETE' })
 }
 
 export const getDeleteMenuItemsFromKeyMutationOptions = <
@@ -10532,7 +14149,7 @@ export const useDeleteMenuItemsFromKey = <
  */
 export const getProduct = (params?: GetProductParams, signal?: AbortSignal) => {
   return configRequest<Product[]>({
-    url: `/api/v1/Product/$count`,
+    url: `/Product`,
     method: 'GET',
     params,
     signal,
@@ -10540,7 +14157,7 @@ export const getProduct = (params?: GetProductParams, signal?: AbortSignal) => {
 }
 
 export const getGetProductQueryKey = (params?: GetProductParams) => {
-  return [`/api/v1/Product/$count`, ...(params ? [params] : [])] as const
+  return [`/Product`, ...(params ? [params] : [])] as const
 }
 
 export const getGetProductQueryOptions = <
@@ -10608,7 +14225,7 @@ export const useGetProduct = <
  */
 export const postProduct = (product: Product, params?: PostProductParams) => {
   return configRequest<void>({
-    url: `/api/v1/Product`,
+    url: `/Product`,
     method: 'POST',
     headers: {
       'Content-Type':
@@ -10672,6 +14289,85 @@ export const usePostProduct = <TError = unknown, TContext = unknown>(options?: {
 }
 
 /**
+ * @summary Collection of objects from oData query.
+ */
+export const getProductCount = (
+  params?: GetProductCountParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<Product[]>({
+    url: `/Product/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getGetProductCountQueryKey = (params?: GetProductCountParams) => {
+  return [`/Product/$count`, ...(params ? [params] : [])] as const
+}
+
+export const getGetProductCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof getProductCount>>,
+  TError = void,
+>(
+  params?: GetProductCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getProductCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey = queryOptions?.queryKey ?? getGetProductCountQueryKey(params)
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getProductCount>>> = ({
+    signal,
+  }) => getProductCount(params, signal)
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getProductCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type GetProductCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getProductCount>>
+>
+export type GetProductCountQueryError = void
+
+/**
+ * @summary Collection of objects from oData query.
+ */
+export const useGetProductCount = <
+  TData = Awaited<ReturnType<typeof getProductCount>>,
+  TError = void,
+>(
+  params?: GetProductCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getProductCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getGetProductCountQueryOptions(params, options)
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
  * @summary object with key from oData query.
  */
 export const getProductFromKey = (
@@ -10680,7 +14376,7 @@ export const getProductFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<Product>({
-    url: `/api/v1/Product/${key}`,
+    url: `/Product/${key}`,
     method: 'GET',
     params,
     signal,
@@ -10691,7 +14387,7 @@ export const getGetProductFromKeyQueryKey = (
   key: number,
   params?: GetProductFromKeyParams
 ) => {
-  return [`/api/v1/Product/${key}`, ...(params ? [params] : [])] as const
+  return [`/Product/${key}`, ...(params ? [params] : [])] as const
 }
 
 export const getGetProductFromKeyQueryOptions = <
@@ -10768,7 +14464,7 @@ export const putProductFromKey = (
   params?: PutProductFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/Product/${key}`,
+    url: `/Product/${key}`,
     method: 'PUT',
     headers: {
       'Content-Type':
@@ -10840,7 +14536,7 @@ export const patchProductFromKey = (
   params?: PatchProductFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/Product/${key}`,
+    url: `/Product/${key}`,
     method: 'PATCH',
     headers: {
       'Content-Type':
@@ -10910,10 +14606,7 @@ export const usePatchProductFromKey = <
  * @summary Delete object of specified type
  */
 export const deleteProductFromKey = (key: number) => {
-  return configRequest<void>({
-    url: `/api/v1/Product/${key}`,
-    method: 'DELETE',
-  })
+  return configRequest<void>({ url: `/Product/${key}`, method: 'DELETE' })
 }
 
 export const getDeleteProductFromKeyMutationOptions = <
@@ -10980,7 +14673,7 @@ export const getLocationsRegionFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<Location[]>({
-    url: `/api/v1/Region/${key}/locations/$count`,
+    url: `/Region/${key}/locations`,
     method: 'GET',
     params,
     signal,
@@ -10991,10 +14684,7 @@ export const getGetLocationsRegionFromKeyQueryKey = (
   key: number,
   params?: GetLocationsRegionFromKeyParams
 ) => {
-  return [
-    `/api/v1/Region/${key}/locations/$count`,
-    ...(params ? [params] : []),
-  ] as const
+  return [`/Region/${key}/locations`, ...(params ? [params] : [])] as const
 }
 
 export const getGetLocationsRegionFromKeyQueryOptions = <
@@ -11069,9 +14759,108 @@ export const useGetLocationsRegionFromKey = <
   return query
 }
 
+/**
+ * @summary Utah.Udot.Atspm.Data.Models.Location navigation property action
+ */
+export const getLocationsRegionFromKeyCount = (
+  key: number,
+  params?: GetLocationsRegionFromKeyCountParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<Location[]>({
+    url: `/Region/${key}/locations/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getGetLocationsRegionFromKeyCountQueryKey = (
+  key: number,
+  params?: GetLocationsRegionFromKeyCountParams
+) => {
+  return [
+    `/Region/${key}/locations/$count`,
+    ...(params ? [params] : []),
+  ] as const
+}
+
+export const getGetLocationsRegionFromKeyCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof getLocationsRegionFromKeyCount>>,
+  TError = void,
+>(
+  key: number,
+  params?: GetLocationsRegionFromKeyCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getLocationsRegionFromKeyCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getGetLocationsRegionFromKeyCountQueryKey(key, params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getLocationsRegionFromKeyCount>>
+  > = ({ signal }) => getLocationsRegionFromKeyCount(key, params, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!key,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getLocationsRegionFromKeyCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type GetLocationsRegionFromKeyCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getLocationsRegionFromKeyCount>>
+>
+export type GetLocationsRegionFromKeyCountQueryError = void
+
+/**
+ * @summary Utah.Udot.Atspm.Data.Models.Location navigation property action
+ */
+export const useGetLocationsRegionFromKeyCount = <
+  TData = Awaited<ReturnType<typeof getLocationsRegionFromKeyCount>>,
+  TError = void,
+>(
+  key: number,
+  params?: GetLocationsRegionFromKeyCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getLocationsRegionFromKeyCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getGetLocationsRegionFromKeyCountQueryOptions(
+    key,
+    params,
+    options
+  )
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
 export const postRegion = (region: Region, params?: PostRegionParams) => {
   return configRequest<void>({
-    url: `/api/v1/Region`,
+    url: `/Region`,
     method: 'POST',
     headers: {
       'Content-Type':
@@ -11136,7 +14925,7 @@ export const usePostRegion = <TError = unknown, TContext = unknown>(options?: {
  */
 export const getRegion = (params?: GetRegionParams, signal?: AbortSignal) => {
   return configRequest<Region[]>({
-    url: `/api/v1/Region/$count`,
+    url: `/Region`,
     method: 'GET',
     params,
     signal,
@@ -11144,7 +14933,7 @@ export const getRegion = (params?: GetRegionParams, signal?: AbortSignal) => {
 }
 
 export const getGetRegionQueryKey = (params?: GetRegionParams) => {
-  return [`/api/v1/Region/$count`, ...(params ? [params] : [])] as const
+  return [`/Region`, ...(params ? [params] : [])] as const
 }
 
 export const getGetRegionQueryOptions = <
@@ -11213,7 +15002,7 @@ export const patchRegionFromKey = (
   params?: PatchRegionFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/Region/${key}`,
+    url: `/Region/${key}`,
     method: 'PATCH',
     headers: {
       'Content-Type':
@@ -11277,7 +15066,7 @@ export const usePatchRegionFromKey = <
 }
 
 export const deleteRegionFromKey = (key: number) => {
-  return configRequest<void>({ url: `/api/v1/Region/${key}`, method: 'DELETE' })
+  return configRequest<void>({ url: `/Region/${key}`, method: 'DELETE' })
 }
 
 export const getDeleteRegionFromKeyMutationOptions = <
@@ -11341,7 +15130,7 @@ export const getRegionFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<Region>({
-    url: `/api/v1/Region/${key}`,
+    url: `/Region/${key}`,
     method: 'GET',
     params,
     signal,
@@ -11352,7 +15141,7 @@ export const getGetRegionFromKeyQueryKey = (
   key: number,
   params?: GetRegionFromKeyParams
 ) => {
-  return [`/api/v1/Region/${key}`, ...(params ? [params] : [])] as const
+  return [`/Region/${key}`, ...(params ? [params] : [])] as const
 }
 
 export const getGetRegionFromKeyQueryOptions = <
@@ -11429,7 +15218,7 @@ export const putRegionFromKey = (
   params?: PutRegionFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/Region/${key}`,
+    url: `/Region/${key}`,
     method: 'PUT',
     headers: {
       'Content-Type':
@@ -11493,6 +15282,85 @@ export const usePutRegionFromKey = <
 }
 
 /**
+ * @summary Collection of objects from oData query.
+ */
+export const getRegionCount = (
+  params?: GetRegionCountParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<Region[]>({
+    url: `/Region/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getGetRegionCountQueryKey = (params?: GetRegionCountParams) => {
+  return [`/Region/$count`, ...(params ? [params] : [])] as const
+}
+
+export const getGetRegionCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof getRegionCount>>,
+  TError = void,
+>(
+  params?: GetRegionCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getRegionCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey = queryOptions?.queryKey ?? getGetRegionCountQueryKey(params)
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getRegionCount>>> = ({
+    signal,
+  }) => getRegionCount(params, signal)
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getRegionCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type GetRegionCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getRegionCount>>
+>
+export type GetRegionCountQueryError = void
+
+/**
+ * @summary Collection of objects from oData query.
+ */
+export const useGetRegionCount = <
+  TData = Awaited<ReturnType<typeof getRegionCount>>,
+  TError = void,
+>(
+  params?: GetRegionCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getRegionCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getGetRegionCountQueryOptions(params, options)
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
  * @summary Utah.Udot.Atspm.Data.Models.RouteLocation navigation property action
  */
 export const getRouteLocationsRouteFromKey = (
@@ -11501,7 +15369,7 @@ export const getRouteLocationsRouteFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<RouteLocation[]>({
-    url: `/api/v1/Route/${key}/routeLocations/$count`,
+    url: `/Route/${key}/routeLocations`,
     method: 'GET',
     params,
     signal,
@@ -11512,10 +15380,7 @@ export const getGetRouteLocationsRouteFromKeyQueryKey = (
   key: number,
   params?: GetRouteLocationsRouteFromKeyParams
 ) => {
-  return [
-    `/api/v1/Route/${key}/routeLocations/$count`,
-    ...(params ? [params] : []),
-  ] as const
+  return [`/Route/${key}/routeLocations`, ...(params ? [params] : [])] as const
 }
 
 export const getGetRouteLocationsRouteFromKeyQueryOptions = <
@@ -11592,6 +15457,105 @@ export const useGetRouteLocationsRouteFromKey = <
 }
 
 /**
+ * @summary Utah.Udot.Atspm.Data.Models.RouteLocation navigation property action
+ */
+export const getRouteLocationsRouteFromKeyCount = (
+  key: number,
+  params?: GetRouteLocationsRouteFromKeyCountParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<RouteLocation[]>({
+    url: `/Route/${key}/routeLocations/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getGetRouteLocationsRouteFromKeyCountQueryKey = (
+  key: number,
+  params?: GetRouteLocationsRouteFromKeyCountParams
+) => {
+  return [
+    `/Route/${key}/routeLocations/$count`,
+    ...(params ? [params] : []),
+  ] as const
+}
+
+export const getGetRouteLocationsRouteFromKeyCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof getRouteLocationsRouteFromKeyCount>>,
+  TError = void,
+>(
+  key: number,
+  params?: GetRouteLocationsRouteFromKeyCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getRouteLocationsRouteFromKeyCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getGetRouteLocationsRouteFromKeyCountQueryKey(key, params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getRouteLocationsRouteFromKeyCount>>
+  > = ({ signal }) => getRouteLocationsRouteFromKeyCount(key, params, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!key,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getRouteLocationsRouteFromKeyCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type GetRouteLocationsRouteFromKeyCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getRouteLocationsRouteFromKeyCount>>
+>
+export type GetRouteLocationsRouteFromKeyCountQueryError = void
+
+/**
+ * @summary Utah.Udot.Atspm.Data.Models.RouteLocation navigation property action
+ */
+export const useGetRouteLocationsRouteFromKeyCount = <
+  TData = Awaited<ReturnType<typeof getRouteLocationsRouteFromKeyCount>>,
+  TError = void,
+>(
+  key: number,
+  params?: GetRouteLocationsRouteFromKeyCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getRouteLocationsRouteFromKeyCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getGetRouteLocationsRouteFromKeyCountQueryOptions(
+    key,
+    params,
+    options
+  )
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
  * @summary Creates a route with its associated route locations
  */
 export const upsertRouteRoute = (
@@ -11599,7 +15563,7 @@ export const upsertRouteRoute = (
   params: UpsertRouteRouteParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/UpsertRoute`,
+    url: `/UpsertRoute`,
     method: 'POST',
     headers: {
       'Content-Type':
@@ -11671,7 +15635,7 @@ export const getRouteViewRouteFromId = (
   signal?: AbortSignal
 ) => {
   return configRequest<void>({
-    url: `/api/v1/GetRouteView/${id}`,
+    url: `/GetRouteView/${id}`,
     method: 'GET',
     params,
     signal,
@@ -11682,7 +15646,7 @@ export const getGetRouteViewRouteFromIdQueryKey = (
   id: number,
   params: GetRouteViewRouteFromIdParams
 ) => {
-  return [`/api/v1/GetRouteView/${id}`, ...(params ? [params] : [])] as const
+  return [`/GetRouteView/${id}`, ...(params ? [params] : [])] as const
 }
 
 export const getGetRouteViewRouteFromIdQueryOptions = <
@@ -11759,7 +15723,7 @@ export const useGetRouteViewRouteFromId = <
  */
 export const getRoute = (params?: GetRouteParams, signal?: AbortSignal) => {
   return configRequest<Route[]>({
-    url: `/api/v1/Route/$count`,
+    url: `/Route`,
     method: 'GET',
     params,
     signal,
@@ -11767,7 +15731,7 @@ export const getRoute = (params?: GetRouteParams, signal?: AbortSignal) => {
 }
 
 export const getGetRouteQueryKey = (params?: GetRouteParams) => {
-  return [`/api/v1/Route/$count`, ...(params ? [params] : [])] as const
+  return [`/Route`, ...(params ? [params] : [])] as const
 }
 
 export const getGetRouteQueryOptions = <
@@ -11827,7 +15791,7 @@ export const useGetRoute = <
  */
 export const postRoute = (route: Route, params?: PostRouteParams) => {
   return configRequest<void>({
-    url: `/api/v1/Route`,
+    url: `/Route`,
     method: 'POST',
     headers: {
       'Content-Type':
@@ -11891,6 +15855,85 @@ export const usePostRoute = <TError = unknown, TContext = unknown>(options?: {
 }
 
 /**
+ * @summary Collection of objects from oData query.
+ */
+export const getRouteCount = (
+  params?: GetRouteCountParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<Route[]>({
+    url: `/Route/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getGetRouteCountQueryKey = (params?: GetRouteCountParams) => {
+  return [`/Route/$count`, ...(params ? [params] : [])] as const
+}
+
+export const getGetRouteCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof getRouteCount>>,
+  TError = void,
+>(
+  params?: GetRouteCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getRouteCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey = queryOptions?.queryKey ?? getGetRouteCountQueryKey(params)
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getRouteCount>>> = ({
+    signal,
+  }) => getRouteCount(params, signal)
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getRouteCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type GetRouteCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getRouteCount>>
+>
+export type GetRouteCountQueryError = void
+
+/**
+ * @summary Collection of objects from oData query.
+ */
+export const useGetRouteCount = <
+  TData = Awaited<ReturnType<typeof getRouteCount>>,
+  TError = void,
+>(
+  params?: GetRouteCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getRouteCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getGetRouteCountQueryOptions(params, options)
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
  * @summary object with key from oData query.
  */
 export const getRouteFromKey = (
@@ -11899,7 +15942,7 @@ export const getRouteFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<Route>({
-    url: `/api/v1/Route/${key}`,
+    url: `/Route/${key}`,
     method: 'GET',
     params,
     signal,
@@ -11910,7 +15953,7 @@ export const getGetRouteFromKeyQueryKey = (
   key: number,
   params?: GetRouteFromKeyParams
 ) => {
-  return [`/api/v1/Route/${key}`, ...(params ? [params] : [])] as const
+  return [`/Route/${key}`, ...(params ? [params] : [])] as const
 }
 
 export const getGetRouteFromKeyQueryOptions = <
@@ -11987,7 +16030,7 @@ export const putRouteFromKey = (
   params?: PutRouteFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/Route/${key}`,
+    url: `/Route/${key}`,
     method: 'PUT',
     headers: {
       'Content-Type':
@@ -12059,7 +16102,7 @@ export const patchRouteFromKey = (
   params?: PatchRouteFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/Route/${key}`,
+    url: `/Route/${key}`,
     method: 'PATCH',
     headers: {
       'Content-Type':
@@ -12129,7 +16172,7 @@ export const usePatchRouteFromKey = <
  * @summary Delete object of specified type
  */
 export const deleteRouteFromKey = (key: number) => {
-  return configRequest<void>({ url: `/api/v1/Route/${key}`, method: 'DELETE' })
+  return configRequest<void>({ url: `/Route/${key}`, method: 'DELETE' })
 }
 
 export const getDeleteRouteFromKeyMutationOptions = <
@@ -12196,7 +16239,7 @@ export const getPreviousLocationsRouteDistanceFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<RouteLocation[]>({
-    url: `/api/v1/RouteDistance/${key}/previousLocations/$count`,
+    url: `/RouteDistance/${key}/previousLocations`,
     method: 'GET',
     params,
     signal,
@@ -12208,7 +16251,7 @@ export const getGetPreviousLocationsRouteDistanceFromKeyQueryKey = (
   params?: GetPreviousLocationsRouteDistanceFromKeyParams
 ) => {
   return [
-    `/api/v1/RouteDistance/${key}/previousLocations/$count`,
+    `/RouteDistance/${key}/previousLocations`,
     ...(params ? [params] : []),
   ] as const
 }
@@ -12290,13 +16333,119 @@ export const useGetPreviousLocationsRouteDistanceFromKey = <
 /**
  * @summary Utah.Udot.Atspm.Data.Models.RouteLocation navigation property action
  */
+export const getPreviousLocationsRouteDistanceFromKeyCount = (
+  key: number,
+  params?: GetPreviousLocationsRouteDistanceFromKeyCountParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<RouteLocation[]>({
+    url: `/RouteDistance/${key}/previousLocations/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getGetPreviousLocationsRouteDistanceFromKeyCountQueryKey = (
+  key: number,
+  params?: GetPreviousLocationsRouteDistanceFromKeyCountParams
+) => {
+  return [
+    `/RouteDistance/${key}/previousLocations/$count`,
+    ...(params ? [params] : []),
+  ] as const
+}
+
+export const getGetPreviousLocationsRouteDistanceFromKeyCountQueryOptions = <
+  TData = Awaited<
+    ReturnType<typeof getPreviousLocationsRouteDistanceFromKeyCount>
+  >,
+  TError = void,
+>(
+  key: number,
+  params?: GetPreviousLocationsRouteDistanceFromKeyCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getPreviousLocationsRouteDistanceFromKeyCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getGetPreviousLocationsRouteDistanceFromKeyCountQueryKey(key, params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getPreviousLocationsRouteDistanceFromKeyCount>>
+  > = ({ signal }) =>
+    getPreviousLocationsRouteDistanceFromKeyCount(key, params, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!key,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getPreviousLocationsRouteDistanceFromKeyCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type GetPreviousLocationsRouteDistanceFromKeyCountQueryResult =
+  NonNullable<
+    Awaited<ReturnType<typeof getPreviousLocationsRouteDistanceFromKeyCount>>
+  >
+export type GetPreviousLocationsRouteDistanceFromKeyCountQueryError = void
+
+/**
+ * @summary Utah.Udot.Atspm.Data.Models.RouteLocation navigation property action
+ */
+export const useGetPreviousLocationsRouteDistanceFromKeyCount = <
+  TData = Awaited<
+    ReturnType<typeof getPreviousLocationsRouteDistanceFromKeyCount>
+  >,
+  TError = void,
+>(
+  key: number,
+  params?: GetPreviousLocationsRouteDistanceFromKeyCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getPreviousLocationsRouteDistanceFromKeyCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions =
+    getGetPreviousLocationsRouteDistanceFromKeyCountQueryOptions(
+      key,
+      params,
+      options
+    )
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
+ * @summary Utah.Udot.Atspm.Data.Models.RouteLocation navigation property action
+ */
 export const getNextLocationsRouteDistanceFromKey = (
   key: number,
   params?: GetNextLocationsRouteDistanceFromKeyParams,
   signal?: AbortSignal
 ) => {
   return configRequest<RouteLocation[]>({
-    url: `/api/v1/RouteDistance/${key}/nextLocations/$count`,
+    url: `/RouteDistance/${key}/nextLocations`,
     method: 'GET',
     params,
     signal,
@@ -12308,7 +16457,7 @@ export const getGetNextLocationsRouteDistanceFromKeyQueryKey = (
   params?: GetNextLocationsRouteDistanceFromKeyParams
 ) => {
   return [
-    `/api/v1/RouteDistance/${key}/nextLocations/$count`,
+    `/RouteDistance/${key}/nextLocations`,
     ...(params ? [params] : []),
   ] as const
 }
@@ -12387,6 +16536,106 @@ export const useGetNextLocationsRouteDistanceFromKey = <
 }
 
 /**
+ * @summary Utah.Udot.Atspm.Data.Models.RouteLocation navigation property action
+ */
+export const getNextLocationsRouteDistanceFromKeyCount = (
+  key: number,
+  params?: GetNextLocationsRouteDistanceFromKeyCountParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<RouteLocation[]>({
+    url: `/RouteDistance/${key}/nextLocations/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getGetNextLocationsRouteDistanceFromKeyCountQueryKey = (
+  key: number,
+  params?: GetNextLocationsRouteDistanceFromKeyCountParams
+) => {
+  return [
+    `/RouteDistance/${key}/nextLocations/$count`,
+    ...(params ? [params] : []),
+  ] as const
+}
+
+export const getGetNextLocationsRouteDistanceFromKeyCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof getNextLocationsRouteDistanceFromKeyCount>>,
+  TError = void,
+>(
+  key: number,
+  params?: GetNextLocationsRouteDistanceFromKeyCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getNextLocationsRouteDistanceFromKeyCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getGetNextLocationsRouteDistanceFromKeyCountQueryKey(key, params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getNextLocationsRouteDistanceFromKeyCount>>
+  > = ({ signal }) =>
+    getNextLocationsRouteDistanceFromKeyCount(key, params, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!key,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getNextLocationsRouteDistanceFromKeyCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type GetNextLocationsRouteDistanceFromKeyCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getNextLocationsRouteDistanceFromKeyCount>>
+>
+export type GetNextLocationsRouteDistanceFromKeyCountQueryError = void
+
+/**
+ * @summary Utah.Udot.Atspm.Data.Models.RouteLocation navigation property action
+ */
+export const useGetNextLocationsRouteDistanceFromKeyCount = <
+  TData = Awaited<ReturnType<typeof getNextLocationsRouteDistanceFromKeyCount>>,
+  TError = void,
+>(
+  key: number,
+  params?: GetNextLocationsRouteDistanceFromKeyCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getNextLocationsRouteDistanceFromKeyCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getGetNextLocationsRouteDistanceFromKeyCountQueryOptions(
+    key,
+    params,
+    options
+  )
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
  * @summary Gets the Utah.Udot.Atspm.Data.Models.RouteDistance that contains locationA and locationB
  */
 export const getRouteDistanceByLocationIdentifiersRouteDistanceFromLocationAAndLocationB =
@@ -12397,7 +16646,7 @@ export const getRouteDistanceByLocationIdentifiersRouteDistanceFromLocationAAndL
     signal?: AbortSignal
   ) => {
     return configRequest<RouteDistance | void>({
-      url: `/api/v1/RouteDistance/GetRouteDistanceByLocationIdentifiers(locationA=${locationA},locationB=${locationB})`,
+      url: `/RouteDistance/GetRouteDistanceByLocationIdentifiers(locationA=${locationA},locationB=${locationB})`,
       method: 'GET',
       params,
       signal,
@@ -12411,7 +16660,7 @@ export const getGetRouteDistanceByLocationIdentifiersRouteDistanceFromLocationAA
     params?: GetRouteDistanceByLocationIdentifiersRouteDistanceFromLocationAAndLocationBParams
   ) => {
     return [
-      `/api/v1/RouteDistance/GetRouteDistanceByLocationIdentifiers(locationA=${locationA},locationB=${locationB})`,
+      `/RouteDistance/GetRouteDistanceByLocationIdentifiers(locationA=${locationA},locationB=${locationB})`,
       ...(params ? [params] : []),
     ] as const
   }
@@ -12543,7 +16792,7 @@ export const getRouteDistance = (
   signal?: AbortSignal
 ) => {
   return configRequest<RouteDistance[]>({
-    url: `/api/v1/RouteDistance/$count`,
+    url: `/RouteDistance`,
     method: 'GET',
     params,
     signal,
@@ -12553,7 +16802,7 @@ export const getRouteDistance = (
 export const getGetRouteDistanceQueryKey = (
   params?: GetRouteDistanceParams
 ) => {
-  return [`/api/v1/RouteDistance/$count`, ...(params ? [params] : [])] as const
+  return [`/RouteDistance`, ...(params ? [params] : [])] as const
 }
 
 export const getGetRouteDistanceQueryOptions = <
@@ -12624,7 +16873,7 @@ export const postRouteDistance = (
   params?: PostRouteDistanceParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/RouteDistance`,
+    url: `/RouteDistance`,
     method: 'POST',
     headers: {
       'Content-Type':
@@ -12691,6 +16940,88 @@ export const usePostRouteDistance = <
 }
 
 /**
+ * @summary Collection of objects from oData query.
+ */
+export const getRouteDistanceCount = (
+  params?: GetRouteDistanceCountParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<RouteDistance[]>({
+    url: `/RouteDistance/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getGetRouteDistanceCountQueryKey = (
+  params?: GetRouteDistanceCountParams
+) => {
+  return [`/RouteDistance/$count`, ...(params ? [params] : [])] as const
+}
+
+export const getGetRouteDistanceCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof getRouteDistanceCount>>,
+  TError = void,
+>(
+  params?: GetRouteDistanceCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getRouteDistanceCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ?? getGetRouteDistanceCountQueryKey(params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getRouteDistanceCount>>
+  > = ({ signal }) => getRouteDistanceCount(params, signal)
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getRouteDistanceCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type GetRouteDistanceCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getRouteDistanceCount>>
+>
+export type GetRouteDistanceCountQueryError = void
+
+/**
+ * @summary Collection of objects from oData query.
+ */
+export const useGetRouteDistanceCount = <
+  TData = Awaited<ReturnType<typeof getRouteDistanceCount>>,
+  TError = void,
+>(
+  params?: GetRouteDistanceCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getRouteDistanceCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getGetRouteDistanceCountQueryOptions(params, options)
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
  * @summary object with key from oData query.
  */
 export const getRouteDistanceFromKey = (
@@ -12699,7 +17030,7 @@ export const getRouteDistanceFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<RouteDistance>({
-    url: `/api/v1/RouteDistance/${key}`,
+    url: `/RouteDistance/${key}`,
     method: 'GET',
     params,
     signal,
@@ -12710,7 +17041,7 @@ export const getGetRouteDistanceFromKeyQueryKey = (
   key: number,
   params?: GetRouteDistanceFromKeyParams
 ) => {
-  return [`/api/v1/RouteDistance/${key}`, ...(params ? [params] : [])] as const
+  return [`/RouteDistance/${key}`, ...(params ? [params] : [])] as const
 }
 
 export const getGetRouteDistanceFromKeyQueryOptions = <
@@ -12791,7 +17122,7 @@ export const putRouteDistanceFromKey = (
   params?: PutRouteDistanceFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/RouteDistance/${key}`,
+    url: `/RouteDistance/${key}`,
     method: 'PUT',
     headers: {
       'Content-Type':
@@ -12871,7 +17202,7 @@ export const patchRouteDistanceFromKey = (
   params?: PatchRouteDistanceFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/RouteDistance/${key}`,
+    url: `/RouteDistance/${key}`,
     method: 'PATCH',
     headers: {
       'Content-Type':
@@ -12957,10 +17288,7 @@ export const usePatchRouteDistanceFromKey = <
  * @summary Delete object of specified type
  */
 export const deleteRouteDistanceFromKey = (key: number) => {
-  return configRequest<void>({
-    url: `/api/v1/RouteDistance/${key}`,
-    method: 'DELETE',
-  })
+  return configRequest<void>({ url: `/RouteDistance/${key}`, method: 'DELETE' })
 }
 
 export const getDeleteRouteDistanceFromKeyMutationOptions = <
@@ -13026,7 +17354,7 @@ export const getRouteLocation = (
   signal?: AbortSignal
 ) => {
   return configRequest<RouteLocation[]>({
-    url: `/api/v1/RouteLocation/$count`,
+    url: `/RouteLocation`,
     method: 'GET',
     params,
     signal,
@@ -13036,7 +17364,7 @@ export const getRouteLocation = (
 export const getGetRouteLocationQueryKey = (
   params?: GetRouteLocationParams
 ) => {
-  return [`/api/v1/RouteLocation/$count`, ...(params ? [params] : [])] as const
+  return [`/RouteLocation`, ...(params ? [params] : [])] as const
 }
 
 export const getGetRouteLocationQueryOptions = <
@@ -13107,7 +17435,7 @@ export const postRouteLocation = (
   params?: PostRouteLocationParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/RouteLocation`,
+    url: `/RouteLocation`,
     method: 'POST',
     headers: {
       'Content-Type':
@@ -13174,6 +17502,88 @@ export const usePostRouteLocation = <
 }
 
 /**
+ * @summary Collection of objects from oData query.
+ */
+export const getRouteLocationCount = (
+  params?: GetRouteLocationCountParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<RouteLocation[]>({
+    url: `/RouteLocation/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getGetRouteLocationCountQueryKey = (
+  params?: GetRouteLocationCountParams
+) => {
+  return [`/RouteLocation/$count`, ...(params ? [params] : [])] as const
+}
+
+export const getGetRouteLocationCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof getRouteLocationCount>>,
+  TError = void,
+>(
+  params?: GetRouteLocationCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getRouteLocationCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ?? getGetRouteLocationCountQueryKey(params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getRouteLocationCount>>
+  > = ({ signal }) => getRouteLocationCount(params, signal)
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getRouteLocationCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type GetRouteLocationCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getRouteLocationCount>>
+>
+export type GetRouteLocationCountQueryError = void
+
+/**
+ * @summary Collection of objects from oData query.
+ */
+export const useGetRouteLocationCount = <
+  TData = Awaited<ReturnType<typeof getRouteLocationCount>>,
+  TError = void,
+>(
+  params?: GetRouteLocationCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getRouteLocationCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getGetRouteLocationCountQueryOptions(params, options)
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
  * @summary object with key from oData query.
  */
 export const getRouteLocationFromKey = (
@@ -13182,7 +17592,7 @@ export const getRouteLocationFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<RouteLocation>({
-    url: `/api/v1/RouteLocation/${key}`,
+    url: `/RouteLocation/${key}`,
     method: 'GET',
     params,
     signal,
@@ -13193,7 +17603,7 @@ export const getGetRouteLocationFromKeyQueryKey = (
   key: number,
   params?: GetRouteLocationFromKeyParams
 ) => {
-  return [`/api/v1/RouteLocation/${key}`, ...(params ? [params] : [])] as const
+  return [`/RouteLocation/${key}`, ...(params ? [params] : [])] as const
 }
 
 export const getGetRouteLocationFromKeyQueryOptions = <
@@ -13274,7 +17684,7 @@ export const putRouteLocationFromKey = (
   params?: PutRouteLocationFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/RouteLocation/${key}`,
+    url: `/RouteLocation/${key}`,
     method: 'PUT',
     headers: {
       'Content-Type':
@@ -13354,7 +17764,7 @@ export const patchRouteLocationFromKey = (
   params?: PatchRouteLocationFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/RouteLocation/${key}`,
+    url: `/RouteLocation/${key}`,
     method: 'PATCH',
     headers: {
       'Content-Type':
@@ -13440,10 +17850,7 @@ export const usePatchRouteLocationFromKey = <
  * @summary Delete object of specified type
  */
 export const deleteRouteLocationFromKey = (key: number) => {
-  return configRequest<void>({
-    url: `/api/v1/RouteLocation/${key}`,
-    method: 'DELETE',
-  })
+  return configRequest<void>({ url: `/RouteLocation/${key}`, method: 'DELETE' })
 }
 
 export const getDeleteRouteLocationFromKeyMutationOptions = <
@@ -13509,7 +17916,7 @@ export const getVersionHistory = (
   signal?: AbortSignal
 ) => {
   return configRequest<VersionHistory[]>({
-    url: `/api/v1/VersionHistory/$count`,
+    url: `/VersionHistory`,
     method: 'GET',
     params,
     signal,
@@ -13519,7 +17926,7 @@ export const getVersionHistory = (
 export const getGetVersionHistoryQueryKey = (
   params?: GetVersionHistoryParams
 ) => {
-  return [`/api/v1/VersionHistory/$count`, ...(params ? [params] : [])] as const
+  return [`/VersionHistory`, ...(params ? [params] : [])] as const
 }
 
 export const getGetVersionHistoryQueryOptions = <
@@ -13591,7 +17998,7 @@ export const postVersionHistory = (
   params?: PostVersionHistoryParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/VersionHistory`,
+    url: `/VersionHistory`,
     method: 'POST',
     headers: {
       'Content-Type':
@@ -13658,6 +18065,88 @@ export const usePostVersionHistory = <
 }
 
 /**
+ * @summary Collection of objects from oData query.
+ */
+export const getVersionHistoryCount = (
+  params?: GetVersionHistoryCountParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<VersionHistory[]>({
+    url: `/VersionHistory/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getGetVersionHistoryCountQueryKey = (
+  params?: GetVersionHistoryCountParams
+) => {
+  return [`/VersionHistory/$count`, ...(params ? [params] : [])] as const
+}
+
+export const getGetVersionHistoryCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof getVersionHistoryCount>>,
+  TError = void,
+>(
+  params?: GetVersionHistoryCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getVersionHistoryCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ?? getGetVersionHistoryCountQueryKey(params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getVersionHistoryCount>>
+  > = ({ signal }) => getVersionHistoryCount(params, signal)
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getVersionHistoryCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type GetVersionHistoryCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getVersionHistoryCount>>
+>
+export type GetVersionHistoryCountQueryError = void
+
+/**
+ * @summary Collection of objects from oData query.
+ */
+export const useGetVersionHistoryCount = <
+  TData = Awaited<ReturnType<typeof getVersionHistoryCount>>,
+  TError = void,
+>(
+  params?: GetVersionHistoryCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getVersionHistoryCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getGetVersionHistoryCountQueryOptions(params, options)
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
  * @summary object with key from oData query.
  */
 export const getVersionHistoryFromKey = (
@@ -13666,7 +18155,7 @@ export const getVersionHistoryFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<VersionHistory>({
-    url: `/api/v1/VersionHistory/${key}`,
+    url: `/VersionHistory/${key}`,
     method: 'GET',
     params,
     signal,
@@ -13677,7 +18166,7 @@ export const getGetVersionHistoryFromKeyQueryKey = (
   key: number,
   params?: GetVersionHistoryFromKeyParams
 ) => {
-  return [`/api/v1/VersionHistory/${key}`, ...(params ? [params] : [])] as const
+  return [`/VersionHistory/${key}`, ...(params ? [params] : [])] as const
 }
 
 export const getGetVersionHistoryFromKeyQueryOptions = <
@@ -13758,7 +18247,7 @@ export const putVersionHistoryFromKey = (
   params?: PutVersionHistoryFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/VersionHistory/${key}`,
+    url: `/VersionHistory/${key}`,
     method: 'PUT',
     headers: {
       'Content-Type':
@@ -13846,7 +18335,7 @@ export const patchVersionHistoryFromKey = (
   params?: PatchVersionHistoryFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/VersionHistory/${key}`,
+    url: `/VersionHistory/${key}`,
     method: 'PATCH',
     headers: {
       'Content-Type':
@@ -13933,7 +18422,7 @@ export const usePatchVersionHistoryFromKey = <
  */
 export const deleteVersionHistoryFromKey = (key: number) => {
   return configRequest<void>({
-    url: `/api/v1/VersionHistory/${key}`,
+    url: `/VersionHistory/${key}`,
     method: 'DELETE',
   })
 }
@@ -14001,7 +18490,7 @@ export const getWatchDogIgnoreEvent = (
   signal?: AbortSignal
 ) => {
   return configRequest<WatchDogIgnoreEvent[]>({
-    url: `/api/v1/WatchDogIgnoreEvent/$count`,
+    url: `/WatchDogIgnoreEvent`,
     method: 'GET',
     params,
     signal,
@@ -14011,10 +18500,7 @@ export const getWatchDogIgnoreEvent = (
 export const getGetWatchDogIgnoreEventQueryKey = (
   params?: GetWatchDogIgnoreEventParams
 ) => {
-  return [
-    `/api/v1/WatchDogIgnoreEvent/$count`,
-    ...(params ? [params] : []),
-  ] as const
+  return [`/WatchDogIgnoreEvent`, ...(params ? [params] : [])] as const
 }
 
 export const getGetWatchDogIgnoreEventQueryOptions = <
@@ -14086,7 +18572,7 @@ export const postWatchDogIgnoreEvent = (
   params?: PostWatchDogIgnoreEventParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/WatchDogIgnoreEvent`,
+    url: `/WatchDogIgnoreEvent`,
     method: 'POST',
     headers: {
       'Content-Type':
@@ -14153,6 +18639,91 @@ export const usePostWatchDogIgnoreEvent = <
 }
 
 /**
+ * @summary Collection of objects from oData query.
+ */
+export const getWatchDogIgnoreEventCount = (
+  params?: GetWatchDogIgnoreEventCountParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<WatchDogIgnoreEvent[]>({
+    url: `/WatchDogIgnoreEvent/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getGetWatchDogIgnoreEventCountQueryKey = (
+  params?: GetWatchDogIgnoreEventCountParams
+) => {
+  return [`/WatchDogIgnoreEvent/$count`, ...(params ? [params] : [])] as const
+}
+
+export const getGetWatchDogIgnoreEventCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof getWatchDogIgnoreEventCount>>,
+  TError = void,
+>(
+  params?: GetWatchDogIgnoreEventCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getWatchDogIgnoreEventCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ?? getGetWatchDogIgnoreEventCountQueryKey(params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getWatchDogIgnoreEventCount>>
+  > = ({ signal }) => getWatchDogIgnoreEventCount(params, signal)
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getWatchDogIgnoreEventCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type GetWatchDogIgnoreEventCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getWatchDogIgnoreEventCount>>
+>
+export type GetWatchDogIgnoreEventCountQueryError = void
+
+/**
+ * @summary Collection of objects from oData query.
+ */
+export const useGetWatchDogIgnoreEventCount = <
+  TData = Awaited<ReturnType<typeof getWatchDogIgnoreEventCount>>,
+  TError = void,
+>(
+  params?: GetWatchDogIgnoreEventCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getWatchDogIgnoreEventCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getGetWatchDogIgnoreEventCountQueryOptions(
+    params,
+    options
+  )
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
  * @summary object with key from oData query.
  */
 export const getWatchDogIgnoreEventFromKey = (
@@ -14161,7 +18732,7 @@ export const getWatchDogIgnoreEventFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<WatchDogIgnoreEvent>({
-    url: `/api/v1/WatchDogIgnoreEvent/${key}`,
+    url: `/WatchDogIgnoreEvent/${key}`,
     method: 'GET',
     params,
     signal,
@@ -14172,10 +18743,7 @@ export const getGetWatchDogIgnoreEventFromKeyQueryKey = (
   key: number,
   params?: GetWatchDogIgnoreEventFromKeyParams
 ) => {
-  return [
-    `/api/v1/WatchDogIgnoreEvent/${key}`,
-    ...(params ? [params] : []),
-  ] as const
+  return [`/WatchDogIgnoreEvent/${key}`, ...(params ? [params] : [])] as const
 }
 
 export const getGetWatchDogIgnoreEventFromKeyQueryOptions = <
@@ -14257,7 +18825,7 @@ export const putWatchDogIgnoreEventFromKey = (
   params?: PutWatchDogIgnoreEventFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/WatchDogIgnoreEvent/${key}`,
+    url: `/WatchDogIgnoreEvent/${key}`,
     method: 'PUT',
     headers: {
       'Content-Type':
@@ -14346,7 +18914,7 @@ export const patchWatchDogIgnoreEventFromKey = (
   params?: PatchWatchDogIgnoreEventFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/WatchDogIgnoreEvent/${key}`,
+    url: `/WatchDogIgnoreEvent/${key}`,
     method: 'PATCH',
     headers: {
       'Content-Type':
@@ -14434,7 +19002,7 @@ export const usePatchWatchDogIgnoreEventFromKey = <
  */
 export const deleteWatchDogIgnoreEventFromKey = (key: number) => {
   return configRequest<void>({
-    url: `/api/v1/WatchDogIgnoreEvent/${key}`,
+    url: `/WatchDogIgnoreEvent/${key}`,
     method: 'DELETE',
   })
 }
