@@ -1,49 +1,52 @@
-import GenericAdminChart, {
-  pageNameToHeaders,
-} from '@/components/GenericAdminChart'
+import { Product } from '@/api/config/aTSPMConfigurationApi.schemas'
+import AdminTable from '@/components/AdminTable/AdminTable'
+import DeleteModal from '@/components/AdminTable/DeleteModal'
 import { ResponsivePageLayout } from '@/components/ResponsivePage'
-import { PageNames, useUserHasClaim, useViewPage } from '@/features/identity/pagesCheck'
+import {
+  PageNames,
+  useUserHasClaim,
+  useViewPage,
+} from '@/features/identity/pagesCheck'
 import {
   useCreateProduct,
   useDeleteProduct,
   useEditProduct,
   useGetProducts,
 } from '@/features/products/api/index'
-import { Product } from '@/features/products/types/index'
+import ProductEditorModal from '@/features/products/components/ProductEditorModal'
 import { Backdrop, CircularProgress } from '@mui/material'
-import { GridColDef } from '@mui/x-data-grid'
-import { useEffect, useState } from 'react'
 
 const ProductsAdmin = () => {
   const pageAccess = useViewPage(PageNames.Products)
 
-  const [data, setData] = useState<any>(null)
-  const headers: GridColDef[] = pageNameToHeaders.get(
-    PageNames.Products
-  ) as GridColDef[]
+  const hasLocationsEditClaim = useUserHasClaim('LocationConfiguration:Edit')
+  const hasLocationsDeleteClaim = useUserHasClaim(
+    'LocationConfiguration:Delete'
+  )
 
-  const hasEditClaim = useUserHasClaim('LocationConfiguration:Edit');
-  const hasDeleteClaim = useUserHasClaim('LocationConfiguration:Delete');
+  const { mutateAsync: createMutation } = useCreateProduct()
+  const { mutateAsync: deleteMutation } = useDeleteProduct()
+  const { mutateAsync: editMutation } = useEditProduct()
 
-  const { data: productData, isLoading } = useGetProducts()
-  const createMutation = useCreateProduct()
-  const deleteMutation = useDeleteProduct()
-  const editMutation = useEditProduct()
+  const {
+    data: productData,
+    isLoading,
+    refetch: refetchProducts,
+  } = useGetProducts()
 
-  useEffect(() => {
-    if (productData) {
-      setData(productData)
-    }
-  }, [productData])
+  const products = productData?.value
 
   if (pageAccess.isLoading) {
     return
   }
 
+  const onModalClose = () => {
+    //do something?? potentially just delete
+  }
+
   const HandleCreateProduct = async (productData: Product) => {
     const { manufacturer, model, webPage, notes } = productData
 
-    //TODO: is there a better way to do this? Note from Dan: created sanitized object as backend will only accept vars that have value otherwise they shouldn't be passed through.
     const sanitizedProduct: Partial<Product> = {}
 
     if (manufacturer) sanitizedProduct.manufacturer = manufacturer
@@ -52,16 +55,17 @@ const ProductsAdmin = () => {
     if (notes) sanitizedProduct.notes = notes
 
     try {
-      await createMutation.mutateAsync(sanitizedProduct)
+      await createMutation(sanitizedProduct)
+      refetchProducts()
     } catch (error) {
       console.error('Mutation Error:', error)
     }
   }
 
-  const HandleDeleteProduct = async (productData: Product) => {
-    const { id } = productData
+  const HandleDeleteProduct = async (id: number) => {
     try {
-      await deleteMutation.mutateAsync(id)
+      await deleteMutation(id)
+      refetchProducts()
     } catch (error) {
       console.error('Mutation Error:', error)
     }
@@ -70,25 +74,14 @@ const ProductsAdmin = () => {
   const HandleEditProduct = async (productData: Product) => {
     const { id, manufacturer, model, webPage, notes } = productData
     try {
-      await editMutation.mutateAsync({
-        data: {manufacturer,model,webPage, notes},
+      await editMutation({
+        data: { manufacturer, model, webPage, notes },
         id,
       })
+      refetchProducts()
     } catch (error) {
       console.error('Mutation Error:', error)
     }
-  }
-
-  const deleteProduct = (data: Product) => {
-    HandleDeleteProduct(data)
-  }
-
-  const editProduct = (data: Product) => {
-    HandleEditProduct(data)
-  }
-
-  const createProduct = (data: Product) => {
-    HandleCreateProduct(data)
   }
 
   if (isLoading) {
@@ -99,11 +92,11 @@ const ProductsAdmin = () => {
     )
   }
 
-  if (!data) {
+  if (!products) {
     return <div>Error returning data</div>
   }
 
-  const filteredData = data?.value.map((obj: Product) => {
+  const filteredData = products.map((obj: Product) => {
     return {
       id: obj.id,
       manufacturer: obj.manufacturer,
@@ -113,26 +106,42 @@ const ProductsAdmin = () => {
     }
   })
 
-  const baseType = {
-    manufacturer: '',
-    model: '',
-    webPage: '',
-    notes: '',
-  }
+  const headers = ['manufacturer', 'Model', 'Web Page', 'Notes']
+  const headerKeys = ['manufacturer', 'model', 'webPage', 'notes']
 
   return (
-    <ResponsivePageLayout title={'Manage Products'} noBottomMargin>
-      <GenericAdminChart
-        pageName={PageNames.Products}
+    <ResponsivePageLayout title="Manage Products" noBottomMargin>
+      <AdminTable
+        pageName="Product"
         headers={headers}
+        headerKeys={headerKeys}
         data={filteredData}
-        baseRowType={baseType}
-        onDelete={deleteProduct}
-        onEdit={editProduct}
-        onCreate={createProduct}
-        hasEditPrivileges={hasEditClaim}
-        hasDeletePrivileges={hasDeleteClaim}
-        
+        hasEditPrivileges={hasLocationsEditClaim}
+        hasDeletePrivileges={hasLocationsDeleteClaim}
+        editModal={
+          <ProductEditorModal
+            isOpen={true}
+            onSave={HandleEditProduct}
+            onClose={onModalClose}
+          />
+        }
+        createModal={
+          <ProductEditorModal
+            isOpen={true}
+            onSave={HandleCreateProduct}
+            onClose={onModalClose}
+          />
+        }
+        deleteModal={
+          <DeleteModal
+            id={0}
+            name={''}
+            objectType="Jurisdiction"
+            open={false}
+            onClose={() => {}}
+            onConfirm={HandleDeleteProduct}
+          />
+        }
       />
     </ResponsivePageLayout>
   )
