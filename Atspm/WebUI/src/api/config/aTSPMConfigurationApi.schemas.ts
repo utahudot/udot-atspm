@@ -20,7 +20,7 @@ export type GetWatchDogIgnoreEventFromKeyParams = {
   expand?: string
 }
 
-export type GetWatchDogIgnoreEventParams = {
+export type GetWatchDogIgnoreEventCountParams = {
   select?: string
   expand?: string
   filter?: string
@@ -60,7 +60,7 @@ export type GetVersionHistoryFromKeyParams = {
   expand?: string
 }
 
-export type GetVersionHistoryParams = {
+export type GetVersionHistoryCountParams = {
   select?: string
   expand?: string
   filter?: string
@@ -100,7 +100,7 @@ export type GetRouteLocationFromKeyParams = {
   expand?: string
 }
 
-export type GetRouteLocationParams = {
+export type GetRouteLocationCountParams = {
   select?: string
   expand?: string
   filter?: string
@@ -140,7 +140,7 @@ export type GetRouteDistanceFromKeyParams = {
   expand?: string
 }
 
-export type GetRouteDistanceParams = {
+export type GetRouteDistanceCountParams = {
   select?: string
   expand?: string
   filter?: string
@@ -165,12 +165,12 @@ export type GetRouteDistanceParams = {
   count?: boolean
 }
 
-export type GetRouteDistanceByLocationIdentifiersRouteDistanceFromLocationAAndLocationBParams =
+export type GetRouteDistanceRouteDistanceByLocationIdentifiersFromLocationAAndLocationBParams =
   {
     select?: string
   }
 
-export type GetNextLocationsRouteDistanceFromKeyParams = {
+export type GetRouteDistanceNextLocationsCountFromKeyParams = {
   select?: string
   filter?: string
   orderby?: string
@@ -179,7 +179,7 @@ export type GetNextLocationsRouteDistanceFromKeyParams = {
   count?: boolean
 }
 
-export type GetNextLocationsRouteDistanceFromKeyParams = {
+export type GetRouteDistanceNextLocationsFromKeyParams = {
   select?: string
   filter?: string
   orderby?: string
@@ -188,7 +188,7 @@ export type GetNextLocationsRouteDistanceFromKeyParams = {
   count?: boolean
 }
 
-export type GetPreviousLocationsRouteDistanceFromKeyParams = {
+export type GetRouteDistancePreviousLocationsCountFromKeyParams = {
   select?: string
   filter?: string
   orderby?: string
@@ -197,7 +197,7 @@ export type GetPreviousLocationsRouteDistanceFromKeyParams = {
   count?: boolean
 }
 
-export type GetPreviousLocationsRouteDistanceFromKeyParams = {
+export type GetRouteDistancePreviousLocationsFromKeyParams = {
   select?: string
   filter?: string
   orderby?: string
@@ -221,7 +221,7 @@ export type GetRouteFromKeyParams = {
   expand?: string
 }
 
-export type GetRouteParams = {
+export type GetRouteCountParams = {
   select?: string
   expand?: string
   filter?: string
@@ -246,7 +246,7 @@ export type GetRouteParams = {
   count?: boolean
 }
 
-export type GetRouteViewRouteFromIdParams = {
+export type GetRouteRouteViewFromIdParams = {
   includeLocationDetail?: boolean
   'api-version': string
   select?: string
@@ -259,7 +259,7 @@ export type UpsertRouteRouteParams = {
   expand?: string
 }
 
-export type GetRouteLocationsRouteFromKeyParams = {
+export type GetRouteRouteLocationsCountFromKeyParams = {
   select?: string
   filter?: string
   orderby?: string
@@ -268,7 +268,7 @@ export type GetRouteLocationsRouteFromKeyParams = {
   count?: boolean
 }
 
-export type GetRouteLocationsRouteFromKeyParams = {
+export type GetRouteRouteLocationsFromKeyParams = {
   select?: string
   filter?: string
   orderby?: string
@@ -277,7 +277,7 @@ export type GetRouteLocationsRouteFromKeyParams = {
   count?: boolean
 }
 
-export type GetRegionParams = {
+export type GetRegionCountParams = {
   select?: string
   expand?: string
   filter?: string
@@ -317,7 +317,7 @@ export type PostRegionParams = {
   expand?: string
 }
 
-export type GetLocationsRegionFromKeyParams = {
+export type GetRegionLocationsCountFromKeyParams = {
   select?: string
   filter?: string
   orderby?: string
@@ -326,7 +326,7 @@ export type GetLocationsRegionFromKeyParams = {
   count?: boolean
 }
 
-export type GetLocationsRegionFromKeyParams = {
+export type GetRegionLocationsFromKeyParams = {
   select?: string
   filter?: string
   orderby?: string
@@ -350,7 +350,7 @@ export type GetProductFromKeyParams = {
   expand?: string
 }
 
-export type GetProductParams = {
+export type GetProductCountParams = {
   select?: string
   expand?: string
   filter?: string
@@ -390,7 +390,7 @@ export type GetMenuItemsFromKeyParams = {
   expand?: string
 }
 
-export type GetMenuItemsParams = {
+export type GetMenuItemsCountParams = {
   select?: string
   expand?: string
   filter?: string
@@ -430,7 +430,7 @@ export type GetMeasureTypeFromKeyParams = {
   expand?: string
 }
 
-export type GetMeasureTypeParams = {
+export type GetMeasureTypeCountParams = {
   select?: string
   expand?: string
   filter?: string
@@ -455,7 +455,7 @@ export type GetMeasureTypeParams = {
   count?: boolean
 }
 
-export type GetMeasureCommentsMeasureTypeFromKeyParams = {
+export type GetMeasureTypeMeasureCommentsCountFromKeyParams = {
   select?: string
   filter?: string
   orderby?: string
@@ -464,7 +464,7 @@ export type GetMeasureCommentsMeasureTypeFromKeyParams = {
   count?: boolean
 }
 
-export type GetMeasureCommentsMeasureTypeFromKeyParams = {
+export type GetMeasureTypeMeasureCommentsFromKeyParams = {
   select?: string
   filter?: string
   orderby?: string
@@ -473,7 +473,7 @@ export type GetMeasureCommentsMeasureTypeFromKeyParams = {
   count?: boolean
 }
 
-export type GetDetectionTypesMeasureTypeFromKeyParams = {
+export type GetMeasureTypeDetectionTypesCountFromKeyParams = {
   select?: string
   filter?: string
   orderby?: string
@@ -482,7 +482,7 @@ export type GetDetectionTypesMeasureTypeFromKeyParams = {
   count?: boolean
 }
 
-export type GetDetectionTypesMeasureTypeFromKeyParams = {
+export type GetMeasureTypeDetectionTypesFromKeyParams = {
   select?: string
   filter?: string
   orderby?: string
@@ -506,7 +506,7 @@ export type GetMeasureOptionFromKeyParams = {
   expand?: string
 }
 
-export type GetMeasureOptionParams = {
+export type GetMeasureOptionCountParams = {
   select?: string
   expand?: string
   filter?: string
@@ -546,7 +546,7 @@ export type GetMeasureCommentFromKeyParams = {
   expand?: string
 }
 
-export type GetMeasureCommentParams = {
+export type GetMeasureCommentCountParams = {
   select?: string
   expand?: string
   filter?: string
@@ -571,7 +571,7 @@ export type GetMeasureCommentParams = {
   count?: boolean
 }
 
-export type GetMeasureTypesMeasureCommentFromKeyParams = {
+export type GetMeasureCommentMeasureTypesCountFromKeyParams = {
   select?: string
   filter?: string
   orderby?: string
@@ -580,7 +580,7 @@ export type GetMeasureTypesMeasureCommentFromKeyParams = {
   count?: boolean
 }
 
-export type GetMeasureTypesMeasureCommentFromKeyParams = {
+export type GetMeasureCommentMeasureTypesFromKeyParams = {
   select?: string
   filter?: string
   orderby?: string
@@ -604,7 +604,7 @@ export type GetMapLayerFromKeyParams = {
   expand?: string
 }
 
-export type GetMapLayerParams = {
+export type GetMapLayerCountParams = {
   select?: string
   expand?: string
   filter?: string
@@ -644,7 +644,7 @@ export type GetLocationTypeFromKeyParams = {
   expand?: string
 }
 
-export type GetLocationTypeParams = {
+export type GetLocationTypeCountParams = {
   select?: string
   expand?: string
   filter?: string
@@ -669,7 +669,7 @@ export type GetLocationTypeParams = {
   count?: boolean
 }
 
-export type GetLocationsLocationTypeFromKeyParams = {
+export type GetLocationTypeLocationsCountFromKeyParams = {
   select?: string
   filter?: string
   orderby?: string
@@ -678,7 +678,7 @@ export type GetLocationsLocationTypeFromKeyParams = {
   count?: boolean
 }
 
-export type GetLocationsLocationTypeFromKeyParams = {
+export type GetLocationTypeLocationsFromKeyParams = {
   select?: string
   filter?: string
   orderby?: string
@@ -702,7 +702,7 @@ export type GetLocationFromKeyParams = {
   expand?: string
 }
 
-export type GetLocationParams = {
+export type GetLocationCountParams = {
   select?: string
   expand?: string
   filter?: string
@@ -727,7 +727,7 @@ export type GetLocationParams = {
   count?: boolean
 }
 
-export type GetLocationsForSearchLocationParams = {
+export type GetLocationLocationsForSearchParams = {
   /**
    * Locations by area
    */
@@ -752,7 +752,7 @@ export type GetLocationsForSearchLocationParams = {
   count?: boolean
 }
 
-export type GetDetectionTypeCountLocationParams = {
+export type GetLocationDetectionTypeCountParams = {
   date?: string
   select?: string
   filter?: string
@@ -762,7 +762,7 @@ export type GetDetectionTypeCountLocationParams = {
   count?: boolean
 }
 
-export type GetLatestVersionOfAllLocationsLocationParams = {
+export type GetLocationLatestVersionOfAllLocationsParams = {
   select?: string
   filter?: string
   orderby?: string
@@ -771,7 +771,7 @@ export type GetLatestVersionOfAllLocationsLocationParams = {
   count?: boolean
 }
 
-export type GetAllVersionsOfLocationLocationFromIdentifierParams = {
+export type GetLocationAllVersionsOfLocationFromIdentifierParams = {
   select?: string
   filter?: string
   orderby?: string
@@ -780,42 +780,32 @@ export type GetAllVersionsOfLocationLocationFromIdentifierParams = {
   count?: boolean
 }
 
-export type GetLatestVersionOfLocationLocationFromIdentifierParams = {
+export type GetLocationLatestVersionOfLocationFromIdentifierParams = {
   select?: string
   expand?: string
 }
 
-export type SetLocationToDeletedLocationFromKeyParams = {
+export type DeleteLocationSetLocationTodFromKeyParams = {
   select?: string
   expand?: string
 }
 
-export type SaveTemplatedLocationLocationFromKeyParams = {
+export type GetLocationSaveTemplatedLocationFromKeyParams = {
   select?: string
   expand?: string
 }
 
-export type SyncLocationLocationFromKeyParams = {
+export type GetLocationSyncLocationFromKeyParams = {
   select?: string
   expand?: string
 }
 
-export type CopyLocationToNewVersionLocationFromKeyParams = {
+export type GetLocationCopyLocationToNewVersionFromKeyParams = {
   select?: string
   expand?: string
 }
 
-export type GetDevicesLocationFromKeyParams = {
-  select?: string
-  expand?: string
-  filter?: string
-  orderby?: string
-  top?: number
-  skip?: number
-  count?: boolean
-}
-
-export type GetDevicesLocationFromKeyParams = {
+export type GetLocationDevicesCountFromKeyParams = {
   select?: string
   expand?: string
   filter?: string
@@ -825,7 +815,7 @@ export type GetDevicesLocationFromKeyParams = {
   count?: boolean
 }
 
-export type GetAreasLocationFromKeyParams = {
+export type GetLocationDevicesFromKeyParams = {
   select?: string
   expand?: string
   filter?: string
@@ -835,7 +825,7 @@ export type GetAreasLocationFromKeyParams = {
   count?: boolean
 }
 
-export type GetAreasLocationFromKeyParams = {
+export type GetLocationAreasCountFromKeyParams = {
   select?: string
   expand?: string
   filter?: string
@@ -845,7 +835,7 @@ export type GetAreasLocationFromKeyParams = {
   count?: boolean
 }
 
-export type GetApproachesLocationFromKeyParams = {
+export type GetLocationAreasFromKeyParams = {
   select?: string
   expand?: string
   filter?: string
@@ -855,7 +845,7 @@ export type GetApproachesLocationFromKeyParams = {
   count?: boolean
 }
 
-export type GetApproachesLocationFromKeyParams = {
+export type GetLocationApproachesCountFromKeyParams = {
   select?: string
   expand?: string
   filter?: string
@@ -865,7 +855,17 @@ export type GetApproachesLocationFromKeyParams = {
   count?: boolean
 }
 
-export type GetJurisdictionParams = {
+export type GetLocationApproachesFromKeyParams = {
+  select?: string
+  expand?: string
+  filter?: string
+  orderby?: string
+  top?: number
+  skip?: number
+  count?: boolean
+}
+
+export type GetJurisdictionCountParams = {
   select?: string
   expand?: string
   filter?: string
@@ -905,7 +905,7 @@ export type PostJurisdictionParams = {
   expand?: string
 }
 
-export type GetLocationsJurisdictionFromKeyParams = {
+export type GetJurisdictionLocationsCountFromKeyParams = {
   select?: string
   filter?: string
   orderby?: string
@@ -914,7 +914,7 @@ export type GetLocationsJurisdictionFromKeyParams = {
   count?: boolean
 }
 
-export type GetLocationsJurisdictionFromKeyParams = {
+export type GetJurisdictionLocationsFromKeyParams = {
   select?: string
   filter?: string
   orderby?: string
@@ -923,7 +923,7 @@ export type GetLocationsJurisdictionFromKeyParams = {
   count?: boolean
 }
 
-export type GetFaqParams = {
+export type GetFaqCountParams = {
   select?: string
   expand?: string
   filter?: string
@@ -978,7 +978,7 @@ export type GetDirectionTypeFromKeyParams = {
   expand?: string
 }
 
-export type GetDirectionTypeParams = {
+export type GetDirectionTypeCountParams = {
   select?: string
   expand?: string
   filter?: string
@@ -1003,7 +1003,7 @@ export type GetDirectionTypeParams = {
   count?: boolean
 }
 
-export type GetOpposingDirectionsDirectionTypeFromKeyParams = {
+export type GetDirectionTypeOpposingDirectionsCountFromKeyParams = {
   select?: string
   filter?: string
   orderby?: string
@@ -1012,7 +1012,7 @@ export type GetOpposingDirectionsDirectionTypeFromKeyParams = {
   count?: boolean
 }
 
-export type GetOpposingDirectionsDirectionTypeFromKeyParams = {
+export type GetDirectionTypeOpposingDirectionsFromKeyParams = {
   select?: string
   filter?: string
   orderby?: string
@@ -1021,7 +1021,7 @@ export type GetOpposingDirectionsDirectionTypeFromKeyParams = {
   count?: boolean
 }
 
-export type GetPrimaryDirectionsDirectionTypeFromKeyParams = {
+export type GetDirectionTypePrimaryDirectionsCountFromKeyParams = {
   select?: string
   filter?: string
   orderby?: string
@@ -1030,7 +1030,7 @@ export type GetPrimaryDirectionsDirectionTypeFromKeyParams = {
   count?: boolean
 }
 
-export type GetPrimaryDirectionsDirectionTypeFromKeyParams = {
+export type GetDirectionTypePrimaryDirectionsFromKeyParams = {
   select?: string
   filter?: string
   orderby?: string
@@ -1039,7 +1039,7 @@ export type GetPrimaryDirectionsDirectionTypeFromKeyParams = {
   count?: boolean
 }
 
-export type GetApproachesDirectionTypeFromKeyParams = {
+export type GetDirectionTypeApproachesCountFromKeyParams = {
   select?: string
   filter?: string
   orderby?: string
@@ -1048,7 +1048,7 @@ export type GetApproachesDirectionTypeFromKeyParams = {
   count?: boolean
 }
 
-export type GetApproachesDirectionTypeFromKeyParams = {
+export type GetDirectionTypeApproachesFromKeyParams = {
   select?: string
   filter?: string
   orderby?: string
@@ -1072,7 +1072,7 @@ export type GetDeviceConfigurationFromKeyParams = {
   expand?: string
 }
 
-export type GetDeviceConfigurationParams = {
+export type GetDeviceConfigurationCountParams = {
   select?: string
   expand?: string
   filter?: string
@@ -1097,7 +1097,7 @@ export type GetDeviceConfigurationParams = {
   count?: boolean
 }
 
-export type GetDevicesDeviceConfigurationFromKeyParams = {
+export type GetDeviceConfigurationDevicesCountFromKeyParams = {
   select?: string
   filter?: string
   orderby?: string
@@ -1106,7 +1106,7 @@ export type GetDevicesDeviceConfigurationFromKeyParams = {
   count?: boolean
 }
 
-export type GetDevicesDeviceConfigurationFromKeyParams = {
+export type GetDeviceConfigurationDevicesFromKeyParams = {
   select?: string
   filter?: string
   orderby?: string
@@ -1130,7 +1130,7 @@ export type GetDeviceFromKeyParams = {
   expand?: string
 }
 
-export type GetDeviceParams = {
+export type GetDeviceCountParams = {
   select?: string
   expand?: string
   filter?: string
@@ -1155,7 +1155,7 @@ export type GetDeviceParams = {
   count?: boolean
 }
 
-export type GetActiveDevicesCountDeviceParams = {
+export type GetDeviceActiveDevicesCountParams = {
   select?: string
   filter?: string
   orderby?: string
@@ -1164,7 +1164,7 @@ export type GetActiveDevicesCountDeviceParams = {
   count?: boolean
 }
 
-export type GetActiveDevicesByLocationDeviceFromLocationIdParams = {
+export type GetDeviceActiveDevicesByLocationFromLocationIdParams = {
   select?: string
   filter?: string
   orderby?: string
@@ -1188,7 +1188,7 @@ export type GetDetectorCommentFromKeyParams = {
   expand?: string
 }
 
-export type GetDetectorCommentParams = {
+export type GetDetectorCommentCountParams = {
   select?: string
   expand?: string
   filter?: string
@@ -1228,7 +1228,7 @@ export type GetDetectorFromKeyParams = {
   expand?: string
 }
 
-export type GetDetectorParams = {
+export type GetDetectorCountParams = {
   select?: string
   expand?: string
   filter?: string
@@ -1253,7 +1253,7 @@ export type GetDetectorParams = {
   count?: boolean
 }
 
-export type GetDetectionTypesDetectorFromKeyParams = {
+export type GetDetectorDetectionTypesCountFromKeyParams = {
   select?: string
   filter?: string
   orderby?: string
@@ -1262,7 +1262,7 @@ export type GetDetectionTypesDetectorFromKeyParams = {
   count?: boolean
 }
 
-export type GetDetectionTypesDetectorFromKeyParams = {
+export type GetDetectorDetectionTypesFromKeyParams = {
   select?: string
   filter?: string
   orderby?: string
@@ -1271,7 +1271,7 @@ export type GetDetectionTypesDetectorFromKeyParams = {
   count?: boolean
 }
 
-export type GetDetectorCommentsDetectorFromKeyParams = {
+export type GetDetectorDetectorCommentsCountFromKeyParams = {
   select?: string
   filter?: string
   orderby?: string
@@ -1280,7 +1280,7 @@ export type GetDetectorCommentsDetectorFromKeyParams = {
   count?: boolean
 }
 
-export type GetDetectorCommentsDetectorFromKeyParams = {
+export type GetDetectorDetectorCommentsFromKeyParams = {
   select?: string
   filter?: string
   orderby?: string
@@ -1304,7 +1304,7 @@ export type GetDetectionTypeFromKeyParams = {
   expand?: string
 }
 
-export type GetDetectionTypeParams = {
+export type GetDetectionTypeCountParams = {
   select?: string
   expand?: string
   filter?: string
@@ -1329,7 +1329,7 @@ export type GetDetectionTypeParams = {
   count?: boolean
 }
 
-export type GetMeasureTypesDetectionTypeFromKeyParams = {
+export type GetDetectionTypeMeasureTypesCountFromKeyParams = {
   select?: string
   filter?: string
   orderby?: string
@@ -1338,7 +1338,7 @@ export type GetMeasureTypesDetectionTypeFromKeyParams = {
   count?: boolean
 }
 
-export type GetMeasureTypesDetectionTypeFromKeyParams = {
+export type GetDetectionTypeMeasureTypesFromKeyParams = {
   select?: string
   filter?: string
   orderby?: string
@@ -1347,7 +1347,7 @@ export type GetMeasureTypesDetectionTypeFromKeyParams = {
   count?: boolean
 }
 
-export type GetDetectorsDetectionTypeFromKeyParams = {
+export type GetDetectionTypeDetectorsCountFromKeyParams = {
   select?: string
   filter?: string
   orderby?: string
@@ -1356,7 +1356,7 @@ export type GetDetectorsDetectionTypeFromKeyParams = {
   count?: boolean
 }
 
-export type GetDetectorsDetectionTypeFromKeyParams = {
+export type GetDetectionTypeDetectorsFromKeyParams = {
   select?: string
   filter?: string
   orderby?: string
@@ -1365,7 +1365,7 @@ export type GetDetectorsDetectionTypeFromKeyParams = {
   count?: boolean
 }
 
-export type GetAreaParams = {
+export type GetAreaCountParams = {
   select?: string
   expand?: string
   filter?: string
@@ -1405,7 +1405,7 @@ export type PostAreaParams = {
   expand?: string
 }
 
-export type GetLocationsAreaFromKeyParams = {
+export type GetAreaLocationsCountFromKeyParams = {
   select?: string
   filter?: string
   orderby?: string
@@ -1414,7 +1414,7 @@ export type GetLocationsAreaFromKeyParams = {
   count?: boolean
 }
 
-export type GetLocationsAreaFromKeyParams = {
+export type GetAreaLocationsFromKeyParams = {
   select?: string
   filter?: string
   orderby?: string
@@ -1423,7 +1423,7 @@ export type GetLocationsAreaFromKeyParams = {
   count?: boolean
 }
 
-export type GetApproachParams = {
+export type GetApproachCountParams = {
   select?: string
   expand?: string
   filter?: string
@@ -1463,7 +1463,7 @@ export type PostApproachParams = {
   expand?: string
 }
 
-export type GetApproachDtoApproachFromIdParams = {
+export type GetApproachApproachDtoFromIdParams = {
   'api-version': string
   select?: string
   expand?: string
@@ -1475,7 +1475,7 @@ export type UpsertApproachApproachParams = {
   expand?: string
 }
 
-export type GetDetectorsApproachFromKeyParams = {
+export type GetApproachDetectorsCountFromKeyParams = {
   select?: string
   filter?: string
   orderby?: string
@@ -1484,7 +1484,7 @@ export type GetDetectorsApproachFromKeyParams = {
   count?: boolean
 }
 
-export type GetDetectorsApproachFromKeyParams = {
+export type GetApproachDetectorsFromKeyParams = {
   select?: string
   filter?: string
   orderby?: string
@@ -1498,13 +1498,13 @@ export type WatchDogIssueTypes =
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const WatchDogIssueTypes = {
-  NUMBER_1: 1,
-  NUMBER_2: 2,
-  NUMBER_3: 3,
-  NUMBER_4: 4,
-  NUMBER_5: 5,
-  NUMBER_6: 6,
-  NUMBER_7: 7,
+  RecordCount: 'RecordCount',
+  LowDetectorHits: 'LowDetectorHits',
+  StuckPed: 'StuckPed',
+  ForceOffThreshold: 'ForceOffThreshold',
+  MaxOutThreshold: 'MaxOutThreshold',
+  UnconfiguredApproach: 'UnconfiguredApproach',
+  UnconfiguredDetector: 'UnconfiguredDetector',
 } as const
 
 export type WatchDogComponentTypes =
@@ -1512,9 +1512,9 @@ export type WatchDogComponentTypes =
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const WatchDogComponentTypes = {
-  NUMBER_0: 0,
-  NUMBER_1: 1,
-  NUMBER_2: 2,
+  Location: 'Location',
+  Approach: 'Approach',
+  Detector: 'Detector',
 } as const
 
 export interface WatchDogIgnoreEvent {
@@ -1564,11 +1564,19 @@ export type TransportProtocols =
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const TransportProtocols = {
-  NUMBER_0: 0,
-  NUMBER_1: 1,
-  NUMBER_2: 2,
-  NUMBER_3: 3,
-  NUMBER_4: 4,
+  Unknown: 'Unknown',
+  Ftp: 'Ftp',
+  Sftp: 'Sftp',
+  Snmp: 'Snmp',
+  Http: 'Http',
+} as const
+
+export type ServiceType = (typeof ServiceType)[keyof typeof ServiceType]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ServiceType = {
+  FeatureServer: 'FeatureServer',
+  MapServer: 'MapServer',
 } as const
 
 export interface SearchLocation {
@@ -1712,14 +1720,14 @@ export type MovementTypes = (typeof MovementTypes)[keyof typeof MovementTypes]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const MovementTypes = {
-  NUMBER_0: 0,
-  NUMBER_1: 1,
-  NUMBER_2: 2,
-  NUMBER_3: 3,
-  NUMBER_4: 4,
-  NUMBER_5: 5,
-  NUMBER_6: 6,
-  NUMBER_7: 7,
+  NA: 'NA',
+  T: 'T',
+  R: 'R',
+  L: 'L',
+  TR: 'TR',
+  TL: 'TL',
+  NW: 'NW',
+  LTR: 'LTR',
 } as const
 
 export interface MenuItem {
@@ -1795,7 +1803,7 @@ export interface MapLayer {
   id?: number
   mapLayerUrl?: string | null
   name?: string | null
-  serviceType?: string | null
+  serviceType?: ServiceType
   showByDefault?: boolean
   updatedBy?: string | null
   updatedOn?: string
@@ -1806,12 +1814,12 @@ export type LocationVersionActions =
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const LocationVersionActions = {
-  NUMBER_0: 0,
-  NUMBER_1: 1,
-  NUMBER_2: 2,
-  NUMBER_3: 3,
-  NUMBER_4: 4,
-  NUMBER_10: 10,
+  Unknown: 'Unknown',
+  New: 'New',
+  Edit: 'Edit',
+  Delete: 'Delete',
+  NewVersion: 'NewVersion',
+  Initial: 'Initial',
 } as const
 
 export interface LocationType {
@@ -1835,14 +1843,14 @@ export type LaneTypes = (typeof LaneTypes)[keyof typeof LaneTypes]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const LaneTypes = {
-  NUMBER_0: 0,
-  NUMBER_1: 1,
-  NUMBER_2: 2,
-  NUMBER_3: 3,
-  NUMBER_4: 4,
-  NUMBER_5: 5,
-  NUMBER_6: 6,
-  NUMBER_7: 7,
+  NA: 'NA',
+  V: 'V',
+  Bike: 'Bike',
+  Ped: 'Ped',
+  E: 'E',
+  LRT: 'LRT',
+  Bus: 'Bus',
+  HDV: 'HDV',
 } as const
 
 export interface Jurisdiction {
@@ -1890,15 +1898,15 @@ export type DirectionTypes =
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const DirectionTypes = {
-  NUMBER_0: 0,
-  NUMBER_1: 1,
-  NUMBER_2: 2,
-  NUMBER_3: 3,
-  NUMBER_4: 4,
-  NUMBER_5: 5,
-  NUMBER_6: 6,
-  NUMBER_7: 7,
-  NUMBER_8: 8,
+  NA: 'NA',
+  NB: 'NB',
+  SB: 'SB',
+  EB: 'EB',
+  WB: 'WB',
+  NE: 'NE',
+  NW: 'NW',
+  SE: 'SE',
+  SW: 'SW',
 } as const
 
 export interface DirectionType {
@@ -1915,25 +1923,25 @@ export type DeviceTypes = (typeof DeviceTypes)[keyof typeof DeviceTypes]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const DeviceTypes = {
-  NUMBER_0: 0,
-  NUMBER_1: 1,
-  NUMBER_2: 2,
-  NUMBER_3: 3,
-  NUMBER_4: 4,
-  NUMBER_5: 5,
-  NUMBER_6: 6,
+  Unknown: 'Unknown',
+  SignalController: 'SignalController',
+  RampController: 'RampController',
+  AICamera: 'AICamera',
+  FIRCamera: 'FIRCamera',
+  LidarSensor: 'LidarSensor',
+  WavetronixSpeed: 'WavetronixSpeed',
 } as const
 
 export type DeviceStatus = (typeof DeviceStatus)[keyof typeof DeviceStatus]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const DeviceStatus = {
-  NUMBER_0: 0,
-  NUMBER_1: 1,
-  NUMBER_2: 2,
-  NUMBER_3: 3,
-  NUMBER_4: 4,
-  NUMBER_5: 5,
+  Unknown: 'Unknown',
+  Decommissioned: 'Decommissioned',
+  Inactive: 'Inactive',
+  Active: 'Active',
+  Testing: 'Testing',
+  Staging: 'Staging',
 } as const
 
 export interface DeviceGroup {
@@ -2027,18 +2035,18 @@ export type DetectionTypes =
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const DetectionTypes = {
-  NUMBER_0: 0,
-  NUMBER_1: 1,
-  NUMBER_2: 2,
-  NUMBER_3: 3,
-  NUMBER_4: 4,
-  NUMBER_5: 5,
-  NUMBER_6: 6,
-  NUMBER_7: 7,
-  NUMBER_8: 8,
-  NUMBER_9: 9,
-  NUMBER_10: 10,
-  NUMBER_11: 11,
+  NA: 'NA',
+  B: 'B',
+  AC: 'AC',
+  AS: 'AS',
+  LLC: 'LLC',
+  LLS: 'LLS',
+  SBP: 'SBP',
+  AP: 'AP',
+  P: 'P',
+  D: 'D',
+  IQ: 'IQ',
+  EQ: 'EQ',
 } as const
 
 export interface DetectionTypeGroup {
@@ -2068,13 +2076,13 @@ export type DetectionHardwareTypes =
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const DetectionHardwareTypes = {
-  NUMBER_0: 0,
-  NUMBER_1: 1,
-  NUMBER_2: 2,
-  NUMBER_3: 3,
-  NUMBER_4: 4,
-  NUMBER_5: 5,
-  NUMBER_6: 6,
+  NA: 'NA',
+  WavetronixMatrix: 'WavetronixMatrix',
+  WavetronixAdvance: 'WavetronixAdvance',
+  InductiveLoops: 'InductiveLoops',
+  Sensys: 'Sensys',
+  Video: 'Video',
+  FLIRThermalCamera: 'FLIRThermalCamera',
 } as const
 
 export interface Area {
