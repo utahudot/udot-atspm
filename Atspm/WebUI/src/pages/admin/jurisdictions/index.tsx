@@ -36,7 +36,6 @@ const JurisdictionsAdmin = () => {
     refetch: refetchJurisdictions,
   } = useGetJurisdiction()
 
-
   const jurisdictions = jurisdictionData?.value
 
   if (pageAccess.isLoading) {
@@ -88,15 +87,15 @@ const JurisdictionsAdmin = () => {
   const filterAssociatedObjects = (
     jurisdictionId: number,
     objects: Location[]
-  ): { id: number, name: string }[] => {
+  ): { id: number; name: string }[] => {
     const associatedLocations = objects.filter((object) => {
-      return object.jurisdictionId === jurisdictionId;
-    });
-  
+      return object.jurisdictionId === jurisdictionId
+    })
+
     return associatedLocations.map((location) => ({
       id: location.id,
-      name: `${location.primaryName} & ${location.secondaryName}`
-    }));
+      name: `${location.primaryName} & ${location.secondaryName}`,
+    }))
   }
 
   if (isLoading) {
@@ -127,7 +126,7 @@ const JurisdictionsAdmin = () => {
   return (
     <ResponsivePageLayout title="Manage Jurisdictions" noBottomMargin>
       <AdminTable
-        pageName="Jurisdictions"
+        pageName="Jurisdiction"
         headers={headers}
         headerKeys={headerKeys}
         data={filteredData}
