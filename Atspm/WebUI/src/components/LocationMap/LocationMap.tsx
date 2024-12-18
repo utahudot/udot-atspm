@@ -1,4 +1,5 @@
 import { useGetMapLayer } from '@/api/config/aTSPMConfigurationApi'
+import { ServiceType } from '@/api/config/aTSPMConfigurationApi.schemas'
 import Markers from '@/components/LocationMap/Markers'
 import MapFilters from '@/components/MapFilters'
 import { Location } from '@/features/locations/types'
@@ -73,6 +74,8 @@ const LocationMap = ({
   const { data: mapLayerData } = useGetMapLayer()
   const [activeLayers, setActiveLayers] = useState<number[]>([])
 
+  console.log('mapLayerData', mapLayerData)
+
   useEffect(() => {
     if (mapLayerData?.value) {
       setActiveLayers(
@@ -94,9 +97,9 @@ const LocationMap = ({
     })
 
     // Add active layers
-    mapLayerData?.value.forEach((layer) => {
+    mapLayerData?.value?.forEach((layer) => {
       if (activeLayers.includes(layer.id)) {
-        if (layer.serviceType === 'mapserver') {
+        if (layer.serviceType === ServiceType.MapServer) {
           new DynamicMapLayer({
             url: layer.mapLayerUrl,
             opacity: 1,
@@ -326,7 +329,7 @@ const LocationMap = ({
               gap: 1,
             }}
           >
-            {mapLayerData?.value.map((layer) => (
+            {mapLayerData?.value?.map((layer) => (
               <FormControlLabel
                 key={layer.id}
                 control={
