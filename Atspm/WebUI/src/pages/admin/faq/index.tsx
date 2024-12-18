@@ -1,6 +1,5 @@
 import AdminTable from '@/components/AdminTable/AdminTable'
 import DeleteModal from '@/components/AdminTable/DeleteModal'
-import FaqEditorModal from '@/features/faq/components/FaqEditorModal'
 import { ResponsivePageLayout } from '@/components/ResponsivePage'
 import {
   useCreateFaqs,
@@ -8,6 +7,7 @@ import {
   useEditFaqs,
   useGetFaqs,
 } from '@/features/faq/api'
+import FaqEditorModal from '@/features/faq/components/FaqEditorModal'
 import { Faq } from '@/features/faq/types'
 import {
   PageNames,

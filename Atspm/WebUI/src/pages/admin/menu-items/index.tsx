@@ -1,46 +1,42 @@
-import GenericAdminChart, {
-  pageNameToHeaders,
-} from '@/components/GenericAdminChart'
-import MenuItemsModal from '@/components/GenericAdminChart/MenuItemModal'
+import AdminTable from '@/components/AdminTable/AdminTable'
+import DeleteModal from '@/components/AdminTable/DeleteModal'
+import MenuItemsModal from '@/features/menuItems/components/MenuItemModal'
 import { ResponsivePageLayout } from '@/components/ResponsivePage'
 import {
   PageNames,
   useUserHasClaim,
   useViewPage,
 } from '@/features/identity/pagesCheck'
-import { useGetMenuItems } from '@/features/links/api/getMenuItems'
+import { useGetMenuItems } from '@/features/menuItems/api/getMenuItems'
 import {
   useCreateMenuItem,
   useDeleteMenuItem,
   useEditMenuItem,
-} from '@/features/links/api/postMenuItems'
-import { MenuItems } from '@/features/links/types/linkDto'
+} from '@/features/menuItems/api/postMenuItems'
+import { MenuItems } from '@/features/menuItems/types/linkDto'
 import { Backdrop, CircularProgress } from '@mui/material'
-import { GridColDef } from '@mui/x-data-grid'
 
 const MenuItemsAdmin = () => {
-  const headers: GridColDef[] = pageNameToHeaders.get(
-    PageNames.MenuItems
-  ) as GridColDef[]
-
   const pageAccess = useViewPage(PageNames.MenuItems)
-  const hasEditClaim = useUserHasClaim('GeneralConfiguration:Edit')
-  const hasDeleteClaim = useUserHasClaim('GeneralConxfiguration:Delete')
+  const hasGeneralEditClaim = useUserHasClaim('GeneralConfiguration:Edit')
+  const hasGeneralDeleteClaim = useUserHasClaim('GeneralConfiguration:Delete')
+
+  const { mutateAsync: createMutation } = useCreateMenuItem()
+  const { mutateAsync: deleteMutation } = useDeleteMenuItem()
+  const { mutateAsync: editMutation } = useEditMenuItem()
 
   const {
     data: menuItemsData,
     isLoading,
     refetch: refetchMenuItems,
   } = useGetMenuItems()
-  const createMutation = useCreateMenuItem()
-  const { mutate: editMenuItemMutate } = useEditMenuItem()
-  const deleteMutation = useDeleteMenuItem()
+  const menuItems = menuItemsData?.value
 
   if (pageAccess.isLoading) {
     return
   }
 
-  const handleCreateLink = async (menuItem: MenuItems) => {
+  const handleCreateMenuItem = async (menuItem: MenuItems) => {
     const { name, icon, displayOrder, document, parentId, link } = menuItem
 
     const sanitizedMenuItem: Partial<MenuItems> = {}
@@ -53,22 +49,23 @@ const MenuItemsAdmin = () => {
     if (link) sanitizedMenuItem.link = link
 
     try {
-      await createMutation.mutateAsync(sanitizedMenuItem)
+      await createMutation(sanitizedMenuItem)
+      refetchMenuItems()
     } catch (error) {
       console.error('Mutation Error:', error)
     }
   }
 
-  const HandleDeleteLink = async (menuItems: MenuItems) => {
-    const { id } = menuItems
+  const HandleDeleteMenuItem = async (id: number) => {
     try {
-      await deleteMutation.mutateAsync(id)
+      await deleteMutation(id)
+      refetchMenuItems()
     } catch (error) {
       console.error('Mutation Error:', error)
     }
   }
 
-  const handleEditLink = async (menuItem: MenuItems) => {
+  const handleEditMenuItem = async (menuItem: MenuItems) => {
     const { id, name, icon, displayOrder, document, parentId, link } = menuItem
 
     const sanitizedMenuItem: Partial<MenuItems> = {}
@@ -82,30 +79,11 @@ const MenuItemsAdmin = () => {
     if (link !== undefined) sanitizedMenuItem.link = link
 
     try {
-      await editMenuItemMutate(
-        { data: sanitizedMenuItem, id },
-        {
-          onSuccess: () => {
-            refetchMenuItems().then(()=>{console.log(menuItemsData)})
-            
-          },
-        }
-      )
+      await editMutation({ data: sanitizedMenuItem, id })
+      refetchMenuItems()
     } catch (error) {
       console.error('Mutation Error:', error)
     }
-  }
-
-  const deleteLink = (data: MenuItems) => {
-    HandleDeleteLink(data)
-  }
-
-  const editLink = (data: MenuItems) => {
-    handleEditLink(data)
-  }
-
-  const createLink = (data: MenuItems) => {
-    handleCreateLink(data)
   }
 
   if (isLoading) {
@@ -116,23 +94,25 @@ const MenuItemsAdmin = () => {
     )
   }
 
-  if (!menuItemsData) {
+  if (!menuItems) {
     return <div>Error returning data</div>
   }
 
-  const filteredData = menuItemsData?.value.map(
-    (obj: MenuItems, index: number) => {
-      return {
-        id: obj.id,
-        name: obj.name,
-        link: obj.link,
-        displayOrder: obj.displayOrder,
-        document: obj.document,
-        parentId: obj.parentId,
-        children: obj.children,
-      }
+  const onModalClose = () => {
+    //do something?? potentially just delete
+  }
+
+  const filteredData = menuItems.map((obj: MenuItems, index: number) => {
+    return {
+      id: obj.id,
+      name: obj.name,
+      link: obj.link,
+      displayOrder: obj.displayOrder,
+      document: obj.document,
+      parentId: obj.parentId,
+      children: obj.children,
     }
-  )
+  })
 
   const sortMenuItems = (menuItems) => {
     const baseObjects = []
@@ -168,10 +148,7 @@ const MenuItemsAdmin = () => {
             ...child,
             parentIdName: nameMap[child.parentId] || null,
           }))
-        return [
-          { ...base, parentIdName: null },
-          ...sortedChildren,
-        ]
+        return [{ ...base, parentIdName: null }, ...sortedChildren]
       })
 
     return sortedMenuItems
@@ -179,32 +156,40 @@ const MenuItemsAdmin = () => {
 
   const sortedFilteredData = sortMenuItems(filteredData)
 
-  const baseType = {
-    name: '',
-    icon: '',
-    displayOrder: '',
-    link: '',
-    document: '',
-    parentIdName: '',
-  }
+  const headers = ['Name', 'Link', 'Display Order', 'ParentId Name']
+  const headerKeys = ['name', 'link', 'displayOrder', 'parentIdName']
 
   return (
-    <ResponsivePageLayout title={'Menu Items'}>
-      <GenericAdminChart
+    <ResponsivePageLayout title="Manage Menu Items" noBottomMargin>
+      <AdminTable
+        pageName="Menu Item"
         headers={headers}
-        pageName={PageNames.MenuItems}
+        headerKeys={headerKeys}
         data={sortedFilteredData}
-        baseRowType={baseType}
-        onDelete={deleteLink}
-        onEdit={editLink}
-        onCreate={createLink}
-        hasEditPrivileges={hasEditClaim}
-        hasDeletePrivileges={hasDeleteClaim}
-        customModal={
+        hasEditPrivileges={hasGeneralEditClaim}
+        hasDeletePrivileges={hasGeneralDeleteClaim}
+        editModal={
           <MenuItemsModal
-            onCreate={createLink}
-            onEdit={editLink}
-            onDelete={deleteLink}
+            isOpen={true}
+            onSave={handleEditMenuItem}
+            onClose={onModalClose}
+          />
+        }
+        createModal={
+          <MenuItemsModal
+            isOpen={true}
+            onSave={handleCreateMenuItem}
+            onClose={onModalClose}
+          />
+        }
+        deleteModal={
+          <DeleteModal
+            id={0}
+            name={''}
+            objectType="Faqs"
+            open={false}
+            onClose={() => {}}
+            onConfirm={HandleDeleteMenuItem}
           />
         }
       />
