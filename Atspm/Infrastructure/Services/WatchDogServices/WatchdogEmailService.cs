@@ -78,7 +78,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
             var emailBody = await CreateEmailBody(options, newErrors, dailyRecurringErrors, recurringErrors
                 , locations, logsFromPreviousDay);
 
-            //await mailService.SendEmailAsync(options.DefaultEmailAddress, users, subject, emailBody);
+            //await mailService.SendEmailAsync(emailOptions.DefaultEmailAddress, users, subject, emailBody);
 
             await mailService.SendEmailAsync(new MailAddress(options.DefaultEmailAddress), users.GetMailingAddresses(), subject, emailBody, true);
 
@@ -144,7 +144,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                         recurringErrors,
                         LocationsByArea,
                         logsFromPreviousDay);
-                    //await mailService.SendEmailAsync(options.DefaultEmailAddress, usersByArea, subject, emailBody);
+                    //await mailService.SendEmailAsync(emailOptions.DefaultEmailAddress, usersByArea, subject, emailBody);
 
                     await mailService.SendEmailAsync(new MailAddress(options.DefaultEmailAddress), usersByArea.GetMailingAddresses(), subject, emailBody, true);
                 }
@@ -178,7 +178,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                         recurringErrors,
                         LocationsByRegion,
                         logsFromPreviousDay);
-                    //await mailService.SendEmailAsync(options.DefaultEmailAddress, usersByRegion, subject, emailBody);
+                    //await mailService.SendEmailAsync(emailOptions.DefaultEmailAddress, usersByRegion, subject, emailBody);
 
                     await mailService.SendEmailAsync(new MailAddress(options.DefaultEmailAddress), usersByRegion.GetMailingAddresses(), subject, emailBody, true);
                 }
@@ -196,23 +196,27 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
             var emailBodyBuilder = new StringBuilder();
 
             // Process New Errors
-            emailBodyBuilder.Append(ProcessErrorList("New Errors", newErrors, options, locations, logsFromPreviousDay));
+            emailBodyBuilder.Append(ProcessErrorList("New Errors", "Issues that have not been recorded in the past 12 months", newErrors, options, locations, logsFromPreviousDay, false, false, false));
 
             // Process Daily Recurring Errors
-            emailBodyBuilder.Append(ProcessErrorList("Daily Recurring Errors", dailyRecurringErrors, options, locations, logsFromPreviousDay));
+            emailBodyBuilder.Append(ProcessErrorList("Daily Recurring Errors", "Issues that have happened on the day being scanned and the previous day", dailyRecurringErrors, options, locations, logsFromPreviousDay));
 
             // Process Recurring Errors
-            emailBodyBuilder.Append(ProcessErrorList("Recurring Errors", recurringErrors, options, locations, logsFromPreviousDay));
+            emailBodyBuilder.Append(ProcessErrorList("Recurring Errors", "Issues have occured at least one additional time within the preceding 12-month period that are not part of the other categories.", recurringErrors, options, locations, logsFromPreviousDay,true, false, true));
 
             return emailBodyBuilder.ToString();
         }
 
         private string ProcessErrorList(
             string errorTitle,
+            string sectionDescription,
             List<WatchDogLogEventWithCountAndDate> errors,
             WatchdogEmailOptions options,
             List<Location> locations,
-            List<WatchDogLogEvent> logsFromPreviousDay)
+            List<WatchDogLogEvent> logsFromPreviousDay,
+            bool showEventCount = true,
+            bool showConsecutiveCount = true,
+            bool showDateOfFirstOccurence = true)
         {
             if (errors == null || !errors.Any())
             {
@@ -226,6 +230,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
 
             var bodyBuilder = new StringBuilder();
             bodyBuilder.Append($"<h2>{errorTitle}</h2>");
+            bodyBuilder.Append($"<p>{sectionDescription}</p>");
 
             // Define the CSS style
             var body = "<style>\r\n" +
@@ -253,15 +258,15 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
             bodyBuilder.Append(body);
 
             // Build HTML sections for each error type
-            bodyBuilder.Append(BuildErrorSection("Missing Records Errors", $"The following Locations had too few records in the database on {options.ScanDate.Date.ToShortDateString()}", missingErrorsLogs, locations, options, logsFromPreviousDay));
-            bodyBuilder.Append(BuildErrorSection("Force Off Errors", $"The following Locations had too many force off occurrences between {options.ScanDayStartHour}:00 and {options.ScanDayEndHour}:00", forceErrorsLogs, locations, options, logsFromPreviousDay));
-            bodyBuilder.Append(BuildErrorSection("Max Out Errors", $"The following Locations had too many max out occurrences between {options.ScanDayStartHour}:00 and {options.ScanDayEndHour}:00", maxErrorsLogs, locations, options, logsFromPreviousDay));
-            bodyBuilder.Append(BuildErrorSection("Low Detection Count Errors", $"The following Locations had unusually low advanced detection counts on {options.ScanDate.Date.ToShortDateString()}", countErrorsLogs, locations, options, logsFromPreviousDay));
-            bodyBuilder.Append(BuildErrorSection("High Pedestrian Activation Errors", $"The following Locations have high pedestrian activation occurrences between {options.ScanDayStartHour}:00 and {options.ScanDayEndHour}:00", stuckPedErrorsLogs, locations, options, logsFromPreviousDay));
-            bodyBuilder.Append(BuildErrorSection("Unconfigured Approaches Errors", "", configurationErrorsLogs, locations, options, logsFromPreviousDay));
-            bodyBuilder.Append(BuildErrorSection("Unconfigured Detectors Errors", "", unconfiguredDetectorErrorsLogs, locations, options, logsFromPreviousDay));
-            bodyBuilder.Append(BuildErrorSection("Missing Mainline Data Error", $"The following Ramp Locations are missing mainline data during {options.RampMainlineStartHour}:00 and {options.RampMainlineEndHour}:00", mainlineMissingErrorLogs, locations, options, logsFromPreviousDay));
-            bodyBuilder.Append(BuildErrorSection("Stuck Queue Detection Error", $"The following Ramp Locations have stuck queue detections during {options.RampStuckQueueStartHour}:00 and {options.RampStuckQueueEndHour}:00", stuckQueueDetectionErrorLogs, locations, options, logsFromPreviousDay));
+            bodyBuilder.Append(BuildErrorSection("Missing Records Errors", $"The following Locations had too few records in the database on {options.ScanDate.Date.ToShortDateString()}", missingErrorsLogs, locations, options, logsFromPreviousDay, showEventCount, showConsecutiveCount, showDateOfFirstOccurence));
+            bodyBuilder.Append(BuildErrorSection("Force Off Errors", $"The following Locations had too many force off occurrences between {options.ScanDayStartHour}:00 and {options.ScanDayEndHour}:00", forceErrorsLogs, locations, options, logsFromPreviousDay, showEventCount, showConsecutiveCount, showDateOfFirstOccurence));
+            bodyBuilder.Append(BuildErrorSection("Max Out Errors", $"The following Locations had too many max out occurrences between {options.ScanDayStartHour}:00 and {options.ScanDayEndHour}:00", maxErrorsLogs, locations, options, logsFromPreviousDay, showEventCount, showConsecutiveCount, showDateOfFirstOccurence));
+            bodyBuilder.Append(BuildErrorSection("Low Detection Count Errors", $"The following Locations had unusually low advanced detection counts on {options.ScanDate.Date.ToShortDateString()}", countErrorsLogs, locations, options, logsFromPreviousDay, showEventCount, showConsecutiveCount, showDateOfFirstOccurence));
+            bodyBuilder.Append(BuildErrorSection("High Pedestrian Activation Errors", $"The following Locations have high pedestrian activation occurrences between {options.ScanDayStartHour}:00 and {options.ScanDayEndHour}:00", stuckPedErrorsLogs, locations, options, logsFromPreviousDay, showEventCount, showConsecutiveCount, showDateOfFirstOccurence));
+            bodyBuilder.Append(BuildErrorSection("Unconfigured Approaches Errors", "", configurationErrorsLogs, locations, options, logsFromPreviousDay, showEventCount, showConsecutiveCount, showDateOfFirstOccurence));
+            bodyBuilder.Append(BuildErrorSection("Unconfigured Detectors Errors", "", unconfiguredDetectorErrorsLogs, locations, options, logsFromPreviousDay, showEventCount, showConsecutiveCount, showDateOfFirstOccurence));
+            bodyBuilder.Append(BuildErrorSection("Missing Mainline Data Error", $"The following Ramp Locations are missing mainline data during {options.RampMainlineStartHour}:00 and {options.RampMainlineEndHour}:00", mainlineMissingErrorLogs, locations, options, logsFromPreviousDay, showEventCount, showConsecutiveCount, showDateOfFirstOccurence));
+            bodyBuilder.Append(BuildErrorSection("Stuck Queue Detection Error", $"The following Ramp Locations have stuck queue detections during {options.RampStuckQueueStartHour}:00 and {options.RampStuckQueueEndHour}:00", stuckQueueDetectionErrorLogs, locations, options, logsFromPreviousDay, showEventCount, showConsecutiveCount, showDateOfFirstOccurence));
 
 
             return bodyBuilder.ToString();
@@ -273,7 +278,10 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
             List<WatchDogLogEventWithCountAndDate> errorLogs,
             List<Location> locations,
             WatchdogEmailOptions options,
-            List<WatchDogLogEvent> logsFromPreviousDay)
+            List<WatchDogLogEvent> logsFromPreviousDay,
+            bool showEventCount = true,
+            bool showConsecutiveCount = true,
+            bool showDateOfFirstOccurence = true)
         {
             var sectionBuilder = new StringBuilder();
 
@@ -289,7 +297,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                 }
 
                 // Define table headers based on error type
-                var headers = GetTableHeadersForErrorType(sectionTitle);
+                var headers = GetTableHeadersForErrorType(sectionTitle, showEventCount, showConsecutiveCount, showDateOfFirstOccurence);
                 foreach (var header in headers)
                 {
                     sectionBuilder.Append($"<th>{header}</th>");
@@ -298,7 +306,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                 sectionBuilder.Append("</tr></thead><tbody>");
 
                 // Build table rows
-                sectionBuilder.Append(SortAndAddToMessage(locations, errorLogs, options, logsFromPreviousDay));
+                sectionBuilder.Append(SortAndAddToMessage(locations, errorLogs, options, logsFromPreviousDay,showEventCount, showConsecutiveCount, showDateOfFirstOccurence));
 
                 sectionBuilder.Append("</tbody></table><br/>");
             }
@@ -311,24 +319,36 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
             return sectionBuilder.ToString();
         }
 
-        private static List<string> GetTableHeadersForErrorType(string sectionTitle)
+        private static List<string> GetTableHeadersForErrorType(
+            string sectionTitle,
+            bool showEventCount,
+            bool showConsecutiveCount,
+            bool showDateOfFirstOccurrence)
         {
-            switch (sectionTitle)
+            // Define the base headers common to all section titles
+            List<string> baseHeaders = sectionTitle switch
             {
-                case "Missing Records Errors":
-                    return new List<string> { "Location", "Location Description", "Issue Details", "Error Count", "Consecutive Occurrence Count", "Date of First Occurrence" };
-                case "Force Off Errors":
-                case "Max Out Errors":
-                case "High Pedestrian Activation Errors":
-                case "Unconfigured Approaches Errors":
-                    return new List<string> { "Location", "Location Description", "Phase", "Issue Details", "Error Count", "Consecutive Occurrence Count", "Date of First Occurrence" };
-                case "Low Detection Count Errors":
-                case "Unconfigured Detectors Errors":
-                    return new List<string> { "Location", "Location Description", "Detector Id", "Issue Details", "Error Count", "Consecutive Occurrence Count", "Date of First Occurrence" };
-                default:
-                    return new List<string> { "Location", "Location Description", "Issue Details", "Error Count", "Consecutive Occurrence Count", "Date of First Occurrence" };
-            }
+                "Missing Records Errors" => new List<string> { "Location", "Location Description", "Issue Details" },
+                "Force Off Errors" or
+                "Max Out Errors" or
+                "High Pedestrian Activation Errors" or
+                "Unconfigured Approaches Errors" => new List<string> { "Location", "Location Description", "Phase", "Issue Details" },
+                "Low Detection Count Errors" or
+                "Unconfigured Detectors Errors" => new List<string> { "Location", "Location Description", "Detector Id", "Issue Details" },
+                _ => new List<string> { "Location", "Location Description", "Issue Details" }
+            };
+
+            // Append optional headers based on flags
+            if (showEventCount)
+                baseHeaders.Add("Error Count");
+            if (showConsecutiveCount)
+                baseHeaders.Add("Consecutive Occurrence Count");
+            if (showDateOfFirstOccurrence)
+                baseHeaders.Add("Date of First Occurrence");
+
+            return baseHeaders;
         }
+
 
         private static void GetEventsByIssueType(
             List<WatchDogLogEventWithCountAndDate> eventsContainer,
@@ -359,7 +379,10 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
             List<Location> Locations,
             List<WatchDogLogEventWithCountAndDate> issues,
             WatchdogEmailOptions options,
-            List<WatchDogLogEvent> logsFromPreviousDay)
+            List<WatchDogLogEvent> logsFromPreviousDay,
+            bool showEventCount = true,
+            bool showConsecutiveCount= true,
+            bool showDateOfFirstOccurence = true)
         {
             if (Locations is null || issues is null || options is null || logsFromPreviousDay is null)
             {
@@ -387,10 +410,18 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                         }
 
                         errorMessage += $"<td>{error.Details}</td>";
-
-                        errorMessage += $"<td>{error.EventCount}</td>";
-                        errorMessage += $"<td>{error.ConsecutiveOccurenceCount}</td>";
-                        errorMessage += $"<td>{error.DateOfFirstInstance}</td></tr>";
+                        if (showEventCount)
+                        {
+                            errorMessage += $"<td>{error.EventCount}</td>";
+                        }
+                        if (showConsecutiveCount)
+                        {
+                            errorMessage += $"<td>{error.ConsecutiveOccurenceCount}</td>";
+                        }
+                        if (showDateOfFirstOccurence)
+                        {
+                            errorMessage += $"<td>{error.DateOfFirstInstance}</td></tr>";
+                        }
                     }
                 }
             }
