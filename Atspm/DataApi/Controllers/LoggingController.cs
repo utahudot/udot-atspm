@@ -17,11 +17,9 @@
 
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
-using Utah.Udot.Atspm.Configuration;
-using Utah.Udot.Atspm.Infrastructure.Services.HostedServices;
+using System.Threading.Tasks.Dataflow;
 using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
-using Utah.Udot.Atspm.Services;
+using Utah.Udot.ATSPM.Infrastructure.Workflows;
 
 namespace Utah.Udot.Atspm.DataApi.Controllers
 {
@@ -34,13 +32,13 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
     [Route("v{version:apiVersion}/[controller]")]
     public class LoggingController : ControllerBase
     {
-        private readonly IEventLogRepository _repository;
+        private readonly IDeviceRepository _repository;
         private readonly ILogger _log;
 
         /// <inheritdoc/>
-        public LoggingController(IEventLogRepository repository, ILogger<EventLogController> log)
+        public LoggingController(IDeviceRepository deviceRepository, ILogger<EventLogController> log)
         {
-            _repository = repository;
+            _repository = deviceRepository;
             _log = log;
         }
 
@@ -49,38 +47,47 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
         /// </summary>
         [HttpGet("log")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async void SyncNewLocationEventsAsync(string locationId)
+        public async void SyncNewLocationEventsAsync(int locationId)
         {
-            //ILogger<DeviceEventLogHostedService> log, IServiceScopeFactory serviceProvider, IOptions<DeviceEventLoggingConfiguration> options
-
-            var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
-            ILogger<DeviceEventLogHostedService> logger = loggerFactory.CreateLogger<DeviceEventLogHostedService>();
-
-            IServiceScopeFactory serviceScopeFactory = HttpContext.RequestServices.GetRequiredService<IServiceScopeFactory>();
-
-            using (var scope = serviceScopeFactory.CreateScope())
-            {
-                var deviceRepository = scope.ServiceProvider.GetRequiredService<IDeviceRepository>();
-                var deviceDownloader = scope.ServiceProvider.GetRequiredService<IDeviceDownloader>();
-                var eventLogImporter = scope.ServiceProvider.GetRequiredService<IEventLogImporter>();
-                var eventLogRepository = scope.ServiceProvider.GetRequiredService<IEventLogRepository>();
-            }
-
-            var deviceEventLoggingConfig = new DeviceEventLoggingConfiguration
-            {
-                // Populate with required configuration values
-                DeviceEventLoggingQueryOptions = new DeviceEventLoggingQueryOptions
+            var host = Host.CreateDefaultBuilder()
+                .ConfigureServices((h, s) =>
                 {
-                    IncludedLocations = new List<string> { locationId }
+                    s.AddAtspmDbContext(h);
+                    s.AddAtspmEFConfigRepositories();
+                    s.AddAtspmEFEventLogRepositories();
+                    s.AddAtspmEFAggregationRepositories();
+                    s.AddDownloaderClients();
+                    s.AddDeviceDownloaders(h);
+                    s.AddEventLogDecoders();
+                    s.AddEventLogImporters(h);
+                }).Build();
 
+            var locationDevices = _repository.GetActiveDevicesByLocation(locationId);
+
+            if (locationDevices == null || !locationDevices.Any())
+                return;
+
+            var workflowTasks = new List<Task>();
+
+            using (var scope = host.Services.CreateScope())
+            {
+                foreach (var device in locationDevices)
+                {
+                    var workflow = new DeviceEventLogWorkflow(scope.ServiceProvider.GetService<IServiceScopeFactory>(), 50000, 1);
+                    await Task.Delay(TimeSpan.FromSeconds(2));
+                    // Start the workflow
+                    var workflowTask = Task.Run(async () =>
+                    {
+                        await workflow.Input.SendAsync(device);
+                        workflow.Input.Complete();
+                        await Task.WhenAll(workflow.Steps.Select(s => s.Completion));
+                    });
+
+                    workflowTasks.Add(workflowTask);
                 }
-            };
-            IOptions<DeviceEventLoggingConfiguration> options = Options.Create(deviceEventLoggingConfig);
-
-
-            DeviceEventLogHostedService test = new(logger, serviceScopeFactory, options);
-            await test.StartAsync(default);
-            await test.StopAsync(default);
+            }
+            // Wait for all workflows to complete
+            await Task.WhenAll(workflowTasks);
         }
 
     }
