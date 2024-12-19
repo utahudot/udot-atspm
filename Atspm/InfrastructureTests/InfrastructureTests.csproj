@@ -23,6 +23,7 @@
 		<Compile Remove="RepositoryTests\IRepositoryTests.cs" />
 		<Compile Remove="RepositoryTests\ISignalRepositoryTests.cs" />
 		<Compile Remove="RepositoryTests\RepositoryControllerEventLogTests.cs" />
+		<Compile Remove="Services\WatchDogServices\SegmentedErrorsServiceTests.cs" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -32,6 +33,7 @@
 		<None Include="RepositoryTests\IRepositoryTests.cs" />
 		<None Include="RepositoryTests\ISignalRepositoryTests.cs" />
 		<None Include="RepositoryTests\RepositoryControllerEventLogTests.cs" />
+		<None Include="Services\WatchDogServices\SegmentedErrorsServiceTests.cs" />
 	</ItemGroup>
 
 	<ItemGroup>
