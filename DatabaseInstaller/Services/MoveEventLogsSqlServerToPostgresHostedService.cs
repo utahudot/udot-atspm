@@ -65,7 +65,7 @@ namespace DatabaseInstaller.Services
             try
             {
             //    using var scope = _serviceProvider.CreateScope();
-            //    var serviceProvider = scope.ServiceProvider;
+            //    var _serviceProvider = scope.ServiceProvider;
 
             //    // SQL Server DbContext to read logs
             //    var sqlOptions = new DbContextOptionsBuilder<EventLogContext>()
@@ -73,8 +73,8 @@ namespace DatabaseInstaller.Services
             //        .Options;
 
             //    using var sqlServerContext = new EventLogContext(sqlOptions);
-            //    var sqlSeverRepository = new IndianaEventLogEFRepository(sqlServerContext, serviceProvider.GetService<ILogger<IndianaEventLogEFRepository>>());
-            //    var sqltestSeverRepository = new EventLogEFRepository(sqlServerContext, serviceProvider.GetService<ILogger<EventLogEFRepository>>());
+            //    var sqlSeverRepository = new IndianaEventLogEFRepository(sqlServerContext, _serviceProvider.GetService<ILogger<IndianaEventLogEFRepository>>());
+            //    var sqltestSeverRepository = new EventLogEFRepository(sqlServerContext, _serviceProvider.GetService<ILogger<EventLogEFRepository>>());
 
 
                 // PostgreSQL DbContext to write logs
@@ -83,7 +83,7 @@ namespace DatabaseInstaller.Services
                 //    .Options;
 
                 //using var postgresContext = new EventLogContext(postgresOptions);
-                //var postgresSeverRepository = new IndianaEventLogEFRepository(postgresContext, serviceProvider.GetService<ILogger<IndianaEventLogEFRepository>>());
+                //var postgresSeverRepository = new IndianaEventLogEFRepository(postgresContext, _serviceProvider.GetService<ILogger<IndianaEventLogEFRepository>>());
                 var locations = new List<string>
                {
                     "2122",

@@ -16,6 +16,7 @@
 #endregion
 
 using DatabaseInstaller.Commands;
+using DatabaseInstaller.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -28,25 +29,27 @@ using Utah.Udot.Atspm.Common;
 using Utah.Udot.Atspm.Data;
 using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Infrastructure.Extensions;
+using Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices;
 
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 var rootCmd = new DatabaseInstallerCommands();
 var cmdBuilder = new CommandLineBuilder(rootCmd);
 cmdBuilder.UseDefaults();
-
 cmdBuilder.UseHost(hostBuilder =>
 {
     return Host.CreateDefaultBuilder(hostBuilder)
-    .UseConsoleLifetime()
+    .ApplyVolumeConfiguration()
+    //.UseConsoleLifetime()
     .ConfigureAppConfiguration((h, c) =>
     {
+        //c.AddCommandLine(args);
         c.AddUserSecrets<Program>(optional: true);
-        c.AddCommandLine(args);
 
     })
-    .ConfigureLogging((hostContext, logging) =>
-    {
-        // Configure logging if needed
-    })
+    //.ConfigureLogging((hostContext, logging) =>
+    //{
+    //    // Configure logging if needed
+    //})
     .ConfigureServices((hostContext, services) =>
     {
         // Core services
@@ -58,9 +61,14 @@ cmdBuilder.UseHost(hostBuilder =>
         .AddDefaultTokenProviders();
 
 
+        //// Optional: Register any core services your application might need here.
+        //services.Configure<UpdateCommandConfiguration>(hostContext.Configuration.GetSection("CommandLineOptions"));
+        //services.AddHostedService<UpdateCommandHostedService>();
+
         // Optional: Register any core services your application might need here.
-        services.Configure<UpdateCommandConfiguration>(hostContext.Configuration.GetSection("CommandLineOptions"));
-        services.AddScoped<UpdateCommandConfiguration>();
+        services.Configure<TransferEventLogsCommandConfiguration>(hostContext.Configuration.GetSection("TransferOptions"));
+        services.AddHostedService<TransferEventLogsHostedService>();
+
     });
 },
 host =>
@@ -80,6 +88,6 @@ host =>
 
 // Build and invoke the command parser
 var cmdParser = cmdBuilder.Build();
-var parseResult = cmdParser.Parse(args);
-Console.WriteLine("Command: " + parseResult.CommandResult.Command.Name);
+//var parseResult = cmdParser.Parse(args);
+//Console.WriteLine("Command: " + parseResult.CommandResult.Command.Name);
 await cmdParser.InvokeAsync(args);
