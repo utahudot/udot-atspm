@@ -136,7 +136,10 @@ const ProductsAdmin = () => {
           <DeleteModal
             id={0}
             name={''}
-            objectType="Jurisdiction"
+            objectType="Product"
+            deleteLabel={(selectedRow: (typeof filteredData)[number]) =>
+              `${selectedRow.manufacturer} - ${selectedRow.model}`
+            }
             open={false}
             onClose={() => {}}
             onConfirm={HandleDeleteProduct}

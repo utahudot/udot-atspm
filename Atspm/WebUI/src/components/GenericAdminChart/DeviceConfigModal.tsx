@@ -1,7 +1,9 @@
-// DeviceConfigModal.tsx
 import { DeviceConfiguration } from '@/features/devices/types/index'
 import { useGetProducts } from '@/features/products/api'
 import { ConfigEnum, useConfigEnums } from '@/hooks/useConfigEnums'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
 
 import {
   Button,
@@ -16,284 +18,262 @@ import {
   Select,
   TextField,
 } from '@mui/material'
-import React, { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 
 interface ModalProps {
-  open: boolean
+  data?: DeviceConfiguration
+  isOpen: boolean
   onClose: () => void
-  data: DeviceConfiguration | null
-  onCreate: (device: DeviceConfiguration) => void
-  onEdit: (device: DeviceConfiguration) => void
   onSave: (device: DeviceConfiguration) => void
 }
 
+// Define Zod schema for form validation
+const deviceConfigSchema = z.object({
+  id: z.number().nullable().optional(),
+  firmware: z.string().min(1, 'Firmware is required'),
+  notes: z.string().optional(),
+  protocol: z.string(),
+  port: z.number().nullable(),
+  directory: z.string(),
+  connectionTimeout: z.number().nullable(),
+  operationTimeout: z.number().nullable(),
+  userName: z.string(),
+  password: z.string(),
+  productId: z
+    .number()
+    .nullable()
+    .refine((val) => val !== null, 'Product is required'),
+})
+
+type DeviceConfigFormData = z.infer<typeof deviceConfigSchema>
+
 const DeviceConfigModal = ({
-  open,
+  data: deviceConfiguration,
+  isOpen,
   onClose,
-  data,
-  onCreate,
   onSave,
-  onEdit,
 }: ModalProps) => {
   const { data: productData } = useGetProducts()
-
   const { data: transportProtocols } = useConfigEnums(
     ConfigEnum.TransportProtocols
   )
-
-  const [errors, setErrors] = useState({
-    firmware: false,
-    productId: false,
+  console.log('config console ', deviceConfiguration)
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    control,
+    watch,
+    formState: { errors },
+  } = useForm<DeviceConfigFormData>({
+    resolver: zodResolver(deviceConfigSchema),
+    defaultValues: {
+      firmware: deviceConfiguration?.firmware || '',
+      notes: deviceConfiguration?.notes || '',
+      protocol: deviceConfiguration?.protocol || '',
+      port: deviceConfiguration?.port || null,
+      directory: deviceConfiguration?.directory || '',
+      connectionTimeout: deviceConfiguration?.connectionTimeout || null,
+      operationTimeout: deviceConfiguration?.operationTimeout || null,
+      userName: deviceConfiguration?.userName || '',
+      password: deviceConfiguration?.password || '',
+      productId: deviceConfiguration?.productId || null,
+      id: deviceConfiguration?.id || null,
+    },
   })
-
-  const [device, setDevice] = useState<DeviceConfiguration | null>(null)
-
+  const defaultValues = {
+    firmware: deviceConfiguration?.firmware || '',
+    notes: deviceConfiguration?.notes || '',
+    protocol: deviceConfiguration?.protocol || '',
+    port: deviceConfiguration?.port || null,
+    directory: deviceConfiguration?.directory || '',
+    connectionTimeout: deviceConfiguration?.connectionTimeout || null,
+    operationTimeout: deviceConfiguration?.operationTimeout || null,
+    userName: deviceConfiguration?.userName || '',
+    password: deviceConfiguration?.password || '',
+    productId: deviceConfiguration?.productId || null,
+    id: deviceConfiguration?.id || null,
+  }
+  console.log('Default Values:', defaultValues)
   useEffect(() => {
-    if (data) {
-      setDevice(data)
-    } else {
-      setDevice({
-        id: null,
-        firmware: '',
-        notes: '',
-        protocol: '',
-        port: null,
-        directory: '',
-        connectionTimeout: null,
-        operationTimeout: null,
-        userName: '',
-        password: '',
-        productId: null,
+    if (deviceConfiguration) {
+      // Explicitly set values for Select components
+      setValue('protocol', deviceConfiguration.protocol)
+      setValue('productId', deviceConfiguration.productId)
+
+      // Set other form values
+      Object.entries(deviceConfiguration).forEach(([key, value]) => {
+        if (key !== 'protocol' && key !== 'productId') {
+          setValue(key as keyof DeviceConfigFormData, value)
+        }
       })
     }
-  }, [data])
+  }, [deviceConfiguration, setValue])
 
-  const handleChange = (
-    event: React.ChangeEvent<{ name?: string; value: unknown }>
-  ) => {
-    const { name, value } = event.target
-    setDevice((prevDevice) => {
-      if (prevDevice) {
-        return {
-          ...prevDevice,
-          [name as keyof DeviceConfiguration]:
-            name === 'productId' ? Number(value) : value,
-        }
-      }
-      return prevDevice
-    })
+  const onSubmit = async (data: DeviceConfigFormData) => {
+    try {
+      const selectedProduct = productData?.value.find(
+        (product) => product.id === data.productId
+      )
 
-    // Clear the error state when the field value changes
-    setErrors((prevErrors) => ({
-      ...prevErrors,
-      [name as keyof typeof errors]: false,
-    }))
-  }
-
-  const handleSubmit = async () => {
-    if (device) {
-      if (!device.firmware || !device.productId) {
-        // Set the error state for the missing fields
-        setErrors({
-          firmware: !device.firmware,
-          productId: !device.productId,
-        })
-        return
+      const sanitizedDevice: Partial<DeviceConfiguration> = {
+        ...data,
+        productName: selectedProduct ? selectedProduct.model : '',
       }
 
-      try {
-        const selectedProduct = productData?.value.find(
-          (product) => product.id === device.productId
-        )
-
-        const sanitizedDevice: Partial<DeviceConfiguration> = {
-          ...device,
-          productId: device.productId,
-          productName: selectedProduct ? selectedProduct.model : '',
-        }
-
-        if (device.id) {
-          await onEdit(sanitizedDevice as DeviceConfiguration)
-        } else {
-          await onCreate(sanitizedDevice as DeviceConfiguration)
-        }
-        onSave(sanitizedDevice as DeviceConfiguration)
-        onClose()
-      } catch (error) {
-        console.error('Error occurred while editing/creating device:', error)
-        // Handle the error, show an error message, or perform any necessary actions
-      }
+      console.log('Sanitized Device Data:', sanitizedDevice) // Log the sanitized data
+      onSave(sanitizedDevice as DeviceConfiguration)
+      onClose()
+    } catch (error) {
+      console.error('Error occurred while editing/creating device:', error)
     }
   }
 
   return (
-    <Dialog open={open} onClose={onClose}>
+    <Dialog open={isOpen} onClose={onClose}>
       <DialogTitle sx={{ fontSize: '1.3rem' }} id="role-permissions-label">
         Device Configuration Details
       </DialogTitle>
 
       <DialogContent>
-        {device ? (
-          <>
-            <TextField
-              autoFocus
-              margin="dense"
-              name="firmware"
-              label="Firmware"
-              type="text"
-              fullWidth
-              value={device.firmware}
-              onChange={handleChange}
-              error={errors.firmware}
-              helperText={errors.firmware ? 'Firmware is required' : ''}
-            />
-            <TextField
-              margin="dense"
-              name="notes"
-              label="Notes"
-              type="text"
-              fullWidth
-              value={device.notes}
-              onChange={handleChange}
-            />
-            <FormControl fullWidth margin="dense">
-              <InputLabel id="protocol-label">Protocol</InputLabel>
-              <Select
-                labelId="protocol-label"
-                id="protocol-select"
-                name="protocol"
-                value={device.protocol}
-                label="Protocol"
-                onChange={handleChange}
-              >
-                {transportProtocols?.map((protocol) => (
-                  <MenuItem key={protocol.value} value={protocol.name}>
-                    {protocol.name}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-            <TextField
-              margin="dense"
-              name="port"
-              label="Port"
-              type="number"
-              fullWidth
-              value={device.port}
-              onChange={handleChange}
-              inputProps={{
-                inputMode: 'numeric',
-                pattern: '[0-9]*',
-              }}
-            />
-            <TextField
-              margin="dense"
-              name="directory"
-              label="Directory"
-              type="text"
-              fullWidth
-              value={device.directory}
-              onChange={handleChange}
-            />
-            {/* <TextField
-              margin="dense"
-              name="searchTerms"
-              label="Search Terms"
-              type="text"
-              fullWidth
-              value={device.searchTerms}
-              onChange={handleChange}
-            /> */}
-            <Grid container spacing={2}>
-              <Grid item xs={6}>
-                <TextField
-                  margin="dense"
-                  name="connectionTimeout"
-                  label="Connection Timeout"
-                  type="number"
-                  fullWidth
-                  value={device.connectionTimeout}
-                  onChange={handleChange}
-                  inputProps={{
-                    inputMode: 'numeric',
-                    pattern: '[0-9]*',
-                  }}
-                />
-              </Grid>
-              <Grid item xs={6}>
-                <TextField
-                  margin="dense"
-                  name="operationTimeout"
-                  label="Operation Timeout"
-                  type="number"
-                  fullWidth
-                  value={device.operationTimeout}
-                  onChange={handleChange}
-                  inputProps={{
-                    inputMode: 'numeric',
-                    pattern: '[0-9]*',
-                  }}
-                />
-              </Grid>
+        <form onSubmit={handleSubmit(onSubmit, () => console.log('POOP'))}>
+          <TextField
+            {...register('firmware')}
+            autoFocus
+            margin="dense"
+            id="firmware"
+            label="Firmware"
+            type="text"
+            fullWidth
+            error={!!errors.firmware}
+            helperText={errors.firmware ? errors.firmware.message : ''}
+          />
+          <TextField
+            {...register('notes')}
+            margin="dense"
+            id="notes"
+            label="Notes"
+            type="text"
+            fullWidth
+          />
+          <FormControl fullWidth margin="dense">
+            <InputLabel id="protocol-label">Protocol</InputLabel>
+            <Select
+              labelId="protocol-label"
+              id="protocol-select"
+              label="Protocol"
+              error={!!errors.protocol}
+              value={watch('protocol') || ''} // Add value prop
+              onChange={(e) => setValue('protocol', e.target.value)} // Add onChange handler
+            >
+              {transportProtocols?.map((protocol) => (
+                <MenuItem key={protocol.value} value={protocol.name}>
+                  {protocol.name}
+                </MenuItem>
+              ))}
+            </Select>
+            {errors.protocol && (
+              <p style={{ color: 'red', fontSize: '12px' }}>
+                {errors.protocol.message}
+              </p>
+            )}
+          </FormControl>
+          <TextField
+            {...register('port', { valueAsNumber: true })}
+            margin="dense"
+            id="port"
+            label="Port"
+            type="number"
+            fullWidth
+            error={!!errors.port}
+            helperText={errors.port ? errors.port.message : ''}
+          />
+          <TextField
+            {...register('directory')}
+            margin="dense"
+            id="directory"
+            label="Directory"
+            type="text"
+            fullWidth
+          />
+          <Grid container spacing={2}>
+            <Grid item xs={6}>
+              <TextField
+                {...register('connectionTimeout', { valueAsNumber: true })}
+                margin="dense"
+                id="connectionTimeout"
+                label="Connection Timeout"
+                type="number"
+                fullWidth
+                error={!!errors.connectionTimeout}
+                helperText={
+                  errors.connectionTimeout
+                    ? errors.connectionTimeout.message
+                    : ''
+                }
+              />
             </Grid>
-            {/* <TextField
-              margin="dense"
-              name="dataModel"
-              label="Data Model"
-              type="text"
-              fullWidth
-              value={device.dataModel}
-              onChange={handleChange}
-            /> */}
-            <TextField
-              margin="dense"
-              name="userName"
-              label="Username"
-              type="text"
-              fullWidth
-              value={device.userName}
-              onChange={handleChange}
-            />
-            <TextField
-              margin="dense"
-              name="password"
-              label="Password"
-              type="text"
-              fullWidth
-              value={device.password}
-              onChange={handleChange}
-            />
-            <FormControl fullWidth margin="dense">
-              <InputLabel id="product-label">Product</InputLabel>
-              <Select
-                labelId="product-label"
-                id="product-select"
-                name="productId"
-                value={device.productId || ''}
-                label="Product"
-                onChange={handleChange}
-                error={errors.productId}
-                helperText={errors.productId ? 'Product is required' : ''}
-              >
-                {productData?.value.map((product) => (
-                  <MenuItem key={product.id} value={product.id}>
-                    {product.model}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </>
-        ) : (
-          <div>Loading...</div>
-        )}
+            <Grid item xs={6}>
+              <TextField
+                {...register('operationTimeout', { valueAsNumber: true })}
+                margin="dense"
+                id="operationTimeout"
+                label="Operation Timeout"
+                type="number"
+                fullWidth
+                error={!!errors.operationTimeout}
+                helperText={
+                  errors.operationTimeout ? errors.operationTimeout.message : ''
+                }
+              />
+            </Grid>
+          </Grid>
+          <TextField
+            {...register('userName')}
+            margin="dense"
+            id="userName"
+            label="Username"
+            type="text"
+            fullWidth
+          />
+          <TextField
+            {...register('password')}
+            margin="dense"
+            id="password"
+            label="Password"
+            type="text"
+            fullWidth
+          />
+          <FormControl fullWidth margin="dense">
+            <InputLabel id="product-label">Product</InputLabel>
+            <Select
+              labelId="product-label"
+              id="product-select"
+              label="Product"
+              error={!!errors.productId}
+              value={watch('productId') || ''} // Add value prop
+              onChange={(e) => setValue('productId', Number(e.target.value))} // Add onChange handler
+            >
+              {productData?.value.map((product) => (
+                <MenuItem key={product.id} value={product.id}>
+                  {product.model}
+                </MenuItem>
+              ))}
+            </Select>
+            {errors.productId && (
+              <p style={{ color: 'red', fontSize: '12px' }}>
+                {errors.productId.message}
+              </p>
+            )}
+          </FormControl>
+          <DialogActions>
+            <Button onClick={onClose}>Cancel</Button>
+            <Button variant="contained" type="submit">
+              Save
+            </Button>
+          </DialogActions>
+        </form>
       </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose}>Cancel</Button>
-
-        <Button variant="contained" onClick={handleSubmit}>
-          Save
-        </Button>
-      </DialogActions>
     </Dialog>
   )
 }

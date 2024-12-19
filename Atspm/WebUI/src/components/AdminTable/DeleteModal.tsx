@@ -11,13 +11,15 @@ import {
   Typography,
 } from '@mui/material'
 
-interface DeleteModalProps {
+interface DeleteModalProps<T> {
   id: number
   name: string
   objectType: string
   open: boolean
   onClose: () => void
   onConfirm: (id: number) => void
+  deleteLabel?: (selectedRow:T)=> string
+  selectedRow:T
   associatedObjects?: { id: number; name: string }[]
   associatedObjectsLabel?: string
   filterFunction?: (
@@ -26,17 +28,19 @@ interface DeleteModalProps {
   ) => { id: number; name: string }[]
 }
 
-const DeleteModal = ({
+const DeleteModal = <T,>({
   id,
   name,
   objectType,
   open,
   onClose,
   onConfirm,
+  deleteLabel,
+  selectedRow,
   associatedObjects = [],
   associatedObjectsLabel,
   filterFunction,
-}: DeleteModalProps) => {
+}: DeleteModalProps<T>) => {
   const handleConfirm = () => {
     onConfirm(id)
     onClose()
@@ -81,7 +85,7 @@ const DeleteModal = ({
           </>
         )}
         <Typography sx={{ mt: 2 }}>
-          Are you sure you want to delete <b>{name}</b>?
+          Are you sure you want to delete <b>{deleteLabel ? deleteLabel(selectedRow) : name}</b>?
         </Typography>
       </DialogContent>
       <DialogActions sx={{ p: 2 }}>

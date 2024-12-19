@@ -28,9 +28,10 @@ interface HasId {
   name: string
 }
 
-interface DeleteModalProps {
+interface DeleteModalProps<T> {
   id: number
   name: string
+  selectedRow: T
   open: boolean
   onClose: () => void
 }
@@ -54,7 +55,7 @@ interface AdminChartProps<T extends HasId> {
   hasEditPrivileges: boolean
   hasDeletePrivileges: boolean
   editModal: ReactElement<EditModalProps<T>>
-  deleteModal: ReactElement<DeleteModalProps>
+  deleteModal: ReactElement<DeleteModalProps<T>>
   createModal: ReactElement<CreateModalProps>
 }
 
@@ -127,6 +128,7 @@ const AdminTable = <T extends HasId>({
     id: selectedRow?.id,
     name: selectedRow?.name,
     open: isDeleteModalOpen,
+    selectedRow: selectedRow ?? undefined,
     onClose: handleClose,
   })
 
@@ -141,9 +143,6 @@ const AdminTable = <T extends HasId>({
     open: isCreateModalOpen,
     onClose: handleClose,
   })
-
-  console.log('Headers:', headers)
-  console.log('Data:', data)
 
   return (
     <Box
