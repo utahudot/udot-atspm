@@ -26,11 +26,11 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
         /// <returns></returns>
         public static IServiceCollection AddAtspmIdentity(this IServiceCollection services, HostBuilderContext host)
         {
-            if (!host.HostingEnvironment.IsDevelopment())
-            {
+            //if (!host.HostingEnvironment.IsDevelopment())
+            //{
                 services.AddAtspmAuthentication(host);
                 services.AddAtspmAuthorization();
-            }
+            //}
             
             return services;
         }

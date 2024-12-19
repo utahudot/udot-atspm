@@ -40,7 +40,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
 
 
         public async Task SendAllEmails(
-            EmailOptions options,
+            WatchdogEmailOptions options,
             List<WatchDogLogEventWithCountAndDate> newErrors,
             List<WatchDogLogEventWithCountAndDate> dailyRecurringErrors,
             List<WatchDogLogEventWithCountAndDate> recurringErrors,
@@ -65,7 +65,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
         }
 
         private async Task SendAdminEmail(
-            EmailOptions options,
+            WatchdogEmailOptions options,
             List<WatchDogLogEventWithCountAndDate> newErrors,
             List<WatchDogLogEventWithCountAndDate> dailyRecurringErrors,
             List<WatchDogLogEventWithCountAndDate> recurringErrors,
@@ -85,7 +85,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
         }
 
         private async Task SendJurisdictionEmails(
-            EmailOptions options,
+            WatchdogEmailOptions options,
             List<WatchDogLogEventWithCountAndDate> newErrors,
             List<WatchDogLogEventWithCountAndDate> dailyRecurringErrors,
             List<WatchDogLogEventWithCountAndDate> recurringErrors,
@@ -117,7 +117,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
         }
 
         private async Task SendAreaEmails(
-            EmailOptions options,
+            WatchdogEmailOptions options,
             List<WatchDogLogEventWithCountAndDate> newErrors,
             List<WatchDogLogEventWithCountAndDate> dailyRecurringErrors,
             List<WatchDogLogEventWithCountAndDate> recurringErrors,
@@ -151,7 +151,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
             }
         }
         private async Task SendRegionEmails(
-            EmailOptions options,
+            WatchdogEmailOptions options,
             List<WatchDogLogEventWithCountAndDate> newErrors,
             List<WatchDogLogEventWithCountAndDate> dailyRecurringErrors,
             List<WatchDogLogEventWithCountAndDate> recurringErrors,
@@ -186,7 +186,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
         }
 
         public async Task<string> CreateEmailBody(
-            EmailOptions options,
+            WatchdogEmailOptions options,
             List<WatchDogLogEventWithCountAndDate> newErrors,
             List<WatchDogLogEventWithCountAndDate> dailyRecurringErrors,
             List<WatchDogLogEventWithCountAndDate> recurringErrors,
@@ -210,7 +210,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
         private string ProcessErrorList(
             string errorTitle,
             List<WatchDogLogEventWithCountAndDate> errors,
-            EmailOptions options,
+            WatchdogEmailOptions options,
             List<Location> locations,
             List<WatchDogLogEvent> logsFromPreviousDay)
         {
@@ -272,7 +272,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
             string sectionTimeDescription,
             List<WatchDogLogEventWithCountAndDate> errorLogs,
             List<Location> locations,
-            EmailOptions options,
+            WatchdogEmailOptions options,
             List<WatchDogLogEvent> logsFromPreviousDay)
         {
             var sectionBuilder = new StringBuilder();
@@ -358,7 +358,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
         private string SortAndAddToMessage(
             List<Location> Locations,
             List<WatchDogLogEventWithCountAndDate> issues,
-            EmailOptions options,
+            WatchdogEmailOptions options,
             List<WatchDogLogEvent> logsFromPreviousDay)
         {
             if (Locations is null || issues is null || options is null || logsFromPreviousDay is null)

@@ -25,8 +25,13 @@ using System.Diagnostics;
 using Utah.Udot.Atspm.EventLogUtility.Commands;
 using Utah.Udot.Atspm.Infrastructure.Extensions;
 
-if (!EventLog.SourceExists("Atspm"))
-    EventLog.CreateEventSource(AppDomain.CurrentDomain.FriendlyName, "Atspm");
+
+if (OperatingSystem.IsWindows())
+{
+    if (!EventLog.SourceExists("Atspm"))
+        EventLog.CreateEventSource(AppDomain.CurrentDomain.FriendlyName, "Atspm");
+}
+
 
 var rootCmd = new EventLogCommands();
 var cmdBuilder = new CommandLineBuilder(rootCmd);
@@ -38,17 +43,22 @@ cmdBuilder.UseHost(a =>
     .ApplyVolumeConfiguration()
     .ConfigureLogging((h, l) =>
     {
-        l.AddEventLog(c =>
+        if (OperatingSystem.IsWindows())
         {
-            c.SourceName = AppDomain.CurrentDomain.FriendlyName;
-            c.LogName = "Atspm";
-        });
+            l.AddEventLog(c =>
+            {
+                c.SourceName = AppDomain.CurrentDomain.FriendlyName;
+                c.LogName = "Atspm";
+            });
+        }
+
+            
         //l.AddGoogle(new LoggingServiceOptions
         //{
         //    //ProjectId = "",
         //    ServiceName = AppDomain.CurrentDomain.FriendlyName,
         //    Version = Assembly.GetEntryAssembly().GetName().Version.ToString(),
-        //    Options = LoggingOptions.Create(LogLevel.Debug, AppDomain.CurrentDomain.FriendlyName)
+        //    Options = WatchdogLoggingOptions.Create(LogLevel.Debug, AppDomain.CurrentDomain.FriendlyName)
         //});
     })
     .ConfigureServices((h, s) =>

@@ -17,6 +17,7 @@
 
 using AutoFixture;
 using Microsoft.AspNetCore.Mvc;
+using Utah.Udot.Atspm.Infrastructure.LogMessages;
 
 namespace Utah.Udot.Atspm.ReportApi.Controllers
 {
