@@ -22,6 +22,7 @@ using System.CommandLine.Binding;
 using System.CommandLine.NamingConventionBinder;
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Infrastructure.Services.HostedServices;
+using Utah.Udot.Atspm.ValueObjects;
 
 namespace Utah.Udot.Atspm.EventLogUtility.Commands
 {
