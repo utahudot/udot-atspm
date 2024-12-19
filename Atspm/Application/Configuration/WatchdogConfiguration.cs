@@ -17,7 +17,6 @@
 
 namespace Utah.Udot.Atspm.Configuration
 {
-
     public class WatchdogConfiguration
     {
         public DateTime ScanDate { get; set; } = DateTime.Today.AddDays(-1);

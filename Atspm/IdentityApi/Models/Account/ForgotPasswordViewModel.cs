@@ -25,5 +25,4 @@ namespace Identity.Models.Account
         [EmailAddress]
         public string Email { get; set; }
     }
-
 }
