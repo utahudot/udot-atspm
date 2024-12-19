@@ -58,7 +58,7 @@ cmdBuilder.UseHost(a =>
         //    //ProjectId = "",
         //    ServiceName = AppDomain.CurrentDomain.FriendlyName,
         //    Version = Assembly.GetEntryAssembly().GetName().Version.ToString(),
-        //    Options = LoggingOptions.Create(LogLevel.Debug, AppDomain.CurrentDomain.FriendlyName)
+        //    Options = WatchdogLoggingOptions.Create(LogLevel.Debug, AppDomain.CurrentDomain.FriendlyName)
         //});
     })
     .ConfigureServices((h, s) =>

@@ -55,7 +55,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Using Include="Utah.Udot.Atspm.Configuration" />
+      <Using Include="Utah.Udot.Atspm.Infrastructure.Configuration" />
 	  <Using Include="Utah.Udot.Atspm.Data.Models" />
 	  <Using Include="Utah.Udot.Atspm.Repositories.ConfigurationRepositories" />
 	  <Using Include="Utah.Udot.Atspm.Services" />
