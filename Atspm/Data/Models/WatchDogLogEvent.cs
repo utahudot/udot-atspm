@@ -114,13 +114,14 @@ namespace Utah.Udot.Atspm.Data.Models
                     Timestamp == other.Timestamp &&
                    ComponentType == other.ComponentType &&
                    ComponentId == other.ComponentId &&
-                   IssueType == other.IssueType;
+                   IssueType == other.IssueType &&
+                       Phase == other.Phase;
         }
 
         /// <inheritdoc/>
         public override int GetHashCode()
         {
-            return HashCode.Combine(LocationIdentifier, Timestamp, ComponentType, ComponentId, IssueType);
+            return HashCode.Combine(LocationIdentifier, Timestamp, ComponentType, ComponentId, IssueType, (Phase.HasValue ? Phase.Value.GetHashCode() : -1));
         }
     }
 }
