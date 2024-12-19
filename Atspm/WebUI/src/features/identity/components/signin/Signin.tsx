@@ -97,7 +97,7 @@ export default function Signin() {
 
   const redirectUser = async () => {
     const env = await getEnv()
-    const externalLoginUrl = `${identityUrl}/identity/api/v1/Account/external-login`
+    const externalLoginUrl = `${identityUrl}/api/v1/Account/external-login`
 
     // Open the external login endpoint in a new tab
     window.open(externalLoginUrl, '_self')
