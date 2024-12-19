@@ -21,7 +21,6 @@ using System.CommandLine;
 using System.CommandLine.Hosting;
 using System.CommandLine.NamingConventionBinder;
 using System.Text.RegularExpressions;
-using Utah.Udot.Atspm.Configuration;
 using Utah.Udot.Atspm.Infrastructure.Services.HostedServices;
 
 namespace Utah.Udot.Atspm.EventLogUtility.Commands

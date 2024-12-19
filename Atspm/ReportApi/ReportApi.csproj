@@ -42,7 +42,6 @@
 	  <Using Include="Utah.Udot.Atspm.Enums" />
 	  <Using Include="Utah.Udot.Atspm.Extensions" />
 	  <Using Include="Utah.Udot.Atspm.Infrastructure.Extensions" />
-	  <Using Include="Utah.Udot.Atspm.LogMessages" />
 	  <Using Include="Utah.Udot.Atspm.Repositories.AggregationRepositories" />
 	  <Using Include="Utah.Udot.Atspm.Repositories.ConfigurationRepositories" />
 	  <Using Include="Utah.Udot.Atspm.Repositories.EventLogRepositories" />

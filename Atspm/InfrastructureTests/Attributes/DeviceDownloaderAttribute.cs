@@ -22,8 +22,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Utah.Udot.Atspm.Configuration;
 using Utah.Udot.Atspm.Data.Enums;
+using Utah.Udot.Atspm.Infrastructure.Configuration;
 using Utah.Udot.Atspm.Services;
 using Xunit.Sdk;
 
