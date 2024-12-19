@@ -32,5 +32,4 @@ namespace Identity.Models.Account
         public string? ReturnUrl { get; set; }
         public string? Provider { get; set; }
     }
-
 }
