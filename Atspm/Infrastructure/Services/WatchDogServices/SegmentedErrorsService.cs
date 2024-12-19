@@ -31,7 +31,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
         }
 
         public (List<WatchDogLogEventWithCountAndDate> newIssues, List<WatchDogLogEventWithCountAndDate> dailyRecurringIssues, List<WatchDogLogEventWithCountAndDate> recurringIssues)
-        GetSegmentedErrors(List<WatchDogLogEvent> recordsForScanDate, EmailOptions emailOptions)
+        GetSegmentedErrors(List<WatchDogLogEvent> recordsForScanDate, WatchdogEmailOptions emailOptions)
         {
             //var consecutiveCountResults = GetConsecutiveDays(emailOptions.ScanDate);
             //var watchDogEventSummary = GetYearStats(emailOptions.ScanDate, emailOptions.ScanDate.AddDays(-1));
@@ -123,7 +123,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
 
 
         private (List<WatchDogLogEvent> recordsForLast12Months, List<WatchDogLogEvent> recordsForDayBeforeScanDate)
-        FetchRecords(EmailOptions emailOptions)
+        FetchRecords(WatchdogEmailOptions emailOptions)
         {
             if (emailOptions.WeekdayOnly && emailOptions.ScanDate.DayOfWeek == DayOfWeek.Monday)
             {

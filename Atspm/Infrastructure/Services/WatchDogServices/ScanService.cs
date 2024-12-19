@@ -74,8 +74,8 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
             this.ignoreEventService = ignoreEventService;
         }
         public async Task StartScan(
-            LoggingOptions loggingOptions,
-            EmailOptions emailOptions,
+            WatchdogLoggingOptions loggingOptions,
+            WatchdogEmailOptions emailOptions,
             CancellationToken cancellationToken)
         {
             //need a version of this that gets the Location version for date of the scan

@@ -93,17 +93,12 @@ builder.Host
     builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
     builder.Services.AddSwaggerGen(o =>
     {
-        var fileName = typeof(Program).Assembly.GetName().Name + ".xml";
-        var filePath = Path.Combine(AppContext.BaseDirectory, fileName);
-
-        // integrate xml comments
-        o.IncludeXmlComments(filePath);
-
-        // Use the full name to avoid schema ID conflicts
-        o.CustomSchemaIds(type => type.FullName);
+        o.IncludeXmlComments(typeof(Program));
+        o.CustomOperationIds((controller, verb, action) => $"{verb}{controller}{action}");
+        o.EnableAnnotations();
     });
 
-    var allowedHosts = builder.Configuration.GetSection("AllowedHosts").Get<string>();
+    var allowedHosts = builder.Configuration.GetSection("AllowedHosts").Get<string>() ?? "*";
     s.AddCors(options =>
     {
         options.AddPolicy("CorsPolicy",
@@ -134,11 +129,7 @@ builder.Host
 
     s.AddPathBaseFilter(h);
 
-    if (!h.HostingEnvironment.IsDevelopment())
-    {
-        s.AddAtspmAuthentication(h);
-        s.AddAtspmAuthorization();
-    }
+    s.AddAtspmIdentity(h);
 });
 
 var app = builder.Build();
