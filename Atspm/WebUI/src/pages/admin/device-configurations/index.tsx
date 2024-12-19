@@ -1,6 +1,6 @@
+import { Device } from '@/api/config/aTSPMConfigurationApi.schemas'
 import AdminTable from '@/components/AdminTable/AdminTable'
 import DeleteModal from '@/components/AdminTable/DeleteModal'
-import DeviceConfigModal from '@/components/GenericAdminChart/DeviceConfigModal'
 import { ResponsivePageLayout } from '@/components/ResponsivePage'
 import {
   useCreateDeviceConfiguration,
@@ -9,12 +9,14 @@ import {
   useGetDeviceConfigurations,
 } from '@/features/devices/api/deviceConfigurations'
 import { useGetDevices } from '@/features/devices/api/devices'
+import DeviceConfigModal from '@/features/devices/components/DeviceConfigModal'
 import { DeviceConfiguration } from '@/features/devices/types/index'
 import {
   PageNames,
   useUserHasClaim,
   useViewPage,
 } from '@/features/identity/pagesCheck'
+import { useLatestVersionOfAllLocations } from '@/features/locations/api'
 import { useGetProducts } from '@/features/products/api'
 import { Backdrop, CircularProgress } from '@mui/material'
 
@@ -33,6 +35,9 @@ const DevicesAdmin = () => {
   const { data: allDevicesData } = useGetDevices()
   const devices = allDevicesData?.value
 
+  const { data: locationsData } = useLatestVersionOfAllLocations()
+  const locations = locationsData?.value
+  console.log('locations ', devices)
   const {
     data: deviceConfigurationData,
     isLoading,
@@ -40,7 +45,6 @@ const DevicesAdmin = () => {
   } = useGetDeviceConfigurations()
   const deviceConfigurations = deviceConfigurationData?.value
 
-  //THIS GOES IN THE MODAL
   const { data: productData, isLoading: productIsloading } = useGetProducts()
 
   if (pageAccess.isLoading) {
@@ -167,16 +171,16 @@ const DevicesAdmin = () => {
     return <div>Error returning data</div>
   }
   const filterAssociatedObjects = (
-    jurisdictionId: number,
-    objects: Location[]
+    deviceConfigurationId: number,
+    objects: Device[]
   ): { id: number; name: string }[] => {
-    const associatedLocations = objects.filter((object) => {
-      return object.jurisdictionId === jurisdictionId
+    const associatedDeviceLocations = objects.filter((object) => {
+      return object.deviceConfigurationId === deviceConfigurationId
     })
 
-    return associatedLocations.map((location) => ({
-      id: location.id,
-      name: `${location.primaryName} & ${location.secondaryName}`,
+    return associatedDeviceLocations.map((devices) => ({
+      id: devices.location?.id ?? 0,
+      name: `${devices.location?.primaryName ?? ''} & ${devices.location?.secondaryName ?? ''} - ${devices?.deviceType ?? ''}`,
     }))
   }
 
@@ -240,15 +244,15 @@ const DevicesAdmin = () => {
           <DeleteModal
             id={0}
             name={'test'}
-            deleteLabel={(selectedRow: typeof filteredData[number] ) =>
-              selectedRow.firmware
+            deleteLabel={(selectedRow: (typeof filteredData)[number]) =>
+              `${selectedRow.product?.manufacturer} ${selectedRow.product?.model} ${selectedRow.firmware}`
             }
             objectType="Device Configuration"
             open={false}
             onClose={() => {}}
             onConfirm={HandleDeleteDevice}
             associatedObjects={devices}
-            associatedObjectsLabel="devices"
+            associatedObjectsLabel="devices and locations"
             filterFunction={filterAssociatedObjects}
           />
         }
