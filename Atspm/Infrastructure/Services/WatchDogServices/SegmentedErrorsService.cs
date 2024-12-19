@@ -34,11 +34,11 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
         GetSegmentedErrors(List<WatchDogLogEvent> recordsForScanDate, WatchdogEmailOptions emailOptions)
         {
             //var consecutiveCountResults = GetConsecutiveDays(emailOptions.ScanDate);
-            var watchDogEventSummary = GetYearStats(emailOptions.ScanDate, emailOptions.ScanDate.AddDays(-1));
+            //var watchDogEventSummary = GetYearStats(emailOptions.ScanDate, emailOptions.ScanDate.AddDays(-1));
             //var recordsWithPreviousDayOccurence = watchDogEventSummary.Where(w => w.OccurredOnSpecificDate == true).ToList();
             var (recordsForLast12Months, recordsForDayBeforeScanDate) = FetchRecords(emailOptions);
 
-            var countAndDateLookupForLast12Months = CreateCountAndDateLookup(recordsForLast12Months);
+            var countAndDateLookupForLast12Months = CreateCountAndDateLookup(recordsForLast12Months, emailOptions.ScanDate);
             var countForDayBeforeScanDate = CreateDayBeforeCountLookup(recordsForDayBeforeScanDate);
 
             var allConvertedRecords = ConvertRecords(recordsForScanDate, countAndDateLookupForLast12Months);
@@ -47,67 +47,79 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
             return CategorizeIssues(allConvertedRecords, countForDayBeforeScanDate);
         }
 
-        public List<ConsecutiveDayResult> GetConsecutiveDays(DateTime scanDate)
-        {
-            DateTime previousDate = scanDate.AddDays(-1);
+        //public List<ConsecutiveDayResult> GetConsecutiveDays(DateTime scanDate)
+        //{
+        //    DateTime previousDate = scanDate.AddDays(-1);
 
-            var consecutiveDaysResult = watchDogLogEventRepository.GetList()
-                .Where(e => e.Timestamp.Date == scanDate.Date || e.Timestamp.Date == previousDate.Date)
-                .GroupBy(e => new
-                {
-                    e.LocationId,
-                    e.ComponentType,
-                    e.ComponentId,
-                    e.Phase,
-                    e.IssueType
-                })
-                .Where(group =>
-                    group.Any(e => e.Timestamp.Date == previousDate.Date) &&
-                    group.Any(e => e.Timestamp.Date == scanDate.Date)) // Ensure events exist for both dates
-                .Select(group => new ConsecutiveDayResult
-                {
-                    LocationId = group.Key.LocationId,
-                    ComponentType = group.Key.ComponentType,
-                    ComponentId = group.Key.ComponentId,
-                    Phase = group.Key.Phase,
-                    IssueType = group.Key.IssueType,
-                    ConsecutiveDays = 2 // Fixed to 2 since we're explicitly checking for two consecutive dates
-                })
-                .ToList();
+        //    var consecutiveDaysResult = watchDogLogEventRepository.GetList()
+        //        .Where(e => e.Timestamp.Date == scanDate.Date || e.Timestamp.Date == previousDate.Date)
+        //        .GroupBy(e => new
+        //        {
+        //            e.LocationId,
+        //            e.ComponentType,
+        //            e.ComponentId,
+        //            e.Phase,
+        //            e.IssueType
+        //        })
+        //        .Where(group =>
+        //            group.Any(e => e.Timestamp.Date == previousDate.Date) &&
+        //            group.Any(e => e.Timestamp.Date == scanDate.Date)) // Ensure events exist for both dates
+        //        .Select(group => new ConsecutiveDayResult
+        //        {
+        //            LocationId = group.Key.LocationId,
+        //            ComponentType = group.Key.ComponentType,
+        //            ComponentId = group.Key.ComponentId,
+        //            Phase = group.Key.Phase,
+        //            IssueType = group.Key.IssueType,
+        //            ConsecutiveDays = 2 // Fixed to 2 since we're explicitly checking for two consecutive dates
+        //        })
+        //        .ToList();
 
-            return consecutiveDaysResult;
-        }
+        //    return consecutiveDaysResult;
+        //}
         
-        public List<WatchDogEventSummary> GetYearStats(DateTime scanDate, DateTime previousDayDate)
-        {
-            DateTime previousDate = scanDate.AddDays(-1);
+        //public List<WatchDogEventSummary> GetYearStats(DateTime scanDate, DateTime previousDayDate)
+        //{
+        //    DateTime previousDate = scanDate.AddDays(-1);
 
-            var consecutiveDaysResult = watchDogLogEventRepository.GetList()
-                .Where(e => e.Timestamp >= scanDate.AddMonths(-12) && e.Timestamp < scanDate)
-                .GroupBy(e => new
-                {
-                    e.LocationId,
-                    e.ComponentType,
-                    e.ComponentId,
-                    e.Phase,
-                    e.IssueType
-                })
-                .Select(g => new WatchDogEventSummary
-                {
-                    LocationId = g.Key.LocationId,
-                    ComponentType = g.Key.ComponentType,
-                    ComponentId = g.Key.ComponentId,
-                    Phase = g.Key.Phase,
-                    IssueType = g.Key.IssueType,
-                    OccurrenceCount = g.Count(),
-                    OccurredOnSpecificDate = g.Any(e => e.Timestamp.Date == previousDayDate.Date) ? 1 : 0,
-                    FirstOccurrenceDate = g.Min(e => e.Timestamp.Date)
-                })
-                .OrderByDescending(x => x.OccurrenceCount)
-                .ToList();
+        //    var test = watchDogLogEventRepository.GetList()
+        //        .Where(e => e.Timestamp >= scanDate.AddMonths(-12) && e.Timestamp < scanDate)
+        //        .GroupBy(e => new WatchDogGroup
+        //        {
+        //            LocationId = e.LocationId,
+        //            ComponentType = e.ComponentType,
+        //            ComponentId = e.ComponentId,
+        //            Phase = e.Phase ?? -1,
+        //            IssueType = e.IssueType
+        //        })
+        //        .ToList();
 
-            return consecutiveDaysResult;
-        }
+        //    var consecutiveDaysResult = watchDogLogEventRepository.GetList()
+        //        .Where(e => e.Timestamp >= scanDate.AddMonths(-12) && e.Timestamp < scanDate)
+        //        .GroupBy(e => new
+        //        {
+        //            e.LocationId,
+        //            e.ComponentType,
+        //            e.ComponentId,
+        //            e.Phase,
+        //            e.IssueType
+        //        })
+        //        .Select(g => new WatchDogEventSummary
+        //        {
+        //            LocationId = g.Key.LocationId,
+        //            ComponentType = g.Key.ComponentType,
+        //            ComponentId = g.Key.ComponentId,
+        //            Phase = g.Key.Phase,
+        //            IssueType = g.Key.IssueType,
+        //            OccurrenceCount = g.Count(),
+        //            OccurredOnSpecificDate = g.Any(e => e.Timestamp.Date == previousDayDate.Date) ? 1 : 0,
+        //            FirstOccurrenceDate = g.Min(e => e.Timestamp.Date)
+        //        })
+        //        .OrderByDescending(x => x.OccurrenceCount)
+        //        .ToList();
+
+        //    return consecutiveDaysResult;
+        //}
 
 
         private (List<WatchDogLogEvent> recordsForLast12Months, List<WatchDogLogEvent> recordsForDayBeforeScanDate)
@@ -127,22 +139,23 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                                    w.Timestamp < emailOptions.ScanDate).ToList();
                 var recordsForLast12Months = watchDogLogEventRepository.GetList(w => w.Timestamp >= emailOptions.ScanDate.AddDays(-1).AddMonths(-12) &&
                     w.Timestamp < emailOptions.ScanDate).ToList();
+                var test = recordsForLast12Months.OrderBy(r => r.LocationIdentifier).ThenBy(r => r.ComponentType).ThenBy(r => r.ComponentId).ThenBy(r => r.IssueType).ThenBy(r => r.Phase).ToList();
                 return (recordsForLast12Months, recordsForDayBeforeScanDate);
             }
         }
 
-        private static Dictionary<(string LocationIdentifier, WatchDogIssueTypes IssueType, WatchDogComponentTypes ComponentType, int? Phase), (int Count, DateTime DateOfFirstOccurrence, int ConsecutiveOccurrenceCount)>
-        CreateCountAndDateLookup(List<WatchDogLogEvent> recordsForLast12Months)
+        public static Dictionary<(string LocationIdentifier, WatchDogComponentTypes ComponentType, int ComponentId,  WatchDogIssueTypes IssueType,  int? Phase), (int Count, DateTime DateOfFirstOccurrence, int ConsecutiveOccurrenceCount)>
+        CreateCountAndDateLookup(List<WatchDogLogEvent> recordsForLast12Months, DateTime scanDate)
         {
             return recordsForLast12Months
-                .GroupBy(r => (r.LocationIdentifier, r.IssueType, r.ComponentType, r.Phase))
+                .GroupBy(r => (r.LocationIdentifier, r.ComponentType, r.ComponentId, r.IssueType, r.Phase))
                 .ToDictionary(
                     group => group.Key,
                     group =>
                     {
                         var orderedEvents = group.OrderBy(e => e.Timestamp).ToList();
                         var firstOccurrence = orderedEvents.First().Timestamp;
-                        var consecutiveCount = CalculateConsecutiveOccurrences(orderedEvents);
+                        var consecutiveCount = CalculateLastConsecutiveOccurrences(orderedEvents, scanDate);
                         return (
                             Count: group.Count(),
                             DateOfFirstOccurrence: group.Min(e => e.Timestamp),
@@ -152,71 +165,129 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                 );
         }
 
-        private static int CalculateConsecutiveOccurrences(List<WatchDogLogEvent> orderedEvents)
+        public static int CalculateLastConsecutiveOccurrences(List<WatchDogLogEvent> events, DateTime scanDate)
         {
-            int maxConsecutiveDays = 1; // Keep track of the longest streak
-            int currentStreak = 1;
+            if (events == null || events.Count == 0 || !events.Select(e => e.Timestamp.Date).Contains(scanDate.AddDays(-1)))
+                return 0;
+
+            // Ensure events are ordered by timestamp in descending order
+            var orderedEvents = events.OrderByDescending(e => e.Timestamp).ToList();
+
+            int currentStreak = 1; // Tracks the streak of the most recent occurrences
 
             for (int i = 1; i < orderedEvents.Count; i++)
             {
-                // Check if the event occurred on the next consecutive day
-                if ((orderedEvents[i].Timestamp - orderedEvents[i - 1].Timestamp).TotalDays == 1)
+                // Check if the event occurred on the previous consecutive day
+                if ((orderedEvents[i - 1].Timestamp.Date - orderedEvents[i].Timestamp.Date).TotalDays == 1)
                 {
                     currentStreak++;
-                    maxConsecutiveDays = Math.Max(maxConsecutiveDays, currentStreak);
                 }
                 else
                 {
-                    // Reset streak if there is a gap in consecutive days
-                    currentStreak = 1;
+                    // Stop as soon as a gap is found
+                    break;
                 }
             }
 
-            return maxConsecutiveDays;
+            return currentStreak;
         }
 
-        private static Dictionary<(string LocationIdentifier, WatchDogIssueTypes IssueType, WatchDogComponentTypes ComponentType, int? Phase), int>
+
+
+        private static Dictionary<(string LocationIdentifier, WatchDogComponentTypes ComponentType, int ComponentId, WatchDogIssueTypes IssueType, int? Phase), int>
         CreateDayBeforeCountLookup(List<WatchDogLogEvent> recordsForDayBeforeScanDate)
         {
             return recordsForDayBeforeScanDate
-                .GroupBy(r => (r.LocationIdentifier, r.IssueType, r.ComponentType, r.Phase))
+                .GroupBy(r => (r.LocationIdentifier, r.ComponentType, r.ComponentId, r.IssueType ,r.Phase))
                 .ToDictionary(
                     group => group.Key,
                     group => group.Count()
                 );
         }
 
-        private static List<WatchDogLogEventWithCountAndDate>
-        ConvertRecords(List<WatchDogLogEvent> recordsForScanDate, Dictionary<(string LocationIdentifier, WatchDogIssueTypes IssueType, WatchDogComponentTypes ComponentType, int? Phase), (int Count, DateTime DateOfFirstOccurrence, int ConsecutiveOccurrenceCount)> countAndDateLookupForLast12Months)
+        private static List<WatchDogLogEventWithCountAndDate> ConvertRecords(
+            List<WatchDogLogEvent> recordsForScanDate,
+            Dictionary<(string LocationIdentifier, WatchDogComponentTypes ComponentType, int ComponentId, WatchDogIssueTypes IssueType, int? Phase),
+            (int Count, DateTime DateOfFirstOccurrence, int ConsecutiveOccurrenceCount)> countAndDateLookupForLast12Months)
         {
             return recordsForScanDate
-                .Select(r => new WatchDogLogEventWithCountAndDate(r.LocationId, r.LocationIdentifier, r.Timestamp, r.ComponentType, r.ComponentId, r.IssueType, r.Details, r.Phase)
+                .Select(r =>
                 {
-                    EventCount = countAndDateLookupForLast12Months.TryGetValue((r.LocationIdentifier, r.IssueType, r.ComponentType, r.Phase), out var data) ? data.Count : 0,
-                    DateOfFirstInstance = countAndDateLookupForLast12Months.TryGetValue((r.LocationIdentifier, r.IssueType, r.ComponentType, r.Phase), out data) ? data.DateOfFirstOccurrence : r.Timestamp,
-                    ConsecutiveOccurenceCount = countAndDateLookupForLast12Months.TryGetValue((r.LocationIdentifier, r.IssueType, r.ComponentType, r.Phase), out data) ? data.ConsecutiveOccurrenceCount : 1
+                    // Try to get the data from the dictionary once
+                    var key = (r.LocationIdentifier, r.ComponentType, r.ComponentId, r.IssueType,  r.Phase);
+                    var found = countAndDateLookupForLast12Months.TryGetValue(key, out var data);
+
+                    return new WatchDogLogEventWithCountAndDate(r.LocationId, r.LocationIdentifier, r.Timestamp, r.ComponentType, r.ComponentId, r.IssueType, r.Details, r.Phase)
+                    {
+                        EventCount = found ? data.Count : 0,
+                        DateOfFirstInstance = found ? data.DateOfFirstOccurrence : r.Timestamp,
+                        ConsecutiveOccurenceCount = found ? data.ConsecutiveOccurrenceCount : 1
+                    };
                 })
                 .ToList();
         }
 
+
         private static (List<WatchDogLogEventWithCountAndDate> newIssues, List<WatchDogLogEventWithCountAndDate> dailyRecurringIssues, List<WatchDogLogEventWithCountAndDate> recurringIssues)
-        CategorizeIssues(List<WatchDogLogEventWithCountAndDate> allConvertedRecords, Dictionary<(string LocationIdentifier, WatchDogIssueTypes IssueType, WatchDogComponentTypes ComponentType, int? Phase), int> countForDayBeforeScanDate)
+        CategorizeIssues(List<WatchDogLogEventWithCountAndDate> allConvertedRecords, Dictionary<(string LocationIdentifier, WatchDogComponentTypes ComponentType, int ComponentId, WatchDogIssueTypes IssueType, int? Phase), int> countForDayBeforeScanDate)
         {
+            //Errors that have not happened before
             var newIssues = allConvertedRecords
                 .Where(r => r.EventCount == 0)
                 .ToList();
 
+            //Errors that happened yesterday
             var dailyRecurringIssues = allConvertedRecords
-                .Where(r => countForDayBeforeScanDate.TryGetValue((r.LocationIdentifier, r.IssueType, r.ComponentType, r.Phase), out var dayBeforeCount) && dayBeforeCount == 1)
+                .Where(r => r.ConsecutiveOccurenceCount > 1)
+                //.Where(r => countForDayBeforeScanDate.TryGetValue((r.LocationIdentifier, r.IssueType, r.ComponentType, r.Phase), out var dayBeforeCount) && dayBeforeCount >= 1)
                 .ToList();
-
+            //Errors are not new and did not happen yesterday
             var recurringIssues = allConvertedRecords
                 .Except(newIssues.Concat(dailyRecurringIssues))
+                .Except(newIssues.Concat(newIssues))                
                 .ToList();
 
             return (newIssues, dailyRecurringIssues, recurringIssues);
         }
     }
+
+    public class WatchDogGroup
+    {
+        public int LocationId { get; set; }
+        public WatchDogComponentTypes ComponentType { get; set; }
+        public int ComponentId { get; set; }
+        public WatchDogIssueTypes IssueType { get; set; }
+        public int? Phase { get; set; }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is WatchDogGroup other)
+            {
+                return LocationId == other.LocationId &&
+                       ComponentType == other.ComponentType &&
+                       ComponentId == other.ComponentId &&
+                       IssueType == other.IssueType &&
+                       Phase == other.Phase;
+            }
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked // Allow arithmetic overflow, no exceptions
+            {
+                int hash = 17; // A prime number to start the hash
+                hash = hash * 23 + LocationId.GetHashCode();
+                hash = hash * 23 + ComponentType.GetHashCode();
+                hash = hash * 23 + ComponentId.GetHashCode();
+                hash = hash * 23 + IssueType.GetHashCode();
+                hash = hash * 23 + (Phase.HasValue ? Phase.Value.GetHashCode() : -1);
+                return hash;
+            }
+        }
+    }
+
+
     public class ConsecutiveDayResult
     {
         public int LocationId { get; set; }           // The ID of the location
