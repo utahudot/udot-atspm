@@ -18,12 +18,11 @@ import {
 import { TabContext, TabList, TabPanel } from '@mui/lab'
 import { Backdrop, CircularProgress, Tab } from '@mui/material'
 import { GridColDef } from '@mui/x-data-grid'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
 const MapLayers = () => {
   const pageAccess = useViewPage(PageNames.MapLayers)
   const [currentTab, setCurrentTab] = useState('1')
-  const [data, setData] = useState<any>(null)
   const headers: GridColDef[] = pageNameToHeaders.get(
     PageNames.MapLayers
   ) as GridColDef[]
@@ -39,11 +38,8 @@ const MapLayers = () => {
   const { mutate: addMapLayer } = usePostMapLayer()
   const { mutate: updateMapLayer } = usePatchMapLayerFromKey()
   const { mutate: removeMapLayer } = useDeleteMapLayerFromKey()
-  useEffect(() => {
-    if (mapLayerData) {
-      setData(mapLayerData)
-    }
-  }, [mapLayerData])
+
+  const mapLayers = mapLayerData?.value as MapLayer[]
 
   if (pageAccess.isLoading) {
     return
@@ -54,6 +50,7 @@ const MapLayers = () => {
   }
 
   const handleCreateMapLayer = async (mapLayerData: MapLayer) => {
+    delete mapLayerData.id
     try {
       await addMapLayer({ data: mapLayerData })
     } catch (error) {
@@ -63,7 +60,10 @@ const MapLayers = () => {
 
   const handleDeleteMapLayer = async (mapLayerData: MapLayer) => {
     const { id } = mapLayerData
-    console.log(id)
+    if (!id) {
+      console.error('Map Layer ID is required for deletion')
+      return
+    }
     try {
       await removeMapLayer({ key: id })
     } catch (error) {
@@ -72,6 +72,10 @@ const MapLayers = () => {
   }
 
   const handleEditMapLayer = async (mapLayerData: MapLayer) => {
+    if (!mapLayerData.id) {
+      console.error('Map Layer ID is required for editing')
+      return
+    }
     try {
       await updateMapLayer(
         {
@@ -97,19 +101,9 @@ const MapLayers = () => {
     )
   }
 
-  if (!data) {
+  if (!mapLayers) {
     return <div>Error returning data</div>
   }
-
-  const filteredData = data?.value.map((obj: any) => {
-    return {
-      id: obj.id,
-      name: obj.name,
-      mapLayerUrl: obj.mapLayerUrl,
-      showByDefault: obj.showByDefault,
-      serviceType: obj.serviceType,
-    }
-  })
 
   const baseType = {
     name: '',
@@ -117,8 +111,6 @@ const MapLayers = () => {
     showByDefault: '',
     serviceType: '',
   }
-
-  console.log('filteredData', filteredData)
 
   return (
     <ResponsivePageLayout title={'General Admin'} noBottomMargin>
@@ -135,7 +127,7 @@ const MapLayers = () => {
           <GenericAdminChart
             pageName={PageNames.MapLayers}
             headers={headers}
-            data={filteredData}
+            data={mapLayers}
             baseRowType={baseType}
             onDelete={handleDeleteMapLayer}
             onEdit={handleEditMapLayer}
