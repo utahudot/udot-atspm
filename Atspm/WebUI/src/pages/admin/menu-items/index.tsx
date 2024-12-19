@@ -1,6 +1,5 @@
 import AdminTable from '@/components/AdminTable/AdminTable'
 import DeleteModal from '@/components/AdminTable/DeleteModal'
-import MenuItemsModal from '@/features/menuItems/components/MenuItemModal'
 import { ResponsivePageLayout } from '@/components/ResponsivePage'
 import {
   PageNames,
@@ -13,6 +12,7 @@ import {
   useDeleteMenuItem,
   useEditMenuItem,
 } from '@/features/menuItems/api/postMenuItems'
+import MenuItemsModal from '@/features/menuItems/components/MenuItemModal'
 import { MenuItems } from '@/features/menuItems/types/linkDto'
 import { Backdrop, CircularProgress } from '@mui/material'
 
@@ -186,7 +186,7 @@ const MenuItemsAdmin = () => {
           <DeleteModal
             id={0}
             name={''}
-            objectType="Faqs"
+            objectType="Menu Item"
             open={false}
             onClose={() => {}}
             onConfirm={HandleDeleteMenuItem}

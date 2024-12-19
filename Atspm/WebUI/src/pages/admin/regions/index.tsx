@@ -139,6 +139,9 @@ const RegionsAdmin = () => {
             id={0}
             name={''}
             objectType="Region"
+            deleteLabel={(selectedRow: typeof filteredData[number] ) =>
+              selectedRow.description
+            }
             open={false}
             onClose={() => {}}
             onConfirm={HandleDeleteRegion}

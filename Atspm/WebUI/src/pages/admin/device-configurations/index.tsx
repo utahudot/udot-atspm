@@ -1,6 +1,5 @@
-import GenericAdminChart, {
-  pageNameToHeaders,
-} from '@/components/GenericAdminChart'
+import AdminTable from '@/components/AdminTable/AdminTable'
+import DeleteModal from '@/components/AdminTable/DeleteModal'
 import DeviceConfigModal from '@/components/GenericAdminChart/DeviceConfigModal'
 import { ResponsivePageLayout } from '@/components/ResponsivePage'
 import {
@@ -18,36 +17,39 @@ import {
 } from '@/features/identity/pagesCheck'
 import { useGetProducts } from '@/features/products/api'
 import { Backdrop, CircularProgress } from '@mui/material'
-import { GridColDef } from '@mui/x-data-grid'
-import { useEffect, useState } from 'react'
 
 const DevicesAdmin = () => {
   const pageAccess = useViewPage(PageNames.DeviceConfigurations)
 
-  const [data, setData] = useState<any>(null)
-  const headers: GridColDef[] = pageNameToHeaders.get(
-    PageNames.DeviceConfigurations
-  ) as GridColDef[]
+  const hasLocationsEditClaim = useUserHasClaim('LocationConfiguration:Edit')
+  const hasLocationsDeleteClaim = useUserHasClaim(
+    'LocationConfiguration:Delete'
+  )
 
-  const hasEditClaim = useUserHasClaim('LocationConfiguration:Edit')
-  const hasDeleteClaim = useUserHasClaim('LocationConfiguration:Delete')
-  const { data: allDevicesData } = useGetDevices();
-  const { data: deviceData, isLoading } = useGetDeviceConfigurations()
-  const createMutation = useCreateDeviceConfiguration()
-  const deleteMutation = useDeleteDeviceConfiguration()
-  const editMutation = useEditDeviceConfiguration()
+  const { mutateAsync: createMutation } = useCreateDeviceConfiguration()
+  const { mutateAsync: deleteMutation } = useDeleteDeviceConfiguration()
+  const { mutateAsync: editMutation } = useEditDeviceConfiguration()
+
+  const { data: allDevicesData } = useGetDevices()
+  const devices = allDevicesData?.value
+
+  const {
+    data: deviceConfigurationData,
+    isLoading,
+    refetch: refetchDeviceConfiguration,
+  } = useGetDeviceConfigurations()
+  const deviceConfigurations = deviceConfigurationData?.value
+
+  //THIS GOES IN THE MODAL
   const { data: productData, isLoading: productIsloading } = useGetProducts()
-  useEffect(() => {
-    if (deviceData) {
-      setData(deviceData)
-    }
-  }, [isLoading])
 
   if (pageAccess.isLoading) {
     return
   }
 
-  const HandleCreateDevice = async (deviceData: DeviceConfiguration) => {
+  const HandleCreateDevice = async (
+    deviceConfigurationData: DeviceConfiguration
+  ) => {
     const {
       firmware,
       notes,
@@ -59,40 +61,46 @@ const DevicesAdmin = () => {
       userName,
       password,
       productId,
-    } = deviceData
+    } = deviceConfigurationData
 
-    const sanitizedDevice: Partial<DeviceConfiguration> = {}
+    const sanitizedDeviceConfigurationData: Partial<DeviceConfiguration> = {}
 
-    if (firmware) sanitizedDevice.firmware = firmware
-    if (notes) sanitizedDevice.notes = notes
-    if (protocol) sanitizedDevice.protocol = protocol
-    if (port) sanitizedDevice.port = parseInt(port)
-    if (directory) sanitizedDevice.directory = directory
+    if (firmware) sanitizedDeviceConfigurationData.firmware = firmware
+    if (notes) sanitizedDeviceConfigurationData.notes = notes
+    if (protocol) sanitizedDeviceConfigurationData.protocol = protocol
+    if (port) sanitizedDeviceConfigurationData.port = parseInt(port)
+    if (directory) sanitizedDeviceConfigurationData.directory = directory
     if (connectionTimeout)
-      sanitizedDevice.connectionTimeout = parseInt(connectionTimeout)
+      sanitizedDeviceConfigurationData.connectionTimeout =
+        parseInt(connectionTimeout)
     if (operationTimeout)
-      sanitizedDevice.operationTimeout = parseInt(operationTimeout)
-    if (userName) sanitizedDevice.userName = userName
-    if (password) sanitizedDevice.password = password
-    if (productId) sanitizedDevice.productId = parseInt(productId)
+      sanitizedDeviceConfigurationData.operationTimeout =
+        parseInt(operationTimeout)
+    if (userName) sanitizedDeviceConfigurationData.userName = userName
+    if (password) sanitizedDeviceConfigurationData.password = password
+    if (productId)
+      sanitizedDeviceConfigurationData.productId = parseInt(productId)
 
     try {
-      await createMutation.mutateAsync(sanitizedDevice)
+      await createMutation(sanitizedDeviceConfigurationData)
+      refetchDeviceConfiguration()
     } catch (error) {
       console.error('Mutation Error:', error)
     }
   }
 
-  const HandleDeleteDevice = async (deviceData: DeviceConfiguration) => {
-    const { id } = deviceData
+  const HandleDeleteDevice = async (id: number) => {
     try {
-      await deleteMutation.mutateAsync(id)
+      await deleteMutation(id)
+      refetchDeviceConfiguration()
     } catch (error) {
       console.error('Mutation Error:', error)
     }
   }
 
-  const HandleEditDevice = async (deviceData: DeviceConfiguration) => {
+  const HandleEditDevice = async (
+    deviceConfigurationData: DeviceConfiguration
+  ) => {
     const {
       id,
       firmware,
@@ -107,48 +115,44 @@ const DevicesAdmin = () => {
       userName,
       password,
       productId,
-    } = deviceData
+    } = deviceConfigurationData
 
-    const sanitizedDevice: Partial<DeviceConfiguration> = {}
+    const sanitizedDeviceConfigurationData: Partial<DeviceConfiguration> = {}
 
-    if (firmware) sanitizedDevice.firmware = firmware
-    if (notes) sanitizedDevice.notes = notes
-    if (protocol) sanitizedDevice.protocol = protocol
-    if (port) sanitizedDevice.port = parseInt(port)
-    if (directory) sanitizedDevice.directory = directory
+    if (firmware) sanitizedDeviceConfigurationData.firmware = firmware
+    if (notes) sanitizedDeviceConfigurationData.notes = notes
+    if (protocol) sanitizedDeviceConfigurationData.protocol = protocol
+    if (port) sanitizedDeviceConfigurationData.port = parseInt(port)
+    if (directory) sanitizedDeviceConfigurationData.directory = directory
     if (connectionTimeout)
-      sanitizedDevice.connectionTimeout = parseInt(connectionTimeout)
+      sanitizedDeviceConfigurationData.connectionTimeout =
+        parseInt(connectionTimeout)
     if (operationTimeout)
-      sanitizedDevice.operationTimeout = parseInt(operationTimeout)
-    if (userName) sanitizedDevice.userName = userName
-    if (password) sanitizedDevice.password = password
-    if (productId) sanitizedDevice.productId = parseInt(productId)
+      sanitizedDeviceConfigurationData.operationTimeout =
+        parseInt(operationTimeout)
+    if (userName) sanitizedDeviceConfigurationData.userName = userName
+    if (password) sanitizedDeviceConfigurationData.password = password
+    if (productId)
+      sanitizedDeviceConfigurationData.productId = parseInt(productId)
 
     try {
-      await editMutation.mutateAsync({
-        data: sanitizedDevice,
+      await editMutation({
+        data: sanitizedDeviceConfigurationData,
         id,
       })
+      refetchDeviceConfiguration()
     } catch (error) {
       console.error('Mutation Error:', error)
     }
   }
 
-  const deleteDevice = (data: DeviceConfiguration) => {
-    HandleDeleteDevice(data)
-  }
-
-  const editDevice = (data: DeviceConfiguration) => {
-    HandleEditDevice(data)
-  }
-
-  const createDevice = (data: DeviceConfiguration) => {
-    HandleCreateDevice(data)
-  }
-
   const getProductDetails = (productId: number) => {
     const product = productData?.value.find((p) => p.id === productId)
     return product ? `${product.model}` : ''
+  }
+
+  const onModalClose = () => {
+    //do something?? potentially just delete
   }
 
   if (isLoading) {
@@ -159,61 +163,93 @@ const DevicesAdmin = () => {
     )
   }
 
-  if (!data) {
+  if (!deviceConfigurations) {
     return <div>Error returning data</div>
   }
+  const filterAssociatedObjects = (
+    jurisdictionId: number,
+    objects: Location[]
+  ): { id: number; name: string }[] => {
+    const associatedLocations = objects.filter((object) => {
+      return object.jurisdictionId === jurisdictionId
+    })
 
-  const filteredData = data?.value.map((obj: DeviceConfiguration) => {
+    return associatedLocations.map((location) => ({
+      id: location.id,
+      name: `${location.primaryName} & ${location.secondaryName}`,
+    }))
+  }
+
+  const filteredData = deviceConfigurations.map((obj: DeviceConfiguration) => {
     const productName = getProductDetails(obj.productId)
     return {
-      id: obj.id,
-      firmware: obj.firmware,
-      notes: obj.notes,
-      protocol: obj.protocol,
-      port: obj.port,
-      directory: obj.directory,
-      connectionTimeout: obj.connectionTimeout,
-      operationTimeout: obj.operationTimeout,
-      userName: obj.userName,
-      password: obj.password,
+      ...obj,
       productName: productName,
-      productId: obj.productId,
     }
   })
 
-  const baseType = {
-    firmware: '',
-    notes: '',
-    protocol: '',
-    port: '',
-    directory: '',
-    connectionTimeout: '',
-    operationTimeout: '',
-    userName: '',
-    password: '',
-    productName: '',
-    productId: '',
-  }
-
+  const headers = [
+    'Firmware',
+    'Notes',
+    'Protocol',
+    'Port',
+    'Directory',
+    'Connection Timeout',
+    'Operation Timeout',
+    'Username',
+    'Password',
+    'Product Name',
+  ]
+  const headerKeys = [
+    'firmware',
+    'notes',
+    'protocol',
+    'port',
+    'directory',
+    'connectionTimeout',
+    'operationTimeout',
+    'userName',
+    'password',
+    'productName',
+  ]
 
   return (
-    <ResponsivePageLayout title={'Device Configurations'} noBottomMargin>
-      <GenericAdminChart
-        pageName={PageNames.DeviceConfigurations}
+    <ResponsivePageLayout title="Device Configurations" noBottomMargin>
+      <AdminTable
+        pageName="Device Configuration"
         headers={headers}
+        headerKeys={headerKeys}
         data={filteredData}
-        baseRowType={baseType}
-        onDelete={deleteDevice}
-        onEdit={editDevice}
-        onCreate={createDevice}
-        locations={allDevicesData?.value}
-        hasEditPrivileges={hasEditClaim}
-        hasDeletePrivileges={hasDeleteClaim}
-        customModal={
+        hasEditPrivileges={hasLocationsEditClaim}
+        hasDeletePrivileges={hasLocationsDeleteClaim}
+        editModal={
           <DeviceConfigModal
-            onCreate={createDevice}
-            onEdit={editDevice}
-            onDelete={deleteDevice}
+            isOpen={true}
+            onSave={HandleEditDevice}
+            onClose={onModalClose}
+          />
+        }
+        createModal={
+          <DeviceConfigModal
+            isOpen={true}
+            onSave={HandleCreateDevice}
+            onClose={onModalClose}
+          />
+        }
+        deleteModal={
+          <DeleteModal
+            id={0}
+            name={'test'}
+            deleteLabel={(selectedRow: typeof filteredData[number] ) =>
+              selectedRow.firmware
+            }
+            objectType="Device Configuration"
+            open={false}
+            onClose={() => {}}
+            onConfirm={HandleDeleteDevice}
+            associatedObjects={devices}
+            associatedObjectsLabel="devices"
+            filterFunction={filterAssociatedObjects}
           />
         }
       />
