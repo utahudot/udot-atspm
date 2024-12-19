@@ -144,8 +144,42 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
 
         public void SaveErrorLogs(List<WatchDogLogEvent> errors)
         {
-            watchDogLogEventRepository.AddRange(errors);
+            const int maxRetryAttempts = 3;
+            int retryCount = 0;
+            int delay = 30000; //(in milliseconds)
+
+            while (retryCount < maxRetryAttempts)
+            {
+                try
+                {
+                    // Attempt to save the errors
+                    watchDogLogEventRepository.AddRange(errors);
+
+                    // If successful, exit the retry loop
+                    return;
+                }
+                catch (Exception ex)
+                {
+                    retryCount++;
+
+                    // Log the exception (optional, based on your logging implementation)
+                   logger.LogError($"Attempt {retryCount} failed: {ex.Message}");
+
+                    if (retryCount == maxRetryAttempts)
+                    {
+                        // Throw the exception after max retries
+                        throw new Exception("Failed to save error logs after multiple attempts.", ex);
+                    }
+
+                    // Exponential backoff delay before retrying
+                    logger.LogInformation($"Retrying in {delay} ms...");
+                    Thread.Sleep(delay);
+                    delay *= 2; // Double the delay time
+                }
+            }
         }
+
+
 
         public async Task<List<ApplicationUser>> GetUsersWithWatchDogClaimAsync()
         {
