@@ -66,7 +66,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
 
                 _client.DefaultRequestHeaders.Accept.Clear();
                 //HACK: this is specific to maxtimecontrollers future versions will need this adjustable
-                _client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/xml"));
+                //_client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/xml"));
 
                 return Task.CompletedTask;
             }
@@ -169,6 +169,8 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
                 //HACK: this is for maxtime controllers, needs to be moved to search terms in the db
                 builder.Query = $"since={DateTime.Now.AddHours(-1):MM-dd-yyyy HH:mm:ss.f}";
 
+                //builder.Query = $"start-time=2024-12-03T23:43:09&end-time=2024-12-10T00:00:00&intervals=10";
+
                 if (filters?.Length > 0)
                 {
                     foreach (var filter in filters)
@@ -180,6 +182,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
                 getPath = builder.Uri;
 
                 return Task.FromResult<IEnumerable<string>>(new List<string>() { $"{DateTime.Now.Ticks}.xml" });
+                //return Task.FromResult<IEnumerable<string>>(new List<string>() { $"{DateTime.Now.Ticks}.json" });
             }
             catch (Exception e)
             {
