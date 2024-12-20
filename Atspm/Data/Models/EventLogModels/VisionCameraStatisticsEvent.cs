@@ -20,65 +20,6 @@
 
 namespace Utah.Udot.Atspm.Data.Models.EventLogModels
 {
-
-
-    public class CameraEvent : EventLogModelBase
-    {
-        /// <summary>
-        /// Zone Identifier
-        /// </summary>
-        public long ZoneId { get; set; } //needs converting to location identifier
-
-        /// <summary>
-        /// Name of the Zone
-        /// </summary>
-        public string ZoneName { get; set; }
-
-        /// <summary>
-        /// Object Type (e.g., Vehicle)
-        /// </summary>
-        public string ObjectType { get; set; }
-
-        /// <summary>
-        /// Speed of the object
-        /// </summary>
-        public double Speed { get; set; }
-
-        /// <summary>
-        /// Length of the object
-        /// </summary>
-        public double Length { get; set; }
-
-        /// <summary>
-        /// Direction of the object
-        /// </summary>
-        public string Direction { get; set; }
-
-        ///<inheritdoc/>
-        public override bool Equals(object obj)
-        {
-            return obj is CameraEvent zoneEvent &&
-                   ZoneId == zoneEvent.ZoneId &&
-                   ZoneName == zoneEvent.ZoneName &&
-                   ObjectType == zoneEvent.ObjectType &&
-                   Speed == zoneEvent.Speed &&
-                   Length == zoneEvent.Length &&
-                   Direction == zoneEvent.Direction;
-        }
-
-        ///<inheritdoc/>
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(ZoneId, ZoneName, Timestamp, ObjectType, Speed, Length, Direction);
-        }
-
-        ///<inheritdoc/>
-        public override string ToString()
-        {
-            return $"{ZoneId}-{ZoneName}-{Timestamp}-{ObjectType}-{Speed}-{Length}-{Direction}";
-        }
-    }
-
     public class VisionCameraStatisticsEvent : EventLogModelBase
     {
         /// <summary>

@@ -4,7 +4,7 @@ using Utah.Udot.Atspm.Infrastructure.Services.EventLogDecoders;
 
 namespace Utah.Udot.ATSPM.Infrastructure.Services.EventLogDecoders
 {
-    public class JsonToVisionCameraEventDecoder : EventLogDecoderBase<VisionCameraStatisticsEvent>
+    public class JsonToVisionCameraStatisticEventDecoder : EventLogDecoderBase<VisionCameraStatisticsEvent>
     {
         public override IEnumerable<VisionCameraStatisticsEvent> Decode(Device device, Stream stream, CancellationToken cancelToken = default)
         {
