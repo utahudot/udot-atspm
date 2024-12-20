@@ -16,7 +16,6 @@
 #endregion
 
 using Microsoft.Extensions.Logging;
-using Utah.Udot.Atspm.Extensions;
 using System.Net.Mail;
 using System.Text;
 using Utah.Udot.Atspm.Business.Watchdog;
@@ -24,7 +23,7 @@ using Utah.Udot.Atspm.Data.Enums;
 
 namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
 {
-    public class WatchdogEmailService
+    public class WatchdogEmailService : IWatchdogEmailService
     {
         private readonly ILogger<WatchdogEmailService> logger;
         private readonly IEmailService mailService;
@@ -36,8 +35,6 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
             this.logger = logger;
             this.mailService = mailService;
         }
-
-
 
         public async Task SendAllEmails(
             WatchdogEmailOptions options,
