@@ -29,13 +29,13 @@ interface User {
 }
 
 interface ModalProps {
-    open: boolean
+    isOpen: boolean
     onClose: () => void
     data: User | null
     onSave: (user: User) => void
 }
 
-const UserModal: React.FC<ModalProps> = ({ open, onClose, data, onSave }) => {
+const UserModal: React.FC<ModalProps> = ({ isOpen, onClose, data, onSave }) => {
     const [user, setUser] = useState<User | null>(null)
     const [usernameError, setUsernameError] = useState('')
     const [emailError, setEmailError] = useState('')
@@ -96,21 +96,7 @@ const UserModal: React.FC<ModalProps> = ({ open, onClose, data, onSave }) => {
                 return
             }
             try {
-                await editUser.mutateAsync({
-                    firstName: user.firstName,
-                    lastName: user.lastName,
-                    agency: user.agency,
-                    email: user.email.toLowerCase(),
-                    userName: user.userName.toLowerCase(),
-                    userId: user.id,
-                    fullName: `${user.firstName} ${user.lastName}`,
-                    roles: user.roles,
-                })
-                onSave({
-                    ...user,
-                    email: user.email.toLowerCase(),
-                    userName: user.userName.toLowerCase(),
-                })
+                onSave(user)
                 onClose()
             } catch (error) {
                 console.error('Error updating user profile:', error)
@@ -120,7 +106,7 @@ const UserModal: React.FC<ModalProps> = ({ open, onClose, data, onSave }) => {
     if (isLoading) return <div>conent is loading...</div>
 
     return (
-        <Dialog open={open} onClose={onClose}>
+        <Dialog open={isOpen} onClose={onClose}>
             <DialogTitle>User Details</DialogTitle>
             <DialogContent>
                 {user ? (

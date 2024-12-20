@@ -1,58 +1,88 @@
-import GenericAdminChart, {
-  pageNameToHeaders,
-} from '@/components/GenericAdminChart'
+import AdminTable from '@/components/AdminTable/AdminTable'
+import DeleteModal from '@/components/AdminTable/DeleteModal'
 import UserModal from '@/components/GenericAdminChart/UserModal'
 import { ResponsivePageLayout } from '@/components/ResponsivePage'
 import { useDeleteUser } from '@/features/identity/api/deleteUser'
+import { useEditUsers } from '@/features/identity/api/editUsers'
 import { useGetAllUsers } from '@/features/identity/api/getAllUsers'
+import {
+  CustomCellConfig,
+  UserRolesCell,
+} from '@/features/identity/components/users/UserRolesCell'
 import {
   PageNames,
   useUserHasClaim,
   useViewPage,
 } from '@/features/identity/pagesCheck'
+import UserDto from '@/features/identity/types/userDto'
 import { Backdrop, CircularProgress } from '@mui/material'
-import { GridColDef } from '@mui/x-data-grid'
 
 const UsersAdmin = () => {
-  const { mutate: deleteUserMutation } = useDeleteUser()
-
   const pageAccess = useViewPage(PageNames.Users)
-  const hasEditClaim = useUserHasClaim('User:Edit')
-  const hasDeleteClaim = useUserHasClaim('User:Delete')
-  const { data: allUserData, isLoading: usersIsLoading } = useGetAllUsers()
+  const hasUserEditClaim = useUserHasClaim('User:Edit')
+  const hasUserDeleteClaim = useUserHasClaim('User:Delete')
 
-  const handleDeleteUser = async (userId: string) => {
+  const { mutateAsync: deleteMutation } = useDeleteUser()
+  const { mutateAsync: editMutation } = useEditUsers()
+  const {
+    data: allUserData,
+    isLoading: usersIsLoading,
+    refetch: refetchUsers,
+  } = useGetAllUsers()
+
+  const users = allUserData
+
+  const handleEditUser = async (userData: UserDto) => {
+    const {
+      userId,
+      firstName,
+      lastName,
+      agency,
+      fullName,
+      userName,
+      email,
+      roles,
+    } = userData
     try {
-      await deleteUserMutation(userId)
+      await editMutation({
+        data: {
+          userId,
+          firstName,
+          lastName,
+          agency,
+          fullName,
+          email: email.toLowerCase(),
+          userName: userName.toLowerCase(),
+          roles,
+        },
+      })
+      refetchUsers()
+    } catch (error) {
+      console.error('Mutation Error:', error)
+    }
+  }
+
+  const handleDeleteUser = async (id: number) => {
+    try {
+      await deleteMutation(id)
+      refetchUsers()
       console.log('User deleted successfully')
     } catch (error) {
       console.error('Error deleting user:', error)
     }
   }
 
+  const onModalClose = () => {
+    //do something?? potentially just delete
+  }
+
   if (pageAccess.isLoading) {
     return
   }
 
-  const deleteUser = (data: any) => {
-    handleDeleteUser(data.id)
-  }
-
-  const editUser = () => {
-    // not needed
-  }
-
-  const createUser = () => {
-    // not Needed
-  }
-
-  const headers: GridColDef[] = pageNameToHeaders.get(
-    PageNames.Users
-  ) as GridColDef[]
-
-  const filteredData = allUserData?.map((user: any) => {
+  const filteredData = users?.map((user: UserDto) => {
     return {
-      id: user.userId,
+      userId: user.userId,
       firstName: user.firstName,
       lastName: user.lastName,
       fullName: user.fullName,
@@ -63,9 +93,8 @@ const UsersAdmin = () => {
     }
   })
 
-  const baseType = {
-    name: '',
-  }
+  const headers = ['Full Name', 'Username', 'Agency', 'Email', 'Roles']
+  const headerKeys = ['fullName', 'userName', 'agency', 'email', 'roles']
 
   if (usersIsLoading) {
     return (
@@ -78,19 +107,44 @@ const UsersAdmin = () => {
   if (!allUserData) {
     return <div>Error returning data</div>
   }
+
+  const customCellRender: CustomCellConfig[] = [
+    {
+      headerKey: 'roles',
+      component: (value: string, row: string[]) => (
+        <UserRolesCell value={value} row={row} headerKey="roles" />
+      ),
+    },
+  ]
+
   return (
-    <ResponsivePageLayout title={'Manage Users'}>
-      <GenericAdminChart
-        pageName={PageNames.Users}
+    <ResponsivePageLayout title="Manage Users" noBottomMargin>
+      <AdminTable
+        pageName="User"
         headers={headers}
+        headerKeys={headerKeys}
         data={filteredData}
-        baseRowType={baseType}
-        onDelete={deleteUser}
-        onEdit={editUser}
-        onCreate={createUser}
-        customModal={<UserModal />}
-        hasEditPrivileges={hasEditClaim}
-        hasDeletePrivileges={hasDeleteClaim}
+        customCellRender={customCellRender}
+        hasEditPrivileges={hasUserEditClaim}
+        hasDeletePrivileges={hasUserDeleteClaim}
+        editModal={
+          <UserModal
+            isOpen={true}
+            onSave={handleEditUser}
+            onClose={onModalClose}
+          />
+        }
+        deleteModal={
+          <DeleteModal
+            id={0}
+            name={''}
+            objectType="User"
+            deleteLabel={(selectedRow: UserDto) => selectedRow.fullName}
+            open={false}
+            onClose={() => {}}
+            onConfirm={handleDeleteUser}
+          />
+        }
       />
     </ResponsivePageLayout>
   )
