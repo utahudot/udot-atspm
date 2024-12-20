@@ -47,6 +47,11 @@ interface CreateModalProps {
   onClose: () => void
 }
 
+interface CustomCellConfig {
+  headerKey: string
+  component: (value: any, row: any) => React.ReactNode
+}
+
 interface AdminChartProps<T extends HasId> {
   headers: string[]
   headerKeys: string[]
@@ -56,7 +61,8 @@ interface AdminChartProps<T extends HasId> {
   hasDeletePrivileges: boolean
   editModal: ReactElement<EditModalProps<T>>
   deleteModal: ReactElement<DeleteModalProps<T>>
-  createModal: ReactElement<CreateModalProps>
+  createModal?: ReactElement<CreateModalProps>
+  customCellRender?: CustomCellConfig[]
 }
 
 type Order = 'asc' | 'desc'
@@ -71,6 +77,7 @@ const AdminTable = <T extends HasId>({
   editModal,
   deleteModal,
   createModal,
+  customCellRender,
 }: AdminChartProps<T>) => {
   const theme = useTheme()
   const { isSidebarOpen } = useSidebarStore()
@@ -139,10 +146,14 @@ const AdminTable = <T extends HasId>({
     onClose: handleClose,
   })
 
-  const createModalWithProps = cloneElement(createModal, {
-    open: isCreateModalOpen,
-    onClose: handleClose,
-  })
+  let createModalWithProps
+
+  if (createModal) {
+    createModalWithProps = cloneElement(createModal, {
+      open: isCreateModalOpen,
+      onClose: handleClose,
+    })
+  }
 
   return (
     <Box
@@ -157,15 +168,19 @@ const AdminTable = <T extends HasId>({
       }}
     >
       <Box display="flex" justifyContent="flex-end" alignItems="center">
-        <Button
-          variant="contained"
-          color="success"
-          startIcon={<AddIcon />}
-          sx={{ mb: 3 }}
-          onClick={() => setIsCreateModalOpen(true)}
-        >
-          New {pageName}
-        </Button>
+        {createModal && (
+          <Button
+            variant="contained"
+            color="success"
+            startIcon={<AddIcon />}
+            sx={{ mb: 3 }}
+            onClick={() => setIsCreateModalOpen(true)}
+          >
+            New {pageName}
+          </Button>
+        )}
+
+        {!createModal && <Box sx={{ mb: 7.5 }}></Box>}
       </Box>
 
       <Box>
@@ -209,11 +224,22 @@ const AdminTable = <T extends HasId>({
             <TableBody>
               {sortedData.map((row) => (
                 <TableRow hover key={row.id}>
-                  {headerKeys.map((header) => (
-                    <TableCell key={header}>
-                      {row[header as keyof T] as string | number}
-                    </TableCell>
-                  ))}
+                  {headerKeys.map((header) => {
+                    const customRenderer = customCellRender?.find(
+                      (config) => config.headerKey === header
+                    )
+
+                    return (
+                      <TableCell key={header}>
+                        {customRenderer
+                          ? customRenderer.component(
+                              row[header as keyof T],
+                              row
+                            )
+                          : (row[header as keyof T] as string | number)}
+                      </TableCell>
+                    )
+                  })}
                   {(hasEditPrivileges || hasDeletePrivileges) && (
                     <TableCell sx={{ width: 100, textAlign: 'right' }}>
                       <IconButton
