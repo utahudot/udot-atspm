@@ -66,7 +66,10 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
 
                 _client.DefaultRequestHeaders.Accept.Clear();
                 //HACK: this is specific to maxtimecontrollers future versions will need this adjustable
-                //_client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/xml"));
+                if (ip.Port != 8080)
+                {
+                    _client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/xml"));
+                }
 
                 return Task.CompletedTask;
             }
@@ -164,12 +167,18 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
                 var builder = new UriBuilder(_client.BaseAddress);
                 builder.Path = directory;
 
-                //for maxtime controllers it uses this searchterm:  $"since={DateTime.Now.AddHours(-24):MM-dd-yyyy HH:mm:ss.f}"
 
                 //HACK: this is for maxtime controllers, needs to be moved to search terms in the db
-                builder.Query = $"since={DateTime.Now.AddHours(-1):MM-dd-yyyy HH:mm:ss.f}";
-
-                //builder.Query = $"start-time=2024-12-03T23:43:09&end-time=2024-12-10T00:00:00&intervals=10";
+                if (directory.Contains("8080"))
+                {
+                    //builder.Query = $"start-time=2024-12-03T23:43:09&end-time=2024-12-10T00:00:00&intervals=15";
+                    builder.Query = $"start-time={DateTime.Now.AddHours(-1):yyyy-MM-ddTHH:mm:ss}";
+                }
+                else
+                {
+                    //for maxtime controllers it uses this searchterm:  $"since={DateTime.Now.AddHours(-24):MM-dd-yyyy HH:mm:ss.f}"
+                    builder.Query = $"since={DateTime.Now.AddHours(-1):MM-dd-yyyy HH:mm:ss.f}";
+                }
 
                 if (filters?.Length > 0)
                 {
@@ -181,8 +190,12 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
 
                 getPath = builder.Uri;
 
+                if (directory.Contains("8080"))
+                {
+                    return Task.FromResult<IEnumerable<string>>(new List<string>() { $"{DateTime.Now.Ticks}.json" });
+                }
+
                 return Task.FromResult<IEnumerable<string>>(new List<string>() { $"{DateTime.Now.Ticks}.xml" });
-                //return Task.FromResult<IEnumerable<string>>(new List<string>() { $"{DateTime.Now.Ticks}.json" });
             }
             catch (Exception e)
             {
