@@ -169,7 +169,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
 
 
                 //HACK: this is for maxtime controllers, needs to be moved to search terms in the db
-                if (directory.Contains("8080"))
+                if (directory.Contains("cameras"))
                 {
                     //builder.Query = $"start-time=2024-12-03T23:43:09&end-time=2024-12-10T00:00:00&intervals=15";
                     builder.Query = $"start-time={DateTime.Now.AddHours(-1):yyyy-MM-ddTHH:mm:ss}";
@@ -190,7 +190,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
 
                 getPath = builder.Uri;
 
-                if (directory.Contains("8080"))
+                if (directory.Contains("cameras"))
                 {
                     return Task.FromResult<IEnumerable<string>>(new List<string>() { $"{DateTime.Now.Ticks}.json" });
                 }
