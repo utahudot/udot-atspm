@@ -39,7 +39,7 @@ const RoleModal: React.FC<ModalProps> = ({ isOpen, onSave, onClose, data }) => {
   const [userClaims, setUserClaims] = useState<string[]>([])
   const [currentRole, setCurrentRole] = useState<string>('')
   const [tempRoleName, setTempRoleName] = useState<string>('')
-  const [tempClaims, setTempClaims] = useState<string[]>([]);
+  const [tempClaims, setTempClaims] = useState<string[]>([])
   const {
     register,
     handleSubmit,
@@ -56,7 +56,6 @@ const RoleModal: React.FC<ModalProps> = ({ isOpen, onSave, onClose, data }) => {
   const isNewRole = !roleId
   const watchedRoleName = watch('roleName')
 
-  // Update current role when role name changes in the form
   useEffect(() => {
     if (isNewRole) {
       setCurrentRole(watchedRoleName)
@@ -67,20 +66,20 @@ const RoleModal: React.FC<ModalProps> = ({ isOpen, onSave, onClose, data }) => {
   }, [watchedRoleName, isNewRole, data])
 
   const handleClaimsChange = (_role: string, claims: string[]) => {
-    console.log('Claims changed:', claims); // Debug log
-    setUserClaims(claims);
-    setTempClaims(claims); // Update temporary claims
-    console.log('userclaims:', claims);
-  };
+    console.log('Claims changed:', claims)
+    setUserClaims(claims)
+    setTempClaims(claims)
+    console.log('userclaims:', claims)
+  }
 
   const onSubmit = (formData: RoleFormData) => {
-    console.log('Submitting with claims:', tempClaims); // Debug log
+    console.log('Submitting with claims:', tempClaims)
     onSave({
       roleName: formData.roleName,
-      claims: tempClaims, // Use temporary claims here
-    });
-    onClose();
-  };
+      claims: tempClaims,
+    })
+    onClose()
+  }
 
   if (rolesIsLoading || claimsIsLoading) {
     return

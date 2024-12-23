@@ -12,21 +12,21 @@ import {
 } from '@mui/material'
 
 interface DeleteModalProps<T> {
-  id: number;
-  name: string;
-  objectType: string;
-  open: boolean;
-  onClose: () => void;
-  onConfirm: (keyValue: string | number) => void;
-  deleteLabel?: (selectedRow: T) => string;
-  selectedRow: T;
-  associatedObjects?: { id: number; name: string }[];
-  associatedObjectsLabel?: string;
+  id: number
+  name: string
+  objectType: string
+  open: boolean
+  onClose: () => void
+  onConfirm: (keyValue: string | number) => void
+  deleteLabel?: (selectedRow: T) => string
+  selectedRow: T
+  associatedObjects?: { id: number; name: string }[]
+  associatedObjectsLabel?: string
   filterFunction?: (
     id: number,
     associatedObjects: { id: number; name: string }[]
-  ) => { id: number; name: string }[];
-  deleteByKey?: keyof T; // NEW PROP
+  ) => { id: number; name: string }[]
+  deleteByKey?: keyof T
 }
 
 const DeleteModal = <T,>({
@@ -44,20 +44,18 @@ const DeleteModal = <T,>({
   deleteByKey, // NEW PROP
 }: DeleteModalProps<T>) => {
   const handleConfirm = () => {
-    const keyValue = deleteByKey ? selectedRow[deleteByKey] : id; // Determine value to delete
-    onConfirm(keyValue as string | number);
-    onClose();
-  };
+    const keyValue = deleteByKey ? selectedRow[deleteByKey] : id
+    onConfirm(keyValue as string | number)
+    onClose()
+  }
 
   const filteredAssociatedObjects = filterFunction
     ? filterFunction(id, associatedObjects)
-    : associatedObjects.filter((obj) => obj.id === id);
+    : associatedObjects.filter((obj) => obj.id === id)
 
   return (
     <Dialog open={open} onClose={onClose}>
-      <DialogTitle id="delete-dialog-title">
-        Delete {objectType}?
-      </DialogTitle>
+      <DialogTitle id="delete-dialog-title">Delete {objectType}?</DialogTitle>
       <DialogContent>
         {filteredAssociatedObjects?.length > 0 && (
           <>
@@ -90,7 +88,7 @@ const DeleteModal = <T,>({
         </Button>
       </DialogActions>
     </Dialog>
-  );
-};
+  )
+}
 
-export default DeleteModal;
+export default DeleteModal
