@@ -1,11 +1,8 @@
-import { useAddRoleClaims } from '@/features/identity/api/addRoleClaims'
 import { useGetClaims } from '@/features/identity/api/getClaims'
 import { useGetRoles } from '@/features/identity/api/getRoles'
 import { Role } from '@/features/identity/types/roles'
 import PageClaimsCard from '@/features/roles/components/PageClaimsCard'
-import { useNotificationStore } from '@/stores/notifications'
-import { Tooltip } from '@mui/material';
-import InfoIcon from '@mui/icons-material/Info';
+import InfoIcon from '@mui/icons-material/Info'
 import {
   Box,
   Button,
@@ -13,72 +10,80 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  TextField,
+  Tooltip,
 } from '@mui/material'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
+import { useForm } from 'react-hook-form'
 
-interface ModalProps {
-  open: boolean
-  onClose: () => void
-  data: Role | null
-  onSave: (role: Role) => void
+interface RoleFormData {
+  roleName: string
+  claims: string[]
 }
 
-const RoleModal: React.FC<ModalProps> = ({ open, onClose, data }) => {
+interface ModalProps {
+  isOpen: boolean
+  onClose: () => void
+  data: Role | null
+  onSave: (roleData: RoleFormData) => void
+}
+
+const RoleModal: React.FC<ModalProps> = ({ isOpen, onSave, onClose, data }) => {
   const {
     data: rolesData,
     isLoading: rolesIsLoading,
     error: rolesError,
-    refetch: refetchRoles,
   } = useGetRoles()
-  const { mutate: addClaimsMutation } = useAddRoleClaims()
   const { isLoading: claimsIsLoading, error: claimsError } = useGetClaims()
 
-  const [currentRole, setCurrentRole] = useState<string>('')
   const [userClaims, setUserClaims] = useState<string[]>([])
+  const [currentRole, setCurrentRole] = useState<string>('')
+  const [tempRoleName, setTempRoleName] = useState<string>('')
+  const [tempClaims, setTempClaims] = useState<string[]>([]);
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm<RoleFormData>({
+    defaultValues: {
+      roleName: data?.role || '',
+      claims: [],
+    },
+  })
 
-  const addNotification = useNotificationStore((state) => state.addNotification)
   const roleId = data?.role || null
+  const isNewRole = !roleId
+  const watchedRoleName = watch('roleName')
 
-  const handleClaimsChange = (role: string, claims: string[]) => {
-    setUserClaims(claims)
-  }
-
-  const handleSaveClick = () => {
-    if (currentRole && userClaims) {
-      addClaimsMutation(
-        { roleName: currentRole, claims: userClaims },
-        {
-          onSuccess: () => {
-            addNotification({
-              type: 'success',
-              title: 'Success',
-              message: 'Permissions added to role successfully',
-            })
-            refetchRoles()
-            onClose()
-          },
-          onError: (error) => {
-            console.error('Failed to add permissions:', error)
-            addNotification({
-              type: 'error',
-              title: 'Error',
-              message: 'Failed to add permissions:',
-            })
-          },
-        }
-      )
+  // Update current role when role name changes in the form
+  useEffect(() => {
+    if (isNewRole) {
+      setCurrentRole(watchedRoleName)
+      setTempRoleName(watchedRoleName)
     } else {
-      console.error('Current role or user claims are missing')
-      addNotification({
-        type: 'warning',
-        title: 'Warning',
-        message: 'No permissions were added',
-      })
+      setCurrentRole(data?.role || '')
     }
-  }
+  }, [watchedRoleName, isNewRole, data])
+
+  const handleClaimsChange = (_role: string, claims: string[]) => {
+    console.log('Claims changed:', claims); // Debug log
+    setUserClaims(claims);
+    setTempClaims(claims); // Update temporary claims
+    console.log('userclaims:', claims);
+  };
+
+  const onSubmit = (formData: RoleFormData) => {
+    console.log('Submitting with claims:', tempClaims); // Debug log
+    onSave({
+      roleName: formData.roleName,
+      claims: tempClaims, // Use temporary claims here
+    });
+    onClose();
+  };
 
   if (rolesIsLoading || claimsIsLoading) {
-    return <div>Loading...</div>
+    return
   }
 
   if (rolesError || claimsError) {
@@ -89,50 +94,119 @@ const RoleModal: React.FC<ModalProps> = ({ open, onClose, data }) => {
       </div>
     )
   }
+
   return (
-<Dialog open={open} onClose={onClose} aria-labelledby="role-permissions-label">
-  <DialogTitle sx={{ fontSize: '1.3rem', margin: '2rem' }} id="role-permissions-label">Role Permissions - {roleId}
-  <Tooltip
-  title={
-    <React.Fragment>
-      <p>Admin – All privileges are granted as described for the Data, Technician & Configuration users, including access to Menu Configuration, FAQs, Watch Dog, Settings, General Settings, Roles, & Users.</p>
-      <p>Data Admin – Privileges are granted to the Admin menu to access the Raw Data Export page.</p>
-      <p>General Configuration Admin – Privileges are granted to add, edit, and delete all configurations excluding location configuration.</p>
-      <p>Location Configuration Admin – Privileges are granted to add, edit, and delete location configurations excluding all other configurations.</p>
-      <p>Report Admin – Privileges are granted to access restricted reports.</p>
-      <p>Role Admin – Privileges are granted to add, edit, and delete roles.</p>
-      <p>User Admin – Privileges are granted to view, edit, and delete users.</p>
-      <p>Watchdog Subscriber – Privileges are granted to receive the watchdog email and access the watchdog report.</p>
-    </React.Fragment>
-  }
->
-  <InfoIcon sx={{ ml: 1, color: 'action.active', fontSize: 20 }} />
-</Tooltip>
-
-  </DialogTitle>
-  <DialogContent>
-    <Box sx={{ display: 'flex', alignItems: 'center', }}>
-      <PageClaimsCard
-        id={roleId ?? ''}
-        currentClaims={rolesData || []}
-        onClaimsChange={handleClaimsChange}
-        currentRole={currentRole}
-        setCurrentRole={setCurrentRole}
-        userClaims={userClaims}
-        setUserClaims={setUserClaims}
-      />
-    </Box>
-  </DialogContent>
-  <DialogActions>
-    <Box sx={{ marginRight: '1rem', marginBottom: '.5rem' }}>
-      <Button onClick={onClose}>Cancel</Button>
-      <Button variant="contained" onClick={handleSaveClick}>
-        Update Role
-      </Button>
-    </Box>
-  </DialogActions>
-</Dialog>
-
+    <Dialog
+      open={isOpen}
+      onClose={onClose}
+      aria-labelledby="role-permissions-label"
+    >
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <DialogTitle
+          sx={{ fontSize: '1.3rem', margin: '2rem', mb: 0 }}
+          id="role-permissions-label"
+        >
+          {isNewRole ? (
+            <>
+              Create New Role
+              {errors.roleName && (
+                <Box sx={{ color: 'error.main', fontSize: '0.8rem', mt: 1 }}>
+                  {errors.roleName.message}
+                </Box>
+              )}
+            </>
+          ) : (
+            <>
+              Role Permissions - {roleId}
+              <Tooltip
+                title={
+                  <React.Fragment>
+                    <p>
+                      Admin – All privileges are granted as described for the
+                      Data, Technician & Configuration users, including access
+                      to Menu Configuration, FAQs, Watch Dog, Settings, General
+                      Settings, Roles, & Users.
+                    </p>
+                    <p>
+                      Data Admin – Privileges are granted to the Admin menu to
+                      access the Raw Data Export page.
+                    </p>
+                    <p>
+                      General Configuration Admin – Privileges are granted to
+                      add, edit, and delete all configurations excluding
+                      location configuration.
+                    </p>
+                    <p>
+                      Location Configuration Admin – Privileges are granted to
+                      add, edit, and delete location configurations excluding
+                      all other configurations.
+                    </p>
+                    <p>
+                      Report Admin – Privileges are granted to access restricted
+                      reports.
+                    </p>
+                    <p>
+                      Role Admin – Privileges are granted to add, edit, and
+                      delete roles.
+                    </p>
+                    <p>
+                      User Admin – Privileges are granted to view, edit, and
+                      delete users.
+                    </p>
+                    <p>
+                      Watchdog Subscriber – Privileges are granted to receive
+                      the watchdog email and access the watchdog report.
+                    </p>
+                  </React.Fragment>
+                }
+              >
+                <InfoIcon
+                  sx={{ ml: 1, color: 'action.active', fontSize: 20 }}
+                />
+              </Tooltip>
+            </>
+          )}
+        </DialogTitle>
+        <DialogContent>
+          {isNewRole && (
+            <Box sx={{ mb: 3, mt: 1 }}>
+              <TextField
+                fullWidth
+                label="Role Name"
+                {...register('roleName', {
+                  required: 'Role name is required',
+                  pattern: {
+                    value: /^[A-Za-z0-9\s]+$/,
+                    message: 'Role name can only contain letters and numbers',
+                  },
+                })}
+                error={!!errors.roleName}
+                helperText={errors.roleName?.message}
+              />
+            </Box>
+          )}
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <PageClaimsCard
+              id={isNewRole ? tempRoleName : (roleId ?? '')}
+              currentClaims={rolesData || []}
+              onClaimsChange={handleClaimsChange}
+              currentRole={currentRole}
+              setCurrentRole={setCurrentRole}
+              userClaims={userClaims}
+              setUserClaims={setUserClaims}
+            />
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Box sx={{ marginRight: '1rem', marginBottom: '.5rem' }}>
+            <Button onClick={onClose}>Cancel</Button>
+            <Button variant="contained" type="submit">
+              {isNewRole ? 'Create Role' : 'Update Role'}
+            </Button>
+          </Box>
+        </DialogActions>
+      </form>
+    </Dialog>
   )
 }
 

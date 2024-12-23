@@ -63,7 +63,7 @@ builder.Host.ConfigureServices((h, s) =>
         options.AddPolicy("CorsPolicy",
         builder =>
         {
-            builder.WithOrigins(allowedHosts.Split(','))
+            builder.AllowAnyOrigin()
                    .AllowAnyMethod()
                    .AllowAnyHeader();
         });
