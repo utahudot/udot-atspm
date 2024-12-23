@@ -151,7 +151,6 @@ const NewLocationModal = ({
         },
         {
           onSuccess: (createdData) => {
-            console.log('createdData', createdData)
             setLocation(createdData as unknown as Location)
           },
           onSettled: closeModal,
