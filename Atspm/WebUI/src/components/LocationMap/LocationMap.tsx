@@ -74,8 +74,6 @@ const LocationMap = ({
   const { data: mapLayerData } = useGetMapLayer()
   const [activeLayers, setActiveLayers] = useState<number[]>([])
 
-  console.log('mapLayerData', mapLayerData)
-
   useEffect(() => {
     if (mapLayerData?.value) {
       setActiveLayers(

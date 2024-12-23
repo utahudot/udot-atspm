@@ -51,9 +51,6 @@ const WatchdogSummaryReport = () => {
     detectionTypeCount: detectionTypeCount,
   }
 
-  // useEffect(() => {
-  //   console.log("DOGDATA", data)
-  // }, [deviceCount,isDeviceCountLoading, dashboardData, isLoading])
   const handleGenerateSummary = () => {
     setFetchData(true)
   }
