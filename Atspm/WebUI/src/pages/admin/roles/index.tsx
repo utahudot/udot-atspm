@@ -1,8 +1,8 @@
-import GenericAdminChart, {
-  pageNameToHeaders,
-} from '@/components/GenericAdminChart'
+import AdminTable from '@/components/AdminTable/AdminTable'
+import DeleteModal from '@/components/AdminTable/DeleteModal'
 import RoleModal from '@/components/GenericAdminChart/RoleModal'
 import { ResponsivePageLayout } from '@/components/ResponsivePage'
+import { useAddRoleClaims } from '@/features/identity/api/addRoleClaims'
 import { useGetRoles } from '@/features/identity/api/getRoles'
 import {
   PageNames,
@@ -12,31 +12,21 @@ import {
 import { Role } from '@/features/identity/types/roles'
 import { useDeleteRole } from '@/features/roles/api/deleteRoles'
 import { usePostRoleName } from '@/features/roles/api/postRolesName'
-import { navigateToPage } from '@/utils/routes'
 import { Backdrop, CircularProgress } from '@mui/material'
-import { GridColDef } from '@mui/x-data-grid'
 
 const RolesAdmin = () => {
   const pageAccess = useViewPage(PageNames.Roles)
-  const hasEditClaim = useUserHasClaim('Role:Edit')
-  const hasDeleteClaim = useUserHasClaim('Role:Delete')
-  const { data, isLoading, error } = useGetRoles()
-  const {
-    mutate: postRoleName,
-    isLoading: isPostingRole,
-    error: postError,
-  } = usePostRoleName()
-  const {
-    mutate: deleteRoleMutation,
-    isLoading: isDeletingRole,
-    error: deleteError,
-  } = useDeleteRole()
+  const hasRoleEditClaim = useUserHasClaim('Role:Edit')
+  const hasRolesDeleteClaim = useUserHasClaim('Role:Delete')
 
-  const headers: GridColDef[] = pageNameToHeaders.get(
-    PageNames.Roles
-  ) as GridColDef[]
+  const { data: allRolesData, isLoading, refetch: refetchRoles } = useGetRoles()
+  const roles = allRolesData
 
-  // TODO - MAKE SURE THIS LOGIC ISCODED IN BACKEND. HACKERS COULD EAILSY START DELELTING PROTECTED ROLES WHICH WE DON'T WANT OB
+  const { mutateAsync: createMutation } = usePostRoleName()
+  const { mutateAsync: deleteMutation } = useDeleteRole()
+  const { mutateAsync: editMutation } = useAddRoleClaims()
+
+  // TODO - MAKE SURE THIS LOGIC ISCODED IN BACKEND.
   const protectedRoles = [
     'ReportAdmin',
     'Admin',
@@ -48,32 +38,46 @@ const RolesAdmin = () => {
     'UserAdmin',
   ]
 
-  const HandleDeleteRole = async (roleData: Role) => {
-    const { role: roleName } = roleData
-
+  const HandleDeleteRole = async (roleName: string) => {
     if (protectedRoles.includes(roleName)) {
       return
     }
-
     try {
-      await deleteRoleMutation(roleName)
+      await deleteMutation(roleName)
+      refetchRoles()
     } catch (error) {
       console.error('Mutation Error:', error)
     }
   }
 
-  const HandleEditRole = async (roleData: Role) => {
-    const { id, role, claims } = roleData
+  const HandleEditRole = async (roleData: {
+    roleName: string
+    claims: string[]
+  }) => {
     try {
-      navigateToPage(`/admin/roles/${id}/edit`)
+      await editMutation({
+        roleName: roleData.roleName,
+        claims: roleData.claims,
+      })
+      refetchRoles()
     } catch (error) {
       console.error('Mutation Error:', error)
     }
   }
 
-  const HandleCreateRole = async (roleName: string) => {
+  const HandleCreateRole = async (roleData: {
+    roleName: string
+    claims: string[]
+  }) => {
     try {
-      await postRoleName({ roleName })
+      await createMutation({ roleName: roleData.roleName })
+      if (roleData.claims.length > 0) {
+        await editMutation({
+          roleName: roleData.roleName,
+          claims: roleData.claims,
+        })
+      }
+      refetchRoles()
     } catch (error) {
       console.error('Mutation Error:', error)
     }
@@ -83,22 +87,8 @@ const RolesAdmin = () => {
     return
   }
 
-  const deleteRole = (data: Role) => {
-    HandleDeleteRole(data)
-  }
-
-  const editRole = (data: Role) => {
-    HandleEditRole(data)
-  }
-
-  const createRole = (data: {
-    name: string
-    id: null
-    isNew: true
-    role: string
-  }) => {
-    const { role } = data
-    HandleCreateRole(role)
+  const onModalClose = () => {
+    //do something?? potentially just delete
   }
 
   if (isLoading) {
@@ -109,36 +99,58 @@ const RolesAdmin = () => {
     )
   }
 
-  if (!data) {
+  if (!roles) {
     return <div>Error returning data</div>
   }
 
-  const filteredData = data
-    ?.map((role: Role, index: number) => {
+  const filteredData = roles
+    .map((role: Role, index: number) => {
       return {
         id: index,
         role: role.role,
-        // claims: role.claims,
       }
     })
     .sort((a, b) => a.role.localeCompare(b.role))
-  const baseType = {
-    name: '',
-  }
+
+  const headers = ['Role']
+  const headerKeys = ['role']
+
   return (
-    <ResponsivePageLayout title={'Manage Roles'}>
-      <GenericAdminChart
-        pageName={PageNames.Roles}
+    <ResponsivePageLayout title="Manage Roles" noBottomMargin>
+      <AdminTable
+        pageName="Role"
         headers={headers}
+        headerKeys={headerKeys}
         data={filteredData}
-        baseRowType={baseType}
-        onDelete={deleteRole}
-        onEdit={editRole}
-        onCreate={createRole}
-        customModal={<RoleModal />}
-        protectedItems={protectedRoles}
-        hasEditPrivileges={hasEditClaim}
-        hasDeletePrivileges={hasDeleteClaim}
+        hasEditPrivileges={hasRoleEditClaim}
+        hasDeletePrivileges={hasRolesDeleteClaim}
+        protectedFromDeleteItems={protectedRoles}
+        editModal={
+          <RoleModal
+            isOpen={true}
+            onSave={HandleEditRole}
+            onClose={onModalClose}
+          />
+        }
+        createModal={
+          <RoleModal
+            isOpen={true}
+            onSave={HandleCreateRole}
+            onClose={onModalClose}
+          />
+        }
+        deleteModal={
+          <DeleteModal
+            id={''}
+            name={''}
+            objectType="Role"
+            deleteByKey="role"
+            open={false}
+            onClose={() => {}}
+            onConfirm={HandleDeleteRole}
+            deleteLabel={(selectedRow: Role) => selectedRow.role}
+          />
+        }
       />
     </ResponsivePageLayout>
   )

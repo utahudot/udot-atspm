@@ -189,82 +189,96 @@ const PageClaimsCard = ({
                 permission
               )}:`}</Typography>
             </Box>
-<Box
-  sx={{
-    flexBasis: '66.67%',
-    display: 'flex',
-    alignItems: 'center',
-    paddingLeft: '8rem',
-  }}
->
-  {hasView && (
-    <Box sx={{ display: 'flex', alignItems: 'center', mr: 4 }}>
-      <Checkbox
-        id={`${permission}-view-checkbox`}
-        checked={
-          id === 'Admin' ||
-          selectedClaims.includes(`${permission}:View`)
-        }
-        onChange={(e) =>
-          handleClaimChange(`${permission}:View`, e.target.checked)
-        }
-        disabled={
-          id === 'Admin' ||
-          roleSetInStoneClaims.includes(`${permission}:View`)
-        }
-      />
-      <label
-        htmlFor={`${permission}-view-checkbox`}
-        style={{ visibility: 'hidden', position: 'absolute', marginLeft:'-15rem'  }}
-      >{`${permission} View`}</label>
-    </Box>
-  )}
-  {hasEdit && (
-    <Box sx={{ display: 'flex', alignItems: 'center', mr: 3 }}>
-      <Checkbox
-        id={`${permission}-edit-checkbox`}
-        checked={
-          id === 'Admin' ||
-          selectedClaims.includes(`${permission}:Edit`)
-        }
-        onChange={(e) =>
-          handleClaimChange(`${permission}:Edit`, e.target.checked)
-        }
-        disabled={
-          id === 'Admin' ||
-          roleSetInStoneClaims.includes(`${permission}:Edit`)
-        }
-      />
-      <label
-        htmlFor={`${permission}-edit-checkbox`}
-        style={{ visibility: 'hidden', position: 'absolute', marginLeft:'-15rem' }}
-      >{`${permission} Edit`}</label>
-    </Box>
-  )}
-  {hasDelete && (
-    <Box sx={{ display: 'flex', alignItems: 'center', mr: 2 }}>
-      <Checkbox
-        id={`${permission}-delete-checkbox`}
-        checked={
-          id === 'Admin' ||
-          selectedClaims.includes(`${permission}:Delete`)
-        }
-        onChange={(e) =>
-          handleClaimChange(`${permission}:Delete`, e.target.checked)
-        }
-        disabled={
-          id === 'Admin' ||
-          roleSetInStoneClaims.includes(`${permission}:Delete`)
-        }
-      />
-      <label
-        htmlFor={`${permission}-delete-checkbox`}
-        style={{ visibility: 'hidden', position: 'absolute', marginLeft:'-15rem'  }}
-      >{`${permission} Delete`}</label>
-    </Box>
-  )}
-</Box>
-
+            <Box
+              sx={{
+                flexBasis: '66.67%',
+                display: 'flex',
+                alignItems: 'center',
+                paddingLeft: '8rem',
+              }}
+            >
+              {hasView && (
+                <Box sx={{ display: 'flex', alignItems: 'center', mr: 4 }}>
+                  <Checkbox
+                    id={`${permission}-view-checkbox`}
+                    checked={
+                      id === 'Admin' ||
+                      selectedClaims.includes(`${permission}:View`)
+                    }
+                    onChange={(e) =>
+                      handleClaimChange(`${permission}:View`, e.target.checked)
+                    }
+                    disabled={
+                      id === 'Admin' ||
+                      roleSetInStoneClaims.includes(`${permission}:View`)
+                    }
+                  />
+                  <label
+                    htmlFor={`${permission}-view-checkbox`}
+                    style={{
+                      visibility: 'hidden',
+                      position: 'absolute',
+                      marginLeft: '-15rem',
+                    }}
+                  >{`${permission} View`}</label>
+                </Box>
+              )}
+              {hasEdit && (
+                <Box sx={{ display: 'flex', alignItems: 'center', mr: 3 }}>
+                  <Checkbox
+                    id={`${permission}-edit-checkbox`}
+                    checked={
+                      id === 'Admin' ||
+                      selectedClaims.includes(`${permission}:Edit`)
+                    }
+                    onChange={(e) =>
+                      handleClaimChange(`${permission}:Edit`, e.target.checked)
+                    }
+                    disabled={
+                      id === 'Admin' ||
+                      roleSetInStoneClaims.includes(`${permission}:Edit`)
+                    }
+                  />
+                  <label
+                    htmlFor={`${permission}-edit-checkbox`}
+                    style={{
+                      visibility: 'hidden',
+                      position: 'absolute',
+                      marginLeft: '-15rem',
+                    }}
+                  >{`${permission} Edit`}</label>
+                </Box>
+              )}
+              {hasDelete && (
+                <Box sx={{ display: 'flex', alignItems: 'center', mr: 2 }}>
+                  <Checkbox
+                    id={`${permission}-delete-checkbox`}
+                    checked={
+                      id === 'Admin' ||
+                      selectedClaims.includes(`${permission}:Delete`)
+                    }
+                    onChange={(e) =>
+                      handleClaimChange(
+                        `${permission}:Delete`,
+                        e.target.checked
+                      )
+                    }
+                    disabled={
+                      id === 'Admin' ||
+                      roleSetInStoneClaims.includes(`${permission}:Delete`)
+                    }
+                  />
+                  <label
+                    htmlFor={`${permission}-delete-checkbox`}
+                    style={{
+                      visibility: 'hidden',
+                      position: 'absolute',
+                      marginLeft: '-15rem',
+                    }}
+                  >{`${permission} Delete`}</label>
+                </Box>
+              )}
+            </Box>
           </Box>
         )
       })}

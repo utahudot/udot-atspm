@@ -59,6 +59,7 @@ interface AdminChartProps<T extends HasId> {
   pageName: string
   hasEditPrivileges: boolean
   hasDeletePrivileges: boolean
+  protectedFromDeleteItems?: string[]
   editModal: ReactElement<EditModalProps<T>>
   deleteModal: ReactElement<DeleteModalProps<T>>
   createModal?: ReactElement<CreateModalProps>
@@ -74,6 +75,7 @@ const AdminTable = <T extends HasId>({
   pageName,
   hasEditPrivileges,
   hasDeletePrivileges,
+  protectedFromDeleteItems,
   editModal,
   deleteModal,
   createModal,
@@ -260,29 +262,29 @@ const AdminTable = <T extends HasId>({
       </Box>
 
       <Menu
-        id="actions-menu"
-        anchorEl={anchorEl}
-        keepMounted
-        open={Boolean(anchorEl)}
-        onClose={handleClose}
-      >
-        {hasEditPrivileges && (
-          <MenuItem onClick={handleEditClick}>
-            <ListItemIcon>
-              <EditIcon />
-            </ListItemIcon>
-            <Typography>Edit</Typography>
-          </MenuItem>
-        )}
-        {hasDeletePrivileges && (
-          <MenuItem onClick={handleDeleteClick}>
-            <ListItemIcon>
-              <DeleteIcon />
-            </ListItemIcon>
-            <Typography>Delete</Typography>
-          </MenuItem>
-        )}
-      </Menu>
+  id="actions-menu"
+  anchorEl={anchorEl}
+  keepMounted
+  open={Boolean(anchorEl)}
+  onClose={handleClose}
+>
+  {hasEditPrivileges && (
+    <MenuItem onClick={handleEditClick}>
+      <ListItemIcon>
+        <EditIcon />
+      </ListItemIcon>
+      <Typography>Edit</Typography>
+    </MenuItem>
+  )}
+  {hasDeletePrivileges && selectedRow && !(protectedFromDeleteItems?.includes(selectedRow[headerKeys[0]] as string)) && (
+    <MenuItem onClick={handleDeleteClick}>
+      <ListItemIcon>
+        <DeleteIcon />
+      </ListItemIcon>
+      <Typography>Delete</Typography>
+    </MenuItem>
+  )}
+</Menu>
 
       {isDeleteModalOpen && deleteModalWithId}
       {isEditModalOpen && editModalWithId}

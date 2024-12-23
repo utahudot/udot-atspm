@@ -12,20 +12,21 @@ import {
 } from '@mui/material'
 
 interface DeleteModalProps<T> {
-  id: number
-  name: string
-  objectType: string
-  open: boolean
-  onClose: () => void
-  onConfirm: (id: number) => void
-  deleteLabel?: (selectedRow:T)=> string
-  selectedRow:T
-  associatedObjects?: { id: number; name: string }[]
-  associatedObjectsLabel?: string
+  id: number;
+  name: string;
+  objectType: string;
+  open: boolean;
+  onClose: () => void;
+  onConfirm: (keyValue: string | number) => void;
+  deleteLabel?: (selectedRow: T) => string;
+  selectedRow: T;
+  associatedObjects?: { id: number; name: string }[];
+  associatedObjectsLabel?: string;
   filterFunction?: (
     id: number,
     associatedObjects: { id: number; name: string }[]
-  ) => { id: number; name: string }[]
+  ) => { id: number; name: string }[];
+  deleteByKey?: keyof T; // NEW PROP
 }
 
 const DeleteModal = <T,>({
@@ -40,41 +41,32 @@ const DeleteModal = <T,>({
   associatedObjects = [],
   associatedObjectsLabel,
   filterFunction,
+  deleteByKey, // NEW PROP
 }: DeleteModalProps<T>) => {
   const handleConfirm = () => {
-    onConfirm(id)
-    onClose()
-  }
+    const keyValue = deleteByKey ? selectedRow[deleteByKey] : id; // Determine value to delete
+    onConfirm(keyValue as string | number);
+    onClose();
+  };
 
   const filteredAssociatedObjects = filterFunction
     ? filterFunction(id, associatedObjects)
-    : associatedObjects.filter((obj) => obj.id === id)
+    : associatedObjects.filter((obj) => obj.id === id);
 
   return (
     <Dialog open={open} onClose={onClose}>
-      <DialogTitle
-        variant="h4"
-        sx={{ fontStyle: 'bold' }}
-        id="delete-dialog-title"
-      >
+      <DialogTitle id="delete-dialog-title">
         Delete {objectType}?
       </DialogTitle>
       <DialogContent>
         {filteredAssociatedObjects?.length > 0 && (
           <>
-            <Typography sx={{ mb: 2 }}>
+            <Typography>
               <b>{name}</b> is associated with the following{' '}
               {associatedObjectsLabel || 'items'}:
             </Typography>
-            <Box
-              sx={{
-                maxHeight: '300px',
-                overflowY: 'auto',
-                backgroundColor: 'background.default',
-                outline: '1px solid #ccc',
-              }}
-            >
-              <List dense={true}>
+            <Box sx={{ maxHeight: '300px', overflowY: 'auto' }}>
+              <List dense>
                 {filteredAssociatedObjects.map((associatedObject) => (
                   <ListItem key={associatedObject.id}>
                     <ListItemText>{associatedObject.name}</ListItemText>
@@ -84,11 +76,12 @@ const DeleteModal = <T,>({
             </Box>
           </>
         )}
-        <Typography sx={{ mt: 2 }}>
-          Are you sure you want to delete <b>{deleteLabel ? deleteLabel(selectedRow) : name}</b>?
+        <Typography>
+          Are you sure you want to delete{' '}
+          <b>{deleteLabel ? deleteLabel(selectedRow) : name}</b>?
         </Typography>
       </DialogContent>
-      <DialogActions sx={{ p: 2 }}>
+      <DialogActions>
         <Button onClick={onClose} variant="outlined">
           Cancel
         </Button>
@@ -97,7 +90,7 @@ const DeleteModal = <T,>({
         </Button>
       </DialogActions>
     </Dialog>
-  )
-}
+  );
+};
 
-export default DeleteModal
+export default DeleteModal;
