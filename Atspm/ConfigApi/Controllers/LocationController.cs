@@ -20,6 +20,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Formatter;
 using Microsoft.AspNetCore.OData.Query;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Utah.Udot.Atspm.Business.Watchdog;
 using Utah.Udot.Atspm.ConfigApi.Models;
 using Utah.Udot.Atspm.ConfigApi.Services;
@@ -132,13 +134,20 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
         /// 
         //[Authorize(Policy = "CanEditLocationConfigurations")]
         [HttpPost]
-        [ProducesResponseType(typeof(Location), Status200OK)]
+        [ProducesResponseType(typeof(TemplateLocationModifiedDto), Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult SyncLocation(int key)
         {
             try
             {
-                return Ok(_signalTemplateService.SyncNewLocationDetectorsAndApproaches(key));
+                var modLocation = _signalTemplateService.SyncNewLocationDetectorsAndApproaches(key);
+                var serialized = JsonSerializer.Serialize(modLocation, new JsonSerializerOptions
+                {
+                    WriteIndented = true,
+                    ReferenceHandler = ReferenceHandler.Preserve
+                });
+                return Content(serialized, "application/json");
+                //return Ok(modLocation);v
             }
             catch (ArgumentException e)
             {
@@ -322,7 +331,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
                 query.Where(w => w.Areas.Any(a => a.Id == areaId));
             if (metricTypeId != null)
                 query.Where(w => w.Approaches.Any(m => m.Detectors.Any(d => d.DetectionTypes.Any(t => t.MeasureTypes.Any(a => a.Id == metricTypeId)))));
-            var mainResult = query.ToList(); 
+            var mainResult = query.ToList();
             var result = mainResult.Select(s => new SearchLocation()
             {
                 Id = s.Id,
