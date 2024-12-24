@@ -46,7 +46,8 @@ builder.Host.ConfigureServices((h, s) =>
     {
         o.JsonSerializerOptions.DictionaryKeyPolicy = JsonNamingPolicy.CamelCase;
         o.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
-        //o.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
+        o.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
+        o.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.Never;
     })
     .AddOData(o =>
     {
