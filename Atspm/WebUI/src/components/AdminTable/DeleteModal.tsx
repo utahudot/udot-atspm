@@ -44,6 +44,7 @@ const DeleteModal = <T,>({
   deleteByKey, // NEW PROP
 }: DeleteModalProps<T>) => {
   const handleConfirm = () => {
+    console.log("Selected ROw ", selectedRow)
     const keyValue = deleteByKey ? selectedRow[deleteByKey] : id
     onConfirm(keyValue as string | number)
     onClose()

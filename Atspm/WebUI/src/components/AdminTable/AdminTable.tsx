@@ -33,18 +33,18 @@ interface DeleteModalProps<T> {
   name: string
   selectedRow: T
   open: boolean
-  onClose: () => void
+  onClose?: () => void
 }
 interface EditModalProps<T> {
   id: number
   data: T | null
   open: boolean
-  onClose: () => void
+  onClose?: () => void
 }
 
 interface CreateModalProps {
   open: boolean
-  onClose: () => void
+  onClose?: () => void
 }
 
 interface CustomCellConfig {
@@ -60,7 +60,8 @@ interface AdminChartProps<T extends HasId> {
   hasEditPrivileges: boolean
   hasDeletePrivileges: boolean
   protectedFromDeleteItems?: string[]
-  editModal: ReactElement<EditModalProps<T>>
+  customEditFunction?: (selectedRow:T) => void
+  editModal?: ReactElement<EditModalProps<T>>
   deleteModal: ReactElement<DeleteModalProps<T>>
   createModal?: ReactElement<CreateModalProps>
   customCellRender?: CustomCellConfig[]
@@ -76,6 +77,7 @@ const AdminTable = <T extends HasId>({
   hasEditPrivileges,
   hasDeletePrivileges,
   protectedFromDeleteItems,
+  customEditFunction,
   editModal,
   deleteModal,
   createModal,
@@ -105,7 +107,12 @@ const AdminTable = <T extends HasId>({
   }
 
   const handleEditClick = () => {
-    setIsEditModalOpen(true)
+    if (customEditFunction){
+      customEditFunction(selectedRow)
+    } else {
+      setIsEditModalOpen(true)
+
+    }
   }
 
   const handleDeleteClick = () => {
@@ -141,12 +148,15 @@ const AdminTable = <T extends HasId>({
     onClose: handleClose,
   })
 
-  const editModalWithId = cloneElement(editModal, {
+  let editModalWithId
+  if (editModal) {
+   editModalWithId = cloneElement(editModal, {
     id: selectedRow?.id,
     data: selectedRow,
     open: isEditModalOpen,
     onClose: handleClose,
   })
+}
 
   let createModalWithProps
 
@@ -262,29 +272,34 @@ const AdminTable = <T extends HasId>({
       </Box>
 
       <Menu
-  id="actions-menu"
-  anchorEl={anchorEl}
-  keepMounted
-  open={Boolean(anchorEl)}
-  onClose={handleClose}
+        id="actions-menu"
+        anchorEl={anchorEl}
+        keepMounted
+        open={Boolean(anchorEl)}
+        onClose={handleClose}
+      >
+        {hasEditPrivileges && (
+          <MenuItem onClick={handleEditClick}
 >
-  {hasEditPrivileges && (
-    <MenuItem onClick={handleEditClick}>
-      <ListItemIcon>
-        <EditIcon />
-      </ListItemIcon>
-      <Typography>Edit</Typography>
-    </MenuItem>
-  )}
-  {hasDeletePrivileges && selectedRow && !(protectedFromDeleteItems?.includes(selectedRow[headerKeys[0]] as string)) && (
-    <MenuItem onClick={handleDeleteClick}>
-      <ListItemIcon>
-        <DeleteIcon />
-      </ListItemIcon>
-      <Typography>Delete</Typography>
-    </MenuItem>
-  )}
-</Menu>
+            <ListItemIcon>
+              <EditIcon />
+            </ListItemIcon>
+            <Typography>Edit</Typography>
+          </MenuItem>
+        )}
+        {hasDeletePrivileges &&
+          selectedRow &&
+          !protectedFromDeleteItems?.includes(
+            selectedRow[headerKeys[0]] as string
+          ) && (
+            <MenuItem onClick={handleDeleteClick}>
+              <ListItemIcon>
+                <DeleteIcon />
+              </ListItemIcon>
+              <Typography>Delete</Typography>
+            </MenuItem>
+          )}
+      </Menu>
 
       {isDeleteModalOpen && deleteModalWithId}
       {isEditModalOpen && editModalWithId}

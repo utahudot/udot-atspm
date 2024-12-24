@@ -32,29 +32,18 @@ const UsersAdmin = () => {
 
   const users = allUserData
 
-  const handleEditUser = async (userData: UserDto) => {
-    const {
-      userId,
-      firstName,
-      lastName,
-      agency,
-      fullName,
-      userName,
-      email,
-      roles,
-    } = userData
+  const handleEditUser = async (userData) => {
+    const { userId, firstName, lastName, agency, userName, email, roles } =
+      userData
     try {
       await editMutation({
-        data: {
-          userId,
-          firstName,
-          lastName,
-          agency,
-          fullName,
-          email: email.toLowerCase(),
-          userName: userName.toLowerCase(),
-          roles,
-        },
+        userId,
+        firstName,
+        lastName,
+        agency,
+        email: email.toLowerCase(),
+        userName: userName.toLowerCase(),
+        roles,
       })
       refetchUsers()
     } catch (error) {
@@ -72,15 +61,11 @@ const UsersAdmin = () => {
     }
   }
 
-  const onModalClose = () => {
-    //do something?? potentially just delete
-  }
-
   if (pageAccess.isLoading) {
     return
   }
 
-  const filteredData = users?.map((user: UserDto) => {
+  const filteredData = users?.map((user) => {
     return {
       userId: user.userId,
       firstName: user.firstName,
@@ -89,7 +74,7 @@ const UsersAdmin = () => {
       userName: user.userName,
       agency: user.agency,
       email: user.email,
-      roles: user.roles,
+      roles: user.roles?.sort(),
     }
   })
 
@@ -128,20 +113,16 @@ const UsersAdmin = () => {
         hasEditPrivileges={hasUserEditClaim}
         hasDeletePrivileges={hasUserDeleteClaim}
         editModal={
-          <UserModal
-            isOpen={true}
-            onSave={handleEditUser}
-            onClose={onModalClose}
-          />
+          <UserModal isOpen={true} onSave={handleEditUser} data={null} />
         }
         deleteModal={
           <DeleteModal
             id={0}
             name={''}
+            deleteByKey="userId"
             objectType="User"
             deleteLabel={(selectedRow: UserDto) => selectedRow.fullName}
             open={false}
-            onClose={() => {}}
             onConfirm={handleDeleteUser}
           />
         }
