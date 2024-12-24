@@ -1,6 +1,5 @@
 import { Chip, Stack } from '@mui/material'
 
-
 export interface CustomCellProps {
   value: any
   row: any
@@ -15,7 +14,7 @@ export const UserRolesCell = ({ value }: CustomCellProps) => {
   }
 
   return (
-    <Stack direction="row" spacing={1} flexWrap="wrap" gap={1}>
+    <Stack direction="row" flexWrap="wrap" gap={1}>
       {value.map((role, index) => (
         <Chip key={index} label={formatRoleName(role)} size="small" />
       ))}

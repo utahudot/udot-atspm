@@ -56,7 +56,7 @@ const AreasAdmin = () => {
   }
 
   const onModalClose = () => {
-    //do something?? potentially just delete
+    //add code for custom modal close
   }
 
   const filterAssociatedObjects = (areaId: number, objects: Location[]) => {

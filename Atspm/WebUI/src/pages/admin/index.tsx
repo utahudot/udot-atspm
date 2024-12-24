@@ -1,7 +1,7 @@
 import {
-  useApiV1MapLayer,
-  useApiV1MapLayerCount,
-  useApiV1MapLayerKey,
+  usePostMapLayer,
+  useGetMapLayer,
+  useDeleteMapLayerFromKey,
 } from '@/api/config/aTSPMConfigurationApi'
 import GenericAdminChart, {
   pageNameToHeaders,
@@ -37,9 +37,9 @@ const Admin = () => {
   const hasLocationsEditClaim = useUserHasClaim('LocationConfiguration:Edit')
   const hasLocationsDelteClaim = useUserHasClaim('LocationConfiguration:Delete')
 
-  const { data: mapLayerData, isLoading } = useApiV1MapLayerCount()
-  const createMutation = useApiV1MapLayer()
-  const deleteMutation = useApiV1MapLayerKey()
+  const { data: mapLayerData, isLoading } = useGetMapLayer()
+  const createMutation = usePostMapLayer()
+  const deleteMutation = useDeleteMapLayerFromKey()
   useEffect(() => {
     if (mapLayerData) {
       setData(mapLayerData)

@@ -125,6 +125,7 @@ const FaqAdmin = () => {
             id={0}
             name={''}
             objectType="Faqs"
+            deleteLabel={(selectedRow: Faq) => selectedRow.header}
             open={false}
             onClose={() => {}}
             onConfirm={HandleDeleteFaq}

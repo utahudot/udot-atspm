@@ -263,7 +263,7 @@ export const getApproachDetectorsFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<Detector[]>({
-    url: `/api/v1/Approach/${key}/detectors`,
+    url: `/Approach/${key}/detectors`,
     method: 'GET',
     params,
     signal,
@@ -275,7 +275,7 @@ export const getGetApproachDetectorsFromKeyQueryKey = (
   params?: GetApproachDetectorsFromKeyParams
 ) => {
   return [
-    `/api/v1/Approach/${key}/detectors`,
+    `/Approach/${key}/detectors`,
     ...(params ? [params] : []),
   ] as const
 }
@@ -362,7 +362,7 @@ export const getApproachDetectorsCountFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<Detector[]>({
-    url: `/api/v1/Approach/${key}/detectors/$count`,
+    url: `/Approach/${key}/detectors/$count`,
     method: 'GET',
     params,
     signal,
@@ -374,7 +374,7 @@ export const getGetApproachDetectorsCountFromKeyQueryKey = (
   params?: GetApproachDetectorsCountFromKeyParams
 ) => {
   return [
-    `/api/v1/Approach/${key}/detectors/$count`,
+    `/Approach/${key}/detectors/$count`,
     ...(params ? [params] : []),
   ] as const
 }
@@ -457,7 +457,7 @@ export const upsertApproachApproach = (
   params: UpsertApproachApproachParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/UpsertApproach`,
+    url: `/UpsertApproach`,
     method: 'POST',
     headers: {
       'Content-Type':
@@ -526,7 +526,7 @@ export const getApproachApproachDtoFromId = (
   signal?: AbortSignal
 ) => {
   return configRequest<void>({
-    url: `/api/v1/GetApproachDto/${id}`,
+    url: `/GetApproachDto/${id}`,
     method: 'GET',
     params,
     signal,
@@ -537,7 +537,7 @@ export const getGetApproachApproachDtoFromIdQueryKey = (
   id: number,
   params: GetApproachApproachDtoFromIdParams
 ) => {
-  return [`/api/v1/GetApproachDto/${id}`, ...(params ? [params] : [])] as const
+  return [`/GetApproachDto/${id}`, ...(params ? [params] : [])] as const
 }
 
 export const getGetApproachApproachDtoFromIdQueryOptions = <
@@ -615,7 +615,7 @@ export const postApproach = (
   params?: PostApproachParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/Approach`,
+    url: `/Approach`,
     method: 'POST',
     headers: {
       'Content-Type':
@@ -686,7 +686,7 @@ export const getApproach = (
   signal?: AbortSignal
 ) => {
   return configRequest<Approach[]>({
-    url: `/api/v1/Approach`,
+    url: `/Approach`,
     method: 'GET',
     params,
     signal,
@@ -694,7 +694,7 @@ export const getApproach = (
 }
 
 export const getGetApproachQueryKey = (params?: GetApproachParams) => {
-  return [`/api/v1/Approach`, ...(params ? [params] : [])] as const
+  return [`/Approach`, ...(params ? [params] : [])] as const
 }
 
 export const getGetApproachQueryOptions = <
@@ -763,7 +763,7 @@ export const patchApproachFromKey = (
   params?: PatchApproachFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/Approach/${key}`,
+    url: `/Approach/${key}`,
     method: 'PATCH',
     headers: {
       'Content-Type':
@@ -828,7 +828,7 @@ export const usePatchApproachFromKey = <
 
 export const deleteApproachFromKey = (key: number) => {
   return configRequest<void>({
-    url: `/api/v1/Approach/${key}`,
+    url: `/Approach/${key}`,
     method: 'DELETE',
   })
 }
@@ -894,7 +894,7 @@ export const getApproachFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<Approach>({
-    url: `/api/v1/Approach/${key}`,
+    url: `/Approach/${key}`,
     method: 'GET',
     params,
     signal,
@@ -905,7 +905,7 @@ export const getGetApproachFromKeyQueryKey = (
   key: number,
   params?: GetApproachFromKeyParams
 ) => {
-  return [`/api/v1/Approach/${key}`, ...(params ? [params] : [])] as const
+  return [`/Approach/${key}`, ...(params ? [params] : [])] as const
 }
 
 export const getGetApproachFromKeyQueryOptions = <
@@ -982,7 +982,7 @@ export const putApproachFromKey = (
   params?: PutApproachFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/Approach/${key}`,
+    url: `/Approach/${key}`,
     method: 'PUT',
     headers: {
       'Content-Type':
@@ -1053,7 +1053,7 @@ export const getApproachCount = (
   signal?: AbortSignal
 ) => {
   return configRequest<Approach[]>({
-    url: `/api/v1/Approach/$count`,
+    url: `/Approach/$count`,
     method: 'GET',
     params,
     signal,
@@ -1063,7 +1063,7 @@ export const getApproachCount = (
 export const getGetApproachCountQueryKey = (
   params?: GetApproachCountParams
 ) => {
-  return [`/api/v1/Approach/$count`, ...(params ? [params] : [])] as const
+  return [`/Approach/$count`, ...(params ? [params] : [])] as const
 }
 
 export const getGetApproachCountQueryOptions = <
@@ -1135,7 +1135,7 @@ export const getAreaLocationsFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<Location[]>({
-    url: `/api/v1/Area/${key}/locations`,
+    url: `/Area/${key}/locations`,
     method: 'GET',
     params,
     signal,
@@ -1146,7 +1146,7 @@ export const getGetAreaLocationsFromKeyQueryKey = (
   key: number,
   params?: GetAreaLocationsFromKeyParams
 ) => {
-  return [`/api/v1/Area/${key}/locations`, ...(params ? [params] : [])] as const
+  return [`/Area/${key}/locations`, ...(params ? [params] : [])] as const
 }
 
 export const getGetAreaLocationsFromKeyQueryOptions = <
@@ -1230,7 +1230,7 @@ export const getAreaLocationsCountFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<Location[]>({
-    url: `/api/v1/Area/${key}/locations/$count`,
+    url: `/Area/${key}/locations/$count`,
     method: 'GET',
     params,
     signal,
@@ -1242,7 +1242,7 @@ export const getGetAreaLocationsCountFromKeyQueryKey = (
   params?: GetAreaLocationsCountFromKeyParams
 ) => {
   return [
-    `/api/v1/Area/${key}/locations/$count`,
+    `/Area/${key}/locations/$count`,
     ...(params ? [params] : []),
   ] as const
 }
@@ -1322,7 +1322,7 @@ export const useGetAreaLocationsCountFromKey = <
 
 export const postArea = (area: Area, params?: PostAreaParams) => {
   return configRequest<void>({
-    url: `/api/v1/Area`,
+    url: `/Area`,
     method: 'POST',
     headers: {
       'Content-Type':
@@ -1387,7 +1387,7 @@ export const usePostArea = <TError = unknown, TContext = unknown>(options?: {
  */
 export const getArea = (params?: GetAreaParams, signal?: AbortSignal) => {
   return configRequest<Area[]>({
-    url: `/api/v1/Area`,
+    url: `/Area`,
     method: 'GET',
     params,
     signal,
@@ -1395,7 +1395,7 @@ export const getArea = (params?: GetAreaParams, signal?: AbortSignal) => {
 }
 
 export const getGetAreaQueryKey = (params?: GetAreaParams) => {
-  return [`/api/v1/Area`, ...(params ? [params] : [])] as const
+  return [`/Area`, ...(params ? [params] : [])] as const
 }
 
 export const getGetAreaQueryOptions = <
@@ -1456,7 +1456,7 @@ export const patchAreaFromKey = (
   params?: PatchAreaFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/Area/${key}`,
+    url: `/Area/${key}`,
     method: 'PATCH',
     headers: {
       'Content-Type':
@@ -1520,7 +1520,7 @@ export const usePatchAreaFromKey = <
 }
 
 export const deleteAreaFromKey = (key: number) => {
-  return configRequest<void>({ url: `/api/v1/Area/${key}`, method: 'DELETE' })
+  return configRequest<void>({ url: `/Area/${key}`, method: 'DELETE' })
 }
 
 export const getDeleteAreaFromKeyMutationOptions = <
@@ -1584,7 +1584,7 @@ export const getAreaFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<Area>({
-    url: `/api/v1/Area/${key}`,
+    url: `/Area/${key}`,
     method: 'GET',
     params,
     signal,
@@ -1595,7 +1595,7 @@ export const getGetAreaFromKeyQueryKey = (
   key: number,
   params?: GetAreaFromKeyParams
 ) => {
-  return [`/api/v1/Area/${key}`, ...(params ? [params] : [])] as const
+  return [`/Area/${key}`, ...(params ? [params] : [])] as const
 }
 
 export const getGetAreaFromKeyQueryOptions = <
@@ -1672,7 +1672,7 @@ export const putAreaFromKey = (
   params?: PutAreaFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/Area/${key}`,
+    url: `/Area/${key}`,
     method: 'PUT',
     headers: {
       'Content-Type':
@@ -1743,7 +1743,7 @@ export const getAreaCount = (
   signal?: AbortSignal
 ) => {
   return configRequest<Area[]>({
-    url: `/api/v1/Area/$count`,
+    url: `/Area/$count`,
     method: 'GET',
     params,
     signal,
@@ -1751,7 +1751,7 @@ export const getAreaCount = (
 }
 
 export const getGetAreaCountQueryKey = (params?: GetAreaCountParams) => {
-  return [`/api/v1/Area/$count`, ...(params ? [params] : [])] as const
+  return [`/Area/$count`, ...(params ? [params] : [])] as const
 }
 
 export const getGetAreaCountQueryOptions = <
@@ -1823,7 +1823,7 @@ export const getDetectionTypeDetectorsFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<Detector[]>({
-    url: `/api/v1/DetectionType/${key}/detectors`,
+    url: `/DetectionType/${key}/detectors`,
     method: 'GET',
     params,
     signal,
@@ -1835,7 +1835,7 @@ export const getGetDetectionTypeDetectorsFromKeyQueryKey = (
   params?: GetDetectionTypeDetectorsFromKeyParams
 ) => {
   return [
-    `/api/v1/DetectionType/${key}/detectors`,
+    `/DetectionType/${key}/detectors`,
     ...(params ? [params] : []),
   ] as const
 }
@@ -1922,7 +1922,7 @@ export const getDetectionTypeDetectorsCountFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<Detector[]>({
-    url: `/api/v1/DetectionType/${key}/detectors/$count`,
+    url: `/DetectionType/${key}/detectors/$count`,
     method: 'GET',
     params,
     signal,
@@ -1934,7 +1934,7 @@ export const getGetDetectionTypeDetectorsCountFromKeyQueryKey = (
   params?: GetDetectionTypeDetectorsCountFromKeyParams
 ) => {
   return [
-    `/api/v1/DetectionType/${key}/detectors/$count`,
+    `/DetectionType/${key}/detectors/$count`,
     ...(params ? [params] : []),
   ] as const
 }
@@ -2021,7 +2021,7 @@ export const getDetectionTypeMeasureTypesFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<MeasureType[]>({
-    url: `/api/v1/DetectionType/${key}/measureTypes`,
+    url: `/DetectionType/${key}/measureTypes`,
     method: 'GET',
     params,
     signal,
@@ -2033,7 +2033,7 @@ export const getGetDetectionTypeMeasureTypesFromKeyQueryKey = (
   params?: GetDetectionTypeMeasureTypesFromKeyParams
 ) => {
   return [
-    `/api/v1/DetectionType/${key}/measureTypes`,
+    `/DetectionType/${key}/measureTypes`,
     ...(params ? [params] : []),
   ] as const
 }
@@ -2120,7 +2120,7 @@ export const getDetectionTypeMeasureTypesCountFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<MeasureType[]>({
-    url: `/api/v1/DetectionType/${key}/measureTypes/$count`,
+    url: `/DetectionType/${key}/measureTypes/$count`,
     method: 'GET',
     params,
     signal,
@@ -2132,7 +2132,7 @@ export const getGetDetectionTypeMeasureTypesCountFromKeyQueryKey = (
   params?: GetDetectionTypeMeasureTypesCountFromKeyParams
 ) => {
   return [
-    `/api/v1/DetectionType/${key}/measureTypes/$count`,
+    `/DetectionType/${key}/measureTypes/$count`,
     ...(params ? [params] : []),
   ] as const
 }
@@ -2219,7 +2219,7 @@ export const getDetectionType = (
   signal?: AbortSignal
 ) => {
   return configRequest<DetectionType[]>({
-    url: `/api/v1/DetectionType`,
+    url: `/DetectionType`,
     method: 'GET',
     params,
     signal,
@@ -2229,7 +2229,7 @@ export const getDetectionType = (
 export const getGetDetectionTypeQueryKey = (
   params?: GetDetectionTypeParams
 ) => {
-  return [`/api/v1/DetectionType`, ...(params ? [params] : [])] as const
+  return [`/DetectionType`, ...(params ? [params] : [])] as const
 }
 
 export const getGetDetectionTypeQueryOptions = <
@@ -2300,7 +2300,7 @@ export const postDetectionType = (
   params?: PostDetectionTypeParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/DetectionType`,
+    url: `/DetectionType`,
     method: 'POST',
     headers: {
       'Content-Type':
@@ -2374,7 +2374,7 @@ export const getDetectionTypeCount = (
   signal?: AbortSignal
 ) => {
   return configRequest<DetectionType[]>({
-    url: `/api/v1/DetectionType/$count`,
+    url: `/DetectionType/$count`,
     method: 'GET',
     params,
     signal,
@@ -2384,7 +2384,7 @@ export const getDetectionTypeCount = (
 export const getGetDetectionTypeCountQueryKey = (
   params?: GetDetectionTypeCountParams
 ) => {
-  return [`/api/v1/DetectionType/$count`, ...(params ? [params] : [])] as const
+  return [`/DetectionType/$count`, ...(params ? [params] : [])] as const
 }
 
 export const getGetDetectionTypeCountQueryOptions = <
@@ -2457,7 +2457,7 @@ export const getDetectionTypeFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<DetectionType>({
-    url: `/api/v1/DetectionType/${key}`,
+    url: `/DetectionType/${key}`,
     method: 'GET',
     params,
     signal,
@@ -2468,7 +2468,7 @@ export const getGetDetectionTypeFromKeyQueryKey = (
   key: DetectionTypes,
   params?: GetDetectionTypeFromKeyParams
 ) => {
-  return [`/api/v1/DetectionType/${key}`, ...(params ? [params] : [])] as const
+  return [`/DetectionType/${key}`, ...(params ? [params] : [])] as const
 }
 
 export const getGetDetectionTypeFromKeyQueryOptions = <
@@ -2549,7 +2549,7 @@ export const putDetectionTypeFromKey = (
   params?: PutDetectionTypeFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/DetectionType/${key}`,
+    url: `/DetectionType/${key}`,
     method: 'PUT',
     headers: {
       'Content-Type':
@@ -2637,7 +2637,7 @@ export const patchDetectionTypeFromKey = (
   params?: PatchDetectionTypeFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/DetectionType/${key}`,
+    url: `/DetectionType/${key}`,
     method: 'PATCH',
     headers: {
       'Content-Type':
@@ -2724,7 +2724,7 @@ export const usePatchDetectionTypeFromKey = <
  */
 export const deleteDetectionTypeFromKey = (key: DetectionTypes) => {
   return configRequest<void>({
-    url: `/api/v1/DetectionType/${key}`,
+    url: `/DetectionType/${key}`,
     method: 'DELETE',
   })
 }
@@ -2793,7 +2793,7 @@ export const getDetectorDetectorCommentsFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<DetectorComment[]>({
-    url: `/api/v1/Detector/${key}/detectorComments`,
+    url: `/Detector/${key}/detectorComments`,
     method: 'GET',
     params,
     signal,
@@ -2805,7 +2805,7 @@ export const getGetDetectorDetectorCommentsFromKeyQueryKey = (
   params?: GetDetectorDetectorCommentsFromKeyParams
 ) => {
   return [
-    `/api/v1/Detector/${key}/detectorComments`,
+    `/Detector/${key}/detectorComments`,
     ...(params ? [params] : []),
   ] as const
 }
@@ -2892,7 +2892,7 @@ export const getDetectorDetectorCommentsCountFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<DetectorComment[]>({
-    url: `/api/v1/Detector/${key}/detectorComments/$count`,
+    url: `/Detector/${key}/detectorComments/$count`,
     method: 'GET',
     params,
     signal,
@@ -2904,7 +2904,7 @@ export const getGetDetectorDetectorCommentsCountFromKeyQueryKey = (
   params?: GetDetectorDetectorCommentsCountFromKeyParams
 ) => {
   return [
-    `/api/v1/Detector/${key}/detectorComments/$count`,
+    `/Detector/${key}/detectorComments/$count`,
     ...(params ? [params] : []),
   ] as const
 }
@@ -2992,7 +2992,7 @@ export const getDetectorDetectionTypesFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<DetectionType[]>({
-    url: `/api/v1/Detector/${key}/detectionTypes`,
+    url: `/Detector/${key}/detectionTypes`,
     method: 'GET',
     params,
     signal,
@@ -3004,7 +3004,7 @@ export const getGetDetectorDetectionTypesFromKeyQueryKey = (
   params?: GetDetectorDetectionTypesFromKeyParams
 ) => {
   return [
-    `/api/v1/Detector/${key}/detectionTypes`,
+    `/Detector/${key}/detectionTypes`,
     ...(params ? [params] : []),
   ] as const
 }
@@ -3091,7 +3091,7 @@ export const getDetectorDetectionTypesCountFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<DetectionType[]>({
-    url: `/api/v1/Detector/${key}/detectionTypes/$count`,
+    url: `/Detector/${key}/detectionTypes/$count`,
     method: 'GET',
     params,
     signal,
@@ -3103,7 +3103,7 @@ export const getGetDetectorDetectionTypesCountFromKeyQueryKey = (
   params?: GetDetectorDetectionTypesCountFromKeyParams
 ) => {
   return [
-    `/api/v1/Detector/${key}/detectionTypes/$count`,
+    `/Detector/${key}/detectionTypes/$count`,
     ...(params ? [params] : []),
   ] as const
 }
@@ -3189,7 +3189,7 @@ export const getDetector = (
   signal?: AbortSignal
 ) => {
   return configRequest<Detector[]>({
-    url: `/api/v1/Detector`,
+    url: `/Detector`,
     method: 'GET',
     params,
     signal,
@@ -3197,7 +3197,7 @@ export const getDetector = (
 }
 
 export const getGetDetectorQueryKey = (params?: GetDetectorParams) => {
-  return [`/api/v1/Detector`, ...(params ? [params] : [])] as const
+  return [`/Detector`, ...(params ? [params] : [])] as const
 }
 
 export const getGetDetectorQueryOptions = <
@@ -3268,7 +3268,7 @@ export const postDetector = (
   params?: PostDetectorParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/Detector`,
+    url: `/Detector`,
     method: 'POST',
     headers: {
       'Content-Type':
@@ -3342,7 +3342,7 @@ export const getDetectorCount = (
   signal?: AbortSignal
 ) => {
   return configRequest<Detector[]>({
-    url: `/api/v1/Detector/$count`,
+    url: `/Detector/$count`,
     method: 'GET',
     params,
     signal,
@@ -3352,7 +3352,7 @@ export const getDetectorCount = (
 export const getGetDetectorCountQueryKey = (
   params?: GetDetectorCountParams
 ) => {
-  return [`/api/v1/Detector/$count`, ...(params ? [params] : [])] as const
+  return [`/Detector/$count`, ...(params ? [params] : [])] as const
 }
 
 export const getGetDetectorCountQueryOptions = <
@@ -3424,7 +3424,7 @@ export const getDetectorFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<Detector>({
-    url: `/api/v1/Detector/${key}`,
+    url: `/Detector/${key}`,
     method: 'GET',
     params,
     signal,
@@ -3435,7 +3435,7 @@ export const getGetDetectorFromKeyQueryKey = (
   key: number,
   params?: GetDetectorFromKeyParams
 ) => {
-  return [`/api/v1/Detector/${key}`, ...(params ? [params] : [])] as const
+  return [`/Detector/${key}`, ...(params ? [params] : [])] as const
 }
 
 export const getGetDetectorFromKeyQueryOptions = <
@@ -3512,7 +3512,7 @@ export const putDetectorFromKey = (
   params?: PutDetectorFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/Detector/${key}`,
+    url: `/Detector/${key}`,
     method: 'PUT',
     headers: {
       'Content-Type':
@@ -3584,7 +3584,7 @@ export const patchDetectorFromKey = (
   params?: PatchDetectorFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/Detector/${key}`,
+    url: `/Detector/${key}`,
     method: 'PATCH',
     headers: {
       'Content-Type':
@@ -3655,7 +3655,7 @@ export const usePatchDetectorFromKey = <
  */
 export const deleteDetectorFromKey = (key: number) => {
   return configRequest<void>({
-    url: `/api/v1/Detector/${key}`,
+    url: `/Detector/${key}`,
     method: 'DELETE',
   })
 }
@@ -3723,7 +3723,7 @@ export const getDetectorComment = (
   signal?: AbortSignal
 ) => {
   return configRequest<DetectorComment[]>({
-    url: `/api/v1/DetectorComment`,
+    url: `/DetectorComment`,
     method: 'GET',
     params,
     signal,
@@ -3733,7 +3733,7 @@ export const getDetectorComment = (
 export const getGetDetectorCommentQueryKey = (
   params?: GetDetectorCommentParams
 ) => {
-  return [`/api/v1/DetectorComment`, ...(params ? [params] : [])] as const
+  return [`/DetectorComment`, ...(params ? [params] : [])] as const
 }
 
 export const getGetDetectorCommentQueryOptions = <
@@ -3805,7 +3805,7 @@ export const postDetectorComment = (
   params?: PostDetectorCommentParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/DetectorComment`,
+    url: `/DetectorComment`,
     method: 'POST',
     headers: {
       'Content-Type':
@@ -3879,7 +3879,7 @@ export const getDetectorCommentCount = (
   signal?: AbortSignal
 ) => {
   return configRequest<DetectorComment[]>({
-    url: `/api/v1/DetectorComment/$count`,
+    url: `/DetectorComment/$count`,
     method: 'GET',
     params,
     signal,
@@ -3890,7 +3890,7 @@ export const getGetDetectorCommentCountQueryKey = (
   params?: GetDetectorCommentCountParams
 ) => {
   return [
-    `/api/v1/DetectorComment/$count`,
+    `/DetectorComment/$count`,
     ...(params ? [params] : []),
   ] as const
 }
@@ -3965,7 +3965,7 @@ export const getDetectorCommentFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<DetectorComment>({
-    url: `/api/v1/DetectorComment/${key}`,
+    url: `/DetectorComment/${key}`,
     method: 'GET',
     params,
     signal,
@@ -3977,7 +3977,7 @@ export const getGetDetectorCommentFromKeyQueryKey = (
   params?: GetDetectorCommentFromKeyParams
 ) => {
   return [
-    `/api/v1/DetectorComment/${key}`,
+    `/DetectorComment/${key}`,
     ...(params ? [params] : []),
   ] as const
 }
@@ -4060,7 +4060,7 @@ export const putDetectorCommentFromKey = (
   params?: PutDetectorCommentFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/DetectorComment/${key}`,
+    url: `/DetectorComment/${key}`,
     method: 'PUT',
     headers: {
       'Content-Type':
@@ -4148,7 +4148,7 @@ export const patchDetectorCommentFromKey = (
   params?: PatchDetectorCommentFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/DetectorComment/${key}`,
+    url: `/DetectorComment/${key}`,
     method: 'PATCH',
     headers: {
       'Content-Type':
@@ -4235,7 +4235,7 @@ export const usePatchDetectorCommentFromKey = <
  */
 export const deleteDetectorCommentFromKey = (key: number) => {
   return configRequest<void>({
-    url: `/api/v1/DetectorComment/${key}`,
+    url: `/DetectorComment/${key}`,
     method: 'DELETE',
   })
 }
@@ -4305,7 +4305,7 @@ export const getDeviceActiveDevicesByLocationFromLocationId = (
   signal?: AbortSignal
 ) => {
   return configRequest<Device[]>({
-    url: `/api/v1/Device/GetActiveDevicesByLocation(locationId=${locationId})`,
+    url: `/Device/GetActiveDevicesByLocation(locationId=${locationId})`,
     method: 'GET',
     params,
     signal,
@@ -4317,7 +4317,7 @@ export const getGetDeviceActiveDevicesByLocationFromLocationIdQueryKey = (
   params?: GetDeviceActiveDevicesByLocationFromLocationIdParams
 ) => {
   return [
-    `/api/v1/Device/GetActiveDevicesByLocation(locationId=${locationId})`,
+    `/Device/GetActiveDevicesByLocation(locationId=${locationId})`,
     ...(params ? [params] : []),
   ] as const
 }
@@ -4417,7 +4417,7 @@ export const getDeviceActiveDevicesCount = (
   signal?: AbortSignal
 ) => {
   return configRequest<DeviceGroup[]>({
-    url: `/api/v1/Device/GetActiveDevicesCount`,
+    url: `/Device/GetActiveDevicesCount`,
     method: 'GET',
     params,
     signal,
@@ -4428,7 +4428,7 @@ export const getGetDeviceActiveDevicesCountQueryKey = (
   params?: GetDeviceActiveDevicesCountParams
 ) => {
   return [
-    `/api/v1/Device/GetActiveDevicesCount`,
+    `/Device/GetActiveDevicesCount`,
     ...(params ? [params] : []),
   ] as const
 }
@@ -4502,7 +4502,7 @@ export const useGetDeviceActiveDevicesCount = <
  */
 export const getDevice = (params?: GetDeviceParams, signal?: AbortSignal) => {
   return configRequest<Device[]>({
-    url: `/api/v1/Device`,
+    url: `/Device`,
     method: 'GET',
     params,
     signal,
@@ -4510,7 +4510,7 @@ export const getDevice = (params?: GetDeviceParams, signal?: AbortSignal) => {
 }
 
 export const getGetDeviceQueryKey = (params?: GetDeviceParams) => {
-  return [`/api/v1/Device`, ...(params ? [params] : [])] as const
+  return [`/Device`, ...(params ? [params] : [])] as const
 }
 
 export const getGetDeviceQueryOptions = <
@@ -4578,7 +4578,7 @@ export const useGetDevice = <
  */
 export const postDevice = (device: Device, params?: PostDeviceParams) => {
   return configRequest<void>({
-    url: `/api/v1/Device`,
+    url: `/Device`,
     method: 'POST',
     headers: {
       'Content-Type':
@@ -4649,7 +4649,7 @@ export const getDeviceCount = (
   signal?: AbortSignal
 ) => {
   return configRequest<Device[]>({
-    url: `/api/v1/Device/$count`,
+    url: `/Device/$count`,
     method: 'GET',
     params,
     signal,
@@ -4657,7 +4657,7 @@ export const getDeviceCount = (
 }
 
 export const getGetDeviceCountQueryKey = (params?: GetDeviceCountParams) => {
-  return [`/api/v1/Device/$count`, ...(params ? [params] : [])] as const
+  return [`/Device/$count`, ...(params ? [params] : [])] as const
 }
 
 export const getGetDeviceCountQueryOptions = <
@@ -4729,7 +4729,7 @@ export const getDeviceFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<Device>({
-    url: `/api/v1/Device/${key}`,
+    url: `/Device/${key}`,
     method: 'GET',
     params,
     signal,
@@ -4740,7 +4740,7 @@ export const getGetDeviceFromKeyQueryKey = (
   key: number,
   params?: GetDeviceFromKeyParams
 ) => {
-  return [`/api/v1/Device/${key}`, ...(params ? [params] : [])] as const
+  return [`/Device/${key}`, ...(params ? [params] : [])] as const
 }
 
 export const getGetDeviceFromKeyQueryOptions = <
@@ -4817,7 +4817,7 @@ export const putDeviceFromKey = (
   params?: PutDeviceFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/Device/${key}`,
+    url: `/Device/${key}`,
     method: 'PUT',
     headers: {
       'Content-Type':
@@ -4889,7 +4889,7 @@ export const patchDeviceFromKey = (
   params?: PatchDeviceFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/Device/${key}`,
+    url: `/Device/${key}`,
     method: 'PATCH',
     headers: {
       'Content-Type':
@@ -4959,7 +4959,7 @@ export const usePatchDeviceFromKey = <
  * @summary Delete object of specified type
  */
 export const deleteDeviceFromKey = (key: number) => {
-  return configRequest<void>({ url: `/api/v1/Device/${key}`, method: 'DELETE' })
+  return configRequest<void>({ url: `/Device/${key}`, method: 'DELETE' })
 }
 
 export const getDeleteDeviceFromKeyMutationOptions = <
@@ -5026,7 +5026,7 @@ export const getDeviceConfigurationDevicesFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<Device[]>({
-    url: `/api/v1/DeviceConfiguration/${key}/devices`,
+    url: `/DeviceConfiguration/${key}/devices`,
     method: 'GET',
     params,
     signal,
@@ -5038,7 +5038,7 @@ export const getGetDeviceConfigurationDevicesFromKeyQueryKey = (
   params?: GetDeviceConfigurationDevicesFromKeyParams
 ) => {
   return [
-    `/api/v1/DeviceConfiguration/${key}/devices`,
+    `/DeviceConfiguration/${key}/devices`,
     ...(params ? [params] : []),
   ] as const
 }
@@ -5125,7 +5125,7 @@ export const getDeviceConfigurationDevicesCountFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<Device[]>({
-    url: `/api/v1/DeviceConfiguration/${key}/devices/$count`,
+    url: `/DeviceConfiguration/${key}/devices/$count`,
     method: 'GET',
     params,
     signal,
@@ -5137,7 +5137,7 @@ export const getGetDeviceConfigurationDevicesCountFromKeyQueryKey = (
   params?: GetDeviceConfigurationDevicesCountFromKeyParams
 ) => {
   return [
-    `/api/v1/DeviceConfiguration/${key}/devices/$count`,
+    `/DeviceConfiguration/${key}/devices/$count`,
     ...(params ? [params] : []),
   ] as const
 }
@@ -5224,7 +5224,7 @@ export const getDeviceConfiguration = (
   signal?: AbortSignal
 ) => {
   return configRequest<DeviceConfiguration[]>({
-    url: `/api/v1/DeviceConfiguration`,
+    url: `/DeviceConfiguration`,
     method: 'GET',
     params,
     signal,
@@ -5234,7 +5234,7 @@ export const getDeviceConfiguration = (
 export const getGetDeviceConfigurationQueryKey = (
   params?: GetDeviceConfigurationParams
 ) => {
-  return [`/api/v1/DeviceConfiguration`, ...(params ? [params] : [])] as const
+  return [`/DeviceConfiguration`, ...(params ? [params] : [])] as const
 }
 
 export const getGetDeviceConfigurationQueryOptions = <
@@ -5306,7 +5306,7 @@ export const postDeviceConfiguration = (
   params?: PostDeviceConfigurationParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/DeviceConfiguration`,
+    url: `/DeviceConfiguration`,
     method: 'POST',
     headers: {
       'Content-Type':
@@ -5380,7 +5380,7 @@ export const getDeviceConfigurationCount = (
   signal?: AbortSignal
 ) => {
   return configRequest<DeviceConfiguration[]>({
-    url: `/api/v1/DeviceConfiguration/$count`,
+    url: `/DeviceConfiguration/$count`,
     method: 'GET',
     params,
     signal,
@@ -5391,7 +5391,7 @@ export const getGetDeviceConfigurationCountQueryKey = (
   params?: GetDeviceConfigurationCountParams
 ) => {
   return [
-    `/api/v1/DeviceConfiguration/$count`,
+    `/DeviceConfiguration/$count`,
     ...(params ? [params] : []),
   ] as const
 }
@@ -5469,7 +5469,7 @@ export const getDeviceConfigurationFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<DeviceConfiguration>({
-    url: `/api/v1/DeviceConfiguration/${key}`,
+    url: `/DeviceConfiguration/${key}`,
     method: 'GET',
     params,
     signal,
@@ -5481,7 +5481,7 @@ export const getGetDeviceConfigurationFromKeyQueryKey = (
   params?: GetDeviceConfigurationFromKeyParams
 ) => {
   return [
-    `/api/v1/DeviceConfiguration/${key}`,
+    `/DeviceConfiguration/${key}`,
     ...(params ? [params] : []),
   ] as const
 }
@@ -5565,7 +5565,7 @@ export const putDeviceConfigurationFromKey = (
   params?: PutDeviceConfigurationFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/DeviceConfiguration/${key}`,
+    url: `/DeviceConfiguration/${key}`,
     method: 'PUT',
     headers: {
       'Content-Type':
@@ -5654,7 +5654,7 @@ export const patchDeviceConfigurationFromKey = (
   params?: PatchDeviceConfigurationFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/DeviceConfiguration/${key}`,
+    url: `/DeviceConfiguration/${key}`,
     method: 'PATCH',
     headers: {
       'Content-Type':
@@ -5742,7 +5742,7 @@ export const usePatchDeviceConfigurationFromKey = <
  */
 export const deleteDeviceConfigurationFromKey = (key: number) => {
   return configRequest<void>({
-    url: `/api/v1/DeviceConfiguration/${key}`,
+    url: `/DeviceConfiguration/${key}`,
     method: 'DELETE',
   })
 }
@@ -5812,7 +5812,7 @@ export const getDirectionTypeApproachesFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<Approach[]>({
-    url: `/api/v1/DirectionType/${key}/approaches`,
+    url: `/DirectionType/${key}/approaches`,
     method: 'GET',
     params,
     signal,
@@ -5824,7 +5824,7 @@ export const getGetDirectionTypeApproachesFromKeyQueryKey = (
   params?: GetDirectionTypeApproachesFromKeyParams
 ) => {
   return [
-    `/api/v1/DirectionType/${key}/approaches`,
+    `/DirectionType/${key}/approaches`,
     ...(params ? [params] : []),
   ] as const
 }
@@ -5911,7 +5911,7 @@ export const getDirectionTypeApproachesCountFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<Approach[]>({
-    url: `/api/v1/DirectionType/${key}/approaches/$count`,
+    url: `/DirectionType/${key}/approaches/$count`,
     method: 'GET',
     params,
     signal,
@@ -5923,7 +5923,7 @@ export const getGetDirectionTypeApproachesCountFromKeyQueryKey = (
   params?: GetDirectionTypeApproachesCountFromKeyParams
 ) => {
   return [
-    `/api/v1/DirectionType/${key}/approaches/$count`,
+    `/DirectionType/${key}/approaches/$count`,
     ...(params ? [params] : []),
   ] as const
 }
@@ -6011,7 +6011,7 @@ export const getDirectionTypePrimaryDirectionsFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<RouteLocation[]>({
-    url: `/api/v1/DirectionType/${key}/primaryDirections`,
+    url: `/DirectionType/${key}/primaryDirections`,
     method: 'GET',
     params,
     signal,
@@ -6023,7 +6023,7 @@ export const getGetDirectionTypePrimaryDirectionsFromKeyQueryKey = (
   params?: GetDirectionTypePrimaryDirectionsFromKeyParams
 ) => {
   return [
-    `/api/v1/DirectionType/${key}/primaryDirections`,
+    `/DirectionType/${key}/primaryDirections`,
     ...(params ? [params] : []),
   ] as const
 }
@@ -6111,7 +6111,7 @@ export const getDirectionTypePrimaryDirectionsCountFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<RouteLocation[]>({
-    url: `/api/v1/DirectionType/${key}/primaryDirections/$count`,
+    url: `/DirectionType/${key}/primaryDirections/$count`,
     method: 'GET',
     params,
     signal,
@@ -6123,7 +6123,7 @@ export const getGetDirectionTypePrimaryDirectionsCountFromKeyQueryKey = (
   params?: GetDirectionTypePrimaryDirectionsCountFromKeyParams
 ) => {
   return [
-    `/api/v1/DirectionType/${key}/primaryDirections/$count`,
+    `/DirectionType/${key}/primaryDirections/$count`,
     ...(params ? [params] : []),
   ] as const
 }
@@ -6217,7 +6217,7 @@ export const getDirectionTypeOpposingDirectionsFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<RouteLocation[]>({
-    url: `/api/v1/DirectionType/${key}/opposingDirections`,
+    url: `/DirectionType/${key}/opposingDirections`,
     method: 'GET',
     params,
     signal,
@@ -6229,7 +6229,7 @@ export const getGetDirectionTypeOpposingDirectionsFromKeyQueryKey = (
   params?: GetDirectionTypeOpposingDirectionsFromKeyParams
 ) => {
   return [
-    `/api/v1/DirectionType/${key}/opposingDirections`,
+    `/DirectionType/${key}/opposingDirections`,
     ...(params ? [params] : []),
   ] as const
 }
@@ -6317,7 +6317,7 @@ export const getDirectionTypeOpposingDirectionsCountFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<RouteLocation[]>({
-    url: `/api/v1/DirectionType/${key}/opposingDirections/$count`,
+    url: `/DirectionType/${key}/opposingDirections/$count`,
     method: 'GET',
     params,
     signal,
@@ -6329,7 +6329,7 @@ export const getGetDirectionTypeOpposingDirectionsCountFromKeyQueryKey = (
   params?: GetDirectionTypeOpposingDirectionsCountFromKeyParams
 ) => {
   return [
-    `/api/v1/DirectionType/${key}/opposingDirections/$count`,
+    `/DirectionType/${key}/opposingDirections/$count`,
     ...(params ? [params] : []),
   ] as const
 }
@@ -6426,7 +6426,7 @@ export const getDirectionType = (
   signal?: AbortSignal
 ) => {
   return configRequest<DirectionType[]>({
-    url: `/api/v1/DirectionType`,
+    url: `/DirectionType`,
     method: 'GET',
     params,
     signal,
@@ -6436,7 +6436,7 @@ export const getDirectionType = (
 export const getGetDirectionTypeQueryKey = (
   params?: GetDirectionTypeParams
 ) => {
-  return [`/api/v1/DirectionType`, ...(params ? [params] : [])] as const
+  return [`/DirectionType`, ...(params ? [params] : [])] as const
 }
 
 export const getGetDirectionTypeQueryOptions = <
@@ -6507,7 +6507,7 @@ export const postDirectionType = (
   params?: PostDirectionTypeParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/DirectionType`,
+    url: `/DirectionType`,
     method: 'POST',
     headers: {
       'Content-Type':
@@ -6581,7 +6581,7 @@ export const getDirectionTypeCount = (
   signal?: AbortSignal
 ) => {
   return configRequest<DirectionType[]>({
-    url: `/api/v1/DirectionType/$count`,
+    url: `/DirectionType/$count`,
     method: 'GET',
     params,
     signal,
@@ -6591,7 +6591,7 @@ export const getDirectionTypeCount = (
 export const getGetDirectionTypeCountQueryKey = (
   params?: GetDirectionTypeCountParams
 ) => {
-  return [`/api/v1/DirectionType/$count`, ...(params ? [params] : [])] as const
+  return [`/DirectionType/$count`, ...(params ? [params] : [])] as const
 }
 
 export const getGetDirectionTypeCountQueryOptions = <
@@ -6664,7 +6664,7 @@ export const getDirectionTypeFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<DirectionType>({
-    url: `/api/v1/DirectionType/${key}`,
+    url: `/DirectionType/${key}`,
     method: 'GET',
     params,
     signal,
@@ -6675,7 +6675,7 @@ export const getGetDirectionTypeFromKeyQueryKey = (
   key: DirectionTypes,
   params?: GetDirectionTypeFromKeyParams
 ) => {
-  return [`/api/v1/DirectionType/${key}`, ...(params ? [params] : [])] as const
+  return [`/DirectionType/${key}`, ...(params ? [params] : [])] as const
 }
 
 export const getGetDirectionTypeFromKeyQueryOptions = <
@@ -6756,7 +6756,7 @@ export const putDirectionTypeFromKey = (
   params?: PutDirectionTypeFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/DirectionType/${key}`,
+    url: `/DirectionType/${key}`,
     method: 'PUT',
     headers: {
       'Content-Type':
@@ -6844,7 +6844,7 @@ export const patchDirectionTypeFromKey = (
   params?: PatchDirectionTypeFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/DirectionType/${key}`,
+    url: `/DirectionType/${key}`,
     method: 'PATCH',
     headers: {
       'Content-Type':
@@ -6931,7 +6931,7 @@ export const usePatchDirectionTypeFromKey = <
  */
 export const deleteDirectionTypeFromKey = (key: DirectionTypes) => {
   return configRequest<void>({
-    url: `/api/v1/DirectionType/${key}`,
+    url: `/DirectionType/${key}`,
     method: 'DELETE',
   })
 }
@@ -6993,7 +6993,7 @@ export const useDeleteDirectionTypeFromKey = <
 
 export const postFaq = (faq: Faq, params?: PostFaqParams) => {
   return configRequest<void>({
-    url: `/api/v1/Faq`,
+    url: `/Faq`,
     method: 'POST',
     headers: {
       'Content-Type':
@@ -7058,7 +7058,7 @@ export const usePostFaq = <TError = unknown, TContext = unknown>(options?: {
  */
 export const getFaq = (params?: GetFaqParams, signal?: AbortSignal) => {
   return configRequest<Faq[]>({
-    url: `/api/v1/Faq`,
+    url: `/Faq`,
     method: 'GET',
     params,
     signal,
@@ -7066,7 +7066,7 @@ export const getFaq = (params?: GetFaqParams, signal?: AbortSignal) => {
 }
 
 export const getGetFaqQueryKey = (params?: GetFaqParams) => {
-  return [`/api/v1/Faq`, ...(params ? [params] : [])] as const
+  return [`/Faq`, ...(params ? [params] : [])] as const
 }
 
 export const getGetFaqQueryOptions = <
@@ -7125,7 +7125,7 @@ export const patchFaqFromKey = (
   params?: PatchFaqFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/Faq/${key}`,
+    url: `/Faq/${key}`,
     method: 'PATCH',
     headers: {
       'Content-Type':
@@ -7189,7 +7189,7 @@ export const usePatchFaqFromKey = <
 }
 
 export const deleteFaqFromKey = (key: number) => {
-  return configRequest<void>({ url: `/api/v1/Faq/${key}`, method: 'DELETE' })
+  return configRequest<void>({ url: `/Faq/${key}`, method: 'DELETE' })
 }
 
 export const getDeleteFaqFromKeyMutationOptions = <
@@ -7253,7 +7253,7 @@ export const getFaqFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<Faq>({
-    url: `/api/v1/Faq/${key}`,
+    url: `/Faq/${key}`,
     method: 'GET',
     params,
     signal,
@@ -7264,7 +7264,7 @@ export const getGetFaqFromKeyQueryKey = (
   key: number,
   params?: GetFaqFromKeyParams
 ) => {
-  return [`/api/v1/Faq/${key}`, ...(params ? [params] : [])] as const
+  return [`/Faq/${key}`, ...(params ? [params] : [])] as const
 }
 
 export const getGetFaqFromKeyQueryOptions = <
@@ -7341,7 +7341,7 @@ export const putFaqFromKey = (
   params?: PutFaqFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/Faq/${key}`,
+    url: `/Faq/${key}`,
     method: 'PUT',
     headers: {
       'Content-Type':
@@ -7412,7 +7412,7 @@ export const getFaqCount = (
   signal?: AbortSignal
 ) => {
   return configRequest<Faq[]>({
-    url: `/api/v1/Faq/$count`,
+    url: `/Faq/$count`,
     method: 'GET',
     params,
     signal,
@@ -7420,7 +7420,7 @@ export const getFaqCount = (
 }
 
 export const getGetFaqCountQueryKey = (params?: GetFaqCountParams) => {
-  return [`/api/v1/Faq/$count`, ...(params ? [params] : [])] as const
+  return [`/Faq/$count`, ...(params ? [params] : [])] as const
 }
 
 export const getGetFaqCountQueryOptions = <
@@ -7492,7 +7492,7 @@ export const getJurisdictionLocationsFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<Location[]>({
-    url: `/api/v1/Jurisdiction/${key}/locations`,
+    url: `/Jurisdiction/${key}/locations`,
     method: 'GET',
     params,
     signal,
@@ -7504,7 +7504,7 @@ export const getGetJurisdictionLocationsFromKeyQueryKey = (
   params?: GetJurisdictionLocationsFromKeyParams
 ) => {
   return [
-    `/api/v1/Jurisdiction/${key}/locations`,
+    `/Jurisdiction/${key}/locations`,
     ...(params ? [params] : []),
   ] as const
 }
@@ -7591,7 +7591,7 @@ export const getJurisdictionLocationsCountFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<Location[]>({
-    url: `/api/v1/Jurisdiction/${key}/locations/$count`,
+    url: `/Jurisdiction/${key}/locations/$count`,
     method: 'GET',
     params,
     signal,
@@ -7603,7 +7603,7 @@ export const getGetJurisdictionLocationsCountFromKeyQueryKey = (
   params?: GetJurisdictionLocationsCountFromKeyParams
 ) => {
   return [
-    `/api/v1/Jurisdiction/${key}/locations/$count`,
+    `/Jurisdiction/${key}/locations/$count`,
     ...(params ? [params] : []),
   ] as const
 }
@@ -7686,7 +7686,7 @@ export const postJurisdiction = (
   params?: PostJurisdictionParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/Jurisdiction`,
+    url: `/Jurisdiction`,
     method: 'POST',
     headers: {
       'Content-Type':
@@ -7757,7 +7757,7 @@ export const getJurisdiction = (
   signal?: AbortSignal
 ) => {
   return configRequest<Jurisdiction[]>({
-    url: `/api/v1/Jurisdiction`,
+    url: `/Jurisdiction`,
     method: 'GET',
     params,
     signal,
@@ -7765,7 +7765,7 @@ export const getJurisdiction = (
 }
 
 export const getGetJurisdictionQueryKey = (params?: GetJurisdictionParams) => {
-  return [`/api/v1/Jurisdiction`, ...(params ? [params] : [])] as const
+  return [`/Jurisdiction`, ...(params ? [params] : [])] as const
 }
 
 export const getGetJurisdictionQueryOptions = <
@@ -7834,7 +7834,7 @@ export const patchJurisdictionFromKey = (
   params?: PatchJurisdictionFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/Jurisdiction/${key}`,
+    url: `/Jurisdiction/${key}`,
     method: 'PATCH',
     headers: {
       'Content-Type':
@@ -7907,7 +7907,7 @@ export const usePatchJurisdictionFromKey = <
 
 export const deleteJurisdictionFromKey = (key: number) => {
   return configRequest<void>({
-    url: `/api/v1/Jurisdiction/${key}`,
+    url: `/Jurisdiction/${key}`,
     method: 'DELETE',
   })
 }
@@ -7973,7 +7973,7 @@ export const getJurisdictionFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<Jurisdiction>({
-    url: `/api/v1/Jurisdiction/${key}`,
+    url: `/Jurisdiction/${key}`,
     method: 'GET',
     params,
     signal,
@@ -7984,7 +7984,7 @@ export const getGetJurisdictionFromKeyQueryKey = (
   key: number,
   params?: GetJurisdictionFromKeyParams
 ) => {
-  return [`/api/v1/Jurisdiction/${key}`, ...(params ? [params] : [])] as const
+  return [`/Jurisdiction/${key}`, ...(params ? [params] : [])] as const
 }
 
 export const getGetJurisdictionFromKeyQueryOptions = <
@@ -8065,7 +8065,7 @@ export const putJurisdictionFromKey = (
   params?: PutJurisdictionFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/Jurisdiction/${key}`,
+    url: `/Jurisdiction/${key}`,
     method: 'PUT',
     headers: {
       'Content-Type':
@@ -8136,7 +8136,7 @@ export const getJurisdictionCount = (
   signal?: AbortSignal
 ) => {
   return configRequest<Jurisdiction[]>({
-    url: `/api/v1/Jurisdiction/$count`,
+    url: `/Jurisdiction/$count`,
     method: 'GET',
     params,
     signal,
@@ -8146,7 +8146,7 @@ export const getJurisdictionCount = (
 export const getGetJurisdictionCountQueryKey = (
   params?: GetJurisdictionCountParams
 ) => {
-  return [`/api/v1/Jurisdiction/$count`, ...(params ? [params] : [])] as const
+  return [`/Jurisdiction/$count`, ...(params ? [params] : [])] as const
 }
 
 export const getGetJurisdictionCountQueryOptions = <
@@ -8219,7 +8219,7 @@ export const getLocationApproachesFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<Approach[]>({
-    url: `/api/v1/Location/${key}/approaches`,
+    url: `/Location/${key}/approaches`,
     method: 'GET',
     params,
     signal,
@@ -8231,7 +8231,7 @@ export const getGetLocationApproachesFromKeyQueryKey = (
   params?: GetLocationApproachesFromKeyParams
 ) => {
   return [
-    `/api/v1/Location/${key}/approaches`,
+    `/Location/${key}/approaches`,
     ...(params ? [params] : []),
   ] as const
 }
@@ -8318,7 +8318,7 @@ export const getLocationApproachesCountFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<Approach[]>({
-    url: `/api/v1/Location/${key}/approaches/$count`,
+    url: `/Location/${key}/approaches/$count`,
     method: 'GET',
     params,
     signal,
@@ -8330,7 +8330,7 @@ export const getGetLocationApproachesCountFromKeyQueryKey = (
   params?: GetLocationApproachesCountFromKeyParams
 ) => {
   return [
-    `/api/v1/Location/${key}/approaches/$count`,
+    `/Location/${key}/approaches/$count`,
     ...(params ? [params] : []),
   ] as const
 }
@@ -8417,7 +8417,7 @@ export const getLocationAreasFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<Area[]>({
-    url: `/api/v1/Location/${key}/areas`,
+    url: `/Location/${key}/areas`,
     method: 'GET',
     params,
     signal,
@@ -8428,7 +8428,7 @@ export const getGetLocationAreasFromKeyQueryKey = (
   key: number,
   params?: GetLocationAreasFromKeyParams
 ) => {
-  return [`/api/v1/Location/${key}/areas`, ...(params ? [params] : [])] as const
+  return [`/Location/${key}/areas`, ...(params ? [params] : [])] as const
 }
 
 export const getGetLocationAreasFromKeyQueryOptions = <
@@ -8512,7 +8512,7 @@ export const getLocationAreasCountFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<Area[]>({
-    url: `/api/v1/Location/${key}/areas/$count`,
+    url: `/Location/${key}/areas/$count`,
     method: 'GET',
     params,
     signal,
@@ -8524,7 +8524,7 @@ export const getGetLocationAreasCountFromKeyQueryKey = (
   params?: GetLocationAreasCountFromKeyParams
 ) => {
   return [
-    `/api/v1/Location/${key}/areas/$count`,
+    `/Location/${key}/areas/$count`,
     ...(params ? [params] : []),
   ] as const
 }
@@ -8611,7 +8611,7 @@ export const getLocationDevicesFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<Device[]>({
-    url: `/api/v1/Location/${key}/devices`,
+    url: `/Location/${key}/devices`,
     method: 'GET',
     params,
     signal,
@@ -8623,7 +8623,7 @@ export const getGetLocationDevicesFromKeyQueryKey = (
   params?: GetLocationDevicesFromKeyParams
 ) => {
   return [
-    `/api/v1/Location/${key}/devices`,
+    `/Location/${key}/devices`,
     ...(params ? [params] : []),
   ] as const
 }
@@ -8709,7 +8709,7 @@ export const getLocationDevicesCountFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<Device[]>({
-    url: `/api/v1/Location/${key}/devices/$count`,
+    url: `/Location/${key}/devices/$count`,
     method: 'GET',
     params,
     signal,
@@ -8721,7 +8721,7 @@ export const getGetLocationDevicesCountFromKeyQueryKey = (
   params?: GetLocationDevicesCountFromKeyParams
 ) => {
   return [
-    `/api/v1/Location/${key}/devices/$count`,
+    `/Location/${key}/devices/$count`,
     ...(params ? [params] : []),
   ] as const
 }
@@ -8807,7 +8807,7 @@ export const getLocationCopyLocationToNewVersionFromKey = (
   params?: GetLocationCopyLocationToNewVersionFromKeyParams
 ) => {
   return configRequest<Location>({
-    url: `/api/v1/Location/${key}/CopyLocationToNewVersion`,
+    url: `/Location/${key}/CopyLocationToNewVersion`,
     method: 'POST',
     params,
   })
@@ -8878,7 +8878,7 @@ export const getLocationSyncLocationFromKey = (
   params?: GetLocationSyncLocationFromKeyParams
 ) => {
   return configRequest<Location>({
-    url: `/api/v1/Location/${key}/SyncLocation`,
+    url: `/Location/${key}/SyncLocation`,
     method: 'POST',
     params,
   })
@@ -8949,7 +8949,7 @@ export const getLocationSaveTemplatedLocationFromKey = (
   params?: GetLocationSaveTemplatedLocationFromKeyParams
 ) => {
   return configRequest<Location>({
-    url: `/api/v1/Location/${key}/SaveTemplatedLocation`,
+    url: `/Location/${key}/SaveTemplatedLocation`,
     method: 'POST',
     headers: {
       'Content-Type':
@@ -9041,7 +9041,7 @@ export const deleteLocationSetLocationTodFromKey = (
   params?: DeleteLocationSetLocationTodFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/Location/${key}/SetLocationToDeleted`,
+    url: `/Location/${key}/SetLocationToDeleted`,
     method: 'POST',
     params,
   })
@@ -9112,7 +9112,7 @@ export const getLocationLatestVersionOfLocationFromIdentifier = (
   signal?: AbortSignal
 ) => {
   return configRequest<Location>({
-    url: `/api/v1/Location/GetLatestVersionOfLocation(identifier=${identifier})`,
+    url: `/Location/GetLatestVersionOfLocation(identifier=${identifier})`,
     method: 'GET',
     params,
     signal,
@@ -9124,7 +9124,7 @@ export const getGetLocationLatestVersionOfLocationFromIdentifierQueryKey = (
   params?: GetLocationLatestVersionOfLocationFromIdentifierParams
 ) => {
   return [
-    `/api/v1/Location/GetLatestVersionOfLocation(identifier=${identifier})`,
+    `/Location/GetLatestVersionOfLocation(identifier=${identifier})`,
     ...(params ? [params] : []),
   ] as const
 }
@@ -9227,7 +9227,7 @@ export const getLocationAllVersionsOfLocationFromIdentifier = (
   signal?: AbortSignal
 ) => {
   return configRequest<Location[]>({
-    url: `/api/v1/Location/GetAllVersionsOfLocation(identifier=${identifier})`,
+    url: `/Location/GetAllVersionsOfLocation(identifier=${identifier})`,
     method: 'GET',
     params,
     signal,
@@ -9239,7 +9239,7 @@ export const getGetLocationAllVersionsOfLocationFromIdentifierQueryKey = (
   params?: GetLocationAllVersionsOfLocationFromIdentifierParams
 ) => {
   return [
-    `/api/v1/Location/GetAllVersionsOfLocation(identifier=${identifier})`,
+    `/Location/GetAllVersionsOfLocation(identifier=${identifier})`,
     ...(params ? [params] : []),
   ] as const
 }
@@ -9339,7 +9339,7 @@ export const getLocationLatestVersionOfAllLocations = (
   signal?: AbortSignal
 ) => {
   return configRequest<Location[]>({
-    url: `/api/v1/Location/GetLatestVersionOfAllLocations`,
+    url: `/Location/GetLatestVersionOfAllLocations`,
     method: 'GET',
     params,
     signal,
@@ -9350,7 +9350,7 @@ export const getGetLocationLatestVersionOfAllLocationsQueryKey = (
   params?: GetLocationLatestVersionOfAllLocationsParams
 ) => {
   return [
-    `/api/v1/Location/GetLatestVersionOfAllLocations`,
+    `/Location/GetLatestVersionOfAllLocations`,
     ...(params ? [params] : []),
   ] as const
 }
@@ -9428,7 +9428,7 @@ export const getLocationDetectionTypeCount = (
   signal?: AbortSignal
 ) => {
   return configRequest<DetectionTypeGroup[]>({
-    url: `/api/v1/Location/GetDetectionTypeCount`,
+    url: `/Location/GetDetectionTypeCount`,
     method: 'GET',
     params,
     signal,
@@ -9439,7 +9439,7 @@ export const getGetLocationDetectionTypeCountQueryKey = (
   params?: GetLocationDetectionTypeCountParams
 ) => {
   return [
-    `/api/v1/Location/GetDetectionTypeCount`,
+    `/Location/GetDetectionTypeCount`,
     ...(params ? [params] : []),
   ] as const
 }
@@ -9516,7 +9516,7 @@ export const getLocationLocationsForSearch = (
   signal?: AbortSignal
 ) => {
   return configRequest<SearchLocation[]>({
-    url: `/api/v1/Location/GetLocationsForSearch`,
+    url: `/Location/GetLocationsForSearch`,
     method: 'GET',
     params,
     signal,
@@ -9527,7 +9527,7 @@ export const getGetLocationLocationsForSearchQueryKey = (
   params?: GetLocationLocationsForSearchParams
 ) => {
   return [
-    `/api/v1/Location/GetLocationsForSearch`,
+    `/Location/GetLocationsForSearch`,
     ...(params ? [params] : []),
   ] as const
 }
@@ -9604,7 +9604,7 @@ export const getLocation = (
   signal?: AbortSignal
 ) => {
   return configRequest<Location[]>({
-    url: `/api/v1/Location`,
+    url: `/Location`,
     method: 'GET',
     params,
     signal,
@@ -9612,7 +9612,7 @@ export const getLocation = (
 }
 
 export const getGetLocationQueryKey = (params?: GetLocationParams) => {
-  return [`/api/v1/Location`, ...(params ? [params] : [])] as const
+  return [`/Location`, ...(params ? [params] : [])] as const
 }
 
 export const getGetLocationQueryOptions = <
@@ -9683,7 +9683,7 @@ export const postLocation = (
   params?: PostLocationParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/Location`,
+    url: `/Location`,
     method: 'POST',
     headers: {
       'Content-Type':
@@ -9757,7 +9757,7 @@ export const getLocationCount = (
   signal?: AbortSignal
 ) => {
   return configRequest<Location[]>({
-    url: `/api/v1/Location/$count`,
+    url: `/Location/$count`,
     method: 'GET',
     params,
     signal,
@@ -9767,7 +9767,7 @@ export const getLocationCount = (
 export const getGetLocationCountQueryKey = (
   params?: GetLocationCountParams
 ) => {
-  return [`/api/v1/Location/$count`, ...(params ? [params] : [])] as const
+  return [`/Location/$count`, ...(params ? [params] : [])] as const
 }
 
 export const getGetLocationCountQueryOptions = <
@@ -9839,7 +9839,7 @@ export const getLocationFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<Location>({
-    url: `/api/v1/Location/${key}`,
+    url: `/Location/${key}`,
     method: 'GET',
     params,
     signal,
@@ -9850,7 +9850,7 @@ export const getGetLocationFromKeyQueryKey = (
   key: number,
   params?: GetLocationFromKeyParams
 ) => {
-  return [`/api/v1/Location/${key}`, ...(params ? [params] : [])] as const
+  return [`/Location/${key}`, ...(params ? [params] : [])] as const
 }
 
 export const getGetLocationFromKeyQueryOptions = <
@@ -9927,7 +9927,7 @@ export const putLocationFromKey = (
   params?: PutLocationFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/Location/${key}`,
+    url: `/Location/${key}`,
     method: 'PUT',
     headers: {
       'Content-Type':
@@ -9999,7 +9999,7 @@ export const patchLocationFromKey = (
   params?: PatchLocationFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/Location/${key}`,
+    url: `/Location/${key}`,
     method: 'PATCH',
     headers: {
       'Content-Type':
@@ -10070,7 +10070,7 @@ export const usePatchLocationFromKey = <
  */
 export const deleteLocationFromKey = (key: number) => {
   return configRequest<void>({
-    url: `/api/v1/Location/${key}`,
+    url: `/Location/${key}`,
     method: 'DELETE',
   })
 }
@@ -10139,7 +10139,7 @@ export const getLocationTypeLocationsFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<Location[]>({
-    url: `/api/v1/LocationType/${key}/locations`,
+    url: `/LocationType/${key}/locations`,
     method: 'GET',
     params,
     signal,
@@ -10151,7 +10151,7 @@ export const getGetLocationTypeLocationsFromKeyQueryKey = (
   params?: GetLocationTypeLocationsFromKeyParams
 ) => {
   return [
-    `/api/v1/LocationType/${key}/locations`,
+    `/LocationType/${key}/locations`,
     ...(params ? [params] : []),
   ] as const
 }
@@ -10238,7 +10238,7 @@ export const getLocationTypeLocationsCountFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<Location[]>({
-    url: `/api/v1/LocationType/${key}/locations/$count`,
+    url: `/LocationType/${key}/locations/$count`,
     method: 'GET',
     params,
     signal,
@@ -10250,7 +10250,7 @@ export const getGetLocationTypeLocationsCountFromKeyQueryKey = (
   params?: GetLocationTypeLocationsCountFromKeyParams
 ) => {
   return [
-    `/api/v1/LocationType/${key}/locations/$count`,
+    `/LocationType/${key}/locations/$count`,
     ...(params ? [params] : []),
   ] as const
 }
@@ -10336,7 +10336,7 @@ export const getLocationType = (
   signal?: AbortSignal
 ) => {
   return configRequest<LocationType[]>({
-    url: `/api/v1/LocationType`,
+    url: `/LocationType`,
     method: 'GET',
     params,
     signal,
@@ -10344,7 +10344,7 @@ export const getLocationType = (
 }
 
 export const getGetLocationTypeQueryKey = (params?: GetLocationTypeParams) => {
-  return [`/api/v1/LocationType`, ...(params ? [params] : [])] as const
+  return [`/LocationType`, ...(params ? [params] : [])] as const
 }
 
 export const getGetLocationTypeQueryOptions = <
@@ -10415,7 +10415,7 @@ export const postLocationType = (
   params?: PostLocationTypeParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/LocationType`,
+    url: `/LocationType`,
     method: 'POST',
     headers: {
       'Content-Type':
@@ -10489,7 +10489,7 @@ export const getLocationTypeCount = (
   signal?: AbortSignal
 ) => {
   return configRequest<LocationType[]>({
-    url: `/api/v1/LocationType/$count`,
+    url: `/LocationType/$count`,
     method: 'GET',
     params,
     signal,
@@ -10499,7 +10499,7 @@ export const getLocationTypeCount = (
 export const getGetLocationTypeCountQueryKey = (
   params?: GetLocationTypeCountParams
 ) => {
-  return [`/api/v1/LocationType/$count`, ...(params ? [params] : [])] as const
+  return [`/LocationType/$count`, ...(params ? [params] : [])] as const
 }
 
 export const getGetLocationTypeCountQueryOptions = <
@@ -10572,7 +10572,7 @@ export const getLocationTypeFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<LocationType>({
-    url: `/api/v1/LocationType/${key}`,
+    url: `/LocationType/${key}`,
     method: 'GET',
     params,
     signal,
@@ -10583,7 +10583,7 @@ export const getGetLocationTypeFromKeyQueryKey = (
   key: number,
   params?: GetLocationTypeFromKeyParams
 ) => {
-  return [`/api/v1/LocationType/${key}`, ...(params ? [params] : [])] as const
+  return [`/LocationType/${key}`, ...(params ? [params] : [])] as const
 }
 
 export const getGetLocationTypeFromKeyQueryOptions = <
@@ -10664,7 +10664,7 @@ export const putLocationTypeFromKey = (
   params?: PutLocationTypeFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/LocationType/${key}`,
+    url: `/LocationType/${key}`,
     method: 'PUT',
     headers: {
       'Content-Type':
@@ -10736,7 +10736,7 @@ export const patchLocationTypeFromKey = (
   params?: PatchLocationTypeFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/LocationType/${key}`,
+    url: `/LocationType/${key}`,
     method: 'PATCH',
     headers: {
       'Content-Type':
@@ -10815,7 +10815,7 @@ export const usePatchLocationTypeFromKey = <
  */
 export const deleteLocationTypeFromKey = (key: number) => {
   return configRequest<void>({
-    url: `/api/v1/LocationType/${key}`,
+    url: `/LocationType/${key}`,
     method: 'DELETE',
   })
 }
@@ -10883,7 +10883,7 @@ export const getMapLayer = (
   signal?: AbortSignal
 ) => {
   return configRequest<MapLayer[]>({
-    url: `/api/v1/MapLayer`,
+    url: `/MapLayer`,
     method: 'GET',
     params,
     signal,
@@ -10891,7 +10891,7 @@ export const getMapLayer = (
 }
 
 export const getGetMapLayerQueryKey = (params?: GetMapLayerParams) => {
-  return [`/api/v1/MapLayer`, ...(params ? [params] : [])] as const
+  return [`/MapLayer`, ...(params ? [params] : [])] as const
 }
 
 export const getGetMapLayerQueryOptions = <
@@ -10962,7 +10962,7 @@ export const postMapLayer = (
   params?: PostMapLayerParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/MapLayer`,
+    url: `/MapLayer`,
     method: 'POST',
     headers: {
       'Content-Type':
@@ -11036,7 +11036,7 @@ export const getMapLayerCount = (
   signal?: AbortSignal
 ) => {
   return configRequest<MapLayer[]>({
-    url: `/api/v1/MapLayer/$count`,
+    url: `/MapLayer/$count`,
     method: 'GET',
     params,
     signal,
@@ -11046,7 +11046,7 @@ export const getMapLayerCount = (
 export const getGetMapLayerCountQueryKey = (
   params?: GetMapLayerCountParams
 ) => {
-  return [`/api/v1/MapLayer/$count`, ...(params ? [params] : [])] as const
+  return [`/MapLayer/$count`, ...(params ? [params] : [])] as const
 }
 
 export const getGetMapLayerCountQueryOptions = <
@@ -11118,7 +11118,7 @@ export const getMapLayerFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<MapLayer>({
-    url: `/api/v1/MapLayer/${key}`,
+    url: `/MapLayer/${key}`,
     method: 'GET',
     params,
     signal,
@@ -11129,7 +11129,7 @@ export const getGetMapLayerFromKeyQueryKey = (
   key: number,
   params?: GetMapLayerFromKeyParams
 ) => {
-  return [`/api/v1/MapLayer/${key}`, ...(params ? [params] : [])] as const
+  return [`/MapLayer/${key}`, ...(params ? [params] : [])] as const
 }
 
 export const getGetMapLayerFromKeyQueryOptions = <
@@ -11206,7 +11206,7 @@ export const putMapLayerFromKey = (
   params?: PutMapLayerFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/MapLayer/${key}`,
+    url: `/MapLayer/${key}`,
     method: 'PUT',
     headers: {
       'Content-Type':
@@ -11278,7 +11278,7 @@ export const patchMapLayerFromKey = (
   params?: PatchMapLayerFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/MapLayer/${key}`,
+    url: `/MapLayer/${key}`,
     method: 'PATCH',
     headers: {
       'Content-Type':
@@ -11349,7 +11349,7 @@ export const usePatchMapLayerFromKey = <
  */
 export const deleteMapLayerFromKey = (key: number) => {
   return configRequest<void>({
-    url: `/api/v1/MapLayer/${key}`,
+    url: `/MapLayer/${key}`,
     method: 'DELETE',
   })
 }
@@ -11418,7 +11418,7 @@ export const getMeasureCommentMeasureTypesFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<MeasureType[]>({
-    url: `/api/v1/MeasureComment/${key}/measureTypes`,
+    url: `/MeasureComment/${key}/measureTypes`,
     method: 'GET',
     params,
     signal,
@@ -11430,7 +11430,7 @@ export const getGetMeasureCommentMeasureTypesFromKeyQueryKey = (
   params?: GetMeasureCommentMeasureTypesFromKeyParams
 ) => {
   return [
-    `/api/v1/MeasureComment/${key}/measureTypes`,
+    `/MeasureComment/${key}/measureTypes`,
     ...(params ? [params] : []),
   ] as const
 }
@@ -11517,7 +11517,7 @@ export const getMeasureCommentMeasureTypesCountFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<MeasureType[]>({
-    url: `/api/v1/MeasureComment/${key}/measureTypes/$count`,
+    url: `/MeasureComment/${key}/measureTypes/$count`,
     method: 'GET',
     params,
     signal,
@@ -11529,7 +11529,7 @@ export const getGetMeasureCommentMeasureTypesCountFromKeyQueryKey = (
   params?: GetMeasureCommentMeasureTypesCountFromKeyParams
 ) => {
   return [
-    `/api/v1/MeasureComment/${key}/measureTypes/$count`,
+    `/MeasureComment/${key}/measureTypes/$count`,
     ...(params ? [params] : []),
   ] as const
 }
@@ -11616,7 +11616,7 @@ export const getMeasureComment = (
   signal?: AbortSignal
 ) => {
   return configRequest<MeasureComment[]>({
-    url: `/api/v1/MeasureComment`,
+    url: `/MeasureComment`,
     method: 'GET',
     params,
     signal,
@@ -11626,7 +11626,7 @@ export const getMeasureComment = (
 export const getGetMeasureCommentQueryKey = (
   params?: GetMeasureCommentParams
 ) => {
-  return [`/api/v1/MeasureComment`, ...(params ? [params] : [])] as const
+  return [`/MeasureComment`, ...(params ? [params] : [])] as const
 }
 
 export const getGetMeasureCommentQueryOptions = <
@@ -11698,7 +11698,7 @@ export const postMeasureComment = (
   params?: PostMeasureCommentParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/MeasureComment`,
+    url: `/MeasureComment`,
     method: 'POST',
     headers: {
       'Content-Type':
@@ -11772,7 +11772,7 @@ export const getMeasureCommentCount = (
   signal?: AbortSignal
 ) => {
   return configRequest<MeasureComment[]>({
-    url: `/api/v1/MeasureComment/$count`,
+    url: `/MeasureComment/$count`,
     method: 'GET',
     params,
     signal,
@@ -11782,7 +11782,7 @@ export const getMeasureCommentCount = (
 export const getGetMeasureCommentCountQueryKey = (
   params?: GetMeasureCommentCountParams
 ) => {
-  return [`/api/v1/MeasureComment/$count`, ...(params ? [params] : [])] as const
+  return [`/MeasureComment/$count`, ...(params ? [params] : [])] as const
 }
 
 export const getGetMeasureCommentCountQueryOptions = <
@@ -11855,7 +11855,7 @@ export const getMeasureCommentFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<MeasureComment>({
-    url: `/api/v1/MeasureComment/${key}`,
+    url: `/MeasureComment/${key}`,
     method: 'GET',
     params,
     signal,
@@ -11866,7 +11866,7 @@ export const getGetMeasureCommentFromKeyQueryKey = (
   key: number,
   params?: GetMeasureCommentFromKeyParams
 ) => {
-  return [`/api/v1/MeasureComment/${key}`, ...(params ? [params] : [])] as const
+  return [`/MeasureComment/${key}`, ...(params ? [params] : [])] as const
 }
 
 export const getGetMeasureCommentFromKeyQueryOptions = <
@@ -11947,7 +11947,7 @@ export const putMeasureCommentFromKey = (
   params?: PutMeasureCommentFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/MeasureComment/${key}`,
+    url: `/MeasureComment/${key}`,
     method: 'PUT',
     headers: {
       'Content-Type':
@@ -12035,7 +12035,7 @@ export const patchMeasureCommentFromKey = (
   params?: PatchMeasureCommentFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/MeasureComment/${key}`,
+    url: `/MeasureComment/${key}`,
     method: 'PATCH',
     headers: {
       'Content-Type':
@@ -12122,7 +12122,7 @@ export const usePatchMeasureCommentFromKey = <
  */
 export const deleteMeasureCommentFromKey = (key: number) => {
   return configRequest<void>({
-    url: `/api/v1/MeasureComment/${key}`,
+    url: `/MeasureComment/${key}`,
     method: 'DELETE',
   })
 }
@@ -12190,7 +12190,7 @@ export const getMeasureOption = (
   signal?: AbortSignal
 ) => {
   return configRequest<MeasureOption[]>({
-    url: `/api/v1/MeasureOption`,
+    url: `/MeasureOption`,
     method: 'GET',
     params,
     signal,
@@ -12200,7 +12200,7 @@ export const getMeasureOption = (
 export const getGetMeasureOptionQueryKey = (
   params?: GetMeasureOptionParams
 ) => {
-  return [`/api/v1/MeasureOption`, ...(params ? [params] : [])] as const
+  return [`/MeasureOption`, ...(params ? [params] : [])] as const
 }
 
 export const getGetMeasureOptionQueryOptions = <
@@ -12271,7 +12271,7 @@ export const postMeasureOption = (
   params?: PostMeasureOptionParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/MeasureOption`,
+    url: `/MeasureOption`,
     method: 'POST',
     headers: {
       'Content-Type':
@@ -12345,7 +12345,7 @@ export const getMeasureOptionCount = (
   signal?: AbortSignal
 ) => {
   return configRequest<MeasureOption[]>({
-    url: `/api/v1/MeasureOption/$count`,
+    url: `/MeasureOption/$count`,
     method: 'GET',
     params,
     signal,
@@ -12355,7 +12355,7 @@ export const getMeasureOptionCount = (
 export const getGetMeasureOptionCountQueryKey = (
   params?: GetMeasureOptionCountParams
 ) => {
-  return [`/api/v1/MeasureOption/$count`, ...(params ? [params] : [])] as const
+  return [`/MeasureOption/$count`, ...(params ? [params] : [])] as const
 }
 
 export const getGetMeasureOptionCountQueryOptions = <
@@ -12428,7 +12428,7 @@ export const getMeasureOptionFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<MeasureOption>({
-    url: `/api/v1/MeasureOption/${key}`,
+    url: `/MeasureOption/${key}`,
     method: 'GET',
     params,
     signal,
@@ -12439,7 +12439,7 @@ export const getGetMeasureOptionFromKeyQueryKey = (
   key: number,
   params?: GetMeasureOptionFromKeyParams
 ) => {
-  return [`/api/v1/MeasureOption/${key}`, ...(params ? [params] : [])] as const
+  return [`/MeasureOption/${key}`, ...(params ? [params] : [])] as const
 }
 
 export const getGetMeasureOptionFromKeyQueryOptions = <
@@ -12520,7 +12520,7 @@ export const putMeasureOptionFromKey = (
   params?: PutMeasureOptionFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/MeasureOption/${key}`,
+    url: `/MeasureOption/${key}`,
     method: 'PUT',
     headers: {
       'Content-Type':
@@ -12600,7 +12600,7 @@ export const patchMeasureOptionFromKey = (
   params?: PatchMeasureOptionFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/MeasureOption/${key}`,
+    url: `/MeasureOption/${key}`,
     method: 'PATCH',
     headers: {
       'Content-Type':
@@ -12687,7 +12687,7 @@ export const usePatchMeasureOptionFromKey = <
  */
 export const deleteMeasureOptionFromKey = (key: number) => {
   return configRequest<void>({
-    url: `/api/v1/MeasureOption/${key}`,
+    url: `/MeasureOption/${key}`,
     method: 'DELETE',
   })
 }
@@ -12756,7 +12756,7 @@ export const getMeasureTypeDetectionTypesFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<DetectionType[]>({
-    url: `/api/v1/MeasureType/${key}/detectionTypes`,
+    url: `/MeasureType/${key}/detectionTypes`,
     method: 'GET',
     params,
     signal,
@@ -12768,7 +12768,7 @@ export const getGetMeasureTypeDetectionTypesFromKeyQueryKey = (
   params?: GetMeasureTypeDetectionTypesFromKeyParams
 ) => {
   return [
-    `/api/v1/MeasureType/${key}/detectionTypes`,
+    `/MeasureType/${key}/detectionTypes`,
     ...(params ? [params] : []),
   ] as const
 }
@@ -12855,7 +12855,7 @@ export const getMeasureTypeDetectionTypesCountFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<DetectionType[]>({
-    url: `/api/v1/MeasureType/${key}/detectionTypes/$count`,
+    url: `/MeasureType/${key}/detectionTypes/$count`,
     method: 'GET',
     params,
     signal,
@@ -12867,7 +12867,7 @@ export const getGetMeasureTypeDetectionTypesCountFromKeyQueryKey = (
   params?: GetMeasureTypeDetectionTypesCountFromKeyParams
 ) => {
   return [
-    `/api/v1/MeasureType/${key}/detectionTypes/$count`,
+    `/MeasureType/${key}/detectionTypes/$count`,
     ...(params ? [params] : []),
   ] as const
 }
@@ -12955,7 +12955,7 @@ export const getMeasureTypeMeasureCommentsFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<MeasureComment[]>({
-    url: `/api/v1/MeasureType/${key}/measureComments`,
+    url: `/MeasureType/${key}/measureComments`,
     method: 'GET',
     params,
     signal,
@@ -12967,7 +12967,7 @@ export const getGetMeasureTypeMeasureCommentsFromKeyQueryKey = (
   params?: GetMeasureTypeMeasureCommentsFromKeyParams
 ) => {
   return [
-    `/api/v1/MeasureType/${key}/measureComments`,
+    `/MeasureType/${key}/measureComments`,
     ...(params ? [params] : []),
   ] as const
 }
@@ -13054,7 +13054,7 @@ export const getMeasureTypeMeasureCommentsCountFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<MeasureComment[]>({
-    url: `/api/v1/MeasureType/${key}/measureComments/$count`,
+    url: `/MeasureType/${key}/measureComments/$count`,
     method: 'GET',
     params,
     signal,
@@ -13066,7 +13066,7 @@ export const getGetMeasureTypeMeasureCommentsCountFromKeyQueryKey = (
   params?: GetMeasureTypeMeasureCommentsCountFromKeyParams
 ) => {
   return [
-    `/api/v1/MeasureType/${key}/measureComments/$count`,
+    `/MeasureType/${key}/measureComments/$count`,
     ...(params ? [params] : []),
   ] as const
 }
@@ -13153,7 +13153,7 @@ export const getMeasureType = (
   signal?: AbortSignal
 ) => {
   return configRequest<MeasureType[]>({
-    url: `/api/v1/MeasureType`,
+    url: `/MeasureType`,
     method: 'GET',
     params,
     signal,
@@ -13161,7 +13161,7 @@ export const getMeasureType = (
 }
 
 export const getGetMeasureTypeQueryKey = (params?: GetMeasureTypeParams) => {
-  return [`/api/v1/MeasureType`, ...(params ? [params] : [])] as const
+  return [`/MeasureType`, ...(params ? [params] : [])] as const
 }
 
 export const getGetMeasureTypeQueryOptions = <
@@ -13232,7 +13232,7 @@ export const postMeasureType = (
   params?: PostMeasureTypeParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/MeasureType`,
+    url: `/MeasureType`,
     method: 'POST',
     headers: {
       'Content-Type':
@@ -13306,7 +13306,7 @@ export const getMeasureTypeCount = (
   signal?: AbortSignal
 ) => {
   return configRequest<MeasureType[]>({
-    url: `/api/v1/MeasureType/$count`,
+    url: `/MeasureType/$count`,
     method: 'GET',
     params,
     signal,
@@ -13316,7 +13316,7 @@ export const getMeasureTypeCount = (
 export const getGetMeasureTypeCountQueryKey = (
   params?: GetMeasureTypeCountParams
 ) => {
-  return [`/api/v1/MeasureType/$count`, ...(params ? [params] : [])] as const
+  return [`/MeasureType/$count`, ...(params ? [params] : [])] as const
 }
 
 export const getGetMeasureTypeCountQueryOptions = <
@@ -13389,7 +13389,7 @@ export const getMeasureTypeFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<MeasureType>({
-    url: `/api/v1/MeasureType/${key}`,
+    url: `/MeasureType/${key}`,
     method: 'GET',
     params,
     signal,
@@ -13400,7 +13400,7 @@ export const getGetMeasureTypeFromKeyQueryKey = (
   key: number,
   params?: GetMeasureTypeFromKeyParams
 ) => {
-  return [`/api/v1/MeasureType/${key}`, ...(params ? [params] : [])] as const
+  return [`/MeasureType/${key}`, ...(params ? [params] : [])] as const
 }
 
 export const getGetMeasureTypeFromKeyQueryOptions = <
@@ -13481,7 +13481,7 @@ export const putMeasureTypeFromKey = (
   params?: PutMeasureTypeFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/MeasureType/${key}`,
+    url: `/MeasureType/${key}`,
     method: 'PUT',
     headers: {
       'Content-Type':
@@ -13553,7 +13553,7 @@ export const patchMeasureTypeFromKey = (
   params?: PatchMeasureTypeFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/MeasureType/${key}`,
+    url: `/MeasureType/${key}`,
     method: 'PATCH',
     headers: {
       'Content-Type':
@@ -13624,7 +13624,7 @@ export const usePatchMeasureTypeFromKey = <
  */
 export const deleteMeasureTypeFromKey = (key: number) => {
   return configRequest<void>({
-    url: `/api/v1/MeasureType/${key}`,
+    url: `/MeasureType/${key}`,
     method: 'DELETE',
   })
 }
@@ -13692,7 +13692,7 @@ export const getMenuItems = (
   signal?: AbortSignal
 ) => {
   return configRequest<MenuItem[]>({
-    url: `/api/v1/MenuItems`,
+    url: `/MenuItems`,
     method: 'GET',
     params,
     signal,
@@ -13700,7 +13700,7 @@ export const getMenuItems = (
 }
 
 export const getGetMenuItemsQueryKey = (params?: GetMenuItemsParams) => {
-  return [`/api/v1/MenuItems`, ...(params ? [params] : [])] as const
+  return [`/MenuItems`, ...(params ? [params] : [])] as const
 }
 
 export const getGetMenuItemsQueryOptions = <
@@ -13771,7 +13771,7 @@ export const postMenuItems = (
   params?: PostMenuItemsParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/MenuItems`,
+    url: `/MenuItems`,
     method: 'POST',
     headers: {
       'Content-Type':
@@ -13845,7 +13845,7 @@ export const getMenuItemsCount = (
   signal?: AbortSignal
 ) => {
   return configRequest<MenuItem[]>({
-    url: `/api/v1/MenuItems/$count`,
+    url: `/MenuItems/$count`,
     method: 'GET',
     params,
     signal,
@@ -13855,7 +13855,7 @@ export const getMenuItemsCount = (
 export const getGetMenuItemsCountQueryKey = (
   params?: GetMenuItemsCountParams
 ) => {
-  return [`/api/v1/MenuItems/$count`, ...(params ? [params] : [])] as const
+  return [`/MenuItems/$count`, ...(params ? [params] : [])] as const
 }
 
 export const getGetMenuItemsCountQueryOptions = <
@@ -13928,7 +13928,7 @@ export const getMenuItemsFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<MenuItem>({
-    url: `/api/v1/MenuItems/${key}`,
+    url: `/MenuItems/${key}`,
     method: 'GET',
     params,
     signal,
@@ -13939,7 +13939,7 @@ export const getGetMenuItemsFromKeyQueryKey = (
   key: number,
   params?: GetMenuItemsFromKeyParams
 ) => {
-  return [`/api/v1/MenuItems/${key}`, ...(params ? [params] : [])] as const
+  return [`/MenuItems/${key}`, ...(params ? [params] : [])] as const
 }
 
 export const getGetMenuItemsFromKeyQueryOptions = <
@@ -14016,7 +14016,7 @@ export const putMenuItemsFromKey = (
   params?: PutMenuItemsFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/MenuItems/${key}`,
+    url: `/MenuItems/${key}`,
     method: 'PUT',
     headers: {
       'Content-Type':
@@ -14088,7 +14088,7 @@ export const patchMenuItemsFromKey = (
   params?: PatchMenuItemsFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/MenuItems/${key}`,
+    url: `/MenuItems/${key}`,
     method: 'PATCH',
     headers: {
       'Content-Type':
@@ -14159,7 +14159,7 @@ export const usePatchMenuItemsFromKey = <
  */
 export const deleteMenuItemsFromKey = (key: number) => {
   return configRequest<void>({
-    url: `/api/v1/MenuItems/${key}`,
+    url: `/MenuItems/${key}`,
     method: 'DELETE',
   })
 }
@@ -14224,7 +14224,7 @@ export const useDeleteMenuItemsFromKey = <
  */
 export const getProduct = (params?: GetProductParams, signal?: AbortSignal) => {
   return configRequest<Product[]>({
-    url: `/api/v1/Product`,
+    url: `/Product`,
     method: 'GET',
     params,
     signal,
@@ -14232,7 +14232,7 @@ export const getProduct = (params?: GetProductParams, signal?: AbortSignal) => {
 }
 
 export const getGetProductQueryKey = (params?: GetProductParams) => {
-  return [`/api/v1/Product`, ...(params ? [params] : [])] as const
+  return [`/Product`, ...(params ? [params] : [])] as const
 }
 
 export const getGetProductQueryOptions = <
@@ -14300,7 +14300,7 @@ export const useGetProduct = <
  */
 export const postProduct = (product: Product, params?: PostProductParams) => {
   return configRequest<void>({
-    url: `/api/v1/Product`,
+    url: `/Product`,
     method: 'POST',
     headers: {
       'Content-Type':
@@ -14371,7 +14371,7 @@ export const getProductCount = (
   signal?: AbortSignal
 ) => {
   return configRequest<Product[]>({
-    url: `/api/v1/Product/$count`,
+    url: `/Product/$count`,
     method: 'GET',
     params,
     signal,
@@ -14379,7 +14379,7 @@ export const getProductCount = (
 }
 
 export const getGetProductCountQueryKey = (params?: GetProductCountParams) => {
-  return [`/api/v1/Product/$count`, ...(params ? [params] : [])] as const
+  return [`/Product/$count`, ...(params ? [params] : [])] as const
 }
 
 export const getGetProductCountQueryOptions = <
@@ -14451,7 +14451,7 @@ export const getProductFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<Product>({
-    url: `/api/v1/Product/${key}`,
+    url: `/Product/${key}`,
     method: 'GET',
     params,
     signal,
@@ -14462,7 +14462,7 @@ export const getGetProductFromKeyQueryKey = (
   key: number,
   params?: GetProductFromKeyParams
 ) => {
-  return [`/api/v1/Product/${key}`, ...(params ? [params] : [])] as const
+  return [`/Product/${key}`, ...(params ? [params] : [])] as const
 }
 
 export const getGetProductFromKeyQueryOptions = <
@@ -14539,7 +14539,7 @@ export const putProductFromKey = (
   params?: PutProductFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/Product/${key}`,
+    url: `/Product/${key}`,
     method: 'PUT',
     headers: {
       'Content-Type':
@@ -14611,7 +14611,7 @@ export const patchProductFromKey = (
   params?: PatchProductFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/Product/${key}`,
+    url: `/Product/${key}`,
     method: 'PATCH',
     headers: {
       'Content-Type':
@@ -14682,7 +14682,7 @@ export const usePatchProductFromKey = <
  */
 export const deleteProductFromKey = (key: number) => {
   return configRequest<void>({
-    url: `/api/v1/Product/${key}`,
+    url: `/Product/${key}`,
     method: 'DELETE',
   })
 }
@@ -14751,7 +14751,7 @@ export const getRegionLocationsFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<Location[]>({
-    url: `/api/v1/Region/${key}/locations`,
+    url: `/Region/${key}/locations`,
     method: 'GET',
     params,
     signal,
@@ -14763,7 +14763,7 @@ export const getGetRegionLocationsFromKeyQueryKey = (
   params?: GetRegionLocationsFromKeyParams
 ) => {
   return [
-    `/api/v1/Region/${key}/locations`,
+    `/Region/${key}/locations`,
     ...(params ? [params] : []),
   ] as const
 }
@@ -14849,7 +14849,7 @@ export const getRegionLocationsCountFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<Location[]>({
-    url: `/api/v1/Region/${key}/locations/$count`,
+    url: `/Region/${key}/locations/$count`,
     method: 'GET',
     params,
     signal,
@@ -14861,7 +14861,7 @@ export const getGetRegionLocationsCountFromKeyQueryKey = (
   params?: GetRegionLocationsCountFromKeyParams
 ) => {
   return [
-    `/api/v1/Region/${key}/locations/$count`,
+    `/Region/${key}/locations/$count`,
     ...(params ? [params] : []),
   ] as const
 }
@@ -14941,7 +14941,7 @@ export const useGetRegionLocationsCountFromKey = <
 
 export const postRegion = (region: Region, params?: PostRegionParams) => {
   return configRequest<void>({
-    url: `/api/v1/Region`,
+    url: `/Region`,
     method: 'POST',
     headers: {
       'Content-Type':
@@ -15006,7 +15006,7 @@ export const usePostRegion = <TError = unknown, TContext = unknown>(options?: {
  */
 export const getRegion = (params?: GetRegionParams, signal?: AbortSignal) => {
   return configRequest<Region[]>({
-    url: `/api/v1/Region`,
+    url: `/Region`,
     method: 'GET',
     params,
     signal,
@@ -15014,7 +15014,7 @@ export const getRegion = (params?: GetRegionParams, signal?: AbortSignal) => {
 }
 
 export const getGetRegionQueryKey = (params?: GetRegionParams) => {
-  return [`/api/v1/Region`, ...(params ? [params] : [])] as const
+  return [`/Region`, ...(params ? [params] : [])] as const
 }
 
 export const getGetRegionQueryOptions = <
@@ -15083,7 +15083,7 @@ export const patchRegionFromKey = (
   params?: PatchRegionFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/Region/${key}`,
+    url: `/Region/${key}`,
     method: 'PATCH',
     headers: {
       'Content-Type':
@@ -15147,7 +15147,7 @@ export const usePatchRegionFromKey = <
 }
 
 export const deleteRegionFromKey = (key: number) => {
-  return configRequest<void>({ url: `/api/v1/Region/${key}`, method: 'DELETE' })
+  return configRequest<void>({ url: `/Region/${key}`, method: 'DELETE' })
 }
 
 export const getDeleteRegionFromKeyMutationOptions = <
@@ -15211,7 +15211,7 @@ export const getRegionFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<Region>({
-    url: `/api/v1/Region/${key}`,
+    url: `/Region/${key}`,
     method: 'GET',
     params,
     signal,
@@ -15222,7 +15222,7 @@ export const getGetRegionFromKeyQueryKey = (
   key: number,
   params?: GetRegionFromKeyParams
 ) => {
-  return [`/api/v1/Region/${key}`, ...(params ? [params] : [])] as const
+  return [`/Region/${key}`, ...(params ? [params] : [])] as const
 }
 
 export const getGetRegionFromKeyQueryOptions = <
@@ -15299,7 +15299,7 @@ export const putRegionFromKey = (
   params?: PutRegionFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/Region/${key}`,
+    url: `/Region/${key}`,
     method: 'PUT',
     headers: {
       'Content-Type':
@@ -15370,7 +15370,7 @@ export const getRegionCount = (
   signal?: AbortSignal
 ) => {
   return configRequest<Region[]>({
-    url: `/api/v1/Region/$count`,
+    url: `/Region/$count`,
     method: 'GET',
     params,
     signal,
@@ -15378,7 +15378,7 @@ export const getRegionCount = (
 }
 
 export const getGetRegionCountQueryKey = (params?: GetRegionCountParams) => {
-  return [`/api/v1/Region/$count`, ...(params ? [params] : [])] as const
+  return [`/Region/$count`, ...(params ? [params] : [])] as const
 }
 
 export const getGetRegionCountQueryOptions = <
@@ -15450,7 +15450,7 @@ export const getRouteRouteLocationsFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<RouteLocation[]>({
-    url: `/api/v1/Route/${key}/routeLocations`,
+    url: `/Route/${key}/routeLocations`,
     method: 'GET',
     params,
     signal,
@@ -15462,7 +15462,7 @@ export const getGetRouteRouteLocationsFromKeyQueryKey = (
   params?: GetRouteRouteLocationsFromKeyParams
 ) => {
   return [
-    `/api/v1/Route/${key}/routeLocations`,
+    `/Route/${key}/routeLocations`,
     ...(params ? [params] : []),
   ] as const
 }
@@ -15549,7 +15549,7 @@ export const getRouteRouteLocationsCountFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<RouteLocation[]>({
-    url: `/api/v1/Route/${key}/routeLocations/$count`,
+    url: `/Route/${key}/routeLocations/$count`,
     method: 'GET',
     params,
     signal,
@@ -15561,7 +15561,7 @@ export const getGetRouteRouteLocationsCountFromKeyQueryKey = (
   params?: GetRouteRouteLocationsCountFromKeyParams
 ) => {
   return [
-    `/api/v1/Route/${key}/routeLocations/$count`,
+    `/Route/${key}/routeLocations/$count`,
     ...(params ? [params] : []),
   ] as const
 }
@@ -15647,7 +15647,7 @@ export const upsertRouteRoute = (
   params: UpsertRouteRouteParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/UpsertRoute`,
+    url: `/UpsertRoute`,
     method: 'POST',
     headers: {
       'Content-Type':
@@ -15719,7 +15719,7 @@ export const getRouteRouteViewFromId = (
   signal?: AbortSignal
 ) => {
   return configRequest<void>({
-    url: `/api/v1/GetRouteView/${id}`,
+    url: `/GetRouteView/${id}`,
     method: 'GET',
     params,
     signal,
@@ -15730,7 +15730,7 @@ export const getGetRouteRouteViewFromIdQueryKey = (
   id: number,
   params: GetRouteRouteViewFromIdParams
 ) => {
-  return [`/api/v1/GetRouteView/${id}`, ...(params ? [params] : [])] as const
+  return [`/GetRouteView/${id}`, ...(params ? [params] : [])] as const
 }
 
 export const getGetRouteRouteViewFromIdQueryOptions = <
@@ -15807,7 +15807,7 @@ export const useGetRouteRouteViewFromId = <
  */
 export const getRoute = (params?: GetRouteParams, signal?: AbortSignal) => {
   return configRequest<Route[]>({
-    url: `/api/v1/Route`,
+    url: `/Route`,
     method: 'GET',
     params,
     signal,
@@ -15815,7 +15815,7 @@ export const getRoute = (params?: GetRouteParams, signal?: AbortSignal) => {
 }
 
 export const getGetRouteQueryKey = (params?: GetRouteParams) => {
-  return [`/api/v1/Route`, ...(params ? [params] : [])] as const
+  return [`/Route`, ...(params ? [params] : [])] as const
 }
 
 export const getGetRouteQueryOptions = <
@@ -15875,7 +15875,7 @@ export const useGetRoute = <
  */
 export const postRoute = (route: Route, params?: PostRouteParams) => {
   return configRequest<void>({
-    url: `/api/v1/Route`,
+    url: `/Route`,
     method: 'POST',
     headers: {
       'Content-Type':
@@ -15946,7 +15946,7 @@ export const getRouteCount = (
   signal?: AbortSignal
 ) => {
   return configRequest<Route[]>({
-    url: `/api/v1/Route/$count`,
+    url: `/Route/$count`,
     method: 'GET',
     params,
     signal,
@@ -15954,7 +15954,7 @@ export const getRouteCount = (
 }
 
 export const getGetRouteCountQueryKey = (params?: GetRouteCountParams) => {
-  return [`/api/v1/Route/$count`, ...(params ? [params] : [])] as const
+  return [`/Route/$count`, ...(params ? [params] : [])] as const
 }
 
 export const getGetRouteCountQueryOptions = <
@@ -16026,7 +16026,7 @@ export const getRouteFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<Route>({
-    url: `/api/v1/Route/${key}`,
+    url: `/Route/${key}`,
     method: 'GET',
     params,
     signal,
@@ -16037,7 +16037,7 @@ export const getGetRouteFromKeyQueryKey = (
   key: number,
   params?: GetRouteFromKeyParams
 ) => {
-  return [`/api/v1/Route/${key}`, ...(params ? [params] : [])] as const
+  return [`/Route/${key}`, ...(params ? [params] : [])] as const
 }
 
 export const getGetRouteFromKeyQueryOptions = <
@@ -16114,7 +16114,7 @@ export const putRouteFromKey = (
   params?: PutRouteFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/Route/${key}`,
+    url: `/Route/${key}`,
     method: 'PUT',
     headers: {
       'Content-Type':
@@ -16186,7 +16186,7 @@ export const patchRouteFromKey = (
   params?: PatchRouteFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/Route/${key}`,
+    url: `/Route/${key}`,
     method: 'PATCH',
     headers: {
       'Content-Type':
@@ -16256,7 +16256,7 @@ export const usePatchRouteFromKey = <
  * @summary Delete object of specified type
  */
 export const deleteRouteFromKey = (key: number) => {
-  return configRequest<void>({ url: `/api/v1/Route/${key}`, method: 'DELETE' })
+  return configRequest<void>({ url: `/Route/${key}`, method: 'DELETE' })
 }
 
 export const getDeleteRouteFromKeyMutationOptions = <
@@ -16323,7 +16323,7 @@ export const getRouteDistancePreviousLocationsFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<RouteLocation[]>({
-    url: `/api/v1/RouteDistance/${key}/previousLocations`,
+    url: `/RouteDistance/${key}/previousLocations`,
     method: 'GET',
     params,
     signal,
@@ -16335,7 +16335,7 @@ export const getGetRouteDistancePreviousLocationsFromKeyQueryKey = (
   params?: GetRouteDistancePreviousLocationsFromKeyParams
 ) => {
   return [
-    `/api/v1/RouteDistance/${key}/previousLocations`,
+    `/RouteDistance/${key}/previousLocations`,
     ...(params ? [params] : []),
   ] as const
 }
@@ -16423,7 +16423,7 @@ export const getRouteDistancePreviousLocationsCountFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<RouteLocation[]>({
-    url: `/api/v1/RouteDistance/${key}/previousLocations/$count`,
+    url: `/RouteDistance/${key}/previousLocations/$count`,
     method: 'GET',
     params,
     signal,
@@ -16435,7 +16435,7 @@ export const getGetRouteDistancePreviousLocationsCountFromKeyQueryKey = (
   params?: GetRouteDistancePreviousLocationsCountFromKeyParams
 ) => {
   return [
-    `/api/v1/RouteDistance/${key}/previousLocations/$count`,
+    `/RouteDistance/${key}/previousLocations/$count`,
     ...(params ? [params] : []),
   ] as const
 }
@@ -16529,7 +16529,7 @@ export const getRouteDistanceNextLocationsFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<RouteLocation[]>({
-    url: `/api/v1/RouteDistance/${key}/nextLocations`,
+    url: `/RouteDistance/${key}/nextLocations`,
     method: 'GET',
     params,
     signal,
@@ -16541,7 +16541,7 @@ export const getGetRouteDistanceNextLocationsFromKeyQueryKey = (
   params?: GetRouteDistanceNextLocationsFromKeyParams
 ) => {
   return [
-    `/api/v1/RouteDistance/${key}/nextLocations`,
+    `/RouteDistance/${key}/nextLocations`,
     ...(params ? [params] : []),
   ] as const
 }
@@ -16628,7 +16628,7 @@ export const getRouteDistanceNextLocationsCountFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<RouteLocation[]>({
-    url: `/api/v1/RouteDistance/${key}/nextLocations/$count`,
+    url: `/RouteDistance/${key}/nextLocations/$count`,
     method: 'GET',
     params,
     signal,
@@ -16640,7 +16640,7 @@ export const getGetRouteDistanceNextLocationsCountFromKeyQueryKey = (
   params?: GetRouteDistanceNextLocationsCountFromKeyParams
 ) => {
   return [
-    `/api/v1/RouteDistance/${key}/nextLocations/$count`,
+    `/RouteDistance/${key}/nextLocations/$count`,
     ...(params ? [params] : []),
   ] as const
 }
@@ -16730,7 +16730,7 @@ export const getRouteDistanceRouteDistanceByLocationIdentifiersFromLocationAAndL
     signal?: AbortSignal
   ) => {
     return configRequest<RouteDistance | void>({
-      url: `/api/v1/RouteDistance/GetRouteDistanceByLocationIdentifiers(locationA=${locationA},locationB=${locationB})`,
+      url: `/RouteDistance/GetRouteDistanceByLocationIdentifiers(locationA=${locationA},locationB=${locationB})`,
       method: 'GET',
       params,
       signal,
@@ -16744,7 +16744,7 @@ export const getGetRouteDistanceRouteDistanceByLocationIdentifiersFromLocationAA
     params?: GetRouteDistanceRouteDistanceByLocationIdentifiersFromLocationAAndLocationBParams
   ) => {
     return [
-      `/api/v1/RouteDistance/GetRouteDistanceByLocationIdentifiers(locationA=${locationA},locationB=${locationB})`,
+      `/RouteDistance/GetRouteDistanceByLocationIdentifiers(locationA=${locationA},locationB=${locationB})`,
       ...(params ? [params] : []),
     ] as const
   }
@@ -16876,7 +16876,7 @@ export const getRouteDistance = (
   signal?: AbortSignal
 ) => {
   return configRequest<RouteDistance[]>({
-    url: `/api/v1/RouteDistance`,
+    url: `/RouteDistance`,
     method: 'GET',
     params,
     signal,
@@ -16886,7 +16886,7 @@ export const getRouteDistance = (
 export const getGetRouteDistanceQueryKey = (
   params?: GetRouteDistanceParams
 ) => {
-  return [`/api/v1/RouteDistance`, ...(params ? [params] : [])] as const
+  return [`/RouteDistance`, ...(params ? [params] : [])] as const
 }
 
 export const getGetRouteDistanceQueryOptions = <
@@ -16957,7 +16957,7 @@ export const postRouteDistance = (
   params?: PostRouteDistanceParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/RouteDistance`,
+    url: `/RouteDistance`,
     method: 'POST',
     headers: {
       'Content-Type':
@@ -17031,7 +17031,7 @@ export const getRouteDistanceCount = (
   signal?: AbortSignal
 ) => {
   return configRequest<RouteDistance[]>({
-    url: `/api/v1/RouteDistance/$count`,
+    url: `/RouteDistance/$count`,
     method: 'GET',
     params,
     signal,
@@ -17041,7 +17041,7 @@ export const getRouteDistanceCount = (
 export const getGetRouteDistanceCountQueryKey = (
   params?: GetRouteDistanceCountParams
 ) => {
-  return [`/api/v1/RouteDistance/$count`, ...(params ? [params] : [])] as const
+  return [`/RouteDistance/$count`, ...(params ? [params] : [])] as const
 }
 
 export const getGetRouteDistanceCountQueryOptions = <
@@ -17114,7 +17114,7 @@ export const getRouteDistanceFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<RouteDistance>({
-    url: `/api/v1/RouteDistance/${key}`,
+    url: `/RouteDistance/${key}`,
     method: 'GET',
     params,
     signal,
@@ -17125,7 +17125,7 @@ export const getGetRouteDistanceFromKeyQueryKey = (
   key: number,
   params?: GetRouteDistanceFromKeyParams
 ) => {
-  return [`/api/v1/RouteDistance/${key}`, ...(params ? [params] : [])] as const
+  return [`/RouteDistance/${key}`, ...(params ? [params] : [])] as const
 }
 
 export const getGetRouteDistanceFromKeyQueryOptions = <
@@ -17206,7 +17206,7 @@ export const putRouteDistanceFromKey = (
   params?: PutRouteDistanceFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/RouteDistance/${key}`,
+    url: `/RouteDistance/${key}`,
     method: 'PUT',
     headers: {
       'Content-Type':
@@ -17286,7 +17286,7 @@ export const patchRouteDistanceFromKey = (
   params?: PatchRouteDistanceFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/RouteDistance/${key}`,
+    url: `/RouteDistance/${key}`,
     method: 'PATCH',
     headers: {
       'Content-Type':
@@ -17373,7 +17373,7 @@ export const usePatchRouteDistanceFromKey = <
  */
 export const deleteRouteDistanceFromKey = (key: number) => {
   return configRequest<void>({
-    url: `/api/v1/RouteDistance/${key}`,
+    url: `/RouteDistance/${key}`,
     method: 'DELETE',
   })
 }
@@ -17441,7 +17441,7 @@ export const getRouteLocation = (
   signal?: AbortSignal
 ) => {
   return configRequest<RouteLocation[]>({
-    url: `/api/v1/RouteLocation`,
+    url: `/RouteLocation`,
     method: 'GET',
     params,
     signal,
@@ -17451,7 +17451,7 @@ export const getRouteLocation = (
 export const getGetRouteLocationQueryKey = (
   params?: GetRouteLocationParams
 ) => {
-  return [`/api/v1/RouteLocation`, ...(params ? [params] : [])] as const
+  return [`/RouteLocation`, ...(params ? [params] : [])] as const
 }
 
 export const getGetRouteLocationQueryOptions = <
@@ -17522,7 +17522,7 @@ export const postRouteLocation = (
   params?: PostRouteLocationParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/RouteLocation`,
+    url: `/RouteLocation`,
     method: 'POST',
     headers: {
       'Content-Type':
@@ -17596,7 +17596,7 @@ export const getRouteLocationCount = (
   signal?: AbortSignal
 ) => {
   return configRequest<RouteLocation[]>({
-    url: `/api/v1/RouteLocation/$count`,
+    url: `/RouteLocation/$count`,
     method: 'GET',
     params,
     signal,
@@ -17606,7 +17606,7 @@ export const getRouteLocationCount = (
 export const getGetRouteLocationCountQueryKey = (
   params?: GetRouteLocationCountParams
 ) => {
-  return [`/api/v1/RouteLocation/$count`, ...(params ? [params] : [])] as const
+  return [`/RouteLocation/$count`, ...(params ? [params] : [])] as const
 }
 
 export const getGetRouteLocationCountQueryOptions = <
@@ -17679,7 +17679,7 @@ export const getRouteLocationFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<RouteLocation>({
-    url: `/api/v1/RouteLocation/${key}`,
+    url: `/RouteLocation/${key}`,
     method: 'GET',
     params,
     signal,
@@ -17690,7 +17690,7 @@ export const getGetRouteLocationFromKeyQueryKey = (
   key: number,
   params?: GetRouteLocationFromKeyParams
 ) => {
-  return [`/api/v1/RouteLocation/${key}`, ...(params ? [params] : [])] as const
+  return [`/RouteLocation/${key}`, ...(params ? [params] : [])] as const
 }
 
 export const getGetRouteLocationFromKeyQueryOptions = <
@@ -17771,7 +17771,7 @@ export const putRouteLocationFromKey = (
   params?: PutRouteLocationFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/RouteLocation/${key}`,
+    url: `/RouteLocation/${key}`,
     method: 'PUT',
     headers: {
       'Content-Type':
@@ -17851,7 +17851,7 @@ export const patchRouteLocationFromKey = (
   params?: PatchRouteLocationFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/RouteLocation/${key}`,
+    url: `/RouteLocation/${key}`,
     method: 'PATCH',
     headers: {
       'Content-Type':
@@ -17938,7 +17938,7 @@ export const usePatchRouteLocationFromKey = <
  */
 export const deleteRouteLocationFromKey = (key: number) => {
   return configRequest<void>({
-    url: `/api/v1/RouteLocation/${key}`,
+    url: `/RouteLocation/${key}`,
     method: 'DELETE',
   })
 }
@@ -18006,7 +18006,7 @@ export const getVersionHistory = (
   signal?: AbortSignal
 ) => {
   return configRequest<VersionHistory[]>({
-    url: `/api/v1/VersionHistory`,
+    url: `/VersionHistory`,
     method: 'GET',
     params,
     signal,
@@ -18016,7 +18016,7 @@ export const getVersionHistory = (
 export const getGetVersionHistoryQueryKey = (
   params?: GetVersionHistoryParams
 ) => {
-  return [`/api/v1/VersionHistory`, ...(params ? [params] : [])] as const
+  return [`/VersionHistory`, ...(params ? [params] : [])] as const
 }
 
 export const getGetVersionHistoryQueryOptions = <
@@ -18088,7 +18088,7 @@ export const postVersionHistory = (
   params?: PostVersionHistoryParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/VersionHistory`,
+    url: `/VersionHistory`,
     method: 'POST',
     headers: {
       'Content-Type':
@@ -18162,7 +18162,7 @@ export const getVersionHistoryCount = (
   signal?: AbortSignal
 ) => {
   return configRequest<VersionHistory[]>({
-    url: `/api/v1/VersionHistory/$count`,
+    url: `/VersionHistory/$count`,
     method: 'GET',
     params,
     signal,
@@ -18172,7 +18172,7 @@ export const getVersionHistoryCount = (
 export const getGetVersionHistoryCountQueryKey = (
   params?: GetVersionHistoryCountParams
 ) => {
-  return [`/api/v1/VersionHistory/$count`, ...(params ? [params] : [])] as const
+  return [`/VersionHistory/$count`, ...(params ? [params] : [])] as const
 }
 
 export const getGetVersionHistoryCountQueryOptions = <
@@ -18245,7 +18245,7 @@ export const getVersionHistoryFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<VersionHistory>({
-    url: `/api/v1/VersionHistory/${key}`,
+    url: `/VersionHistory/${key}`,
     method: 'GET',
     params,
     signal,
@@ -18256,7 +18256,7 @@ export const getGetVersionHistoryFromKeyQueryKey = (
   key: number,
   params?: GetVersionHistoryFromKeyParams
 ) => {
-  return [`/api/v1/VersionHistory/${key}`, ...(params ? [params] : [])] as const
+  return [`/VersionHistory/${key}`, ...(params ? [params] : [])] as const
 }
 
 export const getGetVersionHistoryFromKeyQueryOptions = <
@@ -18337,7 +18337,7 @@ export const putVersionHistoryFromKey = (
   params?: PutVersionHistoryFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/VersionHistory/${key}`,
+    url: `/VersionHistory/${key}`,
     method: 'PUT',
     headers: {
       'Content-Type':
@@ -18425,7 +18425,7 @@ export const patchVersionHistoryFromKey = (
   params?: PatchVersionHistoryFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/VersionHistory/${key}`,
+    url: `/VersionHistory/${key}`,
     method: 'PATCH',
     headers: {
       'Content-Type':
@@ -18512,7 +18512,7 @@ export const usePatchVersionHistoryFromKey = <
  */
 export const deleteVersionHistoryFromKey = (key: number) => {
   return configRequest<void>({
-    url: `/api/v1/VersionHistory/${key}`,
+    url: `/VersionHistory/${key}`,
     method: 'DELETE',
   })
 }
@@ -18580,7 +18580,7 @@ export const getWatchDogIgnoreEvent = (
   signal?: AbortSignal
 ) => {
   return configRequest<WatchDogIgnoreEvent[]>({
-    url: `/api/v1/WatchDogIgnoreEvent`,
+    url: `/WatchDogIgnoreEvent`,
     method: 'GET',
     params,
     signal,
@@ -18590,7 +18590,7 @@ export const getWatchDogIgnoreEvent = (
 export const getGetWatchDogIgnoreEventQueryKey = (
   params?: GetWatchDogIgnoreEventParams
 ) => {
-  return [`/api/v1/WatchDogIgnoreEvent`, ...(params ? [params] : [])] as const
+  return [`/WatchDogIgnoreEvent`, ...(params ? [params] : [])] as const
 }
 
 export const getGetWatchDogIgnoreEventQueryOptions = <
@@ -18662,7 +18662,7 @@ export const postWatchDogIgnoreEvent = (
   params?: PostWatchDogIgnoreEventParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/WatchDogIgnoreEvent`,
+    url: `/WatchDogIgnoreEvent`,
     method: 'POST',
     headers: {
       'Content-Type':
@@ -18736,7 +18736,7 @@ export const getWatchDogIgnoreEventCount = (
   signal?: AbortSignal
 ) => {
   return configRequest<WatchDogIgnoreEvent[]>({
-    url: `/api/v1/WatchDogIgnoreEvent/$count`,
+    url: `/WatchDogIgnoreEvent/$count`,
     method: 'GET',
     params,
     signal,
@@ -18747,7 +18747,7 @@ export const getGetWatchDogIgnoreEventCountQueryKey = (
   params?: GetWatchDogIgnoreEventCountParams
 ) => {
   return [
-    `/api/v1/WatchDogIgnoreEvent/$count`,
+    `/WatchDogIgnoreEvent/$count`,
     ...(params ? [params] : []),
   ] as const
 }
@@ -18825,7 +18825,7 @@ export const getWatchDogIgnoreEventFromKey = (
   signal?: AbortSignal
 ) => {
   return configRequest<WatchDogIgnoreEvent>({
-    url: `/api/v1/WatchDogIgnoreEvent/${key}`,
+    url: `/WatchDogIgnoreEvent/${key}`,
     method: 'GET',
     params,
     signal,
@@ -18837,7 +18837,7 @@ export const getGetWatchDogIgnoreEventFromKeyQueryKey = (
   params?: GetWatchDogIgnoreEventFromKeyParams
 ) => {
   return [
-    `/api/v1/WatchDogIgnoreEvent/${key}`,
+    `/WatchDogIgnoreEvent/${key}`,
     ...(params ? [params] : []),
   ] as const
 }
@@ -18921,7 +18921,7 @@ export const putWatchDogIgnoreEventFromKey = (
   params?: PutWatchDogIgnoreEventFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/WatchDogIgnoreEvent/${key}`,
+    url: `/WatchDogIgnoreEvent/${key}`,
     method: 'PUT',
     headers: {
       'Content-Type':
@@ -19010,7 +19010,7 @@ export const patchWatchDogIgnoreEventFromKey = (
   params?: PatchWatchDogIgnoreEventFromKeyParams
 ) => {
   return configRequest<void>({
-    url: `/api/v1/WatchDogIgnoreEvent/${key}`,
+    url: `/WatchDogIgnoreEvent/${key}`,
     method: 'PATCH',
     headers: {
       'Content-Type':
@@ -19098,7 +19098,7 @@ export const usePatchWatchDogIgnoreEventFromKey = <
  */
 export const deleteWatchDogIgnoreEventFromKey = (key: number) => {
   return configRequest<void>({
-    url: `/api/v1/WatchDogIgnoreEvent/${key}`,
+    url: `/WatchDogIgnoreEvent/${key}`,
     method: 'DELETE',
   })
 }
