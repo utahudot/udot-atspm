@@ -20,6 +20,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Formatter;
 using Microsoft.AspNetCore.OData.Query;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Utah.Udot.Atspm.Business.Watchdog;
 using Utah.Udot.Atspm.ConfigApi.Models;
 using Utah.Udot.Atspm.ConfigApi.Services;
@@ -132,13 +134,20 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
         /// 
         //[Authorize(Policy = "CanEditLocationConfigurations")]
         [HttpPost]
-        [ProducesResponseType(typeof(Location), Status200OK)]
+        [ProducesResponseType(typeof(TemplateLocationModifiedDto), Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult SyncLocation(int key)
         {
             try
             {
-                return Ok(_signalTemplateService.SyncNewLocationDetectorsAndApproaches(key));
+                var modLocation = _signalTemplateService.SyncNewLocationDetectorsAndApproaches(key);
+                var serialized = JsonSerializer.Serialize(modLocation, new JsonSerializerOptions
+                {
+                    WriteIndented = true,
+                    ReferenceHandler = ReferenceHandler.Preserve
+                });
+                return Content(serialized, "application/json");
+                //return Ok(modLocation);v
             }
             catch (ArgumentException e)
             {
@@ -162,22 +171,21 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
 
             try
             {
+                string locationIdentifier = ourParams["locationIdentifier"].ToString();
                 double lat = double.Parse(ourParams["latitude"].ToString());
                 double lon = double.Parse(ourParams["longitude"].ToString());
                 string primary = ourParams["primaryName"].ToString();
                 string secondary = ourParams["secondaryName"].ToString();
-                string note = ourParams["note"].ToString();
                 //(List<Device>)ourParams["devices"];
-                List<Device> devices = (List<Device>)ourParams["devices"];
-
+                List<Device> devices = (ourParams["devices"] as IEnumerable<Device>)?.ToList();
 
                 TemplateLocationDto templateLocationDto = new TemplateLocationDto
                 {
+                    LocationIdentifier = locationIdentifier,
                     Latitude = lat,
                     Longitude = lon,
                     PrimaryName = primary,
                     SecondaryName = secondary,
-                    Note = note,
                     Devices = devices
                 };
                 return Ok(await _repository.SaveTemplatedLocation(key, templateLocationDto));
@@ -313,33 +321,36 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
         public IActionResult GetLocationsForSearch([FromQuery] int? areaId, [FromQuery] int? regionId, [FromQuery] int? jurisdictionId, [FromQuery] int? metricTypeId)
         {
             var basicCharts = new List<int> { 1, 2, 3, 4, 14, 15, 17, 31 };
-            var result = _repository.GetList()
-                .FromSpecification(new ActiveLocationSpecification())
-
-                .Where(w => jurisdictionId == null || w.JurisdictionId == jurisdictionId)
-                .Where(w => regionId == null || w.RegionId == regionId)
-                .Where(w => areaId == null || w.Areas.Any(a => a.Id == areaId))
-                .Where(w => metricTypeId == null || w.Approaches.Any(m => m.Detectors.Any(d => d.DetectionTypes.Any(t => t.MeasureTypes.Any(a => a.Id == metricTypeId)))))
-
-                .Select(s => new SearchLocation()
-                {
-                    Id = s.Id,
-                    Start = s.Start,
-                    locationIdentifier = s.LocationIdentifier,
-                    PrimaryName = s.PrimaryName,
-                    SecondaryName = s.SecondaryName,
-                    RegionId = s.RegionId,
-                    JurisdictionId = s.JurisdictionId,
-                    Longitude = s.Longitude,
-                    Latitude = s.Latitude,
-                    ChartEnabled = s.ChartEnabled,
-                    LocationTypeId = s.LocationTypeId,
-                    Areas = s.Areas.Select(a => a.Id),
-                    Charts = s.Approaches.SelectMany(m => m.Detectors.SelectMany(d => d.DetectionTypes.SelectMany(t => t.MeasureTypes.Select(i => i.Id)))).Distinct()
-                })
-                .GroupBy(r => r.locationIdentifier)
-                .Select(g => g.OrderByDescending(r => r.Start).FirstOrDefault())
-                .ToList();
+            var query = _repository.GetList()
+                .FromSpecification(new ActiveLocationSpecification());
+            if (jurisdictionId != null)
+                query.Where(w => w.JurisdictionId == jurisdictionId);
+            if (regionId != null)
+                query.Where(w => w.RegionId == regionId);
+            if (areaId != null)
+                query.Where(w => w.Areas.Any(a => a.Id == areaId));
+            if (metricTypeId != null)
+                query.Where(w => w.Approaches.Any(m => m.Detectors.Any(d => d.DetectionTypes.Any(t => t.MeasureTypes.Any(a => a.Id == metricTypeId)))));
+            var mainResult = query.ToList();
+            var result = mainResult.Select(s => new SearchLocation()
+            {
+                Id = s.Id,
+                Start = s.Start,
+                locationIdentifier = s.LocationIdentifier,
+                PrimaryName = s.PrimaryName,
+                SecondaryName = s.SecondaryName,
+                RegionId = s.RegionId,
+                JurisdictionId = s.JurisdictionId,
+                Longitude = s.Longitude,
+                Latitude = s.Latitude,
+                ChartEnabled = s.ChartEnabled,
+                LocationTypeId = s.LocationTypeId,
+                Areas = s.Areas.Select(a => a.Id),
+                Charts = s.Approaches.SelectMany(m => m.Detectors.SelectMany(d => d.DetectionTypes.SelectMany(t => t.MeasureTypes.Select(i => i.Id)))).Distinct()
+            })
+                 .GroupBy(r => r.locationIdentifier)
+                 .Select(g => g.OrderByDescending(r => r.Start).FirstOrDefault())
+                 .ToList();
 
             foreach (var location in result)
             {
