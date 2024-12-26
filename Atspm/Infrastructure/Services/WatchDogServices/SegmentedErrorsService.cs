@@ -21,7 +21,7 @@ using Utah.Udot.Atspm.Repositories;
 
 namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
 {
-    public class SegmentedErrorsService
+    public class SegmentedErrorsService : ISegmentedErrorsService
     {
         private readonly IWatchDogEventLogRepository watchDogLogEventRepository;
 
@@ -31,7 +31,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
         }
 
         public (List<WatchDogLogEventWithCountAndDate> newIssues, List<WatchDogLogEventWithCountAndDate> dailyRecurringIssues, List<WatchDogLogEventWithCountAndDate> recurringIssues)
-        GetSegmentedErrors(List<WatchDogLogEvent> recordsForScanDate, EmailOptions emailOptions)
+        GetSegmentedErrors(List<WatchDogLogEvent> recordsForScanDate, WatchdogEmailOptions emailOptions)
         {
             //var consecutiveCountResults = GetConsecutiveDays(emailOptions.ScanDate);
             //var watchDogEventSummary = GetYearStats(emailOptions.ScanDate, emailOptions.ScanDate.AddDays(-1));
@@ -123,7 +123,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
 
 
         private (List<WatchDogLogEvent> recordsForLast12Months, List<WatchDogLogEvent> recordsForDayBeforeScanDate)
-        FetchRecords(EmailOptions emailOptions)
+        FetchRecords(WatchdogEmailOptions emailOptions)
         {
             if (emailOptions.WeekdayOnly && emailOptions.ScanDate.DayOfWeek == DayOfWeek.Monday)
             {
@@ -136,9 +136,9 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
             else
             {
                 var recordsForDayBeforeScanDate = watchDogLogEventRepository.GetList(w => w.Timestamp >= emailOptions.ScanDate.AddDays(-1) &&
-                                   w.Timestamp < emailOptions.ScanDate).ToList();
+                                   w.Timestamp < emailOptions.ScanDate)?.ToList();
                 var recordsForLast12Months = watchDogLogEventRepository.GetList(w => w.Timestamp >= emailOptions.ScanDate.AddDays(-1).AddMonths(-12) &&
-                    w.Timestamp < emailOptions.ScanDate).ToList();
+                    w.Timestamp < emailOptions.ScanDate)?.ToList();
                 var test = recordsForLast12Months.OrderBy(r => r.LocationIdentifier).ThenBy(r => r.ComponentType).ThenBy(r => r.ComponentId).ThenBy(r => r.IssueType).ThenBy(r => r.Phase).ToList();
                 return (recordsForLast12Months, recordsForDayBeforeScanDate);
             }
@@ -167,7 +167,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
 
         public static int CalculateLastConsecutiveOccurrences(List<WatchDogLogEvent> events)
         {
-            if (events == null || events.Count == 0)// || !events.Select(e => e.Timestamp.Date).Contains(scanDate.AddDays(-1)))
+            if (events == null || events.Count == 0 )
                 return 0;
 
             // Ensure events are ordered by timestamp in descending order
