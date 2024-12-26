@@ -20,7 +20,6 @@ using Microsoft.Extensions.Hosting;
 using System.CommandLine;
 using System.CommandLine.Hosting;
 using System.CommandLine.NamingConventionBinder;
-using Utah.Udot.Atspm.Configuration;
 using Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices;
 using Utah.Udot.NetStandardToolkit.Configuration;
 

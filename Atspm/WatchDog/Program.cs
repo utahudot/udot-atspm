@@ -23,17 +23,15 @@ using System.CommandLine;
 using System.CommandLine.Builder;
 using System.CommandLine.Hosting;
 using System.CommandLine.Parsing;
-using Utah.Udot.Atspm.Configuration;
 using Utah.Udot.Atspm.Data;
 using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Infrastructure.Extensions;
 using Utah.Udot.Atspm.Infrastructure.Repositories;
 using Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories;
 using Utah.Udot.Atspm.Infrastructure.Repositories.EventLogRepositories;
-using Utah.Udot.Atspm.Infrastructure.Services.EmailServices;
+using Utah.Udot.Atspm.Services;
 using Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices;
 using Utah.Udot.ATSPM.WatchDog.Commands;
-using Utah.Udot.NetStandardToolkit.Configuration;
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
@@ -53,7 +51,7 @@ cmdBuilder.UseHost(a =>
     .ConfigureServices((h, s) =>
     {
         s.AddEmailServices(h);
-        s.AddScoped<WatchdogEmailService>();
+        s.AddScoped<IWatchdogEmailService, WatchdogEmailService>();
 
         s.AddAtspmDbContext(h);
         s.AddScoped<ILocationRepository, LocationEFRepository>();
@@ -72,8 +70,8 @@ cmdBuilder.UseHost(a =>
         s.AddScoped<AnalysisPhaseCollectionService>();
         s.AddScoped<AnalysisPhaseService>();
         s.AddScoped<PhaseService>();
-        s.AddScoped<SegmentedErrorsService>();
-        s.AddScoped<WatchDogIgnoreEventService>();
+        s.AddScoped<ISegmentedErrorsService, SegmentedErrorsService>();
+        s.AddScoped<IWatchDogIgnoreEventService, WatchDogIgnoreEventService>();
 
         // Register the hosted service with the date
         s.AddIdentity<ApplicationUser, IdentityRole>() // Add this line to register Identity

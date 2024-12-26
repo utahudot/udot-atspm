@@ -18,6 +18,7 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Utah.Udot.Atspm.Business.Watchdog;
 
 namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
 {
@@ -38,7 +39,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
         {
             try
             {
-                var options = new LoggingOptions
+                var options = new WatchdogLoggingOptions
                 {
                     ConsecutiveCount = _options.ConsecutiveCount,
                     LowHitThreshold = _options.LowHitThreshold,
@@ -57,7 +58,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                     RampStuckQueueEndHour = _options.RampStuckQueueEndHour,
                     RampStuckQueueStartHour = _options.RampStuckQueueStartHour,
                 };
-                var emailOptions = new EmailOptions
+                var emailOptions = new WatchdogEmailOptions
                 {
                     PreviousDayPMPeakEnd = _options.PreviousDayPMPeakEnd,
                     PreviousDayPMPeakStart = _options.PreviousDayPMPeakStart,

@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Utah.Udot.ATSPM.Infrastructure.Properties {
+namespace Utah.Udot.Atspm.Infrastructure.Properties {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Utah.Udot.ATSPM.Infrastructure.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Utah.Udot.Atspm.Infrastructure.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

@@ -65,7 +65,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        job: ["atspm-watchdog", "atspm-eventlogutil"]
+        job: ["atspm-watchdog", "atspm-eventlogutil", "atspm-eventagg"]
     steps:
       - name: ⬇️ Set up code
         uses: actions/checkout@v4
@@ -79,10 +79,11 @@ jobs:
           service_account: ${{ vars.DEPLOY_SA }}
       - name: 🚀 Deploy to Cloud Run Job # TODO: Secrets and VPC/Database Connectivity Right Sizing
         run: |
+          [[ ${{ matrix.job }} == "atspm-eventagg" ]] && image="atspm-eventlogutil" || image=${{ matrix.job }}
           if [ ! "$(gcloud run jobs list --project ${{vars.PROJECT_ID}}| grep -w ${{ matrix.job }})" ]; then
               gcloud run jobs create ${{ matrix.job }} --project ${{vars.PROJECT_ID}} \
               --region us-west3 \
-              --image ${{ vars.GCP_ARTIFACT_REPO }}/${{ matrix.job }}:latest \
+              --image ${{ vars.GCP_ARTIFACT_REPO }}/$image:latest \
               --service-account ${{vars.RUN_SA}} \
               --vpc-connector ${{ vars.VPC_CONNECTOR }} \
               --memory=2Gi \
@@ -92,7 +93,7 @@ jobs:
           else
               gcloud run jobs update ${{ matrix.job }} --project ${{vars.PROJECT_ID}} \
               --region us-west3 \
-              --image ${{ vars.GCP_ARTIFACT_REPO }}/${{ matrix.job }}:latest \
+              --image ${{ vars.GCP_ARTIFACT_REPO }}/$image:latest \
               --service-account ${{vars.RUN_SA}} \
               --vpc-connector ${{ vars.VPC_CONNECTOR }} \
               --memory=2Gi \

@@ -6,7 +6,7 @@
 
 	<PropertyGroup>
 		<TargetFramework>net8.0</TargetFramework>
-		<RootNamespace>$(NameSpacePrefix).$(SolutionName).$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
+		<RootNamespace>$(NameSpacePrefix).Atspm.$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
 		<AssemblyName>$(NameSpacePrefix).Atspm.$(MSBuildProjectName)</AssemblyName>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<ImplicitUsings>enable</ImplicitUsings>
@@ -50,6 +50,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<PackageReference Include="Google.Cloud.Diagnostics.Common" Version="5.2.0" />
 		<PackageReference Include="FluentFTP" Version="51.1.0" />
 		<PackageReference Include="Google.Cloud.Diagnostics.Common" Version="5.2.0" />
 		<PackageReference Include="MailKit" Version="4.8.0" />
@@ -64,6 +65,9 @@
 		<PackageReference Include="Parquet.Net" Version="3.10.0" />
 		<PackageReference Include="SendGrid" Version="9.29.3" />
 		<PackageReference Include="SSH.NET" Version="2024.2.0" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.1" />
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="7.1.0" />
+		<PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="7.2.0" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -76,16 +80,16 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Using Include=" Utah.Udot.Atspm.Services" />
-	  <Using Include="Utah.Udot.Atspm.Configuration" />
+	  <Using Include="Utah.Udot.Atspm.Services" />
 	  <Using Include="Utah.Udot.Atspm.Data.Models" />
 	  <Using Include="Utah.Udot.Atspm.Exceptions" />
 	  <Using Include="Utah.Udot.Atspm.Extensions" />
-	  <Using Include="Utah.Udot.Atspm.LogMessages" />
 	  <Using Include="Utah.Udot.Atspm.Repositories.AggregationRepositories" />
 	  <Using Include="Utah.Udot.Atspm.Repositories.ConfigurationRepositories" />
 	  <Using Include="Utah.Udot.Atspm.Repositories.EventLogRepositories" />
 	  <Using Include="Utah.Udot.Atspm.Specifications" />
+      <Using Include="Utah.Udot.Atspm.Infrastructure.Configuration" />
+      <Using Include="Utah.Udot.Atspm.Infrastructure.LogMessages" />
 	  <Using Include="Utah.Udot.NetStandardToolkit.BaseClasses" />
 	  <Using Include="Utah.Udot.NetStandardToolkit.Common" />
 	  <Using Include="Utah.Udot.NetStandardToolkit.Configuration" />
