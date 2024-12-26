@@ -1,8 +1,10 @@
 import {
-  usePostMapLayer,
-  useGetMapLayer,
   useDeleteMapLayerFromKey,
+  useGetMapLayer,
+  usePatchMapLayerFromKey,
+  usePostMapLayer,
 } from '@/api/config/aTSPMConfigurationApi'
+import { MapLayer } from '@/api/config/aTSPMConfigurationApi.schemas'
 import GenericAdminChart, {
   pageNameToHeaders,
 } from '@/components/GenericAdminChart'
@@ -16,20 +18,11 @@ import {
 import { TabContext, TabList, TabPanel } from '@mui/lab'
 import { Backdrop, CircularProgress, Tab } from '@mui/material'
 import { GridColDef } from '@mui/x-data-grid'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
-type MapLayer = {
-  id: number
-  name: string
-  mapLayerUrl: string
-  showByDefault: boolean
-  serviceType?: 'mapserver' | 'featureserver'
-}
-
-const Admin = () => {
+const MapLayers = () => {
   const pageAccess = useViewPage(PageNames.MapLayers)
   const [currentTab, setCurrentTab] = useState('1')
-  const [data, setData] = useState<any>(null)
   const headers: GridColDef[] = pageNameToHeaders.get(
     PageNames.MapLayers
   ) as GridColDef[]
@@ -37,14 +30,17 @@ const Admin = () => {
   const hasLocationsEditClaim = useUserHasClaim('LocationConfiguration:Edit')
   const hasLocationsDelteClaim = useUserHasClaim('LocationConfiguration:Delete')
 
-  const { data: mapLayerData, isLoading } = useGetMapLayer()
-  const createMutation = usePostMapLayer()
-  const deleteMutation = useDeleteMapLayerFromKey()
-  useEffect(() => {
-    if (mapLayerData) {
-      setData(mapLayerData)
-    }
-  }, [mapLayerData])
+  const {
+    data: mapLayerData,
+    isLoading,
+    refetch: fetchMapLayers,
+  } = useGetMapLayer()
+  const { mutate: addMapLayer } = usePostMapLayer()
+  const { mutate: updateMapLayer } = usePatchMapLayerFromKey()
+  const { mutate: removeMapLayer } = useDeleteMapLayerFromKey()
+
+  const mapLayers = mapLayerData?.value as MapLayer[]
+
   if (pageAccess.isLoading) {
     return
   }
@@ -53,43 +49,48 @@ const Admin = () => {
     setCurrentTab(newValue)
   }
 
-  const HandleCreateMapLayer = async (mapLayerData: MapLayer) => {
+  const handleCreateMapLayer = async (mapLayerData: MapLayer) => {
+    delete mapLayerData.id
     try {
-      await createMutation.mutateAsync({data:mapLayerData})
+      await addMapLayer({ data: mapLayerData })
     } catch (error) {
       console.error('Mutation Error:', error)
     }
   }
 
-  const HandleDeleteMapLayer = async (mapLayerData: MapLayer) => {
+  const handleDeleteMapLayer = async (mapLayerData: MapLayer) => {
     const { id } = mapLayerData
-    console.log(id)
+    if (!id) {
+      console.error('Map Layer ID is required for deletion')
+      return
+    }
     try {
-      await deleteMutation.mutateAsync({ key: id })
+      await removeMapLayer({ key: id })
     } catch (error) {
       console.error('Mutation Error:', error)
     }
   }
 
-  const HandleEditMapLayer = async (mapLayerData: MapLayer) => {
-    const { id, name } = mapLayerData
-    // try {
-    //   await editMutation.mutateAsync({ data: { name }, id })
-    // } catch (error) {
-    //   console.error('Mutation Error:', error)
-    // }
-  }
-
-  const deleteMapLayer = (data: MapLayer) => {
-    HandleDeleteMapLayer(data)
-  }
-
-  const editMapLayer = (data: MapLayer) => {
-    HandleEditMapLayer(data)
-  }
-
-  const createMapLayer = (data: MapLayer) => {
-    HandleCreateMapLayer(data)
+  const handleEditMapLayer = async (mapLayerData: MapLayer) => {
+    if (!mapLayerData.id) {
+      console.error('Map Layer ID is required for editing')
+      return
+    }
+    try {
+      await updateMapLayer(
+        {
+          key: mapLayerData.id,
+          data: mapLayerData,
+        },
+        {
+          onSuccess: () => {
+            fetchMapLayers()
+          },
+        }
+      )
+    } catch (error) {
+      console.error('Mutation Error:', error)
+    }
   }
 
   if (isLoading) {
@@ -100,19 +101,9 @@ const Admin = () => {
     )
   }
 
-  if (!data) {
+  if (!mapLayers) {
     return <div>Error returning data</div>
   }
-
-  const filteredData = data?.value.map((obj: any) => {
-    return {
-      id: obj.id,
-      name: obj.name,
-      mapLayerUrl: obj.mapLayerUrl,
-      showByDefault: obj.showByDefault,
-      serviceType: obj.serviceType,
-    }
-  })
 
   const baseType = {
     name: '',
@@ -136,18 +127,18 @@ const Admin = () => {
           <GenericAdminChart
             pageName={PageNames.MapLayers}
             headers={headers}
-            data={filteredData}
+            data={mapLayers}
             baseRowType={baseType}
-            onDelete={deleteMapLayer}
-            onEdit={editMapLayer}
-            onCreate={createMapLayer}
+            onDelete={handleDeleteMapLayer}
+            onEdit={handleEditMapLayer}
+            onCreate={handleCreateMapLayer}
             hasEditPrivileges={hasLocationsEditClaim}
             hasDeletePrivileges={hasLocationsDelteClaim}
             customModal={
               <MapLayerCreateEditModal
-                onCreate={createMapLayer}
-                onEdit={editMapLayer}
-                onDelete={deleteMapLayer}
+                onCreate={handleCreateMapLayer}
+                onEdit={handleEditMapLayer}
+                onDelete={handleDeleteMapLayer}
               />
             }
           />
@@ -157,4 +148,4 @@ const Admin = () => {
   )
 }
 
-export default Admin
+export default MapLayers

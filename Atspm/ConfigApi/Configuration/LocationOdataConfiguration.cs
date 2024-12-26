@@ -86,13 +86,13 @@ namespace Utah.Udot.Atspm.ConfigApi.Configuration
                         var h = model.Action("SaveTemplatedLocation").ReturnsFromEntitySet<Location>("Location"); ;
                         //var h = model.Collection.Function("SaveTemplatedLocation");
                         //h.Parameter<TemplateLocationDto>("templateLocationDto");
+                        h.Parameter<string>("locationIdentifier");
                         h.Parameter<double>("latitude");
                         h.Parameter<double>("longitude");
                         h.Parameter<string>("primaryName");
                         h.Parameter<string>("secondaryName");
                         h.Parameter<string>("note");
-                        h.Parameter<List<Device>>("devices");
-                        //h.ReturnsFromEntitySet<Location>("Location");
+                        h.CollectionParameter<Device>("devices");                        //h.ReturnsFromEntitySet<Location>("Location");
 
                         var i = model.Action("SyncLocation").ReturnsFromEntitySet<TemplateLocationModifiedDto>("templateLocationModifiedDto");
 

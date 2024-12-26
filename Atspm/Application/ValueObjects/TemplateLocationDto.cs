@@ -23,6 +23,11 @@ namespace Utah.Udot.Atspm.ValueObjects
     public class TemplateLocationDto
     {
         /// <summary>
+        /// Identifier
+        /// </summary>
+        public string LocationIdentifier {  get; set; }
+
+        /// <summary>
         /// Latitude of location
         /// </summary>
         public double Latitude { get; set; }
@@ -33,7 +38,7 @@ namespace Utah.Udot.Atspm.ValueObjects
         public double Longitude { get; set; }
 
         /// <summary>
-        /// Priamry name of location
+        /// Primary name of location
         /// </summary>
         public string PrimaryName { get; set; }
 

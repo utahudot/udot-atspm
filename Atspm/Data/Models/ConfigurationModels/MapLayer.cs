@@ -21,9 +21,9 @@
 namespace Utah.Udot.Atspm.Data.Models
 {
     /// <summary>
-    /// Area
+    /// Map Layer
     /// </summary>
-    public partial class MapLayer: AtspmConfigModelBase<int>
+    public partial class MapLayer : AtspmConfigModelBase<int>
     {
         /// <summary>
         /// Map name
@@ -66,12 +66,12 @@ namespace Utah.Udot.Atspm.Data.Models
         public string? UpdatedBy { get; set; }
 
         /// <summary>
-        /// Created On
+        /// Deleted On
         /// </summary>
         public DateTime? DeletedOn { get; set; } = null;
 
         /// <summary>
-        /// Created By
+        /// Deleted By
         /// </summary>
         public string? DeletedBy { get; set; } = null;
 

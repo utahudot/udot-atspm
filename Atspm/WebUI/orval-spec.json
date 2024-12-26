@@ -19,7 +19,7 @@
       "get": {
         "tags": ["Approach"],
         "summary": "Utah.Udot.Atspm.Data.Models.Detector navigation property action",
-        "operationId": "GetApproachDetectorsFromKey",
+        "operationId": "GetDetectorsApproachFromKey",
         "parameters": [
           {
             "name": "key",
@@ -234,7 +234,7 @@
       "get": {
         "tags": ["Approach"],
         "summary": "Utah.Udot.Atspm.Data.Models.Detector navigation property action",
-        "operationId": "GetApproachDetectorsCountFromKey",
+        "operationId": "GetDetectorsApproachFromKey",
         "parameters": [
           {
             "name": "key",
@@ -583,7 +583,7 @@
     "/api/v1/GetApproachDto/{id}": {
       "get": {
         "tags": ["Approach"],
-        "operationId": "GetApproachApproachDtoFromId",
+        "operationId": "GetApproachDtoApproachFromId",
         "parameters": [
           {
             "name": "id",
@@ -1405,7 +1405,7 @@
       "get": {
         "tags": ["Approach"],
         "summary": "Collection of objects from oData query.",
-        "operationId": "GetApproachCount",
+        "operationId": "GetApproach",
         "parameters": [
           {
             "name": "select",
@@ -1614,7 +1614,7 @@
       "get": {
         "tags": ["Area"],
         "summary": "Utah.Udot.Atspm.Data.Models.Location navigation property action",
-        "operationId": "GetAreaLocationsFromKey",
+        "operationId": "GetLocationsAreaFromKey",
         "parameters": [
           {
             "name": "key",
@@ -1829,7 +1829,7 @@
       "get": {
         "tags": ["Area"],
         "summary": "Utah.Udot.Atspm.Data.Models.Location navigation property action",
-        "operationId": "GetAreaLocationsCountFromKey",
+        "operationId": "GetLocationsAreaFromKey",
         "parameters": [
           {
             "name": "key",
@@ -2815,7 +2815,7 @@
       "get": {
         "tags": ["Area"],
         "summary": "Collection of objects from oData query.",
-        "operationId": "GetAreaCount",
+        "operationId": "GetArea",
         "parameters": [
           {
             "name": "select",
@@ -3024,7 +3024,7 @@
       "get": {
         "tags": ["DetectionType"],
         "summary": "Utah.Udot.Atspm.Data.Models.Detector navigation property action",
-        "operationId": "GetDetectionTypeDetectorsFromKey",
+        "operationId": "GetDetectorsDetectionTypeFromKey",
         "parameters": [
           {
             "name": "key",
@@ -3239,7 +3239,7 @@
       "get": {
         "tags": ["DetectionType"],
         "summary": "Utah.Udot.Atspm.Data.Models.Detector navigation property action",
-        "operationId": "GetDetectionTypeDetectorsCountFromKey",
+        "operationId": "GetDetectorsDetectionTypeFromKey",
         "parameters": [
           {
             "name": "key",
@@ -3454,7 +3454,7 @@
       "get": {
         "tags": ["DetectionType"],
         "summary": "Utah.Udot.Atspm.Data.Models.MeasureType navigation property action",
-        "operationId": "GetDetectionTypeMeasureTypesFromKey",
+        "operationId": "GetMeasureTypesDetectionTypeFromKey",
         "parameters": [
           {
             "name": "key",
@@ -3669,7 +3669,7 @@
       "get": {
         "tags": ["DetectionType"],
         "summary": "Utah.Udot.Atspm.Data.Models.MeasureType navigation property action",
-        "operationId": "GetDetectionTypeMeasureTypesCountFromKey",
+        "operationId": "GetMeasureTypesDetectionTypeFromKey",
         "parameters": [
           {
             "name": "key",
@@ -4220,7 +4220,7 @@
       "get": {
         "tags": ["DetectionType"],
         "summary": "Collection of objects from oData query.",
-        "operationId": "GetDetectionTypeCount",
+        "operationId": "GetDetectionType",
         "parameters": [
           {
             "name": "select",
@@ -4867,7 +4867,7 @@
       "get": {
         "tags": ["Detector"],
         "summary": "Utah.Udot.Atspm.Data.Models.DetectorComment navigation property action",
-        "operationId": "GetDetectorDetectorCommentsFromKey",
+        "operationId": "GetDetectorCommentsDetectorFromKey",
         "parameters": [
           {
             "name": "key",
@@ -5082,7 +5082,7 @@
       "get": {
         "tags": ["Detector"],
         "summary": "Utah.Udot.Atspm.Data.Models.DetectorComment navigation property action",
-        "operationId": "GetDetectorDetectorCommentsCountFromKey",
+        "operationId": "GetDetectorCommentsDetectorFromKey",
         "parameters": [
           {
             "name": "key",
@@ -5297,7 +5297,7 @@
       "get": {
         "tags": ["Detector"],
         "summary": "Utah.Udot.Atspm.Data.Models.DetectionType navigation property action",
-        "operationId": "GetDetectorDetectionTypesFromKey",
+        "operationId": "GetDetectionTypesDetectorFromKey",
         "parameters": [
           {
             "name": "key",
@@ -5512,7 +5512,7 @@
       "get": {
         "tags": ["Detector"],
         "summary": "Utah.Udot.Atspm.Data.Models.DetectionType navigation property action",
-        "operationId": "GetDetectorDetectionTypesCountFromKey",
+        "operationId": "GetDetectionTypesDetectorFromKey",
         "parameters": [
           {
             "name": "key",
@@ -6063,7 +6063,7 @@
       "get": {
         "tags": ["Detector"],
         "summary": "Collection of objects from oData query.",
-        "operationId": "GetDetectorCount",
+        "operationId": "GetDetector",
         "parameters": [
           {
             "name": "select",
@@ -7050,7 +7050,7 @@
       "get": {
         "tags": ["DetectorComment"],
         "summary": "Collection of objects from oData query.",
-        "operationId": "GetDetectorCommentCount",
+        "operationId": "GetDetectorComment",
         "parameters": [
           {
             "name": "select",
@@ -7701,7 +7701,7 @@
       "get": {
         "tags": ["Device"],
         "summary": "Gets all Utah.Udot.Atspm.Data.Models.Device from locationId where Utah.Udot.Atspm.Data.Models.Device.DeviceStatus equals Utah.Udot.Atspm.Data.Enums.DeviceStatus.Active",
-        "operationId": "GetDeviceActiveDevicesByLocationFromLocationId",
+        "operationId": "GetActiveDevicesByLocationDeviceFromLocationId",
         "parameters": [
           {
             "name": "locationId",
@@ -7909,7 +7909,7 @@
       "get": {
         "tags": ["Device"],
         "summary": "Gets a count of device type for all active devices Utah.Udot.Atspm.Data.Models.Device where Utah.Udot.Atspm.Data.Models.Device.DeviceStatus equals Utah.Udot.Atspm.Data.Enums.DeviceStatus.Active",
-        "operationId": "GetDeviceActiveDevicesCount",
+        "operationId": "GetActiveDevicesCountDevice",
         "parameters": [
           {
             "name": "select",
@@ -8444,7 +8444,7 @@
       "get": {
         "tags": ["Device"],
         "summary": "Collection of objects from oData query.",
-        "operationId": "GetDeviceCount",
+        "operationId": "GetDevice",
         "parameters": [
           {
             "name": "select",
@@ -9095,7 +9095,7 @@
       "get": {
         "tags": ["DeviceConfiguration"],
         "summary": "Utah.Udot.Atspm.Data.Models.Device navigation property action",
-        "operationId": "GetDeviceConfigurationDevicesFromKey",
+        "operationId": "GetDevicesDeviceConfigurationFromKey",
         "parameters": [
           {
             "name": "key",
@@ -9310,7 +9310,7 @@
       "get": {
         "tags": ["DeviceConfiguration"],
         "summary": "Utah.Udot.Atspm.Data.Models.Device navigation property action",
-        "operationId": "GetDeviceConfigurationDevicesCountFromKey",
+        "operationId": "GetDevicesDeviceConfigurationFromKey",
         "parameters": [
           {
             "name": "key",
@@ -9861,7 +9861,7 @@
       "get": {
         "tags": ["DeviceConfiguration"],
         "summary": "Collection of objects from oData query.",
-        "operationId": "GetDeviceConfigurationCount",
+        "operationId": "GetDeviceConfiguration",
         "parameters": [
           {
             "name": "select",
@@ -10512,7 +10512,7 @@
       "get": {
         "tags": ["DirectionType"],
         "summary": "Utah.Udot.Atspm.Data.Models.Approach navigation property action",
-        "operationId": "GetDirectionTypeApproachesFromKey",
+        "operationId": "GetApproachesDirectionTypeFromKey",
         "parameters": [
           {
             "name": "key",
@@ -10726,7 +10726,7 @@
       "get": {
         "tags": ["DirectionType"],
         "summary": "Utah.Udot.Atspm.Data.Models.Approach navigation property action",
-        "operationId": "GetDirectionTypeApproachesCountFromKey",
+        "operationId": "GetApproachesDirectionTypeFromKey",
         "parameters": [
           {
             "name": "key",
@@ -10940,7 +10940,7 @@
       "get": {
         "tags": ["DirectionType"],
         "summary": "Utah.Udot.Atspm.Data.Models.RouteLocation navigation property action",
-        "operationId": "GetDirectionTypePrimaryDirectionsFromKey",
+        "operationId": "GetPrimaryDirectionsDirectionTypeFromKey",
         "parameters": [
           {
             "name": "key",
@@ -11154,7 +11154,7 @@
       "get": {
         "tags": ["DirectionType"],
         "summary": "Utah.Udot.Atspm.Data.Models.RouteLocation navigation property action",
-        "operationId": "GetDirectionTypePrimaryDirectionsCountFromKey",
+        "operationId": "GetPrimaryDirectionsDirectionTypeFromKey",
         "parameters": [
           {
             "name": "key",
@@ -11368,7 +11368,7 @@
       "get": {
         "tags": ["DirectionType"],
         "summary": "Utah.Udot.Atspm.Data.Models.RouteLocation navigation property action",
-        "operationId": "GetDirectionTypeOpposingDirectionsFromKey",
+        "operationId": "GetOpposingDirectionsDirectionTypeFromKey",
         "parameters": [
           {
             "name": "key",
@@ -11582,7 +11582,7 @@
       "get": {
         "tags": ["DirectionType"],
         "summary": "Utah.Udot.Atspm.Data.Models.RouteLocation navigation property action",
-        "operationId": "GetDirectionTypeOpposingDirectionsCountFromKey",
+        "operationId": "GetOpposingDirectionsDirectionTypeFromKey",
         "parameters": [
           {
             "name": "key",
@@ -12132,7 +12132,7 @@
       "get": {
         "tags": ["DirectionType"],
         "summary": "Collection of objects from oData query.",
-        "operationId": "GetDirectionTypeCount",
+        "operationId": "GetDirectionType",
         "parameters": [
           {
             "name": "select",
@@ -13550,7 +13550,7 @@
       "get": {
         "tags": ["Faq"],
         "summary": "Collection of objects from oData query.",
-        "operationId": "GetFaqCount",
+        "operationId": "GetFaq",
         "parameters": [
           {
             "name": "select",
@@ -13759,7 +13759,7 @@
       "get": {
         "tags": ["Jurisdiction"],
         "summary": "Utah.Udot.Atspm.Data.Models.Location navigation property action",
-        "operationId": "GetJurisdictionLocationsFromKey",
+        "operationId": "GetLocationsJurisdictionFromKey",
         "parameters": [
           {
             "name": "key",
@@ -13974,7 +13974,7 @@
       "get": {
         "tags": ["Jurisdiction"],
         "summary": "Utah.Udot.Atspm.Data.Models.Location navigation property action",
-        "operationId": "GetJurisdictionLocationsCountFromKey",
+        "operationId": "GetLocationsJurisdictionFromKey",
         "parameters": [
           {
             "name": "key",
@@ -14960,7 +14960,7 @@
       "get": {
         "tags": ["Jurisdiction"],
         "summary": "Collection of objects from oData query.",
-        "operationId": "GetJurisdictionCount",
+        "operationId": "GetJurisdiction",
         "parameters": [
           {
             "name": "select",
@@ -15169,7 +15169,7 @@
       "get": {
         "tags": ["Location"],
         "summary": "Utah.Udot.Atspm.Data.Models.Approach navigation property action",
-        "operationId": "GetLocationApproachesFromKey",
+        "operationId": "GetApproachesLocationFromKey",
         "parameters": [
           {
             "name": "key",
@@ -15391,7 +15391,7 @@
       "get": {
         "tags": ["Location"],
         "summary": "Utah.Udot.Atspm.Data.Models.Approach navigation property action",
-        "operationId": "GetLocationApproachesCountFromKey",
+        "operationId": "GetApproachesLocationFromKey",
         "parameters": [
           {
             "name": "key",
@@ -15613,7 +15613,7 @@
       "get": {
         "tags": ["Location"],
         "summary": "Utah.Udot.Atspm.Data.Models.Area navigation property action",
-        "operationId": "GetLocationAreasFromKey",
+        "operationId": "GetAreasLocationFromKey",
         "parameters": [
           {
             "name": "key",
@@ -15835,7 +15835,7 @@
       "get": {
         "tags": ["Location"],
         "summary": "Utah.Udot.Atspm.Data.Models.Area navigation property action",
-        "operationId": "GetLocationAreasCountFromKey",
+        "operationId": "GetAreasLocationFromKey",
         "parameters": [
           {
             "name": "key",
@@ -16057,7 +16057,7 @@
       "get": {
         "tags": ["Location"],
         "summary": "Utah.Udot.Atspm.Data.Models.Device navigation property action",
-        "operationId": "GetLocationDevicesFromKey",
+        "operationId": "GetDevicesLocationFromKey",
         "parameters": [
           {
             "name": "key",
@@ -16279,7 +16279,7 @@
       "get": {
         "tags": ["Location"],
         "summary": "Utah.Udot.Atspm.Data.Models.Device navigation property action",
-        "operationId": "GetLocationDevicesCountFromKey",
+        "operationId": "GetDevicesLocationFromKey",
         "parameters": [
           {
             "name": "key",
@@ -16501,7 +16501,7 @@
       "post": {
         "tags": ["Location"],
         "summary": "Copies Utah.Udot.Atspm.Data.Models.Location and associated Utah.Udot.Atspm.Data.Models.Approach to new version",
-        "operationId": "GetLocationCopyLocationToNewVersionFromKey",
+        "operationId": "CopyLocationToNewVersionLocationFromKey",
         "parameters": [
           {
             "name": "key",
@@ -16632,7 +16632,7 @@
       "post": {
         "tags": ["Location"],
         "summary": "Copies Utah.Udot.Atspm.Data.Models.Location and associated Utah.Udot.Atspm.Data.Models.Approach to new version",
-        "operationId": "GetLocationSyncLocationFromKey",
+        "operationId": "SyncLocationLocationFromKey",
         "parameters": [
           {
             "name": "key",
@@ -16763,7 +16763,7 @@
       "post": {
         "tags": ["Location"],
         "summary": "Templates Utah.Udot.Atspm.Data.Models.Location and associated Utah.Udot.Atspm.Data.Models.Approach to new version",
-        "operationId": "GetLocationSaveTemplatedLocationFromKey",
+        "operationId": "SaveTemplatedLocationLocationFromKey",
         "parameters": [
           {
             "name": "key",
@@ -16988,7 +16988,7 @@
       "post": {
         "tags": ["Location"],
         "summary": "Marks Utah.Udot.Atspm.Data.Models.Location to deleted",
-        "operationId": "DeleteLocationSetLocationTodFromKey",
+        "operationId": "SetLocationToDeletedLocationFromKey",
         "parameters": [
           {
             "name": "key",
@@ -17032,7 +17032,7 @@
       "get": {
         "tags": ["Location"],
         "summary": "Get latest version of Utah.Udot.Atspm.Data.Models.Location and related entities that match identifier",
-        "operationId": "GetLocationLatestVersionOfLocationFromIdentifier",
+        "operationId": "GetLatestVersionOfLocationLocationFromIdentifier",
         "parameters": [
           {
             "name": "identifier",
@@ -17162,7 +17162,7 @@
       "get": {
         "tags": ["Location"],
         "summary": "Get all active Utah.Udot.Atspm.Data.Models.Location that match identifier",
-        "operationId": "GetLocationAllVersionsOfLocationFromIdentifier",
+        "operationId": "GetAllVersionsOfLocationLocationFromIdentifier",
         "parameters": [
           {
             "name": "identifier",
@@ -17373,7 +17373,7 @@
       "get": {
         "tags": ["Location"],
         "summary": "Get latest version of all Utah.Udot.Atspm.Data.Models.Location",
-        "operationId": "GetLocationLatestVersionOfAllLocations",
+        "operationId": "GetLatestVersionOfAllLocationsLocation",
         "parameters": [
           {
             "name": "select",
@@ -17572,7 +17572,7 @@
       "get": {
         "tags": ["Location"],
         "summary": "Get count of Device Types using correct version of all Utah.Udot.Atspm.Data.Models.Location",
-        "operationId": "GetLocationDetectionTypeCount",
+        "operationId": "GetDetectionTypeCountLocation",
         "parameters": [
           {
             "name": "date",
@@ -17779,7 +17779,7 @@
       "get": {
         "tags": ["Location"],
         "summary": "Gets an optimized list of Utah.Udot.Atspm.ConfigApi.Models.SearchLocation to use for Location selection",
-        "operationId": "GetLocationLocationsForSearch",
+        "operationId": "GetLocationsForSearchLocation",
         "parameters": [
           {
             "name": "areaId",
@@ -18353,7 +18353,7 @@
       "get": {
         "tags": ["Location"],
         "summary": "Collection of objects from oData query.",
-        "operationId": "GetLocationCount",
+        "operationId": "GetLocation",
         "parameters": [
           {
             "name": "select",
@@ -19004,7 +19004,7 @@
       "get": {
         "tags": ["LocationType"],
         "summary": "Utah.Udot.Atspm.Data.Models.Location navigation property action",
-        "operationId": "GetLocationTypeLocationsFromKey",
+        "operationId": "GetLocationsLocationTypeFromKey",
         "parameters": [
           {
             "name": "key",
@@ -19219,7 +19219,7 @@
       "get": {
         "tags": ["LocationType"],
         "summary": "Utah.Udot.Atspm.Data.Models.Location navigation property action",
-        "operationId": "GetLocationTypeLocationsCountFromKey",
+        "operationId": "GetLocationsLocationTypeFromKey",
         "parameters": [
           {
             "name": "key",
@@ -19770,7 +19770,7 @@
       "get": {
         "tags": ["LocationType"],
         "summary": "Collection of objects from oData query.",
-        "operationId": "GetLocationTypeCount",
+        "operationId": "GetLocationType",
         "parameters": [
           {
             "name": "select",
@@ -20417,998 +20417,11 @@
         }
       }
     },
-    "/api/v1/MapLayer": {
-      "get": {
-        "tags": ["MapLayer"],
-        "summary": "Collection of objects from oData query.",
-        "operationId": "GetMapLayer",
-        "parameters": [
-          {
-            "name": "select",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "expand",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "filter",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "orderby",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "top",
-            "in": "query",
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          },
-          {
-            "name": "skip",
-            "in": "query",
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          },
-          {
-            "name": "count",
-            "in": "query",
-            "schema": {
-              "type": "boolean"
-            }
-          }
-        ],
-        "responses": {
-          "406": {
-            "description": "Not Acceptable"
-          },
-          "200": {
-            "description": "Items successfully retrieved.",
-            "content": {
-              "application/json;odata.metadata=minimal;odata.streaming=true": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MapLayer"
-                  }
-                }
-              },
-              "application/json;odata.metadata=minimal;odata.streaming=false": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MapLayer"
-                  }
-                }
-              },
-              "application/json;odata.metadata=minimal": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MapLayer"
-                  }
-                }
-              },
-              "application/json;odata.metadata=full;odata.streaming=true": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MapLayer"
-                  }
-                }
-              },
-              "application/json;odata.metadata=full;odata.streaming=false": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MapLayer"
-                  }
-                }
-              },
-              "application/json;odata.metadata=full": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MapLayer"
-                  }
-                }
-              },
-              "application/json;odata.metadata=none;odata.streaming=true": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MapLayer"
-                  }
-                }
-              },
-              "application/json;odata.metadata=none;odata.streaming=false": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MapLayer"
-                  }
-                }
-              },
-              "application/json;odata.metadata=none": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MapLayer"
-                  }
-                }
-              },
-              "application/json;odata.streaming=true": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MapLayer"
-                  }
-                }
-              },
-              "application/json;odata.streaming=false": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MapLayer"
-                  }
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MapLayer"
-                  }
-                }
-              },
-              "application/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MapLayer"
-                  }
-                }
-              },
-              "text/plain": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MapLayer"
-                  }
-                }
-              },
-              "application/octet-stream": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MapLayer"
-                  }
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MapLayer"
-                  }
-                }
-              },
-              "text/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MapLayer"
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request"
-          }
-        }
-      },
-      "post": {
-        "tags": ["MapLayer"],
-        "summary": "Insert object of specified type",
-        "operationId": "PostMapLayer",
-        "parameters": [
-          {
-            "name": "select",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "expand",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "description": "Properties of object to add",
-          "content": {
-            "application/json;odata.metadata=minimal;odata.streaming=true": {
-              "schema": {
-                "$ref": "#/components/schemas/MapLayer"
-              }
-            },
-            "application/json;odata.metadata=minimal;odata.streaming=false": {
-              "schema": {
-                "$ref": "#/components/schemas/MapLayer"
-              }
-            },
-            "application/json;odata.metadata=minimal": {
-              "schema": {
-                "$ref": "#/components/schemas/MapLayer"
-              }
-            },
-            "application/json;odata.metadata=full;odata.streaming=true": {
-              "schema": {
-                "$ref": "#/components/schemas/MapLayer"
-              }
-            },
-            "application/json;odata.metadata=full;odata.streaming=false": {
-              "schema": {
-                "$ref": "#/components/schemas/MapLayer"
-              }
-            },
-            "application/json;odata.metadata=full": {
-              "schema": {
-                "$ref": "#/components/schemas/MapLayer"
-              }
-            },
-            "application/json;odata.metadata=none;odata.streaming=true": {
-              "schema": {
-                "$ref": "#/components/schemas/MapLayer"
-              }
-            },
-            "application/json;odata.metadata=none;odata.streaming=false": {
-              "schema": {
-                "$ref": "#/components/schemas/MapLayer"
-              }
-            },
-            "application/json;odata.metadata=none": {
-              "schema": {
-                "$ref": "#/components/schemas/MapLayer"
-              }
-            },
-            "application/json;odata.streaming=true": {
-              "schema": {
-                "$ref": "#/components/schemas/MapLayer"
-              }
-            },
-            "application/json;odata.streaming=false": {
-              "schema": {
-                "$ref": "#/components/schemas/MapLayer"
-              }
-            },
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/MapLayer"
-              }
-            },
-            "application/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/MapLayer"
-              }
-            },
-            "text/plain": {
-              "schema": {
-                "$ref": "#/components/schemas/MapLayer"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/MapLayer"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/MapLayer"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/MapLayer"
-              }
-            },
-            "application/*+xml": {
-              "schema": {
-                "$ref": "#/components/schemas/MapLayer"
-              }
-            }
-          }
-        },
-        "responses": {
-          "406": {
-            "description": "Not Acceptable"
-          },
-          "201": {
-            "description": "Created"
-          },
-          "400": {
-            "description": "Bad Request"
-          }
-        }
-      }
-    },
-    "/api/v1/MapLayer/$count": {
-      "get": {
-        "tags": ["MapLayer"],
-        "summary": "Collection of objects from oData query.",
-        "operationId": "GetMapLayerCount",
-        "parameters": [
-          {
-            "name": "select",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "expand",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "filter",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "orderby",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "top",
-            "in": "query",
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          },
-          {
-            "name": "skip",
-            "in": "query",
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          },
-          {
-            "name": "count",
-            "in": "query",
-            "schema": {
-              "type": "boolean"
-            }
-          }
-        ],
-        "responses": {
-          "406": {
-            "description": "Not Acceptable"
-          },
-          "200": {
-            "description": "Items successfully retrieved.",
-            "content": {
-              "application/json;odata.metadata=minimal;odata.streaming=true": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MapLayer"
-                  }
-                }
-              },
-              "application/json;odata.metadata=minimal;odata.streaming=false": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MapLayer"
-                  }
-                }
-              },
-              "application/json;odata.metadata=minimal": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MapLayer"
-                  }
-                }
-              },
-              "application/json;odata.metadata=full;odata.streaming=true": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MapLayer"
-                  }
-                }
-              },
-              "application/json;odata.metadata=full;odata.streaming=false": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MapLayer"
-                  }
-                }
-              },
-              "application/json;odata.metadata=full": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MapLayer"
-                  }
-                }
-              },
-              "application/json;odata.metadata=none;odata.streaming=true": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MapLayer"
-                  }
-                }
-              },
-              "application/json;odata.metadata=none;odata.streaming=false": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MapLayer"
-                  }
-                }
-              },
-              "application/json;odata.metadata=none": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MapLayer"
-                  }
-                }
-              },
-              "application/json;odata.streaming=true": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MapLayer"
-                  }
-                }
-              },
-              "application/json;odata.streaming=false": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MapLayer"
-                  }
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MapLayer"
-                  }
-                }
-              },
-              "application/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MapLayer"
-                  }
-                }
-              },
-              "text/plain": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MapLayer"
-                  }
-                }
-              },
-              "application/octet-stream": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MapLayer"
-                  }
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MapLayer"
-                  }
-                }
-              },
-              "text/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MapLayer"
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request"
-          }
-        }
-      }
-    },
-    "/api/v1/MapLayer/{key}": {
-      "get": {
-        "tags": ["MapLayer"],
-        "summary": "object with key from oData query.",
-        "operationId": "GetMapLayerFromKey",
-        "parameters": [
-          {
-            "name": "key",
-            "in": "path",
-            "description": "Key value of object to get",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          },
-          {
-            "name": "select",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "expand",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "406": {
-            "description": "Not Acceptable"
-          },
-          "200": {
-            "description": "Item was successfully retrieved.",
-            "content": {
-              "application/json;odata.metadata=minimal;odata.streaming=true": {
-                "schema": {
-                  "$ref": "#/components/schemas/MapLayer"
-                }
-              },
-              "application/json;odata.metadata=minimal;odata.streaming=false": {
-                "schema": {
-                  "$ref": "#/components/schemas/MapLayer"
-                }
-              },
-              "application/json;odata.metadata=minimal": {
-                "schema": {
-                  "$ref": "#/components/schemas/MapLayer"
-                }
-              },
-              "application/json;odata.metadata=full;odata.streaming=true": {
-                "schema": {
-                  "$ref": "#/components/schemas/MapLayer"
-                }
-              },
-              "application/json;odata.metadata=full;odata.streaming=false": {
-                "schema": {
-                  "$ref": "#/components/schemas/MapLayer"
-                }
-              },
-              "application/json;odata.metadata=full": {
-                "schema": {
-                  "$ref": "#/components/schemas/MapLayer"
-                }
-              },
-              "application/json;odata.metadata=none;odata.streaming=true": {
-                "schema": {
-                  "$ref": "#/components/schemas/MapLayer"
-                }
-              },
-              "application/json;odata.metadata=none;odata.streaming=false": {
-                "schema": {
-                  "$ref": "#/components/schemas/MapLayer"
-                }
-              },
-              "application/json;odata.metadata=none": {
-                "schema": {
-                  "$ref": "#/components/schemas/MapLayer"
-                }
-              },
-              "application/json;odata.streaming=true": {
-                "schema": {
-                  "$ref": "#/components/schemas/MapLayer"
-                }
-              },
-              "application/json;odata.streaming=false": {
-                "schema": {
-                  "$ref": "#/components/schemas/MapLayer"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/MapLayer"
-                }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/MapLayer"
-                }
-              },
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/MapLayer"
-                }
-              },
-              "application/octet-stream": {
-                "schema": {
-                  "$ref": "#/components/schemas/MapLayer"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/MapLayer"
-                }
-              },
-              "text/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/MapLayer"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Item does not exist."
-          }
-        }
-      },
-      "put": {
-        "tags": ["MapLayer"],
-        "summary": "",
-        "operationId": "PutMapLayerFromKey",
-        "parameters": [
-          {
-            "name": "key",
-            "in": "path",
-            "description": "Key value of object to update",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          },
-          {
-            "name": "select",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "expand",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "description": "Properites to update",
-          "content": {
-            "application/json;odata.metadata=minimal;odata.streaming=true": {
-              "schema": {
-                "$ref": "#/components/schemas/MapLayer"
-              }
-            },
-            "application/json;odata.metadata=minimal;odata.streaming=false": {
-              "schema": {
-                "$ref": "#/components/schemas/MapLayer"
-              }
-            },
-            "application/json;odata.metadata=minimal": {
-              "schema": {
-                "$ref": "#/components/schemas/MapLayer"
-              }
-            },
-            "application/json;odata.metadata=full;odata.streaming=true": {
-              "schema": {
-                "$ref": "#/components/schemas/MapLayer"
-              }
-            },
-            "application/json;odata.metadata=full;odata.streaming=false": {
-              "schema": {
-                "$ref": "#/components/schemas/MapLayer"
-              }
-            },
-            "application/json;odata.metadata=full": {
-              "schema": {
-                "$ref": "#/components/schemas/MapLayer"
-              }
-            },
-            "application/json;odata.metadata=none;odata.streaming=true": {
-              "schema": {
-                "$ref": "#/components/schemas/MapLayer"
-              }
-            },
-            "application/json;odata.metadata=none;odata.streaming=false": {
-              "schema": {
-                "$ref": "#/components/schemas/MapLayer"
-              }
-            },
-            "application/json;odata.metadata=none": {
-              "schema": {
-                "$ref": "#/components/schemas/MapLayer"
-              }
-            },
-            "application/json;odata.streaming=true": {
-              "schema": {
-                "$ref": "#/components/schemas/MapLayer"
-              }
-            },
-            "application/json;odata.streaming=false": {
-              "schema": {
-                "$ref": "#/components/schemas/MapLayer"
-              }
-            },
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/MapLayer"
-              }
-            },
-            "application/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/MapLayer"
-              }
-            },
-            "text/plain": {
-              "schema": {
-                "$ref": "#/components/schemas/MapLayer"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/MapLayer"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/MapLayer"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/MapLayer"
-              }
-            },
-            "application/*+xml": {
-              "schema": {
-                "$ref": "#/components/schemas/MapLayer"
-              }
-            }
-          }
-        },
-        "responses": {
-          "406": {
-            "description": "Not Acceptable"
-          },
-          "204": {
-            "description": "No Content"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "400": {
-            "description": "Bad Request"
-          }
-        }
-      },
-      "patch": {
-        "tags": ["MapLayer"],
-        "summary": "Update object of specified type",
-        "operationId": "PatchMapLayerFromKey",
-        "parameters": [
-          {
-            "name": "key",
-            "in": "path",
-            "description": "Key value of object to update",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          },
-          {
-            "name": "select",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "expand",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "description": "Properites to update",
-          "content": {
-            "application/json;odata.metadata=minimal;odata.streaming=true": {
-              "schema": {
-                "$ref": "#/components/schemas/MapLayer"
-              }
-            },
-            "application/json;odata.metadata=minimal;odata.streaming=false": {
-              "schema": {
-                "$ref": "#/components/schemas/MapLayer"
-              }
-            },
-            "application/json;odata.metadata=minimal": {
-              "schema": {
-                "$ref": "#/components/schemas/MapLayer"
-              }
-            },
-            "application/json;odata.metadata=full;odata.streaming=true": {
-              "schema": {
-                "$ref": "#/components/schemas/MapLayer"
-              }
-            },
-            "application/json;odata.metadata=full;odata.streaming=false": {
-              "schema": {
-                "$ref": "#/components/schemas/MapLayer"
-              }
-            },
-            "application/json;odata.metadata=full": {
-              "schema": {
-                "$ref": "#/components/schemas/MapLayer"
-              }
-            },
-            "application/json;odata.metadata=none;odata.streaming=true": {
-              "schema": {
-                "$ref": "#/components/schemas/MapLayer"
-              }
-            },
-            "application/json;odata.metadata=none;odata.streaming=false": {
-              "schema": {
-                "$ref": "#/components/schemas/MapLayer"
-              }
-            },
-            "application/json;odata.metadata=none": {
-              "schema": {
-                "$ref": "#/components/schemas/MapLayer"
-              }
-            },
-            "application/json;odata.streaming=true": {
-              "schema": {
-                "$ref": "#/components/schemas/MapLayer"
-              }
-            },
-            "application/json;odata.streaming=false": {
-              "schema": {
-                "$ref": "#/components/schemas/MapLayer"
-              }
-            },
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/MapLayer"
-              }
-            },
-            "application/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/MapLayer"
-              }
-            },
-            "text/plain": {
-              "schema": {
-                "$ref": "#/components/schemas/MapLayer"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/MapLayer"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/MapLayer"
-              }
-            },
-            "text/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/MapLayer"
-              }
-            },
-            "application/*+xml": {
-              "schema": {
-                "$ref": "#/components/schemas/MapLayer"
-              }
-            }
-          }
-        },
-        "responses": {
-          "406": {
-            "description": "Not Acceptable"
-          },
-          "204": {
-            "description": "No Content"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "400": {
-            "description": "Bad Request"
-          }
-        }
-      },
-      "delete": {
-        "tags": ["MapLayer"],
-        "summary": "Delete object of specified type",
-        "operationId": "DeleteMapLayerFromKey",
-        "parameters": [
-          {
-            "name": "key",
-            "in": "path",
-            "description": "Key value of object to delete",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "406": {
-            "description": "Not Acceptable"
-          },
-          "204": {
-            "description": "No Content"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "400": {
-            "description": "Bad Request"
-          }
-        }
-      }
-    },
     "/api/v1/MeasureComment/{key}/measureTypes": {
       "get": {
         "tags": ["MeasureComment"],
         "summary": "Utah.Udot.Atspm.Data.Models.MeasureType navigation property action",
-        "operationId": "GetMeasureCommentMeasureTypesFromKey",
+        "operationId": "GetMeasureTypesMeasureCommentFromKey",
         "parameters": [
           {
             "name": "key",
@@ -21623,7 +20636,7 @@
       "get": {
         "tags": ["MeasureComment"],
         "summary": "Utah.Udot.Atspm.Data.Models.MeasureType navigation property action",
-        "operationId": "GetMeasureCommentMeasureTypesCountFromKey",
+        "operationId": "GetMeasureTypesMeasureCommentFromKey",
         "parameters": [
           {
             "name": "key",
@@ -22174,7 +21187,7 @@
       "get": {
         "tags": ["MeasureComment"],
         "summary": "Collection of objects from oData query.",
-        "operationId": "GetMeasureCommentCount",
+        "operationId": "GetMeasureComment",
         "parameters": [
           {
             "name": "select",
@@ -23161,7 +22174,7 @@
       "get": {
         "tags": ["MeasureOption"],
         "summary": "Collection of objects from oData query.",
-        "operationId": "GetMeasureOptionCount",
+        "operationId": "GetMeasureOption",
         "parameters": [
           {
             "name": "select",
@@ -23812,7 +22825,7 @@
       "get": {
         "tags": ["MeasureType"],
         "summary": "Utah.Udot.Atspm.Data.Models.DetectionType navigation property action",
-        "operationId": "GetMeasureTypeDetectionTypesFromKey",
+        "operationId": "GetDetectionTypesMeasureTypeFromKey",
         "parameters": [
           {
             "name": "key",
@@ -24027,7 +23040,7 @@
       "get": {
         "tags": ["MeasureType"],
         "summary": "Utah.Udot.Atspm.Data.Models.DetectionType navigation property action",
-        "operationId": "GetMeasureTypeDetectionTypesCountFromKey",
+        "operationId": "GetDetectionTypesMeasureTypeFromKey",
         "parameters": [
           {
             "name": "key",
@@ -24242,7 +23255,7 @@
       "get": {
         "tags": ["MeasureType"],
         "summary": "Utah.Udot.Atspm.Data.Models.MeasureComment navigation property action",
-        "operationId": "GetMeasureTypeMeasureCommentsFromKey",
+        "operationId": "GetMeasureCommentsMeasureTypeFromKey",
         "parameters": [
           {
             "name": "key",
@@ -24457,7 +23470,7 @@
       "get": {
         "tags": ["MeasureType"],
         "summary": "Utah.Udot.Atspm.Data.Models.MeasureComment navigation property action",
-        "operationId": "GetMeasureTypeMeasureCommentsCountFromKey",
+        "operationId": "GetMeasureCommentsMeasureTypeFromKey",
         "parameters": [
           {
             "name": "key",
@@ -25008,7 +24021,7 @@
       "get": {
         "tags": ["MeasureType"],
         "summary": "Collection of objects from oData query.",
-        "operationId": "GetMeasureTypeCount",
+        "operationId": "GetMeasureType",
         "parameters": [
           {
             "name": "select",
@@ -25995,7 +25008,7 @@
       "get": {
         "tags": ["MenuItems"],
         "summary": "Collection of objects from oData query.",
-        "operationId": "GetMenuItemsCount",
+        "operationId": "GetMenuItems",
         "parameters": [
           {
             "name": "select",
@@ -26982,7 +25995,7 @@
       "get": {
         "tags": ["Product"],
         "summary": "Collection of objects from oData query.",
-        "operationId": "GetProductCount",
+        "operationId": "GetProduct",
         "parameters": [
           {
             "name": "select",
@@ -27633,7 +26646,7 @@
       "get": {
         "tags": ["Region"],
         "summary": "Utah.Udot.Atspm.Data.Models.Location navigation property action",
-        "operationId": "GetRegionLocationsFromKey",
+        "operationId": "GetLocationsRegionFromKey",
         "parameters": [
           {
             "name": "key",
@@ -27848,7 +26861,7 @@
       "get": {
         "tags": ["Region"],
         "summary": "Utah.Udot.Atspm.Data.Models.Location navigation property action",
-        "operationId": "GetRegionLocationsCountFromKey",
+        "operationId": "GetLocationsRegionFromKey",
         "parameters": [
           {
             "name": "key",
@@ -28834,7 +27847,7 @@
       "get": {
         "tags": ["Region"],
         "summary": "Collection of objects from oData query.",
-        "operationId": "GetRegionCount",
+        "operationId": "GetRegion",
         "parameters": [
           {
             "name": "select",
@@ -29043,7 +28056,7 @@
       "get": {
         "tags": ["Route"],
         "summary": "Utah.Udot.Atspm.Data.Models.RouteLocation navigation property action",
-        "operationId": "GetRouteRouteLocationsFromKey",
+        "operationId": "GetRouteLocationsRouteFromKey",
         "parameters": [
           {
             "name": "key",
@@ -29258,7 +28271,7 @@
       "get": {
         "tags": ["Route"],
         "summary": "Utah.Udot.Atspm.Data.Models.RouteLocation navigation property action",
-        "operationId": "GetRouteRouteLocationsCountFromKey",
+        "operationId": "GetRouteLocationsRouteFromKey",
         "parameters": [
           {
             "name": "key",
@@ -29609,7 +28622,7 @@
     "/api/v1/GetRouteView/{id}": {
       "get": {
         "tags": ["Route"],
-        "operationId": "GetRouteRouteViewFromId",
+        "operationId": "GetRouteViewRouteFromId",
         "parameters": [
           {
             "name": "id",
@@ -30003,7 +29016,7 @@
       "get": {
         "tags": ["Route"],
         "summary": "Collection of objects from oData query.",
-        "operationId": "GetRouteCount",
+        "operationId": "GetRoute",
         "parameters": [
           {
             "name": "select",
@@ -30654,7 +29667,7 @@
       "get": {
         "tags": ["RouteDistance"],
         "summary": "Utah.Udot.Atspm.Data.Models.RouteLocation navigation property action",
-        "operationId": "GetRouteDistancePreviousLocationsFromKey",
+        "operationId": "GetPreviousLocationsRouteDistanceFromKey",
         "parameters": [
           {
             "name": "key",
@@ -30869,7 +29882,7 @@
       "get": {
         "tags": ["RouteDistance"],
         "summary": "Utah.Udot.Atspm.Data.Models.RouteLocation navigation property action",
-        "operationId": "GetRouteDistancePreviousLocationsCountFromKey",
+        "operationId": "GetPreviousLocationsRouteDistanceFromKey",
         "parameters": [
           {
             "name": "key",
@@ -31084,7 +30097,7 @@
       "get": {
         "tags": ["RouteDistance"],
         "summary": "Utah.Udot.Atspm.Data.Models.RouteLocation navigation property action",
-        "operationId": "GetRouteDistanceNextLocationsFromKey",
+        "operationId": "GetNextLocationsRouteDistanceFromKey",
         "parameters": [
           {
             "name": "key",
@@ -31299,7 +30312,7 @@
       "get": {
         "tags": ["RouteDistance"],
         "summary": "Utah.Udot.Atspm.Data.Models.RouteLocation navigation property action",
-        "operationId": "GetRouteDistanceNextLocationsCountFromKey",
+        "operationId": "GetNextLocationsRouteDistanceFromKey",
         "parameters": [
           {
             "name": "key",
@@ -31514,7 +30527,7 @@
       "get": {
         "tags": ["RouteDistance"],
         "summary": "Gets the Utah.Udot.Atspm.Data.Models.RouteDistance that contains locationA and locationB",
-        "operationId": "GetRouteDistanceRouteDistanceByLocationIdentifiersFromLocationAAndLocationB",
+        "operationId": "GetRouteDistanceByLocationIdentifiersRouteDistanceFromLocationAAndLocationB",
         "parameters": [
           {
             "name": "locationA",
@@ -31980,7 +30993,7 @@
       "get": {
         "tags": ["RouteDistance"],
         "summary": "Collection of objects from oData query.",
-        "operationId": "GetRouteDistanceCount",
+        "operationId": "GetRouteDistance",
         "parameters": [
           {
             "name": "select",
@@ -32967,7 +31980,7 @@
       "get": {
         "tags": ["RouteLocation"],
         "summary": "Collection of objects from oData query.",
-        "operationId": "GetRouteLocationCount",
+        "operationId": "GetRouteLocation",
         "parameters": [
           {
             "name": "select",
@@ -33954,7 +32967,7 @@
       "get": {
         "tags": ["VersionHistory"],
         "summary": "Collection of objects from oData query.",
-        "operationId": "GetVersionHistoryCount",
+        "operationId": "GetVersionHistory",
         "parameters": [
           {
             "name": "select",
@@ -34941,7 +33954,7 @@
       "get": {
         "tags": ["WatchDogIgnoreEvent"],
         "summary": "Collection of objects from oData query.",
-        "operationId": "GetWatchDogIgnoreEventCount",
+        "operationId": "GetWatchDogIgnoreEvent",
         "parameters": [
           {
             "name": "select",
@@ -35747,16 +34760,9 @@
         "additionalProperties": false
       },
       "DetectionHardwareTypes": {
-        "enum": [
-          "NA",
-          "WavetronixMatrix",
-          "WavetronixAdvance",
-          "InductiveLoops",
-          "Sensys",
-          "Video",
-          "FLIRThermalCamera"
-        ],
-        "type": "string"
+        "enum": [0, 1, 2, 3, 4, 5, 6],
+        "type": "integer",
+        "format": "int32"
       },
       "DetectionType": {
         "type": "object",
@@ -35836,21 +34842,9 @@
         "additionalProperties": false
       },
       "DetectionTypes": {
-        "enum": [
-          "NA",
-          "B",
-          "AC",
-          "AS",
-          "LLC",
-          "LLS",
-          "SBP",
-          "AP",
-          "P",
-          "D",
-          "IQ",
-          "EQ"
-        ],
-        "type": "string"
+        "enum": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+        "type": "integer",
+        "format": "int32"
       },
       "Detector": {
         "type": "object",
@@ -36180,27 +35174,14 @@
         "additionalProperties": false
       },
       "DeviceStatus": {
-        "enum": [
-          "Unknown",
-          "Decommissioned",
-          "Inactive",
-          "Active",
-          "Testing",
-          "Staging"
-        ],
-        "type": "string"
+        "enum": [0, 1, 2, 3, 4, 5],
+        "type": "integer",
+        "format": "int32"
       },
       "DeviceTypes": {
-        "enum": [
-          "Unknown",
-          "SignalController",
-          "RampController",
-          "AICamera",
-          "FIRCamera",
-          "LidarSensor",
-          "WavetronixSpeed"
-        ],
-        "type": "string"
+        "enum": [0, 1, 2, 3, 4, 5, 6],
+        "type": "integer",
+        "format": "int32"
       },
       "DirectionType": {
         "type": "object",
@@ -36245,8 +35226,9 @@
         "additionalProperties": false
       },
       "DirectionTypes": {
-        "enum": ["NA", "NB", "SB", "EB", "WB", "NE", "NW", "SE", "SW"],
-        "type": "string"
+        "enum": [0, 1, 2, 3, 4, 5, 6, 7, 8],
+        "type": "integer",
+        "format": "int32"
       },
       "Faq": {
         "type": "object",
@@ -36311,8 +35293,9 @@
         "additionalProperties": false
       },
       "LaneTypes": {
-        "enum": ["NA", "V", "Bike", "Ped", "E", "LRT", "Bus", "HDV"],
-        "type": "string"
+        "enum": [0, 1, 2, 3, 4, 5, 6, 7],
+        "type": "integer",
+        "format": "int32"
       },
       "Location": {
         "type": "object",
@@ -36469,57 +35452,9 @@
         "additionalProperties": false
       },
       "LocationVersionActions": {
-        "enum": ["Unknown", "New", "Edit", "Delete", "NewVersion", "Initial"],
-        "type": "string"
-      },
-      "MapLayer": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string",
-            "nullable": true
-          },
-          "serviceType": {
-            "$ref": "#/components/schemas/ServiceType"
-          },
-          "showByDefault": {
-            "type": "boolean"
-          },
-          "mapLayerUrl": {
-            "type": "string",
-            "nullable": true
-          },
-          "createdOn": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "createdBy": {
-            "type": "string",
-            "nullable": true
-          },
-          "updatedOn": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "updatedBy": {
-            "type": "string",
-            "nullable": true
-          },
-          "deletedOn": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "deletedBy": {
-            "type": "string",
-            "nullable": true
-          },
-          "id": {
-            "type": "integer",
-            "format": "int32"
-          }
-        },
-        "additionalProperties": false
+        "enum": [0, 1, 2, 3, 4, 10],
+        "type": "integer",
+        "format": "int32"
       },
       "MeasureComment": {
         "type": "object",
@@ -36760,8 +35695,9 @@
         "additionalProperties": false
       },
       "MovementTypes": {
-        "enum": ["NA", "T", "R", "L", "TR", "TL", "NW", "LTR"],
-        "type": "string"
+        "enum": [0, 1, 2, 3, 4, 5, 6, 7],
+        "type": "integer",
+        "format": "int32"
       },
       "Product": {
         "type": "object",
@@ -37274,13 +36210,10 @@
         },
         "additionalProperties": false
       },
-      "ServiceType": {
-        "enum": ["FeatureServer", "MapServer"],
-        "type": "string"
-      },
       "TransportProtocols": {
-        "enum": ["Unknown", "Ftp", "Sftp", "Snmp", "Http"],
-        "type": "string"
+        "enum": [0, 1, 2, 3, 4],
+        "type": "integer",
+        "format": "int32"
       },
       "UserArea": {
         "type": "object",
@@ -37375,8 +36308,9 @@
         "additionalProperties": false
       },
       "WatchDogComponentTypes": {
-        "enum": ["Location", "Approach", "Detector"],
-        "type": "string"
+        "enum": [0, 1, 2],
+        "type": "integer",
+        "format": "int32"
       },
       "WatchDogIgnoreEvent": {
         "type": "object",
@@ -37424,16 +36358,9 @@
         "additionalProperties": false
       },
       "WatchDogIssueTypes": {
-        "enum": [
-          "RecordCount",
-          "LowDetectorHits",
-          "StuckPed",
-          "ForceOffThreshold",
-          "MaxOutThreshold",
-          "UnconfiguredApproach",
-          "UnconfiguredDetector"
-        ],
-        "type": "string"
+        "enum": [1, 2, 3, 4, 5, 6, 7],
+        "type": "integer",
+        "format": "int32"
       }
     }
   }

@@ -274,10 +274,7 @@ export const getGetApproachDetectorsFromKeyQueryKey = (
   key: number,
   params?: GetApproachDetectorsFromKeyParams
 ) => {
-  return [
-    `/Approach/${key}/detectors`,
-    ...(params ? [params] : []),
-  ] as const
+  return [`/Approach/${key}/detectors`, ...(params ? [params] : [])] as const
 }
 
 export const getGetApproachDetectorsFromKeyQueryOptions = <
@@ -827,10 +824,7 @@ export const usePatchApproachFromKey = <
 }
 
 export const deleteApproachFromKey = (key: number) => {
-  return configRequest<void>({
-    url: `/Approach/${key}`,
-    method: 'DELETE',
-  })
+  return configRequest<void>({ url: `/Approach/${key}`, method: 'DELETE' })
 }
 
 export const getDeleteApproachFromKeyMutationOptions = <
@@ -1241,10 +1235,7 @@ export const getGetAreaLocationsCountFromKeyQueryKey = (
   key: number,
   params?: GetAreaLocationsCountFromKeyParams
 ) => {
-  return [
-    `/Area/${key}/locations/$count`,
-    ...(params ? [params] : []),
-  ] as const
+  return [`/Area/${key}/locations/$count`, ...(params ? [params] : [])] as const
 }
 
 export const getGetAreaLocationsCountFromKeyQueryOptions = <
@@ -1386,12 +1377,7 @@ export const usePostArea = <TError = unknown, TContext = unknown>(options?: {
  * @summary Collection of objects from oData query.
  */
 export const getArea = (params?: GetAreaParams, signal?: AbortSignal) => {
-  return configRequest<Area[]>({
-    url: `/Area`,
-    method: 'GET',
-    params,
-    signal,
-  })
+  return configRequest<Area[]>({ url: `/Area`, method: 'GET', params, signal })
 }
 
 export const getGetAreaQueryKey = (params?: GetAreaParams) => {
@@ -2723,10 +2709,7 @@ export const usePatchDetectionTypeFromKey = <
  * @summary Delete object of specified type
  */
 export const deleteDetectionTypeFromKey = (key: DetectionTypes) => {
-  return configRequest<void>({
-    url: `/DetectionType/${key}`,
-    method: 'DELETE',
-  })
+  return configRequest<void>({ url: `/DetectionType/${key}`, method: 'DELETE' })
 }
 
 export const getDeleteDetectionTypeFromKeyMutationOptions = <
@@ -3654,10 +3637,7 @@ export const usePatchDetectorFromKey = <
  * @summary Delete object of specified type
  */
 export const deleteDetectorFromKey = (key: number) => {
-  return configRequest<void>({
-    url: `/Detector/${key}`,
-    method: 'DELETE',
-  })
+  return configRequest<void>({ url: `/Detector/${key}`, method: 'DELETE' })
 }
 
 export const getDeleteDetectorFromKeyMutationOptions = <
@@ -3889,10 +3869,7 @@ export const getDetectorCommentCount = (
 export const getGetDetectorCommentCountQueryKey = (
   params?: GetDetectorCommentCountParams
 ) => {
-  return [
-    `/DetectorComment/$count`,
-    ...(params ? [params] : []),
-  ] as const
+  return [`/DetectorComment/$count`, ...(params ? [params] : [])] as const
 }
 
 export const getGetDetectorCommentCountQueryOptions = <
@@ -3976,10 +3953,7 @@ export const getGetDetectorCommentFromKeyQueryKey = (
   key: number,
   params?: GetDetectorCommentFromKeyParams
 ) => {
-  return [
-    `/DetectorComment/${key}`,
-    ...(params ? [params] : []),
-  ] as const
+  return [`/DetectorComment/${key}`, ...(params ? [params] : [])] as const
 }
 
 export const getGetDetectorCommentFromKeyQueryOptions = <
@@ -4427,10 +4401,7 @@ export const getDeviceActiveDevicesCount = (
 export const getGetDeviceActiveDevicesCountQueryKey = (
   params?: GetDeviceActiveDevicesCountParams
 ) => {
-  return [
-    `/Device/GetActiveDevicesCount`,
-    ...(params ? [params] : []),
-  ] as const
+  return [`/Device/GetActiveDevicesCount`, ...(params ? [params] : [])] as const
 }
 
 export const getGetDeviceActiveDevicesCountQueryOptions = <
@@ -5390,10 +5361,7 @@ export const getDeviceConfigurationCount = (
 export const getGetDeviceConfigurationCountQueryKey = (
   params?: GetDeviceConfigurationCountParams
 ) => {
-  return [
-    `/DeviceConfiguration/$count`,
-    ...(params ? [params] : []),
-  ] as const
+  return [`/DeviceConfiguration/$count`, ...(params ? [params] : [])] as const
 }
 
 export const getGetDeviceConfigurationCountQueryOptions = <
@@ -5480,10 +5448,7 @@ export const getGetDeviceConfigurationFromKeyQueryKey = (
   key: number,
   params?: GetDeviceConfigurationFromKeyParams
 ) => {
-  return [
-    `/DeviceConfiguration/${key}`,
-    ...(params ? [params] : []),
-  ] as const
+  return [`/DeviceConfiguration/${key}`, ...(params ? [params] : [])] as const
 }
 
 export const getGetDeviceConfigurationFromKeyQueryOptions = <
@@ -6930,10 +6895,7 @@ export const usePatchDirectionTypeFromKey = <
  * @summary Delete object of specified type
  */
 export const deleteDirectionTypeFromKey = (key: DirectionTypes) => {
-  return configRequest<void>({
-    url: `/DirectionType/${key}`,
-    method: 'DELETE',
-  })
+  return configRequest<void>({ url: `/DirectionType/${key}`, method: 'DELETE' })
 }
 
 export const getDeleteDirectionTypeFromKeyMutationOptions = <
@@ -7057,12 +7019,7 @@ export const usePostFaq = <TError = unknown, TContext = unknown>(options?: {
  * @summary Collection of objects from oData query.
  */
 export const getFaq = (params?: GetFaqParams, signal?: AbortSignal) => {
-  return configRequest<Faq[]>({
-    url: `/Faq`,
-    method: 'GET',
-    params,
-    signal,
-  })
+  return configRequest<Faq[]>({ url: `/Faq`, method: 'GET', params, signal })
 }
 
 export const getGetFaqQueryKey = (params?: GetFaqParams) => {
@@ -7906,10 +7863,7 @@ export const usePatchJurisdictionFromKey = <
 }
 
 export const deleteJurisdictionFromKey = (key: number) => {
-  return configRequest<void>({
-    url: `/Jurisdiction/${key}`,
-    method: 'DELETE',
-  })
+  return configRequest<void>({ url: `/Jurisdiction/${key}`, method: 'DELETE' })
 }
 
 export const getDeleteJurisdictionFromKeyMutationOptions = <
@@ -8230,10 +8184,7 @@ export const getGetLocationApproachesFromKeyQueryKey = (
   key: number,
   params?: GetLocationApproachesFromKeyParams
 ) => {
-  return [
-    `/Location/${key}/approaches`,
-    ...(params ? [params] : []),
-  ] as const
+  return [`/Location/${key}/approaches`, ...(params ? [params] : [])] as const
 }
 
 export const getGetLocationApproachesFromKeyQueryOptions = <
@@ -8523,10 +8474,7 @@ export const getGetLocationAreasCountFromKeyQueryKey = (
   key: number,
   params?: GetLocationAreasCountFromKeyParams
 ) => {
-  return [
-    `/Location/${key}/areas/$count`,
-    ...(params ? [params] : []),
-  ] as const
+  return [`/Location/${key}/areas/$count`, ...(params ? [params] : [])] as const
 }
 
 export const getGetLocationAreasCountFromKeyQueryOptions = <
@@ -8622,10 +8570,7 @@ export const getGetLocationDevicesFromKeyQueryKey = (
   key: number,
   params?: GetLocationDevicesFromKeyParams
 ) => {
-  return [
-    `/Location/${key}/devices`,
-    ...(params ? [params] : []),
-  ] as const
+  return [`/Location/${key}/devices`, ...(params ? [params] : [])] as const
 }
 
 export const getGetLocationDevicesFromKeyQueryOptions = <
@@ -10069,10 +10014,7 @@ export const usePatchLocationFromKey = <
  * @summary Delete object of specified type
  */
 export const deleteLocationFromKey = (key: number) => {
-  return configRequest<void>({
-    url: `/Location/${key}`,
-    method: 'DELETE',
-  })
+  return configRequest<void>({ url: `/Location/${key}`, method: 'DELETE' })
 }
 
 export const getDeleteLocationFromKeyMutationOptions = <
@@ -10814,10 +10756,7 @@ export const usePatchLocationTypeFromKey = <
  * @summary Delete object of specified type
  */
 export const deleteLocationTypeFromKey = (key: number) => {
-  return configRequest<void>({
-    url: `/LocationType/${key}`,
-    method: 'DELETE',
-  })
+  return configRequest<void>({ url: `/LocationType/${key}`, method: 'DELETE' })
 }
 
 export const getDeleteLocationTypeFromKeyMutationOptions = <
@@ -11348,10 +11287,7 @@ export const usePatchMapLayerFromKey = <
  * @summary Delete object of specified type
  */
 export const deleteMapLayerFromKey = (key: number) => {
-  return configRequest<void>({
-    url: `/MapLayer/${key}`,
-    method: 'DELETE',
-  })
+  return configRequest<void>({ url: `/MapLayer/${key}`, method: 'DELETE' })
 }
 
 export const getDeleteMapLayerFromKeyMutationOptions = <
@@ -12686,10 +12622,7 @@ export const usePatchMeasureOptionFromKey = <
  * @summary Delete object of specified type
  */
 export const deleteMeasureOptionFromKey = (key: number) => {
-  return configRequest<void>({
-    url: `/MeasureOption/${key}`,
-    method: 'DELETE',
-  })
+  return configRequest<void>({ url: `/MeasureOption/${key}`, method: 'DELETE' })
 }
 
 export const getDeleteMeasureOptionFromKeyMutationOptions = <
@@ -13623,10 +13556,7 @@ export const usePatchMeasureTypeFromKey = <
  * @summary Delete object of specified type
  */
 export const deleteMeasureTypeFromKey = (key: number) => {
-  return configRequest<void>({
-    url: `/MeasureType/${key}`,
-    method: 'DELETE',
-  })
+  return configRequest<void>({ url: `/MeasureType/${key}`, method: 'DELETE' })
 }
 
 export const getDeleteMeasureTypeFromKeyMutationOptions = <
@@ -14158,10 +14088,7 @@ export const usePatchMenuItemsFromKey = <
  * @summary Delete object of specified type
  */
 export const deleteMenuItemsFromKey = (key: number) => {
-  return configRequest<void>({
-    url: `/MenuItems/${key}`,
-    method: 'DELETE',
-  })
+  return configRequest<void>({ url: `/MenuItems/${key}`, method: 'DELETE' })
 }
 
 export const getDeleteMenuItemsFromKeyMutationOptions = <
@@ -14681,10 +14608,7 @@ export const usePatchProductFromKey = <
  * @summary Delete object of specified type
  */
 export const deleteProductFromKey = (key: number) => {
-  return configRequest<void>({
-    url: `/Product/${key}`,
-    method: 'DELETE',
-  })
+  return configRequest<void>({ url: `/Product/${key}`, method: 'DELETE' })
 }
 
 export const getDeleteProductFromKeyMutationOptions = <
@@ -14762,10 +14686,7 @@ export const getGetRegionLocationsFromKeyQueryKey = (
   key: number,
   params?: GetRegionLocationsFromKeyParams
 ) => {
-  return [
-    `/Region/${key}/locations`,
-    ...(params ? [params] : []),
-  ] as const
+  return [`/Region/${key}/locations`, ...(params ? [params] : [])] as const
 }
 
 export const getGetRegionLocationsFromKeyQueryOptions = <
@@ -15461,10 +15382,7 @@ export const getGetRouteRouteLocationsFromKeyQueryKey = (
   key: number,
   params?: GetRouteRouteLocationsFromKeyParams
 ) => {
-  return [
-    `/Route/${key}/routeLocations`,
-    ...(params ? [params] : []),
-  ] as const
+  return [`/Route/${key}/routeLocations`, ...(params ? [params] : [])] as const
 }
 
 export const getGetRouteRouteLocationsFromKeyQueryOptions = <
@@ -17372,10 +17290,7 @@ export const usePatchRouteDistanceFromKey = <
  * @summary Delete object of specified type
  */
 export const deleteRouteDistanceFromKey = (key: number) => {
-  return configRequest<void>({
-    url: `/RouteDistance/${key}`,
-    method: 'DELETE',
-  })
+  return configRequest<void>({ url: `/RouteDistance/${key}`, method: 'DELETE' })
 }
 
 export const getDeleteRouteDistanceFromKeyMutationOptions = <
@@ -17488,7 +17403,7 @@ export type GetRouteLocationQueryResult = NonNullable<
 export type GetRouteLocationQueryError = void
 
 /**
- * @summary Collection of objects from oData query.
+ * @summary object with key from oData query.
  */
 export const useGetRouteLocation = <
   TData = Awaited<ReturnType<typeof getRouteLocation>>,
@@ -17937,10 +17852,7 @@ export const usePatchRouteLocationFromKey = <
  * @summary Delete object of specified type
  */
 export const deleteRouteLocationFromKey = (key: number) => {
-  return configRequest<void>({
-    url: `/RouteLocation/${key}`,
-    method: 'DELETE',
-  })
+  return configRequest<void>({ url: `/RouteLocation/${key}`, method: 'DELETE' })
 }
 
 export const getDeleteRouteLocationFromKeyMutationOptions = <
@@ -18746,10 +18658,7 @@ export const getWatchDogIgnoreEventCount = (
 export const getGetWatchDogIgnoreEventCountQueryKey = (
   params?: GetWatchDogIgnoreEventCountParams
 ) => {
-  return [
-    `/WatchDogIgnoreEvent/$count`,
-    ...(params ? [params] : []),
-  ] as const
+  return [`/WatchDogIgnoreEvent/$count`, ...(params ? [params] : [])] as const
 }
 
 export const getGetWatchDogIgnoreEventCountQueryOptions = <
@@ -18836,10 +18745,7 @@ export const getGetWatchDogIgnoreEventFromKeyQueryKey = (
   key: number,
   params?: GetWatchDogIgnoreEventFromKeyParams
 ) => {
-  return [
-    `/WatchDogIgnoreEvent/${key}`,
-    ...(params ? [params] : []),
-  ] as const
+  return [`/WatchDogIgnoreEvent/${key}`, ...(params ? [params] : [])] as const
 }
 
 export const getGetWatchDogIgnoreEventFromKeyQueryOptions = <
