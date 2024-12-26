@@ -18,13 +18,13 @@ namespace DatabaseInstaller.Services
         private readonly ILogger<TransferEventLogsHostedService> _logger;
         private readonly IServiceProvider _serviceProvider;
         private readonly ILocationRepository _locationRepository;
-        private readonly TransferEventLogsCommandConfiguration _config;
+        private readonly TransferCommandConfiguration _config;
 
         public TransferEventLogsHostedService(
             ILogger<TransferEventLogsHostedService> logger,
             IServiceProvider serviceProvider,
             ILocationRepository locationRepository,
-            IOptions<TransferEventLogsCommandConfiguration> config)
+            IOptions<TransferCommandConfiguration> config)
         {
             _logger = logger;
             _serviceProvider = serviceProvider;
