@@ -24,7 +24,7 @@ using System.CommandLine.NamingConventionBinder;
 
 namespace DatabaseInstaller.Commands
 {
-    public class TransferEventLogsCommand : Command, ICommandOption<TransferEventLogsCommandConfiguration>
+    public class TransferEventLogsCommand : Command, ICommandOption<TransferCommandConfiguration>
     {
         public TransferEventLogsCommand() : base("transfer", "Transfer logs from 4.3 to 5.0")
         {
@@ -37,9 +37,9 @@ namespace DatabaseInstaller.Commands
         public Option<DateTime> StartOption { get; set; } = new("--start", "Start date");
         public Option<DateTime> EndOption { get; set; } = new("--end", "End date");
 
-        public ModelBinder<TransferEventLogsCommandConfiguration> GetOptionsBinder()
+        public ModelBinder<TransferCommandConfiguration> GetOptionsBinder()
         {
-            var binder = new ModelBinder<TransferEventLogsCommandConfiguration>();
+            var binder = new ModelBinder<TransferCommandConfiguration>();
 
             binder.BindMemberFromValue(b => b.Source, SourceOption);
             binder.BindMemberFromValue(b => b.Start, StartOption);
@@ -51,12 +51,12 @@ namespace DatabaseInstaller.Commands
         public void BindCommandOptions(HostBuilderContext host, IServiceCollection services)
         {
             services.AddSingleton(GetOptionsBinder());
-            services.AddOptions<TransferEventLogsCommandConfiguration>().BindCommandLine();
+            services.AddOptions<TransferCommandConfiguration>().BindCommandLine();
             services.AddHostedService<TransferEventLogsHostedService>();
         }
     }
 
-    public class TransferEventLogsCommandConfiguration
+    public class TransferCommandConfiguration
     {
         public string Source { get; set; }
         public DateTime Start { get; set; }

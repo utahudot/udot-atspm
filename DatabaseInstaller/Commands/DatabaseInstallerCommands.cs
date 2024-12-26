@@ -31,8 +31,9 @@ namespace DatabaseInstaller.Commands
         }
 
         public UpdateCommand UpdateCommand { get; set; } = new UpdateCommand();
-        public CopyConfigurationCommand CopyConfigurationCommand { get; set; } = new CopyConfigurationCommand();
+        public TransferConfigCommand CopyConfigurationCommand { get; set; } = new TransferConfigCommand();
         public MoveEventLogsSqlServerToPostgresCommand MoveEventLogsSqlServerToPostgresCommand { get; set; } = new MoveEventLogsSqlServerToPostgresCommand();
         public TransferEventLogsCommand TransferEventLogsCommand { get; set; } = new TransferEventLogsCommand();
+        
     }
 }
