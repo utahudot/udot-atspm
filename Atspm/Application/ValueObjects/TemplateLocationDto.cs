@@ -25,7 +25,7 @@ namespace Utah.Udot.Atspm.ValueObjects
         /// <summary>
         /// Identifier
         /// </summary>
-        public string LocationIdentifier {  get; set; }
+        public string LocationIdentifier { get; set; }
 
         /// <summary>
         /// Latitude of location
@@ -60,10 +60,16 @@ namespace Utah.Udot.Atspm.ValueObjects
     public class TemplateLocationModifiedDto
     {
         public string Id { get; set; }
+
         /// <summary>
         /// Location
         /// </summary>
-        public Location Location { get; set; }
+        public int LocationId { get; set; }
+
+        /// <summary>
+        /// Location
+        /// </summary>
+        public LocationDto Location { get; set; }
 
         /// <summary>
         /// This is Protected or Permissive Phases that occurred in the logs but were not found in your current location.
@@ -88,6 +94,11 @@ namespace Utah.Udot.Atspm.ValueObjects
         /// <summary>
         /// Approaches that were removed from the location
         /// </summary>
-        public ICollection<Approach> RemovedApproaches { get; set; } = new HashSet<Approach>();
+        public List<int> RemovedApproachIds { get; set; } = new List<int>();
+
+        /// <summary>
+        /// Approaches that were removed from the location
+        /// </summary>
+        public List<ApproachDto> RemovedApproaches { get; set; } = new List<ApproachDto>();
     }
 }

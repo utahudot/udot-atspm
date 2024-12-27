@@ -192,7 +192,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Services.Tests
 
             Assert.True(result.RemovedApproaches.Any());
             Assert.True(result.RemovedApproaches.Any(a => a.PermissivePhaseNumber == RemovedApproachPermissivePhase));
-            Assert.Equal(1, result.RemovedApproaches.Count);
+            Assert.Equal(1, result.RemovedApproachIds.Count);
 
             Assert.True(result.LoggedButUnusedDetectorChannels.Any());
             Assert.Equal(LoggedButUnUsedChannels, result.LoggedButUnusedDetectorChannels);
@@ -209,9 +209,6 @@ namespace Utah.Udot.Atspm.ConfigApi.Services.Tests
             Assert.True(result.LoggedButUnusedProtectedOrPermissivePhases.Any());
             Assert.Equal(LoggedButUnUsedPermissiveOrProtected, result.LoggedButUnusedProtectedOrPermissivePhases);
             Assert.Equal(LoggedButUnUsedPermissiveOrProtected.Count, result.LoggedButUnusedProtectedOrPermissivePhases.Count);
-
-            Location newLocation = result.Location;
-
         }
 
         public void Dispose()

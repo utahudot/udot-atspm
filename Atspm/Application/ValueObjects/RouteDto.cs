@@ -17,7 +17,7 @@
 
 using Utah.Udot.Atspm.Data.Enums;
 
-namespace Utah.Udot.Atspm.ConfigApi.Models
+namespace Utah.Udot.Atspm.ValueObjects
 {
     public class RouteIdDto
     {

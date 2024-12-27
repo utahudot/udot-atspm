@@ -20,8 +20,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Formatter;
 using Microsoft.AspNetCore.OData.Query;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using Utah.Udot.Atspm.Business.Watchdog;
 using Utah.Udot.Atspm.ConfigApi.Models;
 using Utah.Udot.Atspm.ConfigApi.Services;
@@ -140,14 +138,8 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
         {
             try
             {
-                var modLocation = _signalTemplateService.SyncNewLocationDetectorsAndApproaches(key);
-                var serialized = JsonSerializer.Serialize(modLocation, new JsonSerializerOptions
-                {
-                    WriteIndented = true,
-                    ReferenceHandler = ReferenceHandler.Preserve
-                });
-                return Content(serialized, "application/json");
-                //return Ok(modLocation);v
+                TemplateLocationModifiedDto modLocation = _signalTemplateService.SyncNewLocationDetectorsAndApproaches(key);
+                return Ok(modLocation);
             }
             catch (ArgumentException e)
             {
