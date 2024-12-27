@@ -79,7 +79,20 @@ const ExportData = () => {
 
           // Generate the CSV rows
           eventLogData.forEach((eventLog: any) => {
-            const row = headers.map((header) => eventLog[header]).join(',')
+            const row = headers
+              .map((header) => {
+                if (header === 'timestamp') {
+                  return eventLog[header].replace('T', ' ')
+                }
+                if (
+                  typeof eventLog[header] === 'string' &&
+                  eventLog[header].includes(',')
+                ) {
+                  return `"${eventLog[header]}"`
+                }
+                return eventLog[header]
+              })
+              .join(',')
             formattedData += row + '\n'
           })
         } else if (type === 'application/xml') {
