@@ -106,7 +106,7 @@ const ProductsAdmin = () => {
     }
   })
 
-  const headers = ['manufacturer', 'Model', 'Web Page', 'Notes']
+  const headers = ['Manufacturer', 'Model', 'Web Page', 'Notes']
   const headerKeys = ['manufacturer', 'model', 'webPage', 'notes']
 
   return (

@@ -57,12 +57,10 @@ const DeviceConfigModal = ({
   const { data: transportProtocols } = useConfigEnums(
     ConfigEnum.TransportProtocols
   )
-  console.log('config console ', deviceConfiguration)
   const {
     register,
     handleSubmit,
     setValue,
-    control,
     watch,
     formState: { errors },
   } = useForm<DeviceConfigFormData>({
@@ -73,41 +71,26 @@ const DeviceConfigModal = ({
       protocol: deviceConfiguration?.protocol || '',
       port: deviceConfiguration?.port || null,
       directory: deviceConfiguration?.directory || '',
-      connectionTimeout: deviceConfiguration?.connectionTimeout || null,
-      operationTimeout: deviceConfiguration?.operationTimeout || null,
+      connectionTimeout: deviceConfiguration?.connectionTimeout,
+      operationTimeout: deviceConfiguration?.operationTimeout,
       userName: deviceConfiguration?.userName || '',
       password: deviceConfiguration?.password || '',
-      productId: deviceConfiguration?.productId || null,
-      id: deviceConfiguration?.id || null,
+      productId: deviceConfiguration?.productId,
+      id: deviceConfiguration?.id,
     },
   })
-  const defaultValues = {
-    firmware: deviceConfiguration?.firmware || '',
-    notes: deviceConfiguration?.notes || '',
-    protocol: deviceConfiguration?.protocol || '',
-    port: deviceConfiguration?.port || null,
-    directory: deviceConfiguration?.directory || '',
-    connectionTimeout: deviceConfiguration?.connectionTimeout || null,
-    operationTimeout: deviceConfiguration?.operationTimeout || null,
-    userName: deviceConfiguration?.userName || '',
-    password: deviceConfiguration?.password || '',
-    productId: deviceConfiguration?.productId || null,
-    id: deviceConfiguration?.id || null,
-  }
-  console.log('Default Values:', defaultValues)
-  useEffect(() => {
-    if (deviceConfiguration) {
-      // Explicitly set values for Select components
-      setValue('protocol', deviceConfiguration.protocol)
-      setValue('productId', deviceConfiguration.productId)
 
-      // Set other form values
-      Object.entries(deviceConfiguration).forEach(([key, value]) => {
-        if (key !== 'protocol' && key !== 'productId') {
-          setValue(key as keyof DeviceConfigFormData, value)
-        }
-      })
-    }
+  useEffect(() => {
+    if (!deviceConfiguration) return
+
+    setValue('protocol', deviceConfiguration.protocol)
+    setValue('productId', deviceConfiguration.productId)
+
+    Object.entries(deviceConfiguration).forEach(([key, value]) => {
+      if (key !== 'protocol' && key !== 'productId') {
+        setValue(key as keyof DeviceConfigFormData, value)
+      }
+    })
   }, [deviceConfiguration, setValue])
 
   const onSubmit = async (data: DeviceConfigFormData) => {
@@ -118,10 +101,9 @@ const DeviceConfigModal = ({
 
       const sanitizedDevice: Partial<DeviceConfiguration> = {
         ...data,
-        productName: selectedProduct ? selectedProduct.model : '',
+        productName: selectedProduct?.model ? selectedProduct?.model : '',
       }
 
-      console.log('Sanitized Device Data:', sanitizedDevice) // Log the sanitized data
       onSave(sanitizedDevice as DeviceConfiguration)
       onClose()
     } catch (error) {
@@ -163,8 +145,8 @@ const DeviceConfigModal = ({
               id="protocol-select"
               label="Protocol"
               error={!!errors.protocol}
-              value={watch('protocol') || ''} // Add value prop
-              onChange={(e) => setValue('protocol', e.target.value)} // Add onChange handler
+              value={watch('protocol') || ''}
+              onChange={(e) => setValue('protocol', e.target.value)}
             >
               {transportProtocols?.map((protocol) => (
                 <MenuItem key={protocol.value} value={protocol.name}>
