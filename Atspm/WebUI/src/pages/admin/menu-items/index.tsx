@@ -113,7 +113,7 @@ const MenuItemsAdmin = () => {
       children: obj.children,
     }
   })
-
+  console.log("Menu Items", menuItems)
   const sortMenuItems = (menuItems) => {
     const baseObjects = []
     const childObjects = []
@@ -165,7 +165,7 @@ const MenuItemsAdmin = () => {
         pageName="Menu Item"
         headers={headers}
         headerKeys={headerKeys}
-        data={sortedFilteredData}
+        data={menuItems}
         hasEditPrivileges={hasGeneralEditClaim}
         hasDeletePrivileges={hasGeneralDeleteClaim}
         editModal={
