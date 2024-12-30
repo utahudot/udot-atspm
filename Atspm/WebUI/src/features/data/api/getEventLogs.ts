@@ -31,7 +31,6 @@ export type EventLog = {
 export type GetEventLogsParams = {
   locationIdentifier: string
   start: string
-  end: string
   ResponseFormat: ResponseFormat
 }
 
@@ -46,7 +45,6 @@ const headers: AxiosHeaders = new AxiosHeaders({
 export const getEventLogs = async (
   locationIdentifier: string,
   start: string,
-  end: string,
   ResponseFormat: ResponseFormat
 ): Promise<EventLog[]> => {
   let acceptHeader = ''
@@ -64,7 +62,7 @@ export const getEventLogs = async (
   }
 
   return await dataAxios.get(
-    `EventLog/GetArchivedEvents/${locationIdentifier}?start=${start}&end=${end}`,
+    `EventLog/GetArchivedEvents/${locationIdentifier}?start=${start}`,
     { headers }
   )
 }
@@ -74,7 +72,6 @@ type QueryFnType = typeof getEventLogs
 type UseEventLogsOptions = {
   locationIdentifier: string
   start: string
-  end: string
   ResponseFormat: ResponseFormat
   config?: QueryConfig<QueryFnType>
 }
@@ -82,14 +79,13 @@ type UseEventLogsOptions = {
 export const useEventLogs = ({
   locationIdentifier,
   start,
-  end,
   ResponseFormat,
   config,
 }: UseEventLogsOptions) => {
   return useQuery<ExtractFnReturnType<QueryFnType>>({
     ...config,
     enabled: false,
-    queryKey: ['eventLogs', locationIdentifier, start, end, ResponseFormat],
-    queryFn: () => getEventLogs(locationIdentifier, start, end, ResponseFormat),
+    queryKey: ['eventLogs', locationIdentifier, start, ResponseFormat],
+    queryFn: () => getEventLogs(locationIdentifier, start, ResponseFormat),
   })
 }
