@@ -55,7 +55,6 @@ const UsersAdmin = () => {
     try {
       await deleteMutation(id)
       refetchUsers()
-      console.log('User deleted successfully')
     } catch (error) {
       console.error('Error deleting user:', error)
     }

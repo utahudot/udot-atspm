@@ -37,7 +37,6 @@ const DevicesAdmin = () => {
 
   const { data: locationsData } = useLatestVersionOfAllLocations()
   const locations = locationsData?.value
-  console.log('locations ', devices)
   const {
     data: deviceConfigurationData,
     isLoading,

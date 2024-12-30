@@ -118,7 +118,7 @@ const DeviceConfigModal = ({
       </DialogTitle>
 
       <DialogContent>
-        <form onSubmit={handleSubmit(onSubmit, () => console.log('POOP'))}>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <TextField
             {...register('firmware')}
             autoFocus
@@ -233,8 +233,12 @@ const DeviceConfigModal = ({
               id="product-select"
               label="Product"
               error={!!errors.productId}
-              value={watch('productId') || ''} // Add value prop
-              onChange={(e) => setValue('productId', Number(e.target.value))} // Add onChange handler
+              value={watch('productId') || ''}
+              onChange={(e) =>
+                setValue('productId', Number(e.target.value), {
+                  shouldValidate: true,
+                })
+              } 
             >
               {productData?.value.map((product) => (
                 <MenuItem key={product.id} value={product.id}>

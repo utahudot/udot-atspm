@@ -1,6 +1,6 @@
 import TextEditor from '@/components/TextEditor/JoditTextEditor'
-import { zodResolver } from '@hookform/resolvers/zod'
 import { Faq } from '@/features/faq/types'
+import { zodResolver } from '@hookform/resolvers/zod'
 import {
   Box,
   Button,
@@ -18,7 +18,18 @@ import { z } from 'zod'
 
 const schema = z.object({
   header: z.string().min(1, { message: 'Name is required' }),
-  body: z.string().optional(),
+  body: z
+    .string()
+    .transform((str) => {
+      const textContent = str
+        .replace(/<[^>]*>/g, '')
+        .replace(/&nbsp;/g, ' ')
+        .trim()
+      return textContent
+    })
+    .refine((str) => str.length > 0, {
+      message: 'Body content is required',
+    }),
   displayOrder: z.number().optional(),
 })
 
@@ -31,7 +42,6 @@ interface ModalProps {
   onSave: (faq: Faq) => void
 }
 
-
 const FaqEditorModal: React.FC<ModalProps> = ({
   data: faq,
   isOpen,
@@ -39,11 +49,12 @@ const FaqEditorModal: React.FC<ModalProps> = ({
   onSave,
 }) => {
   const [createOrEditText, setCreateOrEditText] = useState('')
+  const [isClosing, setIsClosing] = useState(false) // Add this state
 
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, touchedFields, isSubmitted },
     setValue,
   } = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -54,13 +65,13 @@ const FaqEditorModal: React.FC<ModalProps> = ({
     },
   })
 
-  useEffect(()=>{
+  useEffect(() => {
     if (faq?.id !== undefined) {
-      setCreateOrEditText('Edit');
+      setCreateOrEditText('Edit')
     } else {
-      setCreateOrEditText('Create');
+      setCreateOrEditText('Create')
     }
-  },[faq])
+  }, [faq])
 
   const onSubmit: SubmitHandler<FormData> = (data) => {
     const updatedfaq = { ...faq, ...data } as Faq
@@ -68,8 +79,27 @@ const FaqEditorModal: React.FC<ModalProps> = ({
     onClose()
   }
 
+  //NEEDED for dialog to properly close without TextEditor errors.
+  const handleClose = (event: {}, reason: string) => {
+    if (reason === 'backdropClick') {
+      setIsClosing(true)
+      setTimeout(() => {
+        onClose()
+        setIsClosing(false)
+      }, 0)
+    } else {
+      onClose()
+    }
+  }
+
   return (
-    <Dialog open={isOpen} onClose={onClose} key={isOpen ? 'open' : 'closed'} maxWidth="md" fullWidth>
+    <Dialog
+      open={isOpen}
+      onClose={handleClose}
+      key={isOpen ? 'open' : 'closed'}
+      maxWidth="md"
+      fullWidth
+    >
       <DialogTitle id="form-dialog-title">{createOrEditText} FAQ</DialogTitle>
 
       <DialogContent>
@@ -81,7 +111,12 @@ const FaqEditorModal: React.FC<ModalProps> = ({
             marginBottom: 2,
           }}
         >
-          <FormControl fullWidth margin="normal" sx={{ flex: 7 }} error={!!errors.header}>
+          <FormControl
+            fullWidth
+            margin="normal"
+            sx={{ flex: 7 }}
+            error={!!errors.header}
+          >
             <InputLabel htmlFor="faq-header">Header</InputLabel>
             <OutlinedInput
               id="faq-header"
@@ -89,9 +124,13 @@ const FaqEditorModal: React.FC<ModalProps> = ({
               label="Header"
               error={!!errors.header}
             />
-            {errors.header && <span>{errors.header.message}</span>}
           </FormControl>
-          <FormControl fullWidth margin="normal" sx={{ flex: 1 }} error={!!errors.displayOrder}>
+          <FormControl
+            fullWidth
+            margin="normal"
+            sx={{ flex: 1 }}
+            error={!!errors.displayOrder}
+          >
             <InputLabel htmlFor="faq-display-order">Display Order</InputLabel>
             <OutlinedInput
               id="faq-display-order"
@@ -100,13 +139,25 @@ const FaqEditorModal: React.FC<ModalProps> = ({
               type="number"
               inputProps={{ style: { textAlign: 'center' } }}
             />
-            {errors.displayOrder && <span>{errors.displayOrder.message}</span>}
           </FormControl>
         </Box>
-        <TextEditor 
-          data={faq?.body || ''} 
-          onChange={(value: string) => setValue('body', value)}
+        <TextEditor
+          data={faq?.body || ''}
+          onChange={(value: string) => {
+            setValue('body', value, {
+              shouldValidate: isSubmitted,
+            })
+          }}
+          error={isSubmitted && !!errors.body}
+          isDisabled={isClosing}
         />
+        {errors.body && (
+          <span
+            style={{ color: '#d32f2f', fontSize: '0.75rem', marginTop: '3px' }}
+          >
+            {errors.body.message}
+          </span>
+        )}
       </DialogContent>
       <DialogActions>
         <Box sx={{ marginRight: '1rem', marginBottom: '.5rem' }}>
