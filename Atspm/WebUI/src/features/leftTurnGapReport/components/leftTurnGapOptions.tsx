@@ -34,7 +34,6 @@ export const LeftTurnGapOptions = ({
   }
 
   useEffect(() => {
-    console.log('approaches', approaches)
     if (approaches) {
       const newApproachIds = approaches.map((item) => item.id)
       setApproachIds(newApproachIds)

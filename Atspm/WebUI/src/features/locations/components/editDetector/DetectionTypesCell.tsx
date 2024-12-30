@@ -1,4 +1,5 @@
-import { DetectionType } from '@/features/locations/types'
+import { useGetDetectionType } from '@/api/config/aTSPMConfigurationApi'
+import { DetectionType, Detector } from '@/features/locations/types'
 import {
   Avatar,
   AvatarGroup,
@@ -13,103 +14,30 @@ import {
 } from '@mui/material'
 import React, { useState } from 'react'
 
-const options: Record<string, DetectionType> = {
-  LLC: {
-    id: 'LLC',
-    description: 'Lane-by-lane Count',
-    displayOrder: 4,
-    abbreviation: 'LLC',
-  },
-  LLS: {
-    id: 'LLS',
-    description: 'Lane-by-lane with Speed Restriction',
-    displayOrder: 5,
-    abbreviation: 'LLS',
-  },
-  SBP: {
-    id: 'SBP',
-    description: 'Stop Bar Presence',
-    displayOrder: 6,
-    abbreviation: 'SBP',
-  },
-  AP: {
-    id: 'AP',
-    description: 'Advanced Presence',
-    displayOrder: 7,
-    abbreviation: 'AP',
-  },
-  AC: {
-    id: 'AC',
-    description: 'Advanced Count',
-    displayOrder: 2,
-    abbreviation: 'AC',
-  },
-  AS: {
-    id: 'AS',
-    description: 'Advanced Speed',
-    displayOrder: 3,
-    abbreviation: 'AS',
-  },
-  IQ: {
-    id: 'IQ',
-    description: 'Intermediate Queue',
-    displayOrder: 10,
-    abbreviation: 'IQ',
-  },
-  EQ: {
-    id: 'EQ',
-    description: 'Excessive Queue',
-    displayOrder: 11,
-    abbreviation: 'EQ',
-  },
-}
-
 interface DetectionTypesProps {
-  detectionTypes: string
-  onUpdate?: (newDetectionTypes: string[]) => void
+  detector: Detector
+  onUpdate?: (newDetectionTypes: DetectionType[]) => void
   readonly?: boolean
 }
 
 const DetectionTypesCell = ({
-  detectionTypes,
+  detector,
   onUpdate,
   readonly,
 }: DetectionTypesProps) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const theme = useTheme()
 
-  const descriptionToAbbreviation = React.useMemo(
-    () =>
-      Object.values(options).reduce(
-        (acc, option) => {
-          acc[option.description] = option.abbreviation
-          return acc
-        },
-        {} as Record<string, string>
-      ),
-    []
-  )
+  const { data } = useGetDetectionType()
 
-  const abbreviationToDescription = React.useMemo(
-    () =>
-      Object.values(options).reduce(
-        (acc, option) => {
-          acc[option.abbreviation] = option.description
-          return acc
-        },
-        {} as Record<string, string>
-      ),
-    []
-  )
+  const detectionTypes = data?.value as unknown as DetectionType[]
 
   const valueAbbreviations = new Set(
-    detectionTypes.split(', ').map((desc) => descriptionToAbbreviation[desc])
+    detector.detectionTypes?.map((dt) => dt.abbreviation)
   )
 
   const handleClick = (event: React.MouseEvent<HTMLDivElement>) => {
-    if (!readonly) {
-      setAnchorEl(event.currentTarget)
-    }
+    setAnchorEl(event.currentTarget)
   }
 
   const handleClose = () => {
@@ -117,15 +45,22 @@ const DetectionTypesCell = ({
   }
 
   const handleSelect = (abbreviation: string) => {
-    const description = abbreviationToDescription[abbreviation]
-    const isSelected = valueAbbreviations.has(abbreviation)
+    const selectedOption = Object.values(detectionTypes).find(
+      (option) => option.abbreviation === abbreviation
+    )
+    if (selectedOption) {
+      const isSelected = valueAbbreviations.has(abbreviation)
+      const newDetectionTypes = isSelected
+        ? detector.detectionTypes.filter(
+            (dt) => dt.abbreviation !== abbreviation
+          )
+        : [...detector.detectionTypes, selectedOption]
 
-    const newDetectionTypes = isSelected
-      ? detectionTypes.filter((desc) => desc !== description)
-      : [...detectionTypes, description]
-
-    if (onUpdate) onUpdate(newDetectionTypes)
+      if (onUpdate) onUpdate(newDetectionTypes)
+    }
   }
+
+  if (!detectionTypes) return null
 
   return (
     <TableCell
@@ -143,11 +78,11 @@ const DetectionTypesCell = ({
         onClick={handleClick}
       >
         <AvatarGroup max={12}>
-          {Object.entries(options).map(([abbreviation, option]) => (
+          {detectionTypes.map((option) => (
             <Tooltip key={option.id} title={option.description}>
               <Avatar
                 sx={{
-                  bgcolor: valueAbbreviations.has(abbreviation)
+                  bgcolor: valueAbbreviations.has(option.abbreviation)
                     ? theme.palette.primary.main
                     : theme.palette.grey[400],
                   width: 26,
@@ -160,7 +95,7 @@ const DetectionTypesCell = ({
                   width: { style: { width: 26, height: 26, fontSize: '11px' } },
                 }}
               >
-                {abbreviation}
+                {option.abbreviation}
               </Avatar>
             </Tooltip>
           ))}
@@ -172,7 +107,7 @@ const DetectionTypesCell = ({
           open={Boolean(anchorEl)}
           onClose={handleClose}
         >
-          {Object.values(options).map((option) => (
+          {Object.values(detectionTypes).map((option) => (
             <MenuItem
               key={option.id}
               onClick={() => handleSelect(option.abbreviation)}
