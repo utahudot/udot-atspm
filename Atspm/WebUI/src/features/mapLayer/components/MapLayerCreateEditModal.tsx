@@ -82,7 +82,6 @@ export const MapLayerCreateEditModal = ({
   const isEditMode = !!mapLayer?.name
   const previousServiceType = useRef<string>()
 
-  console.log('Map Layer ', mapLayer)
   const {
     control,
     handleSubmit,

@@ -43,8 +43,6 @@ const AreaEditorModal = ({
     },
   })
 
-  console.log('area', area)
-
   useEffect(() => {
     if (area) {
       setValue('name', area.name)

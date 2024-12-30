@@ -66,14 +66,11 @@ const RoleModal: React.FC<ModalProps> = ({ isOpen, onSave, onClose, data }) => {
   }, [watchedRoleName, isNewRole, data])
 
   const handleClaimsChange = (_role: string, claims: string[]) => {
-    console.log('Claims changed:', claims)
     setUserClaims(claims)
     setTempClaims(claims)
-    console.log('userclaims:', claims)
   }
 
   const onSubmit = (formData: RoleFormData) => {
-    console.log('Submitting with claims:', tempClaims)
     onSave({
       roleName: formData.roleName,
       claims: tempClaims,

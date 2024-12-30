@@ -42,9 +42,7 @@ const RoutesAdmin = () => {
         data: { id, name },
         apiCall,
       })
-      console.log('new route create', newRoute.id)
       navigateToPage(`/admin/routes/${newRoute.id}/edit`)
-      console.log('new route create 2', newRoute.id)
 
       refetchRoutes()
     } catch (error) {

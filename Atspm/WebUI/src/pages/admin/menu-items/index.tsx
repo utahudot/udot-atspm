@@ -113,7 +113,6 @@ const MenuItemsAdmin = () => {
       children: obj.children,
     }
   })
-  console.log("Menu Items", menuItems)
   const sortMenuItems = (menuItems) => {
     const baseObjects = []
     const childObjects = []

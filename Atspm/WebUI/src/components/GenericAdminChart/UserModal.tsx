@@ -1,5 +1,5 @@
-import { useEditUsers } from '@/features/identity/api/editUsers'
 import { useGetRoles } from '@/features/identity/api/getRoles'
+import { zodResolver } from '@hookform/resolvers/zod'
 import {
   Box,
   Button,
@@ -13,13 +13,14 @@ import {
   InputLabel,
   MenuItem,
   Select,
-  SelectChangeEvent,
   TextField,
 } from '@mui/material'
-import React, { useEffect, useState } from 'react'
+import { useEffect } from 'react'
+import { Controller, useForm } from 'react-hook-form'
+import { z } from 'zod'
 
 interface User {
-  id: string
+  userId: string
   firstName: string
   lastName: string
   userName: string
@@ -30,174 +31,185 @@ interface User {
 
 interface ModalProps {
   isOpen: boolean
-  onClose?: () => void
+  onClose: () => void
   data: User | null
   onSave: (user: User) => void
 }
 
+// Define Zod schema
+const userSchema = z.object({
+  userId: z.string(),
+  firstName: z.string().min(1, { message: 'First name required' }),
+  lastName: z.string().min(1, { message: 'Last name required' }),
+  userName: z.string().min(1, { message: 'Username is required' }),
+  agency: z.string().min(1, { message: 'Agency required' }),
+  email: z.string().email('Please enter a valid email address'),
+  roles: z.array(z.string()),
+})
+
+type UserFormData = z.infer<typeof userSchema>
+
 const UserModal: React.FC<ModalProps> = ({ isOpen, onClose, data, onSave }) => {
-  const [user, setUser] = useState<User | null>(null)
-  const [usernameError, setUsernameError] = useState('')
-  const [emailError, setEmailError] = useState('')
   const { data: roles, isLoading } = useGetRoles()
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<UserFormData>({
+    resolver: zodResolver(userSchema),
+    defaultValues: {
+      userId: data?.userId || '',
+      firstName: data?.firstName || '',
+      lastName: data?.lastName || '',
+      userName: data?.userName || '',
+      agency: data?.agency || '',
+      email: data?.email || '',
+      roles: data?.roles || [],
+    },
+  })
 
+  // Reset form when data changes
   useEffect(() => {
-    setUser(data)
-  }, [data])
-
-  const handleChange = (
-    event: React.ChangeEvent<{ name?: string; value: unknown }>
-  ) => {
-    const { name, value } = event.target
-    setUser((prevUser) => {
-      if (prevUser) {
-        if (name === 'userName') {
-          const usernameRegex = /^[a-zA-Z0-9_]+$/
-          if (!usernameRegex.test(value as string)) {
-            setUsernameError(
-              'Username can only contain letters, numbers, and underscores'
-            )
-          } else {
-            setUsernameError('')
-          }
-        }
-        if (name === 'email') {
-          const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
-          if (!emailRegex.test(value as string)) {
-            setEmailError('Please enter a valid email address')
-          } else {
-            setEmailError('')
-          }
-        }
-        return {
-          ...prevUser,
-          [name as keyof User]: value,
-        }
-      }
-      return prevUser
-    })
-  }
-  const handleRolesChange = (event: SelectChangeEvent<string[]>) => {
-    setUser((prevUser) => {
-      if (prevUser) {
-        return {
-          ...prevUser,
-          roles: event.target.value as string[],
-        }
-      }
-      return prevUser
-    })
-  }
-
-  const handleSubmit = async () => {
-    if (user) {
-      if (usernameError || emailError) {
-        return
-      }
-      try {
-        onSave(user)
-        onClose()
-      } catch (error) {
-        console.error('Error updating user profile:', error)
-      }
+    if (data) {
+      reset(data)
     }
+  }, [data, reset])
+
+  const onSubmit = (formData: UserFormData) => {
+    onSave(formData)
+    onClose()
   }
-  if (isLoading) return <div>conent is loading...</div>
+
+  if (isLoading) return <div>content is loading...</div>
 
   return (
     <Dialog open={isOpen} onClose={onClose}>
-      <DialogTitle>User Details</DialogTitle>
+      <DialogTitle sx={{ fontSize: '1.3rem' }} id="role-permissions-label">
+        User Details
+      </DialogTitle>
       <DialogContent>
-        {user ? (
-          <>
-            <TextField
-              autoFocus
-              margin="dense"
-              name="firstName"
-              label="First Name"
-              type="text"
-              fullWidth
-              value={user.firstName}
-              onChange={handleChange}
-            />
-            <TextField
-              autoFocus
-              margin="dense"
-              name="lastName"
-              label="Last Name"
-              type="text"
-              fullWidth
-              value={user.lastName}
-              onChange={handleChange}
-            />
-            <TextField
-              margin="dense"
-              name="userName"
-              label="Username"
-              type="text"
-              fullWidth
-              value={user.userName}
-              onChange={handleChange}
-              error={Boolean(usernameError)}
-              helperText={usernameError}
-            />
-            <TextField
-              margin="dense"
-              name="agency"
-              label="Agency"
-              type="text"
-              fullWidth
-              value={user.agency}
-              onChange={handleChange}
-            />
-            <TextField
-              margin="dense"
-              name="email"
-              label="Email"
-              type="email"
-              fullWidth
-              value={user.email}
-              onChange={handleChange}
-              error={Boolean(emailError)}
-              helperText={emailError}
-            />
-            <FormControl fullWidth margin="dense">
-              <InputLabel>Roles</InputLabel>
-              <Select
-                multiple
-                label="Roles"
-                value={user.roles}
-                onChange={handleRolesChange}
-                renderValue={(selected) => (
-                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                    {selected.map((value) => (
-                      <Chip
-                        key={value}
-                        label={value.replace(/([A-Z])/g, ' $1').trim()}
-                      />
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <Controller
+            name="firstName"
+            control={control}
+            render={({ field }) => (
+              <TextField
+                {...field}
+                autoFocus
+                margin="dense"
+                label="First Name"
+                type="text"
+                fullWidth
+                error={!!errors.firstName}
+                helperText={errors.firstName?.message}
+              />
+            )}
+          />
+
+          <Controller
+            name="lastName"
+            control={control}
+            render={({ field }) => (
+              <TextField
+                {...field}
+                margin="dense"
+                label="Last Name"
+                type="text"
+                fullWidth
+                error={!!errors.lastName}
+                helperText={errors.lastName?.message}
+              />
+            )}
+          />
+
+          <Controller
+            name="userName"
+            control={control}
+            render={({ field }) => (
+              <TextField
+                {...field}
+                margin="dense"
+                label="Username"
+                type="text"
+                fullWidth
+                error={!!errors.userName}
+                helperText={errors.userName?.message}
+              />
+            )}
+          />
+
+          <Controller
+            name="agency"
+            control={control}
+            render={({ field }) => (
+              <TextField
+                {...field}
+                margin="dense"
+                label="Agency"
+                type="text"
+                fullWidth
+                error={!!errors.agency}
+                helperText={errors.agency?.message}
+              />
+            )}
+          />
+
+          <Controller
+            name="email"
+            control={control}
+            render={({ field }) => (
+              <TextField
+                {...field}
+                margin="dense"
+                label="Email"
+                type="email"
+                fullWidth
+                error={!!errors.email}
+                helperText={errors.email?.message}
+              />
+            )}
+          />
+
+          <Controller
+            name="roles"
+            control={control}
+            render={({ field }) => (
+              <FormControl fullWidth margin="dense">
+                <InputLabel>Roles</InputLabel>
+                <Select
+                  {...field}
+                  multiple
+                  label="Roles"
+                  renderValue={(selected) => (
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                      {selected.map((value) => (
+                        <Chip
+                          key={value}
+                          label={value.replace(/([A-Z])/g, ' $1').trim()}
+                        />
+                      ))}
+                    </Box>
+                  )}
+                >
+                  {roles
+                    ?.sort((a, b) => a.role.localeCompare(b.role))
+                    .map((role) => (
+                      <MenuItem key={role.role} value={role.role}>
+                        <Checkbox checked={field.value.includes(role.role)} />
+                        {role.role.replace(/([A-Z])/g, ' $1').trim()}
+                      </MenuItem>
                     ))}
-                  </Box>
-                )}
-              >
-                {roles
-                  ?.sort((a, b) => a.role.localeCompare(b.role))
-                  .map((role) => (
-                    <MenuItem key={role.role} value={role.role}>
-                      <Checkbox checked={user.roles.includes(role.role)} />
-                      {role.role.replace(/([A-Z])/g, ' $1').trim()}
-                    </MenuItem>
-                  ))}
-              </Select>
-            </FormControl>
-          </>
-        ) : (
-          <div>Loading...</div>
-        )}
+                </Select>
+              </FormControl>
+            )}
+          />
+        </form>
       </DialogContent>
       <DialogActions>
         <Box sx={{ marginRight: '1rem', marginBottom: '.5rem' }}>
           <Button onClick={onClose}>Cancel</Button>
-          <Button variant="contained" onClick={handleSubmit}>
+          <Button variant="contained" onClick={handleSubmit(onSubmit)}>
             Update User
           </Button>
         </Box>
