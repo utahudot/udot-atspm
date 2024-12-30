@@ -20,7 +20,7 @@ using Utah.Udot.Atspm.Repositories;
 
 namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
 {
-    public class WatchDogIgnoreEventService
+    public class WatchDogIgnoreEventService : IWatchDogIgnoreEventService
     {
         private readonly IWatchDogIgnoreEventRepository watchDogIgnoreEventLogRepository;
         private readonly IWatchDogEventLogRepository watchDogEventLogRepository;

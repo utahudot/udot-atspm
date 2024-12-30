@@ -29,6 +29,13 @@ namespace Utah.Udot.Atspm.Specifications
             ApplyOrderBy(o => o.ArchiveDate);
         }
 
+        public CompressedEventLogSpecification(string locationId, DateOnly date) : base()
+        {
+            Criteria = c => c.LocationIdentifier == locationId && c.ArchiveDate >= date && c.ArchiveDate <= date;
+
+            ApplyOrderBy(o => o.ArchiveDate);
+        }
+
         public CompressedEventLogSpecification(string locationId, DateOnly startDate, DateOnly endDate) : base()
         {
             Criteria = c => c.LocationIdentifier == locationId && c.ArchiveDate >= startDate && c.ArchiveDate <= endDate;
@@ -39,6 +46,13 @@ namespace Utah.Udot.Atspm.Specifications
         public CompressedEventLogSpecification(string locationId, DateOnly startDate, DateOnly endDate, int deviceId) : base()
         {
             Criteria = c => c.LocationIdentifier == locationId && c.ArchiveDate >= startDate && c.ArchiveDate <= endDate && c.DeviceId == deviceId;
+
+            ApplyOrderBy(o => o.ArchiveDate);
+        }
+
+        public CompressedEventLogSpecification(string locationId, DateOnly date, int deviceId) : base()
+        {
+            Criteria = c => c.LocationIdentifier == locationId && c.ArchiveDate >= date && c.ArchiveDate <= date && c.DeviceId == deviceId;
 
             ApplyOrderBy(o => o.ArchiveDate);
         }

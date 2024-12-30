@@ -24,12 +24,16 @@ namespace DatabaseInstaller.Commands
         public DatabaseInstallerCommands() : base("DatabaseInstaller utility")
         {
             // Initialize and add the UpdateCommand
-            var updateCommand = new UpdateCommand();
-            AddCommand(updateCommand);
-            var copyCommand = new CopyConfigurationCommand();
-            AddCommand(copyCommand);
-            var transferCommand = new MoveEventLogsSqlServerToPostgresCommand();
-            AddCommand(transferCommand);
+            AddCommand(UpdateCommand);
+            AddCommand(CopyConfigurationCommand);
+            AddCommand(MoveEventLogsSqlServerToPostgresCommand);
+            AddCommand(TransferEventLogsCommand);
         }
+
+        public UpdateCommand UpdateCommand { get; set; } = new UpdateCommand();
+        public TransferConfigCommand CopyConfigurationCommand { get; set; } = new TransferConfigCommand();
+        public MoveEventLogsSqlServerToPostgresCommand MoveEventLogsSqlServerToPostgresCommand { get; set; } = new MoveEventLogsSqlServerToPostgresCommand();
+        public TransferEventLogsCommand TransferEventLogsCommand { get; set; } = new TransferEventLogsCommand();
+        
     }
 }
