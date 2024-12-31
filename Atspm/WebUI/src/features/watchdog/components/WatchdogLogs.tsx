@@ -193,7 +193,6 @@ const WatchDogLogs = () => {
     const response = await Promise.all(
       selectedRows.map(async (rowId) => {
         const eventToIgnore = clickedRows?.[rowId]
-        console.log('eventToIgnore', data)
         if (!eventToIgnore || !data.start || !data.end)
           return { rowId, success: false, error: 'Event not found' }
 
