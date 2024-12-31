@@ -32,13 +32,11 @@ namespace DatabaseInstaller.Commands
             AddOption(SourceOption);
             AddOption(DeleteOption);
             AddOption(UpdateLocationsOption);
-            AddOption(UpdateGeneralConfigurationOption);
         }
 
         public Option<string> SourceOption { get; set; } = new("--source", "Connection string for the source SQL Server");
         public Option<bool> DeleteOption { get; set; } = new("--delete", "Delete before inserting locations");
-        public Option<bool> UpdateLocationsOption { get; set; } = new("--updateLocations", "Update Locations from target");
-        public Option<bool> UpdateGeneralConfigurationOption { get; set; } = new("--updateGeneral", "Update General configurations");
+        public Option<bool> UpdateLocationsOption { get; set; } = new("--update-locations", "Update Locations from target");
 
         public ModelBinder<TransferConfigCommandConfiguration> GetOptionsBinder()
         {
@@ -47,7 +45,6 @@ namespace DatabaseInstaller.Commands
             binder.BindMemberFromValue(b => b.Source, SourceOption);
             binder.BindMemberFromValue(b => b.Delete, DeleteOption);
             binder.BindMemberFromValue(b => b.UpdateLocations, UpdateLocationsOption);
-            binder.BindMemberFromValue(b => b.UpdateGeneralConfiguration, UpdateGeneralConfigurationOption);
 
             return binder;
         }
