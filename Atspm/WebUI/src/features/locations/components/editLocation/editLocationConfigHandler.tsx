@@ -1,11 +1,10 @@
-import { useGetLocation } from '@/features/locations/api'
-import { sortApproachesByPhaseNumber } from '@/features/locations/components/editApproach/utils/sortApproaches'
 import {
   Approach,
   Detector,
   Location,
-  LocationExpanded,
-} from '@/features/locations/types'
+} from '@/api/config/aTSPMConfigurationApi.schemas'
+import { useGetLocation } from '@/features/locations/api'
+import { sortApproachesByPhaseNumber } from '@/features/locations/components/editApproach/utils/sortApproaches'
 import { useEffect, useState } from 'react'
 
 interface LocationHandlerProps {
@@ -24,9 +23,9 @@ export interface DetectorForConfig extends Detector {
 
 export interface LocationConfigHandler {
   approaches: ApproachForConfig[]
-  expandedLocation: LocationExpanded | null
+  expandedLocation: Location | null
   updateApproaches: (approaches: ApproachForConfig[]) => void
-  updateExpandedLocation: (location: LocationExpanded) => void
+  updateExpandedLocation: (location: Location) => void
   handleAddNewApproach: () => void
   handleLocationEdit: (name: string, value: string) => void
   refetchLocation: () => void
@@ -35,8 +34,9 @@ export interface LocationConfigHandler {
 export const useLocationConfigHandler = ({
   location,
 }: LocationHandlerProps): LocationConfigHandler => {
-  const [expandedLocation, setExpandedLocation] =
-    useState<LocationExpanded | null>(null)
+  const [expandedLocation, setExpandedLocation] = useState<Location | null>(
+    null
+  )
   const [activeLocationId, setActiveLocationId] = useState(location?.id)
   const [approaches, setApproaches] = useState<ApproachForConfig[]>([])
 
@@ -80,7 +80,7 @@ export const useLocationConfigHandler = ({
 
   const addNewApproach = () => {
     const newApproach: Partial<ApproachForConfig> = {
-      id: crypto.randomUUID(),
+      id: parseInt(crypto.randomUUID()),
       description: 'New Approach',
       isNew: true,
       detectors: [],
@@ -91,7 +91,7 @@ export const useLocationConfigHandler = ({
       permissivePhaseNumber: null,
       pedestrianPhaseNumber: null,
       pedestrianDetectors: '',
-      locationId: parseInt((expandedLocation as LocationExpanded).id),
+      locationId: expandedLocation?.id,
       directionType: {
         id: '0',
         abbreviation: 'NA',
@@ -118,7 +118,7 @@ export const useLocationConfigHandler = ({
     },
     handleLocationEdit(name, value) {
       setExpandedLocation({
-        ...(expandedLocation as LocationExpanded),
+        ...expandedLocation,
         [name as string]: value,
       })
     },

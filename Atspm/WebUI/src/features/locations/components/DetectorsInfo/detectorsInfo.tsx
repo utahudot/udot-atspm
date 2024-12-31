@@ -96,10 +96,11 @@ const detectorsHeaders: GridColDef[] = [
     ...defaults,
     field: 'detectionTypes',
     headerName: 'Detection Types',
-    minWidth: 230,
+    minWidth: 320,
     renderCell: (params) => {
       if (!params.value) return null
-      return <DetectionTypesCell detectionTypes={params.value} readonly />
+      console.log('params.value', params)
+      return <DetectionTypesCell detector={params.row} readonly />
     },
   },
   {
@@ -234,9 +235,7 @@ function DetectorsInfo({ location }: DetectorsInfoProps) {
       phase: detector.approach?.protectedPhaseNumber,
       permPhase: detector.approach?.permissivePhaseNumber,
       overlap: detector.approach?.isProtectedPhaseOverlap,
-      detectionTypes: detector.detectionTypes
-        .map((dt) => dt.description)
-        .join(', '),
+      detectionTypes: detector.detectionTypes,
       detectionHardware: detector.detectionHardware,
       latencyCorrection: detector.latencyCorrection,
       movementType: detector.movementType,
