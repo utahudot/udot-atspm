@@ -11,7 +11,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AppProps } from 'next/app'
 import Head from 'next/head'
 import { Hydrate, QueryClient, QueryClientProvider } from 'react-query'
-
+import { ReactQueryDevtools } from 'react-query/devtools'
 export default function App({ Component, pageProps }: AppProps) {
   const [theme, colorMode] = useMode()
   const queryClient = new QueryClient()
@@ -31,6 +31,9 @@ export default function App({ Component, pageProps }: AppProps) {
                   />
                 </Head>
                 <Component {...pageProps} />
+                {process.env.NODE_ENV === 'development' && (
+                  <ReactQueryDevtools initialIsOpen={false} />
+                )}
               </Layout>
             </ThemeProvider>
           </ColorModeContext.Provider>

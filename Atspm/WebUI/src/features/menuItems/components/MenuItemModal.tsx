@@ -1,6 +1,6 @@
-// import { useGetMenuItems } from '@/features/links/api/getMenuItems'
-// import { MenuItems } from '@/features/links/types/linkDto'
-
+import { useGetMenuItems } from '@/features/menuItems/api/getMenuItems'
+import { MenuItems } from '@/features/menuItems/types/linkDto'
+import { zodResolver } from '@hookform/resolvers/zod'
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline'
 import {
   Button,
@@ -15,263 +15,192 @@ import {
   TextField,
   Tooltip,
 } from '@mui/material'
-import React, { forwardRef, useEffect, useMemo, useState } from 'react'
-import { useGetMenuItems } from '../api/getMenuItems'
-import { MenuItems } from '../types/linkDto'
+import React, { useEffect, useMemo } from 'react'
+import { Controller, useForm } from 'react-hook-form'
+import { z } from 'zod'
 
 interface ModalProps {
-  open: boolean
-  onClose: () => void
-  data: MenuItems | null
-  onCreate: (menuItem: MenuItems) => void
-  onEdit: (menuItem: MenuItems) => void
+  isOpen: boolean
+  data?: MenuItems
   onSave: (menuItem: MenuItems) => void
+  onClose: () => void
 }
 
-const MenuItemsModal = forwardRef(
-  ({ open, onClose, data, onCreate, onSave, onEdit }: ModalProps, ref) => {
-    const { data: menuItemsData } = useGetMenuItems()
+const menuItemSchema = z.object({
+  id: z.number().optional(),
+  name: z.string().min(1, 'Name is required'),
+  icon: z.string().optional(),
+  displayOrder: z.coerce
+    .number()
+    .int()
+    .min(0, 'Display order must be a non-negative integer'),
+  link: z.string().optional(),
+  parentId: z.number().nullable().optional(),
+  children: z.array(z.any()).optional(), // Adjust this based on actual structure if needed
+})
 
-    const [errors, setErrors] = useState({
-      name: false,
-      link: false,
-      parentId: false,
-    })
+type MenuItemFormData = z.infer<typeof menuItemSchema>
 
-    const [menuItem, setMenuItem] = useState<MenuItems | null>(null)
+const MenuItemsModal: React.FC<ModalProps> = ({
+  isOpen,
+  onClose,
+  data,
+  onSave,
+}) => {
+  const { data: menuItemsData } = useGetMenuItems()
+  const { control, handleSubmit, setValue, watch } = useForm<MenuItemFormData>({
+    resolver: zodResolver(menuItemSchema),
+    defaultValues: data || {
+      id: 0,
+      name: '',
+      icon: '',
+      displayOrder: 0,
+      link: '',
+      parentId: null,
+      children: [],
+    },
+  })
 
-    useEffect(() => {
-      if (data) {
-        setMenuItem(data)
-      } else {
-        setMenuItem({
-          id: 0,
-          name: '',
-          icon: '',
-          displayOrder: 0,
-          link: '',
-          document: null,
-          parentId: null,
-          children: [],
-        })
-      }
-    }, [data])
-
-    const handleChange = (
-      event: React.ChangeEvent<{ name?: string; value: unknown }>
-    ) => {
-      const { name, value } = event.target
-      setMenuItem((prevMenuItem) => {
-        if (prevMenuItem) {
-          let newValue: unknown = value
-
-          if (name === 'parentId') {
-            newValue = value === '' ? null : Number(value)
-          } else if (name === 'displayOrder') {
-            newValue = value === '' ? 0 : Number(value)
-          } else {
-            newValue = value
-          }
-
-          return {
-            ...prevMenuItem,
-            [name as keyof MenuItems]: newValue,
-          }
-        }
-        return prevMenuItem
+  useEffect(() => {
+    if (data) {
+      Object.entries(data).forEach(([key, value]) => {
+        setValue(
+          key as keyof MenuItemFormData,
+          key === 'displayOrder' ? Number(value) : value
+        )
       })
-
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        [name as keyof typeof errors]: false,
-      }))
+    } else {
+      setValue('id', 0)
+      setValue('name', '')
+      setValue('icon', '')
+      setValue('displayOrder', 0)
+      setValue('link', '')
+      setValue('parentId', null)
+      setValue('children', [])
     }
+  }, [data, setValue])
 
-    const handleSubmit = async () => {
-      if (menuItem) {
-        const newErrors = {
-          name: !menuItem.name,
-          link: false,
-          displayOrder: !menuItem.displayOrder,
-          parentId: false,
-        }
-        setErrors(newErrors)
-
-        if (!menuItem.name || !menuItem.displayOrder) {
-          return
-        }
-
-        // Check if the item has children and parentId is null
-        const children = menuItemsData?.value.filter(
-          (item: MenuItems) => item.parentId === menuItem.id
-        )
-        if (
-          children &&
-          children.length > 0 &&
-          menuItem.parentId === null &&
-          menuItem.link
-        ) {
-          setErrors({
-            ...newErrors,
-            link: true,
-          })
-          return
-        }
-
-        // Check if the item has children and is being added to a parentId
-        if (children && children.length > 0 && menuItem.parentId !== null) {
-          setErrors({
-            ...newErrors,
-            parentId: true,
-          })
-          return
-        }
-
-        // Check if the selected parent item has a link
-        const parentItem = menuItemsData?.value.find(
-          (item: MenuItems) => item.id === menuItem.parentId
-        )
-        if (parentItem && parentItem.link) {
-          setErrors({
-            ...newErrors,
-            parentId: true,
-          })
-          return
-        }
-
-        if (menuItem.link && children && children.length > 0) {
-          setErrors({
-            ...newErrors,
-            link: true,
-          })
-          return
-        }
-
-        try {
-          const sanitizedMenuItem: Partial<MenuItems> = {
-            ...menuItem,
-            displayOrder: menuItem.displayOrder
-              ? parseInt(menuItem.displayOrder.toString())
-              : null,
-          }
-
-          if (menuItem.id) {
-            await onEdit(sanitizedMenuItem as MenuItems)
-          } else {
-            await onCreate(sanitizedMenuItem as MenuItems)
-          }
-          onSave(sanitizedMenuItem as MenuItems)
-          onClose()
-        } catch (error) {
-          console.error(
-            'Error occurred while editing/creating menu item:',
-            error
-          )
-        }
+  const onSubmit = async (formData: MenuItemFormData) => {
+    try {
+      const sanitizedMenuItem: MenuItems = {
+        ...formData,
+        displayOrder: parseInt(formData.displayOrder.toString(), 10),
       }
+      onSave(sanitizedMenuItem)
+      onClose()
+    } catch (error) {
+      console.error('Error occurred while saving menu item:', error)
     }
+  }
 
-    const topLevelMenuItems = menuItemsData?.value.filter(
-      (item: MenuItems) => item.parentId === null
+  const topLevelMenuItems = useMemo(
+    () =>
+      menuItemsData?.value.filter((item: MenuItems) => item.parentId === null),
+    [menuItemsData]
+  )
+
+  const parentItem = useMemo(
+    () =>
+      menuItemsData?.value.find(
+        (item: MenuItems) => item.id === watch('parentId')
+      ),
+    [menuItemsData, watch]
+  )
+
+  const validateLinkAndChildren = (link: string, id: number | null) => {
+    const children = menuItemsData?.value.filter(
+      (item: MenuItems) => item.parentId === id
     )
+    return !(children && children.length > 0 && link)
+  }
 
-    const parentItem = useMemo(() => {
-      return menuItemsData?.value.find(
-        (item: MenuItems) => item.id === menuItem?.parentId
-      )
-    }, [menuItem?.parentId, menuItemsData])
-
-    return (
-      <Dialog open={open} onClose={onClose}>
-        <h3 style={{ margin: '15px' }}>
-          Menu Item Details
-          <Tooltip
-            title="Items without a parent ID will appear in the top navbar. They are sorted primarily by display order, then alphabetically. Items without a parent ID and without a link will serve as dropdown buttons. If they contain a link, they will be clickable buttons that redirect the user. Please ensure that the 'Link' field contains a URL link.
+  return (
+    <Dialog open={isOpen} onClose={onClose}>
+      <h3 style={{ margin: '15px' }}>
+        Menu Item Details
+        <Tooltip
+          title="Items without a parent ID will appear in the top navbar. They are sorted primarily by display order, then alphabetically. Items without a parent ID and without a link will serve as dropdown buttons. If they contain a link, they will be clickable buttons that redirect the user. Please ensure that the 'Link' field contains a URL link.
 
           To add clickable items to the dropdown buttons (items without links or parent IDs), create a new menu item and assign its parent ID to the desired dropdown button."
-          >
-            <IconButton>
-              <HelpOutlineIcon style={{ fontSize: '.7em' }} />
-            </IconButton>
-          </Tooltip>
-        </h3>
-        <DialogContent>
-          {menuItem ? (
-            <>
+        >
+          <IconButton>
+            <HelpOutlineIcon style={{ fontSize: '.7em' }} />
+          </IconButton>
+        </Tooltip>
+      </h3>
+      <DialogContent>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <Controller
+            name="name"
+            control={control}
+            render={({ field, fieldState }) => (
               <TextField
+                {...field}
                 autoFocus
                 margin="dense"
-                name="name"
                 label="Name"
                 type="text"
                 fullWidth
-                value={menuItem.name}
-                onChange={handleChange}
-                error={errors.name}
-                helperText={errors.name ? 'Name is required' : ''}
+                error={!!fieldState.error}
+                helperText={fieldState.error?.message}
               />
-              {/* <TextField
-                margin="dense"
-                name="icon"
-                label="Icon"
-                type="text"
-                fullWidth
-                value={menuItem.icon ?? ''}
-                onChange={handleChange}
-              /> */}
+            )}
+          />
+          <Controller
+            name="displayOrder"
+            control={control}
+            render={({ field, fieldState }) => (
               <TextField
+                {...field}
                 margin="dense"
-                name="displayOrder"
                 label="Display Order"
                 type="number"
                 fullWidth
-                value={menuItem.displayOrder ?? ''}
-                onChange={handleChange}
-                inputProps={{
-                  inputMode: 'numeric',
-                  pattern: '[0-9]*',
-                }}
-                error={errors.displayOrder}
-                helperText={
-                  errors.displayOrder ? 'Display order is required' : ''
-                }
+                inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
+                onChange={(e) => field.onChange(Number(e.target.value))} // Convert input to number
+                error={!!fieldState.error}
+                helperText={fieldState.error?.message}
               />
+            )}
+          />
+          <Controller
+            name="link"
+            control={control}
+            render={({ field, fieldState }) => (
               <TextField
+                {...field}
                 margin="dense"
-                name="link"
                 label="Link"
                 type="text"
                 fullWidth
-                value={menuItem.link ?? ''}
-                onChange={handleChange}
-                error={errors.link}
+                error={
+                  !!fieldState.error ||
+                  !validateLinkAndChildren(field.value, watch('id'))
+                }
                 helperText={
-                  errors.link
+                  fieldState.error?.message ||
+                  (!validateLinkAndChildren(field.value, watch('id'))
                     ? 'Please remove children associated with this dropdown first'
-                    : ''
+                    : '')
                 }
               />
-              <TextField
-                margin="dense"
-                name="document"
-                label="Document"
-                type="text"
-                fullWidth
-                value={menuItem.document ?? ''}
-                onChange={handleChange}
-              />
+            )}
+          />
+
+          <Controller
+            name="parentId"
+            control={control}
+            render={({ field, fieldState }) => (
               <FormControl fullWidth margin="dense">
                 <InputLabel id="parent-label">Parent</InputLabel>
                 <Select
+                  {...field}
                   labelId="parent-label"
                   id="parent-select"
-                  name="parentId"
-                  value={menuItem.parentId ?? ''}
                   label="Parent"
-                  onChange={handleChange}
-                  error={errors.parentId}
+                  error={!!fieldState.error}
                 >
-                  <MenuItem value="">
+                  <MenuItem value={null}>
                     <em>None</em>
                   </MenuItem>
                   {topLevelMenuItems?.map((item) => (
@@ -280,7 +209,7 @@ const MenuItemsModal = forwardRef(
                     </MenuItem>
                   ))}
                 </Select>
-                {errors.parentId && (
+                {fieldState.error && (
                   <p style={{ color: 'red', fontSize: '12.5px' }}>
                     {parentItem && parentItem.link
                       ? 'Must remove parentId link first before adding this menu item'
@@ -288,21 +217,18 @@ const MenuItemsModal = forwardRef(
                   </p>
                 )}
               </FormControl>
-            </>
-          ) : (
-            <div>Loading...</div>
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={onClose}>Cancel</Button>
-          <Button variant="contained" onClick={handleSubmit}>
-            Save
-          </Button>
-        </DialogActions>
-      </Dialog>
-    )
-  }
-)
+            )}
+          />
+          <DialogActions>
+            <Button onClick={onClose}>Cancel</Button>
+            <Button type="submit" variant="contained">
+              Save
+            </Button>
+          </DialogActions>
+        </form>
+      </DialogContent>
+    </Dialog>
+  )
+}
 
-MenuItemsModal.displayName = 'MenuItemsModal'
 export default MenuItemsModal
