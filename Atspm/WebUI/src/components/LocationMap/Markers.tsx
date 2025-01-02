@@ -1,8 +1,7 @@
-// Markers.tsx
-
 import { Location } from '@/features/locations/types'
 import { generatePin } from '@/features/locations/utils'
 import { Box } from '@mui/material'
+import { useEffect, useState } from 'react'
 import { Marker, Popup } from 'react-leaflet'
 import MarkerClusterGroup from 'react-leaflet-cluster'
 
@@ -12,6 +11,30 @@ type MarkersProps = {
 }
 
 const Markers = ({ locations, setLocation }: MarkersProps) => {
+  const [icons, setIcons] = useState<Record<string, L.DivIcon>>({})
+
+  useEffect(() => {
+    if (locations) {
+      const fetchIcons = async () => {
+        const iconPromises = locations.map(async (location) => ({
+          id: location.id,
+          icon: await generatePin(location.locationTypeId),
+        }))
+        const iconResults = await Promise.all(iconPromises)
+        const iconMap = iconResults.reduce<Record<string, L.DivIcon>>(
+          (acc, { id, icon }) => {
+            acc[id] = icon
+            return acc
+          },
+          {}
+        )
+        setIcons(iconMap)
+      }
+
+      fetchIcons()
+    }
+  }, [locations])
+
   if (!locations) return null
 
   const handleSelectLocation = (location: Location) => {
@@ -21,7 +44,9 @@ const Markers = ({ locations, setLocation }: MarkersProps) => {
   return (
     <MarkerClusterGroup chunkedLoading>
       {locations.map((marker) => {
-        const icon = generatePin(marker.locationTypeId)
+        const icon = icons[marker.id]
+
+        if (!icon) return null
 
         return (
           <Marker
