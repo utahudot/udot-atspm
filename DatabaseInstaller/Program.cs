@@ -85,6 +85,4 @@ host =>
 
 // Build and invoke the command parser
 var cmdParser = cmdBuilder.Build();
-//var parseResult = cmdParser.Parse(args);
-//Console.WriteLine("Command: " + parseResult.CommandResult.Command.Name);
 await cmdParser.InvokeAsync(args);
