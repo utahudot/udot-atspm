@@ -82,6 +82,8 @@ public class TransferConfigCommandHostedService : IHostedService
                 DeleteAreas();
                 DeleteJurisdictions();
                 DeleteDevices();
+                DeleteDevicesConfigurations();
+                DeleteProducts();
             }
             if(_config.UpdateLocations)
             {
@@ -96,8 +98,8 @@ public class TransferConfigCommandHostedService : IHostedService
                 var columnMappings = GetColumnMappings(config);
 
                 SetDetectionTypeMesureType();
-                AddProducts();
-                AddDeviceConfigurations();
+                ImportProducts(queries, columnMappings);
+                ImportDeviceConfigurations(queries, columnMappings);
                 ImportRegions(queries, columnMappings);
                 ImportAreas(queries, columnMappings);
                 ImportJurisdictions(queries, columnMappings);
@@ -108,6 +110,34 @@ public class TransferConfigCommandHostedService : IHostedService
                 ImportRouteLocations(queries, columnMappings);
                 ImportDevices(queries, columnMappings);
             }
+        }
+    }
+
+    private void DeleteProducts()
+    {
+        _logger.LogInformation($"Deleting all products");
+        try
+        {
+            _productRepository.RemoveRange(_productRepository.GetList().ToList());
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message, "Error deleting products");
+            throw;
+        }
+    }
+
+    private void DeleteDevicesConfigurations()
+    {
+        _logger.LogInformation($"Deleting all device configurations");
+        try
+        {
+            _deviceConfigurationRepository.RemoveRange(_deviceConfigurationRepository.GetList().ToList());
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message, "Error deleting device configurations");
+            throw;
         }
     }
 
@@ -174,6 +204,33 @@ public class TransferConfigCommandHostedService : IHostedService
         var routeLocations = ImportData<RouteLocation>(queries["RouteLocations"], columnMappings["RouteLocations"]);
         _routeLocationsRepository.AddRange(routeLocations);
         _logger.LogInformation($"Route Locations Imported");
+    }
+
+
+    private void ImportDeviceConfigurations(Dictionary<string, string> queries, Dictionary<string, Dictionary<string, string>> columnMappings)
+    {
+        if (_deviceConfigurationRepository.GetList().Any())
+        {
+            _logger.LogInformation("Device Configurations already exist");
+            return;
+        }
+        _logger.LogInformation("Adding Device Configurations");
+        var deviceConfigurations = ImportData<DeviceConfiguration>(queries["DeviceConfigurations"], columnMappings["DeviceConfigurations"]);
+        _deviceConfigurationRepository.AddRange(deviceConfigurations);
+        _logger.LogInformation("Device Configurations Added");
+    }
+
+    private void ImportProducts(Dictionary<string, string> queries, Dictionary<string, Dictionary<string, string>> columnMappings)
+    {
+        if (_productRepository.GetList().Any())
+        {
+            _logger.LogInformation("Products already exist");
+            return;
+        }
+        _logger.LogInformation("Adding Products");
+        var products = ImportData<Product>(queries["Products"], columnMappings["Products"]);
+        _productRepository.AddRange(products);
+        _logger.LogInformation("Products Added");
     }
 
     private void ImportApproaches(Dictionary<string, string> queries, Dictionary<string, Dictionary<string, string>> columnMappings)
@@ -417,219 +474,6 @@ public class TransferConfigCommandHostedService : IHostedService
         
     }
 
-    private void AddDeviceConfigurations()
-    {
-        if (_deviceConfigurationRepository.GetList().Any())
-        {
-            _logger.LogInformation("Device Configurations already exist");
-            return;
-        }
-        _logger.LogInformation("Adding Device Configurations");
-        _deviceConfigurationRepository.AddRange(
-            new List<DeviceConfiguration>()
-            {
-                new DeviceConfiguration()
-                {
-                    Id = 1,
-                    Firmware = "ASC3",
-                    Protocol = TransportProtocols.Sftp,
-                    Port = 161,
-                    Directory = "//Set1",
-                    ConnectionTimeout = 2000,
-                    OperationTimeout = 2000,
-                    UserName = "econolite",
-                    ProductId = 1
-                },
-                new DeviceConfiguration()
-                {
-                    Id = 2,
-                    Firmware = "Cobalt",
-                    Protocol = TransportProtocols.Sftp,
-                    Port = 161,
-                    Directory = "/Set1",
-                    ConnectionTimeout = 2000,
-                    OperationTimeout = 2000,
-                    UserName = "econolite",
-                    ProductId = 2
-                },
-                new DeviceConfiguration()
-                {
-                    Id = 3,
-                    Firmware = "ASC3 - 2070",
-                    Protocol = TransportProtocols.Sftp,
-                    Port = 161,
-                    Directory = "/Set1",
-                    ConnectionTimeout = 2000,
-                    OperationTimeout = 2000,
-                    UserName = "econolite",
-                    ProductId = 3
-                },
-                new DeviceConfiguration()
-                {
-                    Id = 4,
-                    Firmware = "MaxTime",
-                    Protocol = TransportProtocols.Sftp,
-                    Port = 161,
-                    Directory = "/Set1",
-                    ConnectionTimeout = 2000,
-                    OperationTimeout = 2000,
-                    UserName = "econolite",
-                    ProductId = 4
-                },
-                new DeviceConfiguration()
-                {
-                    Id = 5,
-                    Firmware = "Trafficware",
-                    Protocol = TransportProtocols.Sftp,
-                    Port = 161,
-                    Directory = "/Set1",
-                    ConnectionTimeout = 2000,
-                    OperationTimeout = 2000,
-                    UserName = "econolite",
-                    ProductId = 5
-                },
-                new DeviceConfiguration()
-                {
-                    Id = 6,
-                    Firmware = "Siemens SEPAC",
-                    Protocol = TransportProtocols.Sftp,
-                    Port = 161,
-                    Directory = "/Set1",
-                    ConnectionTimeout = 2000,
-                    OperationTimeout = 2000,
-                    UserName = "econolite",
-                    ProductId = 6
-                },
-                new DeviceConfiguration()
-                {
-                    Id = 7,
-                    Firmware = "McCain ATC EX",
-                    Protocol = TransportProtocols.Sftp,
-                    Port = 161,
-                    Directory = "/Set1",
-                    ConnectionTimeout = 2000,
-                    OperationTimeout = 2000,
-                    UserName = "econolite",
-                    ProductId = 7
-                },
-                new DeviceConfiguration()
-                {
-                    Id = 8,
-                    Firmware = "Peek",
-                    Protocol = TransportProtocols.Sftp,
-                    Port = 161,
-                    Directory = "/Set1",
-                    ConnectionTimeout = 2000,
-                    OperationTimeout = 2000,
-                    UserName = "econolite",
-                    ProductId = 8
-                },
-                new DeviceConfiguration()
-                {
-                    Id = 9,
-                    Firmware = "EOS",
-                    Protocol = TransportProtocols.Sftp,
-                    Port = 161,
-                    Directory = "/Set1",
-                    ConnectionTimeout = 2000,
-                    OperationTimeout = 2000,
-                    UserName = "econolite",
-                    ProductId = 9
-                },
-                new DeviceConfiguration()
-                {
-                    Id = 10,
-                    Firmware = "ASC3-32.68.40",
-                    Protocol = TransportProtocols.Sftp,
-                    Port = 161,
-                    Directory = "/Set1",
-                    ConnectionTimeout = 2000,
-                    OperationTimeout = 2000,
-                    UserName = "econolite",
-                    ProductId = 10
-                }
-            }
-            );
-        _logger.LogInformation("Device Configurations Added");
-    }
-
-    private void AddProducts()
-    {
-        if(_productRepository.GetList().Any())
-        {
-            _logger.LogInformation("Products already exist");
-            return;
-        }
-        _logger.LogInformation("Adding Products");
-        _productRepository.AddRange(
-            new List<Product>() 
-            {
-                new Product()
-                {
-                    Id = 1,
-                    Manufacturer = "Econolite",
-                    Model = "ASC3",
-                },
-                new Product()
-                {
-                    Id = 2,
-                    Manufacturer = "QFree",
-                    Model = "Cobalt",
-                },
-                new Product()
-                {
-                    Id = 3,
-                    Manufacturer = "Econolite",
-                    Model = "2070",
-                },
-                new Product()
-                {
-                    Id = 4,
-                    Manufacturer = "QFree",
-                    Model = "MaxTime",
-                },
-                new Product()
-                {
-                    Id = 5,
-                    Manufacturer = "Trafficware",
-                    Model = "Trafficware",
-                },
-                new Product()
-                {
-                    Id = 6,
-                    Manufacturer = "Siemens",
-                    Model = "SEPAC",
-                },
-                new Product()
-                {
-                    Id = 7,
-                    Manufacturer = "McCain",
-                    Model = "ATC EX",
-                },
-                new Product()
-                {
-                    Id = 8,
-                    Manufacturer = "Peek",
-                    Model = "Peek",
-                },
-                new Product()
-                {
-                    Id = 9,
-                    Manufacturer = "Econolite",
-                    Model = "EOS",
-                },
-                new Product()
-                {
-                    Id = 10,
-                    Manufacturer = "Econolite",
-                    Model = "32.68.40",
-                }
-            }
-            );
-        _logger.LogInformation("Products Added");
-    }
-
-
 
     private List<T> ImportData<T>(string query, Dictionary<string, string> columnMappings) where T : new()
     {
@@ -779,7 +623,7 @@ public class TransferConfigCommandHostedService : IHostedService
         _logger.LogInformation($"Deleting all devices");
         try
         {
-            _deviceConfigurationRepository.RemoveRange(_deviceConfigurationRepository.GetList().ToList());
+            _deviceRepository.RemoveRange(_deviceRepository.GetList().ToList());
         }
         catch (Exception ex)
         {
