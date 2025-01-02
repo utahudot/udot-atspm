@@ -128,7 +128,10 @@ namespace DatabaseInstaller.Services
                 {
                     UserName = _config.AdminEmail,
                     Email = _config.AdminEmail,
-                    EmailConfirmed = true
+                    EmailConfirmed = true,
+                    FirstName = "Admin",
+                    LastName = "Admin",
+                    Agency = "Transportation Agency",
                 };
                 var result = await userManager.CreateAsync(adminUser, _config.AdminPassword);
                 if (result.Succeeded)
