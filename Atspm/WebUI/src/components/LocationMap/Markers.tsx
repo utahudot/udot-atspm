@@ -42,7 +42,7 @@ const Markers = ({ locations, setLocation }: MarkersProps) => {
   }
 
   return (
-    <MarkerClusterGroup chunkedLoading>
+    <MarkerClusterGroup chunkedLoading disableClusteringAtZoom={16}>
       {locations.map((marker) => {
         const icon = icons[marker.id]
 
