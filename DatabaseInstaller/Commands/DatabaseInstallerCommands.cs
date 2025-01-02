@@ -28,12 +28,14 @@ namespace DatabaseInstaller.Commands
             AddCommand(CopyConfigurationCommand);
             AddCommand(MoveEventLogsSqlServerToPostgresCommand);
             AddCommand(TransferEventLogsCommand);
+            AddCommand(TransferSpeedEventsCommand);
         }
 
         public UpdateCommand UpdateCommand { get; set; } = new UpdateCommand();
         public TransferConfigCommand CopyConfigurationCommand { get; set; } = new TransferConfigCommand();
         public MoveEventLogsSqlServerToPostgresCommand MoveEventLogsSqlServerToPostgresCommand { get; set; } = new MoveEventLogsSqlServerToPostgresCommand();
         public TransferEventLogsCommand TransferEventLogsCommand { get; set; } = new TransferEventLogsCommand();
+        public TransferSpeedEventsCommand TransferSpeedEventsCommand { get; set; } = new TransferSpeedEventsCommand();
         
     }
 }

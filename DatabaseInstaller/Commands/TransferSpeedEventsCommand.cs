@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for DatabaseInstaller - DatabaseInstaller.Commands/TransferConfigCommand.cs
+// for DatabaseInstaller - DatabaseInstaller.Commands/MoveEventLogsSqlServerToPostgresCommand.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,45 +24,35 @@ using System.CommandLine.NamingConventionBinder;
 
 namespace DatabaseInstaller.Commands
 {
-    public class TransferConfigCommand : Command, ICommandOption<TransferConfigCommandConfiguration>
+    public class TransferSpeedEventsCommand : Command, ICommandOption<TransferCommandConfiguration>
     {
-
-        public TransferConfigCommand() : base("transfer-config", "Copy configuration data from SQL Server to PostgreSQL")
+        public TransferSpeedEventsCommand() : base("transfer-speed", "Transfer speed events from 4.3 to 5.0")
         {
             AddOption(SourceOption);
-            AddOption(DeleteOption);
-            AddOption(UpdateLocationsOption);
+            AddOption(StartOption);
+            AddOption(EndOption);
         }
 
         public Option<string> SourceOption { get; set; } = new("--source", "Connection string for the source SQL Server");
-        public Option<bool> DeleteOption { get; set; } = new("--delete", "Delete before inserting locations");
-        public Option<bool> UpdateLocationsOption { get; set; } = new("--update-locations", "Update Locations from target");
+        public Option<DateTime> StartOption { get; set; } = new("--start", "Start date");
+        public Option<DateTime> EndOption { get; set; } = new("--end", "End date");
 
-        public ModelBinder<TransferConfigCommandConfiguration> GetOptionsBinder()
+        public ModelBinder<TransferCommandConfiguration> GetOptionsBinder()
         {
-            var binder = new ModelBinder<TransferConfigCommandConfiguration>();
+            var binder = new ModelBinder<TransferCommandConfiguration>();
 
             binder.BindMemberFromValue(b => b.Source, SourceOption);
-            binder.BindMemberFromValue(b => b.Delete, DeleteOption);
-            binder.BindMemberFromValue(b => b.UpdateLocations, UpdateLocationsOption);
+            binder.BindMemberFromValue(b => b.Start, StartOption);
+            binder.BindMemberFromValue(b => b .End, EndOption);
 
             return binder;
         }
 
-
         public void BindCommandOptions(HostBuilderContext host, IServiceCollection services)
         {
             services.AddSingleton(GetOptionsBinder());
-            services.AddOptions<TransferConfigCommandConfiguration>().BindCommandLine();
-            services.AddHostedService<TransferConfigCommandHostedService>();
+            services.AddOptions<TransferCommandConfiguration>().BindCommandLine();
+            services.AddHostedService<TransferEventLogsHostedService>();
         }
-    }
-
-    public class TransferConfigCommandConfiguration
-    {
-        public string Source { get; set; }
-        public bool Delete { get; set; }
-        public bool UpdateLocations { get; set; }
-        public bool UpdateGeneralConfiguration { get; set; }
     }
 }
