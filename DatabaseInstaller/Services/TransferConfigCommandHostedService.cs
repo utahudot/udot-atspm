@@ -71,46 +71,43 @@ public class TransferConfigCommandHostedService : IHostedService
     }
 
     public async Task StartAsync(CancellationToken cancellationToken)
-    {
-
-        if (_config.UpdateLocations)
+    {        
+        if (_config.Delete)
         {
-            if (_config.Delete)
-            {
-                DeleteLocations();
-                DeleteRegions();
-                DeleteAreas();
-                DeleteJurisdictions();
-                DeleteDevices();
-                DeleteDevicesConfigurations();
-                DeleteProducts();
-            }
-            if(_config.UpdateLocations)
-            {
-                IConfiguration config = new ConfigurationBuilder()
-                  .SetBasePath(Directory.GetCurrentDirectory())
-                  .AddJsonFile("appsettings.json")
-                  .Build();
-
-
-                Dictionary<string, string> queries = GetLocationQueries(config);
-                //Dictionary<string, Dictionary<string, string>> columnMappings = GetColumnMappings();
-                var columnMappings = GetColumnMappings(config);
-
-                SetDetectionTypeMesureType();
-                ImportProducts(queries, columnMappings);
-                ImportDeviceConfigurations(queries, columnMappings);
-                ImportRegions(queries, columnMappings);
-                ImportAreas(queries, columnMappings);
-                ImportJurisdictions(queries, columnMappings);
-                ImportLocations(queries, columnMappings);
-                ImportApproaches(queries, columnMappings);
-                ImportDetectors(queries, columnMappings);
-                ImportRoutes(queries, columnMappings);
-                ImportRouteLocations(queries, columnMappings);
-                ImportDevices(queries, columnMappings);
-            }
+            DeleteLocations();
+            DeleteRegions();
+            DeleteAreas();
+            DeleteJurisdictions();
+            DeleteDevices();
+            DeleteDevicesConfigurations();
+            DeleteProducts();
         }
+        if(_config.UpdateLocations)
+        {
+            IConfiguration config = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json")
+                .Build();
+
+
+            Dictionary<string, string> queries = GetLocationQueries(config);
+            //Dictionary<string, Dictionary<string, string>> columnMappings = GetColumnMappings();
+            var columnMappings = GetColumnMappings(config);
+
+            SetDetectionTypeMesureType();
+            ImportProducts(queries, columnMappings);
+            ImportDeviceConfigurations(queries, columnMappings);
+            ImportRegions(queries, columnMappings);
+            ImportAreas(queries, columnMappings);
+            ImportJurisdictions(queries, columnMappings);
+            ImportLocations(queries, columnMappings);
+            ImportApproaches(queries, columnMappings);
+            ImportDetectors(queries, columnMappings);
+            ImportRoutes(queries, columnMappings);
+            ImportRouteLocations(queries, columnMappings);
+            ImportDevices(queries, columnMappings);
+        }
+        
     }
 
     private void DeleteProducts()
