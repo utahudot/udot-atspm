@@ -13,6 +13,7 @@ import NextLink from 'next/link'
 import { useEffect, useState } from 'react'
 import DropDownButton from './DropdownButton'
 import UserMenu from './UserMenu'
+import { useQueryClient } from 'react-query'
 
 export const topbarHeight = 60
 
@@ -20,7 +21,7 @@ export default function Topbar() {
   const { toggleSidebar } = useSidebarStore()
   const [userHasAccess, setUserHasAccess] = useState(false)
   const { data: menuItemsData, isLoading } = useGetMenuItems()
-
+  const queryClient = useQueryClient();
   useEffect(() => {
     setUserHasAccess(doesUserHaveAccess())
   }, [])
@@ -59,6 +60,19 @@ export default function Topbar() {
     name: key,
     link: pagesToLinks.get(key) as string,
   }))
+
+  useEffect(() => {
+    // This effect runs once when the component mounts but could be triggered on certain conditions like user authentication status change
+    return () => {
+      // Invalidate the query when the component unmounts or if there's a condition where you want to force refresh
+      queryClient.invalidateQueries({ queryKey: ['/MenuItems'] });
+    };
+  }, []);
+
+  // Or if you want to manually trigger an update:
+  const refreshMenuItems = () => {
+    queryClient.invalidateQueries({ queryKey: ['/MenuItems'] });
+  };
 
   return (
     <Box
