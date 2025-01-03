@@ -1,16 +1,9 @@
 import { Location } from '@/features/locations/types'
+import { generatePin } from '@/features/locations/utils'
 import { Box } from '@mui/material'
-import { Icon } from 'leaflet'
+import { useEffect, useState } from 'react'
 import { Marker, Popup } from 'react-leaflet'
 import MarkerClusterGroup from 'react-leaflet-cluster'
-
-const icon = new Icon({
-  iconUrl: '/images/intersection-pin.svg',
-  iconSize: [25, 40],
-  iconAnchor: [13, 40],
-  shadowSize: [40, 40],
-  shadowAnchor: [40, 62],
-})
 
 type MarkersProps = {
   locations: Location[] | undefined
@@ -18,6 +11,30 @@ type MarkersProps = {
 }
 
 const Markers = ({ locations, setLocation }: MarkersProps) => {
+  const [icons, setIcons] = useState<Record<string, L.DivIcon>>({})
+
+  useEffect(() => {
+    if (locations) {
+      const fetchIcons = async () => {
+        const iconPromises = locations.map(async (location) => ({
+          id: location.id,
+          icon: await generatePin(location.locationTypeId),
+        }))
+        const iconResults = await Promise.all(iconPromises)
+        const iconMap = iconResults.reduce<Record<string, L.DivIcon>>(
+          (acc, { id, icon }) => {
+            acc[id] = icon
+            return acc
+          },
+          {}
+        )
+        setIcons(iconMap)
+      }
+
+      fetchIcons()
+    }
+  }, [locations])
+
   if (!locations) return null
 
   const handleSelectLocation = (location: Location) => {
@@ -25,35 +42,30 @@ const Markers = ({ locations, setLocation }: MarkersProps) => {
   }
 
   return (
-    <MarkerClusterGroup chunkedLoading>
-      {locations.map((marker) => (
-        <Marker
-          key={marker.id}
-          position={[marker.latitude, marker.longitude]}
-          icon={icon}
-          eventHandlers={{
-            click: () => handleSelectLocation(marker),
-          }}
-        >
-          <Popup offset={[0, -30]}>
-            <Box sx={{ fontWeight: 'bold' }}>
-              Location #{marker.locationIdentifier}
-            </Box>
-            <Box>
-              {marker.primaryName} & {marker.secondaryName}
-            </Box>
-            {/* <Box display="flex" justifyContent="flex-end" marginTop={2}>
-              <Button
-                variant="contained"
-                size="small"
-                onClick={() => handleSelectLocation(marker)}
-              >
-                Select
-              </Button>
-            </Box> */}
-          </Popup>
-        </Marker>
-      ))}
+    <MarkerClusterGroup chunkedLoading disableClusteringAtZoom={16}>
+      {locations.map((marker) => {
+        const icon = icons[marker.id]
+
+        if (!icon) return null
+
+        return (
+          <Marker
+            key={marker.id}
+            position={[marker.latitude, marker.longitude]}
+            icon={icon}
+            eventHandlers={{ click: () => handleSelectLocation(marker) }}
+          >
+            <Popup offset={[0, -30]}>
+              <Box sx={{ fontWeight: 'bold' }}>
+                Location #{marker.locationIdentifier}
+              </Box>
+              <Box>
+                {marker.primaryName} & {marker.secondaryName}
+              </Box>
+            </Popup>
+          </Marker>
+        )
+      })}
     </MarkerClusterGroup>
   )
 }

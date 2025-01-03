@@ -36,8 +36,6 @@ const DetectionTypeCountChart: React.FC<DetectionTypeCountChartProps> = ({
     }
   }, [])
 
-  console.log('x, y', detectionTypeCountChartOption)
-
   return (
     <Paper elevation={3} sx={{ height: 375, padding: 1 }}>
       {!isLoading && detectionTypeCountChartOption && (
