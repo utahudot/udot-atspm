@@ -54,7 +54,13 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.EventLogImporters
 
         private bool IsAcceptableDateRange(EventLogModelBase log)
         {
-            return log.Timestamp <= DateTime.Now && log.Timestamp > _options.EarliestAcceptableDate;
+            DateTime now = DateTime.Now; // Local time
+            if (log.Timestamp.Kind == DateTimeKind.Utc)
+            {
+                DateTime utcNow = now.ToUniversalTime(); // Convert to UTC
+                return log.Timestamp <= utcNow && log.Timestamp > _options.EarliestAcceptableDate;
+            }
+            return log.Timestamp <= now && log.Timestamp > _options.EarliestAcceptableDate;
         }
 
         /// <inheritdoc/>
