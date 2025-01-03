@@ -114,14 +114,13 @@ export async function generatePin(locationTypeId: number): Promise<L.DivIcon> {
 
   switch (locationTypeId) {
     case 1:
-      // "Intersection" -> Bright Red + Traffic icon
       return createPinWithIcon({
         color,
         MuiIcon,
+        offset: 0,
       })
 
     case 2:
-      // "Ramp Meter" -> Blue + RampRight icon, plus special iconSize/offset
       return createPinWithIcon({
         color,
         MuiIcon,
@@ -130,7 +129,6 @@ export async function generatePin(locationTypeId: number): Promise<L.DivIcon> {
       })
 
     default:
-      // Fallback -> Gray + QuestionMark icon
       return createPinWithIcon({
         color,
         MuiIcon,
