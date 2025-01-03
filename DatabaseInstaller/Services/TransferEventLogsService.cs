@@ -87,7 +87,9 @@ namespace DatabaseInstaller.Services
             var logsToInsert = new List<CompressedEventLogs<IndianaEvent>>();
             while (archiveLogs.TryTake(out var log))
             {
+                _logger.LogInformation($"Inserting archive log (Location: {log.LocationIdentifier}, Date: {log.ArchiveDate})");
                 logsToInsert.Add(log);
+                _logger.LogInformation($"Archive log inserted (Location: {log.LocationIdentifier}, Date: {log.ArchiveDate})");
             }
 
             await InsertLogsAsync(logsToInsert);
