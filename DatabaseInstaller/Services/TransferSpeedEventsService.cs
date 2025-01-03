@@ -13,15 +13,15 @@ using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
 
 namespace DatabaseInstaller.Services
 {
-    public class TransferEventLogsHostedService : IHostedService
+    public class TransferSpeedEventsHostedService : IHostedService
     {
-        private readonly ILogger<TransferEventLogsHostedService> _logger;
+        private readonly ILogger<TransferSpeedEventsHostedService> _logger;
         private readonly IServiceProvider _serviceProvider;
         private readonly ILocationRepository _locationRepository;
         private readonly TransferCommandConfiguration _config;
 
-        public TransferEventLogsHostedService(
-            ILogger<TransferEventLogsHostedService> logger,
+        public TransferSpeedEventsHostedService(
+            ILogger<TransferSpeedEventsHostedService> logger,
             IServiceProvider serviceProvider,
             ILocationRepository locationRepository,
             IOptions<TransferCommandConfiguration> config)
@@ -40,7 +40,7 @@ namespace DatabaseInstaller.Services
             {
                 try
                 {
-                    var archiveLogs = new ConcurrentBag<CompressedEventLogs<IndianaEvent>>();
+                    var archiveLogs = new ConcurrentBag<CompressedEventLogs<SpeedEvent>>();
 
                     // Process locations in batches of 10
                     var locationBatches = locations.Select((location, index) => new { location, index })
@@ -76,26 +76,24 @@ namespace DatabaseInstaller.Services
         private async Task ProcessLocationAsync(
             DateOnly date,
             Location location,
-            ConcurrentBag<CompressedEventLogs<IndianaEvent>> archiveLogs,
+            ConcurrentBag<CompressedEventLogs<SpeedEvent>> archiveLogs,
             CancellationToken cancellationToken)
         {
             await GetLogsAsync(date, _config.Source, archiveLogs, location, cancellationToken);
         }
 
-        private async Task FlushLogsAsync(ConcurrentBag<CompressedEventLogs<IndianaEvent>> archiveLogs)
+        private async Task FlushLogsAsync(ConcurrentBag<CompressedEventLogs<SpeedEvent>> archiveLogs)
         {
-            var logsToInsert = new List<CompressedEventLogs<IndianaEvent>>();
+            var logsToInsert = new List<CompressedEventLogs<SpeedEvent>>();
             while (archiveLogs.TryTake(out var log))
             {
-                _logger.LogInformation($"Inserting archive log (Location: {log.LocationIdentifier}, Date: {log.ArchiveDate})");
                 logsToInsert.Add(log);
-                _logger.LogInformation($"Archive log inserted (Location: {log.LocationIdentifier}, Date: {log.ArchiveDate})");
             }
 
             await InsertLogsAsync(logsToInsert);
         }
 
-        private async Task InsertLogsAsync(List<CompressedEventLogs<IndianaEvent>> archiveLogs)
+        private async Task InsertLogsAsync(List<CompressedEventLogs<SpeedEvent>> archiveLogs)
         {
             const int maxRetryCount = 3; // Number of retries
             int delay = 500; // Initial delay in milliseconds
@@ -163,12 +161,12 @@ namespace DatabaseInstaller.Services
         private async Task GetLogsAsync(
             DateOnly dateToRetrieve,
             string sourceConnectionString,
-            ConcurrentBag<CompressedEventLogs<IndianaEvent>> archiveLogs,
+            ConcurrentBag<CompressedEventLogs<SpeedEvent>> archiveLogs,
             Location location,
             CancellationToken cancellationToken)
         {
             var locationIdentifier = location.LocationIdentifier;
-            string selectQuery = $"SELECT SignalId, Timestamp, EventCode, EventParam FROM [dbo].[Controller_Event_Log] WHERE SignalId = '{locationIdentifier}' AND Timestamp between '{dateToRetrieve}' AND '{dateToRetrieve.AddDays(1)}'";
+            string selectQuery = $"Select DISTINCT [DetectorID],[MPH],[KPH],[timestamp] FROM [MOE].[dbo].[Speed_Events] Where timestamp between '{dateToRetrieve}' and '{dateToRetrieve.AddDays(1)}' and DetectorID like '{location.LocationIdentifier}%'";
 
             using (var connection = new SqlConnection(sourceConnectionString))
             {
@@ -176,7 +174,7 @@ namespace DatabaseInstaller.Services
 
                 using (var selectCommand = new SqlCommand(selectQuery, connection))
                 {
-                    var eventLogs = new List<IndianaEvent>();
+                    var eventLogs = new List<SpeedEvent>();
                     selectCommand.CommandTimeout = 120;
                     Console.WriteLine($"Executing query: {selectQuery}");
 
@@ -186,28 +184,29 @@ namespace DatabaseInstaller.Services
                         {
                             try
                             {
-                                var eventLog = new IndianaEvent
+                                var speedEvent = new SpeedEvent
                                 {
-                                    Timestamp = (DateTime)reader["Timestamp"],
-                                    EventCode = Convert.ToInt16((int)reader["EventCode"]),
-                                    EventParam = Convert.ToInt16((int)reader["EventParam"])
+                                    Timestamp = (DateTime)reader["Timestamp"], 
+                                    DetectorId = (String)reader["DetectorID"],
+                                    Mph = (int)reader["MPH"],
+                                    Kph = (int)reader["KPH"]
                                 };
 
-                                eventLogs.Add(eventLog);
+                                eventLogs.Add(speedEvent);
                             }
                             catch (Exception ex)
                             {
-                                _logger.LogInformation($" Event: {location}-{reader["Timestamp"]} EventCode:{reader["EventCode"]} EventParam:{reader["EventParam"]} Error reading record: {ex.Message}");
+                                _logger.LogInformation($" Event: {location}-{reader["Timestamp"]} Detector Id:{reader["DetectorID"]} MPH:{reader["MPH"]} KPH:{reader["KPH"]} Error reading record: {ex.Message}");
                             }
                         }
                     }
 
                     if (eventLogs.Count > 0)
                     {
-                        var device = location.Devices.FirstOrDefault(d => d.DeviceType == Utah.Udot.Atspm.Data.Enums.DeviceTypes.SignalController);
+                        var device = location.Devices.FirstOrDefault(d => d.DeviceType == Utah.Udot.Atspm.Data.Enums.DeviceTypes.WavetronixSpeed);
                         if (device != null)
                         {
-                            var archiveLog = new CompressedEventLogs<IndianaEvent>
+                            var archiveLog = new CompressedEventLogs<SpeedEvent>
                             {
                                 LocationIdentifier = location.LocationIdentifier,
                                 DeviceId = device.Id,
@@ -219,7 +218,7 @@ namespace DatabaseInstaller.Services
                         }
                         else
                         {
-                            _logger.LogWarning($"No device found for signal {location.LocationIdentifier}");
+                            _logger.LogWarning($"No speed device found for signal {location.LocationIdentifier}");
                         }
                     }
                 }

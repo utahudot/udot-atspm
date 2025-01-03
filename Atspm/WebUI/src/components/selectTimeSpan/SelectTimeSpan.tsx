@@ -31,6 +31,7 @@ export interface SelectDateTimeProps {
   dateFormat?: string
   noCalendar?: boolean
   calendarLocation?: 'bottom' | 'right'
+  startDateOnly?:boolean
   timePeriod?: boolean
   startTimePeriod?: Date
   endTimePeriod?: Date
@@ -51,6 +52,7 @@ export default function SelectDateTime({
   timePeriod,
   startTimePeriod,
   endTimePeriod,
+  startDateOnly,
   changeStartTimePeriod,
   changeEndTimePeriod,
 }: SelectDateTimeProps) {
@@ -190,7 +192,7 @@ export default function SelectDateTime({
             disableFuture={true}
             minutesStep={1}
           />
-          <DateTimePicker
+{!startDateOnly &&  <DateTimePicker
             sx={{ width: '100%', mt: calendarLocation === 'right' ? 0 : 3 }}
             value={endDateTime}
             onChange={handleEndDateTimeChange}
@@ -198,7 +200,7 @@ export default function SelectDateTime({
             views={views}
             label="End"
             ampm={false}
-          />
+          />}
           {timePeriod && (
             <>
               <Divider sx={{ mb: 2, margin: '15px' }}>
