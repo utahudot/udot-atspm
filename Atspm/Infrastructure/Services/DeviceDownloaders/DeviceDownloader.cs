@@ -58,7 +58,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders
         public virtual string GenerateLocalFilePath(Device value, string file)
         {
             var result = Path.Combine
-                (_options.BasePath,
+                (_options.BasePath ?? "",
                 $"{value.Location?.LocationIdentifier} - {value.Location?.PrimaryName}",
                 value.DeviceType.ToString(),
                 value.Ipaddress.ToString(),

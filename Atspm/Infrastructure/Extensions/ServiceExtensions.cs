@@ -390,7 +390,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
             services.AddScoped<IDeviceRepository, DeviceEFRepository>();
             services.AddScoped<IDeviceDownloader, DeviceDownloader>();
             services.AddScoped<IEventLogImporter, EventLogFileImporter>();
-            services.AddScoped<IEventLogRepository, EventLogEFRepository>();
+            //services.AddScoped<IEventLogRepository, EventLogEFRepository>();
 
             return services;
         }

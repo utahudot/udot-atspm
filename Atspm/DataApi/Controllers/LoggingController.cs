@@ -67,27 +67,21 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
             if (locationDevices == null || !locationDevices.Any())
                 return;
 
-            var workflowTasks = new List<Task>();
-
             using (var scope = host.Services.CreateScope())
             {
+                var workflow = new DeviceEventLogWorkflow(scope.ServiceProvider.GetService<IServiceScopeFactory>(), 50000, 1);
+                await Task.Delay(TimeSpan.FromSeconds(2));
                 foreach (var device in locationDevices)
                 {
-                    var workflow = new DeviceEventLogWorkflow(scope.ServiceProvider.GetService<IServiceScopeFactory>(), 50000, 1);
-                    await Task.Delay(TimeSpan.FromSeconds(2));
                     // Start the workflow
-                    var workflowTask = Task.Run(async () =>
+                    await Task.Run(async () =>
                     {
                         await workflow.Input.SendAsync(device);
                         workflow.Input.Complete();
                         await Task.WhenAll(workflow.Steps.Select(s => s.Completion));
                     });
-
-                    workflowTasks.Add(workflowTask);
                 }
             }
-            // Wait for all workflows to complete
-            await Task.WhenAll(workflowTasks);
         }
 
     }
