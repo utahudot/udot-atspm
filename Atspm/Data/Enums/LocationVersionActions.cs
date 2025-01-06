@@ -16,6 +16,8 @@
 #endregion
 
 
+using System.ComponentModel.DataAnnotations;
+
 namespace Utah.Udot.Atspm.Data.Enums
 {
     /// <summary>
@@ -26,31 +28,37 @@ namespace Utah.Udot.Atspm.Data.Enums
         /// <summary>
         /// Version is unknown
         /// </summary>
+        [Display(Name = "Unknown")]
         Unknown = 0,
 
         /// <summary>
         /// Version is new
         /// </summary>
+        [Display(Name = "New")]
         New = 1,
 
         /// <summary>
         /// Version is in edit mode
         /// </summary>
+        [Display(Name = "Edit")]
         Edit = 2,
 
         /// <summary>
         /// Version has been deleted
         /// </summary>
+        [Display(Name = "Delete")] 
         Delete = 3,
 
         /// <summary>
         /// New version has been copied
         /// </summary>
+        [Display(Name = "New Version")]
         NewVersion = 4,
 
         /// <summary>
         /// Initial version
         /// </summary>
+        [Display(Name = "Initial")] 
         Initial = 10
     }
 }

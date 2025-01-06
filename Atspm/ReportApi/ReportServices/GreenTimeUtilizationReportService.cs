@@ -15,7 +15,6 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.IdentityModel.Tokens;
 using Utah.Udot.Atspm.Business.GreenTimeUtilization;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
 
