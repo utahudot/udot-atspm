@@ -212,6 +212,7 @@ const ExportData = () => {
       ? location.locationIdentifier
       : '',
     start: isValid(startDateTime) ? dateToTimestamp(startDateTime) : '',
+    end:isValid(endDateTime) ? dateToTimestamp(endDateTime) : '',
     ResponseFormat: downloadFormat,
   })
 
