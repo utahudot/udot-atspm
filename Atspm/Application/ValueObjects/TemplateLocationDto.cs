@@ -92,6 +92,11 @@ namespace Utah.Udot.Atspm.ValueObjects
         public List<short> LoggedButUnusedDetectorChannels { get; set; } = new List<short>();
 
         /// <summary>
+        /// This is Detector Channels that occurred your current location but were not in the logs.
+        /// </summary>
+        public List<string> RemovedDetectors { get; set; } = new List<string>();
+
+        /// <summary>
         /// Approaches that were removed from the location
         /// </summary>
         public List<int> RemovedApproachIds { get; set; } = new List<int>();
