@@ -1,9 +1,9 @@
+import { Location } from '@/api/config/aTSPMConfigurationApi.schemas'
 import CustomSelect from '@/components/customSelect'
 import { useAreas } from '@/features/areas/api'
 import { useJurisdictions } from '@/features/jurisdictions/api'
 import { useEditLocation } from '@/features/locations/api'
 import { useLocationTypes } from '@/features/locations/api/getLocationTypes'
-import { LocationExpanded } from '@/features/locations/types'
 import { useRegions } from '@/features/regions/api'
 import { dateToTimestamp } from '@/utils/dateTime'
 import SaveIcon from '@mui/icons-material/Save'
@@ -25,8 +25,8 @@ import { ChangeEvent } from 'react'
 import { useQueryClient } from 'react-query'
 
 interface EditGeneralLocationProps {
-  location: LocationExpanded
-  updateLocation: (location: LocationExpanded) => void
+  location: Location
+  updateLocation: (location: Location) => void
   handleLocationEdit: (name: string, value: string) => void
 }
 
@@ -46,7 +46,7 @@ function EditGeneralLocation({
   const handleAreaDelete = (id: number | string) => {
     updateLocation({
       ...location,
-      areas: location.areas.filter((area) => area.id !== id),
+      areas: location?.areas?.filter((area) => area.id !== id),
     })
   }
 
@@ -318,7 +318,7 @@ function EditGeneralLocation({
                 label="Areas"
                 name="areas"
                 displayEmpty
-                value={location.areas.map((area) => area.id)}
+                value={location?.areas?.map((area) => area.id)}
                 data={areasData?.value}
                 onChange={handleAreaChange}
                 onDelete={handleAreaDelete}

@@ -1,3 +1,4 @@
+import { Location } from '@/api/config/aTSPMConfigurationApi.schemas'
 import {
   LocationHandler,
   useLocationHandler,
@@ -7,7 +8,6 @@ import {
   useRouteHandler,
 } from '@/components/handlers/routeHandler'
 import { useGetLocation } from '@/features/locations/api'
-import { LocationExpanded } from '@/features/locations/types'
 import { useGetRouteWithExpandedLocations } from '@/features/routes/api/getRouteWithExpandedLocations'
 import { DateTimeProps, TimeOnlyProps } from '@/types/TimeProps'
 import { dateToTimestamp } from '@/utils/dateTime'
@@ -90,12 +90,10 @@ export const useAggregateOptionsHandler = (): AggregateOptionsHandler => {
   const [binSize, setBinSize] = useState<number>(binSizeMarks[0].value)
   const [locationId, setLocationId] = useState<string>('')
   const [averageOrSum, setAverageOrSum] = useState<number>(0)
-  const [selectedLocations, setSelectedLocations] = useState<
-    LocationExpanded[]
-  >([])
+  const [selectedLocations, setSelectedLocations] = useState<Location[]>([])
   const [aggregatedData, setAggregatedData] = useState<AggregateData[]>([])
   const [routeExpandedLocations, setRouteExpandedLocations] = useState<
-    LocationExpanded[]
+    Location[]
   >([])
   const {
     data: locationExpandedData,

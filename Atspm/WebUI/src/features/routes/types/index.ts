@@ -14,7 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 // #endregion
-import { LocationExpanded } from '@/features/locations/types'
+import { Location } from '@/api/config/aTSPMConfigurationApi.schemas'
 
 export interface RouteApproaches {
   id: number
@@ -76,5 +76,5 @@ export interface RouteDistance {
 export interface RouteWithExpandedLocations {
   id: number
   name: string
-  routeLocations: LocationExpanded[]
+  routeLocations: Location[]
 }

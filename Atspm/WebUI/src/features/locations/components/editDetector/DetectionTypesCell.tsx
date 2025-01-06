@@ -1,5 +1,8 @@
 import { useGetDetectionType } from '@/api/config/aTSPMConfigurationApi'
-import { DetectionType, Detector } from '@/features/locations/types'
+import {
+  DetectionType,
+  Detector,
+} from '@/api/config/aTSPMConfigurationApi.schemas'
 import {
   Avatar,
   AvatarGroup,

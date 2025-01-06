@@ -1,8 +1,7 @@
 import {
-  LaneType,
+  LaneTypes as LaneType,
   Location,
-  LocationExpanded,
-} from '@/features/locations/types'
+} from '@/api/config/aTSPMConfigurationApi.schemas'
 import { Dispatch, SetStateAction, useEffect, useState } from 'react'
 
 export interface ExpandLocationHandler {
@@ -52,8 +51,8 @@ export interface ExpandLocationForAggregation {
 }
 
 interface props {
-  locations: LocationExpanded[]
-  setSelectedLocations: Dispatch<SetStateAction<LocationExpanded[]>>
+  locations: Location[]
+  setSelectedLocations: Dispatch<SetStateAction<Location[]>>
   changeLocation(location: Location | null): void
 }
 
@@ -62,9 +61,9 @@ export const useExpandLocationHandler = ({
   setSelectedLocations,
   changeLocation,
 }: {
-  locations: Location[];
-  setSelectedLocations: Dispatch<SetStateAction<Location[]>>;
-  changeLocation: (location: Location | null) => void;
+  locations: Location[]
+  setSelectedLocations: Dispatch<SetStateAction<Location[]>>
+  changeLocation: (location: Location | null) => void
 }): ExpandLocationHandler => {
   const [updatedLocations, setUpdatedLocations] = useState<
     ExpandLocationForAggregation[]
@@ -75,7 +74,7 @@ export const useExpandLocationHandler = ({
       return locations.map((location) => {
         const existingLocation = prevLocations.find(
           (l) => l.locationIdentifier === location.locationIdentifier
-        );
+        )
 
         return {
           locationIdentifier: location.locationIdentifier,
@@ -86,7 +85,7 @@ export const useExpandLocationHandler = ({
           approaches: location.approaches.map((approach) => {
             const existingApproach = existingLocation?.approaches.find(
               (a) => a.approachId === approach.id
-            );
+            )
 
             return {
               approachId: approach.id,
@@ -96,7 +95,7 @@ export const useExpandLocationHandler = ({
               detectors: approach.detectors.map((detector) => {
                 const existingDetector = existingApproach?.detectors.find(
                   (d) => d.id === detector.id
-                );
+                )
 
                 return {
                   id: detector.id,
@@ -107,11 +106,11 @@ export const useExpandLocationHandler = ({
                   exclude: existingDetector?.exclude ?? false,
                 }
               }),
-            };
+            }
           }),
-        };
-      });
-    });
+        }
+      })
+    })
   }, [locations])
 
   const component: ExpandLocationHandler = {
@@ -120,9 +119,9 @@ export const useExpandLocationHandler = ({
       setUpdatedLocations((prevArr) =>
         prevArr.map((oldLocation) => {
           if (oldLocation.locationIdentifier === location.locationIdentifier) {
-            return { ...oldLocation, open: !oldLocation.open };
+            return { ...oldLocation, open: !oldLocation.open }
           }
-          return oldLocation;
+          return oldLocation
         })
       )
     },
@@ -139,9 +138,9 @@ export const useExpandLocationHandler = ({
       setUpdatedLocations((prevArr) =>
         prevArr.map((oldLocation) => {
           if (oldLocation.locationIdentifier === location.locationIdentifier) {
-            return { ...oldLocation, exclude: !oldLocation.exclude };
+            return { ...oldLocation, exclude: !oldLocation.exclude }
           }
-          return oldLocation;
+          return oldLocation
         })
       )
     },
@@ -153,13 +152,13 @@ export const useExpandLocationHandler = ({
               ...oldLocation,
               approaches: oldLocation.approaches.map((oldApproach) => {
                 if (oldApproach.description === approach.description) {
-                  return { ...oldApproach, open: !oldApproach.open };
+                  return { ...oldApproach, open: !oldApproach.open }
                 }
-                return oldApproach;
+                return oldApproach
               }),
-            };
+            }
           }
-          return oldLocation;
+          return oldLocation
         })
       )
     },
@@ -171,13 +170,13 @@ export const useExpandLocationHandler = ({
               ...oldLocation,
               approaches: oldLocation.approaches.map((oldApproach) => {
                 if (oldApproach.description === approach.description) {
-                  return { ...oldApproach, exclude: !oldApproach.exclude };
+                  return { ...oldApproach, exclude: !oldApproach.exclude }
                 }
-                return oldApproach;
+                return oldApproach
               }),
-            };
+            }
           }
-          return oldLocation;
+          return oldLocation
         })
       )
     },
@@ -193,17 +192,17 @@ export const useExpandLocationHandler = ({
                     ...oldApproach,
                     detectors: oldApproach.detectors.map((oldDetector) => {
                       if (oldDetector.id === detector.id) {
-                        return { ...oldDetector, exclude: !oldDetector.exclude };
+                        return { ...oldDetector, exclude: !oldDetector.exclude }
                       }
-                      return oldDetector;
+                      return oldDetector
                     }),
-                  };
+                  }
                 }
-                return oldApproach;
+                return oldApproach
               }),
-            };
+            }
           }
-          return oldLocation;
+          return oldLocation
         })
       )
     },

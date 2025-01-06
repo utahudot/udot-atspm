@@ -1,4 +1,4 @@
-import { Location } from '@/features/locations/types'
+import { Location } from '@/api/config/aTSPMConfigurationApi.schemas'
 import AddIcon from '@mui/icons-material/Add'
 import CancelIcon from '@mui/icons-material/Close'
 import DeleteIcon from '@mui/icons-material/DeleteOutlined'

@@ -1,6 +1,6 @@
+import { Location } from '@/api/config/aTSPMConfigurationApi.schemas'
 import Markers from '@/components/LocationMap/Markers'
 import MapFilters from '@/components/MapFilters'
-import { Location } from '@/features/locations/types'
 import { getEnv } from '@/utils/getEnv'
 import ClearIcon from '@mui/icons-material/Clear'
 import {

@@ -1,9 +1,12 @@
+import {
+  Device,
+  DeviceConfiguration,
+} from '@/api/config/aTSPMConfigurationApi.schemas'
 import { useGetDeviceConfigurations } from '@/features/devices/api'
 import {
   useCreateDevice,
   useUpdateDevice,
 } from '@/features/devices/api/devices'
-import { Device, DeviceConfiguration } from '@/features/devices/types'
 import { useGetProducts } from '@/features/products/api'
 import { ConfigEnum, useConfigEnums } from '@/hooks/useConfigEnums'
 import {
@@ -41,7 +44,7 @@ export const modalStyle = {
 interface NewDeviceModalProps {
   onClose: () => void
   device?: Device | null
-  locationId: string
+  locationId: number
   refetchDevices: () => void
 }
 

@@ -1,3 +1,4 @@
+import { Location } from '@/api/config/aTSPMConfigurationApi.schemas'
 import { useChartDefaults } from '@/features/charts/api/getChartDefaults'
 import { useGetMeasureTypes } from '@/features/charts/api/getMeasureTypes'
 import { ApproachDelayChartOptions } from '@/features/charts/approachDelay/components/ApproachDelayChartOptions'
@@ -19,7 +20,6 @@ import { Default } from '@/features/charts/types'
 import { getDisplayNameFromChartType } from '@/features/charts/utils'
 import { WaitTimeChartOptions } from '@/features/charts/waitTime/components/WaitTimeOptions'
 import { YellowAndRedActuationsChartOptions } from '@/features/charts/yellowAndRedActuations/components/YellowAndRedActuationsChartOptions'
-import { Location } from '@/features/locations/types/Location'
 import {
   Box,
   Divider,

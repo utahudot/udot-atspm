@@ -1,9 +1,9 @@
+import { Device } from '@/api/config/aTSPMConfigurationApi.schemas'
 import { useGetDeviceConfigurations } from '@/features/devices/api'
 import {
   useDeleteDevice,
   useGetDevicesForLocation,
 } from '@/features/devices/api/devices'
-import { Device } from '@/features/devices/types'
 import DeviceCard from '@/features/locations/components/editLocation/DeviceCard'
 import DeviceModal from '@/features/locations/components/editLocation/NewDeviceModal'
 import AddIcon from '@mui/icons-material/Add'
@@ -11,7 +11,7 @@ import { Avatar, Box, Button, Modal, Typography, useTheme } from '@mui/material'
 import { useState } from 'react'
 
 interface EditDevicesProps {
-  locationId: string
+  locationId: number
 }
 
 const EditDevices = ({ locationId }: EditDevicesProps) => {
