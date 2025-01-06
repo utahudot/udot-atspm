@@ -15,11 +15,11 @@
 // limitations under the License.
 #endregion
 
+using Microsoft.IdentityModel.Tokens;
 using Utah.Udot.Atspm.Business.ApproachSpeed;
 using Utah.Udot.Atspm.Business.SplitFail;
 using Utah.Udot.Atspm.Business.YellowRedActivations;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
-using Utah.Udot.Atspm.Extensions;
 
 namespace Utah.Udot.Atspm.Business.Common
 {

@@ -15,8 +15,9 @@
 // limitations under the License.
 #endregion
 
+using Microsoft.IdentityModel.Tokens;
+using Utah.Udot.Atspm.Business.Common;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
-using Utah.Udot.Atspm.Extensions;
 
 namespace Utah.Udot.Atspm.Business.ApproachSpeed
 {

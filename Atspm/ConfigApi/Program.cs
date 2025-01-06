@@ -20,8 +20,11 @@ using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.AspNetCore.OData;
+using Microsoft.Extensions.Options;
+using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Utah.Udot.Atspm.ConfigApi.Configuration;
 using Utah.Udot.Atspm.ConfigApi.Services;
 using Utah.Udot.Atspm.ConfigApi.Utility;
 using Utah.Udot.Atspm.Infrastructure.Extensions;
@@ -85,6 +88,19 @@ builder.Host.ConfigureServices((h, s) =>
         //                        .AllowTop(100);
     });
 
+    // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+    builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
+    builder.Services.AddSwaggerGen(o =>
+    {
+        var fileName = typeof(Program).Assembly.GetName().Name + ".xml";
+        var filePath = Path.Combine(AppContext.BaseDirectory, fileName);
+
+        // integrate xml comments
+        o.IncludeXmlComments(filePath);
+
+        // Use the full name to avoid schema ID conflicts
+        o.CustomSchemaIds(type => type.FullName);
+    });
 
     var allowedHosts = builder.Configuration.GetSection("AllowedHosts").Get<string>() ?? "*";
     s.AddCors(options =>
