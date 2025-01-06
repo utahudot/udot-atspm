@@ -1,5 +1,4 @@
-﻿using Microsoft.IdentityModel.Tokens;
-using Utah.Udot.Atspm.Business.RampMetering;
+﻿using Utah.Udot.Atspm.Business.RampMetering;
 
 namespace Utah.Udot.ATSPM.ReportApi.ReportServices
 {
