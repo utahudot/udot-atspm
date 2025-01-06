@@ -111,9 +111,15 @@ namespace Utah.Udot.Atspm.ConfigApi.Services
                       (approach.PedestrianPhaseNumber == null ? false : (overlapPhasesInUse.Contains((short)approach.PedestrianPhaseNumber) && approach.IsPedestrianPhaseOverlap == true))))
                 .ToList();
 
+            var removedDetectors = new List<string>();
             // Step 1: Filter and save the Detectors for each Approach
             foreach (var approach in newVersion.Approaches)
             {
+                removedDetectors.AddRange(approach.Detectors
+                    .Where(det => !detectorChannel.Contains((short)det.DetectorChannel))
+                    .Select(det => det.DectectorIdentifier)
+                    .ToList());
+
                 approach.Detectors = approach.Detectors
                     .Where(det => detectorChannel.Contains((short)det.DetectorChannel))
                     .ToList();
@@ -326,6 +332,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Services
                 LoggedButUnusedOverlapPhases = unattachedOverlapPhases,
                 LoggedButUnusedPedestrianPhases = unattachedPedestrianPhases,
                 LoggedButUnusedDetectorChannels = unattachedDetectorChannels,
+                RemovedDetectors = removedDetectors,
                 RemovedApproachIds = removedApproaches.Select(i => i.Id).ToList(),
                 RemovedApproaches = removedApproaches.Select(approach => new ApproachDto
                 {
