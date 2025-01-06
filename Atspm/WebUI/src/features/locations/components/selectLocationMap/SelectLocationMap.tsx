@@ -1,4 +1,4 @@
-import { Location } from '@/features/locations/types'
+import { Location } from '@/api/config/aTSPMConfigurationApi.schemas'
 import { Skeleton } from '@mui/material'
 import dynamic from 'next/dynamic'
 import { memo, useMemo } from 'react'

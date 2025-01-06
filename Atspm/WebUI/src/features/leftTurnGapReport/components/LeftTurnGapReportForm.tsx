@@ -1,4 +1,5 @@
 // components/LeftTurnGapReportForm.tsx
+import { Location } from '@/api/config/aTSPMConfigurationApi.schemas'
 import SelectDateTime from '@/components/selectTimeSpan'
 import { StyledPaper } from '@/components/StyledPaper'
 import { MultiSelectCheckbox } from '@/features/aggregateData/components/chartOptions/MultiSelectCheckbox'
@@ -7,7 +8,6 @@ import { LocationDataCheck } from '@/features/leftTurnGapReport/components/locat
 import { ReportInformation } from '@/features/leftTurnGapReport/components/reportInformation'
 import { TimeOptions } from '@/features/leftTurnGapReport/components/timeOptions'
 import SelectLocation from '@/features/locations/components/selectLocation'
-import { Location } from '@/features/locations/types'
 import { LeftTurnGapReportParams } from '@/pages/left-turn-gap-report'
 import { Box } from '@mui/material'
 import React, { useCallback } from 'react'

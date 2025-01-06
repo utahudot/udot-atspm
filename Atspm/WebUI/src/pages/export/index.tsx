@@ -1,7 +1,7 @@
+import { Location } from '@/api/config/aTSPMConfigurationApi.schemas'
 import { ResponseFormat, useEventLogs } from '@/features/data/api/getEventLogs'
 import SelectDataType from '@/features/data/components/selectDataType'
 import SelectLocation from '@/features/locations/components/selectLocation'
-import { Location } from '@/features/locations/types'
 import { LoadingButton } from '@mui/lab'
 import { Alert, Box, Paper, useMediaQuery, useTheme } from '@mui/material'
 

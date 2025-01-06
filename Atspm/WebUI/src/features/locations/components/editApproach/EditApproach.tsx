@@ -1,3 +1,10 @@
+import {
+  DetectionHardwareTypes,
+  DetectionTypes,
+  DirectionTypes,
+  LaneTypes,
+  MovementTypes,
+} from '@/api/config/aTSPMConfigurationApi.schemas'
 import { AddButton } from '@/components/addButton'
 import {
   useDeleteApproach,
@@ -8,7 +15,6 @@ import ApproachEditorRowHeader from '@/features/locations/components/editApproac
 import DeleteApproachModal from '@/features/locations/components/editApproach/DeleteApproachModal'
 import { hasUniqueDetectorChannels } from '@/features/locations/components/editApproach/utils/checkDetectors'
 import EditDetectors from '@/features/locations/components/editDetector/EditDetectors'
-import { Detector, LocationExpanded } from '@/features/locations/types'
 import { ConfigEnum, useConfigEnums } from '@/hooks/useConfigEnums'
 import { Box, Collapse, Paper } from '@mui/material'
 import React, { useEffect, useState } from 'react'
@@ -49,8 +55,11 @@ function EditApproach({ approach, handler }: ApproachAdminProps) {
   const { findEnumByNameOrAbbreviation: findMovementType } = useConfigEnums(
     ConfigEnum.MovementTypes
   )
+
   const { findEnumByNameOrAbbreviation: findDetectionHardware } =
     useConfigEnums(ConfigEnum.DetectionHardwareTypes)
+
+  console.log('types', findDetectionHardware('NA'))
 
   useEffect(() => {
     const { isValid, errors } = hasUniqueDetectorChannels(handler.approaches)
@@ -74,7 +83,7 @@ function EditApproach({ approach, handler }: ApproachAdminProps) {
       index: handler.approaches.length,
       open: false,
       description: `${approach.description} (copy)`,
-      detectors: detectors.map(({ id, ...restDetector }) => ({
+      detectors: detectors?.map(({ id, ...restDetector }) => ({
         ...restDetector,
       })),
     }
@@ -145,9 +154,9 @@ function EditApproach({ approach, handler }: ApproachAdminProps) {
     delete modifiedApproach.open
     delete modifiedApproach.isNew
 
-    modifiedApproach.directionTypeId = findDirectionType(
-      modifiedApproach.directionTypeId
-    )?.value
+    modifiedApproach.directionTypeId =
+      findDirectionType(modifiedApproach.directionTypeId)?.value ||
+      DirectionTypes.NA
     modifiedApproach.detectors.forEach((detector) => {
       if (detector.isNew) {
         delete detector.id
@@ -169,18 +178,21 @@ function EditApproach({ approach, handler }: ApproachAdminProps) {
 
     editApproach(modifiedApproach, {
       onSuccess: (data: ApproachForConfig) => {
-        data.directionTypeId = findDirectionType(data.directionTypeId)?.name
+        data.directionTypeId =
+          findDirectionType(data.directionTypeId)?.name || DirectionTypes.NA
         data.detectors.forEach((detector) => {
           detector.detectionTypes.forEach((detectionType) => {
-            detectionType.abbreviation = findDetectionType(
-              detectionType.abbreviation
-            )?.name
+            detectionType.abbreviation =
+              findDetectionType(detectionType.abbreviation)?.name ||
+              DetectionTypes.NA
           })
-          detector.detectionHardware = findDetectionHardware(
-            detector.detectionHardware
-          )?.name
-          detector.movementType = findMovementType(detector.movementType)?.name
-          detector.laneType = findLaneType(detector.laneType)?.name
+          detector.detectionHardware =
+            findDetectionHardware(detector.detectionHardware)?.name ||
+            DetectionHardwareTypes.NA
+          detector.movementType =
+            findMovementType(detector.movementType)?.name || MovementTypes.NA
+          detector.laneType =
+            findLaneType(detector.laneType)?.name || LaneTypes.NA
         })
 
         handler.updateApproaches(
@@ -216,7 +228,7 @@ function EditApproach({ approach, handler }: ApproachAdminProps) {
   const handleAddNewDetectorClick = () => {
     const newDetector: Partial<DetectorForConfig> = {
       isNew: true,
-      id: crypto.randomUUID(),
+      id: parseInt(crypto.randomUUID()),
       approachId: approach.id,
       dateDisabled: null,
       decisionPoint: null,
@@ -235,7 +247,7 @@ function EditApproach({ approach, handler }: ApproachAdminProps) {
 
     const updatedApproach = {
       ...approach,
-      detectors: [newDetector as Detector, ...approach.detectors],
+      detectors: [newDetector, ...approach.detectors],
     }
 
     handler.updateApproaches(
@@ -271,7 +283,7 @@ function EditApproach({ approach, handler }: ApproachAdminProps) {
             errors={errors}
             approach={approach}
             approaches={handler.approaches}
-            location={handler.expandedLocation as LocationExpanded}
+            location={handler.expandedLocation}
             updateApproach={updateApproach}
             updateApproaches={handler.updateApproaches}
           />

@@ -14,7 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 // #endregion
-import { DirectionType } from '@/features/locations/types'
+import { DirectionType } from '@/api/config/aTSPMConfigurationApi.schemas'
 import { useGetRequest } from '@/hooks/useGetRequest'
 import { ApiResponse } from '@/types'
 

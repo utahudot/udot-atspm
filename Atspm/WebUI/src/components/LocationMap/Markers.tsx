@@ -1,4 +1,4 @@
-import { Location } from '@/features/locations/types'
+import { Location } from '@/api/config/aTSPMConfigurationApi.schemas'
 import { generatePin } from '@/features/locations/utils'
 import { Box } from '@mui/material'
 import { useEffect, useState } from 'react'

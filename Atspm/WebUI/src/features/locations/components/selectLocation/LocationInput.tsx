@@ -1,4 +1,4 @@
-import { Location } from '@/features/locations/types'
+import { Location } from '@/api/config/aTSPMConfigurationApi.schemas'
 import { Autocomplete, TextField } from '@mui/material'
 import match from 'autosuggest-highlight/match'
 import parse from 'autosuggest-highlight/parse'
@@ -17,7 +17,7 @@ const customSort = (options: Location[], value: string) => {
       const aStartsWithInput = a.locationIdentifier.startsWith(value)
       const bStartsWithInput = b.locationIdentifier.startsWith(value)
       if (aStartsWithInput && !bStartsWithInput) {
-        return -1 
+        return -1
       }
       if (bStartsWithInput && !aStartsWithInput) {
         return 1
@@ -39,7 +39,6 @@ const LocationInput = ({
   location,
   locations,
   handleChange,
-  
 }: LocationInputProps) => {
   const [inputValue, setInputValue] = useState('')
   return (

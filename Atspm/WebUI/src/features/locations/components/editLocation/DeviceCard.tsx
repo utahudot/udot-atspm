@@ -1,5 +1,5 @@
+import { Device } from '@/api/config/aTSPMConfigurationApi.schemas'
 import { useGetDeviceConfigurations } from '@/features/devices/api'
-import { Device } from '@/features/locations/types'
 import CircleIcon from '@mui/icons-material/Circle'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
 import QuestionMarkIcon from '@mui/icons-material/QuestionMark'

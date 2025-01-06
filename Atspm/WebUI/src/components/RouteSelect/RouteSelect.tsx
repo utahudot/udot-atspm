@@ -1,6 +1,6 @@
+import { Location } from '@/api/config/aTSPMConfigurationApi.schemas'
 import { ExpandLocationHandler } from '@/features/data/aggregate/handlers/expandLocationHandler'
 import SelectLocation from '@/features/locations/components/selectLocation'
-import { Location } from '@/features/locations/types'
 import {
   Box,
   Button,

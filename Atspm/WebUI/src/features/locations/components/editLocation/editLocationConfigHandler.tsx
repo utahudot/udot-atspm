@@ -8,17 +8,23 @@ import { sortApproachesByPhaseNumber } from '@/features/locations/components/edi
 import { useEffect, useState } from 'react'
 
 interface LocationHandlerProps {
-  location: Location
+  location: Location | null
 }
 
-export interface ApproachForConfig extends Approach {
+export interface ApproachForConfig
+  extends Omit<Approach, 'id' | 'detectors' | 'protectedPhaseNumber'> {
+  id?: number
   index?: number
   open?: boolean
   isNew?: boolean
+  detectors: DetectorForConfig[]
+  protectedPhaseNumber: number | null
 }
 
-export interface DetectorForConfig extends Detector {
-  isNew: boolean
+export interface DetectorForConfig extends Omit<Detector, 'id' | 'approachId'> {
+  id?: number
+  approachId?: number
+  isNew?: boolean
 }
 
 export interface LocationConfigHandler {
