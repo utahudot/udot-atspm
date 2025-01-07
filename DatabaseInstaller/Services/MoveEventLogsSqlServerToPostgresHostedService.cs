@@ -37,7 +37,7 @@ namespace DatabaseInstaller.Services
     public class MoveEventLogsSqlServerToPostgresHostedService : IHostedService
     {
         private readonly IServiceProvider _serviceProvider;
-        private readonly IOptions<CopyConfigCommandConfiguration> _config;
+        private readonly TransferCommandConfiguration _config;
         private readonly ILogger<UpdateCommandHostedService> _logger;
         private readonly IHostApplicationLifetime _hostApplicationLifetime;
         private readonly IEventLogRepository _eventLogRepository;
@@ -45,7 +45,7 @@ namespace DatabaseInstaller.Services
 
         public MoveEventLogsSqlServerToPostgresHostedService(
             IServiceProvider serviceProvider,
-            IOptions<CopyConfigCommandConfiguration> config,
+            IOptions<TransferCommandConfiguration> config,
             ILogger<UpdateCommandHostedService> logger,
             IHostApplicationLifetime hostApplicationLifetime,
             IEventLogRepository eventLogRepository
@@ -53,7 +53,7 @@ namespace DatabaseInstaller.Services
             )
         {
             _serviceProvider = serviceProvider;
-            _config = config;
+            _config = config.Value;
             _logger = logger;
             _hostApplicationLifetime = hostApplicationLifetime;
             _eventLogRepository = eventLogRepository;
@@ -65,7 +65,7 @@ namespace DatabaseInstaller.Services
             try
             {
             //    using var scope = _serviceProvider.CreateScope();
-            //    var serviceProvider = scope.ServiceProvider;
+            //    var _serviceProvider = scope.ServiceProvider;
 
             //    // SQL Server DbContext to read logs
             //    var sqlOptions = new DbContextOptionsBuilder<EventLogContext>()
@@ -73,8 +73,8 @@ namespace DatabaseInstaller.Services
             //        .Options;
 
             //    using var sqlServerContext = new EventLogContext(sqlOptions);
-            //    var sqlSeverRepository = new IndianaEventLogEFRepository(sqlServerContext, serviceProvider.GetService<ILogger<IndianaEventLogEFRepository>>());
-            //    var sqltestSeverRepository = new EventLogEFRepository(sqlServerContext, serviceProvider.GetService<ILogger<EventLogEFRepository>>());
+            //    var sqlSeverRepository = new IndianaEventLogEFRepository(sqlServerContext, _serviceProvider.GetService<ILogger<IndianaEventLogEFRepository>>());
+            //    var sqltestSeverRepository = new EventLogEFRepository(sqlServerContext, _serviceProvider.GetService<ILogger<EventLogEFRepository>>());
 
 
                 // PostgreSQL DbContext to write logs
@@ -83,7 +83,7 @@ namespace DatabaseInstaller.Services
                 //    .Options;
 
                 //using var postgresContext = new EventLogContext(postgresOptions);
-                //var postgresSeverRepository = new IndianaEventLogEFRepository(postgresContext, serviceProvider.GetService<ILogger<IndianaEventLogEFRepository>>());
+                //var postgresSeverRepository = new IndianaEventLogEFRepository(postgresContext, _serviceProvider.GetService<ILogger<IndianaEventLogEFRepository>>());
                 var locations = new List<string>
                {
                     "2122",
@@ -178,7 +178,7 @@ namespace DatabaseInstaller.Services
                     {
                         // SQL Server DbContext to read logs
                         var sqlOptions = new DbContextOptionsBuilder<EventLogContext>()
-                            .UseSqlServer(_config.Value.Source)
+                            .UseSqlServer(_config.Source)
                             .Options;
 
                         using var sqlServerContext = new EventLogContext(sqlOptions);
@@ -192,7 +192,10 @@ namespace DatabaseInstaller.Services
                         try
                         {
                             Console.WriteLine($"Getting logs for {location}...");
-                            var logs = sqltestSeverRepository.GetArchivedEvents("2306", DateOnly.FromDateTime(Convert.ToDateTime("2024-11-1")), DateOnly.FromDateTime(Convert.ToDateTime("2024-11-18")));
+                            var logs = sqltestSeverRepository.GetArchivedEvents(
+                                location, 
+                                DateOnly.FromDateTime(_config.Start), 
+                                DateOnly.FromDateTime(_config.End));
                             Console.WriteLine($"Logs for {location} retrieved");
                             Console.WriteLine($"Saving logs for {location}...");
                             postgresSeverRepository.AddRange(logs);

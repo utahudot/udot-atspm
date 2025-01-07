@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for DatabaseInstaller - DatabaseInstaller.Commands/CopyConfigurationCommand.cs
+// for DatabaseInstaller - DatabaseInstaller.Commands/TransferConfigCommand.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,24 +24,27 @@ using System.CommandLine.NamingConventionBinder;
 
 namespace DatabaseInstaller.Commands
 {
-    public class CopyConfigurationCommand : Command, ICommandOption<CopyConfigCommandConfiguration>
+    public class TransferConfigCommand : Command, ICommandOption<TransferConfigCommandConfiguration>
     {
 
-        public CopyConfigurationCommand() : base("copy-config", "Copy configuration data from SQL Server to PostgreSQL")
+        public TransferConfigCommand() : base("transfer-config", "Copy configuration data from SQL Server to PostgreSQL")
         {
             AddOption(SourceOption);
-            AddOption(TargetOption);
+            AddOption(DeleteOption);
+            AddOption(UpdateLocationsOption);
         }
 
         public Option<string> SourceOption { get; set; } = new("--source", "Connection string for the source SQL Server");
-        public Option<string> TargetOption { get; set; } = new("--target", "Connection string for the target PostgreSQL database");
+        public Option<bool> DeleteOption { get; set; } = new("--delete", "Delete before inserting locations");
+        public Option<bool> UpdateLocationsOption { get; set; } = new("--update-locations", "Update Locations from target");
 
-        public ModelBinder<CopyConfigCommandConfiguration> GetOptionsBinder()
+        public ModelBinder<TransferConfigCommandConfiguration> GetOptionsBinder()
         {
-            var binder = new ModelBinder<CopyConfigCommandConfiguration>();
+            var binder = new ModelBinder<TransferConfigCommandConfiguration>();
 
             binder.BindMemberFromValue(b => b.Source, SourceOption);
-            binder.BindMemberFromValue(b => b.Target, TargetOption);
+            binder.BindMemberFromValue(b => b.Delete, DeleteOption);
+            binder.BindMemberFromValue(b => b.UpdateLocations, UpdateLocationsOption);
 
             return binder;
         }
@@ -50,15 +53,16 @@ namespace DatabaseInstaller.Commands
         public void BindCommandOptions(HostBuilderContext host, IServiceCollection services)
         {
             services.AddSingleton(GetOptionsBinder());
-            services.AddOptions<CopyConfigCommandConfiguration>().BindCommandLine();
-            services.AddHostedService<CopyConfigCommandHostedService>();
+            services.AddOptions<TransferConfigCommandConfiguration>().BindCommandLine();
+            services.AddHostedService<TransferConfigCommandHostedService>();
         }
     }
 
-    public class CopyConfigCommandConfiguration
+    public class TransferConfigCommandConfiguration
     {
         public string Source { get; set; }
-        public string Target { get; set; }
-
+        public bool Delete { get; set; }
+        public bool UpdateLocations { get; set; }
+        public bool UpdateGeneralConfiguration { get; set; }
     }
 }
