@@ -1,17 +1,16 @@
-import { AddButton } from '@/components/addButton'
+import ApproachOptions from '@/features/locations/components/ApproachOptions/ApproachOptions'
 import EditApproach from '@/features/locations/components/editApproach/EditApproach'
 import EditGeneralLocation from '@/features/locations/components/editLocation/editGeneralLocation'
 import { TabContext, TabList, TabPanel } from '@mui/lab'
 import { Box, Tab, Typography } from '@mui/material'
 import { useEffect, useState } from 'react'
-import { Location } from '../../types'
 import EditDevices from './EditDevices'
-import EditLocationHeader from './EditLocationHeader'
-import WatchdogEditor from './WatchdogEditor'
 import {
   ApproachForConfig,
   LocationConfigHandler,
 } from './editLocationConfigHandler'
+import EditLocationHeader from './EditLocationHeader'
+import WatchdogEditor from './WatchdogEditor'
 
 interface EditLocationProps {
   handler: LocationConfigHandler
@@ -61,34 +60,21 @@ const EditLocation = ({
         <EditDevices locationId={handler.expandedLocation.id} />
       </TabPanel>
       <TabPanel value="3" sx={{ padding: 0, minHeight: '400px' }}>
-        <Box sx={{ minHeight: '400px' }}>
-          <Box
-            sx={{
-              display: 'flex',
-              justifyContent: 'flex-end',
-            }}
-          >
-            <AddButton
-              label="New Approach"
-              onClick={handler.handleAddNewApproach}
-              sx={{ mb: 0.2 }}
-            />
+        <ApproachOptions handler={handler} />
+        {sortedApproaches?.map((approach) => (
+          <EditApproach
+            key={approach.id}
+            approach={approach}
+            handler={handler}
+          />
+        ))}
+        {sortedApproaches.length === 0 && (
+          <Box sx={{ p: 2, mt: 2, textAlign: 'center' }}>
+            <Typography variant="caption" fontStyle={'italic'}>
+              No approaches found
+            </Typography>
           </Box>
-          {sortedApproaches?.map((approach) => (
-            <EditApproach
-              key={approach.id}
-              approach={approach}
-              handler={handler}
-            />
-          ))}
-          {sortedApproaches.length === 0 && (
-            <Box sx={{ p: 2, mt: 2, textAlign: 'center' }}>
-              <Typography variant="caption" fontStyle={'italic'}>
-                No approaches found
-              </Typography>
-            </Box>
-          )}
-        </Box>
+        )}
       </TabPanel>
       <TabPanel value="4" sx={{ padding: 0 }}>
         <WatchdogEditor handler={handler} />
