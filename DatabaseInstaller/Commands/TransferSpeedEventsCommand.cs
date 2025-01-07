@@ -24,17 +24,18 @@ using System.CommandLine.NamingConventionBinder;
 
 namespace DatabaseInstaller.Commands
 {
-    public class MoveEventLogsSqlServerToPostgresCommand : Command, ICommandOption<TransferCommandConfiguration>
+    public class TransferSpeedEventsCommand : Command, ICommandOption<TransferCommandConfiguration>
     {
-        public MoveEventLogsSqlServerToPostgresCommand() : base("copy-sql", "Apply migrations and optionally seed the admin user")
+        public TransferSpeedEventsCommand() : base("transfer-speed", "Transfer speed events from 4.3 to 5.0")
         {
             AddOption(SourceOption);
             AddOption(StartOption);
+            AddOption(EndOption);
         }
 
         public Option<string> SourceOption { get; set; } = new("--source", "Connection string for the source SQL Server");
-        public Option<DateTime> StartOption { get; set; } = new("--start", "Start Date");
-        public Option<DateTime> EndOption { get; set; } = new("--end", "Start Date");
+        public Option<DateTime> StartOption { get; set; } = new("--start", "Start date");
+        public Option<DateTime> EndOption { get; set; } = new("--end", "End date");
 
         public ModelBinder<TransferCommandConfiguration> GetOptionsBinder()
         {
@@ -42,7 +43,7 @@ namespace DatabaseInstaller.Commands
 
             binder.BindMemberFromValue(b => b.Source, SourceOption);
             binder.BindMemberFromValue(b => b.Start, StartOption);
-            binder.BindMemberFromValue(b => b.End, EndOption);
+            binder.BindMemberFromValue(b => b .End, EndOption);
 
             return binder;
         }
@@ -51,9 +52,7 @@ namespace DatabaseInstaller.Commands
         {
             services.AddSingleton(GetOptionsBinder());
             services.AddOptions<TransferCommandConfiguration>().BindCommandLine();
-            services.AddHostedService<MoveEventLogsSqlServerToPostgresHostedService>();
+            services.AddHostedService<TransferEventLogsHostedService>();
         }
     }
-
-
 }
