@@ -17,6 +17,7 @@
 
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
+using Utah.Udot.Atspm.Business.Watchdog;
 using Utah.Udot.Atspm.Repositories;
 
 namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
@@ -31,12 +32,12 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
         private readonly IUserRegionRepository userRegionRepository;
         private readonly IUserJurisdictionRepository userJurisdictionRepository;
         private readonly IUserAreaRepository userAreaRepository;
-        private readonly WatchDogIgnoreEventService ignoreEventService;
+        private readonly IWatchDogIgnoreEventService ignoreEventService;
 
         private readonly UserManager<ApplicationUser> userManager;
         private readonly RoleManager<IdentityRole> roleManager;
         private readonly WatchDogLogService logService;
-        private readonly WatchdogEmailService emailService;
+        private readonly IWatchdogEmailService emailService;
         private readonly SegmentedErrorsService segmentedErrorsService;
         private readonly ILogger<ScanService> logger;
 
@@ -52,10 +53,10 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
             UserManager<ApplicationUser> userManager,
             RoleManager<IdentityRole> roleManager,
             WatchDogLogService logService,
-            WatchdogEmailService emailService,
+            IWatchdogEmailService emailService,
             ILogger<ScanService> logger,
             SegmentedErrorsService segmentedErrorsService,
-            WatchDogIgnoreEventService ignoreEventService)
+            IWatchDogIgnoreEventService ignoreEventService)
         {
             this.LocationRepository = LocationRepository;
             this.watchDogLogEventRepository = watchDogLogEventRepository;

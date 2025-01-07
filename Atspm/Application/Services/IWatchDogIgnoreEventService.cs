@@ -15,10 +15,13 @@
 // limitations under the License.
 #endregion
 
+using Utah.Udot.Atspm.Business.Watchdog;
+
 namespace Utah.Udot.Atspm.Services
 {
     public interface IWatchDogIgnoreEventService
     {
-        public void SetIgnoreEvent(WatchDogIgnoreEvent watchDogIgnoreEvent);
+        List<WatchDogLogEvent> GetFilteredWatchDogEventsForEmail(List<WatchDogLogEvent> watchDogLogEvents, DateTime scanDate);
+        List<WatchDogLogEvent> GetFilteredWatchDogEventsForReport(WatchDogOptions parameter);
     }
 }

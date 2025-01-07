@@ -18,6 +18,7 @@
 using Microsoft.Extensions.Logging;
 using System.Collections.Concurrent;
 using Utah.Udot.Atspm.Business.Common;
+using Utah.Udot.Atspm.Business.Watchdog;
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
 using Utah.Udot.Atspm.TempExtensions;
@@ -150,13 +151,8 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
         private (DateTime start, DateTime end) CalculateStartAndEndTime(WatchdogLoggingOptions options, int startHour, int endHour)
         {
             var scanDate = options.ScanDate;
-            var start = options.WeekdayOnly && scanDate.DayOfWeek == DayOfWeek.Monday
-                ? scanDate.AddDays(-3).Date.AddHours(startHour)
-                : scanDate.AddDays(-1).Date.AddHours(startHour);
-
-            var end = options.WeekdayOnly && scanDate.DayOfWeek == DayOfWeek.Monday
-                ? scanDate.AddDays(-3).Date.AddHours(endHour)
-                : scanDate.AddDays(-1).Date.AddHours(endHour);
+            var start = scanDate.Date.AddHours(startHour);
+            var end = scanDate.Date.AddHours(endHour);
 
             return (start, end);
         }
@@ -219,16 +215,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                         var direction = detector.Approach.DirectionType.Description;
                         var start = new DateTime();
                         var end = new DateTime();
-                        if (options.WeekdayOnly && options.ScanDate.DayOfWeek == DayOfWeek.Monday)
-                        {
-                            start = options.ScanDate.AddDays(-3).Date.AddHours(options.PreviousDayPMPeakStart);
-                            end = options.ScanDate.AddDays(-3).Date.AddHours(options.PreviousDayPMPeakEnd);
-                        }
-                        else
-                        {
-                            start = options.ScanDate.AddDays(-1).Date.AddHours(options.PreviousDayPMPeakStart);
-                            end = options.ScanDate.AddDays(-1).Date.AddHours(options.PreviousDayPMPeakEnd);
-                        }
+
                         var currentVolume = locationEvents.Where(e => e.EventParam == detector.DetectorChannel && detectorEventCodes.Contains(e.EventCode)).Count();
                         //Compare collected hits to low hit threshold, 
                         if (currentVolume < Convert.ToInt32(options.LowHitThreshold))
