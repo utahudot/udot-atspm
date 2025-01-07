@@ -108,6 +108,7 @@ const LocationTemplateInputs = ({
                 <TextField
                   {...field}
                   fullWidth
+                  sx={{ marginBottom: 1 }}
                   error={!!errors.devices?.[index]?.ipaddress}
                   helperText={errors.devices?.[index]?.ipaddress?.message}
                   label={`Device IP Address - ${device.deviceType}`}

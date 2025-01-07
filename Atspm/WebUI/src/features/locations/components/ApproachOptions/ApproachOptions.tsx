@@ -1,6 +1,7 @@
 import { useGetLocationSyncLocationFromKey } from '@/api/config/aTSPMConfigurationApi'
 import { AddButton } from '@/components/addButton'
 import { LocationConfigHandler } from '@/features/locations/components/editLocation/editLocationConfigHandler'
+import { useLocationStore } from '@/features/locations/locationStore'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import CloseIcon from '@mui/icons-material/Close'
 import DoneIcon from '@mui/icons-material/Done'
@@ -15,13 +16,16 @@ import {
   Paper,
   Typography,
 } from '@mui/material'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 interface ApproachOptionsProps {
   handler: LocationConfigHandler
 }
 
 const ApproachOptions = ({ handler }: ApproachOptionsProps) => {
+  const setBadApproaches = useLocationStore((state) => state.setBadApproaches)
+  const setBadDetectors = useLocationStore((state) => state.setBadDetectors)
+  const resetLocationStore = useLocationStore((state) => state.reset)
   const { mutateAsync, isLoading } = useGetLocationSyncLocationFromKey()
   const [showSyncContainer, setShowSyncContainer] = useState(false)
   const [categories, setCategories] = useState({
@@ -36,20 +40,32 @@ const ApproachOptions = ({ handler }: ApproachOptionsProps) => {
       const response = await mutateAsync({
         key: parseInt(handler.expandedLocation.id),
       })
-      const loggedButUnusedPhases = [
-        ...response.loggedButUnusedProtectedOrPermissivePhases,
-        ...response.loggedButUnusedOverlapPhases,
-        // ...response.loggedButUnusedPedestrianPhases,
-      ]
+
+      const notFoundApproaches = response.removedApproachIds.map(
+        (id: number) => {
+          const approach = handler.approaches.find(
+            (approach: any) => approach.id === id
+          )
+          return approach
+            ? approach.description
+            : `Unknown Approach (ID: ${id})`
+        }
+      )
+
+      setBadApproaches(response.removedApproachIds)
+      setBadDetectors(response.removedDetectors)
 
       setCategories({
-        foundPhases: loggedButUnusedPhases,
+        foundPhases: [
+          ...response.loggedButUnusedProtectedOrPermissivePhases,
+          ...response.loggedButUnusedOverlapPhases,
+        ],
         foundDetectors: response.loggedButUnusedDetectorChannels,
-        notFoundApproaches: response.removedApproachIds,
+        notFoundApproaches,
         notFoundDetectors: response.removedDetectors,
       })
 
-      setShowSyncContainer(true) // Show the sync container after syncing
+      setShowSyncContainer(true)
     } catch (error) {
       console.error(error)
     }
@@ -57,7 +73,7 @@ const ApproachOptions = ({ handler }: ApproachOptionsProps) => {
 
   // Memoized arrays of found detector channels and approach phases
   const syncedPhases = useMemo(() => {
-    return handler.approaches.flatMap((approach: any) => [
+    return handler.approaches.flatMap((approach) => [
       approach.protectedPhaseNumber,
       approach.permissivePhaseNumber,
       approach.pedestrianPhaseNumber,
@@ -65,8 +81,8 @@ const ApproachOptions = ({ handler }: ApproachOptionsProps) => {
   }, [handler.approaches])
 
   const syncedDetectors = useMemo(() => {
-    return handler.approaches.flatMap((approach: any) =>
-      approach.detectors.map((det: any) => det.detectorChannel)
+    return handler.approaches.flatMap((approach) =>
+      approach.detectors.map((det) => det.detectorChannel)
     )
   }, [handler.approaches])
 
@@ -77,6 +93,18 @@ const ApproachOptions = ({ handler }: ApproachOptionsProps) => {
   const isDetectorSynced = (detector: string): boolean => {
     return syncedDetectors.includes(detector)
   }
+
+  // Reset store and local state when location changes
+  useEffect(() => {
+    resetLocationStore() // Clear badApproaches and badDetectors
+    setCategories({
+      foundPhases: [],
+      foundDetectors: [],
+      notFoundApproaches: [],
+      notFoundDetectors: [],
+    })
+    setShowSyncContainer(false)
+  }, [handler.expandedLocation.id, resetLocationStore])
 
   const renderCategory = (
     title: string,
@@ -128,7 +156,7 @@ const ApproachOptions = ({ handler }: ApproachOptionsProps) => {
 
       {/* Detectors Section */}
       <Typography variant="subtitle1" sx={{ mb: 0.5 }}>
-        Detectors
+        Detector Channels
       </Typography>
       {detectors.length === 0 && (
         <Typography
@@ -220,6 +248,7 @@ const ApproachOptions = ({ handler }: ApproachOptionsProps) => {
               variant="contained"
               color="primary"
               onClick={() => setShowSyncContainer(false)}
+              sx={{ mt: 1 }}
             >
               Finish
             </Button>
