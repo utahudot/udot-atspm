@@ -82,8 +82,6 @@ function transformData(data: RawTimingAndActuationData) {
     end,
   } = data
 
-  console.log('data', data)
-
   const title = { text: data.approachDescription }
 
   const xAxis = createXAxis(data.start, data.end)

@@ -207,14 +207,10 @@ export const useAggregateOptionsHandler = (): AggregateOptionsHandler => {
 
   const handleSubmit = async () => {
     const aggregateObject: AggregateApiData = createAggregateObject()
-    try {
-      const result: AggregateData[] = (await postMutation.mutateAsync(
-        aggregateObject
-      )) as unknown as AggregateData[]
-      setAggregatedData(result)
-    } catch (e) {
-      console.log('error')
-    }
+    const result: AggregateData[] = (await postMutation.mutateAsync(
+      aggregateObject
+    )) as unknown as AggregateData[]
+    setAggregatedData(result)
   }
 
   useEffect(() => {

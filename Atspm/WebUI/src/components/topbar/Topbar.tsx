@@ -97,6 +97,7 @@ export default function Topbar() {
               src="/images/atspm-logo-new.png"
               priority
               fill
+              sizes="200px"
               style={{ cursor: 'pointer', objectFit: 'contain' }}
             />
           </Box>

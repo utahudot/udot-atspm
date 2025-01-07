@@ -62,10 +62,17 @@ export const SelectDataType = ({
     dataWithRawData = ['All Raw Data', ...AggData]
   }
 
-  const formatPascalCase = (option: string) => {
-return option.replace(/Aggregation/g, '').replace(/([a-z])([A-Z])/g, '$1 $2');
-  }
-
+  const formatPascalCase = (option: string): string => {
+    // Check if the option is 'ApproachPcdAggregation'
+    if (option === 'ApproachPcdAggregation') {
+      return 'Approach PCD';
+    }
+      let formatted = option.replace(/Aggregation/g, '');
+    
+    formatted = formatted.replace(/([a-z])([A-Z])/g, '$1 $2');
+    
+    return formatted;
+  };
   const handleLabelSelect = (label: string) => {
     setSelectedDataType(label)
     setIsAllRawDataSelected(label === 'All Raw Data')
