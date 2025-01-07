@@ -39,7 +39,7 @@ const ApproachOptions = ({ handler }: ApproachOptionsProps) => {
       const loggedButUnusedPhases = [
         ...response.loggedButUnusedProtectedOrPermissivePhases,
         ...response.loggedButUnusedOverlapPhases,
-        ...response.loggedButUnusedPedestrianPhases,
+        // ...response.loggedButUnusedPedestrianPhases,
       ]
 
       setCategories({
@@ -82,8 +82,7 @@ const ApproachOptions = ({ handler }: ApproachOptionsProps) => {
     title: string,
     subtext: string,
     phases: string[],
-    detectors: string[],
-    synced: boolean
+    detectors: string[]
   ) => (
     <Box>
       <Typography variant="h4" sx={{ mb: 1 }} fontWeight={'bold'}>
@@ -97,7 +96,7 @@ const ApproachOptions = ({ handler }: ApproachOptionsProps) => {
       <Typography variant="subtitle1" sx={{ mb: 0.5 }}>
         Phases/Approaches
       </Typography>
-      {phases.length === 0 && synced && (
+      {phases.length === 0 && (
         <Typography
           variant="body2"
           color="success.main"
@@ -109,7 +108,7 @@ const ApproachOptions = ({ handler }: ApproachOptionsProps) => {
           }}
         >
           <CheckCircleIcon sx={{ fontSize: '1rem', mr: 0.5 }} />
-          Synced!
+          In Sync
         </Typography>
       )}
       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
@@ -131,7 +130,7 @@ const ApproachOptions = ({ handler }: ApproachOptionsProps) => {
       <Typography variant="subtitle1" sx={{ mb: 0.5 }}>
         Detectors
       </Typography>
-      {detectors.length === 0 && synced && (
+      {detectors.length === 0 && (
         <Typography
           variant="body2"
           color="success.main"
@@ -143,7 +142,7 @@ const ApproachOptions = ({ handler }: ApproachOptionsProps) => {
           }}
         >
           <CheckCircleIcon sx={{ fontSize: '1rem', mr: 0.5 }} />
-          Synced!
+          In Sync
         </Typography>
       )}
       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
@@ -200,16 +199,14 @@ const ApproachOptions = ({ handler }: ApproachOptionsProps) => {
             'Found',
             'Found data for the following phases/detector channels with no associated approach/detector',
             categories.foundPhases,
-            categories.foundDetectors,
-            false // Not synced
+            categories.foundDetectors
           )}
           <Divider sx={{ my: 2 }} />
           {renderCategory(
             'Not Found',
             'No data was found for the following approaches/detectors',
             categories.notFoundApproaches,
-            categories.notFoundDetectors,
-            true // Synced
+            categories.notFoundDetectors
           )}
 
           {/* Finish Button */}
