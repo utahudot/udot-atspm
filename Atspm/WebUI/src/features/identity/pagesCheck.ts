@@ -36,8 +36,8 @@ export enum PageNames {
 
 const generalConfigListToLink: Map<string, string> = new Map([
   [PageNames.FAQs, '/admin/faq'],
-  [PageNames.MeasureDefaults, '/admin/measure-defaults'],
   [PageNames.MenuItems, '/admin/menu-items'],
+  [PageNames.MeasureDefaults, '/admin/measure-defaults'],
 ])
 const locationConfigListToLink: Map<string, string> = new Map([
   [PageNames.Areas, '/admin/areas'],
@@ -75,34 +75,22 @@ export const useGetAdminPagesList = () => {
   if (claims.toLowerCase().includes('admin')) {
     adminAccessToLinks.forEach((map) => {
       map.forEach((value, key) => {
-        pagesToView.set(key.trim(), value)
+        pagesToView.set(key, value)
       })
     })
-
-    // Sort entries alphabetically
-    return new Map(
-      [...pagesToView.entries()].sort((a, b) =>
-        a[0].trim().localeCompare(b[0].trim())
-      )
-    )
+    return pagesToView
   } else {
     const claimsList = claims.split(',')
     claimsList.forEach((claim) => {
       adminAccessToLinks.forEach((value, key) => {
         if (claim.toLowerCase() === key.toLowerCase()) {
           value.forEach((linkValue, linkKey) => {
-            pagesToView.set(linkKey.trim(), linkValue)
+            pagesToView.set(linkKey, linkValue)
           })
         }
       })
     })
-
-    // Sort entries alphabetically
-    return new Map(
-      [...pagesToView.entries()].sort((a, b) =>
-        a[0].trim().localeCompare(b[0].trim())
-      )
-    )
+    return pagesToView
   }
 }
 
