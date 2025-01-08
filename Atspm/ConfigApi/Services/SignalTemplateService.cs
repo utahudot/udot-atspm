@@ -55,7 +55,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Services
             if (sourceLocation != null)
             {
 
-                var compressedLocationsEvents = _eventLogRepository.GetArchivedEvents(locationId.ToString(), DateOnly.Parse(yesterday), DateOnly.Parse(yesterday));
+                var compressedLocationsEvents = _eventLogRepository.GetArchivedEvents(sourceLocation.LocationIdentifier, DateOnly.Parse(yesterday), DateOnly.Parse(yesterday));
                 var indianaEvents = compressedLocationsEvents.Where(l => l.DataType == typeof(IndianaEvent)).SelectMany(s => s.Data).Cast<IndianaEvent>();
                 return ModifyLocationWithEvents(sourceLocation, indianaEvents);
             }
@@ -117,7 +117,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Services
             {
                 removedDetectors.AddRange(approach.Detectors
                     .Where(det => !detectorChannel.Contains((short)det.DetectorChannel))
-                    .Select(det => det.DectectorIdentifier)
+                    .Select(det => det.DetectorChannel.ToString())
                     .ToList());
 
                 approach.Detectors = approach.Detectors
