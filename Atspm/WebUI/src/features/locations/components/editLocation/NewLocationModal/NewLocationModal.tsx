@@ -1,4 +1,4 @@
-import { useSaveTemplatedLocationLocationFromKey } from '@/api/config/aTSPMConfigurationApi'
+import { useGetLocationSaveTemplatedLocationFromKey } from '@/api/config/aTSPMConfigurationApi'
 import {
   useCreateLocation,
   useLatestVersionOfAllLocations,
@@ -90,7 +90,7 @@ const NewLocationModal = ({
   })
 
   const { mutateAsync: createFromTemplate } =
-    useSaveTemplatedLocationLocationFromKey()
+    useGetLocationSaveTemplatedLocationFromKey()
   const { mutate: createLocation } = useCreateLocation()
   const { data: allLocationsData } = useLatestVersionOfAllLocations()
   const allLocations = allLocationsData?.value || []
