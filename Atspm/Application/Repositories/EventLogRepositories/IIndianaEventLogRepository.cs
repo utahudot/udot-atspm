@@ -20,7 +20,7 @@ using Utah.Udot.Atspm.Data.Models.EventLogModels;
 namespace Utah.Udot.Atspm.Repositories.EventLogRepositories
 {
     /// <summary>
-    /// Indianna event log repository
+    /// Indiana event log repository
     /// </summary>
     public interface IIndianaEventLogRepository : IEventLogRepository<IndianaEvent> { }
 }

@@ -100,7 +100,7 @@ namespace Utah.Udot.Atspm.Data
                 .AddCompressedTableDiscriminators(typeof(EventLogModelBase), typeof(CompressedEventLogs<>));
 
                 builder.Property(e => e.Data)
-                .HasConversion<CompressedListConverter<EventLogModelBase>, Utility.ListComparer<EventLogModelBase>>();
+                .HasConversion<CompressedListConverter<EventLogModelBase>, ListComparer<EventLogModelBase>>();
             });
 
             OnModelCreatingPartial(modelBuilder);
