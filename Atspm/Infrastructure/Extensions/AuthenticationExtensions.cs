@@ -105,6 +105,8 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
                         b.Port = -1;
                         context.ProtocolMessage.RedirectUri = b.ToString();
 
+                        Console.WriteLine($"callback: {b.ToString()}");
+
                         return Task.CompletedTask;
                     },
                     //OnTokenResponseReceived = context =>
