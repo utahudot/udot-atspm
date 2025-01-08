@@ -1,14 +1,13 @@
 module.exports = {
   config: {
     input: {
-      target:
-        'https://config-api-bdppc3riba-wm.a.run.app/swagger/v1/swagger.json',
+      target: './config-spec.json',
     },
     output: {
       target: './src/api/config',
       client: 'react-query',
       templates: './orval-templates',
-      mock: true,
+      // mock: true,
       mode: 'split',
       override: {
         mutator: {
