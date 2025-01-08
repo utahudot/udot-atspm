@@ -129,8 +129,8 @@ namespace Identity.Controllers
         public IActionResult ExternalLogin()
         {
             var redirectUri = Url.Action("OIDCLoginCallback", "Account");
-            //var properties = new AuthenticationProperties { RedirectUri = Url.Action("OIDCLoginCallback", "Account") };
             var properties = signInManager.ConfigureExternalAuthenticationProperties(OpenIdConnectDefaults.AuthenticationScheme, redirectUri);
+
             return Challenge(properties, OpenIdConnectDefaults.AuthenticationScheme);
         }
 
@@ -139,8 +139,8 @@ namespace Identity.Controllers
         [HttpGet("OIDCLoginCallback")]
         public async Task<IActionResult> OIDCLoginCallback()
         {
-            //var authenticate = await HttpContext.AuthenticateAsync(OpenIdConnectDefaults.AuthenticationScheme);
             var info = await signInManager.GetExternalLoginInfoAsync();
+
             if (info == null)
             {
                 // Handle login failure (e.g., redirect to an error page)
@@ -155,7 +155,6 @@ namespace Identity.Controllers
             }
 
             return Redirect($"{configuration["AtspmSite"]}/sso-login?error={result.Message}");
-
         }
 
 
