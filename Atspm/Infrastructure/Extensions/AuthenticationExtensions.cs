@@ -95,34 +95,39 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
                 options.GetClaimsFromUserInfoEndpoint = true;
                 options.UseTokenLifetime = true;
                 options.SkipUnrecognizedRequests = true;
-                //options.Events = new OpenIdConnectEvents
-                //{
-                //    OnRedirectToIdentityProvider = context =>
-                //    {
-                //        //context.ProtocolMessage.RedirectUri = oidc["RedirectUri"];
-                //        return Task.CompletedTask;
-                //    },
-                //    OnTokenResponseReceived = context =>
-                //    {
-                //        var identity = context.Principal.Claims;
-                //        return Task.CompletedTask;
-                //    },
-                //    OnUserInformationReceived = context =>
-                //    {
-                //        var identity = context.Principal.Claims;
-                //        return Task.CompletedTask;
-                //    },
-                //    OnAuthorizationCodeReceived = context =>
-                //    {
-                //        var identity = context.Principal.Claims;
-                //        return Task.CompletedTask;
-                //    },
-                //    OnTokenValidated = context =>
-                //    {
-                //        var identity = context.Principal.Claims;
-                //        return Task.CompletedTask;
-                //    },
-                //};
+
+                options.Events = new OpenIdConnectEvents
+                {
+                    OnRedirectToIdentityProvider = context =>
+                    {
+                        var b = new UriBuilder(context.ProtocolMessage.RedirectUri);
+                        b.Scheme = "https";
+                        b.Port = -1;
+                        context.ProtocolMessage.RedirectUri = b.ToString();
+
+                        return Task.CompletedTask;
+                    },
+                    //OnTokenResponseReceived = context =>
+                    //{
+                    //    var identity = context.Principal.Claims;
+                    //    return Task.CompletedTask;
+                    //},
+                    //OnUserInformationReceived = context =>
+                    //{
+                    //    var identity = context.Principal.Claims;
+                    //    return Task.CompletedTask;
+                    //},
+                    //OnAuthorizationCodeReceived = context =>
+                    //{
+                    //    var identity = context.Principal.Claims;
+                    //    return Task.CompletedTask;
+                    //},
+                    //OnTokenValidated = context =>
+                    //{
+                    //    var identity = context.Principal.Claims;
+                    //    return Task.CompletedTask;
+                    //},
+                };
             });
             }
 
