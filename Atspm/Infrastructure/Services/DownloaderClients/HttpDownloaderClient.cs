@@ -172,7 +172,24 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
                 if (directory.Contains("cameras"))
                 {
                     //builder.Query = $"start-time=2024-12-03T23:43:09&end-time=2024-12-10T00:00:00&intervals=15";
-                    builder.Query = $"start-time={DateTime.Now.AddHours(-1):yyyy-MM-ddTHH:mm:ss}";
+                    // Get the current DateTime
+                    DateTime now = DateTime.Now;
+
+                    // Round down to the nearest 15-minute interval
+                    DateTime roundedTime = new DateTime(
+                        now.Year,
+                        now.Month,
+                        now.Day,
+                        now.Hour,
+                        now.Minute / 15 * 15,
+                        0
+                    );
+
+                    // Subtract 1 hour and 3 days from the rounded time
+                    DateTime startTime = roundedTime.AddHours(-1);
+
+                    // Build the query
+                    builder.Query = $"start-time={startTime:yyyy-MM-ddTHH:mm:ss}";
                 }
                 else
                 {
