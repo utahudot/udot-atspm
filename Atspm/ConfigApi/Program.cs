@@ -30,6 +30,8 @@ using Utah.Udot.Atspm.ConfigApi.Utility;
 using Utah.Udot.Atspm.Infrastructure.Extensions;
 using Utah.Udot.NetStandardToolkit.Extensions;
 
+//gitactions: I
+
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 var builder = WebApplication.CreateBuilder(args);
