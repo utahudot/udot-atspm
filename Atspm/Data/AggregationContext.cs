@@ -145,7 +145,7 @@ namespace Utah.Udot.Atspm.Data
                 .AddCompressedTableDiscriminators(typeof(AggregationModelBase), typeof(CompressedAggregations<>));
 
                 builder.Property(e => e.Data)
-                .HasConversion<CompressedListConverter<AggregationModelBase>, ListComparer<AggregationModelBase>>();
+                .HasConversion<CompressedListConverter<AggregationModelBase>, AbstractListComparer<AggregationModelBase>>();
             });
 
             OnModelCreatingPartial(modelBuilder);
