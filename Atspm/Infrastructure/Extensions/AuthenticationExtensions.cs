@@ -74,7 +74,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
             if (oidc.Exists() && !string.IsNullOrEmpty(oidc["Authority"]) &&
                 !string.IsNullOrEmpty(oidc["ClientId"]) &&
                 !string.IsNullOrEmpty(oidc["ClientSecret"]) &&
-                !string.IsNullOrEmpty(oidc["RedirectUri"]))
+                !string.IsNullOrEmpty(oidc["CallbackPath"]))
             {
                 services.AddAuthentication()
             .AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options =>
@@ -89,38 +89,40 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
                 options.Scope.Add("email");
                 options.Scope.Add("profile");
                 options.Scope.Add("app:Atspm");
-                options.CallbackPath = "/api/Account/OIDCLoginCallback";
+
+                options.CallbackPath = oidc["CallbackPath"];
+
                 options.GetClaimsFromUserInfoEndpoint = true;
                 options.UseTokenLifetime = true;
                 options.SkipUnrecognizedRequests = true;
-                options.Events = new OpenIdConnectEvents
-                {
-                    OnRedirectToIdentityProvider = context =>
-                    {
-                        context.ProtocolMessage.RedirectUri = oidc["RedirectUri"];
-                        return Task.CompletedTask;
-                    },
-                    OnTokenResponseReceived = context =>
-                    {
-                        var identity = context.Principal.Claims;
-                        return Task.CompletedTask;
-                    },
-                    OnUserInformationReceived = context =>
-                    {
-                        var identity = context.Principal.Claims;
-                        return Task.CompletedTask;
-                    },
-                    OnAuthorizationCodeReceived = context =>
-                    {
-                        var identity = context.Principal.Claims;
-                        return Task.CompletedTask;
-                    },
-                    OnTokenValidated = context =>
-                    {
-                        var identity = context.Principal.Claims;
-                        return Task.CompletedTask;
-                    },
-                };
+                //options.Events = new OpenIdConnectEvents
+                //{
+                //    OnRedirectToIdentityProvider = context =>
+                //    {
+                //        //context.ProtocolMessage.RedirectUri = oidc["RedirectUri"];
+                //        return Task.CompletedTask;
+                //    },
+                //    OnTokenResponseReceived = context =>
+                //    {
+                //        var identity = context.Principal.Claims;
+                //        return Task.CompletedTask;
+                //    },
+                //    OnUserInformationReceived = context =>
+                //    {
+                //        var identity = context.Principal.Claims;
+                //        return Task.CompletedTask;
+                //    },
+                //    OnAuthorizationCodeReceived = context =>
+                //    {
+                //        var identity = context.Principal.Claims;
+                //        return Task.CompletedTask;
+                //    },
+                //    OnTokenValidated = context =>
+                //    {
+                //        var identity = context.Principal.Claims;
+                //        return Task.CompletedTask;
+                //    },
+                //};
             });
             }
 
