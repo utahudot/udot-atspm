@@ -35,8 +35,6 @@ using Utah.Udot.Atspm.Infrastructure.Repositories;
 using Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories;
 using Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories;
 using Utah.Udot.Atspm.Infrastructure.Repositories.EventLogRepositories;
-using Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders;
-using Utah.Udot.Atspm.Infrastructure.Services.EventLogImporters;
 using Utah.Udot.Atspm.MySqlDatabaseProvider;
 using Utah.Udot.Atspm.OracleDatabaseProvider;
 using Utah.Udot.Atspm.PostgreSQLDatabaseProvider;
@@ -386,11 +384,8 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
 
             services.AddScoped<IIndianaEventLogRepository, IndianaEventLogEFRepository>();
             services.AddScoped<ISpeedEventLogRepository, SpeedEventLogEFRepository>();
-
-            services.AddScoped<IDeviceRepository, DeviceEFRepository>();
-            services.AddScoped<IDeviceDownloader, DeviceDownloader>();
-            services.AddScoped<IEventLogImporter, EventLogFileImporter>();
-            //services.AddScoped<IEventLogRepository, EventLogEFRepository>();
+            services.AddScoped<IVisionCameraDetectionEventLogRepository, VisionCameraDetectionEventLogEFRepository>();
+            services.AddScoped<IVisionCameraStatisticsEventLogRepository, VisionCameraStatisticsEventLogEFRepository>();
 
             return services;
         }
