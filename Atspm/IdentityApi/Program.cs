@@ -109,7 +109,7 @@ builder.Host
         s.Configure<IdentityConfiguration>(h.Configuration.GetSection(nameof(IdentityConfiguration)));
     });
 var app = builder.Build();
-if (app.Environment.IsDevelopment())
+if (!app.Environment.IsProduction())
 {
     app.Services.PrintHostInformation();
     app.UseDeveloperExceptionPage();
