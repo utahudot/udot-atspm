@@ -30,10 +30,10 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.EventLogRepositories
         #region IEventLogRepository
 
         ///<inheritdoc/>
-        public IReadOnlyList<CompressedEventLogBase> GetArchivedEvents(string locationIdentifier, DateOnly start, Type dataType, int deviceId)
+        public IReadOnlyList<CompressedEventLogBase> GetArchivedEvents(string locationIdentifier, DateOnly start, DateOnly end, Type dataType, int deviceId)
         {
             return GetList()
-                .FromSpecification(new CompressedEventLogSpecification(locationIdentifier, start, deviceId))
+                .FromSpecification(new CompressedEventLogSpecification(locationIdentifier, start, end, deviceId))
                 .Where(w => w.DataType == dataType)
                 .ToList();
         }
@@ -51,14 +51,6 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.EventLogRepositories
         }
 
         ///<inheritdoc/>
-        public IReadOnlyList<CompressedEventLogBase> GetArchivedEvents(string locationIdentifier, DateOnly date)
-        {
-            return GetList()
-                .FromSpecification(new CompressedEventLogSpecification(locationIdentifier, date))
-                .ToList();
-        }
-
-        ///<inheritdoc/>
         public IReadOnlyList<CompressedEventLogBase> GetArchivedEvents(string locationIdentifier, DateOnly start, DateOnly end)
         {
             return GetList()
@@ -67,19 +59,19 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.EventLogRepositories
         }
 
         ///<inheritdoc/>
-        public IReadOnlyList<CompressedEventLogBase> GetArchivedEvents(string locationIdentifier, DateOnly start, Type dataType)
+        public IReadOnlyList<CompressedEventLogBase> GetArchivedEvents(string locationIdentifier, DateOnly start, DateOnly end, Type dataType)
         {
             return GetList()
-                .FromSpecification(new CompressedEventLogSpecification(locationIdentifier, start))
+                .FromSpecification(new CompressedEventLogSpecification(locationIdentifier, start, end))
                 .Where(w => w.DataType == dataType)
                 .ToList();
         }
 
         ///<inheritdoc/>
-        public IReadOnlyList<CompressedEventLogBase> GetArchivedEvents(string locationIdentifier, DateOnly start, int deviceId)
+        public IReadOnlyList<CompressedEventLogBase> GetArchivedEvents(string locationIdentifier, DateOnly start, DateOnly end, int deviceId)
         {
             return GetList()
-                .FromSpecification(new CompressedEventLogSpecification(locationIdentifier, start, deviceId))
+                .FromSpecification(new CompressedEventLogSpecification(locationIdentifier, start, end, deviceId))
                 .ToList();
         }
 
