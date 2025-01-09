@@ -32,11 +32,13 @@ namespace DatabaseInstaller.Commands
             AddOption(SourceOption);
             AddOption(DeleteOption);
             AddOption(UpdateLocationsOption);
+            AddOption(ImportSpeedDevicesOption);
         }
 
         public Option<string> SourceOption { get; set; } = new("--source", "Connection string for the source SQL Server");
         public Option<bool> DeleteOption { get; set; } = new("--delete", "Delete before inserting locations");
         public Option<bool> UpdateLocationsOption { get; set; } = new("--update-locations", "Update Locations from target");
+        public Option<bool> ImportSpeedDevicesOption { get; set; } = new("--update-speed", "Update Speed Devices from target");
 
         public ModelBinder<TransferConfigCommandConfiguration> GetOptionsBinder()
         {
@@ -45,6 +47,7 @@ namespace DatabaseInstaller.Commands
             binder.BindMemberFromValue(b => b.Source, SourceOption);
             binder.BindMemberFromValue(b => b.Delete, DeleteOption);
             binder.BindMemberFromValue(b => b.UpdateLocations, UpdateLocationsOption);
+            binder.BindMemberFromValue(b => b.ImportSpeedDevices, ImportSpeedDevicesOption);
 
             return binder;
         }
@@ -64,5 +67,6 @@ namespace DatabaseInstaller.Commands
         public bool Delete { get; set; }
         public bool UpdateLocations { get; set; }
         public bool UpdateGeneralConfiguration { get; set; }
+        public bool ImportSpeedDevices { get; set; }
     }
 }
