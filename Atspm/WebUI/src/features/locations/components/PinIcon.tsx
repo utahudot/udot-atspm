@@ -1,5 +1,3 @@
-// PinIcon.tsx
-
 type PinIconProps = {
   color?: string
   size?: number

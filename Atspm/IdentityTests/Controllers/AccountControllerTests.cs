@@ -22,9 +22,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Moq;
 using System.Security.Claims;
 using Utah.Udot.Atspm.Data.Models;
+using Utah.Udot.Atspm.Infrastructure.Configuration;
 using Xunit;
 
 namespace Utah.Udot.Atspm.IdentityTests.Controllers
@@ -226,7 +228,7 @@ namespace Utah.Udot.Atspm.IdentityTests.Controllers
                 .ReturnsAsync("reset-token");
 
             // Act
-            var result = await _accountController.ForgotPassword(model);
+            var result = await _accountController.ForgotPassword(Mock.Of<IOptions<IdentityConfiguration>>(), model);
 
             // Assert
             Assert.IsType<OkObjectResult>(result);
@@ -242,7 +244,7 @@ namespace Utah.Udot.Atspm.IdentityTests.Controllers
             }; // Invalid model without required properties
 
             // Act
-            var result = await _accountController.ForgotPassword(model);
+            var result = await _accountController.ForgotPassword(Mock.Of<IOptions<IdentityConfiguration>>(), model);
 
             // Assert
             Assert.IsType<BadRequestObjectResult>(result);
