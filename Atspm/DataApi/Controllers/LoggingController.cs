@@ -48,7 +48,7 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
         /// </summary>
         [HttpGet("log")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<List<DeviceEventDownload>> SyncNewLocationEventsAsync(string locationIdentifier, string deviceIds)
+        public async Task<List<DeviceEventDownload>> SyncNewLocationEventsAsync(string deviceIds)
         {
             var host = Host.CreateDefaultBuilder().ConfigureAppConfiguration((h, c) =>
             {
@@ -67,7 +67,7 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
                 }).Build();
 
             var deviceIdList = deviceIds.Split(',').Select(int.Parse).ToList();
-            var devices = _repository.GetList().Where(device => deviceIdList.Contains(device.Id) && (device.Location.LocationIdentifier == locationIdentifier)).ToList();
+            var devices = _repository.GetList().Where(device => deviceIdList.Contains(device.Id)).ToList();
             var today = DateTime.Today;
             var start = DateOnly.FromDateTime(today);
             var end = DateOnly.FromDateTime(today);
@@ -84,7 +84,7 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
 
                 foreach (var device in devices)
                 {
-                    var eventsPreWorkflow = eventLogRepository.GetArchivedEvents(locationIdentifier, start, end, device.Id).SelectMany(s => s.Data).ToList();
+                    var eventsPreWorkflow = eventLogRepository.GetArchivedEvents(device.Location.LocationIdentifier, start, end, device.Id).SelectMany(s => s.Data).ToList();
                     // Start the workflow
                     await Task.Run(async () =>
                     {
@@ -92,7 +92,7 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
                         workflow.Input.Complete();
                         await Task.WhenAll(workflow.Steps.Select(s => s.Completion));
                     });
-                    var eventsPostWorkflow = eventLogRepository.GetArchivedEvents(locationIdentifier, start, end, device.Id).SelectMany(s => s.Data).ToList();
+                    var eventsPostWorkflow = eventLogRepository.GetArchivedEvents(device.Location.LocationIdentifier, start, end, device.Id).SelectMany(s => s.Data).ToList();
                     var integer = 4;
                     var deviceDownload = new DeviceEventDownload
                     {

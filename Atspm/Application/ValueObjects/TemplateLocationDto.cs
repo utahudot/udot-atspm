@@ -66,10 +66,11 @@ namespace Utah.Udot.Atspm.ValueObjects
         /// </summary>
         public int LocationId { get; set; }
 
-        /// <summary>
-        /// Location
-        /// </summary>
-        public LocationDto Location { get; set; }
+        ///// <summary>
+        ///// Location
+        ///// </summary>
+        //[JsonProperty]
+        //public LocationDto Location { get; set; }
 
         /// <summary>
         /// This is Protected or Permissive Phases that occurred in the logs but were not found in your current location.
@@ -100,10 +101,5 @@ namespace Utah.Udot.Atspm.ValueObjects
         /// Approaches that were removed from the location
         /// </summary>
         public List<int> RemovedApproachIds { get; set; } = new List<int>();
-
-        /// <summary>
-        /// Approaches that were removed from the location
-        /// </summary>
-        public List<ApproachDto> RemovedApproaches { get; set; } = new List<ApproachDto>();
     }
 }
