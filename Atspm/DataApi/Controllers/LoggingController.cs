@@ -19,6 +19,7 @@ using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks.Dataflow;
 using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
+using Utah.Udot.Atspm.ValueObjects;
 using Utah.Udot.ATSPM.Infrastructure.Workflows;
 
 namespace Utah.Udot.Atspm.DataApi.Controllers
@@ -47,9 +48,12 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
         /// </summary>
         [HttpGet("log")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async void SyncNewLocationEventsAsync(int locationId)
+        public async Task<List<DeviceEventDownload>> SyncNewLocationEventsAsync(string locationIdentifier, string deviceIds)
         {
-            var host = Host.CreateDefaultBuilder()
+            var host = Host.CreateDefaultBuilder().ConfigureAppConfiguration((h, c) =>
+            {
+                c.AddUserSecrets<Program>(optional: true);
+            })
                 .ConfigureServices((h, s) =>
                 {
                     s.AddAtspmDbContext(h);
@@ -62,17 +66,25 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
                     s.AddEventLogImporters(h);
                 }).Build();
 
-            var locationDevices = _repository.GetActiveDevicesByLocation(locationId);
+            var deviceIdList = deviceIds.Split(',').Select(int.Parse).ToList();
+            var devices = _repository.GetList().Where(device => deviceIdList.Contains(device.Id) && (device.Location.LocationIdentifier == locationIdentifier)).ToList();
+            var today = DateTime.Today;
+            var start = DateOnly.FromDateTime(today);
+            var end = DateOnly.FromDateTime(today);
+            List<DeviceEventDownload> devicesEventDownload = new List<DeviceEventDownload>();
 
-            if (locationDevices == null || !locationDevices.Any())
-                return;
+            if (devices == null || !devices.Any())
+                return devicesEventDownload;
 
             using (var scope = host.Services.CreateScope())
             {
+                var eventLogRepository = scope.ServiceProvider.GetService<IEventLogRepository>();
                 var workflow = new DeviceEventLogWorkflow(scope.ServiceProvider.GetService<IServiceScopeFactory>(), 50000, 1);
                 await Task.Delay(TimeSpan.FromSeconds(2));
-                foreach (var device in locationDevices)
+
+                foreach (var device in devices)
                 {
+                    var eventsPreWorkflow = eventLogRepository.GetArchivedEvents(locationIdentifier, start, end, device.Id).SelectMany(s => s.Data).ToList();
                     // Start the workflow
                     await Task.Run(async () =>
                     {
@@ -80,8 +92,21 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
                         workflow.Input.Complete();
                         await Task.WhenAll(workflow.Steps.Select(s => s.Completion));
                     });
+                    var eventsPostWorkflow = eventLogRepository.GetArchivedEvents(locationIdentifier, start, end, device.Id).SelectMany(s => s.Data).ToList();
+                    var integer = 4;
+                    var deviceDownload = new DeviceEventDownload
+                    {
+                        DeviceId = device.Id,
+                        Ipaddress = device.Ipaddress,
+                        DeviceType = device.DeviceType,
+                        BeforeWorkflowEventCount = eventsPreWorkflow.Count,
+                        AfterWorkflowEventCount = eventsPostWorkflow.Count,
+                        ChangeInEventCount = eventsPostWorkflow.Count - eventsPreWorkflow.Count
+                    };
+                    devicesEventDownload.Add(deviceDownload);
                 }
             }
+            return devicesEventDownload;
         }
 
     }

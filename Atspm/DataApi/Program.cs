@@ -116,8 +116,6 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddAtspmEFEventLogRepositories();
     s.AddAtspmEFAggregationRepositories();
     s.AddAtspmEFConfigRepositories();
-    s.AddAtspmEFEventLogRepositories();
-    s.AddAtspmEFAggregationRepositories();
     s.AddDownloaderClients();
     s.AddDeviceDownloaders(h);
     s.AddEventLogDecoders();
