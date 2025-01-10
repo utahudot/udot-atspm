@@ -181,223 +181,159 @@ namespace Utah.Udot.Atspm.ConfigApi.Services
             {
                 Id = sourceLocation.Id.ToString(),
                 LocationId = newVersion.Id,
-                Location = new LocationDto
-                {
-                    Id = newVersion.Id,
-                    Latitude = newVersion.Latitude,
-                    Longitude = newVersion.Longitude,
-                    PrimaryName = newVersion.PrimaryName,
-                    SecondaryName = newVersion.SecondaryName,
-                    ChartEnabled = newVersion.ChartEnabled,
-                    VersionAction = newVersion.VersionAction,
-                    Note = newVersion.Note,
-                    Start = newVersion.Start,
-                    PedsAre1to1 = newVersion.PedsAre1to1,
-                    LocationIdentifier = newVersion.LocationIdentifier,
-                    JurisdictionId = newVersion.JurisdictionId,
-                    Jurisdiction = newVersion.Jurisdiction == null ? null : new JurisdictionDto
-                    {
-                        Id = newVersion.Jurisdiction.Id,
-                        Name = newVersion.Jurisdiction.Name,
-                        Mpo = newVersion.Jurisdiction.Mpo,
-                        CountyParish = newVersion.Jurisdiction.CountyParish,
-                        OtherPartners = newVersion.Jurisdiction.OtherPartners,
-                        UserJurisdictions = newVersion.Jurisdiction.UserJurisdictions.Select(userJurisdiction => new UserJurisdictionDto
-                        {
-                            UserId = userJurisdiction.UserId,
-                            JurisdictionId = userJurisdiction.JurisdictionId
-                        }).ToList()
-                    },
-                    LocationTypeId = newVersion.LocationTypeId,
-                    LocationType = newVersion.LocationType == null ? null : new LocationTypeDto
-                    {
-                        Id = newVersion.LocationType.Id,
-                        Name = newVersion.LocationType.Name,
-                        Icon = newVersion.LocationType.Icon
-                    },
-                    RegionId = newVersion.RegionId,
-                    Region = newVersion.Region == null ? null : new RegionDto
-                    {
-                        Id = newVersion.Region.Id,
-                        Description = newVersion.Region.Description,
-                        UserRegions = newVersion.Region.UserRegions.Select(userRegion => new UserRegionDto
-                        {
-                            UserId = userRegion.UserId,
-                            RegionId = userRegion.RegionId
-                        }).ToList()
-                    },
-                    Approaches = newVersion.Approaches.Select(approach => new ApproachDto
-                    {
-                        Id = approach.Id,
-                        Description = approach.Description,
-                        Mph = approach.Mph,
-                        ProtectedPhaseNumber = approach.ProtectedPhaseNumber,
-                        IsProtectedPhaseOverlap = approach.IsProtectedPhaseOverlap,
-                        PermissivePhaseNumber = approach.PermissivePhaseNumber,
-                        IsPermissivePhaseOverlap = approach.IsPermissivePhaseOverlap,
-                        PedestrianPhaseNumber = approach.PedestrianPhaseNumber,
-                        IsPedestrianPhaseOverlap = approach.IsPedestrianPhaseOverlap,
-                        PedestrianDetectors = approach.PedestrianDetectors,
-                        LocationId = approach.LocationId,
-                        DirectionTypeId = approach.DirectionTypeId,
-                        Detectors = approach.Detectors.Select(detector => new DetectorDto
-                        {
-                            Id = detector.Id,
-                            DectectorIdentifier = detector.DectectorIdentifier,
-                            DetectorChannel = detector.DetectorChannel,
-                            DistanceFromStopBar = detector.DistanceFromStopBar,
-                            MinSpeedFilter = detector.MinSpeedFilter,
-                            DateAdded = detector.DateAdded,
-                            DateDisabled = detector.DateDisabled,
-                            LaneNumber = detector.LaneNumber,
-                            MovementType = detector.MovementType,
-                            LaneType = detector.LaneType,
-                            DetectionHardware = detector.DetectionHardware,
-                            DecisionPoint = detector.DecisionPoint,
-                            MovementDelay = detector.MovementDelay,
-                            LatencyCorrection = detector.LatencyCorrection,
-                            ApproachId = detector.ApproachId,
-                            DetectionTypes = detector.DetectionTypes.Select(detectionType => new DetectionTypeDto
-                            {
-                                Id = detectionType.Id,
-                                Description = detectionType.Description,
-                                Abbreviation = detectionType.Abbreviation,
-                                DisplayOrder = detectionType.DisplayOrder,
-                                MeasureTypes = detectionType.MeasureTypes.Select(measureType => new MeasureTypeDto
-                                {
-                                    Id = measureType.Id,
-                                    Name = measureType.Name,
-                                    Abbreviation = measureType.Abbreviation,
-                                    ShowOnWebsite = measureType.ShowOnWebsite,
-                                    ShowOnAggregationSite = measureType.ShowOnAggregationSite,
-                                    DisplayOrder = measureType.DisplayOrder,
-                                    MeasureComments = measureType.MeasureComments.Select(comment => new MeasureCommentsDto
-                                    {
-                                        Id = comment.Id,
-                                        TimeStamp = comment.TimeStamp,
-                                        Comment = comment.Comment,
-                                        LocationIdentifier = comment.LocationIdentifier
-                                    }).ToList(),
-                                    MeasureOptions = measureType.MeasureOptions.Select(option => new MeasureOptionDto
-                                    {
-                                        Id = option.Id,
-                                        Option = option.Option,
-                                        Value = option.Value,
-                                        MeasureTypeId = option.MeasureTypeId
-                                    }).ToList()
-                                }).ToList()
-                            }).ToList()
-                        }).ToList()
-                    }).ToList(),
-                    Areas = newVersion.Areas.Select(area => new AreaDto
-                    {
-                        Id = area.Id,
-                        Name = area.Name,
-                        UserAreas = area.UserAreas.Select(userArea => new UserAreaDto
-                        {
-                            UserId = userArea.UserId,
-                            AreaId = userArea.AreaId
-                        }).ToList()
-                    }).ToList(),
-                    Devices = newVersion.Devices.Select(device => new DeviceDto
-                    {
-                        Id = device.Id,
-                        LoggingEnabled = device.LoggingEnabled,
-                        Ipaddress = device.Ipaddress,
-                        DeviceStatus = device.DeviceStatus,
-                        DeviceType = device.DeviceType,
-                        Notes = device.Notes,
-                        LocationId = device.LocationId,
-                        DeviceConfigurationId = device.DeviceConfigurationId,
-                        DeviceConfiguration = device.DeviceConfiguration == null ? null : new DeviceConfigurationDto
-                        {
-                            Id = device.DeviceConfiguration.Id,
-                            Firmware = device.DeviceConfiguration.Firmware,
-                            Notes = device.DeviceConfiguration.Notes,
-                            Protocol = device.DeviceConfiguration.Protocol,
-                            Port = device.DeviceConfiguration.Port,
-                            Directory = device.DeviceConfiguration.Directory,
-                            SearchTerms = device.DeviceConfiguration.SearchTerms,
-                            ConnectionTimeout = device.DeviceConfiguration.ConnectionTimeout,
-                            OperationTimeout = device.DeviceConfiguration.OperationTimeout,
-                            Decoders = device.DeviceConfiguration.Decoders,
-                            UserName = device.DeviceConfiguration.UserName,
-                            Password = device.DeviceConfiguration.Password,
-                            ProductId = device.DeviceConfiguration.ProductId,
-                            Product = device.DeviceConfiguration.Product // Assuming Product has a mapping as well
-                        }
-                    }).ToList()
-                },
+                //Location = new LocationDto
+                //{
+                //    Id = newVersion.Id,
+                //    Latitude = newVersion.Latitude,
+                //    Longitude = newVersion.Longitude,
+                //    PrimaryName = newVersion.PrimaryName,
+                //    SecondaryName = newVersion.SecondaryName,
+                //    ChartEnabled = newVersion.ChartEnabled,
+                //    VersionAction = newVersion.VersionAction,
+                //    Note = newVersion.Note,
+                //    Start = newVersion.Start,
+                //    PedsAre1to1 = newVersion.PedsAre1to1,
+                //    LocationIdentifier = newVersion.LocationIdentifier,
+                //    JurisdictionId = newVersion.JurisdictionId,
+                //    Jurisdiction = newVersion.Jurisdiction == null ? null : new JurisdictionDto
+                //    {
+                //        Id = newVersion.Jurisdiction.Id,
+                //        Name = newVersion.Jurisdiction.Name,
+                //        Mpo = newVersion.Jurisdiction.Mpo,
+                //        CountyParish = newVersion.Jurisdiction.CountyParish,
+                //        OtherPartners = newVersion.Jurisdiction.OtherPartners,
+                //        UserJurisdictions = newVersion.Jurisdiction.UserJurisdictions.Select(userJurisdiction => new UserJurisdictionDto
+                //        {
+                //            UserId = userJurisdiction.UserId,
+                //            JurisdictionId = userJurisdiction.JurisdictionId
+                //        }).ToList()
+                //    },
+                //    LocationTypeId = newVersion.LocationTypeId,
+                //    LocationType = newVersion.LocationType == null ? null : new LocationTypeDto
+                //    {
+                //        Id = newVersion.LocationType.Id,
+                //        Name = newVersion.LocationType.Name,
+                //        Icon = newVersion.LocationType.Icon
+                //    },
+                //    RegionId = newVersion.RegionId,
+                //    Region = newVersion.Region == null ? null : new RegionDto
+                //    {
+                //        Id = newVersion.Region.Id,
+                //        Description = newVersion.Region.Description,
+                //        UserRegions = newVersion.Region.UserRegions.Select(userRegion => new UserRegionDto
+                //        {
+                //            UserId = userRegion.UserId,
+                //            RegionId = userRegion.RegionId
+                //        }).ToList()
+                //    },
+                //    Approaches = newVersion.Approaches.Select(approach => new ApproachDto
+                //    {
+                //        Id = approach.Id,
+                //        Description = approach.Description,
+                //        Mph = approach.Mph,
+                //        ProtectedPhaseNumber = approach.ProtectedPhaseNumber,
+                //        IsProtectedPhaseOverlap = approach.IsProtectedPhaseOverlap,
+                //        PermissivePhaseNumber = approach.PermissivePhaseNumber,
+                //        IsPermissivePhaseOverlap = approach.IsPermissivePhaseOverlap,
+                //        PedestrianPhaseNumber = approach.PedestrianPhaseNumber,
+                //        IsPedestrianPhaseOverlap = approach.IsPedestrianPhaseOverlap,
+                //        PedestrianDetectors = approach.PedestrianDetectors,
+                //        LocationId = approach.LocationId,
+                //        DirectionTypeId = approach.DirectionTypeId,
+                //        Detectors = approach.Detectors.Select(detector => new DetectorDto
+                //        {
+                //            Id = detector.Id,
+                //            DectectorIdentifier = detector.DectectorIdentifier,
+                //            DetectorChannel = detector.DetectorChannel,
+                //            DistanceFromStopBar = detector.DistanceFromStopBar,
+                //            MinSpeedFilter = detector.MinSpeedFilter,
+                //            DateAdded = detector.DateAdded,
+                //            DateDisabled = detector.DateDisabled,
+                //            LaneNumber = detector.LaneNumber,
+                //            MovementType = detector.MovementType,
+                //            LaneType = detector.LaneType,
+                //            DetectionHardware = detector.DetectionHardware,
+                //            DecisionPoint = detector.DecisionPoint,
+                //            MovementDelay = detector.MovementDelay,
+                //            LatencyCorrection = detector.LatencyCorrection,
+                //            ApproachId = detector.ApproachId,
+                //            DetectionTypes = detector.DetectionTypes.Select(detectionType => new DetectionTypeDto
+                //            {
+                //                Id = detectionType.Id,
+                //                Description = detectionType.Description,
+                //                Abbreviation = detectionType.Abbreviation,
+                //                DisplayOrder = detectionType.DisplayOrder,
+                //                MeasureTypes = detectionType.MeasureTypes.Select(measureType => new MeasureTypeDto
+                //                {
+                //                    Id = measureType.Id,
+                //                    Name = measureType.Name,
+                //                    Abbreviation = measureType.Abbreviation,
+                //                    ShowOnWebsite = measureType.ShowOnWebsite,
+                //                    ShowOnAggregationSite = measureType.ShowOnAggregationSite,
+                //                    DisplayOrder = measureType.DisplayOrder,
+                //                    MeasureComments = measureType.MeasureComments.Select(comment => new MeasureCommentsDto
+                //                    {
+                //                        Id = comment.Id,
+                //                        TimeStamp = comment.TimeStamp,
+                //                        Comment = comment.Comment,
+                //                        LocationIdentifier = comment.LocationIdentifier
+                //                    }).ToList(),
+                //                    MeasureOptions = measureType.MeasureOptions.Select(option => new MeasureOptionDto
+                //                    {
+                //                        Id = option.Id,
+                //                        Option = option.Option,
+                //                        Value = option.Value,
+                //                        MeasureTypeId = option.MeasureTypeId
+                //                    }).ToList()
+                //                }).ToList()
+                //            }).ToList()
+                //        }).ToList()
+                //    }).ToList(),
+                //    Areas = newVersion.Areas.Select(area => new AreaDto
+                //    {
+                //        Id = area.Id,
+                //        Name = area.Name,
+                //        UserAreas = area.UserAreas.Select(userArea => new UserAreaDto
+                //        {
+                //            UserId = userArea.UserId,
+                //            AreaId = userArea.AreaId
+                //        }).ToList()
+                //    }).ToList(),
+                //    Devices = newVersion.Devices.Select(device => new DeviceDto
+                //    {
+                //        Id = device.Id,
+                //        LoggingEnabled = device.LoggingEnabled,
+                //        Ipaddress = device.Ipaddress,
+                //        DeviceStatus = device.DeviceStatus,
+                //        DeviceType = device.DeviceType,
+                //        Notes = device.Notes,
+                //        LocationId = device.LocationId,
+                //        DeviceConfigurationId = device.DeviceConfigurationId,
+                //        DeviceConfiguration = device.DeviceConfiguration == null ? null : new DeviceConfigurationDto
+                //        {
+                //            Id = device.DeviceConfiguration.Id,
+                //            Firmware = device.DeviceConfiguration.Firmware,
+                //            Notes = device.DeviceConfiguration.Notes,
+                //            Protocol = device.DeviceConfiguration.Protocol,
+                //            Port = device.DeviceConfiguration.Port,
+                //            Directory = device.DeviceConfiguration.Directory,
+                //            SearchTerms = device.DeviceConfiguration.SearchTerms,
+                //            ConnectionTimeout = device.DeviceConfiguration.ConnectionTimeout,
+                //            OperationTimeout = device.DeviceConfiguration.OperationTimeout,
+                //            Decoders = device.DeviceConfiguration.Decoders,
+                //            UserName = device.DeviceConfiguration.UserName,
+                //            Password = device.DeviceConfiguration.Password,
+                //            ProductId = device.DeviceConfiguration.ProductId,
+                //            Product = device.DeviceConfiguration.Product // Assuming Product has a mapping as well
+                //        }
+                //    }).ToList()
+                //},
                 LoggedButUnusedProtectedOrPermissivePhases = unattachedProtectedOrPermissivePhases,
                 LoggedButUnusedOverlapPhases = unattachedOverlapPhases,
                 LoggedButUnusedPedestrianPhases = unattachedPedestrianPhases,
                 LoggedButUnusedDetectorChannels = unattachedDetectorChannels,
                 RemovedDetectors = removedDetectors,
                 RemovedApproachIds = removedApproaches.Select(i => i.Id).ToList(),
-                RemovedApproaches = removedApproaches.Select(approach => new ApproachDto
-                {
-                    Id = approach.Id,
-                    Description = approach.Description,
-                    Mph = approach.Mph,
-                    ProtectedPhaseNumber = approach.ProtectedPhaseNumber,
-                    IsProtectedPhaseOverlap = approach.IsProtectedPhaseOverlap,
-                    PermissivePhaseNumber = approach.PermissivePhaseNumber,
-                    IsPermissivePhaseOverlap = approach.IsPermissivePhaseOverlap,
-                    PedestrianPhaseNumber = approach.PedestrianPhaseNumber,
-                    IsPedestrianPhaseOverlap = approach.IsPedestrianPhaseOverlap,
-                    PedestrianDetectors = approach.PedestrianDetectors,
-                    LocationId = approach.LocationId,
-                    DirectionTypeId = approach.DirectionTypeId,
-                    Detectors = approach.Detectors.Select(detector => new DetectorDto
-                    {
-                        Id = detector.Id,
-                        DectectorIdentifier = detector.DectectorIdentifier,
-                        DetectorChannel = detector.DetectorChannel,
-                        DistanceFromStopBar = detector.DistanceFromStopBar,
-                        MinSpeedFilter = detector.MinSpeedFilter,
-                        DateAdded = detector.DateAdded,
-                        DateDisabled = detector.DateDisabled,
-                        LaneNumber = detector.LaneNumber,
-                        MovementType = detector.MovementType,
-                        LaneType = detector.LaneType,
-                        DetectionHardware = detector.DetectionHardware,
-                        DecisionPoint = detector.DecisionPoint,
-                        MovementDelay = detector.MovementDelay,
-                        LatencyCorrection = detector.LatencyCorrection,
-                        ApproachId = detector.ApproachId,
-                        DetectionTypes = detector.DetectionTypes.Select(detectionType => new DetectionTypeDto
-                        {
-                            Id = detectionType.Id,
-                            Description = detectionType.Description,
-                            Abbreviation = detectionType.Abbreviation,
-                            DisplayOrder = detectionType.DisplayOrder,
-                            MeasureTypes = detectionType.MeasureTypes.Select(measureType => new MeasureTypeDto
-                            {
-                                Id = measureType.Id,
-                                Name = measureType.Name,
-                                Abbreviation = measureType.Abbreviation,
-                                ShowOnWebsite = measureType.ShowOnWebsite,
-                                ShowOnAggregationSite = measureType.ShowOnAggregationSite,
-                                DisplayOrder = measureType.DisplayOrder,
-                                MeasureComments = measureType.MeasureComments.Select(comment => new MeasureCommentsDto
-                                {
-                                    Id = comment.Id,
-                                    TimeStamp = comment.TimeStamp,
-                                    Comment = comment.Comment,
-                                    LocationIdentifier = comment.LocationIdentifier
-                                }).ToList(),
-                                MeasureOptions = measureType.MeasureOptions.Select(option => new MeasureOptionDto
-                                {
-                                    Id = option.Id,
-                                    Option = option.Option,
-                                    Value = option.Value,
-                                    MeasureTypeId = option.MeasureTypeId
-                                }).ToList()
-                            }).ToList()
-                        }).ToList()
-                    }).ToList()
-                }).ToList()
-
             };
         }
     }
