@@ -1,7 +1,7 @@
 import { TabContext, TabList, TabPanel } from '@mui/lab'
-import { Box, Tab, useMediaQuery, useTheme } from '@mui/material'
-import { startOfToday, startOfTomorrow } from 'date-fns'
-import { useState } from 'react'
+import { Box, Paper, Tab, useMediaQuery, useTheme } from '@mui/material'
+import { differenceInMinutes, startOfToday, startOfTomorrow } from 'date-fns'
+import { useMemo, useState } from 'react'
 
 import { ResponsivePageLayout } from '@/components/ResponsivePage'
 import { StyledPaper } from '@/components/StyledPaper'
@@ -14,14 +14,15 @@ import SelectLocation from '@/features/locations/components/selectLocation'
 import { Location } from '@/features/locations/types'
 
 const Locations = () => {
+  const theme = useTheme()
+  const isMobileView = useMediaQuery(theme.breakpoints.down('md'))
+
   const [currentTab, setCurrentTab] = useState('1')
   const [location, setLocation] = useState<Location | null>(null)
   const [chartType, setChartType] = useState<ChartType | null>(null)
   const [chartOptions, setChartOptions] = useState<Partial<ChartOptions>>()
   const [startDateTime, setStartDateTime] = useState(startOfToday())
   const [endDateTime, setEndDateTime] = useState(startOfTomorrow())
-  const theme = useTheme()
-  const isMobileView = useMediaQuery(theme.breakpoints.down('md'))
 
   const handleStartDateTimeChange = (date: Date) => {
     setStartDateTime(date)
@@ -43,6 +44,25 @@ const Locations = () => {
   }
 
   const locationIdentifier = location?.locationIdentifier
+
+  const timespanWarning = useMemo(() => {
+    if (chartType !== ChartType.TimingAndActuation) return null
+
+    const diffMinutes = differenceInMinutes(endDateTime, startDateTime)
+    return diffMinutes > 120
+      ? 'A time span of 2 hours or less is recommended for this chart.'
+      : null
+  }, [chartType, startDateTime, endDateTime])
+
+  const binSizeWarning = useMemo(() => {
+    if (chartOptions && 'binSize' in chartOptions && chartOptions.binSize) {
+      const diffMinutes = differenceInMinutes(endDateTime, startDateTime)
+      return diffMinutes < chartOptions.binSize
+        ? 'The selected bin size is larger than the selected time span.'
+        : null
+    }
+    return null
+  }, [chartOptions, startDateTime, endDateTime])
 
   return (
     <ResponsivePageLayout title={'Performance Measures'} noBottomMargin>
@@ -81,7 +101,7 @@ const Locations = () => {
           </StyledPaper>
           {/* SideComponents */}
           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
-            <StyledPaper
+            <Paper
               sx={{
                 padding: 3,
                 width: '336px',
@@ -91,14 +111,14 @@ const Locations = () => {
               }}
             >
               <SelectDateTime
-                chartType={chartType}
                 startDateTime={startDateTime}
                 endDateTime={endDateTime}
                 changeStartDate={handleStartDateTimeChange}
                 changeEndDate={handleEndDateTimeChange}
                 noCalendar={isMobileView}
+                warning={binSizeWarning ?? timespanWarning}
               />
-            </StyledPaper>
+            </Paper>
 
             <StyledPaper
               sx={{
