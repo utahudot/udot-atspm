@@ -82,18 +82,16 @@ public class TransferConfigCommandHostedService : IHostedService
             DeleteDevicesConfigurations();
             DeleteProducts();
         }
-        if(_config.UpdateLocations)
+
+        IConfiguration config = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json")
+            .Build();
+
+        Dictionary<string, string> queries = GetLocationQueries(config);
+        var columnMappings = GetColumnMappings(config);
+        if (_config.UpdateLocations)
         {
-            IConfiguration config = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json")
-                .Build();
-
-
-            Dictionary<string, string> queries = GetLocationQueries(config);
-            //Dictionary<string, Dictionary<string, string>> columnMappings = GetColumnMappings();
-            var columnMappings = GetColumnMappings(config);
-
             SetDetectionTypeMesureType();
             ImportProducts(queries, columnMappings);
             ImportDeviceConfigurations(queries, columnMappings);
@@ -107,7 +105,57 @@ public class TransferConfigCommandHostedService : IHostedService
             ImportRouteLocations(queries, columnMappings);
             ImportDevices(queries, columnMappings);
         }
-        
+        if (_config.ImportSpeedDevices)
+        {
+            ImportSpeedDevices(queries, columnMappings);
+        }
+    }
+
+    private void ImportSpeedDevices(Dictionary<string, string> queries, Dictionary<string, Dictionary<string, string>> columnMappings)
+    {
+        if (_productRepository.GetList().Any(p => p.Manufacturer == "Wavetronix"))
+        {
+            _logger.LogInformation("Speed Product already exist");
+        }
+        else
+        {
+            _productRepository.Add(new Product { Manufacturer = "Wavetronix", Model = "Speed Detection" });
+        }
+        if (_deviceConfigurationRepository.GetList().Any(dc => dc.Firmware == "Speed"))
+        {
+            _logger.LogInformation("Speed Device Configuration already exist");
+        }
+        else
+        {
+            _deviceConfigurationRepository.Add(new DeviceConfiguration
+            {
+                Firmware = "Speed",
+                Protocol = TransportProtocols.Unknown,
+                ConnectionTimeout = 2000,
+                Directory = "Unkown",
+                OperationTimeout = 2000,
+                Port = 0,
+                UserName = "Unknown",
+                Password = "Unkown",
+                ProductId = _productRepository.GetList().First(p => p.Manufacturer == "Wavetronix").Id
+            });
+        }
+        _logger.LogInformation($"Importing Speed Devices");
+        var devices = ImportData<Device>(queries["SpeedDevices"], columnMappings["SpeedDevices"]);
+        //check if device cofiguration exists
+        var speedDeviceConfiguration = _deviceConfigurationRepository.GetList().First(dc => dc.Firmware == "Speed");
+        if (speedDeviceConfiguration == null)
+        {
+            _logger.LogInformation($"Speed Device Configuration not found for configuration.");
+            return;
+        }
+        foreach (var device in devices)
+        {            
+            device.DeviceConfiguration = speedDeviceConfiguration;
+        }
+
+        _deviceRepository.AddRange(devices);
+        _logger.LogInformation($"Speed Devices Imported");
     }
 
     private void DeleteProducts()
@@ -634,7 +682,8 @@ public class TransferConfigCommandHostedService : IHostedService
 
 }
 
-public class AreaLocation
+
+    public class AreaLocation
 {
     public int AreasId { get; set; }
     public int LocationsId { get; set; }
@@ -645,4 +694,5 @@ public class DetectionTypeDetector
     public int DetectionTypesId { get; set; }
     public int DetectorsId { get; set; }
 }
+
 
