@@ -16,10 +16,13 @@
 #endregion
 
 using Asp.Versioning;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Options;
+using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.Filters;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using Utah.Udot.Atspm.DataApi.Configuration;
 using Utah.Udot.Atspm.DataApi.CustomOperations;
@@ -88,6 +91,35 @@ builder.Host
          o.OperationFilter<TimestampFormatHeader>();
          o.DocumentFilter<GenerateAggregationSchemas>();
          o.DocumentFilter<GenerateEventSchemas>();
+
+         o.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme()
+         {
+             In = ParameterLocation.Header,
+             Name = "Authorization",
+             Type = SecuritySchemeType.ApiKey
+         });
+
+         o.OperationFilter<SecurityRequirementsOperationFilter>();
+
+         //var securityScheme = new OpenApiSecurityScheme
+         //{
+         //    Name = "JWT Authentication",
+         //    Description = "Enter JWT Bearer token **_only_**",
+         //    In = ParameterLocation.Header,
+         //    Type = SecuritySchemeType.Http,
+         //    Scheme = "bearer", // must be lower case
+         //    BearerFormat = "JWT",
+         //    Reference = new OpenApiReference
+         //    {
+         //        Id = JwtBearerDefaults.AuthenticationScheme,
+         //        Type = ReferenceType.SecurityScheme
+         //    }
+         //};
+         //o.AddSecurityDefinition(securityScheme.Reference.Id, securityScheme);
+         //o.AddSecurityRequirement(new OpenApiSecurityRequirement
+         //{
+         //    {securityScheme, new string[] { }}
+         //});
      });
 
     var allowedHosts = builder.Configuration.GetSection("AllowedHosts").Get<string>() ?? "*";
