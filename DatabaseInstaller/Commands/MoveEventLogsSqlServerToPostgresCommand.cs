@@ -30,6 +30,7 @@ namespace DatabaseInstaller.Commands
         {
             AddOption(SourceOption);
             AddOption(StartOption);
+            AddOption(EndOption);
         }
 
         public Option<string> SourceOption { get; set; } = new("--source", "Connection string for the source SQL Server");

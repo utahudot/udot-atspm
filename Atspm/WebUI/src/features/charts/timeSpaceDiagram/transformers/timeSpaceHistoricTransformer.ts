@@ -210,7 +210,7 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
 
   const toolbox = createToolbox(
     {
-      title: formatExportFileName(titleHeader, data.start, data.end),
+      title: formatExportFileName(titleHeader, data[0].start, data[0].end),
       dateRange,
     },
     data[0].locationIdentifier,

@@ -13,6 +13,7 @@ import PlayArrowIcon from '@mui/icons-material/PlayArrow'
 import { LoadingButton } from '@mui/lab'
 import { Alert, Box } from '@mui/material'
 import { AxiosError } from 'axios'
+import { differenceInMinutes } from 'date-fns'
 import { RefObject, createRef, useEffect, useRef, useState } from 'react'
 
 interface ChartsContainerProps {
@@ -58,10 +59,20 @@ export default function ChartsContainer({
   })
 
   useEffect(() => {
-    if (alert && location !== '' && chartType !== null) {
+    if (
+      alert &&
+      location &&
+      chartType &&
+      !(
+        options &&
+        'binSize' in options &&
+        options.binSize &&
+        options.binSize > differenceInMinutes(endDateTime, startDateTime)
+      )
+    ) {
       setAlert('')
     }
-  }, [location, alert, chartType])
+  }, [location, chartType, alert, options?.binSize, startDateTime, endDateTime])
 
   useEffect(() => {
     showConfig
@@ -87,14 +98,21 @@ export default function ChartsContainer({
   }, [chartData])
 
   const handleGenerateCharts = () => {
-    if (location === '' && chartType === null) {
-      setAlert('Please select a location and measure')
+    if (!location) {
+      setAlert('Please select a location.')
       return
-    } else if (location === '') {
-      setAlert('Please select a location')
+    }
+    if (!chartType) {
+      setAlert('Please select a measure.')
       return
-    } else if (chartType === null) {
-      setAlert('Please select a measure')
+    }
+    if (
+      options &&
+      'binSize' in options &&
+      options.binSize &&
+      options.binSize > differenceInMinutes(endDateTime, startDateTime)
+    ) {
+      setAlert('Bin size cannot be greater than the selected time span.')
       return
     }
     setAlert('')
