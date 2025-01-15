@@ -1,3 +1,4 @@
+import { Filters } from '@/features/locations/components/selectLocation/SelectLocation'
 import { Location } from '@/features/locations/types'
 import { Skeleton } from '@mui/material'
 import dynamic from 'next/dynamic'
@@ -7,20 +8,26 @@ type SelectLocationMapProps = {
   location: Location | null
   setLocation: (location: Location) => void
   locations: Location[]
+  filteredLocations: Location[]
   route?: number[][]
   zoom?: number
   center?: [number, number]
   mapHeight?: number | string
+  filters: Filters
+  updateFilters: (filters: Partial<Filters>) => void
 }
 
 function SelectLocationMap({
   location,
   setLocation,
   locations,
+  filteredLocations,
   route,
   zoom,
   center,
   mapHeight,
+  filters,
+  updateFilters,
 }: SelectLocationMapProps) {
   const LocationMap = useMemo(
     () =>
@@ -38,12 +45,26 @@ function SelectLocationMap({
       location,
       setLocation,
       locations,
+      filteredLocations,
       route,
       zoom,
       center,
       mapHeight,
+      filters,
+      updateFilters,
     }),
-    [location, setLocation, locations, route, zoom, center, mapHeight]
+    [
+      location,
+      setLocation,
+      locations,
+      filteredLocations,
+      route,
+      zoom,
+      center,
+      mapHeight,
+      filters,
+      updateFilters,
+    ]
   )
 
   return <LocationMap {...mapProps} />
