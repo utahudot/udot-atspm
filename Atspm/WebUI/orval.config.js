@@ -1,10 +1,28 @@
 module.exports = {
-  config: {
+  // config: {
+  //   input: {
+  //     target: './config-spec.json',
+  //   },
+  //   output: {
+  //     target: './src/api/config',
+  //     client: 'react-query',
+  //     templates: './orval-templates',
+  //     mock: true,
+  //     mode: 'split',
+  //     override: {
+  //       mutator: {
+  //         path: './src/lib/axios.ts',
+  //         name: 'configRequest',
+  //       },
+  //     },
+  //   },
+  // },
+  data: {
     input: {
-      target: './config-spec.json',
+      target: './orval-spec.json',
     },
     output: {
-      target: './src/api/config',
+      target: './src/api/data',
       client: 'react-query',
       templates: './orval-templates',
       mock: true,
@@ -12,7 +30,7 @@ module.exports = {
       override: {
         mutator: {
           path: './src/lib/axios.ts',
-          name: 'configRequest',
+          name: 'dataRequest',
         },
       },
     },
