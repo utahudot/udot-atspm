@@ -52,7 +52,7 @@ namespace DatabaseInstaller.Commands
         {
             services.AddSingleton(GetOptionsBinder());
             services.AddOptions<TransferCommandConfiguration>().BindCommandLine();
-            services.AddHostedService<TransferEventLogsHostedService>();
+            services.AddHostedService<TransferSpeedEventsHostedService>();
         }
     }
 }

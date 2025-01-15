@@ -263,7 +263,9 @@ const PhaseTable = ({ phases }: PhaseTableProps) => {
     <Accordion disableGutters>
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <Typography variant="h4" component="h2">Phase Details</Typography>
+          <Typography variant="h4" component="h2">
+            Phase Details
+          </Typography>
           <IconButton
             color="primary"
             onClick={(e) => handleCopyToClipboard(e)}
@@ -282,25 +284,25 @@ const PhaseTable = ({ phases }: PhaseTableProps) => {
               <TableRow>
                 <BorderedCell>Phase</BorderedCell>
                 <BorderedCell>Metric</BorderedCell>
-                {maxPhase.chart.displayProps.plans.map((plan) => (
-                  <BorderedCell key={plan.planNumber}>
+                {maxPhase.chart.displayProps.plans.map((plan, i) => (
+                  <BorderedCell key={`${plan.planNumber}-${i}`}>
                     {createHeaderLabel(plan.planNumber)}
                   </BorderedCell>
                 ))}
               </TableRow>
             </TableHead>
             <TableBody>
-              {syncedPhases.map((phase) => (
+              {syncedPhases.map((phase, i) => (
                 <React.Fragment
-                  key={`phase-${phase.chart.displayProps.phaseNumber}`}
+                  key={`phase-${phase.chart.displayProps.phaseNumber}-${i}`}
                 >
                   <TableRow>
                     <BorderedCell>
                       {phase.chart.displayProps.phaseNumber}
                     </BorderedCell>
                     <BorderedCell>Time</BorderedCell>
-                    {phase.chart.displayProps.plans.map((plan) => (
-                      <BorderedCell key={`time-${plan.planNumber}`}>
+                    {phase.chart.displayProps.plans.map((plan, j) => (
+                      <BorderedCell key={`time-${plan.planNumber}-${i}-${j}`}>
                         {`${formatDateTime(plan.start, plan.end)} `}
                       </BorderedCell>
                     ))}
@@ -310,8 +312,8 @@ const PhaseTable = ({ phases }: PhaseTableProps) => {
                       {phase.chart.displayProps.phaseNumber}
                     </BorderedCell>
                     <BorderedCell>Min Time</BorderedCell>
-                    {phase.chart.displayProps.plans.map((plan) => (
-                      <BorderedCell key={`minTime-${plan.minTime}`}>
+                    {phase.chart.displayProps.plans.map((plan, j) => (
+                      <BorderedCell key={`minTime-${plan.minTime}-${i}-${j}`}>
                         {plan.minTime}
                       </BorderedCell>
                     ))}
@@ -321,9 +323,9 @@ const PhaseTable = ({ phases }: PhaseTableProps) => {
                       {phase.chart.displayProps.phaseNumber}
                     </BorderedCell>
                     <BorderedCell>Programmed Split (sec)</BorderedCell>
-                    {phase.chart.displayProps.plans.map((plan) => (
+                    {phase.chart.displayProps.plans.map((plan, j) => (
                       <BorderedCell
-                        key={`programmedSplit-${plan.programmedSplit}`}
+                        key={`programmedSplit-${plan.programmedSplit}-${i}-${j}`}
                       >
                         {plan.programmedSplit}
                       </BorderedCell>
@@ -336,9 +338,9 @@ const PhaseTable = ({ phases }: PhaseTableProps) => {
                     <BorderedCell color="purple">
                       85th percentile split (sec)
                     </BorderedCell>
-                    {phase.chart.displayProps.plans.map((plan) => (
+                    {phase.chart.displayProps.plans.map((plan, j) => (
                       <BorderedCell
-                        key={`percentileSplit85th-${plan.percentileSplit85th}`}
+                        key={`percentileSplit85th-${plan.percentileSplit85th}-${i}-${j}`}
                         color="purple"
                       >
                         {formatNumber(plan.percentileSplit85th)}
@@ -352,9 +354,9 @@ const PhaseTable = ({ phases }: PhaseTableProps) => {
                     <BorderedCell color="purple">
                       50th percentile split (sec)
                     </BorderedCell>
-                    {phase.chart.displayProps.plans.map((plan) => (
+                    {phase.chart.displayProps.plans.map((plan, j) => (
                       <BorderedCell
-                        key={`percentileSplit50th-${plan.percentileSplit50th}`}
+                        key={`percentileSplit50th-${plan.percentileSplit50th}-${i}-${j}`}
                         color="purple"
                       >
                         {formatNumber(plan.percentileSplit50th)}
@@ -366,8 +368,10 @@ const PhaseTable = ({ phases }: PhaseTableProps) => {
                       {phase.chart.displayProps.phaseNumber}
                     </BorderedCell>
                     <BorderedCell>Average Split (sec)</BorderedCell>
-                    {phase.chart.displayProps.plans.map((plan) => (
-                      <BorderedCell key={`averageSplit-${plan.averageSplit}`}>
+                    {phase.chart.displayProps.plans.map((plan, j) => (
+                      <BorderedCell
+                        key={`averageSplit-${plan.averageSplit}, ${i}-${j}`}
+                      >
                         {formatNumber(plan.averageSplit)}
                       </BorderedCell>
                     ))}
@@ -389,9 +393,9 @@ const PhaseTable = ({ phases }: PhaseTableProps) => {
                       {phase.chart.displayProps.phaseNumber}
                     </BorderedCell>
                     <BorderedCell color="green">Gap Outs (%)</BorderedCell>
-                    {phase.chart.displayProps.plans.map((plan) => (
+                    {phase.chart.displayProps.plans.map((plan, j) => (
                       <BorderedCell
-                        key={`percentGapOuts-${plan.percentGapOuts}`}
+                        key={`percentGapOuts-${plan.percentGapOuts}-${i}-${j}`}
                         color="green"
                       >
                         {formatNumber(plan.percentGapOuts)}
@@ -403,9 +407,9 @@ const PhaseTable = ({ phases }: PhaseTableProps) => {
                       {phase.chart.displayProps.phaseNumber}
                     </BorderedCell>
                     <BorderedCell borderBottom>Skips (%)</BorderedCell>
-                    {phase.chart.displayProps.plans.map((plan) => (
+                    {phase.chart.displayProps.plans.map((plan, j) => (
                       <BorderedCell
-                        key={`percentSkips-${plan.percentSkips}`}
+                        key={`percentSkips-${plan.percentSkips}-${i}-${j}`}
                         borderBottom
                       >
                         {formatNumber(plan.percentSkips)}
