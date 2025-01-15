@@ -78,6 +78,6 @@ namespace Utah.Udot.Atspm.Data.Models
         #endregion
 
         /// <inheritdoc/>
-        public override string ToString() => $"{Id} - {Ipaddress} - {Location?.LocationIdentifier} - {DeviceType} - {DeviceStatus} --- {DeviceConfiguration}";
+        public override string ToString() => $"{Id} - {DeviceIdentifier} - {Ipaddress} - {Location?.LocationIdentifier} - {DeviceType} - {DeviceStatus} --- {DeviceConfiguration}";
     }
 }
