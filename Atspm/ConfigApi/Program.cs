@@ -98,6 +98,7 @@ builder.Host
         o.IncludeXmlComments(typeof(Program));
         o.CustomOperationIds((controller, verb, action) => $"{verb}{controller}{action}");
         o.EnableAnnotations();
+        o.AddJwtAuthorization();
     });
 
     var allowedHosts = builder.Configuration.GetSection("AllowedHosts").Get<string>() ?? "*";
