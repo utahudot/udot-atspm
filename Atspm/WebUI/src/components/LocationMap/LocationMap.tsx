@@ -3,7 +3,7 @@ import { ServiceType } from '@/api/config/aTSPMConfigurationApi.schemas'
 import Markers from '@/components/LocationMap/Markers'
 import MapFilters from '@/components/MapFilters'
 import { Location } from '@/features/locations/types'
-import { getEnv } from '@/lib/getEnv'
+import { getEnv } from '@/utils/getEnv'
 import ClearIcon from '@mui/icons-material/Clear'
 import LayersIcon from '@mui/icons-material/Layers'
 import {

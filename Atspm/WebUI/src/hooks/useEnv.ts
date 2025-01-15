@@ -1,4 +1,4 @@
-import { getEnv } from '@/lib/getEnv'
+import { getEnv } from '@/utils/getEnv'
 import { useEffect, useState } from 'react'
 
 export const useEnv = () => {
