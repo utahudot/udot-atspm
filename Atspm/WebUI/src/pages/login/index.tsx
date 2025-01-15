@@ -2,7 +2,7 @@ import { ResponsivePageLayout } from '@/components/ResponsivePage'
 import { useLogin } from '@/features/identity/api/getLogin'
 import IdentityDto from '@/features/identity/types/identityDto'
 import { setSecureCookie } from '@/features/identity/utils'
-import { getEnv } from '@/lib/getEnv'
+import { getEnv } from '@/utils/getEnv'
 import { LoadingButton } from '@mui/lab'
 import {
   Alert,
