@@ -49,6 +49,9 @@ namespace Utah.Udot.Atspm.ConfigApi.Configuration
                         model.Property(p => p.UserName).MaxLength = 50;
                         model.Property(p => p.Password).MaxLength = 50;
 
+                        var a = model.Collection.Function("GetEventLogDecoders");
+                        a.ReturnsCollection<string>();
+
                         break;
                     }
             }
