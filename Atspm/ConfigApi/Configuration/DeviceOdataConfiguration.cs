@@ -38,7 +38,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Configuration
             {
                 case 1:
                     {
-                        model.Property(p => p.DeviceIdentifier).IsRequired();
+                        model.Property(p => p.Description).MaxLength = 50;
                         model.Property(p => p.DeviceIdentifier).MaxLength = 50;
 
                         model.Property(p => p.Ipaddress).IsRequired();
