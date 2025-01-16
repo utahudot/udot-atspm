@@ -31,8 +31,10 @@ namespace Utah.Udot.Atspm.Data.Configuration
         {
             builder.ToTable(t => t.HasComment("Devices"));
 
+            builder.Property(e => e.Description)
+                .HasMaxLength(50);
+
             builder.Property(e => e.DeviceIdentifier)
-                .IsRequired()
                 .HasMaxLength(50);
 
             builder.Property(e => e.Ipaddress)
