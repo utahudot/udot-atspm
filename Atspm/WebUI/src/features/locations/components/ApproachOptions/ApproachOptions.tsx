@@ -16,7 +16,7 @@ import {
   Paper,
   Typography,
 } from '@mui/material'
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 
 interface ApproachOptionsProps {
   handler: LocationConfigHandler
@@ -25,7 +25,7 @@ interface ApproachOptionsProps {
 const ApproachOptions = ({ handler }: ApproachOptionsProps) => {
   const setBadApproaches = useLocationStore((state) => state.setBadApproaches)
   const setBadDetectors = useLocationStore((state) => state.setBadDetectors)
-  const resetLocationStore = useLocationStore((state) => state.reset)
+  const resetLocationStore = useLocationStore((state) => state.resetStore)
   const { mutateAsync, isLoading } = useGetLocationSyncLocationFromKey()
   const [showSyncContainer, setShowSyncContainer] = useState(false)
   const [categories, setCategories] = useState({
@@ -95,16 +95,16 @@ const ApproachOptions = ({ handler }: ApproachOptionsProps) => {
   }
 
   // Reset store and local state when location changes
-  useEffect(() => {
-    resetLocationStore() // Clear badApproaches and badDetectors
-    setCategories({
-      foundPhases: [],
-      foundDetectors: [],
-      notFoundApproaches: [],
-      notFoundDetectors: [],
-    })
-    setShowSyncContainer(false)
-  }, [handler.expandedLocation.id, resetLocationStore])
+  // useEffect(() => {
+  //   resetLocationStore() // Clear badApproaches and badDetectors
+  //   setCategories({
+  //     foundPhases: [],
+  //     foundDetectors: [],
+  //     notFoundApproaches: [],
+  //     notFoundDetectors: [],
+  //   })
+  //   setShowSyncContainer(false)
+  // }, [handler.expandedLocation.id, resetLocationStore])
 
   const renderCategory = (
     title: string,

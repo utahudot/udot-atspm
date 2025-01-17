@@ -2,6 +2,7 @@ import { ResponsivePageLayout } from '@/components/ResponsivePage'
 import { StyledPaper } from '@/components/StyledPaper'
 import { AddButton } from '@/components/addButton'
 import { PageNames, useViewPage } from '@/features/identity/pagesCheck'
+import LocationSetupWizard from '@/features/locations/components/LocationSetupWizard'
 import EditLocation from '@/features/locations/components/editLocation/EditLocation'
 import NewLocationModal from '@/features/locations/components/editLocation/NewLocationModal'
 import { useLocationConfigHandler } from '@/features/locations/components/editLocation/editLocationConfigHandler'
@@ -14,16 +15,23 @@ const LocationsAdmin = () => {
 
   const [location, setLocation] = useState<Location | null>(null)
   const [isModalOpen, setModalOpen] = useState(false)
+
+  const [isWizardOpen, setIsWizardOpen] = useState(false)
+
   const locationHandler = useLocationConfigHandler({
     location: location as Location,
   })
 
   if (pageAccess.isLoading) {
-    return
+    return null
   }
 
-  const handleLocationChange = (location: Location) => {
-    setLocation(location)
+  const handleLocationChange = (newLocation: Location) => {
+    setLocation(newLocation)
+  }
+
+  const handleOpenWizard = () => {
+    setIsWizardOpen(true)
   }
 
   return (
@@ -33,6 +41,7 @@ const LocationsAdmin = () => {
         onClick={() => setModalOpen(true)}
         sx={{ mb: 1, width: '200px' }}
       />
+
       <StyledPaper sx={{ width: '50%', minWidth: '400px', p: 3 }}>
         <SelectLocation
           location={location}
@@ -40,18 +49,23 @@ const LocationsAdmin = () => {
           mapHeight={400}
         />
       </StyledPaper>
+
       {location !== null ? (
         <EditLocation
           handler={locationHandler}
           updateLocationVersion={setLocation}
         />
       ) : null}
+
       {isModalOpen && (
         <NewLocationModal
           closeModal={() => setModalOpen(false)}
           setLocation={handleLocationChange}
+          onCreatedFromTemplate={handleOpenWizard}
         />
       )}
+
+      {location && <LocationSetupWizard />}
     </ResponsivePageLayout>
   )
 }
