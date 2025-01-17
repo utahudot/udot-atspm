@@ -1,6 +1,7 @@
 import ApproachOptions from '@/features/locations/components/ApproachOptions/ApproachOptions'
 import EditApproach from '@/features/locations/components/editApproach/EditApproach'
 import EditGeneralLocation from '@/features/locations/components/editLocation/editGeneralLocation'
+import { useLocationStore } from '@/features/locations/locationStore'
 import { TabContext, TabList, TabPanel } from '@mui/lab'
 import { Box, Tab, Typography } from '@mui/material'
 import { useEffect, useState } from 'react'
@@ -21,10 +22,21 @@ const EditLocation = ({
   handler,
   updateLocationVersion,
 }: EditLocationProps) => {
+  const { activeStep } = useLocationStore()
   const [currentTab, setCurrentTab] = useState('1')
   const [sortedApproaches, setSortedApproaches] = useState<ApproachForConfig[]>(
     []
   )
+
+  useEffect(() => {
+    if (activeStep === 0) {
+      setCurrentTab('1')
+    } else if (activeStep === 1) {
+      setCurrentTab('2')
+    } else if (activeStep === 2) {
+      setCurrentTab('3')
+    }
+  }, [activeStep])
 
   useEffect(() => {
     setSortedApproaches(handler.approaches)

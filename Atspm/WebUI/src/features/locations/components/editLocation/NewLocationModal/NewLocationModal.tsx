@@ -29,6 +29,7 @@ import LocationTemplateInputs from './LocationTemplateInputs'
 interface NewLocationModalProps {
   closeModal: () => void
   setLocation: (location: Location) => void
+  onCreatedFromTemplate: () => void
 }
 
 // Schemas
@@ -78,6 +79,7 @@ const templateSchema = z.object({
 const NewLocationModal = ({
   closeModal,
   setLocation,
+  onCreatedFromTemplate,
 }: NewLocationModalProps) => {
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(
     null
@@ -152,6 +154,8 @@ const NewLocationModal = ({
         {
           onSuccess: (createdData) => {
             setLocation(createdData as unknown as Location)
+
+            onCreatedFromTemplate()
           },
           onSettled: closeModal,
         }
