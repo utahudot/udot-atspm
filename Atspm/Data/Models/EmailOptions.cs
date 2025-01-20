@@ -28,5 +28,6 @@ namespace Utah.Udot.Atspm.Data.Models
         public bool EmailAllErrors { get; set; }
         public string DefaultEmailAddress { get; set; }
         public bool WeekdayOnly { get; set; }
+        public string Sort { get; set; }
     }
 }
