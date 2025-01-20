@@ -1,7 +1,7 @@
 import ApproachOptions from '@/features/locations/components/ApproachOptions/ApproachOptions'
 import EditApproach from '@/features/locations/components/editApproach/EditApproach'
 import EditGeneralLocation from '@/features/locations/components/editLocation/editGeneralLocation'
-import { useLocationStore } from '@/features/locations/locationStore'
+import { useLocationWizardStore } from '@/features/locations/components/LocationSetupWizard/locationSetupWizardStore'
 import { TabContext, TabList, TabPanel } from '@mui/lab'
 import { Box, Tab, Typography } from '@mui/material'
 import { useEffect, useState } from 'react'
@@ -22,7 +22,7 @@ const EditLocation = ({
   handler,
   updateLocationVersion,
 }: EditLocationProps) => {
-  const { activeStep } = useLocationStore()
+  const { activeStep } = useLocationWizardStore()
   const [currentTab, setCurrentTab] = useState('1')
   const [sortedApproaches, setSortedApproaches] = useState<ApproachForConfig[]>(
     []

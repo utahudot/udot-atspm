@@ -2,7 +2,7 @@ import { ApproachForConfig } from '@/features/locations/components/editLocation/
 import { Box, ButtonBase, IconButton, Tooltip, Typography } from '@mui/material'
 import { useEffect, useState } from 'react'
 
-import { useLocationStore } from '@/features/locations/locationStore'
+import { useLocationWizardStore } from '@/features/locations/components/LocationSetupWizard/locationSetupWizardStore'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import DeleteIcon from '@mui/icons-material/Delete'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
@@ -26,7 +26,7 @@ const ApproachEditorRowHeader = ({
   handleSaveApproach,
   openDeleteApproachModal,
 }: ApproachEditorRowProps) => {
-  const { badApproaches } = useLocationStore()
+  const { badApproaches } = useLocationWizardStore()
   const [isBadApproach, setIsBadApproach] = useState(false)
 
   // Recalculate bad approach status when `badApproaches` changes

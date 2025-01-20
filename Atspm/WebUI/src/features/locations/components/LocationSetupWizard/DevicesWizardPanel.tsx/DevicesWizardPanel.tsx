@@ -49,8 +49,6 @@ const DevicesWizardPanel = ({
 }: DevicesWizardPanelProps) => {
   const [isExpanded, setIsExpanded] = useState(true)
 
-  console.log('Devices:', devices[0])
-
   return (
     <>
       <Box
@@ -70,7 +68,6 @@ const DevicesWizardPanel = ({
       </Box>
 
       <Collapse in={isExpanded}>
-        {/* Headers */}
         <Box
           sx={{
             display: 'flex',
@@ -101,9 +98,9 @@ const DevicesWizardPanel = ({
         </Box>
 
         {/* Rows */}
-        {devices?.map((device) => (
+        {devices?.map((device, i) => (
           <Box
-            key={device.deviceId}
+            key={i}
             sx={{
               display: 'flex',
               justifyContent: 'space-between',
