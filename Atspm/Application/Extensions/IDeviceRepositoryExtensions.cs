@@ -18,8 +18,12 @@ namespace Utah.Udot.Atspm.Extensions
         /// <returns></returns>
         public static IAsyncEnumerable<Device> GetDevicesForLogging(this IDeviceRepository repo, DeviceEventLoggingQueryOptions queryOptions)
         {
-            var result = repo.GetList()
-                .Where(w => w.LoggingEnabled)
+            var result = repo.GetList();
+            if (queryOptions.IncludedDevices?.Count() > 0)
+            {
+                result = result.Where(w => queryOptions.IncludedDevices.Any(a => w.Id.ToString() == a));
+            }
+            var result2 = result.Where(w => w.LoggingEnabled)
                 .Where(w => queryOptions.DeviceType == DeviceTypes.Unknown ? true : w.DeviceType == queryOptions.DeviceType)
                 .Where(w => queryOptions.DeviceStatus == DeviceStatus.Unknown ? true : w.DeviceStatus == queryOptions.DeviceStatus)
                 .Where(w => queryOptions.TransportProtocol == TransportProtocols.Unknown ? true : w.DeviceConfiguration.Protocol == queryOptions.TransportProtocol)
@@ -32,7 +36,7 @@ namespace Utah.Udot.Atspm.Extensions
                 .Where(w => (queryOptions.IncludedJurisdictions?.Count() > 0) ? queryOptions.IncludedJurisdictions.Any(a => w.Location.Jurisdiction.Name == a) : true)
                 .Where(w => (queryOptions.IncludedLocationTypes?.Count() > 0) ? queryOptions.IncludedLocationTypes.Any(a => w.Location.LocationType.Name == a) : true);
 
-            return result;
+            return result2;
         }
     }
 }

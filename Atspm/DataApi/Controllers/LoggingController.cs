@@ -17,7 +17,10 @@
 
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using System.Threading.Tasks.Dataflow;
+using Utah.Udot.Atspm.Configuration;
+using Utah.Udot.Atspm.Infrastructure.Services.HostedServices;
 using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
 using Utah.Udot.Atspm.ValueObjects;
 using Utah.Udot.ATSPM.Infrastructure.Workflows;
@@ -109,5 +112,18 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
             return devicesEventDownload;
         }
 
+
+
+        [HttpPost("deviceEventLoggin")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> DeviceEventLogging([FromServices] IServiceScopeFactory serviceScopeFactory, [FromServices] ILogger<DeviceEventLogHostedService> logger, DeviceEventLoggingConfiguration deviceIds)
+        {
+            var options = Options.Create(deviceIds);
+            var eventloggingservice = new DeviceEventLogHostedService(logger, serviceScopeFactory, options);
+            var ts = new CancellationTokenSource();
+            await eventloggingservice.StartAsync(ts.Token);
+            await eventloggingservice.StopAsync(ts.Token);
+            return Ok("hello world");
+        }
     }
 }
