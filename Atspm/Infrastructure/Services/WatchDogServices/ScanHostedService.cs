@@ -15,10 +15,10 @@
 // limitations under the License.
 #endregion
 
+using Microsoft.CodeAnalysis.Emit;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Utah.Udot.Atspm.Business.Watchdog;
 
 namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
 {
@@ -39,7 +39,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
         {
             try
             {
-                var options = new WatchdogLoggingOptions
+                var options = new LoggingOptions
                 {
                     ConsecutiveCount = _options.ConsecutiveCount,
                     LowHitThreshold = _options.LowHitThreshold,
@@ -52,13 +52,9 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                     ScanDate = _options.ScanDate,
                     ScanDayEndHour = _options.ScanDayEndHour,
                     ScanDayStartHour = _options.ScanDayStartHour,
-                    WeekdayOnly = _options.WeekdayOnly,
-                    RampMainlineEndHour = _options.RampMainlineEndHour,
-                    RampMainlineStartHour = _options.RampMainlineStartHour,
-                    RampStuckQueueEndHour = _options.RampStuckQueueEndHour,
-                    RampStuckQueueStartHour = _options.RampStuckQueueStartHour,
+                    WeekdayOnly = _options.WeekdayOnly
                 };
-                var emailOptions = new WatchdogEmailOptions
+                var emailOptions = new EmailOptions
                 {
                     PreviousDayPMPeakEnd = _options.PreviousDayPMPeakEnd,
                     PreviousDayPMPeakStart = _options.PreviousDayPMPeakStart,
@@ -68,10 +64,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                     WeekdayOnly = _options.WeekdayOnly,
                     DefaultEmailAddress = _options.DefaultEmailAddress,
                     EmailAllErrors = _options.EmailAllErrors,
-                    RampMainlineEndHour = _options.RampMainlineEndHour,
-                    RampMainlineStartHour = _options.RampMainlineStartHour,
-                    RampStuckQueueEndHour = _options.RampStuckQueueEndHour,
-                    RampStuckQueueStartHour = _options.RampStuckQueueStartHour,
+                    Sort = _options.Sort
                 };
 
                 await _scanService.StartScan(options, emailOptions, cancellationToken);
