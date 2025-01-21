@@ -53,6 +53,7 @@ const LocationMap = ({
   const theme = useTheme()
   const [mapRef, setMapRef] = useState<LeafletMap | null>(null)
   const [isFiltersOpen, setIsFiltersOpen] = useState(false)
+  const [hasFocusedRoute, setHasFocusedRoute] = useState(false)
   const filtersButtonRef = useRef(null)
 
   const [mapInfo, setMapInfo] = useState<{
@@ -87,6 +88,23 @@ const LocationMap = ({
       }
     }
   }, [location, mapRef, locations])
+
+  useEffect(() => {
+    if (location && mapRef) {
+      const markerLocation = locations.find((loc) => loc.id === location.id)
+      if (markerLocation) {
+        const { latitude, longitude } = markerLocation
+        mapRef.setView([latitude, longitude], 16)
+      }
+    } else if (route && mapRef && !hasFocusedRoute) {
+      const bounds = L.latLngBounds(route.map((coord) => [coord[0], coord[1]]))
+
+      if (bounds.isValid()) {
+        mapRef.fitBounds(bounds)
+        setHasFocusedRoute(true)
+      }
+    }
+  }, [location, mapRef, locations, route, hasFocusedRoute])
 
   // Resize the map when the container resizes
   useEffect(() => {

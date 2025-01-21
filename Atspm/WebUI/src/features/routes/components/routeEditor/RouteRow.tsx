@@ -31,7 +31,6 @@ const RouteRow = ({
   index,
   route,
   hasErrors,
-  setHasErrors,
   handleDirectionUpdate,
   handleDistanceChange,
   onDeleteLinkClick,

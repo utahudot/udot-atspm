@@ -44,9 +44,7 @@ const RouteAdmin = () => {
   }, [routeDistancesData])
 
   useEffect(() => {
-    if (!(route && locations && routeDistances) || pageAccess.isLoading) {
-      return
-    }
+    if (!(route && locations && routeDistances) || pageAccess.isLoading) return
 
     route.routeLocations.sort((a, b) => a.order - b.order)
     setUpdatedRoute(route)
@@ -126,14 +124,17 @@ const RouteAdmin = () => {
     }))
   }
 
-  const onAddRoute = () => {
+  const onAddRoute = async () => {
     if (!location || !updatedRoute) return
-    const locationExists = updatedRoute.routeLocations.find(
+
+    // Check if location already exists in the route
+    const locationExists = updatedRoute.routeLocations.some(
       (link) => link.locationIdentifier === location.locationIdentifier
     )
     if (locationExists) return
 
-    const newRouteLocation = {
+    // Clone the current route locations and add the new location
+    const newRouteLocation: RouteLocation = {
       routeId: updatedRoute.id,
       locationId: location.id,
       locationIdentifier: location.locationIdentifier,
@@ -154,57 +155,106 @@ const RouteAdmin = () => {
       nextLocationDistanceId: null,
     }
 
+    // Create a local copy of the route locations including the new location
     const updatedRouteLocations = [
       ...updatedRoute.routeLocations,
       newRouteLocation,
     ]
 
+    // If at least two locations exist, fetch the distance
+    if (updatedRouteLocations.length > 1) {
+      const previousLocation =
+        updatedRouteLocations[updatedRouteLocations.length - 2]
+
+      try {
+        // Fetch distance between previous and new location
+        const routeDistance = await fetchRouteDistance([
+          previousLocation,
+          newRouteLocation,
+        ])
+
+        if (routeDistance) {
+          const roundedDistance = Math.round(routeDistance.distance * 100) / 100
+
+          // Update the distance for the previous location before updating state
+          previousLocation.nextLocationDistance = roundedDistance
+        }
+      } catch (error) {
+        console.error('Error fetching route distance:', error)
+      }
+    }
+
+    // Now update the state once all operations are done
     setUpdatedRoute((prevRoute) => ({
       ...prevRoute,
       routeLocations: updatedRouteLocations,
     }))
+
+    // Trigger distance update logic
+    handleDistanceChange(
+      newRouteLocation,
+      newRouteLocation.nextLocationDistance || 0
+    )
+
     fetchRouteDistanceAndUpdatePolyline(updatedRouteLocations)
     setLocation(null)
   }
 
-  const handleDistanceChange = (link: RouteLocation, distance: number) => {
-    const routeLocationIndex = updatedRoute.routeLocations.findIndex(
+  const handleDistanceChange = (
+    currentLocation: RouteLocation,
+    distance: number
+  ) => {
+    if (!isValidLocation(currentLocation)) {
+      console.error('Invalid location provided.')
+      return
+    }
+
+    const nextLocation = findNextLocation(currentLocation)
+    if (!nextLocation) {
+      console.warn('Next location not found.')
+      return
+    }
+
+    const updatedDistance = calculateRoundedDistance(distance)
+    updateLocationDistance(currentLocation, nextLocation, updatedDistance)
+  }
+
+  const isValidLocation = (location: RouteLocation): boolean => {
+    return location && location.latitude !== null && location.longitude !== null
+  }
+
+  // Helper function to find the next location in the route
+  const findNextLocation = (
+    currentLocation: RouteLocation
+  ): RouteLocation | null => {
+    const index = updatedRoute.routeLocations.findIndex(
       (routeLocation) =>
-        routeLocation.locationIdentifier === link.locationIdentifier
+        routeLocation.locationIdentifier === currentLocation.locationIdentifier
     )
+    return index >= 0 && index < updatedRoute.routeLocations.length - 1
+      ? updatedRoute.routeLocations[index + 1]
+      : null
+  }
 
-    if (routeLocationIndex === -1) return
+  // Helper function to calculate and round the distance
+  const calculateRoundedDistance = (distance: number): number => {
+    return Math.round(distance * 100) / 100
+  }
 
-    const nextLink = updatedRoute.routeLocations[routeLocationIndex + 1]
-    if (!nextLink) return // Ensure nextLink exists
-
-    // Find or create the routeDistance
-    let routeDistance = findRouteDistance(
-      link,
-      nextLink.locationIdentifier,
-      routeDistances
-    ) || {
-      locationIdentifierA: link.locationIdentifier,
-      locationIdentifierB: nextLink.locationIdentifier,
-      distance,
-    }
-
-    // Update the routeDistance if it already exists
-    if (routeDistance.distance !== distance) {
-      routeDistance = { ...routeDistance, distance }
-    }
-
-    // Update the route locations
-    const updatedRouteLocations = updatedRoute.routeLocations.map(
-      (routeLocation, idx) => {
-        if (idx === routeLocationIndex) {
-          return { ...routeLocation, nextLocationDistance: routeDistance }
-        }
-        return routeLocation
-      }
-    )
-
-    setUpdatedRoute({ ...updatedRoute, routeLocations: updatedRouteLocations })
+  // Helper function to update the location distance
+  const updateLocationDistance = (
+    currentLocation: RouteLocation,
+    nextLocation: RouteLocation,
+    distance: number
+  ) => {
+    setUpdatedRoute((prevRoute) => ({
+      ...prevRoute,
+      routeLocations: prevRoute.routeLocations.map((routeLocation) =>
+        routeLocation.locationIdentifier === currentLocation.locationIdentifier
+          ? { ...routeLocation, nextLocationDistance: distance }
+          : routeLocation
+      ),
+    }))
   }
 
   const handleDirectionChange = (updatedLink: RouteLocation) => {
@@ -326,19 +376,15 @@ const RouteAdmin = () => {
       </Box>
       <Box sx={{ display: 'flex' }}>
         <StyledPaper sx={{ flexGrow: 1, minWidth: '400px', p: 3 }}>
-          <SelectLocation
-            location={location}
-            setLocation={setLocation}
-            route={routePolyline}
-            center={
-              routePolyline[Math.floor(routePolyline.length / 2)] as [
-                number,
-                number,
-              ]
-            }
-            zoom={13}
-            mapHeight={'calc(100vh - 330px)'}
-          />
+          {route?.routeLocations.length === 0 || routePolyline.length > 0 ? (
+            <SelectLocation
+              location={location}
+              setLocation={setLocation}
+              route={routePolyline}
+              zoom={13}
+              mapHeight={'calc(100vh - 330px)'}
+            />
+          ) : null}
         </StyledPaper>
         <RouteEditor
           hasErrors={hasErrors}
