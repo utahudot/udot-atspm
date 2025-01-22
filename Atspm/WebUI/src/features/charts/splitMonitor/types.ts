@@ -28,6 +28,7 @@ export interface SplitMonitorChartOptions extends BaseChartOptions {
 
 export interface SplitMonitorChartOptionsDefaults {
   percentileSplit: { id: number; value: string; option: string }
+  yAxisDefault: { id: number; value: string; option: string }
 }
 export interface SplitMonitorPlan extends BasePlan {
   percentSkips: number

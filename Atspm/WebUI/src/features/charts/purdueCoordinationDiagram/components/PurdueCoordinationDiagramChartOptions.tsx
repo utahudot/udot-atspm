@@ -1,7 +1,9 @@
 import { BinSizeDropdown } from '@/features/charts/components/selectChart/BinSizeDropdown'
+import { YAxisDefaultInput } from '@/features/charts/components/selectChart/YAxisDefaultInput'
+
 import { PurdueCoordinationDiagramChartOptionsDefaults } from '@/features/charts/purdueCoordinationDiagram/types'
 import { Default } from '@/features/charts/types'
-import { SelectChangeEvent } from '@mui/material'
+import { Box, SelectChangeEvent } from '@mui/material'
 import { useState } from 'react'
 
 interface PurdueCoordinationDiagramChartOptionsProps {
@@ -14,6 +16,9 @@ export const PurdueCoordinationDiagramChartOptions = ({
   handleChartOptionsUpdate,
 }: PurdueCoordinationDiagramChartOptionsProps) => {
   const [binSize, setBinSize] = useState(chartDefaults.binSize?.value)
+  const [yAxisDefault, setYAxisDefault] = useState(
+    chartDefaults.yAxisDefault?.value
+  )
 
   const handleBinSizeChange = (event: SelectChangeEvent<string>) => {
     const newBinSize = event.target.value
@@ -22,15 +27,31 @@ export const PurdueCoordinationDiagramChartOptions = ({
     handleChartOptionsUpdate({
       id: chartDefaults.binSize.id,
       option: chartDefaults.binSize.option,
-      value: newBinSize,
+      value: yAxisDefault,
+    })
+  }
+  const handleYAxisDefaultChange = (event: SelectChangeEvent<string>) => {
+    const newYAxisDefault = event.target.value
+    setYAxisDefault(newYAxisDefault)
+
+    handleChartOptionsUpdate({
+      id: chartDefaults.yAxisDefault.id,
+      option: chartDefaults.yAxisDefault.option,
+      value: newYAxisDefault,
     })
   }
 
   return (
-    <BinSizeDropdown
-      value={binSize}
-      handleChange={handleBinSizeChange}
-      id="purdue-coordination-diagram"
-    />
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+      <BinSizeDropdown
+        value={binSize}
+        handleChange={handleBinSizeChange}
+        id="purdue-coordination-diagram"
+      />
+      <YAxisDefaultInput
+        value={yAxisDefault}
+        handleChange={handleYAxisDefaultChange}
+      />
+    </Box>
   )
 }
