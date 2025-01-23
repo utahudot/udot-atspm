@@ -16,32 +16,32 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
         }
 
         public (List<WatchDogLogEventWithCountAndDate> newIssues, List<WatchDogLogEventWithCountAndDate> dailyRecurringIssues, List<WatchDogLogEventWithCountAndDate> recurringIssues)
-        GetSegmentedErrors(List<WatchDogLogEvent> recordsForScanDate, EmailOptions emailOptions)
+        GetSegmentedErrors(List<WatchDogLogEvent> recordsForScanDate, WatchdogEmailOptions WatchdogEmailOptions)
         {
-            var (recordsForLast12Months, recordsForDayBeforeScanDate) = FetchRecords(emailOptions);
-            var countAndDateLookupForLast12Months = CreateCountAndDateLookup(recordsForLast12Months, emailOptions.ScanDate.AddDays(-1));
+            var (recordsForLast12Months, recordsForDayBeforeScanDate) = FetchRecords(WatchdogEmailOptions);
+            var countAndDateLookupForLast12Months = CreateCountAndDateLookup(recordsForLast12Months, WatchdogEmailOptions.ScanDate.AddDays(-1));
             var allConvertedRecords = ConvertRecords(recordsForScanDate, countAndDateLookupForLast12Months);
 
-            return CategorizeIssues(allConvertedRecords, emailOptions.Sort);
+            return CategorizeIssues(allConvertedRecords, WatchdogEmailOptions.Sort);
         }
 
         private (List<WatchDogLogEvent> recordsForLast12Months, List<WatchDogLogEvent> recordsForDayBeforeScanDate)
-        FetchRecords(EmailOptions emailOptions)
+        FetchRecords(WatchdogEmailOptions WatchdogEmailOptions)
         {
-            if (emailOptions.WeekdayOnly && emailOptions.ScanDate.DayOfWeek == DayOfWeek.Monday)
+            if (WatchdogEmailOptions.WeekdayOnly && WatchdogEmailOptions.ScanDate.DayOfWeek == DayOfWeek.Monday)
             {
-                var recordsForDayBeforeScanDate = watchDogLogEventRepository.GetList(w => w.Timestamp >= emailOptions.ScanDate.AddDays(-3) &&
-                                    w.Timestamp < emailOptions.ScanDate.AddDays(-2)).ToList();
-                var recordsForLast12Months = watchDogLogEventRepository.GetList(w => w.Timestamp >= emailOptions.ScanDate.AddDays(-3).AddMonths(-12) &&
-                    w.Timestamp < emailOptions.ScanDate.AddDays(-2)).ToList();
+                var recordsForDayBeforeScanDate = watchDogLogEventRepository.GetList(w => w.Timestamp >= WatchdogEmailOptions.ScanDate.AddDays(-3) &&
+                                    w.Timestamp < WatchdogEmailOptions.ScanDate.AddDays(-2)).ToList();
+                var recordsForLast12Months = watchDogLogEventRepository.GetList(w => w.Timestamp >= WatchdogEmailOptions.ScanDate.AddDays(-3).AddMonths(-12) &&
+                    w.Timestamp < WatchdogEmailOptions.ScanDate.AddDays(-2)).ToList();
                 return (recordsForLast12Months, recordsForDayBeforeScanDate);
             }
             else
             {
-                var recordsForDayBeforeScanDate = watchDogLogEventRepository.GetList(w => w.Timestamp >= emailOptions.ScanDate.AddDays(-1) &&
-                                   w.Timestamp < emailOptions.ScanDate).ToList();
-                var recordsForLast12Months = watchDogLogEventRepository.GetList(w => w.Timestamp >= emailOptions.ScanDate.AddDays(-1).AddMonths(-12) &&
-                    w.Timestamp < emailOptions.ScanDate).ToList();
+                var recordsForDayBeforeScanDate = watchDogLogEventRepository.GetList(w => w.Timestamp >= WatchdogEmailOptions.ScanDate.AddDays(-1) &&
+                                   w.Timestamp < WatchdogEmailOptions.ScanDate).ToList();
+                var recordsForLast12Months = watchDogLogEventRepository.GetList(w => w.Timestamp >= WatchdogEmailOptions.ScanDate.AddDays(-1).AddMonths(-12) &&
+                    w.Timestamp < WatchdogEmailOptions.ScanDate).ToList();
                 return (recordsForLast12Months, recordsForDayBeforeScanDate);
             }
         }

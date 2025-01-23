@@ -348,7 +348,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices.Tests
                 { 1, new Location { Id = 1, PrimaryName = "Main St", SecondaryName = "1st Ave", LocationIdentifier = "Loc1", Latitude = 40.1234, Longitude = -111.5678 } },
                 { 2, new Location { Id = 2, PrimaryName = "Broadway", SecondaryName = "2nd Ave", LocationIdentifier = "Loc2", Latitude = 41.9876, Longitude = -112.3456 } }
             };
-            var options = new EmailOptions();
+            var options = new WatchdogEmailOptions();
             var logsFromPreviousDay = new List<WatchDogLogEvent>();
             var includeErrorCounts = true;
             var includeConsecutive = true;
@@ -385,7 +385,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices.Tests
             var sectionTimeDescription = "No errors detected in the last 24 hours.";
             var errorLogs = new List<WatchDogLogEventWithCountAndDate>();
             var locations = new Dictionary<int, Location>();
-            var options = new EmailOptions();
+            var options = new WatchdogEmailOptions();
             var logsFromPreviousDay = new List<WatchDogLogEvent>();
             var includeErrorCounts = false;
             var includeConsecutive = false;
@@ -415,7 +415,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices.Tests
             var sectionTimeDescription = "Errors detected during the past week.";
             List<WatchDogLogEventWithCountAndDate> errorLogs = null;
             var locations = new Dictionary<int, Location>();
-            var options = new EmailOptions();
+            var options = new WatchdogEmailOptions();
             var logsFromPreviousDay = new List<WatchDogLogEvent>();
             var includeErrorCounts = false;
             var includeConsecutive = false;
@@ -456,7 +456,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices.Tests
             {
                 { 1, new Location { Id = 1, PrimaryName = "Main St", SecondaryName = "1st Ave", LocationIdentifier = "Loc1", Latitude = 40.1234, Longitude = -111.5678 } }
             };
-            var options = new EmailOptions();
+            var options = new WatchdogEmailOptions();
             var logsFromPreviousDay = new List<WatchDogLogEvent>();
             var includeErrorCounts = true;
             var includeConsecutive = false;
@@ -485,7 +485,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices.Tests
             var errorTitle = "Test Errors";
             var errorSubHeader = "No errors detected in this category.";
             var errors = new List<WatchDogLogEventWithCountAndDate>();
-            var options = new EmailOptions
+            var options = new WatchdogEmailOptions
             {
                 ScanDate = DateTime.UtcNow
             };
@@ -510,7 +510,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices.Tests
             var errorTitle = "Test Errors";
             var errorSubHeader = "No errors detected in this category.";
             List<WatchDogLogEventWithCountAndDate> errors = null;
-            var options = new EmailOptions
+            var options = new WatchdogEmailOptions
             {
                 ScanDate = DateTime.UtcNow
             };
@@ -538,7 +538,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices.Tests
             {
                 new WatchDogLogEventWithCountAndDate(1, "Loc1", DateTime.UtcNow, WatchDogComponentTypes.Location, 100, WatchDogIssueTypes.RecordCount, "Issue details", null)
             };
-            var options = new EmailOptions
+            var options = new WatchdogEmailOptions
             {
                 ScanDate = DateTime.UtcNow
             };
@@ -570,7 +570,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices.Tests
                 new WatchDogLogEventWithCountAndDate(1, "Loc1", DateTime.UtcNow, WatchDogComponentTypes.Location, 100, WatchDogIssueTypes.RecordCount, "Issue details", null),
                 new WatchDogLogEventWithCountAndDate(2, "Loc2", DateTime.UtcNow, WatchDogComponentTypes.Detector, 101, WatchDogIssueTypes.LowDetectorHits, "Detector issue details", null)
             };
-            var options = new EmailOptions
+            var options = new WatchdogEmailOptions
             {
                 ScanDate = DateTime.UtcNow,
                 ScanDayStartHour = 8,
@@ -605,7 +605,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices.Tests
             // Arrange
             Dictionary<int, Location> locationDictionary = null;
             List<WatchDogLogEventWithCountAndDate> issues = null;
-            EmailOptions options = null;
+            WatchdogEmailOptions options = null;
             List<WatchDogLogEvent> logsFromPreviousDay = null;
             var includeErrorCounts = false;
             var includeConsecutive = false;
@@ -624,7 +624,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices.Tests
             // Arrange
             var locationDictionary = GetMockLocations();
             var issues = new List<WatchDogLogEventWithCountAndDate>();
-            var options = new EmailOptions { EmailAllErrors = true };
+            var options = new WatchdogEmailOptions { EmailAllErrors = true };
             var logsFromPreviousDay = new List<WatchDogLogEvent>();
             var includeErrorCounts = false;
             var includeConsecutive = false;
@@ -642,7 +642,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices.Tests
             // Arrange
             var locationDictionary = GetMockLocations();
             var issues = GetMockWatchDogLogEvents();
-            var options = new EmailOptions { EmailAllErrors = true };
+            var options = new WatchdogEmailOptions { EmailAllErrors = true };
             var logsFromPreviousDay = new List<WatchDogLogEvent>();
             var includeErrorCounts = true;
             var includeConsecutive = true;
@@ -664,7 +664,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices.Tests
             // Arrange
             var locationDictionary = GetMockLocations();
             var issues = GetMockWatchDogLogEvents();
-            var options = new EmailOptions { EmailAllErrors = false };
+            var options = new WatchdogEmailOptions { EmailAllErrors = false };
             var logsFromPreviousDay = new List<WatchDogLogEvent>
             {
                 new WatchDogLogEvent(1, "Loc1", DateTime.UtcNow, WatchDogComponentTypes.Location, 100, WatchDogIssueTypes.RecordCount, "Details", null)
@@ -686,7 +686,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices.Tests
             // Arrange
             var locationDictionary = GetMockLocations();
             var issues = GetMockWatchDogLogEventsWithPhaseAndComponent();
-            var options = new EmailOptions { EmailAllErrors = true };
+            var options = new WatchdogEmailOptions { EmailAllErrors = true };
             var logsFromPreviousDay = new List<WatchDogLogEvent>();
             var includeErrorCounts = true;
             var includeConsecutive = false;
