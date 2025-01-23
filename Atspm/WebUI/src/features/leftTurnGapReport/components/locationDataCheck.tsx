@@ -13,18 +13,6 @@ const textFieldStyle = {
     textAlign: 'center', // Center the text horizontally
     fontSize: '.75rem',
   },
-  '& input[type=number]': {
-    //hides the up and down arrows in the TextField
-    '-moz-appearance': 'textfield',
-    '&::-webkit-outer-spin-button': {
-      '-webkit-appearance': 'none',
-      margin: 0,
-    },
-    '&::-webkit-inner-spin-button': {
-      '-webkit-appearance': 'none',
-      margin: 0,
-    },
-  },
   '& label': {
     display: 'none', // Hide the label visually
   },
@@ -70,7 +58,6 @@ export const LocationDataCheck = ({
           <TextField
             id="cycles-with-ped-outs"
             value={cyclesWithPedCalls}
-            type="number"
             onChange={(e) =>
               setCyclesWithPedCalls(
                 (e.target as HTMLInputElement).valueAsNumber
@@ -79,13 +66,11 @@ export const LocationDataCheck = ({
             sx={{ ...textFieldStyle }}
           />
           <label>% Cycles with Ped Calls</label>
-          {/* <Typography htmlFor="cycles-with-ped-outs">% Cycles with Ped Calls</Typography> */}
         </Box>
 
         <Box sx={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <TextField
             id="cycles-with-gap-outs"
-            type="number"
             value={cyclesWithGapOuts}
             onChange={(e) =>
               setCyclesWithGapOuts((e.target as HTMLInputElement).valueAsNumber)
@@ -98,7 +83,6 @@ export const LocationDataCheck = ({
         <Box sx={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <TextField
             id="left-turn-volume"
-            type="number"
             value={leftTurnVolume}
             onChange={(e) =>
               setLeftTurnVolume((e.target as HTMLInputElement).valueAsNumber)

@@ -1,6 +1,8 @@
+import { useGetDetectionType } from '@/api/config/aTSPMConfigurationApi'
 import { DetectionType, Detector } from '@/features/locations/types'
 import {
   Avatar,
+  AvatarGroup,
   Box,
   Checkbox,
   ListItemText,
@@ -11,57 +13,6 @@ import {
   useTheme,
 } from '@mui/material'
 import React, { useState } from 'react'
-
-const options: Record<string, DetectionType> = {
-  LLC: {
-    id: 'LLC',
-    description: 'Lane-by-lane Count',
-    displayOrder: 4,
-    abbreviation: 'LLC',
-  },
-  LLS: {
-    id: 'LLS',
-    description: 'Lane-by-lane with Speed Restriction',
-    displayOrder: 5,
-    abbreviation: 'LLS',
-  },
-  SBP: {
-    id: 'SBP',
-    description: 'Stop Bar Presence',
-    displayOrder: 6,
-    abbreviation: 'SBP',
-  },
-  AP: {
-    id: 'AP',
-    description: 'Advanced Presence',
-    displayOrder: 7,
-    abbreviation: 'AP',
-  },
-  AC: {
-    id: 'AC',
-    description: 'Advanced Count',
-    displayOrder: 2,
-    abbreviation: 'AC',
-  },
-  AS: {
-    id: 'AS',
-    description: 'Advanced Speed',
-    displayOrder: 3,
-    abbreviation: 'AS',
-  },
-  IQ: {
-    id: 'IQ',
-    description: 'Intermediate Queue',
-    displayOrder: 10,
-    abbreviation: 'IQ',
-  },
-  EQ: {
-    id: 'EQ',
-    description: 'Excessive Queue',
-    displayOrder: 11,
-    abbreviation: 'EQ',
-  },
-}
 
 interface DetectionTypesProps {
   detector: Detector
@@ -77,6 +28,10 @@ const DetectionTypesCell = ({
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const theme = useTheme()
 
+  const { data } = useGetDetectionType()
+
+  const detectionTypes = data?.value as unknown as DetectionType[]
+
   const valueAbbreviations = new Set(
     detector.detectionTypes?.map((dt) => dt.abbreviation)
   )
@@ -90,7 +45,7 @@ const DetectionTypesCell = ({
   }
 
   const handleSelect = (abbreviation: string) => {
-    const selectedOption = Object.values(options).find(
+    const selectedOption = Object.values(detectionTypes).find(
       (option) => option.abbreviation === abbreviation
     )
     if (selectedOption) {
@@ -105,6 +60,8 @@ const DetectionTypesCell = ({
     }
   }
 
+  if (!detectionTypes) return null
+
   return (
     <TableCell
       sx={{ p: readonly ? 0 : '', border: readonly ? 'none' : '' }}
@@ -116,26 +73,33 @@ const DetectionTypesCell = ({
           gap: 1,
           alignItems: 'center',
           flexWrap: 'wrap',
-          cursor: 'pointer',
+          cursor: readonly ? 'default' : 'pointer',
         }}
         onClick={handleClick}
       >
-        {Object.entries(options).map(([abbreviation, option]) => (
-          <Tooltip key={option.id} title={option.description}>
-            <Avatar
-              sx={{
-                bgcolor: valueAbbreviations.has(abbreviation)
-                  ? theme.palette.primary.main
-                  : theme.palette.grey[400],
-                width: 26,
-                height: 26,
-                fontSize: '11px',
-              }}
-            >
-              {abbreviation}
-            </Avatar>
-          </Tooltip>
-        ))}
+        <AvatarGroup max={12}>
+          {detectionTypes.map((option) => (
+            <Tooltip key={option.id} title={option.description}>
+              <Avatar
+                sx={{
+                  bgcolor: valueAbbreviations.has(option.abbreviation)
+                    ? theme.palette.primary.main
+                    : theme.palette.grey[400],
+                  width: 26,
+                  height: 26,
+                  fontSize: '11px',
+                  WebkitPrintColorAdjust: 'exact',
+                  printColorAdjust: 'exact',
+                }}
+                slotProps={{
+                  width: { style: { width: 26, height: 26, fontSize: '11px' } },
+                }}
+              >
+                {option.abbreviation}
+              </Avatar>
+            </Tooltip>
+          ))}
+        </AvatarGroup>
       </Box>
       {!readonly && (
         <Menu
@@ -143,7 +107,7 @@ const DetectionTypesCell = ({
           open={Boolean(anchorEl)}
           onClose={handleClose}
         >
-          {Object.values(options).map((option) => (
+          {Object.values(detectionTypes).map((option) => (
             <MenuItem
               key={option.id}
               onClick={() => handleSelect(option.abbreviation)}

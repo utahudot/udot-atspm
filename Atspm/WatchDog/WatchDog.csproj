@@ -6,13 +6,16 @@
 
 	<PropertyGroup>
 		<OutputType>Exe</OutputType>
-		<TargetFramework>net7.0</TargetFramework>
+		<TargetFramework>net8.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<RootNamespace>$(NameSpacePrefix).$(SolutionName).$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
 		<AssemblyName>$(MSBuildProjectName)</AssemblyName>
 		<UserSecretsId>4a25a28a-6471-4d98-ae56-b46fe556756b</UserSecretsId>
 		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+		<VersionPrefix>5.0</VersionPrefix>
+		<VersionSuffix>rc.1</VersionSuffix>
+		<Version>$(VersionPrefix)-$(VersionSuffix)</Version>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -28,17 +31,14 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <None Include="..\.dockerignore" Link=".dockerignore">
-	    <DependentUpon>$(DockerDefaultDockerfile)</DependentUpon>
-	  </None>
-	</ItemGroup>
-
-	<ItemGroup>
-		<PackageReference Include="Google.Apis.Gmail.v1" Version="1.67.0.3287" />
-		<PackageReference Include="MailKit" Version="4.5.0" />
-		<PackageReference Include="Microsoft.CodeAnalysis" Version="4.9.2" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.1" />
-		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.18.1" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.11">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="9.0.0" />
+		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
+		<PackageReference Include="System.CommandLine.NamingConventionBinder" Version="2.0.0-beta4.22272.1" />
+		<PackageReference Include="System.CommandLine.Hosting" Version="0.4.0-alpha.22272.1" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -46,12 +46,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Reference Include="Utah.Udot.NetStandardToolkit">
-	    <HintPath>..\Utah.Udot.NetStandardToolkit.dll</HintPath>
-	  </Reference>
-	</ItemGroup>
-
-	<ItemGroup>
+      <Using Include="Utah.Udot.Atspm.Infrastructure.Configuration" />
 	  <Using Include="Utah.Udot.Atspm.Business.Common" />
 	  <Using Include="Utah.Udot.Atspm.Extensions" />
 	  <Using Include="Utah.Udot.Atspm.Repositories" />

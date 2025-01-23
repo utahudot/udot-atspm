@@ -121,7 +121,8 @@ const SelectChart = ({
       {} as Record<ChartType, React.ComponentType<any>>
     )
 
-    unsortedCharts[ChartType.RampMetering] = RampMeteringChartOptions
+    // if(location.de)
+    // unsortedCharts[ChartType.RampMetering] = RampMeteringChartOptions
 
     const sortedKeys = Object.keys(unsortedCharts).sort((a, b) =>
       a.localeCompare(b)
@@ -197,16 +198,19 @@ const SelectChart = ({
   return (
     <>
       <FormControl fullWidth sx={{ mb: 1 }}>
-        <InputLabel htmlFor="measure-type-label">
+        <InputLabel
+          htmlFor="measure-type-select"
+          id="measure-type-select-label"
+        >
           {location ? 'Measure' : 'Please select a location'}
         </InputLabel>
         <Select
-          inputProps={{ id: 'measure-type-label' }}
+          labelId="measure-type-select-label"
+          id="measure-type-select"
           label="Measure"
+          inputProps={{ id: 'measure-type-select' }}
           value={chartType && chartType in availableCharts ? chartType : ''}
           onChange={handleChartTypeChange}
-          placeholder="Please select a location"
-          displayEmpty
           disabled={!location}
         >
           {Object.keys(availableCharts).map((type) => (

@@ -14,13 +14,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 // #endregion
-import { format } from 'date-fns'
-import {
-  DataZoomComponentOption,
-  EChartsOption,
-  GridComponentOption,
-  SeriesOption,
-} from 'echarts'
 import {
   createDataZoom,
   createDisplayProps,
@@ -29,15 +22,26 @@ import {
   createToolbox,
   createXAxis,
   createYAxis,
-} from '../../common/transformers'
-import { ToolType } from '../../common/types'
-import { TransformedToolResponse } from '../../types'
-import { SolidLineSeriesSymbol, formatChartDateTimeRange } from '../../utils'
+  formatExportFileName,
+} from '@/features/charts/common/transformers'
+import { ToolType } from '@/features/charts/common/types'
+import { TransformedToolResponse } from '@/features/charts/types'
+import {
+  SolidLineSeriesSymbol,
+  formatChartDateTimeRange,
+} from '@/features/charts/utils'
+import { format } from 'date-fns'
+import {
+  DataZoomComponentOption,
+  EChartsOption,
+  GridComponentOption,
+  SeriesOption,
+} from 'echarts'
 import { RawTimeSpaceAverageData, RawTimeSpaceDiagramResponse } from '../types'
 import {
   generateCycles,
   generateGreenEventLines,
-  generateOpposingCycleLabels, 
+  generateOpposingCycleLabels,
   generatePrimaryCycleLabels,
   getDistancesLabelOption,
   getLocationsLabelOption,
@@ -171,7 +175,10 @@ function transformData(data: RawTimeSpaceAverageData[]): EChartsOption {
   }
 
   const toolbox = createToolbox(
-    { title: titleHeader, dateRange },
+    {
+      title: formatExportFileName(titleHeader, data[0].start, data[0].end),
+      dateRange,
+    },
     data[0].locationIdentifier,
     ToolType.TimeSpaceHistoric
   )

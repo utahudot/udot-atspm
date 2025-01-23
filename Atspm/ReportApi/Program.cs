@@ -18,8 +18,10 @@
 using Asp.Versioning;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using System.Text;
 using Utah.Udot.Atspm.Business.AppoachDelay;
 using Utah.Udot.Atspm.Business.ApproachSpeed;
 using Utah.Udot.Atspm.Business.ApproachVolume;
@@ -48,11 +50,15 @@ using Utah.Udot.Atspm.ReportApi.ReportServices;
 using Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices;
 using Utah.Udot.ATSPM.ReportApi.ReportServices;
 
+//gitactions: I 
+
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Host.ConfigureServices((h, s) =>
+builder.Host
+    .ApplyVolumeConfiguration()
+    .ConfigureServices((h, s) =>
 {
     s.AddControllers(o =>
     {
@@ -98,14 +104,12 @@ builder.Host.ConfigureServices((h, s) =>
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     s.AddSwaggerGen(o =>
     {
-        var fileName = typeof(Program).Assembly.GetName().Name + ".xml";
-        var filePath = Path.Combine(AppContext.BaseDirectory, fileName);
-
-        // integrate xml comments
-        o.IncludeXmlComments(filePath);
+        o.IncludeXmlComments(typeof(Program));
+        o.CustomOperationIds((controller, verb, action) => $"{verb}{controller}{action}");
+        o.EnableAnnotations();
     });
 
-    var allowedHosts = builder.Configuration.GetSection("AllowedHosts").Get<string>();
+    var allowedHosts = builder.Configuration.GetSection("AllowedHosts").Get<string>() ?? "*";
     s.AddCors(options =>
     {
         options.AddPolicy("CorsPolicy",
@@ -236,16 +240,12 @@ builder.Host.ConfigureServices((h, s) =>
 
     s.AddPathBaseFilter(h);
 
-    if (!h.HostingEnvironment.IsDevelopment())
-    {
-        s.AddAtspmAuthentication(h);
-        s.AddAtspmAuthorization();
-    }
+    s.AddAtspmIdentity(h);
 });
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
+if (!app.Environment.IsProduction())
 {
     app.Services.PrintHostInformation();
     app.UseDeveloperExceptionPage();

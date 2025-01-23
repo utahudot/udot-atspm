@@ -5,7 +5,6 @@ import { useGetMenuItems } from '@/features/menuItems/api/getMenuItems'
 import { useSidebarStore } from '@/stores/sidebar'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import MenuIcon from '@mui/icons-material/Menu'
-import PublishedWithChangesOutlinedIcon from '@mui/icons-material/PublishedWithChangesOutlined'
 import QuestionAnswerOutlinedIcon from '@mui/icons-material/QuestionAnswerOutlined'
 import { Box, Button, IconButton, Paper, Typography } from '@mui/material'
 import Image from 'next/image'
@@ -46,11 +45,6 @@ export default function Topbar() {
       name: 'FAQ',
       icon: <QuestionAnswerOutlinedIcon fontSize="small" />,
       link: '/faq',
-    },
-    {
-      name: 'Changelog',
-      icon: <PublishedWithChangesOutlinedIcon fontSize="small" />,
-      link: '/changelog',
     },
   ]
 
@@ -116,6 +110,7 @@ export default function Topbar() {
               src="/images/atspm-logo-new.png"
               priority
               fill
+              sizes="200px"
               style={{ cursor: 'pointer', objectFit: 'contain' }}
             />
           </Box>

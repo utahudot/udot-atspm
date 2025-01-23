@@ -14,6 +14,7 @@ import {
   ClickAwayListener,
   FormControlLabel,
   Popper,
+  Skeleton,
   useTheme,
 } from '@mui/material'
 import { DynamicMapLayer, FeatureLayer } from 'esri-leaflet'
@@ -226,7 +227,7 @@ const LocationMap = ({
   }
 
   if (!mapInfo) {
-    return <div>Loading...</div>
+    return <Skeleton variant="rectangular" height={mapHeight ?? 400} />
   }
 
   return (

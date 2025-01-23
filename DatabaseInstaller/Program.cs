@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for EventLogUtility - %Namespace%/Program.cs
+// for DatabaseInstaller - %Namespace%/Program.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,40 +16,56 @@
 #endregion
 
 using DatabaseInstaller.Commands;
+using DatabaseInstaller.Services;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System;
 using System.CommandLine.Builder;
 using System.CommandLine.Hosting;
 using System.CommandLine.Parsing;
 using Utah.Udot.Atspm.Common;
+using Utah.Udot.Atspm.Data;
+using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Infrastructure.Extensions;
+using Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices;
 
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 var rootCmd = new DatabaseInstallerCommands();
 var cmdBuilder = new CommandLineBuilder(rootCmd);
 cmdBuilder.UseDefaults();
-
 cmdBuilder.UseHost(hostBuilder =>
 {
     return Host.CreateDefaultBuilder(hostBuilder)
-    .UseConsoleLifetime()
+    .ApplyVolumeConfiguration()
+    //.UseConsoleLifetime()
     .ConfigureAppConfiguration((h, c) =>
     {
-        c.AddCommandLine(args);
+        //c.AddCommandLine(args);
         c.AddUserSecrets<Program>(optional: true);
 
     })
-    .ConfigureLogging((hostContext, logging) =>
-    {
-        // Configure logging if needed
-    })
+    //.ConfigureLogging((hostContext, logging) =>
+    //{
+    //    // Configure logging if needed
+    //})
     .ConfigureServices((hostContext, services) =>
     {
         // Core services
         services.AddAtspmDbContext(hostContext);
         services.AddAtspmEFConfigRepositories();
         services.AddAtspmEFEventLogRepositories();
+        services.AddIdentity<ApplicationUser, IdentityRole>()
+        .AddEntityFrameworkStores<IdentityContext>()
+        .AddDefaultTokenProviders();
 
-        // Optional: Register any core services your application might need here.
+
+        //// Optional: Register any core services your application might need here.
+        services.Configure<UpdateCommandConfiguration>(hostContext.Configuration.GetSection("CommandLineOptions"));
+        services.Configure<TransferCommandConfiguration>(hostContext.Configuration.GetSection(nameof(TransferCommandConfiguration)));
+        services.Configure<TransferConfigCommandConfiguration>(hostContext.Configuration.GetSection(nameof(TransferConfigCommandConfiguration)));
+
     });
 },
 host =>
@@ -69,6 +85,4 @@ host =>
 
 // Build and invoke the command parser
 var cmdParser = cmdBuilder.Build();
-var parseResult = cmdParser.Parse(args);
-Console.WriteLine("Command: " + parseResult.CommandResult.Command.Name);
 await cmdParser.InvokeAsync(args);

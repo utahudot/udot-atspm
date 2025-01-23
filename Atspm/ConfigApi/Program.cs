@@ -30,11 +30,15 @@ using Utah.Udot.Atspm.ConfigApi.Utility;
 using Utah.Udot.Atspm.Infrastructure.Extensions;
 using Utah.Udot.NetStandardToolkit.Extensions;
 
+//gitactions: I
+
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Host.ConfigureServices((h, s) =>
+builder.Host
+    .ApplyVolumeConfiguration()
+    .ConfigureServices((h, s) =>
 {
     s.AddControllers(o =>
     {
@@ -92,14 +96,9 @@ builder.Host.ConfigureServices((h, s) =>
     builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
     builder.Services.AddSwaggerGen(o =>
     {
-        var fileName = typeof(Program).Assembly.GetName().Name + ".xml";
-        var filePath = Path.Combine(AppContext.BaseDirectory, fileName);
-
-        // integrate xml comments
-        o.IncludeXmlComments(filePath);
-
-        // Use the full name to avoid schema ID conflicts
-        o.CustomSchemaIds(type => type.FullName);
+        o.IncludeXmlComments(typeof(Program));
+        o.CustomOperationIds((controller, verb, action) => $"{verb}{controller}{action}");
+        o.EnableAnnotations();
     });
 
     var allowedHosts = builder.Configuration.GetSection("AllowedHosts").Get<string>() ?? "*";
@@ -134,13 +133,12 @@ builder.Host.ConfigureServices((h, s) =>
 
     s.AddPathBaseFilter(h);
 
-    s.AddAtspmAuthentication(h);
-    s.AddAtspmAuthorization();
+    s.AddAtspmIdentity(h);
 });
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
+if (!app.Environment.IsProduction())
 {
     // navigate to ~/$odata to determine whether any endpoints did not match an odata route template
     app.UseODataRouteDebug();

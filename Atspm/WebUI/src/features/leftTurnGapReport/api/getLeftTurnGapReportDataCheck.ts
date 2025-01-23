@@ -37,7 +37,7 @@ type QueryFnType = typeof getLeftTurnGapReportDataCheck
 type UseLeftTurnGapReportOptions = {
   config?: QueryConfig<QueryFnType>
   body: any
-  approachIds: number[]
+  approachIds: string[]
 }
 
 export const useLeftTurnGapReportDataCheck = ({

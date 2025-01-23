@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for ApplicationCore - ATSPM.Application.Business.ApproachSpeed/AvgSpeedBucket.cs
+// for Application - Utah.Udot.Atspm.Business.ApproachSpeed/AvgSpeedBucket.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 #endregion
 
 using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Tokens;
+using Utah.Udot.Atspm.Extensions;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
 
 namespace Utah.Udot.Atspm.Business.ApproachSpeed

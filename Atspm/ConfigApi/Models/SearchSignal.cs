@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for ConfigApi - ATSPM.ConfigApi.Models/SearchSignal.cs
+// for ConfigApi - Utah.Udot.Atspm.ConfigApi.Models/SearchSignal.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,7 +14,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
-
 
 namespace Utah.Udot.Atspm.ConfigApi.Models
 {
@@ -33,5 +32,6 @@ namespace Utah.Udot.Atspm.ConfigApi.Models
         public IEnumerable<int> Charts { get; set; }
         public DateTime Start { get; set; }
         public int LocationTypeId { get; set; }
+        public bool? HasRampDevice { get; set; }
     }
 }

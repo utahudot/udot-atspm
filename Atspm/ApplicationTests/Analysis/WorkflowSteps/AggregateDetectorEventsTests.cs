@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for ApplicationCoreTests - ApplicationCoreTests.Analysis.WorkflowSteps/AggregateDetectorEventsTests.cs
+// for ApplicationTests - Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps/AggregateDetectorEventsTests.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -58,7 +58,7 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
 
             var testData = Tuple.Create(_testDetector, _testDetector.DetectorChannel, testLogs);
 
-            var sut = new AggregateDetectorEvents();
+            var sut = new AggregateDetectorEvents(TimeSpan.FromMinutes(15));
 
             await Assert.ThrowsAsync<TaskCanceledException>(async () => await sut.ExecuteAsync(testData, source.Token));
         }
@@ -80,7 +80,7 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
 
             var testData = Tuple.Create(_testDetector, _testDetector.DetectorChannel, testLogs);
 
-            var sut = new AggregateDetectorEvents();
+            var sut = new AggregateDetectorEvents(TimeSpan.FromMinutes(15));
 
             var actual = await sut.ExecuteAsync(testData);
 
@@ -115,7 +115,7 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
 
             var testData = Tuple.Create(_testDetector, _testDetector.DetectorChannel, testLogs);
 
-            var sut = new AggregateDetectorEvents();
+            var sut = new AggregateDetectorEvents(TimeSpan.FromMinutes(15));
 
             var actual = await sut.ExecuteAsync(testData);
 
@@ -150,7 +150,7 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
 
             var testData = Tuple.Create(_testDetector, _testDetector.DetectorChannel, testLogs);
 
-            var sut = new AggregateDetectorEvents();
+            var sut = new AggregateDetectorEvents(TimeSpan.FromMinutes(15));
 
             var actual = await sut.ExecuteAsync(testData);
 
@@ -184,7 +184,7 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
 
             var testData = Tuple.Create(_testDetector, _testDetector.DetectorChannel, testLogs);
 
-            var sut = new AggregateDetectorEvents();
+            var sut = new AggregateDetectorEvents(TimeSpan.FromMinutes(15));
 
             var actual = await sut.ExecuteAsync(testData);
 
@@ -224,7 +224,7 @@ namespace Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps
 
             var testData = Tuple.Create(_testDetector, _testDetector.DetectorChannel, testLogs);
 
-            var sut = new AggregateDetectorEvents();
+            var sut = new AggregateDetectorEvents(TimeSpan.FromMinutes(15));
 
             var actual = await sut.ExecuteAsync(testData);
 

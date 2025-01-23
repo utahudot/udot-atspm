@@ -25,11 +25,15 @@ using Utah.Udot.Atspm.DataApi.Configuration;
 using Utah.Udot.Atspm.DataApi.CustomOperations;
 using Utah.Udot.Atspm.DataApi.Formatters;
 
+//gitactions: I
+
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Host.ConfigureServices((h, s) =>
+builder.Host
+    .ApplyVolumeConfiguration()
+    .ConfigureServices((h, s) =>
 {
     s.AddControllers(o =>
     {
@@ -66,7 +70,6 @@ builder.Host.ConfigureServices((h, s) =>
     {
         o.GroupNameFormat = "'v'VVV";
         o.SubstituteApiVersionInUrl = true;
-
         //configure query options(which cannot otherwise be configured by OData conventions)
         //o.QueryOptions.Controller<JurisdictionController>()
         //                    .Action(c => c.Get(default))
@@ -78,18 +81,16 @@ builder.Host.ConfigureServices((h, s) =>
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     s.AddSwaggerGen(o =>
      {
-         var fileName = typeof(Program).Assembly.GetName().Name + ".xml";
-         var filePath = Path.Combine(AppContext.BaseDirectory, fileName);
-
-         // integrate xml comments
-         o.IncludeXmlComments(filePath);
+         o.IncludeXmlComments(typeof(Program));
+         o.CustomOperationIds((controller, verb, action) => $"{verb}{controller}{action}");
+         o.EnableAnnotations();
 
          o.OperationFilter<TimestampFormatHeader>();
          o.DocumentFilter<GenerateAggregationSchemas>();
          o.DocumentFilter<GenerateEventSchemas>();
      });
 
-    var allowedHosts = builder.Configuration.GetSection("AllowedHosts").Get<string>();
+    var allowedHosts = builder.Configuration.GetSection("AllowedHosts").Get<string>() ?? "*";
     s.AddCors(options =>
     {
         options.AddPolicy("CorsPolicy",
@@ -123,16 +124,12 @@ builder.Host.ConfigureServices((h, s) =>
 
     s.AddPathBaseFilter(h);
 
-    if (!h.HostingEnvironment.IsDevelopment())
-    {
-        s.AddAtspmAuthentication(h);
-        s.AddAtspmAuthorization();
-    }
+    s.AddAtspmIdentity(h);
 });
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
+if (!app.Environment.IsProduction())
 {
     app.Services.PrintHostInformation();
     app.UseDeveloperExceptionPage();
