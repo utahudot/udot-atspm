@@ -24,7 +24,6 @@ using System.CommandLine.Builder;
 using System.CommandLine.Hosting;
 using System.CommandLine.Parsing;
 using Utah.Udot.Atspm.Common;
-using Utah.Udot.Atspm.Configuration;
 using Utah.Udot.Atspm.Data;
 using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Infrastructure.Extensions;
