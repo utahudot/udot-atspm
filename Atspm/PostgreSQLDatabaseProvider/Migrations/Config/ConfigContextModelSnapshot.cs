@@ -17,7 +17,7 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.14")
+                .HasAnnotation("ProductVersion", "8.0.11")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -2056,7 +2056,7 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
                     b.Property<DateTime>("Date")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp")
-                        .HasDefaultValue(new DateTime(2024, 12, 4, 14, 42, 43, 505, DateTimeKind.Local).AddTicks(1184));
+                        .HasDefaultValue(new DateTime(2024, 12, 20, 12, 28, 12, 764, DateTimeKind.Local).AddTicks(2478));
 
                     b.Property<string>("Name")
                         .IsRequired()

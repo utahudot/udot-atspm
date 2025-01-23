@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for ApplicationCore - ATSPM.Application.Analysis.Common/CorrectedDetectorEvent.cs
+// for Application - Utah.Udot.Atspm.Analysis.Common/CorrectedDetectorEvent.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ namespace Utah.Udot.Atspm.Analysis.Common
     /// <summary>
     /// Events that coorelate to <see cref="IndianaEnumerations.VehicleDetectorOn"/>
     /// and that have been timestamp corrected for detector distances and latency
-    /// using the <see cref="Utah.Udot.Atspm.AtspmMath.AdjustTimeStamp"/> calculation.
+    /// using the <see cref="AtspmMath.AdjustTimeStamp"/> calculation.
     /// </summary>
     public class CorrectedDetectorEvent : IDetectorEvent
     {

@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for ConfigApi - ATSPM.ConfigApi.Controllers/LocationController.cs
+// for ConfigApi - Utah.Udot.Atspm.ConfigApi.Controllers/LocationController.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ using Microsoft.AspNetCore.OData.Formatter;
 using Microsoft.AspNetCore.OData.Query;
 using Utah.Udot.Atspm.Business.Watchdog;
 using Utah.Udot.Atspm.ConfigApi.Models;
-using Utah.Udot.Atspm.ConfigApi.Services;
+using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Extensions;
 using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
@@ -313,42 +313,41 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
         public IActionResult GetLocationsForSearch([FromQuery] int? areaId, [FromQuery] int? regionId, [FromQuery] int? jurisdictionId, [FromQuery] int? metricTypeId)
         {
             var basicCharts = new List<int> { 1, 2, 3, 4, 14, 15, 17, 31 };
-            var query = _repository.GetList()
-                .FromSpecification(new ActiveLocationSpecification());
-            if (jurisdictionId != null)
-                query.Where(w => w.JurisdictionId == jurisdictionId);
-            if (regionId != null)
-                query.Where(w => w.RegionId == regionId);
-            if (areaId != null)
-                query.Where(w => w.Areas.Any(a => a.Id == areaId));
-            if (metricTypeId != null)
-                query.Where(w => w.Approaches.Any(m => m.Detectors.Any(d => d.DetectionTypes.Any(t => t.MeasureTypes.Any(a => a.Id == metricTypeId)))));
-            var mainResult = query.ToList();
-            var result = mainResult.Select(s => new SearchLocation()
-            {
-                Id = s.Id,
-                Start = s.Start,
-                locationIdentifier = s.LocationIdentifier,
-                PrimaryName = s.PrimaryName,
-                SecondaryName = s.SecondaryName,
-                RegionId = s.RegionId,
-                JurisdictionId = s.JurisdictionId,
-                Longitude = s.Longitude,
-                Latitude = s.Latitude,
-                ChartEnabled = s.ChartEnabled,
-                LocationTypeId = s.LocationTypeId,
-                Areas = s.Areas.Select(a => a.Id),
-                Charts = s.Approaches.SelectMany(m => m.Detectors.SelectMany(d => d.DetectionTypes.SelectMany(t => t.MeasureTypes.Select(i => i.Id)))).Distinct()
-            })
-                 .GroupBy(r => r.locationIdentifier)
-                 .Select(g => g.OrderByDescending(r => r.Start).FirstOrDefault())
-                 .ToList();
+            var result = _repository.GetList()
+                .FromSpecification(new ActiveLocationSpecification())
+                .Where(w => (jurisdictionId != null) ? w.JurisdictionId == jurisdictionId : true)
+                .Where(w => (regionId != null) ? w.RegionId == regionId : true)
+                .Where(w => (areaId != null) ? w.Areas.Any(a => a.Id == areaId) : true)
+                .Where(w => (metricTypeId != null) ? w.Approaches.Any(m => m.Detectors.Any(d => d.DetectionTypes.Any(t => t.MeasureTypes.Any(a => a.Id == metricTypeId)))) : true)
+                .Select(s => new SearchLocation()
+                {
+                    Id = s.Id,
+                    Start = s.Start,
+                    locationIdentifier = s.LocationIdentifier,
+                    PrimaryName = s.PrimaryName,
+                    SecondaryName = s.SecondaryName,
+                    RegionId = s.RegionId,
+                    JurisdictionId = s.JurisdictionId,
+                    Longitude = s.Longitude,
+                    Latitude = s.Latitude,
+                    ChartEnabled = s.ChartEnabled,
+                    LocationTypeId = s.LocationTypeId,
+                    Areas = s.Areas.Select(a => a.Id),
+                    Charts = s.Approaches.SelectMany(m => m.Detectors.SelectMany(d => d.DetectionTypes.SelectMany(t => t.MeasureTypes.Select(i => i.Id)))).Distinct(),
+                })
+                .GroupBy(r => r.locationIdentifier)
+                .Select(g => g.OrderByDescending(r => r.Start).FirstOrDefault())
+                .ToList();
 
             foreach (var location in result)
             {
                 if (location != null && location.Charts != null)
                 {
                     location.Charts = location.Charts.Concat(basicCharts).Order();
+                    if (location.LocationTypeId == ((int)LocationTypes.RM))
+                    {
+                        location.Charts = location.Charts.Append(37).Order();
+                    }
                 }
             }
 

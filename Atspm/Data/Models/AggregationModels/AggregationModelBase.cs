@@ -207,7 +207,7 @@ namespace Utah.Udot.Atspm.Data.Models
         public int PhaseNumber { get; set; }
 
         /// <summary>
-        /// Sum of consecutive <see cref="4"/> events
+        /// Sum of consecutive <see cref="IndianaEnumerations.PhaseGapOut"/> events
         /// </summary>
         public int GapOuts { get; set; }
 
@@ -217,7 +217,7 @@ namespace Utah.Udot.Atspm.Data.Models
         public int ForceOffs { get; set; }
 
         /// <summary>
-        /// Sum of consecutive <see cref="6"/> events
+        /// Sum of consecutive <see cref="IndianaEnumerations.PhaseForceOff"/> events
         /// </summary>
         public int MaxOuts { get; set; }
 

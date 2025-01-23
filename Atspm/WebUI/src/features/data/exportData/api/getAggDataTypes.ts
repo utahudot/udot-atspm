@@ -14,11 +14,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 // #endregion
-import { useGetRequest } from '@/hooks/useGetRequest'
 import { dataAxios } from '@/lib/axios'
 import { ApiResponse } from '@/types'
 import { AxiosHeaders } from 'axios'
 import Cookies from 'js-cookie'
+import { useQuery } from 'react-query'
 
 const route = `/Aggregation/GetDataTypes`
 const token = Cookies.get('token')
@@ -28,9 +28,8 @@ const headers: AxiosHeaders = new AxiosHeaders({
 })
 
 export function useGetAggDataTypes() {
-  return useGetRequest<ApiResponse<string[]>>({
-    route,
-    axiosInstance: dataAxios,
-    headers,
+  return useQuery<ApiResponse<string[]>>('aggDataTypes', async () => {
+    const response = await dataAxios.get(route, { headers })
+    return response
   })
 }

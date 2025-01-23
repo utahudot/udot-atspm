@@ -75,7 +75,12 @@ export function adjustPlanPositions(chart: ECharts) {
 
   const planSeries = options.series[options.series.length - 1]
 
-  if (!planSeries.markArea || !planSeries.markArea.data) return
+  if (
+    !planSeries.markArea ||
+    !planSeries.markArea.data.length ||
+    !planSeries.data
+  )
+    return
 
   const planData: PlanData[] = planSeries.data
 

@@ -26,6 +26,7 @@ import {
   createTooltip,
   createXAxis,
   createYAxis,
+  formatExportFileName,
   transformSeriesData,
 } from '@/features/charts/common/transformers'
 import { ChartType } from '@/features/charts/common/types'
@@ -100,13 +101,20 @@ function transformData(data: RawApproachVolumeData) {
   const title = createTitle({
     title: titleHeader,
     dateRange,
-    info: info,
+    info,
   })
 
   const yAxis = createYAxis(
     false,
     { name: 'Volume (Vehicles per Hour)', nameGap: 50 },
-    { name: 'Directional Split' }
+    {
+      name: 'Directional Split',
+      data: [0, 0.2, 0.4, 0.6, 0.8, 1],
+      max: 1,
+      min: 0,
+      nameGap: 55,
+      axisLabel: { formatter: (val: number) => val.toFixed(2) },
+    }
   )
 
   const xAxis = createXAxis(data.start, data.end)
@@ -138,7 +146,10 @@ function transformData(data: RawApproachVolumeData) {
   const dataZoom = createDataZoom()
 
   const toolbox = createToolbox(
-    { title: titleHeader, dateRange },
+    {
+      title: formatExportFileName(titleHeader, data.start, data.end),
+      dateRange,
+    },
     data.locationIdentifier,
     ChartType.ApproachVolume
   )

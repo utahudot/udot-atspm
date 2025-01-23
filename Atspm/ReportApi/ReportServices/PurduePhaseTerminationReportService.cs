@@ -1,6 +1,6 @@
 #region license
 // Copyright 2024 Utah Departement of Transportation
-// for ReportApi - ATSPM.ReportApi.ReportServices/PurduePhaseTerminationReportService.cs
+// for ReportApi - Utah.Udot.Atspm.ReportApi.ReportServices/PurduePhaseTerminationReportService.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.IdentityModel.Tokens;
 using Utah.Udot.Atspm.Business.PhaseTermination;
 
 namespace Utah.Udot.Atspm.ReportApi.ReportServices

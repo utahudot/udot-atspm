@@ -74,10 +74,6 @@ function LocationsConfigContainer({
 
   const location = configData[0]
 
-  const detectors = location?.approaches?.flatMap(
-    (approach) => approach.detectors
-  )
-
   return (
     <Box>
       <Typography variant="h4" fontWeight={'bold'} my={2}>
@@ -85,8 +81,20 @@ function LocationsConfigContainer({
       </Typography>
       <Paper sx={{ width: '300px', mb: 2 }}>
         <FormControl fullWidth>
-          <InputLabel>Version</InputLabel>
-          <Select value={version.id} label="Version" onChange={handleChange}>
+          <InputLabel
+            htmlFor={'location-version-select'}
+            id={'location-version-select-label'}
+          >
+            Version
+          </InputLabel>
+          <Select
+            value={version.id}
+            label="Version"
+            labelId="location-version-select-label"
+            id={'location-version-select'}
+            inputProps={{ id: 'location-version-select' }}
+            onChange={handleChange}
+          >
             {versionData.map((version, index) => (
               <MenuItem key={index} value={version.id}>
                 {formatTimestampToDDMMYYYY(version.start)} - {version.note}
@@ -118,7 +126,7 @@ function LocationsConfigContainer({
           </Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <ApproachesInfo approaches={location.approaches} />
+          <ApproachesInfo location={location} />
         </AccordionDetails>
       </Accordion>
       <Accordion
@@ -131,7 +139,7 @@ function LocationsConfigContainer({
           </Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <DetectorsInfo detectors={detectors} />
+          <DetectorsInfo location={location} />
         </AccordionDetails>
       </Accordion>
     </Box>

@@ -15,22 +15,26 @@
 // limitations under the License.
 // #endregion
 import {
-  DataZoomComponentOption,
-  EChartsOption,
-  GridComponentOption,
-  SeriesOption,
-} from 'echarts'
-import {
   createDisplayProps,
   createLegend,
   createTitle,
   createToolbox,
   createXAxis,
   createYAxis,
-} from '../../common/transformers'
-import { ToolType } from '../../common/types'
-import { TransformedToolResponse } from '../../types'
-import { SolidLineSeriesSymbol, formatChartDateTimeRange } from '../../utils'
+  formatExportFileName,
+} from '@/features/charts/common/transformers'
+import { ToolType } from '@/features/charts/common/types'
+import { TransformedToolResponse } from '@/features/charts/types'
+import {
+  SolidLineSeriesSymbol,
+  formatChartDateTimeRange,
+} from '@/features/charts/utils'
+import {
+  DataZoomComponentOption,
+  EChartsOption,
+  GridComponentOption,
+  SeriesOption,
+} from 'echarts'
 import { RawTimeSpaceDiagramResponse, RawTimeSpaceHistoricData } from '../types'
 import {
   generateCycles,
@@ -69,7 +73,7 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
   const title = createTitle({
     title: titleHeader,
     dateRange,
-    info: `Route data from ${primaryPhaseData[0].locationDescription} to ${primaryPhaseData[primaryPhaseData.length-1].locationDescription} \n`,
+    info: `Route data from ${primaryPhaseData[0].locationDescription} to ${primaryPhaseData[primaryPhaseData.length - 1].locationDescription} \n`,
   })
 
   const xAxis = createXAxis(data[0].start, data[0].end)
@@ -205,7 +209,10 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
   }
 
   const toolbox = createToolbox(
-    { title: titleHeader, dateRange },
+    {
+      title: formatExportFileName(titleHeader, data[0].start, data[0].end),
+      dateRange,
+    },
     data[0].locationIdentifier,
     ToolType.TimeSpaceHistoric
   )

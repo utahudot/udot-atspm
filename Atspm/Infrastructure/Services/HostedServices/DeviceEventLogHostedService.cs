@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for Infrastructure - ATSPM.Infrastructure.Services.HostedServices/SignalLoggerUtilityHostedService.cs
+// for Infrastructure - Utah.Udot.Atspm.Infrastructure.Services.HostedServices/DeviceEventLogHostedService.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,12 +19,76 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System;
 using System.Diagnostics;
 using System.Threading.Tasks.Dataflow;
 using Utah.Udot.ATSPM.Infrastructure.Workflows;
 
 namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
 {
+    /// <summary>
+    /// Base class for <see cref="IHostedService"/> with service scope, logging and exit codes
+    /// </summary>
+    public abstract class HostedServiceBase : IHostedService
+    {
+        protected readonly ILogger _log;
+        protected readonly IServiceScopeFactory _services;
+
+        /// <summary>
+        /// Base class for <see cref="IHostedService"/> with service scope, logging and exit codes
+        /// </summary>
+        /// <param name="log"></param>
+        /// <param name="serviceProvider"></param>
+        public HostedServiceBase(ILogger log, IServiceScopeFactory serviceProvider) => (_log, _services) = (log, serviceProvider);
+
+        /// <summary>
+        /// The process to execute given the current service scope
+        /// </summary>
+        /// <param name="scope"></param>
+        /// <returns>Exit Code</returns>
+        public abstract Task<int> Process(IServiceScope scope);
+
+        /// <inheritdoc/>
+        public async Task StartAsync(CancellationToken cancellationToken)
+        {   
+            var serviceName = this.GetType().Name;
+            var logMessages = new HostedServiceLogMessages(_log, this.GetType().Name);
+
+            cancellationToken.Register(() => logMessages.StartingCancelled(serviceName));
+            logMessages.StartingService(serviceName);
+
+            var sw = new Stopwatch();
+            sw.Start();
+
+            using (var scope = _services.CreateAsyncScope())
+            {
+                if (scope.ServiceProvider.GetService<IHostEnvironment>().IsDevelopment())
+                    scope.ServiceProvider.PrintHostInformation();
+
+                Environment.ExitCode = await Process(scope);
+            }
+
+            sw.Stop();
+
+            logMessages.CompletingService(serviceName, sw.Elapsed);
+        }
+
+        /// <inheritdoc/>
+        public Task StopAsync(CancellationToken cancellationToken)
+        {
+            var serviceName = this.GetType().Name;
+            var logMessages = new HostedServiceLogMessages(_log, this.GetType().Name);
+
+            cancellationToken.Register(() => logMessages.StoppingCancelled(serviceName));
+            logMessages.StoppingService(serviceName);
+
+            Environment.ExitCode = 0;
+
+            return Task.CompletedTask;
+        }
+    }
+
+
     /// <summary>
     /// Hosted service for running the <see cref="DeviceEventLogWorkflow"/>
     /// </summary>

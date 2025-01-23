@@ -31,7 +31,7 @@ export type EventLog = {
 export type GetEventLogsParams = {
   locationIdentifier: string
   start: string
-  end: string
+  end:string
   ResponseFormat: ResponseFormat
 }
 
@@ -46,7 +46,7 @@ const headers: AxiosHeaders = new AxiosHeaders({
 export const getEventLogs = async (
   locationIdentifier: string,
   start: string,
-  end: string,
+  end:string,
   ResponseFormat: ResponseFormat
 ): Promise<EventLog[]> => {
   let acceptHeader = ''
@@ -74,7 +74,7 @@ type QueryFnType = typeof getEventLogs
 type UseEventLogsOptions = {
   locationIdentifier: string
   start: string
-  end: string
+  end:string
   ResponseFormat: ResponseFormat
   config?: QueryConfig<QueryFnType>
 }
@@ -89,7 +89,7 @@ export const useEventLogs = ({
   return useQuery<ExtractFnReturnType<QueryFnType>>({
     ...config,
     enabled: false,
-    queryKey: ['eventLogs', locationIdentifier, start, end, ResponseFormat],
+    queryKey: ['eventLogs', locationIdentifier, start, ResponseFormat],
     queryFn: () => getEventLogs(locationIdentifier, start, end, ResponseFormat),
   })
 }

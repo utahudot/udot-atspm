@@ -36,13 +36,23 @@ export const SplitMonitorChartOptions = ({
   }
 
   return (
-    <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-      <InputLabel htmlFor="percentile-split-input">
+    <Box
+      sx={{
+        display: 'flex',
+        justifyContent: 'space-between',
+      }}
+    >
+      <InputLabel
+        htmlFor="percentile-split-input"
+        id="percentile-split-input-label"
+      >
         <Typography>Percentile Split</Typography>
       </InputLabel>
       <Box sx={{ display: 'flex', alignItems: 'center' }}>
         <FormControl variant="outlined">
           <Select
+            labelId="percentile-split-input-label"
+            id="percentile-split-input"
             value={selectedPercentile}
             onChange={handleSelectedPercentileChange}
             variant="standard"

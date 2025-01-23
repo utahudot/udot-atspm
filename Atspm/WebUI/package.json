@@ -33,7 +33,7 @@
     "autosuggest-highlight": "^3.3.4",
     "axios": "^1.4.0",
     "date-fns": "^3.2.0",
-    "echarts": "^5.4.3",
+    "echarts": "^5.5.1",
     "eslint-config-next": "^14.2.4",
     "esri-leaflet": "^3.0.13",
     "esri-leaflet-renderers": "^3.0.1",

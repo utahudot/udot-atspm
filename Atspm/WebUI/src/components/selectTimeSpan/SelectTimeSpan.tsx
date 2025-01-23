@@ -1,4 +1,3 @@
-import { ChartType, ToolType } from '@/features/charts/common/types'
 import {
   Alert,
   Box,
@@ -13,12 +12,7 @@ import {
   DateTimePicker,
   TimePicker,
 } from '@mui/x-date-pickers'
-import {
-  add,
-  differenceInHours,
-  differenceInMinutes,
-  startOfToday,
-} from 'date-fns'
+import { add, startOfToday } from 'date-fns'
 import { useEffect, useState } from 'react'
 
 export interface SelectDateTimeProps {
@@ -27,15 +21,16 @@ export interface SelectDateTimeProps {
   changeStartDate(date: Date): void
   changeEndDate(date: Date): void
   views?: DateOrTimeView[]
-  chartType?: ChartType | ToolType
   dateFormat?: string
   noCalendar?: boolean
   calendarLocation?: 'bottom' | 'right'
+  startDateOnly?: boolean
   timePeriod?: boolean
   startTimePeriod?: Date
   endTimePeriod?: Date
   changeStartTimePeriod?(date: Date): void
   changeEndTimePeriod?(date: Date): void
+  warning?: string | null
 }
 
 export default function SelectDateTime({
@@ -44,19 +39,18 @@ export default function SelectDateTime({
   changeStartDate,
   changeEndDate,
   views,
-  chartType,
   dateFormat = 'MMM dd, yyyy @ HH:mm',
   noCalendar,
   calendarLocation = 'bottom',
   timePeriod,
   startTimePeriod,
   endTimePeriod,
+  startDateOnly,
   changeStartTimePeriod,
   changeEndTimePeriod,
+  warning = null,
 }: SelectDateTimeProps) {
   const [showWarning, setShowWarning] = useState(false)
-  const [showWarningForTimeSpace, setShowWarningForTimeSpace] = useState(false)
-  // Todo: further investigate why calendar is loading wrong date. Until then, forcing it to wait a second seems to fix it.
   const [showCalendar, setShowCalendar] = useState(false)
 
   useEffect(() => {
@@ -68,46 +62,14 @@ export default function SelectDateTime({
   }, [])
 
   useEffect(() => {
-    if (
-      chartType === ChartType.TimingAndActuation &&
-      startDateTime &&
-      endDateTime
-    ) {
-      const diffHours = differenceInHours(endDateTime, startDateTime)
-      setShowWarning(diffHours > 2)
-    } else {
-      setShowWarning(false)
-    }
-  }, [startDateTime, endDateTime, chartType])
-
-  useEffect(() => {
-    if (
-      chartType === ToolType.TimeSpaceHistoric &&
-      startDateTime &&
-      endDateTime
-    ) {
-      const diffMinutes = differenceInMinutes(endDateTime, startDateTime)
-      setShowWarningForTimeSpace(diffMinutes > 20)
-    } else {
-      setShowWarningForTimeSpace(false)
-    }
-  }, [startDateTime, endDateTime, chartType])
+    setShowWarning(!!warning)
+  }, [warning])
 
   const handleCalendarChange = (newDate: Date | null) => {
     if (!newDate) return
 
     changeStartDate(newDate)
     changeEndDate(add(newDate, { days: 1 }))
-  }
-
-  const handleStartDateTimeChange = (date: Date | null) => {
-    if (!date) return
-    changeStartDate(date)
-  }
-
-  const handleEndDateTimeChange = (date: Date | null) => {
-    if (!date) return
-    changeEndDate(date)
   }
 
   const handleResetDate = () => {
@@ -182,23 +144,25 @@ export default function SelectDateTime({
           <DateTimePicker
             sx={{ width: '100%' }}
             value={startDateTime}
-            onChange={handleStartDateTimeChange}
-            views={views !== undefined ? views : undefined}
+            onChange={(date) => date && changeStartDate(date)}
+            views={views}
             label="Start"
             format={dateFormat}
             ampm={false}
-            disableFuture={true}
+            disableFuture
             minutesStep={1}
           />
-          <DateTimePicker
-            sx={{ width: '100%', mt: calendarLocation === 'right' ? 0 : 3 }}
-            value={endDateTime}
-            onChange={handleEndDateTimeChange}
-            views={views !== undefined ? views : undefined}
-            label="End"
-            format={dateFormat}
-            ampm={false}
-          />
+          {!startDateOnly && (
+            <DateTimePicker
+              sx={{ width: '100%', mt: calendarLocation === 'right' ? 0 : 3 }}
+              value={endDateTime}
+              onChange={(date) => date && changeEndDate(date)}
+              format={dateFormat}
+              views={views}
+              label="End"
+              ampm={false}
+            />
+          )}
           {timePeriod && (
             <>
               <Divider sx={{ mb: 2, margin: '15px' }}>
@@ -210,21 +174,16 @@ export default function SelectDateTime({
                 <TimePicker
                   label="Start Time"
                   ampm={false}
-                  closeOnSelect={true}
+                  closeOnSelect
                   value={startTimePeriod}
-                  onChange={(value: Date | null) => {
-                    if (changeStartTimePeriod)
-                      changeStartTimePeriod(value as Date)
-                  }}
+                  onChange={(value) => changeStartTimePeriod?.(value as Date)}
                 />
                 <TimePicker
                   label="End Time"
                   ampm={false}
-                  closeOnSelect={true}
+                  closeOnSelect
                   value={endTimePeriod}
-                  onChange={(value: Date | null) => {
-                    if (changeEndTimePeriod) changeEndTimePeriod(value as Date)
-                  }}
+                  onChange={(value) => changeEndTimePeriod?.(value as Date)}
                 />
               </Box>
             </>
@@ -241,17 +200,7 @@ export default function SelectDateTime({
           <Box sx={{ mt: -2 }}>{displayCalendarContainer()}</Box>
         )}
       </Box>
-      {showWarning && (
-        <Alert severity="warning" sx={{ marginTop: 2 }}>
-          We generally recommend a time span of 2 hours or less for this chart.
-        </Alert>
-      )}
-      {showWarningForTimeSpace && (
-        <Alert severity="warning" sx={{ marginTop: 2, maxWidth: '330px' }}>
-          We generally recommend a time span of 20 minutes or less for
-          Time-Space.
-        </Alert>
-      )}
+      {showWarning && warning && <Alert severity="warning">{warning}</Alert>}
     </>
   )
 }
