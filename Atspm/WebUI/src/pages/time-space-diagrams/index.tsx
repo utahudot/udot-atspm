@@ -184,10 +184,18 @@ const TimeSpaceDiagram = () => {
               </LoadingButton>
               {isError && (
                 <Alert severity="error" sx={{ marginLeft: 1 }}>
-                  {`${
+                  {(
                     ((error as AxiosError).response as unknown as AxiosResponse)
-                      ?.data
-                  }. Verify in Route Configuration`}
+                      ?.data as string
+                  ).includes('Controller')
+                    ? ((
+                        (error as AxiosError)
+                          .response as unknown as AxiosResponse
+                      )?.data as string)
+                    : ((
+                        (error as AxiosError)
+                          .response as unknown as AxiosResponse
+                      )?.data as string) + '. Verify in Configuration'}
                 </Alert>
               )}
               {hasAttemptedGenerate && toolOptions.routeId === '' && (
