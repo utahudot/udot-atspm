@@ -86,7 +86,12 @@ namespace Utah.Udot.Atspm.Data.Configuration
                 new MeasureOption() { Id = 107, Option = "showArrivalsOnGreen", Value = "TRUE", MeasureTypeId = 6 },
                 new MeasureOption() { Id = 113, Option = "xAxisBinSize", Value = "15", MeasureTypeId = 36 },
                 new MeasureOption() { Id = 114, Option = "yAxisBinSize", Value = "4", MeasureTypeId = 36 },
-                new MeasureOption() { Id = 115, Option = "binSize", Value = "15", MeasureTypeId = 32 });
+                new MeasureOption() { Id = 115, Option = "binSize", Value = "15", MeasureTypeId = 32 }),
+                new MeasureOption() { Id = 116, Option = "yAxisDefault", Value = "100", MeasureTypeId = 2 }),
+                new MeasureOption() { Id = 117, Option = "yAxisDefault", Value = "150", MeasureTypeId = 6 }),
+                new MeasureOption() { Id = 118, Option = "yAxisDefault", Value = "180", MeasureTypeId = 3 }),
+                new MeasureOption() { Id = 119, Option = "yAxisDefault", Value = "20", MeasureTypeId = 11 });
+
         }
     }
 }
