@@ -1,14 +1,16 @@
 import { YAxisDefaultInput } from '@/features/charts/components/selectChart/YAxisDefaultInput'
 import { PedestrianDelayChartOptionsDefaults } from '@/features/charts/pedestrianDelay/types'
 import { Default } from '@/features/charts/types'
+import { useChartsStore } from '@/stores/charts'
 import {
   Box,
+  Divider,
   FormControl,
   SelectChangeEvent,
   TextField,
   Typography,
 } from '@mui/material'
-import { ChangeEvent, useState } from 'react'
+import { ChangeEvent, useEffect, useState } from 'react'
 
 interface PedestrianDelayChartOptionsProps {
   chartDefaults: PedestrianDelayChartOptionsDefaults
@@ -23,9 +25,13 @@ export const PedestrianDelayChartOptions = ({
   const [pedRecallThreshold, setPedRecallThreshold] = useState(
     chartDefaults.pedRecallThreshold.value
   )
-  const [yAxisDefault, setYAxisDefault] = useState(
-    chartDefaults.yAxisDefault?.value
-  )
+  const { yAxisDefault, setYAxisDefault } = useChartsStore()
+
+  useEffect(() => {
+    if (chartDefaults.yAxisDefault?.value) {
+      setYAxisDefault(chartDefaults.yAxisDefault.value)
+    }
+  }, [chartDefaults.yAxisDefault?.value, setYAxisDefault])
 
   const handleTimeBufferChange = (
     event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -131,6 +137,9 @@ export const PedestrianDelayChartOptions = ({
             </Typography>
           </Box>
         </Box>
+        <Divider sx={{ mt: 2, mb: 2 }}>
+          <Typography variant="caption">Display</Typography>
+        </Divider>
         <YAxisDefaultInput
           value={yAxisDefault}
           handleChange={handleYAxisDefaultChange}

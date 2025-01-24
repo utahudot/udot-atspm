@@ -38,12 +38,13 @@ export default function ApacheEChart({
   hideInteractionMessage = false,
 }: ApacheEChartsProps) {
   const chartRef = useRef<HTMLDivElement>(null)
-  const { activeChart, setActiveChart, syncZoom } = useChartsStore()
+  const { activeChart, setActiveChart, syncZoom, yAxisDefault } = useChartsStore()
   const [isHovered, setIsHovered] = useState(false)
   const [isScrolling, setIsScrolling] = useState(false)
   const chartInstance = useRef<ECharts | null>(null)
 
   const isActive = activeChart === id || hideInteractionMessage
+  console.log(yAxisDefault)
 
   const initChart = useCallback(() => {
     if (chartRef.current !== null) {
@@ -104,23 +105,32 @@ export default function ApacheEChart({
 
   useEffect(() => {
     if (chartInstance.current) {
+      const adjustedDataZoom = (option.dataZoom as DataZoomComponentOption[])?.map(
+        (zoom) => ({
+          ...zoom,
+          // Only modify endValue if yAxisDefault exists
+          endValue: yAxisDefault !== undefined
+            ? yAxisDefault
+            : zoom.endValue,
+          disabled: !isActive,
+          zoomLock: !isActive,
+        })
+      )
+  
+      // Use adjusted dataZoom in the chart options
       const updatedOption: EChartsOption = {
         ...option,
-        dataZoom: (option.dataZoom as DataZoomComponentOption[])?.map(
-          (zoom) => ({
-            ...zoom,
-            disabled: !isActive,
-            zoomLock: !isActive,
-          })
-        ),
+        dataZoom: adjustedDataZoom,
         series: (option.series as SeriesOption[])?.map((series) => ({
           ...series,
           silent: !isActive,
         })),
       }
+  
+      // Apply the updated option to the chart
       chartInstance.current.setOption(updatedOption, settings)
     }
-  }, [option, settings, theme, isActive])
+  }, [option, settings, theme, isActive, yAxisDefault]) 
 
   useEffect(() => {
     if (chartInstance.current) {

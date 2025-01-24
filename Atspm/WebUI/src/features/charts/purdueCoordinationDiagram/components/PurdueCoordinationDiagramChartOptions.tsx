@@ -1,10 +1,10 @@
 import { BinSizeDropdown } from '@/features/charts/components/selectChart/BinSizeDropdown'
 import { YAxisDefaultInput } from '@/features/charts/components/selectChart/YAxisDefaultInput'
-
 import { PurdueCoordinationDiagramChartOptionsDefaults } from '@/features/charts/purdueCoordinationDiagram/types'
 import { Default } from '@/features/charts/types'
-import { Box, SelectChangeEvent } from '@mui/material'
-import { useState } from 'react'
+import { useChartsStore } from '@/stores/charts'
+import { Box, Divider, SelectChangeEvent, Typography } from '@mui/material'
+import { useEffect, useState } from 'react'
 
 interface PurdueCoordinationDiagramChartOptionsProps {
   chartDefaults: PurdueCoordinationDiagramChartOptionsDefaults
@@ -16,9 +16,13 @@ export const PurdueCoordinationDiagramChartOptions = ({
   handleChartOptionsUpdate,
 }: PurdueCoordinationDiagramChartOptionsProps) => {
   const [binSize, setBinSize] = useState(chartDefaults.binSize?.value)
-  const [yAxisDefault, setYAxisDefault] = useState(
-    chartDefaults.yAxisDefault?.value
-  )
+  const { yAxisDefault, setYAxisDefault } = useChartsStore()
+
+  useEffect(() => {
+    if (chartDefaults.yAxisDefault?.value) {
+      setYAxisDefault(chartDefaults.yAxisDefault.value)
+    }
+  }, [chartDefaults.yAxisDefault?.value, setYAxisDefault])
 
   const handleBinSizeChange = (event: SelectChangeEvent<string>) => {
     const newBinSize = event.target.value
@@ -48,6 +52,9 @@ export const PurdueCoordinationDiagramChartOptions = ({
         handleChange={handleBinSizeChange}
         id="purdue-coordination-diagram"
       />
+      <Divider sx={{ mt: 2, mb: 2 }}>
+        <Typography variant="caption">Display</Typography>
+      </Divider>
       <YAxisDefaultInput
         value={yAxisDefault}
         handleChange={handleYAxisDefaultChange}

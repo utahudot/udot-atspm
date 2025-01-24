@@ -1,9 +1,16 @@
+import { YAxisDefaultInput } from '@/features/charts/components/selectChart/YAxisDefaultInput'
 import { Default } from '@/features/charts/types'
 import { YellowAndRedActuationsChartOptionsDefaults } from '@/features/charts/yellowAndRedActuations/types'
-import { YAxisDefaultInput } from '@/features/charts/components/selectChart/YAxisDefaultInput'
-import { Box, FormControl, TextField, Typography,SelectChangeEvent } from '@mui/material'
-import { ChangeEvent, useState } from 'react'
-
+import { useChartsStore } from '@/stores/charts'
+import {
+  Box,
+  Divider,
+  FormControl,
+  SelectChangeEvent,
+  TextField,
+  Typography,
+} from '@mui/material'
+import { ChangeEvent, useEffect, useState } from 'react'
 
 const visuallyHidden: React.CSSProperties = {
   position: 'absolute',
@@ -28,9 +35,14 @@ export const YellowAndRedActuationsChartOptions = ({
   const [severeLevel, setSevereLevel] = useState(
     chartDefaults.severeLevelSeconds.value
   )
-  const [yAxisDefault, setYAxisDefault] = useState(
-    chartDefaults.yAxisDefault?.value
-  )
+  const { yAxisDefault, setYAxisDefault } = useChartsStore()
+
+  useEffect(() => {
+    if (chartDefaults.yAxisDefault?.value) {
+      setYAxisDefault(chartDefaults.yAxisDefault.value)
+    }
+  }, [chartDefaults.yAxisDefault?.value, setYAxisDefault])
+
   const handleSevereLevelChange = (
     event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -54,8 +66,6 @@ export const YellowAndRedActuationsChartOptions = ({
       value: newYAxisDefault,
     })
   }
-
-
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
@@ -84,10 +94,13 @@ export const YellowAndRedActuationsChartOptions = ({
           </Typography>
         </Box>
       </Box>
-            <YAxisDefaultInput
-              value={yAxisDefault}
-              handleChange={handleYAxisDefaultChange}
-            />
+      <Divider sx={{ mt: 2, mb: 2 }}>
+        <Typography variant="caption">Display</Typography>
+      </Divider>
+      <YAxisDefaultInput
+        value={yAxisDefault}
+        handleChange={handleYAxisDefaultChange}
+      />
     </Box>
   )
 }

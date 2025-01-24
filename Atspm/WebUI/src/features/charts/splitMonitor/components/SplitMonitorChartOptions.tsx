@@ -1,8 +1,10 @@
 import { YAxisDefaultInput } from '@/features/charts/components/selectChart/YAxisDefaultInput'
 import { SplitMonitorChartOptionsDefaults } from '@/features/charts/splitMonitor/types'
 import { Default } from '@/features/charts/types'
+import { useChartsStore } from '@/stores/charts'
 import {
   Box,
+  Divider,
   FormControl,
   InputLabel,
   MenuItem,
@@ -10,7 +12,7 @@ import {
   SelectChangeEvent,
   Typography,
 } from '@mui/material'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 interface SplitMonitorChartOptionsProps {
   chartDefaults: SplitMonitorChartOptionsDefaults
@@ -24,9 +26,13 @@ export const SplitMonitorChartOptions = ({
   const [selectedPercentile, setSelectedPercentile] = useState(
     chartDefaults?.percentileSplit?.value || ''
   )
-  const [yAxisDefault, setYAxisDefault] = useState(
-    chartDefaults.yAxisDefault?.value
-  )
+  const { yAxisDefault, setYAxisDefault } = useChartsStore()
+
+  useEffect(() => {
+    if (chartDefaults.yAxisDefault?.value) {
+      setYAxisDefault(chartDefaults.yAxisDefault.value)
+    }
+  }, [chartDefaults.yAxisDefault?.value, setYAxisDefault])
 
   const handleSelectedPercentileChange = (event: SelectChangeEvent<string>) => {
     const newPercentile = event.target.value
@@ -93,6 +99,9 @@ export const SplitMonitorChartOptions = ({
           </Typography>
         </Box>
       </Box>
+      <Divider sx={{ mt: 2, mb: 2 }}>
+        <Typography variant="caption">Display</Typography>
+      </Divider>
       <YAxisDefaultInput
         value={yAxisDefault}
         handleChange={handleYAxisDefaultChange}

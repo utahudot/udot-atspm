@@ -2,7 +2,7 @@ import { Box, FormControl, InputLabel, TextField } from '@mui/material'
 import { ChangeEvent } from 'react'
 
 interface YAxisDefaultInputProps {
-  value: string
+  value: string | null
   handleChange: (event: ChangeEvent<HTMLInputElement>) => void
   id?: string
 }

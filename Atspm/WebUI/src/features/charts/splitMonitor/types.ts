@@ -45,6 +45,7 @@ export interface SplitMonitorPlan extends BasePlan {
 
 export interface RawSplitMonitorData extends BaseChartData {
   phaseNumber: number
+  yAxisDefault: string
   percentileSplit: number
   phaseDescription: string
   plans: SplitMonitorPlan[]
