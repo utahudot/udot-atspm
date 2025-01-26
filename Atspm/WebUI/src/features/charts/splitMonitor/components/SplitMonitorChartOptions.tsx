@@ -4,10 +4,10 @@ import { Default } from '@/features/charts/types'
 import { useChartsStore } from '@/stores/charts'
 import {
   Box,
-  Divider,
   FormControl,
   InputLabel,
   MenuItem,
+  Paper,
   Select,
   SelectChangeEvent,
   Typography,
@@ -45,15 +45,8 @@ export const SplitMonitorChartOptions = ({
     })
   }
 
-  const handleYAxisDefaultChange = (event: SelectChangeEvent<string>) => {
-    const newYAxisDefault = event.target.value
-    setYAxisDefault(newYAxisDefault)
-
-    handleChartOptionsUpdate({
-      id: chartDefaults.yAxisDefault.id,
-      option: chartDefaults.yAxisDefault.option,
-      value: newYAxisDefault,
-    })
+  const handleYAxisDefaultChange = (val: number) => {
+    setYAxisDefault(val)
   }
 
   return (
@@ -99,13 +92,16 @@ export const SplitMonitorChartOptions = ({
           </Typography>
         </Box>
       </Box>
-      <Divider sx={{ mt: 2, mb: 2 }}>
+      <Paper
+        sx={{ px: 2, py: 1, my: 1, bgcolor: 'background.default' }}
+        elevation={0}
+      >
         <Typography variant="caption">Display</Typography>
-      </Divider>
-      <YAxisDefaultInput
-        value={yAxisDefault}
-        handleChange={handleYAxisDefaultChange}
-      />
+        <YAxisDefaultInput
+          value={yAxisDefault}
+          handleChange={handleYAxisDefaultChange}
+        />
+      </Paper>
     </Box>
   )
 }
