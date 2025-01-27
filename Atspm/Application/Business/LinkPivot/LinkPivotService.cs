@@ -94,7 +94,7 @@ namespace Utah.Udot.Atspm.Business.LinkPivot
                 linkPivotResult.TotalPaogUpstreamBefore = 0;
             }
             linkPivotResult.TotalAogUpstreamPredicted = linkPivot.Adjustments.Sum(a => a.AOGUpstreamPredicted);
-            linkPivotResult.TotalPaogUpstreamPredicted = (int)Math.Round((linkPivot.Adjustments.Sum(a => a.AOGUpstreamPredicted) / totalUpstreamVolume) * 100);
+            linkPivotResult.TotalPaogUpstreamPredicted = totalUpstreamVolume.AreEqual(0d) ? 0 : (int)Math.Round((linkPivot.Adjustments.Sum(a => a.AOGUpstreamPredicted) / totalUpstreamVolume) * 100);
             if (double.IsNaN(linkPivotResult.TotalPaogUpstreamPredicted))
             {
                 // If result is NaN, set it to 0
@@ -102,7 +102,7 @@ namespace Utah.Udot.Atspm.Business.LinkPivot
             }
 
             linkPivotResult.TotalAogBefore = linkPivotResult.TotalAogUpstreamBefore + linkPivotResult.TotalAogDownstreamBefore;
-            linkPivotResult.TotalPaogBefore = (int)Math.Round((linkPivotResult.TotalAogBefore / totalVolume) * 100);
+            linkPivotResult.TotalPaogBefore = totalVolume.AreEqual(0d) ? 0 : (int)Math.Round((linkPivotResult.TotalAogBefore / totalVolume) * 100);
             if (double.IsNaN(linkPivotResult.TotalPaogBefore))
             {
                 // If result is NaN, set it to 0
@@ -110,7 +110,7 @@ namespace Utah.Udot.Atspm.Business.LinkPivot
             }
 
             linkPivotResult.TotalAogPredicted = linkPivotResult.TotalAogUpstreamPredicted + linkPivotResult.TotalAogDownstreamPredicted;
-            linkPivotResult.TotalPaogPredicted = (int)Math.Round((linkPivotResult.TotalAogPredicted / totalVolume) * 100);
+            linkPivotResult.TotalPaogPredicted = totalVolume.AreEqual(0d) ? 0 : (int)Math.Round((linkPivotResult.TotalAogPredicted / totalVolume) * 100);
             if (double.IsNaN(linkPivotResult.TotalPaogPredicted))
             {
                 // If result is NaN, set it to 0
@@ -233,8 +233,8 @@ namespace Utah.Udot.Atspm.Business.LinkPivot
                 AOGUpstreamBefore = 0,
                 AOGUpstreamPredicted = 0,
                 DownstreamLocationIdentifier = routeLocation.LocationIdentifier,
-                DownstreamApproachDirection = routeLocation.PrimaryDirection.Description,
-                UpstreamApproachDirection = routeLocation.PrimaryDirection.Description,
+                DownstreamApproachDirection = routeLocation.PrimaryDirection != null ? routeLocation.PrimaryDirection.Description : "",
+                UpstreamApproachDirection = routeLocation.PrimaryDirection != null ? routeLocation.PrimaryDirection?.Description : "",
                 ResultChartLocation = "",
                 AogTotalBefore = 0,
                 PAogTotalBefore = 0,
