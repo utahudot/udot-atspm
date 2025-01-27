@@ -29,12 +29,12 @@ interface ModalProps {
 const menuItemSchema = z.object({
   id: z.number().optional(),
   name: z.string().min(1, 'Name is required'),
-  icon: z.string().optional(),
+  icon: z.string().nullable().optional(),
   displayOrder: z.coerce
     .number()
     .int()
     .min(0, 'Display order must be a non-negative integer'),
-  link: z.string().optional(),
+  link: z.string().nullable().optional(),
   parentId: z.number().nullable().optional(),
   children: z.array(z.any()).optional(), // Adjust this based on actual structure if needed
 })
