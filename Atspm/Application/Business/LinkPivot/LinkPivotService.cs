@@ -37,6 +37,11 @@ namespace Utah.Udot.Atspm.Business.LinkPivot
         {
             LinkPivot linkPivot = new LinkPivot(options.StartDate.ToDateTime(options.StartTime), options.EndDate.ToDateTime(options.EndTime));
             var (lp, pairedApproches) = await GetAdjustmentObjectsAsync(options, routeLocations);
+
+            if (lp.Count == 0 || pairedApproches.Count == 0) {
+                throw new Exception("Issue grabbing approach data for route locations.");
+            }
+
             linkPivot.Adjustments = lp;
             linkPivot.PairedApproaches = pairedApproches;
 
@@ -218,32 +223,35 @@ namespace Utah.Udot.Atspm.Business.LinkPivot
 
         private static void AddLastAdjusment(RouteLocation routeLocation, List<AdjustmentObject> adjustments)
         {
-            adjustments.Add(new AdjustmentObject()
+            if(routeLocation != null)
             {
-                LocationIdentifier = routeLocation.LocationIdentifier,
-                Location = routeLocation.ToString(),
-                DownstreamLocation = "",
-                Delta = 0,
-                PAOGDownstreamBefore = 0,
-                PAOGDownstreamPredicted = 0,
-                PAOGUpstreamBefore = 0,
-                PAOGUpstreamPredicted = 0,
-                AOGDownstreamBefore = 0,
-                AOGDownstreamPredicted = 0,
-                AOGUpstreamBefore = 0,
-                AOGUpstreamPredicted = 0,
-                DownstreamLocationIdentifier = routeLocation.LocationIdentifier,
-                DownstreamApproachDirection = routeLocation.PrimaryDirection != null ? routeLocation.PrimaryDirection.Description : "",
-                UpstreamApproachDirection = routeLocation.PrimaryDirection != null ? routeLocation.PrimaryDirection?.Description : "",
-                ResultChartLocation = "",
-                AogTotalBefore = 0,
-                PAogTotalBefore = 0,
-                AogTotalPredicted = 0,
-                PAogTotalPredicted = 0,
-                LinkNumber = routeLocation.Order,
-                DownstreamVolume = 0,
-                UpstreamVolume = 0
-            });
+                adjustments.Add(new AdjustmentObject()
+                {
+                    LocationIdentifier = routeLocation.LocationIdentifier,
+                    Location = routeLocation.ToString(),
+                    DownstreamLocation = "",
+                    Delta = 0,
+                    PAOGDownstreamBefore = 0,
+                    PAOGDownstreamPredicted = 0,
+                    PAOGUpstreamBefore = 0,
+                    PAOGUpstreamPredicted = 0,
+                    AOGDownstreamBefore = 0,
+                    AOGDownstreamPredicted = 0,
+                    AOGUpstreamBefore = 0,
+                    AOGUpstreamPredicted = 0,
+                    DownstreamLocationIdentifier = routeLocation.LocationIdentifier,
+                    DownstreamApproachDirection = routeLocation.PrimaryDirection != null ? routeLocation.PrimaryDirection.Description : "",
+                    UpstreamApproachDirection = routeLocation.PrimaryDirection != null ? routeLocation.PrimaryDirection?.Description : "",
+                    ResultChartLocation = "",
+                    AogTotalBefore = 0,
+                    PAogTotalBefore = 0,
+                    AogTotalPredicted = 0,
+                    PAogTotalPredicted = 0,
+                    LinkNumber = routeLocation.Order,
+                    DownstreamVolume = 0,
+                    UpstreamVolume = 0
+                });
+            }
         }
 
         private async Task CreatePairedApproaches(LinkPivotOptions options, List<RouteLocation> routeLocations, List<LinkPivotPair> PairedApproaches, List<int> indices, List<DateOnly> daysToInclude)
