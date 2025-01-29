@@ -6,11 +6,13 @@ import { RampMeteringChartOptionsDefaults } from '../types'
 interface GreenTimeUtilizationChartOptionsProps {
   chartDefaults: RampMeteringChartOptionsDefaults
   handleChartOptionsUpdate: (update: Default) => void
+  isMeasureDefaultView?: boolean
 }
 
 export const RampMeteringChartOptions = ({
   chartDefaults,
   handleChartOptionsUpdate,
+  isMeasureDefaultView = false,
 }: GreenTimeUtilizationChartOptionsProps) => {
   const [combineLanes, setCombineLanes] = useState(
     chartDefaults.combineLanes.value
