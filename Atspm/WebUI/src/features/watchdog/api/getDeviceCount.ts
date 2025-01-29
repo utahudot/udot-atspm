@@ -20,8 +20,7 @@ import { ExtractFnReturnType } from '@/lib/react-query'
 import { useQuery } from 'react-query'
 
 const getDeviceCount = async (): Promise<DeviceCount[]> => {
-  const response = await configAxios.get('Device/GetActiveDevicesCount')
-
+  const response = await configAxios.get('/Device/GetActiveDevicesCount')
   return response
 }
 
