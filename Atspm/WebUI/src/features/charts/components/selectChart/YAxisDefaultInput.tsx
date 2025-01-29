@@ -75,9 +75,7 @@ export const YAxisDefaultInput = ({
           },
         }}
       >
-        Y-Axis Default value is not configured. Please add a yAxisDefault
-        measureOption to the following MeasureTypes: Purdue Coordination
-        Diagram, Split Monitor, Ped Delay, Yellow & Red Actuations
+        A Y-Axis Default value is not found for this Measure Default.
       </Alert>
     )
   }
