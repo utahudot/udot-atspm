@@ -225,7 +225,7 @@ export default function ApacheEChart({
                 left: option?.grid?.left || 0,
                 right: option?.grid?.right || 0,
                 bottom: option?.grid?.bottom || 0,
-                outline: '2px solid #0060df80',
+                // outline: '2px solid #0060df80',
                 zIndex: 1,
                 pointerEvents: 'none',
               }}

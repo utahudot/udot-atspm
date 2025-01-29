@@ -11,6 +11,7 @@ import {
 import { useCreateWatchdogIgnoreEvents } from '@/features/watchdog/api/watchdogIgnoreEvents'
 import { useNotificationStore } from '@/stores/notifications'
 import { dateToTimestamp, toUTCDateStamp } from '@/utils/dateTime'
+import { addSpaces } from '@/utils/string'
 import { zodResolver } from '@hookform/resolvers/zod'
 import NotificationsPausedIcon from '@mui/icons-material/NotificationsPaused'
 import PlayArrowIcon from '@mui/icons-material/PlayArrow'
@@ -43,7 +44,6 @@ import { startOfToday, startOfYesterday } from 'date-fns'
 import { useCallback, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
-
 interface transformWatchDogLog {
   id: number
   locationId: number
@@ -294,15 +294,8 @@ const WatchDogLogs = () => {
         headerName: 'Issue Type',
         flex: 1,
         headerAlign: 'center',
-        renderCell: (params) => (
-          <div style={{ textAlign: 'center', width: '100%' }}>
-            {issueTypes
-              ? `${params.value} - ${
-                  issueTypes[params.value as keyof typeof issueTypes]
-                }`
-              : params.value}
-          </div>
-        ),
+        valueGetter: (params) =>
+          addSpaces(issueTypes?.[params.value as number]) ?? '',
       },
       { field: 'phase', headerName: 'Phase', flex: 1, headerAlign: 'center' },
       {
