@@ -29,11 +29,8 @@ const WatchdogSummaryReport = () => {
   })
 
   const { data: deviceCount } = useGetDeviceCount()
-
-  const { data: detectionTypeCount } = useGetDetectionTypeCount(
-    toUTCDateStamp(endDateTime)
-  )
-
+  const { data: detectionTypeCount } =
+    useGetDetectionTypeCount(formattedEndDate)
   const data = {
     ...dashboardData,
     deviceCount,
