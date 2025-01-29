@@ -3,26 +3,29 @@ import { YAxisDefaultInput } from '@/features/charts/components/selectChart/YAxi
 import { PurdueCoordinationDiagramChartOptionsDefaults } from '@/features/charts/purdueCoordinationDiagram/types'
 import { Default } from '@/features/charts/types'
 import { useChartsStore } from '@/stores/charts'
-import { Box, Divider, SelectChangeEvent, Typography } from '@mui/material'
+import { Box, Paper, SelectChangeEvent, Typography } from '@mui/material'
 import { useEffect, useState } from 'react'
 
 interface PurdueCoordinationDiagramChartOptionsProps {
   chartDefaults: PurdueCoordinationDiagramChartOptionsDefaults
   handleChartOptionsUpdate: (update: Default) => void
+  isMeasureDefaultView?: boolean
 }
 
 export const PurdueCoordinationDiagramChartOptions = ({
   chartDefaults,
   handleChartOptionsUpdate,
+  isMeasureDefaultView = false,
 }: PurdueCoordinationDiagramChartOptionsProps) => {
   const [binSize, setBinSize] = useState(chartDefaults.binSize?.value)
-  const { yAxisDefault, setYAxisDefault } = useChartsStore()
+  const [yAxisMax, setYAxisMax] = useState<string | null>(
+    chartDefaults.yAxisDefault?.value ?? null
+  )
+  const { setYAxisMaxStore } = useChartsStore()
 
   useEffect(() => {
-    if (chartDefaults.yAxisDefault?.value) {
-      setYAxisDefault(chartDefaults.yAxisDefault.value)
-    }
-  }, [chartDefaults.yAxisDefault?.value, setYAxisDefault])
+    setYAxisMaxStore(chartDefaults.yAxisDefault?.value ?? 150)
+  }, [chartDefaults.yAxisDefault?.value, setYAxisMaxStore])
 
   const handleBinSizeChange = (event: SelectChangeEvent<string>) => {
     const newBinSize = event.target.value
@@ -34,14 +37,19 @@ export const PurdueCoordinationDiagramChartOptions = ({
       value: yAxisDefault,
     })
   }
-  const handleYAxisDefaultChange = (event: SelectChangeEvent<string>) => {
-    const newYAxisDefault = event.target.value
-    setYAxisDefault(newYAxisDefault)
+
+  const handleYAxisChartStoreUpdate = (val: string | null) => {
+    setYAxisMaxStore(val)
+  }
+
+  const updateYAxisDefault = (event: SelectChangeEvent<string>) => {
+    const newYAxis = event.target.value
+    setYAxisMax(newYAxis)
 
     handleChartOptionsUpdate({
-      id: chartDefaults.yAxisDefault.id,
+      value: newYAxis,
       option: chartDefaults.yAxisDefault.option,
-      value: newYAxisDefault,
+      id: chartDefaults.yAxisDefault.id,
     })
   }
 
@@ -52,13 +60,25 @@ export const PurdueCoordinationDiagramChartOptions = ({
         handleChange={handleBinSizeChange}
         id="purdue-coordination-diagram"
       />
-      <Divider sx={{ mt: 2, mb: 2 }}>
-        <Typography variant="caption">Display</Typography>
-      </Divider>
-      <YAxisDefaultInput
-        value={yAxisDefault}
-        handleChange={handleYAxisDefaultChange}
-      />
+      {isMeasureDefaultView ? (
+        <YAxisDefaultInput
+          value={yAxisMax}
+          handleChange={updateYAxisDefault}
+          isMeasureDefaultView={isMeasureDefaultView}
+        />
+      ) : (
+        <Paper
+          sx={{ px: 2, py: 1, my: 1, bgcolor: 'background.default' }}
+          elevation={0}
+        >
+          <Typography variant="caption">Display</Typography>
+          <YAxisDefaultInput
+            value={yAxisMax}
+            handleChange={handleYAxisChartStoreUpdate}
+            isMeasureDefaultView={isMeasureDefaultView}
+          />
+        </Paper>
+      )}
     </Box>
   )
 }

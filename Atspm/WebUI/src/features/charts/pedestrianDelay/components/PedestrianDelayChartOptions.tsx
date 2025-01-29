@@ -4,8 +4,8 @@ import { Default } from '@/features/charts/types'
 import { useChartsStore } from '@/stores/charts'
 import {
   Box,
-  Divider,
   FormControl,
+  Paper,
   SelectChangeEvent,
   TextField,
   Typography,
@@ -15,23 +15,26 @@ import { ChangeEvent, useEffect, useState } from 'react'
 interface PedestrianDelayChartOptionsProps {
   chartDefaults: PedestrianDelayChartOptionsDefaults
   handleChartOptionsUpdate: (update: Default) => void
+  isMeasureDefaultView?: boolean
 }
 
 export const PedestrianDelayChartOptions = ({
   chartDefaults,
   handleChartOptionsUpdate,
+  isMeasureDefaultView = false,
 }: PedestrianDelayChartOptionsProps) => {
   const [timeBuffer, setTimeBuffer] = useState(chartDefaults.timeBuffer.value)
   const [pedRecallThreshold, setPedRecallThreshold] = useState(
     chartDefaults.pedRecallThreshold.value
   )
-  const { yAxisDefault, setYAxisDefault } = useChartsStore()
+  const [yAxisMax, setYAxisMax] = useState<string | null>(
+    chartDefaults.yAxisDefault?.value ?? null
+  )
+  const { setYAxisMaxStore } = useChartsStore()
 
   useEffect(() => {
-    if (chartDefaults.yAxisDefault?.value) {
-      setYAxisDefault(chartDefaults.yAxisDefault.value)
-    }
-  }, [chartDefaults.yAxisDefault?.value, setYAxisDefault])
+    setYAxisMaxStore(chartDefaults.yAxisDefault?.value ?? 180)
+  }, [chartDefaults.yAxisDefault?.value, setYAxisMaxStore])
 
   const handleTimeBufferChange = (
     event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -59,14 +62,18 @@ export const PedestrianDelayChartOptions = ({
     })
   }
 
-  const handleYAxisDefaultChange = (event: SelectChangeEvent<string>) => {
-    const newYAxisDefault = event.target.value
-    setYAxisDefault(newYAxisDefault)
+  const handleYAxisChartStoreUpdate = (val: string | null) => {
+    setYAxisMaxStore(val)
+  }
+
+  const updateYAxisDefault = (event: SelectChangeEvent<string>) => {
+    const newYAxis = event.target.value
+    setYAxisMax(newYAxis)
 
     handleChartOptionsUpdate({
-      id: chartDefaults.yAxisDefault.id,
+      value: newYAxis,
       option: chartDefaults.yAxisDefault.option,
-      value: newYAxisDefault,
+      id: chartDefaults.yAxisDefault.id,
     })
   }
 
@@ -137,13 +144,25 @@ export const PedestrianDelayChartOptions = ({
             </Typography>
           </Box>
         </Box>
-        <Divider sx={{ mt: 2, mb: 2 }}>
-          <Typography variant="caption">Display</Typography>
-        </Divider>
-        <YAxisDefaultInput
-          value={yAxisDefault}
-          handleChange={handleYAxisDefaultChange}
-        />
+        {isMeasureDefaultView ? (
+          <YAxisDefaultInput
+            value={yAxisMax}
+            handleChange={updateYAxisDefault}
+            isMeasureDefaultView={isMeasureDefaultView}
+          />
+        ) : (
+          <Paper
+            sx={{ px: 2, py: 1, my: 1, bgcolor: 'background.default' }}
+            elevation={0}
+          >
+            <Typography variant="caption">Display</Typography>
+            <YAxisDefaultInput
+              value={yAxisMax}
+              handleChange={handleYAxisChartStoreUpdate}
+              isMeasureDefaultView={isMeasureDefaultView}
+            />
+          </Paper>
+        )}
       </Box>
     </>
   )

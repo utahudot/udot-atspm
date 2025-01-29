@@ -17,22 +17,26 @@ import { useEffect, useState } from 'react'
 interface SplitMonitorChartOptionsProps {
   chartDefaults: SplitMonitorChartOptionsDefaults
   handleChartOptionsUpdate: (update: Default) => void
+  isMeasureDefaultView?: boolean
 }
 
 export const SplitMonitorChartOptions = ({
   chartDefaults,
   handleChartOptionsUpdate,
+  isMeasureDefaultView = false,
 }: SplitMonitorChartOptionsProps) => {
   const [selectedPercentile, setSelectedPercentile] = useState(
     chartDefaults?.percentileSplit?.value || ''
   )
-  const { yAxisDefault, setYAxisDefault } = useChartsStore()
+  const { setYAxisMaxStore } = useChartsStore()
+
+  const [yAxisMax, setYAxisMax] = useState<string | null>(
+    chartDefaults.yAxisDefault?.value ?? ''
+  )
 
   useEffect(() => {
-    if (chartDefaults.yAxisDefault?.value) {
-      setYAxisDefault(chartDefaults.yAxisDefault.value)
-    }
-  }, [chartDefaults.yAxisDefault?.value, setYAxisDefault])
+    setYAxisMaxStore(chartDefaults.yAxisDefault?.value ?? null)
+  }, [chartDefaults.yAxisDefault?.value, setYAxisMaxStore])
 
   const handleSelectedPercentileChange = (event: SelectChangeEvent<string>) => {
     const newPercentile = event.target.value
@@ -45,8 +49,19 @@ export const SplitMonitorChartOptions = ({
     })
   }
 
-  const handleYAxisDefaultChange = (val: number) => {
-    setYAxisDefault(val)
+  const handleYAxisChartStoreUpdate = (val: string | null) => {
+    setYAxisMaxStore(val)
+  }
+
+  const updateYAxisDefault = (event: SelectChangeEvent<string>) => {
+    const newYAxis = event.target.value
+    setYAxisMax(newYAxis)
+
+    handleChartOptionsUpdate({
+      value: newYAxis,
+      option: chartDefaults.yAxisDefault.option,
+      id: chartDefaults.yAxisDefault.id,
+    })
   }
 
   return (
@@ -92,16 +107,25 @@ export const SplitMonitorChartOptions = ({
           </Typography>
         </Box>
       </Box>
-      <Paper
-        sx={{ px: 2, py: 1, my: 1, bgcolor: 'background.default' }}
-        elevation={0}
-      >
-        <Typography variant="caption">Display</Typography>
+      {isMeasureDefaultView ? (
         <YAxisDefaultInput
-          value={yAxisDefault}
-          handleChange={handleYAxisDefaultChange}
+          value={yAxisMax}
+          handleChange={updateYAxisDefault}
+          isMeasureDefaultView={isMeasureDefaultView}
         />
-      </Paper>
+      ) : (
+        <Paper
+          sx={{ px: 2, py: 1, my: 1, bgcolor: 'background.default' }}
+          elevation={0}
+        >
+          <Typography variant="caption">Display</Typography>
+          <YAxisDefaultInput
+            value={yAxisMax}
+            handleChange={handleYAxisChartStoreUpdate}
+            isMeasureDefaultView={isMeasureDefaultView}
+          />
+        </Paper>
+      )}
     </Box>
   )
 }

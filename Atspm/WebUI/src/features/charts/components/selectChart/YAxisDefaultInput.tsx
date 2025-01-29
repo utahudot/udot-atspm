@@ -1,18 +1,31 @@
-import { Box, Button, FormControl, InputLabel, TextField } from '@mui/material'
-import { ChangeEvent, useState } from 'react'
+import {
+  Alert,
+  Box,
+  Button,
+  FormControl,
+  InputLabel,
+  SelectChangeEvent,
+  TextField,
+} from '@mui/material'
+
+import { useChartsStore } from '@/stores/charts'
+import { ChangeEvent, useEffect, useState } from 'react'
 
 interface YAxisDefaultInputProps {
   value: string | null
-  handleChange: (value: string | null) => void
-  id?: string
+  handleChange:
+    | ((event: SelectChangeEvent<string>) => void)
+    | ((value: string | null) => void)
+  isMeasureDefaultView: boolean
 }
-
 export const YAxisDefaultInput = ({
   value,
   handleChange,
-  id = 'bin-size',
+  isMeasureDefaultView,
 }: YAxisDefaultInputProps) => {
   const [inputValue, setInputValue] = useState<string | null>(value)
+  const [showError, setShowError] = useState<boolean>(false)
+  const { yAxisMaxStore } = useChartsStore()
 
   const visuallyHidden: React.CSSProperties = {
     position: 'absolute',
@@ -26,16 +39,74 @@ export const YAxisDefaultInput = ({
   }
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setInputValue(e.target.value)
+    const newValue = e.target.value
+    setInputValue(newValue)
+
+    // For admin view, update immediately
+    if (isMeasureDefaultView) {
+      ;(handleChange as (event: SelectChangeEvent<string>) => void)({
+        target: { value: newValue },
+      } as SelectChangeEvent<string>)
+    }
   }
+  useEffect(() => {
+    if (value === undefined) {
+      setShowError(true)
+    } else {
+      setShowError(false)
+      setInputValue(value)
+    }
+  }, [value])
 
   const applyChange = () => {
-    if (inputValue !== value) {
-      handleChange(inputValue)
+    if (inputValue !== yAxisMaxStore) {
+      ;(handleChange as (value: string | null) => void)(inputValue)
     }
   }
 
-  return (
+  if (showError) {
+    return (
+      <Alert
+        severity="error"
+        sx={{
+          mt: 2,
+          '& .MuiAlert-message': {
+            width: '100%',
+          },
+        }}
+      >
+        Y-Axis Default value is not configured. Please add a yAxisDefault
+        measureOption to the following MeasureTypes: Purdue Coordination
+        Diagram, Split Monitor, Ped Delay, Yellow & Red Actuations
+      </Alert>
+    )
+  }
+
+  return isMeasureDefaultView ? (
+    <Box
+      sx={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        marginRight: '29.3px',
+      }}
+    >
+      <InputLabel sx={{ color: 'black' }}>Y-Axis Chart Default </InputLabel>
+      <Box sx={{ display: 'flex' }}>
+        <FormControl sx={{ width: '60px' }}>
+          <label htmlFor="yAxis-defualt" style={visuallyHidden}>
+            YAxis Chart Default
+          </label>
+          <TextField
+            id="yAxis-defualt"
+            type="number"
+            value={value}
+            onChange={handleInputChange}
+            variant="standard"
+          />
+        </FormControl>
+      </Box>
+    </Box>
+  ) : (
     <Box
       sx={{
         display: 'flex',
@@ -77,7 +148,7 @@ export const YAxisDefaultInput = ({
           marginTop: 'auto',
         }}
         onClick={applyChange}
-        disabled={inputValue === value}
+        disabled={inputValue === yAxisMaxStore}
       >
         Apply
       </Button>

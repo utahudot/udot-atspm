@@ -57,6 +57,7 @@ const MeasureDefaults = () => {
       <ChartComponent
         chartDefaults={chartDefaults}
         handleChartOptionsUpdate={handleChartOptionsUpdate}
+        isMeasureDefaultView={true}
       />
     )
   }

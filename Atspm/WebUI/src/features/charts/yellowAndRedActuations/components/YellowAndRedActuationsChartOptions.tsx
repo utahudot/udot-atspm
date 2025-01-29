@@ -4,8 +4,8 @@ import { YellowAndRedActuationsChartOptionsDefaults } from '@/features/charts/ye
 import { useChartsStore } from '@/stores/charts'
 import {
   Box,
-  Divider,
   FormControl,
+  Paper,
   SelectChangeEvent,
   TextField,
   Typography,
@@ -26,22 +26,25 @@ const visuallyHidden: React.CSSProperties = {
 interface YellowAndRedActuationsChartOptionsProps {
   chartDefaults: YellowAndRedActuationsChartOptionsDefaults
   handleChartOptionsUpdate: (update: Default) => void
+  isMeasureDefaultView?: boolean
 }
 
 export const YellowAndRedActuationsChartOptions = ({
   chartDefaults,
   handleChartOptionsUpdate,
+  isMeasureDefaultView = false,
 }: YellowAndRedActuationsChartOptionsProps) => {
   const [severeLevel, setSevereLevel] = useState(
     chartDefaults.severeLevelSeconds.value
   )
-  const { yAxisDefault, setYAxisDefault } = useChartsStore()
+  const { setYAxisMaxStore } = useChartsStore()
+  const [yAxisMax, setYAxisMax] = useState<string | null>(
+    chartDefaults.yAxisDefault?.value ?? null
+  )
 
   useEffect(() => {
-    if (chartDefaults.yAxisDefault?.value) {
-      setYAxisDefault(chartDefaults.yAxisDefault.value)
-    }
-  }, [chartDefaults.yAxisDefault?.value, setYAxisDefault])
+    setYAxisMaxStore(chartDefaults.yAxisDefault?.value ?? 20)
+  }, [chartDefaults.yAxisDefault?.value, setYAxisMaxStore])
 
   const handleSevereLevelChange = (
     event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -56,14 +59,18 @@ export const YellowAndRedActuationsChartOptions = ({
     })
   }
 
-  const handleYAxisDefaultChange = (event: SelectChangeEvent<string>) => {
-    const newYAxisDefault = event.target.value
-    setYAxisDefault(newYAxisDefault)
+  const handleYAxisChartStoreUpdate = (val: string | null) => {
+    setYAxisMaxStore(val)
+  }
+
+  const updateYAxisDefault = (event: SelectChangeEvent<string>) => {
+    const newYAxis = event.target.value
+    setYAxisMax(newYAxis)
 
     handleChartOptionsUpdate({
-      id: chartDefaults.yAxisDefault.id,
+      value: newYAxis,
       option: chartDefaults.yAxisDefault.option,
-      value: newYAxisDefault,
+      id: chartDefaults.yAxisDefault.id,
     })
   }
 
@@ -94,13 +101,25 @@ export const YellowAndRedActuationsChartOptions = ({
           </Typography>
         </Box>
       </Box>
-      <Divider sx={{ mt: 2, mb: 2 }}>
-        <Typography variant="caption">Display</Typography>
-      </Divider>
-      <YAxisDefaultInput
-        value={yAxisDefault}
-        handleChange={handleYAxisDefaultChange}
-      />
+      {isMeasureDefaultView ? (
+        <YAxisDefaultInput
+          value={yAxisMax}
+          handleChange={updateYAxisDefault}
+          isMeasureDefaultView={isMeasureDefaultView}
+        />
+      ) : (
+        <Paper
+          sx={{ px: 2, py: 1, my: 1, bgcolor: 'background.default' }}
+          elevation={0}
+        >
+          <Typography variant="caption">Display</Typography>
+          <YAxisDefaultInput
+            value={yAxisMax}
+            handleChange={handleYAxisChartStoreUpdate}
+            isMeasureDefaultView={isMeasureDefaultView}
+          />
+        </Paper>
+      )}
     </Box>
   )
 }
