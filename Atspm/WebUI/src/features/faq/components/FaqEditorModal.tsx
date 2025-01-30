@@ -25,7 +25,7 @@ const schema = z.object({
       const cleanHTML = str
         .replace(/<script[^>]*>.*?<\/script>/gi, '') // Remove <script> tags
         .replace(/on\w+="[^"]*"/g, '') // Remove inline event handlers like onclick=""
-        .replace(/javascript:/gi, '') // Remove javascript: URLs
+        .replace(/(?:javascript|data|vbscript):/gi, '') // Remove javascript:, data:, and vbscript: URLs
         .trim()
       return cleanHTML
     })
