@@ -75,6 +75,11 @@ namespace Utah.Udot.Atspm.Data.Models
         /// </summary>
         public string? DeletedBy { get; set; } = null;
 
+        /// <summary>
+        /// The interval at which the map layer should refresh, in minutes.
+        /// </summary>
+        public int? refreshInterval { get; set; }
+
         /// <inheritdoc/>
         public override string ToString() => $"{Id} - {Name}";
     }
