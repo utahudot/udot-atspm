@@ -21,11 +21,13 @@ const schema = z.object({
   body: z
     .string()
     .transform((str) => {
-      const textContent = str
-        .replace(/<[^>]*>/g, '')
-        .replace(/&nbsp;/g, ' ')
+      // Remove script tags and inline event handlers (e.g., onclick)
+      const cleanHTML = str
+        .replace(/<script[^>]*>.*?<\/script>/gi, '') // Remove <script> tags
+        .replace(/on\w+="[^"]*"/g, '') // Remove inline event handlers like onclick=""
+        .replace(/javascript:/gi, '') // Remove javascript: URLs
         .trim()
-      return textContent
+      return cleanHTML
     })
     .refine((str) => str.length > 0, {
       message: 'Body content is required',

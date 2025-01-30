@@ -15,6 +15,7 @@ import {
   useViewPage,
 } from '@/features/identity/pagesCheck'
 import { Backdrop, CircularProgress } from '@mui/material'
+import { Markup } from 'interweave'
 
 const FaqAdmin = () => {
   const pageAccess = useViewPage(PageNames.FAQs)
@@ -94,6 +95,16 @@ const FaqAdmin = () => {
     }
   })
 
+  const FaqBodyCell = ({ value }: { value: string }) => {
+    return <Markup content={value} />
+  }
+  const customCellRender = [
+    {
+      headerKey: 'body',
+      component: (value: string) => <FaqBodyCell value={value} />,
+    },
+  ]
+
   const headers = ['Header', 'Body', 'Display Order']
   const headerKeys = ['header', 'body', 'displayOrder']
 
@@ -104,6 +115,7 @@ const FaqAdmin = () => {
         headers={headers}
         headerKeys={headerKeys}
         data={filteredData}
+        customCellRender={customCellRender}
         hasEditPrivileges={hasGeneralEditClaim}
         hasDeletePrivileges={hasGeneralDeleteClaim}
         editModal={
