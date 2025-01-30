@@ -14,6 +14,7 @@ import {
 } from '@mui/material'
 import { useEffect, useState } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
+import sanitizeHtml from 'sanitize-html'
 import { z } from 'zod'
 
 const schema = z.object({
@@ -21,12 +22,14 @@ const schema = z.object({
   body: z
     .string()
     .transform((str) => {
-      // Remove script tags and inline event handlers (e.g., onclick)
-      const cleanHTML = str
-        .replace(/<script[^>]*>.*?<\/script>/gi, '') // Remove <script> tags
-        .replace(/on\w+="[^"]*"/g, '') // Remove inline event handlers like onclick=""
-        .replace(/(?:javascript|data|vbscript):/gi, '') // Remove javascript:, data:, and vbscript: URLs
-        .trim()
+      const cleanHTML = sanitizeHtml(str, {
+        allowedTags: sanitizeHtml.defaults.allowedTags,
+        allowedAttributes: {
+          ...sanitizeHtml.defaults.allowedAttributes,
+          '*': ['style', 'class'], // Allow style and class attributes
+        },
+        disallowedTagsMode: 'discard',
+      })
       return cleanHTML
     })
     .refine((str) => str.length > 0, {
