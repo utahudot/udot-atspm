@@ -29,9 +29,9 @@ const MapLayers = () => {
     isLoading,
     refetch: fetchMapLayers,
   } = useGetMapLayer()
-  const { mutate: addMapLayer } = usePostMapLayer()
-  const { mutate: updateMapLayer } = usePatchMapLayerFromKey()
-  const { mutate: removeMapLayer } = useDeleteMapLayerFromKey()
+  const { mutateAsync: addMapLayer } = usePostMapLayer()
+  const { mutateAsync: updateMapLayer } = usePatchMapLayerFromKey()
+  const { mutateAsync: removeMapLayer } = useDeleteMapLayerFromKey()
 
   const mapLayers = mapLayerData?.value as MapLayer[]
 
@@ -96,11 +96,12 @@ const MapLayers = () => {
       mapLayerUrl: obj.mapLayerUrl,
       showByDefault: obj.showByDefault,
       serviceType: obj.serviceType,
+      refreshIntervalSeconds:obj.refreshIntervalSeconds
     }
   })
 
-  const headers = ['Name', 'Map Layer Url', 'Show By Default', 'Service Type']
-  const headerKeys = ['name', 'mapLayerUrl', 'showByDefault', 'serviceType']
+  const headers = ['Name', 'Map Layer Url', 'Show By Default', 'Service Type', "Refresh in Seconds"]
+  const headerKeys = ['name', 'mapLayerUrl', 'showByDefault', 'serviceType','refreshIntervalSeconds']
 
   const customCellRender = [
     {
