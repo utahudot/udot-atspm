@@ -4,6 +4,7 @@ import {
 } from '@/api/config/aTSPMConfigurationApi.schemas'
 import { zodResolver } from '@hookform/resolvers/zod'
 import {
+  Box,
   Button,
   Checkbox,
   Dialog,
@@ -29,6 +30,7 @@ const mapLayerSchema = z
     name: z.string().min(1, 'Name is required'),
     mapLayerUrl: z.string(),
     showByDefault: z.boolean(),
+    refreshIntervalSeconds: z.number().nullable(),
     serviceType: z
       .string()
       .refine(
@@ -94,6 +96,7 @@ export const MapLayerCreateEditModal = ({
       name: mapLayer?.name || '',
       mapLayerUrl: mapLayer?.mapLayerUrl || '',
       showByDefault: mapLayer?.showByDefault || false,
+      refreshIntervalSeconds: mapLayer?.refreshIntervalSeconds ?? null,
       serviceType: mapLayer?.serviceType || ServiceType.FeatureServer,
     },
   })
@@ -191,23 +194,42 @@ export const MapLayerCreateEditModal = ({
               />
             )}
           />
-
-          <Controller
-            name="showByDefault"
-            control={control}
-            render={({ field }) => (
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={field.value}
-                    onChange={(e) => field.onChange(e.target.checked)}
-                  />
-                }
-                label="Show by default"
-                sx={{ mt: 2 }}
-              />
-            )}
-          />
+          <Box sx={{ display: 'flex', alignItems: 'center', mt: 2 }}>
+            <Controller
+              name="refreshIntervalSeconds"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  onChange={(e) => {
+                    const value = e.target.value
+                    field.onChange(value === '' ? null : Number(value))
+                  }}
+                  label="Refresh Interval (seconds)"
+                  type="number"
+                  sx={{ mr: 2 }}
+                  InputProps={{
+                    inputProps: { min: 0 },
+                  }}
+                />
+              )}
+            />
+            <Controller
+              name="showByDefault"
+              control={control}
+              render={({ field }) => (
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={field.value}
+                      onChange={(e) => field.onChange(e.target.checked)}
+                    />
+                  }
+                  label="Show by default"
+                />
+              )}
+            />
+          </Box>
         </DialogContent>
 
         <DialogActions>
