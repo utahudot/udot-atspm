@@ -53,13 +53,13 @@ namespace Utah.Udot.Atspm.Services
         /// <param name="path">Path to list resources from</param>
         /// <param name="token">Cancellation token</param>
         /// <param name="query">Uri query to filter resources</param>
-        /// <returns>List of files in path</returns>
+        /// <returns>List of files in resource</returns>
         /// <exception cref="DownloaderClientConnectionException"></exception>
         /// <exception cref="DownloaderClientListResourcesException"></exception>
         Task<IEnumerable<Uri>> ListResourcesAsync(string path, CancellationToken token = default, params string[] query);
 
         /// <summary>
-        /// Download from remote path to local path
+        /// Download from remote resource to local resource
         /// </summary>
         /// <param name="local">Uri of resource to download to</param>
         /// <param name="remote">Uri of resource to download from</param>
@@ -70,14 +70,14 @@ namespace Utah.Udot.Atspm.Services
         Task<FileInfo> DownloadResourceAsync(Uri local, Uri remote, CancellationToken token = default);
 
         /// <summary>
-        /// Delete files in path
+        /// Delete resource
         /// </summary>
-        /// <param name="path">Directory of files to delete</param>
+        /// <param name="resource">Uri of resource to delete</param>
         /// <param name="token">Cancellation token</param>
         /// <returns></returns>
         /// <exception cref="DownloaderClientConnectionException"></exception>
-        /// <exception cref="DownloaderClientDeleteFileException"></exception>
-        Task DeleteFileAsync(string path, CancellationToken token = default);
+        /// <exception cref="DownloaderClientDeleteResourceException"></exception>
+        Task DeleteResourceAsync(Uri resource, CancellationToken token = default);
 
         /// <summary>
         /// Disconnects from the server

@@ -93,7 +93,7 @@ namespace Utah.Udot.Atspm.InfrastructureTests.DownloaderClientTests
         [Trait(nameof(IDownloaderClient), "DeleteFileAsync")]
         public async virtual void DeleteFileAsyncControllerDeleteFileException()
         {
-            await Assert.ThrowsAsync<DownloaderClientDeleteFileException>(async () => await Sut.DeleteFileAsync(""));
+            await Assert.ThrowsAsync<DownloaderClientDeleteResourceException>(async () => await Sut.DeleteFileAsync(""));
         }
 
         [Fact]

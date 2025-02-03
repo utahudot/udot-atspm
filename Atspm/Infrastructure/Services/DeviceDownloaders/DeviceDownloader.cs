@@ -3,7 +3,7 @@
 // for Infrastructure - Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders/DeviceDownloader.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
+// you may not use this resource except in compliance with the License.
 // You may obtain a copy of the License at
 // 
 // http://www.apache.org/licenses/LICENSE-2.
@@ -131,13 +131,13 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders
                     {
                         logMessages.ConnectedToHostMessage(deviceIdentifier, ipaddress);
 
-                        IEnumerable<Uri> remoteFiles = new List<Uri>();
+                        IEnumerable<Uri> resources = new List<Uri>();
 
                         try
                         {
                             logMessages.GettingsResourcesListMessage(deviceIdentifier, ipaddress, path);
 
-                            remoteFiles = await client.ListResourcesAsync(path, cancelToken, query);
+                            resources = await client.ListResourcesAsync(path, cancelToken, query);
                         }
                         catch (DownloaderClientListResourcesException e)
                         {
@@ -148,26 +148,26 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders
                             logMessages.NotConnectedToHostException(deviceIdentifier, ipaddress, e);
                         }
 
-                        int total = remoteFiles.Count();
+                        int total = resources.Count();
                         int current = 0;
 
                         logMessages.ResourceListingMessage(total, deviceIdentifier, ipaddress);
 
-                        foreach (var file in remoteFiles)
+                        foreach (var resource in resources)
                         {
-                            var localFilePath = GenerateLocalFilePath(parameter, file);
+                            var localFilePath = GenerateLocalFilePath(parameter, resource);
                             FileInfo downloadedFile = null;
 
                             try
                             {
-                                logMessages.DownloadingResourceMessage(file, deviceIdentifier, ipaddress);
+                                logMessages.DownloadingResourceMessage(resource, deviceIdentifier, ipaddress);
 
-                                downloadedFile = await client.DownloadResourceAsync(localFilePath, file, cancelToken);
+                                downloadedFile = await client.DownloadResourceAsync(localFilePath, resource, cancelToken);
                                 current++;
                             }
                             catch (DownloaderClientDownloadResourceException e)
                             {
-                                logMessages.DownloadResourceException(file, deviceIdentifier, ipaddress, e);
+                                logMessages.DownloadResourceException(resource, deviceIdentifier, ipaddress, e);
                             }
                             catch (DownloaderClientConnectionException e)
                             {
@@ -182,26 +182,26 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders
                             {
                                 try
                                 {
-                                    logMessages.DeletingFileMessage(file, deviceIdentifier, ipaddress);
+                                    logMessages.DeletingResourceMessage(resource, deviceIdentifier, ipaddress);
 
-                                    await client.DeleteFileAsync(file, cancelToken);
+                                    await client.DeleteResourceAsync(resource, cancelToken);
                                 }
-                                catch (DownloaderClientDeleteFileException e)
+                                catch (DownloaderClientDeleteResourceException e)
                                 {
-                                    logMessages.DeleteFileException(file, deviceIdentifier, ipaddress, e);
+                                    logMessages.DeleteResourceException(resource, deviceIdentifier, ipaddress, e);
                                 }
                                 catch (OperationCanceledException e)
                                 {
                                     logMessages.OperationCancelledException(deviceIdentifier, ipaddress, e);
                                 }
 
-                                logMessages.DeletedFileMessage(file, deviceIdentifier, ipaddress);
+                                logMessages.DeletedResourceMessage(resource, deviceIdentifier, ipaddress);
                             }
 
                             //HACK: don't know why files aren't downloading without throwing an error
                             if (downloadedFile != null)
                             {
-                                logMessages.DownloadedResourceMessage(file, deviceIdentifier, ipaddress);
+                                logMessages.DownloadedResourceMessage(resource, deviceIdentifier, ipaddress);
 
                                 progress?.Report(new ControllerDownloadProgress(downloadedFile, current, total));
 
@@ -209,7 +209,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders
                             }
                             else
                             {
-                                _log.LogWarning(new EventId(Convert.ToInt32(deviceIdentifier)), "File failed to download on {Location} file name: {file}", deviceIdentifier, file);
+                                _log.LogWarning(new EventId(Convert.ToInt32(deviceIdentifier)), "File failed to download on {Location} file name: {file}", deviceIdentifier, resource);
                             }
                         }
 

@@ -79,7 +79,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
         }
 
         ///<inheritdoc/>
-        public async Task DeleteFileAsync(string path, CancellationToken token = default)
+        public async Task DeleteResourceAsync(Uri resource, CancellationToken token = default)
         {
             token.ThrowIfCancellationRequested();
 
@@ -88,11 +88,11 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
 
             try
             {
-                await _client.DeleteFile(path, token);
+                await _client.DeleteFile(resource.LocalPath, token);
             }
             catch (Exception e)
             {
-                throw new DownloaderClientDeleteFileException(path, this, e.Message, e);
+                throw new DownloaderClientDeleteResourceException(resource, this, e.Message, e);
             }
         }
 
