@@ -126,7 +126,7 @@ namespace Utah.Udot.Atspm.Infrastructure.LogMessages
         /// <param name="deviceIdentifier"></param>
         /// <param name="ip"></param>
         [LoggerMessage(EventId = 1020, EventName = "Downloading Resource", Level = LogLevel.Debug, Message = "Downloading resource {resource} from {deviceIdentifier} at {ip}")]
-        public partial void DownloadingResourceMessage(string resource, string deviceIdentifier, IPAddress ip);
+        public partial void DownloadingResourceMessage(Uri resource, string deviceIdentifier, IPAddress ip);
 
         /// <summary>
         /// Downloaded resource message
@@ -135,7 +135,7 @@ namespace Utah.Udot.Atspm.Infrastructure.LogMessages
         /// <param name="deviceIdentifier"></param>
         /// <param name="ip"></param>
         [LoggerMessage(EventId = 1021, EventName = "Downloaded Resource", Level = LogLevel.Debug, Message = "Downloaded resource {resource} from {deviceIdentifier} at {ip}")]
-        public partial void DownloadedResourceMessage(string resource, string deviceIdentifier, IPAddress ip);
+        public partial void DownloadedResourceMessage(Uri resource, string deviceIdentifier, IPAddress ip);
 
         /// <summary>
         /// Downloaded resources message
@@ -155,39 +155,39 @@ namespace Utah.Udot.Atspm.Infrastructure.LogMessages
         /// <param name="ip"></param>
         /// <param name="ex"></param>
         [LoggerMessage(EventId = 1023, EventName = "Download Resource Exception", Level = LogLevel.Warning, Message = "Exception downloading resource {resource} from {deviceIdentifier} at {ip}")]
-        public partial void DownloadResourceException(string resource, string deviceIdentifier, IPAddress ip, Exception ex = null);
+        public partial void DownloadResourceException(Uri resource, string deviceIdentifier, IPAddress ip, Exception ex = null);
 
         #endregion
 
-        #region FileDeleteMessages
+        #region DeleteResourceMessages
 
         /// <summary>
         /// Deleting resource message
         /// </summary>
-        /// <param name="file"></param>
+        /// <param name="resource"></param>
         /// <param name="deviceIdentifier"></param>
         /// <param name="ip"></param>
-        [LoggerMessage(EventId = 1030, EventName = "Deleting File", Level = LogLevel.Debug, Message = "Deleting file {file} from {deviceIdentifier} at {ip}")]
-        public partial void DeletingFileMessage(string file, string deviceIdentifier, IPAddress ip);
+        [LoggerMessage(EventId = 1030, EventName = "Deleting Resource", Level = LogLevel.Debug, Message = "Deleting resource {resource} from {deviceIdentifier} at {ip}")]
+        public partial void DeletingResourceMessage(Uri resource, string deviceIdentifier, IPAddress ip);
 
         /// <summary>
         /// Deleted resource message
         /// </summary>
-        /// <param name="file"></param>
+        /// <param name="resource"></param>
         /// <param name="deviceIdentifier"></param>
         /// <param name="ip"></param>
-        [LoggerMessage(EventId = 1031, EventName = "Deleted File", Level = LogLevel.Debug, Message = "Deleted file {file} from {deviceIdentifier} at {ip}")]
-        public partial void DeletedFileMessage(string file, string deviceIdentifier, IPAddress ip);
+        [LoggerMessage(EventId = 1031, EventName = "Deleted Resource", Level = LogLevel.Debug, Message = "Deleted resource {resource} from {deviceIdentifier} at {ip}")]
+        public partial void DeletedResourceMessage(Uri resource, string deviceIdentifier, IPAddress ip);
 
         /// <summary>
         /// Delete resource exception message
         /// </summary>
-        /// <param name="file"></param>
+        /// <param name="resource"></param>
         /// <param name="deviceIdentifier"></param>
         /// <param name="ip"></param>
         /// <param name="ex"></param>
-        [LoggerMessage(EventId = 1032, EventName = "Delete File Exception", Level = LogLevel.Warning, Message = "Exception deleting file {file} from {deviceIdentifier} at {ip}")]
-        public partial void DeleteFileException(string file, string deviceIdentifier, IPAddress ip, Exception ex = null);
+        [LoggerMessage(EventId = 1032, EventName = "Delete Resource Exception", Level = LogLevel.Warning, Message = "Exception deleting resource {resource} from {deviceIdentifier} at {ip}")]
+        public partial void DeleteResourceException(Uri resource, string deviceIdentifier, IPAddress ip, Exception ex = null);
 
         #endregion
 

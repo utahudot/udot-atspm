@@ -91,7 +91,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
         }
 
         ///<inheritdoc/>
-        public async Task DeleteFileAsync(string path, CancellationToken token = default)
+        public async Task DeleteResourceAsync(Uri resource, CancellationToken token = default)
         {
             token.ThrowIfCancellationRequested();
 
