@@ -49,7 +49,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
         public bool IsConnected => _client != null && _client.IsConnected;
 
         ///<inheritdoc/>
-        public async Task ConnectAsync(IPEndPoint connection, NetworkCredential credentials, int connectionTimeout = 2000, int operationTImeout = 2000, CancellationToken token = default)
+        public async Task ConnectAsync(IPEndPoint connection, NetworkCredential credentials, int connectionTimeout = 2000, int operationTImeout = 2000, Dictionary<string, string> connectionProperties = null, CancellationToken token = default)
         {
             token.ThrowIfCancellationRequested();
 

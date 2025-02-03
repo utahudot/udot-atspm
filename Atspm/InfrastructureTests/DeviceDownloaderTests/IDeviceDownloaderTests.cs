@@ -174,7 +174,7 @@ namespace Utah.Udot.Atspm.InfrastructureTests.DeviceDownloaderTests
 
             foreach (var client in mockClients)
             {
-                Mock.Get(client).Setup(s => s.ConnectAsync(It.IsAny<IPEndPoint>(), It.IsAny<NetworkCredential>(), 0, 0, default))
+                Mock.Get(client).Setup(s => s.ConnectAsync(It.IsAny<IPEndPoint>(), It.IsAny<NetworkCredential>(), 0, 0, null, default))
                 .ThrowsAsync(new DownloaderClientConnectionException(It.IsAny<string>(), client, null))
                 .Verifiable();
 

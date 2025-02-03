@@ -41,10 +41,11 @@ namespace Utah.Udot.Atspm.Services
         /// <param name="credentials">username/password</param>
         /// <param name="connectionTimeout">Timeout for connections</param>
         /// <param name="operationTImeout">Timeout for operations</param>
+        /// <param name="connectionProperties">Connection properties specific to the <see cref="Protocol"/></param>
         /// <param name="token">Cancellation token</param>
         /// <returns></returns>
         /// <exception cref="DownloaderClientConnectionException"></exception>
-        Task ConnectAsync(IPEndPoint connection, NetworkCredential credentials, int connectionTimeout = 2000, int operationTImeout = 2000, CancellationToken token = default);
+        Task ConnectAsync(IPEndPoint connection, NetworkCredential credentials, int connectionTimeout = 2000, int operationTImeout = 2000, Dictionary<string, string> connectionProperties = null, CancellationToken token = default);
 
         /// <summary>
         /// List files in directory
