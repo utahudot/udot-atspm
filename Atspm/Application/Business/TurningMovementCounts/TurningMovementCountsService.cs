@@ -52,7 +52,7 @@ namespace Utah.Udot.Atspm.Business.TurningMovementCounts
             var tmcDetectors = new List<Detector>();
             FindLaneDetectors(tmcDetectors, movementType, detectorsByDirection, laneType);
 
-            if (tmcDetectors.Count == 0)
+            if (tmcDetectors.Count == 0 || detectorEvents.Count == 0)
                 return null;
 
             var laneVolumes = GetVolumeDictionaryByDetector(tmcDetectors, options.Start, options.End, detectorEvents, options.BinSize);

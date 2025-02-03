@@ -97,7 +97,8 @@ function LocationsConfigContainer({
           >
             {versionData.map((version, index) => (
               <MenuItem key={index} value={version.id}>
-                {formatTimestampToDDMMYYYY(version.start)} - {version.note}
+                {formatTimestampToDDMMYYYY(version.start.replace(/Z$/, ''))} -{' '}
+                {version.note}
               </MenuItem>
             ))}
           </Select>

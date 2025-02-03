@@ -22,7 +22,8 @@ using Utah.Udot.ATSPM.ReportApi.ReportServices;
 
 namespace Utah.Udot.ATSPM.ReportApi.Controllers
 {
-    [ApiVersion(1.0)]
+    [ApiController]
+    [Route("api/v{version:apiVersion}/[controller]")]
     public class WatchDogDashboardController : ControllerBase
     {
         private readonly WatchDogDashboardReportService watchDogDashboardReportService;
