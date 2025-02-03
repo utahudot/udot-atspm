@@ -54,18 +54,20 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders
         /// Generates a pattern for folder structure used for temp event log storage
         /// </summary>
         /// <param name="value"></param>
-        /// <param name="file"></param>
+        /// <param name="resource"></param>
         /// <returns></returns>
-        public virtual string GenerateLocalFilePath(Device value, string file)
+        public virtual Uri GenerateLocalFilePath(Device value, Uri resource)
         {
-            var result = Path.Combine
-                (_options.BasePath,
-                $"{value.Location?.LocationIdentifier} - {value.Location?.PrimaryName}",
-                value.DeviceType.ToString(),
-                value.Ipaddress.ToString(),
-                Path.GetFileName(file));
+            //var result = Path.Combine
+            //    (_options.BasePath,
+            //    $"{value.Location?.LocationIdentifier} - {value.Location?.PrimaryName}",
+            //    value.DeviceType.ToString(),
+            //    value.Ipaddress.ToString(),
+            //    Path.GetFileName(resource));
 
-            return result;
+            //return result;
+
+            return resource;
         }
 
         ///<inheritdoc/>
@@ -155,14 +157,14 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders
 
                         foreach (var resource in resources)
                         {
-                            var localFilePath = GenerateLocalFilePath(parameter, resource);
+                            var locatlPath = GenerateLocalFilePath(parameter, resource);
                             FileInfo downloadedFile = null;
 
                             try
                             {
                                 logMessages.DownloadingResourceMessage(resource, deviceIdentifier, ipaddress);
 
-                                downloadedFile = await client.DownloadResourceAsync(localFilePath, resource, cancelToken);
+                                downloadedFile = await client.DownloadResourceAsync(locatlPath, resource, cancelToken);
                                 current++;
                             }
                             catch (DownloaderClientDownloadResourceException e)

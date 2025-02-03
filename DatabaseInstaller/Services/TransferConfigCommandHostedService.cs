@@ -132,7 +132,7 @@ public class TransferConfigCommandHostedService : IHostedService
                 Firmware = "Speed",
                 Protocol = TransportProtocols.Unknown,
                 ConnectionTimeout = 2000,
-                Directory = "Unkown",
+                Path = "Unkown",
                 OperationTimeout = 2000,
                 Port = 0,
                 UserName = "Unknown",
