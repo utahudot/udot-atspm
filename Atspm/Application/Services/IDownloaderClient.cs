@@ -48,21 +48,21 @@ namespace Utah.Udot.Atspm.Services
         Task ConnectAsync(IPEndPoint connection, NetworkCredential credentials, int connectionTimeout = 2000, int operationTimeout = 2000, Dictionary<string, string> connectionProperties = null, CancellationToken token = default);
 
         /// <summary>
-        /// List files in directory
+        /// Lists uri's of all resources
         /// </summary>
-        /// <param name="directory">Directory to list</param>
+        /// <param name="path">Path to list resources from</param>
         /// <param name="token">Cancellation token</param>
-        /// <param name="filters">File type and name filters</param>
-        /// <returns>List of files in directory</returns>
+        /// <param name="query">Uri query to filter resources</param>
+        /// <returns>List of files in path</returns>
         /// <exception cref="DownloaderClientConnectionException"></exception>
-        /// <exception cref="DownloaderClientListDirectoryException"></exception>
-        Task<IEnumerable<string>> ListDirectoryAsync(string directory, CancellationToken token = default, params string[] filters);
+        /// <exception cref="DownloaderClientListResourcesException"></exception>
+        Task<IEnumerable<Uri>> ListResourcesAsync(string path, CancellationToken token = default, params string[] query);
 
         /// <summary>
         /// Download from remote path to local path
         /// </summary>
-        /// <param name="localPath">Path to download directory to</param>
-        /// <param name="remotePath">Path of directory to download from</param>
+        /// <param name="localPath">Path to download path to</param>
+        /// <param name="remotePath">Path of path to download from</param>
         /// <param name="token">Cancellation token</param>
         /// <returns></returns>
         /// <exception cref="DownloaderClientConnectionException"></exception>
@@ -70,7 +70,7 @@ namespace Utah.Udot.Atspm.Services
         Task<FileInfo> DownloadFileAsync(string localPath, string remotePath, CancellationToken token = default);
 
         /// <summary>
-        /// Delete files in directory
+        /// Delete files in path
         /// </summary>
         /// <param name="path">Directory of files to delete</param>
         /// <param name="token">Cancellation token</param>

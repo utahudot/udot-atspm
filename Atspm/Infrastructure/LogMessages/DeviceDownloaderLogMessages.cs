@@ -85,16 +85,16 @@ namespace Utah.Udot.Atspm.Infrastructure.LogMessages
 
         #endregion
 
-        #region ListDirectoryMessages
+        #region ListResourcesMessages
 
         /// <summary>
-        /// Get directory listing message
+        /// Get path listing message
         /// </summary>
         /// <param name="deviceIdentifier"></param>
         /// <param name="ip"></param>
-        /// <param name="directory"></param>
-        [LoggerMessage(EventId = 1010, EventName = "Getting Directory List", Level = LogLevel.Debug, Message = "Getting directory {directory} from {deviceIdentifier} at {ip}")]
-        public partial void GettingDirectoryListMessage(string deviceIdentifier, IPAddress ip, string directory);
+        /// <param name="path"></param>
+        [LoggerMessage(EventId = 1010, EventName = "Getting Resources List", Level = LogLevel.Debug, Message = "Getting resources {path} from {deviceIdentifier} at {ip}")]
+        public partial void GettingsResourcesListMessage(string deviceIdentifier, IPAddress ip, string path);
 
         /// <summary>
         /// Path listing message
@@ -102,18 +102,18 @@ namespace Utah.Udot.Atspm.Infrastructure.LogMessages
         /// <param name="total"></param>
         /// <param name="deviceIdentifier"></param>
         /// <param name="ip"></param>
-        [LoggerMessage(EventId = 1011, EventName = "Directory Listing", Level = LogLevel.Information, Message = "{total} files found on {deviceIdentifier} at {ip}")]
-        public partial void DirectoryListingMessage(int total, string deviceIdentifier, IPAddress ip);
+        [LoggerMessage(EventId = 1011, EventName = "Resource Listing", Level = LogLevel.Information, Message = "{total} files found on {deviceIdentifier} at {ip}")]
+        public partial void ResourceListingMessage(int total, string deviceIdentifier, IPAddress ip);
 
         /// <summary>
         /// Path listing exception message
         /// </summary>
         /// <param name="deviceIdentifier"></param>
         /// <param name="ip"></param>
-        /// <param name="directory"></param>
+        /// <param name="path"></param>
         /// <param name="ex"></param>
-        [LoggerMessage(EventId = 1012, EventName = "Directory Listing Exception", Level = LogLevel.Warning, Message = "Exception getting directory {directory} from {deviceIdentifier} at {ip}")]
-        public partial void DirectoryListingException(string deviceIdentifier, IPAddress ip, string directory, Exception ex = null);
+        [LoggerMessage(EventId = 1012, EventName = "Resources Listing Exception", Level = LogLevel.Warning, Message = "Exception getting resources {path} from {deviceIdentifier} at {ip}")]
+        public partial void ResourceListingException(string deviceIdentifier, IPAddress ip, string path, Exception ex = null);
 
         #endregion
 

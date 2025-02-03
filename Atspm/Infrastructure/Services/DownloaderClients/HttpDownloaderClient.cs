@@ -162,24 +162,24 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
         }
 
         ///<inheritdoc/>
-        public Task<IEnumerable<string>> ListDirectoryAsync(string directory, CancellationToken token = default, params string[] query)
+        public Task<IEnumerable<Uri>> ListResourcesAsync(string path, CancellationToken token = default, params string[] query)
         {
             token.ThrowIfCancellationRequested();
 
             if (!IsConnected)
                 throw new DownloaderClientConnectionException(_client?.BaseAddress?.Host, this, "Client not connected");
 
-            List<string> results = new List<string>();
+            List<Uri> results = new List<Uri>();
 
             try
             {
-                if (Uri.TryCreate(_client.BaseAddress, directory, out Uri baseAddress) && Uri.IsWellFormedUriString(baseAddress.ToString(), UriKind.Absolute))
+                if (Uri.TryCreate(_client.BaseAddress, path, out Uri baseAddress) && Uri.IsWellFormedUriString(baseAddress.ToString(), UriKind.Absolute))
                 {
                     foreach (var f in query)
                     {
                         if (Uri.IsWellFormedUriString(Uri.EscapeDataString(f), UriKind.Relative) && Uri.TryCreate(baseAddress + f, UriKind.Absolute, out Uri result))
                         {
-                            results.Add(result.ToString());
+                            results.Add(result);
                         }
                         else
                         {
@@ -189,14 +189,14 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
                 }
                 else
                 {
-                    throw new UriFormatException($"Invalid directory: {directory}");
+                    throw new UriFormatException($"Invalid path: {path}");
                 }
 
-                return Task.FromResult<IEnumerable<string>>(results);
+                return Task.FromResult<IEnumerable<Uri>>(results);
             }
             catch (Exception e)
             {
-                throw new DownloaderClientListDirectoryException(directory, this, e.Message);
+                throw new DownloaderClientListResourcesException(path, this, e.Message);
             }
         }
 

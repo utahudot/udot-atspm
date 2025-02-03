@@ -145,7 +145,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
         }
 
         ///<inheritdoc/>
-        public async Task<IEnumerable<string>> ListDirectoryAsync(string directory, CancellationToken token = default, params string[] query)
+        public async Task<IEnumerable<Uri>> ListResourcesAsync(string path, CancellationToken token = default, params string[] query)
         {
             token.ThrowIfCancellationRequested();
 
@@ -154,16 +154,16 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
 
             try
             {
-                var results = await _client.GetListing(directory, FtpListOption.Auto, token);
+                var results = await _client.GetListing(path, FtpListOption.Auto, token);
 
                 return results.Select(s => s.FullName)
                     .Where(f => query.Any(a => f.Contains(a)))
-                    .Select(s => new UriBuilder(Uri.UriSchemeFtp, _client.Host, _client.Port, s).ToString())
+                    .Select(s => new UriBuilder(Uri.UriSchemeFtp, _client.Host, _client.Port, s).Uri)
                     .ToList();
             }
             catch (Exception e)
             {
-                throw new DownloaderClientListDirectoryException(directory, this, e.Message);
+                throw new DownloaderClientListResourcesException(path, this, e.Message);
             }
         }
 

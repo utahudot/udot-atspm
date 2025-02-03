@@ -154,7 +154,7 @@ using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 //var searchTerms = device.DeviceConfiguration.Query.Select(s => new StringObjectParser(device, s).ToString()).ToArray();
 
-//var resources = await client.ListDirectoryAsync(new StringObjectParser(device, device.DeviceConfiguration.Path).ToString(), default, searchTerms);
+//var resources = await client.ListResourcesAsync(new StringObjectParser(device, device.DeviceConfiguration.Path).ToString(), default, searchTerms);
 
 
 //foreach (var r in resources)
@@ -187,7 +187,7 @@ using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 //        //"/bin-statistics?start-time=[DateTime:yyyy-MM-ddTHH:mm:ss]&end-time=[DateTime:yyyy-MM-ddTHH:mm:ss]&intervals=10"
 //    };
 
-//var resources = await client.ListDirectoryAsync("v1/asclog/xml/full", default, query);
+//var resources = await client.ListResourcesAsync("v1/asclog/xml/full", default, query);
 
 
 
@@ -206,7 +206,7 @@ var query = new string[]
         "datZ"
     };
 
-var resources = await client.ListDirectoryAsync("//Set1", default, query);
+var resources = await client.ListResourcesAsync("//Set1", default, query);
 
 
 
