@@ -138,7 +138,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
         }
 
         ///<inheritdoc/>
-        public async Task<IEnumerable<string>> ListDirectoryAsync(string directory, CancellationToken token = default, params string[] filters)
+        public async Task<IEnumerable<Uri>> ListResourcesAsync(string path, CancellationToken token = default, params string[] query)
         {
             token.ThrowIfCancellationRequested();
 
@@ -147,11 +147,13 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
 
             try
             {
-                return await _client.ListDirectoryAsync(directory, filters);
+                var result = await _client.ListDirectoryAsync(path, query);
+                    
+                return result.Select(s => new UriBuilder(Uri.UriSchemeSftp, _client.ConnectionInfo.Host, _client.ConnectionInfo.Port, s).Uri).ToList();
             }
             catch (Exception e)
             {
-                throw new DownloaderClientListDirectoryException(directory, this, e.Message);
+                throw new DownloaderClientListResourcesException(path, this, e.Message);
             }
         }
 

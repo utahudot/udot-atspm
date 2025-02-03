@@ -155,36 +155,36 @@ namespace Utah.Udot.Atspm.Exceptions
     }
 
     /// <summary>
-    /// Thrown when there is an exception listing directory from <see cref="IDownloaderClient"/> implementation
+    /// Thrown when there is an exception listing resources from <see cref="IDownloaderClient"/> implementation
     /// </summary>
-    public class DownloaderClientListDirectoryException : DownloaderClientException
+    public class DownloaderClientListResourcesException : DownloaderClientException
     {
         /// <summary>
-        /// Thrown when there is an exception listing directory from <see cref="IDownloaderClient"/> implementation
+        /// Thrown when there is an exception listing resources from <see cref="IDownloaderClient"/> implementation
         /// </summary>
-        /// <param name="directory">Path of directory that threw the exception</param>
+        /// <param name="path">Path of resources that threw the exception</param>
         /// <param name="downloaderClient">Downloader client exception was thrown for</param>
         /// <param name="message">Exception message</param>
-        public DownloaderClientListDirectoryException(string directory, IDownloaderClient downloaderClient, string? message) : base(downloaderClient, message)
+        public DownloaderClientListResourcesException(string path, IDownloaderClient downloaderClient, string? message) : base(downloaderClient, message)
         {
-            Directory = directory;
+            Path = path;
         }
 
         /// <summary>
-        /// Thrown when there is an exception listing directory from <see cref="IDownloaderClient"/> implementation
+        /// Thrown when there is an exception listing resources from <see cref="IDownloaderClient"/> implementation
         /// </summary>
-        /// <param name="directory">Path of directory that threw the exception</param>
+        /// <param name="path">Path of resources that threw the exception</param>
         /// <param name="downloaderClient">Downloader client exception was thrown for</param>
         /// <param name="message">Exception message</param>
         /// <param name="innerException">Exception thrown by the <see cref="IDownloaderClient"/> implementation</param>
-        public DownloaderClientListDirectoryException(string directory, IDownloaderClient downloaderClient, string? message, Exception? innerException) : base(downloaderClient, message, innerException)
+        public DownloaderClientListResourcesException(string path, IDownloaderClient downloaderClient, string? message, Exception? innerException) : base(downloaderClient, message, innerException)
         {
-            Directory = directory;
+            Path = path;
         }
 
         /// <summary>
-        /// Path of directory that threw the exception
+        /// Path of resources that threw the exception
         /// </summary>
-        public string Directory { get; private set; }
+        public string Path { get; private set; }
     }
 }

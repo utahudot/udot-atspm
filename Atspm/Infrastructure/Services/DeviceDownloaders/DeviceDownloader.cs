@@ -135,13 +135,13 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders
 
                         try
                         {
-                            logMessages.GettingDirectoryListMessage(deviceIdentifier, ipaddress, path);
+                            logMessages.GettingsResourcesListMessage(deviceIdentifier, ipaddress, path);
 
-                            remoteFiles = await client.ListDirectoryAsync(path, cancelToken, query);
+                            remoteFiles = await client.ListResourcesAsync(path, cancelToken, query);
                         }
-                        catch (DownloaderClientListDirectoryException e)
+                        catch (DownloaderClientListResourcesException e)
                         {
-                            logMessages.DirectoryListingException(deviceIdentifier, ipaddress, path, e);
+                            logMessages.ResourceListingException(deviceIdentifier, ipaddress, path, e);
                         }
                         catch (DownloaderClientConnectionException e)
                         {
@@ -151,7 +151,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders
                         int total = remoteFiles.Count();
                         int current = 0;
 
-                        logMessages.DirectoryListingMessage(total, deviceIdentifier, ipaddress);
+                        logMessages.ResourceListingMessage(total, deviceIdentifier, ipaddress);
 
                         foreach (var file in remoteFiles)
                         {

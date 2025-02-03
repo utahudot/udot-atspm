@@ -178,7 +178,7 @@ namespace Utah.Udot.Atspm.InfrastructureTests.DownloaderClientTests
         [Trait(nameof(IDownloaderClient), "ListDirectoryAsync")]
         public async virtual void ListDirectoryAsyncSucceeded()
         {
-            var condition = await Sut.ListDirectoryAsync("");
+            var condition = await Sut.ListResourcesAsync("");
 
             Assert.True(condition is IEnumerable<string>);
         }
@@ -187,14 +187,14 @@ namespace Utah.Udot.Atspm.InfrastructureTests.DownloaderClientTests
         [Trait(nameof(IDownloaderClient), "ListDirectoryAsync")]
         public async virtual void ListDirectoryAsyncNotConnected()
         {
-            await Assert.ThrowsAsync<DownloaderClientConnectionException>(async () => await Sut.ListDirectoryAsync(""));
+            await Assert.ThrowsAsync<DownloaderClientConnectionException>(async () => await Sut.ListResourcesAsync(""));
         }
 
         [Fact]
         [Trait(nameof(IDownloaderClient), "ListDirectoryAsync")]
         public async virtual void ListDirectoryAsyncControllerDownloadFileException()
         {
-            await Assert.ThrowsAsync<DownloaderClientListDirectoryException>(async () => await Sut.ListDirectoryAsync(""));
+            await Assert.ThrowsAsync<DownloaderClientListResourcesException>(async () => await Sut.ListResourcesAsync(""));
         }
 
         [Fact]
@@ -204,7 +204,7 @@ namespace Utah.Udot.Atspm.InfrastructureTests.DownloaderClientTests
             var tokenSource = new CancellationTokenSource();
             tokenSource.Cancel();
 
-            await Assert.ThrowsAsync<OperationCanceledException>(async () => await Sut.ListDirectoryAsync("", tokenSource.Token));
+            await Assert.ThrowsAsync<OperationCanceledException>(async () => await Sut.ListResourcesAsync("", tokenSource.Token));
         }
 
         [Fact]
