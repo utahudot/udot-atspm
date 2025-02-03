@@ -42,7 +42,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Configuration
 
                         model.Property(p => p.Firmware).MaxLength = 16;
                         model.Property(p => p.Notes).MaxLength = 512;
-                        model.Property(p => p.Directory).MaxLength = 512;
+                        model.Property(p => p.Path).MaxLength = 512;
                         model.Property(p => p.ConnectionTimeout).DefaultValueString = "2000";
                         model.Property(p => p.OperationTimeout).DefaultValueString = "2000";
                         //model.Property(p => p.DataModel).MaxLength = 512;

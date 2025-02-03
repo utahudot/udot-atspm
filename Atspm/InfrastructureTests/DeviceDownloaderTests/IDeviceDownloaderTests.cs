@@ -272,7 +272,7 @@ namespace Utah.Udot.Atspm.InfrastructureTests.DeviceDownloaderTests
         //    //{
         //    //    Ipaddress = "192.168.1.1",
         //    //    LoggingEnabled = true,
-        //    //    DeviceConfiguration = new DeviceConfiguration() { Protocol = sut.Protocol, Directory = directory }
+        //    //    DeviceConfiguration = new DeviceConfiguration() { Protocol = sut.Protocol, Path = directory }
         //    //};
 
         //    //Mock.Get(mockClient).Setup(s => s.ListDirectoryAsync(It.Is<string>(i => i == directory), default, It.IsAny<string[]>())).ReturnsAsync(returnValue).Verifiable();
@@ -337,7 +337,7 @@ namespace Utah.Udot.Atspm.InfrastructureTests.DeviceDownloaderTests
         //    //Mock.Get(mockClient).Setup(s => s.DisconnectAsync(default)).Returns(Task.CompletedTask).Verifiable();
         //    //Mock.Get(mockClient).Setup(s => s.Dispose()).Verifiable();
 
-        //    //Location.ControllerType = new ControllerType() { Id = d.ControllerType, Directory = ftpDirectory };
+        //    //Location.ControllerType = new ControllerType() { Id = d.ControllerType, Path = ftpDirectory };
 
         //    //var progressList = new List<ControllerDownloadProgress>();
 

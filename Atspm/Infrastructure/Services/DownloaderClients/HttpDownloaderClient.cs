@@ -162,7 +162,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
         }
 
         ///<inheritdoc/>
-        public Task<IEnumerable<string>> ListDirectoryAsync(string directory, CancellationToken token = default, params string[] filters)
+        public Task<IEnumerable<string>> ListDirectoryAsync(string directory, CancellationToken token = default, params string[] query)
         {
             token.ThrowIfCancellationRequested();
 
@@ -175,7 +175,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
             {
                 if (Uri.TryCreate(_client.BaseAddress, directory, out Uri baseAddress) && Uri.IsWellFormedUriString(baseAddress.ToString(), UriKind.Absolute))
                 {
-                    foreach (var f in filters)
+                    foreach (var f in query)
                     {
                         if (Uri.IsWellFormedUriString(Uri.EscapeDataString(f), UriKind.Relative) && Uri.TryCreate(baseAddress + f, UriKind.Absolute, out Uri result))
                         {

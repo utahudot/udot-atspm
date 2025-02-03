@@ -15,8 +15,10 @@
 // limitations under the License.
 #endregion
 
+using MailKit.Search;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.CodeAnalysis.VisualBasic.Syntax;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -30,12 +32,14 @@ using System.Net;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Text;
+using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
 using Utah.Udot.Atspm.EventLogUtility.Commands;
 using Utah.Udot.Atspm.Infrastructure.Extensions;
 using Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders;
 using Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients;
 using Utah.Udot.Atspm.Infrastructure.Services.EventLogDecoders;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 
 //if (OperatingSystem.IsWindows())
@@ -107,69 +111,119 @@ using Utah.Udot.Atspm.Infrastructure.Services.EventLogDecoders;
 //http://10.10.10.73:8080/api/v1/cameras/1/bin-statistics?start-time=2024-12-03T23:43:09&end-time=2024-12-10T00:00:00&intervals=10 - This will pull out the bin stats so it will be events grouped by the interval time
 
 
-var device = new Device() 
-{ 
-    DeviceIdentifier = "7114", 
-    Ipaddress = "10.210.14.15",
-    Location = new Location() { LocationIdentifier = "7114"}
-};
-device.DeviceConfiguration = new()
-{
-    Id = 21,
-    Firmware = "test",
-    ConnectionTimeout = 5000,
-    OperationTimeout = 5000,
-    Protocol = Utah.Udot.Atspm.Data.Enums.TransportProtocols.Http,
-    //Directory = "api/v1/cameras/[Device:DeviceIdentifier]",
-    Directory = "v1/asclog/xml/full",
-    LoggingOffset = 8,
-    SearchTerms = new string[] 
-    { 
-        "?since=[DateTime:MM-dd-yyyy HH:mm:ss.f]",
-        "?since=[DateTime:MM-dd-yyyy HH:mm:ss.f]",
-        //"/detections?start-time=[DateTime:yyyy-MM-ddTHH:mm:ss]&end-time=[DateTime:yyyy-MM-ddTHH:mm:ss]",
-        //"/bin-statistics?start-time=[DateTime:yyyy-MM-ddTHH:mm:ss]&end-time=[DateTime:yyyy-MM-ddTHH:mm:ss]&intervals=10"
-    },
-    Port = 80,
-    UserName = "user",
-    Password = "password",
-    ConnectionProperties = new Dictionary<string, string>()
+//var device = new Device() 
+//{ 
+//    DeviceIdentifier = "7114", 
+//    Ipaddress = "10.210.14.15",
+//    Location = new Location() { LocationIdentifier = "7114"}
+//};
+//device.DeviceConfiguration = new()
+//{
+//    Id = 21,
+//    Firmware = "test",
+//    ConnectionTimeout = 5000,
+//    OperationTimeout = 5000,
+//    Protocol = Utah.Udot.Atspm.Data.Enums.TransportProtocols.Http,
+//    //Path = "api/v1/cameras/[Device:DeviceIdentifier]",
+//    Path = "v1/asclog/xml/full",
+//    LoggingOffset = 8,
+//    Query = new string[] 
+//    { 
+//        "?since=[DateTime:MM-dd-yyyy HH:mm:ss.f]",
+//        "?since=[DateTime:MM-dd-yyyy HH:mm:ss.f]",
+//        //"/detections?start-time=[DateTime:yyyy-MM-ddTHH:mm:ss]&end-time=[DateTime:yyyy-MM-ddTHH:mm:ss]",
+//        //"/bin-statistics?start-time=[DateTime:yyyy-MM-ddTHH:mm:ss]&end-time=[DateTime:yyyy-MM-ddTHH:mm:ss]&intervals=10"
+//    },
+//    Port = 80,
+//    UserName = "user",
+//    Password = "password",
+//    ConnectionProperties = new Dictionary<string, string>()
+//    {
+//        {"Accept", "application/xml" }
+//        //{new KeyValuePair<string, string>("Accept", "application/json") },
+//    },
+//};
+
+
+//IDownloaderClient client = new HttpDownloaderClient();
+
+//var connection = new IPEndPoint(IPAddress.Parse(device.Ipaddress), device.DeviceConfiguration.Port);
+//var credentials = new NetworkCredential(device.DeviceConfiguration.UserName, device.DeviceConfiguration.Password, device.Ipaddress);
+
+//await client.ConnectAsync(connection, credentials, device.DeviceConfiguration.ConnectionTimeout, device.DeviceConfiguration.OperationTimeout, device.DeviceConfiguration.ConnectionProperties);
+
+//var searchTerms = device.DeviceConfiguration.Query.Select(s => new StringObjectParser(device, s).ToString()).ToArray();
+
+//var resources = await client.ListDirectoryAsync(new StringObjectParser(device, device.DeviceConfiguration.Path).ToString(), default, searchTerms);
+
+
+//foreach (var r in resources)
+//{
+//    Console.WriteLine($"r: {r}");
+
+//    var result = await client.DownloadFileAsync($"C:\\Temp5\\{r.GetHashCode()}.txt", r);
+
+
+//    IEventLogDecoder<IndianaEvent> decoder = new MaxtimeToIndianaDecoder();
+
+//    var memoryStream = result.ToMemoryStream();
+
+//    memoryStream = decoder.IsCompressed(memoryStream) ? (MemoryStream)decoder.Decompress(memoryStream) : memoryStream;
+
+//    var results = decoder.Decode(device, memoryStream);
+
+//    Console.WriteLine($"eventCount: {results.Count()}");
+//}
+
+//IDownloaderClient client = new HttpDownloaderClient();
+//var connection = new IPEndPoint(IPAddress.Parse("10.210.14.15"), 80);
+//var credentials = new NetworkCredential("", "", "10.210.14.15");
+//await client.ConnectAsync(connection, credentials, 5000, 5000);
+
+//var query = new string[]
+//    {
+//        $"?since={DateTime.Now.AddMinutes(-30):HH:mm:ss.f}",
+//        //"/detections?start-time=[DateTime:yyyy-MM-ddTHH:mm:ss]&end-time=[DateTime:yyyy-MM-ddTHH:mm:ss]",
+//        //"/bin-statistics?start-time=[DateTime:yyyy-MM-ddTHH:mm:ss]&end-time=[DateTime:yyyy-MM-ddTHH:mm:ss]&intervals=10"
+//    };
+
+//var resources = await client.ListDirectoryAsync("v1/asclog/xml/full", default, query);
+
+
+
+
+
+
+
+IDownloaderClient client = new FluentFTPDownloaderClient();
+var connection = new IPEndPoint(IPAddress.Parse("10.204.13.51"), 21);
+var credentials = new NetworkCredential("econolite", "ecpi2ecpi", "10.204.13.51");
+await client.ConnectAsync(connection, credentials, 5000, 5000);
+
+var query = new string[]
     {
-        {"Accept", "application/xml" }
-        //{new KeyValuePair<string, string>("Accept", "application/json") },
-    },
-};
+        "dat",
+        "datZ"
+    };
+
+var resources = await client.ListDirectoryAsync("//Set1", default, query);
 
 
-IDownloaderClient client = new HttpDownloaderClient();
 
-var connection = new IPEndPoint(IPAddress.Parse(device.Ipaddress), device.DeviceConfiguration.Port);
-var credentials = new NetworkCredential(device.DeviceConfiguration.UserName, device.DeviceConfiguration.Password, device.Ipaddress);
 
-await client.ConnectAsync(connection, credentials, device.DeviceConfiguration.ConnectionTimeout, device.DeviceConfiguration.OperationTimeout, device.DeviceConfiguration.ConnectionProperties);
-
-var searchTerms = device.DeviceConfiguration.SearchTerms.Select(s => new StringObjectParser(device, s).ToString()).ToArray();
-
-var resources = await client.ListDirectoryAsync(new StringObjectParser(device, device.DeviceConfiguration.Directory).ToString(), default, searchTerms);
 
 
 foreach (var r in resources)
 {
-    Console.WriteLine($"r: {r}");
+    if (Uri.TryCreate(r, UriKind.Absolute, out Uri uri))
+    {
+        Console.WriteLine($"result: {uri} --- Uri kind: {uri.Scheme} --- {uri.LocalPath} --- {Path.GetFileName(uri.ToString())}");
+    }
 
-    var result = await client.DownloadFileAsync($"C:\\Temp5\\{r.GetHashCode()}.txt", r);
-
-
-    IEventLogDecoder<IndianaEvent> decoder = new MaxtimeToIndianaDecoder();
-
-    var memoryStream = result.ToMemoryStream();
-
-    memoryStream = decoder.IsCompressed(memoryStream) ? (MemoryStream)decoder.Decompress(memoryStream) : memoryStream;
-
-    var results = decoder.Decode(device, memoryStream);
-
-    Console.WriteLine($"eventCount: {results.Count()}");
+    var test = await client.DownloadFileAsync(Path.Combine("C:\\Temp5", Path.GetFileName(uri.ToString())), r);
 }
+
+await client.DisconnectAsync();
 
 Console.ReadLine();
 
