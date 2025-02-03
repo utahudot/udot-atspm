@@ -72,7 +72,7 @@ namespace Utah.Udot.Atspm.InfrastructureTests.DownloaderClientTests
             var tokenSource = new CancellationTokenSource();
             tokenSource.Cancel();
 
-            await Assert.ThrowsAsync<OperationCanceledException>(async () => await Sut.ConnectAsync(connection, credentials, 2000, 2000, tokenSource.Token));
+            await Assert.ThrowsAsync<OperationCanceledException>(async () => await Sut.ConnectAsync(connection, credentials, 2000, 2000, null, tokenSource.Token));
         }
 
         [Fact]

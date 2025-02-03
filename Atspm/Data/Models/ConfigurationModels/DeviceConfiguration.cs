@@ -48,6 +48,11 @@ namespace Utah.Udot.Atspm.Data.Models
         public int Port { get; set; }
 
         /// <summary>
+        /// Connection properties specific to the <see cref="Protocol"/>
+        /// </summary>
+        public Dictionary<string, string> ConnectionProperties { get; set; }
+
+        /// <summary>
         /// Path to log directory
         /// </summary>
         public string Directory { get; set; }
@@ -67,6 +72,11 @@ namespace Utah.Udot.Atspm.Data.Models
         /// Device operation timeout in milliseconds
         /// </summary>
         public int OperationTimeout { get; set; }
+
+        /// <summary>
+        /// Offset in hours of events to log
+        /// </summary>
+        public int LoggingOffset { get; set; }
 
         /// <summary>
         /// Decoders used to decode events logs

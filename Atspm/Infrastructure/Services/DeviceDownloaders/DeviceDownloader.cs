@@ -19,6 +19,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Net;
 using System.Runtime.CompilerServices;
+using System.Text;
 using Utah.Udot.Atspm.Common;
 using Utah.Udot.Atspm.Data.Enums;
 
@@ -115,7 +116,30 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders
 
                         logMessages.ConnectingToHostMessage(locationIdentifier, ipaddress);
 
-                        await client.ConnectAsync(connection, credentials, connectionTimeout, operationTimeout, cancelToken);
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        await client.ConnectAsync(connection, credentials, connectionTimeout, operationTimeout, null, cancelToken);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                     }
                     catch (DownloaderClientConnectionException e)
                     {
@@ -246,6 +270,148 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders
             {
                 client.Dispose();
             }
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+    public class StringObjectParser //: IFormattable
+    {
+        public StringObjectParser(object obj, string query)
+        {
+            Obj = obj;
+            Query = query;
+        }
+
+        public object Obj { get; set; }
+
+        public string Query { get; set; }
+
+        public string ParseQuery()
+        {
+            var output = Query.Split('[', ']').ToArray();
+
+            var builder = new StringBuilder();
+
+            foreach (var o in output)
+            {
+                var result = o;
+
+                //Console.WriteLine($"o: {o}");
+
+                if (o.StartsWith("DateTime"))
+                {
+                    result = o.Replace("DateTime", "");
+
+
+                    //o.Split(':', 2);
+
+
+
+
+
+
+                    //HACK: update this!
+                    builder.AppendFormat("{0" + result + "}", DateTime.Now.AddHours(-2));
+
+
+
+
+
+
+
+
+
+
+
+
+
+                }
+
+                else if (o.StartsWith(Obj.GetType().Name))
+                {
+                    var length = Obj.GetType().Name.Length;
+                    result = o.Remove(0, length);
+
+                    //result = o.Replace(Obj.GetType().Name, "");
+
+                    builder.AppendFormat(new TestFormatProvider(), "{0" + result + "}", Obj);
+                }
+
+                else
+                {
+                    builder.Append(result);
+                }
+            }
+
+            return builder.ToString();
+        }
+
+        public override string? ToString()
+        {
+            return ParseQuery();
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+    public class TestFormatProvider : IFormatProvider
+    {
+        public object GetFormat(Type formatType)
+        {
+            if (formatType == typeof(ICustomFormatter))
+            {
+                return new CapitalisationCustomFormatter();
+            }
+
+            Console.WriteLine($"formatType: {formatType}");
+
+            return null;
+        }
+    }
+
+    public class CapitalisationCustomFormatter : ICustomFormatter
+    {
+        public string Format(string format, object arg, IFormatProvider formatProvider)
+        {
+            Console.WriteLine($"format: {format} - arg: {arg}");
+
+            if (arg.HasProperty(format))
+                return arg.GetPropertyValueString(format);
+
+            return format;
+        }
+    }
+
+    public static class PropertyExtensions
+    {
+        public static string GetPropertyValueString(this object obj, string propertyName)
+        {
+            if (obj.HasProperty(propertyName))
+            {
+                string value = obj.GetType().GetProperty(propertyName).GetValue(obj, null).ToString();
+
+                return value;
+            }
+
+            throw new ArgumentException(propertyName, "propertyName");
         }
     }
 }

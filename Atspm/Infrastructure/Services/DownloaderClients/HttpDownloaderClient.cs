@@ -15,7 +15,6 @@
 // limitations under the License.
 #endregion
 
-using System.Diagnostics;
 using System.Net;
 using Utah.Udot.Atspm.Data.Enums;
 
@@ -27,8 +26,6 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
     public class HttpDownloaderClient : ServiceObjectBase, IDownloaderClient
     {
         private HttpClient _client;
-        private Uri getPath;
-        private IPEndPoint ip;
 
         ///<inheritdoc/>
         public HttpDownloaderClient() : base(true) { }
@@ -51,22 +48,39 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
         public bool IsConnected => _client != null && _client.BaseAddress.Host.IsValidIpAddress();
 
         ///<inheritdoc/>
-        public Task ConnectAsync(IPEndPoint connection, NetworkCredential credentials, int connectionTimeout = 2000, int operationTimeout = 2000, CancellationToken token = default)
+        public Task ConnectAsync(IPEndPoint connection, NetworkCredential credentials, int connectionTimeout = 2000, int operationTimeout = 2000, Dictionary<string, string> connectionProperties = null, CancellationToken token = default)
         {
             token.ThrowIfCancellationRequested();
-
-            ip = connection;
 
             try
             {
                 _client ??= new HttpClient();
-
                 _client.Timeout = TimeSpan.FromMilliseconds(operationTimeout);
-                _client.BaseAddress = new Uri($"http://{ip.Address}:{ip.Port}/");
 
-                _client.DefaultRequestHeaders.Accept.Clear();
-                //HACK: this is specific to maxtimecontrollers future versions will need this adjustable
-                _client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/xml"));
+                var uriBuilder = new UriBuilder(Uri.UriSchemeHttp, connection.Address.ToString(), connection.Port)
+                {
+                    UserName = credentials.UserName,
+                    Password = credentials.Password,
+                };
+
+                if (Uri.TryCreate(uriBuilder.Uri.ToString(), UriKind.Absolute, out Uri baseAddress) && Uri.IsWellFormedUriString(baseAddress.ToString(), UriKind.Absolute))
+                {
+                    _client.BaseAddress = baseAddress;
+                }
+                else
+                {
+                    throw new UriFormatException($"Invalid Uri: {uriBuilder.Uri}");
+                }
+
+                if (connectionProperties != null && connectionProperties.Count > 0)
+                {
+                    _client.DefaultRequestHeaders.Accept.Clear();
+
+                    foreach (var prop in connectionProperties)
+                    {
+                        _client.DefaultRequestHeaders.Add(prop.Key, prop.Value);
+                    }
+                }
 
                 return Task.CompletedTask;
             }
@@ -105,8 +119,6 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
                 throw new DownloaderClientConnectionException(_client?.BaseAddress?.Host, this, e.Message, e);
             }
 
-            getPath = null;
-
             await Task.CompletedTask;
         }
 
@@ -118,32 +130,30 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
             if (!IsConnected)
                 throw new DownloaderClientConnectionException(_client?.BaseAddress?.Host, this, "Client not connected");
 
-            //if (getPath == null)
-            //    throw new DownloaderClientDownloadFileException(remotePath, this, "HTTP Get Path not defined");
-
-            HttpResponseMessage response = new HttpResponseMessage();
-
-            var sw = new Stopwatch();
-
             try
             {
-                response = await _client.GetAsync(getPath, token);
-
-                sw.Stop();
-
-                if (response.IsSuccessStatusCode && response?.Content != null)
+                if (Uri.TryCreate(remotePath, UriKind.Absolute, out Uri request) && Uri.IsWellFormedUriString(Uri.EscapeDataString(request.Query), UriKind.Relative))
                 {
-                    string data = await response.Content.ReadAsStringAsync();
+                    var response = await _client.GetAsync(request, token);
 
-                    var fileInfo = new FileInfo(localPath);
-                    fileInfo.Directory.Create();
+                    if (response.IsSuccessStatusCode && response?.Content != null)
+                    {
+                        var data = await response.Content.ReadAsStringAsync();
 
-                    await File.WriteAllTextAsync(localPath, data, token).ConfigureAwait(false);
+                        var fileInfo = new FileInfo(localPath);
+                        fileInfo.Directory.Create();
 
-                    return fileInfo;
+                        await File.WriteAllTextAsync(localPath, data, token).ConfigureAwait(false);
+
+                        return fileInfo;
+                    }
+                    else
+                        throw new HttpRequestException(response.StatusCode.ToString());
                 }
                 else
-                    throw new DownloaderClientDownloadFileException(remotePath, this, response.StatusCode.ToString());
+                {
+                    throw new UriFormatException($"Invalid Uri: {remotePath}");
+                }
             }
             catch (Exception e)
             {
@@ -159,27 +169,30 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
             if (!IsConnected)
                 throw new DownloaderClientConnectionException(_client?.BaseAddress?.Host, this, "Client not connected");
 
+            List<string> results = new List<string>();
+
             try
             {
-                var builder = new UriBuilder(_client.BaseAddress);
-                builder.Path = directory;
-
-                //for maxtime controllers it uses this searchterm:  $"since={DateTime.Now.AddHours(-24):MM-dd-yyyy HH:mm:ss.f}"
-
-                //HACK: this is for maxtime controllers, needs to be moved to search terms in the db
-                builder.Query = $"since={DateTime.Now.AddHours(-1):MM-dd-yyyy HH:mm:ss.f}";
-
-                if (filters?.Length > 0)
+                if (Uri.TryCreate(_client.BaseAddress, directory, out Uri baseAddress) && Uri.IsWellFormedUriString(baseAddress.ToString(), UriKind.Absolute))
                 {
-                    foreach (var filter in filters)
+                    foreach (var f in filters)
                     {
-                        builder.Query += filter;
+                        if (Uri.IsWellFormedUriString(Uri.EscapeDataString(f), UriKind.Relative) && Uri.TryCreate(baseAddress + f, UriKind.Absolute, out Uri result))
+                        {
+                            results.Add(result.ToString());
+                        }
+                        else
+                        {
+                            throw new UriFormatException($"Invalid search term: {f}");
+                        }
                     }
                 }
+                else
+                {
+                    throw new UriFormatException($"Invalid directory: {directory}");
+                }
 
-                getPath = builder.Uri;
-
-                return Task.FromResult<IEnumerable<string>>(new List<string>() { $"{DateTime.Now.Ticks}.xml" });
+                return Task.FromResult<IEnumerable<string>>(results);
             }
             catch (Exception e)
             {
