@@ -48,11 +48,11 @@ namespace Utah.Udot.Atspm.Data.Configuration
             builder.Property(e => e.Port)
                 .HasDefaultValueSql("((0))");
 
-            builder.Property(e => e.Directory)
+            builder.Property(e => e.Path)
                 .IsRequired(false)
                 .HasMaxLength(512);
 
-            builder.Property(e => e.SearchTerms)
+            builder.Property(e => e.Query)
                 .IsRequired(false)
                 .HasDefaultValueSql("('[]')")
                 .HasMaxLength(512)

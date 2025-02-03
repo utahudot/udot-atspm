@@ -127,7 +127,14 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
                 var fileInfo = new FileInfo(localPath);
                 fileInfo.Directory.Create();
 
-                await _client.DownloadFile(localPath, remotePath, FtpLocalExists.Overwrite, FtpVerify.None, null, token);
+                if (Uri.TryCreate(remotePath, UriKind.Absolute, out Uri uri) && uri.Scheme == Uri.UriSchemeFtp)
+                {
+                    await _client.DownloadFile(localPath, uri.LocalPath, FtpLocalExists.Overwrite, FtpVerify.None, null, token);
+                }
+                else
+                {
+                    await _client.DownloadFile(localPath, remotePath, FtpLocalExists.Overwrite, FtpVerify.None, null, token);
+                }
 
                 return fileInfo;
             }
@@ -138,7 +145,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
         }
 
         ///<inheritdoc/>
-        public async Task<IEnumerable<string>> ListDirectoryAsync(string directory, CancellationToken token = default, params string[] filters)
+        public async Task<IEnumerable<string>> ListDirectoryAsync(string directory, CancellationToken token = default, params string[] query)
         {
             token.ThrowIfCancellationRequested();
 
@@ -149,7 +156,10 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
             {
                 var results = await _client.GetListing(directory, FtpListOption.Auto, token);
 
-                return results.Select(s => s.FullName).Where(f => filters.Any(a => f.Contains(a))).ToList();
+                return results.Select(s => s.FullName)
+                    .Where(f => query.Any(a => f.Contains(a)))
+                    .Select(s => new UriBuilder(Uri.UriSchemeFtp, _client.Host, _client.Port, s).ToString())
+                    .ToList();
             }
             catch (Exception e)
             {

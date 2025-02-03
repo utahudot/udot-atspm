@@ -38,7 +38,7 @@ namespace Utah.Udot.Atspm.Data.Models
         public string Notes { get; set; }
 
         /// <summary>
-        /// Transport protocol for controller logging
+        /// Transport protocol used for remote event logging
         /// </summary>
         public TransportProtocols Protocol { get; set; }
 
@@ -53,15 +53,15 @@ namespace Utah.Udot.Atspm.Data.Models
         public Dictionary<string, string> ConnectionProperties { get; set; }
 
         /// <summary>
-        /// Path to log directory
+        /// Uri or file path to remote event log resources
         /// </summary>
-        public string Directory { get; set; }
+        public string Path { get; set; }
 
         /// <summary>
-        /// Log search term to find log in directory
-        /// Can be a query string or file extension
+        /// Query to filter results from <see cref="Path"/>
+        /// Can be uri or sql query string
         /// </summary>
-        public string[] SearchTerms { get; set; }
+        public string[] Query { get; set; }
 
         /// <summary>
         /// Device connection timeout in milliseconds
@@ -74,7 +74,7 @@ namespace Utah.Udot.Atspm.Data.Models
         public int OperationTimeout { get; set; }
 
         /// <summary>
-        /// Offset in hours of events to log
+        /// Offset in minutes of events to log
         /// </summary>
         public int LoggingOffset { get; set; }
 
