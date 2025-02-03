@@ -215,12 +215,18 @@ var resources = await client.ListResourcesAsync("//Set1", default, query);
 
 foreach (var r in resources)
 {
-    if (Uri.TryCreate(r, UriKind.Absolute, out Uri uri))
+    if (Uri.TryCreate(r.ToString(), UriKind.Absolute, out Uri uri))
     {
         Console.WriteLine($"result: {uri} --- Uri kind: {uri.Scheme} --- {uri.LocalPath} --- {Path.GetFileName(uri.ToString())}");
     }
 
-    var test = await client.DownloadFileAsync(Path.Combine("C:\\Temp5", Path.GetFileName(uri.ToString())), r);
+    var local = new UriBuilder()
+    {
+        Scheme = Uri.UriSchemeFile,
+        Path = Path.Combine("C:\\Temp5", Path.GetFileName(uri.ToString()))
+    };
+
+    var test = await client.DownloadResourceAsync(local.Uri, r);
 }
 
 await client.DisconnectAsync();
