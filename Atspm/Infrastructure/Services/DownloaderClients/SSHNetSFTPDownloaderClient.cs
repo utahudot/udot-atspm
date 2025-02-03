@@ -120,7 +120,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
         }
 
         ///<inheritdoc/>
-        public async Task<FileInfo> DownloadFileAsync(string localPath, string remotePath, CancellationToken token = default)
+        public async Task<FileInfo> DownloadResourceAsync(string localPath, string remotePath, CancellationToken token = default)
         {
             token.ThrowIfCancellationRequested();
 
@@ -133,7 +133,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
             }
             catch (Exception e)
             {
-                throw new DownloaderClientDownloadFileException(remotePath, this, e.Message, e);
+                throw new DownloaderClientDownloadResourceException(remotePath, this, e.Message, e);
             }
         }
 

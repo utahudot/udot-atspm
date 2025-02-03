@@ -145,7 +145,7 @@ namespace Utah.Udot.Atspm.InfrastructureTests.DownloaderClientTests
         [Trait(nameof(IDownloaderClient), "DownloadFileAsync")]
         public async virtual void DownloadFileAsyncSucceeded()
         {
-            var condition = await Sut.DownloadFileAsync(Path.GetTempFileName(), "");
+            var condition = await Sut.DownloadResourceAsync(Path.GetTempFileName(), "");
 
             Assert.True(condition is FileInfo);
         }
@@ -154,14 +154,14 @@ namespace Utah.Udot.Atspm.InfrastructureTests.DownloaderClientTests
         [Trait(nameof(IDownloaderClient), "DownloadFileAsync")]
         public async virtual void DownloadFileAsyncNotConnected()
         {
-            await Assert.ThrowsAsync<DownloaderClientConnectionException>(async () => await Sut.DownloadFileAsync("", ""));
+            await Assert.ThrowsAsync<DownloaderClientConnectionException>(async () => await Sut.DownloadResourceAsync("", ""));
         }
 
         [Fact]
         [Trait(nameof(IDownloaderClient), "DownloadFileAsync")]
         public async virtual void DownloadFileAsyncControllerDownloadFileException()
         {
-            await Assert.ThrowsAsync<DownloaderClientDownloadFileException>(async () => await Sut.DownloadFileAsync(Path.GetTempFileName(), ""));
+            await Assert.ThrowsAsync<DownloaderClientDownloadResourceException>(async () => await Sut.DownloadResourceAsync(Path.GetTempFileName(), ""));
         }
 
         [Fact]
@@ -171,7 +171,7 @@ namespace Utah.Udot.Atspm.InfrastructureTests.DownloaderClientTests
             var tokenSource = new CancellationTokenSource();
             tokenSource.Cancel();
 
-            await Assert.ThrowsAsync<OperationCanceledException>(async () => await Sut.DownloadFileAsync(Path.GetTempFileName(), "", tokenSource.Token));
+            await Assert.ThrowsAsync<OperationCanceledException>(async () => await Sut.DownloadResourceAsync(Path.GetTempFileName(), "", tokenSource.Token));
         }
 
         [Fact]

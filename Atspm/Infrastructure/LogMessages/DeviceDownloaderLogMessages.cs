@@ -117,52 +117,52 @@ namespace Utah.Udot.Atspm.Infrastructure.LogMessages
 
         #endregion
 
-        #region FileDownloadMessages
+        #region ResourceDownloadMessages
 
         /// <summary>
-        /// Downloading file message
+        /// Downloading resource message
         /// </summary>
-        /// <param name="file"></param>
+        /// <param name="resource"></param>
         /// <param name="deviceIdentifier"></param>
         /// <param name="ip"></param>
-        [LoggerMessage(EventId = 1020, EventName = "Downloading File", Level = LogLevel.Debug, Message = "Downloading file {file} from {deviceIdentifier} at {ip}")]
-        public partial void DownloadingFileMessage(string file, string deviceIdentifier, IPAddress ip);
+        [LoggerMessage(EventId = 1020, EventName = "Downloading Resource", Level = LogLevel.Debug, Message = "Downloading resource {resource} from {deviceIdentifier} at {ip}")]
+        public partial void DownloadingResourceMessage(string resource, string deviceIdentifier, IPAddress ip);
 
         /// <summary>
-        /// Downloaded file message
+        /// Downloaded resource message
         /// </summary>
-        /// <param name="file"></param>
+        /// <param name="resource"></param>
         /// <param name="deviceIdentifier"></param>
         /// <param name="ip"></param>
-        [LoggerMessage(EventId = 1021, EventName = "Downloaded File", Level = LogLevel.Debug, Message = "Downloaded file {file} from {deviceIdentifier} at {ip}")]
-        public partial void DownloadedFileMessage(string file, string deviceIdentifier, IPAddress ip);
+        [LoggerMessage(EventId = 1021, EventName = "Downloaded Resource", Level = LogLevel.Debug, Message = "Downloaded resource {resource} from {deviceIdentifier} at {ip}")]
+        public partial void DownloadedResourceMessage(string resource, string deviceIdentifier, IPAddress ip);
 
         /// <summary>
-        /// Downloaded files message
+        /// Downloaded resources message
         /// </summary>
         /// <param name="current"></param>
         /// <param name="total"></param>
         /// <param name="deviceIdentifier"></param>
         /// <param name="ip"></param>
-        [LoggerMessage(EventId = 1022, EventName = "Downloaded Files", Level = LogLevel.Information, Message = "Downloaded {current}/{total} files from {deviceIdentifier} at {ip}")]
-        public partial void DownloadedFilesMessage(int current, int total, string deviceIdentifier, IPAddress ip);
+        [LoggerMessage(EventId = 1022, EventName = "Downloaded Resources", Level = LogLevel.Information, Message = "Downloaded {current}/{total} resources from {deviceIdentifier} at {ip}")]
+        public partial void DownloadedResourcesMessage(int current, int total, string deviceIdentifier, IPAddress ip);
 
         /// <summary>
-        /// Downloaded file exception message
+        /// Downloaded resource exception message
         /// </summary>
-        /// <param name="file"></param>
+        /// <param name="resource"></param>
         /// <param name="deviceIdentifier"></param>
         /// <param name="ip"></param>
         /// <param name="ex"></param>
-        [LoggerMessage(EventId = 1023, EventName = "Download File Exception", Level = LogLevel.Warning, Message = "Exception downloading file {file} from {deviceIdentifier} at {ip}")]
-        public partial void DownloadFileException(string file, string deviceIdentifier, IPAddress ip, Exception ex = null);
+        [LoggerMessage(EventId = 1023, EventName = "Download Resource Exception", Level = LogLevel.Warning, Message = "Exception downloading resource {resource} from {deviceIdentifier} at {ip}")]
+        public partial void DownloadResourceException(string resource, string deviceIdentifier, IPAddress ip, Exception ex = null);
 
         #endregion
 
         #region FileDeleteMessages
 
         /// <summary>
-        /// Deleting file message
+        /// Deleting resource message
         /// </summary>
         /// <param name="file"></param>
         /// <param name="deviceIdentifier"></param>
@@ -171,7 +171,7 @@ namespace Utah.Udot.Atspm.Infrastructure.LogMessages
         public partial void DeletingFileMessage(string file, string deviceIdentifier, IPAddress ip);
 
         /// <summary>
-        /// Deleted file message
+        /// Deleted resource message
         /// </summary>
         /// <param name="file"></param>
         /// <param name="deviceIdentifier"></param>
@@ -180,7 +180,7 @@ namespace Utah.Udot.Atspm.Infrastructure.LogMessages
         public partial void DeletedFileMessage(string file, string deviceIdentifier, IPAddress ip);
 
         /// <summary>
-        /// Delete file exception message
+        /// Delete resource exception message
         /// </summary>
         /// <param name="file"></param>
         /// <param name="deviceIdentifier"></param>

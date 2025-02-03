@@ -161,7 +161,7 @@ using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 //{
 //    Console.WriteLine($"r: {r}");
 
-//    var result = await client.DownloadFileAsync($"C:\\Temp5\\{r.GetHashCode()}.txt", r);
+//    var result = await client.DownloadResourceAsync($"C:\\Temp5\\{r.GetHashCode()}.txt", r);
 
 
 //    IEventLogDecoder<IndianaEvent> decoder = new MaxtimeToIndianaDecoder();

@@ -123,7 +123,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
         }
 
         ///<inheritdoc/>
-        public async Task<FileInfo> DownloadFileAsync(string localPath, string remotePath, CancellationToken token = default)
+        public async Task<FileInfo> DownloadResourceAsync(Uri local, Uri remote, CancellationToken token = default)
         {
             token.ThrowIfCancellationRequested();
 
@@ -132,7 +132,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
 
             try
             {
-                if (Uri.TryCreate(remotePath, UriKind.Absolute, out Uri request) && Uri.IsWellFormedUriString(Uri.EscapeDataString(request.Query), UriKind.Relative))
+                if (Uri.TryCreate(remote.ToString(), UriKind.Absolute, out Uri request) && Uri.IsWellFormedUriString(Uri.EscapeDataString(request.Query), UriKind.Relative))
                 {
                     var response = await _client.GetAsync(request, token);
 
@@ -140,10 +140,10 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
                     {
                         var data = await response.Content.ReadAsStringAsync();
 
-                        var fileInfo = new FileInfo(localPath);
+                        var fileInfo = new FileInfo(local.LocalPath);
                         fileInfo.Directory.Create();
 
-                        await File.WriteAllTextAsync(localPath, data, token).ConfigureAwait(false);
+                        await File.WriteAllTextAsync(local.LocalPath, data, token).ConfigureAwait(false);
 
                         return fileInfo;
                     }
@@ -152,12 +152,12 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
                 }
                 else
                 {
-                    throw new UriFormatException($"Invalid Uri: {remotePath}");
+                    throw new UriFormatException($"Invalid Uri: {remote}");
                 }
             }
             catch (Exception e)
             {
-                throw new DownloaderClientDownloadFileException(remotePath, this, e.Message, e);
+                throw new DownloaderClientDownloadResourceException(remote, this, e.Message, e);
             }
         }
 
