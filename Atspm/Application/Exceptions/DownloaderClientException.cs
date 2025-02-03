@@ -89,35 +89,35 @@ namespace Utah.Udot.Atspm.Exceptions
     /// <summary>
     /// Thrown when there is an exception downloading from <see cref="IDownloaderClient"/> implementation
     /// </summary>
-    public class DownloaderClientDownloadFileException : DownloaderClientException
+    public class DownloaderClientDownloadResourceException : DownloaderClientException
     {
         /// <summary>
         /// Thrown when there is an exception downloading from <see cref="IDownloaderClient"/> implementation
         /// </summary>
-        /// <param name="fileName">Name of file that that threw the exception when trying to download</param>
+        /// <param name="resource">Name of the resource that threw the exception when trying to download</param>
         /// <param name="downloaderClient">Downloader client exception was thrown for</param>
         /// <param name="message">Exception message</param>
-        public DownloaderClientDownloadFileException(string fileName, IDownloaderClient downloaderClient, string? message) : base(downloaderClient, message)
+        public DownloaderClientDownloadResourceException(Uri resource, IDownloaderClient downloaderClient, string? message) : base(downloaderClient, message)
         {
-            FileName = fileName;
+            Resource = resource;
         }
 
         /// <summary>
         /// Thrown when there is an exception downloading from <see cref="IDownloaderClient"/> implementation
         /// </summary>
-        /// <param name="fileName">Name of file that that threw the exception when trying to download</param>
+        /// <param name="resource">Name of the resource that threw the exception when trying to download</param>
         /// <param name="downloaderClient">Downloader client exception was thrown for</param>
         /// <param name="message">Exception message</param>
         /// <param name="innerException">Exception thrown by the <see cref="IDownloaderClient"/> implementation</param>
-        public DownloaderClientDownloadFileException(string fileName, IDownloaderClient downloaderClient, string? message, Exception? innerException) : base(downloaderClient, message, innerException)
+        public DownloaderClientDownloadResourceException(Uri resource, IDownloaderClient downloaderClient, string? message, Exception? innerException) : base(downloaderClient, message, innerException)
         {
-            FileName = fileName;
+            Resource = resource;
         }
 
         /// <summary>
-        /// Name of file that that threw the exception when trying to download
+        /// Name of the resource that threw the exception when trying to download
         /// </summary>
-        public string FileName { get; private set; }
+        public Uri Resource { get; private set; }
     }
 
     /// <summary>

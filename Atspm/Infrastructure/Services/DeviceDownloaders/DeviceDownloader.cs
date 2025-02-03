@@ -131,7 +131,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders
                     {
                         logMessages.ConnectedToHostMessage(deviceIdentifier, ipaddress);
 
-                        IEnumerable<string> remoteFiles = new List<string>();
+                        IEnumerable<Uri> remoteFiles = new List<Uri>();
 
                         try
                         {
@@ -160,14 +160,14 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders
 
                             try
                             {
-                                logMessages.DownloadingFileMessage(file, deviceIdentifier, ipaddress);
+                                logMessages.DownloadingResourceMessage(file, deviceIdentifier, ipaddress);
 
-                                downloadedFile = await client.DownloadFileAsync(localFilePath, file, cancelToken);
+                                downloadedFile = await client.DownloadResourceAsync(localFilePath, file, cancelToken);
                                 current++;
                             }
-                            catch (DownloaderClientDownloadFileException e)
+                            catch (DownloaderClientDownloadResourceException e)
                             {
-                                logMessages.DownloadFileException(file, deviceIdentifier, ipaddress, e);
+                                logMessages.DownloadResourceException(file, deviceIdentifier, ipaddress, e);
                             }
                             catch (DownloaderClientConnectionException e)
                             {
@@ -201,7 +201,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders
                             //HACK: don't know why files aren't downloading without throwing an error
                             if (downloadedFile != null)
                             {
-                                logMessages.DownloadedFileMessage(file, deviceIdentifier, ipaddress);
+                                logMessages.DownloadedResourceMessage(file, deviceIdentifier, ipaddress);
 
                                 progress?.Report(new ControllerDownloadProgress(downloadedFile, current, total));
 
@@ -213,7 +213,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders
                             }
                         }
 
-                        logMessages.DownloadedFilesMessage(current, total, deviceIdentifier, ipaddress);
+                        logMessages.DownloadedResourcesMessage(current, total, deviceIdentifier, ipaddress);
 
                         try
                         {

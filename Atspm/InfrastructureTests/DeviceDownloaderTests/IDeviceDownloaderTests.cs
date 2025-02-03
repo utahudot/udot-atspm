@@ -277,7 +277,7 @@ namespace Utah.Udot.Atspm.InfrastructureTests.DeviceDownloaderTests
 
         //    //Mock.Get(mockClient).Setup(s => s.ListResourcesAsync(It.Is<string>(i => i == directory), default, It.IsAny<string[]>())).ReturnsAsync(returnValue).Verifiable();
 
-        //    //Mock.Get(mockClient).Setup(v => v.DownloadFileAsync(It.Is<string>(i => i.StartsWith(verifyPath)), It.IsIn(returnValue), default))
+        //    //Mock.Get(mockClient).Setup(v => v.DownloadResourceAsync(It.Is<string>(i => i.StartsWith(verifyPath)), It.IsIn(returnValue), default))
         //    //    .ReturnsAsync((string localPath, string remotePath, CancellationToken token) => new FileInfo(localPath)).Verifiable();
 
         //    //Mock.Get(mockClient).Setup(s => s.DisconnectAsync(default)).Returns(Task.CompletedTask).Verifiable();
@@ -331,7 +331,7 @@ namespace Utah.Udot.Atspm.InfrastructureTests.DeviceDownloaderTests
 
         //    //Mock.Get(mockClient).Setup(s => s.ListResourcesAsync(It.Is<string>(i => i == ftpDirectory), default, It.Is<string[]>(i => i == d.FileFilters))).ReturnsAsync(returnValue).Verifiable();
 
-        //    //Mock.Get(mockClient).Setup(v => v.DownloadFileAsync(It.Is<string>(i => i.StartsWith(verifyPath)), It.IsIn(returnValue), default))
+        //    //Mock.Get(mockClient).Setup(v => v.DownloadResourceAsync(It.Is<string>(i => i.StartsWith(verifyPath)), It.IsIn(returnValue), default))
         //    //    .ReturnsAsync((string localPath, string remotePath, CancellationToken token) => new FileInfo(localPath)).Verifiable();
 
         //    //Mock.Get(mockClient).Setup(s => s.DisconnectAsync(default)).Returns(Task.CompletedTask).Verifiable();

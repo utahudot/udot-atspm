@@ -22,7 +22,7 @@ using Utah.Udot.Atspm.Exceptions;
 namespace Utah.Udot.Atspm.Services
 {
     /// <summary>
-    /// Client for connecting to services and interacting with their file directories
+    /// Client for connecting to uri resources over a specific protocol
     /// </summary>
     public interface IDownloaderClient : IDisposable
     {
@@ -61,13 +61,13 @@ namespace Utah.Udot.Atspm.Services
         /// <summary>
         /// Download from remote path to local path
         /// </summary>
-        /// <param name="localPath">Path to download path to</param>
-        /// <param name="remotePath">Path of path to download from</param>
+        /// <param name="local">Uri of resource to download to</param>
+        /// <param name="remote">Uri of resource to download from</param>
         /// <param name="token">Cancellation token</param>
         /// <returns></returns>
         /// <exception cref="DownloaderClientConnectionException"></exception>
-        /// <exception cref="DownloaderClientDownloadFileException"></exception>
-        Task<FileInfo> DownloadFileAsync(string localPath, string remotePath, CancellationToken token = default);
+        /// <exception cref="DownloaderClientDownloadResourceException"></exception>
+        Task<FileInfo> DownloadResourceAsync(Uri local, Uri remote, CancellationToken token = default);
 
         /// <summary>
         /// Delete files in path

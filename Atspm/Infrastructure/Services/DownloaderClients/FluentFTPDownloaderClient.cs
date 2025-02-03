@@ -115,7 +115,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
         }
 
         ///<inheritdoc/>
-        public async Task<FileInfo> DownloadFileAsync(string localPath, string remotePath, CancellationToken token = default)
+        public async Task<FileInfo> DownloadResourceAsync(Uri local, Uri remote, CancellationToken token = default)
         {
             token.ThrowIfCancellationRequested();
 
@@ -124,23 +124,23 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
 
             try
             {
-                var fileInfo = new FileInfo(localPath);
+                var fileInfo = new FileInfo(local.LocalPath);
                 fileInfo.Directory.Create();
 
-                if (Uri.TryCreate(remotePath, UriKind.Absolute, out Uri uri) && uri.Scheme == Uri.UriSchemeFtp)
+                if (Uri.TryCreate(remote.ToString(), UriKind.Absolute, out Uri uri) && uri.Scheme == Uri.UriSchemeFtp)
                 {
-                    await _client.DownloadFile(localPath, uri.LocalPath, FtpLocalExists.Overwrite, FtpVerify.None, null, token);
+                    await _client.DownloadFile(fileInfo.FullName, uri.LocalPath, FtpLocalExists.Overwrite, FtpVerify.None, null, token);
                 }
                 else
                 {
-                    await _client.DownloadFile(localPath, remotePath, FtpLocalExists.Overwrite, FtpVerify.None, null, token);
+                    throw new UriFormatException($"Invalid Uri: {remote}");
                 }
 
                 return fileInfo;
             }
             catch (Exception e)
             {
-                throw new DownloaderClientDownloadFileException(remotePath, this, e.Message, e);
+                throw new DownloaderClientDownloadResourceException(remote, this, e.Message, e);
             }
         }
 
