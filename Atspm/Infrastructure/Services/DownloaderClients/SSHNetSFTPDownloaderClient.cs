@@ -15,8 +15,10 @@
 // limitations under the License.
 #endregion
 
+using FluentFTP;
 using Renci.SshNet;
 using Renci.SshNet.Common;
+using System.IO;
 using System.Net;
 using Utah.Udot.Atspm.Data.Enums;
 
@@ -129,7 +131,20 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
 
             try
             {
-                return await _client.DownloadFileAsync(local.LocalPath, remote.LocalPath);
+                var localFile = local.AbsolutePath.First() == '/' ? local.AbsolutePath.Remove(0, 1) : local.AbsolutePath;
+
+
+                if (Uri.TryCreate(remote.ToString(), UriKind.Absolute, out Uri uri) && uri.Scheme == Uri.UriSchemeSftp)
+                {
+                    return await _client.DownloadFileAsync(localFile, uri.LocalPath);
+                }
+                else
+                {
+                    throw new UriFormatException($"Invalid Uri: {remote}");
+                }
+
+
+                
             }
             catch (Exception e)
             {

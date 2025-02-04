@@ -58,11 +58,13 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders
         /// <returns></returns>
         public virtual Uri GenerateLocalFilePath(Device value, Uri resource)
         {
-            //var result = Path.Combine
+            //var path = Path.Combine
             //    (_options.BasePath,
             //    $"{value.Location?.LocationIdentifier} - {value.Location?.PrimaryName}",
             //    value.DeviceType.ToString(),
-            //    value.Ipaddress.ToString(),
+            //    value.Ipaddress.ToString());
+
+
             //    Path.GetFileName(resource));
 
             //return result;

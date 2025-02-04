@@ -138,12 +138,12 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
 
                     if (response.IsSuccessStatusCode && response?.Content != null)
                     {
-                        var data = await response.Content.ReadAsStringAsync();
+                        var data = await response.Content.ReadAsStringAsync(token);
 
-                        var fileInfo = new FileInfo(local.LocalPath);
+                        var fileInfo = new FileInfo(local.AbsolutePath.First() == '/' ? local.AbsolutePath.Remove(0, 1) : local.AbsolutePath);
                         fileInfo.Directory.Create();
 
-                        await File.WriteAllTextAsync(local.LocalPath, data, token).ConfigureAwait(false);
+                        await File.WriteAllTextAsync(fileInfo.FullName, data, token).ConfigureAwait(false);
 
                         return fileInfo;
                     }
@@ -169,7 +169,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
             if (!IsConnected)
                 throw new DownloaderClientConnectionException(_client?.BaseAddress?.Host, this, "Client not connected");
 
-            List<Uri> results = new List<Uri>();
+            List<Uri> results = [];
 
             try
             {

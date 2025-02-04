@@ -175,14 +175,22 @@ using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 //    Console.WriteLine($"eventCount: {results.Count()}");
 //}
 
+
+
+
+
+
+
+
 //IDownloaderClient client = new HttpDownloaderClient();
 //var connection = new IPEndPoint(IPAddress.Parse("10.210.14.15"), 80);
 //var credentials = new NetworkCredential("", "", "10.210.14.15");
-//await client.ConnectAsync(connection, credentials, 5000, 5000);
+//await client.ConnectAsync(connection, credentials, 6000, 6000);
 
 //var query = new string[]
 //    {
-//        $"?since={DateTime.Now.AddMinutes(-30):HH:mm:ss.f}",
+//        $"?since={DateTime.Now.AddMinutes(-30):MM-dd-yyyy HH:mm:ss.f}",
+//        $"?since={DateTime.Now.AddMinutes(-30):MM-dd-yyyy HH:mm:ss.f}",
 //        //"/detections?start-time=[DateTime:yyyy-MM-ddTHH:mm:ss]&end-time=[DateTime:yyyy-MM-ddTHH:mm:ss]",
 //        //"/bin-statistics?start-time=[DateTime:yyyy-MM-ddTHH:mm:ss]&end-time=[DateTime:yyyy-MM-ddTHH:mm:ss]&intervals=10"
 //    };
@@ -195,18 +203,36 @@ using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 
 
-IDownloaderClient client = new FluentFTPDownloaderClient();
-var connection = new IPEndPoint(IPAddress.Parse("10.204.13.51"), 21);
-var credentials = new NetworkCredential("econolite", "ecpi2ecpi", "10.204.13.51");
-await client.ConnectAsync(connection, credentials, 5000, 5000);
+//IDownloaderClient client = new FluentFTPDownloaderClient();
+//var connection = new IPEndPoint(IPAddress.Parse("10.204.13.51"), 21);
+//var credentials = new NetworkCredential("econolite", "ecpi2ecpi", "10.204.13.51");
+//await client.ConnectAsync(connection, credentials, 5000, 5000);
 
-var query = new string[]
-    {
-        "dat",
-        "datZ"
-    };
+//var query = new string[]
+//    {
+//        "dat",
+//        "datZ"
+//    };
 
-var resources = await client.ListResourcesAsync("//Set1", default, query);
+//var resources = await client.ListResourcesAsync("//Set1", default, query);
+
+
+
+
+
+
+//IDownloaderClient client = new SSHNetSFTPDownloaderClient();
+//var connection = new IPEndPoint(IPAddress.Parse("10.133.41.155"), 22);
+//var credentials = new NetworkCredential("econolite", "ecpi2ecpi", "10.133.41.155");
+//await client.ConnectAsync(connection, credentials, 5000, 5000);
+
+//var query = new string[]
+//    {
+//        "dat",
+//        "datZ"
+//    };
+
+//var resources = await client.ListResourcesAsync("/opt/econolite/set1", default, query);
 
 
 
@@ -220,10 +246,18 @@ foreach (var r in resources)
         Console.WriteLine($"result: {uri} --- Uri kind: {uri.Scheme} --- {uri.LocalPath} --- {Path.GetFileName(uri.ToString())}");
     }
 
+    var basePath = "C:\\Temp5";
+    var test1 = Path.GetFileName(uri.Segments.LastOrDefault());
+    var test2 = Path.GetExtension(uri.Segments.LastOrDefault());
+    var test3 = Path.IsPathFullyQualified(uri.AbsolutePath);
+    var test4 = Path.HasExtension(uri.Segments.LastOrDefault());
+
+    var file = Path.HasExtension(uri.Segments.LastOrDefault()) ? $"{DateTime.Now.Ticks}{Path.GetExtension(uri.Segments.LastOrDefault())}" : $"{DateTime.Now.Ticks}.txt";
+
     var local = new UriBuilder()
     {
         Scheme = Uri.UriSchemeFile,
-        Path = Path.Combine("C:\\Temp5", Path.GetFileName(uri.ToString()))
+        Path = Path.Combine(basePath, file)
     };
 
     var test = await client.DownloadResourceAsync(local.Uri, r);
