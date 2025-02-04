@@ -30,6 +30,7 @@ export interface DeviceConfiguration {
   productId: number
   product?: Product
   productName?: string
+  camera?: string
 }
 
 export interface Product {
