@@ -124,7 +124,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
 
             try
             {
-                var fileInfo = new FileInfo(local.LocalPath);
+                var fileInfo = new FileInfo(local.AbsolutePath.First() == '/' ? local.AbsolutePath.Remove(0, 1) : local.AbsolutePath);
                 fileInfo.Directory.Create();
 
                 if (Uri.TryCreate(remote.ToString(), UriKind.Absolute, out Uri uri) && uri.Scheme == Uri.UriSchemeFtp)
