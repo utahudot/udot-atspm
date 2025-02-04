@@ -74,6 +74,7 @@ const LocationMap = ({
 
   const { data: mapLayerData } = useGetMapLayer()
   const [activeLayers, setActiveLayers] = useState<number[]>([])
+  const layerRefreshers = useRef<{ [key: number]: number | null }>({})
 
   useEffect(() => {
     if (mapLayerData?.value) {
@@ -88,27 +89,48 @@ const LocationMap = ({
   useEffect(() => {
     if (!mapRef) return
 
-    // Clear existing layers
     mapRef.eachLayer((layer) => {
       if (layer instanceof FeatureLayer || layer instanceof DynamicMapLayer) {
         mapRef.removeLayer(layer)
       }
     })
+    Object.values(layerRefreshers.current).forEach(
+      (refreshId) => refreshId !== null && clearInterval(refreshId)
+    )
+    layerRefreshers.current = {}
 
-    // Add active layers
     mapLayerData?.value?.forEach((layer) => {
       if (activeLayers.includes(layer.id)) {
+        let newLayer
         if (layer.serviceType === ServiceType.MapServer) {
-          new DynamicMapLayer({
+          newLayer = new DynamicMapLayer({
             url: layer.mapLayerUrl,
             opacity: 1,
-          }).addTo(mapRef)
+          })
         } else {
-          // Feature server - just use the URL as is
-          new FeatureLayer({
+          newLayer = new FeatureLayer({
             url: layer.mapLayerUrl,
-            useCors: false, // Sometimes needed for ArcGIS services
-          }).addTo(mapRef)
+            useCors: false,
+          })
+        }
+        newLayer.addTo(mapRef)
+
+        if (layer.refreshIntervalSeconds) {
+          const refreshId = setInterval(() => {
+            if (newLayer instanceof FeatureLayer && newLayer.refresh) {
+              newLayer.refresh()
+            } else if (newLayer instanceof DynamicMapLayer && newLayer.redraw) {
+              newLayer.redraw()
+            } else {
+              setTimeout(() => {
+                mapRef.removeLayer(newLayer)
+                newLayer.addTo(mapRef)
+              }, 50)
+            }
+            // console.log(`Refreshing layer ${layer.name}`)
+          }, layer.refreshIntervalSeconds * 1000)
+
+          layerRefreshers.current[layer.id] = refreshId
         }
       }
     })
