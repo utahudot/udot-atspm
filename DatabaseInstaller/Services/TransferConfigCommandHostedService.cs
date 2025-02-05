@@ -121,7 +121,7 @@ public class TransferConfigCommandHostedService : IHostedService
         {
             _productRepository.Add(new Product { Manufacturer = "Wavetronix", Model = "Speed Detection" });
         }
-        if (_deviceConfigurationRepository.GetList().Any(dc => dc.Firmware == "Speed"))
+        if (_deviceConfigurationRepository.GetList().Any(dc => dc.Description == "Speed"))
         {
             _logger.LogInformation("Speed Device Configuration already exist");
         }
@@ -129,7 +129,7 @@ public class TransferConfigCommandHostedService : IHostedService
         {
             _deviceConfigurationRepository.Add(new DeviceConfiguration
             {
-                Firmware = "Speed",
+                Description = "Speed",
                 Protocol = TransportProtocols.Unknown,
                 ConnectionTimeout = 2000,
                 Path = "Unkown",
@@ -143,7 +143,7 @@ public class TransferConfigCommandHostedService : IHostedService
         _logger.LogInformation($"Importing Speed Devices");
         var devices = ImportData<Device>(queries["SpeedDevices"], columnMappings["SpeedDevices"]);
         //check if device cofiguration exists
-        var speedDeviceConfiguration = _deviceConfigurationRepository.GetList().First(dc => dc.Firmware == "Speed");
+        var speedDeviceConfiguration = _deviceConfigurationRepository.GetList().First(dc => dc.Description == "Speed");
         if (speedDeviceConfiguration == null)
         {
             _logger.LogInformation($"Speed Device Configuration not found for configuration.");
@@ -630,7 +630,7 @@ public class TransferConfigCommandHostedService : IHostedService
     //    deviceConfigurationRepository.Add(new DeviceConfiguration
     //    {
     //        Id = 11,
-    //        Firmware = "None",
+    //        Description = "None",
     //        Protocol = ATSPM.Table.Enums.TransportProtocols.Unknown,
     //        ConnectionTimeout = 2000,
     //        Directory = "Unkown",

@@ -34,7 +34,7 @@ namespace Utah.Udot.Atspm.Data.Configuration
         {
             builder.ToTable(t => t.HasComment("Device Configuration"));
 
-            builder.Property(e => e.Firmware)
+            builder.Property(e => e.Description)
                 .IsRequired()
                 .HasMaxLength(16);
 

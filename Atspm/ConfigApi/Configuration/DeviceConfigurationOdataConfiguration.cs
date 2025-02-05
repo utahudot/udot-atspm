@@ -38,9 +38,9 @@ namespace Utah.Udot.Atspm.ConfigApi.Configuration
             {
                 case 1:
                     {
-                        model.Property(p => p.Firmware).IsRequired();
+                        model.Property(p => p.Description).IsRequired();
 
-                        model.Property(p => p.Firmware).MaxLength = 16;
+                        model.Property(p => p.Description).MaxLength = 16;
                         model.Property(p => p.Notes).MaxLength = 512;
                         model.Property(p => p.Path).MaxLength = 512;
                         model.Property(p => p.ConnectionTimeout).DefaultValueString = "2000";

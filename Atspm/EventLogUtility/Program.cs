@@ -120,7 +120,7 @@ using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 //device.DeviceConfiguration = new()
 //{
 //    Id = 21,
-//    Firmware = "test",
+//    Description = "test",
 //    ConnectionTimeout = 5000,
 //    OperationTimeout = 5000,
 //    Protocol = Utah.Udot.Atspm.Data.Enums.TransportProtocols.Http,
@@ -182,20 +182,20 @@ using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 
 
-//IDownloaderClient client = new HttpDownloaderClient();
-//var connection = new IPEndPoint(IPAddress.Parse("10.210.14.15"), 80);
-//var credentials = new NetworkCredential("", "", "10.210.14.15");
-//await client.ConnectAsync(connection, credentials, 6000, 6000);
+IDownloaderClient client = new HttpDownloaderClient();
+var connection = new IPEndPoint(IPAddress.Parse("10.210.14.15"), 80);
+var credentials = new NetworkCredential("", "", "10.210.14.15");
+await client.ConnectAsync(connection, credentials, 6000, 6000);
 
-//var query = new string[]
-//    {
-//        $"?since={DateTime.Now.AddMinutes(-30):MM-dd-yyyy HH:mm:ss.f}",
-//        $"?since={DateTime.Now.AddMinutes(-30):MM-dd-yyyy HH:mm:ss.f}",
-//        //"/detections?start-time=[DateTime:yyyy-MM-ddTHH:mm:ss]&end-time=[DateTime:yyyy-MM-ddTHH:mm:ss]",
-//        //"/bin-statistics?start-time=[DateTime:yyyy-MM-ddTHH:mm:ss]&end-time=[DateTime:yyyy-MM-ddTHH:mm:ss]&intervals=10"
-//    };
+var query = new string[]
+    {
+        $"?since={DateTime.Now.AddMinutes(-30):MM-dd-yyyy HH:mm:ss.f}",
+        $"?since={DateTime.Now.AddMinutes(-30):MM-dd-yyyy HH:mm:ss.f}",
+        //"/detections?start-time=[DateTime:yyyy-MM-ddTHH:mm:ss]&end-time=[DateTime:yyyy-MM-ddTHH:mm:ss]",
+        //"/bin-statistics?start-time=[DateTime:yyyy-MM-ddTHH:mm:ss]&end-time=[DateTime:yyyy-MM-ddTHH:mm:ss]&intervals=10"
+    };
 
-//var resources = await client.ListResourcesAsync("v1/asclog/xml/full", default, query);
+var resources = await client.ListResourcesAsync("v1/asclog/xml/full", default, query);
 
 
 
