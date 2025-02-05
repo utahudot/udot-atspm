@@ -28,9 +28,9 @@ namespace Utah.Udot.Atspm.Data.Models
     public partial class DeviceConfiguration : AtspmConfigModelBase<int>, IRelatedDevices, IRelatedProduct
     {
         /// <summary>
-        /// Firmware version
+        /// Description of configuration for specified <see cref="Product"/>
         /// </summary>
-        public string Firmware { get; set; }
+        public string Description { get; set; }
 
         /// <summary>
         /// Configuration notes
@@ -111,6 +111,6 @@ namespace Utah.Udot.Atspm.Data.Models
         #endregion
 
         /// <inheritdoc/>
-        public override string ToString() => $"{Id} - {Firmware} - {Product}";
+        public override string ToString() => $"{Id} - {Description} - {Product}";
     }
 }

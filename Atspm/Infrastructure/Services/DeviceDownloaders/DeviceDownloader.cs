@@ -17,6 +17,7 @@
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System;
 using System.Net;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -51,25 +52,29 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders
         //}
 
         /// <summary>
-        /// Generates a pattern for folder structure used for temp event log storage
+        /// Generates a <see cref="Uri"/> resource used for temp event log storage
         /// </summary>
-        /// <param name="value"></param>
+        /// <param name="device"></param>
         /// <param name="resource"></param>
         /// <returns></returns>
-        public virtual Uri GenerateLocalFilePath(Device value, Uri resource)
+        public virtual Uri GenerateLocalFilePath(Device device, Uri resource)
         {
-            //var path = Path.Combine
-            //    (_options.BasePath,
-            //    $"{value.Location?.LocationIdentifier} - {value.Location?.PrimaryName}",
-            //    value.DeviceType.ToString(),
-            //    value.Ipaddress.ToString());
+            var fileExtension = Path.HasExtension(resource.Segments.LastOrDefault()) ? Path.GetExtension(resource.Segments.LastOrDefault()) : ".txt";
+            var fileName = $"{device.DeviceIdentifier}-{DateTime.Now.Ticks}{fileExtension}";
 
+            var path = Path.Combine
+                (_options.BasePath,
+                $"{device.Location?.LocationIdentifier} - {device.Location?.PrimaryName}",
+                device.DeviceType.ToString(),
+                 $"{device.DeviceIdentifier}-{device.Ipaddress}");
 
-            //    Path.GetFileName(resource));
+            var result = new UriBuilder()
+            {
+                Scheme = Uri.UriSchemeFile,
+                Path = Path.Combine(path, fileName)
+            }.Uri;
 
-            //return result;
-
-            return resource;
+            return result;
         }
 
         ///<inheritdoc/>

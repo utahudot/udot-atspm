@@ -20,7 +20,7 @@ namespace Utah.Udot.Atspm.Infrastructure.LogMessages
         {
             _logger = logger.WithAddedLabels(new Dictionary<string, string>()
             {
-                { "deviceIdentifierentifier", device?.Location?.LocationIdentifier },
+                { "LocationIdentifier", device?.Location?.LocationIdentifier },
                 { "LocationName", device?.Location?.PrimaryName },
                 { "DeviceId", device.Id.ToString() },
                 { "deviceIdentifier", device.DeviceIdentifier },
