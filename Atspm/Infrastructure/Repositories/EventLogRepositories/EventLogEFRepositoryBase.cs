@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for Infrastructure - ATSPM.Infrastructure.Repositories.EventLogRepositories/EventLogEFRepositoryBase.cs
+// for Infrastructure - Utah.Udot.Atspm.Infrastructure.Repositories.EventLogRepositories/EventLogEFRepositoryBase.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -37,11 +37,11 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.EventLogRepositories
         public virtual IReadOnlyList<T> GetEventsBetweenDates(string locationId, DateTime startTime, DateTime endTime)
         {
             var result = table
-                .FromSpecification(new EventLogDateRangeSpecification(locationId, DateOnly.FromDateTime(startTime), DateOnly.FromDateTime(endTime)))
+                .FromSpecification(new CompressedEventLogSpecification(locationId, DateOnly.FromDateTime(startTime), DateOnly.FromDateTime(endTime)))
                 .AsNoTracking()
                 .AsEnumerable()
                 .SelectMany(m => m.Data)
-                .FromSpecification(new EventLogDateTimeRangeSpecification(locationId, startTime, endTime))
+                .FromSpecification(new EventLogSpecification(locationId, startTime, endTime))
                 .Cast<T>()
                 .ToList();
 

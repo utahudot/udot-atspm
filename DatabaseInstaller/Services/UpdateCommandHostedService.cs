@@ -1,9 +1,27 @@
-﻿using global::DatabaseInstaller.Commands;
+﻿#region license
+// Copyright 2024 Utah Departement of Transportation
+// for DatabaseInstaller - DatabaseInstaller.Services/UpdateCommandHostedService.cs
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+// http://www.apache.org/licenses/LICENSE-2.
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+#endregion
+
+using global::DatabaseInstaller.Commands;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Utah.Udot.Atspm.Data;
 using Utah.Udot.Atspm.Data.Configuration.Identity;
 using Utah.Udot.Atspm.Data.Models;
@@ -20,12 +38,12 @@ namespace DatabaseInstaller.Services
 
         public UpdateCommandHostedService(
             IServiceProvider serviceProvider,
-            UpdateCommandConfiguration config,
+            IOptions<UpdateCommandConfiguration> config,
             ILogger<UpdateCommandHostedService> logger,
             IHostApplicationLifetime hostApplicationLifetime)
         {
             _serviceProvider = serviceProvider;
-            _config = config;
+            _config = config.Value;
             _logger = logger;
             _hostApplicationLifetime = hostApplicationLifetime;
         }
@@ -110,7 +128,10 @@ namespace DatabaseInstaller.Services
                 {
                     UserName = _config.AdminEmail,
                     Email = _config.AdminEmail,
-                    EmailConfirmed = true
+                    EmailConfirmed = true,
+                    FirstName = "Admin",
+                    LastName = "Admin",
+                    Agency = "Transportation Agency",
                 };
                 var result = await userManager.CreateAsync(adminUser, _config.AdminPassword);
                 if (result.Succeeded)

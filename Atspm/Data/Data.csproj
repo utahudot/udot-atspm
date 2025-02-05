@@ -1,11 +1,11 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<NameSpacePrefix>Utah.Udot</NameSpacePrefix>
 	</PropertyGroup>
 	
 	<PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <RootNamespace>Utah.Udot.Atspm.Data</RootNamespace>
@@ -50,28 +50,26 @@
 	  <None Include="LegacyEventLogContext.cs" />
 	  <None Include="SpeedContext.cs" />
 	</ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Duende.IdentityServer.EntityFramework.Storage" Version="6.3.6" />
-    <PackageReference Include="EFCore.BulkExtensions" Version="7.1.6" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="7.0.14" />
-    <PackageReference Include="Microsoft.CodeAnalysis" Version="4.9.2" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.14" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.14">
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="7.0.14" />
-    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="7.0.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.11" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="Utah.Udot.NetStandardToolkit">
-      <HintPath>..\Utah.Udot.NetStandardToolkit.dll</HintPath>
-    </Reference>
-  </ItemGroup>
+	
+	<ItemGroup>
+	  <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.11" />
+	  <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.11" />
+	  <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.11">
+	    <PrivateAssets>all</PrivateAssets>
+	    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+	  </PackageReference>
+	  <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.11" />
+	  <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.11" />
+	  <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.11">
+	    <PrivateAssets>all</PrivateAssets>
+	    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+	  </PackageReference>
+	  <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="9.0.0" />
+	  <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+	  <PackageReference Include="Npgsql" Version="8.0.6" />
+	  <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.11" />
+	  <PackageReference Include="Utah.Udot.NetStandardToolkit" Version="1.0.0" />
+	</ItemGroup>
 
   <ItemGroup>
     <Using Include="Utah.Udot.Atspm.Data" />

@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for EventLogUtility - ATSPM.EventLogUtility.Commands/PathCommandOption.cs
+// for EventLogUtility - Utah.Udot.Atspm.EventLogUtility.Commands/PathCommandOption.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.

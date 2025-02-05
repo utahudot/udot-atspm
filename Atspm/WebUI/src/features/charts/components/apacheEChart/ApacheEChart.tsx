@@ -14,7 +14,7 @@ import type {
 } from 'echarts'
 import { connect, init } from 'echarts'
 import type { CSSProperties } from 'react'
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 export interface ApacheEChartsProps {
   id: string
@@ -38,18 +38,25 @@ export default function ApacheEChart({
   hideInteractionMessage = false,
 }: ApacheEChartsProps) {
   const chartRef = useRef<HTMLDivElement>(null)
-  const { activeChart, setActiveChart } = useChartsStore()
+  const { activeChart, setActiveChart, syncZoom } = useChartsStore()
   const [isHovered, setIsHovered] = useState(false)
   const [isScrolling, setIsScrolling] = useState(false)
   const chartInstance = useRef<ECharts | null>(null)
 
-  const isActive = activeChart === id
+  const isActive = activeChart === id || hideInteractionMessage
 
-  const initChart = () => {
+  const initChart = useCallback(() => {
     if (chartRef.current !== null) {
       chartInstance.current = init(chartRef.current, theme, {
         useDirtyRect: true,
       })
+
+      if (syncZoom || chartType === ChartType.TimingAndActuation) {
+        chartInstance.current.group = 'group1'
+        connect('group1')
+      }
+
+      if (option?.dataZoom === undefined) return
 
       // Set initial options with zooming disabled
       const disabledZoomOption: EChartsOption = {
@@ -73,16 +80,14 @@ export default function ApacheEChart({
         chartInstance.current.on('datazoom', () =>
           handleGreenTimeUtilizationDataZoom(chartInstance.current!)
         )
-      } else if (chartType === ChartType.TimingAndActuation) {
-        chartInstance.current.group = 'group1'
-        connect('group1')
       } else {
         chartInstance.current.on('datazoom', () =>
           adjustPlanPositions(chartInstance.current!)
         )
       }
     }
-  }
+  }, [option, settings, theme, chartType, syncZoom])
+
   useEffect(() => {
     initChart()
 
@@ -95,7 +100,7 @@ export default function ApacheEChart({
       chartInstance.current?.dispose()
       window.removeEventListener('resize', resizeChart)
     }
-  }, [theme, chartType])
+  }, [theme, chartType, initChart, syncZoom])
 
   useEffect(() => {
     if (chartInstance.current) {

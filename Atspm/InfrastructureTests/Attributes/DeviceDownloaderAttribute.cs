@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for InfrastructureTests - InfrastructureTests.Attributes/DeviceDownloaderAttribute.cs
+// for InfrastructureTests - Utah.Udot.Atspm.InfrastructureTests.Attributes/DeviceDownloaderAttribute.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,8 +22,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Utah.Udot.Atspm.Configuration;
 using Utah.Udot.Atspm.Data.Enums;
+using Utah.Udot.Atspm.Infrastructure.Configuration;
 using Utah.Udot.Atspm.Services;
 using Xunit.Sdk;
 

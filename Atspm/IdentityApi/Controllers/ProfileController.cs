@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for Identity - Identity.Controllers/ProfileController.cs
+// for IdentityApi - Identity.Controllers/ProfileController.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,17 +15,18 @@
 // limitations under the License.
 #endregion
 
+using Asp.Versioning;
 using Identity.Models.Profile;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Utah.Udot.Atspm.Data.Models;
+using Utah.Udot.ATSPM.IdentityApi.Controllers;
 
 namespace Identity.Controllers
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class ProfileController : ControllerBase
+    [ApiVersion("1.0")]
+    public class ProfileController : IdentityControllerBase
     {
         private readonly UserManager<ApplicationUser> _userManager;
 

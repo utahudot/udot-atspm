@@ -1,7 +1,10 @@
+import { useChartsStore } from '@/stores/charts'
 import {
   Box,
   Button,
+  Checkbox,
   Divider,
+  FormControlLabel,
   Paper,
   Toolbar,
   Typography,
@@ -24,6 +27,8 @@ export default function ChartsToolbox({
   toggleConfig,
 }: GeneralChartsControllerProps) {
   const theme = useTheme()
+
+  const { syncZoom, setSyncZoom } = useChartsStore()
   return (
     <Paper
       sx={{
@@ -38,6 +43,27 @@ export default function ChartsToolbox({
     >
       <Toolbar variant="dense" sx={{ px: 1 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={syncZoom}
+                onChange={() => setSyncZoom(!syncZoom)}
+                name="showPermissivePhases"
+                color="default"
+                size="small"
+              />
+            }
+            label={
+              <Typography
+                fontWeight={400}
+                fontSize={'.8rem'}
+                sx={{ textTransform: 'none' }}
+              >
+                Sync Zoom
+              </Typography>
+            }
+            sx={{ flexGrow: 1 }}
+          />
           <Button
             onClick={toggleConfig}
             sx={{
@@ -59,7 +85,7 @@ export default function ChartsToolbox({
           <IndividualChartControls
             charts={chartData.data.charts}
             chartRefs={chartRefs}
-            isDisabled={toggleConfigLabel === "Charts"}
+            isDisabled={toggleConfigLabel === 'Charts'}
           />
         </Box>
       </Toolbar>

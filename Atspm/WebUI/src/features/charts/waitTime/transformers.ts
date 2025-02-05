@@ -27,6 +27,7 @@ import {
   createTooltip,
   createXAxis,
   createYAxis,
+  formatExportFileName,
   transformSeriesData,
 } from '@/features/charts/common/transformers'
 import { ChartType, PlanOptions } from '@/features/charts/common/types'
@@ -79,13 +80,13 @@ function transformData(data: RawWaitTimeData) {
     info: info,
   })
 
-  const volumePerHourText = 'Volume Per Hour';
-  const averageWaitText = 'Average Wait';
-  const programmedSplitsText = 'Programmed Splits';
-  const gapOutText = 'Gap Out';
-  const maxOutText = 'Max Out';
-  const forceOffText = 'Force Off';
-  const unknownText = 'Unknown';
+  const volumePerHourText = 'Volume Per Hour'
+  const averageWaitText = 'Average Wait'
+  const programmedSplitsText = 'Programmed Splits'
+  const gapOutText = 'Gap Out'
+  const maxOutText = 'Max Out'
+  const forceOffText = 'Force Off'
+  const unknownText = 'Unknown'
 
   const xAxis = createXAxis(data.start, data.end)
   const yAxis = createYAxis(
@@ -124,7 +125,10 @@ function transformData(data: RawWaitTimeData) {
   const dataZoom = createDataZoom()
 
   const toolbox = createToolbox(
-    { title: titleHeader, dateRange },
+    {
+      title: formatExportFileName(titleHeader, data.start, data.end),
+      dateRange,
+    },
     data.locationIdentifier,
     ChartType.WaitTime
   )

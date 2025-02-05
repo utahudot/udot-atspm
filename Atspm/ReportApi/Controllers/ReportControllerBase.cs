@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for ReportApi - ATSPM.ReportApi.Controllers/ReportControllerBase.cs
+// for ReportApi - Utah.Udot.Atspm.ReportApi.Controllers/ReportControllerBase.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 
 using AutoFixture;
 using Microsoft.AspNetCore.Mvc;
+using Utah.Udot.Atspm.Infrastructure.LogMessages;
 
 namespace Utah.Udot.Atspm.ReportApi.Controllers
 {
@@ -25,6 +26,8 @@ namespace Utah.Udot.Atspm.ReportApi.Controllers
     /// </summary>
     /// <typeparam name="Tin">Input options</typeparam>
     /// <typeparam name="Tout">Output results</typeparam>
+    [ApiController]
+    [Route("api/v{version:apiVersion}/[controller]")]
     public abstract class ReportControllerBase<Tin, Tout> : ControllerBase
     {
         private readonly IReportService<Tin, Tout> _reportService;
@@ -46,7 +49,7 @@ namespace Utah.Udot.Atspm.ReportApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         //[ProducesResponseType(StatusCodes.Status400BadRequest)]
         //[ProducesResponseType(StatusCodes.Status404NotFound)]
-        public virtual ActionResult<Tout> Test()
+        public virtual ActionResult<Tout> GetTestData()
         {
             return Ok(new Fixture().Create<Tout>());
         }

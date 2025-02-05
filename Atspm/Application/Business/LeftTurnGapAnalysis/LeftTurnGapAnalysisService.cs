@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for ApplicationCore - ATSPM.Application.Business.LeftTurnGapAnalysis/LeftTurnGapAnalysisService.cs
+// for Application - Utah.Udot.Atspm.Business.LeftTurnGapAnalysis/LeftTurnGapAnalysisService.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -70,7 +70,7 @@ namespace Utah.Udot.Atspm.Business.LeftTurnGapAnalysis
             if (detectorEvents.Any() && cycleEventsByPhase.Any())
             {
                 var result = GetData(cycleEventsByPhase, detectorEvents, options, detectionTypeStr, approach);
-                result.PhaseDescription = $"{leftTurnPhase.DirectionType.Description} Left Phase {leftTurnPhase.ProtectedPhaseNumber} crossing {approach.DirectionType.Description} {string.Join(',', detectorsToUse.Select(d => d.MovementType.GetDisplayName()))} Phase {approach.ProtectedPhaseNumber}";
+                result.PhaseDescription = $"{leftTurnPhase.DirectionType.Description} Left Turn Crossing {approach.DirectionType.Description} Thru - Phase {approach.ProtectedPhaseNumber}";
                 result.ApproachDescription = approach.Description;
                 result.LocationDescription = approach.Location.LocationDescription();
                 return result;

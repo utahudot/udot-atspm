@@ -9,11 +9,14 @@ import {
   useSetLocationToBeDeleted,
 } from '@/features/locations/api/location'
 import { Location, LocationExpanded } from '@/features/locations/types'
+import { getLocationTypeConfig } from '@/features/locations/utils'
 import { useNotificationStore } from '@/stores/notifications'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import {
+  Avatar,
   Box,
   Button,
+  Icon,
   InputLabel,
   Menu,
   MenuItem,
@@ -70,6 +73,8 @@ const EditLocationHeader = ({
     (type) => type.id === location?.locationTypeId
   )
 
+  
+
   const locationsVersions = versionData?.value.map((version: Location) => ({
     id: version.id,
     note: version.note,
@@ -77,9 +82,8 @@ const EditLocationHeader = ({
   }))
 
   locationsVersions?.map((obj) => {
-    obj.note = ` ${new Date(obj.startDate).toLocaleDateString('en-US')} - ${
-      obj.note
-    }`
+    const [year, month, day] = obj.startDate.split('T')[0].split('-');
+    obj.note = `${parseInt(month)}/${parseInt(day)}/${year} - ${obj.note}`
     return obj
   })
   useEffect(() => {
@@ -185,18 +189,35 @@ const EditLocationHeader = ({
     displayName += ` & ${secondaryName}`
   }
 
+  const locationTypeConfig = getLocationTypeConfig(location?.locationTypeId)
+
   return (
     <Paper sx={{ mt: 2, p: 2 }}>
       <Box
         sx={{
           display: 'flex',
           justifyContent: 'space-between',
-          alignItems: 'center',
         }}
       >
-        <Typography variant="h4" marginBottom={'5px'} component={'p'}>
-          {locationType?.name}
-        </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'flex-end', mb: '10px' }}>
+          <Avatar
+            sx={{
+              mr: '10px',
+              width: 30,
+              height: 30,
+              bgcolor: locationTypeConfig?.color,
+            }}
+            variant="rounded"
+          >
+            <Icon
+              component={locationTypeConfig.MuiIcon}
+              sx={{ ml: locationType?.id === 2 ? '2px' : '0px' }}
+            />
+          </Avatar>
+          <Typography variant="h4" component={'p'}>
+            {locationType?.name}
+          </Typography>
+        </Box>
         <Box>
           <Button
             variant="contained"

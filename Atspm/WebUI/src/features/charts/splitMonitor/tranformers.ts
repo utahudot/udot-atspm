@@ -27,6 +27,7 @@ import {
   createXAxis,
   createYAxis,
   formatDataPointForStepView,
+  formatExportFileName,
   transformSeriesData,
 } from '@/features/charts/common/transformers'
 import { ChartType, PlanOptions } from '@/features/charts/common/types'
@@ -52,7 +53,6 @@ export default function transformSplitMonitorData(
       chart: chartOptions,
     }
   })
-
 
   return {
     type: ChartType.SplitMonitor,
@@ -150,7 +150,10 @@ function transformData(data: RawSplitMonitorData) {
   ]
 
   const toolbox = createToolbox(
-    { title: titleHeader, dateRange },
+    {
+      title: formatExportFileName(titleHeader, data.start, data.end),
+      dateRange,
+    },
     data.locationIdentifier,
     ChartType.SplitMonitor
   )

@@ -27,10 +27,14 @@ export const BinSizeDropdown = ({
         justifyContent: 'space-between',
       }}
     >
-      <InputLabel htmlFor={labelId}>Bin Size</InputLabel>
+      <InputLabel htmlFor={labelId} id={id}>
+        Bin Size
+      </InputLabel>
       <Box sx={{ display: 'flex', alignItems: 'center' }}>
         <FormControl fullWidth>
           <Select
+            labelId={labelId}
+            id={id}
             label="Bin Size"
             value={value}
             onChange={handleChange}

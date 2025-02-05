@@ -5,7 +5,7 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
-		<TargetFramework>net7.0</TargetFramework>
+		<TargetFramework>net8.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<UserSecretsId>af468330-96e6-4297-a188-86f216ee07b4</UserSecretsId>
@@ -15,19 +15,19 @@
 		<ServerGarbageCollection>true</ServerGarbageCollection>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<IncludeOpenAPIAnalyzers>True</IncludeOpenAPIAnalyzers>
+		<VersionPrefix>5.0</VersionPrefix>
+		<VersionSuffix>rc.1</VersionSuffix>
+		<Version>$(VersionPrefix)-$(VersionSuffix)</Version>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<Compile Remove="Controllers\OldEventLogController.cs" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<PackageReference Include="Asp.Versioning.Mvc" Version="7.0.1" />
-		<PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" Version="7.0.1" />
-		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="7.0.15" />
-		<PackageReference Include="Microsoft.CodeAnalysis" Version="4.9.2" />
-		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.18.1" />
-		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+		<PackageReference Include="Asp.Versioning.Mvc" Version="8.1.0" />
+		<PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" Version="8.1.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.11" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.11">
+		  <PrivateAssets>all</PrivateAssets>
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
 	</ItemGroup>
 
 	<ItemGroup>
@@ -36,16 +36,6 @@
 
 	<ItemGroup>
 		<Folder Include="BackgroundServices\" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<None Include="Controllers\OldEventLogController.cs" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Reference Include="Utah.Udot.NetStandardToolkit">
-	    <HintPath>..\Utah.Udot.NetStandardToolkit.dll</HintPath>
-	  </Reference>
 	</ItemGroup>
 
 	<ItemGroup>

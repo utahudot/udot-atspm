@@ -136,7 +136,7 @@ function EditApproach({ approach, handler }: ApproachAdminProps) {
     ) as ApproachForConfig
     if (modifiedApproach.isNew) {
       delete modifiedApproach.id
-      modifiedApproach.detectors.forEach((detector) => {
+      modifiedApproach.detectors?.forEach((detector) => {
         delete detector.approachId
       })
     }
