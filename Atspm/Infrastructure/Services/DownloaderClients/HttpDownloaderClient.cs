@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for Infrastructure - ATSPM.Infrastructure.Services.DownloaderClients/HttpDownloaderClient.cs
+// for Infrastructure - Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients/HttpDownloaderClient.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -51,7 +51,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
         public bool IsConnected => _client != null && _client.BaseAddress.Host.IsValidIpAddress();
 
         ///<inheritdoc/>
-        public Task ConnectAsync(IPEndPoint connection, NetworkCredential credentials, int connectionTimeout = 2000, int operationTImeout = 2000, CancellationToken token = default)
+        public Task ConnectAsync(IPEndPoint connection, NetworkCredential credentials, int connectionTimeout = 2000, int operationTimeout = 2000, CancellationToken token = default)
         {
             token.ThrowIfCancellationRequested();
 
@@ -61,7 +61,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
             {
                 _client ??= new HttpClient();
 
-                _client.Timeout = TimeSpan.FromMilliseconds(operationTImeout);
+                _client.Timeout = TimeSpan.FromMilliseconds(operationTimeout);
                 _client.BaseAddress = new Uri($"http://{ip.Address}:{ip.Port}/");
 
                 _client.DefaultRequestHeaders.Accept.Clear();

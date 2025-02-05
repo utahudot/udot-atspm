@@ -1,25 +1,26 @@
-import { Box, Checkbox, Paper } from '@mui/material'
+import { Box, Checkbox, Paper, Typography } from '@mui/material'
 import { useEffect, useState } from 'react'
 
-import {
-  StyledComponentHeader,
-  commonPaperStyle,
-} from '@/components/HeaderStyling/StyledComponentHeader'
+import { StyledComponentHeader } from '@/components/HeaderStyling/StyledComponentHeader'
+
+type Approach = {
+  id: string
+  description: string
+}
 
 type LeftTurnGapOptionsProps = {
-  locationIdentifier?: string
-  approaches: number[]
-  approachIds: number[]
-  setApproachIds: (approachIds: number[]) => void
+  approaches: Approach[]
+  approachIds: string[]
+  setApproachIds: (approachIds: string[]) => void
 }
 
 export const LeftTurnGapOptions = ({
-  locationIdentifier,
   approaches,
   approachIds,
   setApproachIds,
 }: LeftTurnGapOptionsProps) => {
-  const [checked, setChecked] = useState({})
+  const [checked, setChecked] = useState<{ [key: string]: boolean }>({})
+
   const handleCheckChange = (
     event: React.ChangeEvent<HTMLInputElement>,
     approachId: string
@@ -34,55 +35,58 @@ export const LeftTurnGapOptions = ({
 
   useEffect(() => {
     if (approaches) {
-      let newApproach = approaches.map((item) => {
-        return item.id
-      })
-      setApproachIds(newApproach)
+      const newApproachIds = approaches.map((item) => item.id)
+      setApproachIds(newApproachIds)
 
-      let initialCheckedState = {}
+      const initialCheckedState: { [key: string]: boolean } = {}
       approaches.forEach((approach) => {
         initialCheckedState[approach.description] = true
       })
       setChecked(initialCheckedState)
+    } else {
+      setApproachIds([])
+      setChecked({})
     }
-  }, [approaches])
-
-  useEffect(() => {
-    setApproachIds([])
-    setChecked({})
-  }, [locationIdentifier])
+  }, [approaches, setApproachIds])
 
   return (
     <Paper
       sx={{
-        ...commonPaperStyle,
-
         '@media (max-width: 1200px)': {
           marginBottom: 1,
         },
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'flex-start',
       }}
     >
-      <StyledComponentHeader header={'Left Turn Gap Options'} />
-      {approaches && approaches.length > 0 ? (
-        <>
-          {approaches.map((approach, i) => (
-            <Box key={i} sx={{ display: 'flex' }}>
-              <Checkbox
-                checked={checked[approach.description] || false}
-                onChange={(event) => handleCheckChange(event, approach.id)}
-                name={approach.description}
-                id={`checkbox-${i}`}
-              />
-              <label style={{ marginTop: '.6rem' }} htmlFor={`checkbox-${i}`}>
-                {approach.description}
-              </label>
-              {/* <p>{approach.description}</p> */}
-            </Box>
-          ))}
-        </>
-      ) : (
-        <p>Please select a location</p>
-      )}
+      <StyledComponentHeader header="Left Turn Gap Options" />
+      <Box sx={{ p: 2, minWidth: '250px' }}>
+        {approaches && approaches.length > 0 ? (
+          <Box sx={{ width: '100%' }}>
+            {approaches.map((approach, i) => (
+              <Box
+                key={i}
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  width: '100%',
+                }}
+              >
+                <Checkbox
+                  checked={checked[approach.description] || false}
+                  onChange={(event) => handleCheckChange(event, approach.id)}
+                  name={approach.description}
+                  id={`checkbox-${i}`}
+                />
+                <label htmlFor={`checkbox-${i}`}>{approach.description}</label>
+              </Box>
+            ))}
+          </Box>
+        ) : (
+          <Typography>Please select a location</Typography>
+        )}
+      </Box>
     </Paper>
   )
 }

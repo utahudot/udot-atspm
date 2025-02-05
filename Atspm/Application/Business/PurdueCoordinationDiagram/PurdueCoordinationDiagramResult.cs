@@ -1,6 +1,6 @@
 #region license
 // Copyright 2024 Utah Departement of Transportation
-// for ApplicationCore - ATSPM.Application.Business.PurdueCoordinationDiagram/PurdueCoordinationDiagramResult.cs
+// for Application - Utah.Udot.Atspm.Business.PurdueCoordinationDiagram/PurdueCoordinationDiagramResult.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.

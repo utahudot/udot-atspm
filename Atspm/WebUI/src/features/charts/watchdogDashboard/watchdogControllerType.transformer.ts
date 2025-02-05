@@ -1,3 +1,19 @@
+// #region license
+// Copyright 2024 Utah Departement of Transportation
+// for WebUI - watchdogControllerType.transformer.ts
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//http://www.apache.org/licenses/LICENSE-2.
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+// #endregion
 import { Color, lightenColor } from '@/features/charts/utils'
 import { EChartsOption } from 'echarts'
 
@@ -52,7 +68,7 @@ const controllerColors = [
 export default function transformWatchdogControllerTypeData(
   response: RawWatchdogData[],
   deselectedItems: string[] = [],
-  showUnconfiguredData: boolean = false
+  showUnconfiguredData = false
 ): TransformedData {
   const transformedData = transformData(
     response,
@@ -68,6 +84,24 @@ export default function transformWatchdogControllerTypeData(
   }))
 
   const chart: EChartsOption = {
+    tooltip: {
+      trigger: 'item',
+      formatter: (params) => {
+        const { data, treePathInfo } = params
+        const depth = treePathInfo.length - 1
+
+        // Determine the layer type based on the depth in the hierarchy
+        let layer = ''
+        if (depth === 0) layer = 'Total Controller Types Count'
+        else if (depth === 1) layer = 'Product'
+        else if (depth === 2) layer = 'Model'
+        else if (depth === 3) layer = 'Firmware'
+        else if (depth === 4) layer = 'Issue Type'
+
+        // Display layer, name, and value
+        return `${layer}: ${data.name}<br/>Count: ${data.value || 'N/A'}`
+      },
+    },
     series: [
       {
         type: 'sunburst',
@@ -78,7 +112,18 @@ export default function transformWatchdogControllerTypeData(
           borderWidth: 2,
         },
         label: {
+          show: true, // Show labels if there's enough space
           rotate: 0,
+          overflow: 'truncate',
+        },
+        emphasis: {
+          label: {
+            show: true, // Always show label on hover
+            fontWeight: 'bold',
+          },
+        },
+        labelLayout: {
+          hideOverlap: true, // Hide labels only if they overlap
         },
       },
     ],

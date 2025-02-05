@@ -15,23 +15,51 @@
 // limitations under the License.
 #endregion
 
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using System.CommandLine.Builder;
 using System.CommandLine.Hosting;
 using System.CommandLine.Parsing;
+using System.Diagnostics;
 using Utah.Udot.Atspm.EventLogUtility.Commands;
 using Utah.Udot.Atspm.Infrastructure.Extensions;
+
+
+if (OperatingSystem.IsWindows())
+{
+    if (!EventLog.SourceExists("Atspm"))
+        EventLog.CreateEventSource(AppDomain.CurrentDomain.FriendlyName, "Atspm");
+}
+
 
 var rootCmd = new EventLogCommands();
 var cmdBuilder = new CommandLineBuilder(rootCmd);
 cmdBuilder.UseDefaults();
-
 cmdBuilder.UseHost(a =>
 {
     return Host.CreateDefaultBuilder(a)
-    .UseConsoleLifetime()
+    //.UseConsoleLifetime()
+    .ApplyVolumeConfiguration()
     .ConfigureLogging((h, l) =>
     {
+        if (OperatingSystem.IsWindows())
+        {
+            l.AddEventLog(c =>
+            {
+                c.SourceName = AppDomain.CurrentDomain.FriendlyName;
+                c.LogName = "Atspm";
+            });
+        }
+
+            
+        //l.AddGoogle(new LoggingServiceOptions
+        //{
+        //    //ProjectId = "",
+        //    ServiceName = AppDomain.CurrentDomain.FriendlyName,
+        //    Version = Assembly.GetEntryAssembly().GetName().Version.ToString(),
+        //    Options = WatchdogLoggingOptions.Create(LogLevel.Debug, AppDomain.CurrentDomain.FriendlyName)
+        //});
     })
     .ConfigureServices((h, s) =>
     {
@@ -43,6 +71,8 @@ cmdBuilder.UseHost(a =>
         s.AddDeviceDownloaders(h);
         s.AddEventLogDecoders();
         s.AddEventLogImporters(h);
+
+        //s.Configure<DeviceEventLoggingConfiguration>(h.Configuration.GetSection(nameof(DeviceEventLoggingConfiguration)));
     });
 },
 h =>

@@ -1,6 +1,6 @@
 ﻿#region license
-// Copyright 2024 Utah Department of Transportation
-// for DatabaseInstaller.Commands/UpdateCommand.cs
+// Copyright 2024 Utah Departement of Transportation
+// for DatabaseInstaller - DatabaseInstaller.Commands/MoveEventLogsSqlServerToPostgresCommand.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,27 +21,29 @@ using Microsoft.Extensions.Hosting;
 using System.CommandLine;
 using System.CommandLine.Hosting;
 using System.CommandLine.NamingConventionBinder;
-using Utah.Udot.Atspm.Common;
 
 namespace DatabaseInstaller.Commands
 {
-    public class MoveEventLogsSqlServerToPostgresCommand : Command, ICommandOption<CopyConfigCommandConfiguration>
+    public class MoveEventLogsSqlServerToPostgresCommand : Command, ICommandOption<TransferCommandConfiguration>
     {
         public MoveEventLogsSqlServerToPostgresCommand() : base("copy-sql", "Apply migrations and optionally seed the admin user")
         {
             AddOption(SourceOption);
-            AddOption(TargetOption);
+            AddOption(StartOption);
+            AddOption(EndOption);
         }
 
         public Option<string> SourceOption { get; set; } = new("--source", "Connection string for the source SQL Server");
-        public Option<string> TargetOption { get; set; } = new("--target", "Connection string for the target PostgreSQL database");
+        public Option<DateTime> StartOption { get; set; } = new("--start", "Start Date");
+        public Option<DateTime> EndOption { get; set; } = new("--end", "Start Date");
 
-        public ModelBinder<CopyConfigCommandConfiguration> GetOptionsBinder()
+        public ModelBinder<TransferCommandConfiguration> GetOptionsBinder()
         {
-            var binder = new ModelBinder<CopyConfigCommandConfiguration>();
+            var binder = new ModelBinder<TransferCommandConfiguration>();
 
             binder.BindMemberFromValue(b => b.Source, SourceOption);
-            binder.BindMemberFromValue(b => b.Target, TargetOption);
+            binder.BindMemberFromValue(b => b.Start, StartOption);
+            binder.BindMemberFromValue(b => b.End, EndOption);
 
             return binder;
         }
@@ -49,7 +51,7 @@ namespace DatabaseInstaller.Commands
         public void BindCommandOptions(HostBuilderContext host, IServiceCollection services)
         {
             services.AddSingleton(GetOptionsBinder());
-            services.AddOptions<CopyConfigCommandConfiguration>().BindCommandLine();
+            services.AddOptions<TransferCommandConfiguration>().BindCommandLine();
             services.AddHostedService<MoveEventLogsSqlServerToPostgresHostedService>();
         }
     }

@@ -18,6 +18,10 @@ import { BaseChartData, ChartType, DataPoint } from '../common/types'
 import { TimeSpaceDetectorEvent } from '../timeSpaceDiagram/types'
 import { DetectorEvent } from '../timingAndActuation/types'
 
+export interface RampMeteringChartOptionsDefaults {
+  combineLanes: { id: number; value: string; option: string }
+}
+
 export interface DescriptionWithDataPoints {
   description: string
   value: DataPoint[]
@@ -28,6 +32,10 @@ export interface DescriptionWithDetectorEvents {
   value: DetectorEvent[]
 }
 
+export interface QueueDetectorEvent extends DetectorEvent {
+  value: number
+}
+
 export interface RampMeteringData extends BaseChartData {
   mainlineAvgFlow: DataPoint[]
   mainlineAvgOcc: DataPoint[]
@@ -36,9 +44,7 @@ export interface RampMeteringData extends BaseChartData {
   lanesBaseRate: DescriptionWithDataPoints[]
   startUpWarning: TimeSpaceDetectorEvent[]
   shutdownWarning: TimeSpaceDetectorEvent[]
-  // lanesQueueEvents: DescriptionWithDetectorEvents[]
-  lanesQueueOnEvents: DescriptionWithDataPoints[]
-  lanesQueueOffEvents: DescriptionWithDataPoints[]
+  lanesQueueOnAndOffEvents: QueueDetectorEvent[]
 }
 
 export interface RawRampMeteringResponse {

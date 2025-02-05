@@ -1,7 +1,7 @@
 import Markers from '@/components/LocationMap/Markers'
 import MapFilters from '@/components/MapFilters'
 import { Location } from '@/features/locations/types'
-import { getEnv } from '@/lib/getEnv'
+import { getEnv } from '@/utils/getEnv'
 import ClearIcon from '@mui/icons-material/Clear'
 import {
   Box,
@@ -9,6 +9,7 @@ import {
   ButtonGroup,
   ClickAwayListener,
   Popper,
+  Skeleton,
   useTheme,
 } from '@mui/material'
 import L, { Map as LeafletMap } from 'leaflet'
@@ -171,7 +172,7 @@ const LocationMap = ({
   }
 
   if (!mapInfo) {
-    return <div>Loading...</div>
+    return <Skeleton variant="rectangular" height={mapHeight ?? 400} />
   }
 
   return (

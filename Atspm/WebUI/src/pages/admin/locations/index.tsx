@@ -19,7 +19,6 @@ const LocationsAdmin = () => {
   })
 
   // const data = useConfigEnums(ConfigEnum.WatchDogIssueTypes)
-  // console.log('data', data)
 
   if (pageAccess.isLoading) {
     return

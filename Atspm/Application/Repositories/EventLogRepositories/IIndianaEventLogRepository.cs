@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for ApplicationCore - ATSPM.Application.Repositories.EventLogRepositories/IIndianaEventLogRepository.cs
+// for Application - Utah.Udot.Atspm.Repositories.EventLogRepositories/IIndianaEventLogRepository.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ using Utah.Udot.Atspm.Data.Models.EventLogModels;
 namespace Utah.Udot.Atspm.Repositories.EventLogRepositories
 {
     /// <summary>
-    /// Indianna event log repository
+    /// Indiana event log repository
     /// </summary>
     public interface IIndianaEventLogRepository : IEventLogRepository<IndianaEvent> { }
 }

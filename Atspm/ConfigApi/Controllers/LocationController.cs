@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for ConfigApi - ATSPM.ConfigApi.Controllers/LocationController.cs
+// for ConfigApi - Utah.Udot.Atspm.ConfigApi.Controllers/LocationController.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using Utah.Udot.Atspm.Business.Watchdog;
 using Utah.Udot.Atspm.ConfigApi.Models;
+using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Extensions;
 using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
@@ -245,12 +246,10 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
             var basicCharts = new List<int> { 1, 2, 3, 4, 14, 15, 17, 31 };
             var result = _repository.GetList()
                 .FromSpecification(new ActiveLocationSpecification())
-
-                .Where(w => jurisdictionId == null || w.JurisdictionId == jurisdictionId)
-                .Where(w => regionId == null || w.RegionId == regionId)
-                .Where(w => areaId == null || w.Areas.Any(a => a.Id == areaId))
-                .Where(w => metricTypeId == null || w.Approaches.Any(m => m.Detectors.Any(d => d.DetectionTypes.Any(t => t.MeasureTypes.Any(a => a.Id == metricTypeId)))))
-
+                .Where(w => (jurisdictionId != null) ? w.JurisdictionId == jurisdictionId : true)
+                .Where(w => (regionId != null) ? w.RegionId == regionId : true)
+                .Where(w => (areaId != null) ? w.Areas.Any(a => a.Id == areaId) : true)
+                .Where(w => (metricTypeId != null) ? w.Approaches.Any(m => m.Detectors.Any(d => d.DetectionTypes.Any(t => t.MeasureTypes.Any(a => a.Id == metricTypeId)))) : true)
                 .Select(s => new SearchLocation()
                 {
                     Id = s.Id,
@@ -265,7 +264,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
                     ChartEnabled = s.ChartEnabled,
                     LocationTypeId = s.LocationTypeId,
                     Areas = s.Areas.Select(a => a.Id),
-                    Charts = s.Approaches.SelectMany(m => m.Detectors.SelectMany(d => d.DetectionTypes.SelectMany(t => t.MeasureTypes.Select(i => i.Id)))).Distinct()
+                    Charts = s.Approaches.SelectMany(m => m.Detectors.SelectMany(d => d.DetectionTypes.SelectMany(t => t.MeasureTypes.Select(i => i.Id)))).Distinct(),
                 })
                 .GroupBy(r => r.locationIdentifier)
                 .Select(g => g.OrderByDescending(r => r.Start).FirstOrDefault())
@@ -276,6 +275,10 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
                 if (location != null && location.Charts != null)
                 {
                     location.Charts = location.Charts.Concat(basicCharts).Order();
+                    if (location.LocationTypeId == ((int)LocationTypes.RM))
+                    {
+                        location.Charts = location.Charts.Append(37).Order();
+                    }
                 }
             }
 

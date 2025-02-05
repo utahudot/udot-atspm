@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for Infrastructure - ATSPM.Infrastructure.Services.EmailServices/SmtpEmailService.cs
+// for Infrastructure - Utah.Udot.Atspm.Infrastructure.Services.EmailServices/SmtpEmailService.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -67,9 +67,12 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.EmailServices
                 try
                 {
                     await smtp.ConnectAsync(_options.Host, _options.Port, _options.EnableSsl ? SecureSocketOptions.StartTls : SecureSocketOptions.Auto);
-                    await smtp.AuthenticateAsync(_options.UserName, _options.Password);
+                    if (!String.IsNullOrEmpty(_options.UserName) || !String.IsNullOrEmpty(_options.Password))
+                    {
+                        await smtp.AuthenticateAsync(_options.UserName, _options.Password);
+                    }
 
-                    if (smtp.IsConnected && smtp.IsAuthenticated)
+                    if (smtp.IsConnected)
                     {
                         _logger.LogDebug("SendEmail sending: {email}", email);
 

@@ -35,7 +35,9 @@ export function ApproachVolumeTable({ data }: ApproachVolumeTableProps) {
       }}
     >
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-        <Typography variant="h4" component="h2"></Typography>
+        <Typography variant="h4" component="h2">
+          Peak Hour Data
+        </Typography>
       </AccordionSummary>
       <AccordionDetails>
         <Grid container spacing={2}>

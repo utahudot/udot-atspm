@@ -3,14 +3,7 @@ import SelectDataType from '@/features/data/components/selectDataType'
 import SelectLocation from '@/features/locations/components/selectLocation'
 import { Location } from '@/features/locations/types'
 import { LoadingButton } from '@mui/lab'
-import {
-  Alert,
-  Box,
-  CircularProgress,
-  Paper,
-  useMediaQuery,
-  useTheme,
-} from '@mui/material'
+import { Alert, Box, Paper, useMediaQuery, useTheme } from '@mui/material'
 
 import { StyledPaper } from '@/components/StyledPaper'
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
@@ -43,6 +36,8 @@ const ExportData = () => {
   const [selectedDataType, setSelectedDataType] = useState<string | null>(
     'All Raw Data'
   )
+  const [isAllRawDataSelected, setIsAllRawDataSelected] =
+    useState<boolean>(true)
   // const [eventCodes, setEventCodes] = useState<string | null>('')
   // const [eventParams, setEventParams] = useState<string>('')
 
@@ -84,7 +79,20 @@ const ExportData = () => {
 
           // Generate the CSV rows
           eventLogData.forEach((eventLog: any) => {
-            const row = headers.map((header) => eventLog[header]).join(',')
+            const row = headers
+              .map((header) => {
+                if (header === 'timestamp') {
+                  return eventLog[header].replace('T', ' ')
+                }
+                if (
+                  typeof eventLog[header] === 'string' &&
+                  eventLog[header].includes(',')
+                ) {
+                  return `"${eventLog[header]}"`
+                }
+                return eventLog[header]
+              })
+              .join(',')
             formattedData += row + '\n'
           })
         } else if (type === 'application/xml') {
@@ -127,14 +135,14 @@ const ExportData = () => {
       let data
       if (selectedDataType == 'All Raw Data') {
         response = await refetchEventLogs()
-        if (response.status === 'error'){
+        if (response.status === 'error') {
           setError(true)
           setIsDownloading(false)
 
           return
         }
         data = response.data
-  
+
         setIsDownloading(false)
       } else {
         response = await refetchAggData()
@@ -142,11 +150,14 @@ const ExportData = () => {
         setIsDownloading(false)
       }
 
-      const filename = `${location?.locationIdentifier}_${selectedDataType
-        ?.split(' ')
-        .join('')}_${dateToTimestamp(startDateTime)}_${dateToTimestamp(
-        endDateTime
-      )}.${downloadFormat}`
+      function dateToTimestamp(dateTime) {
+        const date = new Date(dateTime)
+        return date.toISOString().split('T')[0] // Returns "YYYY-MM-DD"
+      }
+
+      const filename = isAllRawDataSelected
+        ? `${location?.locationIdentifier}_${selectedDataType?.split(' ').join('')}_${dateToTimestamp(dateToTimestamp(startDateTime))}.${downloadFormat}`
+        : `${location?.locationIdentifier}_${selectedDataType?.split(' ').join('')}_${dateToTimestamp(dateToTimestamp(startDateTime))}_${dateToTimestamp(dateToTimestamp(endDateTime))}.${downloadFormat}`
 
       let mimeType = ''
       switch (downloadFormat) {
@@ -196,31 +207,29 @@ const ExportData = () => {
   }
 
   //React Query Fetch
-  const {
-    refetch: refetchEventLogs,
-    data: eventLogsData,
-    isLoading: isLoadingEventLogs,
-    isError: eventLogError,
-  } = useEventLogs({
+  const { refetch: refetchEventLogs } = useEventLogs({
     locationIdentifier: location?.locationIdentifier
       ? location.locationIdentifier
       : '',
     start: isValid(startDateTime) ? dateToTimestamp(startDateTime) : '',
-    end: isValid(endDateTime) ? dateToTimestamp(endDateTime) : '',
+    end:isValid(endDateTime) ? dateToTimestamp(endDateTime) : '',
     ResponseFormat: downloadFormat,
   })
 
-  const {
-    data: aggData,
-    isLoading: aggDataIsLoading,
-    isError: aggDataError,
-    refetch: refetchAggData,
-  } = useGetAggData(
+  const { refetch: refetchAggData } = useGetAggData(
     location?.locationIdentifier,
     selectedDataType,
     isValid(startDateTime) ? dateToTimestamp(startDateTime) : '',
     isValid(endDateTime) ? dateToTimestamp(endDateTime) : ''
   )
+
+  useEffect(() => {
+    if (selectedDataType == 'All Raw Data') {
+      setIsAllRawDataSelected(true)
+    } else {
+      setIsAllRawDataSelected(false)
+    }
+  }, [selectedDataType])
 
   const requiredClaim = 'Data:View'
   return (
@@ -253,17 +262,12 @@ const ExportData = () => {
                 },
               }}
             >
-              {/* <SelectTimeSpan
-                startDateTime={startDateTime}
-                endDateTime={endDateTime}
-                changeStartDate={handleStartDateTimeChange}
-                changeEndDate={handleEndDateTimeChange}
-                noCalendar={isMobileView}
-              /> */}
               <SelectDateTime
-                // chartType={chartType}
+                dateFormat="MMM d, yyyy"
+                views={['year', 'month', 'day']}
                 startDateTime={startDateTime}
                 endDateTime={endDateTime}
+                startDateOnly={isAllRawDataSelected}
                 changeStartDate={handleStartDateTimeChange}
                 changeEndDate={handleEndDateTimeChange}
                 noCalendar={isMobileView}
@@ -289,7 +293,14 @@ const ExportData = () => {
           </Box>
         </Box>
 
-        <Box sx={{ display: 'flex', gap: '10px', marginTop: '10px', marginBottom: "120px" }}>
+        <Box
+          sx={{
+            display: 'flex',
+            gap: '10px',
+            marginTop: '10px',
+            marginBottom: '120px',
+          }}
+        >
           <ButtonGroup
             variant="contained"
             ref={anchorRef}
@@ -299,11 +310,7 @@ const ExportData = () => {
           >
             <LoadingButton
               loadingPosition="start"
-              startIcon={
-                isDownloading ? (
-                  <CircularProgress size={14} style={{ color: 'lightgray' }} />
-                ) : null
-              }
+              loading={isDownloading}
               variant="contained"
               onClick={downloadEventLogs}
               disabled={!location}
@@ -325,7 +332,7 @@ const ExportData = () => {
           <Popper
             sx={{
               zIndex: 1300,
-              paddingLeft:'140px',
+              paddingLeft: '140px',
             }}
             open={open}
             anchorEl={anchorRef.current}
@@ -337,11 +344,11 @@ const ExportData = () => {
               {
                 name: 'preventOverflow',
                 options: {
-                  altAxis: true, 
+                  altAxis: true,
                   altBoundary: true,
                   tether: true,
                   rootBoundary: 'document',
-                  padding: 8, 
+                  padding: 8,
                 },
               },
             ]}
@@ -377,10 +384,10 @@ const ExportData = () => {
                 display: 'flex',
                 marginLeft: '1rem',
                 marginTop: '19px',
-                height: "48px"
+                height: '48px',
               }}
             >
-              <Alert  severity="error">No Data Found</Alert>
+              <Alert severity="error">No Data Found</Alert>
             </Box>
           )}
         </Box>

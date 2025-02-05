@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for ReportApi - ATSPM.ReportApi.ReportServices/SplitFailReportService.cs
+// for ReportApi - Utah.Udot.Atspm.ReportApi.ReportServices/SplitFailReportService.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.IdentityModel.Tokens;
 using Utah.Udot.Atspm.Business.SplitFail;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
 

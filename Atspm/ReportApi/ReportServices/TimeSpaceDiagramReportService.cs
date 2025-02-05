@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for ReportApi - ATSPM.ReportApi.ReportServices/TimeSpaceDiagramReportService.cs
+// for ReportApi - Utah.Udot.Atspm.ReportApi.ReportServices/TimeSpaceDiagramReportService.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 #endregion
 
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using Utah.Udot.Atspm.Business.TimeSpaceDiagram;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
 
@@ -136,8 +135,8 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                     throw new Exception("Issue fetching location from route");
                 }
 
-                var primaryPhaseDetail = phaseService.GetPhases(location).Find(p => p.PhaseNumber == routeLocation.PrimaryPhase);
-                var opposingPhaseDetail = phaseService.GetPhases(location).Find(p => p.PhaseNumber == routeLocation.OpposingPhase);
+                var primaryPhaseDetail = phaseService.GetPhases(location).Find(p => p.Approach.ProtectedPhaseNumber == routeLocation.PrimaryPhase && p.Approach.DirectionType == routeLocation.PrimaryDirection);
+                var opposingPhaseDetail = phaseService.GetPhases(location).Find(p => p.Approach.ProtectedPhaseNumber == routeLocation.OpposingPhase && p.Approach.DirectionType == routeLocation.OpposingDirection);
 
                 if (primaryPhaseDetail == null || opposingPhaseDetail == null)
                 {
@@ -198,6 +197,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             return viewModel;
         }
 
+        //HACK: this needs to be moved into the repository
         private List<RouteLocation> GetLocationsFromRouteId(int routeId)
         {
             var routeLocations = routeLocationsRepository.GetList()
