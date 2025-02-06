@@ -63,7 +63,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Utilities", "Utilities", "{
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GUIs", "GUIs", "{1CFBBB2E-FC73-4FAC-A3F7-BFE1D9059F4F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabaseInstaller", "..\DatabaseInstaller\DatabaseInstaller.csproj", "{E620003F-F23B-4EA4-BF6F-BA81F45A8664}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DatabaseInstaller", "..\DatabaseInstaller\DatabaseInstaller.csproj", "{E620003F-F23B-4EA4-BF6F-BA81F45A8664}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
