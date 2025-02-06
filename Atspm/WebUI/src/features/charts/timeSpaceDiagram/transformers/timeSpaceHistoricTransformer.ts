@@ -19,6 +19,7 @@ import {
   createLegend,
   createTitle,
   createToolbox,
+  createTooltip,
   createXAxis,
   createYAxis,
   formatExportFileName,
@@ -322,6 +323,7 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
     description: '',
     numberOfLocations: primaryPhaseData.length,
   })
+  const tooltip = createTooltip()
 
   const chartOptions: EChartsOption = {
     title: title,
@@ -334,6 +336,7 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
     animation: false,
     series: series,
     displayProps,
+    tooltip,
   }
 
   return chartOptions
