@@ -45,6 +45,7 @@ namespace Utah.Udot.Atspm.Services
         /// <param name="token">Cancellation token</param>
         /// <returns></returns>
         /// <exception cref="DownloaderClientConnectionException"></exception>
+        /// <exception cref="OperationCanceledException"></exception>
         Task ConnectAsync(IPEndPoint connection, NetworkCredential credentials, int connectionTimeout = 2000, int operationTimeout = 2000, Dictionary<string, string> connectionProperties = null, CancellationToken token = default);
 
         /// <summary>
@@ -77,6 +78,7 @@ namespace Utah.Udot.Atspm.Services
         /// <returns></returns>
         /// <exception cref="DownloaderClientConnectionException"></exception>
         /// <exception cref="DownloaderClientDeleteResourceException"></exception>
+        /// <exception cref="OperationCanceledException"></exception>
         Task DeleteResourceAsync(Uri resource, CancellationToken token = default);
 
         /// <summary>
@@ -85,6 +87,7 @@ namespace Utah.Udot.Atspm.Services
         /// <param name="token">Cancellation token</param>
         /// <returns></returns>
         /// <exception cref="DownloaderClientConnectionException"></exception>
+        /// <exception cref="OperationCanceledException"></exception>
         Task DisconnectAsync(CancellationToken token = default);
     }
 }

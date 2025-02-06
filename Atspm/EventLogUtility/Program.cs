@@ -176,7 +176,31 @@ using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 //}
 
 
+//List<Assembly> assemblies = new List<Assembly>();
+//string assemblyFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+//foreach (var path in Directory.GetFiles(assemblyFolder, "*.dll"))
+//{
+//    var a = Assembly.LoadFrom(path);
 
+//    //if (a.GetName().Name.StartsWith("Utah.Udot.Atspm") || a.GetName().Name.Contains("EventLogUtility"))
+//    //{
+//    //    Console.WriteLine($"{a.GetName()} --- {a.GetName().Version}");
+//    //}
+
+
+//    if (a.GetName().Name.Contains("EventLogUtility"))
+//    {
+//        foreach (var t in a.GetReferencedAssemblies())
+//        {
+//            var l = Assembly.Load(t);
+
+//            Console.WriteLine($"{t} -- {l.GetName().Name}");
+
+//        }
+//    }
+
+//    //assemblies.Add(Assembly.LoadFrom(path));
+//}
 
 
 
@@ -259,6 +283,8 @@ foreach (var r in resources)
         Scheme = Uri.UriSchemeFile,
         Path = Path.Combine(basePath, file)
     };
+
+    var boo = Uri.IsWellFormedUriString(local.Uri.ToString(), UriKind.Absolute);
 
     var test = await client.DownloadResourceAsync(local.Uri, r);
 }

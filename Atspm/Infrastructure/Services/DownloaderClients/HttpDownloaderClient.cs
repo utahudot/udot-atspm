@@ -20,21 +20,22 @@ using Utah.Udot.Atspm.Data.Enums;
 
 namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
 {
+
     /// <summary>
     /// Connect to services and interact with their file directories using <see cref="HttpClient"/>
     /// </summary>
-    public class HttpDownloaderClient : ServiceObjectBase, IDownloaderClient
+    public class HttpDownloaderClient : DownloaderClientBase
     {
         private HttpClient _client;
 
         ///<inheritdoc/>
-        public HttpDownloaderClient() : base(true) { }
-
+        public HttpDownloaderClient() { }
+        
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
         /// <param name="client">External client used for special settings and mocking</param>
-        public HttpDownloaderClient(HttpClient client) : base(true)
+        public HttpDownloaderClient(HttpClient client)
         {
             _client = client;
         }
@@ -42,162 +43,101 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
         #region IDownloaderClient
 
         ///<inheritdoc/>
-        public TransportProtocols Protocol => TransportProtocols.Http;
+        public override TransportProtocols Protocol => TransportProtocols.Http;
 
         ///<inheritdoc/>
-        public bool IsConnected => _client != null && _client.BaseAddress.Host.IsValidIpAddress();
+        public override bool IsConnected => _client != null && _client.BaseAddress.Host.IsValidIpAddress();
 
         ///<inheritdoc/>
-        public Task ConnectAsync(IPEndPoint connection, NetworkCredential credentials, int connectionTimeout = 2000, int operationTimeout = 2000, Dictionary<string, string> connectionProperties = null, CancellationToken token = default)
+        protected override Task Connect(IPEndPoint connection, NetworkCredential credentials, int connectionTimeout = 2000, int operationTimeout = 2000, Dictionary<string, string> connectionProperties = null, CancellationToken token = default)
         {
-            token.ThrowIfCancellationRequested();
+            _client ??= new HttpClient();
+            _client.Timeout = TimeSpan.FromMilliseconds(operationTimeout);
 
-            try
+            var uriBuilder = new UriBuilder(Uri.UriSchemeHttp, connection.Address.ToString(), connection.Port)
             {
-                _client ??= new HttpClient();
-                _client.Timeout = TimeSpan.FromMilliseconds(operationTimeout);
+                UserName = credentials.UserName,
+                Password = credentials.Password,
+            };
 
-                var uriBuilder = new UriBuilder(Uri.UriSchemeHttp, connection.Address.ToString(), connection.Port)
-                {
-                    UserName = credentials.UserName,
-                    Password = credentials.Password,
-                };
-
-                if (Uri.TryCreate(uriBuilder.Uri.ToString(), UriKind.Absolute, out Uri baseAddress) && Uri.IsWellFormedUriString(baseAddress.ToString(), UriKind.Absolute))
-                {
-                    _client.BaseAddress = baseAddress;
-                }
-                else
-                {
-                    throw new UriFormatException($"Invalid Uri: {uriBuilder.Uri}");
-                }
-
-                if (connectionProperties != null && connectionProperties.Count > 0)
-                {
-                    _client.DefaultRequestHeaders.Accept.Clear();
-
-                    foreach (var prop in connectionProperties)
-                    {
-                        _client.DefaultRequestHeaders.Add(prop.Key, prop.Value);
-                    }
-                }
-
-                return Task.CompletedTask;
-            }
-            catch (Exception e)
+            if (Uri.TryCreate(uriBuilder.Uri.ToString(), UriKind.Absolute, out Uri baseAddress) && Uri.IsWellFormedUriString(baseAddress.ToString(), UriKind.Absolute))
             {
-                throw new DownloaderClientConnectionException(credentials.Domain, this, e.Message, e);
+                _client.BaseAddress = baseAddress;
             }
+            else
+            {
+                throw new UriFormatException($"Invalid Uri: {uriBuilder.Uri}");
+            }
+
+            if (connectionProperties != null && connectionProperties.Count > 0)
+            {
+                _client.DefaultRequestHeaders.Accept.Clear();
+
+                foreach (var prop in connectionProperties)
+                {
+                    _client.DefaultRequestHeaders.Add(prop.Key, prop.Value);
+                }
+            }
+
+            return Task.CompletedTask;
         }
 
         ///<inheritdoc/>
-        public async Task DeleteResourceAsync(Uri resource, CancellationToken token = default)
+        protected override Task DeleteResource(Uri resource, CancellationToken token = default)
         {
-            token.ThrowIfCancellationRequested();
-
-            if (!IsConnected)
-                throw new DownloaderClientConnectionException(_client?.BaseAddress?.Host, this, "Client not connected");
-
-            await Task.CompletedTask;
+            return Task.CompletedTask;
         }
 
         ///<inheritdoc/>
-        public async Task DisconnectAsync(CancellationToken token = default)
+        protected override Task Disconnect(CancellationToken token = default)
         {
-            token.ThrowIfCancellationRequested();
+            _client.CancelPendingRequests();
 
-            if (!IsConnected)
-                throw new DownloaderClientConnectionException(_client?.BaseAddress?.Host, this, "Client not connected");
-
-            try
-            {
-                _client.CancelPendingRequests();
-                _client = null;
-            }
-            catch (Exception e)
-            {
-                throw new DownloaderClientConnectionException(_client?.BaseAddress?.Host, this, e.Message, e);
-            }
-
-            await Task.CompletedTask;
+            return Task.CompletedTask;
         }
 
         ///<inheritdoc/>
-        public async Task<FileInfo> DownloadResourceAsync(Uri local, Uri remote, CancellationToken token = default)
+        protected override async Task<FileInfo> DownloadResource(FileInfo file, Uri remote, CancellationToken token = default)
         {
-            token.ThrowIfCancellationRequested();
+            var response = await _client.GetAsync(remote, token);
 
-            if (!IsConnected)
-                throw new DownloaderClientConnectionException(_client?.BaseAddress?.Host, this, "Client not connected");
-
-            try
+            if (response.IsSuccessStatusCode && response?.Content != null)
             {
-                if (Uri.TryCreate(remote.ToString(), UriKind.Absolute, out Uri request) && Uri.IsWellFormedUriString(Uri.EscapeDataString(request.Query), UriKind.Relative))
-                {
-                    var response = await _client.GetAsync(request, token);
+                var data = await response.Content.ReadAsStringAsync(token);
 
-                    if (response.IsSuccessStatusCode && response?.Content != null)
-                    {
-                        var data = await response.Content.ReadAsStringAsync(token);
+                await File.WriteAllTextAsync(file.FullName, data, token).ConfigureAwait(false);
 
-                        var fileInfo = new FileInfo(local.AbsolutePath.First() == '/' ? local.AbsolutePath.Remove(0, 1) : local.AbsolutePath);
-                        fileInfo.Directory.Create();
-
-                        await File.WriteAllTextAsync(fileInfo.FullName, data, token).ConfigureAwait(false);
-
-                        return fileInfo;
-                    }
-                    else
-                        throw new HttpRequestException(response.StatusCode.ToString());
-                }
-                else
-                {
-                    throw new UriFormatException($"Invalid Uri: {remote}");
-                }
+                return file;
             }
-            catch (Exception e)
-            {
-                throw new DownloaderClientDownloadResourceException(remote, this, e.Message, e);
-            }
+            else
+                throw new HttpRequestException(response.StatusCode.ToString());
         }
 
         ///<inheritdoc/>
-        public Task<IEnumerable<Uri>> ListResourcesAsync(string path, CancellationToken token = default, params string[] query)
+        protected override Task<IEnumerable<Uri>> ListResources(string path, CancellationToken token = default, params string[] query)
         {
-            token.ThrowIfCancellationRequested();
-
-            if (!IsConnected)
-                throw new DownloaderClientConnectionException(_client?.BaseAddress?.Host, this, "Client not connected");
-
             List<Uri> results = [];
 
-            try
+            if (Uri.TryCreate(_client.BaseAddress, path, out Uri baseAddress) && Uri.IsWellFormedUriString(baseAddress.ToString(), UriKind.Absolute))
             {
-                if (Uri.TryCreate(_client.BaseAddress, path, out Uri baseAddress) && Uri.IsWellFormedUriString(baseAddress.ToString(), UriKind.Absolute))
+                foreach (var f in query)
                 {
-                    foreach (var f in query)
+                    if (Uri.IsWellFormedUriString(Uri.EscapeDataString(f), UriKind.Relative) && Uri.TryCreate(baseAddress + f, UriKind.Absolute, out Uri result))
                     {
-                        if (Uri.IsWellFormedUriString(Uri.EscapeDataString(f), UriKind.Relative) && Uri.TryCreate(baseAddress + f, UriKind.Absolute, out Uri result))
-                        {
-                            results.Add(result);
-                        }
-                        else
-                        {
-                            throw new UriFormatException($"Invalid search term: {f}");
-                        }
+                        results.Add(result);
+                    }
+                    else
+                    {
+                        throw new UriFormatException($"Invalid search term: {f}");
                     }
                 }
-                else
-                {
-                    throw new UriFormatException($"Invalid path: {path}");
-                }
-
-                return Task.FromResult<IEnumerable<Uri>>(results);
             }
-            catch (Exception e)
+            else
             {
-                throw new DownloaderClientListResourcesException(path, this, e.Message);
+                throw new UriFormatException($"Invalid path: {path}");
             }
+
+            return Task.FromResult<IEnumerable<Uri>>(results);
         }
 
         #endregion
