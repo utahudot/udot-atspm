@@ -109,6 +109,8 @@ builder.Host
         s.AddAtspmAuthentication(h);
         s.AddAtspmAuthorization();
 
+        //don't mind me, i'm just putting this in here to gitactions thinks I changed something
+
         s.Configure<IdentityConfiguration>(h.Configuration.GetSection(nameof(IdentityConfiguration)));
     });
 var app = builder.Build();
