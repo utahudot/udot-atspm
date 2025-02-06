@@ -240,9 +240,8 @@ function transformData(data: RawSplitMonitorData) {
 
   const planOptions: PlanOptions<SplitMonitorPlan> = {
     percentileSplit: (value: number) =>
-      percentileSplit &&
-      `${Math.round(value)} Percentile Split (${percentileSplit}th)`,
-    averageSplit: (value) => `${Math.round(value)} Avg. Split`,
+      percentileSplit && `${Math.round(value)}s (${percentileSplit}th %)`,
+    averageSplit: (value) => `${Math.round(value)}s Avg. Split`,
     percentGapOuts: (value) => `${Math.round(value)}% Gap Outs`,
     percentMaxOuts: (value) => value && `${Math.round(value)}% Max Outs`,
     percentForceOffs: (value) => value && `${Math.round(value)}% Force Offs`,
