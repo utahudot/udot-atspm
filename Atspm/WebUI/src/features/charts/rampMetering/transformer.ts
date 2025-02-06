@@ -33,6 +33,7 @@ import { TimeSpaceDetectorEvent } from '../timeSpaceDiagram/types'
 import { TransformedChartResponse } from '../types'
 import {
   Color,
+  DashedLineSeriesSymbol,
   SolidLineSeriesSymbol,
   formatChartDateTimeRange,
   triangleSvgSymbol,
@@ -110,6 +111,7 @@ function transformData(data: RampMeteringData): EChartsOption[] {
     {
       name: 'Metering Rate (vph)',
       nameGap: 50,
+      min: 0,
     },
     {
       name: 'Lane Number',
@@ -162,7 +164,7 @@ function transformData(data: RampMeteringData): EChartsOption[] {
         : `Base Rate: ${lane.description}`
     return {
       name: description,
-      icon: SolidLineSeriesSymbol,
+      icon: DashedLineSeriesSymbol,
     }
   })
 
@@ -331,11 +333,11 @@ function transformData(data: RampMeteringData): EChartsOption[] {
         data: transformSeriesData(lane.value),
         type: 'custom',
         yAxisIndex: 0,
-        color: chartColors[index + 2],
+        color: chartColors[index + 1],
         clip: true,
         renderItem(param, api) {
           if (param.dataIndex === 0) {
-            const polylines = createPolyLines(baseRateData, api)
+            const polylines = createPolyLines(baseRateData, api, 'dashed')
 
             return {
               type: 'group',
@@ -363,7 +365,7 @@ function transformData(data: RampMeteringData): EChartsOption[] {
         data: transformSeriesData(lane.value),
         type: 'custom',
         yAxisIndex: 1,
-        color: chartColors[index + 1],
+        color: chartColors[index + 2],
         clip: true,
         renderItem(param, api) {
           if (param.dataIndex === 0) {
@@ -395,7 +397,7 @@ function transformData(data: RampMeteringData): EChartsOption[] {
         clip: true,
         renderItem(param, api) {
           if (param.dataIndex === 0) {
-            const polylines = createPolyLines(baseRateData, api)
+            const polylines = createPolyLines(baseRateData, api, 'dashed')
 
             return {
               type: 'group',
@@ -432,7 +434,7 @@ function transformData(data: RampMeteringData): EChartsOption[] {
         data: transformSeriesData(lane.value),
         type: 'custom',
         yAxisIndex: 1,
-        color: chartColors[index + 1],
+        color: chartColors[index + 3],
         clip: true,
         renderItem(param, api) {
           if (param.dataIndex === 0) {
@@ -460,11 +462,11 @@ function transformData(data: RampMeteringData): EChartsOption[] {
         data: transformSeriesData(lane.value),
         type: 'custom',
         yAxisIndex: 1,
-        color: chartColors[index + 2],
+        color: chartColors[index + 3],
         clip: true,
         renderItem(param, api) {
           if (param.dataIndex === 0) {
-            const polylines = createPolyLines(baseRateData, api)
+            const polylines = createPolyLines(baseRateData, api, 'dashed')
 
             return {
               type: 'group',
