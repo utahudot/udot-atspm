@@ -16,8 +16,8 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -25,7 +25,6 @@ using Utah.Udot.Atspm.Exceptions;
 using Utah.Udot.Atspm.Services;
 using Xunit;
 using Xunit.Abstractions;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace Utah.Udot.Atspm.InfrastructureTests.DownloaderClientTests
 {
@@ -215,6 +214,7 @@ namespace Utah.Udot.Atspm.InfrastructureTests.DownloaderClientTests
             var local = new UriBuilder()
             {
                 Scheme = Uri.UriSchemeFile,
+                Path = Path.GetTempFileName()
             }.Uri;
 
             var remote = new UriBuilder().Uri;
@@ -304,31 +304,43 @@ namespace Utah.Udot.Atspm.InfrastructureTests.DownloaderClientTests
         #region ListResources
 
         [Fact]
-        [Trait(nameof(IDownloaderClient), "ListDirectoryAsync")]
-        public async virtual Task ListDirectoryAsyncSucceeded()
+        [Trait(nameof(IDownloaderClient), nameof(IDownloaderClient.ListResourcesAsync))]
+        public async virtual Task ListResourcesAsyncSucceeded()
         {
-            var condition = await Sut.ListResourcesAsync("");
+            var expected = "/a/b/c";
 
-            Assert.True(condition is IEnumerable<string>);
+            var result = await Sut.ListResourcesAsync(expected);
+
+            foreach (var r in result)
+            {
+                Output.WriteLine($"result: {r}");
+            }
+
+            var actual = result.FirstOrDefault().PathAndQuery;
+
+            Output.WriteLine($"expected: {expected}");
+            Output.WriteLine($"actual: {actual}");
+
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
-        [Trait(nameof(IDownloaderClient), "ListDirectoryAsync")]
-        public async virtual Task ListDirectoryAsyncNotConnected()
+        [Trait(nameof(IDownloaderClient), nameof(IDownloaderClient.ListResourcesAsync))]
+        public async virtual Task ListResourcesAsyncNotConnected()
         {
             await Assert.ThrowsAsync<DownloaderClientConnectionException>(async () => await Sut.ListResourcesAsync(""));
         }
 
         [Fact]
-        [Trait(nameof(IDownloaderClient), "ListDirectoryAsync")]
+        [Trait(nameof(IDownloaderClient), nameof(IDownloaderClient.ListResourcesAsync))]
         public async virtual Task ListDirectoryAsyncControllerDownloadFileException()
         {
             await Assert.ThrowsAsync<DownloaderClientListResourcesException>(async () => await Sut.ListResourcesAsync(""));
         }
 
         [Fact]
-        [Trait(nameof(IDownloaderClient), "ListDirectoryAsync")]
-        public async virtual Task ListDirectoryAsyncOperationCanceledException()
+        [Trait(nameof(IDownloaderClient), nameof(IDownloaderClient.ListResourcesAsync))]
+        public async virtual Task ListResourcesAsyncDownloaderClientListResourcesException()
         {
             var tokenSource = new CancellationTokenSource();
             tokenSource.Cancel();
@@ -339,7 +351,7 @@ namespace Utah.Udot.Atspm.InfrastructureTests.DownloaderClientTests
         #endregion
 
         [Fact]
-        [Trait(nameof(IDownloaderClient), "ConnectAsync")]
+        [Trait(nameof(IDownloaderClient), nameof(IDownloaderClient.ConnectAsync))]
         public async virtual Task ConnectAsyncConnectionProperties()
         {
             var ipAddress = "127.0.0.1";

@@ -148,24 +148,6 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
 
         #endregion
 
-        ///// <summary>
-        ///// Runs <see cref="Uri.IsWellFormedUriString(string?, UriKind)"/> on each componenet of <paramref name="uri"/>
-        ///// </summary>
-        ///// <param name="uri"></param>
-        ///// <param name="scheme"></param>
-        ///// <returns></returns>
-        ///// <exception cref="UriFormatException"></exception>
-        //protected bool IsValidUri(Uri uri, UriKind uriKind, string scheme = null)
-        //{
-        //    var schemeCheck = string.IsNullOrEmpty(scheme) ? true : uri.Scheme == scheme;
-        //    var pathCheck = Uri.IsWellFormedUriString(Uri.EscapeDataString(uri.ToString()), uriKind);
-
-        //    if (schemeCheck && pathCheck)
-        //        return true;
-
-        //    throw new UriFormatException($"Invalid Uri {uri}");
-        //}
-
         /// <summary>
         /// Tries and creates a <see cref="FileInfo"/> instance from a valid <see cref="Uri"/> with a <see cref="Uri.UriSchemeFile"/> schema
         /// </summary>
