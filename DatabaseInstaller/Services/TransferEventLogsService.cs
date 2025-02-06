@@ -1,5 +1,4 @@
-﻿
-using DatabaseInstaller.Commands;
+﻿using DatabaseInstaller.Commands;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -40,37 +39,41 @@ namespace DatabaseInstaller.Services
             {
                 try
                 {
-                    var archiveLogs = new ConcurrentBag<CompressedEventLogs<IndianaEvent>>();
-
-                    // Process locations in batches of 10
                     var locationBatches = locations.Select((location, index) => new { location, index })
-                                                   .GroupBy(x => x.index / 10)
+                                                   .GroupBy(x => x.index / 50)
                                                    .Select(g => g.Select(x => x.location).ToList());
 
                     foreach (var batch in locationBatches)
                     {
-                        var tasks = batch.Select(location => ProcessLocationAsync(DateOnly.FromDateTime(date), location, archiveLogs, cancellationToken));
+                        var archiveLogs = new ConcurrentBag<CompressedEventLogs<IndianaEvent>>();
+                        var tasks = batch.Select(location => ProcessLocationAsync(DateOnly.FromDateTime(date), location, archiveLogs, cancellationToken)).ToList();
                         await Task.WhenAll(tasks);
 
-                        if (archiveLogs.Count > 50)
+                        if (archiveLogs.Any())
                         {
                             await FlushLogsAsync(archiveLogs);
                         }
                     }
-
-                    // Final flush after processing all batches
-                    if (archiveLogs.Any())
-                    {
-                        await FlushLogsAsync(archiveLogs);
-                    }
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError($"Error inserting data: {ex.Message}");
+                    _logger.LogError($"Error processing data for date {date}: {ex.Message}");
                 }
             }
 
             _logger.LogInformation("Execution completed.");
+        }
+
+        private async Task InsertLogsAsync(List<CompressedEventLogs<IndianaEvent>> archiveLogs)
+        {
+            using (var scope = _serviceProvider.CreateScope())
+            {
+                var context = scope.ServiceProvider.GetService<EventLogContext>();
+                if (context == null) return;
+
+                context.CompressedEvents.AddRange(archiveLogs);
+                await context.SaveChangesAsync();
+            }
         }
 
         private async Task ProcessLocationAsync(
@@ -79,86 +82,19 @@ namespace DatabaseInstaller.Services
             ConcurrentBag<CompressedEventLogs<IndianaEvent>> archiveLogs,
             CancellationToken cancellationToken)
         {
+            _logger.LogInformation($"Processing location {location.LocationIdentifier} for date {date}");
             await GetLogsAsync(date, _config.Source, archiveLogs, location, cancellationToken);
+            _logger.LogInformation($"Finished processing location {location.LocationIdentifier} for date {date}");
         }
 
         private async Task FlushLogsAsync(ConcurrentBag<CompressedEventLogs<IndianaEvent>> archiveLogs)
         {
-            var logsToInsert = new List<CompressedEventLogs<IndianaEvent>>();
-            while (archiveLogs.TryTake(out var log))
-            {
-                _logger.LogInformation($"Inserting archive log (Location: {log.LocationIdentifier}, Date: {log.ArchiveDate})");
-                logsToInsert.Add(log);
-                _logger.LogInformation($"Archive log inserted (Location: {log.LocationIdentifier}, Date: {log.ArchiveDate})");
-            }
+            var logsToInsert = archiveLogs.ToList();
+            archiveLogs.Clear();
 
+            _logger.LogInformation($"Flushing {logsToInsert.Count} logs to database");
             await InsertLogsAsync(logsToInsert);
         }
-
-        private async Task InsertLogsAsync(List<CompressedEventLogs<IndianaEvent>> archiveLogs)
-        {
-            const int maxRetryCount = 3; // Number of retries
-            int delay = 500; // Initial delay in milliseconds
-
-            for (int retry = 0; retry <= maxRetryCount; retry++)
-            {
-                try
-                {
-                    using (var scope = _serviceProvider.CreateScope())
-                    {
-                        var context = scope.ServiceProvider.GetService<EventLogContext>();
-
-                        if (context != null)
-                        {
-                            foreach (var archiveLog in archiveLogs)
-                            {
-                                context.CompressedEvents.Add(archiveLog);
-                            }
-
-                            await context.SaveChangesAsync(); // Ensure this is awaited
-                        }
-                    }
-
-                    // Exit the loop if successful
-                    return;
-                }
-                catch (Exception ex) when (retry < maxRetryCount)
-                {
-                    _logger.LogWarning($"InsertLogsAsync failed (attempt {retry + 1} of {maxRetryCount + 1}). Retrying in {delay}ms. Error: {ex.Message}");
-
-                    await Task.Delay(delay);
-                    delay *= 2; // Double the delay for the next retry
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError($"InsertLogsAsync failed after {maxRetryCount + 1} attempts. Switching to individual log insertion. Error: {ex.Message}");
-                }
-            }
-
-            // Fallback: Insert logs one by one
-            using (var scope = _serviceProvider.CreateScope())
-            {
-                var context = scope.ServiceProvider.GetService<EventLogContext>();
-
-                if (context != null)
-                {
-                    foreach (var archiveLog in archiveLogs)
-                    {
-                        try
-                        {
-                            context.CompressedEvents.Add(archiveLog);
-                            await context.SaveChangesAsync();
-                        }
-                        catch (Exception ex)
-                        {
-                            _logger.LogError($"Failed to insert individual archive log (Location: {archiveLog.LocationIdentifier}, Date: {archiveLog.ArchiveDate}). Error: {ex.Message}");
-                        }
-                    }
-                }
-            }
-        }
-
-
 
         private async Task GetLogsAsync(
             DateOnly dateToRetrieve,
@@ -167,18 +103,17 @@ namespace DatabaseInstaller.Services
             Location location,
             CancellationToken cancellationToken)
         {
-            var locationIdentifier = location.LocationIdentifier;
-            string selectQuery = $"SELECT SignalId, Timestamp, EventCode, EventParam FROM [dbo].[Controller_Event_Log] WHERE SignalId = '{locationIdentifier}' AND Timestamp between '{dateToRetrieve}' AND '{dateToRetrieve.AddDays(1)}'";
+            string selectQuery = $"SELECT SignalId, Timestamp, EventCode, EventParam FROM [dbo].[Controller_Event_Log] " +
+                                 $"WHERE SignalId = '{location.LocationIdentifier}' " +
+                                 $"AND Timestamp >= '{dateToRetrieve}' AND Timestamp < '{dateToRetrieve.AddDays(1)}'";
 
             using (var connection = new SqlConnection(sourceConnectionString))
             {
                 await connection.OpenAsync(cancellationToken);
-
                 using (var selectCommand = new SqlCommand(selectQuery, connection))
                 {
                     var eventLogs = new List<IndianaEvent>();
                     selectCommand.CommandTimeout = 120;
-                    Console.WriteLine($"Executing query: {selectQuery}");
 
                     using (var reader = await selectCommand.ExecuteReaderAsync(cancellationToken))
                     {
@@ -189,25 +124,27 @@ namespace DatabaseInstaller.Services
                                 var eventLog = new IndianaEvent
                                 {
                                     Timestamp = (DateTime)reader["Timestamp"],
-                                    EventCode = Convert.ToInt16((int)reader["EventCode"]),
-                                    EventParam = Convert.ToInt16((int)reader["EventParam"])
+                                    EventCode = Convert.ToInt16(reader["EventCode"]),
+                                    EventParam = Convert.ToInt16(reader["EventParam"])
                                 };
 
                                 eventLogs.Add(eventLog);
                             }
                             catch (Exception ex)
                             {
-                                _logger.LogInformation($" Event: {location}-{reader["Timestamp"]} EventCode:{reader["EventCode"]} EventParam:{reader["EventParam"]} Error reading record: {ex.Message}");
+                                _logger.LogInformation($"Error reading record for {location.LocationIdentifier}: {ex.Message}");
                             }
                         }
                     }
 
-                    if (eventLogs.Count > 0)
+                    _logger.LogInformation($"Found {eventLogs.Count} events for location {location.LocationIdentifier} on {dateToRetrieve}");
+
+                    if (eventLogs.Any())
                     {
                         var device = location.Devices.FirstOrDefault(d => d.DeviceType == Utah.Udot.Atspm.Data.Enums.DeviceTypes.SignalController);
                         if (device != null)
                         {
-                            var archiveLog = new CompressedEventLogs<IndianaEvent>
+                            var logEntry = new CompressedEventLogs<IndianaEvent>
                             {
                                 LocationIdentifier = location.LocationIdentifier,
                                 DeviceId = device.Id,
@@ -215,11 +152,12 @@ namespace DatabaseInstaller.Services
                                 Data = eventLogs
                             };
 
-                            archiveLogs.Add(archiveLog);
+                            archiveLogs.Add(logEntry);
+                            _logger.LogInformation($"Added log entry for location {location.LocationIdentifier} with {eventLogs.Count} events");
                         }
                         else
                         {
-                            _logger.LogWarning($"No device found for signal {location.LocationIdentifier}");
+                            _logger.LogWarning($"No device found for location {location.LocationIdentifier}");
                         }
                     }
                 }
@@ -227,8 +165,5 @@ namespace DatabaseInstaller.Services
         }
 
         public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
-
-
-
     }
 }
