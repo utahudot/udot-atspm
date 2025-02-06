@@ -84,20 +84,27 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
         ///<inheritdoc/>
         protected override async Task<FileInfo> DownloadResource(FileInfo file, Uri remote, CancellationToken token = default)
         {
-            await _client.DownloadFile(file.FullName, remote.LocalPath, FtpLocalExists.Overwrite, FtpVerify.None, null, token);
+            FtpStatus result = await _client.DownloadFile(file.FullName, remote.LocalPath, FtpLocalExists.Overwrite, FtpVerify.None, null, token);
 
-            return file;
+            if (result == FtpStatus.Success)
+                return file;
+            else
+                return null;
         }
 
         ///<inheritdoc/>
         protected override async Task<IEnumerable<Uri>> ListResources(string path, CancellationToken token = default, params string[] query)
         {
-            var results = await _client.GetListing(path, FtpListOption.Auto, token);
+            var resources = await _client.GetListing(path, FtpListOption.Auto, token);
 
-            return results.Select(s => s.FullName)
-                .Where(f => query.Any(a => f.Contains(a)))
-                .Select(s => new UriBuilder(Uri.UriSchemeFtp, _client.Host, _client.Port, s).Uri)
-                .ToList();
+            var results = resources.Select(s => s.FullName);
+
+            if (query.Length > 0)
+            {
+                results = results.Where(f => query.Any(a => f.Contains(a)));
+            }
+
+            return results.Select(s => new UriBuilder(Uri.UriSchemeFtp, _client.Host, _client.Port, s).Uri).ToList();
         }
 
         #endregion

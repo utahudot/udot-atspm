@@ -120,15 +120,22 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
 
             if (Uri.TryCreate(_client.BaseAddress, path, out Uri baseAddress) && Uri.IsWellFormedUriString(baseAddress.ToString(), UriKind.Absolute))
             {
-                foreach (var f in query)
+                if (query.Length <= 0)
                 {
-                    if (Uri.IsWellFormedUriString(Uri.EscapeDataString(f), UriKind.Relative) && Uri.TryCreate(baseAddress + f, UriKind.Absolute, out Uri result))
+                    results.Add(baseAddress);
+                }
+                else
+                {
+                    foreach (var f in query)
                     {
-                        results.Add(result);
-                    }
-                    else
-                    {
-                        throw new UriFormatException($"Invalid search term: {f}");
+                        if (Uri.IsWellFormedUriString(Uri.EscapeDataString(f), UriKind.Relative) && Uri.TryCreate(baseAddress + f, UriKind.Absolute, out Uri result))
+                        {
+                            results.Add(result);
+                        }
+                        else
+                        {
+                            throw new UriFormatException($"Invalid search term: {f}");
+                        }
                     }
                 }
             }

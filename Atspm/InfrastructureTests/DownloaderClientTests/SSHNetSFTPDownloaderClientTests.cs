@@ -17,12 +17,16 @@
 
 using FluentFTP;
 using Moq;
+using Renci.SshNet;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients;
 using Xunit.Abstractions;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace Utah.Udot.Atspm.InfrastructureTests.DownloaderClientTests
 {
@@ -215,7 +219,8 @@ namespace Utah.Udot.Atspm.InfrastructureTests.DownloaderClientTests
 
             client.SetupGet(p => p.IsConnected).Returns(true);
 
-            client.Setup(s => s.DownloadFileAsync(It.IsAny<string>(), "")).ReturnsAsync(new FileInfo(Path.GetTempFileName()));
+            client.Setup(s => s.DownloadFileAsync(It.IsAny<string>(), It.IsAny<string>()))
+                .ReturnsAsync((string a, string b) => new FileInfo(a));
 
             Sut = new SSHNetSFTPDownloaderClient(client.Object);
 
@@ -288,24 +293,35 @@ namespace Utah.Udot.Atspm.InfrastructureTests.DownloaderClientTests
 
         #region ListResources
 
-        public override async Task ListDirectoryAsyncSucceeded()
+        public override async Task ListResourcesAsyncSucceeded()
         {
+            var connectionInfo = new ConnectionInfo
+                ("127.0.0.1",
+                22,
+                "user",
+                new PasswordAuthenticationMethod("user", "password"));
+
             var client = new Mock<ISftpClientWrapper>();
+
+            client.SetupGet(p => p.ConnectionInfo).Returns(connectionInfo);
 
             client.SetupGet(p => p.IsConnected).Returns(true);
 
+            client.Setup(s => s.ListDirectoryAsync(It.IsAny<string>(), It.Is<string[]>(a => true)))
+                .ReturnsAsync((string a, string[] b) => [a]);
+
             Sut = new SSHNetSFTPDownloaderClient(client.Object);
 
-            await base.ListDirectoryAsyncSucceeded();
+            await base.ListResourcesAsyncSucceeded();
         }
 
-        public override async Task ListDirectoryAsyncNotConnected()
+        public override async Task ListResourcesAsyncNotConnected()
         {
             var client = new Mock<ISftpClientWrapper>();
 
             Sut = new SSHNetSFTPDownloaderClient(client.Object);
 
-            await base.ListDirectoryAsyncNotConnected();
+            await base.ListResourcesAsyncNotConnected();
         }
 
         public override async Task ListDirectoryAsyncControllerDownloadFileException()
@@ -321,11 +337,11 @@ namespace Utah.Udot.Atspm.InfrastructureTests.DownloaderClientTests
             await base.ListDirectoryAsyncControllerDownloadFileException();
         }
 
-        public override async Task ListDirectoryAsyncOperationCanceledException()
+        public override async Task ListResourcesAsyncDownloaderClientListResourcesException()
         {
             Sut = new SSHNetSFTPDownloaderClient();
 
-            await base.ListDirectoryAsyncOperationCanceledException();
+            await base.ListResourcesAsyncDownloaderClientListResourcesException();
         }
 
         #endregion

@@ -229,16 +229,18 @@ namespace Utah.Udot.Atspm.InfrastructureTests.DownloaderClientTests
 
         #region ListResources
 
-        public override Task ListDirectoryAsyncSucceeded()
+        public override async Task ListResourcesAsyncSucceeded()
         {
-            return Task.CompletedTask;
+            Sut = new HttpDownloaderClient(new HttpClient() { BaseAddress = new Uri("http://192.168.1.1") });
+
+            await base.ListResourcesAsyncSucceeded();
         }
 
-        public override async Task ListDirectoryAsyncNotConnected()
+        public override async Task ListResourcesAsyncNotConnected()
         {
             Sut = new HttpDownloaderClient();
 
-            await base.ListDirectoryAsyncNotConnected();
+            await base.ListResourcesAsyncNotConnected();
         }
 
         public override Task ListDirectoryAsyncControllerDownloadFileException()
@@ -246,11 +248,11 @@ namespace Utah.Udot.Atspm.InfrastructureTests.DownloaderClientTests
             return Task.CompletedTask;
         }
 
-        public override async Task ListDirectoryAsyncOperationCanceledException()
+        public override async Task ListResourcesAsyncDownloaderClientListResourcesException()
         {
             Sut = new HttpDownloaderClient();
 
-            await base.ListDirectoryAsyncOperationCanceledException();
+            await base.ListResourcesAsyncDownloaderClientListResourcesException();
         }
 
         #endregion
