@@ -24,18 +24,18 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
     /// <summary>
     /// Connect to services and interact with their file directories using <see cref="IAsyncFtpClient"/>
     /// </summary>
-    public class FluentFTPDownloaderClient : ServiceObjectBase, IDownloaderClient
+    public class FluentFTPDownloaderClient : DownloaderClientBase
     {
         private IAsyncFtpClient _client;
 
         ///<inheritdoc/>
-        public FluentFTPDownloaderClient() : base(true) { }
+        public FluentFTPDownloaderClient() { }
 
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
         /// <param name="client">External client used for special settings and mocking</param>
-        public FluentFTPDownloaderClient(IAsyncFtpClient client) : base(true)
+        public FluentFTPDownloaderClient(IAsyncFtpClient client)
         {
             _client = client;
         }
@@ -43,128 +43,61 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
         #region IDownloaderClient
 
         ///<inheritdoc/>
-        public TransportProtocols Protocol => TransportProtocols.Ftp;
+        public override TransportProtocols Protocol => TransportProtocols.Ftp;
 
         ///<inheritdoc/>
-        public bool IsConnected => _client != null && _client.IsConnected;
+        public override bool IsConnected => _client != null && _client.IsConnected;
 
         ///<inheritdoc/>
-        public async Task ConnectAsync(IPEndPoint connection, NetworkCredential credentials, int connectionTimeout = 2000, int operationTImeout = 2000, Dictionary<string, string> connectionProperties = null, CancellationToken token = default)
+        protected override async Task Connect(IPEndPoint connection, NetworkCredential credentials, int connectionTimeout = 2000, int operationTimeout = 2000, Dictionary<string, string> connectionProperties = null, CancellationToken token = default)
         {
-            token.ThrowIfCancellationRequested();
-
-            try
+            if (_client == null)
             {
-                if (_client == null)
-                {
-                    _client = new AsyncFtpClient();
-                }
-
-                _client.Host = connection.Address.ToString();
-                _client.Port = connection.Port;
-                _client.Credentials = credentials;
-                _client.Config.DataConnectionConnectTimeout = connectionTimeout;
-                _client.Config.DataConnectionReadTimeout = operationTImeout;
-                _client.Config.ConnectTimeout = connectionTimeout;
-                _client.Config.ReadTimeout = operationTImeout;
-                _client.Config.DataConnectionType = FtpDataConnectionType.AutoActive;
-
-                var result = await _client.AutoConnect(token);
-                //await client.Connect(token);
+                _client = new AsyncFtpClient();
             }
-            catch (Exception e)
-            {
-                throw new DownloaderClientConnectionException(credentials.Domain, this, e.Message, e);
-            }
+
+            _client.Host = connection.Address.ToString();
+            _client.Port = connection.Port;
+            _client.Credentials = credentials;
+            _client.Config.DataConnectionConnectTimeout = connectionTimeout;
+            _client.Config.DataConnectionReadTimeout = operationTimeout;
+            _client.Config.ConnectTimeout = connectionTimeout;
+            _client.Config.ReadTimeout = operationTimeout;
+            _client.Config.DataConnectionType = FtpDataConnectionType.AutoActive;
+
+            var result = await _client.AutoConnect(token);
+            //await client.Connect(token);
         }
 
         ///<inheritdoc/>
-        public async Task DeleteResourceAsync(Uri resource, CancellationToken token = default)
+        protected override async Task DeleteResource(Uri resource, CancellationToken token = default)
         {
-            token.ThrowIfCancellationRequested();
-
-            if (!IsConnected)
-                throw new DownloaderClientConnectionException(_client.Host, this, "Client not connected");
-
-            try
-            {
-                await _client.DeleteFile(resource.LocalPath, token);
-            }
-            catch (Exception e)
-            {
-                throw new DownloaderClientDeleteResourceException(resource, this, e.Message, e);
-            }
+            await _client.DeleteFile(resource.LocalPath, token);
         }
 
         ///<inheritdoc/>
-        public async Task DisconnectAsync(CancellationToken token = default)
+        protected override async Task Disconnect(CancellationToken token = default)
         {
-            token.ThrowIfCancellationRequested();
-
-            if (!IsConnected)
-                throw new DownloaderClientConnectionException(_client.Host, this, "Client not connected");
-
-            try
-            {
-                await _client.Disconnect(token);
-            }
-            catch (Exception e)
-            {
-                throw new DownloaderClientConnectionException(_client.Host, this, e.Message, e);
-            }
+            await _client.Disconnect(token);
         }
 
         ///<inheritdoc/>
-        public async Task<FileInfo> DownloadResourceAsync(Uri local, Uri remote, CancellationToken token = default)
+        protected override async Task<FileInfo> DownloadResource(FileInfo file, Uri remote, CancellationToken token = default)
         {
-            token.ThrowIfCancellationRequested();
+            await _client.DownloadFile(file.FullName, remote.LocalPath, FtpLocalExists.Overwrite, FtpVerify.None, null, token);
 
-            if (!IsConnected)
-                throw new DownloaderClientConnectionException(_client.Host, this, "Client not connected");
-
-            try
-            {
-                var fileInfo = new FileInfo(local.AbsolutePath.First() == '/' ? local.AbsolutePath.Remove(0, 1) : local.AbsolutePath);
-                fileInfo.Directory.Create();
-
-                if (Uri.TryCreate(remote.ToString(), UriKind.Absolute, out Uri uri) && uri.Scheme == Uri.UriSchemeFtp)
-                {
-                    await _client.DownloadFile(fileInfo.FullName, uri.LocalPath, FtpLocalExists.Overwrite, FtpVerify.None, null, token);
-                }
-                else
-                {
-                    throw new UriFormatException($"Invalid Uri: {remote}");
-                }
-
-                return fileInfo;
-            }
-            catch (Exception e)
-            {
-                throw new DownloaderClientDownloadResourceException(remote, this, e.Message, e);
-            }
+            return file;
         }
 
         ///<inheritdoc/>
-        public async Task<IEnumerable<Uri>> ListResourcesAsync(string path, CancellationToken token = default, params string[] query)
+        protected override async Task<IEnumerable<Uri>> ListResources(string path, CancellationToken token = default, params string[] query)
         {
-            token.ThrowIfCancellationRequested();
+            var results = await _client.GetListing(path, FtpListOption.Auto, token);
 
-            if (!IsConnected)
-                throw new DownloaderClientConnectionException(_client.Host, this, "Client not connected");
-
-            try
-            {
-                var results = await _client.GetListing(path, FtpListOption.Auto, token);
-
-                return results.Select(s => s.FullName)
-                    .Where(f => query.Any(a => f.Contains(a)))
-                    .Select(s => new UriBuilder(Uri.UriSchemeFtp, _client.Host, _client.Port, s).Uri)
-                    .ToList();
-            }
-            catch (Exception e)
-            {
-                throw new DownloaderClientListResourcesException(path, this, e.Message);
-            }
+            return results.Select(s => s.FullName)
+                .Where(f => query.Any(a => f.Contains(a)))
+                .Select(s => new UriBuilder(Uri.UriSchemeFtp, _client.Host, _client.Port, s).Uri)
+                .ToList();
         }
 
         #endregion
