@@ -11,7 +11,6 @@ interface SelectLocationProps {
   chartsDisabled?:boolean
   route?: number[][]
   center?: [number, number]
-  zoom?: number
   mapHeight?: number | string
   addLocationBtn?: boolean
 }
@@ -22,7 +21,6 @@ export function SelectLocation({
   chartsDisabled,
   route,
   center,
-  zoom,
   addLocationBtn,
   mapHeight,
 }: SelectLocationProps) {
@@ -51,7 +49,6 @@ export function SelectLocation({
         setLocation={setLocation}
         locations={locations}
         center={center}
-        zoom={zoom}
         route={route}
         mapHeight={mapHeight}
       />
