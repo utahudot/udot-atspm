@@ -26,6 +26,7 @@ export interface EnvVariables {
   MAP_TILE_LAYER: string | undefined
   MAP_TILE_ATTRIBUTION: string | undefined
   SPONSOR_IMAGE_URL: string | undefined
+  MAP_DEFAULT_ZOOM: string | undefined
 }
 let cachedEnv: EnvVariables | null = null
 export const getEnv = async (): Promise<EnvVariables | null> => {
