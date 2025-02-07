@@ -8,7 +8,6 @@ type SelectLocationMapProps = {
   setLocation: (location: Location) => void
   locations: Location[]
   route?: number[][]
-  zoom?: number
   center?: [number, number]
   mapHeight?: number | string
 }
@@ -18,7 +17,6 @@ function SelectLocationMap({
   setLocation,
   locations,
   route,
-  zoom,
   center,
   mapHeight,
 }: SelectLocationMapProps) {
@@ -39,11 +37,10 @@ function SelectLocationMap({
       setLocation,
       locations,
       route,
-      zoom,
       center,
       mapHeight,
     }),
-    [location, setLocation, locations, route, zoom, center, mapHeight]
+    [location, setLocation, locations, route, center, mapHeight]
   )
 
   return <LocationMap {...mapProps} />

@@ -23,7 +23,6 @@ type MapProps = {
   locations: Location[]
   route?: number[][]
   center?: [number, number]
-  zoom?: number
   mapHeight?: number | string
 }
 
@@ -33,7 +32,6 @@ const LocationMap = ({
   locations,
   route,
   center,
-  zoom,
   mapHeight,
 }: MapProps) => {
   const theme = useTheme()
@@ -57,6 +55,7 @@ const LocationMap = ({
     attribution: string
     initialLat: number
     initialLong: number
+    mapZoom: number
   } | null>(null)
 
   useEffect(() => {
@@ -67,6 +66,7 @@ const LocationMap = ({
         attribution: env.MAP_TILE_ATTRIBUTION,
         initialLat: parseFloat(env.MAP_DEFAULT_LATITUDE),
         initialLong: parseFloat(env.MAP_DEFAULT_LONGITUDE),
+        mapZoom: parseInt(env?.MAP_DEFAULT_ZOOM),
       })
     }
     fetchEnv()
@@ -178,7 +178,7 @@ const LocationMap = ({
   return (
     <MapContainer
       center={center || [mapInfo.initialLat, mapInfo.initialLong]}
-      zoom={zoom || 6}
+      zoom={mapInfo.mapZoom || 6}
       scrollWheelZoom={true}
       style={{
         height: mapHeight || 'calc(100% - 80px)',
