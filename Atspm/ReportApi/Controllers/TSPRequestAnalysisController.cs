@@ -17,7 +17,6 @@
 
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
-using Utah.Udot.Atspm.Business.PurdueCoordinationDiagram;
 using Utah.Udot.Atspm.Business.TSPRequestAnalysis;
 
 namespace Utah.Udot.Atspm.ReportApi.Controllers
@@ -26,9 +25,9 @@ namespace Utah.Udot.Atspm.ReportApi.Controllers
     /// Purdue coordination diagram report controller
     /// </summary>
     [ApiVersion(1.0)]
-    public class PurdueCoordinationDiagramController : ReportControllerBase<PurdueCoordinationDiagramOptions, IEnumerable<PurdueCoordinationDiagramResult>>
+    public class TSPRequestAnalysisController : ReportControllerBase<TSPRequestAnalysisOptions, IEnumerable<TSPRequestAnalysisResult>>
     {
         /// <inheritdoc/>
-        public PurdueCoordinationDiagramController(IReportService<PurdueCoordinationDiagramOptions, IEnumerable<PurdueCoordinationDiagramResult>> reportService, ILogger<PurdueCoordinationDiagramController> logger) : base(reportService, logger) { }
+        public TSPRequestAnalysisController(IReportService<TSPRequestAnalysisOptions, IEnumerable<TSPRequestAnalysisResult>> reportService, ILogger<TSPRequestAnalysisController> logger) : base(reportService, logger) { }
     }
 }

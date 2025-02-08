@@ -41,6 +41,7 @@ using Utah.Udot.Atspm.Business.SplitFail;
 using Utah.Udot.Atspm.Business.SplitMonitor;
 using Utah.Udot.Atspm.Business.TimeSpaceDiagram;
 using Utah.Udot.Atspm.Business.TimingAndActuation;
+using Utah.Udot.Atspm.Business.TSPRequestAnalysis;
 using Utah.Udot.Atspm.Business.TurningMovementCounts;
 using Utah.Udot.Atspm.Business.WaitTime;
 using Utah.Udot.Atspm.Business.Watchdog;
@@ -170,6 +171,7 @@ builder.Host
     s.AddScoped<IReportService<YellowRedActivationsOptions, IEnumerable<YellowRedActivationsResult>>, YellowRedActivationsReportService>();
     s.AddScoped<IReportService<WaitTimeOptions, IEnumerable<WaitTimeResult>>, WaitTimeReportService>();
     s.AddScoped<IReportService<WatchDogOptions, WatchDogResult>, WatchDogReportService>();
+    s.AddScoped<IReportService<TSPRequestAnalysisOptions, IEnumerable<TSPRequestAnalysisResult>>, TSPRequestAnalysisReportService>();
     s.AddScoped<WatchDogDashboardReportService>();
 
     //AggregationResult Services

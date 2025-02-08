@@ -74,6 +74,7 @@ namespace Utah.Udot.Atspm.Business.Common
         /// <returns></returns>
         public List<GreenToGreenCycle> GetGreenToGreenCycles(DateTime startTime, DateTime endTime, List<IndianaEvent> cycleEvents)
         {
+            cycleEvents = cycleEvents.OrderBy(c => c.Timestamp).ToList();
             var cycles = new List<GreenToGreenCycle>();
             for (var i = 0; i < cycleEvents.Count; i++)
                 if (i < cycleEvents.Count - 3
