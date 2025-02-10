@@ -1,6 +1,6 @@
 import { Default } from '@/features/charts/types'
 import { YellowAndRedActuationsChartOptionsDefaults } from '@/features/charts/yellowAndRedActuations/types'
-import { Box, FormControl, TextField, Typography } from '@mui/material'
+import { Alert, Box, FormControl, TextField, Typography } from '@mui/material'
 import { ChangeEvent, useState } from 'react'
 
 interface YellowAndRedActuationsChartOptionsProps {
@@ -41,30 +41,38 @@ export const YellowAndRedActuationsChartOptions = ({
   }
 
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        justifyContent: 'space-between',
-      }}
-    >
-      <Typography>Severe Level</Typography>
-      <Box sx={{ display: 'flex', alignItems: 'center' }}>
-        <FormControl sx={{ width: '60px' }}>
-          <label htmlFor="severe-level" style={visuallyHidden}>
-            Severe Level
-          </label>
-          <TextField
-            id="severe-level"
-            type="number"
-            value={severeLevel}
-            onChange={handleSevereLevelChange}
-            variant="standard"
-          />
-        </FormControl>
-        <Typography variant="caption" sx={{ marginLeft: '0.5rem' }}>
-          sec
-        </Typography>
-      </Box>
-    </Box>
+    <>
+      {severeLevel === undefined ? (
+        <Alert severity="error" sx={{ mt: 1 }}>
+          Severe Level default value not found.
+        </Alert>
+      ) : (
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+          }}
+        >
+          <Typography>Severe Level</Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <FormControl sx={{ width: '60px' }}>
+              <label htmlFor="severe-level" style={visuallyHidden}>
+                Severe Level
+              </label>
+              <TextField
+                id="severe-level"
+                type="number"
+                value={severeLevel}
+                onChange={handleSevereLevelChange}
+                variant="standard"
+              />
+            </FormControl>
+            <Typography variant="caption" sx={{ marginLeft: '0.5rem' }}>
+              sec
+            </Typography>
+          </Box>
+        </Box>
+      )}
+    </>
   )
 }

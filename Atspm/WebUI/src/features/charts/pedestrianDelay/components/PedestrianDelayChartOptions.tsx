@@ -1,6 +1,6 @@
 import { PedestrianDelayChartOptionsDefaults } from '@/features/charts/pedestrianDelay/types'
 import { Default } from '@/features/charts/types'
-import { Box, FormControl, TextField, Typography } from '@mui/material'
+import { Alert, Box, FormControl, TextField, Typography } from '@mui/material'
 import { ChangeEvent, useState } from 'react'
 
 interface PedestrianDelayChartOptionsProps {
@@ -56,58 +56,70 @@ export const PedestrianDelayChartOptions = ({
 
   return (
     <>
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          padding: '0.25rem',
-        }}
-      >
-        <Typography>Time Buffer</Typography>
-        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <FormControl sx={{ width: '60px' }}>
-            <label htmlFor="time-buffer" style={visuallyHidden}>
-              Time Buffer
-            </label>
-            <TextField
-              id="time-buffer"
-              type="number"
-              value={timeBuffer}
-              onChange={handleTimeBufferChange}
-              variant="standard"
-            />
-          </FormControl>
-          <Typography variant="caption" sx={{ marginLeft: '0.5rem' }}>
-            sec
-          </Typography>
+      {timeBuffer === undefined ? (
+        <Alert severity="error" sx={{ mt: 1 }}>
+          Time Buffer default value not found.
+        </Alert>
+      ) : (
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            padding: '0.25rem',
+          }}
+        >
+          <Typography>Time Buffer</Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <FormControl sx={{ width: '60px' }}>
+              <label htmlFor="time-buffer" style={visuallyHidden}>
+                Time Buffer
+              </label>
+              <TextField
+                id="time-buffer"
+                type="number"
+                value={timeBuffer}
+                onChange={handleTimeBufferChange}
+                variant="standard"
+              />
+            </FormControl>
+            <Typography variant="caption" sx={{ marginLeft: '0.5rem' }}>
+              sec
+            </Typography>
+          </Box>
         </Box>
-      </Box>
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          padding: '0.25rem',
-        }}
-      >
-        <Typography>Ped Recall Threshold</Typography>
-        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <FormControl sx={{ width: '60px' }}>
-            <label htmlFor="ped-recall-threshold" style={visuallyHidden}>
-              Ped Recall Threshold
-            </label>
-            <TextField
-              id="ped-recall-threshold"
-              type="number"
-              value={pedRecallThreshold}
-              onChange={handlePedRecallThresholdChange}
-              variant="standard"
-            />
-          </FormControl>
-          <Typography variant="caption" sx={{ mx: '.6rem' }}>
-            %
-          </Typography>
+      )}
+      {pedRecallThreshold === undefined ? (
+        <Alert severity="error" sx={{ mt: 1 }}>
+          Ped Recall Threshold default value not found.
+        </Alert>
+      ) : (
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            padding: '0.25rem',
+          }}
+        >
+          <Typography>Ped Recall Threshold</Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <FormControl sx={{ width: '60px' }}>
+              <label htmlFor="ped-recall-threshold" style={visuallyHidden}>
+                Ped Recall Threshold
+              </label>
+              <TextField
+                id="ped-recall-threshold"
+                type="number"
+                value={pedRecallThreshold}
+                onChange={handlePedRecallThresholdChange}
+                variant="standard"
+              />
+            </FormControl>
+            <Typography variant="caption" sx={{ mx: '.6rem' }}>
+              %
+            </Typography>
+          </Box>
         </Box>
-      </Box>
+      )}
     </>
   )
 }

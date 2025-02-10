@@ -2,6 +2,7 @@ import { BinSizeDropdown } from '@/features/charts/components/selectChart/BinSiz
 import { LeftTurnGapAnalysisChartOptionsDefaults } from '@/features/charts/leftTurnGapAnalysis/types'
 import { Default } from '@/features/charts/types'
 import {
+  Alert,
   Box,
   FormControl,
   SelectChangeEvent,
@@ -86,97 +87,122 @@ export const LeftTurnGapAnalysisChartOptions = ({
     gapEnd: string | null,
     setGapEnd: ((value: string) => void) | null
   ) => (
-    <Box
-      sx={{ display: 'flex', justifyContent: 'space-between', marginY: '1rem' }}
-    >
-      <Typography>{formatGapLabel(gapNumber)}</Typography>
-      <Box sx={{ display: 'flex', alignItems: 'center' }}>
-        <FormControl
-          variant="standard"
-          size="small"
-          sx={{ width: '60px', marginRight: '0.5rem' }}
+    <>
+      {gapStart === undefined || gapEnd === undefined ? (
+        <Alert severity="error" sx={{ mt: 1 }}>
+          {`gap ${gapNumber} range default value not found.`}
+        </Alert>
+      ) : (
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            marginY: '1rem',
+          }}
         >
-          <label htmlFor={`gap${gapNumber}Min`} style={visuallyHidden}>
-            Gap Start
-          </label>
-          <TextField
-            id={`gap${gapNumber}Min`}
-            value={gapStart}
-            onChange={handleInputChange(
-              `gap${gapNumber}Min`,
-              setGapStart,
-              chartDefaults[`gap${gapNumber}Min`]?.id
-            )}
-            variant="standard"
-            size="small"
-            type="number"
-            inputProps={{ step: 0.1 }}
-            sx={{ width: '100%' }}
-          />
-        </FormControl>
-        {setGapEnd && <Typography sx={{ marginX: '0.5rem' }}>–</Typography>}
-        {setGapEnd && (
-          <FormControl
-            variant="standard"
-            size="small"
-            sx={{ width: '60px', marginRight: '0.5rem' }}
-          >
-            <label htmlFor={`gap${gapNumber}Max`} style={visuallyHidden}>
-              Gap End
-            </label>
-            <TextField
-              id={`gap${gapNumber}Max`}
-              value={gapEnd}
-              onChange={handleInputChange(
-                `gap${gapNumber}Max`,
-                setGapEnd,
-                chartDefaults[`gap${gapNumber}Max`]?.id
-              )}
+          <Typography>{formatGapLabel(gapNumber)}</Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <FormControl
               variant="standard"
               size="small"
-              type="number"
-              inputProps={{ step: 0.1 }}
-              sx={{ width: '100%' }}
-            />
-          </FormControl>
-        )}
-        <Typography variant="caption">sec</Typography>
-      </Box>
-    </Box>
+              sx={{ width: '60px', marginRight: '0.5rem' }}
+            >
+              <label htmlFor={`gap${gapNumber}Min`} style={visuallyHidden}>
+                Gap Start
+              </label>
+              <TextField
+                id={`gap${gapNumber}Min`}
+                value={gapStart}
+                onChange={handleInputChange(
+                  `gap${gapNumber}Min`,
+                  setGapStart,
+                  chartDefaults[`gap${gapNumber}Min`]?.id
+                )}
+                variant="standard"
+                size="small"
+                type="number"
+                inputProps={{ step: 0.1 }}
+                sx={{ width: '100%' }}
+              />
+            </FormControl>
+            {setGapEnd && <Typography sx={{ marginX: '0.5rem' }}>–</Typography>}
+            {setGapEnd && (
+              <FormControl
+                variant="standard"
+                size="small"
+                sx={{ width: '60px', marginRight: '0.5rem' }}
+              >
+                <label htmlFor={`gap${gapNumber}Max`} style={visuallyHidden}>
+                  Gap End
+                </label>
+                <TextField
+                  id={`gap${gapNumber}Max`}
+                  value={gapEnd}
+                  onChange={handleInputChange(
+                    `gap${gapNumber}Max`,
+                    setGapEnd,
+                    chartDefaults[`gap${gapNumber}Max`]?.id
+                  )}
+                  variant="standard"
+                  size="small"
+                  type="number"
+                  inputProps={{ step: 0.1 }}
+                  sx={{ width: '100%' }}
+                />
+              </FormControl>
+            )}
+            <Typography variant="caption">sec</Typography>
+          </Box>
+        </Box>
+      )}
+    </>
   )
 
   return (
     <>
-      <BinSizeDropdown value={binSize} handleChange={handleBinSizeChange} />
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          marginY: '1rem',
-        }}
-      >
-        <Typography>Trend Line Gap Threshold</Typography>
-        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <FormControl sx={{ width: '60px' }}>
-            <label htmlFor="trendLineGapThreshold" style={visuallyHidden}>
-              Trend Line Gap Threshold
-            </label>
-            <TextField
-              id="trendLineGapThreshold"
-              type="number"
-              inputProps={{ step: 0.1 }}
-              value={trendLineGapThreshold}
-              onChange={handleTrendLineGapThresholdChange}
-              variant="standard"
-              placeholder="Enter threshold"
-              size="small"
-            />
-          </FormControl>
-          <Typography variant="caption" sx={{ marginLeft: '0.5rem' }}>
-            sec
-          </Typography>
+      {binSize === undefined ? (
+        <Alert severity="error" sx={{ mt: 1 }}>
+          Bin Size default value not found.
+        </Alert>
+      ) : (
+        <BinSizeDropdown value={binSize} handleChange={handleBinSizeChange} />
+      )}
+
+      {trendLineGapThreshold === undefined ? (
+        <Alert severity="error" sx={{ mt: 1 }}>
+          Trend Line Gap Threshold default value not found.
+        </Alert>
+      ) : (
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            marginY: '1rem',
+          }}
+        >
+          <Typography>Trend Line Gap Threshold</Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <FormControl sx={{ width: '60px' }}>
+              <label htmlFor="trendLineGapThreshold" style={visuallyHidden}>
+                Trend Line Gap Threshold
+              </label>
+              <TextField
+                id="trendLineGapThreshold"
+                type="number"
+                inputProps={{ step: 0.1 }}
+                value={trendLineGapThreshold}
+                onChange={handleTrendLineGapThresholdChange}
+                variant="standard"
+                placeholder="Enter threshold"
+                size="small"
+              />
+            </FormControl>
+            <Typography variant="caption" sx={{ marginLeft: '0.5rem' }}>
+              sec
+            </Typography>
+          </Box>
         </Box>
-      </Box>
+      )}
       {renderGapInput(1, gap1Min, setgap1Min, gap1Max, setgap1Max)}
       {renderGapInput(2, gap2Min, setgap2Min, gap2Max, setgap2Max)}
       {renderGapInput(3, gap3Min, setgap3Min, gap3Max, setgap3Max)}
