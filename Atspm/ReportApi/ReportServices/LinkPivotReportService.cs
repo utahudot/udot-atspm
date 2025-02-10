@@ -40,6 +40,9 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
         public override async Task<LinkPivotResult> ExecuteAsync(LinkPivotOptions parameter, IProgress<int> progress = null, CancellationToken cancelToken = default)
         {
             var routeLocations = GetLocationsFromRouteId(parameter.RouteId);
+            if (routeLocations == null || routeLocations.Count == 0) {
+                throw new Exception($"No Route Locations configured for route");
+            }
             var result = await Task.Run(() => linkPivotService.GetData(parameter, routeLocations));
 
             return result;

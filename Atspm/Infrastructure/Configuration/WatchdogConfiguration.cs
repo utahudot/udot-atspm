@@ -14,15 +14,13 @@
         public int MinimumRecords { get; set; } = 500;
         public int MinPhaseTerminations { get; set; } = 50;
         public double PercentThreshold { get; set; } = .9;
-        public int RampMainlineStartHour { get; set; } = 15;
-        public int RampMainlineEndHour { get; set; } = 19;
-        public int RampStuckQueueStartHour { get; set; } = 1;
-        public int RampStuckQueueEndHour { get; set; } = 4;
 
         public bool EmailAllErrors { get; set; }
         public string DefaultEmailAddress { get; set; }
 
         public DateTime AnalysisStart => ScanDate.Date + new TimeSpan(ScanDayStartHour, 0, 0);
         public DateTime AnalysisEnd => ScanDate.Date + new TimeSpan(ScanDayEndHour, 0, 0);
+
+        public string Sort { get; set; }
     }
 }
