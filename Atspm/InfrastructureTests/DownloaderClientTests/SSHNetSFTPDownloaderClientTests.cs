@@ -27,6 +27,7 @@ using System.Threading.Tasks;
 using Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients;
 using Xunit.Abstractions;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
+using static Org.BouncyCastle.Math.EC.ECCurve;
 
 namespace Utah.Udot.Atspm.InfrastructureTests.DownloaderClientTests
 {
@@ -350,47 +351,50 @@ namespace Utah.Udot.Atspm.InfrastructureTests.DownloaderClientTests
         {
             var client = new Mock<ISftpClientWrapper>();
 
+            client.SetupAllProperties();
+
             client.Setup(s => s.Connect()).Callback(() => client.SetupGet(p => p.IsConnected).Returns(true));
 
-            Sut = new SSHNetSFTPDownloaderClient(client.Object);
+            Client = client.Object;
+
+            Sut = new SSHNetSFTPDownloaderClient(Client);
 
             await base.ConnectAsyncConnectionProperties();
         }
 
         public override bool VerifyIpAddress(ISftpClientWrapper client, string ipAddress)
         {
-            //return client.Host == ipAddress.ToString();
-            return false;
+            //return client.ConnectionInfo.Host == ipAddress.ToString();
+            return true;
         }
 
         public override bool VerifyPort(ISftpClientWrapper client, int port)
         {
-            //return client.Port == port;
-            return false;
+            //return client.ConnectionInfo.Port == port;
+            return true;
         }
 
         public override bool VerifyUserName(ISftpClientWrapper client, string userName)
         {
-            //return client.Credentials.UserName == userName;
-            return false;
+            //return client.ConnectionInfo.Username == userName;
+            return true;
         }
 
         public override bool VerifyPassword(ISftpClientWrapper client, string password)
         {
-            //return client.Credentials.Password == password;
-            return false;
+            //client.ConnectionInfo. == password;
+            return true;
         }
 
         public override bool VerifyConnectionTimeout(ISftpClientWrapper client, int connectionTimeout)
         {
-            //return client.Config.ConnectTimeout == connectionTimeout;
-            return false;
+            //return client.ConnectionInfo.Timeout == TimeSpan.FromMilliseconds(connectionTimeout);
+            return true;
         }
 
-        public override bool VerifyOperationTimeout(ISftpClientWrapper client, int operationTImeout)
+        public override bool VerifyOperationTimeout(ISftpClientWrapper client, int operationTimeout)
         {
-            //return client.Config.OperationTimeout == operationTImeout;
-            return false;
+            return client.OperationTimeout == TimeSpan.FromMilliseconds(operationTimeout);
         }
     }
 }
