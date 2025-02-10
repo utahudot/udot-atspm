@@ -121,9 +121,9 @@ namespace Utah.Udot.Atspm.Business.PedDelay
             pedPhaseData.PedRequests = mainEvents.Count(e => e.EventCode == 90);
             pedPhaseData.PedCallsRegisteredCount = mainEvents.Count(e => e.EventCode == 45);
 
-            mainEvents = Remove45s(mainEvents);
-
-            mainEvents = CombineSequential90s(mainEvents);
+            //mainEvents = Remove45s(mainEvents);
+            var pedEventCodes = new List<int> { 21, 22, 90 };
+            mainEvents = mainEvents.Where(e => pedEventCodes.Contains(e.EventCode)).OrderBy(e => e.Timestamp).ToList();
 
             pedPhaseData.PedBeginWalkCount = mainEvents.Count(e => e.EventCode == pedPhaseData.BeginWalkEvent);
             pedPhaseData.ImputedPedCallsRegistered = CountImputedPedCalls(mainEvents, previousEvents, pedPhaseData);

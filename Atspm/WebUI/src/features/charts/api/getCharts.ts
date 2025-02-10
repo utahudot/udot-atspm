@@ -74,15 +74,12 @@ export const getCharts = async (
   options: ChartOptions
 ): Promise<TransformedChartResponse> => {
   const endpoint = TypeApiMap[type]
-
   const transformedOptions = mapStringBooleansToBoolean(options)
-
   transformedOptions.start = dateToTimestamp(transformedOptions.start as Date)
   transformedOptions.end = dateToTimestamp(transformedOptions.end as Date)
 
 
   const response = await reportsAxios.post(endpoint, transformedOptions)
-
   return transformChartData({
     type: type,
     data: response,

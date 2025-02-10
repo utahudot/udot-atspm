@@ -1,7 +1,7 @@
 import { transformMenuItems } from '@/components/topbar/menuUtils'
 import { useGetAdminPagesList } from '@/features/identity/pagesCheck'
 import { doesUserHaveAccess } from '@/features/identity/utils'
-import { useGetMenuItems } from '@/features/links/api/getMenuItems'
+import { useGetMenuItems } from '@/features/menuItems/api/getMenuItems'
 import { useSidebarStore } from '@/stores/sidebar'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import MenuIcon from '@mui/icons-material/Menu'
@@ -9,8 +9,8 @@ import QuestionAnswerOutlinedIcon from '@mui/icons-material/QuestionAnswerOutlin
 import { Box, Button, IconButton, Paper, Typography } from '@mui/material'
 import Image from 'next/image'
 import NextLink from 'next/link'
-import router from 'next/router'
 import { useEffect, useState } from 'react'
+import { useQueryClient } from 'react-query'
 import DropDownButton from './DropdownButton'
 import UserMenu from './UserMenu'
 
@@ -20,7 +20,7 @@ export default function Topbar() {
   const { toggleSidebar } = useSidebarStore()
   const [userHasAccess, setUserHasAccess] = useState(false)
   const { data: menuItemsData, isLoading } = useGetMenuItems()
-
+  const queryClient = useQueryClient()
   useEffect(() => {
     setUserHasAccess(doesUserHaveAccess())
   }, [])
@@ -30,7 +30,7 @@ export default function Topbar() {
   }
 
   const handleNavigation = (path: string) => {
-    router.push(path)
+    window.open(path, '_blank')
   }
 
   const menuItems = menuItemsData ? transformMenuItems(menuItemsData.value) : []
@@ -54,6 +54,19 @@ export default function Topbar() {
     name: key,
     link: pagesToLinks.get(key) as string,
   }))
+
+  useEffect(() => {
+    // This effect runs once when the component mounts but could be triggered on certain conditions like user authentication status change
+    return () => {
+      // Invalidate the query when the component unmounts or if there's a condition where you want to force refresh
+      queryClient.invalidateQueries({ queryKey: ['/MenuItems'] })
+    }
+  }, [])
+
+  // Or if you want to manually trigger an update:
+  const refreshMenuItems = () => {
+    queryClient.invalidateQueries({ queryKey: ['/MenuItems'] })
+  }
 
   return (
     <Box
