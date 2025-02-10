@@ -398,9 +398,9 @@ namespace Utah.Udot.Atspm.InfrastructureTests.DownloaderClientTests
             return client.Config.ConnectTimeout == connectionTimeout;
         }
 
-        public override bool VerifyOperationTimeout(IAsyncFtpClient client, int operationTImeout)
+        public override bool VerifyOperationTimeout(IAsyncFtpClient client, int operationTimeout)
         {
-            return client.Config.ReadTimeout == operationTImeout;
+            return client.Config.ReadTimeout == operationTimeout;
         }
     }
 }

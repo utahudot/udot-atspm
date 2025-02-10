@@ -366,6 +366,13 @@ namespace Utah.Udot.Atspm.InfrastructureTests.DownloaderClientTests
 
             await Sut.ConnectAsync(connection, credentials, connectionTimeout, operationTImeout);
 
+            Output.WriteLine($"VerifyIpAddress: {ipAddress}");
+            Output.WriteLine($"VerifyPort: {port}");
+            Output.WriteLine($"VerifyUserName: {userName}");
+            Output.WriteLine($"VerifyPassword: {password}");
+            Output.WriteLine($"VerifyConnectionTimeout: {connectionTimeout}");
+            Output.WriteLine($"VerifyOperationTimeout: {operationTImeout}");
+
             Assert.True(VerifyIpAddress(Client, ipAddress));
             Assert.True(VerifyPort(Client, port));
             Assert.True(VerifyUserName(Client, userName));
@@ -379,7 +386,7 @@ namespace Utah.Udot.Atspm.InfrastructureTests.DownloaderClientTests
         public abstract bool VerifyUserName(T client, string userName);
         public abstract bool VerifyPassword(T client, string password);
         public abstract bool VerifyConnectionTimeout(T client, int connectionTimeout);
-        public abstract bool VerifyOperationTimeout(T client, int operationTImeout);
+        public abstract bool VerifyOperationTimeout(T client, int operationTimeout);
 
         public virtual void Dispose()
         {

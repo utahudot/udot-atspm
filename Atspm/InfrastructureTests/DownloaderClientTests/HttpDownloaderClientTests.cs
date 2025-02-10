@@ -290,9 +290,9 @@ namespace Utah.Udot.Atspm.InfrastructureTests.DownloaderClientTests
             return true;
         }
 
-        public override bool VerifyOperationTimeout(HttpClient client, int operationTImeout)
+        public override bool VerifyOperationTimeout(HttpClient client, int operationTimeout)
         {
-            return client.Timeout.TotalMilliseconds == operationTImeout;
+            return client.Timeout.TotalMilliseconds == operationTimeout;
         }
     }
 }
