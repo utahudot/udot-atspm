@@ -28,15 +28,15 @@ namespace Utah.Udot.Atspm.Data.Models
     public partial class Device : AtspmConfigModelBase<int>, IRelatedLocation, IRelatedDeviceConfiguration
     {
         /// <summary>
-        /// Friendly name of device
-        /// </summary>
-        public string Description { get; set; }
-        
-        /// <summary>
         /// Device identifier from external systems
         /// </summary>
         public string DeviceIdentifier { get; set; }
-        
+
+        /// <summary>
+        /// Used for additional device properties
+        /// </summary>
+        public Dictionary<string, object> DeviceProperties { get; set; }
+
         /// <summary>
         /// Enable Location to be logged
         /// </summary>

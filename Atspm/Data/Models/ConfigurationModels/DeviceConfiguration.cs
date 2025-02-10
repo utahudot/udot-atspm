@@ -50,7 +50,7 @@ namespace Utah.Udot.Atspm.Data.Models
         /// <summary>
         /// Connection properties specific to the <see cref="Protocol"/>
         /// </summary>
-        public Dictionary<string, string> ConnectionProperties { get; set; }
+        public Dictionary<string, object> ConnectionProperties { get; set; }
 
         /// <summary>
         /// Uri or file path to remote event log resources

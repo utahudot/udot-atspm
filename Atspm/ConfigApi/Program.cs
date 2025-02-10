@@ -20,7 +20,11 @@ using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.AspNetCore.OData;
+using Microsoft.AspNetCore.OData.Formatter;
+using Microsoft.AspNetCore.OData.Formatter.Serialization;
 using Microsoft.Extensions.Options;
+using Microsoft.OData;
+using Microsoft.OData.ModelBuilder;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -68,17 +72,22 @@ builder.Host
     });
     s.AddProblemDetails();
 
-    //https://github.com/dotnet/aspnet-api-versioning/wiki/OData-Versioned-Metadata
-    s.AddApiVersioning(o =>
-    {
-        o.ReportApiVersions = true;
-        o.DefaultApiVersion = new ApiVersion(1, 0);
-        o.AssumeDefaultVersionWhenUnspecified = true;
+//https://github.com/dotnet/aspnet-api-versioning/wiki/OData-Versioned-Metadata
+s.AddApiVersioning(o =>
+{
+    o.ReportApiVersions = true;
+    o.DefaultApiVersion = new ApiVersion(1, 0);
+    o.AssumeDefaultVersionWhenUnspecified = true;
 
-        //Sunset policies
-        o.Policies.Sunset(0.1).Effective(DateTimeOffset.Now.AddDays(60)).Link("").Title("These are only available during development").Type("text/html");
-    })
-    .AddOData(o => o.AddRouteComponents("api/v{version:apiVersion}"))
+    //Sunset policies
+    o.Policies.Sunset(0.1).Effective(DateTimeOffset.Now.AddDays(60)).Link("").Title("These are only available during development").Type("text/html");
+})
+.AddOData(o => o.AddRouteComponents("api/v{version:apiVersion}"))
+    //{
+        //ODataConventionModelBuilder modelBuilder = new();
+        //modelBuilder.ComplexType<Dictionary<string, string>>();
+        //o.AddRouteComponents("api/v{version:apiVersion}", s => s.AddSingleton<ODataResourceSerializer, OdataDictionaryStringStringSerializer>());
+    //})
     .AddODataApiExplorer(o =>
     {
         o.GroupNameFormat = "'v'VVV";
@@ -132,7 +141,7 @@ builder.Host
 
     s.AddPathBaseFilter(h);
 
-    s.AddAtspmIdentity(h);
+    //s.AddAtspmIdentity(h);
 });
 
 var app = builder.Build();
@@ -168,3 +177,25 @@ app.UseVersionedODataBatching();
 app.MapControllers();
 
 app.Run();
+
+//public class OdataDictionaryStringStringSerializer : ODataResourceSerializer
+//{
+//    public OdataDictionaryStringStringSerializer(IODataSerializerProvider serializerProvider)
+//        : base(serializerProvider)
+//    {
+//    }
+
+//    public override ODataResource CreateResource(SelectExpandNode selectExpandNode, ResourceContext resourceContext)
+//    {
+//        var resource = base.CreateResource(selectExpandNode, resourceContext);
+//        if (resourceContext.ResourceInstance is Dictionary<string, string> dictionary)
+//        {
+//            resource.Properties = dictionary.Select(kvp => new ODataProperty
+//            {
+//                Name = kvp.Key,
+//                Value = kvp.Value
+//            }).ToList();
+//        }
+//        return resource;
+//    }
+//}

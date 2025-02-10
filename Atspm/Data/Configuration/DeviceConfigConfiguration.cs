@@ -19,6 +19,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Newtonsoft.Json;
 using Utah.Udot.Atspm.Data.Enums;
+using Utah.Udot.Atspm.Data.Utility;
 
 #nullable disable
 
@@ -36,7 +37,7 @@ namespace Utah.Udot.Atspm.Data.Configuration
 
             builder.Property(e => e.Description)
                 .IsRequired()
-                .HasMaxLength(16);
+                .HasMaxLength(24);
 
             builder.Property(e => e.Notes)
                 .HasMaxLength(512);
@@ -44,6 +45,10 @@ namespace Utah.Udot.Atspm.Data.Configuration
             builder.Property(e => e.Protocol)
                 .HasMaxLength(Enum.GetNames(typeof(TransportProtocols)).Max().Length)
                 .HasDefaultValue(TransportProtocols.Unknown);
+
+            builder.Property(e => e.ConnectionProperties)
+                .HasMaxLength(1024)
+                .HasConversion<DictionaryToJsonValueConverter<string, object>>();
 
             builder.Property(e => e.Port)
                 .HasDefaultValueSql("((0))");

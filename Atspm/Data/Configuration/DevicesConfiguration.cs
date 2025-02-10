@@ -17,7 +17,9 @@
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Newtonsoft.Json;
 using Utah.Udot.Atspm.Data.Enums;
+using Utah.Udot.Atspm.Data.Utility;
 
 namespace Utah.Udot.Atspm.Data.Configuration
 {
@@ -31,11 +33,13 @@ namespace Utah.Udot.Atspm.Data.Configuration
         {
             builder.ToTable(t => t.HasComment("Devices"));
 
-            builder.Property(e => e.Description)
+            builder.Property(e => e.DeviceIdentifier)
+                .IsRequired()
                 .HasMaxLength(50);
 
-            builder.Property(e => e.DeviceIdentifier)
-                .HasMaxLength(50);
+            builder.Property(e => e.DeviceProperties)
+                .HasMaxLength(1024)
+                .HasConversion<DictionaryToJsonValueConverter<string, object>>();
 
             builder.Property(e => e.Ipaddress)
                 .IsRequired()
