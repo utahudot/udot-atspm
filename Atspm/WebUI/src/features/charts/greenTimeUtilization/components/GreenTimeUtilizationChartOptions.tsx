@@ -1,6 +1,6 @@
 import { GreenTimeUtilizationChartOptionsDefaults } from '@/features/charts/greenTimeUtilization/types'
 import { Default } from '@/features/charts/types'
-import { Box, FormControl, TextField, Typography } from '@mui/material'
+import { Alert, Box, FormControl, TextField, Typography } from '@mui/material'
 import { ChangeEvent, useState } from 'react'
 
 interface GreenTimeUtilizationChartOptionsProps {
@@ -58,6 +58,11 @@ export const GreenTimeUtilizationChartOptions = ({
 
   return (
     <>
+          {yAxisBinSize === undefined ? (
+          <Alert severity="error" sx={{ mt: 1 }}>
+            Y-Axis Bin Size default value not found.
+          </Alert>
+        ) : (
       <Box
         sx={{
           display: 'flex',
@@ -84,6 +89,12 @@ export const GreenTimeUtilizationChartOptions = ({
           </Typography>
         </Box>
       </Box>
+        )}
+      {xAxisBinSize === undefined ? (
+          <Alert severity="error" sx={{ mt: 1 }}>
+            X-Axis Bin Size default value not found.
+          </Alert>
+        ) : (
       <Box
         sx={{
           display: 'flex',
@@ -110,6 +121,7 @@ export const GreenTimeUtilizationChartOptions = ({
           </Typography>
         </Box>
       </Box>
+        )}
     </>
   )
 }

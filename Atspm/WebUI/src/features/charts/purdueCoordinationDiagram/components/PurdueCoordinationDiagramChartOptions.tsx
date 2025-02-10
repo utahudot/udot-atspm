@@ -1,7 +1,7 @@
 import { BinSizeDropdown } from '@/features/charts/components/selectChart/BinSizeDropdown'
 import { PurdueCoordinationDiagramChartOptionsDefaults } from '@/features/charts/purdueCoordinationDiagram/types'
 import { Default } from '@/features/charts/types'
-import { SelectChangeEvent } from '@mui/material'
+import { Alert, SelectChangeEvent } from '@mui/material'
 import { useState } from 'react'
 
 interface PurdueCoordinationDiagramChartOptionsProps {
@@ -27,10 +27,18 @@ export const PurdueCoordinationDiagramChartOptions = ({
   }
 
   return (
-    <BinSizeDropdown
-      value={binSize}
-      handleChange={handleBinSizeChange}
-      id="purdue-coordination-diagram"
-    />
+    <>
+      {binSize === undefined ? (
+        <Alert severity="error" sx={{ mt: 1 }}>
+          Bin Size default value not found.
+        </Alert>
+      ) : (
+        <BinSizeDropdown
+          value={binSize}
+          handleChange={handleBinSizeChange}
+          id="purdue-coordination-diagram"
+        />
+      )}
+    </>
   )
 }

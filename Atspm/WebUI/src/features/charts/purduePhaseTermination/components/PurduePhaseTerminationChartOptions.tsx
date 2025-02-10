@@ -1,6 +1,6 @@
 import { PurduePhaseTerminationChartOptionsDefaults } from '@/features/charts/purduePhaseTermination/types'
 import { Default } from '@/features/charts/types'
-import { Box, FormControl, TextField, Typography } from '@mui/material'
+import { Alert, Box, FormControl, TextField, Typography } from '@mui/material'
 import { ChangeEvent, useState } from 'react'
 
 interface PurduePhaseTerminationChartOptionsProps {
@@ -38,31 +38,42 @@ export const PurduePhaseTerminationChartOptions = ({
     overflow: 'hidden',
     clip: 'rect(0, 0, 0, 0)',
     border: 0,
-  };
+  }
 
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        padding: '0.25rem',
-      }}
-    >
-      <Typography>Consecutive Count</Typography>
-      <Box sx={{ display: 'flex', alignItems: 'center' }}>
-      <FormControl sx={{ width: '60px' }}>
-      <label htmlFor="selected-consecutive-count" style={visuallyHidden}>
-        Selected Consecutive Count
-      </label>
-      <TextField
-        id="selected-consecutive-count"
-        type="number"
-        value={selectedConsecutiveCount}
-        onChange={handleSelectedConsecutiveCountChange}
-        variant="standard"
-      />
-    </FormControl>
-      </Box>
-    </Box>
+    <>
+      {selectedConsecutiveCount === undefined ? (
+        <Alert severity="error" sx={{ mt: 1 }}>
+          Selected Consecutive Count default value not found.
+        </Alert>
+      ) : (
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            padding: '0.25rem',
+          }}
+        >
+          <Typography>Consecutive Count</Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <FormControl sx={{ width: '60px' }}>
+              <label
+                htmlFor="selected-consecutive-count"
+                style={visuallyHidden}
+              >
+                Selected Consecutive Count
+              </label>
+              <TextField
+                id="selected-consecutive-count"
+                type="number"
+                value={selectedConsecutiveCount}
+                onChange={handleSelectedConsecutiveCountChange}
+                variant="standard"
+              />
+            </FormControl>
+          </Box>
+        </Box>
+      )}
+    </>
   )
 }

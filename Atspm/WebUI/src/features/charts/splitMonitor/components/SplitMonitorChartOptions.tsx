@@ -1,6 +1,7 @@
 import { SplitMonitorChartOptionsDefaults } from '@/features/charts/splitMonitor/types'
 import { Default } from '@/features/charts/types'
 import {
+  Alert,
   Box,
   FormControl,
   InputLabel,
@@ -21,7 +22,7 @@ export const SplitMonitorChartOptions = ({
   handleChartOptionsUpdate,
 }: SplitMonitorChartOptionsProps) => {
   const [selectedPercentile, setSelectedPercentile] = useState(
-    chartDefaults?.percentileSplit?.value || ''
+    chartDefaults?.percentileSplit?.value
   )
 
   const handleSelectedPercentileChange = (event: SelectChangeEvent<string>) => {
@@ -36,41 +37,49 @@ export const SplitMonitorChartOptions = ({
   }
 
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        justifyContent: 'space-between',
-      }}
-    >
-      <InputLabel
-        htmlFor="percentile-split-input"
-        id="percentile-split-input-label"
-      >
-        <Typography>Percentile Split</Typography>
-      </InputLabel>
-      <Box sx={{ display: 'flex', alignItems: 'center' }}>
-        <FormControl variant="outlined">
-          <Select
-            labelId="percentile-split-input-label"
-            id="percentile-split-input"
-            value={selectedPercentile}
-            onChange={handleSelectedPercentileChange}
-            variant="standard"
-            size="small"
-            sx={{ width: '60px' }}
-            inputProps={{ id: 'percentile-split-input' }}
+    <>
+      {selectedPercentile === undefined ? (
+        <Alert severity="error" sx={{ mt: 1 }}>
+          Percentile Split default value not found.
+        </Alert>
+      ) : (
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+          }}
+        >
+          <InputLabel
+            htmlFor="percentile-split-input"
+            id="percentile-split-input-label"
           >
-            {['None', '50', '75', '85', '90', '95'].map((option) => (
-              <MenuItem key={option} value={option}>
-                {option}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <Typography variant="caption" sx={{ ml: '0.5rem' }}>
-          %
-        </Typography>
-      </Box>
-    </Box>
+            <Typography sx={{ color: 'black' }}>Percentile Split</Typography>
+          </InputLabel>
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <FormControl variant="outlined">
+              <Select
+                labelId="percentile-split-input-label"
+                id="percentile-split-input"
+                value={selectedPercentile}
+                onChange={handleSelectedPercentileChange}
+                variant="standard"
+                size="small"
+                sx={{ width: '60px' }}
+                inputProps={{ id: 'percentile-split-input' }}
+              >
+                {['None', '50', '75', '85', '90', '95'].map((option) => (
+                  <MenuItem key={option} value={option}>
+                    {option}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <Typography variant="caption" sx={{ ml: '0.5rem' }}>
+              %
+            </Typography>
+          </Box>
+        </Box>
+      )}
+    </>
   )
 }
