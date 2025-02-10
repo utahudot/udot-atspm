@@ -28,6 +28,12 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories
 
         #region Overrides
 
+        /// <inheritdoc/>
+        public override IQueryable<Route> GetList()
+        {
+            return base.GetList().OrderBy(o => o.Name);
+        }
+
         #endregion
 
         #region IRouteRepository
