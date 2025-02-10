@@ -10,7 +10,6 @@ type SelectLocationMapProps = {
   locations: Location[]
   filteredLocations: Location[]
   route?: number[][]
-  zoom?: number
   center?: [number, number]
   mapHeight?: number | string
   filters: Filters
@@ -23,7 +22,6 @@ function SelectLocationMap({
   locations,
   filteredLocations,
   route,
-  zoom,
   center,
   mapHeight,
   filters,
@@ -47,7 +45,6 @@ function SelectLocationMap({
       locations,
       filteredLocations,
       route,
-      zoom,
       center,
       mapHeight,
       filters,
