@@ -6,11 +6,13 @@ import { ChangeEvent, useState } from 'react'
 interface GreenTimeUtilizationChartOptionsProps {
   chartDefaults: GreenTimeUtilizationChartOptionsDefaults
   handleChartOptionsUpdate: (update: Default) => void
+  isMeasureDefaultView?: boolean
 }
 
 export const GreenTimeUtilizationChartOptions = ({
   chartDefaults,
   handleChartOptionsUpdate,
+  isMeasureDefaultView = false,
 }: GreenTimeUtilizationChartOptionsProps) => {
   const [xAxisBinSize, setxAxisBinSize] = useState(
     chartDefaults.xAxisBinSize?.value

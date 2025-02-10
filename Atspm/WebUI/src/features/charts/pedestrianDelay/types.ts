@@ -38,6 +38,7 @@ export interface PedestrianDelayChartOptionsDefaults {
   showPedBeginWalk: { id: number; value: boolean; option: string }
   timeBuffer: { id: number; value: string; option: string }
   pedRecallThreshold: { id: number; value: string; option: string }
+  yAxisDefault: { id: number; value: string; option: string }
 }
 
 export interface pedestrianDelayPlan extends BasePlan {
