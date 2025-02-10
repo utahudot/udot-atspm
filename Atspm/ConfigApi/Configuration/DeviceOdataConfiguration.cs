@@ -31,14 +31,15 @@ namespace Utah.Udot.Atspm.ConfigApi.Configuration
         public void Apply(ODataModelBuilder builder, ApiVersion apiVersion, string? routePrefix)
         {
             var model = builder.EntitySet<Device>("Device").EntityType;
+            
             model.Page(default, default);
-            model.Expand(2, SelectExpandType.Automatic, new string[] { "location", "deviceConfiguration", "product" });
+            //model.Expand(2, SelectExpandType.Automatic, new string[] { "location", "deviceConfiguration", "product" });
 
             switch (apiVersion.MajorVersion)
             {
                 case 1:
                     {
-                        model.Property(p => p.Description).MaxLength = 50;
+                        model.Property(p => p.DeviceIdentifier).IsRequired();
                         model.Property(p => p.DeviceIdentifier).MaxLength = 50;
 
                         model.Property(p => p.Ipaddress).IsRequired();
