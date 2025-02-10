@@ -43,7 +43,7 @@ namespace Identity.Controllers
         public async Task<IActionResult> GetUsersAsync([FromServices] IServiceScopeFactory serviceScopeFactory)
         {
             var usersDto = new List<UserDTO>();
-            var users = userManager.Users;
+            var users = userManager.Users.OrderBy(u => u.UserName);
 
             foreach (var user in users)
             {

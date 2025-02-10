@@ -32,7 +32,6 @@ interface LocationMapProps {
   filteredLocations: Location[]
   route?: number[][]
   center?: [number, number]
-  zoom?: number
   mapHeight?: number | string
   filters: Filters
   updateFilters: (filters: Partial<Filters>) => void
@@ -45,7 +44,6 @@ const LocationMap = ({
   filteredLocations,
   route,
   center,
-  zoom,
   mapHeight,
   filters,
   updateFilters,
@@ -60,6 +58,7 @@ const LocationMap = ({
     attribution: string
     initialLat: number
     initialLong: number
+    mapZoom: number
   } | null>(null)
 
   const locationsEnabledLength = locations.filter((l) => l.chartEnabled).length
@@ -72,6 +71,7 @@ const LocationMap = ({
         attribution: env.MAP_TILE_ATTRIBUTION,
         initialLat: parseFloat(env.MAP_DEFAULT_LATITUDE),
         initialLong: parseFloat(env.MAP_DEFAULT_LONGITUDE),
+        mapZoom: parseInt(env?.MAP_DEFAULT_ZOOM),
       })
     }
     fetchEnv()
@@ -161,7 +161,7 @@ const LocationMap = ({
   return (
     <MapContainer
       center={center || [mapInfo.initialLat, mapInfo.initialLong]}
-      zoom={zoom || 6}
+      zoom={mapInfo.mapZoom || 6}
       scrollWheelZoom={true}
       style={{
         height: mapHeight || 'calc(100% - 80px)',

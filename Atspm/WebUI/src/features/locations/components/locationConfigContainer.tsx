@@ -21,7 +21,7 @@ import {
 import ApproachesInfo from '@/features/locations/components/ApproachesInfo/approachesInfo'
 import DetectorsInfo from '@/features/locations/components/DetectorsInfo/detectorsInfo'
 import LocationInfo from '@/features/locations/components/LocationInfo/locationInfo'
-import { formatTimestampToDDMMYYYY } from '@/utils/dateTime'
+import { format } from 'date-fns'
 
 interface LocationsConfigContainerProps {
   locationIdentifier: string
@@ -97,8 +97,7 @@ function LocationsConfigContainer({
           >
             {versionData.map((version, index) => (
               <MenuItem key={index} value={version.id}>
-                {formatTimestampToDDMMYYYY(version.start.replace(/Z$/, ''))} -{' '}
-                {version.note}
+                {format(version.start, 'MM/dd/yyyy')} - {version.note}
               </MenuItem>
             ))}
           </Select>
