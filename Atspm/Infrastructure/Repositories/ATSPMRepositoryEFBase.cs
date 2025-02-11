@@ -200,6 +200,8 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories
         {
             if (_db.ChangeTracker.QueryTrackingBehavior == QueryTrackingBehavior.TrackAll)
             {
+                _db.ChangeTracker.DetectChanges();
+
                 switch (_db.Entry(item).State)
                 {
                     case EntityState.Detached:
@@ -215,7 +217,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories
                                     if (!i.IsLoaded)
                                         i.Load();
 
-                                    //HACK: change to i.IsModified = true; and test
+                                    //HACK: change to i.IsModified = true; and test https://learn.microsoft.com/en-us/ef/core/change-tracking/change-detection
                                     UpdateCollections(old, i, item, _db.Entry(item).Collections.First(w => w.Metadata.Name == i.Metadata.Name));
                                 }
 
@@ -224,7 +226,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories
                                     if (!i.IsLoaded)
                                         i.Load();
 
-                                    //HACK: change to i.IsModified = true; and test
+                                    //HACK: change to i.IsModified = true; and test https://learn.microsoft.com/en-us/ef/core/change-tracking/change-detection
                                     UpdateReferences(old, i, item, _db.Entry(item).References.First(w => w.Metadata.Name == i.Metadata.Name));
                                 }
                             }
@@ -278,7 +280,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories
                                     if (!i.IsLoaded)
                                         await i.LoadAsync();
 
-                                    //HACK: change to i.IsModified = true; and test
+                                    //HACK: change to i.IsModified = true; and test https://learn.microsoft.com/en-us/ef/core/change-tracking/change-detection
                                     UpdateCollections(old, i, item, _db.Entry(item).Collections.First(w => w.Metadata.Name == i.Metadata.Name));
                                 }
 
@@ -287,7 +289,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories
                                     if (!i.IsLoaded)
                                         await i.LoadAsync();
 
-                                    //HACK: change to i.IsModified = true; and test
+                                    //HACK: change to i.IsModified = true; and test https://learn.microsoft.com/en-us/ef/core/change-tracking/change-detection
                                     UpdateReferences(old, i, item, _db.Entry(item).References.First(w => w.Metadata.Name == i.Metadata.Name));
                                 }
                             }

@@ -16,9 +16,7 @@
 #endregion
 
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Newtonsoft.Json;
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Utility;
 
