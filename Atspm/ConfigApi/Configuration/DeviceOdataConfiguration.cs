@@ -33,7 +33,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Configuration
             var model = builder.EntitySet<Device>("Device").EntityType;
             
             model.Page(default, default);
-            //model.Expand(2, SelectExpandType.Automatic, new string[] { "location", "deviceConfiguration", "product" });
+            model.Expand(2, SelectExpandType.Automatic, new string[] { "location", "deviceConfiguration", "product" });
 
             switch (apiVersion.MajorVersion)
             {
