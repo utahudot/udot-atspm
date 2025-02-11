@@ -17,29 +17,27 @@ namespace Utah.Udot.Atspm.Data.Utility
 
         private static bool Compare(Dictionary<TKey, TValue> a, Dictionary<TKey, TValue> b)
         {
-            var test1 = Enumerable.SequenceEqual(a.Keys.ToList(), b.Keys.ToList());
-            var test2 = Enumerable.SequenceEqual(a.Values.ToList(), b.Values.ToList());
+            var e1 = Enumerable.SequenceEqual(a.Keys.ToList(), b.Keys.ToList());
+            var e2 = Enumerable.SequenceEqual(a.Values.ToList(), b.Values.ToList());
 
-            Console.Write($"compare a:{test1} b:{test2}");
-
-            return test1 && test2;
+            return e1 && e2;
         }
 
         private static int GetHashCode(Dictionary<TKey, TValue> obj)
         {
             var hash = new HashCode();
+
             foreach (var h in obj)
             {
                 hash.Add(h.GetHashCode());
             }
-            Console.Write($"hash: {hash.ToHashCode()}");
 
             return hash.ToHashCode();
         }
 
         private static Dictionary<TKey, TValue> GetSnapshot(Dictionary<TKey, TValue> obj)
         {
-            return obj.ToDictionary<TKey, TValue>();
+            return obj.ToDictionary();
         }
     }
 }
