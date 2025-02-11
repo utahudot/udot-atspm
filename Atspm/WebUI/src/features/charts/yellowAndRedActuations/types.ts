@@ -28,6 +28,7 @@ export interface YellowAndRedActuationsChartOptions extends BaseChartOptions {
 
 export interface YellowAndRedActuationsChartOptionsDefaults {
   severeLevelSeconds: { id: number; value: string; option: string }
+  yAxisDefault: { id: number; value: string; option: string }
 }
 
 export interface YellowAndRedActuationsPlan extends BasePlan {

@@ -128,7 +128,7 @@ namespace Utah.Udot.Atspm.Business.GreenTimeUtilization
                     {
                         TimeSpan timeSinceGreenStart = detection.Timestamp - timeStamp;
                         var yAxisBinNumber = (int)(timeSinceGreenStart.TotalSeconds / options.YAxisBinSize);
-                        if (BinValueList.Count < yAxisBinNumber)
+                        if (BinValueList.Count <= yAxisBinNumber)
                         {
                             int howMany = yAxisBinNumber - BinValueList.Count + 1;  //check the numbering on this, might need to add 1, etc)
                             for (int i = 1; i <= howMany; i++)
