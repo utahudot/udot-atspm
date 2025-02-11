@@ -16,6 +16,7 @@
 #endregion
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Newtonsoft.Json;
 using Utah.Udot.Atspm.Data.Enums;
@@ -39,7 +40,7 @@ namespace Utah.Udot.Atspm.Data.Configuration
 
             builder.Property(e => e.DeviceProperties)
                 .HasMaxLength(1024)
-                .HasConversion<DictionaryToJsonValueConverter<string, object>>();
+                .HasConversion<DictionaryToJsonValueConverter<string, object>>(new DictionaryValueComparer<string, object>());
 
             builder.Property(e => e.Ipaddress)
                 .IsRequired()

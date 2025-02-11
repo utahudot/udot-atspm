@@ -15,11 +15,17 @@
 // limitations under the License.
 #endregion
 
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System.Xml.Linq;
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Utility;
+using Utah.Udot.NetStandardToolkit.Extensions;
+using static System.Net.Mime.MediaTypeNames;
 
 #nullable disable
 
@@ -47,8 +53,8 @@ namespace Utah.Udot.Atspm.Data.Configuration
                 .HasDefaultValue(TransportProtocols.Unknown);
 
             builder.Property(e => e.ConnectionProperties)
-                .HasMaxLength(1024)
-                .HasConversion<DictionaryToJsonValueConverter<string, object>>();
+            .HasMaxLength(1024)
+            .HasConversion<DictionaryToJsonValueConverter<string, object>>(new DictionaryValueComparer<string, object>());
 
             builder.Property(e => e.Port)
                 .HasDefaultValueSql("((0))");
@@ -88,4 +94,6 @@ namespace Utah.Udot.Atspm.Data.Configuration
                 .HasMaxLength(50);
         }
     }
+
+    
 }

@@ -32,15 +32,15 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories
         #region Overrides
 
         /// <inheritdoc/>
-        //public override IQueryable<Device> GetList()
-        //{
-        //    return base.GetList()
-        //        .Include(i => i.Location).ThenInclude(i => i.Region)
-        //        .Include(i => i.Location).ThenInclude(i => i.Jurisdiction)
-        //        .Include(i => i.Location).ThenInclude(i => i.Areas)
-        //        .Include(i => i.DeviceConfiguration).ThenInclude(i => i.Product)
-        //        .AsQueryable();
-        //}
+        public override IQueryable<Device> GetList()
+        {
+            return base.GetList()
+                .Include(i => i.Location).ThenInclude(i => i.Region)
+                .Include(i => i.Location).ThenInclude(i => i.Jurisdiction)
+                .Include(i => i.Location).ThenInclude(i => i.Areas)
+                .Include(i => i.DeviceConfiguration).ThenInclude(i => i.Product)
+                .AsQueryable();
+        }
 
         #endregion
 
