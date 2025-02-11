@@ -123,76 +123,19 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
             {
                 scope.ServiceProvider.PrintHostInformation();
 
-                //var configs = scope.ServiceProvider.GetService<IDeviceConfigurationRepository>();
+                var workflow = new DeviceEventLogWorkflow(_services, _options.Value.BatchSize, _options.Value.ParallelProcesses, cancellationToken);
 
-                //await configs.AddAsync(new DeviceConfiguration()
-                //{
-                //    Description = "firmware",
-                //    LoggingOffset = 30,
-                //    ProductId = 1,
-                //    Protocol = Data.Enums.TransportProtocols.Http,
-                //    Port = 80,
-                //    Path = "api/v1/cameras/[Device:DeviceIdentifier]",
-                //    Query = new string[]
-                //        {
-                //            "?since=[DateTime:MM-dd-yyyy HH:mm:ss.f]"
-                //        },
-                //    ConnectionProperties = new Dictionary<string, string>()
-                //        {
-                //            {"Accept", "application/xml" }
-                //        },
-                //    UserName = "user",
-                //    Password = "password",
-                //});
+                var repo = scope.ServiceProvider.GetService<IDeviceRepository>();
 
-                //foreach (var c in configs.GetList())
-                //{
-                //    Console.WriteLine($"c: {c}");
-                //}
+                await foreach (var d in repo.GetDevicesForLogging(_options.Value.DeviceEventLoggingQueryOptions))
+                {
+                    await workflow.Input.SendAsync(d);
+                }
 
-                //var devices = scope.ServiceProvider.GetService<IDeviceRepository>();
+                workflow.Input.Complete();
 
-                //await devices.AddAsync(new Device()
-                //{
-                //    DeviceConfigurationId = 1,
-                //    LocationId = 3,
-                //    DeviceIdentifier = "test1device",
-                //    DeviceProperties = new Dictionary<string, string>()
-                //    {
-                //        { "token", "here is a token" },
-                //        { "serial", "1234356"},
-                //        { "firmware", "stuff" }
-                //    },
-                //    DeviceStatus = Data.Enums.DeviceStatus.Active,
-                //    DeviceType = Data.Enums.DeviceTypes.SignalController,
-                //    LoggingEnabled = true,
-                //    Ipaddress = "127.0.0.1",
-                //});
-
-                //foreach (var d in devices.GetList())
-                //{
-                //    Console.WriteLine($"d: {d}");
-                //}
-
+                await Task.WhenAll(workflow.Steps.Select(s => s.Completion));
             }
-
-            //using (var scope = _services.CreateAsyncScope())
-            //{
-            //    scope.ServiceProvider.PrintHostInformation();
-
-            //    var workflow = new DeviceEventLogWorkflow(_services, _options.Value.BatchSize, _options.Value.ParallelProcesses, cancellationToken);
-
-            //    var repo = scope.ServiceProvider.GetService<IDeviceRepository>();
-
-            //    await foreach (var d in repo.GetDevicesForLogging(_options.Value.DeviceEventLoggingQueryOptions))
-            //    {
-            //        await workflow.Input.SendAsync(d);
-            //    }
-
-            //    workflow.Input.Complete();
-
-            //    await Task.WhenAll(workflow.Steps.Select(s => s.Completion));
-            //}
 
             sw.Stop();
 
