@@ -129,6 +129,8 @@ export function transformPcdData(
       filterMode: 'none',
       right: 160,
       minSpan: 0.2,
+      endValue: 150,
+      yAxisIndex: [0, 1],
     },
     {
       type: 'inside',

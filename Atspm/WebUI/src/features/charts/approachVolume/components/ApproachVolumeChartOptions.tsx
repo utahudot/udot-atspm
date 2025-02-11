@@ -7,11 +7,13 @@ import { useState } from 'react'
 interface ApproachVolumeChartOptionsProps {
   chartDefaults: ApproachVolumeChartOptionsDefaults
   handleChartOptionsUpdate: (update: Default) => void
+  isMeasureDefaultView?: boolean
 }
 
 export const ApproachVolumeChartOptions = ({
   chartDefaults,
   handleChartOptionsUpdate,
+  isMeasureDefaultView = false,
 }: ApproachVolumeChartOptionsProps) => {
   const [binSize, setBinSize] = useState(chartDefaults.binSize?.value)
 

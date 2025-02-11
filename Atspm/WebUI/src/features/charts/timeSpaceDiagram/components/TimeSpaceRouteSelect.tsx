@@ -2,13 +2,11 @@ import RouteChecker from '@/features/charts/timeSpaceDiagram/components/RouteChe
 import { useGetRouteWithExpandedLocations } from '@/features/routes/api/getRouteWithExpandedLocations'
 import {
   Alert,
+  Autocomplete,
   Box,
   FormControl,
   InputAdornment,
-  InputLabel,
-  MenuItem,
   Paper,
-  Select,
   TextField,
 } from '@mui/material'
 import { useEffect } from 'react'
@@ -103,30 +101,26 @@ export const TimeSpaceRouteSelect = ({ handler }: Props) => {
       }}
     >
       <FormControl fullWidth sx={{ mb: 2 }}>
-        <InputLabel htmlFor="route-input">Route</InputLabel>
-        <Select
-          label="Route"
-          variant="outlined"
-          fullWidth
-          sx={{ mb: 2 }}
-          onChange={(e) => handler.setRouteId(e.target.value)}
+        <Autocomplete
+          options={handler.routes}
+          getOptionLabel={(option) => option.name}
           value={
-            handler.routes?.find(
+            handler.routes.find(
               (route) => route.id === Number.parseInt(handler.routeId)
-            )?.id || ''
+            ) || null
           }
-          inputProps={{ id: 'route-input' }}
-        >
-          {handler.routes.map(
-            (route: { name: string; id: number }, index: number) => {
-              return (
-                <MenuItem key={index} value={route.id}>
-                  {route.name}
-                </MenuItem>
-              )
-            }
+          onChange={(_, newValue) =>
+            handler.setRouteId(newValue ? String(newValue.id) : '')
+          }
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Route Select"
+              variant="outlined"
+              fullWidth
+            />
           )}
-        </Select>
+        />
       </FormControl>
       {handler.routeId && (
         <>

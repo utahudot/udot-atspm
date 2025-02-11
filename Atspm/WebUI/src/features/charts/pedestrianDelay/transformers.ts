@@ -15,7 +15,6 @@
 // limitations under the License.
 // #endregion
 import {
-  createDataZoom,
   createDisplayProps,
   createGrid,
   createInfoString,
@@ -43,7 +42,7 @@ import {
   SolidLineSeriesSymbol,
   formatChartDateTimeRange,
 } from '@/features/charts/utils'
-import { EChartsOption } from 'echarts'
+import { DataZoomComponentOption, EChartsOption } from 'echarts'
 
 export default function transformPedestrianDelayData(
   response: RawPedestrianDelayResponse
@@ -99,18 +98,20 @@ function transformData(data: RawPedestrianDelayData) {
   const xAxis = createXAxis(data.start, data.end)
   const yAxis = createYAxis(
     true,
-    { name: 'Delay per Request (seconds)' },
+    { name: 'Delay per Request (seconds)', min: 0 },
     {
       name: 'Delay by Cycle Length',
       position: 'right',
-      axisLabel: { formatter: '{value}%' },
+      axisLabel: { formatter: (val) => `${Math.round(val)}%` },
+      nameGap: 50,
+      min: 0,
     }
   )
 
   const grid = createGrid({
     top: 230,
     left: 65,
-    right: 220,
+    right: 270,
   })
 
   const pedestrianDelayText = 'Pedestrian Delay'
@@ -130,7 +131,27 @@ function transformData(data: RawPedestrianDelayData) {
     ],
   })
 
-  const dataZoom = createDataZoom()
+  const dataZoom: DataZoomComponentOption[] = [
+    {
+      type: 'slider',
+      filterMode: 'none',
+      minSpan: 0.2,
+    },
+    {
+      type: 'slider',
+      orient: 'vertical',
+      filterMode: 'none',
+      right: 160,
+      endValue: 180,
+      minSpan: 0.2,
+      yAxisIndex: [0, 1],
+    },
+    {
+      type: 'inside',
+      filterMode: 'none',
+      minSpan: 0.2,
+    },
+  ]
 
   const toolbox = createToolbox(
     {
