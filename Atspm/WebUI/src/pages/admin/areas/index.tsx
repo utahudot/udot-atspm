@@ -1,13 +1,13 @@
-import GenericAdminChart, {
-  pageNameToHeaders,
-} from '@/components/GenericAdminChart'
+import { usePatchAreaFromKey } from '@/api/config/aTSPMConfigurationApi'
+import AdminTable from '@/components/AdminTable/AdminTable'
+import DeleteModal from '@/components/AdminTable/DeleteModal'
 import { ResponsivePageLayout } from '@/components/ResponsivePage'
 import {
   useCreateArea,
   useDeleteArea,
-  useEditArea,
   useGetAreas,
 } from '@/features/areas/api/areaApi'
+import AreaEditorModal from '@/features/areas/components/AreaEditorModal'
 import { Area } from '@/features/areas/types'
 import {
   PageNames,
@@ -15,77 +15,59 @@ import {
   useViewPage,
 } from '@/features/identity/pagesCheck'
 import { useLatestVersionOfAllLocations } from '@/features/locations/api'
+import { Location } from '@/features/locations/types'
 import { Backdrop, CircularProgress } from '@mui/material'
-import { GridColDef } from '@mui/x-data-grid'
-import { useEffect, useState } from 'react'
-
 const AreasAdmin = () => {
   const pageAccess = useViewPage(PageNames.Areas)
-
-  const [data, setData] = useState<any>(null)
-  const headers: GridColDef[] = pageNameToHeaders.get(
-    PageNames.Areas
-  ) as GridColDef[]
-
   const hasLocationsEditClaim = useUserHasClaim('LocationConfiguration:Edit')
-  const hasLocationsDelteClaim = useUserHasClaim('LocationConfiguration:Delete')
+  const hasLocationsDeleteClaim = useUserHasClaim(
+    'LocationConfiguration:Delete'
+  )
 
-  const createMutation = useCreateArea()
-  const deleteMutation = useDeleteArea()
-  const editMutation = useEditArea()
+  const { mutateAsync: createArea } = useCreateArea()
+  const { mutateAsync: deleteArea } = useDeleteArea()
+  const { mutateAsync: updateArea } = usePatchAreaFromKey()
+
   const { data: locationsData } = useLatestVersionOfAllLocations()
+  const { data: areaData, isLoading, refetch: refetchAreas } = useGetAreas()
 
   const locations = locationsData?.value
-
-  const { data: areaData, isLoading } = useGetAreas()
-
-  useEffect(() => {
-    if (areaData) {
-      setData(areaData)
-    }
-  }, [areaData])
+  const areas = areaData?.value
 
   if (pageAccess.isLoading) {
-    return
+    return null
   }
 
-  const HandleCreateArea = async (areaData: Area) => {
+  const handleCreateArea = async (areaData: Area) => {
+    const { name } = areaData
+    await createArea({ name })
+    refetchAreas()
+  }
+
+  const handleDeleteArea = async (id: number) => {
+    await deleteArea(id)
+    refetchAreas()
+  }
+
+  const handleEditArea = async (areaData: Area) => {
     const { id, name } = areaData
-    try {
-      await createMutation.mutateAsync({ id, name })
-    } catch (error) {
-      console.error('Mutation Error:', error)
-    }
+    await updateArea({ data: { name }, key: id })
+    refetchAreas()
   }
 
-  const HandleDeleteArea = async (areaData: Area) => {
-    const { id } = areaData
-    try {
-      await deleteMutation.mutateAsync(id)
-    } catch (error) {
-      console.error('Mutation Error:', error)
-    }
+  const onModalClose = () => {
+    //add code for custom modal close
   }
 
-  const HandleEditArea = async (areaData: Area) => {
-    const { id, name } = areaData
-    try {
-      await editMutation.mutateAsync({ data: { name }, id })
-    } catch (error) {
-      console.error('Mutation Error:', error)
-    }
-  }
+  const filterAssociatedObjects = (areaId: number, objects: Location[]) => {
+    const associatedLocations = objects.filter((object) => {
+      return object.areas?.some((id) => id === areaId)
+    })
 
-  const deleteArea = (data: Area) => {
-    HandleDeleteArea(data)
-  }
-
-  const editArea = (data: Area) => {
-    HandleEditArea(data)
-  }
-
-  const createArea = (data: Area) => {
-    HandleCreateArea(data)
+    return associatedLocations.map((location) => ({
+      id: location.id,
+      name: `${location.primaryName} & ${location.secondaryName}`,
+    }))
   }
 
   if (isLoading) {
@@ -96,34 +78,54 @@ const AreasAdmin = () => {
     )
   }
 
-  if (!data) {
+  if (!areas) {
     return <div>Error returning data</div>
   }
 
-  const filteredData = data?.value.map((obj: any) => {
-    return {
-      id: obj.id,
-      name: obj.name,
-    }
-  })
+  const filteredData = areas.map((area) => ({
+    id: area.id,
+    name: area.name,
+  }))
 
-  const baseType = {
-    name: '',
-  }
+  const headers = ['Name']
+  const headerKeys = ['name']
 
   return (
-    <ResponsivePageLayout title={'Manage Areas'} noBottomMargin>
-      <GenericAdminChart
-        pageName={PageNames.Areas}
+    <ResponsivePageLayout title="Manage Areas" noBottomMargin>
+      <AdminTable
+        pageName="Area"
         headers={headers}
+        headerKeys={headerKeys}
         data={filteredData}
-        baseRowType={baseType}
-        onDelete={deleteArea}
-        onEdit={editArea}
-        onCreate={createArea}
-        locations={locations}
         hasEditPrivileges={hasLocationsEditClaim}
-        hasDeletePrivileges={hasLocationsDelteClaim}
+        hasDeletePrivileges={hasLocationsDeleteClaim}
+        editModal={
+          <AreaEditorModal
+            isOpen={true}
+            onSave={handleEditArea}
+            onClose={onModalClose}
+          />
+        }
+        createModal={
+          <AreaEditorModal
+            isOpen={true}
+            onSave={handleCreateArea}
+            onClose={onModalClose}
+          />
+        }
+        deleteModal={
+          <DeleteModal
+            id={0}
+            name={''}
+            objectType="Area"
+            open={false}
+            onClose={() => {}}
+            onConfirm={handleDeleteArea}
+            associatedObjects={locations}
+            associatedObjectsLabel="locations"
+            filterFunction={filterAssociatedObjects}
+          />
+        }
       />
     </ResponsivePageLayout>
   )
