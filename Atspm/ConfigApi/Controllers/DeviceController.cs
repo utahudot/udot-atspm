@@ -77,7 +77,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
             {
                 Manufacturer = d.DeviceConfiguration.Product.Manufacturer,
                 Model = d.DeviceConfiguration.Product.Model,
-                Firmware = d.DeviceConfiguration.Firmware
+                Firmware = d.DeviceConfiguration.Description
             })
                 .Select(g => new ATSPM.ConfigApi.Models.DeviceGroup
                 {
