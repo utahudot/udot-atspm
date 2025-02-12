@@ -82,8 +82,8 @@ export default function Sidebar() {
             {hasLTGRPermission && (
               <NavItem
                 icon={<ForkLeftOutlinedIcon />}
-                text={'Left Turn Gap Report'}
-                url={'/left-turn-gap-report'}
+                text={'Reports'}
+                url={'/reports'}
               />
             )}
             <NavItem
