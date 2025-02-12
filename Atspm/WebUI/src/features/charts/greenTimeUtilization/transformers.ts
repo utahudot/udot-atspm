@@ -127,6 +127,7 @@ function transformData(data: RawGreenTimeUtilizationData) {
       right: 190,
       filterMode: 'none',
       minSpan: 0.2,
+      yAxisIndex: [0, 1],
     },
     {
       type: 'inside',

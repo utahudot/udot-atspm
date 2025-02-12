@@ -13,7 +13,7 @@ import LocationsConfigContainer from '@/features/locations/components/locationCo
 import SelectLocation from '@/features/locations/components/selectLocation'
 import { Location } from '@/features/locations/types'
 
-const Locations = () => {
+const PerformanceMeasures = () => {
   const theme = useTheme()
   const isMobileView = useMediaQuery(theme.breakpoints.down('md'))
 
@@ -161,4 +161,4 @@ const Locations = () => {
   )
 }
 
-export default Locations
+export default PerformanceMeasures
