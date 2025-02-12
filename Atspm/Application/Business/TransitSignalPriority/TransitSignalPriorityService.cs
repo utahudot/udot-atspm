@@ -36,21 +36,7 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
             IReadOnlyList<IndianaEvent> planEvents,
             IReadOnlyList<IndianaEvent> events)
         {
-            var preemptEvents = events.Where(row => row.EventCode == 102).Select(row => new DataPointForInt(row.Timestamp, row.EventParam));
-            var plans = planService.GetBasicPlans(options.Start, options.End, options.LocationIdentifier, planEvents);
-            IReadOnlyList<Plan> preemptPlans = plans.Select(pl => new PreemptPlan(
-                pl.PlanNumber.ToString(),
-                pl.Start,
-                pl.End,
-                preemptEvents.Count(p => p.Timestamp >= pl.Start && p.Timestamp < pl.End))).ToList();
-            return new TransitSignalPriorityResult(
-                "Preempt Service",
-                options.LocationIdentifier,
-                options.Start,
-                options.End,
-                preemptPlans,
-                preemptEvents.ToList()
-                );
+            throw new System.NotImplementedException();
         }
     }
 }
