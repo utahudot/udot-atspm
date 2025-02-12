@@ -1,17 +1,19 @@
 import { ApproachSpeedChartOptionsDefaults } from '@/features/charts/approachSpeed/types'
 import { BinSizeDropdown } from '@/features/charts/components/selectChart/BinSizeDropdown'
 import { Default } from '@/features/charts/types'
-import { SelectChangeEvent } from '@mui/material'
+import { Alert, SelectChangeEvent } from '@mui/material'
 import { useState } from 'react'
 
 interface ApproachSpeedChartOptionsProps {
   chartDefaults: ApproachSpeedChartOptionsDefaults
   handleChartOptionsUpdate: (update: Default) => void
+  isMeasureDefaultView?: boolean
 }
 
 export const ApproachSpeedChartOptions = ({
   chartDefaults,
   handleChartOptionsUpdate,
+  isMeasureDefaultView = false,
 }: ApproachSpeedChartOptionsProps) => {
   const [binSize, setBinSize] = useState(chartDefaults.binSize?.value)
 
@@ -27,10 +29,18 @@ export const ApproachSpeedChartOptions = ({
   }
 
   return (
-    <BinSizeDropdown
-      value={binSize}
-      handleChange={handleBinSizeChange}
-      id="approach-speed"
-    />
+    <>
+      {binSize === undefined ? (
+        <Alert severity="error" sx={{ mt: 1 }}>
+          Bin Size default value not found.
+        </Alert>
+      ) : (
+        <BinSizeDropdown
+          value={binSize}
+          handleChange={handleBinSizeChange}
+          id="approach-speed"
+        />
+      )}
+    </>
   )
 }

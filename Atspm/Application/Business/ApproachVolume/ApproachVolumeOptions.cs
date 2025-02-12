@@ -19,7 +19,7 @@ using Utah.Udot.Atspm.Business.Common;
 
 namespace Utah.Udot.Atspm.Business.ApproachVolume
 {
-    public class ApproachVolumeOptions : OptionsBase
+    public class ApproachVolumeOptions : DateTimeOptionsBase, ILocationOptionsBase
     {
         public int BinSize { get; set; }
         public bool ShowDirectionalSplits { get; set; }
@@ -29,5 +29,6 @@ namespace Utah.Udot.Atspm.Business.ApproachVolume
         public bool ShowTMCDetection { get; set; }
         public bool ShowAdvanceDetection { get; set; }
         public int MetricTypeId { get; internal set; } = 7;
+        public string LocationIdentifier { get; set; }
     }
 }

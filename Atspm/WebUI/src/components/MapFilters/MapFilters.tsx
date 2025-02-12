@@ -2,36 +2,21 @@ import { useGetAreas } from '@/features/areas/api/areaApi'
 import { useGetMeasureTypes } from '@/features/charts/api/getMeasureTypes'
 import { useGetJurisdiction } from '@/features/jurisdictions/api/jurisdictionApi'
 import { useLocationTypes } from '@/features/locations/api/getLocationTypes'
+import { Filters } from '@/features/locations/components/selectLocation'
 import { useGetRegion } from '@/features/region/api/regionApi'
 import { Autocomplete, Box, Paper, TextField, Typography } from '@mui/material'
 import { SyntheticEvent, memo } from 'react'
 
 type MapFiltersProps = {
-  setSelectedAreaId: (id: number | null) => void
-  setSelectedRegionId: (id: number | null) => void
-  setSelectedLocationTypeId: (id: number | null) => void
-  setSelectedJurisdictionId: (id: number | null) => void
-  setSelectedMeasureTypeId: (id: number | null) => void
-  selectedAreaId: number | null
-  selectedRegionId: number | null
-  selectedLocationTypeId: number | null
-  selectedJurisdictionId: number | null
-  selectedMeasureTypeId: number | null
+  onFilterChange: (filters: Partial<Filters>) => void
+  filters: Filters
   locationsTotal: number
   locationsFiltered: number
 }
 
 const MapFilters = ({
-  setSelectedAreaId,
-  setSelectedRegionId,
-  setSelectedLocationTypeId,
-  setSelectedJurisdictionId,
-  setSelectedMeasureTypeId,
-  selectedAreaId,
-  selectedRegionId,
-  selectedLocationTypeId,
-  selectedJurisdictionId,
-  selectedMeasureTypeId,
+  onFilterChange,
+  filters,
   locationsTotal,
   locationsFiltered,
 }: MapFiltersProps) => {
@@ -46,30 +31,8 @@ const MapFilters = ({
   const jurisdictions = jurisdictionsData?.value
   const measureTypes = measureTypeData?.value
 
-  const handleRegionChange = (_: SyntheticEvent, val: string | null) => {
-    const id = regions?.find((region) => region.description === val)?.id
-    setSelectedRegionId(id || null)
-  }
-
-  const handleLocationTypeChange = (_: SyntheticEvent, val: string | null) => {
-    const id = locationTypes?.find((locationType) => locationType.name === val)
-      ?.id
-    setSelectedLocationTypeId(id || null)
-  }
-
-  const handleJurisdictionChange = (_: SyntheticEvent, val: string | null) => {
-    const id = jurisdictions?.find((jurisdiction) => jurisdiction.name === val)
-      ?.id
-    setSelectedJurisdictionId(id || null)
-  }
-
-  const handleAreaChange = (_: SyntheticEvent, val: string | null) => {
-    const id = areas?.find((area) => area.name === val)?.id
-    setSelectedAreaId(id || null)
-  }
-  const handleMeasureTypeChange = (_: SyntheticEvent, val: string | null) => {
-    const id = measureTypes?.find((measureType) => measureType.name === val)?.id
-    setSelectedMeasureTypeId(id || null)
+  const handleFilterChange = (key: keyof Filters, value: number | null) => {
+    onFilterChange({ [key]: value })
   }
 
   return (
@@ -84,39 +47,51 @@ const MapFilters = ({
     >
       <Autocomplete
         size="small"
-        value={areas?.find((area) => area.id === selectedAreaId)?.name || null}
+        value={areas?.find((area) => area.id === filters.areaId)?.name || null}
         options={areas?.map((area) => area.name) || []}
         renderInput={(params) => <TextField {...params} label="Area" />}
-        onChange={handleAreaChange}
+        onChange={(_: SyntheticEvent, val: string | null) => {
+          const id = areas?.find((area) => area.name === val)?.id || null
+          handleFilterChange('areaId', id)
+        }}
       />
       <Autocomplete
         size="small"
         value={
-          regions?.find((region) => region.id === selectedRegionId)
+          regions?.find((region) => region.id === filters.regionId)
             ?.description || null
         }
         options={regions?.map((region) => region.description) || []}
         renderInput={(params) => (
           <TextField {...params} label="Region/District" />
         )}
-        onChange={handleRegionChange}
+        onChange={(_: SyntheticEvent, val: string | null) => {
+          const id =
+            regions?.find((region) => region.description === val)?.id || null
+          handleFilterChange('regionId', id)
+        }}
       />
       <Autocomplete
         size="small"
         value={
           jurisdictions?.find(
-            (jurisdiction) => jurisdiction.id === selectedJurisdictionId
+            (jurisdiction) => jurisdiction.id === filters.jurisdictionId
           )?.name || null
         }
         options={jurisdictions?.map((jurisdiction) => jurisdiction.name) || []}
         renderInput={(params) => <TextField {...params} label="Jurisdiction" />}
-        onChange={handleJurisdictionChange}
+        onChange={(_: SyntheticEvent, val: string | null) => {
+          const id =
+            jurisdictions?.find((jurisdiction) => jurisdiction.name === val)
+              ?.id || null
+          handleFilterChange('jurisdictionId', id)
+        }}
       />
       <Autocomplete
         size="small"
         value={
           measureTypes?.find(
-            (measureType) => measureType.id === selectedMeasureTypeId
+            (measureType) => measureType.id === filters.measureTypeId
           )?.name || null
         }
         options={
@@ -125,20 +100,30 @@ const MapFilters = ({
             .map((measureType) => measureType.name) || []
         }
         renderInput={(params) => <TextField {...params} label="Measure Type" />}
-        onChange={handleMeasureTypeChange}
+        onChange={(_: SyntheticEvent, val: string | null) => {
+          const id =
+            measureTypes?.find((measureType) => measureType.name === val)?.id ||
+            null
+          handleFilterChange('measureTypeId', id)
+        }}
       />
       <Autocomplete
         size="small"
         value={
           locationTypes?.find(
-            (locationType) => locationType.id === selectedLocationTypeId
+            (locationType) => locationType.id === filters.locationTypeId
           )?.name || null
         }
         options={locationTypes?.map((locationType) => locationType.name) || []}
         renderInput={(params) => (
           <TextField {...params} label="Location Type" />
         )}
-        onChange={handleLocationTypeChange}
+        onChange={(_: SyntheticEvent, val: string | null) => {
+          const id =
+            locationTypes?.find((locationType) => locationType.name === val)
+              ?.id || null
+          handleFilterChange('locationTypeId', id)
+        }}
       />
       <Box display={'flex'} justifyContent={'space-between'}>
         <Typography variant="caption">Results</Typography>

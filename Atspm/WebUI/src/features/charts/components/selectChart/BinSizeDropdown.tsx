@@ -27,7 +27,7 @@ export const BinSizeDropdown = ({
         justifyContent: 'space-between',
       }}
     >
-      <InputLabel htmlFor={labelId} id={id}>
+      <InputLabel sx={{ color: 'black' }} htmlFor={labelId} id={id}>
         Bin Size
       </InputLabel>
       <Box sx={{ display: 'flex', alignItems: 'center' }}>
