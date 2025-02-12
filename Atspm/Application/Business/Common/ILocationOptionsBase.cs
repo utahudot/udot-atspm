@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for Application - Utah.Udot.Atspm.Business.SplitMonitor/SplitMonitorOptions.cs
+// for Application - Utah.Udot.Atspm.Business.Common/OptionsBase.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,14 +15,11 @@
 // limitations under the License.
 #endregion
 
-using Utah.Udot.Atspm.Business.Common;
-
-namespace Utah.Udot.Atspm.Business.SplitMonitor
+namespace Utah.Udot.Atspm.Business.Common
 {
-    public class SplitMonitorOptions : DateTimeOptionsBase, ILocationOptionsBase
+    public interface ILocationOptionsBase
     {
-        public int PercentileSplit { get; set; }
+       
         public string LocationIdentifier { get; set; }
-
     }
 }

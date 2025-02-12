@@ -45,30 +45,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
         /// <inheritdoc/>
         public override async Task<TransitSignalPriorityResult> ExecuteAsync(TransitSignalPriorityOptions parameter, IProgress<int> progress = null, CancellationToken cancelToken = default)
         {
-            var Location = LocationRepository.GetLatestVersionOfLocation(parameter.LocationIdentifier, parameter.Start);
-            if (Location == null)
-            {
-                //return BadRequest("Location not found");
-                return await Task.FromException<TransitSignalPriorityResult>(new NullReferenceException("Location not found"));
-            }
-            var controllerEventLogs = controllerEventLogRepository.GetEventsBetweenDates(parameter.LocationIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
-            if (controllerEventLogs.IsNullOrEmpty())
-            {
-                //return Ok("No Controller Event Logs found for Location");
-                return await Task.FromException<TransitSignalPriorityResult>(new NullReferenceException("No Controller Event Logs found for Location"));
-            }
-            var planEvents = controllerEventLogs.GetPlanEvents(
-            parameter.Start.AddHours(-12),
-                parameter.End.AddHours(12)).ToList();
-            var preemptEvents = controllerEventLogs.GetEventsByEventCodes(parameter.Start, parameter.End, new List<short>() { 105 });
-            TransitSignalPriorityResult result = preemptServiceService.GetChartData(
-                parameter,
-                planEvents.ToList(),
-                preemptEvents.ToList());
-            result.LocationDescription = Location.LocationDescription();
-            //return Ok(viewModel);
-
-            return result;
+            throw new NotImplementedException();
         }
 
     }
