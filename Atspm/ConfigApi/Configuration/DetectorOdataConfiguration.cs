@@ -39,6 +39,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Configuration
             {
                 case 1:
                     {
+                        model.Property(p => p.DectectorIdentifier).IsRequired();
                         model.Property(p => p.DectectorIdentifier).MaxLength = 50;
 
                         break;

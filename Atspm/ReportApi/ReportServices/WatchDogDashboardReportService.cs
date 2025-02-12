@@ -141,7 +141,7 @@ namespace Utah.Udot.ATSPM.ReportApi.ReportServices
                     IssueType = combined.logEvent.IssueType,
                     Model = product.Model,
                     Manufacturer = product.Manufacturer,
-                    Firmware = combined.deviceConfig.Firmware
+                    Firmware = combined.deviceConfig.Description
                 });
         }
 

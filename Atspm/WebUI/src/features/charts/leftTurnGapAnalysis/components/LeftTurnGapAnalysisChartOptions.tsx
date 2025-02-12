@@ -14,11 +14,13 @@ import { ChangeEvent, useState } from 'react'
 interface LeftTurnGapAnalysisChartOptionsProps {
   chartDefaults: LeftTurnGapAnalysisChartOptionsDefaults
   handleChartOptionsUpdate: (update: Default) => void
+  isMeasureDefaultView?: boolean
 }
 
 export const LeftTurnGapAnalysisChartOptions = ({
   chartDefaults,
   handleChartOptionsUpdate,
+  isMeasureDefaultView = false,
 }: LeftTurnGapAnalysisChartOptionsProps) => {
   const [binSize, setBinSize] = useState(chartDefaults.binSize.value)
   const [gap1Min, setgap1Min] = useState(chartDefaults.gap1Min.value)

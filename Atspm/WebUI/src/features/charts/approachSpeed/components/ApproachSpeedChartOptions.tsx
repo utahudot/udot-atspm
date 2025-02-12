@@ -7,11 +7,13 @@ import { useState } from 'react'
 interface ApproachSpeedChartOptionsProps {
   chartDefaults: ApproachSpeedChartOptionsDefaults
   handleChartOptionsUpdate: (update: Default) => void
+  isMeasureDefaultView?: boolean
 }
 
 export const ApproachSpeedChartOptions = ({
   chartDefaults,
   handleChartOptionsUpdate,
+  isMeasureDefaultView = false,
 }: ApproachSpeedChartOptionsProps) => {
   const [binSize, setBinSize] = useState(chartDefaults.binSize?.value)
 

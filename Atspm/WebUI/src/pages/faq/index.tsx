@@ -35,9 +35,7 @@ const FAQ = () => {
           </AccordionSummary>
           <Divider />
           <AccordionDetails>
-            <Typography>
-              <Markup content={faq.body} />
-            </Typography>
+            <Markup content={faq.body} />
           </AccordionDetails>
         </Accordion>
       ))}

@@ -6,11 +6,13 @@ import { ChangeEvent, useState } from 'react'
 interface PurdueSplitFailureChartOptionsProps {
   chartDefaults: PurdueSplitFailureChartOptionsDefaults
   handleChartOptionsUpdate: (update: Default) => void
+  isMeasureDefaultView?: boolean
 }
 
 export const PurdueSplitFailureChartOptions = ({
   chartDefaults,
   handleChartOptionsUpdate,
+  isMeasureDefaultView = false,
 }: PurdueSplitFailureChartOptionsProps) => {
   const [firstSecondsOfRed, setFirstSecondsOfRed] = useState(
     chartDefaults.firstSecondsOfRed.value

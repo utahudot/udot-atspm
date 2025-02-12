@@ -16,10 +16,11 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Threading;
+using System.Threading.Tasks;
 using Utah.Udot.Atspm.Exceptions;
 using Utah.Udot.Atspm.Services;
 using Xunit;
@@ -38,14 +39,16 @@ namespace Utah.Udot.Atspm.InfrastructureTests.DownloaderClientTests
             Output = output;
         }
 
+        #region Connect
+
         [Fact]
-        [Trait(nameof(IDownloaderClient), "ConnectAsync")]
-        public async virtual void ConnectAsyncSucceeded()
+        [Trait(nameof(IDownloaderClient), nameof(IDownloaderClient.ConnectAsync))]
+        public async virtual Task ConnectAsyncSucceeded()
         {
             var connection = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 1);
             var credentials = new NetworkCredential("user", "password", "127.0.0.1");
 
-            await Sut.ConnectAsync(connection, credentials, 2000, 2000);
+            await Sut.ConnectAsync(connection, credentials);
 
             var condition = Sut.IsConnected;
 
@@ -53,18 +56,44 @@ namespace Utah.Udot.Atspm.InfrastructureTests.DownloaderClientTests
         }
 
         [Fact]
-        [Trait(nameof(IDownloaderClient), "ConnectAsync")]
-        public async virtual void ConnectAsyncControllerConnectionException()
+        [Trait(nameof(IDownloaderClient), nameof(IDownloaderClient.ConnectAsync))]
+        public async virtual Task ConnectAsyncNullConnection()
+        {
+            var credentials = new NetworkCredential("user", "password", "127.0.0.1");
+
+            var ex = await Record.ExceptionAsync(async () => await Sut.ConnectAsync(null, credentials));
+
+            Assert.NotNull(ex);
+            Assert.IsType<DownloaderClientConnectionException>(ex);
+            Assert.IsType<ArgumentNullException>(ex.InnerException);
+        }
+
+        [Fact]
+        [Trait(nameof(IDownloaderClient), nameof(IDownloaderClient.ConnectAsync))]
+        public async virtual Task ConnectAsyncNullCredentials()
+        {
+            var connection = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 1);
+
+            var ex = await Record.ExceptionAsync(async () => await Sut.ConnectAsync(connection, null));
+
+            Assert.NotNull(ex);
+            Assert.IsType<DownloaderClientConnectionException>(ex);
+            Assert.IsType<ArgumentNullException>(ex.InnerException);
+        }
+
+        [Fact]
+        [Trait(nameof(IDownloaderClient), nameof(IDownloaderClient.ConnectAsync))]
+        public async virtual Task ConnectAsyncControllerConnectionException()
         {
             var connection = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 1);
             var credentials = new NetworkCredential("user", "password", "127.0.0.1");
 
-            await Assert.ThrowsAsync<DownloaderClientConnectionException>(async () => await Sut.ConnectAsync(connection, credentials, 2000, 2000));
+            await Assert.ThrowsAsync<DownloaderClientConnectionException>(async () => await Sut.ConnectAsync(connection, credentials));
         }
 
         [Fact]
-        [Trait(nameof(IDownloaderClient), "ConnectAsync")]
-        public async virtual void ConnectAsyncOperationCanceledException()
+        [Trait(nameof(IDownloaderClient), nameof(IDownloaderClient.ConnectAsync))]
+        public async virtual Task ConnectAsyncOperationCanceledException()
         {
             var connection = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 1);
             var credentials = new NetworkCredential("user", "password", "127.0.0.1");
@@ -72,43 +101,76 @@ namespace Utah.Udot.Atspm.InfrastructureTests.DownloaderClientTests
             var tokenSource = new CancellationTokenSource();
             tokenSource.Cancel();
 
-            await Assert.ThrowsAsync<OperationCanceledException>(async () => await Sut.ConnectAsync(connection, credentials, 2000, 2000, tokenSource.Token));
+            await Assert.ThrowsAsync<OperationCanceledException>(async () => await Sut.ConnectAsync(connection, credentials, 2000, 2000, null, tokenSource.Token));
         }
 
+        #endregion
+
+        #region DeleteResource
+
         [Fact]
-        [Trait(nameof(IDownloaderClient), "DeleteFileAsync")]
-        public async virtual void DeleteFileAsyncSucceeded()
+        [Trait(nameof(IDownloaderClient), nameof(IDownloaderClient.DeleteResourceAsync))]
+        public abstract Task DeleteResourceAsyncSucceeded();
+
+        [Fact]
+        [Trait(nameof(IDownloaderClient), nameof(IDownloaderClient.DeleteResourceAsync))]
+        public async virtual Task DeleteResourceAsyncNullResource()
         {
-            await Sut.DeleteFileAsync("");
+            var ex = await Record.ExceptionAsync(async () => await Sut.DeleteResourceAsync(null));
+
+            Assert.NotNull(ex);
+            Assert.IsType<DownloaderClientDeleteResourceException>(ex);
+            Assert.IsType<ArgumentNullException>(ex.InnerException);
         }
 
         [Fact]
-        [Trait(nameof(IDownloaderClient), "DeleteFileAsync")]
-        public async virtual void DeleteFileAsyncNotConnected()
+        [Trait(nameof(IDownloaderClient), nameof(IDownloaderClient.DeleteResourceAsync))]
+        public async virtual Task DeleteResourceAsyncInvalidResource()
         {
-            await Assert.ThrowsAsync<DownloaderClientConnectionException>(async () => await Sut.DeleteFileAsync(""));
+            var uri = new UriBuilder()
+            {
+                Host = "127.0.0.1",
+                Path = "/a/b/    c",
+            }.Uri;
+
+            var ex = await Record.ExceptionAsync(async () => await Sut.DeleteResourceAsync(uri));
+
+            Assert.NotNull(ex);
+            Assert.IsType<DownloaderClientDeleteResourceException>(ex);
+            Assert.IsType<UriFormatException>(ex.InnerException);
         }
 
         [Fact]
-        [Trait(nameof(IDownloaderClient), "DeleteFileAsync")]
-        public async virtual void DeleteFileAsyncControllerDeleteFileException()
+        [Trait(nameof(IDownloaderClient), nameof(IDownloaderClient.DeleteResourceAsync))]
+        public async virtual Task DeleteResourceAsyncNotConnected()
         {
-            await Assert.ThrowsAsync<DownloaderClientDeleteFileException>(async () => await Sut.DeleteFileAsync(""));
+            await Assert.ThrowsAsync<DownloaderClientConnectionException>(async () => await Sut.DeleteResourceAsync(null));
         }
 
         [Fact]
-        [Trait(nameof(IDownloaderClient), "DeleteFileAsync")]
-        public async virtual void DeleteFileAsyncOperationCanceledException()
+        [Trait(nameof(IDownloaderClient), nameof(IDownloaderClient.DeleteResourceAsync))]
+        public async virtual Task DeleteResourceAsyncControllerDeleteResourceException()
+        {
+            await Assert.ThrowsAsync<DownloaderClientDeleteResourceException>(async () => await Sut.DeleteResourceAsync(null));
+        }
+
+        [Fact]
+        [Trait(nameof(IDownloaderClient), nameof(IDownloaderClient.DeleteResourceAsync))]
+        public async virtual Task DeleteResourceAsyncOperationCanceledException()
         {
             var tokenSource = new CancellationTokenSource();
             tokenSource.Cancel();
 
-            await Assert.ThrowsAsync<OperationCanceledException>(async () => await Sut.DeleteFileAsync("", tokenSource.Token));
+            await Assert.ThrowsAsync<OperationCanceledException>(async () => await Sut.DeleteResourceAsync(null, tokenSource.Token));
         }
 
+        #endregion
+
+        #region Disconnect
+
         [Fact]
-        [Trait(nameof(IDownloaderClient), "DisconnectAsync")]
-        public async virtual void DisconnectAsyncSucceeded()
+        [Trait(nameof(IDownloaderClient), nameof(IDownloaderClient.DisconnectAsync))]
+        public async virtual Task DisconnectAsyncSucceeded()
         {
             await Sut.DisconnectAsync();
 
@@ -118,22 +180,22 @@ namespace Utah.Udot.Atspm.InfrastructureTests.DownloaderClientTests
         }
 
         [Fact]
-        [Trait(nameof(IDownloaderClient), "DisconnectAsync")]
-        public async virtual void DisconnectAsyncNotConnected()
+        [Trait(nameof(IDownloaderClient), nameof(IDownloaderClient.DisconnectAsync))]
+        public async virtual Task DisconnectAsyncNotConnected()
         {
             await Assert.ThrowsAsync<DownloaderClientConnectionException>(async () => await Sut.DisconnectAsync());
         }
 
         [Fact]
-        [Trait(nameof(IDownloaderClient), "DisconnectAsync")]
-        public async virtual void DisconnectAsyncControllerConnectionException()
+        [Trait(nameof(IDownloaderClient), nameof(IDownloaderClient.DisconnectAsync))]
+        public async virtual Task DisconnectAsyncControllerConnectionException()
         {
             await Assert.ThrowsAsync<DownloaderClientConnectionException>(async () => await Sut.DisconnectAsync());
         }
 
         [Fact]
-        [Trait(nameof(IDownloaderClient), "DisconnectAsync")]
-        public async virtual void DisconnectAsyncOperationCanceledException()
+        [Trait(nameof(IDownloaderClient), nameof(IDownloaderClient.DisconnectAsync))]
+        public async virtual Task DisconnectAsyncOperationCanceledException()
         {
             var tokenSource = new CancellationTokenSource();
             tokenSource.Cancel();
@@ -141,75 +203,156 @@ namespace Utah.Udot.Atspm.InfrastructureTests.DownloaderClientTests
             await Assert.ThrowsAsync<OperationCanceledException>(async () => await Sut.DisconnectAsync(tokenSource.Token));
         }
 
+        #endregion
+
+        #region DownloadResource
+
         [Fact]
-        [Trait(nameof(IDownloaderClient), "DownloadFileAsync")]
-        public async virtual void DownloadFileAsyncSucceeded()
+        [Trait(nameof(IDownloaderClient), nameof(IDownloaderClient.DownloadResourceAsync))]
+        public async virtual Task DownloadResourceAsyncSucceed()
         {
-            var condition = await Sut.DownloadFileAsync(Path.GetTempFileName(), "");
+            var local = new UriBuilder()
+            {
+                Scheme = Uri.UriSchemeFile,
+                Path = Path.GetTempFileName()
+            }.Uri;
+
+            var remote = new UriBuilder().Uri;
+
+            var condition = await Sut.DownloadResourceAsync(local, remote);
 
             Assert.True(condition is FileInfo);
         }
 
         [Fact]
-        [Trait(nameof(IDownloaderClient), "DownloadFileAsync")]
-        public async virtual void DownloadFileAsyncNotConnected()
+        [Trait(nameof(IDownloaderClient), nameof(IDownloaderClient.DownloadResourceAsync))]
+        public async virtual Task DownloadResourceAsyncNullLocal()
         {
-            await Assert.ThrowsAsync<DownloaderClientConnectionException>(async () => await Sut.DownloadFileAsync("", ""));
+            var remote = new UriBuilder().Uri;
+
+            var ex = await Record.ExceptionAsync(async () => await Sut.DownloadResourceAsync(null, remote));
+
+            Assert.NotNull(ex);
+            Assert.IsType<DownloaderClientDownloadResourceException>(ex);
+            Assert.IsType<ArgumentNullException>(ex.InnerException);
         }
 
         [Fact]
-        [Trait(nameof(IDownloaderClient), "DownloadFileAsync")]
-        public async virtual void DownloadFileAsyncControllerDownloadFileException()
+        [Trait(nameof(IDownloaderClient), nameof(IDownloaderClient.DownloadResourceAsync))]
+        public async virtual Task DownloadResourceAsyncNullRemote()
         {
-            await Assert.ThrowsAsync<DownloaderClientDownloadFileException>(async () => await Sut.DownloadFileAsync(Path.GetTempFileName(), ""));
+            var local = new UriBuilder()
+            {
+                Scheme = Uri.UriSchemeFile,
+            }.Uri;
+
+            var ex = await Record.ExceptionAsync(async () => await Sut.DownloadResourceAsync(local, null));
+
+            Assert.NotNull(ex);
+            Assert.IsType<DownloaderClientDownloadResourceException>(ex);
+            Assert.IsType<ArgumentNullException>(ex.InnerException);
         }
 
         [Fact]
-        [Trait(nameof(IDownloaderClient), "DownloadFileAsync")]
-        public async virtual void DownloadFileAsyncOperationCanceledException()
+        [Trait(nameof(IDownloaderClient), nameof(IDownloaderClient.DownloadResourceAsync))]
+        public async virtual Task DownloadResourceAsyncInvalidLocal()
+        {
+            var local = new UriBuilder().Uri;
+
+            var remote = new UriBuilder().Uri;
+
+            var ex = await Record.ExceptionAsync(async () => await Sut.DownloadResourceAsync(local, remote));
+
+            Assert.NotNull(ex);
+            Assert.IsType<DownloaderClientDownloadResourceException>(ex);
+            Assert.IsType<UriFormatException>(ex.InnerException);
+        }
+
+        [Fact]
+        [Trait(nameof(IDownloaderClient), nameof(IDownloaderClient.DownloadResourceAsync))]
+        public async virtual Task DownloadResourceAsyncNotConnected()
+        {
+            await Assert.ThrowsAsync<DownloaderClientConnectionException>(async () => await Sut.DownloadResourceAsync(null, null));
+        }
+
+        [Fact]
+        [Trait(nameof(IDownloaderClient), nameof(IDownloaderClient.DownloadResourceAsync))]
+        public async virtual Task DownloadResourceAsyncDownloaderClientDownloadResourceException()
+        {
+            var local = new UriBuilder()
+            {
+                Scheme = Uri.UriSchemeFile,
+            }.Uri;
+
+            var remote = new UriBuilder().Uri;
+
+            await Assert.ThrowsAsync<DownloaderClientDownloadResourceException>(async () => await Sut.DownloadResourceAsync(local, remote));
+        }
+
+        [Fact]
+        [Trait(nameof(IDownloaderClient), nameof(IDownloaderClient.DownloadResourceAsync))]
+        public async virtual Task DownloadResourceAsyncOperationCanceledException()
         {
             var tokenSource = new CancellationTokenSource();
             tokenSource.Cancel();
 
-            await Assert.ThrowsAsync<OperationCanceledException>(async () => await Sut.DownloadFileAsync(Path.GetTempFileName(), "", tokenSource.Token));
+            await Assert.ThrowsAsync<OperationCanceledException>(async () => await Sut.DownloadResourceAsync(null, null, tokenSource.Token));
         }
 
+        #endregion
+
+        #region ListResources
+
         [Fact]
-        [Trait(nameof(IDownloaderClient), "ListDirectoryAsync")]
-        public async virtual void ListDirectoryAsyncSucceeded()
+        [Trait(nameof(IDownloaderClient), nameof(IDownloaderClient.ListResourcesAsync))]
+        public async virtual Task ListResourcesAsyncSucceeded()
         {
-            var condition = await Sut.ListDirectoryAsync("");
+            var expected = "/a/b/c";
 
-            Assert.True(condition is IEnumerable<string>);
+            var result = await Sut.ListResourcesAsync(expected);
+
+            foreach (var r in result)
+            {
+                Output.WriteLine($"result: {r}");
+            }
+
+            var actual = result.FirstOrDefault().PathAndQuery;
+
+            Output.WriteLine($"expected: {expected}");
+            Output.WriteLine($"actual: {actual}");
+
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
-        [Trait(nameof(IDownloaderClient), "ListDirectoryAsync")]
-        public async virtual void ListDirectoryAsyncNotConnected()
+        [Trait(nameof(IDownloaderClient), nameof(IDownloaderClient.ListResourcesAsync))]
+        public async virtual Task ListResourcesAsyncNotConnected()
         {
-            await Assert.ThrowsAsync<DownloaderClientConnectionException>(async () => await Sut.ListDirectoryAsync(""));
+            await Assert.ThrowsAsync<DownloaderClientConnectionException>(async () => await Sut.ListResourcesAsync(""));
         }
 
         [Fact]
-        [Trait(nameof(IDownloaderClient), "ListDirectoryAsync")]
-        public async virtual void ListDirectoryAsyncControllerDownloadFileException()
+        [Trait(nameof(IDownloaderClient), nameof(IDownloaderClient.ListResourcesAsync))]
+        public async virtual Task ListDirectoryAsyncControllerDownloadFileException()
         {
-            await Assert.ThrowsAsync<DownloaderClientListDirectoryException>(async () => await Sut.ListDirectoryAsync(""));
+            await Assert.ThrowsAsync<DownloaderClientListResourcesException>(async () => await Sut.ListResourcesAsync(""));
         }
 
         [Fact]
-        [Trait(nameof(IDownloaderClient), "ListDirectoryAsync")]
-        public async virtual void ListDirectoryAsyncOperationCanceledException()
+        [Trait(nameof(IDownloaderClient), nameof(IDownloaderClient.ListResourcesAsync))]
+        public async virtual Task ListResourcesAsyncDownloaderClientListResourcesException()
         {
             var tokenSource = new CancellationTokenSource();
             tokenSource.Cancel();
 
-            await Assert.ThrowsAsync<OperationCanceledException>(async () => await Sut.ListDirectoryAsync("", tokenSource.Token));
+            await Assert.ThrowsAsync<OperationCanceledException>(async () => await Sut.ListResourcesAsync("", tokenSource.Token));
         }
 
+        #endregion
+
         [Fact]
-        [Trait(nameof(IDownloaderClient), "ConnectAsync")]
-        public async virtual void ConnectAsyncConnectionProperties()
+        [Trait(nameof(IDownloaderClient), nameof(IDownloaderClient.ConnectAsync))]
+        public async virtual Task ConnectAsyncConnectionProperties()
         {
             var ipAddress = "127.0.0.1";
             var port = Random.Shared.Next(1, 10);
@@ -222,6 +365,13 @@ namespace Utah.Udot.Atspm.InfrastructureTests.DownloaderClientTests
             var credentials = new NetworkCredential(userName, password, ipAddress);
 
             await Sut.ConnectAsync(connection, credentials, connectionTimeout, operationTImeout);
+
+            Output.WriteLine($"VerifyIpAddress: {ipAddress}");
+            Output.WriteLine($"VerifyPort: {port}");
+            Output.WriteLine($"VerifyUserName: {userName}");
+            Output.WriteLine($"VerifyPassword: {password}");
+            Output.WriteLine($"VerifyConnectionTimeout: {connectionTimeout}");
+            Output.WriteLine($"VerifyOperationTimeout: {operationTImeout}");
 
             Assert.True(VerifyIpAddress(Client, ipAddress));
             Assert.True(VerifyPort(Client, port));
@@ -236,10 +386,12 @@ namespace Utah.Udot.Atspm.InfrastructureTests.DownloaderClientTests
         public abstract bool VerifyUserName(T client, string userName);
         public abstract bool VerifyPassword(T client, string password);
         public abstract bool VerifyConnectionTimeout(T client, int connectionTimeout);
-        public abstract bool VerifyOperationTimeout(T client, int operationTImeout);
+        public abstract bool VerifyOperationTimeout(T client, int operationTimeout);
 
         public virtual void Dispose()
         {
+            if (Client is IDisposable d)
+                d.Dispose();
         }
     }
 }

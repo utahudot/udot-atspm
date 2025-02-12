@@ -3,7 +3,7 @@
 // for Infrastructure - Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders/DeviceDownloader.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
+// you may not use this resource except in compliance with the License.
 // You may obtain a copy of the License at
 // 
 // http://www.apache.org/licenses/LICENSE-2.
@@ -17,8 +17,10 @@
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System;
 using System.Net;
 using System.Runtime.CompilerServices;
+using System.Text;
 using Utah.Udot.Atspm.Common;
 using Utah.Udot.Atspm.Data.Enums;
 
@@ -50,19 +52,27 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders
         //}
 
         /// <summary>
-        /// Generates a pattern for folder structure used for temp event log storage
+        /// Generates a <see cref="Uri"/> resource used for temp event log storage
         /// </summary>
-        /// <param name="value"></param>
-        /// <param name="file"></param>
+        /// <param name="device"></param>
+        /// <param name="resource"></param>
         /// <returns></returns>
-        public virtual string GenerateLocalFilePath(Device value, string file)
+        public virtual Uri GenerateLocalFilePath(Device device, Uri resource)
         {
-            var result = Path.Combine
+            var fileExtension = Path.HasExtension(resource.Segments.LastOrDefault()) ? Path.GetExtension(resource.Segments.LastOrDefault()) : ".txt";
+            var fileName = $"{device.DeviceIdentifier}-{DateTime.Now.Ticks}{fileExtension}";
+
+            var path = Path.Combine
                 (_options.BasePath,
-                $"{value.Location?.LocationIdentifier} - {value.Location?.PrimaryName}",
-                value.DeviceType.ToString(),
-                value.Ipaddress.ToString(),
-                Path.GetFileName(file));
+                $"{device.Location?.LocationIdentifier} - {device.Location?.PrimaryName}",
+                device.DeviceType.ToString(),
+                 $"{device.DeviceIdentifier}-{device.Ipaddress}");
+
+            var result = new UriBuilder()
+            {
+                Scheme = Uri.UriSchemeFile,
+                Path = Path.Combine(path, fileName)
+            }.Uri;
 
             return result;
         }
@@ -98,11 +108,11 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders
                     }
                 }
 
-                var locationIdentifier = parameter?.Location?.LocationIdentifier;
+                var deviceIdentifier = parameter?.DeviceIdentifier;
                 var user = parameter?.DeviceConfiguration?.UserName;
                 var password = parameter?.DeviceConfiguration?.Password;
-                var directory = parameter?.DeviceConfiguration?.Directory;
-                var searchTerms = parameter?.DeviceConfiguration?.SearchTerms;
+                var path = parameter?.DeviceConfiguration?.Path;
+                var query = parameter?.DeviceConfiguration?.Query;
                 var connectionTimeout = parameter?.DeviceConfiguration?.ConnectionTimeout ?? 2000;
                 var operationTimeout = parameter?.DeviceConfiguration?.OperationTimeout ?? 2000;
 
@@ -113,94 +123,94 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders
                         var connection = new IPEndPoint(ipaddress, parameter.DeviceConfiguration.Port);
                         var credentials = new NetworkCredential(user, password, ipaddress.ToString());
 
-                        logMessages.ConnectingToHostMessage(locationIdentifier, ipaddress);
+                        logMessages.ConnectingToHostMessage(deviceIdentifier, ipaddress);
 
-                        await client.ConnectAsync(connection, credentials, connectionTimeout, operationTimeout, cancelToken);
+                        await client.ConnectAsync(connection, credentials, connectionTimeout, operationTimeout, null, cancelToken);
                     }
                     catch (DownloaderClientConnectionException e)
                     {
-                        logMessages.ConnectingToHostException(locationIdentifier, ipaddress, e);
+                        logMessages.ConnectingToHostException(deviceIdentifier, ipaddress, e);
                     }
                     catch (OperationCanceledException e)
                     {
-                        logMessages.OperationCancelledException(locationIdentifier, ipaddress, e);
+                        logMessages.OperationCancelledException(deviceIdentifier, ipaddress, e);
                     }
 
                     if (client.IsConnected)
                     {
-                        logMessages.ConnectedToHostMessage(locationIdentifier, ipaddress);
+                        logMessages.ConnectedToHostMessage(deviceIdentifier, ipaddress);
 
-                        IEnumerable<string> remoteFiles = new List<string>();
+                        IEnumerable<Uri> resources = new List<Uri>();
 
                         try
                         {
-                            logMessages.GettingDirectoryListMessage(locationIdentifier, ipaddress, directory);
+                            logMessages.GettingsResourcesListMessage(deviceIdentifier, ipaddress, path);
 
-                            remoteFiles = await client.ListDirectoryAsync(directory, cancelToken, searchTerms);
+                            resources = await client.ListResourcesAsync(path, cancelToken, query);
                         }
-                        catch (DownloaderClientListDirectoryException e)
+                        catch (DownloaderClientListResourcesException e)
                         {
-                            logMessages.DirectoryListingException(locationIdentifier, ipaddress, directory, e);
+                            logMessages.ResourceListingException(deviceIdentifier, ipaddress, path, e);
                         }
                         catch (DownloaderClientConnectionException e)
                         {
-                            logMessages.NotConnectedToHostException(locationIdentifier, ipaddress, e);
+                            logMessages.NotConnectedToHostException(deviceIdentifier, ipaddress, e);
                         }
 
-                        int total = remoteFiles.Count();
+                        int total = resources.Count();
                         int current = 0;
 
-                        logMessages.DirectoryListingMessage(total, locationIdentifier, ipaddress);
+                        logMessages.ResourceListingMessage(total, deviceIdentifier, ipaddress);
 
-                        foreach (var file in remoteFiles)
+                        foreach (var resource in resources)
                         {
-                            var localFilePath = GenerateLocalFilePath(parameter, file);
+                            var locatlPath = GenerateLocalFilePath(parameter, resource);
                             FileInfo downloadedFile = null;
 
                             try
                             {
-                                logMessages.DownloadingFileMessage(file, locationIdentifier, ipaddress);
+                                logMessages.DownloadingResourceMessage(resource, deviceIdentifier, ipaddress);
 
-                                downloadedFile = await client.DownloadFileAsync(localFilePath, file, cancelToken);
+                                downloadedFile = await client.DownloadResourceAsync(locatlPath, resource, cancelToken);
                                 current++;
                             }
-                            catch (DownloaderClientDownloadFileException e)
+                            catch (DownloaderClientDownloadResourceException e)
                             {
-                                logMessages.DownloadFileException(file, locationIdentifier, ipaddress, e);
+                                logMessages.DownloadResourceException(resource, deviceIdentifier, ipaddress, e);
                             }
                             catch (DownloaderClientConnectionException e)
                             {
-                                logMessages.NotConnectedToHostException(locationIdentifier, ipaddress, e);
+                                logMessages.NotConnectedToHostException(deviceIdentifier, ipaddress, e);
                             }
                             catch (OperationCanceledException e)
                             {
-                                logMessages.OperationCancelledException(locationIdentifier, ipaddress, e);
+                                logMessages.OperationCancelledException(deviceIdentifier, ipaddress, e);
                             }
 
                             if (_options.DeleteRemoteFile)
                             {
                                 try
                                 {
-                                    logMessages.DeletingFileMessage(file, locationIdentifier, ipaddress);
+                                    logMessages.DeletingResourceMessage(resource, deviceIdentifier, ipaddress);
 
-                                    await client.DeleteFileAsync(file, cancelToken);
+                                    await client.DeleteResourceAsync(resource, cancelToken);
                                 }
-                                catch (DownloaderClientDeleteFileException e)
+                                catch (DownloaderClientDeleteResourceException e)
                                 {
-                                    logMessages.DeleteFileException(file, locationIdentifier, ipaddress, e);
+                                    logMessages.DeleteResourceException(resource, deviceIdentifier, ipaddress, e);
                                 }
                                 catch (OperationCanceledException e)
                                 {
-                                    logMessages.OperationCancelledException(locationIdentifier, ipaddress, e);
+                                    logMessages.OperationCancelledException(deviceIdentifier, ipaddress, e);
                                 }
 
-                                logMessages.DeletedFileMessage(file, locationIdentifier, ipaddress);
+                                logMessages.DeletedResourceMessage(resource, deviceIdentifier, ipaddress);
                             }
 
                             //HACK: don't know why files aren't downloading without throwing an error
                             if (downloadedFile != null)
                             {
-                                logMessages.DownloadedFileMessage(file, locationIdentifier, ipaddress);
+                                logMessages.DownloadedResourceMessage(resource, deviceIdentifier, ipaddress);
 
                                 progress?.Report(new ControllerDownloadProgress(downloadedFile, current, total));
 
@@ -208,25 +218,25 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders
                             }
                             else
                             {
-                                _log.LogWarning(new EventId(Convert.ToInt32(locationIdentifier)), "File failed to download on {Location} file name: {file}", locationIdentifier, file);
+                                _log.LogWarning(new EventId(Convert.ToInt32(deviceIdentifier)), "File failed to download on {Location} file name: {file}", deviceIdentifier, resource);
                             }
                         }
 
-                        logMessages.DownloadedFilesMessage(current, total, locationIdentifier, ipaddress);
+                        logMessages.DownloadedResourcesMessage(current, total, deviceIdentifier, ipaddress);
 
                         try
                         {
-                            logMessages.DisconnectingFromHostMessage(locationIdentifier, ipaddress);
+                            logMessages.DisconnectingFromHostMessage(deviceIdentifier, ipaddress);
 
                             await client.DisconnectAsync(cancelToken);
                         }
                         catch (DownloaderClientConnectionException e)
                         {
-                            logMessages.DisconnectingFromHostException(locationIdentifier, ipaddress, e);
+                            logMessages.DisconnectingFromHostException(deviceIdentifier, ipaddress, e);
                         }
                         catch (OperationCanceledException e)
                         {
-                            logMessages.OperationCancelledException(locationIdentifier, ipaddress, e);
+                            logMessages.OperationCancelledException(deviceIdentifier, ipaddress, e);
                         }
                     }
                 }
@@ -246,6 +256,148 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders
             {
                 client.Dispose();
             }
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+    public class StringObjectParser //: IFormattable
+    {
+        public StringObjectParser(object obj, string query)
+        {
+            Obj = obj;
+            Query = query;
+        }
+
+        public object Obj { get; set; }
+
+        public string Query { get; set; }
+
+        public string ParseQuery()
+        {
+            var output = Query.Split('[', ']').ToArray();
+
+            var builder = new StringBuilder();
+
+            foreach (var o in output)
+            {
+                var result = o;
+
+                //Console.WriteLine($"o: {o}");
+
+                if (o.StartsWith("DateTime"))
+                {
+                    result = o.Replace("DateTime", "");
+
+
+                    //o.Split(':', 2);
+
+
+
+
+
+
+                    //HACK: update this!
+                    builder.AppendFormat("{0" + result + "}", DateTime.Now.AddHours(-2));
+
+
+
+
+
+
+
+
+
+
+
+
+
+                }
+
+                else if (o.StartsWith(Obj.GetType().Name))
+                {
+                    var length = Obj.GetType().Name.Length;
+                    result = o.Remove(0, length);
+
+                    //result = o.Replace(Obj.GetType().Name, "");
+
+                    builder.AppendFormat(new TestFormatProvider(), "{0" + result + "}", Obj);
+                }
+
+                else
+                {
+                    builder.Append(result);
+                }
+            }
+
+            return builder.ToString();
+        }
+
+        public override string? ToString()
+        {
+            return ParseQuery();
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+    public class TestFormatProvider : IFormatProvider
+    {
+        public object GetFormat(Type formatType)
+        {
+            if (formatType == typeof(ICustomFormatter))
+            {
+                return new CapitalisationCustomFormatter();
+            }
+
+            Console.WriteLine($"formatType: {formatType}");
+
+            return null;
+        }
+    }
+
+    public class CapitalisationCustomFormatter : ICustomFormatter
+    {
+        public string Format(string format, object arg, IFormatProvider formatProvider)
+        {
+            Console.WriteLine($"format: {format} - arg: {arg}");
+
+            if (arg.HasProperty(format))
+                return arg.GetPropertyValueString(format);
+
+            return format;
+        }
+    }
+
+    public static class PropertyExtensions
+    {
+        public static string GetPropertyValueString(this object obj, string propertyName)
+        {
+            if (obj.HasProperty(propertyName))
+            {
+                string value = obj.GetType().GetProperty(propertyName).GetValue(obj, null).ToString();
+
+                return value;
+            }
+
+            throw new ArgumentException(propertyName, "propertyName");
         }
     }
 }

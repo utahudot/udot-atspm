@@ -7,11 +7,13 @@ import { useState } from 'react'
 interface TurningMovementCountsChartOptionsProps {
   chartDefaults: TurningMovementCountsChartOptionsDefaults
   handleChartOptionsUpdate: (update: Default) => void
+  isMeasureDefaultView?: boolean
 }
 
 export const TurningMovementCountsChartOptions = ({
   chartDefaults,
   handleChartOptionsUpdate,
+  isMeasureDefaultView = false,
 }: TurningMovementCountsChartOptionsProps) => {
   const [binSize, setBinSize] = useState(chartDefaults.binSize?.value)
 

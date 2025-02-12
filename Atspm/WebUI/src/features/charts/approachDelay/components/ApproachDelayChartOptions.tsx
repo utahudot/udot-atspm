@@ -7,11 +7,13 @@ import { useState } from 'react'
 interface ApproachDelayChartOptionsProps {
   chartDefaults: ApproachDelayChartOptionsDefaults
   handleChartOptionsUpdate: (update: Default) => void
+  isMeasureDefaultView?: boolean
 }
 
 export const ApproachDelayChartOptions = ({
   chartDefaults,
   handleChartOptionsUpdate,
+  isMeasureDefaultView = false,
 }: ApproachDelayChartOptionsProps) => {
   const [binSize, setBinSize] = useState(chartDefaults.binSize?.value)
 
