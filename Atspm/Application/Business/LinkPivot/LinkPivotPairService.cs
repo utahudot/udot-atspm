@@ -403,7 +403,7 @@ namespace Utah.Udot.Atspm.Business.LinkPivot
             var logs = controllerEventLogRepository.GetEventsBetweenDates(approach.Location.LocationIdentifier, tempStartDate.AddHours(-2), tempEndDate.AddHours(2)).ToList();
             if (logs.Count == 0)
             {
-                throw new Exception("No Controller Event Logs found for the dates provided");
+                throw new Exception($"No Controller Event Logs found for the dates provided for location {approach.Location.LocationIdentifier}");
             }
             var plans = logs.GetPlanEvents(tempStartDate.AddHours(-2), tempEndDate.AddHours(2)).ToList();
             var pcd = await locationPhaseService.GetLocationPhaseDataWithApproach(approach, tempStartDate, tempEndDate, 15, 13, logs, plans, true, null, cycleTime);

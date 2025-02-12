@@ -7,11 +7,13 @@ import { useState } from 'react'
 interface ArrivalsOnRedChartOptionsProps {
   chartDefaults: ArrivalsOnRedChartOptionsDefaults
   handleChartOptionsUpdate: (update: Default) => void
+  isMeasureDefaultView?: boolean
 }
 
 export const ArrivalsOnRedChartOptions = ({
   chartDefaults,
   handleChartOptionsUpdate,
+  isMeasureDefaultView = false,
 }: ArrivalsOnRedChartOptionsProps) => {
   const [binSize, setBinSize] = useState(chartDefaults.binSize?.value)
 

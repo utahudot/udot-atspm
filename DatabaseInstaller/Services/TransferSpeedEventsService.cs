@@ -238,7 +238,7 @@ namespace DatabaseInstaller.Services
 
                     if (eventLogs.Count > 0)
                     {
-                        var device = location.Devices.FirstOrDefault(d => d.DeviceType == Utah.Udot.Atspm.Data.Enums.DeviceTypes.WavetronixSpeed);
+                        var device = location.Devices.FirstOrDefault(d => d.DeviceType == Utah.Udot.Atspm.Data.Enums.DeviceTypes.SpeedSensor);
                         if (device != null)
                         {
                             var archiveLog = new CompressedEventLogs<SpeedEvent>
