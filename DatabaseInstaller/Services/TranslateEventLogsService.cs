@@ -1,4 +1,5 @@
 ﻿using DatabaseInstaller.Commands;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,7 +19,9 @@ using Utah.Udot.Atspm.Data;
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
+using Utah.Udot.Atspm.Infrastructure.Repositories.EventLogRepositories;
 using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
+using Utah.Udot.Atspm.Repositories.EventLogRepositories;
 
 namespace DatabaseInstaller.Services
 {
@@ -27,17 +30,21 @@ namespace DatabaseInstaller.Services
         private readonly ILogger<TranslateEventLogsService> _logger;
         private readonly IServiceProvider _serviceProvider;
         private readonly ILocationRepository _locationRepository;
+        private readonly IIndianaEventLogRepository _indianaEventLogEFRepository;
         private readonly TransferCommandConfiguration _config;
 
         public TranslateEventLogsService(
             ILogger<TranslateEventLogsService> logger,
             IServiceProvider serviceProvider,
             ILocationRepository locationRepository,
-            IOptions<TransferCommandConfiguration> config)
+            IOptions<TransferCommandConfiguration> config,
+            IIndianaEventLogRepository indianaEventLogEFRepository
+            )
         {
             _logger = logger;
             _serviceProvider = serviceProvider;
             _locationRepository = locationRepository;
+            _indianaEventLogEFRepository = indianaEventLogEFRepository;
             _config = config.Value;
         }
 
@@ -60,49 +67,106 @@ namespace DatabaseInstaller.Services
         {
             await Parallel.ForEachAsync(locations, async (location, token) =>
             {
-                string selectQuery = $"SELECT LogData FROM [dbo].[ControllerLogArchives] WHERE SignalId = {location.LocationIdentifier} AND ArchiveDate = '{date}'";
-
-                try
+                // Create a new scope for the repository (and its DbContext)
+                using (var scope = _serviceProvider.CreateScope())
                 {
-                    using (var connection = new SqlConnection(_config.Source))
+                    var repository = scope.ServiceProvider.GetRequiredService<IIndianaEventLogRepository>();
+
+                    if (repository.GetList().Any(i =>
+                            i.ArchiveDate == DateOnly.FromDateTime(date) &&
+                            i.LocationIdentifier == location.LocationIdentifier))
                     {
-                        await connection.OpenAsync(token);
-                        using (var command = new SqlCommand(selectQuery, connection))
-                        using (var reader = await command.ExecuteReaderAsync(token))
+                        _logger.LogInformation(
+                            "Location: {LocationId} for Date: {Date} already processed. Skipping...",
+                            location.LocationIdentifier, date);
+                        return;
+                    }
+                }
+
+                // Define the query for reading the compressed data.
+                string selectQuery = $"SELECT LogData FROM [dbo].[ControllerLogArchives] " +
+                                     $"WHERE SignalId = {location.LocationIdentifier} AND ArchiveDate = '{date}'";
+
+                // Set up retry parameters.
+                int maxAttempts = 4;
+                bool success = false;
+
+                for (int attempt = 1; attempt <= maxAttempts && !token.IsCancellationRequested; attempt++)
+                {
+                    try
+                    {
+                        // Open the SQL connection and execute the query.
+                        using (var connection = new SqlConnection(_config.Source))
                         {
-                            if (await reader.ReadAsync(token))
+                            await connection.OpenAsync(token);
+                            using (var command = new SqlCommand(selectQuery, connection))
+                            using (var reader = await command.ExecuteReaderAsync(token))
                             {
-                                byte[] compressedData = (byte[])reader["LogData"];
-                                byte[] decompressedData;
-
-                                using (var memoryStream = new MemoryStream(compressedData))
-                                using (var gzipStream = new GZipStream(memoryStream, CompressionMode.Decompress))
-                                using (var decompressedStream = new MemoryStream())
+                                if (await reader.ReadAsync(token))
                                 {
-                                    await gzipStream.CopyToAsync(decompressedStream, token);
-                                    decompressedData = decompressedStream.ToArray();
+                                    // Retrieve and decompress the data.
+                                    byte[] compressedData = (byte[])reader["LogData"];
+                                    byte[] decompressedData;
+                                    using (var memoryStream = new MemoryStream(compressedData))
+                                    using (var gzipStream = new GZipStream(memoryStream, CompressionMode.Decompress))
+                                    using (var decompressedStream = new MemoryStream())
+                                    {
+                                        await gzipStream.CopyToAsync(decompressedStream, token);
+                                        decompressedData = decompressedStream.ToArray();
+                                    }
+
+                                    // Convert decompressed bytes into JSON, then deserialize.
+                                    string json = System.Text.Encoding.UTF8.GetString(decompressedData);
+                                    var jsonObject = JsonConvert.DeserializeObject<List<ControllerEventLog>>(json);
+                                    jsonObject.ForEach(x => x.SignalIdentifier = location.LocationIdentifier);
+
+                                    // Convert to the required event format.
+                                    var indianaEvents = ConvertToCompressedEvents(
+                                        jsonObject,
+                                        location,
+                                        DateOnly.FromDateTime(date));
+
+                                    // Insert the events (assumed to have its own retry logic).
+                                    await InsertWithRetryAsync(indianaEvents, location.LocationIdentifier, date, token);
+
+                                    _logger.LogInformation(
+                                        "Processed Location: {LocationId} for Date: {Date} with {RecordCount} records.",
+                                        location.LocationIdentifier, date, jsonObject.Count);
                                 }
-
-                                string json = System.Text.Encoding.UTF8.GetString(decompressedData);
-                                var jsonObject = JsonConvert.DeserializeObject<List<ControllerEventLog>>(json);
-                                jsonObject.ForEach(x => x.SignalIdentifier = location.LocationIdentifier);
-
-                                var indianaEvents = ConvertToCompressedEvents(jsonObject, location, DateOnly.FromDateTime(date));
-
-                                await InsertWithRetryAsync(indianaEvents, location.LocationIdentifier, date, token);
-
-                                _logger.LogInformation("Processed Location: {LocationId} for Date: {Date} with {RecordCount} records.",
-                                    location.LocationIdentifier, date, jsonObject.Count);
                             }
+                        }
+
+                        // If no exception was thrown, mark as success and exit the retry loop.
+                        success = true;
+                        break;
+                    }
+                    catch (Exception ex)
+                    {
+                        if (attempt == maxAttempts)
+                        {
+                            _logger.LogError(ex,
+                                "Error processing Location: {LocationId} for Date: {Date} after {Attempt} attempts",
+                                location.LocationIdentifier, date, attempt);
+                            // Optionally rethrow the exception or handle it as needed.
+                        }
+                        else
+                        {
+                            _logger.LogWarning(ex,
+                                "Attempt {Attempt} failed processing Location: {LocationId} for Date: {Date}. Retrying in 30 seconds...",
+                                attempt, location.LocationIdentifier, date);
+                            await Task.Delay(TimeSpan.FromSeconds(30), token);
                         }
                     }
                 }
-                catch (Exception ex)
+
+                if (!success)
                 {
-                    _logger.LogError(ex, "Error processing Location: {LocationId} for Date: {Date}", location.LocationIdentifier, date);
+                    // Optionally handle the scenario where all attempts failed.
+                    // For example, log a final error or record the failure for further investigation.
                 }
             });
         }
+
 
         private async Task InsertWithRetryAsync(CompressedEventLogs<IndianaEvent> indianaEvents, string locationId, DateTime date, CancellationToken token)
         {
