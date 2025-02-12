@@ -1,14 +1,14 @@
+import { Location } from '@/api/config/aTSPMConfigurationApi.schemas'
 import { useLatestVersionOfAllLocations } from '@/features/locations/api'
 import LocationInput from '@/features/locations/components/selectLocation/LocationInput'
 import SelectLocationMap from '@/features/locations/components/selectLocationMap'
-import { Location } from '@/features/locations/types'
 import { Button } from '@mui/material'
 import { memo } from 'react'
 
 interface SelectLocationProps {
-  location: Location | null
+  location: Location | undefined
   setLocation: (location: Location) => void
-  chartsDisabled?:boolean
+  chartsDisabled?: boolean
   route?: number[][]
   center?: [number, number]
   zoom?: number
@@ -29,7 +29,8 @@ export function SelectLocation({
   const { data } = useLatestVersionOfAllLocations()
 
   let locations = data?.value || []
-  if(chartsDisabled)  locations = locations.filter(loc => loc.chartEnabled === true)
+  if (chartsDisabled)
+    locations = locations.filter((loc) => loc.chartEnabled === true)
 
   const handleChange = (_: React.SyntheticEvent, value: Location | null) => {
     if (value) {
