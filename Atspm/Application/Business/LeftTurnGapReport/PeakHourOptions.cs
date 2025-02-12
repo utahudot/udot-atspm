@@ -19,9 +19,10 @@ using Utah.Udot.Atspm.Business.Common;
 
 namespace Utah.Udot.Atspm.Business.LeftTurnGapReport
 {
-    public class PeakHourOptions : OptionsBase
+    public class PeakHourOptions : DateTimeOptionsBase, ILocationOptionsBase
     {
         public int ApproachId { get; set; }
         public int[] DaysOfWeek { get; set; }
+        public string LocationIdentifier { get; set; }
     }
 }

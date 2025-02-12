@@ -53,8 +53,8 @@ namespace Utah.Udot.Atspm.Data.Enums
         LidarSensor,
 
         /// <summary>
-        /// Wavetronix Speed sensor
+        /// Speed sensor
         /// </summary>
-        WavetronixSpeed
+        SpeedSensor
     }
 }

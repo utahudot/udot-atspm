@@ -19,10 +19,11 @@ using Utah.Udot.Atspm.Business.Common;
 
 namespace Utah.Udot.Atspm.Business.SplitFail
 {
-    public class SplitFailOptions : OptionsBase
+    public class SplitFailOptions : DateTimeOptionsBase, ILocationOptionsBase
     {
         public int FirstSecondsOfRed { get; set; }
         public int MetricTypeId { get; set; } = 12;
         public bool GetPermissivePhase { get; set; }
+        public string LocationIdentifier { get; set; }
     }
 }

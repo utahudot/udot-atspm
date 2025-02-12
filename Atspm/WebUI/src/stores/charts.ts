@@ -19,12 +19,17 @@ import { create } from 'zustand'
 interface ChartsStore {
   activeChart: number | string | null
   setActiveChart: (activeChart: number | string | null) => void
+  yAxisMaxStore: string | null
+  setYAxisMaxStore: (yAxisMaxStore: string | null) => void
   syncZoom: boolean
   setSyncZoom: (syncZoom: boolean) => void
 }
 export const useChartsStore = create<ChartsStore>((set) => ({
   activeChart: null,
   setActiveChart: (activeChart: number | string | null) => set({ activeChart }),
+  yAxisMaxStore: null,
+  setYAxisMaxStore: (yAxisMaxStore: string | null) =>
+    set({ yAxisMaxStore }),
   syncZoom: false,
   setSyncZoom: (syncZoom: boolean) => set({ syncZoom }),
 }))
