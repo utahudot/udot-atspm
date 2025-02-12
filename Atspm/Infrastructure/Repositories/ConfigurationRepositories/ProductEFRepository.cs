@@ -28,6 +28,12 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories
 
         #region Overrides
 
+        /// <inheritdoc/>
+        public override IQueryable<Product> GetList()
+        {
+            return base.GetList().OrderBy(o => o.Manufacturer);
+        }
+
         #endregion
 
         #region IProductRepository

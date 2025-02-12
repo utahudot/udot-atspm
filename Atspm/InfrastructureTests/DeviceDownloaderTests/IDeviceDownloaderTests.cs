@@ -174,7 +174,7 @@ namespace Utah.Udot.Atspm.InfrastructureTests.DeviceDownloaderTests
 
             foreach (var client in mockClients)
             {
-                Mock.Get(client).Setup(s => s.ConnectAsync(It.IsAny<IPEndPoint>(), It.IsAny<NetworkCredential>(), 0, 0, default))
+                Mock.Get(client).Setup(s => s.ConnectAsync(It.IsAny<IPEndPoint>(), It.IsAny<NetworkCredential>(), 0, 0, null, default))
                 .ThrowsAsync(new DownloaderClientConnectionException(It.IsAny<string>(), client, null))
                 .Verifiable();
 
@@ -272,12 +272,12 @@ namespace Utah.Udot.Atspm.InfrastructureTests.DeviceDownloaderTests
         //    //{
         //    //    Ipaddress = "192.168.1.1",
         //    //    LoggingEnabled = true,
-        //    //    DeviceConfiguration = new DeviceConfiguration() { Protocol = sut.Protocol, Directory = directory }
+        //    //    DeviceConfiguration = new DeviceConfiguration() { Protocol = sut.Protocol, Path = directory }
         //    //};
 
-        //    //Mock.Get(mockClient).Setup(s => s.ListDirectoryAsync(It.Is<string>(i => i == directory), default, It.IsAny<string[]>())).ReturnsAsync(returnValue).Verifiable();
+        //    //Mock.Get(mockClient).Setup(s => s.ListResourcesAsync(It.Is<string>(i => i == directory), default, It.IsAny<string[]>())).ReturnsAsync(returnValue).Verifiable();
 
-        //    //Mock.Get(mockClient).Setup(v => v.DownloadFileAsync(It.Is<string>(i => i.StartsWith(verifyPath)), It.IsIn(returnValue), default))
+        //    //Mock.Get(mockClient).Setup(v => v.DownloadResourceAsync(It.Is<string>(i => i.StartsWith(verifyPath)), It.IsIn(returnValue), default))
         //    //    .ReturnsAsync((string localPath, string remotePath, CancellationToken token) => new FileInfo(localPath)).Verifiable();
 
         //    //Mock.Get(mockClient).Setup(s => s.DisconnectAsync(default)).Returns(Task.CompletedTask).Verifiable();
@@ -329,15 +329,15 @@ namespace Utah.Udot.Atspm.InfrastructureTests.DeviceDownloaderTests
 
         //    //var d = (IDeviceDownloader)Activator.CreateInstance(downloader, new object[] { mockClient, log, mockConfig });
 
-        //    //Mock.Get(mockClient).Setup(s => s.ListDirectoryAsync(It.Is<string>(i => i == ftpDirectory), default, It.Is<string[]>(i => i == d.FileFilters))).ReturnsAsync(returnValue).Verifiable();
+        //    //Mock.Get(mockClient).Setup(s => s.ListResourcesAsync(It.Is<string>(i => i == ftpDirectory), default, It.Is<string[]>(i => i == d.FileFilters))).ReturnsAsync(returnValue).Verifiable();
 
-        //    //Mock.Get(mockClient).Setup(v => v.DownloadFileAsync(It.Is<string>(i => i.StartsWith(verifyPath)), It.IsIn(returnValue), default))
+        //    //Mock.Get(mockClient).Setup(v => v.DownloadResourceAsync(It.Is<string>(i => i.StartsWith(verifyPath)), It.IsIn(returnValue), default))
         //    //    .ReturnsAsync((string localPath, string remotePath, CancellationToken token) => new FileInfo(localPath)).Verifiable();
 
         //    //Mock.Get(mockClient).Setup(s => s.DisconnectAsync(default)).Returns(Task.CompletedTask).Verifiable();
         //    //Mock.Get(mockClient).Setup(s => s.Dispose()).Verifiable();
 
-        //    //Location.ControllerType = new ControllerType() { Id = d.ControllerType, Directory = ftpDirectory };
+        //    //Location.ControllerType = new ControllerType() { Id = d.ControllerType, Path = ftpDirectory };
 
         //    //var progressList = new List<ControllerDownloadProgress>();
 
