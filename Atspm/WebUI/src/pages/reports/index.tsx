@@ -1,5 +1,5 @@
 import { ResponsivePageLayout } from '@/components/ResponsivePage'
-import TspReport from '@/features/tspReport/components/TspReport'
+import TspReportPage from '@/features/tspReport/components/TspReportPage'
 import LeftTurnGapReport from '@/pages/left-turn-gap-report'
 import { TabContext, TabList, TabPanel } from '@mui/lab'
 import { Box, Tab } from '@mui/material'
@@ -18,7 +18,7 @@ function Reports() {
             <LeftTurnGapReport />
           </TabPanel>
           <TabPanel value="2" sx={{ padding: 0 }}>
-            <TspReport />
+            <TspReportPage />
           </TabPanel>
         </Box>
       </TabContext>

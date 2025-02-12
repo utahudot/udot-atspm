@@ -1,202 +1,134 @@
-import { Location } from '@/api/config/aTSPMConfigurationApi.schemas'
-import MultipleLocationsDisplay from '@/components/MultipleLocationsSelect/MultipleLocationsDisplay'
-import MultipleLocationsSelect from '@/components/MultipleLocationsSelect/MultipleLocationsSelect'
-import SelectDateTime from '@/components/selectTimeSpan'
-import { MultiSelectCheckbox } from '@/features/aggregateData/components/chartOptions/MultiSelectCheckbox'
-import { DropResult } from '@hello-pangea/dnd'
-import PlayArrowIcon from '@mui/icons-material/PlayArrow'
-import { LoadingButton } from '@mui/lab'
-import {
-  Box,
-  Divider,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Paper,
-  Select,
-} from '@mui/material'
-import { startOfToday, startOfYesterday } from 'date-fns'
-import { useState } from 'react'
-
-const daysOfWeek = [
-  'Sunday',
-  'Monday',
-  'Tuesday',
-  'Wednesday',
-  'Thursday',
-  'Friday',
-  'Saturday',
-]
-
-const savedReportsMock = [
-  {
-    id: 1,
-    name: 'Report 1',
-    start: new Date(),
-    end: new Date(),
-    locations: [
-      { id: 1, name: 'Location 1' },
-      { id: 2, name: 'Location 2' },
-    ],
-    daysOfWeek: [1, 2, 3],
-  },
-  {
-    id: 2,
-    name: 'Report 2',
-    start: new Date('2021-10-01'),
-    end: new Date('2021-10-31'),
-    locations: [
-      { id: 3, name: 'Location 3' },
-      { id: 4, name: 'Location 4' },
-      { id: 5, name: 'Location 5' },
-      { id: 6, name: 'Location 6' },
-    ],
-    daysOfWeek: [4, 5, 6],
-  },
-]
-
-interface TspReportOptions {
-  start: Date
-  end: Date
-  locations: Location[]
-  daysOfWeek: number[]
-}
+import DownloadIcon from '@mui/icons-material/Download'
+import PrintIcon from '@mui/icons-material/Print'
+import SaveIcon from '@mui/icons-material/Save'
+import { Box, Button, Divider, Paper, Typography } from '@mui/material'
+import html2canvas from 'html2canvas'
+import { jsPDF } from 'jspdf'
+import { useRef } from 'react'
+import { useReactToPrint } from 'react-to-print'
 
 const TspReport = () => {
-  const [reportOptions, setReportOptions] = useState<TspReportOptions>({
-    start: startOfYesterday(),
-    end: startOfToday(),
-    locations: [],
-    daysOfWeek: [2, 3, 4],
-  })
-  const [selectedReport, setSelectedReport] = useState(0)
+  const contentRef = useRef<HTMLDivElement>(null)
 
-  // const { isLoading, generateReport } = useGenerateReport()
+  const handlePrint = useReactToPrint({ contentRef })
 
-  const setLocations = (locations: Location[]) => {
-    setReportOptions((prev) => ({ ...prev, locations }))
-  }
+  // This function captures the ref’s content as an image, then generates a PDF.
+  const handleDownloadPdf = async () => {
+    if (!contentRef.current) return
+    try {
+      const canvas = await html2canvas(contentRef.current)
+      const imgData = canvas.toDataURL('image/png')
+      const pdf = new jsPDF({
+        orientation: 'p',
+        unit: 'px',
+        format: 'a4',
+      })
+      const pdfWidth = pdf.internal.pageSize.getWidth()
+      const pdfHeight = pdf.internal.pageSize.getHeight()
 
-  const setDaysOfWeek = (daysOfWeek: number[]) => {
-    setReportOptions((prev) => ({ ...prev, daysOfWeek }))
-  }
-
-  const setStart = (start: Date) => {
-    setReportOptions((prev) => ({ ...prev, start }))
-  }
-
-  const setEnd = (end: Date) => {
-    setReportOptions((prev) => ({ ...prev, end }))
-  }
-
-  const handleLocationDelete = (location: Location) => {
-    setLocations(
-      reportOptions.locations.filter((loc) => loc.id !== location.id)
-    )
-  }
-
-  const handleReorderLocations = (dropResult: DropResult) => {
-    if (!dropResult.destination) return
-    const items = Array.from(reportOptions.locations)
-    const [reorderedItem] = items.splice(dropResult.source.index, 1)
-    items.splice(dropResult.destination.index, 0, reorderedItem)
-    setLocations(items)
-  }
-
-  const handleSavedReportChange = (
-    e: React.ChangeEvent<{ value: unknown }>
-  ) => {
-    const selectedReport = savedReportsMock.find(
-      (report) => report.id === e.target.value
-    )
-    if (selectedReport) {
-      setSelectedReport(selectedReport.id)
-      setLocations(selectedReport.locations)
-      setDaysOfWeek(selectedReport.daysOfWeek)
-      setStart(selectedReport.start)
-      setEnd(selectedReport.end)
-    } else {
-      setSelectedReport(0)
-      setLocations([])
-      setDaysOfWeek([0, 1, 2, 3, 4, 5, 6])
-      setStart(startOfYesterday())
-      setEnd(startOfToday())
+      // Add the image to the PDF, covering the full page.
+      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight)
+      pdf.save('TSP_Report.pdf')
+    } catch (error) {
+      console.error('PDF generation error:', error)
     }
   }
 
   return (
-    <Box>
-      <FormControl
-        sx={{ minWidth: 200, marginBottom: 2, bgcolor: 'paper.default' }}
-      >
-        <InputLabel htmlFor="route-parameters-select">
-          Saved Report Parameters
-        </InputLabel>
-        <Select
-          label="Saved Report Parameters"
-          variant="outlined"
-          value={selectedReport}
-          onChange={handleSavedReportChange}
-          inputProps={{ id: 'route-parameters-select' }}
+    <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+      <Box>
+        <Box
+          sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2, gap: 2 }}
         >
-          <MenuItem key={0} value={0}>
-            None
-          </MenuItem>
-          {savedReportsMock?.map((report) => (
-            <MenuItem key={report.id} value={report.id}>
-              {report.name} - {report.start.toDateString()} -{' '}
-              {report.end.toDateString()}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
-      <Box sx={{ display: 'flex', flexDirection: 'row', gap: 2 }}>
-        <Paper sx={{ p: 3, display: 'flex', flexDirection: 'row' }}>
-          <Box sx={{ width: '400px' }}>
-            <MultipleLocationsSelect
-              selectedLocations={reportOptions.locations}
-              setLocations={setLocations}
-            />
-          </Box>
-          <Divider orientation="vertical" sx={{ mx: 2 }} />
-          <Box>
-            <MultipleLocationsDisplay
-              locations={reportOptions.locations}
-              onLocationDelete={handleLocationDelete}
-              onDeleteAllLocations={() => setLocations([])}
-              onLocationsReorder={handleReorderLocations}
-            />
-          </Box>
-        </Paper>
-        <Paper sx={{ p: 3, maxWidth: '320px' }}>
-          <SelectDateTime
-            changeStartDate={setStart}
-            changeEndDate={setEnd}
-            startDateTime={reportOptions.start}
-            endDateTime={reportOptions.end}
-            warning={'Holiday warning'}
-          />
-        </Paper>
-        <Box>
-          <MultiSelectCheckbox
-            header="Days of Week"
-            itemList={daysOfWeek}
-            selectedItems={reportOptions.daysOfWeek}
-            setSelectedItems={setDaysOfWeek}
-          />
+          <Button
+            size="small"
+            variant="outlined"
+            startIcon={<PrintIcon />}
+            color="primary"
+            onClick={handlePrint}
+          >
+            Print
+          </Button>
+
+          <Button
+            size="small"
+            variant="outlined"
+            startIcon={<DownloadIcon />}
+            color="primary"
+            onClick={handleDownloadPdf}
+          >
+            Download
+          </Button>
+
+          <Button
+            size="small"
+            variant="outlined"
+            startIcon={<SaveIcon />}
+            color="primary"
+            onClick={handlePrint}
+          >
+            Save Parameters
+          </Button>
         </Box>
+
+        <Paper
+          ref={contentRef}
+          sx={{
+            position: 'relative',
+            height: '1100px',
+            width: '850px',
+            p: 2,
+            backgroundColor: 'white',
+          }}
+        >
+          <Box>
+            <Typography variant="h3" sx={{ textAlign: 'center', mt: 3 }}>
+              TSP Report
+            </Typography>
+            <Box
+              sx={{
+                m: 2,
+                p: 2,
+                pt: 1.5,
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 2,
+                backgroundColor: 'background.default',
+                borderRadius: 5,
+              }}
+            >
+              <Typography variant="h6">Report Parameters</Typography>
+              <Divider />
+              <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                <Typography variant="body1">Date Range:</Typography>
+                <Typography variant="body1" fontWeight="bold">
+                  8:00 AM - 9:00 AM
+                </Typography>
+              </Box>
+              <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                <Typography variant="body1">Days of the Week:</Typography>
+                <Typography variant="body1" fontWeight="bold">
+                  Mon, Tues, Wed, Thurs, Fri
+                </Typography>
+              </Box>
+              <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                <Typography variant="body1">Selected Locations:</Typography>
+                <Typography variant="body1" fontWeight="bold">
+                  #7115 - 3000 W & 500 N
+                </Typography>
+                <Typography variant="body1" fontWeight="bold">
+                  #7116 - 3000 W & 5900 N
+                </Typography>
+                <Typography variant="body1" fontWeight="bold">
+                  #7117 - Washington & 5700 N
+                </Typography>
+              </Box>
+            </Box>
+          </Box>
+        </Paper>
       </Box>
-      <LoadingButton
-        // loading={isLoading}
-        loadingPosition="start"
-        startIcon={<PlayArrowIcon />}
-        variant="contained"
-        sx={{ padding: '10px', marginTop: '10px' }}
-        // onClick={handleGenerateReport}
-      >
-        Generate Report
-      </LoadingButton>
     </Box>
   )
 }
+
 export default TspReport
