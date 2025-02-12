@@ -1,6 +1,5 @@
-import { Filters } from '@/features/locations/components/selectLocation/SelectLocation'
-import { Location } from '@/features/locations/types'
-import { Autocomplete, Badge, TextField, Tooltip } from '@mui/material'
+import { Location } from '@/api/config/aTSPMConfigurationApi.schemas'
+import { Autocomplete, Box, TextField } from '@mui/material'
 import match from 'autosuggest-highlight/match'
 import parse from 'autosuggest-highlight/parse'
 import { useState } from 'react'
@@ -30,38 +29,20 @@ const customSort = (options: Location[], value: string) => {
 }
 
 interface LocationInputProps {
-  location: Location | null
+  location: Location | undefined
   locations: Location[]
   chartsDisabled?: boolean
-  filters: Filters
   handleChange: (_: React.SyntheticEvent, value: Location | null) => void
 }
 
 const LocationInput = ({
   location,
   locations,
-  filters,
   handleChange,
 }: LocationInputProps) => {
-  const amountOfFiltersApplied = Object.values(filters).filter(
-    (value) => value !== null
-  ).length
   const [inputValue, setInputValue] = useState('')
   return (
-    <Badge
-      color="primary"
-      overlap="rectangular"
-      invisible={amountOfFiltersApplied === 0}
-      badgeContent={
-        <Tooltip
-          title={`${amountOfFiltersApplied} filter(s) applied`}
-          placement="top"
-        >
-          <span>{amountOfFiltersApplied}</span>
-        </Tooltip>
-      }
-      sx={{ width: '100%' }}
-    >
+    <Box sx={{ width: '100%' }}>
       <Autocomplete
         value={
           locations?.find(
@@ -73,7 +54,6 @@ const LocationInput = ({
         onInputChange={(event, newInputValue) => {
           setInputValue(newInputValue)
         }}
-        sx={{ width: '100%', marginBottom: 2 }}
         renderInput={(params) => <TextField {...params} label="Location" />}
         autoHighlight={true}
         autoSelect={true}
@@ -102,7 +82,7 @@ const LocationInput = ({
           )
         }}
       />
-    </Badge>
+    </Box>
   )
 }
 
