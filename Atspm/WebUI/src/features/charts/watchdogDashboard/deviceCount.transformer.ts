@@ -19,12 +19,10 @@ import { EChartsOption } from 'echarts'
 
 const transformDeviceCountData = (data: DeviceCount[]): EChartsOption => {
   const total = data.reduce((sum, item) => sum + item.count, 0)
-  const seriesData = data.map((item) => ({
 
   const seriesData = data.map((item) => ({
     value: item.count,
-    name: `${item.manufacturer}`,
-    name: `${item.model} - ${item.firmware}`,
+    name: `${item.manufacturer}: \n${item.model} - ${item.firmware}`,
   }))
 
   return {
