@@ -48,7 +48,7 @@
 //    {
 
 //        private readonly int MetricTypeID = 13;
-//        private readonly ILocationRepository locationRepository;
+//        private readonly ILocationRepository _locationRepository;
 //        private readonly LocationPhaseService locationPhaseService;
 //        private readonly IControllerEventLogRepository controllerEventLogRepository;
 //        private readonly PhaseService phaseService;
@@ -69,8 +69,8 @@
 //            string downstreamSignalId, string downstreamDirection, int delta,
 //            DateTime startDate, DateTime endDate, int maxYAxis)
 //        {
-//            var upstreamSignal = locationRepository.GetLatestVersionOfLocation(upstreamSignalId, startDate);
-//            var downstreamSignal = locationRepository.GetLatestVersionOfLocation(downstreamSignalId, startDate);
+//            var upstreamSignal = _locationRepository.GetLatestVersionOfLocation(upstreamSignalId, startDate);
+//            var downstreamSignal = _locationRepository.GetLatestVersionOfLocation(downstreamSignalId, startDate);
 
 //            var upstreamPhaseDetails = phaseService.GetPhases(upstreamSignal);
 //            var downstreamPhaseDetails = phaseService.GetPhases(downstreamSignal);
@@ -89,7 +89,7 @@
 //            IControllerEventLogRepository controllerEventLogRepository,
 //            PhaseService phaseService)
 //        {
-//            locationRepository = repository;
+//            _locationRepository = repository;
 //            this.locationPhaseService = locationPhaseService;
 //            this.controllerEventLogRepository = controllerEventLogRepository;
 //            this.phaseService = phaseService;

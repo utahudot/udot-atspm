@@ -21,14 +21,11 @@ using Utah.Udot.Atspm.Business.Common;
 namespace Utah.Udot.Atspm.Business.TransitSignalPriority
 {
     [DataContract]
-    public class TransitSignalPriorityOptions : DateTimeOptionsBase, ILocationsOptionsBase
+    public class TransitSignalPriorityOptions : ILocationsOptionsBase
 
     {
-        public TransitSignalPriorityOptions()
-        {
-        }
 
         public IEnumerable<string> LocationIdentifiers { get; set; }
-        public List<DateTime> Dates { get; set; }
+        public IEnumerable<DateTime> Dates { get; set; }
     }
 }
