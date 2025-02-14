@@ -1,4 +1,4 @@
-import { Location } from '@/api/config/aTSPMConfigurationApi.schemas'
+import { SearchLocation as Location } from '@/api/config/aTSPMConfigurationApi.schemas'
 import {
   DragDropContext,
   Draggable,
