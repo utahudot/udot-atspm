@@ -16,25 +16,15 @@
 #endregion
 
 using Utah.Udot.Atspm.Business.Common;
+using Utah.Udot.Atspm.Data.Models.EventLogModels;
 
 namespace Utah.Udot.Atspm.Business.TransitSignalPriority
 {
     /// <summary>
     /// Preempt Service Request chart
     /// </summary>
-    public class TransitSignalPriorityResult : LocationResult
+    public class TransitSignalPriorityResult
     {
-        public TransitSignalPriorityResult(string chartName,
-            string locationId,
-            DateTime start,
-            DateTime end,
-            IReadOnlyList<Plan> plans,
-            IReadOnlyList<DataPointForInt> preemptRequests) : base(locationId, start, end)
-        {
-            Plans = plans;
-            PreemptRequests = preemptRequests;
-        }
-        public IReadOnlyList<Plan> Plans { get; internal set; }
-        public IReadOnlyList<DataPointForInt> PreemptRequests { get; internal set; }
+        public List<IndianaEvent> Events { get; set; }
     }
 }

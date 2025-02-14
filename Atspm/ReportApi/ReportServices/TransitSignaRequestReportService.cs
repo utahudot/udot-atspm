@@ -26,26 +26,20 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
     /// </summary>
     public class TransitSignalPriorityReportService : ReportServiceBase<TransitSignalPriorityOptions, TransitSignalPriorityResult>
     {
-        private readonly TransitSignalPriorityService preemptServiceService;
-        private readonly IIndianaEventLogRepository controllerEventLogRepository;
-        private readonly ILocationRepository LocationRepository;
+        private readonly TransitSignalPriorityService _transitSignalPriorityService;
 
         /// <inheritdoc/>
         public TransitSignalPriorityReportService(
-            TransitSignalPriorityService preemptServiceService,
-            IIndianaEventLogRepository controllerEventLogRepository,
-            ILocationRepository LocationRepository
+            TransitSignalPriorityService transitSignalPriorityService
             )
         {
-            this.preemptServiceService = preemptServiceService;
-            this.controllerEventLogRepository = controllerEventLogRepository;
-            this.LocationRepository = LocationRepository;
+            _transitSignalPriorityService = transitSignalPriorityService;
         }
 
         /// <inheritdoc/>
-        public override async Task<TransitSignalPriorityResult> ExecuteAsync(TransitSignalPriorityOptions parameter, IProgress<int> progress = null, CancellationToken cancelToken = default)
+        public override async Task<TransitSignalPriorityResult> ExecuteAsync(TransitSignalPriorityOptions parameters, IProgress<int> progress = null, CancellationToken cancelToken = default)
         {
-            throw new NotImplementedException();
+            return await _transitSignalPriorityService.GetChartDataAsync(parameters);
         }
 
     }
