@@ -16,6 +16,7 @@
 #endregion
 
 using Utah.Udot.Atspm.Business.Common;
+using Utah.Udot.Atspm.Business.SplitMonitor;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
 
 namespace Utah.Udot.Atspm.Business.TransitSignalPriority
@@ -25,6 +26,6 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriority
     /// </summary>
     public class TransitSignalPriorityResult
     {
-        public List<IndianaEvent> Events { get; set; }
+        public Dictionary<string, IEnumerable<SplitMonitorResult>> SplitMonitorResults;
     }
 }
