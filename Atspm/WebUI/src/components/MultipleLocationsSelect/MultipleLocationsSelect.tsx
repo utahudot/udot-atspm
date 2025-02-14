@@ -1,5 +1,9 @@
-import { Location, Route } from '@/api/config/aTSPMConfigurationApi.schemas'
-import { useLatestVersionOfAllLocations } from '@/features/locations/api'
+import { useGetLocationLocationsForSearch } from '@/api/config/aTSPMConfigurationApi'
+import {
+  SearchLocation as Location,
+  Route,
+} from '@/api/config/aTSPMConfigurationApi.schemas'
+import { Filters } from '@/features/locations/components/selectLocation'
 import LocationInput from '@/features/locations/components/selectLocation/LocationInput'
 import SelectLocationMap from '@/features/locations/components/selectLocationMap'
 import { useGetRoutes } from '@/features/routes/api'
@@ -13,7 +17,7 @@ import {
   Select,
   SelectChangeEvent,
 } from '@mui/material'
-import { useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 
 interface MultipleLocationsSelectProps {
   selectedLocations: Location[]
@@ -28,16 +32,36 @@ const MultipleLocationsSelect = ({
   selectedLocations,
   setLocations,
 }: MultipleLocationsSelectProps) => {
-  const [selectedLocation, setSelectedLocation] = useState<
-    Location | undefined
-  >(undefined)
-  const [selectedRoute, setSelectedRoute] = useState<Route | undefined>(
-    undefined
-  )
   const { data: routesData } = useGetRoutes()
-  const { data: locationsData } = useLatestVersionOfAllLocations()
-  const routes = routesData?.value
-  const locations = locationsData?.value || []
+  const { data: locationsData } = useGetLocationLocationsForSearch()
+
+  const routes = useMemo(() => routesData?.value || [], [routesData])
+  const locations = useMemo(
+    () => locationsData?.value || [],
+    [locationsData]
+  ) as Location[]
+
+  const [selectedLocation, setSelectedLocation] = useState<Location>()
+  const [selectedRoute, setSelectedRoute] = useState<Route>()
+  const [filters, setFilters] = useState<Filters>({})
+
+  const updateFilters = useCallback((newFilters: Partial<Filters>) => {
+    setFilters((prevFilters) => ({ ...prevFilters, ...newFilters }))
+  }, [])
+
+  const filteredLocations = useMemo(() => {
+    return locations.filter(
+      (loc) =>
+        (!filters.areaId || loc.areas?.includes(filters.areaId)) &&
+        (!filters.regionId || loc.regionId === filters.regionId) &&
+        (!filters.locationTypeId ||
+          loc.locationTypeId === filters.locationTypeId) &&
+        (!filters.measureTypeId ||
+          loc.charts?.includes(filters.measureTypeId)) &&
+        (!filters.jurisdictionId ||
+          loc.jurisdictionId === filters.jurisdictionId)
+    )
+  }, [locations, filters])
 
   const onRouteChange = (e: SelectChangeEvent<number>) => {
     const route = routes?.find((r) => r.id === e.target.value)
@@ -45,18 +69,18 @@ const MultipleLocationsSelect = ({
   }
 
   const onAddRoute = () => {
-    if (selectedRoute && selectedRoute.routeLocations) {
-      const routeLocs = selectedRoute.routeLocations
-        .map((rl) =>
-          locations.find((l) => l.locationIdentifier === rl.locationIdentifier)
-        )
-        .filter((l): l is Location => Boolean(l))
-      const newLocations = routeLocs.filter(
-        (loc) => !selectedLocations.some((sel) => sel.id === loc.id)
+    if (!selectedRoute?.routeLocations) return
+
+    const routeLocs = selectedRoute.routeLocations
+      .map((rl) =>
+        locations.find((l) => l.locationIdentifier === rl.locationIdentifier)
       )
-      if (newLocations.length > 0) {
-        setLocations([...selectedLocations, ...newLocations])
-      }
+      .filter((l): l is Location => Boolean(l))
+    const newLocations = routeLocs.filter(
+      (loc) => !selectedLocations.some((sel) => sel.id === loc.id)
+    )
+    if (newLocations.length > 0) {
+      setLocations([...selectedLocations, ...newLocations])
     }
   }
 
@@ -109,7 +133,7 @@ const MultipleLocationsSelect = ({
           variant="contained"
           startIcon={<AddIcon />}
           onClick={onAddRoute}
-          sx={{ ml: 2 }}
+          sx={{ ml: 2, width: 100 }}
         >
           Add
         </Button>
@@ -120,14 +144,16 @@ const MultipleLocationsSelect = ({
           flexDirection: 'row',
           alignItems: 'center',
           mb: 2,
-          width: '100%',
         }}
       >
-        <LocationInput
-          location={selectedLocation}
-          locations={locations}
-          handleChange={handleLocationInputChange}
-        />
+        <Box sx={{ flex: 1 }}>
+          <LocationInput
+            location={selectedLocation}
+            locations={filteredLocations}
+            handleChange={handleLocationInputChange}
+            filters={filters}
+          />
+        </Box>
         <Button
           variant="contained"
           startIcon={<AddIcon />}
@@ -142,7 +168,10 @@ const MultipleLocationsSelect = ({
           location={selectedLocation || null}
           setLocation={setSelectedLocation}
           locations={locations}
-          mapHeight={360}
+          filteredLocations={filteredLocations}
+          mapHeight={300}
+          filters={filters}
+          updateFilters={updateFilters}
         />
       </Box>
     </Box>
