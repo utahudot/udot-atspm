@@ -22,6 +22,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using Utah.Udot.Atspm.Business.Common;
+using Utah.Udot.Atspm.Business.SplitMonitor;
 using Utah.Udot.Atspm.Business.TransitSignalPriority;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
 using Utah.Udot.Atspm.Extensions;
@@ -41,79 +42,111 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
 
         private readonly IServiceProvider _serviceProvider;
         private readonly PlanService _planService;
+        private readonly SplitMonitorService _splitMonitorService;
 
-        public TransitSignalPriorityService(IServiceProvider serviceProvider, PlanService planService)
+        public TransitSignalPriorityService(IServiceProvider serviceProvider, PlanService planService, SplitMonitorService splitMonitorService)
         {
             _serviceProvider = serviceProvider;
             _planService = planService;
+            _splitMonitorService = splitMonitorService;
         }
 
         public async Task<TransitSignalPriorityResult> GetChartDataAsync(TransitSignalPriorityOptions options)
         {
-            var result = new TransitSignalPriorityResult { Events = new List<IndianaEvent>() };
+            var results = new ConcurrentDictionary<string, IEnumerable<SplitMonitorResult>>();
             var eventCollection = new ConcurrentBag<IndianaEvent>();
+
+            var startDate = options.Dates.Min().Date;
+            var endDate = options.Dates.Max().Date.AddDays(1).AddTicks(-1);
 
             var dateLocationBlock = new TransformManyBlock<DateTime, (Location, DateTime)>(async date =>
             {
-                var locations = new List<Location>();
-
-                using (var scope = _serviceProvider.CreateScope())
-                {
-                    var locationRepository = scope.ServiceProvider.GetRequiredService<ILocationRepository>();
-                    locations = locationRepository.GetVersionOfLocations(options.LocationIdentifiers.ToList(), date).ToList();
-                }
-
+                using var scope = _serviceProvider.CreateScope();
+                var locationRepository = scope.ServiceProvider.GetRequiredService<ILocationRepository>();
+                var locations = locationRepository.GetVersionOfLocations(options.LocationIdentifiers.ToList(), date).ToList();
                 return locations.Select(location => (location, date));
             }, new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = _maxDegreeOfParallelism });
 
-            var eventBlock = new TransformManyBlock<(Location, DateTime), IndianaEvent>(tuple =>
+            var eventBlock = new TransformManyBlock<(Location, DateTime), (Location, IndianaEvent)>(tuple =>
             {
                 var (location, date) = tuple;
-                var startTime = date.Date;
-                var endTime = date.Date.AddDays(1).AddTicks(-1);
                 var events = new List<IndianaEvent>();
 
-                using (var scope = _serviceProvider.CreateScope())
-                {
-                    var eventLogRepository = scope.ServiceProvider.GetRequiredService<IIndianaEventLogRepository>();
-                    events = eventLogRepository.GetEventsByEventCodes(location.LocationIdentifier, startTime, endTime, EventCodes).ToList();
-                }
+                using var scope = _serviceProvider.CreateScope();
+                var eventLogRepository = scope.ServiceProvider.GetRequiredService<IIndianaEventLogRepository>();
+                events = eventLogRepository.GetEventsByEventCodes(location.LocationIdentifier, startDate, endDate, EventCodes).ToList();
 
-                // Manually trigger garbage collection after processing each batch
-                GC.Collect();
-                GC.WaitForPendingFinalizers();
-                GC.Collect();
-
-                return events;
-
+                return events.Select(e => (location, e));
             }, new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = _maxDegreeOfParallelism });
 
-            var outputBlock = new ActionBlock<IndianaEvent>(eventData =>
+            var classifyEventsBlock = new TransformBlock<(Location, IndianaEvent), (Location, Dictionary<string, List<IndianaEvent>>)>
+            (tuple =>
             {
-                eventCollection.Add(eventData);
+                var (location, ev) = tuple;
 
+                var categorizedEvents = new Dictionary<string, List<IndianaEvent>>
+                {
+            { "planEvents", new List<IndianaEvent>() },
+            { "pedEvents", new List<IndianaEvent>() },
+            { "cycleEvents", new List<IndianaEvent>() },
+            { "splitsEvents", new List<IndianaEvent>() },
+            { "terminationEvents", new List<IndianaEvent>() }
+                };
+
+                if (new List<short> { 130, 131 }.Contains(ev.EventCode))
+                    categorizedEvents["planEvents"].Add(ev);
+
+                if (new List<short> { 21, 23 }.Contains(ev.EventCode))
+                    categorizedEvents["pedEvents"].Add(ev);
+
+                if (new List<short> { 1, 4, 5, 6, 7, 8, 11 }.Contains(ev.EventCode))
+                    categorizedEvents["cycleEvents"].Add(ev);
+
+                if (Enumerable.Range(130, 20).Contains(ev.EventCode))
+                    categorizedEvents["splitsEvents"].Add(ev);
+
+                if (new List<short> { 4, 5, 6, 7 }.Contains(ev.EventCode))
+                    categorizedEvents["terminationEvents"].Add(ev);
+
+                return (location, categorizedEvents);
             }, new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = _maxDegreeOfParallelism });
 
-            // Link blocks together
-            dateLocationBlock.LinkTo(eventBlock, new DataflowLinkOptions { PropagateCompletion = true });
-            eventBlock.LinkTo(outputBlock, new DataflowLinkOptions { PropagateCompletion = true });
+            var processSignalBlock = new ActionBlock<(Location, Dictionary<string, List<IndianaEvent>>)>(async tuple =>
+            {
+                var (location, eventGroups) = tuple;
 
-            // Post all dates to the pipeline for concurrent execution
+                var splitMonitorResult = await _splitMonitorService.GetChartData(
+                    new SplitMonitorOptions { 
+                        LocationIdentifier = location.LocationIdentifier, 
+                        PercentileSplit = 50, 
+                        Start = eventGroups.SelectMany(kvp => kvp.Value).Min(e => e.Timestamp).Date,
+                        End = eventGroups.SelectMany(kvp => kvp.Value).Max(e => e.Timestamp).Date.AddDays(1)
+                    },
+                    eventGroups["planEvents"],
+                    eventGroups["cycleEvents"],
+                    eventGroups["pedEvents"],
+                    eventGroups["splitsEvents"],
+                    eventGroups["terminationEvents"],
+                    location);
+
+                results[location.LocationIdentifier] = splitMonitorResult;
+            }, new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = _maxDegreeOfParallelism });
+
+            // Link dataflow blocks
+            dateLocationBlock.LinkTo(eventBlock, new DataflowLinkOptions { PropagateCompletion = true });
+            eventBlock.LinkTo(classifyEventsBlock, new DataflowLinkOptions { PropagateCompletion = true });
+            classifyEventsBlock.LinkTo(processSignalBlock, new DataflowLinkOptions { PropagateCompletion = true });
+
+            // Post all dates to the pipeline
             foreach (var date in options.Dates)
                 dateLocationBlock.Post(date);
 
             dateLocationBlock.Complete();
-            await outputBlock.Completion;
-
-            result.Events = eventCollection.ToList();
-
-            // Final GC cleanup
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
-            GC.Collect();
-
+            await processSignalBlock.Completion;
+            var result = new TransitSignalPriorityResult { SplitMonitorResults = results.ToDictionary(kvp => kvp.Key, kvp => kvp.Value) };
             return result;
         }
+
 
 
     }
