@@ -29,5 +29,6 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriority
         }
 
         public IEnumerable<string> LocationIdentifiers { get; set; }
+        public List<DateTime> Dates { get; set; }
     }
 }
