@@ -4,6 +4,7 @@ import { useSidebarStore } from '@/stores/sidebar'
 import AddchartOutlinedIcon from '@mui/icons-material/AddchartOutlined'
 import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined'
 import FileDownloadIcon from '@mui/icons-material/FileDownload'
+import ForkLeftIcon from '@mui/icons-material/ForkLeft'
 import RouteOutlinedIcon from '@mui/icons-material/RouteOutlined'
 import ShowChartOutlinedIcon from '@mui/icons-material/ShowChartOutlined'
 import SignalCellularAltOutlinedIcon from '@mui/icons-material/SignalCellularAltOutlined'
@@ -81,11 +82,16 @@ export default function Sidebar() {
             />
             {hasLTGRPermission && (
               <NavItem
-                icon={<DescriptionOutlinedIcon />}
-                text={'Reports'}
-                url={'/reports'}
+                icon={<ForkLeftIcon />}
+                text={'Left Turn Gap Report'}
+                url={'/reports/left-turn-gap'}
               />
             )}
+            <NavItem
+              icon={<DescriptionOutlinedIcon />}
+              text={'Transit Signal Priority Report'}
+              url={'/reports/transit-signal-priority'}
+            />
             <NavItem
               icon={<AddchartOutlinedIcon />}
               text={'Aggregate Charts'}
