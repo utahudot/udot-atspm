@@ -22,7 +22,7 @@ namespace Utah.Udot.Atspm.Data.Models.EventLogModels
 {
 
 
-    public class VisionCameraDetectionEvent : EventLogModelBase
+    public class EnhancedVehicleEvent : EventLogModelBase
     {
         /// <summary>
         /// Zone Identifier
@@ -57,7 +57,7 @@ namespace Utah.Udot.Atspm.Data.Models.EventLogModels
         ///<inheritdoc/>
         public override bool Equals(object obj)
         {
-            return obj is VisionCameraDetectionEvent zoneEvent &&
+            return obj is EnhancedVehicleEvent zoneEvent &&
                    ZoneId == zoneEvent.ZoneId &&
                    ZoneName == zoneEvent.ZoneName &&
                    ObjectType == zoneEvent.ObjectType &&
