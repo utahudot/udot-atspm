@@ -31,6 +31,7 @@ export interface PurdueCoordinationDiagramChartOptions
 
 export interface PurdueCoordinationDiagramChartOptionsDefaults {
   binSize: { id: number; value: string; option: string }
+  yAxisDefault: { id: number; value: string; option: string }
   showPlanStatistics: { id: number; value: boolean; option: string }
   getVolume: { id: number; value: boolean; option: string }
 }

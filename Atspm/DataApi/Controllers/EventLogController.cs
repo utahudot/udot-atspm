@@ -18,6 +18,8 @@
 using Asp.Versioning;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using Utah.Udot.ATSPM.DataApi.Controllers;
 
 namespace Utah.Udot.Atspm.DataApi.Controllers
@@ -50,6 +52,20 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
         public ActionResult<IEnumerable<string>> GetDataTypes()
         {
             var result = typeof(EventLogModelBase).Assembly.GetTypes().Where(w => w.IsSubclassOf(typeof(EventLogModelBase))).Select(s => s.Name).ToList();
+
+            var test = User;
+
+            foreach (var claim in User.Claims)
+            {
+                Console.WriteLine($"{claim.Type} --- {claim.Value}");
+            }
+
+            var id = User.Claims.FirstOrDefault(w => w.Type == ClaimTypes.NameIdentifier)?.Value;
+            var email = User.Claims.FirstOrDefault(w => w.Type == ClaimTypes.Email)?.Value;
+
+            Console.WriteLine($"{id}");
+
+            Console.WriteLine($"{email}");
 
             return Ok(result);
         }

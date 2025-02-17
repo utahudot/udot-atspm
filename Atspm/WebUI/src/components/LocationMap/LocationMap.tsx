@@ -21,16 +21,25 @@ import { DynamicMapLayer, FeatureLayer } from 'esri-leaflet'
 import 'esri-leaflet-renderers'
 import L, { Map as LeafletMap } from 'leaflet'
 import 'leaflet/dist/leaflet.css'
-import { memo, useEffect, useRef, useState } from 'react'
+import { memo, useCallback, useEffect, useRef, useState } from 'react'
 import { MapContainer, Polyline, TileLayer } from 'react-leaflet'
 
+interface Filters {
+  areaId?: number | null
+  regionId?: number | null
+  locationTypeId?: number | null
+  jurisdictionId?: number | null
+  measureTypeId?: number | null
+}
+
+interface LocationMapProps {
 interface MapProps {
   location: Location | null
   setLocation: (location: Location) => void
   locations: Location[]
+  filteredLocations: Location[]
   route?: number[][]
   center?: [number, number]
-  zoom?: number
   mapHeight?: number | string
 }
 
@@ -46,14 +55,16 @@ const LocationMap = ({
   location,
   setLocation,
   locations,
+  filteredLocations,
   route,
   center,
-  zoom,
   mapHeight,
-}: MapProps) => {
+  filters,
+  updateFilters,
+}: LocationMapProps) => {
   const theme = useTheme()
   const [mapRef, setMapRef] = useState<LeafletMap | null>(null)
-  const [isPopperOpen, setIsPopperOpen] = useState(false)
+  const [isFiltersOpen, setIsFiltersOpen] = useState(false)
   const filtersButtonRef = useRef(null)
   const [filters, setFilters] = useState<FilterProps>({
     areaId: null,
@@ -68,6 +79,7 @@ const LocationMap = ({
     attribution: string
     initialLat: number
     initialLong: number
+    mapZoom: number
   } | null>(null)
   const [isLayersPopperOpen, setIsLayersPopperOpen] = useState(false)
   const layersButtonRef = useRef(null)
@@ -152,6 +164,7 @@ const LocationMap = ({
         attribution: env.MAP_TILE_ATTRIBUTION,
         initialLat: parseFloat(env.MAP_DEFAULT_LATITUDE),
         initialLong: parseFloat(env.MAP_DEFAULT_LONGITUDE),
+        mapZoom: parseInt(env?.MAP_DEFAULT_ZOOM),
       })
     }
     fetchEnv()
@@ -159,16 +172,13 @@ const LocationMap = ({
 
   useEffect(() => {
     if (location && mapRef) {
-      const markerToPanTo = filteredLocations?.find(
-        (marker) => marker.locationIdentifier === location.locationIdentifier
-      )
-
-      if (markerToPanTo) {
-        const { latitude, longitude } = markerToPanTo
-        mapRef?.setView([latitude, longitude], 16)
+      const markerLocation = locations.find((loc) => loc.id === location.id)
+      if (markerLocation) {
+        const { latitude, longitude } = markerLocation
+        mapRef.setView([latitude, longitude], 16)
       }
     }
-  }, [location, filteredLocations, mapRef])
+  }, [location, mapRef, locations])
 
   useEffect(() => {
     if (!mapRef) return
@@ -207,7 +217,7 @@ const LocationMap = ({
     if (
       mapRef &&
       filteredLocations.length > 0 &&
-      filteredLocations.length < locations.length
+      filteredLocations.length < locationsEnabledLength
     ) {
       const bounds = L.latLngBounds(
         filteredLocations
@@ -242,11 +252,11 @@ const LocationMap = ({
     if (mapInfo?.initialLat && mapInfo?.initialLong) {
       mapRef?.setView([mapInfo.initialLat, mapInfo.initialLong], 6)
     }
-  }
+  }, [updateFilters])
 
-  const handleClosePopper = () => {
-    setIsPopperOpen(false)
-  }
+  const handleClosePopper = useCallback(() => {
+    setIsFiltersOpen(false)
+  }, [])
 
   if (!mapInfo) {
     return <Skeleton variant="rectangular" height={mapHeight ?? 400} />
@@ -255,7 +265,7 @@ const LocationMap = ({
   return (
     <MapContainer
       center={center || [mapInfo.initialLat, mapInfo.initialLong]}
-      zoom={zoom || 6}
+      zoom={mapInfo.mapZoom || 6}
       scrollWheelZoom={true}
       style={{
         height: mapHeight || 'calc(100% - 80px)',
@@ -298,7 +308,7 @@ const LocationMap = ({
             </Button>
           </ButtonGroup>
           <Popper
-            open={isPopperOpen}
+            open={isFiltersOpen}
             anchorEl={filtersButtonRef.current}
             placement="bottom-end"
             style={{ zIndex: 1000 }}
