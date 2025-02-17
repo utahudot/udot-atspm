@@ -33,22 +33,16 @@ interface Filters {
 }
 
 interface LocationMapProps {
-interface MapProps {
   location: Location | null
   setLocation: (location: Location) => void
   locations: Location[]
   filteredLocations: Location[]
   route?: number[][]
   center?: [number, number]
+  zoom?: number
   mapHeight?: number | string
-}
-
-interface FilterProps {
-  areaId: number | null
-  regionId: number | null
-  locationTypeId: number | null
-  jurisdictionId: number | null
-  measureTypeId: number | null
+  filters: Filters
+  updateFilters: (filters: Partial<Filters>) => void
 }
 
 const LocationMap = ({
@@ -65,22 +59,18 @@ const LocationMap = ({
   const theme = useTheme()
   const [mapRef, setMapRef] = useState<LeafletMap | null>(null)
   const [isFiltersOpen, setIsFiltersOpen] = useState(false)
+  const [hasFocusedRoute, setHasFocusedRoute] = useState(false)
   const filtersButtonRef = useRef(null)
-  const [filters, setFilters] = useState<FilterProps>({
-    areaId: null,
-    regionId: null,
-    locationTypeId: null,
-    jurisdictionId: null,
-    measureTypeId: null,
-  })
-  const [filteredLocations, setFilteredLocations] = useState(locations)
+
   const [mapInfo, setMapInfo] = useState<{
     tile_layer: string
     attribution: string
     initialLat: number
     initialLong: number
-    mapZoom: number
   } | null>(null)
+
+  const locationsEnabledLength = locations.filter((l) => l.chartEnabled).length
+
   const [isLayersPopperOpen, setIsLayersPopperOpen] = useState(false)
   const layersButtonRef = useRef(null)
 
@@ -180,6 +170,24 @@ const LocationMap = ({
     }
   }, [location, mapRef, locations])
 
+  // useEffect(() => {
+  //   if (location && mapRef) {
+  //     const markerLocation = locations.find((loc) => loc.id === location.id)
+  //     if (markerLocation) {
+  //       const { latitude, longitude } = markerLocation
+  //       mapRef.setView([latitude, longitude], 16)
+  //     }
+  //   } else if (route && mapRef && !hasFocusedRoute) {
+  //     const bounds = L.latLngBounds(route.map((coord) => [coord[0], coord[1]]))
+
+  //     if (bounds.isValid()) {
+  //       mapRef.fitBounds(bounds)
+  //       setHasFocusedRoute(true)
+  //     }
+  //   }
+  // }, [location, mapRef, locations, route, hasFocusedRoute])
+
+  // // Resize the map when the container resizes
   useEffect(() => {
     if (!mapRef) return
 
@@ -196,22 +204,6 @@ const LocationMap = ({
       resizeObserver.disconnect()
     }
   }, [mapRef])
-
-  useEffect(() => {
-    const filtered = locations.filter((location) => {
-      return (
-        (!filters.areaId || location.areas?.includes(filters.areaId)) &&
-        (!filters.regionId || location.regionId === filters.regionId) &&
-        (!filters.locationTypeId ||
-          location.locationTypeId === filters.locationTypeId) &&
-        (!filters.measureTypeId ||
-          location.charts?.includes(filters.measureTypeId)) &&
-        (!filters.jurisdictionId ||
-          location.jurisdictionId === filters.jurisdictionId)
-      )
-    })
-    setFilteredLocations(filtered)
-  }, [filters, locations])
 
   useEffect(() => {
     if (
@@ -235,14 +227,14 @@ const LocationMap = ({
         mapRef.fitBounds(bounds)
       }
     }
-  }, [mapRef, filteredLocations, locations])
+  }, [mapRef, filteredLocations, locations, locationsEnabledLength])
 
-  const handleFiltersChange = (newFilters: Partial<typeof filters>) => {
-    setFilters((prevFilters) => ({ ...prevFilters, ...newFilters }))
-  }
+  const handleFiltersClick = useCallback(() => {
+    setIsFiltersOpen((prev) => !prev)
+  }, [])
 
-  const handleFiltersClearClick = () => {
-    setFilters({
+  const handleFiltersClearClick = useCallback(() => {
+    updateFilters({
       areaId: null,
       regionId: null,
       locationTypeId: null,
@@ -252,7 +244,7 @@ const LocationMap = ({
     if (mapInfo?.initialLat && mapInfo?.initialLong) {
       mapRef?.setView([mapInfo.initialLat, mapInfo.initialLong], 6)
     }
-  }, [updateFilters])
+  }, [updateFilters, mapInfo, mapRef])
 
   const handleClosePopper = useCallback(() => {
     setIsFiltersOpen(false)
@@ -287,10 +279,7 @@ const LocationMap = ({
               zIndex: 1000,
             }}
           >
-            <Button
-              variant="contained"
-              onClick={() => setIsPopperOpen(!isPopperOpen)}
-            >
+            <Button variant="contained" onClick={handleFiltersClick}>
               Filters
             </Button>
             <Button
@@ -299,7 +288,7 @@ const LocationMap = ({
               size="small"
               aria-label="Clear filters"
               onClick={handleFiltersClearClick}
-              disabled={Object.values(filters).every((value) => value === null)}
+              disabled={!Object.values(filters).some((value) => value != null)}
               sx={{
                 '&:disabled': { backgroundColor: theme.palette.grey[300] },
               }}
@@ -315,8 +304,8 @@ const LocationMap = ({
           >
             <MapFilters
               filters={filters}
-              onFiltersChange={handleFiltersChange}
-              locationsTotal={locations.length}
+              onFilterChange={updateFilters}
+              locationsTotal={locationsEnabledLength}
               locationsFiltered={filteredLocations.length}
             />
           </Popper>

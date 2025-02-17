@@ -1,84 +1,81 @@
-import { transformMenuItems } from "@/components/topbar/menuUtils";
-import { useGetAdminPagesList } from "@/features/identity/pagesCheck";
-import { doesUserHaveAccess } from "@/features/identity/utils";
-import { useGetMenuItems } from "@/features/menuItems/api/getMenuItems";
-import { useSidebarStore } from "@/stores/sidebar";
-import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
-import MenuIcon from "@mui/icons-material/Menu";
-import QuestionAnswerOutlinedIcon from "@mui/icons-material/QuestionAnswerOutlined";
-import { Box, Button, IconButton, Paper, Typography } from "@mui/material";
-import Image from "next/image";
-import NextLink from "next/link";
-import { useEffect, useState } from "react";
-import { useQueryClient } from "react-query";
-import DropDownButton from "./DropdownButton";
-import UserMenu from "./UserMenu";
-import { useQueryClient } from "react-query";
+import { transformMenuItems } from '@/components/topbar/menuUtils'
+import { useGetAdminPagesList } from '@/features/identity/pagesCheck'
+import { doesUserHaveAccess } from '@/features/identity/utils'
+import { useGetMenuItems } from '@/features/menuItems/api/getMenuItems'
+import { useSidebarStore } from '@/stores/sidebar'
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
+import MenuIcon from '@mui/icons-material/Menu'
+import QuestionAnswerOutlinedIcon from '@mui/icons-material/QuestionAnswerOutlined'
+import { Box, Button, IconButton, Paper, Typography } from '@mui/material'
+import Image from 'next/image'
+import NextLink from 'next/link'
+import { useEffect, useState } from 'react'
+import { useQueryClient } from 'react-query'
+import DropDownButton from './DropdownButton'
+import UserMenu from './UserMenu'
 
-export const topbarHeight = 60;
+export const topbarHeight = 60
 
 export default function Topbar() {
-  const { toggleSidebar } = useSidebarStore();
-  const [userHasAccess, setUserHasAccess] = useState(false);
-  const { data: menuItemsData, isLoading } = useGetMenuItems();
-  const queryClient = useQueryClient();
+  const { toggleSidebar } = useSidebarStore()
+  const [userHasAccess, setUserHasAccess] = useState(false)
+  const { data: menuItemsData, isLoading } = useGetMenuItems()
+  const queryClient = useQueryClient()
   useEffect(() => {
-    setUserHasAccess(doesUserHaveAccess());
-  }, []);
+    setUserHasAccess(doesUserHaveAccess())
+  }, [])
 
   const handleMenuCollapseClick = () => {
-    toggleSidebar();
-  };
+    toggleSidebar()
+  }
 
   const handleNavigation = (path: string) => {
-    window.open(path, "_blank");
-  };
+    window.open(path, '_blank')
+  }
 
-  const menuItems = menuItemsData
-    ? transformMenuItems(menuItemsData.value)
-    : [];
+  const menuItems = menuItemsData ? transformMenuItems(menuItemsData.value) : []
 
   const infoItems = [
     {
-      name: "About",
+      name: 'About',
       icon: <InfoOutlinedIcon fontSize="small" />,
-      link: "/about",
+      link: '/about',
     },
     {
-      name: "FAQ",
+      name: 'FAQ',
       icon: <QuestionAnswerOutlinedIcon fontSize="small" />,
-      link: "/faq",
+      link: '/faq',
     },
-  ];
+  ]
 
-  const pagesToLinks = useGetAdminPagesList();
+  const pagesToLinks = useGetAdminPagesList()
 
   const adminPagesList = Array.from(pagesToLinks.keys()).map((key) => ({
     name: key,
     link: pagesToLinks.get(key) as string,
-  }));
+  }))
 
   useEffect(() => {
     // This effect runs once when the component mounts but could be triggered on certain conditions like user authentication status change
     return () => {
       // Invalidate the query when the component unmounts or if there's a condition where you want to force refresh
-      queryClient.invalidateQueries({ queryKey: ["/MenuItems"] });
-    };
-  }, []);
+      queryClient.invalidateQueries({ queryKey: ['/MenuItems'] })
+    }
+  }, [])
 
   // Or if you want to manually trigger an update:
   const refreshMenuItems = () => {
-    queryClient.invalidateQueries({ queryKey: ["/MenuItems"] });
-  };
+    queryClient.invalidateQueries({ queryKey: ['/MenuItems'] })
+  }
 
   return (
     <Box
       sx={{
-        display: "flex",
-        alignItems: "center",
+        display: 'flex',
+        alignItems: 'center',
         paddingX: 2,
-        borderBottom: "1px solid rgba(0, 0, 0, 0.12)",
-        width: "100%",
+        borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
+        width: '100%',
         height: topbarHeight,
       }}
     >
@@ -94,18 +91,18 @@ export default function Topbar() {
       <Box
         sx={{
           flexGrow: 1,
-          display: "flex",
-          justifyContent: "flex-start",
+          display: 'flex',
+          justifyContent: 'flex-start',
         }}
       >
         <NextLink href="/" passHref>
           <Box
             sx={{
-              width: "160px",
-              height: "50px",
+              width: '160px',
+              height: '50px',
               m: 1,
               ml: 2,
-              position: "relative",
+              position: 'relative',
             }}
           >
             <Image
@@ -114,7 +111,7 @@ export default function Topbar() {
               priority
               fill
               sizes="200px"
-              style={{ cursor: "pointer", objectFit: "contain" }}
+              style={{ cursor: 'pointer', objectFit: 'contain' }}
             />
           </Box>
         </NextLink>
@@ -128,12 +125,12 @@ export default function Topbar() {
                 key={item.name}
                 onClick={() => handleNavigation(item.link)}
                 sx={{
-                  mx: "2px",
-                  textTransform: "none",
-                  color: "black",
+                  mx: '2px',
+                  textTransform: 'none',
+                  color: 'black',
                 }}
               >
-                <Typography fontWeight={400} sx={{ textTransform: "none" }}>
+                <Typography fontWeight={400} sx={{ textTransform: 'none' }}>
                   {item.name}
                 </Typography>
               </Button>
@@ -166,5 +163,5 @@ export default function Topbar() {
         </Box>
       )}
     </Box>
-  );
+  )
 }
