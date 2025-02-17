@@ -39,11 +39,6 @@ const MapFilters = ({
   const jurisdictions = jurisdictionsData?.value;
   const measureTypes = measureTypeData?.value;
 
-  const handleAreaChange = (_: SyntheticEvent, val: string | null) => {
-    const id = areas?.find((area) => area.name === val)?.id || null;
-    onFiltersChange({ areaId: id });
-  };
-
   const handleFilterChange = (key: keyof Filters, value: number | null) => {
     onFilterChange({ [key]: value });
   };
