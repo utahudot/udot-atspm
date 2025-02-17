@@ -84,6 +84,7 @@ builder.Host
          o.IncludeXmlComments(typeof(Program));
          o.CustomOperationIds((controller, verb, action) => $"{verb}{controller}{action}");
          o.EnableAnnotations();
+         o.AddJwtAuthorization();
 
          o.OperationFilter<TimestampFormatHeader>();
          o.DocumentFilter<GenerateAggregationSchemas>();
@@ -157,3 +158,5 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+

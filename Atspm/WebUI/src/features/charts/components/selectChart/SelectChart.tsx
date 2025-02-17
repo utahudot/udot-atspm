@@ -101,7 +101,7 @@ const SelectChart = ({
         }, {} as ChartOptions)
       : {}
   }
-
+  
   const availableCharts = useMemo(() => {
     if (!measureTypesData || !location) return {}
 

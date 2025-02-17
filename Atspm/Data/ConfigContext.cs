@@ -23,6 +23,7 @@ using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Data.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
+using Utah.Udot.Atspm.Data.Utility;
 
 namespace Utah.Udot.Atspm.Data
 {
@@ -228,6 +229,7 @@ namespace Utah.Udot.Atspm.Data
             modelBuilder.ApplyConfiguration(new UserRegionConfiguration());
             modelBuilder.ApplyConfiguration(new VersionHistoryConfiguration());
             //modelBuilder.ApplyConfiguration(new WatchDogIgnoreEventConfiguration());
+
 
             //Set keys to null for optional relationships
             foreach (var fk in modelBuilder.Model.GetEntityTypes()

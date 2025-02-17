@@ -15,21 +15,20 @@
 // limitations under the License.
 // #endregion
 interface linkDto {
-  id: number
-  name: string
-  displayOrder: number
-  url: string
+  id: number;
+  name: string;
+  displayOrder: number;
+  url: string;
 }
-export default linkDto
+export default linkDto;
 
 export interface MenuItems {
   id: number;
   name: string;
   icon?: string | null;
   displayOrder: number;
-  link: string | null
+  link: string | null;
   document?: Buffer | null;
   parentId: number | null;
   children: MenuItems[];
 }
-

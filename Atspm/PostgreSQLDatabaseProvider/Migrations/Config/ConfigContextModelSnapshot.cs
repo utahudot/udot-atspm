@@ -376,6 +376,16 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
                     b.Property<int?>("DeviceConfigurationId")
                         .HasColumnType("integer");
 
+                    b.Property<string>("DeviceIdentifier")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .IsUnicode(false)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("DeviceProperties")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)");
+
                     b.Property<string>("DeviceStatus")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
@@ -429,6 +439,10 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("ConnectionProperties")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)");
+
                     b.Property<int>("ConnectionTimeout")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
@@ -440,16 +454,14 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
                         .HasColumnType("character varying(512)")
                         .HasDefaultValueSql("('[]')");
 
-                    b.Property<string>("Directory")
-                        .HasMaxLength(512)
-                        .IsUnicode(false)
-                        .HasColumnType("character varying(512)");
-
-                    b.Property<string>("Firmware")
+                    b.Property<string>("Description")
                         .IsRequired()
-                        .HasMaxLength(16)
+                        .HasMaxLength(24)
                         .IsUnicode(false)
-                        .HasColumnType("character varying(16)");
+                        .HasColumnType("character varying(24)");
+
+                    b.Property<int>("LoggingOffset")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Notes")
                         .HasMaxLength(512)
@@ -466,6 +478,11 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
                         .IsUnicode(false)
                         .HasColumnType("character varying(50)");
 
+                    b.Property<string>("Path")
+                        .HasMaxLength(512)
+                        .IsUnicode(false)
+                        .HasColumnType("character varying(512)");
+
                     b.Property<int>("Port")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
@@ -481,7 +498,7 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
                         .HasColumnType("character varying(7)")
                         .HasDefaultValue("Unknown");
 
-                    b.Property<string>("SearchTerms")
+                    b.Property<string>("Query")
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(512)
                         .HasColumnType("character varying(512)")
@@ -2059,7 +2076,7 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
                     b.Property<DateTime>("Date")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp")
-                        .HasDefaultValue(new DateTime(2025, 1, 30, 16, 5, 6, 625, DateTimeKind.Local).AddTicks(9158));
+                        .HasDefaultValue(new DateTime(2025, 2, 10, 10, 24, 34, 63, DateTimeKind.Local).AddTicks(6320));
 
                     b.Property<string>("Name")
                         .IsRequired()
