@@ -3,7 +3,7 @@
 // for Application - Utah.Udot.Atspm.Business.PreemptServiceRequest/PreemptServiceRequestService.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
+// You may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 // 
 // http://www.apache.org/licenses/LICENSE-2.
@@ -14,20 +14,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
+
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
-using Utah.Udot.Atspm.Business.Common;
 using Utah.Udot.Atspm.Business.SplitMonitor;
-using Utah.Udot.Atspm.Business.TransitSignalPriority;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
-using Utah.Udot.Atspm.Extensions;
-using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
 using Utah.Udot.Atspm.Repositories.EventLogRepositories;
+using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
+using Utah.Udot.Atspm.Business.TransitSignalPriority;
+using Utah.Udot.Atspm.Extensions;
 
 namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
 {
@@ -41,120 +42,145 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
         private static readonly int _maxDegreeOfParallelism = 5;
 
         private readonly IServiceProvider _serviceProvider;
-        private readonly PlanService _planService;
         private readonly SplitMonitorService _splitMonitorService;
+        private readonly ILogger<TransitSignalPriorityService> _logger;
 
-        public TransitSignalPriorityService(IServiceProvider serviceProvider, PlanService planService, SplitMonitorService splitMonitorService)
+        public TransitSignalPriorityService(
+            IServiceProvider serviceProvider,
+            SplitMonitorService splitMonitorService,
+            ILogger<TransitSignalPriorityService> logger)
         {
             _serviceProvider = serviceProvider;
-            _planService = planService;
             _splitMonitorService = splitMonitorService;
+            _logger = logger;
         }
 
-        public async Task<TransitSignalPriorityResult> GetChartDataAsync(TransitSignalPriorityOptions options)
-        {
-            var results = new ConcurrentDictionary<string, IEnumerable<SplitMonitorResult>>();
-            var eventCollection = new ConcurrentBag<IndianaEvent>();
-
-            var startDate = options.Dates.Min().Date;
-            var endDate = options.Dates.Max().Date.AddDays(1).AddTicks(-1);
-
-            var dateLocationBlock = new TransformManyBlock<DateTime, (Location, DateTime)>(async date =>
+        public TransformBlock<(string, DateTime), (Location, DateTime)?> LocationBlock =>
+            new(async locationIdentifier =>
             {
-                using var scope = _serviceProvider.CreateScope();
-                var locationRepository = scope.ServiceProvider.GetRequiredService<ILocationRepository>();
-                var locations = locationRepository.GetVersionOfLocations(options.LocationIdentifiers.ToList(), date).ToList();
-                return locations.Select(location => (location, date));
+                var location = new Location();
+                using (var scope = _serviceProvider.CreateScope())
+                {
+                    var locationRepository = scope.ServiceProvider.GetRequiredService<ILocationRepository>();
+                    location = locationRepository.GetLatestVersionOfLocation(locationIdentifier.Item1, locationIdentifier.Item2);
+
+                    if (location == null)
+                    {
+                        _logger.LogWarning($"Location not found for {locationIdentifier.Item1} at {locationIdentifier.Item2}");
+                        return null;
+                    }
+
+                    _logger.LogInformation($"Location found: {location.LocationIdentifier}");
+                }
+                return (location, locationIdentifier.Item2);
             }, new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = _maxDegreeOfParallelism });
 
-            var eventBlock = new TransformManyBlock<(Location, DateTime), (Location, IndianaEvent)>(tuple =>
-            {
-                var (location, date) = tuple;
-                var events = new List<IndianaEvent>();
+        //private readonly TransformBlock<(Location, DateTime)?, (Location, DateTime)> _filterValidLocationsBlock =
+        //    new(tuple => tuple!.Value, new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = _maxDegreeOfParallelism });
 
+        public TransformBlock<(Location, DateTime)?, (Location, List<IndianaEvent>)?> EventBlock =>
+            new(tuple =>
+            {
+                if (tuple == null)
+                    return null;
+                var (location, date) = tuple!.Value;
                 using var scope = _serviceProvider.CreateScope();
                 var eventLogRepository = scope.ServiceProvider.GetRequiredService<IIndianaEventLogRepository>();
-                events = eventLogRepository.GetEventsByEventCodes(location.LocationIdentifier, startDate, endDate, EventCodes).ToList();
+                var events = eventLogRepository.GetEventsByEventCodes(location.LocationIdentifier, date, date.AddDays(1), EventCodes).ToList();
 
-                return events.Select(e => (location, e));
+                _logger.LogInformation($"Found {events.Count} events for location {location.LocationIdentifier} on {date}");
+
+                return (location, events);
             }, new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = _maxDegreeOfParallelism });
 
-            var classifyEventsBlock = new TransformBlock<(Location, IndianaEvent), (Location, Dictionary<string, List<IndianaEvent>>)>
-            (tuple =>
-            {
-                var (location, ev) = tuple;
-
-                var categorizedEvents = new Dictionary<string, List<IndianaEvent>>
-                {
+        public TransformBlock<(Location, List<IndianaEvent>)?, (Location, Dictionary<string, List<IndianaEvent>>)?> ClassifyEventsBlock =>
+    new(tuple =>
+    {
+        if(tuple == null)
+            return null;
+        var (location, events) = tuple!.Value;
+        var categorizedEvents = new Dictionary<string, List<IndianaEvent>>
+        {
             { "planEvents", new List<IndianaEvent>() },
             { "pedEvents", new List<IndianaEvent>() },
             { "cycleEvents", new List<IndianaEvent>() },
             { "splitsEvents", new List<IndianaEvent>() },
             { "terminationEvents", new List<IndianaEvent>() }
-                };
+        };
 
-                if (new List<short> { 130, 131 }.Contains(ev.EventCode))
-                    categorizedEvents["planEvents"].Add(ev);
+        foreach (var ev in events)
+        {
+            if (new List<short> { 130, 131 }.Contains(ev.EventCode))
+                categorizedEvents["planEvents"].Add(ev);
 
-                if (new List<short> { 21, 23 }.Contains(ev.EventCode))
-                    categorizedEvents["pedEvents"].Add(ev);
+            if (new List<short> { 21, 23 }.Contains(ev.EventCode))
+                categorizedEvents["pedEvents"].Add(ev);
 
-                if (new List<short> { 1, 4, 5, 6, 7, 8, 11 }.Contains(ev.EventCode))
-                    categorizedEvents["cycleEvents"].Add(ev);
+            if (new List<short> { 1, 4, 5, 6, 7, 8, 11 }.Contains(ev.EventCode))
+                categorizedEvents["cycleEvents"].Add(ev);
 
-                if (Enumerable.Range(130, 20).Contains(ev.EventCode))
-                    categorizedEvents["splitsEvents"].Add(ev);
+            if (Enumerable.Range(130, 20).Contains(ev.EventCode))
+                categorizedEvents["splitsEvents"].Add(ev);
 
-                if (new List<short> { 4, 5, 6, 7 }.Contains(ev.EventCode))
-                    categorizedEvents["terminationEvents"].Add(ev);
+            if (new List<short> { 4, 5, 6, 7 }.Contains(ev.EventCode))
+                categorizedEvents["terminationEvents"].Add(ev);
+        }
 
-                return (location, categorizedEvents);
-            }, new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = _maxDegreeOfParallelism });
+        return (location, categorizedEvents);
+    }, new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = _maxDegreeOfParallelism });
 
-            var processSignalBlock = new ActionBlock<(Location, Dictionary<string, List<IndianaEvent>>)>(async tuple =>
+
+        public TransformBlock<(Location, Dictionary<string, List<IndianaEvent>>)?,List<SplitMonitorResult>?> ProcessSignalBlock =>
+            new(async tuple =>
             {
-                var (location, eventGroups) = tuple;
+                if (tuple == null)
+                    return null;
+                var (location, eventGroups) = tuple!.Value;
 
                 var splitMonitorResult = await _splitMonitorService.GetChartData(
-                    new SplitMonitorOptions { 
-                        LocationIdentifier = location.LocationIdentifier, 
-                        PercentileSplit = 50, 
-                        Start = eventGroups.SelectMany(kvp => kvp.Value).Min(e => e.Timestamp).Date,
-                        End = eventGroups.SelectMany(kvp => kvp.Value).Max(e => e.Timestamp).Date.AddDays(1)
-                    },
+                    new SplitMonitorOptions(),
                     eventGroups["planEvents"],
                     eventGroups["cycleEvents"],
                     eventGroups["pedEvents"],
                     eventGroups["splitsEvents"],
                     eventGroups["terminationEvents"],
                     location);
-
-                results[location.LocationIdentifier] = splitMonitorResult;
+                return (splitMonitorResult.ToList());
+                // Store results if needed
             }, new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = _maxDegreeOfParallelism });
 
+        public async Task<TransitSignalPriorityResult> GetChartDataAsync(TransitSignalPriorityOptions options)
+        {
+            var results = new List<SplitMonitorResult>();
+
             // Link dataflow blocks
-            dateLocationBlock.LinkTo(eventBlock, new DataflowLinkOptions { PropagateCompletion = true });
-            eventBlock.LinkTo(classifyEventsBlock, new DataflowLinkOptions { PropagateCompletion = true });
-            classifyEventsBlock.LinkTo(processSignalBlock, new DataflowLinkOptions { PropagateCompletion = true });
+            LocationBlock.LinkTo(EventBlock, new DataflowLinkOptions { PropagateCompletion = true });
+            //_filterValidLocationsBlock.LinkTo(EventBlock, new DataflowLinkOptions { PropagateCompletion = true });
+            EventBlock.LinkTo(ClassifyEventsBlock, new DataflowLinkOptions { PropagateCompletion = true });
+            ClassifyEventsBlock.LinkTo(ProcessSignalBlock, new DataflowLinkOptions { PropagateCompletion = true });
 
-            // Post all dates to the pipeline
-            foreach (var date in options.Dates)
-                dateLocationBlock.Post(date);
+            // Post locations to pipeline
+            foreach (var location in options.LocationIdentifiers)
+            {
+                foreach (var date in options.Dates)
+                {
+                    _logger.LogInformation($"Posting location {location} for date {date}");
+                    bool posted = LocationBlock.Post((location, date));
+                    if (!posted)
+                        _logger.LogError($"Failed to post {location} for {date}");
+                }
+            }
+            LocationBlock.Complete();
+            while (await ProcessSignalBlock.OutputAvailableAsync())
+            {
+                while (ProcessSignalBlock.TryReceive(out var result))
+                {
+                    results.AddRange(result); // Store the processed results
+                }
+            }
+            await ProcessSignalBlock.Completion; 
 
-            dateLocationBlock.Complete();
-            await processSignalBlock.Completion;
-            var result = new TransitSignalPriorityResult { SplitMonitorResults = results.ToDictionary(kvp => kvp.Key, kvp => kvp.Value) };
-            return result;
+            return new TransitSignalPriorityResult { SplitMonitorResults = results };
         }
-
-
-
     }
 }
-
-
-
-
-
-
-

@@ -26,6 +26,6 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriority
     /// </summary>
     public class TransitSignalPriorityResult
     {
-        public Dictionary<string, IEnumerable<SplitMonitorResult>> SplitMonitorResults;
+        public List<SplitMonitorResult> SplitMonitorResults;
     }
 }
