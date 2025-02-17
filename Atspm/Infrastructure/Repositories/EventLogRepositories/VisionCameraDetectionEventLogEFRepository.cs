@@ -22,7 +22,7 @@ using Utah.Udot.Atspm.Data.Models.EventLogModels;
 namespace Utah.Udot.Atspm.Infrastructure.Repositories.EventLogRepositories
 {
     ///<inheritdoc cref="IVisionCameraDetectionEventLogRepository"/>
-    public class VisionCameraDetectionEventLogEFRepository : EventLogEFRepositoryBase<VisionCameraDetectionEvent>, IVisionCameraDetectionEventLogRepository
+    public class VisionCameraDetectionEventLogEFRepository : EventLogEFRepositoryBase<EnhancedVehicleEvent>, IVisionCameraDetectionEventLogRepository
     {
         ///<inheritdoc/>
         public VisionCameraDetectionEventLogEFRepository(EventLogContext db, ILogger<VisionCameraDetectionEventLogEFRepository> log) : base(db, log) { }

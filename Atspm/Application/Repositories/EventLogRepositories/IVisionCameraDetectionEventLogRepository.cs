@@ -22,5 +22,5 @@ namespace Utah.Udot.Atspm.Repositories.EventLogRepositories
     /// <summary>
     /// Vision Camera Detection event log repository
     /// </summary>
-    public interface IVisionCameraDetectionEventLogRepository : IEventLogRepository<VisionCameraDetectionEvent> { }
+    public interface IVisionCameraDetectionEventLogRepository : IEventLogRepository<EnhancedVehicleEvent> { }
 }

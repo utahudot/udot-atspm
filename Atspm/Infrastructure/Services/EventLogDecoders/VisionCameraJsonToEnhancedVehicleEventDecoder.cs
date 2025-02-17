@@ -4,14 +4,14 @@ using Utah.Udot.Atspm.Infrastructure.Services.EventLogDecoders;
 
 namespace Utah.Udot.ATSPM.Infrastructure.Services.EventLogDecoders
 {
-    public class JsonToVisionCameraDetectorEventDecoder : EventLogDecoderBase<VisionCameraDetectionEvent>
+    public class VisionCameraJsonToEnhancedVehicleEventDecoder : EventLogDecoderBase<EnhancedVehicleEvent>
     {
-        public override IEnumerable<VisionCameraDetectionEvent> Decode(Device device, Stream stream, CancellationToken cancelToken = default)
+        public override IEnumerable<EnhancedVehicleEvent> Decode(Device device, Stream stream, CancellationToken cancelToken = default)
         {
             var memoryStream = (MemoryStream)stream;
             var rootStats = memoryStream.ToArray().FromEncodedJson<Root>().detections;
 
-            return rootStats.Select(x => new VisionCameraDetectionEvent
+            return rootStats.Select(x => new EnhancedVehicleEvent
             {
                 LocationIdentifier = device.Location.LocationIdentifier,
                 ZoneId = x.zoneId,
