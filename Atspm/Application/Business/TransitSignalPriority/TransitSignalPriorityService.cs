@@ -6,7 +6,7 @@
 // You may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 // 
-// http://www.apache.org/licenses/LICENSE-2.
+// http://www.apache.org/licenses/LICENSE-2.0
 // 
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -29,6 +28,7 @@ using Utah.Udot.Atspm.Repositories.EventLogRepositories;
 using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
 using Utah.Udot.Atspm.Business.TransitSignalPriority;
 using Utah.Udot.Atspm.Extensions;
+using Utah.Udot.Atspm.Business.Common;
 
 namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
 {
@@ -42,143 +42,212 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
         private static readonly int _maxDegreeOfParallelism = 5;
 
         private readonly IServiceProvider _serviceProvider;
-        private readonly SplitMonitorService _splitMonitorService;
+        private readonly AnalysisPhaseService _analysisPhaseService;
+
+        //private readonly SplitMonitorService _splitMonitorService;
         private readonly ILogger<TransitSignalPriorityService> _logger;
+
+        // New block that gets all data for a single location (across multiple dates)
+        private readonly TransformBlock<(string LocationIdentifier, List<DateTime> Dates), (Location, List<IndianaEvent>)?> _loadLocationDataBlock;
+        private readonly TransformBlock<(Location, List<IndianaEvent>), (Location, Dictionary<string, List<IndianaEvent>>)> _classifyEventsBlock;
+        private readonly TransformBlock<(Location, Dictionary<string, List<IndianaEvent>>), List<SplitMonitorResult>> _processSignalBlock;
+        private readonly TransformBlock<(Location, List<IndianaEvent>)?, (Location, List<IndianaEvent>)> _filteringBlock;
 
         public TransitSignalPriorityService(
             IServiceProvider serviceProvider,
-            SplitMonitorService splitMonitorService,
+            //SplitMonitorService splitMonitorService,
+            AnalysisPhaseService analysisPhaseService,
             ILogger<TransitSignalPriorityService> logger)
         {
             _serviceProvider = serviceProvider;
-            _splitMonitorService = splitMonitorService;
+            _analysisPhaseService = analysisPhaseService;
+            //_splitMonitorService = splitMonitorService;
             _logger = logger;
-        }
 
-        public TransformBlock<(string, DateTime), (Location, DateTime)?> LocationBlock =>
-            new(async locationIdentifier =>
-            {
-                var location = new Location();
-                using (var scope = _serviceProvider.CreateScope())
+            // Block to load location and all events (aggregated over all dates)
+            _loadLocationDataBlock = new TransformBlock<(string, List<DateTime>), (Location, List<IndianaEvent>)?>(
+                async input =>
                 {
-                    var locationRepository = scope.ServiceProvider.GetRequiredService<ILocationRepository>();
-                    location = locationRepository.GetLatestVersionOfLocation(locationIdentifier.Item1, locationIdentifier.Item2);
+                    var (locationIdentifier, dates) = input;
+                    Location location;
+
+                    // Create a scope to get the location.
+                    using (var scope = _serviceProvider.CreateScope())
+                    {
+                        var locationRepository = scope.ServiceProvider.GetRequiredService<ILocationRepository>();
+                        location = locationRepository.GetLatestVersionOfLocation(locationIdentifier, dates.First());
+                    }
 
                     if (location == null)
                     {
-                        _logger.LogWarning($"Location not found for {locationIdentifier.Item1} at {locationIdentifier.Item2}");
+                        _logger.LogWarning($"Location not found for {locationIdentifier} at {dates.First()}");
                         return null;
                     }
-
                     _logger.LogInformation($"Location found: {location.LocationIdentifier}");
-                }
-                return (location, locationIdentifier.Item2);
-            }, new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = _maxDegreeOfParallelism });
 
-        //private readonly TransformBlock<(Location, DateTime)?, (Location, DateTime)> _filterValidLocationsBlock =
-        //    new(tuple => tuple!.Value, new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = _maxDegreeOfParallelism });
+                    // Create a semaphore to limit the number of concurrent tasks to 5.
+                    using (var semaphore = new SemaphoreSlim(5))
+                    {
+                        // Process each date in parallel, but only allow 5 tasks concurrently.
+                        var tasks = dates.Select(async date =>
+                        {
+                            await semaphore.WaitAsync();
+                            try
+                            {
+                                using (var innerScope = _serviceProvider.CreateScope())
+                                {
+                                    var eventLogRepository = innerScope.ServiceProvider.GetRequiredService<IIndianaEventLogRepository>();
+                                    var events = eventLogRepository
+                                        .GetEventsByEventCodes(location.LocationIdentifier, date, date.AddDays(1), EventCodes)
+                                        .ToList();
+                                    _logger.LogInformation($"Found {events.Count} events for location {location.LocationIdentifier} on {date}");
 
-        public TransformBlock<(Location, DateTime)?, (Location, List<IndianaEvent>)?> EventBlock =>
-            new(tuple =>
-            {
-                if (tuple == null)
-                    return null;
-                var (location, date) = tuple!.Value;
-                using var scope = _serviceProvider.CreateScope();
-                var eventLogRepository = scope.ServiceProvider.GetRequiredService<IIndianaEventLogRepository>();
-                var events = eventLogRepository.GetEventsByEventCodes(location.LocationIdentifier, date, date.AddDays(1), EventCodes).ToList();
+                                    // Perform manual garbage collection after retrieving event logs.
+                                    GC.Collect();
+                                    GC.WaitForPendingFinalizers();
 
-                _logger.LogInformation($"Found {events.Count} events for location {location.LocationIdentifier} on {date}");
+                                    return events;
+                                }
+                            }
+                            finally
+                            {
+                                semaphore.Release();
+                            }
+                        }).ToList();
 
-                return (location, events);
-            }, new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = _maxDegreeOfParallelism });
+                        // Await all tasks and flatten the results.
+                        var eventsForAllDates = (await Task.WhenAll(tasks)).SelectMany(e => e).ToList();
+                        return (location, eventsForAllDates);
+                    }
+                },
+                // Process a single signal at a time.
+                new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = 1 }
+            );
 
-        public TransformBlock<(Location, List<IndianaEvent>)?, (Location, Dictionary<string, List<IndianaEvent>>)?> ClassifyEventsBlock =>
-    new(tuple =>
-    {
-        if(tuple == null)
-            return null;
-        var (location, events) = tuple!.Value;
-        var categorizedEvents = new Dictionary<string, List<IndianaEvent>>
-        {
-            { "planEvents", new List<IndianaEvent>() },
-            { "pedEvents", new List<IndianaEvent>() },
-            { "cycleEvents", new List<IndianaEvent>() },
-            { "splitsEvents", new List<IndianaEvent>() },
-            { "terminationEvents", new List<IndianaEvent>() }
-        };
 
-        foreach (var ev in events)
-        {
-            if (new List<short> { 130, 131 }.Contains(ev.EventCode))
-                categorizedEvents["planEvents"].Add(ev);
 
-            if (new List<short> { 21, 23 }.Contains(ev.EventCode))
-                categorizedEvents["pedEvents"].Add(ev);
 
-            if (new List<short> { 1, 4, 5, 6, 7, 8, 11 }.Contains(ev.EventCode))
-                categorizedEvents["cycleEvents"].Add(ev);
+            _filteringBlock = new TransformBlock<(Location, List<IndianaEvent>)?, (Location, List<IndianaEvent>)>(
+                item =>
+                {
+                    if (item.HasValue)
+                    {
+                        return item.Value;
+                    }
+                    // Decide how to handle null values. Here, we return a default value that can be filtered later.
+                    return default;
+                },
+                new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = _maxDegreeOfParallelism }
+);
 
-            if (Enumerable.Range(130, 20).Contains(ev.EventCode))
-                categorizedEvents["splitsEvents"].Add(ev);
+            // Reuse (or slightly adjust) the existing classification block.
+            _classifyEventsBlock = new TransformBlock<(Location, List<IndianaEvent>), (Location, Dictionary<string, List<IndianaEvent>>)>(
+                tuple =>
+                {
+                    var (location, events) = tuple;
+                    var categorizedEvents = new Dictionary<string, List<IndianaEvent>>
+                    {
+                        { "planEvents", new List<IndianaEvent>() },
+                        { "pedEvents", new List<IndianaEvent>() },
+                        { "cycleEvents", new List<IndianaEvent>() },
+                        { "splitsEvents", new List<IndianaEvent>() },
+                        { "terminationEvents", new List<IndianaEvent>() }
+                    };
 
-            if (new List<short> { 4, 5, 6, 7 }.Contains(ev.EventCode))
-                categorizedEvents["terminationEvents"].Add(ev);
+                    foreach (var ev in events)
+                    {
+                        if (new List<short> { 130, 131 }.Contains(ev.EventCode))
+                            categorizedEvents["planEvents"].Add(ev);
+
+                        if (new List<short> { 21, 23 }.Contains(ev.EventCode))
+                            categorizedEvents["pedEvents"].Add(ev);
+
+                        if (new List<short> { 1, 4, 5, 6, 7, 8, 11 }.Contains(ev.EventCode))
+                            categorizedEvents["cycleEvents"].Add(ev);
+
+                        if (Enumerable.Range(130, 20).Contains(ev.EventCode))
+                            categorizedEvents["splitsEvents"].Add(ev);
+
+                        if (new List<short> { 4, 5, 6, 7 }.Contains(ev.EventCode))
+                            categorizedEvents["terminationEvents"].Add(ev);
+                    }
+
+                    return (location, categorizedEvents);
+                },
+                new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = _maxDegreeOfParallelism }
+            );
+
+            _processSignalBlock = new TransformBlock<(Location, Dictionary<string, List<IndianaEvent>>), List<SplitMonitorResult>>(
+                async tuple =>
+                {
+                    var (location, eventGroups) = tuple;
+                    var phases = eventGroups["cycleEvents"].Select(c => c.EventParam).Distinct();
+                    var analysisPhaseDatas = new List<AnalysisPhaseData>();
+                    foreach( var phase in phases)
+                    {
+                        analysisPhaseDatas.Add(await _analysisPhaseService.GetAnalysisPhaseData(
+                            phase,
+                            eventGroups["pedEvents"],
+                            eventGroups["cycleEvents"],
+                            eventGroups["terminationEvents"],
+                            1,
+                            location
+                            ));
+                    }
+                    var splitMonitorResult = await _splitMonitorService.GetChartData(
+                        new SplitMonitorOptions(),
+                        eventGroups["planEvents"],
+                        eventGroups["cycleEvents"],
+                        eventGroups["pedEvents"],
+                        eventGroups["splitsEvents"],
+                        eventGroups["terminationEvents"],
+                        location);
+
+                    return splitMonitorResult.ToList();
+                },
+                new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = _maxDegreeOfParallelism }
+            );
         }
-
-        return (location, categorizedEvents);
-    }, new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = _maxDegreeOfParallelism });
-
-
-        public TransformBlock<(Location, Dictionary<string, List<IndianaEvent>>)?,List<SplitMonitorResult>?> ProcessSignalBlock =>
-            new(async tuple =>
-            {
-                if (tuple == null)
-                    return null;
-                var (location, eventGroups) = tuple!.Value;
-
-                var splitMonitorResult = await _splitMonitorService.GetChartData(
-                    new SplitMonitorOptions(),
-                    eventGroups["planEvents"],
-                    eventGroups["cycleEvents"],
-                    eventGroups["pedEvents"],
-                    eventGroups["splitsEvents"],
-                    eventGroups["terminationEvents"],
-                    location);
-                return (splitMonitorResult.ToList());
-                // Store results if needed
-            }, new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = _maxDegreeOfParallelism });
 
         public async Task<TransitSignalPriorityResult> GetChartDataAsync(TransitSignalPriorityOptions options)
         {
             var results = new List<SplitMonitorResult>();
 
-            // Link dataflow blocks
-            LocationBlock.LinkTo(EventBlock, new DataflowLinkOptions { PropagateCompletion = true });
-            //_filterValidLocationsBlock.LinkTo(EventBlock, new DataflowLinkOptions { PropagateCompletion = true });
-            EventBlock.LinkTo(ClassifyEventsBlock, new DataflowLinkOptions { PropagateCompletion = true });
-            ClassifyEventsBlock.LinkTo(ProcessSignalBlock, new DataflowLinkOptions { PropagateCompletion = true });
+            // Link the blocks, and add a predicate to filteringBlock's output if needed.
+            _loadLocationDataBlock.LinkTo(
+                _filteringBlock,
+                new DataflowLinkOptions { PropagateCompletion = true }
+            );
 
-            // Post locations to pipeline
+            // Optionally, filter out any default values in filteringBlock (if default is a valid non-data marker).
+            _filteringBlock.LinkTo(
+                _classifyEventsBlock,
+                new DataflowLinkOptions { PropagateCompletion = true },
+                item => item != default
+            );
+            _classifyEventsBlock.LinkTo(
+                _processSignalBlock,
+                new DataflowLinkOptions { PropagateCompletion = true }
+            );
+
+            // For each location, post one item containing all dates.
             foreach (var location in options.LocationIdentifiers)
             {
-                foreach (var date in options.Dates)
-                {
-                    _logger.LogInformation($"Posting location {location} for date {date}");
-                    bool posted = LocationBlock.Post((location, date));
-                    if (!posted)
-                        _logger.LogError($"Failed to post {location} for {date}");
-                }
+                _logger.LogInformation($"Posting location {location} with {options.Dates.ToList().Count} dates");
+                bool posted = _loadLocationDataBlock.Post((location, options.Dates.ToList()));
+                if (!posted)
+                    _logger.LogError($"Failed to post data for location {location}");
             }
-            LocationBlock.Complete();
-            while (await ProcessSignalBlock.OutputAvailableAsync())
+            _loadLocationDataBlock.Complete();
+
+            while (await _processSignalBlock.OutputAvailableAsync())
             {
-                while (ProcessSignalBlock.TryReceive(out var result))
+                while (_processSignalBlock.TryReceive(out var result))
                 {
-                    results.AddRange(result); // Store the processed results
+                    results.AddRange(result);
                 }
             }
-            await ProcessSignalBlock.Completion; 
+            await _processSignalBlock.Completion;
 
             return new TransitSignalPriorityResult { SplitMonitorResults = results };
         }
