@@ -22,7 +22,7 @@ const transformDeviceCountData = (data: DeviceCount[]): EChartsOption => {
 
   const seriesData = data.map((item) => ({
     value: item.count,
-    name: `${item.model} - ${item.firmware}`,
+    name: `${item.manufacturer}: \n${item.model} - ${item.firmware}`,
   }))
 
   return {
