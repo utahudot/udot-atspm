@@ -52,7 +52,7 @@ namespace DatabaseInstaller.Services
             IHostApplicationLifetime hostApplicationLifetime,
             IEventLogRepository eventLogRepository,
             ILocationRepository locationRepository
-            //IndianaEventLogEFRepository indianaEventLogEFRepository
+            //IndianaEventLogEFRepository _indianaEventLogEFRepository
             )
         {
             _serviceProvider = serviceProvider;
@@ -61,7 +61,7 @@ namespace DatabaseInstaller.Services
             _hostApplicationLifetime = hostApplicationLifetime;
             _eventLogRepository = eventLogRepository;
             _locationRepository = locationRepository;
-            //_indianaEventLogEFRepository = indianaEventLogEFRepository;
+            //_indianaEventLogEFRepository = _indianaEventLogEFRepository;
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)
