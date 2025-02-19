@@ -1,4 +1,4 @@
-import { Box, Checkbox, FormControl, Typography } from '@mui/material'
+import { Alert, Box, Checkbox, FormControl, Typography } from '@mui/material'
 import { useState } from 'react'
 import { Default } from '../../types'
 import { RampMeteringChartOptionsDefaults } from '../types'
@@ -45,24 +45,32 @@ export const RampMeteringChartOptions = ({
   }
 
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        justifyContent: 'space-between',
-      }}
-    >
-      <Typography>Combine Lanes</Typography>
-      <Box sx={{ display: 'flex', alignItems: 'center' }}>
-        <FormControl sx={{ width: '60px' }}>
-          <label htmlFor="combine-lanes" style={visuallyHidden}>
-            Severe Level
-          </label>
-          <Checkbox
-            checked={combineLanes === 'TRUE' ? true : false}
-            onChange={handleChange}
-          />
-        </FormControl>
-      </Box>
-    </Box>
+    <>
+      {combineLanes === undefined ? (
+        <Alert severity="error" sx={{ mt: 1 }}>
+          Combine Lanes default value not found.
+        </Alert>
+      ) : (
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+          }}
+        >
+          <Typography>Combine Lanes</Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <FormControl sx={{ width: '60px' }}>
+              <label htmlFor="combine-lanes" style={visuallyHidden}>
+                Combine Lanes
+              </label>
+              <Checkbox
+                checked={combineLanes === 'TRUE' ? true : false}
+                onChange={handleChange}
+              />
+            </FormControl>
+          </Box>
+        </Box>
+      )}
+    </>
   )
 }

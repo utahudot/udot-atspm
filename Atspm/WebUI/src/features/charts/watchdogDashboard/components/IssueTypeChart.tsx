@@ -9,10 +9,7 @@ interface IssueTypeChartProps {
   isLoading: boolean
 }
 
-const IssueTypeChart: React.FC<IssueTypeChartProps> = ({
-  data,
-  isLoading,
-}) => {
+const IssueTypeChart: React.FC<IssueTypeChartProps> = ({ data, isLoading }) => {
   const [issueTypeData, setIssueTypeData] = useState<any>(null)
   const [issueTypeLegend, setIssueTypeLegend] = useState<
     { name: string; color: string; selected: boolean }[]
@@ -86,8 +83,7 @@ const IssueTypeChart: React.FC<IssueTypeChartProps> = ({
             justifyContent: 'center',
             paddingLeft: isMobile ? 0 : '23px',
             marginTop: isMobile ? '20px' : 0,
-            marginBottom:'1rem'
-
+            marginBottom: '1rem',
           }}
         >
           <SunburstLegend
