@@ -1,6 +1,6 @@
 import { PurdueSplitFailureChartOptionsDefaults } from '@/features/charts/purdueSplitFailure/types'
 import { Default } from '@/features/charts/types'
-import { Box, FormControl, TextField, Typography } from '@mui/material'
+import { Alert, Box, FormControl, TextField, Typography } from '@mui/material'
 import { ChangeEvent, useState } from 'react'
 
 interface PurdueSplitFailureChartOptionsProps {
@@ -43,28 +43,36 @@ export const PurdueSplitFailureChartOptions = ({
   }
 
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        padding: '0.25rem',
-      }}
-    >
-      <Typography>First Seconds of Red</Typography>
-      <Box sx={{ display: 'flex', alignItems: 'center' }}>
-        <FormControl sx={{ width: '60px' }}>
-          <label htmlFor="first-seconds-of-red" style={visuallyHidden}>
-            First Seconds of Red
-          </label>
-          <TextField
-            id="first-seconds-of-red"
-            type="number"
-            value={firstSecondsOfRed}
-            onChange={handleFirstSecondsOfRedChange}
-            variant="standard"
-          />
-        </FormControl>
-      </Box>
-    </Box>
+    <>
+      {firstSecondsOfRed === undefined ? (
+        <Alert severity="error" sx={{ mt: 1 }}>
+          First Seconds of Red default value not found.
+        </Alert>
+      ) : (
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            padding: '0.25rem',
+          }}
+        >
+          <Typography>First Seconds of Red</Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <FormControl sx={{ width: '60px' }}>
+              <label htmlFor="first-seconds-of-red" style={visuallyHidden}>
+                First Seconds of Red
+              </label>
+              <TextField
+                id="first-seconds-of-red"
+                type="number"
+                value={firstSecondsOfRed}
+                onChange={handleFirstSecondsOfRedChange}
+                variant="standard"
+              />
+            </FormControl>
+          </Box>
+        </Box>
+      )}
+    </>
   )
 }

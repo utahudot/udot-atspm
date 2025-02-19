@@ -16,7 +16,6 @@
 // #endregion
 export type DeviceConfiguration = {
   id: number
-  firmware: string
   notes: string
   protocol: string
   port: number
