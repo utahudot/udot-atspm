@@ -55,11 +55,6 @@ namespace Utah.Udot.Atspm.Data.Enums
         /// <summary>
         /// Speed sensor
         /// </summary>
-        SpeedSensor,
-
-        /// <summary>
-        /// Wavetronix Speed
-        /// </summary>
-        WavetronixSpeed,
+        SpeedSensor
     }
 }
