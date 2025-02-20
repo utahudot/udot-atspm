@@ -56,7 +56,6 @@ function SelectLocationMap({
       locations,
       filteredLocations,
       route,
-      zoom,
       center,
       mapHeight,
       filters,

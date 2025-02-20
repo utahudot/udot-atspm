@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for DataApi - Utah.Udot.Atspm.DataApi.Controllers/EventLogController.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -52,20 +52,6 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
         public ActionResult<IEnumerable<string>> GetDataTypes()
         {
             var result = typeof(EventLogModelBase).Assembly.GetTypes().Where(w => w.IsSubclassOf(typeof(EventLogModelBase))).Select(s => s.Name).ToList();
-
-            var test = User;
-
-            foreach (var claim in User.Claims)
-            {
-                Console.WriteLine($"{claim.Type} --- {claim.Value}");
-            }
-
-            var id = User.Claims.FirstOrDefault(w => w.Type == ClaimTypes.NameIdentifier)?.Value;
-            var email = User.Claims.FirstOrDefault(w => w.Type == ClaimTypes.Email)?.Value;
-
-            Console.WriteLine($"{id}");
-
-            Console.WriteLine($"{email}");
 
             return Ok(result);
         }

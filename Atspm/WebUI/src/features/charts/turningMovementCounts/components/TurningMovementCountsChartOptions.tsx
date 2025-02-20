@@ -1,7 +1,7 @@
 import { BinSizeDropdown } from '@/features/charts/components/selectChart/BinSizeDropdown'
 import { TurningMovementCountsChartOptionsDefaults } from '@/features/charts/turningMovementCounts/types'
 import { Default } from '@/features/charts/types'
-import { SelectChangeEvent } from '@mui/material'
+import { Alert, SelectChangeEvent } from '@mui/material'
 import { useState } from 'react'
 
 interface TurningMovementCountsChartOptionsProps {
@@ -29,10 +29,18 @@ export const TurningMovementCountsChartOptions = ({
   }
 
   return (
-    <BinSizeDropdown
-      value={binSize}
-      handleChange={handleBinSizeChange}
-      id="turning-movement-counts"
-    />
+    <>
+      {binSize === undefined ? (
+        <Alert severity="error" sx={{ mt: 1 }}>
+          Bin Size default value not found.
+        </Alert>
+      ) : (
+        <BinSizeDropdown
+          value={binSize}
+          handleChange={handleBinSizeChange}
+          id="turning-movement-counts"
+        />
+      )}
+    </>
   )
 }
