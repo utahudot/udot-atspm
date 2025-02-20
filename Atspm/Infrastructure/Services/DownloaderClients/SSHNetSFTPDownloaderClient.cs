@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for Infrastructure - Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients/SSHNetSFTPDownloaderClient.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,18 +25,18 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
     /// <summary>
     /// Connect to services and interact with their file directories using <see cref="ISftpClientWrapper"/>
     /// </summary>
-    public class SSHNetSFTPDownloaderClient : ServiceObjectBase, IDownloaderClient
+    public class SSHNetSFTPDownloaderClient : DownloaderClientBase
     {
         private ISftpClientWrapper _client;
 
         ///<inheritdoc/>
-        public SSHNetSFTPDownloaderClient() : base(true) { }
+        public SSHNetSFTPDownloaderClient() { }
 
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
         /// <param name="client">External client used for special settings and mocking</param>
-        public SSHNetSFTPDownloaderClient(ISftpClientWrapper client) : base(true)
+        public SSHNetSFTPDownloaderClient(ISftpClientWrapper client) 
         {
             _client = client;
         }
@@ -44,115 +44,60 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
         #region IDownloaderClient
 
         ///<inheritdoc/>
-        public TransportProtocols Protocol => TransportProtocols.Sftp;
+        public override TransportProtocols Protocol => TransportProtocols.Sftp;
 
         ///<inheritdoc/>
-        public bool IsConnected => _client != null && _client.IsConnected;
+        public override bool IsConnected => _client != null && _client.IsConnected;
 
         ///<inheritdoc/>
-        public Task ConnectAsync(IPEndPoint connection, NetworkCredential credentials, int connectionTimeout = 2, int operationTImeout = 2, CancellationToken token = default)
+        protected override Task Connect(IPEndPoint connection, NetworkCredential credentials, int connectionTimeout = 2000, int operationTimeout = 2000, Dictionary<string, string> connectionProperties = null, CancellationToken token = default)
         {
-            token.ThrowIfCancellationRequested();
-
-            try
-            {
-                var connectionInfo = new ConnectionInfo
+            var connectionInfo = new ConnectionInfo
                 (connection.Address.ToString(),
                 connection.Port,
                 credentials.UserName,
                 new PasswordAuthenticationMethod(credentials.UserName, credentials.Password))
-                {
-                    Timeout = TimeSpan.FromMilliseconds(connectionTimeout)
-                };
-
-                _client ??= new SftpClientWrapper(connectionInfo);
-
-                _client.OperationTimeout = TimeSpan.FromMilliseconds(operationTImeout);
-
-                _client.Connect();
-
-                return Task.CompletedTask;
-            }
-            catch (Exception e)
             {
-                throw new DownloaderClientConnectionException(credentials.Domain, this, e.Message, e);
-            }
-        }
+                Timeout = TimeSpan.FromMilliseconds(connectionTimeout)
+            };
 
-        ///<inheritdoc/>
-        public Task DeleteFileAsync(string path, CancellationToken token = default)
-        {
-            token.ThrowIfCancellationRequested();
+            _client ??= new SftpClientWrapper(connectionInfo);
 
-            if (!IsConnected)
-                throw new DownloaderClientConnectionException("", this, "Client not connected");
+            _client.OperationTimeout = TimeSpan.FromMilliseconds(operationTimeout);
 
-            try
-            {
-                _client.DeleteFile(path);
-
-                return Task.CompletedTask;
-            }
-            catch (Exception e)
-            {
-                throw new DownloaderClientDeleteFileException(path, this, e.Message, e);
-            }
-        }
-
-        ///<inheritdoc/>
-        public Task DisconnectAsync(CancellationToken token = default)
-        {
-            token.ThrowIfCancellationRequested();
-
-            if (!IsConnected)
-                throw new DownloaderClientConnectionException("", this, "Client not connected");
-
-            try
-            {
-                _client.Disconnect();
-            }
-            catch (Exception e)
-            {
-                throw new DownloaderClientConnectionException(_client.ConnectionInfo.Host, this, e.Message, e);
-            }
+            _client.Connect();
 
             return Task.CompletedTask;
         }
 
         ///<inheritdoc/>
-        public async Task<FileInfo> DownloadFileAsync(string localPath, string remotePath, CancellationToken token = default)
+        protected override Task DeleteResource(Uri resource, CancellationToken token = default)
         {
-            token.ThrowIfCancellationRequested();
+            _client.DeleteFile(resource.LocalPath);
 
-            if (!IsConnected)
-                throw new DownloaderClientConnectionException("", this, "Client not connected");
-
-            try
-            {
-                return await _client.DownloadFileAsync(localPath, remotePath);
-            }
-            catch (Exception e)
-            {
-                throw new DownloaderClientDownloadFileException(remotePath, this, e.Message, e);
-            }
+            return Task.CompletedTask;
         }
 
         ///<inheritdoc/>
-        public async Task<IEnumerable<string>> ListDirectoryAsync(string directory, CancellationToken token = default, params string[] filters)
+        protected override Task Disconnect(CancellationToken token = default)
         {
-            token.ThrowIfCancellationRequested();
+            _client.Disconnect();
 
-            if (!IsConnected)
-                throw new DownloaderClientConnectionException("", this, "Client not connected");
+            return Task.CompletedTask;
+        }
 
-            try
-            {
-                return await _client.ListDirectoryAsync(directory, filters);
-            }
-            catch (Exception e)
-            {
-                throw new DownloaderClientListDirectoryException(directory, this, e.Message);
-            }
+        ///<inheritdoc/>
+        protected override async Task<FileInfo> DownloadResource(FileInfo file, Uri remote, CancellationToken token = default)
+        {
+            return await _client.DownloadFileAsync(file.FullName, remote.LocalPath);
+        }
+
+        ///<inheritdoc/>
+        protected override async Task<IEnumerable<Uri>> ListResources(string path, CancellationToken token = default, params string[] query)
+        {
+            var result = await _client.ListDirectoryAsync(path, query);
+
+            return result.Select(s => new UriBuilder(Uri.UriSchemeSftp, _client.ConnectionInfo.Host, _client.ConnectionInfo.Port, s).Uri).ToList();
         }
 
         #endregion

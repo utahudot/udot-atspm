@@ -1,5 +1,5 @@
 #region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for DataApi - %Namespace%/Program.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -87,6 +87,7 @@ builder.Host
          o.IncludeXmlComments(typeof(Program));
          o.CustomOperationIds((controller, verb, action) => $"{verb}{controller}{action}");
          o.EnableAnnotations();
+         o.AddJwtAuthorization();
 
          o.OperationFilter<TimestampFormatHeader>();
          o.DocumentFilter<GenerateAggregationSchemas>();
@@ -184,3 +185,5 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+

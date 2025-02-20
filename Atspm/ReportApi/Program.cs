@@ -1,5 +1,5 @@
 #region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for ReportApi - %Namespace%/Program.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,10 +18,8 @@
 using Asp.Versioning;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.SwaggerGen;
-using System.Text;
 using Utah.Udot.Atspm.Business.AppoachDelay;
 using Utah.Udot.Atspm.Business.ApproachSpeed;
 using Utah.Udot.Atspm.Business.ApproachVolume;
@@ -107,6 +105,7 @@ builder.Host
         o.IncludeXmlComments(typeof(Program));
         o.CustomOperationIds((controller, verb, action) => $"{verb}{controller}{action}");
         o.EnableAnnotations();
+        o.AddJwtAuthorization();
     });
 
     var allowedHosts = builder.Configuration.GetSection("AllowedHosts").Get<string>() ?? "*";

@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for Application - Utah.Udot.Atspm.Business.LinkPivot/LinkPivotService.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,7 +14,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
-
 
 using Microsoft.EntityFrameworkCore;
 using Utah.Udot.Atspm.Extensions;
@@ -37,6 +36,11 @@ namespace Utah.Udot.Atspm.Business.LinkPivot
         {
             LinkPivot linkPivot = new LinkPivot(options.StartDate.ToDateTime(options.StartTime), options.EndDate.ToDateTime(options.EndTime));
             var (lp, pairedApproches) = await GetAdjustmentObjectsAsync(options, routeLocations);
+
+            if (lp.Count == 0 || pairedApproches.Count == 0) {
+                throw new Exception("Issue grabbing approach data for route locations.");
+            }
+
             linkPivot.Adjustments = lp;
             linkPivot.PairedApproaches = pairedApproches;
 
@@ -94,7 +98,7 @@ namespace Utah.Udot.Atspm.Business.LinkPivot
                 linkPivotResult.TotalPaogUpstreamBefore = 0;
             }
             linkPivotResult.TotalAogUpstreamPredicted = linkPivot.Adjustments.Sum(a => a.AOGUpstreamPredicted);
-            linkPivotResult.TotalPaogUpstreamPredicted = (int)Math.Round((linkPivot.Adjustments.Sum(a => a.AOGUpstreamPredicted) / totalUpstreamVolume) * 100);
+            linkPivotResult.TotalPaogUpstreamPredicted = totalUpstreamVolume.AreEqual(0d) ? 0 : (int)Math.Round((linkPivot.Adjustments.Sum(a => a.AOGUpstreamPredicted) / totalUpstreamVolume) * 100);
             if (double.IsNaN(linkPivotResult.TotalPaogUpstreamPredicted))
             {
                 // If result is NaN, set it to 0
@@ -102,7 +106,7 @@ namespace Utah.Udot.Atspm.Business.LinkPivot
             }
 
             linkPivotResult.TotalAogBefore = linkPivotResult.TotalAogUpstreamBefore + linkPivotResult.TotalAogDownstreamBefore;
-            linkPivotResult.TotalPaogBefore = (int)Math.Round((linkPivotResult.TotalAogBefore / totalVolume) * 100);
+            linkPivotResult.TotalPaogBefore = totalVolume.AreEqual(0d) ? 0 : (int)Math.Round((linkPivotResult.TotalAogBefore / totalVolume) * 100);
             if (double.IsNaN(linkPivotResult.TotalPaogBefore))
             {
                 // If result is NaN, set it to 0
@@ -110,7 +114,7 @@ namespace Utah.Udot.Atspm.Business.LinkPivot
             }
 
             linkPivotResult.TotalAogPredicted = linkPivotResult.TotalAogUpstreamPredicted + linkPivotResult.TotalAogDownstreamPredicted;
-            linkPivotResult.TotalPaogPredicted = (int)Math.Round((linkPivotResult.TotalAogPredicted / totalVolume) * 100);
+            linkPivotResult.TotalPaogPredicted = totalVolume.AreEqual(0d) ? 0 : (int)Math.Round((linkPivotResult.TotalAogPredicted / totalVolume) * 100);
             if (double.IsNaN(linkPivotResult.TotalPaogPredicted))
             {
                 // If result is NaN, set it to 0
@@ -218,32 +222,35 @@ namespace Utah.Udot.Atspm.Business.LinkPivot
 
         private static void AddLastAdjusment(RouteLocation routeLocation, List<AdjustmentObject> adjustments)
         {
-            adjustments.Add(new AdjustmentObject()
+            if(routeLocation != null)
             {
-                LocationIdentifier = routeLocation.LocationIdentifier,
-                Location = routeLocation.ToString(),
-                DownstreamLocation = "",
-                Delta = 0,
-                PAOGDownstreamBefore = 0,
-                PAOGDownstreamPredicted = 0,
-                PAOGUpstreamBefore = 0,
-                PAOGUpstreamPredicted = 0,
-                AOGDownstreamBefore = 0,
-                AOGDownstreamPredicted = 0,
-                AOGUpstreamBefore = 0,
-                AOGUpstreamPredicted = 0,
-                DownstreamLocationIdentifier = routeLocation.LocationIdentifier,
-                DownstreamApproachDirection = routeLocation.PrimaryDirection.Description,
-                UpstreamApproachDirection = routeLocation.PrimaryDirection.Description,
-                ResultChartLocation = "",
-                AogTotalBefore = 0,
-                PAogTotalBefore = 0,
-                AogTotalPredicted = 0,
-                PAogTotalPredicted = 0,
-                LinkNumber = routeLocation.Order,
-                DownstreamVolume = 0,
-                UpstreamVolume = 0
-            });
+                adjustments.Add(new AdjustmentObject()
+                {
+                    LocationIdentifier = routeLocation.LocationIdentifier,
+                    Location = routeLocation.ToString(),
+                    DownstreamLocation = "",
+                    Delta = 0,
+                    PAOGDownstreamBefore = 0,
+                    PAOGDownstreamPredicted = 0,
+                    PAOGUpstreamBefore = 0,
+                    PAOGUpstreamPredicted = 0,
+                    AOGDownstreamBefore = 0,
+                    AOGDownstreamPredicted = 0,
+                    AOGUpstreamBefore = 0,
+                    AOGUpstreamPredicted = 0,
+                    DownstreamLocationIdentifier = routeLocation.LocationIdentifier,
+                    DownstreamApproachDirection = routeLocation.PrimaryDirection != null ? routeLocation.PrimaryDirection.Description : "",
+                    UpstreamApproachDirection = routeLocation.PrimaryDirection != null ? routeLocation.PrimaryDirection?.Description : "",
+                    ResultChartLocation = "",
+                    AogTotalBefore = 0,
+                    PAogTotalBefore = 0,
+                    AogTotalPredicted = 0,
+                    PAogTotalPredicted = 0,
+                    LinkNumber = routeLocation.Order,
+                    DownstreamVolume = 0,
+                    UpstreamVolume = 0
+                });
+            }
         }
 
         private async Task CreatePairedApproaches(LinkPivotOptions options, List<RouteLocation> routeLocations, List<LinkPivotPair> PairedApproaches, List<int> indices, List<DateOnly> daysToInclude)

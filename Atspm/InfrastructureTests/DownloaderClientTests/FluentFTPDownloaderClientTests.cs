@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for InfrastructureTests - Utah.Udot.Atspm.InfrastructureTests.DownloaderClientTests/FluentFTPDownloaderClientTests.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,6 +18,10 @@
 using FluentFTP;
 using Moq;
 using System;
+using System.IO;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 using Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients;
 using Xunit.Abstractions;
 
@@ -27,7 +31,9 @@ namespace Utah.Udot.Atspm.InfrastructureTests.DownloaderClientTests
     {
         public FluentFTPDownloaderClientTests(ITestOutputHelper output) : base(output) { }
 
-        public override void ConnectAsyncSucceeded()
+        #region MyRegion
+
+        public override async Task ConnectAsyncSucceeded()
         {
             var client = new Mock<IAsyncFtpClient>();
             var config = new Mock<FtpConfig>();
@@ -41,10 +47,44 @@ namespace Utah.Udot.Atspm.InfrastructureTests.DownloaderClientTests
 
             Sut = new FluentFTPDownloaderClient(Client);
 
-            base.ConnectAsyncSucceeded();
+            await base.ConnectAsyncSucceeded();
         }
 
-        public override void ConnectAsyncControllerConnectionException()
+        public override async Task ConnectAsyncNullConnection()
+        {
+            var client = new Mock<IAsyncFtpClient>();
+            var config = new Mock<FtpConfig>();
+
+            client.SetupAllProperties();
+
+            client.Setup(s => s.AutoConnect(default)).Callback(() => client.SetupGet(p => p.IsConnected).Returns(true));
+
+            Client = client.Object;
+            Client.Config = config.Object;
+
+            Sut = new FluentFTPDownloaderClient(Client);
+
+            await base.ConnectAsyncNullConnection();
+        }
+
+        public override async Task ConnectAsyncNullCredentials()
+        {
+            var client = new Mock<IAsyncFtpClient>();
+            var config = new Mock<FtpConfig>();
+
+            client.SetupAllProperties();
+
+            client.Setup(s => s.AutoConnect(default)).Callback(() => client.SetupGet(p => p.IsConnected).Returns(true));
+
+            Client = client.Object;
+            Client.Config = config.Object;
+
+            Sut = new FluentFTPDownloaderClient(Client);
+
+            await base.ConnectAsyncNullCredentials();
+        }
+
+        public override async Task ConnectAsyncControllerConnectionException()
         {
             var client = new Mock<IAsyncFtpClient>();
 
@@ -52,17 +92,21 @@ namespace Utah.Udot.Atspm.InfrastructureTests.DownloaderClientTests
 
             Sut = new FluentFTPDownloaderClient(client.Object);
 
-            base.ConnectAsyncControllerConnectionException();
+            await base.ConnectAsyncControllerConnectionException();
         }
 
-        public override void ConnectAsyncOperationCanceledException()
+        public override async Task ConnectAsyncOperationCanceledException()
         {
             Sut = new FluentFTPDownloaderClient();
 
-            base.ConnectAsyncOperationCanceledException();
+            await base.ConnectAsyncOperationCanceledException();
         }
 
-        public override void DeleteFileAsyncSucceeded()
+        #endregion
+
+        #region DeleteResource
+
+        public override async Task DeleteResourceAsyncSucceeded()
         {
             var client = new Mock<IAsyncFtpClient>();
 
@@ -70,19 +114,49 @@ namespace Utah.Udot.Atspm.InfrastructureTests.DownloaderClientTests
 
             Sut = new FluentFTPDownloaderClient(client.Object);
 
-            base.DeleteFileAsyncSucceeded();
+            var uri = new UriBuilder()
+            {
+                Scheme = Uri.UriSchemeFtp,
+                Host = "127.0.0.1",
+                Port = 21,
+                Path = "/a/b/c.txt"
+            }.Uri;
+
+            await Sut.DeleteResourceAsync(uri);
         }
 
-        public override void DeleteFileAsyncNotConnected()
+        public override Task DeleteResourceAsyncNullResource()
+        {
+            var client = new Mock<IAsyncFtpClient>();
+
+            client.SetupGet(p => p.IsConnected).Returns(true);
+
+            Sut = new FluentFTPDownloaderClient(client.Object);
+
+            return base.DeleteResourceAsyncNullResource();
+        }
+
+        public override Task DeleteResourceAsyncInvalidResource()
+        {
+            var client = new Mock<IAsyncFtpClient>();
+
+            client.SetupGet(p => p.IsConnected).Returns(true);
+
+            Sut = new FluentFTPDownloaderClient(client.Object);
+
+            return base.DeleteResourceAsyncInvalidResource();
+        }
+
+        public override async Task DeleteResourceAsyncNotConnected()
         {
             var client = new Mock<IAsyncFtpClient>();
 
             Sut = new FluentFTPDownloaderClient(client.Object);
 
-            base.DeleteFileAsyncNotConnected();
+            await base.DeleteResourceAsyncNotConnected();
         }
 
-        public override void DeleteFileAsyncControllerDeleteFileException()
+        public override async Task DeleteResourceAsyncControllerDeleteResourceException()
         {
             var client = new Mock<IAsyncFtpClient>();
 
@@ -92,17 +166,21 @@ namespace Utah.Udot.Atspm.InfrastructureTests.DownloaderClientTests
 
             Sut = new FluentFTPDownloaderClient(client.Object);
 
-            base.DeleteFileAsyncControllerDeleteFileException();
+            await base.DeleteResourceAsyncControllerDeleteResourceException();
         }
 
-        public override void DeleteFileAsyncOperationCanceledException()
+        public override async Task DeleteResourceAsyncOperationCanceledException()
         {
             Sut = new FluentFTPDownloaderClient();
 
-            base.DeleteFileAsyncOperationCanceledException();
+            await base.DeleteResourceAsyncOperationCanceledException();
         }
 
-        public override void DisconnectAsyncSucceeded()
+        #endregion
+
+        #region Disconnect
+
+        public override async Task DisconnectAsyncSucceeded()
         {
             var client = new Mock<IAsyncFtpClient>();
 
@@ -112,19 +190,19 @@ namespace Utah.Udot.Atspm.InfrastructureTests.DownloaderClientTests
 
             Sut = new FluentFTPDownloaderClient(client.Object);
 
-            base.DisconnectAsyncSucceeded();
+            await base.DisconnectAsyncSucceeded();
         }
 
-        public override void DisconnectAsyncNotConnected()
+        public override async Task DisconnectAsyncNotConnected()
         {
             var client = new Mock<IAsyncFtpClient>();
 
             Sut = new FluentFTPDownloaderClient(client.Object);
 
-            base.DisconnectAsyncNotConnected();
+            await base.DisconnectAsyncNotConnected();
         }
 
-        public override void DisconnectAsyncControllerConnectionException()
+        public override async Task DisconnectAsyncControllerConnectionException()
         {
             var client = new Mock<IAsyncFtpClient>();
 
@@ -134,17 +212,35 @@ namespace Utah.Udot.Atspm.InfrastructureTests.DownloaderClientTests
 
             Sut = new FluentFTPDownloaderClient(client.Object);
 
-            base.DisconnectAsyncControllerConnectionException();
+            await base.DisconnectAsyncControllerConnectionException();
         }
 
-        public override void DisconnectAsyncOperationCanceledException()
+        public override async Task DisconnectAsyncOperationCanceledException()
         {
             Sut = new FluentFTPDownloaderClient();
 
             base.DisconnectAsyncOperationCanceledException();
         }
 
-        public override void DownloadFileAsyncSucceeded()
+        #endregion
+
+        #region DownloadResource
+
+        public override async Task DownloadResourceAsyncSucceed()
+        {
+            var client = new Mock<IAsyncFtpClient>();
+
+            client.SetupGet(p => p.IsConnected).Returns(true);
+
+            client.Setup(s => s.DownloadFile(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<FtpLocalExists>(), It.IsAny<FtpVerify>(), It.IsAny<IProgress<FtpProgress>>(), default))
+                .ReturnsAsync((string a, string b, FtpLocalExists c, FtpVerify d, IProgress<FtpProgress> e, CancellationToken f) => FtpStatus.Success);
+
+            Sut = new FluentFTPDownloaderClient(client.Object);
+
+            await base.DownloadResourceAsyncSucceed();
+        }
+
+        public override async Task DownloadResourceAsyncNullLocal()
         {
             var client = new Mock<IAsyncFtpClient>();
 
@@ -152,19 +248,41 @@ namespace Utah.Udot.Atspm.InfrastructureTests.DownloaderClientTests
 
             Sut = new FluentFTPDownloaderClient(client.Object);
 
-            base.DownloadFileAsyncSucceeded();
+            await base.DownloadResourceAsyncNullLocal();
         }
 
-        public override void DownloadFileAsyncNotConnected()
+        public override async Task DownloadResourceAsyncNullRemote()
+        {
+            var client = new Mock<IAsyncFtpClient>();
+
+            client.SetupGet(p => p.IsConnected).Returns(true);
+
+            Sut = new FluentFTPDownloaderClient(client.Object);
+
+            await base.DownloadResourceAsyncNullRemote();
+        }
+
+        public override async Task DownloadResourceAsyncInvalidLocal()
+        {
+            var client = new Mock<IAsyncFtpClient>();
+
+            client.SetupGet(p => p.IsConnected).Returns(true);
+
+            Sut = new FluentFTPDownloaderClient(client.Object);
+
+            await base.DownloadResourceAsyncInvalidLocal();
+        }
+
+        public override async Task DownloadResourceAsyncNotConnected()
         {
             var client = new Mock<IAsyncFtpClient>();
 
             Sut = new FluentFTPDownloaderClient(client.Object);
 
-            base.DownloadFileAsyncNotConnected();
+            await base.DownloadResourceAsyncNotConnected();
         }
 
-        public override void DownloadFileAsyncControllerDownloadFileException()
+        public override async Task DownloadResourceAsyncDownloaderClientDownloadResourceException()
         {
             var client = new Mock<IAsyncFtpClient>();
 
@@ -174,37 +292,50 @@ namespace Utah.Udot.Atspm.InfrastructureTests.DownloaderClientTests
 
             Sut = new FluentFTPDownloaderClient(client.Object);
 
-            base.DownloadFileAsyncControllerDownloadFileException();
+            await base.DownloadResourceAsyncDownloaderClientDownloadResourceException();
         }
 
-        public override void DownloadFileAsyncOperationCanceledException()
+        public override async Task DownloadResourceAsyncOperationCanceledException()
         {
             Sut = new FluentFTPDownloaderClient();
 
-            base.DownloadFileAsyncOperationCanceledException();
+            await base.DownloadResourceAsyncOperationCanceledException();
         }
 
-        public override void ListDirectoryAsyncSucceeded()
+        #endregion
+
+        #region ListResources
+
+        public override async Task ListResourcesAsyncSucceeded()
         {
             var client = new Mock<IAsyncFtpClient>();
+            var ftpListItem = new Mock<FtpListItem>();
 
+            client.SetupGet(p => p.Host).Returns("localhost");
+            client.SetupGet(p => p.Port).Returns(21);
             client.SetupGet(p => p.IsConnected).Returns(true);
 
+            client.Setup(s => s.GetListing(It.IsAny<string>(), It.IsAny<FtpListOption>(), default))
+               .ReturnsAsync((string a, FtpListOption b, CancellationToken c) =>
+               [
+                   new FtpListItem("test", 0, FtpObjectType.File, DateTime.Now) { FullName = a }
+               ]);
+
             Sut = new FluentFTPDownloaderClient(client.Object);
 
-            base.ListDirectoryAsyncSucceeded();
+            await base.ListResourcesAsyncSucceeded();
         }
 
-        public override void ListDirectoryAsyncNotConnected()
+        public override async Task ListResourcesAsyncNotConnected()
         {
             var client = new Mock<IAsyncFtpClient>();
 
             Sut = new FluentFTPDownloaderClient(client.Object);
 
-            base.ListDirectoryAsyncNotConnected();
+            await base.ListResourcesAsyncNotConnected();
         }
 
-        public override void ListDirectoryAsyncControllerDownloadFileException()
+        public override async Task ListDirectoryAsyncControllerDownloadFileException()
         {
             var client = new Mock<IAsyncFtpClient>();
 
@@ -214,17 +345,19 @@ namespace Utah.Udot.Atspm.InfrastructureTests.DownloaderClientTests
 
             Sut = new FluentFTPDownloaderClient(client.Object);
 
-            base.ListDirectoryAsyncControllerDownloadFileException();
+            await base.ListDirectoryAsyncControllerDownloadFileException();
         }
 
-        public override void ListDirectoryAsyncOperationCanceledException()
+        public override async Task ListResourcesAsyncDownloaderClientListResourcesException()
         {
             Sut = new FluentFTPDownloaderClient();
 
-            base.ListDirectoryAsyncOperationCanceledException();
+            await base.ListResourcesAsyncDownloaderClientListResourcesException();
         }
 
-        public override void ConnectAsyncConnectionProperties()
+        #endregion
+
+        public override async Task ConnectAsyncConnectionProperties()
         {
             var client = new Mock<IAsyncFtpClient>();
             var config = new Mock<FtpConfig>();
@@ -237,7 +370,7 @@ namespace Utah.Udot.Atspm.InfrastructureTests.DownloaderClientTests
             Client.Config = config.Object;
             Sut = new FluentFTPDownloaderClient(Client);
 
-            base.ConnectAsyncConnectionProperties();
+            await base.ConnectAsyncConnectionProperties();
         }
 
         public override bool VerifyIpAddress(IAsyncFtpClient client, string ipAddress)
@@ -265,9 +398,9 @@ namespace Utah.Udot.Atspm.InfrastructureTests.DownloaderClientTests
             return client.Config.ConnectTimeout == connectionTimeout;
         }
 
-        public override bool VerifyOperationTimeout(IAsyncFtpClient client, int operationTImeout)
+        public override bool VerifyOperationTimeout(IAsyncFtpClient client, int operationTimeout)
         {
-            return client.Config.ReadTimeout == operationTImeout;
+            return client.Config.ReadTimeout == operationTimeout;
         }
     }
 }

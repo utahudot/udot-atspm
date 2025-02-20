@@ -1,6 +1,6 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
-// for WatchDog - WatchDog.Services/ScanHostedService.cs
+// Copyright 2025 Utah Departement of Transportation
+// for Infrastructure - Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices/ScanHostedService.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
 // limitations under the License.
 #endregion
 
+using Microsoft.CodeAnalysis.Emit;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -52,11 +53,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                     ScanDate = _options.ScanDate,
                     ScanDayEndHour = _options.ScanDayEndHour,
                     ScanDayStartHour = _options.ScanDayStartHour,
-                    WeekdayOnly = _options.WeekdayOnly,
-                    RampMainlineEndHour = _options.RampMainlineEndHour,
-                    RampMainlineStartHour = _options.RampMainlineStartHour,
-                    RampStuckQueueEndHour = _options.RampStuckQueueEndHour,
-                    RampStuckQueueStartHour = _options.RampStuckQueueStartHour,
+                    WeekdayOnly = _options.WeekdayOnly
                 };
                 var emailOptions = new WatchdogEmailOptions
                 {
@@ -68,10 +65,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                     WeekdayOnly = _options.WeekdayOnly,
                     DefaultEmailAddress = _options.DefaultEmailAddress,
                     EmailAllErrors = _options.EmailAllErrors,
-                    RampMainlineEndHour = _options.RampMainlineEndHour,
-                    RampMainlineStartHour = _options.RampMainlineStartHour,
-                    RampStuckQueueEndHour = _options.RampStuckQueueEndHour,
-                    RampStuckQueueStartHour = _options.RampStuckQueueStartHour,
+                    Sort = _options.Sort
                 };
 
                 await _scanService.StartScan(options, emailOptions, cancellationToken);

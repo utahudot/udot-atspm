@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for DatabaseInstaller - DatabaseInstaller.Services/MoveEventLogsSqlServerToPostgresHostedService.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -52,7 +52,7 @@ namespace DatabaseInstaller.Services
             IHostApplicationLifetime hostApplicationLifetime,
             IEventLogRepository eventLogRepository,
             ILocationRepository locationRepository
-            //IndianaEventLogEFRepository indianaEventLogEFRepository
+            //IndianaEventLogEFRepository _indianaEventLogEFRepository
             )
         {
             _serviceProvider = serviceProvider;
@@ -61,7 +61,7 @@ namespace DatabaseInstaller.Services
             _hostApplicationLifetime = hostApplicationLifetime;
             _eventLogRepository = eventLogRepository;
             _locationRepository = locationRepository;
-            //_indianaEventLogEFRepository = indianaEventLogEFRepository;
+            //_indianaEventLogEFRepository = _indianaEventLogEFRepository;
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)

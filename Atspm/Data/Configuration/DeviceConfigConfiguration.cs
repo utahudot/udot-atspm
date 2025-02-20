@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for Data - Utah.Udot.Atspm.Data.Configuration/DeviceConfigConfiguration.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,6 +19,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Newtonsoft.Json;
 using Utah.Udot.Atspm.Data.Enums;
+using Utah.Udot.Atspm.Data.Utility;
 
 #nullable disable
 
@@ -34,9 +35,9 @@ namespace Utah.Udot.Atspm.Data.Configuration
         {
             builder.ToTable(t => t.HasComment("Device Configuration"));
 
-            builder.Property(e => e.Firmware)
+            builder.Property(e => e.Description)
                 .IsRequired()
-                .HasMaxLength(16);
+                .HasMaxLength(24);
 
             builder.Property(e => e.Notes)
                 .HasMaxLength(512);
@@ -45,14 +46,18 @@ namespace Utah.Udot.Atspm.Data.Configuration
                 .HasMaxLength(Enum.GetNames(typeof(TransportProtocols)).Max().Length)
                 .HasDefaultValue(TransportProtocols.Unknown);
 
+            builder.Property(e => e.ConnectionProperties)
+            .HasMaxLength(1024)
+            .HasConversion<DictionaryToJsonValueConverter<string, object>>(new DictionaryValueComparer<string, object>());
+
             builder.Property(e => e.Port)
                 .HasDefaultValueSql("((0))");
 
-            builder.Property(e => e.Directory)
+            builder.Property(e => e.Path)
                 .IsRequired(false)
                 .HasMaxLength(512);
 
-            builder.Property(e => e.SearchTerms)
+            builder.Property(e => e.Query)
                 .IsRequired(false)
                 .HasDefaultValueSql("('[]')")
                 .HasMaxLength(512)
@@ -83,4 +88,6 @@ namespace Utah.Udot.Atspm.Data.Configuration
                 .HasMaxLength(50);
         }
     }
+
+    
 }

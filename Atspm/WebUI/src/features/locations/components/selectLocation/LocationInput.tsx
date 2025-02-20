@@ -1,5 +1,6 @@
+import { Filters } from '@/features/locations/components/selectLocation/SelectLocation'
 import { Location } from '@/features/locations/types'
-import { Autocomplete, TextField } from '@mui/material'
+import { Autocomplete, Badge, TextField, Tooltip } from '@mui/material'
 import match from 'autosuggest-highlight/match'
 import parse from 'autosuggest-highlight/parse'
 import { useState } from 'react'
@@ -17,7 +18,7 @@ const customSort = (options: Location[], value: string) => {
       const aStartsWithInput = a.locationIdentifier.startsWith(value)
       const bStartsWithInput = b.locationIdentifier.startsWith(value)
       if (aStartsWithInput && !bStartsWithInput) {
-        return -1 
+        return -1
       }
       if (bStartsWithInput && !aStartsWithInput) {
         return 1
@@ -32,56 +33,76 @@ interface LocationInputProps {
   location: Location | null
   locations: Location[]
   chartsDisabled?: boolean
+  filters: Filters
   handleChange: (_: React.SyntheticEvent, value: Location | null) => void
 }
 
 const LocationInput = ({
   location,
   locations,
+  filters,
   handleChange,
-  
 }: LocationInputProps) => {
+  const amountOfFiltersApplied = Object.values(filters).filter(
+    (value) => value !== null
+  ).length
   const [inputValue, setInputValue] = useState('')
   return (
-    <Autocomplete
-      value={
-        locations?.find(
-          (l) => l.locationIdentifier === location?.locationIdentifier
-        ) || null
+    <Badge
+      color="primary"
+      overlap="rectangular"
+      invisible={amountOfFiltersApplied === 0}
+      badgeContent={
+        <Tooltip
+          title={`${amountOfFiltersApplied} filter(s) applied`}
+          placement="top"
+        >
+          <span>{amountOfFiltersApplied}</span>
+        </Tooltip>
       }
-      options={customSort(locations, inputValue)}
-      inputValue={inputValue}
-      onInputChange={(event, newInputValue) => {
-        setInputValue(newInputValue)
-      }}
-      renderInput={(params) => <TextField {...params} label="Location" />}
-      autoHighlight={true}
-      autoSelect={true}
-      onChange={handleChange}
-      selectOnFocus={true}
-      getOptionLabel={(option) => formatLocationLabel(option)}
-      renderOption={(props, option, { inputValue }) => {
-        const matches = match(formatLocationLabel(option), inputValue, {
-          insideWords: true,
-        })
-        const parts = parse(formatLocationLabel(option), matches)
+      sx={{ width: '100%' }}
+    >
+      <Autocomplete
+        value={
+          locations?.find(
+            (l) => l.locationIdentifier === location?.locationIdentifier
+          ) || null
+        }
+        options={customSort(locations, inputValue)}
+        inputValue={inputValue}
+        onInputChange={(event, newInputValue) => {
+          setInputValue(newInputValue)
+        }}
+        sx={{ width: '100%', marginBottom: 2 }}
+        renderInput={(params) => <TextField {...params} label="Location" />}
+        autoHighlight={true}
+        autoSelect={true}
+        onChange={handleChange}
+        selectOnFocus={true}
+        getOptionLabel={(option) => formatLocationLabel(option)}
+        renderOption={(props, option, { inputValue }) => {
+          const matches = match(formatLocationLabel(option), inputValue, {
+            insideWords: true,
+          })
+          const parts = parse(formatLocationLabel(option), matches)
 
-        return (
-          <li {...props} key={option.id}>
-            <div>
-              {parts.map((part, index) => (
-                <span
-                  key={index}
-                  style={{ fontWeight: part.highlight ? 700 : 400 }}
-                >
-                  {part.text}
-                </span>
-              ))}
-            </div>
-          </li>
-        )
-      }}
-    />
+          return (
+            <li {...props} key={option.id}>
+              <div>
+                {parts.map((part, index) => (
+                  <span
+                    key={index}
+                    style={{ fontWeight: part.highlight ? 700 : 400 }}
+                  >
+                    {part.text}
+                  </span>
+                ))}
+              </div>
+            </li>
+          )
+        }}
+      />
+    </Badge>
   )
 }
 
