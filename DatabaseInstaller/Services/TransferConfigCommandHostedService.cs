@@ -25,6 +25,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Npgsql;
 using Npgsql.Internal;
+using System.Text.Json;
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
@@ -553,10 +554,11 @@ public class TransferConfigCommandHostedService : IHostedService
                         var entity = new T(); // Create an instance of the generic type
 
                         // Iterate through column mappings
+
                         foreach (var mapping in columnMappings)
                         {
                             var propertyName = mapping.Value; // Name of the property in the class
-                            var columnName = mapping.Key;    // Name of the column in the data reader
+                            var columnName = mapping.Key;       // Name of the column in the data reader
 
                             // Get the value from the reader
                             var value = reader[columnName];
@@ -566,7 +568,6 @@ public class TransferConfigCommandHostedService : IHostedService
                             if (propertyInfo != null && value != DBNull.Value)
                             {
                                 var propertyType = propertyInfo.PropertyType;
-
                                 // Handle nullable types
                                 var targetType = Nullable.GetUnderlyingType(propertyType) ?? propertyType;
 
@@ -576,6 +577,48 @@ public class TransferConfigCommandHostedService : IHostedService
                                     var enumValue = Enum.ToObject(targetType, value);
                                     propertyInfo.SetValue(entity, enumValue);
                                 }
+                                else if (targetType == typeof(Dictionary<string, object>))
+                                {
+                                    // Convert the value to string (which should be valid JSON) and deserialize it
+                                    string jsonString = Convert.ChangeType(value, typeof(string)) as string;
+                                    if (!string.IsNullOrWhiteSpace(jsonString))
+                                    {
+                                        try
+                                        {
+                                            var dictionary = JsonSerializer.Deserialize<Dictionary<string, object>>(jsonString);
+                                            propertyInfo.SetValue(entity, dictionary);
+                                        }
+                                        catch (JsonException ex)
+                                        {
+                                            throw new InvalidOperationException(
+                                                $"Failed to deserialize JSON for property '{propertyName}'.", ex);
+                                        }
+                                    }
+                                }
+                                else if (targetType == typeof(string[]))
+                                {
+                                    // Convert the value to string and then deserialize the JSON array
+                                    string jsonString = Convert.ChangeType(value, typeof(string)) as string;
+                                    if (!string.IsNullOrWhiteSpace(jsonString))
+                                    {
+                                        try
+                                        {
+                                            string[] arrayValue = JsonSerializer.Deserialize<string[]>(jsonString);
+                                            propertyInfo.SetValue(entity, arrayValue);
+                                        }
+                                        catch (JsonException ex)
+                                        {
+                                            throw new InvalidOperationException(
+                                                $"Failed to deserialize JSON array for property '{propertyName}'.", ex);
+                                        }
+                                    }
+                                }
+                                else if (targetType == typeof(string))
+                                {
+                                    // For string, simply convert it (optionally, unescape if needed)
+                                    string stringValue = Convert.ChangeType(value, typeof(string)) as string;
+                                    propertyInfo.SetValue(entity, stringValue);
+                                }
                                 else
                                 {
                                     // Convert and assign other types
@@ -583,6 +626,7 @@ public class TransferConfigCommandHostedService : IHostedService
                                 }
                             }
                         }
+
 
                         entities.Add(entity);
                     }

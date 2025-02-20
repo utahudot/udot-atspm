@@ -1,3 +1,4 @@
+import { usePutDeviceConfigurationFromKey } from '@/api/config/aTSPMConfigurationApi'
 import { Device } from '@/api/config/aTSPMConfigurationApi.schemas'
 import AdminTable from '@/components/AdminTable/AdminTable'
 import DeleteModal from '@/components/AdminTable/DeleteModal'
@@ -5,10 +6,10 @@ import { ResponsivePageLayout } from '@/components/ResponsivePage'
 import {
   useCreateDeviceConfiguration,
   useDeleteDeviceConfiguration,
-  useEditDeviceConfiguration,
   useGetDeviceConfigurations,
 } from '@/features/devices/api/deviceConfigurations'
 import { useGetDevices } from '@/features/devices/api/devices'
+import { DeviceConfigCustomCellRender } from '@/features/devices/components/DeviceConfigCustomRenderCell'
 import DeviceConfigModal from '@/features/devices/components/DeviceConfigModal'
 import { DeviceConfiguration } from '@/features/devices/types/index'
 import {
@@ -18,11 +19,12 @@ import {
 } from '@/features/identity/pagesCheck'
 import { useLatestVersionOfAllLocations } from '@/features/locations/api'
 import { useGetProducts } from '@/features/products/api'
+import { useNotificationStore } from '@/stores/notifications'
 import { Backdrop, CircularProgress } from '@mui/material'
 
 const DevicesAdmin = () => {
   const pageAccess = useViewPage(PageNames.DeviceConfigurations)
-
+  const {addNotification} = useNotificationStore()
   const hasLocationsEditClaim = useUserHasClaim('LocationConfiguration:Edit')
   const hasLocationsDeleteClaim = useUserHasClaim(
     'LocationConfiguration:Delete'
@@ -30,7 +32,7 @@ const DevicesAdmin = () => {
 
   const { mutateAsync: createMutation } = useCreateDeviceConfiguration()
   const { mutateAsync: deleteMutation } = useDeleteDeviceConfiguration()
-  const { mutateAsync: editMutation } = useEditDeviceConfiguration()
+  const { mutateAsync: editMutation } = usePutDeviceConfigurationFromKey()
 
   const { data: allDevicesData } = useGetDevices()
   const devices = allDevicesData?.value
@@ -44,48 +46,18 @@ const DevicesAdmin = () => {
   } = useGetDeviceConfigurations()
   const deviceConfigurations = deviceConfigurationData?.value
 
-  const { data: productData, isLoading: productIsloading } = useGetProducts()
+  const { data: productData } = useGetProducts()
 
   if (pageAccess.isLoading) {
     return
   }
 
-  const HandleCreateDevice = async (
+  const handleCreateDeviceConfiguration = async (
     deviceConfigurationData: DeviceConfiguration
   ) => {
-    const {
-      firmware,
-      notes,
-      protocol,
-      port,
-      directory,
-      connectionTimeout,
-      operationTimeout,
-      userName,
-      password,
-      productId,
-    } = deviceConfigurationData
-
-    const sanitizedDeviceConfigurationData: Partial<DeviceConfiguration> = {}
-
-    if (firmware) sanitizedDeviceConfigurationData.firmware = firmware
-    if (notes) sanitizedDeviceConfigurationData.notes = notes
-    if (protocol) sanitizedDeviceConfigurationData.protocol = protocol
-    if (port) sanitizedDeviceConfigurationData.port = parseInt(port)
-    if (directory) sanitizedDeviceConfigurationData.directory = directory
-    if (connectionTimeout)
-      sanitizedDeviceConfigurationData.connectionTimeout =
-        parseInt(connectionTimeout)
-    if (operationTimeout)
-      sanitizedDeviceConfigurationData.operationTimeout =
-        parseInt(operationTimeout)
-    if (userName) sanitizedDeviceConfigurationData.userName = userName
-    if (password) sanitizedDeviceConfigurationData.password = password
-    if (productId)
-      sanitizedDeviceConfigurationData.productId = parseInt(productId)
-
     try {
-      await createMutation(sanitizedDeviceConfigurationData)
+      const { id, ...dataWithoutId } = deviceConfigurationData
+      await createMutation(dataWithoutId)
       refetchDeviceConfiguration()
     } catch (error) {
       console.error('Mutation Error:', error)
@@ -101,51 +73,22 @@ const DevicesAdmin = () => {
     }
   }
 
-  const HandleEditDevice = async (
+  const handleEditDeviceConfiguration = async (
     deviceConfigurationData: DeviceConfiguration
   ) => {
-    const {
-      id,
-      firmware,
-      notes,
-      protocol,
-      port,
-      directory,
-      searchTerms,
-      connectionTimeout,
-      operationTimeout,
-      dataModel,
-      userName,
-      password,
-      productId,
-    } = deviceConfigurationData
-
-    const sanitizedDeviceConfigurationData: Partial<DeviceConfiguration> = {}
-
-    if (firmware) sanitizedDeviceConfigurationData.firmware = firmware
-    if (notes) sanitizedDeviceConfigurationData.notes = notes
-    if (protocol) sanitizedDeviceConfigurationData.protocol = protocol
-    if (port) sanitizedDeviceConfigurationData.port = parseInt(port)
-    if (directory) sanitizedDeviceConfigurationData.directory = directory
-    if (connectionTimeout)
-      sanitizedDeviceConfigurationData.connectionTimeout =
-        parseInt(connectionTimeout)
-    if (operationTimeout)
-      sanitizedDeviceConfigurationData.operationTimeout =
-        parseInt(operationTimeout)
-    if (userName) sanitizedDeviceConfigurationData.userName = userName
-    if (password) sanitizedDeviceConfigurationData.password = password
-    if (productId)
-      sanitizedDeviceConfigurationData.productId = parseInt(productId)
-
     try {
+      const { productName, ...dataWithoutProductName } = deviceConfigurationData
+
       await editMutation({
-        data: sanitizedDeviceConfigurationData,
-        id,
+        data: dataWithoutProductName,
+        key: deviceConfigurationData.id,
       })
+      addNotification({title:"Device Configuration Updated", type:'success'})
       refetchDeviceConfiguration()
     } catch (error) {
       console.error('Mutation Error:', error)
+      addNotification({title:"Device Configuration Update Unsuccessful", type:'error'})
+
     }
   }
 
@@ -192,28 +135,37 @@ const DevicesAdmin = () => {
   })
 
   const headers = [
-    'Firmware',
-    'Notes',
+    'Product Name',
+    'Description',
+    
     'Protocol',
     'Port',
-    'Directory',
+    'Path',
+    'Query',
+    'Connection Properties',
     'Connection Timeout',
     'Operation Timeout',
+    'Logging Offset',
+    'Decoders',
     'Username',
     'Password',
-    'Product Name',
   ]
+
   const headerKeys = [
-    'firmware',
-    'notes',
+    'productName',
+    'description',
+  
     'protocol',
     'port',
-    'directory',
+    'path',
+    'query',
+    'connectionProperties',
     'connectionTimeout',
     'operationTimeout',
+    'loggingOffset',
+    'decoders',
     'userName',
     'password',
-    'productName',
   ]
 
   return (
@@ -225,17 +177,18 @@ const DevicesAdmin = () => {
         data={filteredData}
         hasEditPrivileges={hasLocationsEditClaim}
         hasDeletePrivileges={hasLocationsDeleteClaim}
+        customCellRender={DeviceConfigCustomCellRender}
         editModal={
           <DeviceConfigModal
             isOpen={true}
-            onSave={HandleEditDevice}
+            onSave={handleEditDeviceConfiguration}
             onClose={onModalClose}
           />
         }
         createModal={
           <DeviceConfigModal
             isOpen={true}
-            onSave={HandleCreateDevice}
+            onSave={handleCreateDeviceConfiguration}
             onClose={onModalClose}
           />
         }
@@ -244,7 +197,7 @@ const DevicesAdmin = () => {
             id={0}
             name={'test'}
             deleteLabel={(selectedRow: (typeof filteredData)[number]) =>
-              `${selectedRow.product?.manufacturer} ${selectedRow.product?.model} ${selectedRow.firmware}`
+              `${selectedRow.product?.manufacturer} ${selectedRow.product?.model}`
             }
             objectType="Device Configuration"
             open={false}
