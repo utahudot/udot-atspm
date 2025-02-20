@@ -63,7 +63,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders
 
             var path = Path.Combine
                 (_options.BasePath,
-                $"{device.Location?.LocationIdentifier} - {device.Location?.PrimaryName}",
+                $"{device.Location?.LocationIdentifier} - {device.Location?.PrimaryName} - {device.Location?.SecondaryName}",
                 device.DeviceType.ToString(),
                  $"{device.DeviceIdentifier}-{device.Ipaddress}");
 
@@ -74,6 +74,8 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders
             }.Uri;
 
             return result;
+
+            //return WebUtility.UrlDecode(result); ;
         }
 
         ///<inheritdoc/>

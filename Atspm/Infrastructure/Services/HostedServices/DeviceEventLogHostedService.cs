@@ -22,6 +22,7 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks.Dataflow;
+using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.ATSPM.Infrastructure.Workflows;
 
 namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
@@ -125,12 +126,60 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
 
                 var workflow = new DeviceEventLogWorkflow(_services, _options.Value.BatchSize, _options.Value.ParallelProcesses, cancellationToken);
 
-                var repo = scope.ServiceProvider.GetService<IDeviceRepository>();
+                await Task.Delay(TimeSpan.FromSeconds(1));
 
-                await foreach (var d in repo.GetDevicesForLogging(_options.Value.DeviceEventLoggingQueryOptions))
+
+                var httpDevice = new Device()
                 {
-                    await workflow.Input.SendAsync(d);
-                }
+                    DeviceIdentifier = "7114",
+                    DeviceType = DeviceTypes.SignalController,
+                    DeviceStatus = DeviceStatus.Active,
+                    Ipaddress = "10.210.14.15",
+                    LoggingEnabled = true,
+                    DeviceConfiguration = new DeviceConfiguration()
+                    {
+                        Protocol = TransportProtocols.Http,
+                        Port = 80,
+                        LoggingOffset = 30,
+                        ConnectionTimeout = 5000,
+                        OperationTimeout = 5000,
+                        Decoders = ["MaxtimeToIndianaDecoder"],
+                        Path = "v1/asclog/xml/full",
+                        Query = ["?since=[LogStartTime:MM-dd-yyyy HH:mm:ss.f]"]
+                    },
+                    Location = new Location()
+                    {
+                        LocationIdentifier = "7114",
+                        PrimaryName = "Redwood Road",
+                        SecondaryName = "6200 South"
+                    }
+                };
+
+
+
+                await workflow.Input.SendAsync(httpDevice);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                //var repo = scope.ServiceProvider.GetService<IDeviceRepository>();
+
+                //await foreach (var d in repo.GetDevicesForLogging(_options.Value.DeviceEventLoggingQueryOptions))
+                //{
+                //    await workflow.Input.SendAsync(d);
+                //}
 
                 workflow.Input.Complete();
 
