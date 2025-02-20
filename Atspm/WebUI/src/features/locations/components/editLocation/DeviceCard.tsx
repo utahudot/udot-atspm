@@ -170,6 +170,10 @@ const DeviceCard = ({ device, onEdit, onDelete }: DeviceCardProps) => {
               {device.loggingEnabled ? 'Yes' : 'No'}
             </Typography>
           </Box>
+          <Box display={'flex'} justifyContent={'flex-start'}>
+            <StyledLabel>Device Identifier</StyledLabel>
+            <Typography variant="body1">{device.deviceIdentifier}</Typography>
+          </Box>
           {Object.entries(device)
             .filter(
               ([key]) =>
