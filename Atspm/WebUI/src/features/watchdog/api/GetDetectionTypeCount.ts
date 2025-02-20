@@ -31,6 +31,7 @@ const getDetectionTypeCount = async (
 type QueryFnType = typeof getDetectionTypeCount
 
 export const useGetDetectionTypeCount = (date: string) => {
+  //date must beformmated yyyy-MM-dd or MM-dd-yyyy
   return useQuery<ExtractFnReturnType<QueryFnType>>({
     queryKey: ['detectionTypeCount', date],
     queryFn: () => getDetectionTypeCount(date),
