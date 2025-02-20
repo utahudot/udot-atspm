@@ -1,5 +1,5 @@
 #region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for IdentityApi - %Namespace%/Program.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -108,6 +108,8 @@ builder.Host
         s.AddPathBaseFilter(h);
         s.AddAtspmAuthentication(h);
         s.AddAtspmAuthorization();
+
+        //don't mind me, i'm just putting this in here to gitactions thinks I changed something
 
         s.Configure<IdentityConfiguration>(h.Configuration.GetSection(nameof(IdentityConfiguration)));
     });

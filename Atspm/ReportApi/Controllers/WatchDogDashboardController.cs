@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for ReportApi - Utah.Udot.ATSPM.ReportApi.Controllers/WatchDogDashboardController.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,7 +22,8 @@ using Utah.Udot.ATSPM.ReportApi.ReportServices;
 
 namespace Utah.Udot.ATSPM.ReportApi.Controllers
 {
-    [ApiVersion(1.0)]
+    [ApiController]
+    [Route("api/v{version:apiVersion}/[controller]")]
     public class WatchDogDashboardController : ControllerBase
     {
         private readonly WatchDogDashboardReportService watchDogDashboardReportService;

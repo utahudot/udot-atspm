@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for ConfigApi - Utah.Udot.Atspm.ConfigApi.Controllers/DeviceController.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -77,7 +77,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
             {
                 Manufacturer = d.DeviceConfiguration.Product.Manufacturer,
                 Model = d.DeviceConfiguration.Product.Model,
-                Firmware = d.DeviceConfiguration.Firmware
+                Firmware = d.DeviceConfiguration.Description
             })
                 .Select(g => new ATSPM.ConfigApi.Models.DeviceGroup
                 {

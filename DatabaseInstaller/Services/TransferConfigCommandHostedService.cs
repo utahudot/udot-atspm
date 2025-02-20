@@ -1,4 +1,20 @@
-﻿
+﻿#region license
+// Copyright 2025 Utah Departement of Transportation
+// for DatabaseInstaller - %Namespace%/TransferConfigCommandHostedService.cs
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+// http://www.apache.org/licenses/LICENSE-2.
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+#endregion
+
 using DatabaseInstaller.Commands;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -8,6 +24,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Npgsql;
 using Npgsql.Internal;
+using System.Text.Json;
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
@@ -121,7 +138,7 @@ public class TransferConfigCommandHostedService : IHostedService
         {
             _productRepository.Add(new Product { Manufacturer = "Wavetronix", Model = "Speed Detection" });
         }
-        if (_deviceConfigurationRepository.GetList().Any(dc => dc.Firmware == "Speed"))
+        if (_deviceConfigurationRepository.GetList().Any(dc => dc.Description == "Speed"))
         {
             _logger.LogInformation("Speed Device Configuration already exist");
         }
@@ -129,10 +146,10 @@ public class TransferConfigCommandHostedService : IHostedService
         {
             _deviceConfigurationRepository.Add(new DeviceConfiguration
             {
-                Firmware = "Speed",
+                Description = "Speed",
                 Protocol = TransportProtocols.Unknown,
                 ConnectionTimeout = 2000,
-                Directory = "Unkown",
+                Path = "Unkown",
                 OperationTimeout = 2000,
                 Port = 0,
                 UserName = "Unknown",
@@ -143,7 +160,7 @@ public class TransferConfigCommandHostedService : IHostedService
         _logger.LogInformation($"Importing Speed Devices");
         var devices = ImportData<Device>(queries["SpeedDevices"], columnMappings["SpeedDevices"]);
         //check if device cofiguration exists
-        var speedDeviceConfiguration = _deviceConfigurationRepository.GetList().First(dc => dc.Firmware == "Speed");
+        var speedDeviceConfiguration = _deviceConfigurationRepository.GetList().First(dc => dc.Description == "Speed");
         if (speedDeviceConfiguration == null)
         {
             _logger.LogInformation($"Speed Device Configuration not found for configuration.");
@@ -536,10 +553,11 @@ public class TransferConfigCommandHostedService : IHostedService
                         var entity = new T(); // Create an instance of the generic type
 
                         // Iterate through column mappings
+
                         foreach (var mapping in columnMappings)
                         {
                             var propertyName = mapping.Value; // Name of the property in the class
-                            var columnName = mapping.Key;    // Name of the column in the data reader
+                            var columnName = mapping.Key;       // Name of the column in the data reader
 
                             // Get the value from the reader
                             var value = reader[columnName];
@@ -549,7 +567,6 @@ public class TransferConfigCommandHostedService : IHostedService
                             if (propertyInfo != null && value != DBNull.Value)
                             {
                                 var propertyType = propertyInfo.PropertyType;
-
                                 // Handle nullable types
                                 var targetType = Nullable.GetUnderlyingType(propertyType) ?? propertyType;
 
@@ -559,6 +576,48 @@ public class TransferConfigCommandHostedService : IHostedService
                                     var enumValue = Enum.ToObject(targetType, value);
                                     propertyInfo.SetValue(entity, enumValue);
                                 }
+                                else if (targetType == typeof(Dictionary<string, object>))
+                                {
+                                    // Convert the value to string (which should be valid JSON) and deserialize it
+                                    string jsonString = Convert.ChangeType(value, typeof(string)) as string;
+                                    if (!string.IsNullOrWhiteSpace(jsonString))
+                                    {
+                                        try
+                                        {
+                                            var dictionary = JsonSerializer.Deserialize<Dictionary<string, object>>(jsonString);
+                                            propertyInfo.SetValue(entity, dictionary);
+                                        }
+                                        catch (JsonException ex)
+                                        {
+                                            throw new InvalidOperationException(
+                                                $"Failed to deserialize JSON for property '{propertyName}'.", ex);
+                                        }
+                                    }
+                                }
+                                else if (targetType == typeof(string[]))
+                                {
+                                    // Convert the value to string and then deserialize the JSON array
+                                    string jsonString = Convert.ChangeType(value, typeof(string)) as string;
+                                    if (!string.IsNullOrWhiteSpace(jsonString))
+                                    {
+                                        try
+                                        {
+                                            string[] arrayValue = JsonSerializer.Deserialize<string[]>(jsonString);
+                                            propertyInfo.SetValue(entity, arrayValue);
+                                        }
+                                        catch (JsonException ex)
+                                        {
+                                            throw new InvalidOperationException(
+                                                $"Failed to deserialize JSON array for property '{propertyName}'.", ex);
+                                        }
+                                    }
+                                }
+                                else if (targetType == typeof(string))
+                                {
+                                    // For string, simply convert it (optionally, unescape if needed)
+                                    string stringValue = Convert.ChangeType(value, typeof(string)) as string;
+                                    propertyInfo.SetValue(entity, stringValue);
+                                }
                                 else
                                 {
                                     // Convert and assign other types
@@ -566,6 +625,7 @@ public class TransferConfigCommandHostedService : IHostedService
                                 }
                             }
                         }
+
 
                         entities.Add(entity);
                     }
@@ -630,7 +690,7 @@ public class TransferConfigCommandHostedService : IHostedService
     //    deviceConfigurationRepository.Add(new DeviceConfiguration
     //    {
     //        Id = 11,
-    //        Firmware = "None",
+    //        Description = "None",
     //        Protocol = ATSPM.Table.Enums.TransportProtocols.Unknown,
     //        ConnectionTimeout = 2000,
     //        Directory = "Unkown",

@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for EventLogUtility - %Namespace%/Program.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,7 +15,6 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System.CommandLine.Builder;
@@ -25,13 +24,11 @@ using System.Diagnostics;
 using Utah.Udot.Atspm.EventLogUtility.Commands;
 using Utah.Udot.Atspm.Infrastructure.Extensions;
 
-
 if (OperatingSystem.IsWindows())
 {
     if (!EventLog.SourceExists("Atspm"))
         EventLog.CreateEventSource(AppDomain.CurrentDomain.FriendlyName, "Atspm");
 }
-
 
 var rootCmd = new EventLogCommands();
 var cmdBuilder = new CommandLineBuilder(rootCmd);
@@ -51,8 +48,6 @@ cmdBuilder.UseHost(a =>
                 c.LogName = "Atspm";
             });
         }
-
-            
         //l.AddGoogle(new LoggingServiceOptions
         //{
         //    //ProjectId = "",

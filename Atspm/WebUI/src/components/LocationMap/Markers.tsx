@@ -1,7 +1,7 @@
 import { Location } from '@/features/locations/types'
 import { generatePin } from '@/features/locations/utils'
 import { Box } from '@mui/material'
-import { useEffect, useState } from 'react'
+import { memo, useEffect, useState } from 'react'
 import { Marker, Popup } from 'react-leaflet'
 import MarkerClusterGroup from 'react-leaflet-cluster'
 
@@ -70,4 +70,4 @@ const Markers = ({ locations, setLocation }: MarkersProps) => {
   )
 }
 
-export default Markers
+export default memo(Markers)

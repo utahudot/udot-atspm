@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for ConfigApi - Utah.Udot.Atspm.ConfigApi.Configuration/DeviceConfigurationOdataConfiguration.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -38,16 +38,18 @@ namespace Utah.Udot.Atspm.ConfigApi.Configuration
             {
                 case 1:
                     {
-                        model.Property(p => p.Firmware).IsRequired();
-
-                        model.Property(p => p.Firmware).MaxLength = 16;
+                        model.Property(p => p.Description).IsRequired();
+                        model.Property(p => p.Description).MaxLength = 24;
                         model.Property(p => p.Notes).MaxLength = 512;
-                        model.Property(p => p.Directory).MaxLength = 512;
+                        model.Property(p => p.Path).MaxLength = 512;
                         model.Property(p => p.ConnectionTimeout).DefaultValueString = "2000";
                         model.Property(p => p.OperationTimeout).DefaultValueString = "2000";
                         //model.Property(p => p.DataModel).MaxLength = 512;
                         model.Property(p => p.UserName).MaxLength = 50;
                         model.Property(p => p.Password).MaxLength = 50;
+
+                        var a = model.Collection.Function("GetEventLogDecoders");
+                        a.ReturnsCollection<string>();
 
                         break;
                     }

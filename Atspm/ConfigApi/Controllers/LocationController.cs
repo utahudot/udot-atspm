@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for ConfigApi - Utah.Udot.Atspm.ConfigApi.Controllers/LocationController.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -244,18 +244,13 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
         public IActionResult GetLocationsForSearch([FromQuery] int? areaId, [FromQuery] int? regionId, [FromQuery] int? jurisdictionId, [FromQuery] int? metricTypeId)
         {
             var basicCharts = new List<int> { 1, 2, 3, 4, 14, 15, 17, 31 };
-            var query = _repository.GetList()
-                .FromSpecification(new ActiveLocationSpecification());
-            if (jurisdictionId != null)
-                query.Where(w =>  w.JurisdictionId == jurisdictionId);
-            if (regionId != null)
-                query.Where(w => w.RegionId == regionId);
-            if (areaId != null)
-                query.Where(w => w.Areas.Any(a => a.Id == areaId));
-            if (metricTypeId != null)
-                query.Where(w => w.Approaches.Any(m => m.Detectors.Any(d => d.DetectionTypes.Any(t => t.MeasureTypes.Any(a => a.Id == metricTypeId)))));
-            var mainResult = query.ToList();
-            var result = mainResult.Select(s => new SearchLocation()
+            var result = _repository.GetList()
+                .FromSpecification(new ActiveLocationSpecification())
+                .Where(w => (jurisdictionId != null) ? w.JurisdictionId == jurisdictionId : true)
+                .Where(w => (regionId != null) ? w.RegionId == regionId : true)
+                .Where(w => (areaId != null) ? w.Areas.Any(a => a.Id == areaId) : true)
+                .Where(w => (metricTypeId != null) ? w.Approaches.Any(m => m.Detectors.Any(d => d.DetectionTypes.Any(t => t.MeasureTypes.Any(a => a.Id == metricTypeId)))) : true)
+                .Select(s => new SearchLocation()
                 {
                     Id = s.Id,
                     Start = s.Start,

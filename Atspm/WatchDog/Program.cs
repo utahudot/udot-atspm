@@ -1,6 +1,6 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
-// for WatchDog - Utah.Udot.Atspm.WatchDog/Program.cs
+// Copyright 2025 Utah Departement of Transportation
+// for WatchDog - %Namespace%/Program.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,39 +19,46 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System.CommandLine;
+using System.CodeDom.Compiler;
 using System.CommandLine.Builder;
 using System.CommandLine.Hosting;
 using System.CommandLine.Parsing;
+using Utah.Udot.Atspm.Common;
 using Utah.Udot.Atspm.Data;
 using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Infrastructure.Extensions;
 using Utah.Udot.Atspm.Infrastructure.Repositories;
 using Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories;
 using Utah.Udot.Atspm.Infrastructure.Repositories.EventLogRepositories;
-using Utah.Udot.Atspm.Services;
+using Utah.Udot.Atspm.Infrastructure.Services.EmailServices;
 using Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices;
 using Utah.Udot.ATSPM.WatchDog.Commands;
+using Utah.Udot.NetStandardToolkit.Configuration;
+
+
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
-var rootCmd = new WatchdogConfigCommand();
+var rootCmd = new WatchdogCommand();
 var cmdBuilder = new CommandLineBuilder(rootCmd);
 cmdBuilder.UseDefaults();
-cmdBuilder.UseHost(a =>
+
+cmdBuilder.UseHost(hostBuilder =>
 {
-    return Host.CreateDefaultBuilder(a)
-    .ApplyVolumeConfiguration()
+
+    return Host.CreateDefaultBuilder(args)
+    .UseConsoleLifetime()
     .ConfigureAppConfiguration((h, c) =>
     {
-        c.AddCommandLine(args);
         c.AddUserSecrets<Program>(optional: true);
+        c.AddCommandLine(args);
 
     })
     .ConfigureServices((h, s) =>
     {
         s.AddEmailServices(h);
-        s.AddScoped<IWatchdogEmailService, WatchdogEmailService>();
+        s.AddScoped<IEmailService, SmtpEmailService>();
+        s.AddScoped<WatchdogEmailService>();
 
         s.AddAtspmDbContext(h);
         s.AddScoped<ILocationRepository, LocationEFRepository>();
@@ -70,32 +77,41 @@ cmdBuilder.UseHost(a =>
         s.AddScoped<AnalysisPhaseCollectionService>();
         s.AddScoped<AnalysisPhaseService>();
         s.AddScoped<PhaseService>();
-        s.AddScoped<ISegmentedErrorsService, SegmentedErrorsService>();
-        s.AddScoped<IWatchDogIgnoreEventService, WatchDogIgnoreEventService>();
+        s.AddScoped<SegmentedErrorsService>();
+        s.AddScoped<WatchDogIgnoreEventService>();
 
         // Register the hosted service with the date
         s.AddIdentity<ApplicationUser, IdentityRole>() // Add this line to register Identity
             .AddEntityFrameworkStores<IdentityContext>() // Specify the EF Core store
             .AddDefaultTokenProviders();
-        s.AddSingleton<WatchdogCommand>();
-        s.AddSingleton<ICommandOption<WatchdogConfiguration>, WatchdogCommand>();
 
+        s.AddSingleton<WatchdogCommand>();
+
+        // Other service registrations
+        s.AddOptions<WatchdogConfiguration>().Bind(h.Configuration.GetSection("WatchdogConfiguration"));
         s.AddHostedService<ScanHostedService>();
+
+        s.Configure<EmailConfiguration>(h.Configuration.GetSection("EmailConfiguration"));
 
     });
 },
-h =>
+host =>
 {
-    var cmd = h.GetInvocationContext().ParseResult.CommandResult.Command;
+    var cmd = host.GetInvocationContext().ParseResult.CommandResult.Command;
 
-    h.ConfigureServices((h, s) =>
+    // Dynamically bind services for the specific command being executed
+    host.ConfigureServices((context, services) =>
     {
-        if (cmd is ICommandOption opt)
+        if (cmd is ICommandOption commandOption)
         {
-            opt.BindCommandOptions(h, s);
+            // Call the BindCommandOptions method for the command
+            commandOption.BindCommandOptions(context, services);
         }
     });
 });
 
+// Build and invoke the command parser
 var cmdParser = cmdBuilder.Build();
+var parseResult = cmdParser.Parse(args);
+Console.WriteLine("Command: " + parseResult.CommandResult.Command.Name);
 await cmdParser.InvokeAsync(args);

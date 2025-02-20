@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for DatabaseInstaller - DatabaseInstaller.Commands/DatabaseInstallerCommands.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -29,6 +29,7 @@ namespace DatabaseInstaller.Commands
             AddCommand(MoveEventLogsSqlServerToPostgresCommand);
             AddCommand(TransferEventLogsCommand);
             AddCommand(TransferSpeedEventsCommand);
+            AddCommand(TranslateEventLogsCommand);
         }
 
         public UpdateCommand UpdateCommand { get; set; } = new UpdateCommand();
@@ -36,6 +37,7 @@ namespace DatabaseInstaller.Commands
         public MoveEventLogsSqlServerToPostgresCommand MoveEventLogsSqlServerToPostgresCommand { get; set; } = new MoveEventLogsSqlServerToPostgresCommand();
         public TransferEventLogsCommand TransferEventLogsCommand { get; set; } = new TransferEventLogsCommand();
         public TransferSpeedEventsCommand TransferSpeedEventsCommand { get; set; } = new TransferSpeedEventsCommand();
+        public TranslateEventLogsCommand TranslateEventLogsCommand { get; set; } = new TranslateEventLogsCommand();
         
     }
 }

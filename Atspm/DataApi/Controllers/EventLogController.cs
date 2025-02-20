@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for DataApi - Utah.Udot.Atspm.DataApi.Controllers/EventLogController.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,6 +18,8 @@
 using Asp.Versioning;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using Utah.Udot.ATSPM.DataApi.Controllers;
 
 namespace Utah.Udot.Atspm.DataApi.Controllers
