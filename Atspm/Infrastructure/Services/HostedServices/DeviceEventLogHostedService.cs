@@ -126,60 +126,12 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
 
                 var workflow = new DeviceEventLogWorkflow(_services, _options.Value.BatchSize, _options.Value.ParallelProcesses, cancellationToken);
 
-                await Task.Delay(TimeSpan.FromSeconds(1));
+                var repo = scope.ServiceProvider.GetService<IDeviceRepository>();
 
-
-                var httpDevice = new Device()
+                await foreach (var d in repo.GetDevicesForLogging(_options.Value.DeviceEventLoggingQueryOptions))
                 {
-                    DeviceIdentifier = "7114",
-                    DeviceType = DeviceTypes.SignalController,
-                    DeviceStatus = DeviceStatus.Active,
-                    Ipaddress = "10.210.14.15",
-                    LoggingEnabled = true,
-                    DeviceConfiguration = new DeviceConfiguration()
-                    {
-                        Protocol = TransportProtocols.Http,
-                        Port = 80,
-                        LoggingOffset = 30,
-                        ConnectionTimeout = 5000,
-                        OperationTimeout = 5000,
-                        Decoders = ["MaxtimeToIndianaDecoder"],
-                        Path = "v1/asclog/xml/full",
-                        Query = ["?since=[LogStartTime:MM-dd-yyyy HH:mm:ss.f]"]
-                    },
-                    Location = new Location()
-                    {
-                        LocationIdentifier = "7114",
-                        PrimaryName = "Redwood Road",
-                        SecondaryName = "6200 South"
-                    }
-                };
-
-
-
-                await workflow.Input.SendAsync(httpDevice);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                //var repo = scope.ServiceProvider.GetService<IDeviceRepository>();
-
-                //await foreach (var d in repo.GetDevicesForLogging(_options.Value.DeviceEventLoggingQueryOptions))
-                //{
-                //    await workflow.Input.SendAsync(d);
-                //}
+                    await workflow.Input.SendAsync(d);
+                }
 
                 workflow.Input.Complete();
 

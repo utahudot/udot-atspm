@@ -226,7 +226,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders
                                 _log.LogWarning(new EventId(Convert.ToInt32(deviceIdentifier)), "File failed to download on {Location} file name: {file}", deviceIdentifier, resource);
                             }
                         }
-
+                       
                         logMessages.DownloadedResourcesMessage(current, total, deviceIdentifier, ipaddress);
 
                         try
