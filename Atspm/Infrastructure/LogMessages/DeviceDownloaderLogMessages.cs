@@ -23,9 +23,9 @@ namespace Utah.Udot.Atspm.Infrastructure.LogMessages
                 { "LocationIdentifier", device?.Location?.LocationIdentifier },
                 { "LocationName", device?.Location?.PrimaryName },
                 { "DeviceId", device.Id.ToString() },
-                { "deviceIdentifier", device.DeviceIdentifier },
+                { "deviceIdentifier", device?.DeviceIdentifier },
                 { "DeviceType", device?.DeviceType.ToString() },
-                { "IPAddress", device?.Ipaddress.ToString() },
+                { "IPAddress", device?.Ipaddress?.ToString() },
             });
         }
 
