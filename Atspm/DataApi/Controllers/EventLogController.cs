@@ -53,20 +53,6 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
         {
             var result = typeof(EventLogModelBase).Assembly.GetTypes().Where(w => w.IsSubclassOf(typeof(EventLogModelBase))).Select(s => s.Name).ToList();
 
-            var test = User;
-
-            foreach (var claim in User.Claims)
-            {
-                Console.WriteLine($"{claim.Type} --- {claim.Value}");
-            }
-
-            var id = User.Claims.FirstOrDefault(w => w.Type == ClaimTypes.NameIdentifier)?.Value;
-            var email = User.Claims.FirstOrDefault(w => w.Type == ClaimTypes.Email)?.Value;
-
-            Console.WriteLine($"{id}");
-
-            Console.WriteLine($"{email}");
-
             return Ok(result);
         }
 

@@ -17,7 +17,6 @@
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System;
 using System.Net;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -88,31 +87,35 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders
         /// <exception cref="ExecuteException"></exception>
         public override async IAsyncEnumerable<Tuple<Device, FileInfo>> Execute(Device parameter, IProgress<ControllerDownloadProgress> progress = null, [EnumeratorCancellation] CancellationToken cancelToken = default)
         {
+            cancelToken.ThrowIfCancellationRequested();
+            
             if (parameter == null)
                 throw new ArgumentNullException(nameof(parameter), $"Parameter can not be null");
 
             var client = _clients.FirstOrDefault(w => parameter.DeviceConfiguration.Protocol == w.Protocol);
 
-            //if (CanExecute(parameter) && !cancelToken.IsCancellationRequested)
             if (CanExecute(parameter))
             {
                 var logMessages = new DeviceDownloaderLogMessages(_log, parameter);
 
-                if (!IPAddress.TryParse(parameter.Ipaddress, out IPAddress ipaddress) && !ipaddress.IsValidIpAddress())
+                if (!IPAddress.TryParse(parameter?.Ipaddress, out IPAddress ipaddress) || ipaddress == null ? true : !ipaddress.IsValidIpAddress())
                 {
-                    if (_options.Ping ? !await ipaddress.PingIpAddressAsync() : true)
-                    {
-                        logMessages.InvalidDeviceIpAddressException(ipaddress);
+                    logMessages.InvalidDeviceIpAddressException(ipaddress);
 
-                        throw new InvalidDeviceIpAddressException(parameter);
-                    }
+                    throw new InvalidDeviceIpAddressException(parameter);
+                }
+                else if (_options.Ping ? !await ipaddress.PingIpAddressAsync() : false)
+                {
+                    logMessages.InvalidDeviceIpAddressException(ipaddress);
+
+                    throw new InvalidDeviceIpAddressException(parameter);
                 }
 
                 var deviceIdentifier = parameter?.DeviceIdentifier;
                 var user = parameter?.DeviceConfiguration?.UserName;
                 var password = parameter?.DeviceConfiguration?.Password;
-                var path = parameter?.DeviceConfiguration?.Path;
-                var query = parameter?.DeviceConfiguration?.Query;
+                var path = new ObjectPropertyParser(parameter, parameter?.DeviceConfiguration?.Path).ToString();
+                var query = parameter?.DeviceConfiguration?.Query.Select(s => new ObjectPropertyParser(parameter, s).ToString()).ToArray();
                 var connectionTimeout = parameter?.DeviceConfiguration?.ConnectionTimeout ?? 2000;
                 var operationTimeout = parameter?.DeviceConfiguration?.OperationTimeout ?? 2000;
 
@@ -259,126 +262,85 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders
         }
     }
 
-
-
-
-
-
-
-
-
-
-    public class StringObjectParser //: IFormattable
+    /// <summary>
+    /// Takes a string and parses against the properties of the provided object
+    /// </summary>
+    public class ObjectPropertyParser
     {
-        public StringObjectParser(object obj, string query)
+        private readonly object _obj;
+        private readonly string _value;
+
+        /// <summary>
+        /// Takes <paramref name="value"/> and parses against the properties of the provided <paramref name="obj"/>
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="value"></param>
+        public ObjectPropertyParser(object obj, string value)
         {
-            Obj = obj;
-            Query = query;
+            _obj = obj;
+            _value = value;
         }
 
-        public object Obj { get; set; }
-
-        public string Query { get; set; }
-
-        public string ParseQuery()
+        /// <inheritdoc/>
+        public override string ToString()
         {
-            var output = Query.Split('[', ']').ToArray();
-
             var builder = new StringBuilder();
 
-            foreach (var o in output)
+            foreach (var i in _value.Split('[', ']').ToArray())
             {
-                var result = o;
-
-                //Console.WriteLine($"o: {o}");
-
-                if (o.StartsWith("DateTime"))
+                if (i.StartsWith("DateTime"))
                 {
-                    result = o.Replace("DateTime", "");
-
-
-                    //o.Split(':', 2);
-
-
-
-
-
-
-                    //HACK: update this!
-                    builder.AppendFormat("{0" + result + "}", DateTime.Now.AddHours(-2));
-
-
-
-
-
-
-
-
-
-
-
-
-
+                    builder.AppendFormat("{0" + i.Replace("DateTime", "") + "}", DateTime.Now);
                 }
 
-                else if (o.StartsWith(Obj.GetType().Name))
+                else if (i.StartsWith("LogStartTime"))
                 {
-                    var length = Obj.GetType().Name.Length;
-                    result = o.Remove(0, length);
+                    if (_obj is Device d && d.DeviceConfiguration != null)
+                    {
+                        builder.AppendFormat("{0" + i.Replace("LogStartTime", "") + "}", DateTime.Now.AddMinutes(-d.DeviceConfiguration.LoggingOffset));
+                    }
+                }
 
-                    //result = o.Replace(Obj.GetType().Name, "");
-
-                    builder.AppendFormat(new TestFormatProvider(), "{0" + result + "}", Obj);
+                else if (i.StartsWith(_obj.GetType().Name))
+                {
+                    builder.AppendFormat(new ObjectPropertiesFormatProvider(), "{0" + i.Remove(0, _obj.GetType().Name.Length) + "}", _obj);
                 }
 
                 else
                 {
-                    builder.Append(result);
+                    builder.Append(i);
                 }
             }
 
             return builder.ToString();
         }
-
-        public override string? ToString()
-        {
-            return ParseQuery();
-        }
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-    public class TestFormatProvider : IFormatProvider
+    /// <summary>
+    /// Provides formatting for replacing a device property with a value
+    /// </summary>
+    public class ObjectPropertiesFormatProvider : IFormatProvider
     {
+        /// <inheritdoc/>
         public object GetFormat(Type formatType)
         {
             if (formatType == typeof(ICustomFormatter))
             {
-                return new CapitalisationCustomFormatter();
+                return new ObjectPropertiesFormatter();
             }
-
-            Console.WriteLine($"formatType: {formatType}");
 
             return null;
         }
     }
 
-    public class CapitalisationCustomFormatter : ICustomFormatter
+    /// <summary>
+    /// Formats a string to replace the object property with a string vaue
+    /// </summary>
+    public class ObjectPropertiesFormatter : ICustomFormatter
     {
+        /// <inheritdoc/>
         public string Format(string format, object arg, IFormatProvider formatProvider)
         {
-            Console.WriteLine($"format: {format} - arg: {arg}");
-
             if (arg.HasProperty(format))
                 return arg.GetPropertyValueString(format);
 
@@ -386,8 +348,16 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders
         }
     }
 
+    //TODO: this needs to be moved to the toolkit
     public static class PropertyExtensions
     {
+        /// <summary>
+        /// Checks if the <paramref name="obj"/> contains <paramref name="propertyName"/> and returns a string value of <paramref name="propertyName"/>
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="propertyName"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
         public static string GetPropertyValueString(this object obj, string propertyName)
         {
             if (obj.HasProperty(propertyName))
@@ -397,7 +367,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders
                 return value;
             }
 
-            throw new ArgumentException(propertyName, "propertyName");
+            throw new ArgumentException(propertyName, nameof(propertyName));
         }
     }
 }
