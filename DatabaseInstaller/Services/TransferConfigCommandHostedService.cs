@@ -15,7 +15,6 @@
 // limitations under the License.
 #endregion
 
-
 using DatabaseInstaller.Commands;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
