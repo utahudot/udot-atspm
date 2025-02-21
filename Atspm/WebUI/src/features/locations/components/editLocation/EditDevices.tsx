@@ -74,8 +74,9 @@ const EditDevices = ({ locationId }: EditDevicesProps) => {
         onClick={handleAddClick}
         sx={{
           padding: 2,
+          mb: 1.95,
           minWidth: '400px',
-          height: '400px',
+          minHeight: '400px',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'center',
