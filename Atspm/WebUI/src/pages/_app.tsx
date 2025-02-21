@@ -20,8 +20,6 @@ export default function App({ Component, pageProps }: AppProps) {
   const [queryClient] = useState(() => new QueryClient())
   const [isAxiosInitialized, setIsAxiosInitialized] = useState(false)
 
-  console.log('test')
-
   useEffect(() => {
     const initialize = async () => {
       await initializeAxiosInstances()
