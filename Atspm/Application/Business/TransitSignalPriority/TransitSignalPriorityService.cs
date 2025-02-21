@@ -29,13 +29,14 @@ using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
 using Utah.Udot.Atspm.Business.TransitSignalPriority;
 using Utah.Udot.Atspm.Extensions;
 using Utah.Udot.Atspm.Business.Common;
+using Utah.Udot.Atspm.Business.PhaseTermination;
 
 namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
 {
     public class TransitSignalPriorityService
     {
         private static readonly short[] EventCodes =
-            (new short[] { 1, 4, 5, 6, 7, 8, 11, 21, 23 })
+            (new short[] { 1, 4, 5, 6, 7, 8, 11 })
             .Concat(Enumerable.Range(130, 20).Select(x => (short)x))
             .ToArray();
 
@@ -43,89 +44,74 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
 
         private readonly IServiceProvider _serviceProvider;
         private readonly PlanService _planService;
-        private readonly AnalysisPhaseService _analysisPhaseService;
-
-        //private readonly SplitMonitorService _splitMonitorService;
+        private readonly CycleService _cycleService;
         private readonly ILogger<TransitSignalPriorityService> _logger;
 
         // New block that gets all data for a single inputParameters (across multiple dates)
         private readonly TransformBlock<TransitSignalLoadParameters, (TransitSignalLoadParameters, List<IndianaEvent>)?> _loadLocationDataBlock;
         private readonly TransformBlock<(TransitSignalLoadParameters, List<IndianaEvent>), (TransitSignalLoadParameters, Dictionary<string, List<IndianaEvent>>)> _classifyEventsBlock;
-        private readonly TransformBlock<(TransitSignalLoadParameters, Dictionary<string, List<IndianaEvent>>), (TransitSignalLoadParameters, List<TransitSignalPriorityPlan>)> _processSignalAnalysisPhaseBlock;
+        private readonly TransformBlock<(TransitSignalLoadParameters, Dictionary<string, List<IndianaEvent>>), (TransitSignalLoadParameters, List<TransitSignalPriorityPlan>)> _processCyclesBlock;
         private readonly TransformBlock<(TransitSignalLoadParameters, List<IndianaEvent>)?, (TransitSignalLoadParameters, List<IndianaEvent>)> _filteringBlock;
+        private readonly TransformBlock<(TransitSignalLoadParameters, List<TransitSignalPriorityPlan>), (TransitSignalLoadParameters, List<TransitSignalPriorityPlan>)> _calculateTSPMaxBlock;
 
         public TransitSignalPriorityService(
             IServiceProvider serviceProvider,
             PlanService planService,
-            //SplitMonitorService splitMonitorService,
-            AnalysisPhaseService analysisPhaseService,
+            CycleService cycleService,
             ILogger<TransitSignalPriorityService> logger)
         {
             _serviceProvider = serviceProvider;
             _planService = planService;
-            _analysisPhaseService = analysisPhaseService;
-            //_splitMonitorService = splitMonitorService;
+            _cycleService = cycleService;
             _logger = logger;
 
             // Block to load inputParameters and all events (aggregated over all dates)
             _loadLocationDataBlock = new TransformBlock<TransitSignalLoadParameters, (TransitSignalLoadParameters, List<IndianaEvent>)?>(
                 async input =>
                 {
-                    //var (locationIdentifier, dates) = tuple;
-                    Location location;
-
-                    // Create a scope to get the inputParameters.
-                    using (var scope = _serviceProvider.CreateScope())
+                    try
                     {
-                        var locationRepository = scope.ServiceProvider.GetRequiredService<ILocationRepository>();
-                        input.Location = locationRepository.GetLatestVersionOfLocation(input.LocationIdentifier, input.Dates.First());
-                    }
+                        // Start fetching location concurrently with event retrieval
+                        var locationTask = GetLocation(input.LocationIdentifier, input.Dates.First());
 
-                    if (input.Location == null)
-                    {
-                        _logger.LogWarning($"Location not found for {input.LocationIdentifier} at {input.Dates.First()}");
-                        return null;
-                    }
-                    _logger.LogInformation($"Location found: {input.LocationIdentifier}");
-
-                    // Create a semaphore to limit the number of concurrent tasks to 5.
-                    using (var semaphore = new SemaphoreSlim(5))
-                    {
-                        // Process each date in parallel, but only allow 5 tasks concurrently.
-                        var tasks = input.Dates.Select(async date =>
+                        var eventTasks = input.Dates.Select(async date =>
                         {
-                            await semaphore.WaitAsync();
                             try
                             {
-                                using (var innerScope = _serviceProvider.CreateScope())
-                                {
-                                    var eventLogRepository = innerScope.ServiceProvider.GetRequiredService<IIndianaEventLogRepository>();
-                                    var events = eventLogRepository
-                                        .GetEventsByEventCodes(input.LocationIdentifier, date, date.AddDays(1), EventCodes)
-                                        .ToList();
-                                    _logger.LogInformation($"Found {events.Count} events for location {input.LocationIdentifier} on {date}");
-
-                                    // Perform manual garbage collection after retrieving event logs.
-                                    GC.Collect();
-                                    GC.WaitForPendingFinalizers();
-
-                                    return events;
-                                }
+                                var events = await GetEvents(input.LocationIdentifier, date);
+                                return events ?? new List<IndianaEvent>(); // Ensure non-null
                             }
-                            finally
+                            catch (Exception ex)
                             {
-                                semaphore.Release();
+                                _logger.LogError(ex, $"Error getting events for location {input.LocationIdentifier} on {date}");
+                                return new List<IndianaEvent>(); // Return empty list on failure
                             }
                         }).ToList();
 
-                        // Await all tasks and flatten the results.
-                        var eventsForAllDates = (await Task.WhenAll(tasks)).SelectMany(e => e).ToList();
+                        // Await location retrieval
+                        input.Location = await locationTask;
+                        if (input.Location == null)
+                        {
+                            _logger.LogWarning($"Location not found for {input.LocationIdentifier} on {input.Dates.First()}");
+                            return null;
+                        }
+
+                        _logger.LogInformation($"Location found: {input.LocationIdentifier}");
+
+                        // Await all event retrieval tasks
+                        var eventsForAllDates = (await Task.WhenAll(eventTasks)).SelectMany(e => e).ToList();
+
                         return (input, eventsForAllDates);
                     }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, $"Unexpected error processing {input.LocationIdentifier}");
+                        return null;
+                    }
                 },
-                // Process a single signal at a time.
-                new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = 1 }
+                new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = DataflowBlockOptions.Unbounded } // No explicit limitation on concurrent tasks
             );
+
 
 
 
@@ -151,7 +137,6 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
                     var categorizedEvents = new Dictionary<string, List<IndianaEvent>>
                     {
                         { "planEvents", new List<IndianaEvent>() },
-                        { "pedEvents", new List<IndianaEvent>() },
                         { "cycleEvents", new List<IndianaEvent>() },
                         { "splitsEvents", new List<IndianaEvent>() },
                         { "terminationEvents", new List<IndianaEvent>() }
@@ -159,13 +144,10 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
 
                     foreach (var ev in events)
                     {
-                        if (new List<short> { 130, 131 }.Contains(ev.EventCode))
+                        if (new List<short> { 131 }.Contains(ev.EventCode))
                             categorizedEvents["planEvents"].Add(ev);
 
-                        if (new List<short> { 21, 23 }.Contains(ev.EventCode))
-                            categorizedEvents["pedEvents"].Add(ev);
-
-                        if (new List<short> { 1, 4, 5, 6, 7, 8, 11 }.Contains(ev.EventCode))
+                        if (new List<short> { 1,8,11 }.Contains(ev.EventCode))
                             categorizedEvents["cycleEvents"].Add(ev);
 
                         if (Enumerable.Range(130, 20).Contains(ev.EventCode))
@@ -180,57 +162,124 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
                 new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = _maxDegreeOfParallelism }
             );
 
-            _processSignalAnalysisPhaseBlock = new TransformBlock<(TransitSignalLoadParameters, Dictionary<string, List<IndianaEvent>>), (TransitSignalLoadParameters, List<TransitSignalPriorityPlan>)>(
-    async tuple =>
-    {
-        var (inputParameters, eventGroups) = tuple;
+            _processCyclesBlock = new TransformBlock<(TransitSignalLoadParameters, Dictionary<string, List<IndianaEvent>>), (TransitSignalLoadParameters, List<TransitSignalPriorityPlan>)>(
+                async tuple =>
+                {
+                    var (inputParameters, eventGroups) = tuple;
 
-        // Extract event lists to local variables.
-        var pedEvents = eventGroups["pedEvents"];
-        var cycleEvents = eventGroups["cycleEvents"];
-        var terminationEvents = eventGroups["terminationEvents"];
-        var planEvents = eventGroups["planEvents"];
-        var splitsEvents = eventGroups["splitsEvents"];
+                    // Extract event lists to local variables.
+                    var cycleEvents = eventGroups["cycleEvents"];
+                    var terminationEvents = eventGroups["terminationEvents"];
+                    var planEvents = eventGroups["planEvents"];
+                    var splitsEvents = eventGroups["splitsEvents"];
 
-        var phases = cycleEvents.Select(c => c.EventParam).Distinct();
-        var analysisPhaseDatas = new List<AnalysisPhaseData>();
+                    var phases = cycleEvents.Select(c => c.EventParam).Distinct();
+                    var cycles = new List<TransitSignalPriorityCycle>();
 
-        foreach (var phase in phases)
-        {
-            analysisPhaseDatas.Add(_analysisPhaseService.GetAnalysisPhaseData(
-                phase,
-                pedEvents,
-                cycleEvents,
-                terminationEvents,
-                1,
-                inputParameters.Location
-            ));
-        }
+                    foreach (var phase in phases)
+                    {
+                        if(cycleEvents.Any(cycleEvents => cycleEvents.EventParam == phase))
+                        cycles.AddRange(_cycleService.GetTransitSignalPriorityCycles(
+                            phase,
+                            cycleEvents.Where(cycleEvents => cycleEvents.EventParam == phase).ToList(),
+                            terminationEvents.Where(terminationEvents => terminationEvents.EventParam == phase).ToList()
+                            ));
+                    }
+                    var plans = GetTransitSignalPriorityPlans(
+                        inputParameters.Dates.OrderBy(d => d).First(), 
+                        inputParameters.Dates.OrderBy(d => d).Last(), 
+                        inputParameters.LocationIdentifier,
+                        planEvents,
+                        splitsEvents,
+                        cycles
+                        );
 
-        var plans = GetTransitSignalPriorityPlans(
-            inputParameters.Dates.OrderBy(d => d).First(), 
-            inputParameters.Dates.OrderBy(d => d).Last(), 
-            inputParameters.LocationIdentifier,
-            planEvents,
-            splitsEvents,
-            analysisPhaseDatas.SelectMany(a => a.Cycles.Cycles).ToList()
+
+                    // Clear the event lists to free up memory after processing.
+                    cycleEvents.Clear();
+                    terminationEvents.Clear();
+                    planEvents.Clear();
+                    splitsEvents.Clear();
+                    GC.Collect();
+                    GC.WaitForPendingFinalizers();
+
+                    return (inputParameters, plans);
+                },
+                new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = _maxDegreeOfParallelism }
             );
 
+            _calculateTSPMaxBlock = new TransformBlock<(TransitSignalLoadParameters, List<TransitSignalPriorityPlan>), (TransitSignalLoadParameters, List<TransitSignalPriorityPlan>)>(
+                input =>
+                {
+                    var (parameters, plans) = input;
 
-        // Clear the event lists to free up memory after processing.
-        pedEvents.Clear();
-        cycleEvents.Clear();
-        terminationEvents.Clear();
-        planEvents.Clear();
-        splitsEvents.Clear();
-        GC.Collect();
-        GC.WaitForPendingFinalizers();
+                    foreach (var plan in plans)
+                    {
+                        foreach (var phase in plan.Phases)
+                        {
+                            phase.SkipsGreaterThan70TSPMax = phase.ProgrammedSplit - phase.MinTime;
+                            phase.ForceOffsGreaterThan40TSPMax = phase.ProgrammedSplit - ((phase.MinTime + phase.PercentileSplit50th) / 2);
+                            phase.ForceOffsGreaterThan60TSPMax = phase.ProgrammedSplit - phase.PercentileSplit50th;
+                            phase.ForceOffsGreaterThan80TSPMax = phase.ProgrammedSplit - phase.PercentileSplit85th;
 
-        return (inputParameters, plans);
-    },
-    new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = _maxDegreeOfParallelism }
-);
+                            if (phase.PercentSkips > 70)
+                            {
+                                phase.RecommendedTSPMax = phase.SkipsGreaterThan70TSPMax;
+                            }
+                            else if (phase.PercentMaxOutsForceOffs < 60)
+                            {
+                                phase.RecommendedTSPMax = phase.ForceOffsGreaterThan60TSPMax;
+                            }
+                            else if (phase.PercentMaxOutsForceOffs < 80)
+                            {
+                                phase.RecommendedTSPMax = phase.ForceOffsGreaterThan80TSPMax;
+                            }
+                            else
+                            {
+                                phase.RecommendedTSPMax = null; // Not recommended
+                            }
 
+                            // Ensure RecommendedTSPMax is null if it is negative
+                            if (phase.RecommendedTSPMax.HasValue && phase.RecommendedTSPMax < 0)
+                            {
+                                phase.RecommendedTSPMax = null;
+                            }
+                        }
+                    }
+
+                    return (parameters, plans);
+                },
+                new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = _maxDegreeOfParallelism }
+    );
+
+        }
+
+        private async Task<Location> GetLocation(string locationIdentifier, DateTime date)
+        {
+            // Create a scope to get the inputParameters.
+            using (var scope = _serviceProvider.CreateScope())
+            {
+                var locationRepository = scope.ServiceProvider.GetRequiredService<ILocationRepository>();
+                return locationRepository.GetLatestVersionOfLocation(locationIdentifier, date);
+            }            
+        }
+
+        private async Task<List<IndianaEvent>> GetEvents(string locationIdentifier, DateTime date)
+        {
+            using (var innerScope = _serviceProvider.CreateScope())
+            {
+                var eventLogRepository = innerScope.ServiceProvider.GetRequiredService<IIndianaEventLogRepository>();
+                var events = eventLogRepository
+                    .GetEventsByEventCodes(locationIdentifier, date, date.AddDays(1), EventCodes)
+                    .ToList();
+                _logger.LogInformation($"Found {events.Count} events for location {locationIdentifier} on {date}");
+
+                // Perform manual garbage collection after retrieving event logs.
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+
+                return events;
+            }
         }
 
         public async Task<List<TransitSignalPriorityResult>> GetChartDataAsync(TransitSignalPriorityOptions options)
@@ -250,7 +299,11 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
                 item => item != default
             );
             _classifyEventsBlock.LinkTo(
-                _processSignalAnalysisPhaseBlock,
+                _processCyclesBlock,
+                new DataflowLinkOptions { PropagateCompletion = true }
+            );
+            _processCyclesBlock.LinkTo(
+                _calculateTSPMaxBlock,
                 new DataflowLinkOptions { PropagateCompletion = true }
             );
 
@@ -269,14 +322,14 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
             }
             _loadLocationDataBlock.Complete();
             var results = new List<TransitSignalPriorityResult>();
-            while (await _processSignalAnalysisPhaseBlock.OutputAvailableAsync())
+            while (await _calculateTSPMaxBlock.OutputAvailableAsync())
             {
-                while (_processSignalAnalysisPhaseBlock.TryReceive(out var result))
+                while (_calculateTSPMaxBlock.TryReceive(out var result))
                 {
                     results.Add(new TransitSignalPriorityResult { LocationIdentifier = result.Item1.LocationIdentifier, TransitSignalPlans = result.Item2 });
                 }
             }
-            await _processSignalAnalysisPhaseBlock.Completion;
+            await _calculateTSPMaxBlock.Completion;
 
             return results;
         }
@@ -287,7 +340,7 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
             string locationId,
             IReadOnlyList<IndianaEvent> planEvents,
             IReadOnlyList<IndianaEvent> splitEvents,
-            List<AnalysisPhaseCycle> cycles)
+            List<TransitSignalPriorityCycle> cycles)
         {
             if (planEvents == null)
                 throw new ArgumentNullException(nameof(planEvents));
@@ -300,16 +353,13 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
             // Build the complete list of phases from cycles (fill in any gaps)
             var completePhases = GetCompletePhaseList(cycles);
 
-            // Get programmed splits for split events within the time range
-            var validSplitEvents = splitEvents.Where(s => s.Timestamp >= startDate && s.Timestamp < endDate).ToList();
-            var programmedSplits = GetProgrammedSplits(validSplitEvents);
 
             // Process each distinct plan number
             var tspPlans = new List<TransitSignalPriorityPlan>();
             var distinctPlanNumbers = plans.Select(p => p.PlanNumber).Distinct().ToList();
 
             foreach (var planNumber in distinctPlanNumbers)
-            {
+            {             
                 var tspPlan = new TransitSignalPriorityPlan
                 {
                     PlanNumber = Convert.ToInt32(planNumber)
@@ -319,11 +369,14 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
                 var plansForNumber = plans.Where(p => p.PlanNumber == planNumber).ToList();
 
                 // Aggregate cycles that occur within any of these plans' time windows
-                var planCycles = new List<AnalysisPhaseCycle>();
+                var planCycles = new List<TransitSignalPriorityCycle>();
+                var validSplitEvents = new List<IndianaEvent>();
+                var programmedSplits = new SortedDictionary<int, int>();
                 foreach (var plan in plansForNumber)
                 {
-                    var cyclesInPlan = cycles.Where(c => c.StartTime >= plan.Start && c.StartTime < plan.End).ToList();
-                    planCycles.AddRange(cyclesInPlan);
+                    planCycles.AddRange(cycles.Where(c => c.GreenEvent >= plan.Start && c.GreenEvent < plan.End).ToList());
+                    validSplitEvents.AddRange(splitEvents.Where(s => s.Timestamp >= plan.Start && s.Timestamp < plan.End).ToList());
+                    SetProgrammedSplits(programmedSplits, validSplitEvents);
                 }
 
                 if (!planCycles.Any())
@@ -351,7 +404,7 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
                             ? (cyclesForPhase.Count(c => c.TerminationEvent == 4) / (double)maxCycleCount) * 100
                             : 0;
                         double averageSplit = cyclesForPhase.Any()
-                            ? cyclesForPhase.Average(c => c.Duration.TotalSeconds)
+                            ? cyclesForPhase.Average(c => c.DurationSeconds)
                             : 0;
 
                         var tspPhase = new TransitSignalPhase
@@ -361,10 +414,13 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
                             PercentGapOuts = percentGapOuts,
                             PercentMaxOutsForceOffs = GetPercentMaxOutForceOffs(planNumber, maxCycleCount, cyclesForPhase) * 100,
                             AverageSplit = averageSplit,
-                            MinTime = cyclesForPhase.Min(c => c.Duration.TotalSeconds),
+                            MinTime = cyclesForPhase.Min(c => c.DurationSeconds),
                             ProgrammedSplit = programmedSplits[phaseNumber],
                             PercentileSplit85th = GetPercentSplit(cyclesForPhase.Count, 0.85, cyclesForPhase),
                             PercentileSplit50th = GetPercentSplit(cyclesForPhase.Count, 0.5, cyclesForPhase),
+                            MinGreen = cyclesForPhase.Min(c => c.GreenDurationSeconds),
+                            Yellow = cyclesForPhase.Min(c => c.YellowDurationSeconds),
+                            RedClearance = cyclesForPhase.Min(c => c.RedDurationSeconds)
                         };
 
                         tspPlan.Phases.Add(tspPhase);
@@ -378,7 +434,7 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
         }
 
 
-        private static double GetPercentMaxOutForceOffs(string planNumber, int highCycleCount, List<AnalysisPhaseCycle> cycles)
+        private static double GetPercentMaxOutForceOffs(string planNumber, int highCycleCount, List<TransitSignalPriorityCycle> cycles)
         {
             if (highCycleCount == 0)
             {
@@ -416,7 +472,7 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
         /// Builds a complete list of phases based on the cycles provided,
         /// filling in any missing phase numbers between the minimum and maximum.
         /// </summary>
-        private List<int> GetCompletePhaseList(List<AnalysisPhaseCycle> cycles)
+        private List<int> GetCompletePhaseList(List<TransitSignalPriorityCycle> cycles)
         {
             var phaseNumbers = cycles.Select(c => c.PhaseNumber).Distinct().ToList();
             if (!phaseNumbers.Any())
@@ -431,9 +487,9 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
         /// <summary>
         /// Groups the given plan cycles into a dictionary keyed by phase number.
         /// </summary>
-        private Dictionary<int, List<AnalysisPhaseCycle>> GetPhaseCyclesDictionary(List<AnalysisPhaseCycle> planCycles, List<int> allPhases)
+        private Dictionary<int, List<TransitSignalPriorityCycle>> GetPhaseCyclesDictionary(List<TransitSignalPriorityCycle> planCycles, List<int> allPhases)
         {
-            var dictionary = new Dictionary<int, List<AnalysisPhaseCycle>>();
+            var dictionary = new Dictionary<int, List<TransitSignalPriorityCycle>>();
 
             foreach (var phase in allPhases)
             {
@@ -446,17 +502,16 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
         }
 
 
-        private double GetPercentSplit(double highCycleCount, double percentile, List<AnalysisPhaseCycle> cycles)
+        private double GetPercentSplit(double highCycleCount, double percentile, List<TransitSignalPriorityCycle> cycles)
         {
             if (cycles.Count <= 2)
                 return 0;
-            var orderedCycles = cycles.OrderBy(c => c.Duration.TotalSeconds).ToList();
+            var orderedCycles = cycles.OrderBy(c => c.DurationSeconds).ToList();
 
             var percentilIndex = percentile * orderedCycles.Count;
             if ((percentilIndex % 1).AreEqual(0))
             {
-                return orderedCycles.ElementAt(Convert.ToInt16(percentilIndex) - 1).Duration
-                    .TotalSeconds;
+                return orderedCycles.ElementAt(Convert.ToInt16(percentilIndex) - 1).DurationSeconds;
             }
             else
             {
@@ -465,17 +520,16 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
                 //There was probably another way to do that, but this is easy.
                 int indexInt = Convert.ToInt16(percentilIndex - .5);
 
-                var step1 = orderedCycles.ElementAt(Convert.ToInt16(indexInt) - 1).Duration.TotalSeconds;
-                var step2 = orderedCycles.ElementAt(Convert.ToInt16(indexInt)).Duration.TotalSeconds;
+                var step1 = orderedCycles.ElementAt(Convert.ToInt16(indexInt) - 1).DurationSeconds;
+                var step2 = orderedCycles.ElementAt(Convert.ToInt16(indexInt)).DurationSeconds;
                 var stepDiff = step2 - step1;
                 var step3 = stepDiff * indexMod;
                 return step1 + step3;
             }
         }
 
-        public SortedDictionary<int, int> GetProgrammedSplits(List<IndianaEvent> locationEvents)
+        public void SetProgrammedSplits(SortedDictionary<int, int> splits, List<IndianaEvent> locationEvents)
         {
-            var splits = new SortedDictionary<int, int>();
             var eventCodes = new List<short>();
             for (short i = 130; i <= 151; i++)
                 eventCodes.Add(i);
@@ -567,7 +621,6 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
             if (splits.Count == 0)
                 for (var i = 0; i < 16; i++)
                     splits.Add(i, 0);
-            return splits;
         }
     }
 }
