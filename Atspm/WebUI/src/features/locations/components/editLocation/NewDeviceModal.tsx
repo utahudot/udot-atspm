@@ -357,6 +357,17 @@ const DeviceModal = ({
             <TextField
               fullWidth
               multiline
+              label="Device Identifier"
+              sx={{ mb: 2 }}
+              maxRows={6}
+              error={!!errors.notes}
+              helperText={errors.notes ? 'String(errors.notes.message) ' : ''}
+              {...register('deviceIdentifier')}
+            />
+
+            <TextField
+              fullWidth
+              multiline
               label="Notes"
               sx={{ mb: 2 }}
               maxRows={6}
