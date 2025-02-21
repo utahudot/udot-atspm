@@ -24,7 +24,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
     /// <summary>
     /// Approach delay report service
     /// </summary>
-    public class TransitSignalPriorityReportService : ReportServiceBase<TransitSignalPriorityOptions, TransitSignalPriorityResult>
+    public class TransitSignalPriorityReportService : ReportServiceBase<TransitSignalPriorityOptions, List<TransitSignalPriorityResult>>
     {
         private readonly TransitSignalPriorityService _transitSignalPriorityService;
 
@@ -37,7 +37,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
         }
 
         /// <inheritdoc/>
-        public override async Task<TransitSignalPriorityResult> ExecuteAsync(TransitSignalPriorityOptions parameters, IProgress<int> progress = null, CancellationToken cancelToken = default)
+        public override async Task<List<TransitSignalPriorityResult>> ExecuteAsync(TransitSignalPriorityOptions parameters, IProgress<int> progress = null, CancellationToken cancelToken = default)
         {
             return await _transitSignalPriorityService.GetChartDataAsync(parameters);
         }
