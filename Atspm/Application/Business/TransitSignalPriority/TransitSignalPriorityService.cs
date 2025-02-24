@@ -96,7 +96,7 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
             );
 
             _calculateMaxExtensionBlock = new TransformBlock<(TransitSignalLoadParameters, List<TransitSignalPriorityPlan>), (TransitSignalLoadParameters, List<TransitSignalPriorityPlan>)>(
-                CalculateMaxExtension(),
+                input => CalculateMaxExtension(input),
                 new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = _maxDegreeOfParallelism }
             );
 
@@ -246,70 +246,69 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
             return (parameters, plans);
         }
 
-        private static Func<(TransitSignalLoadParameters, List<TransitSignalPriorityPlan>), (TransitSignalLoadParameters, List<TransitSignalPriorityPlan>)> CalculateMaxExtension()
-        {
-            return input =>
+        public static (TransitSignalLoadParameters, List<TransitSignalPriorityPlan>) CalculateMaxExtension((TransitSignalLoadParameters, List<TransitSignalPriorityPlan>) input)
+        {            
+            var ring1 = new List<int> { 1, 2, 3, 4 };
+            var ring2 = new List<int> { 5, 6, 7, 8 };
+            var ring3 = new List<int> { 9, 10, 11, 12 };
+            var ring4 = new List<int> { 13, 14, 15, 16 };
+            var (parameters, plans) = input;
+
+            foreach (var plan in plans)
             {
-                var ring1 = new List<int> { 1, 2, 3, 4 };
-                var ring2 = new List<int> { 5, 6, 7, 8 };
-                var ring3 = new List<int> { 9, 10, 11, 12 };
-                var ring4 = new List<int> { 13, 14, 15, 16 };
-                var (parameters, plans) = input;
-
-                foreach (var plan in plans)
+                foreach (var phase in plan.Phases)
                 {
-                    foreach (var phase in plan.Phases)
+
+                    if ((phase.ProgrammedSplit == 0
+                        && phase.MinTime == 0
+                        && phase.PercentileSplit50th == 0
+                        && phase.PercentileSplit85th == 0
+                        && phase.PercentSkips == 0
+                        && phase.MinGreen == 0
+                        && phase.Yellow == 0
+                        && phase.RedClearance == 0)
+                        || phase.RecommendedTSPMax < 0
+
+                        )
                     {
-
-                        if (phase.ProgrammedSplit == 0
-                            && phase.MinTime == 0
-                            && phase.PercentileSplit50th == 0
-                            && phase.PercentileSplit85th == 0
-                            && phase.PercentSkips == 0
-                            && phase.MinGreen == 0
-                            && phase.Yellow == 0
-                            && phase.RedClearance == 0
-
-                            )
-                        {
-                            phase.MaxReduction = 0; 
-                            phase.MaxExtension = 0; 
-                            phase.PriorityMin = 0; 
-                            phase.PriorityMax = 0;
-                            continue;
-                        }
-                        if(parameters.LocationPhases.DesignatedPhases.Contains(phase.PhaseNumber) && phase.PhaseNumber >=1 && phase.PhaseNumber <=16)
-                        {
-                            //Sum of the non designated phase TSP Max for ring assume 16 phases 4 rings
-                            if (parameters.LocationPhases.DesignatedPhases.Contains(phase.PhaseNumber))
-                            {
-                                List<int> nonDesignatedPhases = phase.PhaseNumber switch
-                                {
-                                    >= 1 and <= 4 => ring1.Except(parameters.LocationPhases.DesignatedPhases).ToList(),
-                                    >= 5 and <= 8 => ring2.Except(parameters.LocationPhases.DesignatedPhases).ToList(),
-                                    >= 9 and <= 12 => ring3.Except(parameters.LocationPhases.DesignatedPhases).ToList(),
-                                    >= 13 and <= 16 => ring4.Except(parameters.LocationPhases.DesignatedPhases).ToList(),
-                                    _ => new List<int>()
-                                };
-
-                                phase.MaxExtension = plan.Phases
-                                    .Where(p => nonDesignatedPhases.Contains(p.PhaseNumber))
-                                    .Sum(p => p.RecommendedTSPMax.HasValue ? Convert.ToInt32(Math.Round(p.RecommendedTSPMax.Value)) : 0);
-                            }
-                            else
-                            {
-                                phase.MaxExtension = 0;
-                            }
-
-                        }
-                        phase.MaxReduction = phase.RecommendedTSPMax.HasValue?Convert.ToInt32(Math.Round(phase.RecommendedTSPMax.Value)):0; //TSP MAX
-                        phase.PriorityMin = phase.ProgrammedSplit>0?Convert.ToInt32(Math.Round(phase.ProgrammedSplit-(phase.RecommendedTSPMax.HasValue?phase.RecommendedTSPMax.Value:0d))):0; // Program split minus tsp max
-                        phase.PriorityMax = phase.ProgrammedSplit > 0 ? Convert.ToInt32(Math.Round(phase.ProgrammedSplit + (phase.RecommendedTSPMax.HasValue ? phase.RecommendedTSPMax.Value : 0d))) : 0; // Program split minus tsp max; //Program split plus the max extension
+                        phase.MaxReduction = 0; 
+                        phase.MaxExtension = 0; 
+                        phase.PriorityMin = 0; 
+                        phase.PriorityMax = 0;
+                        continue;
                     }
-                }
+                    if(parameters.LocationPhases.DesignatedPhases.Contains(phase.PhaseNumber) && phase.PhaseNumber >=1 && phase.PhaseNumber <=16)
+                    {
+                        //Sum of the non designated phase TSP Max for ring assume 16 phases 4 rings
+                        if (parameters.LocationPhases.DesignatedPhases.Contains(phase.PhaseNumber))
+                        {
+                            List<int> nonDesignatedPhases = phase.PhaseNumber switch
+                            {
+                                >= 1 and <= 4 => ring1.Except(parameters.LocationPhases.DesignatedPhases).ToList(),
+                                >= 5 and <= 8 => ring2.Except(parameters.LocationPhases.DesignatedPhases).ToList(),
+                                >= 9 and <= 12 => ring3.Except(parameters.LocationPhases.DesignatedPhases).ToList(),
+                                >= 13 and <= 16 => ring4.Except(parameters.LocationPhases.DesignatedPhases).ToList(),
+                                _ => new List<int>()
+                            };
 
-                return (parameters, plans);
-            };
+                            phase.MaxExtension = plan.Phases
+                                .Where(p => nonDesignatedPhases.Contains(p.PhaseNumber))
+                                .Sum(p => p.RecommendedTSPMax.HasValue ? Convert.ToInt32(Math.Round(p.RecommendedTSPMax.Value)) : 0);
+                        }
+                        else
+                        {
+                            phase.MaxExtension = 0;
+                        }
+
+                    }
+                    phase.MaxReduction = phase.RecommendedTSPMax.HasValue?Convert.ToInt32(Math.Round(phase.RecommendedTSPMax.Value)):0; //TSP MAX
+                    phase.PriorityMin = phase.ProgrammedSplit>0?Convert.ToInt32(Math.Round(phase.ProgrammedSplit-(phase.RecommendedTSPMax.HasValue?phase.RecommendedTSPMax.Value:0d))):0; // Program split minus tsp max
+                    phase.PriorityMax = phase.ProgrammedSplit > 0 ? Convert.ToInt32(Math.Round(phase.ProgrammedSplit + (phase.RecommendedTSPMax.HasValue ? phase.RecommendedTSPMax.Value : 0d))) : 0; // Program split minus tsp max; //Program split plus the max extension
+                }
+            }
+
+            return (parameters, plans);
+            
         }
         private Func<(TransitSignalLoadParameters, Dictionary<string, List<IndianaEvent>>), Task<(TransitSignalLoadParameters, List<TransitSignalPriorityPlan>)>> ProcessCycles()
         {
