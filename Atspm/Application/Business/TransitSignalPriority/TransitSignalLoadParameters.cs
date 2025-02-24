@@ -8,8 +8,9 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriority
 {
     public class TransitSignalLoadParameters
     {
-        public string LocationIdentifier { get; set; }
+        public LocationPhases LocationPhases { get; set; }
         public Location Location { get; set; }
         public List<DateTime> Dates { get; set; }
+
     }
 }

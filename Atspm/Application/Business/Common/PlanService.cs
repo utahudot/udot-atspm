@@ -152,7 +152,7 @@ namespace Utah.Udot.Atspm.Business.Common
             return plans;
         }
 
-        public List<Plan> GetTransitSignalPriorityBasicPlans(
+        public List<TransitSignalPriorityBasicPlan> GetTransitSignalPriorityBasicPlans(
             DateTime startDate,
             DateTime endDate,
             string locationId,
@@ -166,7 +166,7 @@ namespace Utah.Udot.Atspm.Business.Common
             // Clean the plan events and create plans
             var cleanedEvents = CleanPlanEvents(startDate, endDate, locationId, planEvents.ToList());
             var plans = CreatePlansFromEvents(cleanedEvents, startDate, endDate);
-            return plans;
+            return plans.Select(p => new TransitSignalPriorityBasicPlan(p.PlanNumber, p.Start, p.End)).ToList();
         }
         /// <summary>
         /// Creates plan objects based on cleaned events and the given time range.
