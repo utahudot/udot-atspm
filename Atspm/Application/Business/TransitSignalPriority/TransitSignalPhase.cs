@@ -16,9 +16,9 @@
         public double PercentSkips { get; set; }
         public double? RecommendedTSPMax { get; set; }
         public double SkipsGreaterThan70TSPMax { get; set; }
-        public double ForceOffsGreaterThan40TSPMax { get; set; }
-        public double ForceOffsGreaterThan60TSPMax { get; set; }
-        public double ForceOffsGreaterThan80TSPMax { get; set; }
+        public double ForceOffsLessThan40TSPMax { get; set; }
+        public double ForceOffsLessThan60TSPMax { get; set; }
+        public double ForceOffsLessThan80TSPMax { get; set; }
         public int MaxReduction { get; set; } //TSP MAX
         public int MaxExtension { get; set; } //Sum of the non designated phase TSP Max for ring assume 16 phases 4 rings
         public int PriorityMin { get; set; } // Program split minus tsp max
