@@ -19,10 +19,10 @@
         public double ForceOffsGreaterThan40TSPMax { get; set; }
         public double ForceOffsGreaterThan60TSPMax { get; set; }
         public double ForceOffsGreaterThan80TSPMax { get; set; }
-        public int MaxReduction { get; set; }
-        public int MaxExtension { get; set; }
-        public int PriorityMin { get; set; }
-        public int PriorityMax { get; set; }
+        public int MaxReduction { get; set; } //TSP MAX
+        public int MaxExtension { get; set; } //Sum of the non designated phase TSP Max for ring assume 16 phases 4 rings
+        public int PriorityMin { get; set; } // Program split minus tsp max
+        public int PriorityMax { get; set; } //Program split plus the max extension
         public string Notes { get; set; }
 
     }

@@ -260,7 +260,9 @@ namespace Utah.Udot.Atspm.Business.Common
             var cycles = Enumerable.Range(0, cycleEventsForPhase.Count - 3)
                 .Where(i => cycleEventsForPhase[i].EventCode ==1 &&
                             cycleEventsForPhase[i + 1].EventCode == 8 &&
-                            cycleEventsForPhase[i + 2].EventCode == 11)
+                            cycleEventsForPhase[i + 2].EventCode == 10 &&
+                            cycleEventsForPhase[i + 3].EventCode == 11                             
+                            )
                 .Select(i =>
                 {
                     var termEvent = GetTerminationTypeBetweenStartAndEnd(
@@ -271,8 +273,8 @@ namespace Utah.Udot.Atspm.Business.Common
                         PhaseNumber = phaseNumber,
                         GreenEvent = cycleEventsForPhase[i].Timestamp, 
                         YellowEvent = cycleEventsForPhase[i + 1].Timestamp, 
-                        RedEvent = cycleEventsForPhase[i + 1].Timestamp.AddMilliseconds(3),  
-                        EndRedClearanceEvent = cycleEventsForPhase[i + 2].Timestamp, 
+                        RedEvent = cycleEventsForPhase[i + 2].Timestamp,  
+                        EndRedClearanceEvent = cycleEventsForPhase[i + 3].Timestamp, 
                         TerminationEvent  = GetTerminationEventBetweenStartAndEnd(cycleEventsForPhase[i].Timestamp, cycleEventsForPhase[i + 3].Timestamp, terminationEvents)
                     };
                 })                
