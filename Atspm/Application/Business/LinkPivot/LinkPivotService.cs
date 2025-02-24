@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for Application - Utah.Udot.Atspm.Business.LinkPivot/LinkPivotService.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,7 +14,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
-
 
 using Microsoft.EntityFrameworkCore;
 using Utah.Udot.Atspm.Extensions;

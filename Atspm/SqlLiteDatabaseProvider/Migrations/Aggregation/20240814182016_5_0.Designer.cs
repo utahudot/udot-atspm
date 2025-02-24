@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for SqlLiteDatabaseProvider - Utah.Udot.ATSPM.SqlLiteDatabaseProvider.Migrations.Aggregation/20240814182016_5_0.Designer.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
