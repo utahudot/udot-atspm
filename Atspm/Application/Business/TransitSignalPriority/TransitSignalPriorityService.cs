@@ -91,7 +91,7 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
             );
 
             _calculateTSPMaxBlock = new TransformBlock<(TransitSignalLoadParameters, List<TransitSignalPriorityPlan>), (TransitSignalLoadParameters, List<TransitSignalPriorityPlan>)>(
-                CalculateTransitSignalPriorityMax(),
+                input => CalculateTransitSignalPriorityMax(input),
                 new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = _maxDegreeOfParallelism }
             );
 
@@ -172,77 +172,80 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
             };
         }
 
-        private static Func<(TransitSignalLoadParameters, List<TransitSignalPriorityPlan>), (TransitSignalLoadParameters, List<TransitSignalPriorityPlan>)> CalculateTransitSignalPriorityMax()
+        public static (TransitSignalLoadParameters, List<TransitSignalPriorityPlan>) CalculateTransitSignalPriorityMax(
+            (TransitSignalLoadParameters, List<TransitSignalPriorityPlan>) input)
         {
-            return input =>
+            var (parameters, plans) = input;
+
+            foreach (var plan in plans)
             {
-                var (parameters, plans) = input;
-
-                foreach (var plan in plans)
+                foreach (var phase in plan.Phases)
                 {
-                    foreach (var phase in plan.Phases)
+                    // If all phase values are zero, set the recommended TSP Max to null and note that the phase is not in use
+                    if (phase.ProgrammedSplit == 0
+                        && phase.MinTime == 0
+                        && phase.PercentileSplit50th == 0
+                        && phase.PercentileSplit85th == 0
+                        && phase.PercentSkips == 0
+                        && phase.MinGreen == 0
+                        && phase.Yellow == 0
+                        && phase.RedClearance == 0)
                     {
-                        //If all phase values are zero, set the recommended TSP Max to null and note of phase not in use
-                        if (phase.ProgrammedSplit == 0 
-                            && phase.MinTime == 0 
-                            && phase.PercentileSplit50th == 0
-                            && phase.PercentileSplit85th == 0
-                            && phase.PercentSkips == 0
-                            && phase.MinGreen == 0
-                            && phase.Yellow == 0
-                            && phase.RedClearance == 0
+                        phase.RecommendedTSPMax = null;
+                        phase.Notes = "Phase not in use";
+                        continue;
+                    }
 
-                            )
-                        {
-                            phase.RecommendedTSPMax = null;
-                            phase.Notes = "Phase not in use";
-                            continue;
-                        }
+                    if (phase.ProgrammedSplit == 0)
+                    {
+                        phase.RecommendedTSPMax = null;
+                        phase.Notes = "Programmed split is zero, manually calculate";
+                        continue;
+                    }
 
-                        if (phase.ProgrammedSplit == 0)
-                        {
-                            phase.RecommendedTSPMax = null;
-                            phase.Notes = "Programmed split is zero, manually calculate";
-                            continue;
-                        }
-                        phase.SkipsGreaterThan70TSPMax = phase.ProgrammedSplit - phase.MinTime;
-                        phase.ForceOffsGreaterThan40TSPMax = phase.ProgrammedSplit - ((phase.MinTime + phase.PercentileSplit50th) / 2);
-                        phase.ForceOffsGreaterThan60TSPMax = phase.ProgrammedSplit - phase.PercentileSplit50th;
-                        phase.ForceOffsGreaterThan80TSPMax = phase.ProgrammedSplit - phase.PercentileSplit85th;
+                    phase.SkipsGreaterThan70TSPMax = phase.ProgrammedSplit - phase.MinTime;
+                    phase.ForceOffsLessThan40TSPMax = phase.ProgrammedSplit - ((phase.MinTime + phase.PercentileSplit50th) / 2);
+                    phase.ForceOffsLessThan60TSPMax = phase.ProgrammedSplit - phase.PercentileSplit50th;
+                    phase.ForceOffsLessThan80TSPMax = phase.ProgrammedSplit - phase.PercentileSplit85th;
 
-                        if (phase.PercentSkips > 70)
-                        {
-                            phase.RecommendedTSPMax = phase.SkipsGreaterThan70TSPMax;
-                            phase.Notes = "Skips greater than 70%";
-                        }
-                        else if (phase.PercentMaxOutsForceOffs < 60)
-                        {
-                            phase.RecommendedTSPMax = phase.ForceOffsGreaterThan60TSPMax;
-                            phase.Notes = "Force offs greater than 60%";
-                        }
-                        else if (phase.PercentMaxOutsForceOffs < 80)
-                        {
-                            phase.RecommendedTSPMax = phase.ForceOffsGreaterThan80TSPMax;
-                            phase.Notes = "Force offs greater than 80%";
-                        }
-                        else
-                        {
-                            phase.RecommendedTSPMax = null; // Not recommended
-                            phase.Notes = "No recommended TSP Max";
-                        }
+                    if (phase.PercentSkips > 70)
+                    {
+                        phase.RecommendedTSPMax = phase.SkipsGreaterThan70TSPMax;
+                        phase.Notes = "Skips greater than 70%";
+                    }
+                    else if (phase.PercentMaxOutsForceOffs < 40)
+                    {
+                        phase.RecommendedTSPMax = phase.ForceOffsLessThan40TSPMax;
+                        phase.Notes = "Force offs less than 40%";
+                    }
+                    else if (phase.PercentMaxOutsForceOffs < 60)
+                    {
+                        phase.RecommendedTSPMax = phase.ForceOffsLessThan60TSPMax;
+                        phase.Notes = "Force offs less than 60%";
+                    }
+                    else if (phase.PercentMaxOutsForceOffs < 80)
+                    {
+                        phase.RecommendedTSPMax = phase.ForceOffsLessThan80TSPMax;
+                        phase.Notes = "Force offs less than 80%";
+                    }
+                    else
+                    {
+                        phase.RecommendedTSPMax = null; // Not recommended
+                        phase.Notes = "No recommended TSP Max";
+                    }
 
-                        // Ensure RecommendedTSPMax is null if it is negative
-                        if (phase.RecommendedTSPMax.HasValue && phase.RecommendedTSPMax < 0)
-                        {
-                            phase.RecommendedTSPMax = null;
-                            phase.Notes = "No recommended TSP Max";
-                        }
+                    // Ensure RecommendedTSPMax is null if it is negative
+                    if (phase.RecommendedTSPMax.HasValue && phase.RecommendedTSPMax < 0)
+                    {
+                        phase.RecommendedTSPMax = null;
+                        phase.Notes = "No recommended TSP Max";
                     }
                 }
+            }
 
-                return (parameters, plans);
-            };
+            return (parameters, plans);
         }
+
         private static Func<(TransitSignalLoadParameters, List<TransitSignalPriorityPlan>), (TransitSignalLoadParameters, List<TransitSignalPriorityPlan>)> CalculateMaxExtension()
         {
             return input =>
