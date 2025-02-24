@@ -9,7 +9,7 @@ using Utah.Udot.Atspm.Business.TransitSignalPriority;
 
 namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest.Tests
 {
-    public class TransitSignalPriorityServiceTests
+    public class CalculateTransitSignalPriorityMaxTests
     {
         [Fact]
         public void CalculateTransitSignalPriorityMax_Given_AllZeroPhaseValues_Should_SetRecommendedTSPMaxToNull()
@@ -153,4 +153,147 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest.Tests
             return (new TransitSignalLoadParameters(), new List<TransitSignalPriorityPlan> { plan });
         }
     }
+
+    public class CalculateMaxExtensionTests
+    {
+        [Fact]
+        public void Given_AllZeroPhaseValues_Should_SetMaxReductionAndMaxExtensionToZero()
+        {
+            // Arrange
+            var input = CreateTestInput(
+                programmedSplit: 0, minTime: 0, percentile50th: 0, percentile85th: 0, percentSkips: 0,
+                minGreen: 0, yellow: 0, redClearance: 0, recommendedTSPMax: null, phaseNumber: 1
+            );
+
+            // Act
+            var result = TransitSignalPriorityService.CalculateMaxExtension(input);
+
+            // Assert
+            var phase = result.Item2[0].Phases[0];
+            Assert.Equal(0, phase.MaxReduction);
+            Assert.Equal(0, phase.MaxExtension);
+            Assert.Equal(0, phase.PriorityMin);
+            Assert.Equal(0, phase.PriorityMax);
+        }
+
+        [Fact]
+        public void Given_DesignatedPhase_Should_CalculateMaxExtensionBasedOnNonDesignatedPhases()
+        {
+            // Arrange
+            var input = CreateTestInput(
+                programmedSplit: 40, minTime: 10, recommendedTSPMax: 10, phaseNumber: 1,
+                designatedPhases: new List<int> { 1 } // Phase 1 is designated
+            );
+
+            // Add additional non-designated phases with TSP Max values
+            input.Item2[0].Phases.AddRange(new List<TransitSignalPhase>
+        {
+            new TransitSignalPhase { PhaseNumber = 2, RecommendedTSPMax = 5 },
+            new TransitSignalPhase { PhaseNumber = 3, RecommendedTSPMax = 7 }
+        });
+
+            // Act
+            var result = TransitSignalPriorityService.CalculateMaxExtension(input);
+
+            // Assert
+            var phase = result.Item2[0].Phases.First(p => p.PhaseNumber == 1);
+            Assert.Equal(10, phase.MaxReduction);
+            Assert.Equal(12, phase.MaxExtension); // Sum of 5 and 7
+            Assert.Equal(30, phase.PriorityMin); // ProgrammedSplit - RecommendedTSPMax (40 - 10)
+            Assert.Equal(50, phase.PriorityMax); // ProgrammedSplit + RecommendedTSPMax (40 + 10)
+        }
+
+        [Fact]
+        public void Given_NonDesignatedPhase_Should_HaveZeroMaxExtension()
+        {
+            // Arrange
+            var input = CreateTestInput(
+                programmedSplit: 40, minTime: 10, recommendedTSPMax: 10, phaseNumber: 5,
+                designatedPhases: new List<int> { 1 } // Phase 5 is NOT designated
+            );
+
+            // Act
+            var result = TransitSignalPriorityService.CalculateMaxExtension(input);
+
+            // Assert
+            var phase = result.Item2[0].Phases.First(p => p.PhaseNumber == 5);
+            Assert.Equal(10, phase.MaxReduction);
+            Assert.Equal(0, phase.MaxExtension); // Not a designated phase, so should be 0
+            Assert.Equal(30, phase.PriorityMin);
+            Assert.Equal(50, phase.PriorityMax);
+        }
+
+        [Fact]
+        public void Given_EmptyDesignatedPhases_Should_NotAffectMaxExtensionCalculation()
+        {
+            // Arrange
+            var input = CreateTestInput(
+                programmedSplit: 50, minTime: 15, recommendedTSPMax: 12, phaseNumber: 3,
+                designatedPhases: new List<int>() // No designated phases
+            );
+
+            // Act
+            var result = TransitSignalPriorityService.CalculateMaxExtension(input);
+
+            // Assert
+            var phase = result.Item2[0].Phases.First(p => p.PhaseNumber == 3);
+            Assert.Equal(12, phase.MaxReduction);
+            Assert.Equal(0, phase.MaxExtension); // No designated phases should result in 0 MaxExtension
+            Assert.Equal(38, phase.PriorityMin); // ProgrammedSplit - RecommendedTSPMax
+            Assert.Equal(62, phase.PriorityMax); // ProgrammedSplit + RecommendedTSPMax
+        }
+
+        [Fact]
+        public void Given_NegativeRecommendedTSPMax_Should_SetMaxReductionToZero()
+        {
+            // Arrange
+            var input = CreateTestInput(
+                programmedSplit: 30, minTime: 20, recommendedTSPMax: -5, phaseNumber: 7
+            );
+
+            // Act
+            var result = TransitSignalPriorityService.CalculateMaxExtension(input);
+
+            // Assert
+            var phase = result.Item2[0].Phases[0];
+            Assert.Equal(0, phase.MaxReduction); // Should not allow negative values
+            Assert.Equal(0, phase.PriorityMin);
+            Assert.Equal(0, phase.PriorityMax);
+            Assert.Equal(0, phase.MaxExtension);
+        }
+
+        private (TransitSignalLoadParameters, List<TransitSignalPriorityPlan>) CreateTestInput(
+            int programmedSplit = 50, int minTime = 20, int percentile50th = 25, int percentile85th = 30,
+            double percentSkips = 0, double percentMaxOutsForceOffs = 0, int minGreen = 5, int yellow = 3, int redClearance = 2,
+            double? recommendedTSPMax = null, int phaseNumber = 1, List<int> designatedPhases = null)
+        {
+            var phase = new TransitSignalPhase
+            {
+                PhaseNumber = phaseNumber,
+                ProgrammedSplit = programmedSplit,
+                MinTime = minTime,
+                PercentileSplit50th = percentile50th,
+                PercentileSplit85th = percentile85th,
+                PercentSkips = percentSkips,
+                PercentMaxOutsForceOffs = percentMaxOutsForceOffs,
+                MinGreen = minGreen,
+                Yellow = yellow,
+                RedClearance = redClearance,
+                RecommendedTSPMax = recommendedTSPMax
+            };
+
+            var plan = new TransitSignalPriorityPlan { Phases = new List<TransitSignalPhase> { phase } };
+
+            var parameters = new TransitSignalLoadParameters
+            {
+                LocationPhases = new LocationPhases
+                {
+                    DesignatedPhases = designatedPhases ?? new List<int>()
+                }
+            };
+
+            return (parameters, new List<TransitSignalPriorityPlan> { plan });
+        }
+    }
+
 }
