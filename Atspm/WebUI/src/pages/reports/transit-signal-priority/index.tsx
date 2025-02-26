@@ -1,4 +1,8 @@
-import { SearchLocation as Location } from '@/api/config/aTSPMConfigurationApi.schemas'
+import {
+  Approach,
+  SearchLocation as Location,
+} from '@/api/config/aTSPMConfigurationApi.schemas'
+import { useGetTransitSignalPriorityReportData } from '@/api/reports/aTSPMReportDataApi'
 import MultipleLocationsDisplay from '@/components/MultipleLocationsSelect/MultipleLocationsDisplay'
 import MultipleLocationsSelect from '@/components/MultipleLocationsSelect/MultipleLocationsSelect'
 import { ResponsivePageLayout } from '@/components/ResponsivePage'
@@ -8,6 +12,7 @@ import { DropResult } from '@hello-pangea/dnd'
 import PlayArrowIcon from '@mui/icons-material/PlayArrow'
 import { LoadingButton } from '@mui/lab'
 import {
+  Alert,
   Box,
   Button,
   Divider,
@@ -17,6 +22,7 @@ import {
   Paper,
   Select,
 } from '@mui/material'
+import { startOfYesterday } from 'date-fns'
 import { useState } from 'react'
 
 const savedReportsMock = [
@@ -46,23 +52,39 @@ const savedReportsMock = [
   },
 ]
 
+export interface TspLocation extends Location {
+  approaches: Approach[]
+  designatedPhases: number[]
+}
+
 interface TspReportOptions {
   selectedDays: Date[]
-  locations: Location[]
+  locations: TspLocation[]
 }
 
 export default function TspReportPage() {
   const [reportOptions, setReportOptions] = useState<TspReportOptions>({
-    selectedDays: [],
+    selectedDays: [startOfYesterday()],
     locations: [],
   })
   const [selectedReport, setSelectedReport] = useState(0)
 
-  const setLocations = (locations: Location[]) => {
+  // NEW: Used for error handling
+  const [userHasTriedRun, setUserHasTriedRun] = useState(false) // Tracks if user pressed "Generate Report"
+  const [errorLocations, setErrorLocations] = useState<Set<string>>(new Set()) // Which location IDs have no phases
+  const [showErrorAlert, setShowErrorAlert] = useState(false) // Controls the MUI Alert
+
+  const {
+    data: reportResponse,
+    mutateAsync: fetchTspReport,
+    isLoading: loadingReport,
+  } = useGetTransitSignalPriorityReportData()
+
+  const setLocations = (locations: TspLocation[]) => {
     setReportOptions((prev) => ({ ...prev, locations }))
   }
 
-  const handleLocationDelete = (location: Location) => {
+  const handleLocationDelete = (location: TspLocation) => {
     setLocations(
       reportOptions.locations.filter((loc) => loc.id !== location.id)
     )
@@ -82,14 +104,69 @@ export default function TspReportPage() {
     const found = savedReportsMock.find((r) => r.id === e.target.value)
     if (found) {
       setSelectedReport(found.id)
-      setLocations(found.locations)
+      // This mock data has incomplete TspLocation shape. (Just ignoring in this example)
+      setLocations(found.locations as TspLocation[])
     } else {
       setSelectedReport(0)
       setLocations([])
     }
   }
 
-  console.log(reportOptions)
+  // Update a single location (e.g. designatedPhases)
+  const handleUpdateLocation = (updatedLocation: TspLocation) => {
+    const updateLocations = reportOptions.locations.map((loc) =>
+      loc.id === updatedLocation.id ? updatedLocation : loc
+    )
+    setLocations(updateLocations)
+
+    // If user already tried to run, let's re-check if this location still needs error highlight
+    if (userHasTriedRun) {
+      const newErrorLocations = new Set(errorLocations)
+      // If user selected phases for a previously error location, remove from error set
+      if (updatedLocation.designatedPhases?.length > 0) {
+        newErrorLocations.delete(String(updatedLocation.id))
+      }
+      // If no more errors remain, hide the alert
+      if (newErrorLocations.size === 0) {
+        setShowErrorAlert(false)
+      }
+      setErrorLocations(newErrorLocations)
+    }
+  }
+
+  const generateReport = () => {
+    // Let them press, but if any location is missing phases, show error & do NOT run
+    const missingPhases = reportOptions.locations.filter(
+      (loc) => !loc.designatedPhases || loc.designatedPhases.length === 0
+    )
+
+    if (missingPhases.length > 0) {
+      // Prepare error sets
+      const errorSet = new Set<string>(
+        missingPhases.map((loc) => String(loc.id))
+      )
+      setErrorLocations(errorSet)
+      setUserHasTriedRun(true)
+      setShowErrorAlert(true)
+      // Do not run the diagram
+      return
+    }
+
+    // If no missing phases, clear error states and run the chart
+    setUserHasTriedRun(false)
+    setShowErrorAlert(false)
+    setErrorLocations(new Set())
+
+    fetchTspReport({
+      data: {
+        locationsAndPhases: reportOptions.locations.map((loc) => ({
+          locationIdentifier: loc.locationIdentifier,
+          designatedPhases: loc.designatedPhases,
+        })),
+        dates: reportOptions.selectedDays.map((date) => date.toISOString()),
+      },
+    })
+  }
 
   return (
     <ResponsivePageLayout title="Transit Signal Priority">
@@ -133,6 +210,10 @@ export default function TspReportPage() {
                 onLocationDelete={handleLocationDelete}
                 onDeleteAllLocations={() => setLocations([])}
                 onLocationsReorder={handleReorderLocations}
+                onUpdateLocation={handleUpdateLocation}
+                // Pass the relevant states so child can highlight missing phases & show error text only if user tried
+                userHasTriedRun={userHasTriedRun}
+                errorLocations={errorLocations}
               />
             </Box>
           </Paper>
@@ -163,14 +244,24 @@ export default function TspReportPage() {
             />
           </Paper>
         </Box>
-        <LoadingButton
-          startIcon={<PlayArrowIcon />}
-          variant="contained"
-          sx={{ padding: '10px', marginTop: '10px' }}
-        >
-          Generate Report
-        </LoadingButton>
-        <TspReport />
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mt: 2 }}>
+          <LoadingButton
+            startIcon={<PlayArrowIcon />}
+            loading={loadingReport}
+            variant="contained"
+            sx={{ padding: '10px' }}
+            onClick={generateReport}
+          >
+            Generate Report
+          </LoadingButton>
+          {showErrorAlert && (
+            <Alert severity="error">
+              Please select at least one phase for each location before running
+              the report.
+            </Alert>
+          )}
+        </Box>
+        {reportResponse && <TspReport report={reportResponse} />}
       </Box>
     </ResponsivePageLayout>
   )
