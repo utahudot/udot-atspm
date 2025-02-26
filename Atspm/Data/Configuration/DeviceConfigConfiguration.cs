@@ -87,7 +87,5 @@ namespace Utah.Udot.Atspm.Data.Configuration
                 .IsRequired(false)
                 .HasMaxLength(50);
         }
-    }
-
-    
+    }    
 }
