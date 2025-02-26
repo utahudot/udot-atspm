@@ -19,9 +19,10 @@ using Utah.Udot.Atspm.Business.Common;
 
 namespace Utah.Udot.Atspm.Business.ApproachSpeed
 {
-    public class ApproachSpeedOptions : OptionsBase
+    public class ApproachSpeedOptions : DateTimeOptionsBase, ILocationOptionsBase
     {
         public int BinSize { get; set; }
         public int MetricTypeId { get; } = 10;
+        public string LocationIdentifier { get; set; }
     }
 }

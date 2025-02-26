@@ -1,5 +1,5 @@
+import { SearchLocation as Location } from '@/api/config/aTSPMConfigurationApi.schemas'
 import { Filters } from '@/features/locations/components/selectLocation/SelectLocation'
-import { Location } from '@/features/locations/types'
 import { Skeleton } from '@mui/material'
 import dynamic from 'next/dynamic'
 import { memo, useMemo } from 'react'

@@ -17,7 +17,7 @@
 
 namespace Utah.Udot.Atspm.Business.Common
 {
-    public class OptionsBase
+    public class DateTimeOptionsBase
     {
         private DateTime _start;
         private DateTime _end;
@@ -43,6 +43,5 @@ namespace Utah.Udot.Atspm.Business.Common
                 _end = DateTime.SpecifyKind(value, DateTimeKind.Unspecified);
             }
         }
-        public string LocationIdentifier { get; set; }
     }
 }
