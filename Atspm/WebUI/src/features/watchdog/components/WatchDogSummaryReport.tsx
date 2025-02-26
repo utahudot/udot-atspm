@@ -30,7 +30,7 @@ const WatchdogSummaryReport = () => {
 
   const { data: deviceCount } = useGetDeviceCount()
   const { data: detectionTypeCount } =
-    useGetDetectionTypeCount(formattedEndDate)
+    useGetDetectionTypeCount(toUTCDateStamp(endDateTime))
   const data = {
     ...dashboardData,
     deviceCount,
@@ -38,7 +38,7 @@ const WatchdogSummaryReport = () => {
   }
 
   const handleGenerateSummary = () => {
-    setFetchData(true)
+    fetchDashboardData()
   }
 
   const handleStartDateTimeChange = (date: Date) => {
