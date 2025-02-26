@@ -22,7 +22,7 @@ import {
   Paper,
   Select,
 } from '@mui/material'
-import { startOfYesterday } from 'date-fns'
+import { AxiosError } from 'axios'
 import { useState } from 'react'
 
 const savedReportsMock = [
@@ -35,7 +35,6 @@ const savedReportsMock = [
       { id: 1, name: 'Location 1' },
       { id: 2, name: 'Location 2' },
     ],
-    daysOfWeek: [1, 2, 3],
   },
   {
     id: 2,
@@ -45,10 +44,7 @@ const savedReportsMock = [
     locations: [
       { id: 3, name: 'Location 3' },
       { id: 4, name: 'Location 4' },
-      { id: 5, name: 'Location 5' },
-      { id: 6, name: 'Location 6' },
     ],
-    daysOfWeek: [4, 5, 6],
   },
 ]
 
@@ -57,6 +53,13 @@ export interface TspLocation extends Location {
   designatedPhases: number[]
 }
 
+export type TspErrorState =
+  | { type: 'NONE' }
+  | { type: 'NO_LOCATIONS' }
+  | { type: 'MISSING_PHASES'; locationIDs: Set<string> }
+  | { type: '400' }
+  | { type: 'UNKNOWN'; message: string }
+
 interface TspReportOptions {
   selectedDays: Date[]
   locations: TspLocation[]
@@ -64,15 +67,11 @@ interface TspReportOptions {
 
 export default function TspReportPage() {
   const [reportOptions, setReportOptions] = useState<TspReportOptions>({
-    selectedDays: [startOfYesterday()],
+    selectedDays: [],
     locations: [],
   })
   const [selectedReport, setSelectedReport] = useState(0)
-
-  // NEW: Used for error handling
-  const [userHasTriedRun, setUserHasTriedRun] = useState(false) // Tracks if user pressed "Generate Report"
-  const [errorLocations, setErrorLocations] = useState<Set<string>>(new Set()) // Which location IDs have no phases
-  const [showErrorAlert, setShowErrorAlert] = useState(false) // Controls the MUI Alert
+  const [errorState, setErrorState] = useState<TspErrorState>({ type: 'NONE' })
 
   const {
     data: reportResponse,
@@ -80,17 +79,52 @@ export default function TspReportPage() {
     isLoading: loadingReport,
   } = useGetTransitSignalPriorityReportData()
 
-  const setLocations = (locations: TspLocation[]) => {
-    setReportOptions((prev) => ({ ...prev, locations }))
+  function renderErrorAlert() {
+    if (errorState.type === 'NO_LOCATIONS') {
+      return (
+        <Alert severity="error">Please select one or more locations.</Alert>
+      )
+    }
+    if (errorState.type === 'MISSING_PHASES') {
+      return (
+        <Alert severity="error">
+          Please select phases for the highlighted locations.
+        </Alert>
+      )
+    }
+    if (errorState.type === '400') {
+      return (
+        <Alert severity="error">
+          400: The requested resource was not found.
+        </Alert>
+      )
+    }
+    if (errorState.type === 'UNKNOWN') {
+      return (
+        <Alert severity="error">
+          Something went wrong: {errorState.message}
+        </Alert>
+      )
+    }
+    return null
   }
 
-  const handleLocationDelete = (location: TspLocation) => {
+  function setLocations(locations: TspLocation[]) {
+    const hadNoLocations = errorState.type === 'NO_LOCATIONS'
+    setReportOptions((prev) => ({ ...prev, locations }))
+
+    if (hadNoLocations && locations.length > 0) {
+      setErrorState({ type: 'NONE' })
+    }
+  }
+
+  function handleLocationDelete(location: TspLocation) {
     setLocations(
       reportOptions.locations.filter((loc) => loc.id !== location.id)
     )
   }
 
-  const handleReorderLocations = (dropResult: DropResult) => {
+  function handleReorderLocations(dropResult: DropResult) {
     if (!dropResult.destination) return
     const items = Array.from(reportOptions.locations)
     const [reorderedItem] = items.splice(dropResult.source.index, 1)
@@ -98,13 +132,10 @@ export default function TspReportPage() {
     setLocations(items)
   }
 
-  const handleSavedReportChange = (
-    e: React.ChangeEvent<{ value: unknown }>
-  ) => {
+  function handleSavedReportChange(e: React.ChangeEvent<{ value: unknown }>) {
     const found = savedReportsMock.find((r) => r.id === e.target.value)
     if (found) {
       setSelectedReport(found.id)
-      // This mock data has incomplete TspLocation shape. (Just ignoring in this example)
       setLocations(found.locations as TspLocation[])
     } else {
       setSelectedReport(0)
@@ -112,60 +143,63 @@ export default function TspReportPage() {
     }
   }
 
-  // Update a single location (e.g. designatedPhases)
-  const handleUpdateLocation = (updatedLocation: TspLocation) => {
-    const updateLocations = reportOptions.locations.map((loc) =>
+  function handleUpdateLocation(updatedLocation: TspLocation) {
+    const updatedLocations = reportOptions.locations.map((loc) =>
       loc.id === updatedLocation.id ? updatedLocation : loc
     )
-    setLocations(updateLocations)
+    setReportOptions((prev) => ({ ...prev, locations: updatedLocations }))
 
-    // If user already tried to run, let's re-check if this location still needs error highlight
-    if (userHasTriedRun) {
-      const newErrorLocations = new Set(errorLocations)
-      // If user selected phases for a previously error location, remove from error set
-      if (updatedLocation.designatedPhases?.length > 0) {
-        newErrorLocations.delete(String(updatedLocation.id))
+    if (errorState.type === 'MISSING_PHASES') {
+      const newIDs = new Set(errorState.locationIDs)
+      if (
+        updatedLocation.designatedPhases &&
+        updatedLocation.designatedPhases.length > 0
+      ) {
+        newIDs.delete(String(updatedLocation.id))
       }
-      // If no more errors remain, hide the alert
-      if (newErrorLocations.size === 0) {
-        setShowErrorAlert(false)
+      if (newIDs.size === 0) {
+        setErrorState({ type: 'NONE' })
+      } else {
+        setErrorState({ type: 'MISSING_PHASES', locationIDs: newIDs })
       }
-      setErrorLocations(newErrorLocations)
     }
   }
 
-  const generateReport = () => {
-    // Let them press, but if any location is missing phases, show error & do NOT run
+  async function generateReport() {
+    if (reportOptions.locations.length === 0) {
+      setErrorState({ type: 'NO_LOCATIONS' })
+      return
+    }
     const missingPhases = reportOptions.locations.filter(
       (loc) => !loc.designatedPhases || loc.designatedPhases.length === 0
     )
-
     if (missingPhases.length > 0) {
-      // Prepare error sets
-      const errorSet = new Set<string>(
-        missingPhases.map((loc) => String(loc.id))
-      )
-      setErrorLocations(errorSet)
-      setUserHasTriedRun(true)
-      setShowErrorAlert(true)
-      // Do not run the diagram
+      setErrorState({
+        type: 'MISSING_PHASES',
+        locationIDs: new Set(missingPhases.map((loc) => String(loc.id))),
+      })
       return
     }
-
-    // If no missing phases, clear error states and run the chart
-    setUserHasTriedRun(false)
-    setShowErrorAlert(false)
-    setErrorLocations(new Set())
-
-    fetchTspReport({
-      data: {
-        locationsAndPhases: reportOptions.locations.map((loc) => ({
-          locationIdentifier: loc.locationIdentifier,
-          designatedPhases: loc.designatedPhases,
-        })),
-        dates: reportOptions.selectedDays.map((date) => date.toISOString()),
-      },
-    })
+    setErrorState({ type: 'NONE' })
+    try {
+      await fetchTspReport({
+        data: {
+          locationsAndPhases: reportOptions.locations.map((loc) => ({
+            locationIdentifier: loc.locationIdentifier,
+            designatedPhases: loc.designatedPhases,
+          })),
+          dates: reportOptions.selectedDays.map((date) => date.toISOString()),
+        },
+      })
+    } catch (err: unknown) {
+      if (err instanceof AxiosError && err.response?.status === 404) {
+        setErrorState({ type: '400' })
+      } else if (err instanceof Error) {
+        setErrorState({ type: 'UNKNOWN', message: err.message || 'Error' })
+      } else {
+        setErrorState({ type: 'UNKNOWN', message: 'Error' })
+      }
+    }
   }
 
   return (
@@ -195,6 +229,7 @@ export default function TspReportPage() {
             ))}
           </Select>
         </FormControl>
+
         <Box sx={{ display: 'flex', flexDirection: 'row', gap: 2 }}>
           <Paper sx={{ p: 3, display: 'flex', flexDirection: 'row' }}>
             <Box sx={{ width: '400px' }}>
@@ -211,12 +246,11 @@ export default function TspReportPage() {
                 onDeleteAllLocations={() => setLocations([])}
                 onLocationsReorder={handleReorderLocations}
                 onUpdateLocation={handleUpdateLocation}
-                // Pass the relevant states so child can highlight missing phases & show error text only if user tried
-                userHasTriedRun={userHasTriedRun}
-                errorLocations={errorLocations}
+                errorState={errorState}
               />
             </Box>
           </Paper>
+
           <Paper sx={{ maxWidth: '390px' }}>
             <Box display="flex" justifyContent="flex-end">
               <Button
@@ -244,6 +278,7 @@ export default function TspReportPage() {
             />
           </Paper>
         </Box>
+
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mt: 2 }}>
           <LoadingButton
             startIcon={<PlayArrowIcon />}
@@ -254,12 +289,7 @@ export default function TspReportPage() {
           >
             Generate Report
           </LoadingButton>
-          {showErrorAlert && (
-            <Alert severity="error">
-              Please select at least one phase for each location before running
-              the report.
-            </Alert>
-          )}
+          {renderErrorAlert()}
         </Box>
         {reportResponse && <TspReport report={reportResponse} />}
       </Box>
