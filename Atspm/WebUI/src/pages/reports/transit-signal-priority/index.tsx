@@ -1,4 +1,8 @@
-import { SearchLocation as Location } from '@/api/config/aTSPMConfigurationApi.schemas'
+import {
+  Approach,
+  SearchLocation as Location,
+} from '@/api/config/aTSPMConfigurationApi.schemas'
+import { useGetTransitSignalPriorityReportData } from '@/api/reports/aTSPMReportDataApi'
 import MultipleLocationsDisplay from '@/components/MultipleLocationsSelect/MultipleLocationsDisplay'
 import MultipleLocationsSelect from '@/components/MultipleLocationsSelect/MultipleLocationsSelect'
 import { ResponsivePageLayout } from '@/components/ResponsivePage'
@@ -8,6 +12,7 @@ import { DropResult } from '@hello-pangea/dnd'
 import PlayArrowIcon from '@mui/icons-material/PlayArrow'
 import { LoadingButton } from '@mui/lab'
 import {
+  Alert,
   Box,
   Button,
   Divider,
@@ -17,6 +22,7 @@ import {
   Paper,
   Select,
 } from '@mui/material'
+import { AxiosError } from 'axios'
 import { useState } from 'react'
 
 const savedReportsMock = [
@@ -29,7 +35,6 @@ const savedReportsMock = [
       { id: 1, name: 'Location 1' },
       { id: 2, name: 'Location 2' },
     ],
-    daysOfWeek: [1, 2, 3],
   },
   {
     id: 2,
@@ -39,16 +44,25 @@ const savedReportsMock = [
     locations: [
       { id: 3, name: 'Location 3' },
       { id: 4, name: 'Location 4' },
-      { id: 5, name: 'Location 5' },
-      { id: 6, name: 'Location 6' },
     ],
-    daysOfWeek: [4, 5, 6],
   },
 ]
 
+export interface TspLocation extends Location {
+  approaches: Approach[]
+  designatedPhases: number[]
+}
+
+export type TspErrorState =
+  | { type: 'NONE' }
+  | { type: 'NO_LOCATIONS' }
+  | { type: 'MISSING_PHASES'; locationIDs: Set<string> }
+  | { type: '400' }
+  | { type: 'UNKNOWN'; message: string }
+
 interface TspReportOptions {
   selectedDays: Date[]
-  locations: Location[]
+  locations: TspLocation[]
 }
 
 export default function TspReportPage() {
@@ -57,18 +71,60 @@ export default function TspReportPage() {
     locations: [],
   })
   const [selectedReport, setSelectedReport] = useState(0)
+  const [errorState, setErrorState] = useState<TspErrorState>({ type: 'NONE' })
 
-  const setLocations = (locations: Location[]) => {
-    setReportOptions((prev) => ({ ...prev, locations }))
+  const {
+    data: reportResponse,
+    mutateAsync: fetchTspReport,
+    isLoading: loadingReport,
+  } = useGetTransitSignalPriorityReportData()
+
+  function renderErrorAlert() {
+    if (errorState.type === 'NO_LOCATIONS') {
+      return (
+        <Alert severity="error">Please select one or more locations.</Alert>
+      )
+    }
+    if (errorState.type === 'MISSING_PHASES') {
+      return (
+        <Alert severity="error">
+          Please select phases for the highlighted locations.
+        </Alert>
+      )
+    }
+    if (errorState.type === '400') {
+      return (
+        <Alert severity="error">
+          400: The requested resource was not found.
+        </Alert>
+      )
+    }
+    if (errorState.type === 'UNKNOWN') {
+      return (
+        <Alert severity="error">
+          Something went wrong: {errorState.message}
+        </Alert>
+      )
+    }
+    return null
   }
 
-  const handleLocationDelete = (location: Location) => {
+  function setLocations(locations: TspLocation[]) {
+    const hadNoLocations = errorState.type === 'NO_LOCATIONS'
+    setReportOptions((prev) => ({ ...prev, locations }))
+
+    if (hadNoLocations && locations.length > 0) {
+      setErrorState({ type: 'NONE' })
+    }
+  }
+
+  function handleLocationDelete(location: TspLocation) {
     setLocations(
       reportOptions.locations.filter((loc) => loc.id !== location.id)
     )
   }
 
-  const handleReorderLocations = (dropResult: DropResult) => {
+  function handleReorderLocations(dropResult: DropResult) {
     if (!dropResult.destination) return
     const items = Array.from(reportOptions.locations)
     const [reorderedItem] = items.splice(dropResult.source.index, 1)
@@ -76,20 +132,75 @@ export default function TspReportPage() {
     setLocations(items)
   }
 
-  const handleSavedReportChange = (
-    e: React.ChangeEvent<{ value: unknown }>
-  ) => {
+  function handleSavedReportChange(e: React.ChangeEvent<{ value: unknown }>) {
     const found = savedReportsMock.find((r) => r.id === e.target.value)
     if (found) {
       setSelectedReport(found.id)
-      setLocations(found.locations)
+      setLocations(found.locations as TspLocation[])
     } else {
       setSelectedReport(0)
       setLocations([])
     }
   }
 
-  console.log(reportOptions)
+  function handleUpdateLocation(updatedLocation: TspLocation) {
+    const updatedLocations = reportOptions.locations.map((loc) =>
+      loc.id === updatedLocation.id ? updatedLocation : loc
+    )
+    setReportOptions((prev) => ({ ...prev, locations: updatedLocations }))
+
+    if (errorState.type === 'MISSING_PHASES') {
+      const newIDs = new Set(errorState.locationIDs)
+      if (
+        updatedLocation.designatedPhases &&
+        updatedLocation.designatedPhases.length > 0
+      ) {
+        newIDs.delete(String(updatedLocation.id))
+      }
+      if (newIDs.size === 0) {
+        setErrorState({ type: 'NONE' })
+      } else {
+        setErrorState({ type: 'MISSING_PHASES', locationIDs: newIDs })
+      }
+    }
+  }
+
+  async function generateReport() {
+    if (reportOptions.locations.length === 0) {
+      setErrorState({ type: 'NO_LOCATIONS' })
+      return
+    }
+    const missingPhases = reportOptions.locations.filter(
+      (loc) => !loc.designatedPhases || loc.designatedPhases.length === 0
+    )
+    if (missingPhases.length > 0) {
+      setErrorState({
+        type: 'MISSING_PHASES',
+        locationIDs: new Set(missingPhases.map((loc) => String(loc.id))),
+      })
+      return
+    }
+    setErrorState({ type: 'NONE' })
+    try {
+      await fetchTspReport({
+        data: {
+          locationsAndPhases: reportOptions.locations.map((loc) => ({
+            locationIdentifier: loc.locationIdentifier,
+            designatedPhases: loc.designatedPhases,
+          })),
+          dates: reportOptions.selectedDays.map((date) => date.toISOString()),
+        },
+      })
+    } catch (err: unknown) {
+      if (err instanceof AxiosError && err.response?.status === 404) {
+        setErrorState({ type: '400' })
+      } else if (err instanceof Error) {
+        setErrorState({ type: 'UNKNOWN', message: err.message || 'Error' })
+      } else {
+        setErrorState({ type: 'UNKNOWN', message: 'Error' })
+      }
+    }
+  }
 
   return (
     <ResponsivePageLayout title="Transit Signal Priority">
@@ -118,6 +229,7 @@ export default function TspReportPage() {
             ))}
           </Select>
         </FormControl>
+
         <Box sx={{ display: 'flex', flexDirection: 'row', gap: 2 }}>
           <Paper sx={{ p: 3, display: 'flex', flexDirection: 'row' }}>
             <Box sx={{ width: '400px' }}>
@@ -133,9 +245,12 @@ export default function TspReportPage() {
                 onLocationDelete={handleLocationDelete}
                 onDeleteAllLocations={() => setLocations([])}
                 onLocationsReorder={handleReorderLocations}
+                onUpdateLocation={handleUpdateLocation}
+                errorState={errorState}
               />
             </Box>
           </Paper>
+
           <Paper sx={{ maxWidth: '390px' }}>
             <Box display="flex" justifyContent="flex-end">
               <Button
@@ -163,14 +278,20 @@ export default function TspReportPage() {
             />
           </Paper>
         </Box>
-        <LoadingButton
-          startIcon={<PlayArrowIcon />}
-          variant="contained"
-          sx={{ padding: '10px', marginTop: '10px' }}
-        >
-          Generate Report
-        </LoadingButton>
-        <TspReport />
+
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mt: 2 }}>
+          <LoadingButton
+            startIcon={<PlayArrowIcon />}
+            loading={loadingReport}
+            variant="contained"
+            sx={{ padding: '10px' }}
+            onClick={generateReport}
+          >
+            Generate Report
+          </LoadingButton>
+          {renderErrorAlert()}
+        </Box>
+        {reportResponse && <TspReport report={reportResponse} />}
       </Box>
     </ResponsivePageLayout>
   )
