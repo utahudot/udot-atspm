@@ -302,7 +302,7 @@ namespace Utah.Udot.Atspm.Business.Common
         private static short? GetTerminationEventBetweenStartAndEnd(DateTime start,
             DateTime end, IReadOnlyList<IndianaEvent> terminationEvents)
         {
-            return terminationEvents.Where(t => t.Timestamp > start && t.Timestamp <= end).OrderBy(t => t.Timestamp).LastOrDefault().EventCode;
+            return terminationEvents.Where(t => t.Timestamp > start && t.Timestamp <= end).OrderBy(t => t.Timestamp).LastOrDefault()?.EventCode;
         }
 
         private static YellowRedEventType GetYellowToRedEventType(short EventCode)

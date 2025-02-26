@@ -6,6 +6,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Utah.Udot.Atspm.Business.TransitSignalPriority;
+using Moq;
+using Utah.Udot.Atspm.Business.Common;
+using Utah.Udot.Atspm.Data.Models.EventLogModels;
+using Microsoft.Extensions.Logging;
 
 namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest.Tests
 {
@@ -295,5 +299,6 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest.Tests
             return (parameters, new List<TransitSignalPriorityPlan> { plan });
         }
     }
+
 
 }
