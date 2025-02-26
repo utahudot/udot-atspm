@@ -19,9 +19,9 @@ using Utah.Udot.Atspm.Business.Common;
 
 namespace Utah.Udot.Atspm.Business.WaitTime
 {
-    public class WaitTimeOptions : OptionsBase
+    public class WaitTimeOptions : DateTimeOptionsBase, ILocationOptionsBase
     {
         public int BinSize { get; set; }
-
+        public string LocationIdentifier { get; set; }
     }
 }

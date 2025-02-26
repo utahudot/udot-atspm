@@ -21,7 +21,7 @@ using Utah.Udot.Atspm.Business.Common;
 namespace Utah.Udot.Atspm.Business.PedDelay
 {
     [DataContract]
-    public class PedDelayOptions : OptionsBase
+    public class PedDelayOptions : DateTimeOptionsBase, ILocationOptionsBase
     {
         public int TimeBuffer { get; set; }
         public bool ShowPedBeginWalk { get; set; }
@@ -29,5 +29,6 @@ namespace Utah.Udot.Atspm.Business.PedDelay
         public bool ShowPercentDelay { get; set; }
         public bool ShowPedRecall { get; set; }
         public int PedRecallThreshold { get; set; }
+        public string LocationIdentifier { get; set; }
     }
 }
