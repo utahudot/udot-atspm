@@ -51,8 +51,9 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
 
         // New block that gets all data for a single inputParameters (across multiple dates)
         private readonly TransformBlock<TransitSignalLoadParameters, (TransitSignalLoadParameters, List<IndianaEvent>)?> _loadLocationDataBlock;
-        private readonly TransformBlock<(TransitSignalLoadParameters, List<IndianaEvent>), (TransitSignalLoadParameters, Dictionary<string, List<IndianaEvent>>)> _classifyEventsBlock;
-        private readonly TransformBlock<(TransitSignalLoadParameters, Dictionary<string, List<IndianaEvent>>), (TransitSignalLoadParameters, List<TransitSignalPriorityPlan>)> _processCyclesBlock;
+        private readonly TransformBlock<(TransitSignalLoadParameters, List<IndianaEvent>), (TransitSignalLoadParameters, Dictionary<string, List<IndianaEvent>>)> _classifyEventsBlock; 
+        private readonly TransformBlock<(TransitSignalLoadParameters, Dictionary<string, List<IndianaEvent>>), (TransitSignalLoadParameters, List<TransitSignalPriorityCycle>, Dictionary<string, List<IndianaEvent>>)> _processCyclesBlock;
+        private readonly TransformBlock<(TransitSignalLoadParameters, List<TransitSignalPriorityCycle>, Dictionary<string, List<IndianaEvent>>), (TransitSignalLoadParameters, List<TransitSignalPriorityPlan>)> _processPlansBlock;
         private readonly TransformBlock<(TransitSignalLoadParameters, List<IndianaEvent>)?, (TransitSignalLoadParameters, List<IndianaEvent>)> _filteringBlock;
         private readonly TransformBlock<(TransitSignalLoadParameters, List<TransitSignalPriorityPlan>), (TransitSignalLoadParameters, List<TransitSignalPriorityPlan>)> _calculateTSPMaxBlock;
         private readonly TransformBlock<(TransitSignalLoadParameters, List<TransitSignalPriorityPlan>), (TransitSignalLoadParameters, List<TransitSignalPriorityPlan>)> _calculateMaxExtensionBlock;
@@ -85,8 +86,14 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
                 new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = _maxDegreeOfParallelism }
             );
 
-            _processCyclesBlock = new TransformBlock<(TransitSignalLoadParameters, Dictionary<string, List<IndianaEvent>>), (TransitSignalLoadParameters, List<TransitSignalPriorityPlan>)>(
-                ProcessCycles(),
+            _processCyclesBlock = new TransformBlock<(TransitSignalLoadParameters, Dictionary<string, List<IndianaEvent>>), (TransitSignalLoadParameters, List<TransitSignalPriorityCycle>, Dictionary<string, List<IndianaEvent>>)>(
+                input => ProcessCycles(input),
+                new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = _maxDegreeOfParallelism }
+            );
+            
+
+            _processPlansBlock = new TransformBlock<(TransitSignalLoadParameters, List<TransitSignalPriorityCycle>, Dictionary<string, List<IndianaEvent>>), (TransitSignalLoadParameters, List<TransitSignalPriorityPlan>)>(
+                input => ProcessPlans(input),
                 new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = _maxDegreeOfParallelism }
             );
 
@@ -124,6 +131,11 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
                 new DataflowLinkOptions { PropagateCompletion = true }
             );
             _processCyclesBlock.LinkTo(
+                _processPlansBlock,
+                new DataflowLinkOptions { PropagateCompletion = true }
+            );
+
+            _processPlansBlock.LinkTo(
                 _calculateTSPMaxBlock,
                 new DataflowLinkOptions { PropagateCompletion = true }
             );
@@ -310,56 +322,50 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
             return (parameters, plans);
             
         }
-        private Func<(TransitSignalLoadParameters, Dictionary<string, List<IndianaEvent>>), Task<(TransitSignalLoadParameters, List<TransitSignalPriorityPlan>)>> ProcessCycles()
+
+        private (TransitSignalLoadParameters, List<TransitSignalPriorityCycle>, Dictionary<string, List<IndianaEvent>>) ProcessCycles((TransitSignalLoadParameters, Dictionary<string, List<IndianaEvent>>) input)
         {
-            return async tuple =>
+            var (inputParameters, eventGroups) = input;
+            var cycleEvents = eventGroups["cycleEvents"];
+            var terminationEvents = eventGroups["terminationEvents"];
+            var phases = cycleEvents.Select(c => c.EventParam).Distinct();
+            var cycles = new List<TransitSignalPriorityCycle>();
+
+            foreach (var phase in phases)
             {
-                var (inputParameters, eventGroups) = tuple;
-
-                // Extract event lists to local variables.
-                var cycleEvents = eventGroups["cycleEvents"];
-                var terminationEvents = eventGroups["terminationEvents"];
-                var planEvents = eventGroups["planEvents"];
-                var splitsEvents = eventGroups["splitsEvents"];
-
-                var phases = cycleEvents.Select(c => c.EventParam).Distinct();
-                var cycles = new List<TransitSignalPriorityCycle>();
-
-                foreach (var phase in phases)
+                if (cycleEvents.Any(e => e.EventParam == phase))
                 {
-                    if (cycleEvents.Any(cycleEvents => cycleEvents.EventParam == phase))
-                    {
-                        cycles.AddRange(_cycleService.GetTransitSignalPriorityCycles(
-                            phase,
-                            cycleEvents.Where(cycleEvents => cycleEvents.EventParam == phase).ToList(),
-                            terminationEvents.Where(terminationEvents => terminationEvents.EventParam == phase).ToList()
-                            ));
-                    }
+                    cycles.AddRange(_cycleService.GetTransitSignalPriorityCycles(
+                        phase,
+                        cycleEvents.Where(e => e.EventParam == phase).ToList(),
+                        terminationEvents.Where(e => e.EventParam == phase).ToList()
+                    ));
                 }
-                var firstPlanEvent = planEvents.Min(p => p.Timestamp);
-                var firstDate = inputParameters.Dates.OrderBy(d => d).First();
-                var plans = GetTransitSignalPriorityPlans(
-                    firstPlanEvent < firstDate ? firstPlanEvent : firstDate,
-                    inputParameters.Dates.OrderBy(d => d).Last(),
-                    inputParameters.LocationPhases.LocationIdentifier,
-                    planEvents,
-                    splitsEvents,
-                    cycles
-                    );
+            }
 
-
-                // Clear the event lists to free up memory after processing.
-                cycleEvents.Clear();
-                terminationEvents.Clear();
-                planEvents.Clear();
-                splitsEvents.Clear();
-                GC.Collect();
-                GC.WaitForPendingFinalizers();
-
-                return (inputParameters, plans);
-            };
+            // Return eventGroups along with cycles
+            return (inputParameters, cycles, eventGroups);
         }
 
+
+        private (TransitSignalLoadParameters, List<TransitSignalPriorityPlan>) ProcessPlans((TransitSignalLoadParameters, List<TransitSignalPriorityCycle>, Dictionary<string, List<IndianaEvent>>) input)
+        {
+            var (inputParameters, cycles, eventGroups) = input;
+            var planEvents = eventGroups["planEvents"];
+            var splitsEvents = eventGroups["splitsEvents"];
+            var firstPlanEvent = planEvents.Min(p => p.Timestamp);
+            var firstDate = inputParameters.Dates.OrderBy(d => d).First();
+
+            var plans = GetTransitSignalPriorityPlans(
+                firstPlanEvent < firstDate ? firstPlanEvent : firstDate,
+                inputParameters.Dates.OrderBy(d => d).Last(),
+                inputParameters.LocationPhases.LocationIdentifier,
+                planEvents,
+                splitsEvents,
+                cycles
+            );
+            return (inputParameters, plans);
+        }
         private static Func<(TransitSignalLoadParameters, List<IndianaEvent>), (TransitSignalLoadParameters, Dictionary<string, List<IndianaEvent>>)> ClassifyEvents()
         {
             return tuple =>
