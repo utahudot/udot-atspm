@@ -1,4 +1,7 @@
-import { TspLocation } from '@/pages/reports/transit-signal-priority'
+import {
+  TspErrorState,
+  TspLocation,
+} from '@/pages/reports/transit-signal-priority'
 import {
   DragDropContext,
   Draggable,
@@ -12,7 +15,6 @@ import {
   Button,
   Divider,
   FormControl,
-  FormHelperText,
   IconButton,
   InputLabel,
   MenuItem,
@@ -31,23 +33,18 @@ interface Props {
   onDeleteAllLocations: (locations: TspLocation[]) => void
   onLocationsReorder: (result: DropResult) => void
   onUpdateLocation: (updatedLocation: TspLocation) => void
-  userHasTriedRun: boolean
-  errorLocations: Set<string>
+  errorState: TspErrorState
 }
 
-const MultipleLocationsDisplay = ({
+export default function MultipleLocationsDisplay({
   locations,
   onLocationDelete,
   onDeleteAllLocations,
   onLocationsReorder,
   onUpdateLocation,
-  userHasTriedRun,
-  errorLocations,
-}: Props) => {
-  const handlePhaseChange = (
-    location: TspLocation,
-    selectedPhases: number[]
-  ) => {
+  errorState,
+}: Props) {
+  function handlePhaseChange(location: TspLocation, selectedPhases: number[]) {
     onUpdateLocation({ ...location, designatedPhases: selectedPhases })
   }
 
@@ -102,13 +99,14 @@ const MultipleLocationsDisplay = ({
                     const locationPhaseOptions = Array.from(
                       new Set(
                         location.approaches?.map(
-                          (app) => app.protectedPhaseNumber
+                          (a) => a.protectedPhaseNumber
                         ) || []
                       )
                     ).sort((a, b) => a - b)
 
-                    const hasError =
-                      userHasTriedRun && errorLocations.has(String(location.id))
+                    const isInError =
+                      errorState.type === 'MISSING_PHASES' &&
+                      errorState.locationIDs.has(String(location.id))
 
                     return (
                       <Draggable
@@ -136,19 +134,16 @@ const MultipleLocationsDisplay = ({
                                   flexItem
                                 />
                                 <Box ml={1}>
-                                  {`${location.locationIdentifier} - ${
-                                    location.primaryName
-                                  } ${location.secondaryName}`}
+                                  {`${location.locationIdentifier} - ${location.primaryName} ${location.secondaryName}`}
                                 </Box>
                               </Box>
                             </TableCell>
-
                             <TableCell align="center">
                               <FormControl
                                 variant="outlined"
                                 size="small"
                                 sx={{ minWidth: 150 }}
-                                error={hasError}
+                                error={isInError}
                                 fullWidth
                               >
                                 <InputLabel id={`phase-label-${location.id}`}>
@@ -183,7 +178,6 @@ const MultipleLocationsDisplay = ({
                                 </Select>
                               </FormControl>
                             </TableCell>
-
                             <TableCell align="right">
                               <IconButton
                                 color="error"
@@ -204,14 +198,6 @@ const MultipleLocationsDisplay = ({
           )}
         </Droppable>
       </DragDropContext>
-
-      {userHasTriedRun && errorLocations.size > 0 && (
-        <FormHelperText error sx={{ mt: 1 }}>
-          Each location must have at least one designated phase selected.
-        </FormHelperText>
-      )}
     </>
   )
 }
-
-export default MultipleLocationsDisplay
