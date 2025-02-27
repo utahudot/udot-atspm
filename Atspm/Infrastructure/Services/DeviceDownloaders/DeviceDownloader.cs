@@ -100,13 +100,13 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders
             {
                 var logMessages = new DeviceDownloaderLogMessages(_log, parameter);
 
-                if (!IPAddress.TryParse(parameter?.Ipaddress, out IPAddress ipaddress) || ipaddress == null ? true : !ipaddress.IsValidIpAddress())
+                if (!IPAddress.TryParse(parameter?.Ipaddress, out IPAddress ipaddress) || ipaddress == null || !ipaddress.IsValidIpAddress())
                 {
                     logMessages.InvalidDeviceIpAddressException(ipaddress);
 
                     throw new InvalidDeviceIpAddressException(parameter);
                 }
-                else if (_options.Ping ? !await ipaddress.PingIpAddressAsync() : false)
+                else if (_options.Ping && !await ipaddress.PingIpAddressAsync())
                 {
                     logMessages.InvalidDeviceIpAddressException(ipaddress);
 
@@ -347,29 +347,6 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders
                 return arg.GetPropertyValueString(format);
 
             return format;
-        }
-    }
-
-    //TODO: this needs to be moved to the toolkit
-    public static class PropertyExtensions
-    {
-        /// <summary>
-        /// Checks if the <paramref name="obj"/> contains <paramref name="propertyName"/> and returns a string value of <paramref name="propertyName"/>
-        /// </summary>
-        /// <param name="obj"></param>
-        /// <param name="propertyName"></param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentException"></exception>
-        public static string GetPropertyValueString(this object obj, string propertyName)
-        {
-            if (obj.HasProperty(propertyName))
-            {
-                string value = obj.GetType().GetProperty(propertyName).GetValue(obj, null).ToString();
-
-                return value;
-            }
-
-            throw new ArgumentException(propertyName, nameof(propertyName));
         }
     }
 }
