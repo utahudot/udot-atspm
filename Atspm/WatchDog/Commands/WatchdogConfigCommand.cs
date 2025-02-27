@@ -21,7 +21,8 @@ namespace Utah.Udot.ATSPM.WatchDog.Commands
 {
     public class WatchdogConfigCommand : RootCommand
     {
-        public WatchdogConfigCommand() {
+        public WatchdogConfigCommand()
+        {
             AddCommand(WatchdogCommand);
             AddCommand(EmailCommand);
         }

@@ -57,7 +57,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
             string controller = string.Empty;
             string verb = string.Empty;
             string action = string.Empty;
-            
+
             swaggerGenOptions.CustomOperationIds(a =>
             {
                 StringBuilder builder = new StringBuilder();
@@ -101,21 +101,21 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
 
         public static SwaggerGenOptions AddJwtAuthorization(this SwaggerGenOptions swaggerGenOptions)
         {
-                 var jwtSecurityScheme = new OpenApiSecurityScheme
-                 {
-                     BearerFormat = "JWT",
-                     Name = "JWT Authentication",
-                     In = ParameterLocation.Header,
-                     Type = SecuritySchemeType.Http,
-                     Scheme = JwtBearerDefaults.AuthenticationScheme,
-                     Description = "Put **_ONLY_** your JWT Bearer token on textbox below!",
+            var jwtSecurityScheme = new OpenApiSecurityScheme
+            {
+                BearerFormat = "JWT",
+                Name = "JWT Authentication",
+                In = ParameterLocation.Header,
+                Type = SecuritySchemeType.Http,
+                Scheme = JwtBearerDefaults.AuthenticationScheme,
+                Description = "Put **_ONLY_** your JWT Bearer token on textbox below!",
 
-                     Reference = new OpenApiReference
-                     {
-                         Id = JwtBearerDefaults.AuthenticationScheme,
-                         Type = ReferenceType.SecurityScheme
-                     }
-                 };
+                Reference = new OpenApiReference
+                {
+                    Id = JwtBearerDefaults.AuthenticationScheme,
+                    Type = ReferenceType.SecurityScheme
+                }
+            };
 
             swaggerGenOptions.AddSecurityDefinition(jwtSecurityScheme.Reference.Id, jwtSecurityScheme);
 

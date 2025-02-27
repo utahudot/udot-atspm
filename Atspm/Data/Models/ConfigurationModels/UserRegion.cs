@@ -27,12 +27,12 @@ namespace Utah.Udot.Atspm.Data.Models
         /// User id
         /// </summary>
         public string UserId { get; set; }
-        
+
         /// <summary>
         /// Region id
         /// </summary>
         public int RegionId { get; set; }
-        
+
         /// <summary>
         /// Region
         /// </summary>

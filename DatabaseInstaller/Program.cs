@@ -16,20 +16,16 @@
 #endregion
 
 using DatabaseInstaller.Commands;
-using DatabaseInstaller.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
 using System.CommandLine.Builder;
 using System.CommandLine.Hosting;
 using System.CommandLine.Parsing;
-using Utah.Udot.Atspm.Common;
 using Utah.Udot.Atspm.Data;
 using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Infrastructure.Extensions;
-using Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices;
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 var rootCmd = new DatabaseInstallerCommands();

@@ -18,8 +18,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
 using Utah.Udot.ATSPM.Infrastructure.WorkflowSteps;
@@ -79,7 +77,7 @@ namespace Utah.Udot.ATSPM.InfrastructureTests.WorkflowStepTests
         {
             var time1 = DateTime.Now;
             var time2 = time1.AddDays(5);
-            
+
             var input = Enumerable.Range(1, 10)
                 .Select(s =>
                 {
@@ -160,7 +158,7 @@ namespace Utah.Udot.ATSPM.InfrastructureTests.WorkflowStepTests
                 .Select(s =>
                 {
                     {
-                        return Tuple.Create<Device, EventLogModelBase>(new Device() { Id = s }, (s % 2 == 0) ? 
+                        return Tuple.Create<Device, EventLogModelBase>(new Device() { Id = s }, (s % 2 == 0) ?
                             new IndianaEvent()
                             {
                                 LocationIdentifier = "1001",

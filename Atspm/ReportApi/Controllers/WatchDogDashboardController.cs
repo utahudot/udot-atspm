@@ -15,7 +15,6 @@
 // limitations under the License.
 #endregion
 
-using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
 using Utah.Udot.Atspm.Business.Watchdog;
 using Utah.Udot.ATSPM.ReportApi.ReportServices;
