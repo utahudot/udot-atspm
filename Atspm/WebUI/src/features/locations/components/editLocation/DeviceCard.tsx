@@ -38,6 +38,7 @@ const deviceTypeMap = {
   FIRCamera: { label: 'FIR Camera', icon: <VideocamOutlinedIcon /> },
   LidarSensor: { label: 'Lidar Sensor', icon: <SensorsIcon /> },
   WavetronixSpeed: { label: 'Wavetronix Speed', icon: <SettingsRemoteIcon /> },
+  SpeedSensor: { label: 'Speed Sensor', icon: <SettingsRemoteIcon /> },
 }
 
 const StyledLabel = ({ children }: { children: React.ReactNode }) => (
