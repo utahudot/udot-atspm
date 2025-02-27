@@ -2,33 +2,36 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Oracle.EntityFrameworkCore.Metadata;
 using Utah.Udot.Atspm.Data;
 
 #nullable disable
 
-namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
+namespace Utah.Udot.ATSPM.SqlDatabaseProvider.Migrations
 {
     [DbContext(typeof(ConfigContext))]
-    partial class ConfigContextModelSnapshot : ModelSnapshot
+    [Migration("20250227162910_5_0")]
+    partial class _5_0
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "8.0.11")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
-            OracleModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
             modelBuilder.Entity("AreaLocation", b =>
                 {
                     b.Property<int>("AreasId")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
                     b.Property<int>("LocationsId")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
                     b.HasKey("AreasId", "LocationsId");
 
@@ -40,10 +43,10 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
             modelBuilder.Entity("DetectionTypeDetector", b =>
                 {
                     b.Property<int>("DetectionTypesId")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
                     b.Property<int>("DetectorsId")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
                     b.HasKey("DetectionTypesId", "DetectorsId");
 
@@ -55,10 +58,10 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
             modelBuilder.Entity("DetectionTypeMeasureType", b =>
                 {
                     b.Property<int>("DetectionTypesId")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
                     b.Property<int>("MeasureTypesId")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
                     b.HasKey("DetectionTypesId", "MeasureTypesId");
 
@@ -70,10 +73,10 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
             modelBuilder.Entity("MeasureCommentMeasureType", b =>
                 {
                     b.Property<int>("MeasureCommentsId")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
                     b.Property<int>("MeasureTypesId")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
                     b.HasKey("MeasureCommentsId", "MeasureTypesId");
 
@@ -86,44 +89,44 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
-                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(4000)");
+                        .HasColumnType("varchar(max)");
 
                     b.Property<int>("DirectionTypeId")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
                     b.Property<bool>("IsPedestrianPhaseOverlap")
-                        .HasColumnType("BOOLEAN");
+                        .HasColumnType("bit");
 
                     b.Property<bool>("IsPermissivePhaseOverlap")
-                        .HasColumnType("BOOLEAN");
+                        .HasColumnType("bit");
 
                     b.Property<bool>("IsProtectedPhaseOverlap")
-                        .HasColumnType("BOOLEAN");
+                        .HasColumnType("bit");
 
                     b.Property<int>("LocationId")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
                     b.Property<int?>("Mph")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
                     b.Property<string>("PedestrianDetectors")
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(4000)");
+                        .HasColumnType("varchar(max)");
 
                     b.Property<int?>("PedestrianPhaseNumber")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
                     b.Property<int?>("PermissivePhaseNumber")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
                     b.Property<int>("ProtectedPhaseNumber")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -141,15 +144,15 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
-                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(50)");
+                        .HasColumnType("varchar(50)");
 
                     b.HasKey("Id");
 
@@ -162,21 +165,21 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
             modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.DetectionType", b =>
                 {
                     b.Property<int>("Id")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
                     b.Property<string>("Abbreviation")
                         .HasMaxLength(5)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(5)");
+                        .HasColumnType("varchar(5)");
 
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(128)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(128)");
+                        .HasColumnType("varchar(128)");
 
                     b.Property<int>("DisplayOrder")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -276,54 +279,54 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
-                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("ApproachId")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("DateAdded")
-                        .HasColumnType("TIMESTAMP(7)");
+                        .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("DateDisabled")
-                        .HasColumnType("TIMESTAMP(7)");
+                        .HasColumnType("datetime2");
 
                     b.Property<int?>("DecisionPoint")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
                     b.Property<string>("DectectorIdentifier")
                         .IsRequired()
                         .HasMaxLength(50)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(50)");
+                        .HasColumnType("varchar(50)");
 
                     b.Property<int>("DetectionHardware")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
                     b.Property<int>("DetectorChannel")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
                     b.Property<int?>("DistanceFromStopBar")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
                     b.Property<int?>("LaneNumber")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
                     b.Property<int>("LaneType")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
                     b.Property<double>("LatencyCorrection")
-                        .HasColumnType("BINARY_DOUBLE");
+                        .HasColumnType("float");
 
                     b.Property<int?>("MinSpeedFilter")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
                     b.Property<int?>("MovementDelay")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
                     b.Property<int>("MovementType")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -339,21 +342,21 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
-                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Comment")
                         .IsRequired()
                         .HasMaxLength(256)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(256)");
+                        .HasColumnType("varchar(256)");
 
                     b.Property<int>("DetectorId")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("TimeStamp")
-                        .HasColumnType("TIMESTAMP(7)");
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
@@ -369,35 +372,35 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
-                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int?>("DeviceConfigurationId")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
                     b.Property<string>("DeviceIdentifier")
                         .IsRequired()
                         .HasMaxLength(50)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(50)");
+                        .HasColumnType("varchar(50)");
 
                     b.Property<string>("DeviceProperties")
                         .HasMaxLength(1024)
-                        .HasColumnType("NVARCHAR2(1024)");
+                        .HasColumnType("nvarchar(1024)");
 
                     b.Property<string>("DeviceStatus")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(14)
-                        .HasColumnType("NVARCHAR2(14)")
+                        .HasColumnType("nvarchar(14)")
                         .HasDefaultValue("Unknown");
 
                     b.Property<string>("DeviceType")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(16)
-                        .HasColumnType("NVARCHAR2(16)")
+                        .HasColumnType("nvarchar(16)")
                         .HasDefaultValue("Unknown");
 
                     b.Property<string>("Ipaddress")
@@ -405,19 +408,19 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(15)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(15)")
+                        .HasColumnType("varchar(15)")
                         .HasDefaultValueSql("('0.0.0.0')");
 
                     b.Property<int>("LocationId")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
                     b.Property<bool>("LoggingEnabled")
-                        .HasColumnType("BOOLEAN");
+                        .HasColumnType("bit");
 
                     b.Property<string>("Notes")
                         .HasMaxLength(512)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(512)");
+                        .HasColumnType("varchar(512)");
 
                     b.HasKey("Id");
 
@@ -435,79 +438,79 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
-                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ConnectionProperties")
                         .HasMaxLength(1024)
-                        .HasColumnType("NVARCHAR2(1024)");
+                        .HasColumnType("nvarchar(1024)");
 
                     b.Property<int>("ConnectionTimeout")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(10)")
+                        .HasColumnType("int")
                         .HasDefaultValueSql("((2000))");
 
                     b.Property<string>("Decoders")
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(512)
-                        .HasColumnType("NVARCHAR2(512)")
+                        .HasColumnType("nvarchar(512)")
                         .HasDefaultValueSql("('[]')");
 
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(24)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(24)");
+                        .HasColumnType("varchar(24)");
 
                     b.Property<int>("LoggingOffset")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
                     b.Property<string>("Notes")
                         .HasMaxLength(512)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(512)");
+                        .HasColumnType("varchar(512)");
 
                     b.Property<int>("OperationTimeout")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(10)")
+                        .HasColumnType("int")
                         .HasDefaultValueSql("((2000))");
 
                     b.Property<string>("Password")
                         .HasMaxLength(50)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(50)");
+                        .HasColumnType("varchar(50)");
 
                     b.Property<string>("Path")
                         .HasMaxLength(512)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(512)");
+                        .HasColumnType("varchar(512)");
 
                     b.Property<int>("Port")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(10)")
+                        .HasColumnType("int")
                         .HasDefaultValueSql("((0))");
 
                     b.Property<int?>("ProductId")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
                     b.Property<string>("Protocol")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(7)
-                        .HasColumnType("NVARCHAR2(7)")
+                        .HasColumnType("nvarchar(7)")
                         .HasDefaultValue("Unknown");
 
                     b.Property<string>("Query")
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(512)
-                        .HasColumnType("NVARCHAR2(512)")
+                        .HasColumnType("nvarchar(512)")
                         .HasDefaultValueSql("('[]')");
 
                     b.Property<string>("UserName")
                         .HasMaxLength(50)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(50)");
+                        .HasColumnType("varchar(50)");
 
                     b.HasKey("Id");
 
@@ -522,20 +525,20 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
             modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.DirectionType", b =>
                 {
                     b.Property<int>("Id")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
                     b.Property<string>("Abbreviation")
                         .HasMaxLength(5)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(5)");
+                        .HasColumnType("varchar(5)");
 
                     b.Property<string>("Description")
                         .HasMaxLength(30)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(30)");
+                        .HasColumnType("varchar(30)");
 
                     b.Property<int>("DisplayOrder")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -614,24 +617,24 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
-                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Body")
                         .IsRequired()
                         .HasMaxLength(8000)
                         .IsUnicode(false)
-                        .HasColumnType("CLOB");
+                        .HasColumnType("varchar(8000)");
 
                     b.Property<int>("DisplayOrder")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
                     b.Property<string>("Header")
                         .IsRequired()
                         .HasMaxLength(256)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(256)");
+                        .HasColumnType("varchar(256)");
 
                     b.HasKey("Id");
 
@@ -794,30 +797,30 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
-                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("CountyParish")
                         .HasMaxLength(50)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(50)");
+                        .HasColumnType("varchar(50)");
 
                     b.Property<string>("Mpo")
                         .HasMaxLength(50)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(50)");
+                        .HasColumnType("varchar(50)");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(50)");
+                        .HasColumnType("varchar(50)");
 
                     b.Property<string>("OtherPartners")
                         .HasMaxLength(50)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(50)");
+                        .HasColumnType("varchar(50)");
 
                     b.HasKey("Id");
 
@@ -831,66 +834,66 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
-                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<bool>("ChartEnabled")
-                        .HasColumnType("BOOLEAN");
+                        .HasColumnType("bit");
 
                     b.Property<int?>("JurisdictionId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(10)")
+                        .HasColumnType("int")
                         .HasDefaultValueSql("((0))");
 
                     b.Property<double>("Latitude")
-                        .HasColumnType("BINARY_DOUBLE");
+                        .HasColumnType("float");
 
                     b.Property<string>("LocationIdentifier")
                         .IsRequired()
                         .HasMaxLength(10)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(10)");
+                        .HasColumnType("varchar(10)");
 
                     b.Property<int>("LocationTypeId")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
                     b.Property<double>("Longitude")
-                        .HasColumnType("BINARY_DOUBLE");
+                        .HasColumnType("float");
 
                     b.Property<string>("Note")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(256)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(256)")
+                        .HasColumnType("varchar(256)")
                         .HasDefaultValueSql("('Initial')");
 
                     b.Property<bool>("PedsAre1to1")
-                        .HasColumnType("BOOLEAN");
+                        .HasColumnType("bit");
 
                     b.Property<string>("PrimaryName")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(100)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(100)")
+                        .HasColumnType("varchar(100)")
                         .HasDefaultValueSql("('')");
 
                     b.Property<int?>("RegionId")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
                     b.Property<string>("SecondaryName")
                         .HasMaxLength(100)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(100)");
+                        .HasColumnType("varchar(100)");
 
                     b.Property<DateTime>("Start")
-                        .HasColumnType("TIMESTAMP(7)");
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("VersionAction")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(10)")
+                        .HasColumnType("int")
                         .HasDefaultValueSql("((10))");
 
                     b.HasKey("Id");
@@ -911,19 +914,19 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
-                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Icon")
                         .IsUnicode(true)
-                        .HasColumnType("NVARCHAR2(2000)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(50)");
+                        .HasColumnType("varchar(50)");
 
                     b.HasKey("Id");
 
@@ -959,23 +962,23 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
-                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Comment")
                         .HasMaxLength(255)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(255)");
+                        .HasColumnType("varchar(255)");
 
                     b.Property<string>("LocationIdentifier")
                         .IsRequired()
                         .HasMaxLength(10)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(10)");
+                        .HasColumnType("varchar(10)");
 
                     b.Property<DateTime>("TimeStamp")
-                        .HasColumnType("TIMESTAMP(7)");
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
@@ -991,22 +994,22 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
-                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("MeasureTypeId")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
                     b.Property<string>("Option")
                         .HasMaxLength(128)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(128)");
+                        .HasColumnType("varchar(128)");
 
                     b.Property<string>("Value")
                         .HasMaxLength(512)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(512)");
+                        .HasColumnType("varchar(512)");
 
                     b.HasKey("Id");
 
@@ -1416,28 +1419,28 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
-                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Abbreviation")
                         .HasMaxLength(8)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(8)");
+                        .HasColumnType("varchar(8)");
 
                     b.Property<int>("DisplayOrder")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
                     b.Property<string>("Name")
                         .HasMaxLength(50)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(50)");
+                        .HasColumnType("varchar(50)");
 
                     b.Property<bool>("ShowOnAggregationSite")
-                        .HasColumnType("BOOLEAN");
+                        .HasColumnType("bit");
 
                     b.Property<bool>("ShowOnWebsite")
-                        .HasColumnType("BOOLEAN");
+                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 
@@ -1768,33 +1771,33 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
-                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("DisplayOrder")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
                     b.Property<byte[]>("Document")
-                        .HasColumnType("RAW(2000)");
+                        .HasColumnType("varbinary(max)");
 
                     b.Property<string>("Icon")
                         .IsUnicode(true)
-                        .HasColumnType("NVARCHAR2(2000)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Link")
                         .HasMaxLength(4000)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(4000)");
+                        .HasColumnType("varchar(4000)");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(128)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(128)");
+                        .HasColumnType("varchar(128)");
 
                     b.Property<int?>("ParentId")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -1810,30 +1813,30 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
-                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Manufacturer")
                         .IsRequired()
                         .HasMaxLength(48)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(48)");
+                        .HasColumnType("varchar(48)");
 
                     b.Property<string>("Model")
                         .IsRequired()
                         .HasMaxLength(48)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(48)");
+                        .HasColumnType("varchar(48)");
 
                     b.Property<string>("Notes")
                         .HasMaxLength(512)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(512)");
+                        .HasColumnType("varchar(512)");
 
                     b.Property<string>("WebPage")
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(4000)");
+                        .HasColumnType("varchar(max)");
 
                     b.HasKey("Id");
 
@@ -1847,15 +1850,15 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
-                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(50)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(50)");
+                        .HasColumnType("varchar(50)");
 
                     b.HasKey("Id");
 
@@ -1869,14 +1872,14 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
-                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
                         .HasMaxLength(50)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(50)");
+                        .HasColumnType("varchar(50)");
 
                     b.HasKey("Id");
 
@@ -1890,24 +1893,24 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
-                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<double>("Distance")
-                        .HasColumnType("BINARY_DOUBLE");
+                        .HasColumnType("float");
 
                     b.Property<string>("LocationIdentifierA")
                         .IsRequired()
                         .HasMaxLength(10)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(10)");
+                        .HasColumnType("varchar(10)");
 
                     b.Property<string>("LocationIdentifierB")
                         .IsRequired()
                         .HasMaxLength(10)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(10)");
+                        .HasColumnType("varchar(10)");
 
                     b.HasKey("Id");
 
@@ -1924,45 +1927,45 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
-                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<bool>("IsOpposingOverlap")
-                        .HasColumnType("BOOLEAN");
+                        .HasColumnType("bit");
 
                     b.Property<bool>("IsPrimaryOverlap")
-                        .HasColumnType("BOOLEAN");
+                        .HasColumnType("bit");
 
                     b.Property<string>("LocationIdentifier")
                         .IsRequired()
                         .HasMaxLength(10)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(10)");
+                        .HasColumnType("varchar(10)");
 
                     b.Property<int?>("NextLocationDistanceId")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
                     b.Property<int>("OpposingDirectionId")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
                     b.Property<int>("OpposingPhase")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
                     b.Property<int>("Order")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
                     b.Property<int?>("PreviousLocationDistanceId")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
                     b.Property<int>("PrimaryDirectionId")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
                     b.Property<int>("PrimaryPhase")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
                     b.Property<int>("RouteId")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -1989,10 +1992,10 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                 {
                     b.Property<string>("UserId")
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(900)");
+                        .HasColumnType("varchar(900)");
 
                     b.Property<int>("AreaId")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
                     b.HasKey("UserId", "AreaId");
 
@@ -2008,10 +2011,10 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                 {
                     b.Property<string>("UserId")
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(900)");
+                        .HasColumnType("varchar(900)");
 
                     b.Property<int>("JurisdictionId")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
                     b.HasKey("UserId", "JurisdictionId");
 
@@ -2024,10 +2027,10 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                 {
                     b.Property<string>("UserId")
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(900)");
+                        .HasColumnType("varchar(900)");
 
                     b.Property<int>("RegionId")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
                     b.HasKey("UserId", "RegionId");
 
@@ -2040,31 +2043,31 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
-                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("Date")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TIMESTAMP(7)")
-                        .HasDefaultValue(new DateTime(2025, 2, 27, 9, 26, 38, 588, DateTimeKind.Local).AddTicks(4189));
+                        .HasColumnType("datetime2")
+                        .HasDefaultValue(new DateTime(2025, 2, 27, 9, 29, 9, 10, DateTimeKind.Local).AddTicks(3603));
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(64)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(64)");
+                        .HasColumnType("varchar(64)");
 
                     b.Property<string>("Notes")
                         .HasMaxLength(512)
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(512)");
+                        .HasColumnType("varchar(512)");
 
                     b.Property<int?>("ParentId")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
                     b.Property<int>("Version")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -2080,35 +2083,35 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
-                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int?>("ComponentId")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
                     b.Property<int?>("ComponentType")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("End")
-                        .HasColumnType("TIMESTAMP(7)");
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("IssueType")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
                     b.Property<int>("LocationId")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
                     b.Property<string>("LocationIdentifier")
                         .IsRequired()
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(4000)");
+                        .HasColumnType("varchar(max)");
 
                     b.Property<int?>("Phase")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("Start")
-                        .HasColumnType("TIMESTAMP(7)");
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
@@ -2121,37 +2124,37 @@ namespace Utah.Udot.ATSPM.OracleDatabaseProvider.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
-                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("ComponentId")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
                     b.Property<int>("ComponentType")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
                     b.Property<string>("Details")
                         .IsRequired()
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(4000)");
+                        .HasColumnType("varchar(max)");
 
                     b.Property<int>("IssueType")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
                     b.Property<int>("LocationId")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
                     b.Property<string>("LocationIdentifier")
                         .IsRequired()
                         .IsUnicode(false)
-                        .HasColumnType("VARCHAR2(4000)");
+                        .HasColumnType("varchar(max)");
 
                     b.Property<int?>("Phase")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("Timestamp")
-                        .HasColumnType("TIMESTAMP(7)");
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
