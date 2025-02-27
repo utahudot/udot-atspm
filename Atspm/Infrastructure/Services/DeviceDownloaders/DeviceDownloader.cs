@@ -349,27 +349,4 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders
             return format;
         }
     }
-
-    //TODO: this needs to be moved to the toolkit
-    public static class PropertyExtensions
-    {
-        /// <summary>
-        /// Checks if the <paramref name="obj"/> contains <paramref name="propertyName"/> and returns a string value of <paramref name="propertyName"/>
-        /// </summary>
-        /// <param name="obj"></param>
-        /// <param name="propertyName"></param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentException"></exception>
-        public static string GetPropertyValueString(this object obj, string propertyName)
-        {
-            if (obj.HasProperty(propertyName))
-            {
-                string value = obj.GetType().GetProperty(propertyName).GetValue(obj, null).ToString();
-
-                return value;
-            }
-
-            throw new ArgumentException(propertyName, nameof(propertyName));
-        }
-    }
 }
