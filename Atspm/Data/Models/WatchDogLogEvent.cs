@@ -30,42 +30,42 @@ namespace Utah.Udot.Atspm.Data.Models
         /// Id
         /// </summary>
         public int Id { get; set; }
-        
+
         /// <summary>
         /// Location id
         /// </summary>
         public int LocationId { get; set; }
-        
+
         /// <summary>
         /// Location identifier
         /// </summary>
         public string LocationIdentifier { get; set; }
-        
+
         /// <summary>
         /// Timestamp
         /// </summary>
-        public DateTime Timestamp { get; set; } 
+        public DateTime Timestamp { get; set; }
 
         /// <summary>
         /// Component type
         /// </summary>
         public WatchDogComponentTypes ComponentType { get; set; }
-        
+
         /// <summary>
         /// Component id
         /// </summary>
         public int ComponentId { get; set; }
-       
+
         /// <summary>
         /// Issue type
         /// </summary>
         public WatchDogIssueTypes IssueType { get; set; }
-        
+
         /// <summary>
         /// Details
         /// </summary>
         public string Details { get; set; }
-        
+
         /// <summary>
         /// Phase
         /// </summary>

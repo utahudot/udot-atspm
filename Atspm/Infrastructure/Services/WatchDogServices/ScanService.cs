@@ -164,7 +164,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                     retryCount++;
 
                     // Log the exception (optional, based on your logging implementation)
-                   logger.LogError($"Attempt {retryCount} failed: {ex.Message}");
+                    logger.LogError($"Attempt {retryCount} failed: {ex.Message}");
 
                     if (retryCount == maxRetryAttempts)
                     {

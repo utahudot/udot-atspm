@@ -25,7 +25,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
     {
         ///<inheritdoc/>
         public DownloaderClientBase() : base(true) { }
-        
+
         #region IDownloaderClient
 
         ///<inheritdoc/>

@@ -260,10 +260,10 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories
         /// <inheritdoc/>
         public async Task UpdateAsync(T item)
         {
-            if (_db.ChangeTracker.QueryTrackingBehavior == QueryTrackingBehavior.TrackAll) 
+            if (_db.ChangeTracker.QueryTrackingBehavior == QueryTrackingBehavior.TrackAll)
             {
                 _db.ChangeTracker.DetectChanges();
-                
+
                 switch (_db.Entry(item).State)
                 {
                     case EntityState.Detached:

@@ -36,7 +36,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
         /// <inheritdoc/>
         /// </summary>
         /// <param name="client">External client used for special settings and mocking</param>
-        public SSHNetSFTPDownloaderClient(ISftpClientWrapper client) 
+        public SSHNetSFTPDownloaderClient(ISftpClientWrapper client)
         {
             _client = client;
         }

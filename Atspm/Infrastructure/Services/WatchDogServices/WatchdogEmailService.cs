@@ -15,7 +15,6 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.CodeAnalysis.Emit;
 using Microsoft.Extensions.Logging;
 using System.Net.Mail;
 using System.Text;

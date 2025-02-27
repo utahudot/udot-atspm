@@ -31,9 +31,9 @@ namespace Utah.Udot.Atspm.Analysis.WorkflowSteps
     public class AggregateDetectorEvents : TransformProcessStepBase<Tuple<Detector, int, IEnumerable<IndianaEvent>>, IEnumerable<DetectorEventCountAggregation>>
     {
         private readonly TimeSpan _binSize;
-        
+
         /// <inheritdoc/>
-        public AggregateDetectorEvents(TimeSpan binSize, ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) 
+        public AggregateDetectorEvents(TimeSpan binSize, ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
         {
             _binSize = binSize;
         }

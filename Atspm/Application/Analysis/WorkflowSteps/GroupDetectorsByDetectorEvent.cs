@@ -47,7 +47,7 @@ namespace Utah.Udot.Atspm.Analysis.WorkflowSteps
                 .AsEnumerable();
 
             var result = approach.Detectors
-                .GroupJoin(events,o => o.DetectorChannel, i => i.EventParam, (o, i) => Tuple.Create(o, o.DetectorChannel, i.OrderBy(o => o.Timestamp).AsEnumerable()));
+                .GroupJoin(events, o => o.DetectorChannel, i => i.EventParam, (o, i) => Tuple.Create(o, o.DetectorChannel, i.OrderBy(o => o.Timestamp).AsEnumerable()));
 
             return Task.FromResult(result);
         }
