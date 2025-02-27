@@ -353,6 +353,10 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
             var (inputParameters, cycles, eventGroups) = input;
             var planEvents = eventGroups["planEvents"];
             var splitsEvents = eventGroups["splitsEvents"];
+            if(planEvents.Count == 0)
+            {
+                return (inputParameters, new List<TransitSignalPriorityPlan>());
+            }
             var firstPlanEvent = planEvents.Min(p => p.Timestamp);
             var firstDate = inputParameters.Dates.OrderBy(d => d).First();
 
