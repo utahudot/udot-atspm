@@ -74,7 +74,7 @@ namespace Utah.Udot.Atspm.Business.PedDelay
         {
             var planService = new PlanService();
             var pedPlans = new List<PedPlan>();
-            var planEvents = planService.CleanPlanEvents(options.Start, options.End, options.LocationIdentifier, plansData.ToList());
+            var planEvents = planService.SetFirstAndLastPlan(options.Start, options.End, options.LocationIdentifier, plansData.ToList());
             for (var i = 0; i < planEvents.Count; i++)
             {
                 //if this is the last plan then we want the end of the plan
