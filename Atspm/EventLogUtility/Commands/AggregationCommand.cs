@@ -84,7 +84,7 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
         public Argument<string> AggregationTypeArgument { get; set; } = new Argument<string>("type", () => "all", "Aggregation type to run");
 
         public DateCommandOption DateOption { get; set; } = new();
-        
+
         public ModelBinder<EventLogAggregateConfiguration> GetOptionsBinder()
         {
             var binder = new ModelBinder<EventLogAggregateConfiguration>();

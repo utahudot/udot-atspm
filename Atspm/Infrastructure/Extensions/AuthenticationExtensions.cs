@@ -45,13 +45,13 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
         {
             //if (!host.HostingEnvironment.IsDevelopment())
             //{
-                services.AddAtspmAuthentication(host);
-                services.AddAtspmAuthorization();
+            services.AddAtspmAuthentication(host);
+            services.AddAtspmAuthorization();
             //}
-            
+
             return services;
         }
-        
+
         /// <summary>
         /// Add atspm authentication
         /// </summary>

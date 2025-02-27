@@ -110,7 +110,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             foreach (var e in events)
             {
                 var location = locations.Where(l => l.Id == e.LocationId).FirstOrDefault();
-                if(location == null)
+                if (location == null)
                 {
                     continue;
                 }

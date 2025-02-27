@@ -25,7 +25,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
     {
         ///<inheritdoc/>
         public DownloaderClientBase() : base(true) { }
-        
+
         #region IDownloaderClient
 
         ///<inheritdoc/>
@@ -120,7 +120,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
                     return await DownloadResource(file, remote, token);
                 }
                 else
-                    throw new FileNotFoundException(local.AbsolutePath);
+                    throw new FileNotFoundException(local.LocalPath);
             }
             catch (Exception e)
             {
