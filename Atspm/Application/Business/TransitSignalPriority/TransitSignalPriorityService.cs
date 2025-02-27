@@ -367,7 +367,7 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
                 planEvents,
                 splitsEvents,
                 cycles
-            );
+            ).OrderBy(p => p.PlanNumber).ToList();
             return (inputParameters, plans);
         }
         private static Func<(TransitSignalLoadParameters, List<IndianaEvent>), (TransitSignalLoadParameters, Dictionary<string, List<IndianaEvent>>)> ClassifyEvents()
@@ -754,7 +754,7 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
             int minPhase = phaseNumbers.Min();
             int maxPhase = phaseNumbers.Max();
 
-            return Enumerable.Range(minPhase, maxPhase - minPhase + 1).ToList();
+            return Enumerable.Range(1, maxPhase).ToList();
         }
 
         /// <summary>
