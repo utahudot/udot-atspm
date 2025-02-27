@@ -15,19 +15,13 @@
 // limitations under the License.
 #endregion
 
-using FluentFTP;
 using Moq;
 using Renci.SshNet;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Net.Http;
-using System.Threading;
 using System.Threading.Tasks;
 using Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients;
 using Xunit.Abstractions;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
-using static Org.BouncyCastle.Math.EC.ECCurve;
 
 namespace Utah.Udot.Atspm.InfrastructureTests.DownloaderClientTests
 {

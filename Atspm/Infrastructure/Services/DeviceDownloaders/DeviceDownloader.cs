@@ -90,7 +90,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders
         public override async IAsyncEnumerable<Tuple<Device, FileInfo>> Execute(Device parameter, IProgress<ControllerDownloadProgress> progress = null, [EnumeratorCancellation] CancellationToken cancelToken = default)
         {
             cancelToken.ThrowIfCancellationRequested();
-            
+
             if (parameter == null)
                 throw new ArgumentNullException(nameof(parameter), $"Parameter can not be null");
 
@@ -226,7 +226,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders
                                 _log.LogWarning(new EventId(Convert.ToInt32(deviceIdentifier)), "File failed to download on {Location} file name: {file}", deviceIdentifier, resource);
                             }
                         }
-                       
+
                         logMessages.DownloadedResourcesMessage(current, total, deviceIdentifier, ipaddress);
 
                         try

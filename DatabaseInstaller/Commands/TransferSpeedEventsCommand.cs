@@ -43,7 +43,7 @@ namespace DatabaseInstaller.Commands
 
             binder.BindMemberFromValue(b => b.Source, SourceOption);
             binder.BindMemberFromValue(b => b.Start, StartOption);
-            binder.BindMemberFromValue(b => b .End, EndOption);
+            binder.BindMemberFromValue(b => b.End, EndOption);
 
             return binder;
         }

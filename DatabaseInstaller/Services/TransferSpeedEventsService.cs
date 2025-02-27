@@ -237,7 +237,7 @@ namespace DatabaseInstaller.Services
                             {
                                 var speedEvent = new SpeedEvent
                                 {
-                                    Timestamp = (DateTime)reader["Timestamp"], 
+                                    Timestamp = (DateTime)reader["Timestamp"],
                                     DetectorId = (String)reader["DetectorID"],
                                     Mph = (int)reader["MPH"],
                                     Kph = (int)reader["KPH"]

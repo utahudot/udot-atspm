@@ -30,7 +30,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
 
         ///<inheritdoc/>
         public HttpDownloaderClient() { }
-        
+
         /// <summary>
         /// <inheritdoc/>
         /// </summary>

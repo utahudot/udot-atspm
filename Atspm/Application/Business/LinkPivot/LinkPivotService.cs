@@ -37,7 +37,8 @@ namespace Utah.Udot.Atspm.Business.LinkPivot
             LinkPivot linkPivot = new LinkPivot(options.StartDate.ToDateTime(options.StartTime), options.EndDate.ToDateTime(options.EndTime));
             var (lp, pairedApproches) = await GetAdjustmentObjectsAsync(options, routeLocations);
 
-            if (lp.Count == 0 || pairedApproches.Count == 0) {
+            if (lp.Count == 0 || pairedApproches.Count == 0)
+            {
                 throw new Exception("Issue grabbing approach data for route locations.");
             }
 
@@ -222,7 +223,7 @@ namespace Utah.Udot.Atspm.Business.LinkPivot
 
         private static void AddLastAdjusment(RouteLocation routeLocation, List<AdjustmentObject> adjustments)
         {
-            if(routeLocation != null)
+            if (routeLocation != null)
             {
                 adjustments.Add(new AdjustmentObject()
                 {

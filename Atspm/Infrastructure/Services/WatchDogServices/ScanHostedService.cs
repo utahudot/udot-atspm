@@ -15,7 +15,6 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.CodeAnalysis.Emit;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
