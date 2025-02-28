@@ -361,7 +361,7 @@ const DeviceModal = ({
               sx={{ mb: 2 }}
               maxRows={6}
               error={!!errors.notes}
-              helperText={errors.notes ? "String(errors.notes.message) ": ''}
+              helperText={errors.notes ? 'String(errors.notes.message) ' : ''}
               {...register('deviceIdentifier')}
             />
 
