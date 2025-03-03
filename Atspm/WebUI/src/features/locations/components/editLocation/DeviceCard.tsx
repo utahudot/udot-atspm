@@ -171,6 +171,29 @@ const DeviceCard = ({ device, onEdit, onDelete }: DeviceCardProps) => {
               {device.loggingEnabled ? 'Yes' : 'No'}
             </Typography>
           </Box>
+          {Object.entries(device)
+            .filter(
+              ([key]) =>
+                ![
+                  'id',
+                  'loggingEnabled',
+                  'ipaddress',
+                  'deviceStatus',
+                  'deviceType',
+                  'notes',
+                  'locationId',
+                  'deviceConfigurationId',
+                  'deviceIdentifier',
+                  'location',
+                  'deviceConfiguration',
+                ].includes(key)
+            )
+            .map(([key, value]) => (
+              <Box display="flex" justifyContent="flex-start" key={key}>
+                <StyledLabel>{key}</StyledLabel>
+                <Typography variant="body1">{String(value)}</Typography>
+              </Box>
+            ))}
           <Box display={'flex'} justifyContent={'flex-start'}>
             <StyledLabel>Device Identifier</StyledLabel>
             <Typography variant="body1">{device.deviceIdentifier}</Typography>

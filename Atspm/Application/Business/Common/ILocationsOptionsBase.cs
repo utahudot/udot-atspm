@@ -15,9 +15,11 @@
 // limitations under the License.
 #endregion
 
+using Utah.Udot.Atspm.Data.Interfaces;
+
 namespace Utah.Udot.Atspm.Business.Common
 {
-    public interface ILocationsOptionsBase
+    public interface ILocationsOptionsBase: IMeasureOption
     {
         public IEnumerable<string> LocationIdentifiers { get; set; }
     }
