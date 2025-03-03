@@ -353,6 +353,15 @@ namespace Utah.Udot.Atspm.Data.Configuration
                      ShowOnWebsite = true,
                      ShowOnAggregationSite = false,
                      DisplayOrder = 131
+                 },
+                 new MeasureType
+                 {
+                     Id = 38,
+                     Name = "Transit Signal Priority",
+                     Abbreviation = "TSP",
+                     ShowOnWebsite = false,
+                     ShowOnAggregationSite = false,
+                     DisplayOrder = 132
                  });
         }
     }
