@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2024 Utah Departement of Transportation
-// for Application - Utah.Udot.Atspm.Business.Common/OptionsBase.cs
+// for Application - Utah.Udot.Atspm.Repositories.ConfigurationRepositories/IMeasureOptionsRepository.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,14 +15,15 @@
 // limitations under the License.
 #endregion
 
-using Utah.Udot.Atspm.Data.Interfaces;
+using Utah.Udot.NetStandardToolkit.Services;
 
-namespace Utah.Udot.Atspm.Business.Common
+namespace Utah.Udot.Atspm.Repositories.ConfigurationRepositories
 {
-    public interface ILocationOptionsBase : IMeasureOption
+    /// <summary>
+    /// Measure options repository
+    /// </summary>
+    public interface IMeasureOptionsSaveRepository : IAsyncRepository<MeasureOptionsSave>
     {
        
-        public string LocationIdentifier { get; set; }
-    }    
-
+    }
 }

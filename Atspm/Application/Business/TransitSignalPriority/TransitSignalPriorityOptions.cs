@@ -17,11 +17,12 @@
 
 using System.Runtime.Serialization;
 using Utah.Udot.Atspm.Business.Common;
+using Utah.Udot.Atspm.Data.Interfaces;
 
 namespace Utah.Udot.Atspm.Business.TransitSignalPriority
 {
     [DataContract]
-    public class TransitSignalPriorityOptions 
+    public class TransitSignalPriorityOptions:IMeasureOption 
 
     {
         public IEnumerable<LocationPhases> LocationsAndPhases { get; set; }

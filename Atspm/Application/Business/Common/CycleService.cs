@@ -253,7 +253,7 @@ namespace Utah.Udot.Atspm.Business.Common
         public List<TransitSignalPriorityCycle> GetTransitSignalPriorityCycles(int phaseNumber, List<IndianaEvent> cycleEvents, List<IndianaEvent> terminationEvents)
         {
             if(cycleEvents.IsNullOrEmpty()) return new List<TransitSignalPriorityCycle>();
-            var cycleEventsForPhase = cycleEvents.Where(c => c.EventParam == phaseNumber).ToList();
+            var cycleEventsForPhase = cycleEvents.Where(c => c.EventParam == phaseNumber).OrderBy(c => c.Timestamp).ToList();
             var terminationEventsForPhase = terminationEvents.Where(c => c.EventParam == phaseNumber).ToList();
 
             var cleanTerminationEvents = CleanTerminationEvents(terminationEventsForPhase);
