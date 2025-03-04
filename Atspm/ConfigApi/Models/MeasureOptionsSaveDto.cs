@@ -53,37 +53,37 @@ namespace Utah.Udot.ATSPM.ConfigApi.Models
         /// <summary>
         /// Converts DTO to Entity Model
         /// </summary>
-        public MeasureOptionsSave ToEntity()
-        {
-            return new MeasureOptionsSave
-            {
-                Id = this.Id,
-                Name = this.Name,
-                CreatedByUserId = this.CreatedByUserId,
-                CreatedOn = this.CreatedOn,
-                ModifiedByUserId = this.ModifiedByUserId,
-                ModifiedOn = this.ModifiedOn,
-                MeasureTypeId = this.MeasureTypeId,
-                SelectedParametersJson = this.SelectedParametersJson // Store JSON in DB
-            };
-        }
+        //public MeasureOptionsSave ToEntity()
+        //{
+        //    return new MeasureOptionsSave
+        //    {
+        //        Id = this.Id,
+        //        Name = this.Name,
+        //        CreatedByUserId = this.CreatedByUserId,
+        //        CreatedOn = this.CreatedOn,
+        //        ModifiedByUserId = this.ModifiedByUserId,
+        //        ModifiedOn = this.ModifiedOn,
+        //        MeasureTypeId = this.MeasureTypeId,
+        //        SelectedParametersJson = this.SelectedParametersJson // Store JSON in DB
+        //    };
+        //}
 
         /// <summary>
         /// Converts Entity Model to DTO
         /// </summary>
-        public static MeasureOptionsSaveDto FromEntity(MeasureOptionsSave entity)
-        {
-            return new MeasureOptionsSaveDto
-            {
-                Id = entity.Id,
-                Name = entity.Name,
-                CreatedByUserId = entity.CreatedByUserId,
-                CreatedOn = entity.CreatedOn,
-                ModifiedByUserId = entity.ModifiedByUserId,
-                ModifiedOn = entity.ModifiedOn,
-                MeasureTypeId = entity.MeasureTypeId,
-                SelectedParametersJson = entity.SelectedParametersJson // Retrieve JSON from DB
-            };
-        }
+        //public static MeasureOptionsSaveDto FromEntity(MeasureOptionsSave entity)
+        //{
+        //    return new MeasureOptionsSaveDto
+        //    {
+        //        Id = entity.Id,
+        //        Name = entity.Name,
+        //        CreatedByUserId = entity.CreatedByUserId,
+        //        CreatedOn = entity.CreatedOn,
+        //        ModifiedByUserId = entity.ModifiedByUserId,
+        //        ModifiedOn = entity.ModifiedOn,
+        //        MeasureTypeId = entity.MeasureTypeId,
+        //        SelectedParametersJson = entity.SelectedParametersJson // Retrieve JSON from DB
+        //    };
+        //}
     }
 }

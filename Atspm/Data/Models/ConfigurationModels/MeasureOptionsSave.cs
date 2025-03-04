@@ -22,6 +22,7 @@ using System.Text.Json;
 using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Data.Relationships;
+using Utah.Udot.NetStandardToolkit.BaseClasses;
 
 namespace Utah.Udot.Atspm.Data.Models
 {
@@ -56,5 +57,11 @@ namespace Utah.Udot.Atspm.Data.Models
 
         /// <inheritdoc/>
         public override string ToString() => $"{Id} - {Name} - {CreatedOn}";
+    }
+
+    //HACK: This is temporary, this will be merged into AtspmConfigModelBase
+    public class TempConfigModelBase<T> : AtspmConfigModelBase<T>
+    {
+
     }
 }
