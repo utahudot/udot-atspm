@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for ReportApi - Utah.Udot.Atspm.ReportApi.Controllers/LeftTurnGapReportController.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,6 @@
 #endregion
 
 using Asp.Versioning;
-using Microsoft.AspNetCore.Mvc;
 using Utah.Udot.Atspm.Business.LeftTurnGapReport;
 
 namespace Utah.Udot.Atspm.ReportApi.Controllers

@@ -1,6 +1,6 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
-// for WatchDog - Utah.Udot.Atspm.WatchDog.Services/ScanService.cs
+// Copyright 2025 Utah Departement of Transportation
+// for Infrastructure - Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices/ScanService.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -164,7 +164,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices
                     retryCount++;
 
                     // Log the exception (optional, based on your logging implementation)
-                   logger.LogError($"Attempt {retryCount} failed: {ex.Message}");
+                    logger.LogError($"Attempt {retryCount} failed: {ex.Message}");
 
                     if (retryCount == maxRetryAttempts)
                     {

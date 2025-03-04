@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for EventLogUtility - Utah.Udot.Atspm.EventLogUtility.Commands/LogConsoleCommand.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -30,7 +30,7 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
     //{
     //    public DownloadCommand() : base("download", "Download data from devices")
     //    {
-            
+
     //    }
 
     //    public void BindCommandOptions(HostBuilderContext host, IServiceCollection services)
@@ -45,7 +45,7 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
     //        }
     //    }
     //}
-    
+
     public class LogConsoleCommand : Command, ICommandOption
     {
         public LogConsoleCommand() : base("log", "Pulls and uploads event logs from devices")
@@ -113,7 +113,7 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
         public DeviceStatusCommandOption DeviceStatusCommandOption { get; set; } = new();
 
         public void BindCommandOptions(HostBuilderContext host, IServiceCollection services)
-        {   
+        {
             services.Configure<DeviceEventLoggingConfiguration>(host.Configuration.GetSection(nameof(DeviceEventLoggingConfiguration)));
 
             var deviceEventLoggingConfiguration = new ModelBinder<DeviceEventLoggingConfiguration>();
@@ -165,7 +165,7 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
 
     public class DeviceTypeCommandOption : Option<DeviceTypes>
     {
-        public DeviceTypeCommandOption() : base("--device-type", "Device type to include") 
+        public DeviceTypeCommandOption() : base("--device-type", "Device type to include")
         {
             AddAlias("-dt");
         }

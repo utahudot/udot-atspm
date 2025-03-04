@@ -1,4 +1,20 @@
-﻿
+﻿#region license
+// Copyright 2025 Utah Departement of Transportation
+// for DatabaseInstaller - %Namespace%/TransferConfigCommandHostedService.cs
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+// http://www.apache.org/licenses/LICENSE-2.
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+#endregion
+
 using DatabaseInstaller.Commands;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -6,14 +22,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Npgsql;
-using Npgsql.Internal;
 using System.Text.Json;
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
-using static Org.BouncyCastle.Math.EC.ECCurve;
 
 public class TransferConfigCommandHostedService : IHostedService
 {
@@ -72,7 +84,7 @@ public class TransferConfigCommandHostedService : IHostedService
     }
 
     public async Task StartAsync(CancellationToken cancellationToken)
-    {        
+    {
         if (_config.Delete)
         {
             DeleteLocations();
@@ -151,7 +163,7 @@ public class TransferConfigCommandHostedService : IHostedService
             return;
         }
         foreach (var device in devices)
-        {            
+        {
             device.DeviceConfiguration = speedDeviceConfiguration;
         }
 
@@ -215,7 +227,7 @@ public class TransferConfigCommandHostedService : IHostedService
 
     private void ImportRegions(Dictionary<string, string> queries, Dictionary<string, Dictionary<string, string>> columnMappings)
     {
-        if(_regionsRepository.GetList().Any())
+        if (_regionsRepository.GetList().Any())
         {
             _logger.LogInformation("Regions already exist");
             return;
@@ -398,7 +410,7 @@ public class TransferConfigCommandHostedService : IHostedService
 
         var locations = ImportData<Location>(queries["Locations"], columnMappings["Locations"]);
 
-        foreach(var area in areas)
+        foreach (var area in areas)
         {
             var locationIds = locationAreas.Where(l => l.AreasId == area.Id).Select(l => l.LocationsId).ToList();
             foreach (var location in locations.Where(l => locationIds.Contains(l.Id)))
@@ -413,7 +425,7 @@ public class TransferConfigCommandHostedService : IHostedService
 
     private void SetDetectionTypeMesureType()
     {
-        if(_detectionTypeRepository.GetList()
+        if (_detectionTypeRepository.GetList()
             .Include(d => d.MeasureTypes)
             .SelectMany(d => d.MeasureTypes)
             .Any())
@@ -424,11 +436,11 @@ public class TransferConfigCommandHostedService : IHostedService
         var detectionTypes = _detectionTypeRepository.GetList().ToList();
         var measureTypes = _measureTypeRepository.GetList().ToList();
         var measureTypesForBasic = measureTypes.Where(m => new List<int> { 1, 2, 3, 4, 14, 15, 17, 31 }.Contains(m.Id)).ToList();
-        var measureTypesForAdvanceCount = measureTypes.Where(m => new List<int> { 6,7,8,9,13,32 }.Contains(m.Id)).ToList();
+        var measureTypesForAdvanceCount = measureTypes.Where(m => new List<int> { 6, 7, 8, 9, 13, 32 }.Contains(m.Id)).ToList();
         var measureTypesForAdvanceSpeed = measureTypes.Where(m => new List<int> { 10 }.Contains(m.Id)).ToList();
-        var measureTypesForLlc = measureTypes.Where(m => new List<int> { 5,7,31,36 }.Contains(m.Id)).ToList();
+        var measureTypesForLlc = measureTypes.Where(m => new List<int> { 5, 7, 31, 36 }.Contains(m.Id)).ToList();
         var measureTypesForLls = measureTypes.Where(m => new List<int> { 11 }.Contains(m.Id)).ToList();
-        var measureTypesForStopBarPresence = measureTypes.Where(m => new List<int> { 12,31,32 }.Contains(m.Id)).ToList();
+        var measureTypesForStopBarPresence = measureTypes.Where(m => new List<int> { 12, 31, 32 }.Contains(m.Id)).ToList();
         foreach (var detectionType in detectionTypes)
         {
             switch (detectionType.Id)
@@ -437,7 +449,7 @@ public class TransferConfigCommandHostedService : IHostedService
                     foreach (var measureType in measureTypesForBasic)
                     {
                         detectionType.MeasureTypes.Add(measureType);
-                    }                    
+                    }
                     break;
                 case DetectionTypes.AC:
                     foreach (var measureType in measureTypesForAdvanceCount)
@@ -517,7 +529,7 @@ public class TransferConfigCommandHostedService : IHostedService
             _logger.LogError(ex.Message, "Error deleting regions");
             throw;
         }
-        
+
     }
 
 
@@ -690,7 +702,7 @@ public class TransferConfigCommandHostedService : IHostedService
     //    });
     //}
 
-    
+
 
     private void DeleteLocations()
     {
@@ -719,7 +731,7 @@ public class TransferConfigCommandHostedService : IHostedService
             _logger.LogError(ex.Message, "Error deleting devices");
             throw;
         }
-    }   
+    }
 
 
     public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
@@ -727,7 +739,7 @@ public class TransferConfigCommandHostedService : IHostedService
 }
 
 
-    public class AreaLocation
+public class AreaLocation
 {
     public int AreasId { get; set; }
     public int LocationsId { get; set; }
