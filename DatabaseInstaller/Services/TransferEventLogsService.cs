@@ -204,7 +204,7 @@ namespace DatabaseInstaller.Services
             // Get only the locations that match the provided identifiers.
             var locations = _locationRepository
                 .GetLatestVersionOfAllLocations(_config.Start);
-                //.Where(l => locationIdentifiers.Contains(l.LocationIdentifier));
+            //.Where(l => locationIdentifiers.Contains(l.LocationIdentifier));
 
             // Process each date in the range.
             for (var date = _config.Start; date <= _config.End; date = date.AddDays(1))

@@ -25,7 +25,6 @@ using System.Reflection;
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Infrastructure.Configuration;
 using Utah.Udot.Atspm.Services;
-using Utah.Udot.NetStandardToolkit.Services;
 using Xunit.Sdk;
 
 namespace Utah.Udot.Atspm.InfrastructureTests.Attributes

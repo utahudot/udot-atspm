@@ -63,7 +63,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders
 
             var path = Path.Combine
                 (_options.BasePath,
-                $"{device.Location?.LocationIdentifier} - {device.Location?.PrimaryName} - {device.Location?.SecondaryName}",
+                $"{device.Location?.LocationIdentifier}",
                 device.DeviceType.ToString(),
                  $"{device.DeviceIdentifier}-{device.Ipaddress}");
 
@@ -90,7 +90,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders
         public override async IAsyncEnumerable<Tuple<Device, FileInfo>> Execute(Device parameter, IProgress<ControllerDownloadProgress> progress = null, [EnumeratorCancellation] CancellationToken cancelToken = default)
         {
             cancelToken.ThrowIfCancellationRequested();
-            
+
             if (parameter == null)
                 throw new ArgumentNullException(nameof(parameter), $"Parameter can not be null");
 
@@ -100,13 +100,13 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders
             {
                 var logMessages = new DeviceDownloaderLogMessages(_log, parameter);
 
-                if (!IPAddress.TryParse(parameter?.Ipaddress, out IPAddress ipaddress) || ipaddress == null ? true : !ipaddress.IsValidIpAddress())
+                if (!IPAddress.TryParse(parameter?.Ipaddress, out IPAddress ipaddress) || ipaddress == null || !ipaddress.IsValidIpAddress())
                 {
                     logMessages.InvalidDeviceIpAddressException(ipaddress);
 
                     throw new InvalidDeviceIpAddressException(parameter);
                 }
-                else if (_options.Ping ? !await ipaddress.PingIpAddressAsync() : false)
+                else if (_options.Ping && !await ipaddress.PingIpAddressAsync())
                 {
                     logMessages.InvalidDeviceIpAddressException(ipaddress);
 
@@ -226,7 +226,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders
                                 _log.LogWarning(new EventId(Convert.ToInt32(deviceIdentifier)), "File failed to download on {Location} file name: {file}", deviceIdentifier, resource);
                             }
                         }
-                       
+
                         logMessages.DownloadedResourcesMessage(current, total, deviceIdentifier, ipaddress);
 
                         try
@@ -299,7 +299,10 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders
                 {
                     if (_obj is Device d && d.DeviceConfiguration != null)
                     {
-                        builder.AppendFormat("{0" + i.Replace("LogStartTime", "") + "}", DateTime.Now.AddMinutes(-d.DeviceConfiguration.LoggingOffset));
+                        //https://stackoverflow.com/questions/33639571/get-local-time-based-on-coordinates
+                        DateTime localTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("America/Boise"));
+
+                        builder.AppendFormat("{0" + i.Replace("LogStartTime", "") + "}", localTime.AddMinutes(-d.DeviceConfiguration.LoggingOffset));
                     }
                 }
 
@@ -347,29 +350,6 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders
                 return arg.GetPropertyValueString(format);
 
             return format;
-        }
-    }
-
-    //TODO: this needs to be moved to the toolkit
-    public static class PropertyExtensions
-    {
-        /// <summary>
-        /// Checks if the <paramref name="obj"/> contains <paramref name="propertyName"/> and returns a string value of <paramref name="propertyName"/>
-        /// </summary>
-        /// <param name="obj"></param>
-        /// <param name="propertyName"></param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentException"></exception>
-        public static string GetPropertyValueString(this object obj, string propertyName)
-        {
-            if (obj.HasProperty(propertyName))
-            {
-                string value = obj.GetType().GetProperty(propertyName).GetValue(obj, null).ToString();
-
-                return value;
-            }
-
-            throw new ArgumentException(propertyName, nameof(propertyName));
         }
     }
 }

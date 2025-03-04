@@ -17,19 +17,10 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
 using System.CommandLine;
 using System.CommandLine.Hosting;
 using System.CommandLine.NamingConventionBinder;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Utah.Udot.Atspm.Common;
-using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices;
-using static Org.BouncyCastle.Math.EC.ECCurve;
 
 namespace Utah.Udot.ATSPM.WatchDog.Commands
 {

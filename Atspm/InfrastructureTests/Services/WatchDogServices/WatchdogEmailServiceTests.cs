@@ -15,20 +15,16 @@
 // limitations under the License.
 #endregion
 
-using Xunit;
-using Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices;
+using Microsoft.Extensions.Logging;
+using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Utah.Udot.Atspm.Business.Watchdog;
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models;
-using Microsoft.Extensions.Logging;
-using Moq;
 using Utah.Udot.NetStandardToolkit.Services;
-using Microsoft.CodeAnalysis.Emit;
+using Xunit;
 
 namespace Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices.Tests
 {

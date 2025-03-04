@@ -23,16 +23,16 @@ namespace Utah.Udot.Atspm.Data.Models
     /// </summary>
     public class UserJurisdiction
     {
-       /// <summary>
-       /// User id
-       /// </summary>
+        /// <summary>
+        /// User id
+        /// </summary>
         public string UserId { get; set; }
-        
+
         /// <summary>
         /// Jurisdiction id
         /// </summary>
         public int JurisdictionId { get; set; }
-        
+
         /// <summary>
         /// Jursidiction
         /// </summary>

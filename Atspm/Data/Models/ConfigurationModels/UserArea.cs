@@ -18,7 +18,7 @@
 #nullable disable
 namespace Utah.Udot.Atspm.Data.Models
 {
-    
+
     /// <summary>
     /// Users for area
     /// </summary>
@@ -28,12 +28,12 @@ namespace Utah.Udot.Atspm.Data.Models
         /// User id
         /// </summary>
         public string UserId { get; set; }
-       
+
         /// <summary>
         /// Area id
         /// </summary>
         public int AreaId { get; set; }
-        
+
         /// <summary>
         /// Area
         /// </summary>
