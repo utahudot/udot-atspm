@@ -18,9 +18,9 @@
 		<PackageProjectUrl>https://github.com/OpenSourceTransportation/Atspm</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/OpenSourceTransportation/Atspm</RepositoryUrl>
 		<PackageTags>C#; .net standard; .net core</PackageTags>
-		<VersionPrefix>5.0</VersionPrefix>
-		<VersionSuffix>rc.1</VersionSuffix>
-		<Version>$(VersionPrefix)-$(VersionSuffix)</Version>
+		<VersionPrefix>5.0.0</VersionPrefix>
+		<VersionSuffix></VersionSuffix>
+		<Version>$(VersionPrefix)$(VersionSuffix)</Version>
 		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>

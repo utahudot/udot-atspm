@@ -15,7 +15,6 @@
 // limitations under the License.
 #endregion
 
-using DatabaseInstaller.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.CommandLine;

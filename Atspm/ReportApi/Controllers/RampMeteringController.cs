@@ -16,7 +16,6 @@
 #endregion
 
 using Asp.Versioning;
-using Microsoft.AspNetCore.Mvc;
 using Utah.Udot.Atspm.Business.RampMetering;
 using Utah.Udot.Atspm.ReportApi.Controllers;
 

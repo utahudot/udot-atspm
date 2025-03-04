@@ -16,8 +16,8 @@
 #endregion
 
 using Microsoft.Extensions.Logging;
-using Utah.Udot.Atspm.Extensions;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
+using Utah.Udot.Atspm.Extensions;
 
 namespace Utah.Udot.Atspm.Business.ApproachSpeed
 {

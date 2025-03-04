@@ -16,7 +16,6 @@
 #endregion
 
 using Asp.Versioning;
-using Microsoft.AspNetCore.Mvc;
 using Utah.Udot.Atspm.ReportApi.DataAggregation;
 
 namespace Utah.Udot.Atspm.ReportApi.Controllers

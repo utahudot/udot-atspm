@@ -16,7 +16,6 @@
 #endregion
 
 using Asp.Versioning;
-using Microsoft.AspNetCore.Mvc;
 using Utah.Udot.Atspm.Business.AppoachDelay;
 
 namespace Utah.Udot.Atspm.ReportApi.Controllers
