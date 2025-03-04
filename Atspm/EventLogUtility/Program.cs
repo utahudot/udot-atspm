@@ -52,13 +52,13 @@ cmdBuilder.UseHost(a =>
                 c.LogName = "Atspm";
             });
         }
-        //l.AddGoogle(new LoggingServiceOptions
-        //{
-        //    ProjectId = "",
-        //    ServiceName = AppDomain.CurrentDomain.FriendlyName,
-        //    Version = Assembly.GetEntryAssembly().GetName().Version.ToString(),
-        //    Options = LoggingOptions.Create(LogLevel.Debug, AppDomain.CurrentDomain.FriendlyName)
-        //});
+        l.AddGoogle(new LoggingServiceOptions
+        {
+            ProjectId = "",
+            ServiceName = AppDomain.CurrentDomain.FriendlyName,
+            Version = Assembly.GetEntryAssembly().GetName().Version.ToString(),
+            Options = LoggingOptions.Create(LogLevel.Debug, AppDomain.CurrentDomain.FriendlyName)
+        });
     })
     .ConfigureServices((h, s) =>
     {
