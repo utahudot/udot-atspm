@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for Infrastructure - Utah.Udot.Atspm.Infrastructure.Services.HostedServices/EventAggregationHostedService.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,12 +19,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
-using Org.BouncyCastle.Asn1.X509;
 using System.Diagnostics;
-using System.Threading.Tasks.Dataflow;
-using Utah.Udot.Atspm.Analysis.Workflows;
-using Utah.Udot.Atspm.Data.Models.EventLogModels;
 using Utah.Udot.ATSPM.Infrastructure.Workflows;
 
 namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
@@ -62,11 +57,11 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
             using (var scope = _services.CreateAsyncScope())
             {
                 //if (scope.ServiceProvider.GetService<IHostEnvironment>().IsDevelopment()) 
-                    scope.ServiceProvider.PrintHostInformation();
+                scope.ServiceProvider.PrintHostInformation();
 
                 //var workflow = new DeviceEventLogWorkflow(_services, _options.Value.BatchSize, _options.Value.ParallelProcesses, cancellationToken);
 
-               
+
 
 
 

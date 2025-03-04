@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for InfrastructureTests - Utah.Udot.Atspm.InfrastructureTests.DownloaderClientTests/FluentFTPDownloaderClientTests.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,8 +18,6 @@
 using FluentFTP;
 using Moq;
 using System;
-using System.IO;
-using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients;

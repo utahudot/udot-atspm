@@ -1,6 +1,6 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
-// for Infrastructure - Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients/HttpDownloaderClient.cs
+// Copyright 2025 Utah Departement of Transportation
+// for Infrastructure - Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients/DownloaderClientBase.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
     {
         ///<inheritdoc/>
         public DownloaderClientBase() : base(true) { }
-        
+
         #region IDownloaderClient
 
         ///<inheritdoc/>
@@ -120,7 +120,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
                     return await DownloadResource(file, remote, token);
                 }
                 else
-                    throw new FileNotFoundException(local.AbsolutePath);
+                    throw new FileNotFoundException(local.LocalPath);
             }
             catch (Exception e)
             {
@@ -156,9 +156,10 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
         /// <returns></returns>
         protected bool TryCreateFileInfo(Uri uri, out FileInfo file)
         {
-            if (uri.IsFile && uri.IsUnc)
+            if (uri.IsFile && uri.IsUnc && uri.Host == "localhost")
             {
-                var path = uri.AbsolutePath.First() == '/' ? uri.AbsolutePath.Remove(0, 1) : uri.AbsolutePath;
+                var path = uri.LocalPath.Replace("\\\\localhost\\", "");
+
                 var driveCheck = Path.IsPathRooted(path);
                 var pathCheck = Path.IsPathFullyQualified(path);
                 var fileCheck = !Path.GetFileName(path).Any(a => Path.GetInvalidFileNameChars().Contains(a));
