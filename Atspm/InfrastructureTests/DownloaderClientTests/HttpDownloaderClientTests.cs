@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for InfrastructureTests - Utah.Udot.Atspm.InfrastructureTests.DownloaderClientTests/HttpDownloaderClientTests.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,7 +15,6 @@
 // limitations under the License.
 #endregion
 
-using FluentFTP;
 using Moq;
 using Moq.Protected;
 using System;
@@ -81,7 +80,7 @@ namespace Utah.Udot.Atspm.InfrastructureTests.DownloaderClientTests
                 Path = "/a/b/c",
                 Query = "?key=value"
             }.Uri;
-            
+
             Sut = new HttpDownloaderClient(new HttpClient() { BaseAddress = uri });
 
             await Sut.DeleteResourceAsync(uri);

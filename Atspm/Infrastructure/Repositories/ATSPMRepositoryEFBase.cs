@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for Infrastructure - Utah.Udot.Atspm.Infrastructure.Repositories/ATSPMRepositoryEFBase.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -260,10 +260,10 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories
         /// <inheritdoc/>
         public async Task UpdateAsync(T item)
         {
-            if (_db.ChangeTracker.QueryTrackingBehavior == QueryTrackingBehavior.TrackAll) 
+            if (_db.ChangeTracker.QueryTrackingBehavior == QueryTrackingBehavior.TrackAll)
             {
                 _db.ChangeTracker.DetectChanges();
-                
+
                 switch (_db.Entry(item).State)
                 {
                     case EntityState.Detached:

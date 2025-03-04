@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for Data - Utah.Udot.Atspm.Data.Models/UserJurisdiction.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,16 +23,16 @@ namespace Utah.Udot.Atspm.Data.Models
     /// </summary>
     public class UserJurisdiction
     {
-       /// <summary>
-       /// User id
-       /// </summary>
+        /// <summary>
+        /// User id
+        /// </summary>
         public string UserId { get; set; }
-        
+
         /// <summary>
         /// Jurisdiction id
         /// </summary>
         public int JurisdictionId { get; set; }
-        
+
         /// <summary>
         /// Jursidiction
         /// </summary>

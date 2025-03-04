@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for IdentityApi - Identity.Controllers/AccountController.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -30,7 +30,6 @@ using System.Text;
 using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Infrastructure.Configuration;
 using Utah.Udot.ATSPM.IdentityApi.Controllers;
-using Utah.Udot.NetStandardToolkit.Services;
 
 namespace Identity.Controllers
 {
