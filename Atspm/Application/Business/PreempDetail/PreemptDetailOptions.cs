@@ -19,8 +19,8 @@ using Utah.Udot.Atspm.Business.Common;
 
 namespace Utah.Udot.Atspm.Business.PreempDetail
 {
-    public class PreemptDetailOptions : OptionsBase
+    public class PreemptDetailOptions : DateTimeOptionsBase, ILocationOptionsBase
     {
-
+        public string LocationIdentifier { get; set; }
     }
 }
