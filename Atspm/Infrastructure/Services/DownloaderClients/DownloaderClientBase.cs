@@ -115,9 +115,6 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
 
                 if (TryCreateFileInfo(local, out FileInfo file))
                 {
-                    Console.WriteLine($"==============================================================file: {file.FullName}");
-
-
                     file.Directory.Create();
 
                     return await DownloadResource(file, remote, token);
