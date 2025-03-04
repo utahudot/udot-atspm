@@ -1,6 +1,6 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
-// for WatchDog - WatchDog.Services/ScanHostedService.cs
+// Copyright 2025 Utah Departement of Transportation
+// for Infrastructure - Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices/ScanHostedService.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.CodeAnalysis.Emit;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;

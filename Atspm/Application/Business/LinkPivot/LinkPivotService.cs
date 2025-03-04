@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for Application - Utah.Udot.Atspm.Business.LinkPivot/LinkPivotService.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,7 +14,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #endregion
-
 
 using Microsoft.EntityFrameworkCore;
 using Utah.Udot.Atspm.Extensions;
@@ -38,7 +37,8 @@ namespace Utah.Udot.Atspm.Business.LinkPivot
             LinkPivot linkPivot = new LinkPivot(options.StartDate.ToDateTime(options.StartTime), options.EndDate.ToDateTime(options.EndTime));
             var (lp, pairedApproches) = await GetAdjustmentObjectsAsync(options, routeLocations);
 
-            if (lp.Count == 0 || pairedApproches.Count == 0) {
+            if (lp.Count == 0 || pairedApproches.Count == 0)
+            {
                 throw new Exception("Issue grabbing approach data for route locations.");
             }
 
@@ -223,7 +223,7 @@ namespace Utah.Udot.Atspm.Business.LinkPivot
 
         private static void AddLastAdjusment(RouteLocation routeLocation, List<AdjustmentObject> adjustments)
         {
-            if(routeLocation != null)
+            if (routeLocation != null)
             {
                 adjustments.Add(new AdjustmentObject()
                 {
