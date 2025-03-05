@@ -9,7 +9,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
 {
     /// <inheritdoc />
-    public partial class _5_0 : Migration
+    public partial class tsp : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -234,7 +234,7 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "character varying(64)", unicode: false, maxLength: 64, nullable: false),
                     Notes = table.Column<string>(type: "character varying(512)", unicode: false, maxLength: 512, nullable: true),
-                    Date = table.Column<DateTime>(type: "timestamp", nullable: false, defaultValue: new DateTime(2025, 2, 27, 9, 24, 49, 960, DateTimeKind.Local).AddTicks(1714)),
+                    Date = table.Column<DateTime>(type: "timestamp", nullable: false, defaultValue: new DateTime(2025, 3, 4, 18, 54, 29, 807, DateTimeKind.Local).AddTicks(8289)),
                     Version = table.Column<int>(type: "integer", nullable: false),
                     ParentId = table.Column<int>(type: "integer", nullable: true)
                 },
@@ -354,6 +354,32 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.CreateTable(
+                name: "MeasureOptionPresets",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "character varying(512)", unicode: false, maxLength: 512, nullable: true),
+                    Option = table.Column<string>(type: "text", nullable: true),
+                    MeasureTypeId = table.Column<int>(type: "integer", nullable: false),
+                    Created = table.Column<DateTime>(type: "timestamp", nullable: false),
+                    Modified = table.Column<DateTime>(type: "timestamp", nullable: false),
+                    CreatedBy = table.Column<string>(type: "text", unicode: false, nullable: true),
+                    ModifiedBy = table.Column<string>(type: "text", unicode: false, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MeasureOptionPresets", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_MeasureOptionPresets_MeasureType_MeasureTypeId",
+                        column: x => x.MeasureTypeId,
+                        principalTable: "MeasureType",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                },
+                comment: "Measure Option Presets");
 
             migrationBuilder.CreateTable(
                 name: "MeasureOptions",
@@ -834,7 +860,8 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
                     { 34, "LTG", 114, "Left Turn Gap", true, false },
                     { 35, "SM", 120, "Split Monitor", true, false },
                     { 36, "GTU", 130, "Green Time Utilization", false, true },
-                    { 37, "RM", 131, "Ramp Metering", false, true }
+                    { 37, "RM", 131, "Ramp Metering", false, true },
+                    { 38, "TSP", 132, "Transit Signal Priority", false, false }
                 });
 
             migrationBuilder.InsertData(
@@ -894,10 +921,11 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
                     { 113, 36, "xAxisBinSize", "15" },
                     { 114, 36, "yAxisBinSize", "4" },
                     { 115, 32, "binSize", "15" },
-                    { 116, 2, "yAxisDefault", "100" },
-                    { 117, 6, "yAxisDefault", "150" },
-                    { 118, 3, "yAxisDefault", "180" },
-                    { 119, 11, "yAxisDefault", "20" }
+                    { 116, 37, "combineLanes", "FALSE" },
+                    { 117, 2, "yAxisDefault", "100" },
+                    { 118, 6, "yAxisDefault", "150" },
+                    { 119, 3, "yAxisDefault", "180" },
+                    { 120, 11, "yAxisDefault", "20" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -974,6 +1002,11 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
                 name: "IX_MeasureComments_LocationIdentifier",
                 table: "MeasureComments",
                 column: "LocationIdentifier");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MeasureOptionPresets_MeasureTypeId",
+                table: "MeasureOptionPresets",
+                column: "MeasureTypeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_MeasureOptions_MeasureTypeId",
@@ -1071,6 +1104,9 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
 
             migrationBuilder.DropTable(
                 name: "MeasureCommentMeasureType");
+
+            migrationBuilder.DropTable(
+                name: "MeasureOptionPresets");
 
             migrationBuilder.DropTable(
                 name: "MeasureOptions");

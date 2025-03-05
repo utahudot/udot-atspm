@@ -114,7 +114,7 @@ namespace Utah.Udot.Atspm.Data
         public virtual DbSet<MeasureOption> MeasureOptions { get; set; }
 
         /// <summary>
-        /// Measure options save table
+        /// Measure option presets
         /// </summary>
         public virtual DbSet<MeasureOptionPreset> MeasureOptionPresets { get; set; }
 
