@@ -52,6 +52,7 @@ cmdBuilder.UseHost(a =>
                 c.LogName = "Atspm";
             });
         }
+        l.AddGoogle();
         //l.AddGoogle(new LoggingServiceOptions
         //{
         //    ProjectId = "",
@@ -62,6 +63,8 @@ cmdBuilder.UseHost(a =>
     })
     .ConfigureServices((h, s) =>
     {
+        s.AddGoogleDiagnostics(null, AppDomain.CurrentDomain.FriendlyName, "Atspm");
+        
         s.AddAtspmDbContext(h);
         s.AddAtspmEFConfigRepositories();
         s.AddAtspmEFEventLogRepositories();
