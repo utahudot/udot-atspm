@@ -59,4 +59,12 @@ namespace Utah.Udot.Atspm.Data.Models
         public string CreatedBy {  get; set; }
         public string ModifiedBy { get; set; }
     }
+
+    public interface IRelatedMeasureOptionPresets
+    {
+        /// <summary>
+        /// Collection of measure comments
+        /// </summary>
+        ICollection<MeasureOptionPreset> MeasureOptionPresets { get; set; }
+    }
 }

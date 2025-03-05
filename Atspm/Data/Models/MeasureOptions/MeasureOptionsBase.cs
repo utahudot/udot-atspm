@@ -46,6 +46,11 @@ namespace Utah.Udot.Atspm.Data.Models.MeasureOptions
         public int BinSize { get; set; }
         public bool GetPermissivePhase { get; set; }
         public bool GetVolume { get; set; } = true;
+
+        public override string? ToString()
+        {
+            return $"{LocationIdentifier} - {Start} - {End} - {BinSize} - {GetPermissivePhase} - {GetVolume}";
+        }
         //public string LocationIdentifier { get; set; }
     }
 

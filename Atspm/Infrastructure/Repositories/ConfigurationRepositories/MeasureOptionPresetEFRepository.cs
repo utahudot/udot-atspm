@@ -22,21 +22,21 @@ using Utah.Udot.Atspm.Data;
 namespace Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories
 {
     ///<inheritdoc cref="IMeasureOptionsRepository"/>
-    public class MeasureOptionsSaveEFRepository : ATSPMRepositoryEFBase<MeasureOptionPreset>, IMeasureOptionsSaveRepository
+    public class MeasureOptionPresetEFRepository : ATSPMRepositoryEFBase<MeasureOptionPreset>, IMeasureOptionPresetRepository
     {
         /// <inheritdoc/>
-        public MeasureOptionsSaveEFRepository(ConfigContext db, ILogger<MeasureOptionsSaveEFRepository> log) : base(db, log) { }
+        public MeasureOptionPresetEFRepository(ConfigContext db, ILogger<MeasureOptionPresetEFRepository> log) : base(db, log) { }
 
         #region Overrides
 
         /// <inheritdoc/>
         public override IQueryable<MeasureOptionPreset> GetList()
         {
-            return base.GetList().Include(i => i.MeasureType);
+            return base.GetList()
+                .Include(i => i.MeasureType)
+                .OrderBy(o => o.Name);
         }
 
         #endregion
-
-       
     }
 }

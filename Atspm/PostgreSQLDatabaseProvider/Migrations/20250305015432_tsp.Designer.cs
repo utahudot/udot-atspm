@@ -9,10 +9,10 @@ using Utah.Udot.Atspm.Data;
 
 #nullable disable
 
-namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations.Config
+namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
 {
     [DbContext(typeof(ConfigContext))]
-    [Migration("20250305013136_tsp")]
+    [Migration("20250305015432_tsp")]
     partial class tsp
     {
         /// <inheritdoc />
@@ -2109,7 +2109,7 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations.Config
                     b.Property<DateTime>("Date")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp")
-                        .HasDefaultValue(new DateTime(2025, 3, 4, 18, 31, 33, 965, DateTimeKind.Local).AddTicks(7341));
+                        .HasDefaultValue(new DateTime(2025, 3, 4, 18, 54, 29, 807, DateTimeKind.Local).AddTicks(8289));
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -2384,7 +2384,7 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations.Config
             modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.MeasureOptionPreset", b =>
                 {
                     b.HasOne("Utah.Udot.Atspm.Data.Models.MeasureType", "MeasureType")
-                        .WithMany()
+                        .WithMany("MeasureOptionPresets")
                         .HasForeignKey("MeasureTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -2547,6 +2547,8 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations.Config
 
             modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.MeasureType", b =>
                 {
+                    b.Navigation("MeasureOptionPresets");
+
                     b.Navigation("MeasureOptions");
                 });
 

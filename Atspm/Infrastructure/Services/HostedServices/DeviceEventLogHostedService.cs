@@ -21,6 +21,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Diagnostics;
 using System.Threading.Tasks.Dataflow;
+using Utah.Udot.Atspm.Data.Models.MeasureOptions;
 using Utah.Udot.ATSPM.Infrastructure.Workflows;
 
 namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
@@ -122,18 +123,61 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
             {
                 scope.ServiceProvider.PrintHostInformation();
 
-                var workflow = new DeviceEventLogWorkflow(_services, _options.Value.BatchSize, _options.Value.ParallelProcesses, cancellationToken);
 
-                var repo = scope.ServiceProvider.GetService<IDeviceRepository>();
 
-                await foreach (var d in repo.GetDevicesForLogging(_options.Value.DeviceEventLoggingQueryOptions))
+
+                var repo = scope.ServiceProvider.GetService<IMeasureOptionPresetRepository>();
+
+
+                //var test = new MeasureOptionPreset()
+                //{
+                //    Name = "Test1",
+                //    MeasureTypeId = 8,
+                //    Option = new ApproachDelayOptions()
+                //    {
+                //        BinSize = 15,
+                //        Start = DateTime.Now.AddMinutes(-15),
+                //        End = DateTime.Now,
+                //        GetPermissivePhase = true,
+                //        GetVolume = true,
+                //        LocationIdentifier = "1234"
+                //    }
+                //};
+
+                //await repo.AddAsync(test);
+
+                foreach (var i in repo.GetList())
                 {
-                    await workflow.Input.SendAsync(d);
+                    Console.WriteLine($"stuff: {i} --- {i.Option.GetType()} --- {i.Option}");
                 }
 
-                workflow.Input.Complete();
 
-                await Task.WhenAll(workflow.Steps.Select(s => s.Completion));
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                //var workflow = new DeviceEventLogWorkflow(_services, _options.Value.BatchSize, _options.Value.ParallelProcesses, cancellationToken);
+
+                //var repo = scope.ServiceProvider.GetService<IDeviceRepository>();
+
+                //await foreach (var d in repo.GetDevicesForLogging(_options.Value.DeviceEventLoggingQueryOptions))
+                //{
+                //    await workflow.Input.SendAsync(d);
+                //}
+
+                //workflow.Input.Complete();
+
+                //await Task.WhenAll(workflow.Steps.Select(s => s.Completion));
             }
 
             sw.Stop();
