@@ -17,26 +17,33 @@
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Newtonsoft.Json;
+using Utah.Udot.Atspm.Data.Models.MeasureOptions;
+
+#nullable disable
 
 namespace Utah.Udot.Atspm.Data.Configuration
 {
     /// <summary>
     /// Measure options configuration
     /// </summary>
-    public class MeasureOptionsSaveConfiguration : IEntityTypeConfiguration<MeasureOptionsSave>
+    public class MeasureOptionPresetConfiguration : IEntityTypeConfiguration<MeasureOptionPreset>
     {
         /// <inheritdoc/>
-        public void Configure(EntityTypeBuilder<MeasureOptionsSave> builder)
+        public void Configure(EntityTypeBuilder<MeasureOptionPreset> builder)
         {
-            builder.ToTable(t => t.HasComment("Measure Options Save"));
+            builder.ToTable(t => t.HasComment("Measure Option Presets"));
 
             builder.Property(e => e.Name).HasMaxLength(512);
-            builder.Property(e => e.MeasureTypeId).IsRequired();
-            builder.Property(e => e.ModifiedByUserId).IsRequired();
-            builder.Property(e => e.ModifiedOn).IsRequired();
-            builder.Property(e => e.CreatedByUserId).IsRequired();
-            builder.Property(e => e.CreatedOn).IsRequired();
-            builder.Property(e => e.SelectedParametersJson).IsRequired();
+
+            builder.Property(e => e.Option).HasConversion(v => JsonConvert.SerializeObject(v, new JsonSerializerSettings()
+            {
+                TypeNameHandling = TypeNameHandling.All
+            }), 
+            v => JsonConvert.DeserializeObject<MeasureOptionsBase>(v, new JsonSerializerSettings()
+            {
+                TypeNameHandling = TypeNameHandling.All
+            }));
         }
     }
 }

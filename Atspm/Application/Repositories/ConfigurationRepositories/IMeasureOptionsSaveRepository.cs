@@ -22,7 +22,7 @@ namespace Utah.Udot.Atspm.Repositories.ConfigurationRepositories
     /// <summary>
     /// Measure options repository
     /// </summary>
-    public interface IMeasureOptionsSaveRepository : IAsyncRepository<MeasureOptionsSave>
+    public interface IMeasureOptionsSaveRepository : IAsyncRepository<MeasureOptionPreset>
     {
        
     }
