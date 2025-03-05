@@ -63,7 +63,7 @@ cmdBuilder.UseHost(a =>
     })
     .ConfigureServices((h, s) =>
     {
-        s.AddGoogleDiagnostics();
+        //s.AddGoogleDiagnostics();
         
         s.AddAtspmDbContext(h);
         s.AddAtspmEFConfigRepositories();
