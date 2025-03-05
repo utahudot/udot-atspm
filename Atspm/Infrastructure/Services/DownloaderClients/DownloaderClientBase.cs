@@ -65,10 +65,11 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
             {
                 ArgumentNullException.ThrowIfNull(resource);
 
-                if (resource.IsAbsoluteUri && Uri.IsWellFormedUriString(resource.ToString(), UriKind.Absolute))
+                //HACK: took this out until it could be tested
+                //if (resource.IsAbsoluteUri && Uri.IsWellFormedUriString(resource.ToString(), UriKind.Absolute))
                     await DeleteResource(resource, token);
-                else
-                    throw new UriFormatException($"Invalid Uri {resource}");
+                //else
+                //    throw new UriFormatException($"Invalid Uri {resource}");
             }
             catch (Exception e)
             {
