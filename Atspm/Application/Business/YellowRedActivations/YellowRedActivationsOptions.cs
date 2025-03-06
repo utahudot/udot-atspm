@@ -19,9 +19,10 @@ using Utah.Udot.Atspm.Business.Common;
 
 namespace Utah.Udot.Atspm.Business.YellowRedActivations
 {
-    public class YellowRedActivationsOptions : OptionsBase
+    public class YellowRedActivationsOptions : DateTimeOptionsBase, ILocationOptionsBase
     {
         public double SevereLevelSeconds { get; set; }
         public int MetricTypeId { get; set; } = 11;
+        public string LocationIdentifier { get; set; }
     }
 }

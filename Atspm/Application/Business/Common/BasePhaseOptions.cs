@@ -17,9 +17,10 @@
 
 namespace Utah.Udot.Atspm.Business.Common
 {
-    public class BasePhaseOptions : OptionsBase
+    public class BasePhaseOptions : DateTimeOptionsBase, ILocationOptionsBase
     {
         public double ExtendStartStopSearch { get; set; }
         public bool ShowAllLanesInfo { get; set; }
+        public string LocationIdentifier { get; set; }
     }
 }
