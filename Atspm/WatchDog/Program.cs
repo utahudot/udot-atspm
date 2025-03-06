@@ -1,6 +1,6 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
-// for WatchDog - WatchDog/Program.cs
+// Copyright 2025 Utah Departement of Transportation
+// for WatchDog - %Namespace%/Program.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,11 +19,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System.CodeDom.Compiler;
 using System.CommandLine.Builder;
 using System.CommandLine.Hosting;
 using System.CommandLine.Parsing;
-using Utah.Udot.Atspm.Common;
 using Utah.Udot.Atspm.Data;
 using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Infrastructure.Extensions;

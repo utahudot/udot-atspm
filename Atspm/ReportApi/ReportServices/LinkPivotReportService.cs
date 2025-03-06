@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for ReportApi - Utah.Udot.Atspm.ReportApi.ReportServices/LinkPivotReportService.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -40,7 +40,8 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
         public override async Task<LinkPivotResult> ExecuteAsync(LinkPivotOptions parameter, IProgress<int> progress = null, CancellationToken cancelToken = default)
         {
             var routeLocations = GetLocationsFromRouteId(parameter.RouteId);
-            if (routeLocations == null || routeLocations.Count == 0) {
+            if (routeLocations == null || routeLocations.Count == 0)
+            {
                 throw new Exception($"No Route Locations configured for route");
             }
             var result = await Task.Run(() => linkPivotService.GetData(parameter, routeLocations));

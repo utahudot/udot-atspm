@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for Infrastructure - Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients/SSHNetSFTPDownloaderClient.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -36,7 +36,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
         /// <inheritdoc/>
         /// </summary>
         /// <param name="client">External client used for special settings and mocking</param>
-        public SSHNetSFTPDownloaderClient(ISftpClientWrapper client) 
+        public SSHNetSFTPDownloaderClient(ISftpClientWrapper client)
         {
             _client = client;
         }

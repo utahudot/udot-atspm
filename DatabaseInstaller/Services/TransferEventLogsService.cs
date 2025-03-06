@@ -1,4 +1,22 @@
-﻿using DatabaseInstaller.Commands;
+﻿#region license
+// Copyright 2025 Utah Departement of Transportation
+// for DatabaseInstaller - DatabaseInstaller.Services/TransferEventLogsService.cs
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+// http://www.apache.org/licenses/LICENSE-2.
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+#endregion
+
+
+using DatabaseInstaller.Commands;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -186,7 +204,7 @@ namespace DatabaseInstaller.Services
             // Get only the locations that match the provided identifiers.
             var locations = _locationRepository
                 .GetLatestVersionOfAllLocations(_config.Start);
-                //.Where(l => locationIdentifiers.Contains(l.LocationIdentifier));
+            //.Where(l => locationIdentifiers.Contains(l.LocationIdentifier));
 
             // Process each date in the range.
             for (var date = _config.Start; date <= _config.End; date = date.AddDays(1))

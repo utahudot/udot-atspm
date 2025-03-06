@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for Application - Utah.Udot.Atspm.Analysis.WorkflowSteps/GroupPhaseTerminationsByApproaches.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +16,8 @@
 #endregion
 
 using System.Threading.Tasks.Dataflow;
-using Utah.Udot.Atspm.Data.Models.EventLogModels;
 using Utah.Udot.Atspm.Data.Enums;
+using Utah.Udot.Atspm.Data.Models.EventLogModels;
 using Utah.Udot.Atspm.Specifications;
 using Utah.Udot.NetStandardToolkit.Extensions;
 

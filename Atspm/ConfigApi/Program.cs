@@ -1,5 +1,5 @@
 #region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for ConfigApi - %Namespace%/Program.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,7 +21,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.AspNetCore.OData;
 using Microsoft.Extensions.Options;
-using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Text.Json;
 using System.Text.Json.Serialization;

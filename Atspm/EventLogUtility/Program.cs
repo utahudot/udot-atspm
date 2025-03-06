@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for EventLogUtility - %Namespace%/Program.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,6 +23,8 @@ using System.CommandLine.Parsing;
 using System.Diagnostics;
 using Utah.Udot.Atspm.EventLogUtility.Commands;
 using Utah.Udot.Atspm.Infrastructure.Extensions;
+
+//tricking github
 
 if (OperatingSystem.IsWindows())
 {

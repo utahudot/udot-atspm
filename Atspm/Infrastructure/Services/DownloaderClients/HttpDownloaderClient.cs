@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for Infrastructure - Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients/HttpDownloaderClient.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -30,7 +30,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
 
         ///<inheritdoc/>
         public HttpDownloaderClient() { }
-        
+
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
