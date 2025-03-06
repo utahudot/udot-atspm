@@ -19,8 +19,9 @@ using Utah.Udot.Atspm.Business.Common;
 
 namespace Utah.Udot.Atspm.Business.TimingAndActuation
 {
-    public class TimingAndActuationsOptions : OptionsBase
+    public class TimingAndActuationsOptions : DateTimeOptionsBase, ILocationOptionsBase
     {
+        public string LocationIdentifier { get; set; }
         public List<short> GlobalEventCodesList { get; set; }
         public List<short> GlobalEventParamsList { get; set; }
         public List<short> PhaseEventCodesList { get; set; }
