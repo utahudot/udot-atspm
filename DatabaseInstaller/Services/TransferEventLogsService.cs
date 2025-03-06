@@ -26,6 +26,8 @@ using Utah.Udot.Atspm.Data;
 using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
 using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
+using Polly;
+using Polly.Retry;
 
 namespace DatabaseInstaller.Services
 {
@@ -201,26 +203,28 @@ namespace DatabaseInstaller.Services
             //    "6522"
             //};
 
-            // Get only the locations that match the provided identifiers.
-            var locations = _locationRepository
-                .GetLatestVersionOfAllLocations(_config.Start);
-            //.Where(l => locationIdentifiers.Contains(l.LocationIdentifier));
+            var locations = _locationRepository.GetLatestVersionOfAllLocations(_config.Start).OrderBy(l => l.LocationIdentifier).ToList();
 
-            // Process each date in the range.
-            for (var date = _config.Start; date <= _config.End; date = date.AddDays(1))
+            // Process locations in batches of 100
+            var locationBatches = locations
+                .Select((location, index) => new { location, index })
+                .GroupBy(x => x.index / 100)
+                .Select(g => g.Select(x => x.location).ToList());
+
+            foreach (var batch in locationBatches)
             {
                 try
                 {
-                    // Optionally, you can batch these tasks if needed.
-                    var tasks = locations
-                        .Select(location => ProcessLocationAsync(DateOnly.FromDateTime(date), location, cancellationToken))
+                    // Process each batch in parallel
+                    var tasks = batch
+                        .Select(location => ProcessLocationAsync(DateOnly.FromDateTime(_config.Start), location, cancellationToken))
                         .ToList();
 
-                    await Task.WhenAll(tasks);
+                    await Task.WhenAll(tasks); // Run the batch in parallel
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError($"Error processing data for date {date}: {ex.Message}");
+                    _logger.LogError($"Error processing batch: {ex.Message}");
                 }
             }
 
@@ -244,85 +248,108 @@ namespace DatabaseInstaller.Services
             _logger.LogInformation($"Finished processing location {location.LocationIdentifier} for date {date}");
         }
 
-        /// <summary>
-        /// Retrieves event logs for the specified location and date.
-        /// Returns a compressed log entry if any events are found; otherwise, returns null.
-        /// </summary>
-        private async Task<CompressedEventLogs<IndianaEvent>?> GetLogsAsync(
-            DateOnly dateToRetrieve,
-            string sourceConnectionString,
-            Location location,
-            CancellationToken cancellationToken)
-        {
-            string selectQuery = $"SELECT SignalId, Timestamp, EventCode, EventParam FROM [dbo].[Controller_Event_Log] " +
-                                 $"WHERE SignalId = '{location.LocationIdentifier}' " +
-                                 $"AND Timestamp >= '{dateToRetrieve}' AND Timestamp < '{dateToRetrieve.AddDays(1)}'";
+    private async Task<CompressedEventLogs<IndianaEvent>?> GetLogsAsync(
+        DateOnly dateToRetrieve,
+        string sourceConnectionString,
+        Location location,
+        CancellationToken cancellationToken)
+    {
+        string connectionString = $"{sourceConnectionString};Max Pool Size=200;Connection Timeout=60;";
 
-            using (var connection = new SqlConnection(sourceConnectionString))
-            {
-                await connection.OpenAsync(cancellationToken);
-                using (var selectCommand = new SqlCommand(selectQuery, connection))
+        string selectQuery = $"SELECT SignalId, Timestamp, EventCode, EventParam FROM [dbo].[Controller_Event_Log] " +
+                             $"WHERE SignalId = '{location.LocationIdentifier}' " +
+                             $"AND Timestamp >= '{dateToRetrieve}' AND Timestamp < '{dateToRetrieve.AddDays(1)}'";
+
+        // Define retry policy with incremental backoff (30s, 60s, 90s, 120s)
+        var retryPolicy = Policy
+            .Handle<SqlException>()  // Retry on SQL errors
+            .Or<TimeoutException>()  // Retry on timeouts
+            .Or<InvalidOperationException>() // Retry for connection pool exhaustion
+            .WaitAndRetryAsync(4, retryAttempt => TimeSpan.FromSeconds(30 * retryAttempt),
+                (exception, timeSpan, retryCount, context) =>
                 {
-                    var eventLogs = new List<IndianaEvent>();
-                    selectCommand.CommandTimeout = 120;
+                    _logger.LogWarning($"Attempt {retryCount} failed for {location.LocationIdentifier} on {dateToRetrieve}: {exception.Message}. Retrying in {timeSpan.TotalSeconds} seconds...");
+                });
 
-                    using (var reader = await selectCommand.ExecuteReaderAsync(cancellationToken))
+        try
+        {
+            return await retryPolicy.ExecuteAsync(async () =>
+            {
+                using (var connection = new SqlConnection(connectionString))
+                {
+                    await connection.OpenAsync(cancellationToken);  // If this fails, Polly will retry
+
+                    using (var selectCommand = new SqlCommand(selectQuery, connection))
                     {
-                        while (await reader.ReadAsync(cancellationToken))
+                        var eventLogs = new List<IndianaEvent>();
+                        selectCommand.CommandTimeout = 120;  // Ensure command timeout is set
+
+                        using (var reader = await selectCommand.ExecuteReaderAsync(cancellationToken))
                         {
-                            try
+                            while (await reader.ReadAsync(cancellationToken))
                             {
-                                var eventLog = new IndianaEvent
+                                try
                                 {
-                                    Timestamp = (DateTime)reader["Timestamp"],
-                                    EventCode = Convert.ToInt16(reader["EventCode"]),
-                                    EventParam = Convert.ToInt16(reader["EventParam"])
+                                    var eventLog = new IndianaEvent
+                                    {
+                                        Timestamp = (DateTime)reader["Timestamp"],
+                                        EventCode = Convert.ToInt16(reader["EventCode"]),
+                                        EventParam = Convert.ToInt16(reader["EventParam"])
+                                    };
+                                    eventLogs.Add(eventLog);
+                                }
+                                catch (Exception ex)
+                                {
+                                    _logger.LogWarning($"Error reading record for {location.LocationIdentifier} on {dateToRetrieve}: {ex.Message}");
+                                }
+                            }
+                        }
+
+                        _logger.LogInformation($"Found {eventLogs.Count} events for location {location.LocationIdentifier} on {dateToRetrieve}");
+
+                        if (eventLogs.Any())
+                        {
+                            var device = location.Devices
+                                .FirstOrDefault(d => d.DeviceType == Utah.Udot.Atspm.Data.Enums.DeviceTypes.SignalController);
+
+                            if (device != null)
+                            {
+                                return new CompressedEventLogs<IndianaEvent>
+                                {
+                                    LocationIdentifier = location.LocationIdentifier,
+                                    DeviceId = device.Id,
+                                    ArchiveDate = dateToRetrieve,
+                                    Data = eventLogs
                                 };
-                                eventLogs.Add(eventLog);
                             }
-                            catch (Exception ex)
+                            else
                             {
-                                _logger.LogInformation($"Error reading record for {location.LocationIdentifier}: {ex.Message}");
+                                _logger.LogWarning($"No device found for location {location.LocationIdentifier}");
                             }
-                        }
-                    }
-
-                    _logger.LogInformation($"Found {eventLogs.Count} events for location {location.LocationIdentifier} on {dateToRetrieve}");
-
-                    if (eventLogs.Any())
-                    {
-                        var device = location.Devices
-                            .FirstOrDefault(d => d.DeviceType == Utah.Udot.Atspm.Data.Enums.DeviceTypes.SignalController);
-
-                        if (device != null)
-                        {
-                            var logEntry = new CompressedEventLogs<IndianaEvent>
-                            {
-                                LocationIdentifier = location.LocationIdentifier,
-                                DeviceId = device.Id,
-                                ArchiveDate = dateToRetrieve,
-                                Data = eventLogs
-                            };
-
-                            _logger.LogInformation($"Prepared log entry for location {location.LocationIdentifier} with {eventLogs.Count} events");
-                            return logEntry;
-                        }
-                        else
-                        {
-                            _logger.LogWarning($"No device found for location {location.LocationIdentifier}");
                         }
                     }
                 }
-            }
 
-            return null;
+                return null;
+            });
         }
+        catch (Exception ex)
+        {
+            // If all retries fail, log an error but do NOT throw the exception
+            _logger.LogError($"Failed to get logs for {location.LocationIdentifier} on {dateToRetrieve} after multiple attempts: {ex.Message}");
+            return null; // Continue processing other locations
+        }
+    }
 
-        /// <summary>
-        /// Attempts to insert the log entry into the database with retry logic.
-        /// Retries up to 4 times with a 30-second delay between attempts.
-        /// </summary>
-        private async Task InsertLogsWithRetryAsync(CompressedEventLogs<IndianaEvent> archiveLog)
+
+
+
+
+    /// <summary>
+    /// Attempts to insert the log entry into the database with retry logic.
+    /// Retries up to 4 times with a 30-second delay between attempts.
+    /// </summary>
+    private async Task InsertLogsWithRetryAsync(CompressedEventLogs<IndianaEvent> archiveLog)
         {
             const int maxRetries = 4;
             const int delaySeconds = 30;
