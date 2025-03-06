@@ -19,6 +19,7 @@ using System.Text;
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.NetStandardToolkit.Extensions;
 
+
 namespace Utah.Udot.Atspm.Business.Common
 {
     public class PhaseDetail
@@ -28,15 +29,31 @@ namespace Utah.Udot.Atspm.Business.Common
         public Approach Approach { get; set; }
         public bool IsPermissivePhase { get; set; }
 
-        public string GetApproachDescription()
+        public string GetApproachDescriptionWithMovements(DetectionTypes detectionTypes)
         {
-            var movements = Approach.Detectors?.Select(d => d.MovementType).Distinct().ToList();
+            var movements = Approach.Detectors?.Where(d => d.DetectionTypes.Select(d => d.Id).Contains( detectionTypes)).Select(d => d.MovementType).Distinct().ToList();
             string movementResult = GetMovementResult(movements);
 
             var descriptionResult = new StringBuilder($"{Approach.DirectionType.Description} ");
             if (!string.IsNullOrEmpty(movementResult) && movementResult.Contains("Left"))
             {
                 descriptionResult.Append($"{movementResult} ");
+                descriptionResult.Append(IsPermissivePhase ? "Permissive " : "Protected ");
+            }
+            descriptionResult.Append(UseOverlap ? "Overlap " : "Phase ");
+            descriptionResult.Append(PhaseNumber);
+
+            return descriptionResult.ToString();
+        }
+
+        public string GetApproachDescription()
+        {   
+            var movements = Approach.Detectors?.Select(d => d.MovementType).Distinct().ToList();
+            string movementResult = GetMovementResult(movements);
+            
+            var descriptionResult = new StringBuilder($"{Approach.DirectionType.Description} ");
+            if (!string.IsNullOrEmpty(movementResult) && movementResult.Contains("Left"))
+            {
                 descriptionResult.Append(IsPermissivePhase ? "Permissive " : "Protected ");
             }
             descriptionResult.Append(UseOverlap ? "Overlap " : "Phase ");
