@@ -46,7 +46,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Services
         //}
 
         //Sync signal: From the data in the database return a list of phases and detector channels that are in the logs and compare the newly created signal.
-        //Remove any phases or channels that dont exist on the signal, provide a list of non configured event phases. 
+        //Remove any phases or channels that dont exist on the signal, provide a list of non configured event phases. .
         public TemplateLocationModifiedDto SyncNewLocationDetectorsAndApproaches(int locationId)
         {
             DateTime now = DateTime.Now;
