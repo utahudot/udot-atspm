@@ -58,9 +58,19 @@ namespace DatabaseInstaller.Services
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
+            var locationIdentifiers = new List<string>()
+            {
+                "6530",
+            };
+
+            var locations = _locationRepository.GetLatestVersionOfAllLocations(_config.Start)
+                .Where(l => locationIdentifiers.Contains(l.LocationIdentifier))
+                ;//.Where(l => l.Devices.Select(d => d.DeviceType).Contains(DeviceTypes.WavetronixSpeed));
             for (var date = _config.Start; date <= _config.End; date = date.AddDays(1))
             {
-                var locations = _locationRepository.GetLatestVersionOfAllLocations(_config.Start);//.Where(l => l.Devices.Select(d => d.DeviceType).Contains(DeviceTypes.WavetronixSpeed));
+                //var locations = _locationRepository.GetLatestVersionOfAllLocations(_config.Start)
+                //    .Where(l => locationIdentifiers.Contains(l.LocationIdentifier))                    
+                //    ;//.Where(l => l.Devices.Select(d => d.DeviceType).Contains(DeviceTypes.WavetronixSpeed));
 
                 _logger.LogInformation("Processing date: {Date} with {LocationCount} locations.", date, locations.Count());
 

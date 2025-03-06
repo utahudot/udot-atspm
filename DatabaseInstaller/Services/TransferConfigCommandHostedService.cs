@@ -19,10 +19,12 @@ using DatabaseInstaller.Commands;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Text.Json;
+using Utah.Udot.Atspm.Data;
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
@@ -43,6 +45,7 @@ public class TransferConfigCommandHostedService : IHostedService
     private readonly IMeasureTypeRepository _measureTypeRepository;
     private readonly IRouteRepository _routeRepository;
     private readonly IRouteLocationsRepository _routeLocationsRepository;
+    private readonly IServiceProvider _serviceProvider;
     private readonly IDeviceRepository _deviceRepository;
     private readonly TransferConfigCommandConfiguration _config;
 
@@ -62,7 +65,8 @@ public class TransferConfigCommandHostedService : IHostedService
         IMeasureTypeRepository measureTypeRepository,
         IRouteRepository routeRepository,
         IRouteLocationsRepository routeLocationsRepository,
-        IOptions<TransferConfigCommandConfiguration> config
+        IOptions<TransferConfigCommandConfiguration> config,
+        IServiceProvider serviceProvider
         )
     {
         _logger = logger;
@@ -79,6 +83,7 @@ public class TransferConfigCommandHostedService : IHostedService
         _measureTypeRepository = measureTypeRepository;
         _routeRepository = routeRepository;
         _routeLocationsRepository = routeLocationsRepository;
+        _serviceProvider = serviceProvider;
         _deviceRepository = deviceRepository;
         _config = config.Value;
     }
@@ -117,15 +122,61 @@ public class TransferConfigCommandHostedService : IHostedService
             ImportRoutes(queries, columnMappings);
             ImportRouteLocations(queries, columnMappings);
             ImportDevices(queries, columnMappings);
+            ResetSequences();
         }
         if (_config.ImportSpeedDevices)
         {
             ImportSpeedDevices(queries, columnMappings);
+            ResetSequences();
         }
     }
 
+    private void ResetSequences()
+    {
+        using var scope = _serviceProvider.CreateScope();
+        var configContext = scope.ServiceProvider.GetRequiredService<ConfigContext>();
+
+        // Check if the provider is PostgreSQL
+        var databaseProvider = configContext.Database.ProviderName;
+        if (databaseProvider != "Npgsql.EntityFrameworkCore.PostgreSQL")
+        {
+            Console.WriteLine("Skipping sequence reset: Database provider is not PostgreSQL.");
+            return;
+        }
+
+        string[] sequences = new string[]
+        {
+        "\"Locations_Id_seq\"",
+        "\"Jurisdictions_Id_seq\"",
+        "\"Approaches_Id_seq\"",
+        "\"Detectors_Id_seq\"",
+        "\"Products_Id_seq\"",
+        "\"DeviceConfigurations_Id_seq\"",
+        "\"Regions_Id_seq\"",
+        "\"Devices_Id_seq\"",
+        "\"Routes_Id_seq\"",
+        "\"Areas_Id_seq\"",
+        "\"MenuItems_Id_seq\"",
+        "\"RouteLocations_Id_seq\""
+        };
+
+        foreach (string sequence in sequences)
+        {
+            // Correctly format table name derived from sequence name
+            string tableName = sequence.Replace("_Id_seq\"", "").Replace("\"", "");
+
+            string query = $"SELECT setval('public.{sequence}',(SELECT COALESCE(MAX(\"Id\"), 0) FROM public.\"{tableName}\") + 1);";
+
+            configContext.Database.ExecuteSqlRaw(query);
+
+            Console.WriteLine($"Sequence {sequence} reset successfully.");
+        }
+    }
+
+
     private void ImportSpeedDevices(Dictionary<string, string> queries, Dictionary<string, Dictionary<string, string>> columnMappings)
     {
+        var products = _productRepository.GetList().ToList();
         if (_productRepository.GetList().Any(p => p.Manufacturer == "Wavetronix"))
         {
             _logger.LogInformation("Speed Product already exist");
@@ -301,7 +352,7 @@ public class TransferConfigCommandHostedService : IHostedService
             return;
         }
         _logger.LogInformation("Adding Device Configurations");
-        var deviceConfigurations = ImportData<DeviceConfiguration>(queries["DeviceConfigurations"], columnMappings["DeviceConfigurations"]);
+        var deviceConfigurations = ImportData<DeviceConfiguration>(queries["DeviceConfigurations"], columnMappings["DeviceConfigurations"]);      
         _deviceConfigurationRepository.AddRange(deviceConfigurations);
         _logger.LogInformation("Device Configurations Added");
     }
