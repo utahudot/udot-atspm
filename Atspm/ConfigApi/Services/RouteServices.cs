@@ -60,7 +60,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Services
             // Update route properties
             route.Name = routeDto.Name;
 
-            // Create a list of routeLocation identifiers from the DTO
+            // Create a list of routeLocation identifiers from the DTO.
             var routeLocationIds = routeDto.RouteLocations.Select(rl => rl.LocationIdentifier).ToList();
 
             // Delete RouteLocations that are not in the DTO
