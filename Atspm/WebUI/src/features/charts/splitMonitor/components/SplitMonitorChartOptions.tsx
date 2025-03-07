@@ -3,6 +3,7 @@ import { SplitMonitorChartOptionsDefaults } from '@/features/charts/splitMonitor
 import { Default } from '@/features/charts/types'
 import { useChartsStore } from '@/stores/charts'
 import {
+  Alert,
   Box,
   FormControl,
   InputLabel,
@@ -26,7 +27,7 @@ export const SplitMonitorChartOptions = ({
   isMeasureDefaultView = false,
 }: SplitMonitorChartOptionsProps) => {
   const [selectedPercentile, setSelectedPercentile] = useState(
-    chartDefaults?.percentileSplit?.value || ''
+    chartDefaults?.percentileSplit?.value
   )
   const { setYAxisMaxStore } = useChartsStore()
 

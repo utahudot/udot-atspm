@@ -1,5 +1,5 @@
 #region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for ApplicationTests - Utah.Udot.Atspm.ApplicationTests.Analysis.WorkflowSteps/CreatePreemptiveCyclesTests.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,7 +19,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Utah.Udot.Atspm.Analysis.Workflows;
-using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
 using Xunit;
 using Xunit.Abstractions;

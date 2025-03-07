@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for Infrastructure - Utah.Udot.Atspm.Infrastructure.Services.HostedServices/DeviceEventLogHostedService.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,7 +19,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System;
 using System.Diagnostics;
 using System.Threading.Tasks.Dataflow;
 using Utah.Udot.ATSPM.Infrastructure.Workflows;
@@ -50,7 +49,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
 
         /// <inheritdoc/>
         public async Task StartAsync(CancellationToken cancellationToken)
-        {   
+        {
             var serviceName = this.GetType().Name;
             var logMessages = new HostedServiceLogMessages(_log, this.GetType().Name);
 

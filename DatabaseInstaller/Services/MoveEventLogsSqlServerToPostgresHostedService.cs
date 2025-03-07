@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for DatabaseInstaller - DatabaseInstaller.Services/MoveEventLogsSqlServerToPostgresHostedService.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,21 +16,15 @@
 #endregion
 
 using global::DatabaseInstaller.Commands;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System;
 using Utah.Udot.Atspm.Data;
-using Utah.Udot.Atspm.Data.Configuration.Identity;
-using Utah.Udot.Atspm.Data.Models;
-using Utah.Udot.Atspm.Data.Models.EventLogModels;
 using Utah.Udot.Atspm.Infrastructure.Repositories.EventLogRepositories;
 using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
 using Utah.Udot.Atspm.Repositories.EventLogRepositories;
-using Utah.Udot.NetStandardToolkit.Extensions;
 
 
 namespace DatabaseInstaller.Services
@@ -183,7 +177,7 @@ namespace DatabaseInstaller.Services
                     .ToList();
                 foreach (var location in locations)
                 {
-                //create a scope to run in using
+                    //create a scope to run in using
                     using (var scope = _serviceProvider.CreateScope())
                     {
                         // SQL Server DbContext to read logs
@@ -203,8 +197,8 @@ namespace DatabaseInstaller.Services
                         {
                             Console.WriteLine($"Getting logs for {location}...");
                             var logs = sqltestSeverRepository.GetArchivedEvents(
-                                location, 
-                                DateOnly.FromDateTime(_config.Start), 
+                                location,
+                                DateOnly.FromDateTime(_config.Start),
                                 DateOnly.FromDateTime(_config.End));
                             Console.WriteLine($"Logs for {location} retrieved");
                             Console.WriteLine($"Saving logs for {location}...");

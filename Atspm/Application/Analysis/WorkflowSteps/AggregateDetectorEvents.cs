@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for Application - Utah.Udot.Atspm.Analysis.WorkflowSteps/AggregateDetectorEvents.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -31,9 +31,9 @@ namespace Utah.Udot.Atspm.Analysis.WorkflowSteps
     public class AggregateDetectorEvents : TransformProcessStepBase<Tuple<Detector, int, IEnumerable<IndianaEvent>>, IEnumerable<DetectorEventCountAggregation>>
     {
         private readonly TimeSpan _binSize;
-        
+
         /// <inheritdoc/>
-        public AggregateDetectorEvents(TimeSpan binSize, ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) 
+        public AggregateDetectorEvents(TimeSpan binSize, ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
         {
             _binSize = binSize;
         }
