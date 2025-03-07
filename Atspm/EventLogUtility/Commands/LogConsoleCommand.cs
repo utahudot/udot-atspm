@@ -78,8 +78,6 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
             AddGlobalOption(DeviceTypeOption);
             AddGlobalOption(TransportProtocolOption);
             AddGlobalOption(DeviceStatusCommandOption);
-
-            //this.AddCommand(new DownloadCommand());
         }
 
         public Argument<bool?> DeleteRemoteFileArg { get; set; } = new Argument<bool?>("delete local", "Delete the remote file on the device after downloading");
@@ -150,7 +148,7 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
         public BatchSizeOption() : base("--batch-size", "Batch size of event logs to save to repository")
         {
             AddAlias("-bs");
-            SetDefaultValue(50000);
+            //SetDefaultValue(50000);
         }
     }
 
@@ -159,10 +157,10 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
         public PrallelProcessesOption() : base("--parallel-processes", "Amount of processes that can be run in parallel")
         {
             AddAlias("-pp");
-            SetDefaultValue(50);
+            //SetDefaultValue(50);
         }
     }
-
+    
     public class DeviceTypeCommandOption : Option<DeviceTypes>
     {
         public DeviceTypeCommandOption() : base("--device-type", "Device type to include")
