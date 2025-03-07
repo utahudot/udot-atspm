@@ -74,8 +74,6 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders
             }.Uri;
 
             return result;
-
-            //return WebUtility.UrlDecode(result); ;
         }
 
         ///<inheritdoc/>
@@ -192,32 +190,36 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders
                                 logMessages.OperationCancelledException(deviceIdentifier, ipaddress, e);
                             }
 
-                            if (_options.DeleteRemoteFile)
-                            {
-                                try
-                                {
-                                    logMessages.DeletingResourceMessage(resource, deviceIdentifier, ipaddress);
-
-                                    await client.DeleteResourceAsync(resource, cancelToken);
-                                }
-                                catch (DownloaderClientDeleteResourceException e)
-                                {
-                                    logMessages.DeleteResourceException(resource, deviceIdentifier, ipaddress, e);
-                                }
-                                catch (OperationCanceledException e)
-                                {
-                                    logMessages.OperationCancelledException(deviceIdentifier, ipaddress, e);
-                                }
-
-                                logMessages.DeletedResourceMessage(resource, deviceIdentifier, ipaddress);
-                            }
-
                             //HACK: don't know why files aren't downloading without throwing an error
                             if (downloadedFile != null)
                             {
                                 logMessages.DownloadedResourceMessage(resource, deviceIdentifier, ipaddress);
 
                                 progress?.Report(new ControllerDownloadProgress(downloadedFile, current, total));
+
+                                if (_options.DeleteRemoteFile)
+                                {
+                                    try
+                                    {
+                                        logMessages.DeletingResourceMessage(resource, deviceIdentifier, ipaddress);
+
+                                        await client.DeleteResourceAsync(resource, cancelToken);
+                                    }
+                                    catch (DownloaderClientDeleteResourceException e)
+                                    {
+                                        logMessages.DeleteResourceException(resource, deviceIdentifier, ipaddress, e);
+                                    }
+                                    catch (DownloaderClientConnectionException e)
+                                    {
+                                        logMessages.NotConnectedToHostException(deviceIdentifier, ipaddress, e);
+                                    }
+                                    catch (OperationCanceledException e)
+                                    {
+                                        logMessages.OperationCancelledException(deviceIdentifier, ipaddress, e);
+                                    }
+
+                                    logMessages.DeletedResourceMessage(resource, deviceIdentifier, ipaddress);
+                                }
 
                                 yield return Tuple.Create(parameter, downloadedFile);
                             }
