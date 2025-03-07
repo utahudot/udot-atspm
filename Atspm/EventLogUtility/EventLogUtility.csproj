@@ -50,7 +50,7 @@
 		</None>
 		<None Update="appsettings.Production.json">
 			<DependentUpon>appsettings.json</DependentUpon>
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
 	</ItemGroup>
 
