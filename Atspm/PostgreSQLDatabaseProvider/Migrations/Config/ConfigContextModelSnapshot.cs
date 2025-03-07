@@ -1438,6 +1438,34 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
                             MeasureTypeId = 32,
                             Option = "binSize",
                             Value = "15"
+                        },
+                        new
+                        {
+                            Id = 116,
+                            MeasureTypeId = 2,
+                            Option = "yAxisDefault",
+                            Value = "100"
+                        },
+                        new
+                        {
+                            Id = 117,
+                            MeasureTypeId = 6,
+                            Option = "yAxisDefault",
+                            Value = "150"
+                        },
+                        new
+                        {
+                            Id = 118,
+                            MeasureTypeId = 3,
+                            Option = "yAxisDefault",
+                            Value = "180"
+                        },
+                        new
+                        {
+                            Id = 119,
+                            MeasureTypeId = 11,
+                            Option = "yAxisDefault",
+                            Value = "20"
                         });
                 });
 
@@ -2076,7 +2104,7 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
                     b.Property<DateTime>("Date")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp")
-                        .HasDefaultValue(new DateTime(2025, 2, 10, 10, 24, 34, 63, DateTimeKind.Local).AddTicks(6320));
+                        .HasDefaultValue(new DateTime(2025, 2, 27, 9, 24, 49, 960, DateTimeKind.Local).AddTicks(1714));
 
                     b.Property<string>("Name")
                         .IsRequired()

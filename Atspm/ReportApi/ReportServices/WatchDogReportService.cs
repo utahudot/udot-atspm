@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for ReportApi - Utah.Udot.Atspm.ReportApi.ReportServices/WatchDogReportService.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -110,7 +110,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
             foreach (var e in events)
             {
                 var location = locations.Where(l => l.Id == e.LocationId).FirstOrDefault();
-                if(location == null)
+                if (location == null)
                 {
                     continue;
                 }
