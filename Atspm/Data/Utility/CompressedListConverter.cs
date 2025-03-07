@@ -17,7 +17,9 @@
 
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Newtonsoft.Json;
-using Utah.Udot.NetStandardToolkit.Extensions;
+using System.IO.Compression;
+using System.Text;
+//using Utah.Udot.NetStandardToolkit.Extensions;
 
 #nullable disable
 
@@ -45,5 +47,54 @@ namespace Utah.Udot.Atspm.Data.Utility
                 SerializationBinder = new CompressedSerializationBinder<T>()
             }))
         { }
+    }
+
+    public static class CompressionExtensions
+    {
+        public static byte[] GZipCompressToByte(this string str)
+        {
+            using MemoryStream memoryStream = new MemoryStream();
+            using (GZipStream destination = new GZipStream(memoryStream, CompressionLevel.SmallestSize))
+            {
+                using MemoryStream memoryStream2 = new MemoryStream(Encoding.UTF8.GetBytes(str));
+                memoryStream2.CopyTo(destination);
+            }
+
+            return memoryStream.ToArray();
+        }
+
+        public static MemoryStream GZipDecompressToStream(this Stream msi)
+        {
+            using GZipStream gZipStream = new GZipStream(msi, CompressionMode.Decompress);
+            using MemoryStream memoryStream = new MemoryStream(1024 * 1024 * 5);
+            gZipStream.CopyToAsync(memoryStream);
+            return memoryStream;
+        }
+
+        public static MemoryStream GZipDecompressToStream(this byte[] bytes)
+        {
+            using MemoryStream msi = new MemoryStream(bytes);
+            return msi.GZipDecompressToStream();
+        }
+
+        public static byte[] GZipDecompressToByteArray(this Stream stream)
+        {
+            return stream.GZipDecompressToStream().ToArray();
+        }
+
+        public static byte[] GZipDecompressToByteArray(this byte[] bytes)
+        {
+            return bytes.GZipDecompressToStream().ToArray();
+        }
+
+        public static string GZipDecompressToString(this Stream stream)
+        {
+            return Encoding.UTF8.GetString(stream.GZipDecompressToByteArray());
+        }
+
+        public static string GZipDecompressToString(this byte[] bytes)
+        {
+            return Encoding.UTF8.GetString(bytes.GZipDecompressToByteArray());
+        }
     }
 }

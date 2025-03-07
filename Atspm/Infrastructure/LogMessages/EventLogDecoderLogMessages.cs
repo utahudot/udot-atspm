@@ -58,12 +58,22 @@ namespace Utah.Udot.Atspm.Infrastructure.LogMessages
         public partial void DecodedLogsMessage(string file, int count);
 
         /// <summary>
+        /// Logs if the <paramref name="file"/> is to be deleted
+        /// </summary>
+        /// <param name="file">File to be deleted</param>
+        /// <param name="deleteFlag">Flag indicating if to be deleted</param>
+        [LoggerMessage(EventId = 1002, EventName = "Delete Log File", Level = LogLevel.Debug, Message = "Deleting {file} - {deleteFlag}")]
+        public partial void DeletingFileLogsMessage(string file, bool deleteFlag);
+
+        /// <summary>
         /// Logs exceptions that occured while decoding <paramref name="file"/>
         /// </summary>
         /// <param name="file">File to decode</param>
         /// <param name="ex">Exception thrown decoding <paramref name="file"/></param>
-        [LoggerMessage(EventId = 1002, EventName = "Decode Exception", Level = LogLevel.Warning, Message = "Exception decoding {file}")]
+        [LoggerMessage(EventId = 1003, EventName = "Decode Exception", Level = LogLevel.Warning, Message = "Exception decoding {file}")]
         public partial void DecodeLogFileException(string file, Exception ex);
+
+        
 
         #endregion
 
