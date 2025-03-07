@@ -16,6 +16,7 @@
 #endregion
 
 using Google.Cloud.Diagnostics.Common;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System.CommandLine.Builder;
@@ -52,10 +53,9 @@ cmdBuilder.UseHost(a =>
                 c.LogName = "Atspm";
             });
         }
-        //l.AddGoogle();
+
         //l.AddGoogle(new LoggingServiceOptions
         //{
-        //    ProjectId = "",
         //    ServiceName = AppDomain.CurrentDomain.FriendlyName,
         //    Version = Assembly.GetEntryAssembly().GetName().Version.ToString(),
         //    Options = LoggingOptions.Create(LogLevel.Debug, AppDomain.CurrentDomain.FriendlyName)
@@ -63,8 +63,8 @@ cmdBuilder.UseHost(a =>
     })
     .ConfigureServices((h, s) =>
     {
-        //s.AddGoogleDiagnostics();
-        
+        //s.AddGoogleDiagnostics(loggingOptions: LoggingOptions.Create(LogLevel.Debug));
+
         s.AddAtspmDbContext(h);
         s.AddAtspmEFConfigRepositories();
         s.AddAtspmEFEventLogRepositories();
@@ -92,3 +92,36 @@ h =>
 
 var cmdParser = cmdBuilder.Build();
 await cmdParser.InvokeAsync(args);
+
+//var host = Host.CreateDefaultBuilder(args)
+//    .ConfigureLogging((h, l) =>
+//    {
+//        l.AddGoogle(new LoggingServiceOptions
+//        {
+//            //ProjectId = "1022556126938",
+//            ServiceName = AppDomain.CurrentDomain.FriendlyName,
+//            Version = Assembly.GetEntryAssembly().GetName().Version.ToString(),
+//            Options = LoggingOptions.Create(LogLevel.Debug, AppDomain.CurrentDomain.FriendlyName)
+//        });
+//    }).Build();
+
+//using (var scope = host.Services.CreateScope())
+//{
+//    var logger = scope.ServiceProvider.GetService<ILogger<Program>>()
+//    .WithAddedLabels(new Dictionary<string, string>()
+//{
+//    {"key1", "value1"},
+//    {"key2", "value2"},
+//    {"key3", "value3"},
+//    {"key4", "value4"},
+//    {"key5", "value5"},
+//});
+
+//    logger.LogDebug("log debug test");
+//    logger.LogInformation("log info test");
+//    logger.LogWarning("log warning test");
+//    logger.LogError("log error test");
+//    logger.LogError(new Exception("exception test"), "log error with exception test");
+
+//    await Task.Delay(TimeSpan.FromSeconds(10));
+//}

@@ -66,7 +66,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
             _client.Config.DataConnectionType = FtpDataConnectionType.AutoActive;
 
             var result = await _client.AutoConnect(token);
-            //await client.Connect(token);
+            //await _client.Connect(token);
         }
 
         ///<inheritdoc/>
@@ -96,14 +96,13 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
         protected override async Task<IEnumerable<Uri>> ListResources(string path, CancellationToken token = default, params string[] query)
         {
             var resources = await _client.GetListing(path, FtpListOption.Auto, token);
-
             var results = resources.Select(s => s.FullName);
 
             if (query.Length > 0)
             {
                 results = results.Where(f => query.Any(a => f.Contains(a)));
             }
-
+            
             return results.Select(s => new UriBuilder(Uri.UriSchemeFtp, _client.Host, _client.Port, s).Uri).ToList();
         }
 
