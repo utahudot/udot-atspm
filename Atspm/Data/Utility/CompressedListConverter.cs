@@ -57,7 +57,7 @@ namespace Utah.Udot.Atspm.Data.Utility
             using (GZipStream destination = new GZipStream(memoryStream, CompressionLevel.SmallestSize))
             {
                 using MemoryStream memoryStream2 = new MemoryStream(Encoding.UTF8.GetBytes(str));
-                memoryStream2.CopyToAsync(destination);
+                memoryStream2.CopyTo(destination);
             }
 
             return memoryStream.ToArray();
@@ -65,9 +65,14 @@ namespace Utah.Udot.Atspm.Data.Utility
 
         public static MemoryStream GZipDecompressToStream(this Stream msi)
         {
+            Console.WriteLine($"--------------------msi: {msi.Length}");
+            
             using GZipStream gZipStream = new GZipStream(msi, CompressionMode.Decompress);
-            using MemoryStream memoryStream = new MemoryStream(int.MaxValue);
-            gZipStream.CopyToAsync(memoryStream);
+            using MemoryStream memoryStream = new MemoryStream();
+            gZipStream.CopyTo(memoryStream);
+
+            Console.WriteLine($"--------------------memoryStream: {memoryStream.Length}");
+
             return memoryStream;
         }
 
