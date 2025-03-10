@@ -128,6 +128,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
 
                 await foreach (var d in repo.GetDevicesForLogging(_options.Value.DeviceEventLoggingQueryOptions))
                 {
+                    if (d.DeviceConfigurationId == 10)
                     await workflow.Input.SendAsync(d);
                 }
 
