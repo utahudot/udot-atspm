@@ -1,104 +1,33 @@
 import { TransitSignalPriorityResult } from '@/api/reports/aTSPMReportDataApi.schemas'
 import { TabContext, TabList, TabPanel } from '@mui/lab'
+import { Box, Paper, Tab, Typography } from '@mui/material'
 import {
-  Paper,
-  Tab,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Typography,
-} from '@mui/material'
-import html2canvas from 'html2canvas'
-import { jsPDF } from 'jspdf'
+  DataGrid,
+  GridColDef,
+  GridToolbarContainer,
+  GridToolbarExport,
+} from '@mui/x-data-grid'
 import { useRef, useState } from 'react'
-import { useReactToPrint } from 'react-to-print'
 
 interface TspReportProps {
   report: TransitSignalPriorityResult[]
 }
 
-const round = (value: number | undefined) =>
-  value != null ? Number(value.toFixed(1)) : value
-
 const TspReport = ({ report }: TspReportProps) => {
   const contentRef = useRef<HTMLDivElement>(null)
-  const handlePrint = useReactToPrint({ contentRef })
   const [currentTab, setCurrentTab] = useState('0')
-
   const handleTabChange = (_: React.SyntheticEvent, newTab: string) => {
     setCurrentTab(newTab)
   }
-
-  const handleDownloadPdf = async () => {
-    if (!contentRef.current) return
-    try {
-      const canvas = await html2canvas(contentRef.current)
-      const imgData = canvas.toDataURL('image/png')
-      const pdf = new jsPDF({
-        orientation: 'landscape',
-        unit: 'px',
-        format: 'a4',
-      })
-      const pdfWidth = pdf.internal.pageSize.getWidth()
-      const pdfHeight = pdf.internal.pageSize.getHeight()
-
-      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight)
-      pdf.save('TSP_Report.pdf')
-    } catch (error) {
-      console.error('PDF generation error:', error)
-    }
-  }
-
   return (
     <TabContext value={currentTab}>
-      {/* <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2, gap: 2 }}>
-        <Button
-          size="small"
-          variant="outlined"
-          startIcon={<PrintIcon />}
-          color="primary"
-          onClick={handlePrint}
-        >
-          Print
-        </Button>
-
-        <Button
-          size="small"
-          variant="outlined"
-          startIcon={<DownloadIcon />}
-          color="primary"
-          onClick={handleDownloadPdf}
-        >
-          Download
-        </Button>
-
-        <Button
-          size="small"
-          variant="outlined"
-          startIcon={<SaveIcon />}
-          color="primary"
-          onClick={handlePrint}
-        >
-          Save Parameters
-        </Button>
-      </Box> */}
-
       <Paper
         ref={contentRef}
-        sx={{
-          position: 'relative',
-          p: 2,
-          backgroundColor: 'white',
-        }}
+        sx={{ position: 'relative', p: 2, backgroundColor: 'white' }}
       >
         <Typography variant="h4" sx={{ textAlign: 'center', mb: 3 }}>
           Transit Signal Priority Report
         </Typography>
-
-        {/* Tabs for Locations */}
         <TabList onChange={handleTabChange} aria-label="Location Tabs">
           {report.map((locationReport, index) => (
             <Tab
@@ -108,166 +37,194 @@ const TspReport = ({ report }: TspReportProps) => {
             />
           ))}
         </TabList>
-
-        {report.map((locationReport, index) => (
-          <TabPanel
-            key={locationReport?.locationPhases?.locationIdentifier}
-            value={index.toString()}
-            sx={{ p: 0 }}
-          >
-            <TableContainer component={Paper} sx={{ mb: 3 }}>
-              <Table size="small">
-                <TableHead>
-                  <TableRow
-                    sx={{
-                      backgroundColor: '#f9f9fb',
-                      '& .MuiTableCell-root': {
-                        fontSize: '12px',
-                        border: '1px solid rgb(224, 224, 224)',
-                      },
-                    }}
-                  >
-                    <TableCell>Plan</TableCell>
-                    <TableCell>Phase #</TableCell>
-                    <TableCell>Min Green</TableCell>
-                    <TableCell>Yellow</TableCell>
-                    <TableCell>Red Clearance</TableCell>
-                    <TableCell>Min Time</TableCell>
-                    <TableCell sx={{ minWidth: '100px' }}>
-                      Programmed Split (sec)
-                    </TableCell>
-                    <TableCell
-                      sx={{
-                        color: 'purple',
-                        minWidth: '100px',
-                      }}
-                    >
-                      85th Percentile Split (sec)
-                    </TableCell>
-                    <TableCell
-                      sx={{
-                        color: 'purple',
-                        minWidth: '100px',
-                      }}
-                    >
-                      50th Percentile Split (sec)
-                    </TableCell>
-                    <TableCell sx={{ minWidth: '100px' }}>
-                      Average Split (sec)
-                    </TableCell>
-                    <TableCell
-                      sx={{
-                        minWidth: '100px',
-                      }}
-                    >
-                      <span style={{ color: 'blue' }}>Force Offs</span> or{' '}
-                      <span style={{ color: 'red' }}>Max Outs</span> (%)
-                    </TableCell>
-                    <TableCell sx={{ color: 'green' }}>Gap Outs (%)</TableCell>
-                    <TableCell>Skips (%)</TableCell>
-                    <TableCell>TSP Max</TableCell>
-                    <TableCell>Max Reduction</TableCell>
-                    <TableCell>Max Extension</TableCell>
-                    <TableCell>Priority Min</TableCell>
-                    <TableCell>Priority Max</TableCell>
-                    <TableCell sx={{ minWidth: '200px' }}>
-                      Result Notes
-                    </TableCell>
-                    {/* TSP Ad sx={{fontSize: '12px'}}justments moved to the end */}
-                    <TableCell sx={{ minWidth: '200px' }}>
-                      {'Skips > 70% TSP Max'}
-                    </TableCell>
-                    <TableCell sx={{ minWidth: '200px' }}>
-                      {'Force Offs < 40% TSP Max'}
-                    </TableCell>
-                    <TableCell sx={{ minWidth: '200px' }}>
-                      {'Force Offs < 60% TSP Max'}
-                    </TableCell>
-                    <TableCell sx={{ minWidth: '200px' }}>
-                      {'Force Offs < 80% TSP Max'}
-                    </TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody
+        {report.map((locationReport, index) => {
+          const rows = locationReport.transitSignalPlans
+            ?.map((plan) => {
+              return plan.phases?.map((phase) => {
+                console.log('60', plan.planNumber)
+                return {
+                  plan: plan.planNumber,
+                  phaseNumber: phase.phaseNumber,
+                  programmedSplit: round(phase.programmedSplit),
+                  recommendedTSPMax:
+                    phase.recommendedTSPMax !== null
+                      ? round(phase.recommendedTSPMax)
+                      : '',
+                  maxReduction: round(phase.maxReduction),
+                  maxExtension: round(phase.maxExtension),
+                  priorityMin: round(phase.priorityMin),
+                  priorityMax: round(phase.priorityMax),
+                  minGreen: round(phase.minGreen),
+                  yellow: round(phase.yellow),
+                  redClearance: round(phase.redClearance),
+                  minTime: round(phase.minTime),
+                  percentileSplit85th: round(phase.percentileSplit85th),
+                  percentileSplit50th: round(phase.percentileSplit50th),
+                  averageSplit: round(phase.averageSplit),
+                  percentMaxOutsForceOffs: round(phase.percentMaxOutsForceOffs),
+                  percentGapOuts: round(phase.percentGapOuts),
+                  percentSkips: round(phase.percentSkips),
+                  notes: phase.notes,
+                  skipsGreaterThan70TSPMax: round(
+                    phase.skipsGreaterThan70TSPMax
+                  ),
+                  forceOffsLessThan40TSPMax: round(
+                    phase.forceOffsLessThan40TSPMax
+                  ),
+                  forceOffsLessThan60TSPMax: round(
+                    phase.forceOffsLessThan60TSPMax
+                  ),
+                  forceOffsLessThan80TSPMax: round(
+                    phase.forceOffsLessThan80TSPMax
+                  ),
+                }
+              })
+            })
+            .flat()
+          console.log('rows', rows)
+          return (
+            <TabPanel
+              key={locationReport?.locationPhases?.locationIdentifier}
+              value={index.toString()}
+              sx={{ p: 0 }}
+            >
+              <div style={{ height: 700, width: '100%' }}>
+                <DataGrid
+                  getRowId={(row) => `${row.plan}-${row.phaseNumber}`}
+                  rows={rows}
+                  columns={columns}
+                  unstable_rowSpanning={true}
+                  density="compact"
+                  slots={{
+                    toolbar: () =>
+                      CustomToolbar(
+                        locationReport?.locationPhases?.locationIdentifier ?? ''
+                      ),
+                  }}
+                  disableColumnFilter
+                  disableColumnMenu
+                  disableColumnSelector
+                  disableDensitySelector
+                  disableRowSelectionOnClick
+                  disableColumnSorting
+                  hideFooter
                   sx={{
-                    '& .MuiTableCell-root': {
-                      border: '1px solid rgb(224, 224, 224)',
+                    '& .MuiDataGrid-cell': {
+                      borderRight: '1px solid lightgray',
+                    },
+                    '& .purple-text': {
+                      color: 'purple',
+                    },
+                    '& .blue-text': {
+                      color: 'blue',
+                    },
+                    '& .red-text': {
+                      color: 'red',
+                    },
+                    '& .green-text': {
+                      color: 'green',
                     },
                   }}
-                >
-                  {locationReport?.transitSignalPlans?.map((plan) => {
-                    return plan?.phases?.map((phase, rowIndex) => (
-                      <TableRow key={`${plan.planNumber}-${rowIndex}`}>
-                        {rowIndex === 0 && (
-                          <TableCell
-                            rowSpan={plan?.phases?.length}
-                            sx={{
-                              borderRight: '1px solid lightgrey',
-                              alignSelf: 'center',
-                              textAlign: 'center',
-                            }}
-                          >
-                            {plan.planNumber}
-                          </TableCell>
-                        )}
-                        <TableCell>{phase.phaseNumber}</TableCell>
-                        <TableCell>{round(phase?.minGreen)}</TableCell>
-                        <TableCell>{round(phase.yellow)}</TableCell>
-                        <TableCell>{round(phase.redClearance)}</TableCell>
-                        <TableCell>{round(phase.minTime)}</TableCell>
-                        <TableCell>{round(phase.programmedSplit)}</TableCell>
-                        <TableCell sx={{ color: 'purple' }}>
-                          {round(phase.percentileSplit85th)}
-                        </TableCell>
-                        <TableCell sx={{ color: 'purple' }}>
-                          {round(phase.percentileSplit50th)}
-                        </TableCell>
-                        <TableCell>{round(phase.averageSplit)}</TableCell>
-                        <TableCell
-                          sx={{
-                            color: plan.planNumber === 254 ? 'red' : 'blue',
-                          }}
-                        >
-                          {round(phase.percentMaxOutsForceOffs)}
-                        </TableCell>
-                        <TableCell sx={{ color: 'green' }}>
-                          {round(phase.percentGapOuts)}
-                        </TableCell>
-                        <TableCell>{round(phase.percentSkips)}</TableCell>
-                        <TableCell>
-                          {phase.recommendedTSPMax !== null
-                            ? round(phase.recommendedTSPMax)
-                            : ''}
-                        </TableCell>
-                        <TableCell>{round(phase.maxReduction)}</TableCell>
-                        <TableCell>{round(phase.maxExtension)}</TableCell>
-                        <TableCell>{round(phase.priorityMin)}</TableCell>
-                        <TableCell>{round(phase.priorityMax)}</TableCell>
-                        <TableCell>{phase.notes}</TableCell>
-                        {/* TSP Adjustment Recommendations (Moved to End) */}
-                        <TableCell>
-                          {round(phase.skipsGreaterThan70TSPMax)}
-                        </TableCell>
-                        <TableCell>
-                          {round(phase.forceOffsLessThan40TSPMax)}
-                        </TableCell>
-                        <TableCell>
-                          {round(phase.forceOffsLessThan60TSPMax)}
-                        </TableCell>
-                        <TableCell>
-                          {round(phase.forceOffsLessThan80TSPMax)}
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  })}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </TabPanel>
-        ))}
+                />
+              </div>
+            </TabPanel>
+          )
+        })}
       </Paper>
     </TabContext>
   )
 }
 
 export default TspReport
+
+const round = (value: number | undefined) =>
+  value != null ? Number(value.toFixed(1)) : value
+
+const columns: GridColDef[] = [
+  { field: 'plan', headerName: 'Plan', width: 100 },
+  { field: 'phaseNumber', headerName: 'Phase #', width: 100 },
+  {
+    field: 'programmedSplit',
+    headerName: 'Programmed Split (sec)',
+    width: 160,
+  },
+  { field: 'recommendedTSPMax', headerName: 'TSP Max', width: 100 },
+  { field: 'maxReduction', headerName: 'Max Reduction', width: 130 },
+  { field: 'maxExtension', headerName: 'Max Extension', width: 130 },
+  { field: 'priorityMin', headerName: 'Priority Min', width: 120 },
+  { field: 'priorityMax', headerName: 'Priority Max', width: 120 },
+  { field: 'minGreen', headerName: 'Min Green', width: 100 },
+  { field: 'yellow', headerName: 'Yellow', width: 100 },
+  { field: 'redClearance', headerName: 'Red Clearance', width: 120 },
+  { field: 'minTime', headerName: 'Min Time', width: 100 },
+  {
+    field: 'percentileSplit85th',
+    headerName: '85th Percentile Split (sec)',
+    width: 200,
+    cellClassName: 'purple-text',
+  },
+  {
+    field: 'percentileSplit50th',
+    headerName: '50th Percentile Split (sec)',
+    width: 200,
+    cellClassName: 'purple-text',
+  },
+  { field: 'averageSplit', headerName: 'Average Split (sec)', width: 150 },
+  {
+    field: 'percentMaxOutsForceOffs',
+    headerName: 'Force Offs / Max Outs (%)',
+    width: 200,
+    cellClassName: (params) => {
+      return params.row.plan === 254 ? 'red-text' : 'blue-text'
+    },
+  },
+  {
+    field: 'percentGapOuts',
+    headerName: 'Gap Outs (%)',
+    width: 130,
+    cellClassName: 'green-text',
+  },
+  { field: 'percentSkips', headerName: 'Skips (%)', width: 120 },
+  { field: 'notes', headerName: 'Result Notes', width: 200 },
+  {
+    field: 'skipsGreaterThan70TSPMax',
+    headerName: 'Skips > 70% TSP Max',
+    width: 180,
+  },
+  {
+    field: 'forceOffsLessThan40TSPMax',
+    headerName: 'Force Offs < 40% TSP Max',
+    width: 200,
+  },
+  {
+    field: 'forceOffsLessThan60TSPMax',
+    headerName: 'Force Offs < 60% TSP Max',
+    width: 200,
+  },
+  {
+    field: 'forceOffsLessThan80TSPMax',
+    headerName: 'Force Offs < 80% TSP Max',
+    width: 200,
+  },
+]
+
+function CustomToolbar(locationIdentifier: string) {
+  return (
+    <GridToolbarContainer sx={{ p: 2 }}>
+      <Box sx={{ flexGrow: 1 }} />
+      <GridToolbarExport
+        slotProps={{
+          tooltip: { title: 'Export data' },
+          button: { variant: 'outlined' },
+        }}
+        printOptions={{
+          disableToolbarButton: true,
+        }}
+        csvOptions={{
+          fileName: `TSP_Report-${locationIdentifier}.csv`,
+          escapeFormulas: false,
+        }}
+      />
+    </GridToolbarContainer>
+  )
+}

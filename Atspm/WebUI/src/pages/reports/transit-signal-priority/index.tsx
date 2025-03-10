@@ -54,6 +54,12 @@ export interface TspLocation extends Location {
   designatedPhases: number[]
 }
 
+export const getPhases = (location: TspLocation) => {
+  return Array.from(
+    new Set(location.approaches?.map((a) => a.protectedPhaseNumber) || [])
+  ).sort((a, b) => a - b)
+}
+
 export type TspErrorState =
   | { type: 'NONE' }
   | { type: 'NO_LOCATIONS' }
@@ -112,6 +118,14 @@ export default function TspReportPage() {
 
   function setLocations(locations: TspLocation[]) {
     const hadNoLocations = errorState.type === 'NO_LOCATIONS'
+    // check each location, and set it's designated phases to 2 and 6 if available.
+    locations.forEach((loc) => {
+      const phases = getPhases(loc)
+      if (phases.includes(2) && phases.includes(6)) {
+        loc.designatedPhases = [2, 6]
+      }
+    })
+
     setReportOptions((prev) => ({ ...prev, locations }))
 
     if (hadNoLocations && locations.length > 0) {
@@ -285,7 +299,7 @@ export default function TspReportPage() {
             startIcon={<PlayArrowIcon />}
             loading={loadingReport}
             variant="contained"
-            sx={{ padding: '10px' }}
+            sx={{ padding: '10px', mb: 2 }}
             onClick={generateReport}
           >
             Generate Report
