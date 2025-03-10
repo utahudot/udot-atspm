@@ -95,15 +95,34 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
         ///<inheritdoc/>
         protected override async Task<IEnumerable<Uri>> ListResources(string path, CancellationToken token = default, params string[] query)
         {
-            var resources = await _client.GetListing(path, FtpListOption.Auto, token);
-            var results = resources.Select(s => s.FullName);
+            var results = new List<Uri>();
 
-            if (query.Length > 0)
+            //https://stackoverflow.com/questions/33639571/get-local-time-based-on-coordinates
+            DateTime localTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("America/Boise"));
+            localTime = localTime.AddMinutes(-16);
+
+            var resources = await _client.GetListing(path, FtpListOption.Auto, token);
+            foreach (var r in resources)
             {
-                results = results.Where(f => query.Any(a => f.Contains(a)));
+                if (r.Type == FtpObjectType.File && query.Any(a => r.Name.Contains(a)))
+                {
+                    if (r.Created < localTime)
+                    {
+                        results.Add(new UriBuilder(Uri.UriSchemeFtp, _client.Host, _client.Port, r.FullName).Uri);
+                    }
+                }
             }
+
+            return results;
+
+            //var results = resources.Select(s => s.FullName);
+
+            //if (query.Length > 0)
+            //{
+            //    results = results.Where(f => query.Any(a => f.Contains(a)));
+            //}
             
-            return results.Select(s => new UriBuilder(Uri.UriSchemeFtp, _client.Host, _client.Port, s).Uri).ToList();
+            //return results.Select(s => new UriBuilder(Uri.UriSchemeFtp, _client.Host, _client.Port, s).Uri).ToList();
         }
 
         #endregion

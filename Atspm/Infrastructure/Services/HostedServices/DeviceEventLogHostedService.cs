@@ -122,19 +122,33 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
             {
                 scope.ServiceProvider.PrintHostInformation();
 
-                var workflow = new DeviceEventLogWorkflow(_services, _options.Value.BatchSize, _options.Value.ParallelProcesses, cancellationToken);
+                //var workflow = new DeviceEventLogWorkflow(_services, _options.Value.BatchSize, _options.Value.ParallelProcesses, cancellationToken);
 
-                var repo = scope.ServiceProvider.GetService<IDeviceRepository>();
+                //var repo = scope.ServiceProvider.GetService<IDeviceRepository>();
 
-                await foreach (var d in repo.GetDevicesForLogging(_options.Value.DeviceEventLoggingQueryOptions))
-                {
-                    if (d.DeviceConfigurationId == 10)
-                    await workflow.Input.SendAsync(d);
-                }
+                //await foreach (var d in repo.GetDevicesForLogging(_options.Value.DeviceEventLoggingQueryOptions))
+                //{
+                //    if (d.DeviceConfigurationId == 1)
+                //    await workflow.Input.SendAsync(d);
+                //}
 
-                workflow.Input.Complete();
+                //workflow.Input.Complete();
 
-                await Task.WhenAll(workflow.Steps.Select(s => s.Completion));
+                //await Task.WhenAll(workflow.Steps.Select(s => s.Completion));
+
+
+
+
+
+                Lextm.SharpSnmpLi.Messaging.Messenger = new();
+
+
+
+
+
+
+
+
             }
 
             sw.Stop();
