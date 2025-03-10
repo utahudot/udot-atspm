@@ -16,6 +16,7 @@
 #endregion
 
 using FluentFTP;
+using System.Linq;
 using System.Net;
 using Utah.Udot.Atspm.Data.Enums;
 
@@ -95,34 +96,14 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
         ///<inheritdoc/>
         protected override async Task<IEnumerable<Uri>> ListResources(string path, CancellationToken token = default, params string[] query)
         {
-            var results = new List<Uri>();
+            var result = await _client.GetListing(path, FtpListOption.Auto, token);
 
-            //https://stackoverflow.com/questions/33639571/get-local-time-based-on-coordinates
-            DateTime localTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("America/Boise"));
-            localTime = localTime.AddMinutes(-16);
-
-            var resources = await _client.GetListing(path, FtpListOption.Auto, token);
-            foreach (var r in resources)
-            {
-                if (r.Type == FtpObjectType.File && query.Any(a => r.Name.Contains(a)))
-                {
-                    if (r.Created < localTime)
-                    {
-                        results.Add(new UriBuilder(Uri.UriSchemeFtp, _client.Host, _client.Port, r.FullName).Uri);
-                    }
-                }
-            }
-
-            return results;
-
-            //var results = resources.Select(s => s.FullName);
-
-            //if (query.Length > 0)
-            //{
-            //    results = results.Where(f => query.Any(a => f.Contains(a)));
-            //}
-            
-            //return results.Select(s => new UriBuilder(Uri.UriSchemeFtp, _client.Host, _client.Port, s).Uri).ToList();
+            return result
+                .Where(w => w.Type == FtpObjectType.File)
+                .Where(w => query.Any(a => w.Name.Contains(a)))
+                .Where(w => w.RawModified != result.Max(m => m.RawModified))
+                .Select(s => new UriBuilder(Uri.UriSchemeFtp, _client.Host, _client.Port, s.FullName).Uri)
+                .ToList();
         }
 
         #endregion

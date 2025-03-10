@@ -17,6 +17,8 @@
 
 using Renci.SshNet;
 using Renci.SshNet.Common;
+using Renci.SshNet.Sftp;
+using System.Linq;
 using System.Net;
 using Utah.Udot.Atspm.Data.Enums;
 
@@ -93,7 +95,9 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
         {
             var result = await _client.ListDirectoryAsync(path, query);
 
-            return result.Select(s => new UriBuilder(Uri.UriSchemeSftp, _client.ConnectionInfo.Host, _client.ConnectionInfo.Port, s).Uri).ToList();
+            return result
+                .Where(w => w.LastWriteTime != result.Max(m => m.LastWriteTime))
+                .Select(s => new UriBuilder(Uri.UriSchemeSftp, _client.ConnectionInfo.Host, _client.ConnectionInfo.Port, s.FullName).Uri).ToList();
         }
 
         #endregion
@@ -132,7 +136,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
 
         Task<FileInfo> DownloadFileAsync(string localPath, string remotePath);
 
-        Task<IEnumerable<string>> ListDirectoryAsync(string directory, params string[] filters);
+        Task<IEnumerable<ISftpFile>> ListDirectoryAsync(string directory, params string[] filters);
     }
 
     /// <summary>
@@ -163,11 +167,11 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
             return fileInfo;
         }
 
-        public async Task<IEnumerable<string>> ListDirectoryAsync(string directory, params string[] filters)
+        public async Task<IEnumerable<ISftpFile>> ListDirectoryAsync(string directory, params string[] filters)
         {
-            var files = await Task.Factory.FromAsync(BeginListDirectory(directory, null, null), EndListDirectory);
+            var result = await Task.Factory.FromAsync(BeginListDirectory(directory, null, null), EndListDirectory);
 
-            return files.Select(s => s.FullName).Where(f => filters.Any(a => f.Contains(a))).ToList();
+            return result.Where(w => w.IsRegularFile).Where(w => filters.Any(a => w.FullName.Contains(a)));
         }
     }
 }
