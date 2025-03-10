@@ -197,6 +197,8 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders
 
                                 progress?.Report(new ControllerDownloadProgress(downloadedFile, current, total));
 
+                                yield return Tuple.Create(parameter, downloadedFile);
+
                                 if (_options.DeleteRemoteFile)
                                 {
                                     try
@@ -220,13 +222,11 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders
 
                                     logMessages.DeletedResourceMessage(resource, deviceIdentifier, ipaddress);
                                 }
-
-                                yield return Tuple.Create(parameter, downloadedFile);
                             }
-                            else
-                            {
-                                _log.LogWarning(new EventId(Convert.ToInt32(deviceIdentifier)), "File failed to download on {Location} file name: {file}", deviceIdentifier, resource);
-                            }
+                            //else
+                            //{
+                            //    _log.LogWarning(new EventId(Convert.ToInt32(deviceIdentifier)), "File failed to download on {Location} file name: {file}", deviceIdentifier, resource);
+                            //}
                         }
 
                         logMessages.DownloadedResourcesMessage(current, total, deviceIdentifier, ipaddress);
