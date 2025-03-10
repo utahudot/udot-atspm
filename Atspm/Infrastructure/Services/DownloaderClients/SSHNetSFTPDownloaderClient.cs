@@ -50,7 +50,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
         public override bool IsConnected => _client != null && _client.IsConnected;
 
         ///<inheritdoc/>
-        protected override Task Connect(IPEndPoint connection, NetworkCredential credentials, int connectionTimeout = 2000, int operationTimeout = 2000, Dictionary<string, string> connectionProperties = null, CancellationToken token = default)
+        protected override async Task Connect(IPEndPoint connection, NetworkCredential credentials, int connectionTimeout = 2000, int operationTimeout = 2000, Dictionary<string, string> connectionProperties = null, CancellationToken token = default)
         {
             var connectionInfo = new ConnectionInfo
                 (connection.Address.ToString(),
@@ -65,17 +65,13 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
 
             _client.OperationTimeout = TimeSpan.FromMilliseconds(operationTimeout);
 
-            _client.Connect();
-
-            return Task.CompletedTask;
+            await _client.ConnectAsync(token);
         }
 
         ///<inheritdoc/>
-        protected override Task DeleteResource(Uri resource, CancellationToken token = default)
+        protected override async Task DeleteResource(Uri resource, CancellationToken token = default)
         {
-            _client.DeleteFile(resource.LocalPath);
-
-            return Task.CompletedTask;
+            await _client.DeleteAsync(resource.LocalPath);
         }
 
         ///<inheritdoc/>
@@ -122,17 +118,17 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
     /// </summary>
     public interface ISftpClientWrapper : ISftpClient
     {
-        ConnectionInfo ConnectionInfo { get; }
-        bool IsConnected { get; }
-        TimeSpan KeepAliveInterval { get; set; }
+        //ConnectionInfo ConnectionInfo { get; }
+        //bool IsConnected { get; }
+        //TimeSpan KeepAliveInterval { get; set; }
 
-        event EventHandler<ExceptionEventArgs> ErrorOccurred;
-        event EventHandler<HostKeyEventArgs> HostKeyReceived;
+        //event EventHandler<ExceptionEventArgs> ErrorOccurred;
+        //event EventHandler<HostKeyEventArgs> HostKeyReceived;
 
-        void Connect();
-        void Disconnect();
-        void Dispose();
-        void SendKeepAlive();
+        //void Connect();
+        //void Disconnect();
+        //void Dispose();
+        //void SendKeepAlive();
 
         Task<FileInfo> DownloadFileAsync(string localPath, string remotePath);
 
