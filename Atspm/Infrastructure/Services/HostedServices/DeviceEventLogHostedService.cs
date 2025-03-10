@@ -132,7 +132,8 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
 
                 await foreach (var d in repo.GetDevicesForLogging(_options.Value.DeviceEventLoggingQueryOptions))
                 {
-                    await workflow.Input.SendAsync(d);
+                    //if (d.DeviceConfigurationId == 2)
+                        await workflow.Input.SendAsync(d);
                 }
 
                 workflow.Input.Complete();
@@ -151,7 +152,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
 
                 //Console.WriteLine($"devices: {devices.Count}");
 
-                //foreach (var d in devices)
+                //foreach (var d in devices.Where(w => w.DeviceConfigurationId == 2))
                 //{
                 //    if (d.Ipaddress.IsValidIpAddress())
                 //    {
