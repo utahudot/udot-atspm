@@ -82,8 +82,8 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
         {
             token.ThrowIfCancellationRequested();
 
-            if (!IsConnected)
-                throw new DownloaderClientConnectionException(null, this, "Client not connected");
+            //if (!IsConnected)
+            //    throw new DownloaderClientConnectionException(null, this, "Client not connected");
 
             try
             {
@@ -102,8 +102,8 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
         {
             token.ThrowIfCancellationRequested();
 
-            if (!IsConnected)
-                throw new DownloaderClientConnectionException(null, this, "Client not connected");
+            //if (!IsConnected)
+            //    throw new DownloaderClientConnectionException(null, this, "Client not connected");
 
             try
             {

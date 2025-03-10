@@ -96,7 +96,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
         ///<inheritdoc/>
         protected override async Task<IEnumerable<Uri>> ListResources(string path, CancellationToken token = default, params string[] query)
         {
-            var result = await _client.GetListing(path, FtpListOption.Auto, token);
+            var result = await _client.GetListing(".." + path, FtpListOption.Auto, token);
 
             return result
                 .Where(w => w.Type == FtpObjectType.File)
