@@ -163,6 +163,13 @@ function EditApproach({ approach, handler }: ApproachAdminProps) {
       delete detector.isNew
       delete detector.approach
       delete detector.detectorComments
+
+      detector.latencyCorrection =
+        detector.latencyCorrection === null ||
+        detector.latencyCorrection === undefined ||
+        detector.latencyCorrection === ''
+          ? 0
+          : Number(detector.latencyCorrection)
       detector.dectectorIdentifier =
         handler.expandedLocation?.locationIdentifier + detector.detectorChannel
       detector.detectionTypes.forEach((detectionType) => {
