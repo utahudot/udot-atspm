@@ -162,6 +162,7 @@ function EditApproach({ approach, handler }: ApproachAdminProps) {
         detector.latencyCorrection === ''
           ? 0
           : Number(detector.latencyCorrection)
+
       detector.dectectorIdentifier =
         handler.expandedLocation?.locationIdentifier + detector.detectorChannel
       detector.detectionTypes.forEach((detectionType) => {
