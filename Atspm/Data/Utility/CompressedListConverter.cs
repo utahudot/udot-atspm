@@ -51,29 +51,29 @@ namespace Utah.Udot.Atspm.Data.Utility
 
         public CompressedListConverter() : base(v => ConvertTo(v), v => ConvertFrom(v))
         {
-            var inputString = "“ ... ”";
-            byte[] compressed;
-            string output;
+            //var inputString = "“ ... ”";
+            //byte[] compressed;
+            //string output;
 
-            using (var outStream = new MemoryStream())
-            {
-                using (var tinyStream = new GZipStream(outStream, CompressionMode.Compress))
-                using (var mStream = new MemoryStream(Encoding.UTF8.GetBytes(inputString)))
-                    mStream.CopyTo(tinyStream);
+            //using (var outStream = new MemoryStream())
+            //{
+            //    using (var tinyStream = new GZipStream(outStream, CompressionMode.Compress))
+            //    using (var mStream = new MemoryStream(Encoding.UTF8.GetBytes(inputString)))
+            //        mStream.CopyTo(tinyStream);
 
-                compressed = outStream.ToArray();
-            }
+            //    compressed = outStream.ToArray();
+            //}
 
-            // “compressed” now contains the compressed string.
-            // Also, all the streams are closed and the above is a self-contained operation.
+            //// “compressed” now contains the compressed string.
+            //// Also, all the streams are closed and the above is a self-contained operation.
 
-            using (var inStream = new MemoryStream(compressed))
-            using (var bigStream = new GZipStream(inStream, CompressionMode.Decompress))
-            using (var bigStreamOut = new MemoryStream())
-            {
-                bigStream.CopyTo(bigStreamOut);
-                output = Encoding.UTF8.GetString(bigStreamOut.ToArray());
-            }
+            //using (var inStream = new MemoryStream(compressed))
+            //using (var bigStream = new GZipStream(inStream, CompressionMode.Decompress))
+            //using (var bigStreamOut = new MemoryStream())
+            //{
+            //    bigStream.CopyTo(bigStreamOut);
+            //    output = Encoding.UTF8.GetString(bigStreamOut.ToArray());
+            //}
         }
 
         internal static byte[] ConvertTo(IEnumerable<T> value)
@@ -88,7 +88,7 @@ namespace Utah.Udot.Atspm.Data.Utility
 
                 using (var outStream = new MemoryStream())
                 {
-                    using (var tinyStream = new GZipStream(outStream, CompressionMode.Compress))
+                    using (var tinyStream = new GZipStream(outStream, CompressionLevel.SmallestSize))
                     using (var mStream = new MemoryStream(Encoding.UTF8.GetBytes(json)))
                         mStream.CopyTo(tinyStream);
 
