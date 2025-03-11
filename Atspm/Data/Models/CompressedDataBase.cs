@@ -49,11 +49,19 @@ namespace Utah.Udot.Atspm.Data.Models
         {
             get
             {
-                foreach (var d in data)
+                if (data != null)
                 {
-                    d.LocationIdentifier = LocationIdentifier;
+                    foreach (var d in data)
+                    {
+                        d.LocationIdentifier = LocationIdentifier;
+                    }
                 }
-                return data.ToList();
+                else
+                {
+                   data = new List<ILocationLayer>();
+                }
+
+                return data?.ToList();
             }
             set => data = value;
         }
