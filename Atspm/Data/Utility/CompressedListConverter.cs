@@ -17,6 +17,7 @@
 
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Newtonsoft.Json;
+using System.IO;
 using System.IO.Compression;
 using System.Text;
 //using Utah.Udot.NetStandardToolkit.Extensions;
@@ -50,7 +51,29 @@ namespace Utah.Udot.Atspm.Data.Utility
 
         public CompressedListConverter() : base(v => ConvertTo(v), v => ConvertFrom(v))
         {
-            
+            var inputString = "“ ... ”";
+            byte[] compressed;
+            string output;
+
+            using (var outStream = new MemoryStream())
+            {
+                using (var tinyStream = new GZipStream(outStream, CompressionMode.Compress))
+                using (var mStream = new MemoryStream(Encoding.UTF8.GetBytes(inputString)))
+                    mStream.CopyTo(tinyStream);
+
+                compressed = outStream.ToArray();
+            }
+
+            // “compressed” now contains the compressed string.
+            // Also, all the streams are closed and the above is a self-contained operation.
+
+            using (var inStream = new MemoryStream(compressed))
+            using (var bigStream = new GZipStream(inStream, CompressionMode.Decompress))
+            using (var bigStreamOut = new MemoryStream())
+            {
+                bigStream.CopyTo(bigStreamOut);
+                output = Encoding.UTF8.GetString(bigStreamOut.ToArray());
+            }
         }
 
         internal static byte[] ConvertTo(IEnumerable<T> value)
@@ -63,16 +86,25 @@ namespace Utah.Udot.Atspm.Data.Utility
                     SerializationBinder = new CompressedSerializationBinder<T>()
                 });
 
-                using MemoryStream memoryStream = new MemoryStream();
-                using (GZipStream destination = new GZipStream(memoryStream, CompressionLevel.SmallestSize))
+                using (var outStream = new MemoryStream())
                 {
-                    using MemoryStream memoryStream2 = new MemoryStream(Encoding.UTF8.GetBytes(json));
-                    memoryStream2.CopyTo(destination);
+                    using (var tinyStream = new GZipStream(outStream, CompressionMode.Compress))
+                    using (var mStream = new MemoryStream(Encoding.UTF8.GetBytes(json)))
+                        mStream.CopyTo(tinyStream);
+
+                    var array = outStream.ToArray();
+
+                    return array;
                 }
 
-                var array = memoryStream.ToArray();
+                //using MemoryStream memoryStream = new MemoryStream();
+                //using (GZipStream destination = new GZipStream(memoryStream, CompressionLevel.SmallestSize))
+                //{
+                //    using MemoryStream memoryStream2 = new MemoryStream(Encoding.UTF8.GetBytes(json));
+                //    memoryStream2.CopyTo(destination);
+                //}
 
-                return array;
+                //var array = memoryStream.ToArray();
             }
             catch (Exception e)
             {
@@ -86,12 +118,22 @@ namespace Utah.Udot.Atspm.Data.Utility
         {
             try
             {
-                using MemoryStream msi = new MemoryStream(value);
-                using GZipStream gZipStream = new GZipStream(msi, CompressionMode.Decompress);
-                using MemoryStream memoryStream = new MemoryStream();
-                gZipStream.CopyTo(memoryStream);
+                //using MemoryStream msi = new MemoryStream(value);
+                //using GZipStream gZipStream = new GZipStream(msi, CompressionMode.Decompress);
+                //using MemoryStream memoryStream = new MemoryStream();
+                //gZipStream.CopyTo(memoryStream);
 
-                var json = Encoding.UTF8.GetString(memoryStream.ToArray());
+                string json;
+
+                using (var inStream = new MemoryStream(value))
+                using (var bigStream = new GZipStream(inStream, CompressionMode.Decompress))
+                using (var bigStreamOut = new MemoryStream())
+                {
+                    bigStream.CopyTo(bigStreamOut);
+                    json = Encoding.UTF8.GetString(bigStreamOut.ToArray());
+                }
+
+                //var json = Encoding.UTF8.GetString(memoryStream.ToArray());
 
                 var result = JsonConvert.DeserializeObject<IEnumerable<T>>(json, new JsonSerializerSettings()
                 {
