@@ -16,7 +16,6 @@
 #endregion
 
 using FluentFTP;
-using System.Linq;
 using System.Net;
 using Utah.Udot.Atspm.Data.Enums;
 

@@ -15,16 +15,15 @@
 // limitations under the License.
 #endregion
 
-using Lextm.SharpSnmpLib.Messaging;
 using Lextm.SharpSnmpLib;
+using Lextm.SharpSnmpLib.Messaging;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Diagnostics;
-using System.Net.Sockets;
 using System.Net;
-using System.Threading.Tasks.Dataflow;
+using Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders;
 using Utah.Udot.ATSPM.Infrastructure.Workflows;
 
 namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
@@ -130,16 +129,25 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
 
                 var repo = scope.ServiceProvider.GetService<IDeviceRepository>();
 
-                var workflow = new DeviceEventLogWorkflow(_services, _options.Value.BatchSize, _options.Value.ParallelProcesses, cancellationToken);
+                //var workflow = new DeviceEventLogWorkflow(_services, _options.Value.BatchSize, _options.Value.ParallelProcesses, cancellationToken);
+
+                //await foreach (var d in repo.GetDevicesForLogging(_options.Value.DeviceEventLoggingQueryOptions))
+                //{
+                //    await workflow.Input.SendAsync(d);
+                //}
+
+                //workflow.Input.Complete();
+
+                //await Task.WhenAll(workflow.Steps.Select(s => s.Completion));
+
 
                 await foreach (var d in repo.GetDevicesForLogging(_options.Value.DeviceEventLoggingQueryOptions))
                 {
-                    await workflow.Input.SendAsync(d);
+                    var path = new ObjectPropertyParser(d, d?.DeviceConfiguration?.Path).ToString();
+                    var query = d?.DeviceConfiguration?.Query.Select(s => new ObjectPropertyParser(d, s).ToString()).ToArray();
+
+                    Console.WriteLine($"{d.DeviceIdentifier} - {path} - {query[0]}");
                 }
-
-                workflow.Input.Complete();
-
-                await Task.WhenAll(workflow.Steps.Select(s => s.Completion));
 
 
 
@@ -179,6 +187,8 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
 
             logMessages.CompletingService(serviceName, sw.Elapsed);
         }
+
+
 
         /// <inheritdoc/>
         public Task StopAsync(CancellationToken cancellationToken)

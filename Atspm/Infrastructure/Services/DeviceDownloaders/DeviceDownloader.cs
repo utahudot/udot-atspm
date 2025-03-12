@@ -22,6 +22,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using Utah.Udot.Atspm.Common;
 using Utah.Udot.Atspm.Data.Enums;
+using Utah.Udot.NetStandardToolkit.Interfaces;
 
 namespace Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders
 {
@@ -299,11 +300,15 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders
 
                 else if (i.StartsWith("LogStartTime"))
                 {
+                    var localTime = DateTime.Now;
+
+                    if (_obj.ExtractInterface(out ICoordinates c))
+                    {
+                        localTime = c.GetLocalTimeFromCoordinates();
+                    }
+
                     if (_obj is Device d && d.DeviceConfiguration != null)
                     {
-                        //https://stackoverflow.com/questions/33639571/get-local-time-based-on-coordinates
-                        DateTime localTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("America/Boise"));
-
                         builder.AppendFormat("{0" + i.Replace("LogStartTime", "") + "}", localTime.AddMinutes(-d.DeviceConfiguration.LoggingOffset));
                     }
                 }
@@ -320,38 +325,6 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders
             }
 
             return builder.ToString();
-        }
-    }
-
-    /// <summary>
-    /// Provides formatting for replacing a device property with a value
-    /// </summary>
-    public class ObjectPropertiesFormatProvider : IFormatProvider
-    {
-        /// <inheritdoc/>
-        public object GetFormat(Type formatType)
-        {
-            if (formatType == typeof(ICustomFormatter))
-            {
-                return new ObjectPropertiesFormatter();
-            }
-
-            return null;
-        }
-    }
-
-    /// <summary>
-    /// Formats a string to replace the object property with a string vaue
-    /// </summary>
-    public class ObjectPropertiesFormatter : ICustomFormatter
-    {
-        /// <inheritdoc/>
-        public string Format(string format, object arg, IFormatProvider formatProvider)
-        {
-            if (arg.HasProperty(format))
-                return arg.GetPropertyValueString(format);
-
-            return format;
         }
     }
 }

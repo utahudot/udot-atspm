@@ -16,9 +16,7 @@
 #endregion
 
 using Renci.SshNet;
-using Renci.SshNet.Common;
 using Renci.SshNet.Sftp;
-using System.Linq;
 using System.Net;
 using Utah.Udot.Atspm.Data.Enums;
 
