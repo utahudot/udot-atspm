@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for Application - Utah.Udot.Atspm.Business.Common/PlanService.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,11 @@
 #endregion
 
 using Utah.Udot.Atspm.Business.ApproachSpeed;
+using Utah.Udot.Atspm.Business.GreenTimeUtilization;
+using Utah.Udot.Atspm.Business.PhaseTermination;
 using Utah.Udot.Atspm.Business.SplitFail;
+using Utah.Udot.Atspm.Business.SplitMonitor;
+using Utah.Udot.Atspm.Business.TransitSignalPriority;
 using Utah.Udot.Atspm.Business.YellowRedActivations;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
 using Utah.Udot.Atspm.Extensions;
@@ -33,7 +37,7 @@ namespace Utah.Udot.Atspm.Business.Common
         public List<PurdueCoordinationPlan> GetPcdPlans(List<CyclePcd> cycles, DateTime startDate,
             DateTime endDate, Approach approach, List<IndianaEvent> events)
         {
-            var planEvents = GetPlanEvents(startDate, endDate, approach.Location.LocationIdentifier, events.OrderBy(e => e.Timestamp).ToList());
+            var planEvents = SetFirstAndLastPlan(startDate, endDate, approach.Location.LocationIdentifier, events.OrderBy(e => e.Timestamp).ToList());
             var plans = new List<PurdueCoordinationPlan>();
             for (var i = 0; i < planEvents.Count; i++)
                 if (planEvents.Count - 1 == i)
@@ -59,12 +63,13 @@ namespace Utah.Udot.Atspm.Business.Common
             return plans;
         }
 
-        public IReadOnlyList<IndianaEvent> GetPlanEvents(
+        public List<IndianaEvent> SetFirstAndLastPlan(
             DateTime startDate,
             DateTime endDate,
             string locationId,
             List<IndianaEvent> tempPlanEvents)
         {
+            tempPlanEvents = tempPlanEvents.OrderBy(t => t.Timestamp).ToList();
             startDate = DateTime.SpecifyKind(startDate, DateTimeKind.Unspecified);
             endDate = DateTime.SpecifyKind(endDate, DateTimeKind.Unspecified);
             if (!tempPlanEvents.IsNullOrEmpty() && tempPlanEvents[0].Timestamp != startDate)
@@ -92,7 +97,7 @@ namespace Utah.Udot.Atspm.Business.Common
 
             if (lastIndex >= 0)
             {
-                // Remove events after the last event within the specified range
+                // Remove planEvents after the last event within the specified range
                 tempPlanEvents.RemoveRange(lastIndex + 1, tempPlanEvents.Count - lastIndex - 1);
             }
             else
@@ -104,7 +109,7 @@ namespace Utah.Udot.Atspm.Business.Common
 
         private static void SetFirstPlan(DateTime startDate, string locationId, List<IndianaEvent> planEvents)
         {
-            // Check if first plan has exact startDate as value in planEvents
+            // Check if first plan has exact startDate as value in cleanPlanEvents
             var firstPlanEvent = planEvents.Find(e => e.Timestamp == startDate);
             firstPlanEvent ??= planEvents.Where(e => e.Timestamp < startDate).OrderByDescending(e => e.Timestamp).FirstOrDefault();
 
@@ -113,7 +118,7 @@ namespace Utah.Udot.Atspm.Business.Common
                 // update the timestamp of the first event to match the start date
                 firstPlanEvent.Timestamp = startDate;
 
-                // remove all events before the first event
+                // remove all planEvents before the first event
                 var indexToRemove = planEvents.IndexOf(firstPlanEvent);
                 if (indexToRemove != -1)
                 {
@@ -140,11 +145,50 @@ namespace Utah.Udot.Atspm.Business.Common
             string locationId,
             IReadOnlyList<IndianaEvent> events)
         {
-            var planEvents = GetPlanEvents(startDate, endDate, locationId, events.ToList());
+            var planEvents = SetFirstAndLastPlan(startDate, endDate, locationId, events.ToList());
             var plans = planEvents.Select((x, i) => i == planEvents.Count - 1
                                         ? new Plan(x.EventParam.ToString(), x.Timestamp, endDate)
                                         : new Plan(x.EventParam.ToString(), x.Timestamp, planEvents[i + 1].Timestamp))
                                   .ToList();
+            return plans;
+        }
+
+        public List<TransitSignalPriorityBasicPlan> GetTransitSignalPriorityBasicPlans(
+            DateTime startDate,
+            DateTime endDate,
+            string locationId,
+            IReadOnlyList<IndianaEvent> planEvents)
+        {
+            // Validate input parameters
+            if (startDate >= endDate)
+                throw new ArgumentException("startDate must be earlier than endDate.", nameof(startDate));
+            if (string.IsNullOrWhiteSpace(locationId))
+                throw new ArgumentException("locationId cannot be null or empty.", nameof(locationId));
+            var plans = CreatePlansFromEvents(planEvents.ToList(), startDate, endDate);
+            return plans.Select(p => new TransitSignalPriorityBasicPlan(p.PlanNumber, p.Start, p.End)).ToList();
+        }
+        /// <summary>
+        /// Creates plan objects based on cleaned events and the given time range.
+        /// </summary>
+        private List<Plan> CreatePlansFromEvents(List<IndianaEvent> planEvents, DateTime startDate, DateTime endDate)
+        {
+            planEvents = planEvents.OrderBy(e => e.Timestamp).ToList();
+            var plans = new List<Plan>();
+
+            for (int i = 0; i < planEvents.Count; i++)
+            {
+                DateTime planStart = planEvents[i].Timestamp;
+                DateTime planEnd = (i == planEvents.Count - 1) ? endDate : planEvents[i + 1].Timestamp;
+
+                // If the plan's duration is longer than a day, adjust the end to be at the start of the next day.
+                if ((planEnd - planStart).TotalDays > 1)
+                {
+                    planEnd = planStart.Date.AddDays(1);
+                }
+
+                plans.Add(new Plan(planEvents[i].EventParam.ToString(), planStart, planEnd));
+            }
+
             return plans;
         }
 
@@ -175,9 +219,9 @@ namespace Utah.Udot.Atspm.Business.Common
             DateTime startDate,
             DateTime endDate,
             string locationId,
-            IList<IndianaEvent> events)
+            IList<IndianaEvent> planEvents)
         {
-            var planEvents = GetPlanEvents(startDate, endDate, locationId, events.ToList());
+            //var planEvents = SetFirstAndLastPlan(startDate, endDate, locationId, events.ToList());
             var plans = new List<PlanSplitMonitorData>();
             for (var i = 0; i < planEvents.Count; i++)
                 if (planEvents.Count - 1 == i)
@@ -210,7 +254,7 @@ namespace Utah.Udot.Atspm.Business.Common
             {
                 return new List<SpeedPlan>();
             }
-            var planEvents = GetPlanEvents(startDate, endDate, approach.Location.LocationIdentifier, events);
+            var planEvents = SetFirstAndLastPlan(startDate, endDate, approach.Location.LocationIdentifier, events);
             var plans = new List<SpeedPlan>();
             try
             {
@@ -336,7 +380,7 @@ namespace Utah.Udot.Atspm.Business.Common
             Approach approach,
             IReadOnlyList<IndianaEvent> events)
         {
-            var planEvents = GetPlanEvents(options.Start, options.End, approach.Location.LocationIdentifier, events.ToList());
+            var planEvents = SetFirstAndLastPlan(options.Start, options.End, approach.Location.LocationIdentifier, events.ToList());
             var plans = planEvents.Select((x, i) =>
             {
                 var planCycles = cycles.Where(c => c.StartTime >= x.Timestamp && c.StartTime < (i + 1 < planEvents.Count ? planEvents[i + 1].Timestamp : options.End)).ToList();
@@ -345,6 +389,5 @@ namespace Utah.Udot.Atspm.Business.Common
                 .ToList();
             return plans;
         }
-
     }
 }

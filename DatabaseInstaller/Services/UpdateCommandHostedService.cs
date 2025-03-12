@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for DatabaseInstaller - DatabaseInstaller.Services/UpdateCommandHostedService.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -76,54 +76,171 @@ namespace DatabaseInstaller.Services
 
         public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 
+
+        // Helper method to ensure the PostgreSQL database exists.
+        //private async Task EnsureDatabaseExists(string connectionString)
+        //{
+        //    var builder = new NpgsqlConnectionStringBuilder(connectionString);
+        //    var databaseName = builder.Database;
+        //    // Connect to the default database instead.
+        //    builder.Database = "postgres";
+
+        //    using var connection = new NpgsqlConnection(builder.ConnectionString);
+        //    await connection.OpenAsync();
+
+        //    using (var command = connection.CreateCommand())
+        //    {
+        //        // Check if the database exists.
+        //        command.CommandText = $"SELECT 1 FROM pg_database WHERE datname = '{databaseName}'";
+        //        var exists = await command.ExecuteScalarAsync();
+
+        //        if (exists == null)
+        //        {
+        //            // Create the database if it does not exist.
+        //            command.CommandText = $"CREATE DATABASE \"{databaseName}\"";
+        //            await command.ExecuteNonQueryAsync();
+        //            _logger.LogInformation("Created database {DatabaseName}", databaseName);
+        //        }
+        //        else
+        //        {
+        //            _logger.LogInformation("Database {DatabaseName} already exists", databaseName);
+        //        }
+        //    }
+        //}
+
+        //    private async Task MigrateContextAsync<TContext>(
+        //string connectionString,
+        //CancellationToken cancellationToken,
+        //string contextName)
+        //where TContext : DbContext
+        //    {
+        //        // Build new options for the context using the correct connection string.
+        //        var optionsBuilder = new DbContextOptionsBuilder<TContext>();
+        //        optionsBuilder.UseNpgsql(connectionString);
+
+        //        // Create a new instance of the context with these options.
+        //        using var context = (TContext)Activator.CreateInstance(typeof(TContext), optionsBuilder.Options);
+
+        //        // Optionally, ensure the database exists.
+        //        //await EnsureDatabaseExists(connectionString);
+
+        //        // Check for pending migrations.
+        //        //var pendingMigrations = await context.Database.GetPendingMigrationsAsync(cancellationToken);
+        //        //if (pendingMigrations.Any())
+        //        //{
+        //            //_logger.LogInformation("{ContextName} has pending migrations: {Pending}",
+        //            //    contextName, string.Join(", ", pendingMigrations));
+        //            await context.Database.MigrateAsync(cancellationToken);
+        //            _logger.LogInformation("Migrations applied for {ContextName}.", contextName);
+        //        //}
+        //        //else
+        //        //{
+        //        //    _logger.LogInformation("No pending migrations for {ContextName}.", contextName);
+        //        //}
+        //    }
+
         private async Task ApplyMigrationsForAllContexts(CancellationToken cancellationToken)
         {
-            try
-            {
-                using var scope = _serviceProvider.CreateScope();
-                var serviceProvider = scope.ServiceProvider;
+            using var scope = _serviceProvider.CreateScope();
+            var serviceProvider = scope.ServiceProvider;
 
-                var configContext = serviceProvider.GetRequiredService<ConfigContext>();
-                configContext.Database.GetDbConnection().ConnectionString = _config.ConfigConnection;
-                _logger.LogInformation("Applying migrations for ConfigContext");
-                await configContext.Database.MigrateAsync(cancellationToken);
+            // ConfigContext
+            var configContext = serviceProvider.GetRequiredService<ConfigContext>();
+            _logger.LogInformation("Applying migrations for ConfigContext.");
+            await configContext.Database.MigrateAsync(cancellationToken);
+            _logger.LogInformation("Migrations applied for ConfigContext.");
 
-                var aggregationContext = serviceProvider.GetRequiredService<AggregationContext>();
-                aggregationContext.Database.GetDbConnection().ConnectionString = _config.AggregationConnection;
-                _logger.LogInformation("Applying migrations for AggregationContext");
-                await aggregationContext.Database.MigrateAsync(cancellationToken);
+            // AggregationContext
+            var aggregationContext = serviceProvider.GetRequiredService<AggregationContext>();
+            _logger.LogInformation("Applying migrations for AggregationContext.");
+            await aggregationContext.Database.MigrateAsync(cancellationToken);
+            _logger.LogInformation("Migrations applied for AggregationContext.");
 
-                var eventLogContext = serviceProvider.GetRequiredService<EventLogContext>();
-                eventLogContext.Database.GetDbConnection().ConnectionString = _config.EventLogConnection;
-                _logger.LogInformation("Applying migrations for EventLogContext");
-                await eventLogContext.Database.MigrateAsync(cancellationToken);
+            // EventLogContext
+            var eventLogContext = serviceProvider.GetRequiredService<EventLogContext>();
+            _logger.LogInformation("Applying migrations for EventLogContext.");
+            await eventLogContext.Database.MigrateAsync(cancellationToken);
+            _logger.LogInformation("Migrations applied for EventLogContext.");
 
-                var identityContext = serviceProvider.GetRequiredService<IdentityContext>();
-                identityContext.Database.GetDbConnection().ConnectionString = _config.IdentityConnection;
-                _logger.LogInformation("Applying migrations for IdentityContext");
-                await identityContext.Database.MigrateAsync(cancellationToken);
+            // IdentityContext
+            var identityContext = serviceProvider.GetRequiredService<IdentityContext>();
+            _logger.LogInformation("Applying migrations for IdentityContext.");
+            await identityContext.Database.MigrateAsync(cancellationToken);
+            _logger.LogInformation("Migrations applied for IdentityContext.");
 
-                await RolesAndClaimsDBInitializer.SeedRolesAndClaims(serviceProvider, _config.IdentityConnection);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError("Error applying migrations: {Exception}", ex);
-            }
+            await RolesAndClaimsDBInitializer.SeedRolesAndClaims(serviceProvider, null);
         }
+
+
+        //private async Task ApplyMigrationsForAllContexts(CancellationToken cancellationToken)
+        //{
+        //    await MigrateContextAsync<ConfigContext>(_config.ConfigConnection, cancellationToken, "ConfigContext");
+        //    await MigrateContextAsync<AggregationContext>(_config.AggregationConnection, cancellationToken, "AggregationContext");
+        //    await MigrateContextAsync<EventLogContext>(_config.EventLogConnection, cancellationToken, "EventLogContext");
+        //    await MigrateContextAsync<IdentityContext>(_config.IdentityConnection, cancellationToken, "IdentityContext");
+
+        //    // Seed roles and claims as needed.
+        //    using var scope = _serviceProvider.CreateScope();
+        //    var serviceProvider = scope.ServiceProvider;
+        //    await RolesAndClaimsDBInitializer.SeedRolesAndClaims(serviceProvider, _config.IdentityConnection);
+        //}
+
+
+
+        //private async Task SeedAdminUserAndAssignRole()
+        //{
+        //    using var scope = _serviceProvider.CreateScope();
+        //    var identityContext = scope.ServiceProvider.GetRequiredService<IdentityContext>();
+        //    // Set the connection string dynamically
+        //    identityContext.Database.GetDbConnection().ConnectionString = _config.IdentityConnection;
+        //    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+
+        //    // Check if the admin user already exists
+        //    var adminUser = await userManager.FindByEmailAsync(_config.AdminEmail);
+        //    if (adminUser == null)
+        //    {
+        //        // Create the admin user
+        //        adminUser = new ApplicationUser
+        //        {
+        //            UserName = _config.AdminEmail,
+        //            Email = _config.AdminEmail,
+        //            EmailConfirmed = true,
+        //            FirstName = "Admin",
+        //            LastName = "Admin",
+        //            Agency = "Transportation Agency",
+        //        };
+        //        var result = await userManager.CreateAsync(adminUser, _config.AdminPassword);
+        //        if (result.Succeeded)
+        //        {
+        //            _logger.LogInformation("Admin user created.");
+        //        }
+        //        else
+        //        {
+        //            _logger.LogError("Failed to create admin user: {Errors}", string.Join(", ", result.Errors.Select(e => e.Description)));
+        //            return;
+        //        }
+        //    }
+
+        //    // Assign the Admin role to the admin user (role must already exist)
+        //    if (!await userManager.IsInRoleAsync(adminUser, _config.AdminRole))
+        //    {
+        //        await userManager.AddToRoleAsync(adminUser, _config.AdminRole);
+        //        _logger.LogInformation("Admin user assigned to Admin role.");
+        //    }
+        //}
 
         private async Task SeedAdminUserAndAssignRole()
         {
             using var scope = _serviceProvider.CreateScope();
-            var identityContext = scope.ServiceProvider.GetRequiredService<IdentityContext>();
-            // Set the connection string dynamically
-            identityContext.Database.GetDbConnection().ConnectionString = _config.IdentityConnection;
             var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+            // No need to retrieve IdentityContext here if not directly needed for seeding.
+            // The DI configuration for IdentityContext should already be correct.
 
-            // Check if the admin user already exists
+            // Check if the admin user already exists.
             var adminUser = await userManager.FindByEmailAsync(_config.AdminEmail);
             if (adminUser == null)
             {
-                // Create the admin user
+                // Create the admin user.
                 adminUser = new ApplicationUser
                 {
                     UserName = _config.AdminEmail,
@@ -133,25 +250,40 @@ namespace DatabaseInstaller.Services
                     LastName = "Admin",
                     Agency = "Transportation Agency",
                 };
-                var result = await userManager.CreateAsync(adminUser, _config.AdminPassword);
-                if (result.Succeeded)
+
+                var createResult = await userManager.CreateAsync(adminUser, _config.AdminPassword);
+                if (!createResult.Succeeded)
                 {
-                    _logger.LogInformation("Admin user created.");
-                }
-                else
-                {
-                    _logger.LogError("Failed to create admin user: {Errors}", string.Join(", ", result.Errors.Select(e => e.Description)));
+                    _logger.LogError("Failed to create admin user: {Errors}",
+                        string.Join(", ", createResult.Errors.Select(e => e.Description)));
                     return;
                 }
+
+                _logger.LogInformation("Admin user created successfully.");
+            }
+            else
+            {
+                _logger.LogInformation("Admin user already exists.");
             }
 
-            // Assign the Admin role to the admin user (role must already exist)
+            // Assign the Admin role to the user if not already assigned.
             if (!await userManager.IsInRoleAsync(adminUser, _config.AdminRole))
             {
-                await userManager.AddToRoleAsync(adminUser, _config.AdminRole);
-                _logger.LogInformation("Admin user assigned to Admin role.");
+                var roleResult = await userManager.AddToRoleAsync(adminUser, _config.AdminRole);
+                if (!roleResult.Succeeded)
+                {
+                    _logger.LogError("Failed to assign admin role: {Errors}",
+                        string.Join(", ", roleResult.Errors.Select(e => e.Description)));
+                    return;
+                }
+                _logger.LogInformation("Admin user assigned to Admin role successfully.");
+            }
+            else
+            {
+                _logger.LogInformation("Admin user is already assigned to the Admin role.");
             }
         }
+
     }
 
 

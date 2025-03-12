@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for Application - Utah.Udot.Atspm.Business.SplitFail/SplitFailOptions.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,10 +19,11 @@ using Utah.Udot.Atspm.Business.Common;
 
 namespace Utah.Udot.Atspm.Business.SplitFail
 {
-    public class SplitFailOptions : OptionsBase
+    public class SplitFailOptions : DateTimeOptionsBase, ILocationOptionsBase
     {
         public int FirstSecondsOfRed { get; set; }
         public int MetricTypeId { get; set; } = 12;
         public bool GetPermissivePhase { get; set; }
+        public string LocationIdentifier { get; set; }
     }
 }

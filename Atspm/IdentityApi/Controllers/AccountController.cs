@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for IdentityApi - Identity.Controllers/AccountController.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,8 +24,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Options;
+using System.Net.Mail;
 using System.Text;
 using Utah.Udot.Atspm.Data.Models;
+using Utah.Udot.Atspm.Infrastructure.Configuration;
 using Utah.Udot.ATSPM.IdentityApi.Controllers;
 
 namespace Identity.Controllers
@@ -125,8 +128,8 @@ namespace Identity.Controllers
         public IActionResult ExternalLogin()
         {
             var redirectUri = Url.Action("OIDCLoginCallback", "Account");
-            //var properties = new AuthenticationProperties { RedirectUri = Url.Action("OIDCLoginCallback", "Account") };
             var properties = signInManager.ConfigureExternalAuthenticationProperties(OpenIdConnectDefaults.AuthenticationScheme, redirectUri);
+
             return Challenge(properties, OpenIdConnectDefaults.AuthenticationScheme);
         }
 
@@ -135,8 +138,8 @@ namespace Identity.Controllers
         [HttpGet("OIDCLoginCallback")]
         public async Task<IActionResult> OIDCLoginCallback()
         {
-            //var authenticate = await HttpContext.AuthenticateAsync(OpenIdConnectDefaults.AuthenticationScheme);
             var info = await signInManager.GetExternalLoginInfoAsync();
+
             if (info == null)
             {
                 // Handle login failure (e.g., redirect to an error page)
@@ -151,7 +154,6 @@ namespace Identity.Controllers
             }
 
             return Redirect($"{configuration["AtspmSite"]}/sso-login?error={result.Message}");
-
         }
 
 
@@ -228,7 +230,7 @@ namespace Identity.Controllers
         }
 
         [HttpPost("forgotpassword")]
-        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
+        public async Task<IActionResult> ForgotPassword([FromServices] IOptions<IdentityConfiguration> identityOptions, ForgotPasswordViewModel model)
         {
             if (model.Email == null || !ModelState.IsValid)
             {
@@ -244,9 +246,13 @@ namespace Identity.Controllers
             var token = await userManager.GeneratePasswordResetTokenAsync(user);
             var uriEncodedToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
 
-            var callbackUrl = $"{configuration["AtspmSite"]}/change-password?username=" + user.UserName + "&token=" + uriEncodedToken;
+            var callbackUrl = $"{identityOptions.Value.Website}/change-password?username=" + user.UserName + "&token=" + uriEncodedToken;
 
             //HACK: FIX THIS
+
+            var message = new MailMessage(identityOptions.Value.DefaultEmailAddress, model.Email, "Reset Password", $"<p>Please reset your password by clicking <a href=\"{callbackUrl}\">here</a>.</p>");
+            await emailService.SendEmailAsync(message);
+
             //await emailService.SendEmailAsync(
             //    model.Email,
             //    "Reset Password",

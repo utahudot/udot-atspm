@@ -1,6 +1,3 @@
-// LeftTurnGapReport.tsx
-import { Location } from '@/api/config/aTSPMConfigurationApi.schemas'
-import { ResponsivePageLayout } from '@/components/ResponsivePage'
 import { useLeftTurnApproaches } from '@/features/leftTurnGapReport/api/getLeftTurnApproaches'
 import { useLeftTurnGapReportDataCheck } from '@/features/leftTurnGapReport/api/getLeftTurnGapReportDataCheck'
 import { useLeftTurnGapReport } from '@/features/leftTurnGapReport/api/getLTGRData'
@@ -185,61 +182,59 @@ const LeftTurnGapReport = () => {
 
   return (
     <Authorization requiredClaim={requiredClaim}>
-      <ResponsivePageLayout title="Left Turn Gap Analysis Report">
-        <LeftTurnGapReportForm
-          params={params}
-          setParams={setParams}
-          approachesData={approachesData}
-        />
+      <LeftTurnGapReportForm
+        params={params}
+        setParams={setParams}
+        approachesData={approachesData}
+      />
 
-        <Box display={'flex'} justifyContent={'space-between'}>
-          <Box sx={{ display: 'flex', gap: 2 }}>
-            <LoadingButton
-              loading={reportDataCheckIsLoading}
-              disabled={params.approachIds.length === 0}
-              variant="contained"
-              onClick={runCheckOnSubmit}
-              sx={{ margin: '20px 0', padding: '10px' }}
-            >
-              Run Check
-            </LoadingButton>
-
-            <LoadingButton
-              loading={reportDataIsLoading}
-              variant="contained"
-              onClick={handleRunReport}
-              disabled={disableRunReport}
-              sx={{ margin: '20px 0', padding: '10px' }}
-            >
-              Run Report
-            </LoadingButton>
-          </Box>
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
+      <Box display={'flex'} justifyContent={'space-between'}>
+        <Box sx={{ display: 'flex', gap: 2 }}>
+          <LoadingButton
+            loading={reportDataCheckIsLoading}
+            disabled={params.approachIds.length === 0}
+            variant="contained"
+            onClick={runCheckOnSubmit}
+            sx={{ margin: '20px 0', padding: '10px' }}
           >
-            <Alert severity="info">
-              It is always good practice to review the Split Pattern performance
-              in conjunction with using this report
-            </Alert>
-          </Box>
-        </Box>
-        {reportDataCheckData &&
-          Array.isArray(reportDataCheckData) &&
-          reportDataCheckData.length > 0 && (
-            <RunCheckGrid data={reportDataCheckData} />
-          )}
+            Run Check
+          </LoadingButton>
 
-        {reportData && (
-          <LTGRReportView
-            lTGRDataReport={reportData}
-            approaches={reportDataCheckData}
-          />
+          <LoadingButton
+            loading={reportDataIsLoading}
+            variant="contained"
+            onClick={handleRunReport}
+            disabled={disableRunReport}
+            sx={{ margin: '20px 0', padding: '10px' }}
+          >
+            Run Report
+          </LoadingButton>
+        </Box>
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <Alert severity="info">
+            It is always good practice to review the Split Pattern performance
+            in conjunction with using this report
+          </Alert>
+        </Box>
+      </Box>
+      {reportDataCheckData &&
+        Array.isArray(reportDataCheckData) &&
+        reportDataCheckData.length > 0 && (
+          <RunCheckGrid data={reportDataCheckData} />
         )}
-      </ResponsivePageLayout>
+
+      {reportData && (
+        <LTGRReportView
+          lTGRDataReport={reportData}
+          approaches={reportDataCheckData}
+        />
+      )}
     </Authorization>
   )
 }

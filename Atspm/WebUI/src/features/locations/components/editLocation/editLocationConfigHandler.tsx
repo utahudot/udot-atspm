@@ -85,15 +85,17 @@ export const useLocationConfigHandler = ({
   }, [expandedData])
 
   const addNewApproach = () => {
+    const id = Math.round(Math.random() * 10000)
+    const index = approaches.length
     const newApproach: Partial<ApproachForConfig> = {
-      id: parseInt(crypto.randomUUID()),
+      id: id,
+      index,
       description: 'New Approach',
       isNew: true,
       detectors: [],
       isProtectedPhaseOverlap: false,
       isPermissivePhaseOverlap: false,
       isPedestrianPhaseOverlap: false,
-      protectedPhaseNumber: null,
       permissivePhaseNumber: null,
       pedestrianPhaseNumber: null,
       pedestrianDetectors: '',

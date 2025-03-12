@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for Data - Utah.Udot.Atspm.Data.Configuration/MeasureTypeConfiguration.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -353,6 +353,15 @@ namespace Utah.Udot.Atspm.Data.Configuration
                      ShowOnWebsite = true,
                      ShowOnAggregationSite = false,
                      DisplayOrder = 131
+                 },
+                 new MeasureType
+                 {
+                     Id = 38,
+                     Name = "Transit Signal Priority",
+                     Abbreviation = "TSP",
+                     ShowOnWebsite = false,
+                     ShowOnAggregationSite = false,
+                     DisplayOrder = 132
                  });
         }
     }

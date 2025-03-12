@@ -5,11 +5,13 @@ import { Box, Typography } from '@mui/material'
 interface TimingAndActuationChartOptionsProps {
   chartDefaults: TimingAndActuationChartOptionsDefaults
   handleChartOptionsUpdate: (update: Default) => void
+  isMeasureDefaultView?: boolean
 }
 
 export const TimingAndActuationChartOptions = ({
   // chartDefaults,
   handleChartOptionsUpdate,
+  isMeasureDefaultView = false,
 }: TimingAndActuationChartOptionsProps) => {
   //////////////////////////////
   // It sounds like we'll add this back in later, so I'm leaving the code here for now.

@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for Data - Utah.Udot.Atspm.Data/ConfigContext.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,6 +23,7 @@ using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Data.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
+using Utah.Udot.Atspm.Data.Utility;
 
 namespace Utah.Udot.Atspm.Data
 {
@@ -111,6 +112,11 @@ namespace Utah.Udot.Atspm.Data
         /// Measure options table
         /// </summary>
         public virtual DbSet<MeasureOption> MeasureOptions { get; set; }
+
+        /// <summary>
+        /// Measure options save table
+        /// </summary>
+        public virtual DbSet<MeasureOptionsSave> MeasureOptionsSave { get; set; }
 
         /// <summary>
         /// Measure type table
@@ -211,6 +217,7 @@ namespace Utah.Udot.Atspm.Data
             modelBuilder.ApplyConfiguration(new MenuItemConfiguration());
             modelBuilder.ApplyConfiguration(new MeasureCommentConfiguration());
             modelBuilder.ApplyConfiguration(new MeasureOptionsConfiguration());
+            modelBuilder.ApplyConfiguration(new MeasureOptionsSaveConfiguration());
             modelBuilder.ApplyConfiguration(new MeasureTypeConfiguration());
             modelBuilder.ApplyConfiguration(new ProductConfiguration());
             modelBuilder.ApplyConfiguration(new RegionConfiguration());
@@ -222,6 +229,7 @@ namespace Utah.Udot.Atspm.Data
             modelBuilder.ApplyConfiguration(new UserRegionConfiguration());
             modelBuilder.ApplyConfiguration(new VersionHistoryConfiguration());
             //modelBuilder.ApplyConfiguration(new WatchDogIgnoreEventConfiguration());
+
 
             //Set keys to null for optional relationships
             foreach (var fk in modelBuilder.Model.GetEntityTypes()

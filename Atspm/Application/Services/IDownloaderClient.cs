@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for Application - Utah.Udot.Atspm.Services/IDownloaderClient.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,7 +22,7 @@ using Utah.Udot.Atspm.Exceptions;
 namespace Utah.Udot.Atspm.Services
 {
     /// <summary>
-    /// Client for connecting to services and interacting with their file directories
+    /// Client for connecting to uri resources over a specific protocol
     /// </summary>
     public interface IDownloaderClient : IDisposable
     {
@@ -40,43 +40,46 @@ namespace Utah.Udot.Atspm.Services
         /// <param name="connection">Ip connection info</param>
         /// <param name="credentials">username/password</param>
         /// <param name="connectionTimeout">Timeout for connections</param>
-        /// <param name="operationTImeout">Timeout for operations</param>
+        /// <param name="operationTimeout">Timeout for operations</param>
+        /// <param name="connectionProperties">Connection properties specific to the <see cref="Protocol"/></param>
         /// <param name="token">Cancellation token</param>
         /// <returns></returns>
         /// <exception cref="DownloaderClientConnectionException"></exception>
-        Task ConnectAsync(IPEndPoint connection, NetworkCredential credentials, int connectionTimeout = 2000, int operationTImeout = 2000, CancellationToken token = default);
+        /// <exception cref="OperationCanceledException"></exception>
+        Task ConnectAsync(IPEndPoint connection, NetworkCredential credentials, int connectionTimeout = 2000, int operationTimeout = 2000, Dictionary<string, string> connectionProperties = null, CancellationToken token = default);
 
         /// <summary>
-        /// List files in directory
+        /// Lists uri's of all resources
         /// </summary>
-        /// <param name="directory">Directory to list</param>
+        /// <param name="path">Path to list resources from</param>
         /// <param name="token">Cancellation token</param>
-        /// <param name="filters">File type and name filters</param>
-        /// <returns>List of files in directory</returns>
+        /// <param name="query">Uri query to filter resources</param>
+        /// <returns>List of files in resource</returns>
         /// <exception cref="DownloaderClientConnectionException"></exception>
-        /// <exception cref="DownloaderClientListDirectoryException"></exception>
-        Task<IEnumerable<string>> ListDirectoryAsync(string directory, CancellationToken token = default, params string[] filters);
+        /// <exception cref="DownloaderClientListResourcesException"></exception>
+        Task<IEnumerable<Uri>> ListResourcesAsync(string path, CancellationToken token = default, params string[] query);
 
         /// <summary>
-        /// Download from remote path to local path
+        /// Download from remote resource to local resource
         /// </summary>
-        /// <param name="localPath">Path to download directory to</param>
-        /// <param name="remotePath">Path of directory to download from</param>
-        /// <param name="token">Cancellation token</param>
-        /// <returns></returns>
-        /// <exception cref="DownloaderClientConnectionException"></exception>
-        /// <exception cref="DownloaderClientDownloadFileException"></exception>
-        Task<FileInfo> DownloadFileAsync(string localPath, string remotePath, CancellationToken token = default);
-
-        /// <summary>
-        /// Delete files in directory
-        /// </summary>
-        /// <param name="path">Directory of files to delete</param>
+        /// <param name="local">Uri of resource to download to</param>
+        /// <param name="remote">Uri of resource to download from</param>
         /// <param name="token">Cancellation token</param>
         /// <returns></returns>
         /// <exception cref="DownloaderClientConnectionException"></exception>
-        /// <exception cref="DownloaderClientDeleteFileException"></exception>
-        Task DeleteFileAsync(string path, CancellationToken token = default);
+        /// <exception cref="DownloaderClientDownloadResourceException"></exception>
+        Task<FileInfo> DownloadResourceAsync(Uri local, Uri remote, CancellationToken token = default);
+
+        /// <summary>
+        /// Delete resource
+        /// </summary>
+        /// <param name="resource">Uri of resource to delete</param>
+        /// <param name="token">Cancellation token</param>
+        /// <returns></returns>
+        /// <exception cref="DownloaderClientConnectionException"></exception>
+        /// <exception cref="DownloaderClientDeleteResourceException"></exception>
+        /// <exception cref="OperationCanceledException"></exception>
+        Task DeleteResourceAsync(Uri resource, CancellationToken token = default);
 
         /// <summary>
         /// Disconnects from the server
@@ -84,6 +87,7 @@ namespace Utah.Udot.Atspm.Services
         /// <param name="token">Cancellation token</param>
         /// <returns></returns>
         /// <exception cref="DownloaderClientConnectionException"></exception>
+        /// <exception cref="OperationCanceledException"></exception>
         Task DisconnectAsync(CancellationToken token = default);
     }
 }

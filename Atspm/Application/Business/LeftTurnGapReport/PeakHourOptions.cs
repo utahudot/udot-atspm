@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for Application - Utah.Udot.Atspm.Business.LeftTurnGapReport/PeakHourOptions.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,9 +19,10 @@ using Utah.Udot.Atspm.Business.Common;
 
 namespace Utah.Udot.Atspm.Business.LeftTurnGapReport
 {
-    public class PeakHourOptions : OptionsBase
+    public class PeakHourOptions : DateTimeOptionsBase, ILocationOptionsBase
     {
         public int ApproachId { get; set; }
         public int[] DaysOfWeek { get; set; }
+        public string LocationIdentifier { get; set; }
     }
 }

@@ -1,17 +1,19 @@
 import { ApproachVolumeChartOptionsDefaults } from '@/features/charts/approachVolume/types'
 import { BinSizeDropdown } from '@/features/charts/components/selectChart/BinSizeDropdown'
 import { Default } from '@/features/charts/types'
-import { SelectChangeEvent } from '@mui/material'
+import { Alert, SelectChangeEvent } from '@mui/material'
 import { useState } from 'react'
 
 interface ApproachVolumeChartOptionsProps {
   chartDefaults: ApproachVolumeChartOptionsDefaults
   handleChartOptionsUpdate: (update: Default) => void
+  isMeasureDefaultView?: boolean
 }
 
 export const ApproachVolumeChartOptions = ({
   chartDefaults,
   handleChartOptionsUpdate,
+  isMeasureDefaultView = false,
 }: ApproachVolumeChartOptionsProps) => {
   const [binSize, setBinSize] = useState(chartDefaults.binSize?.value)
 
@@ -27,10 +29,18 @@ export const ApproachVolumeChartOptions = ({
   }
 
   return (
-    <BinSizeDropdown
-      value={binSize}
-      handleChange={handleBinSizeChange}
-      id="approach-volume"
-    />
+    <>
+      {binSize === undefined ? (
+        <Alert severity="error" sx={{ mt: 1 }}>
+          Bin Size default value not found.
+        </Alert>
+      ) : (
+        <BinSizeDropdown
+          value={binSize}
+          handleChange={handleBinSizeChange}
+          id="approach-volume"
+        />
+      )}
+    </>
   )
 }

@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for Application - Utah.Udot.Atspm.Business.PedDelay/PedPhaseService.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -74,7 +74,7 @@ namespace Utah.Udot.Atspm.Business.PedDelay
         {
             var planService = new PlanService();
             var pedPlans = new List<PedPlan>();
-            var planEvents = planService.GetPlanEvents(options.Start, options.End, options.LocationIdentifier, plansData.ToList());
+            var planEvents = planService.SetFirstAndLastPlan(options.Start, options.End, options.LocationIdentifier, plansData.ToList());
             for (var i = 0; i < planEvents.Count; i++)
             {
                 //if this is the last plan then we want the end of the plan
@@ -121,9 +121,9 @@ namespace Utah.Udot.Atspm.Business.PedDelay
             pedPhaseData.PedRequests = mainEvents.Count(e => e.EventCode == 90);
             pedPhaseData.PedCallsRegisteredCount = mainEvents.Count(e => e.EventCode == 45);
 
-            mainEvents = Remove45s(mainEvents);
-
-            mainEvents = CombineSequential90s(mainEvents);
+            //mainEvents = Remove45s(mainEvents);
+            var pedEventCodes = new List<int> { 21, 22, 90 };
+            mainEvents = mainEvents.Where(e => pedEventCodes.Contains(e.EventCode)).OrderBy(e => e.Timestamp).ToList();
 
             pedPhaseData.PedBeginWalkCount = mainEvents.Count(e => e.EventCode == pedPhaseData.BeginWalkEvent);
             pedPhaseData.ImputedPedCallsRegistered = CountImputedPedCalls(mainEvents, previousEvents, pedPhaseData);

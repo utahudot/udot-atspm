@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for Application - Utah.Udot.Atspm.Business.PhaseTermination/PurduePhaseTerminationOptions.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,8 +19,10 @@ using Utah.Udot.Atspm.Business.Common;
 
 namespace Utah.Udot.Atspm.Business.PhaseTermination
 {
-    public class PurduePhaseTerminationOptions : OptionsBase
+    public class PurduePhaseTerminationOptions : DateTimeOptionsBase, ILocationOptionsBase
     {
         public int SelectedConsecutiveCount { get; set; }
+        public int SelectedPhaseNumber { get; set; }
+        public string LocationIdentifier { get; set; }
     }
 }

@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for Application - Utah.Udot.Atspm.Business.PreempDetail/PreemptDetailOptions.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,8 +19,8 @@ using Utah.Udot.Atspm.Business.Common;
 
 namespace Utah.Udot.Atspm.Business.PreempDetail
 {
-    public class PreemptDetailOptions : OptionsBase
+    public class PreemptDetailOptions : DateTimeOptionsBase, ILocationOptionsBase
     {
-
+        public string LocationIdentifier { get; set; }
     }
 }

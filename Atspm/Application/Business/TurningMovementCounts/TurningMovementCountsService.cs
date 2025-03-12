@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for Application - Utah.Udot.Atspm.Business.TurningMovementCounts/TurningMovementCountsService.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -48,11 +48,11 @@ namespace Utah.Udot.Atspm.Business.TurningMovementCounts
             string locationIdentifier,
             string LocationDescription)
         {
-            //var plans = planService.GetBasicPlans(options.Start, options.End, LocationIdentifier, plans);
+            //var plans = planService.GetBasicPlans(_options.Start, _options.End, LocationIdentifier, plans);
             var tmcDetectors = new List<Detector>();
             FindLaneDetectors(tmcDetectors, movementType, detectorsByDirection, laneType);
 
-            if (tmcDetectors.Count == 0)
+            if (tmcDetectors.Count == 0 || detectorEvents.Count == 0)
                 return null;
 
             var laneVolumes = GetVolumeDictionaryByDetector(tmcDetectors, options.Start, options.End, detectorEvents, options.BinSize);

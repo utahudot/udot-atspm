@@ -1,5 +1,5 @@
 #region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for ReportApi - Utah.Udot.Atspm.ReportApi.ReportServices/YellowRedActivationsReportService.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,6 +16,7 @@
 #endregion
 
 using Utah.Udot.Atspm.Business.YellowRedActivations;
+using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
 
 namespace Utah.Udot.Atspm.ReportApi.ReportServices
@@ -119,7 +120,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                 detectorEvents,
                 planEvents);
             viewModel.LocationDescription = LocationDescription;
-            viewModel.ApproachDescription = phaseDetail.GetApproachDescription();
+            viewModel.ApproachDescription = phaseDetail.GetApproachDescriptionWithMovements(DetectionTypes.LLS);
             return viewModel;
         }
 

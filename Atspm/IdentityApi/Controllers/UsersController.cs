@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for IdentityApi - Identity.Controllers/UsersController.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -43,7 +43,7 @@ namespace Identity.Controllers
         public async Task<IActionResult> GetUsersAsync([FromServices] IServiceScopeFactory serviceScopeFactory)
         {
             var usersDto = new List<UserDTO>();
-            var users = userManager.Users;
+            var users = userManager.Users.OrderBy(u => u.UserName);
 
             foreach (var user in users)
             {

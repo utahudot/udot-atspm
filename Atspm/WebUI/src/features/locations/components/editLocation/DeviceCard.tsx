@@ -38,6 +38,7 @@ const deviceTypeMap = {
   FIRCamera: { label: 'FIR Camera', icon: <VideocamOutlinedIcon /> },
   LidarSensor: { label: 'Lidar Sensor', icon: <SensorsIcon /> },
   WavetronixSpeed: { label: 'Wavetronix Speed', icon: <SettingsRemoteIcon /> },
+  SpeedSensor: { label: 'Speed Sensor', icon: <SettingsRemoteIcon /> },
 }
 
 const StyledLabel = ({ children }: { children: React.ReactNode }) => (
@@ -82,7 +83,7 @@ const DeviceCard = ({ device, onEdit, onDelete }: DeviceCardProps) => {
         mb: 2,
         minWidth: '400px',
         maxWidth: '400px',
-        height: '400px',
+        minHeight: '400px',
       }}
     >
       <Box mx={2}>
@@ -142,7 +143,7 @@ const DeviceCard = ({ device, onEdit, onDelete }: DeviceCardProps) => {
           </Avatar>
           <Box sx={{ textAlign: 'left' }}>
             <Typography variant="h4" fontWeight={'bold'} component={'h3'}>
-              {deviceTypeMap[device.deviceType].label}
+              {deviceTypeMap[device.deviceType]?.label}
             </Typography>
           </Box>
         </Box>
@@ -170,6 +171,29 @@ const DeviceCard = ({ device, onEdit, onDelete }: DeviceCardProps) => {
               {device.loggingEnabled ? 'Yes' : 'No'}
             </Typography>
           </Box>
+          {Object.entries(device)
+            .filter(
+              ([key]) =>
+                ![
+                  'id',
+                  'loggingEnabled',
+                  'ipaddress',
+                  'deviceStatus',
+                  'deviceType',
+                  'notes',
+                  'locationId',
+                  'deviceConfigurationId',
+                  'deviceIdentifier',
+                  'location',
+                  'deviceConfiguration',
+                ].includes(key)
+            )
+            .map(([key, value]) => (
+              <Box display="flex" justifyContent="flex-start" key={key}>
+                <StyledLabel>{key}</StyledLabel>
+                <Typography variant="body1">{String(value)}</Typography>
+              </Box>
+            ))}
           <Box display={'flex'} justifyContent={'flex-start'}>
             <StyledLabel>Notes</StyledLabel>
           </Box>

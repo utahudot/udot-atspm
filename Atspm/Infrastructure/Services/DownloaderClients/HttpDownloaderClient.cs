@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for Infrastructure - Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients/HttpDownloaderClient.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,29 +15,27 @@
 // limitations under the License.
 #endregion
 
-using System.Diagnostics;
 using System.Net;
 using Utah.Udot.Atspm.Data.Enums;
 
 namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
 {
+
     /// <summary>
     /// Connect to services and interact with their file directories using <see cref="HttpClient"/>
     /// </summary>
-    public class HttpDownloaderClient : ServiceObjectBase, IDownloaderClient
+    public class HttpDownloaderClient : DownloaderClientBase
     {
         private HttpClient _client;
-        private Uri getPath;
-        private IPEndPoint ip;
 
         ///<inheritdoc/>
-        public HttpDownloaderClient() : base(true) { }
+        public HttpDownloaderClient() { }
 
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
         /// <param name="client">External client used for special settings and mocking</param>
-        public HttpDownloaderClient(HttpClient client) : base(true)
+        public HttpDownloaderClient(HttpClient client)
         {
             _client = client;
         }
@@ -45,146 +43,108 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
         #region IDownloaderClient
 
         ///<inheritdoc/>
-        public TransportProtocols Protocol => TransportProtocols.Http;
+        public override TransportProtocols Protocol => TransportProtocols.Http;
 
         ///<inheritdoc/>
-        public bool IsConnected => _client != null && _client.BaseAddress.Host.IsValidIpAddress();
+        public override bool IsConnected => _client != null && _client.BaseAddress.Host.IsValidIpAddress();
 
         ///<inheritdoc/>
-        public Task ConnectAsync(IPEndPoint connection, NetworkCredential credentials, int connectionTimeout = 2000, int operationTimeout = 2000, CancellationToken token = default)
+        protected override Task Connect(IPEndPoint connection, NetworkCredential credentials, int connectionTimeout = 2000, int operationTimeout = 2000, Dictionary<string, string> connectionProperties = null, CancellationToken token = default)
         {
-            token.ThrowIfCancellationRequested();
+            _client ??= new HttpClient();
+            _client.Timeout = TimeSpan.FromMilliseconds(operationTimeout);
 
-            ip = connection;
-
-            try
+            var uriBuilder = new UriBuilder(Uri.UriSchemeHttp, connection.Address.ToString(), connection.Port)
             {
-                _client ??= new HttpClient();
+                UserName = credentials.UserName,
+                Password = credentials.Password,
+            };
 
-                _client.Timeout = TimeSpan.FromMilliseconds(operationTimeout);
-                _client.BaseAddress = new Uri($"http://{ip.Address}:{ip.Port}/");
+            if (Uri.TryCreate(uriBuilder.Uri.ToString(), UriKind.Absolute, out Uri baseAddress) && Uri.IsWellFormedUriString(baseAddress.ToString(), UriKind.Absolute))
+            {
+                _client.BaseAddress = baseAddress;
+            }
+            else
+            {
+                throw new UriFormatException($"Invalid Uri: {uriBuilder.Uri}");
+            }
 
+            if (connectionProperties != null && connectionProperties.Count > 0)
+            {
                 _client.DefaultRequestHeaders.Accept.Clear();
-                //HACK: this is specific to maxtimecontrollers future versions will need this adjustable
-                _client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/xml"));
 
-                return Task.CompletedTask;
-            }
-            catch (Exception e)
-            {
-                throw new DownloaderClientConnectionException(credentials.Domain, this, e.Message, e);
-            }
-        }
-
-        ///<inheritdoc/>
-        public async Task DeleteFileAsync(string path, CancellationToken token = default)
-        {
-            token.ThrowIfCancellationRequested();
-
-            if (!IsConnected)
-                throw new DownloaderClientConnectionException(_client?.BaseAddress?.Host, this, "Client not connected");
-
-            await Task.CompletedTask;
-        }
-
-        ///<inheritdoc/>
-        public async Task DisconnectAsync(CancellationToken token = default)
-        {
-            token.ThrowIfCancellationRequested();
-
-            if (!IsConnected)
-                throw new DownloaderClientConnectionException(_client?.BaseAddress?.Host, this, "Client not connected");
-
-            try
-            {
-                _client.CancelPendingRequests();
-                _client = null;
-            }
-            catch (Exception e)
-            {
-                throw new DownloaderClientConnectionException(_client?.BaseAddress?.Host, this, e.Message, e);
-            }
-
-            getPath = null;
-
-            await Task.CompletedTask;
-        }
-
-        ///<inheritdoc/>
-        public async Task<FileInfo> DownloadFileAsync(string localPath, string remotePath, CancellationToken token = default)
-        {
-            token.ThrowIfCancellationRequested();
-
-            if (!IsConnected)
-                throw new DownloaderClientConnectionException(_client?.BaseAddress?.Host, this, "Client not connected");
-
-            //if (getPath == null)
-            //    throw new DownloaderClientDownloadFileException(remotePath, this, "HTTP Get Path not defined");
-
-            HttpResponseMessage response = new HttpResponseMessage();
-
-            var sw = new Stopwatch();
-
-            try
-            {
-                response = await _client.GetAsync(getPath, token);
-
-                sw.Stop();
-
-                if (response.IsSuccessStatusCode && response?.Content != null)
+                foreach (var prop in connectionProperties)
                 {
-                    string data = await response.Content.ReadAsStringAsync();
+                    _client.DefaultRequestHeaders.Add(prop.Key, prop.Value);
+                }
+            }
 
-                    var fileInfo = new FileInfo(localPath);
-                    fileInfo.Directory.Create();
+            return Task.CompletedTask;
+        }
 
-                    await File.WriteAllTextAsync(localPath, data, token).ConfigureAwait(false);
+        ///<inheritdoc/>
+        protected override Task DeleteResource(Uri resource, CancellationToken token = default)
+        {
+            return Task.CompletedTask;
+        }
 
-                    return fileInfo;
+        ///<inheritdoc/>
+        protected override Task Disconnect(CancellationToken token = default)
+        {
+            _client.CancelPendingRequests();
+
+            return Task.CompletedTask;
+        }
+
+        ///<inheritdoc/>
+        protected override async Task<FileInfo> DownloadResource(FileInfo file, Uri remote, CancellationToken token = default)
+        {
+            var response = await _client.GetAsync(remote, token);
+
+            if (response.IsSuccessStatusCode && response?.Content != null)
+            {
+                var data = await response.Content.ReadAsStringAsync(token);
+
+                await File.WriteAllTextAsync(file.FullName, data, token).ConfigureAwait(false);
+
+                return file;
+            }
+            else
+                throw new HttpRequestException(response.StatusCode.ToString());
+        }
+
+        ///<inheritdoc/>
+        protected override Task<IEnumerable<Uri>> ListResources(string path, CancellationToken token = default, params string[] query)
+        {
+            List<Uri> results = [];
+
+            if (Uri.TryCreate(_client.BaseAddress, path, out Uri baseAddress) && Uri.IsWellFormedUriString(baseAddress.ToString(), UriKind.Absolute))
+            {
+                if (query.Length <= 0)
+                {
+                    results.Add(baseAddress);
                 }
                 else
-                    throw new DownloaderClientDownloadFileException(remotePath, this, response.StatusCode.ToString());
-            }
-            catch (Exception e)
-            {
-                throw new DownloaderClientDownloadFileException(remotePath, this, e.Message, e);
-            }
-        }
-
-        ///<inheritdoc/>
-        public Task<IEnumerable<string>> ListDirectoryAsync(string directory, CancellationToken token = default, params string[] filters)
-        {
-            token.ThrowIfCancellationRequested();
-
-            if (!IsConnected)
-                throw new DownloaderClientConnectionException(_client?.BaseAddress?.Host, this, "Client not connected");
-
-            try
-            {
-                var builder = new UriBuilder(_client.BaseAddress);
-                builder.Path = directory;
-
-                //for maxtime controllers it uses this searchterm:  $"since={DateTime.Now.AddHours(-24):MM-dd-yyyy HH:mm:ss.f}"
-
-                //HACK: this is for maxtime controllers, needs to be moved to search terms in the db
-                builder.Query = $"since={DateTime.Now.AddHours(-1):MM-dd-yyyy HH:mm:ss.f}";
-
-                if (filters?.Length > 0)
                 {
-                    foreach (var filter in filters)
+                    foreach (var f in query)
                     {
-                        builder.Query += filter;
+                        if (Uri.IsWellFormedUriString(Uri.EscapeDataString(f), UriKind.Relative) && Uri.TryCreate(baseAddress + f, UriKind.Absolute, out Uri result))
+                        {
+                            results.Add(result);
+                        }
+                        else
+                        {
+                            throw new UriFormatException($"Invalid search term: {f}");
+                        }
                     }
                 }
-
-                getPath = builder.Uri;
-
-                return Task.FromResult<IEnumerable<string>>(new List<string>() { $"{DateTime.Now.Ticks}.xml" });
             }
-            catch (Exception e)
+            else
             {
-                throw new DownloaderClientListDirectoryException(directory, this, e.Message);
+                throw new UriFormatException($"Invalid path: {path}");
             }
+
+            return Task.FromResult<IEnumerable<Uri>>(results);
         }
 
         #endregion

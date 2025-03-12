@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for Application - Utah.Udot.Atspm.Business.Common/PhaseDetail.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,6 +19,7 @@ using System.Text;
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.NetStandardToolkit.Extensions;
 
+
 namespace Utah.Udot.Atspm.Business.Common
 {
     public class PhaseDetail
@@ -28,11 +29,29 @@ namespace Utah.Udot.Atspm.Business.Common
         public Approach Approach { get; set; }
         public bool IsPermissivePhase { get; set; }
 
+        public string GetApproachDescriptionWithMovements(DetectionTypes detectionTypes)
+        {
+            var movements = Approach.Detectors?
+                .Where(d => d.DetectionTypes.Select(d => d.Id).Contains(detectionTypes))
+                .Select(d => d.MovementType)
+                .Distinct()
+                .ToList();
+            string movementResult = GetMovementResult(movements);
+            return BuildApproachDescription(movementResult);
+        }
+
         public string GetApproachDescription()
         {
-            var movements = Approach.Detectors?.Select(d => d.MovementType).Distinct().ToList();
+            var movements = Approach.Detectors?
+                .Select(d => d.MovementType)
+                .Distinct()
+                .ToList();
             string movementResult = GetMovementResult(movements);
+            return BuildApproachDescription(movementResult);
+        }
 
+        private string BuildApproachDescription(string movementResult)
+        {
             var descriptionResult = new StringBuilder($"{Approach.DirectionType.Description} ");
             if (!string.IsNullOrEmpty(movementResult) && movementResult.Contains("Left"))
             {

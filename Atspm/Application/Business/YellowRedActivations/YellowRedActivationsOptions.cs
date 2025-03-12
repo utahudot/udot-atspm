@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for Application - Utah.Udot.Atspm.Business.YellowRedActivations/YellowRedActivationsOptions.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,9 +19,10 @@ using Utah.Udot.Atspm.Business.Common;
 
 namespace Utah.Udot.Atspm.Business.YellowRedActivations
 {
-    public class YellowRedActivationsOptions : OptionsBase
+    public class YellowRedActivationsOptions : DateTimeOptionsBase, ILocationOptionsBase
     {
         public double SevereLevelSeconds { get; set; }
         public int MetricTypeId { get; set; } = 11;
+        public string LocationIdentifier { get; set; }
     }
 }

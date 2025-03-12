@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for Application - Utah.Udot.Atspm.Business.WaitTime/WaitTimeOptions.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,9 +19,9 @@ using Utah.Udot.Atspm.Business.Common;
 
 namespace Utah.Udot.Atspm.Business.WaitTime
 {
-    public class WaitTimeOptions : OptionsBase
+    public class WaitTimeOptions : DateTimeOptionsBase, ILocationOptionsBase
     {
         public int BinSize { get; set; }
-
+        public string LocationIdentifier { get; set; }
     }
 }

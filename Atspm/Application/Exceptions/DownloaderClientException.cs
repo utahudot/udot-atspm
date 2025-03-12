@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for Application - Utah.Udot.Atspm.Exceptions/DownloaderClientException.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -89,102 +89,102 @@ namespace Utah.Udot.Atspm.Exceptions
     /// <summary>
     /// Thrown when there is an exception downloading from <see cref="IDownloaderClient"/> implementation
     /// </summary>
-    public class DownloaderClientDownloadFileException : DownloaderClientException
+    public class DownloaderClientDownloadResourceException : DownloaderClientException
     {
         /// <summary>
         /// Thrown when there is an exception downloading from <see cref="IDownloaderClient"/> implementation
         /// </summary>
-        /// <param name="fileName">Name of file that that threw the exception when trying to download</param>
+        /// <param name="resource">Name of the resource that threw the exception when trying to download</param>
         /// <param name="downloaderClient">Downloader client exception was thrown for</param>
         /// <param name="message">Exception message</param>
-        public DownloaderClientDownloadFileException(string fileName, IDownloaderClient downloaderClient, string? message) : base(downloaderClient, message)
+        public DownloaderClientDownloadResourceException(Uri resource, IDownloaderClient downloaderClient, string? message) : base(downloaderClient, message)
         {
-            FileName = fileName;
+            Resource = resource;
         }
 
         /// <summary>
         /// Thrown when there is an exception downloading from <see cref="IDownloaderClient"/> implementation
         /// </summary>
-        /// <param name="fileName">Name of file that that threw the exception when trying to download</param>
+        /// <param name="resource">Name of the resource that threw the exception when trying to download</param>
         /// <param name="downloaderClient">Downloader client exception was thrown for</param>
         /// <param name="message">Exception message</param>
         /// <param name="innerException">Exception thrown by the <see cref="IDownloaderClient"/> implementation</param>
-        public DownloaderClientDownloadFileException(string fileName, IDownloaderClient downloaderClient, string? message, Exception? innerException) : base(downloaderClient, message, innerException)
+        public DownloaderClientDownloadResourceException(Uri resource, IDownloaderClient downloaderClient, string? message, Exception? innerException) : base(downloaderClient, message, innerException)
         {
-            FileName = fileName;
+            Resource = resource;
         }
 
         /// <summary>
-        /// Name of file that that threw the exception when trying to download
+        /// Name of the resource that threw the exception when trying to download
         /// </summary>
-        public string FileName { get; private set; }
+        public Uri Resource { get; private set; }
     }
 
     /// <summary>
     /// Thrown when there is an exception deleting from <see cref="IDownloaderClient"/> implementation
     /// </summary>
-    public class DownloaderClientDeleteFileException : DownloaderClientException
+    public class DownloaderClientDeleteResourceException : DownloaderClientException
     {
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="fileName">Name of file that that threw the exception when trying to delete</param>
+        /// <param name="resource">Name of resource that that threw the exception when trying to delete</param>
         /// <param name="downloaderClient">Downloader client exception was thrown for</param>
         /// <param name="message">Exception message</param>
-        public DownloaderClientDeleteFileException(string fileName, IDownloaderClient downloaderClient, string? message) : base(downloaderClient, message)
+        public DownloaderClientDeleteResourceException(Uri resource, IDownloaderClient downloaderClient, string? message) : base(downloaderClient, message)
         {
-            FileName = fileName;
+            Resource = resource;
         }
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="fileName">Name of file that that threw the exception when trying to delete</param>
+        /// <param name="resource">Name of resource that that threw the exception when trying to delete</param>
         /// <param name="downloaderClient">Downloader client exception was thrown for</param>
         /// <param name="message">Exception message</param>
         /// <param name="innerException">Exception thrown by the <see cref="IDownloaderClient"/> implementation</param>
-        public DownloaderClientDeleteFileException(string fileName, IDownloaderClient downloaderClient, string? message, Exception? innerException) : base(downloaderClient, message, innerException)
+        public DownloaderClientDeleteResourceException(Uri resource, IDownloaderClient downloaderClient, string? message, Exception? innerException) : base(downloaderClient, message, innerException)
         {
-            FileName = fileName;
+            Resource = resource;
         }
 
         /// <summary>
         /// Name of file that that threw the exception when trying to delete
         /// </summary>
-        public string FileName { get; private set; }
+        public Uri Resource { get; private set; }
     }
 
     /// <summary>
-    /// Thrown when there is an exception listing directory from <see cref="IDownloaderClient"/> implementation
+    /// Thrown when there is an exception listing resources from <see cref="IDownloaderClient"/> implementation
     /// </summary>
-    public class DownloaderClientListDirectoryException : DownloaderClientException
+    public class DownloaderClientListResourcesException : DownloaderClientException
     {
         /// <summary>
-        /// Thrown when there is an exception listing directory from <see cref="IDownloaderClient"/> implementation
+        /// Thrown when there is an exception listing resources from <see cref="IDownloaderClient"/> implementation
         /// </summary>
-        /// <param name="directory">Path of directory that threw the exception</param>
+        /// <param name="path">Path of resources that threw the exception</param>
         /// <param name="downloaderClient">Downloader client exception was thrown for</param>
         /// <param name="message">Exception message</param>
-        public DownloaderClientListDirectoryException(string directory, IDownloaderClient downloaderClient, string? message) : base(downloaderClient, message)
+        public DownloaderClientListResourcesException(string path, IDownloaderClient downloaderClient, string? message) : base(downloaderClient, message)
         {
-            Directory = directory;
+            Path = path;
         }
 
         /// <summary>
-        /// Thrown when there is an exception listing directory from <see cref="IDownloaderClient"/> implementation
+        /// Thrown when there is an exception listing resources from <see cref="IDownloaderClient"/> implementation
         /// </summary>
-        /// <param name="directory">Path of directory that threw the exception</param>
+        /// <param name="path">Path of resources that threw the exception</param>
         /// <param name="downloaderClient">Downloader client exception was thrown for</param>
         /// <param name="message">Exception message</param>
         /// <param name="innerException">Exception thrown by the <see cref="IDownloaderClient"/> implementation</param>
-        public DownloaderClientListDirectoryException(string directory, IDownloaderClient downloaderClient, string? message, Exception? innerException) : base(downloaderClient, message, innerException)
+        public DownloaderClientListResourcesException(string path, IDownloaderClient downloaderClient, string? message, Exception? innerException) : base(downloaderClient, message, innerException)
         {
-            Directory = directory;
+            Path = path;
         }
 
         /// <summary>
-        /// Path of directory that threw the exception
+        /// Path of resources that threw the exception
         /// </summary>
-        public string Directory { get; private set; }
+        public string Path { get; private set; }
     }
 }

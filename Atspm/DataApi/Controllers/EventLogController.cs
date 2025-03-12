@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for DataApi - Utah.Udot.Atspm.DataApi.Controllers/EventLogController.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -58,7 +58,8 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
         /// Get all event logs for location by date
         /// </summary>
         /// <param name="locationIdentifier">Location identifier</param>
-        /// <param name="start">Archive date of event</param>
+        /// <param name="start">Archive date of event to start with</param>
+        /// <param name="end">Archive date of event to end with</param>
         /// <returns></returns>
         /// <response code="200">Call completed successfully</response>
         /// <response code="400">Invalid request (date)</response>
@@ -68,12 +69,12 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult GetArchivedEvents(string locationIdentifier, DateOnly start)
+        public IActionResult GetArchivedEvents(string locationIdentifier, DateOnly start, DateOnly end)
         {
-            if (start == DateOnly.MinValue)
+            if (start == DateOnly.MinValue || end == DateOnly.MinValue || end < start)
                 return BadRequest("Invalid date range");
 
-            var result = _repository.GetArchivedEvents(locationIdentifier, start);
+            var result = _repository.GetArchivedEvents(locationIdentifier, start, end);
 
             if (result.Count == 0)
                 return NotFound();
@@ -88,7 +89,8 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
         /// </summary>
         /// <param name="locationIdentifier">Location identifier</param>
         /// <param name="deviceId">Deivce id events came from</param>
-        /// <param name="start">Archive date of event</param>
+        /// <param name="start">Archive date of event to start with</param>
+        /// <param name="end">Archive date of event to end with</param>
         /// <returns></returns>
         /// <response code="200">Call completed successfully</response>
         /// <response code="400">Invalid request (date)</response>
@@ -98,15 +100,15 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult GetArchivedEvents(string locationIdentifier, int deviceId, DateOnly start)
+        public IActionResult GetArchivedEvents(string locationIdentifier, int deviceId, DateOnly start, DateOnly end)
         {
-            if (start == DateOnly.MinValue)
+            if (start == DateOnly.MinValue || end == DateOnly.MinValue || end < start)
                 return BadRequest("Invalid date range");
 
             if (deviceId == 0)
                 return BadRequest("Invalid device id");
 
-            var result = _repository.GetArchivedEvents(locationIdentifier, start, deviceId);
+            var result = _repository.GetArchivedEvents(locationIdentifier, start, end, deviceId);
 
             if (result.Count == 0)
                 return NotFound();
@@ -132,9 +134,9 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult GetArchivedEvents(string locationIdentifier, string dataType, DateOnly start)
+        public IActionResult GetArchivedEvents(string locationIdentifier, string dataType, DateOnly start, DateOnly end)
         {
-            if (start == DateOnly.MinValue)
+            if (start == DateOnly.MinValue || end == DateOnly.MinValue || end < start)
                 return BadRequest("Invalid date range");
 
             Type type;
@@ -148,7 +150,7 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
                 return BadRequest("Invalid data type");
             }
 
-            var result = _repository.GetArchivedEvents(locationIdentifier, start, type);
+            var result = _repository.GetArchivedEvents(locationIdentifier, start, end, type);
 
             if (result.Count == 0)
                 return NotFound();
@@ -175,9 +177,9 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult GetArchivedEvents(string locationIdentifier, int deviceId, string dataType, DateOnly start)
+        public IActionResult GetArchivedEvents(string locationIdentifier, int deviceId, string dataType, DateOnly start, DateOnly end)
         {
-            if (start == DateOnly.MinValue)
+            if (start == DateOnly.MinValue || end == DateOnly.MinValue || end < start)
                 return BadRequest("Invalid date range");
 
             if (deviceId == 0)
@@ -194,7 +196,7 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
                 return BadRequest("Invalid data type");
             }
 
-            var result = _repository.GetArchivedEvents(locationIdentifier, start, type, deviceId);
+            var result = _repository.GetArchivedEvents(locationIdentifier, start, end, type, deviceId);
 
             if (result.Count == 0)
                 return NotFound();

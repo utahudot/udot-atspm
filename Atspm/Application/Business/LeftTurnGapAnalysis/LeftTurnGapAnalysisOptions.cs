@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for Application - Utah.Udot.Atspm.Business.LeftTurnGapAnalysis/LeftTurnGapAnalysisOptions.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,7 +19,7 @@ using Utah.Udot.Atspm.Business.Common;
 
 namespace Utah.Udot.Atspm.Business.LeftTurnGapAnalysis
 {
-    public class LeftTurnGapAnalysisOptions : OptionsBase
+    public class LeftTurnGapAnalysisOptions : DateTimeOptionsBase, ILocationOptionsBase
     {
         public const int EVENT_GREEN = 1;
         public const int EVENT_RED = 10;
@@ -56,7 +56,6 @@ namespace Utah.Udot.Atspm.Business.LeftTurnGapAnalysis
         public double? SumDurationGap3 { get; set; }
         public double TrendLineGapThreshold { get; set; } = 7.4;
         public int BinSize { get; set; }
-
-
+        public string LocationIdentifier { get; set; }
     }
 }

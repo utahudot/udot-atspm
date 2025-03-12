@@ -1,4 +1,20 @@
-﻿
+﻿#region license
+// Copyright 2025 Utah Departement of Transportation
+// for DatabaseInstaller - %Namespace%/TransferConfigCommandHostedService.cs
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+// http://www.apache.org/licenses/LICENSE-2.
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+#endregion
+
 using DatabaseInstaller.Commands;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -6,13 +22,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Npgsql;
-using Npgsql.Internal;
+using System.Text.Json;
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
-using static Org.BouncyCastle.Math.EC.ECCurve;
 
 public class TransferConfigCommandHostedService : IHostedService
 {
@@ -71,7 +84,7 @@ public class TransferConfigCommandHostedService : IHostedService
     }
 
     public async Task StartAsync(CancellationToken cancellationToken)
-    {        
+    {
         if (_config.Delete)
         {
             DeleteLocations();
@@ -82,18 +95,16 @@ public class TransferConfigCommandHostedService : IHostedService
             DeleteDevicesConfigurations();
             DeleteProducts();
         }
-        if(_config.UpdateLocations)
+
+        IConfiguration config = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json")
+            .Build();
+
+        Dictionary<string, string> queries = GetLocationQueries(config);
+        var columnMappings = GetColumnMappings(config);
+        if (_config.UpdateLocations)
         {
-            IConfiguration config = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json")
-                .Build();
-
-
-            Dictionary<string, string> queries = GetLocationQueries(config);
-            //Dictionary<string, Dictionary<string, string>> columnMappings = GetColumnMappings();
-            var columnMappings = GetColumnMappings(config);
-
             SetDetectionTypeMesureType();
             ImportProducts(queries, columnMappings);
             ImportDeviceConfigurations(queries, columnMappings);
@@ -107,7 +118,57 @@ public class TransferConfigCommandHostedService : IHostedService
             ImportRouteLocations(queries, columnMappings);
             ImportDevices(queries, columnMappings);
         }
-        
+        if (_config.ImportSpeedDevices)
+        {
+            ImportSpeedDevices(queries, columnMappings);
+        }
+    }
+
+    private void ImportSpeedDevices(Dictionary<string, string> queries, Dictionary<string, Dictionary<string, string>> columnMappings)
+    {
+        if (_productRepository.GetList().Any(p => p.Manufacturer == "Wavetronix"))
+        {
+            _logger.LogInformation("Speed Product already exist");
+        }
+        else
+        {
+            _productRepository.Add(new Product { Manufacturer = "Wavetronix", Model = "Speed Detection" });
+        }
+        if (_deviceConfigurationRepository.GetList().Any(dc => dc.Description == "Speed"))
+        {
+            _logger.LogInformation("Speed Device Configuration already exist");
+        }
+        else
+        {
+            _deviceConfigurationRepository.Add(new DeviceConfiguration
+            {
+                Description = "Speed",
+                Protocol = TransportProtocols.Unknown,
+                ConnectionTimeout = 2000,
+                Path = "Unkown",
+                OperationTimeout = 2000,
+                Port = 0,
+                UserName = "Unknown",
+                Password = "Unkown",
+                ProductId = _productRepository.GetList().First(p => p.Manufacturer == "Wavetronix").Id
+            });
+        }
+        _logger.LogInformation($"Importing Speed Devices");
+        var devices = ImportData<Device>(queries["SpeedDevices"], columnMappings["SpeedDevices"]);
+        //check if device cofiguration exists
+        var speedDeviceConfiguration = _deviceConfigurationRepository.GetList().First(dc => dc.Description == "Speed");
+        if (speedDeviceConfiguration == null)
+        {
+            _logger.LogInformation($"Speed Device Configuration not found for configuration.");
+            return;
+        }
+        foreach (var device in devices)
+        {
+            device.DeviceConfiguration = speedDeviceConfiguration;
+        }
+
+        _deviceRepository.AddRange(devices);
+        _logger.LogInformation($"Speed Devices Imported");
     }
 
     private void DeleteProducts()
@@ -166,7 +227,7 @@ public class TransferConfigCommandHostedService : IHostedService
 
     private void ImportRegions(Dictionary<string, string> queries, Dictionary<string, Dictionary<string, string>> columnMappings)
     {
-        if(_regionsRepository.GetList().Any())
+        if (_regionsRepository.GetList().Any())
         {
             _logger.LogInformation("Regions already exist");
             return;
@@ -349,7 +410,7 @@ public class TransferConfigCommandHostedService : IHostedService
 
         var locations = ImportData<Location>(queries["Locations"], columnMappings["Locations"]);
 
-        foreach(var area in areas)
+        foreach (var area in areas)
         {
             var locationIds = locationAreas.Where(l => l.AreasId == area.Id).Select(l => l.LocationsId).ToList();
             foreach (var location in locations.Where(l => locationIds.Contains(l.Id)))
@@ -364,7 +425,7 @@ public class TransferConfigCommandHostedService : IHostedService
 
     private void SetDetectionTypeMesureType()
     {
-        if(_detectionTypeRepository.GetList()
+        if (_detectionTypeRepository.GetList()
             .Include(d => d.MeasureTypes)
             .SelectMany(d => d.MeasureTypes)
             .Any())
@@ -375,11 +436,11 @@ public class TransferConfigCommandHostedService : IHostedService
         var detectionTypes = _detectionTypeRepository.GetList().ToList();
         var measureTypes = _measureTypeRepository.GetList().ToList();
         var measureTypesForBasic = measureTypes.Where(m => new List<int> { 1, 2, 3, 4, 14, 15, 17, 31 }.Contains(m.Id)).ToList();
-        var measureTypesForAdvanceCount = measureTypes.Where(m => new List<int> { 6,7,8,9,13,32 }.Contains(m.Id)).ToList();
+        var measureTypesForAdvanceCount = measureTypes.Where(m => new List<int> { 6, 7, 8, 9, 13, 32 }.Contains(m.Id)).ToList();
         var measureTypesForAdvanceSpeed = measureTypes.Where(m => new List<int> { 10 }.Contains(m.Id)).ToList();
-        var measureTypesForLlc = measureTypes.Where(m => new List<int> { 5,7,31,36 }.Contains(m.Id)).ToList();
+        var measureTypesForLlc = measureTypes.Where(m => new List<int> { 5, 7, 31, 36 }.Contains(m.Id)).ToList();
         var measureTypesForLls = measureTypes.Where(m => new List<int> { 11 }.Contains(m.Id)).ToList();
-        var measureTypesForStopBarPresence = measureTypes.Where(m => new List<int> { 12,31,32 }.Contains(m.Id)).ToList();
+        var measureTypesForStopBarPresence = measureTypes.Where(m => new List<int> { 12, 31, 32 }.Contains(m.Id)).ToList();
         foreach (var detectionType in detectionTypes)
         {
             switch (detectionType.Id)
@@ -388,7 +449,7 @@ public class TransferConfigCommandHostedService : IHostedService
                     foreach (var measureType in measureTypesForBasic)
                     {
                         detectionType.MeasureTypes.Add(measureType);
-                    }                    
+                    }
                     break;
                 case DetectionTypes.AC:
                     foreach (var measureType in measureTypesForAdvanceCount)
@@ -468,7 +529,7 @@ public class TransferConfigCommandHostedService : IHostedService
             _logger.LogError(ex.Message, "Error deleting regions");
             throw;
         }
-        
+
     }
 
 
@@ -488,10 +549,11 @@ public class TransferConfigCommandHostedService : IHostedService
                         var entity = new T(); // Create an instance of the generic type
 
                         // Iterate through column mappings
+
                         foreach (var mapping in columnMappings)
                         {
                             var propertyName = mapping.Value; // Name of the property in the class
-                            var columnName = mapping.Key;    // Name of the column in the data reader
+                            var columnName = mapping.Key;       // Name of the column in the data reader
 
                             // Get the value from the reader
                             var value = reader[columnName];
@@ -501,7 +563,6 @@ public class TransferConfigCommandHostedService : IHostedService
                             if (propertyInfo != null && value != DBNull.Value)
                             {
                                 var propertyType = propertyInfo.PropertyType;
-
                                 // Handle nullable types
                                 var targetType = Nullable.GetUnderlyingType(propertyType) ?? propertyType;
 
@@ -511,6 +572,48 @@ public class TransferConfigCommandHostedService : IHostedService
                                     var enumValue = Enum.ToObject(targetType, value);
                                     propertyInfo.SetValue(entity, enumValue);
                                 }
+                                else if (targetType == typeof(Dictionary<string, object>))
+                                {
+                                    // Convert the value to string (which should be valid JSON) and deserialize it
+                                    string jsonString = Convert.ChangeType(value, typeof(string)) as string;
+                                    if (!string.IsNullOrWhiteSpace(jsonString))
+                                    {
+                                        try
+                                        {
+                                            var dictionary = JsonSerializer.Deserialize<Dictionary<string, object>>(jsonString);
+                                            propertyInfo.SetValue(entity, dictionary);
+                                        }
+                                        catch (JsonException ex)
+                                        {
+                                            throw new InvalidOperationException(
+                                                $"Failed to deserialize JSON for property '{propertyName}'.", ex);
+                                        }
+                                    }
+                                }
+                                else if (targetType == typeof(string[]))
+                                {
+                                    // Convert the value to string and then deserialize the JSON array
+                                    string jsonString = Convert.ChangeType(value, typeof(string)) as string;
+                                    if (!string.IsNullOrWhiteSpace(jsonString))
+                                    {
+                                        try
+                                        {
+                                            string[] arrayValue = JsonSerializer.Deserialize<string[]>(jsonString);
+                                            propertyInfo.SetValue(entity, arrayValue);
+                                        }
+                                        catch (JsonException ex)
+                                        {
+                                            throw new InvalidOperationException(
+                                                $"Failed to deserialize JSON array for property '{propertyName}'.", ex);
+                                        }
+                                    }
+                                }
+                                else if (targetType == typeof(string))
+                                {
+                                    // For string, simply convert it (optionally, unescape if needed)
+                                    string stringValue = Convert.ChangeType(value, typeof(string)) as string;
+                                    propertyInfo.SetValue(entity, stringValue);
+                                }
                                 else
                                 {
                                     // Convert and assign other types
@@ -518,6 +621,7 @@ public class TransferConfigCommandHostedService : IHostedService
                                 }
                             }
                         }
+
 
                         entities.Add(entity);
                     }
@@ -582,7 +686,7 @@ public class TransferConfigCommandHostedService : IHostedService
     //    deviceConfigurationRepository.Add(new DeviceConfiguration
     //    {
     //        Id = 11,
-    //        Firmware = "None",
+    //        Description = "None",
     //        Protocol = ATSPM.Table.Enums.TransportProtocols.Unknown,
     //        ConnectionTimeout = 2000,
     //        Directory = "Unkown",
@@ -598,7 +702,7 @@ public class TransferConfigCommandHostedService : IHostedService
     //    });
     //}
 
-    
+
 
     private void DeleteLocations()
     {
@@ -627,12 +731,13 @@ public class TransferConfigCommandHostedService : IHostedService
             _logger.LogError(ex.Message, "Error deleting devices");
             throw;
         }
-    }   
+    }
 
 
     public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 
 }
+
 
 public class AreaLocation
 {
@@ -645,4 +750,5 @@ public class DetectionTypeDetector
     public int DetectionTypesId { get; set; }
     public int DetectorsId { get; set; }
 }
+
 

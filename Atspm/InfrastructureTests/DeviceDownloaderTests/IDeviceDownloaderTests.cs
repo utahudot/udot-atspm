@@ -1,5 +1,5 @@
 #region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for InfrastructureTests - Utah.Udot.Atspm.InfrastructureTests.DeviceDownloaderTests/IDeviceDownloaderTests.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,12 +20,13 @@ using Microsoft.Extensions.Options;
 using Moq;
 using System;
 using System.Collections.Generic;
-using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Exceptions;
 using Utah.Udot.Atspm.Infrastructure.Configuration;
+using Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders;
 using Utah.Udot.Atspm.InfrastructureTests.Attributes;
 using Utah.Udot.Atspm.Services;
 using Utah.Udot.NetStandardToolkit.Exceptions;
@@ -61,8 +62,8 @@ namespace Utah.Udot.Atspm.InfrastructureTests.DeviceDownloaderTests
         #region IDeviceDownloader
 
         [Theory]
-        [Trait(nameof(IDeviceDownloader), "CanExecute")]
         [DeviceDownloader]
+        [Trait(nameof(IDeviceDownloader), nameof(IDeviceDownloader.CanExecute))]
         public void CanExecuteValid(Type downloader, IEnumerable<IDownloaderClient> mockClients, ILogger log, IOptionsSnapshot<DeviceDownloaderConfiguration> mockConfig)
         {
             var sut = (IDeviceDownloader)Activator.CreateInstance(downloader, new object[] { mockClients, log, mockConfig });
@@ -79,6 +80,7 @@ namespace Utah.Udot.Atspm.InfrastructureTests.DeviceDownloaderTests
 
         [Theory]
         [DeviceDownloader]
+        [Trait(nameof(IDeviceDownloader), nameof(IDeviceDownloader.CanExecute))]
         public void CanExecuteLoggingEnabledNotValid(Type downloader, IEnumerable<IDownloaderClient> mockClients, ILogger log, IOptionsSnapshot<DeviceDownloaderConfiguration> mockConfig)
         {
             var sut = (IDeviceDownloader)Activator.CreateInstance(downloader, new object[] { mockClients, log, mockConfig });
@@ -96,6 +98,7 @@ namespace Utah.Udot.Atspm.InfrastructureTests.DeviceDownloaderTests
 
         [Theory]
         [DeviceDownloader]
+        [Trait(nameof(IDeviceDownloader), nameof(IDeviceDownloader.CanExecute))]
         public void CanExecuteProtocolNotValid(Type downloader, IEnumerable<IDownloaderClient> mockClients, ILogger log, IOptionsSnapshot<DeviceDownloaderConfiguration> mockConfig)
         {
             var sut = (IDeviceDownloader)Activator.CreateInstance(downloader, new object[] { mockClients, log, mockConfig });
@@ -106,11 +109,6 @@ namespace Utah.Udot.Atspm.InfrastructureTests.DeviceDownloaderTests
                 DeviceConfiguration = new DeviceConfiguration() { Protocol = TransportProtocols.Unknown }
             };
 
-            foreach (var c in mockClients)
-            {
-                Mock.Get(c).Setup(s => s.Dispose());
-            }
-
             var condition = sut.CanExecute(device);
 
             Assert.False(condition);
@@ -118,7 +116,8 @@ namespace Utah.Udot.Atspm.InfrastructureTests.DeviceDownloaderTests
 
         [Theory]
         [DeviceDownloader]
-        public async void ExecuteWithNullParameter(Type downloader, IEnumerable<IDownloaderClient> mockClients, ILogger log, IOptionsSnapshot<DeviceDownloaderConfiguration> mockConfig)
+        [Trait(nameof(IDeviceDownloader), nameof(IDeviceDownloader.Execute))]
+        public async Task ExecuteWithNullParameter(Type downloader, IEnumerable<IDownloaderClient> mockClients, ILogger log, IOptionsSnapshot<DeviceDownloaderConfiguration> mockConfig)
         {
             var sut = (IDeviceDownloader)Activator.CreateInstance(downloader, new object[] { mockClients, log, mockConfig });
 
@@ -130,7 +129,8 @@ namespace Utah.Udot.Atspm.InfrastructureTests.DeviceDownloaderTests
 
         [Theory]
         [DeviceDownloader]
-        public async void ExecuteWithInvalidIPAddress(Type downloader, IEnumerable<IDownloaderClient> mockClients, ILogger log, IOptionsSnapshot<DeviceDownloaderConfiguration> mockConfig)
+        [Trait(nameof(IDeviceDownloader), nameof(IDeviceDownloader.Execute))]
+        public async Task ExecuteWithNullIPAddress(Type downloader, IEnumerable<IDownloaderClient> mockClients, ILogger log, IOptionsSnapshot<DeviceDownloaderConfiguration> mockConfig)
         {
             Mock.Get(mockConfig).Setup(s => s.Value).Returns(new DeviceDownloaderConfiguration() { Ping = false });
 
@@ -150,7 +150,30 @@ namespace Utah.Udot.Atspm.InfrastructureTests.DeviceDownloaderTests
 
         [Theory]
         [DeviceDownloader]
-        public async void ExecuteWithFailedCanExecute(Type downloader, IEnumerable<IDownloaderClient> mockClients, ILogger log, IOptionsSnapshot<DeviceDownloaderConfiguration> mockConfig)
+        [Trait(nameof(IDeviceDownloader), nameof(IDeviceDownloader.Execute))]
+        public async Task ExecuteWithInvalidIPAddress(Type downloader, IEnumerable<IDownloaderClient> mockClients, ILogger log, IOptionsSnapshot<DeviceDownloaderConfiguration> mockConfig)
+        {
+            Mock.Get(mockConfig).Setup(s => s.Value).Returns(new DeviceDownloaderConfiguration() { Ping = false });
+
+            var sut = (IDeviceDownloader)Activator.CreateInstance(downloader, new object[] { mockClients, log, mockConfig });
+
+            var device = new Device()
+            {
+                Ipaddress = "256.256.256.256",
+                LoggingEnabled = true,
+                DeviceConfiguration = new DeviceConfiguration() { Protocol = TransportProtocols.Ftp }
+            };
+
+            await Assert.ThrowsAsync<InvalidDeviceIpAddressException>(async () =>
+            {
+                await foreach (var file in sut.Execute(device)) { }
+            });
+        }
+
+        [Theory]
+        [DeviceDownloader]
+        [Trait(nameof(IDeviceDownloader), nameof(IDeviceDownloader.Execute))]
+        public async Task ExecuteWithFailedCanExecute(Type downloader, IEnumerable<IDownloaderClient> mockClients, ILogger log, IOptionsSnapshot<DeviceDownloaderConfiguration> mockConfig)
         {
             var sut = (IDeviceDownloader)Activator.CreateInstance(downloader, new object[] { mockClients, log, mockConfig });
 
@@ -168,47 +191,86 @@ namespace Utah.Udot.Atspm.InfrastructureTests.DeviceDownloaderTests
 
         [Theory]
         [DeviceDownloader]
-        public async void ExecuteWithDownloaderClientConnectionException(Type downloader, IEnumerable<IDownloaderClient> mockClients, ILogger log, IOptionsSnapshot<DeviceDownloaderConfiguration> mockConfig)
+        [Trait(nameof(IDeviceDownloader), nameof(IDeviceDownloader.Execute))]
+        public async Task ExecuteWithTokenCancelled(Type downloader, IEnumerable<IDownloaderClient> mockClients, ILogger log, IOptionsSnapshot<DeviceDownloaderConfiguration> mockConfig)
         {
-            Mock.Get(mockConfig).Setup(s => s.Value).Returns(new DeviceDownloaderConfiguration() { Ping = false });
-
-            foreach (var client in mockClients)
-            {
-                Mock.Get(client).Setup(s => s.ConnectAsync(It.IsAny<IPEndPoint>(), It.IsAny<NetworkCredential>(), 0, 0, default))
-                .ThrowsAsync(new DownloaderClientConnectionException(It.IsAny<string>(), client, null))
-                .Verifiable();
-
-                Mock.Get(client).SetupGet(s => s.IsConnected).Returns(false).Verifiable();
-
-                Mock.Get(client).Setup(s => s.DisconnectAsync(default)).Returns(Task.CompletedTask).Verifiable();
-
-                Mock.Get(client).Setup(s => s.Dispose()).Verifiable();
-            }
+            var ts = new CancellationTokenSource();
+            ts.Cancel();
 
             var sut = (IDeviceDownloader)Activator.CreateInstance(downloader, new object[] { mockClients, log, mockConfig });
 
-            var device = new Device()
+            await Assert.ThrowsAsync<OperationCanceledException>(async () =>
             {
-                Ipaddress = "192.168.1.1",
-                LoggingEnabled = true,
-                DeviceConfiguration = new DeviceConfiguration() { Protocol = TransportProtocols.Ftp },
-            };
-
-            await foreach (var file in sut.Execute(device)) { }
-
-            Mock.Verify();
+                await foreach (var file in sut.Execute(null, ts.Token)) { }
+            });
         }
 
         //[Theory]
         //[DeviceDownloader]
-        //public async void ExecuteWithControllerConnectionTokenCancelled(Type downloader, IDownloaderClient mockClient, ILogger log, IOptionsSnapshot<DeviceDownloaderConfiguration> mockConfig)
+        //[Trait(nameof(IDeviceDownloader), nameof(IDeviceDownloader.Execute))]
+        //public async Task TestParser(Type downloader, IEnumerable<IDownloaderClient> mockClients, ILogger log, IOptionsSnapshot<DeviceDownloaderConfiguration> mockConfig)
         //{
+        //    Mock.Get(mockConfig).Setup(s => s.Value).Returns(new DeviceDownloaderConfiguration() { Ping = false });
 
+        //    var sut = (IDeviceDownloader)Activator.CreateInstance(downloader, new object[] { mockClients, log, mockConfig });
+
+        //    var device = new Device()
+        //    {
+        //        DeviceIdentifier = "hello",
+        //        Ipaddress = "192.168.1.1",
+        //        LoggingEnabled = true,
+        //        DeviceConfiguration = new DeviceConfiguration()
+        //        {
+        //            Protocol = TransportProtocols.Ftp,
+        //            Path = "path1 [Device:Ipaddress] path 2 [DateTime:HH:mm:ss.f] - [LogStartTime:MM-dd-yyyy HH:mm:ss.f]",
+        //            Query = ["this is another test [Device:DeviceIdentifier] and another [DateTime:MM-dd-yyyy]"]
+        //        }
+        //    };
+
+        //    //_output.WriteLine($"path: {new ObjectPropertyParser(device, device.DeviceConfiguration.Path)}");
+
+        //    await foreach (var file in sut.Execute(device))
+        //    {
+        //        _output.WriteLine($"{file.Item1} - {file.Item2}");
+        //    }
         //}
 
         //[Theory]
         //[DeviceDownloader]
-        //public async void ExecuteWithControllerDownloadFileException(Type downloader, IEnumerable<IDownloaderClient> mockClients, ILogger log, IOptionsSnapshot<DeviceDownloaderConfiguration> mockConfig)
+        //public async Task ExecuteWithDownloaderClientConnectionException(Type downloader, IEnumerable<IDownloaderClient> mockClients, ILogger log, IOptionsSnapshot<DeviceDownloaderConfiguration> mockConfig)
+        //{
+        //    Mock.Get(mockConfig).Setup(s => s.Value).Returns(new DeviceDownloaderConfiguration() { Ping = false });
+
+        //    foreach (var client in mockClients)
+        //    {
+        //        Mock.Get(client).Setup(s => s.ConnectAsync(It.IsAny<IPEndPoint>(), It.IsAny<NetworkCredential>(), 0, 0, null, default))
+        //        .ThrowsAsync(new DownloaderClientConnectionException(It.IsAny<string>(), client, null))
+        //        .Verifiable();
+
+        //        Mock.Get(client).SetupGet(s => s.IsConnected).Returns(false).Verifiable();
+
+        //        Mock.Get(client).Setup(s => s.DisconnectAsync(default)).Returns(Task.CompletedTask).Verifiable();
+
+        //        Mock.Get(client).Setup(s => s.Dispose()).Verifiable();
+        //    }
+
+        //    var sut = (IDeviceDownloader)Activator.CreateInstance(downloader, new object[] { mockClients, log, mockConfig });
+
+        //    var device = new Device()
+        //    {
+        //        Ipaddress = "192.168.1.1",
+        //        LoggingEnabled = true,
+        //        DeviceConfiguration = new DeviceConfiguration() { Protocol = TransportProtocols.Ftp },
+        //    };
+
+        //    await foreach (var file in sut.Execute(device)) { }
+
+        //    Mock.Verify();
+        //}
+
+        //[Theory]
+        //[DeviceDownloader]
+        //public async Task ExecuteWithControllerDownloadFileException(Type downloader, IEnumerable<IDownloaderClient> mockClients, ILogger log, IOptionsSnapshot<DeviceDownloaderConfiguration> mockConfig)
         //{
         //    Mock.Get(mockConfig).Setup(s => s.Value).Returns(new DeviceDownloaderConfiguration() { Ping = false });
 
@@ -240,7 +302,7 @@ namespace Utah.Udot.Atspm.InfrastructureTests.DeviceDownloaderTests
 
         //[Theory]
         //[DeviceDownloader]
-        //public async void ExecuteWithControllerDownloadFileTokenCancelled(Type downloader, IDownloaderClient mockClient, ILogger log, IOptionsSnapshot<DeviceDownloaderConfiguration> mockConfig)
+        //public async Task ExecuteWithControllerDownloadFileTokenCancelled(Type downloader, IDownloaderClient mockClient, ILogger log, IOptionsSnapshot<DeviceDownloaderConfiguration> mockConfig)
         //{
 
         //}
@@ -272,12 +334,12 @@ namespace Utah.Udot.Atspm.InfrastructureTests.DeviceDownloaderTests
         //    //{
         //    //    Ipaddress = "192.168.1.1",
         //    //    LoggingEnabled = true,
-        //    //    DeviceConfiguration = new DeviceConfiguration() { Protocol = sut.Protocol, Directory = directory }
+        //    //    DeviceConfiguration = new DeviceConfiguration() { Protocol = sut.Protocol, Path = directory }
         //    //};
 
-        //    //Mock.Get(mockClient).Setup(s => s.ListDirectoryAsync(It.Is<string>(i => i == directory), default, It.IsAny<string[]>())).ReturnsAsync(returnValue).Verifiable();
+        //    //Mock.Get(mockClient).Setup(s => s.ListResourcesAsync(It.Is<string>(i => i == directory), default, It.IsAny<string[]>())).ReturnsAsync(returnValue).Verifiable();
 
-        //    //Mock.Get(mockClient).Setup(v => v.DownloadFileAsync(It.Is<string>(i => i.StartsWith(verifyPath)), It.IsIn(returnValue), default))
+        //    //Mock.Get(mockClient).Setup(v => v.DownloadResourceAsync(It.Is<string>(i => i.StartsWith(verifyPath)), It.IsIn(returnValue), default))
         //    //    .ReturnsAsync((string localPath, string remotePath, CancellationToken token) => new FileInfo(localPath)).Verifiable();
 
         //    //Mock.Get(mockClient).Setup(s => s.DisconnectAsync(default)).Returns(Task.CompletedTask).Verifiable();
@@ -329,15 +391,15 @@ namespace Utah.Udot.Atspm.InfrastructureTests.DeviceDownloaderTests
 
         //    //var d = (IDeviceDownloader)Activator.CreateInstance(downloader, new object[] { mockClient, log, mockConfig });
 
-        //    //Mock.Get(mockClient).Setup(s => s.ListDirectoryAsync(It.Is<string>(i => i == ftpDirectory), default, It.Is<string[]>(i => i == d.FileFilters))).ReturnsAsync(returnValue).Verifiable();
+        //    //Mock.Get(mockClient).Setup(s => s.ListResourcesAsync(It.Is<string>(i => i == ftpDirectory), default, It.Is<string[]>(i => i == d.FileFilters))).ReturnsAsync(returnValue).Verifiable();
 
-        //    //Mock.Get(mockClient).Setup(v => v.DownloadFileAsync(It.Is<string>(i => i.StartsWith(verifyPath)), It.IsIn(returnValue), default))
+        //    //Mock.Get(mockClient).Setup(v => v.DownloadResourceAsync(It.Is<string>(i => i.StartsWith(verifyPath)), It.IsIn(returnValue), default))
         //    //    .ReturnsAsync((string localPath, string remotePath, CancellationToken token) => new FileInfo(localPath)).Verifiable();
 
         //    //Mock.Get(mockClient).Setup(s => s.DisconnectAsync(default)).Returns(Task.CompletedTask).Verifiable();
         //    //Mock.Get(mockClient).Setup(s => s.Dispose()).Verifiable();
 
-        //    //Location.ControllerType = new ControllerType() { Id = d.ControllerType, Directory = ftpDirectory };
+        //    //Location.ControllerType = new ControllerType() { Id = d.ControllerType, Path = ftpDirectory };
 
         //    //var progressList = new List<ControllerDownloadProgress>();
 
@@ -380,6 +442,8 @@ namespace Utah.Udot.Atspm.InfrastructureTests.DeviceDownloaderTests
 
         //    Mock.Verify();
         //}
+
+
 
         #endregion
 

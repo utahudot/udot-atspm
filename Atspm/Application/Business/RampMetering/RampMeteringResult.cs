@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for Application - Utah.Udot.Atspm.Business.RampMetering/RampMeteringResult.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,7 +23,7 @@ namespace Utah.Udot.Atspm.Business.RampMetering
 {
     public class RampMeteringResult : LocationResult
     {
-        public RampMeteringResult(string locationId, DateTime start, DateTime end): base(locationId, start, end)
+        public RampMeteringResult(string locationId, DateTime start, DateTime end) : base(locationId, start, end)
         { }
 
         public List<DataPointForDouble> MainlineAvgFlow { get; set; }

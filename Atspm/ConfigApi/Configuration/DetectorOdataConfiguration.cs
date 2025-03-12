@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for ConfigApi - Utah.Udot.Atspm.ConfigApi.Configuration/DetectorOdataConfiguration.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -39,6 +39,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Configuration
             {
                 case 1:
                     {
+                        model.Property(p => p.DectectorIdentifier).IsRequired();
                         model.Property(p => p.DectectorIdentifier).MaxLength = 50;
 
                         break;

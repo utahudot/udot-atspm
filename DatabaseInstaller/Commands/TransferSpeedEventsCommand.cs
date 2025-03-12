@@ -1,6 +1,6 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
-// for DatabaseInstaller - DatabaseInstaller.Commands/MoveEventLogsSqlServerToPostgresCommand.cs
+// Copyright 2025 Utah Departement of Transportation
+// for DatabaseInstaller - DatabaseInstaller.Commands/TransferSpeedEventsCommand.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -43,7 +43,7 @@ namespace DatabaseInstaller.Commands
 
             binder.BindMemberFromValue(b => b.Source, SourceOption);
             binder.BindMemberFromValue(b => b.Start, StartOption);
-            binder.BindMemberFromValue(b => b .End, EndOption);
+            binder.BindMemberFromValue(b => b.End, EndOption);
 
             return binder;
         }
@@ -52,7 +52,7 @@ namespace DatabaseInstaller.Commands
         {
             services.AddSingleton(GetOptionsBinder());
             services.AddOptions<TransferCommandConfiguration>().BindCommandLine();
-            services.AddHostedService<TransferEventLogsHostedService>();
+            services.AddHostedService<TransferSpeedEventsHostedService>();
         }
     }
 }

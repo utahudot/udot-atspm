@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for Data - Utah.Udot.Atspm.Data/EventLogContext.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -100,7 +100,7 @@ namespace Utah.Udot.Atspm.Data
                 .AddCompressedTableDiscriminators(typeof(EventLogModelBase), typeof(CompressedEventLogs<>));
 
                 builder.Property(e => e.Data)
-                .HasConversion<CompressedListConverter<EventLogModelBase>, Utility.ListComparer<EventLogModelBase>>();
+                .HasConversion<CompressedListConverter<EventLogModelBase>, AbstractListComparer<EventLogModelBase>>();
             });
 
             OnModelCreatingPartial(modelBuilder);

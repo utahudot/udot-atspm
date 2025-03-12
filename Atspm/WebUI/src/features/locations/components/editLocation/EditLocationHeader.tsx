@@ -73,6 +73,8 @@ const EditLocationHeader = ({
     (type) => type.id === location?.locationTypeId
   )
 
+  
+
   const locationsVersions = versionData?.value.map((version: Location) => ({
     id: version.id,
     note: version.note,
@@ -80,9 +82,8 @@ const EditLocationHeader = ({
   }))
 
   locationsVersions?.map((obj) => {
-    obj.note = ` ${new Date(obj.startDate).toLocaleDateString('en-US')} - ${
-      obj.note
-    }`
+    const [year, month, day] = obj.startDate.split('T')[0].split('-');
+    obj.note = `${parseInt(month)}/${parseInt(day)}/${year} - ${obj.note}`
     return obj
   })
   useEffect(() => {

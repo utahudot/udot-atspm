@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for ConfigApi - Utah.Udot.Atspm.ConfigApi.Controllers/DeviceConfigurationController.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,7 +19,9 @@ using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using Utah.Udot.Atspm.Data.Models;
+using Utah.Udot.Atspm.Data.Models.EventLogModels;
 using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
+using Utah.Udot.Atspm.Services;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 using static Microsoft.AspNetCore.OData.Query.AllowedQueryOptions;
 
@@ -62,6 +64,30 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
         #endregion
 
         #region Functions
+
+        /// <summary>
+        /// Gets all implementations of <see cref="IEventLogDecoder"/>
+        /// that can be assigned to <see cref="DeviceConfiguration"/> for decoding <see cref="EventLogModelBase"/> derived types.
+        /// </summary>
+        /// <returns>List of <see cref="IEventLogDecoder"/> implementations</returns>
+        [HttpGet]
+        [EnableQuery(AllowedQueryOptions = Count | Filter | Select | OrderBy | Top | Skip)]
+        [ProducesResponseType(typeof(IEnumerable<string>), Status200OK)]
+        public IActionResult GetEventLogDecoders()
+        {
+            var result = AppDomain
+                .CurrentDomain
+                .GetAssemblies()
+                .SelectMany(m => m.GetTypes()
+                .Where(w => w.GetInterfaces()
+                .Contains(typeof(IEventLogDecoder))))
+                .Where(w => !w.IsAbstract)
+                .Where(w => !w.IsInterface)
+                .Select(s => s.Name)
+                .ToList();
+
+            return Ok(result);
+        }
 
         #endregion
     }

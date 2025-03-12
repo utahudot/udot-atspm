@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for Application - Utah.Udot.Atspm.Business.LeftTurnGapReport/GapDurationOptions.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,7 +19,7 @@ using Utah.Udot.Atspm.Business.Common;
 
 namespace Utah.Udot.Atspm.Business.LeftTurnGapReport
 {
-    public class GapDurationOptions : OptionsBase
+    public class GapDurationOptions : DateTimeOptionsBase, ILocationOptionsBase
     {
         public int ApproachId { get; set; }
         public int StartHour { get; set; }
@@ -27,5 +27,6 @@ namespace Utah.Udot.Atspm.Business.LeftTurnGapReport
         public int EndHour { get; set; }
         public int EndMinute { get; set; }
         public int[] DaysOfWeek { get; set; }
+        public string LocationIdentifier { get; set; }
     }
 }

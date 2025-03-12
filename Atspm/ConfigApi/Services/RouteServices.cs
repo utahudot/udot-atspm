@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for ConfigApi - Utah.Udot.Atspm.ConfigApi.Services/RouteServices.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,7 +20,6 @@ using System.ComponentModel.DataAnnotations;
 using Utah.Udot.Atspm.ConfigApi.Models;
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models;
-using Utah.Udot.Atspm.Extensions;
 using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
 using Utah.Udot.NetStandardToolkit.Extensions;
 
@@ -49,7 +48,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Services
 
         public RouteDto UpsertRoute(RouteDto routeDto)
         {
-            // Find existing route or create a new one
+            // Find existing route or create a new one.
             var route = _routeRepository.GetList()
                 .Where(r => r.Id == routeDto.Id)
                 .Include(r => r.RouteLocations)
@@ -108,7 +107,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Services
                         RouteId = routeLocationDto.RouteId
                     };
 
-                    HandleDistances(routeLocationDto, newLocation);
+                    //HandleDistances(routeLocationDto, newLocation);
 
                     route.RouteLocations.Add(newLocation);
                 }
@@ -126,9 +125,12 @@ namespace Utah.Udot.Atspm.ConfigApi.Services
                     existingLocation.NextLocationDistanceId = routeLocationDto.NextLocationDistanceId;
                     existingLocation.LocationIdentifier = routeLocationDto.LocationIdentifier;
 
-                    HandleDistances(routeLocationDto, existingLocation);
+                    //HandleDistances(routeLocationDto, existingLocation);
                 }
             }
+
+            HandleDistances(orderedRouteLocations, route.RouteLocations.ToList());
+
 
             // Save changes
             if (route.Id == 0)
@@ -198,27 +200,41 @@ namespace Utah.Udot.Atspm.ConfigApi.Services
             }
         }
 
-        private void HandleDistances(RouteLocationDto routeLocationDto, RouteLocation location)
+        private void HandleDistances(List<RouteLocationDto> routeLocationDtos, List<RouteLocation> locations)
         {
             var distancesToUpsert = new Dictionary<(string LocationIdentifierA, string LocationIdentifierB), (RouteDistanceDto DistanceDto, Action<RouteDistance> AssignId)>();
 
-            if (routeLocationDto.NextLocationDistance != null)
+            for (int i = 0; i < routeLocationDtos.Count; i++)
             {
-                var key = (routeLocationDto.NextLocationDistance.LocationIdentifierA, routeLocationDto.NextLocationDistance.LocationIdentifierB);
-                if (!distancesToUpsert.ContainsKey(key))
+                var routeLocationDto = routeLocationDtos[i];
+                var location = locations[i];
+
+                if (routeLocationDto.NextLocationDistance != null)
                 {
-                    distancesToUpsert[key] = (routeLocationDto.NextLocationDistance, rd =>
+                    var key = (routeLocationDto.NextLocationDistance.LocationIdentifierA, routeLocationDto.NextLocationDistance.LocationIdentifierB);
+                    if (!distancesToUpsert.ContainsKey(key))
                     {
-                        location.NextLocationDistanceId = rd.Id;
-                        location.NextLocationDistance = rd;
+                        distancesToUpsert[key] = (routeLocationDto.NextLocationDistance, rd =>
+                        {
+                            location.NextLocationDistanceId = rd.Id;
+                            location.NextLocationDistance = rd;
+                        }
+                        );
                     }
-                    );
+
+                    // Set the PreviousLocationDistance for the next location
+                    if (i + 1 < routeLocationDtos.Count)
+                    {
+                        var nextLocation = locations[i + 1];
+                        nextLocation.PreviousLocationDistanceId = location.NextLocationDistanceId;
+                        nextLocation.PreviousLocationDistance = location.NextLocationDistance;
+                    }
                 }
-            }
-            else
-            {
-                location.NextLocationDistanceId = null;
-                location.NextLocationDistance = null;
+                else
+                {
+                    location.NextLocationDistanceId = null;
+                    location.NextLocationDistance = null;
+                }
             }
 
             foreach (var (key, value) in distancesToUpsert)
@@ -238,14 +254,75 @@ namespace Utah.Udot.Atspm.ConfigApi.Services
                     };
                     _routeDistanceRepository.Add(distance);
                 }
-                else if (distance.Distance.AreNotEqual(distanceDto.Distance))
+                else if (distance.Distance != distanceDto.Distance)
                 {
                     distance.Distance = distanceDto.Distance;
                     _routeDistanceRepository.Update(distance);
                 }
                 assignId(distance);
+
+                // Update the PreviousLocationDistance for the next location if a new distance was created
+                if (distanceDto == routeLocationDtos.FirstOrDefault(rl => rl.NextLocationDistance == distanceDto)?.NextLocationDistance)
+                {
+                    var currentIndex = routeLocationDtos.FindIndex(rl => rl.NextLocationDistance == distanceDto);
+                    if (currentIndex + 1 < routeLocationDtos.Count)
+                    {
+                        var nextLocation = locations[currentIndex + 1];
+                        nextLocation.PreviousLocationDistanceId = distance.Id;
+                        nextLocation.PreviousLocationDistance = distance;
+                    }
+                }
             }
         }
+
+        //private void HandleDistances(RouteLocationDto routeLocationDto, RouteLocation location)
+        //{
+        //    var distancesToUpsert = new Dictionary<(string LocationIdentifierA, string LocationIdentifierB), (RouteDistanceDto DistanceDto, Action<RouteDistance> AssignId)>();
+
+        //    if (routeLocationDto.NextLocationDistance != null)
+        //    {
+        //        var key = (routeLocationDto.NextLocationDistance.LocationIdentifierA, routeLocationDto.NextLocationDistance.LocationIdentifierB);
+        //        if (!distancesToUpsert.ContainsKey(key))
+        //        {
+        //            distancesToUpsert[key] = (routeLocationDto.NextLocationDistance, rd =>
+        //            {
+        //                location.NextLocationDistanceId = rd.Id;
+        //                location.NextLocationDistance = rd;
+        //            }
+        //            );
+        //        }
+        //    }
+        //    else
+        //    {
+        //        location.NextLocationDistanceId = null;
+        //        location.NextLocationDistance = null;
+        //    }
+
+        //    foreach (var (key, value) in distancesToUpsert)
+        //    {
+        //        var (distanceDto, assignId) = value;
+        //        var distance = _routeDistanceRepository.GetList()
+        //            .FirstOrDefault(rd => rd.LocationIdentifierA == key.LocationIdentifierA &&
+        //                                  rd.LocationIdentifierB == key.LocationIdentifierB);
+
+        //        if (distance == null)
+        //        {
+        //            distance = new RouteDistance
+        //            {
+        //                Distance = distanceDto.Distance,
+        //                LocationIdentifierA = distanceDto.LocationIdentifierA,
+        //                LocationIdentifierB = distanceDto.LocationIdentifierB
+        //            };
+        //            _routeDistanceRepository.Add(distance);
+        //        }
+        //        else if (distance.Distance.AreNotEqual(distanceDto.Distance))
+        //        {
+        //            distance.Distance = distanceDto.Distance;
+        //            _routeDistanceRepository.Update(distance);
+        //        }
+        //        assignId(distance);
+        //    }
+        //}
 
 
         public RouteDto CreateRouteDto(Data.Models.Route route)

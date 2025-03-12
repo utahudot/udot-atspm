@@ -68,7 +68,15 @@ function EditApproach({ approach, handler }: ApproachAdminProps) {
       setWarnings(null)
       setErrors(null)
     } else {
-      setWarnings(errors)
+      setWarnings(
+        Object.keys(errors).reduce(
+          (acc, key) => {
+            acc[key] = { warning: errors[key].error, id: errors[key].id }
+            return acc
+          },
+          {} as Record<string, { warning: string; id: string }>
+        )
+      )
     }
   }, [handler.approaches])
 
@@ -237,9 +245,6 @@ function EditApproach({ approach, handler }: ApproachAdminProps) {
       laneNumber: null,
       latencyCorrection: 0,
       movementDelay: null,
-      movementType: 'NA',
-      laneType: 'NA',
-      detectionHardware: 'NA',
       detectionTypes: [],
       dateAdded: new Date().toISOString(),
       detectorComments: [],
