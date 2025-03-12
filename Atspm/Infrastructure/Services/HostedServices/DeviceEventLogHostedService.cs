@@ -35,7 +35,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
     public abstract class HostedServiceBase : IHostedService
     {
         protected readonly ILogger _log;
-        protected readonly IServiceScopeFactory _services;
+        private readonly IServiceScopeFactory _services;
 
         /// <summary>
         /// Base class for <see cref="IHostedService"/> with service scope, logging and exit codes
@@ -128,21 +128,23 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
 
                 var repo = scope.ServiceProvider.GetService<IDeviceRepository>();
 
-                var workflow = new DeviceEventLogWorkflow(_services, _options.Value.BatchSize, _options.Value.ParallelProcesses, cancellationToken);
+                //var workflow = new DeviceEventLogWorkflow(_services, _options.Value.BatchSize, _options.Value.ParallelProcesses, cancellationToken);
 
-                await foreach (var d in repo.GetDevicesForLogging(_options.Value.DeviceEventLoggingQueryOptions))
-                {
-                    //if (d.DeviceConfigurationId == 2)
-                        await workflow.Input.SendAsync(d);
-                }
+                //await foreach (var d in repo.GetDevicesForLogging(_options.Value.DeviceEventLoggingQueryOptions))
+                //{
+                //    await workflow.Input.SendAsync(d);
+                //}
 
-                workflow.Input.Complete();
+                //workflow.Input.Complete();
 
-                await Task.WhenAll(workflow.Steps.Select(s => s.Completion));
+                //await Task.WhenAll(workflow.Steps.Select(s => s.Completion));
 
+                Console.WriteLine($"{_options.Value.DeviceEventLoggingQueryOptions}");
 
-
-
+                //await foreach (var d in repo.GetDevicesForLogging(_options.Value.DeviceEventLoggingQueryOptions))
+                //{
+                //    Console.WriteLine(d);
+                //}
 
 
 
@@ -150,32 +152,32 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
 
                 //var devices = repo.GetList().Where(w => w.DeviceConfiguration.Protocol == Data.Enums.TransportProtocols.Ftp).ToList();
 
-                //Console.WriteLine($"devices: {devices.Count}");
+                    //Console.WriteLine($"devices: {devices.Count}");
 
-                //foreach (var d in devices.Where(w => w.DeviceConfigurationId == 2))
-                //{
-                //    if (d.Ipaddress.IsValidIpAddress())
-                //    {
-                //        var result = await SnmpGet(d.Ipaddress, "1.3.6.1.4.1.1206.3.5.2.9.17.1.0", "1", "i");
+                    //foreach (var d in devices.Where(w => w.DeviceConfigurationId == 2))
+                    //{
+                    //    if (d.Ipaddress.IsValidIpAddress())
+                    //    {
+                    //        var result = await SnmpGet(d.Ipaddress, "1.3.6.1.4.1.1206.3.5.2.9.17.1.0", "1", "i");
 
-                //        if (result != 1)
-                //        {
-                //            Console.WriteLine($"{d} --- first: {result}");
+                    //        if (result != 1)
+                    //        {
+                    //            Console.WriteLine($"{d} --- first: {result}");
 
-                //            await SmnpSet(d.Ipaddress, "1.3.6.1.4.1.1206.3.5.2.9.17.1.0", "0", "i", 161);
-                //            await Task.Delay(TimeSpan.FromMilliseconds(350));
-                //            await SmnpSet(d.Ipaddress, "1.3.6.1.4.1.1206.3.5.2.9.17.1.0", "1", "i", 161);
+                    //            await SmnpSet(d.Ipaddress, "1.3.6.1.4.1.1206.3.5.2.9.17.1.0", "0", "i", 161);
+                    //            await Task.Delay(TimeSpan.FromMilliseconds(350));
+                    //            await SmnpSet(d.Ipaddress, "1.3.6.1.4.1.1206.3.5.2.9.17.1.0", "1", "i", 161);
 
-                //            await Task.Delay(TimeSpan.FromMilliseconds(350));
+                    //            await Task.Delay(TimeSpan.FromMilliseconds(350));
 
-                //            result = await SnmpGet(d.Ipaddress, "1.3.6.1.4.1.1206.3.5.2.9.17.1.0", "1", "i");
+                    //            result = await SnmpGet(d.Ipaddress, "1.3.6.1.4.1.1206.3.5.2.9.17.1.0", "1", "i");
 
-                //            Console.WriteLine($"{d} --- second: {result}");
-                //        };
-                //    }
-                //}
+                    //            Console.WriteLine($"{d} --- second: {result}");
+                    //        };
+                    //    }
+                    //}
 
-                //Console.WriteLine($"--- complete");
+                    //Console.WriteLine($"--- complete");
 
             }
 

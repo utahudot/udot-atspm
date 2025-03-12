@@ -39,13 +39,13 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
     //{
     //    public LogCommandQueryBinder(LogConsoleCommand cmd)
     //    {
-    //        BindMemberFromValue(b => b.IncludedLocations, cmd.IncludeOption);
-    //        BindMemberFromValue(b => b.ExcludedLocations, cmd.ExcludeOption);
+    //        BindMemberFromValue(b => b.IncludedLocations, cmd.IncludeLocationOption);
+    //        BindMemberFromValue(b => b.ExcludedLocations, cmd.ExcludeLocationOption);
     //        BindMemberFromValue(b => b.IncludedAreas, cmd.AreaOption);
     //        BindMemberFromValue(b => b.IncludedJurisdictions, cmd.JurisdictionOption);
     //        BindMemberFromValue(b => b.IncludedRegions, cmd.RegionOption);
     //        BindMemberFromValue(b => b.IncludedLocationTypes, cmd.LocationTypeOption);
-    //        BindMemberFromValue(b => b.DeviceType, cmd.DeviceTypeOption);
+    //        BindMemberFromValue(b => b.DeviceType, cmd.DeviceConfigurationOption);
     //        BindMemberFromValue(b => b.TransportProtocol, cmd.TransportProtocolOption);
     //        BindMemberFromValue(b => b.TransportProtocol, cmd.TransportProtocolOption);
     //    }
@@ -66,14 +66,14 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
 
             DateOption.SetDefaultValue(DateTime.Now.Date.AddDays(-1));
 
-            //IncludeOption.AddValidator(r =>
+            //IncludeLocationOption.AddValidator(r =>
             //{
-            //    if (r.GetValueForOption(ExcludeOption)?.Count() > 0)
+            //    if (r.GetValueForOption(ExcludeLocationOption)?.Count() > 0)
             //        r.ErrorMessage = "Can't use include option when also using exclude option";
             //});
-            //ExcludeOption.AddValidator(r =>
+            //ExcludeLocationOption.AddValidator(r =>
             //{
-            //    if (r.GetValueForOption(IncludeOption)?.Count() > 0)
+            //    if (r.GetValueForOption(IncludeLocationOption)?.Count() > 0)
             //        r.ErrorMessage = "Can't use exclude option when also using include option";
             //});
 
