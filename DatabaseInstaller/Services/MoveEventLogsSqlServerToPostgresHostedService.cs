@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for DatabaseInstaller - DatabaseInstaller.Services/MoveEventLogsSqlServerToPostgresHostedService.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,20 +16,15 @@
 #endregion
 
 using global::DatabaseInstaller.Commands;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System;
 using Utah.Udot.Atspm.Data;
-using Utah.Udot.Atspm.Data.Configuration.Identity;
-using Utah.Udot.Atspm.Data.Models;
-using Utah.Udot.Atspm.Data.Models.EventLogModels;
 using Utah.Udot.Atspm.Infrastructure.Repositories.EventLogRepositories;
+using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
 using Utah.Udot.Atspm.Repositories.EventLogRepositories;
-using Utah.Udot.NetStandardToolkit.Extensions;
 
 
 namespace DatabaseInstaller.Services
@@ -41,6 +36,7 @@ namespace DatabaseInstaller.Services
         private readonly ILogger<UpdateCommandHostedService> _logger;
         private readonly IHostApplicationLifetime _hostApplicationLifetime;
         private readonly IEventLogRepository _eventLogRepository;
+        private readonly ILocationRepository _locationRepository;
         private readonly IndianaEventLogEFRepository _indianaEventLogEFRepository;
 
         public MoveEventLogsSqlServerToPostgresHostedService(
@@ -48,8 +44,9 @@ namespace DatabaseInstaller.Services
             IOptions<TransferCommandConfiguration> config,
             ILogger<UpdateCommandHostedService> logger,
             IHostApplicationLifetime hostApplicationLifetime,
-            IEventLogRepository eventLogRepository
-            //IndianaEventLogEFRepository indianaEventLogEFRepository
+            IEventLogRepository eventLogRepository,
+            ILocationRepository locationRepository
+            //IndianaEventLogEFRepository _indianaEventLogEFRepository
             )
         {
             _serviceProvider = serviceProvider;
@@ -57,24 +54,25 @@ namespace DatabaseInstaller.Services
             _logger = logger;
             _hostApplicationLifetime = hostApplicationLifetime;
             _eventLogRepository = eventLogRepository;
-            //_indianaEventLogEFRepository = indianaEventLogEFRepository;
+            _locationRepository = locationRepository;
+            //_indianaEventLogEFRepository = _indianaEventLogEFRepository;
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
             try
             {
-            //    using var scope = _serviceProvider.CreateScope();
-            //    var _serviceProvider = scope.ServiceProvider;
+                //    using var scope = _serviceProvider.CreateScope();
+                //    var _serviceProvider = scope.ServiceProvider;
 
-            //    // SQL Server DbContext to read logs
-            //    var sqlOptions = new DbContextOptionsBuilder<EventLogContext>()
-            //        .UseSqlServer(_config.Value.Source)
-            //        .Options;
+                //    // SQL Server DbContext to read logs
+                //    var sqlOptions = new DbContextOptionsBuilder<EventLogContext>()
+                //        .UseSqlServer(_config.Value.Source)
+                //        .Options;
 
-            //    using var sqlServerContext = new EventLogContext(sqlOptions);
-            //    var sqlSeverRepository = new IndianaEventLogEFRepository(sqlServerContext, _serviceProvider.GetService<ILogger<IndianaEventLogEFRepository>>());
-            //    var sqltestSeverRepository = new EventLogEFRepository(sqlServerContext, _serviceProvider.GetService<ILogger<EventLogEFRepository>>());
+                //    using var sqlServerContext = new EventLogContext(sqlOptions);
+                //    var sqlSeverRepository = new IndianaEventLogEFRepository(sqlServerContext, _serviceProvider.GetService<ILogger<IndianaEventLogEFRepository>>());
+                //    var sqltestSeverRepository = new EventLogEFRepository(sqlServerContext, _serviceProvider.GetService<ILogger<EventLogEFRepository>>());
 
 
                 // PostgreSQL DbContext to write logs
@@ -84,96 +82,102 @@ namespace DatabaseInstaller.Services
 
                 //using var postgresContext = new EventLogContext(postgresOptions);
                 //var postgresSeverRepository = new IndianaEventLogEFRepository(postgresContext, _serviceProvider.GetService<ILogger<IndianaEventLogEFRepository>>());
-                var locations = new List<string>
-               {
-                    "2122",
-"2123",
-"2124",
-"2125",
-"2126",
-"2127",
-"2128",
-"2129",
-"2132",
-"2133",
-"2136",
-"2137",
-"2138",
-"2139",
-"2140",
-"2141",
-"2142",
-"2143",
-"2144",
-"2145",
-"2146",
-"2147",
-"2148",
-"2149",
-"2150",
-"2151",
-"2155",
-"2156",
-"2157",
-"2302",
-"2303",
-"2306",
-"2307",
-"2308",
-"2309",
-"2310",
-"2311",
-"2312",
-"2313",
-"2316",
-"2317",
-"2318",
-"2319",
-"2324",
-"2325",
-"2326",
-"2327",
-"2328",
-"2329",
-"2335",
-"2340",
-"2341",
-"2347",
-"2392",
-"2394",
-"2395",
-"2396",
-"2397",
-"2700",
-"2702",
-"2703",
-"2704",
-"2705",
-"2706",
-"2707",
-"2708",
-"2709",
-"2710",
-"2712",
-"2713",
-"2718",
-"2719",
-"2720",
-"2721",
-"2722",
-"2723",
-"2724",
-"2725",
-"2726",
-"2727",
-"2728",
-"2729",
-"2734",
-"2798"
-                };
+                //                var locations = new List<string>
+                //               {
+                //                    "2122",
+                //"2123",
+                //"2124",
+                //"2125",
+                //"2126",
+                //"2127",
+                //"2128",
+                //"2129",
+                //"2132",
+                //"2133",
+                //"2136",
+                //"2137",
+                //"2138",
+                //"2139",
+                //"2140",
+                //"2141",
+                //"2142",
+                //"2143",
+                //"2144",
+                //"2145",
+                //"2146",
+                //"2147",
+                //"2148",
+                //"2149",
+                //"2150",
+                //"2151",
+                //"2155",
+                //"2156",
+                //"2157",
+                //"2302",
+                //"2303",
+                //"2306",
+                //"2307",
+                //"2308",
+                //"2309",
+                //"2310",
+                //"2311",
+                //"2312",
+                //"2313",
+                //"2316",
+                //"2317",
+                //"2318",
+                //"2319",
+                //"2324",
+                //"2325",
+                //"2326",
+                //"2327",
+                //"2328",
+                //"2329",
+                //"2335",
+                //"2340",
+                //"2341",
+                //"2347",
+                //"2392",
+                //"2394",
+                //"2395",
+                //"2396",
+                //"2397",
+                //"2700",
+                //"2702",
+                //"2703",
+                //"2704",
+                //"2705",
+                //"2706",
+                //"2707",
+                //"2708",
+                //"2709",
+                //"2710",
+                //"2712",
+                //"2713",
+                //"2718",
+                //"2719",
+                //"2720",
+                //"2721",
+                //"2722",
+                //"2723",
+                //"2724",
+                //"2725",
+                //"2726",
+                //"2727",
+                //"2728",
+                //"2729",
+                //"2734",
+                //"2798"
+                //                };
+
+                var locations = _locationRepository.GetList()
+                    .Include(l => l.Devices)
+                    .Where(l => l.Devices.Select(d => d.DeviceType).ToList().Contains(Utah.Udot.Atspm.Data.Enums.DeviceTypes.RampController))
+                    .Select(l => l.LocationIdentifier)
+                    .ToList();
                 foreach (var location in locations)
                 {
-                //create a scope to run in using
+                    //create a scope to run in using
                     using (var scope = _serviceProvider.CreateScope())
                     {
                         // SQL Server DbContext to read logs
@@ -193,8 +197,8 @@ namespace DatabaseInstaller.Services
                         {
                             Console.WriteLine($"Getting logs for {location}...");
                             var logs = sqltestSeverRepository.GetArchivedEvents(
-                                location, 
-                                DateOnly.FromDateTime(_config.Start), 
+                                location,
+                                DateOnly.FromDateTime(_config.Start),
                                 DateOnly.FromDateTime(_config.End));
                             Console.WriteLine($"Logs for {location} retrieved");
                             Console.WriteLine($"Saving logs for {location}...");

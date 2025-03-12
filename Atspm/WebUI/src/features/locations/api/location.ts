@@ -15,6 +15,7 @@
 // limitations under the License.
 // #endregion
 import { Location } from '@/api/config/aTSPMConfigurationApi.schemas'
+import { LocationExpanded } from '@/features/locations/types'
 import { useDeleteRequest } from '@/hooks/useDeleteRequest'
 import { useGetRequest } from '@/hooks/useGetRequest'
 import { usePostRequest } from '@/hooks/usePostRequest'

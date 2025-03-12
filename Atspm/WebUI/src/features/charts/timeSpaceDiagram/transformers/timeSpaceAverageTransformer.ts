@@ -20,6 +20,7 @@ import {
   createLegend,
   createTitle,
   createToolbox,
+  createTooltip,
   createXAxis,
   createYAxis,
   formatExportFileName,
@@ -112,7 +113,7 @@ function transformData(data: RawTimeSpaceAverageData[]): EChartsOption {
   })
 
   const legends = createLegend({
-    top: 75,
+    top: 195,
     data: [
       {
         name: `Cycles ${primaryDirection}`,
@@ -138,7 +139,7 @@ function transformData(data: RawTimeSpaceAverageData[]): EChartsOption {
   const grid: GridComponentOption = {
     top: 200,
     left: 100,
-    right: 210,
+    right: 325,
     show: true,
     borderWidth: 1,
     // borderColor: Color.Black,
@@ -176,7 +177,7 @@ function transformData(data: RawTimeSpaceAverageData[]): EChartsOption {
 
   const toolbox = createToolbox(
     {
-      title: formatExportFileName(titleHeader, data.start, data.end),
+      title: formatExportFileName(titleHeader, data[0].start, data[0].end),
       dateRange,
     },
     data[0].locationIdentifier,
@@ -245,6 +246,8 @@ function transformData(data: RawTimeSpaceAverageData[]): EChartsOption {
     numberOfLocations: data.length,
   })
 
+  const tooltip = createTooltip()
+
   const chartOptions: EChartsOption = {
     title: title,
     xAxis: xAxis,
@@ -255,6 +258,7 @@ function transformData(data: RawTimeSpaceAverageData[]): EChartsOption {
     toolbox: toolbox,
     animation: false,
     series: series,
+    tooltip,
     displayProps,
   }
 

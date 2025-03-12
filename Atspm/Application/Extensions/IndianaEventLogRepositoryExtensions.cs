@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for Application - Utah.Udot.Atspm.Extensions/IndianaEventLogRepositoryExtensions.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -183,14 +183,14 @@ namespace Utah.Udot.Atspm.Extensions
         /// Gets <see cref="IIndianaEventLogRepository"/> events by <paramref name="eventCodes"/>
         /// </summary>
         /// <param name="repo"></param>
-        /// <param name="locationId"></param>
+        /// <param name="locationIdentifier"></param>
         /// <param name="startTime"></param>
         /// <param name="endTime"></param>
         /// <param name="eventCodes"></param>
         /// <returns></returns>
-        public static IReadOnlyList<IndianaEvent> GetEventsByEventCodes(this IIndianaEventLogRepository repo, string locationId, DateTime startTime, DateTime endTime, IEnumerable<short> eventCodes)
+        public static IReadOnlyList<IndianaEvent> GetEventsByEventCodes(this IIndianaEventLogRepository repo, string locationIdentifier, DateTime startTime, DateTime endTime, IEnumerable<short> eventCodes)
         {
-            var result = repo.GetEventsBetweenDates(locationId, startTime, endTime)
+            var result = repo.GetEventsBetweenDates(locationIdentifier, startTime, endTime)
                 .FromSpecification(new IndianaLogCodeAndParamSpecification(eventCodes))
                 .OrderBy(o => o.EventParam)
                 .ToList();

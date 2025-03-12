@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for Application - Utah.Udot.Atspm.Business.PedDelay/PedDelayOptions.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,7 +21,7 @@ using Utah.Udot.Atspm.Business.Common;
 namespace Utah.Udot.Atspm.Business.PedDelay
 {
     [DataContract]
-    public class PedDelayOptions : OptionsBase
+    public class PedDelayOptions : DateTimeOptionsBase, ILocationOptionsBase
     {
         public int TimeBuffer { get; set; }
         public bool ShowPedBeginWalk { get; set; }
@@ -29,5 +29,6 @@ namespace Utah.Udot.Atspm.Business.PedDelay
         public bool ShowPercentDelay { get; set; }
         public bool ShowPedRecall { get; set; }
         public int PedRecallThreshold { get; set; }
+        public string LocationIdentifier { get; set; }
     }
 }

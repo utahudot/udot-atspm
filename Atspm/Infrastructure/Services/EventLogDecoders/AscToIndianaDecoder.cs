@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for Infrastructure - Utah.Udot.Atspm.Infrastructure.Services.EventLogDecoders/AscToIndianaDecoder.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -71,7 +71,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.EventLogDecoders
                     {
                         //find  line feed characters, that should take us to the end of the header.
                         // First line break is after Version
-                        // Second LF is after FileName
+                        // Second LF is after Resource
                         // Third LF is after Interseciton number, which isn't used as far as I can tell
                         // Fourth LF is after IP address
                         // Fifth is after MAC Address

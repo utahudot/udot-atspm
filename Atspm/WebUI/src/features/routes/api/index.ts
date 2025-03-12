@@ -14,7 +14,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 // #endregion
-import { Route, RouteLocation } from '@/features/routes/types'
+import {
+  Route,
+  RouteLocation,
+} from '@/api/config/aTSPMConfigurationApi.schemas'
 import { useDeleteRequest } from '@/hooks/useDeleteRequest'
 import { useGetRequest } from '@/hooks/useGetRequest'
 import { usePatchRequest } from '@/hooks/usePatchRequest'
@@ -43,7 +46,10 @@ export function useDeleteRoute() {
 }
 
 export function useGetRoutes() {
-  return useGetRequest<ApiResponse<Route>>({ route: '/Route', headers })
+  return useGetRequest<ApiResponse<Route>>({
+    route: '/Route?expand=RouteLocations',
+    headers,
+  })
 }
 
 export function useGetRouteLocations(id: string) {

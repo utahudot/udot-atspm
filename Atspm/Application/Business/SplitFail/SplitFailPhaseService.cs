@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for Application - Utah.Udot.Atspm.Business.SplitFail/SplitFailPhaseService.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -173,7 +173,7 @@ namespace Utah.Udot.Atspm.Business.SplitFail
                 //TODO: Verify that this is not needed
                 //if (!events.Any())
                 //{
-                //    CheckForDetectorOnBeforeStart(options, detector, splitFailPhaseData);
+                //    CheckForDetectorOnBeforeStart(_options, detector, splitFailPhaseData);
                 //}
                 //else
                 //{

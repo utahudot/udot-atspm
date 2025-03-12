@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for Data - Utah.Udot.Atspm.Data.Utility/CompressedSerializationBinder.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -33,7 +33,7 @@ namespace Utah.Udot.Atspm.Data.Utility
         {
             if (serializedType.IsAssignableTo(typeof(IEnumerable<T>)) &&
                 serializedType.IsGenericType &&
-                (serializedType.GetGenericArguments()[0].IsSubclassOf(typeof(T)) || serializedType.GetGenericArguments()[0]== typeof(T)))
+                (serializedType.GetGenericArguments()[0].IsSubclassOf(typeof(T)) || serializedType.GetGenericArguments()[0] == typeof(T)))
             {
                 assemblyName = null;
                 typeName = serializedType.GetGenericArguments()[0].Name;

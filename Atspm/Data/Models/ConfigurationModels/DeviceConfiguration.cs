@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for Data - Utah.Udot.Atspm.Data.Models/DeviceConfiguration.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,9 +28,9 @@ namespace Utah.Udot.Atspm.Data.Models
     public partial class DeviceConfiguration : AtspmConfigModelBase<int>, IRelatedDevices, IRelatedProduct
     {
         /// <summary>
-        /// Firmware version
+        /// Description of configuration for specified <see cref="Product"/>
         /// </summary>
-        public string Firmware { get; set; }
+        public string Description { get; set; }
 
         /// <summary>
         /// Configuration notes
@@ -38,7 +38,7 @@ namespace Utah.Udot.Atspm.Data.Models
         public string Notes { get; set; }
 
         /// <summary>
-        /// Transport protocol for controller logging
+        /// Transport protocol used for remote event logging
         /// </summary>
         public TransportProtocols Protocol { get; set; }
 
@@ -48,15 +48,20 @@ namespace Utah.Udot.Atspm.Data.Models
         public int Port { get; set; }
 
         /// <summary>
-        /// Path to log directory
+        /// Connection properties specific to the <see cref="Protocol"/>
         /// </summary>
-        public string Directory { get; set; }
+        public Dictionary<string, object> ConnectionProperties { get; set; }
 
         /// <summary>
-        /// Log search term to find log in directory
-        /// Can be a query string or file extension
+        /// Uri or file path to remote event log resources
         /// </summary>
-        public string[] SearchTerms { get; set; }
+        public string Path { get; set; }
+
+        /// <summary>
+        /// Query to filter results from <see cref="Path"/>
+        /// Can be uri or sql query string
+        /// </summary>
+        public string[] Query { get; set; }
 
         /// <summary>
         /// Device connection timeout in milliseconds
@@ -67,6 +72,11 @@ namespace Utah.Udot.Atspm.Data.Models
         /// Device operation timeout in milliseconds
         /// </summary>
         public int OperationTimeout { get; set; }
+
+        /// <summary>
+        /// Offset in minutes of events to log
+        /// </summary>
+        public int LoggingOffset { get; set; }
 
         /// <summary>
         /// Decoders used to decode events logs
@@ -101,6 +111,6 @@ namespace Utah.Udot.Atspm.Data.Models
         #endregion
 
         /// <inheritdoc/>
-        public override string ToString() => $"{Id} - {Firmware} - {Product}";
+        public override string ToString() => $"{Id} - {Description} - {Product}";
     }
 }

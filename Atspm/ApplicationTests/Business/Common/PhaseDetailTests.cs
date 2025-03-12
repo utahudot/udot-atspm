@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for ApplicationTests - Utah.Udot.Atspm.ApplicationTests.Business.Common/PhaseDetailTests.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -77,22 +77,34 @@ namespace Utah.Udot.Atspm.ApplicationTests.Business.Common
             var result = phaseDetail.GetApproachDescription();
 
             // Assert
-            Assert.Equal("South Left Permissive Phase 2", result);
+            Assert.Equal("South Permissive Phase 2", result);
         }
 
         [Fact]
-        public void GetApproachDescription_MultipleMovements_ReturnsDirectionMovementTypesPhaseNumber()
+        public void GetApproachDescriptionWithMovements_MultipleMovements_ReturnsDirectionMovementTypesPhaseNumber()
         {
             // Arrange
             var directionType = new DirectionType { Description = "East" };
+            var detectionType = new DetectionType 
+            { 
+                Id = DetectionTypes.LLS 
+            };
             var approach = new Approach
             {
                 DirectionType = directionType,
                 ProtectedPhaseNumber = 3,
                 Detectors = new List<Detector>
                 {
-                    new Detector { MovementType = MovementTypes.L },
-                    new Detector { MovementType = MovementTypes.R }
+                    new Detector 
+                    { 
+                        MovementType = MovementTypes.L, 
+                        DetectionTypes = new List<DetectionType> { detectionType } 
+                    },
+                    new Detector 
+                    { 
+                        MovementType = MovementTypes.R,
+                        DetectionTypes = new List<DetectionType> { detectionType }
+                    }
                 }
             };
             var phaseDetail = new PhaseDetail
@@ -104,7 +116,7 @@ namespace Utah.Udot.Atspm.ApplicationTests.Business.Common
             };
 
             // Act
-            var result = phaseDetail.GetApproachDescription();
+            var result = phaseDetail.GetApproachDescriptionWithMovements(DetectionTypes.LLS);
 
             // Assert
             Assert.Equal("East Left,Right Protected Overlap 3", result);

@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for Application - Utah.Udot.Atspm.Business.Watchdog/WatchDogDashboardOptions.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,7 +19,7 @@ namespace Utah.Udot.Atspm.Business.Watchdog
 {
     public class WatchDogDashboardOptions
     {
-        public DateTime Start {  get; set; }
+        public DateTime Start { get; set; }
         public DateTime End { get; set; }
     }
 }

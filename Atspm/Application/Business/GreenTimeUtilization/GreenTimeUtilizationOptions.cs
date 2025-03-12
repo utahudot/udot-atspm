@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for Application - Utah.Udot.Atspm.Business.GreenTimeUtilization/GreenTimeUtilizationOptions.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,10 +19,11 @@ using Utah.Udot.Atspm.Business.Common;
 
 namespace Utah.Udot.Atspm.Business.GreenTimeUtilization
 {
-    public class GreenTimeUtilizationOptions : OptionsBase
+    public class GreenTimeUtilizationOptions : DateTimeOptionsBase, ILocationOptionsBase
     {
         public int MetricTypeId { get; set; } = 36;
         public int XAxisBinSize { get; set; }
         public int YAxisBinSize { get; set; }
+        public string LocationIdentifier { get; set; }
     }
 }

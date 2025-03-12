@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for Application - Utah.Udot.Atspm.TempExtensions/ControllerEventLogExtensions.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,7 +22,7 @@ namespace Utah.Udot.Atspm.TempExtensions
 {
     //public static class ControllerEventLogExtensions
     //{
-    //    public static IReadOnlyList<ControllerEventLog> GetPlanEvents(
+    //    public static IReadOnlyList<ControllerEventLog> SetFirstAndLastPlan(
     //       this IEnumerable<ControllerEventLog> events,
     //       DateTime start,
     //       DateTime end)

@@ -1,16 +1,18 @@
 import { PurduePhaseTerminationChartOptionsDefaults } from '@/features/charts/purduePhaseTermination/types'
 import { Default } from '@/features/charts/types'
-import { Box, FormControl, TextField, Typography } from '@mui/material'
+import { Alert, Box, FormControl, TextField, Typography } from '@mui/material'
 import { ChangeEvent, useState } from 'react'
 
 interface PurduePhaseTerminationChartOptionsProps {
   chartDefaults: PurduePhaseTerminationChartOptionsDefaults
   handleChartOptionsUpdate: (update: Default) => void
+  isMeasureDefaultView?: boolean
 }
 
 export const PurduePhaseTerminationChartOptions = ({
   chartDefaults,
   handleChartOptionsUpdate,
+  isMeasureDefaultView = false,
 }: PurduePhaseTerminationChartOptionsProps) => {
   const [selectedConsecutiveCount, setSelectedConsecutiveCount] = useState(
     chartDefaults.selectedConsecutiveCount.value
@@ -38,7 +40,7 @@ export const PurduePhaseTerminationChartOptions = ({
     overflow: 'hidden',
     clip: 'rect(0, 0, 0, 0)',
     border: 0,
-  };
+  }
 
   return (
     <Box
@@ -50,18 +52,18 @@ export const PurduePhaseTerminationChartOptions = ({
     >
       <Typography>Consecutive Count</Typography>
       <Box sx={{ display: 'flex', alignItems: 'center' }}>
-      <FormControl sx={{ width: '60px' }}>
-      <label htmlFor="selected-consecutive-count" style={visuallyHidden}>
-        Selected Consecutive Count
-      </label>
-      <TextField
-        id="selected-consecutive-count"
-        type="number"
-        value={selectedConsecutiveCount}
-        onChange={handleSelectedConsecutiveCountChange}
-        variant="standard"
-      />
-    </FormControl>
+        <FormControl sx={{ width: '60px' }}>
+          <label htmlFor="selected-consecutive-count" style={visuallyHidden}>
+            Selected Consecutive Count
+          </label>
+          <TextField
+            id="selected-consecutive-count"
+            type="number"
+            value={selectedConsecutiveCount}
+            onChange={handleSelectedConsecutiveCountChange}
+            variant="standard"
+          />
+        </FormControl>
       </Box>
     </Box>
   )

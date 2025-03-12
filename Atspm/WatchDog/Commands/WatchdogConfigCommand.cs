@@ -1,6 +1,6 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
-// for EventLogUtility - Utah.Udot.Atspm.EventLogUtility.Commands/EventLogCommands.cs
+// Copyright 2025 Utah Departement of Transportation
+// for WatchDog - Utah.Udot.ATSPM.WatchDog.Commands/WatchdogConfigCommand.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,7 +21,8 @@ namespace Utah.Udot.ATSPM.WatchDog.Commands
 {
     public class WatchdogConfigCommand : RootCommand
     {
-        public WatchdogConfigCommand() {
+        public WatchdogConfigCommand()
+        {
             AddCommand(WatchdogCommand);
             AddCommand(EmailCommand);
         }

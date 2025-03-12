@@ -98,7 +98,7 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
   })
 
   const legends = createLegend({
-    top: 60,
+    top: 195,
     data: [
       {
         name: `Cycles ${primaryDirection}`,
@@ -164,7 +164,7 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
   const grid: GridComponentOption = {
     top: 200,
     left: 100,
-    right: 210,
+    right: 250,
     show: true,
     borderWidth: 1,
   }
@@ -210,7 +210,7 @@ function transformData(data: RawTimeSpaceHistoricData[]): EChartsOption {
 
   const toolbox = createToolbox(
     {
-      title: formatExportFileName(titleHeader, data.start, data.end),
+      title: formatExportFileName(titleHeader, data[0].start, data[0].end),
       dateRange,
     },
     data[0].locationIdentifier,

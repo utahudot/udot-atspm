@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for Application - Utah.Udot.Atspm.Business.RampMetering/RampMeteringOptions.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,8 +19,9 @@ using Utah.Udot.Atspm.Business.Common;
 
 namespace Utah.Udot.Atspm.Business.RampMetering
 {
-    public class RampMeteringOptions : OptionsBase
+    public class RampMeteringOptions : DateTimeOptionsBase, ILocationOptionsBase
     {
         public bool CombineLanes { get; set; }
+        public string LocationIdentifier { get; set; }
     }
 }

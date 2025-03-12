@@ -1,4 +1,20 @@
-﻿
+﻿#region license
+// Copyright 2025 Utah Departement of Transportation
+// for DatabaseInstaller - DatabaseInstaller.Services/TransferSpeedEventsService.cs
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+// http://www.apache.org/licenses/LICENSE-2.
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+#endregion
+
 using DatabaseInstaller.Commands;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.DependencyInjection;
@@ -34,10 +50,18 @@ namespace DatabaseInstaller.Services
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            var locations = _locationRepository.GetLatestVersionOfAllLocations(_config.Start);
 
             for (var date = _config.Start; date <= _config.End; date = date.AddDays(1))
             {
+                var locations = _locationRepository
+                .GetLatestVersionOfAllLocations(date)
+                .Where(l => l.Approaches
+                    .SelectMany(a => a.Detectors)
+                    .SelectMany(d => d.DetectionTypes)
+                    .Any(dt => (int)dt.Id == 3)
+                    && l.VersionAction != Utah.Udot.Atspm.Data.Enums.LocationVersionActions.Delete)
+                .ToList();
+
                 try
                 {
                     var archiveLogs = new ConcurrentBag<CompressedEventLogs<SpeedEvent>>();
@@ -49,7 +73,34 @@ namespace DatabaseInstaller.Services
 
                     foreach (var batch in locationBatches)
                     {
-                        var tasks = batch.Select(location => ProcessLocationAsync(DateOnly.FromDateTime(date), location, archiveLogs, cancellationToken));
+                        var tasks = new List<Task>();
+
+                        foreach (var location in batch)
+                        {
+                            tasks.Add(Task.Run(async () =>
+                            {
+                                int retryCount = 3;
+                                for (int attempt = 1; attempt <= retryCount; attempt++)
+                                {
+                                    try
+                                    {
+                                        await ProcessLocationAsync(DateOnly.FromDateTime(date), location, archiveLogs, cancellationToken);
+                                        break; // Break out of the retry loop on success
+                                    }
+                                    catch (Exception ex) when (attempt < retryCount)
+                                    {
+                                        _logger.LogInformation($"Attempt {attempt} failed for location {location}. Retrying...");
+                                        await Task.Delay(TimeSpan.FromSeconds(30)); // Wait before retrying
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        _logger.LogInformation($"Failed to process location {location} after {retryCount} attempts: {ex.Message}");
+                                        break; // Exit the loop on a permanent failure
+                                    }
+                                }
+                            }));
+                        }
+
                         await Task.WhenAll(tasks);
 
                         if (archiveLogs.Count > 50)
@@ -95,6 +146,7 @@ namespace DatabaseInstaller.Services
 
         private async Task InsertLogsAsync(List<CompressedEventLogs<SpeedEvent>> archiveLogs)
         {
+            _logger.LogInformation($"Inserting {archiveLogs.Count} archive logs");
             const int maxRetryCount = 3; // Number of retries
             int delay = 500; // Initial delay in milliseconds
 
@@ -176,7 +228,6 @@ namespace DatabaseInstaller.Services
                 {
                     var eventLogs = new List<SpeedEvent>();
                     selectCommand.CommandTimeout = 120;
-                    Console.WriteLine($"Executing query: {selectQuery}");
 
                     using (var reader = await selectCommand.ExecuteReaderAsync(cancellationToken))
                     {
@@ -186,7 +237,7 @@ namespace DatabaseInstaller.Services
                             {
                                 var speedEvent = new SpeedEvent
                                 {
-                                    Timestamp = (DateTime)reader["Timestamp"], 
+                                    Timestamp = (DateTime)reader["Timestamp"],
                                     DetectorId = (String)reader["DetectorID"],
                                     Mph = (int)reader["MPH"],
                                     Kph = (int)reader["KPH"]
@@ -203,7 +254,7 @@ namespace DatabaseInstaller.Services
 
                     if (eventLogs.Count > 0)
                     {
-                        var device = location.Devices.FirstOrDefault(d => d.DeviceType == Utah.Udot.Atspm.Data.Enums.DeviceTypes.WavetronixSpeed);
+                        var device = location.Devices.FirstOrDefault(d => d.DeviceType == Utah.Udot.Atspm.Data.Enums.DeviceTypes.SpeedSensor);
                         if (device != null)
                         {
                             var archiveLog = new CompressedEventLogs<SpeedEvent>
@@ -215,11 +266,16 @@ namespace DatabaseInstaller.Services
                             };
 
                             archiveLogs.Add(archiveLog);
+                            _logger.LogInformation($"{eventLogs.Count} Speed logs retrieved {location.LocationIdentifier} on {dateToRetrieve}");
                         }
                         else
                         {
                             _logger.LogWarning($"No speed device found for signal {location.LocationIdentifier}");
                         }
+                    }
+                    else
+                    {
+                        _logger.LogWarning($"No speed records found for {location.LocationIdentifier} on {dateToRetrieve}");
                     }
                 }
             }

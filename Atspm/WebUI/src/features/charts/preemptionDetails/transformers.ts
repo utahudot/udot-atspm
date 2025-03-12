@@ -281,7 +281,7 @@ function transformSummaryData(data: PreemptServiceSummary) {
     data.locationIdentifer,
     ChartType.PreemptionDetails
   )
-  const tooltip = createTooltip()
+  const tooltip = createTooltip({ trigger: 'item' })
 
   const series = createSeries()
 

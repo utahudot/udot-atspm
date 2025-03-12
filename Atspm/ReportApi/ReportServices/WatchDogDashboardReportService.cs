@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for ReportApi - Utah.Udot.ATSPM.ReportApi.ReportServices/WatchDogDashboardReportService.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -141,7 +141,7 @@ namespace Utah.Udot.ATSPM.ReportApi.ReportServices
                     IssueType = combined.logEvent.IssueType,
                     Model = product.Model,
                     Manufacturer = product.Manufacturer,
-                    Firmware = combined.deviceConfig.Firmware
+                    Firmware = combined.deviceConfig.Description
                 });
         }
 

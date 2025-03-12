@@ -26,19 +26,19 @@ import {
   SolidLineSeriesSymbol,
   formatChartDateTimeRange,
 } from '@/features/charts/utils'
+import { EChartsOption, SeriesOption } from 'echarts'
+import { GroupedListDataItems } from '../components/aggregateTypeSelect'
+import { AggregateOptionsHandler } from '../handlers/aggregateDataHandler'
 import {
   AggregateData,
   AggregateDataPointTypes,
   TransformedAggregateData,
 } from '../types/aggregateData'
-import { EChartsOption, SeriesOption } from 'echarts'
-import { AggregateOptionsHandler } from '../handlers/aggregateDataHandler'
 import {
   MetricTypeOptionsList,
   YAxisOptions,
   chartTypeOptions,
 } from '../types/aggregateOptionsData'
-import { GroupedListDataItems } from '../components/aggregateTypeSelect'
 
 export default function transformAggregateData(
   handler: AggregateOptionsHandler
@@ -118,7 +118,7 @@ export const transformData = (
   const grid = createGrid({
     top: 200,
     left: 60,
-    right: 200,
+    right: 430,
   })
 
   const dataZoom = createDataZoom()

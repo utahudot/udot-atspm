@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for InfrastructureTests - Utah.Udot.Atspm.InfrastructureTests.DownloaderClientTests/HttpDownloaderClientTests.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -31,73 +31,129 @@ namespace Utah.Udot.Atspm.InfrastructureTests.DownloaderClientTests
     {
         public HttpDownloaderClientTests(ITestOutputHelper output) : base(output) { }
 
-        public override void ConnectAsyncSucceeded()
+        #region MyRegion
+
+        public override async Task ConnectAsyncSucceeded()
         {
             Sut = new HttpDownloaderClient();
 
-            base.ConnectAsyncSucceeded();
+            await base.ConnectAsyncSucceeded();
         }
 
-        public override void ConnectAsyncControllerConnectionException()
+        public override async Task ConnectAsyncNullConnection()
         {
+            Sut = new HttpDownloaderClient();
+
+            await base.ConnectAsyncNullConnection();
         }
 
-        public override void ConnectAsyncOperationCanceledException()
+        public override async Task ConnectAsyncNullCredentials()
+        {
+            Sut = new HttpDownloaderClient();
+
+            await base.ConnectAsyncNullCredentials();
+        }
+
+        public override Task ConnectAsyncControllerConnectionException()
+        {
+            return Task.CompletedTask;
+        }
+
+        public override async Task ConnectAsyncOperationCanceledException()
         {
             Sut = new SSHNetSFTPDownloaderClient();
 
-            base.ConnectAsyncOperationCanceledException();
+            await base.ConnectAsyncOperationCanceledException();
         }
 
-        public override void DeleteFileAsyncSucceeded()
+        #endregion
+
+        #region DeleteResource
+
+        public override async Task DeleteResourceAsyncSucceeded()
         {
-            Sut = new HttpDownloaderClient(new HttpClient() { BaseAddress = new Uri($"http://127.0.0.1") });
+            var uri = new UriBuilder()
+            {
+                Scheme = Uri.UriSchemeHttp,
+                Host = "127.0.0.1",
+                Port = 80,
+                Path = "/a/b/c",
+                Query = "?key=value"
+            }.Uri;
 
-            base.DeleteFileAsyncSucceeded();
+            Sut = new HttpDownloaderClient(new HttpClient() { BaseAddress = uri });
+
+            await Sut.DeleteResourceAsync(uri);
         }
 
-        public override void DeleteFileAsyncNotConnected()
+        public override Task DeleteResourceAsyncNullResource()
         {
+            Sut = new HttpDownloaderClient(new HttpClient() { BaseAddress = new Uri("http://192.168.1.1") });
 
-            Sut = new HttpDownloaderClient();
-
-            base.DeleteFileAsyncNotConnected();
+            return base.DeleteResourceAsyncNullResource();
         }
 
-        public override void DeleteFileAsyncControllerDeleteFileException()
+        public override Task DeleteResourceAsyncInvalidResource()
         {
+            Sut = new HttpDownloaderClient(new HttpClient() { BaseAddress = new Uri("http://192.168.1.1") });
+
+            return base.DeleteResourceAsyncInvalidResource();
         }
 
-        public override void DeleteFileAsyncOperationCanceledException()
-        {
-            Sut = new HttpDownloaderClient();
-
-            base.DeleteFileAsyncOperationCanceledException();
-        }
-
-        public override void DisconnectAsyncSucceeded()
-        {
-        }
-
-        public override void DisconnectAsyncNotConnected()
-        {
-            Sut = new HttpDownloaderClient();
-
-            base.DisconnectAsyncNotConnected();
-        }
-
-        public override void DisconnectAsyncControllerConnectionException()
-        {
-        }
-
-        public override void DisconnectAsyncOperationCanceledException()
+        public override async Task DeleteResourceAsyncNotConnected()
         {
             Sut = new HttpDownloaderClient();
 
-            base.DisconnectAsyncOperationCanceledException();
+            await base.DeleteResourceAsyncNotConnected();
         }
 
-        public override void DownloadFileAsyncSucceeded()
+        public override async Task DeleteResourceAsyncControllerDeleteResourceException()
+        {
+            Sut = new HttpDownloaderClient(new HttpClient() { BaseAddress = new Uri("http://192.168.1.1") });
+
+            await base.DeleteResourceAsyncControllerDeleteResourceException();
+        }
+
+        public override async Task DeleteResourceAsyncOperationCanceledException()
+        {
+            Sut = new HttpDownloaderClient();
+
+            await base.DeleteResourceAsyncOperationCanceledException();
+        }
+
+        #endregion
+
+        #region Disconnect
+
+        public override Task DisconnectAsyncSucceeded()
+        {
+            return Task.CompletedTask;
+        }
+
+        public override async Task DisconnectAsyncNotConnected()
+        {
+            Sut = new HttpDownloaderClient();
+
+            await base.DisconnectAsyncNotConnected();
+        }
+
+        public override Task DisconnectAsyncControllerConnectionException()
+        {
+            return Task.CompletedTask;
+        }
+
+        public override async Task DisconnectAsyncOperationCanceledException()
+        {
+            Sut = new HttpDownloaderClient();
+
+            await base.DisconnectAsyncOperationCanceledException();
+        }
+
+        #endregion
+
+        #region DownloadResource
+
+        public override async Task DownloadResourceAsyncSucceed()
         {
             var client = new Mock<HttpMessageHandler>();
 
@@ -115,17 +171,38 @@ namespace Utah.Udot.Atspm.InfrastructureTests.DownloaderClientTests
 
             Sut = new HttpDownloaderClient(new HttpClient(client.Object) { BaseAddress = new Uri("http://192.168.1.1") });
 
-            base.DownloadFileAsyncSucceeded();
+            await base.DownloadResourceAsyncSucceed();
         }
 
-        public override void DownloadFileAsyncNotConnected()
+        public override async Task DownloadResourceAsyncNullLocal()
+        {
+            Sut = new HttpDownloaderClient(new HttpClient() { BaseAddress = new Uri("http://192.168.1.1") });
+
+            await base.DownloadResourceAsyncNullLocal();
+        }
+
+        public override async Task DownloadResourceAsyncNullRemote()
+        {
+            Sut = new HttpDownloaderClient(new HttpClient() { BaseAddress = new Uri("http://192.168.1.1") });
+
+            await base.DownloadResourceAsyncNullRemote();
+        }
+
+        public override async Task DownloadResourceAsyncInvalidLocal()
+        {
+            Sut = new HttpDownloaderClient(new HttpClient() { BaseAddress = new Uri("http://192.168.1.1") });
+
+            await base.DownloadResourceAsyncInvalidLocal();
+        }
+
+        public override async Task DownloadResourceAsyncNotConnected()
         {
             Sut = new HttpDownloaderClient();
 
-            base.DownloadFileAsyncNotConnected();
+            await base.DownloadResourceAsyncNotConnected();
         }
 
-        public override void DownloadFileAsyncControllerDownloadFileException()
+        public override async Task DownloadResourceAsyncDownloaderClientDownloadResourceException()
         {
             var client = new Mock<HttpMessageHandler>();
 
@@ -137,44 +214,54 @@ namespace Utah.Udot.Atspm.InfrastructureTests.DownloaderClientTests
 
             Sut = new HttpDownloaderClient(new HttpClient(client.Object) { BaseAddress = new Uri("http://192.168.1.1") });
 
-            base.DownloadFileAsyncControllerDownloadFileException();
+            await base.DownloadResourceAsyncDownloaderClientDownloadResourceException();
         }
 
-        public override void DownloadFileAsyncOperationCanceledException()
+        public override async Task DownloadResourceAsyncOperationCanceledException()
+        {
+            Sut = new HttpDownloaderClient(new HttpClient() { BaseAddress = new Uri("http://192.168.1.1") });
+
+            await base.DownloadResourceAsyncOperationCanceledException();
+        }
+
+        #endregion
+
+        #region ListResources
+
+        public override async Task ListResourcesAsyncSucceeded()
+        {
+            Sut = new HttpDownloaderClient(new HttpClient() { BaseAddress = new Uri("http://192.168.1.1") });
+
+            await base.ListResourcesAsyncSucceeded();
+        }
+
+        public override async Task ListResourcesAsyncNotConnected()
         {
             Sut = new HttpDownloaderClient();
 
-            base.DownloadFileAsyncOperationCanceledException();
+            await base.ListResourcesAsyncNotConnected();
         }
 
-        public override void ListDirectoryAsyncSucceeded()
+        public override Task ListDirectoryAsyncControllerDownloadFileException()
         {
+            return Task.CompletedTask;
         }
 
-        public override void ListDirectoryAsyncNotConnected()
-        {
-            Sut = new HttpDownloaderClient();
-
-            base.ListDirectoryAsyncNotConnected();
-        }
-
-        public override void ListDirectoryAsyncControllerDownloadFileException()
-        {
-        }
-
-        public override void ListDirectoryAsyncOperationCanceledException()
+        public override async Task ListResourcesAsyncDownloaderClientListResourcesException()
         {
             Sut = new HttpDownloaderClient();
 
-            base.ListDirectoryAsyncOperationCanceledException();
+            await base.ListResourcesAsyncDownloaderClientListResourcesException();
         }
 
-        public override void ConnectAsyncConnectionProperties()
+        #endregion
+
+        public override async Task ConnectAsyncConnectionProperties()
         {
             Client = new HttpClient();
             Sut = new HttpDownloaderClient(Client);
 
-            base.ConnectAsyncConnectionProperties();
+            await base.ConnectAsyncConnectionProperties();
         }
 
         public override bool VerifyIpAddress(HttpClient client, string ipAddress)
@@ -189,12 +276,12 @@ namespace Utah.Udot.Atspm.InfrastructureTests.DownloaderClientTests
 
         public override bool VerifyUserName(HttpClient client, string userName)
         {
-            return true;
+            return client.BaseAddress.UserInfo.StartsWith(userName);
         }
 
         public override bool VerifyPassword(HttpClient client, string password)
         {
-            return true;
+            return client.BaseAddress.UserInfo.EndsWith(password);
         }
 
         public override bool VerifyConnectionTimeout(HttpClient client, int connectionTimeout)
@@ -202,9 +289,9 @@ namespace Utah.Udot.Atspm.InfrastructureTests.DownloaderClientTests
             return true;
         }
 
-        public override bool VerifyOperationTimeout(HttpClient client, int operationTImeout)
+        public override bool VerifyOperationTimeout(HttpClient client, int operationTimeout)
         {
-            return client.Timeout.TotalMilliseconds == operationTImeout;
+            return client.Timeout.TotalMilliseconds == operationTimeout;
         }
     }
 }

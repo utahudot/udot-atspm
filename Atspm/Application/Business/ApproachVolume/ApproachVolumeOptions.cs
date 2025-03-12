@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for Application - Utah.Udot.Atspm.Business.ApproachVolume/ApproachVolumeOptions.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,7 +19,7 @@ using Utah.Udot.Atspm.Business.Common;
 
 namespace Utah.Udot.Atspm.Business.ApproachVolume
 {
-    public class ApproachVolumeOptions : OptionsBase
+    public class ApproachVolumeOptions : DateTimeOptionsBase, ILocationOptionsBase
     {
         public int BinSize { get; set; }
         public bool ShowDirectionalSplits { get; set; }
@@ -29,5 +29,6 @@ namespace Utah.Udot.Atspm.Business.ApproachVolume
         public bool ShowTMCDetection { get; set; }
         public bool ShowAdvanceDetection { get; set; }
         public int MetricTypeId { get; internal set; } = 7;
+        public string LocationIdentifier { get; set; }
     }
 }

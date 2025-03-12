@@ -1,4 +1,21 @@
-﻿using Microsoft.AspNetCore.Authentication.Cookies;
+﻿#region license
+// Copyright 2025 Utah Departement of Transportation
+// for Infrastructure - Utah.Udot.Atspm.Infrastructure.Extensions/AuthenticationExtensions.cs
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+// http://www.apache.org/licenses/LICENSE-2.
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+#endregion
+
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
@@ -28,13 +45,13 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
         {
             //if (!host.HostingEnvironment.IsDevelopment())
             //{
-                services.AddAtspmAuthentication(host);
-                services.AddAtspmAuthorization();
+            services.AddAtspmAuthentication(host);
+            services.AddAtspmAuthorization();
             //}
-            
+
             return services;
         }
-        
+
         /// <summary>
         /// Add atspm authentication
         /// </summary>
@@ -74,7 +91,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
             if (oidc.Exists() && !string.IsNullOrEmpty(oidc["Authority"]) &&
                 !string.IsNullOrEmpty(oidc["ClientId"]) &&
                 !string.IsNullOrEmpty(oidc["ClientSecret"]) &&
-                !string.IsNullOrEmpty(oidc["RedirectUri"]))
+                !string.IsNullOrEmpty(oidc["CallbackPath"]))
             {
                 services.AddAuthentication()
             .AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options =>
@@ -89,37 +106,46 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
                 options.Scope.Add("email");
                 options.Scope.Add("profile");
                 options.Scope.Add("app:Atspm");
-                options.CallbackPath = "/api/Account/OIDCLoginCallback";
+
+                options.CallbackPath = oidc["CallbackPath"];
+
                 options.GetClaimsFromUserInfoEndpoint = true;
                 options.UseTokenLifetime = true;
                 options.SkipUnrecognizedRequests = true;
+
                 options.Events = new OpenIdConnectEvents
                 {
                     OnRedirectToIdentityProvider = context =>
                     {
-                        context.ProtocolMessage.RedirectUri = oidc["RedirectUri"];
+                        var b = new UriBuilder(context.ProtocolMessage.RedirectUri);
+                        b.Scheme = "https";
+                        b.Port = -1;
+                        context.ProtocolMessage.RedirectUri = b.ToString();
+
+                        Console.WriteLine($"callback: {b.ToString()}");
+
                         return Task.CompletedTask;
                     },
-                    OnTokenResponseReceived = context =>
-                    {
-                        var identity = context.Principal.Claims;
-                        return Task.CompletedTask;
-                    },
-                    OnUserInformationReceived = context =>
-                    {
-                        var identity = context.Principal.Claims;
-                        return Task.CompletedTask;
-                    },
-                    OnAuthorizationCodeReceived = context =>
-                    {
-                        var identity = context.Principal.Claims;
-                        return Task.CompletedTask;
-                    },
-                    OnTokenValidated = context =>
-                    {
-                        var identity = context.Principal.Claims;
-                        return Task.CompletedTask;
-                    },
+                    //OnTokenResponseReceived = context =>
+                    //{
+                    //    var identity = context.Principal.Claims;
+                    //    return Task.CompletedTask;
+                    //},
+                    //OnUserInformationReceived = context =>
+                    //{
+                    //    var identity = context.Principal.Claims;
+                    //    return Task.CompletedTask;
+                    //},
+                    //OnAuthorizationCodeReceived = context =>
+                    //{
+                    //    var identity = context.Principal.Claims;
+                    //    return Task.CompletedTask;
+                    //},
+                    //OnTokenValidated = context =>
+                    //{
+                    //    var identity = context.Principal.Claims;
+                    //    return Task.CompletedTask;
+                    //},
                 };
             });
             }

@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for Infrastructure - Utah.Udot.Atspm.Infrastructure.Repositories/ATSPMRepositoryEFBase.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -200,6 +200,8 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories
         {
             if (_db.ChangeTracker.QueryTrackingBehavior == QueryTrackingBehavior.TrackAll)
             {
+                _db.ChangeTracker.DetectChanges();
+
                 switch (_db.Entry(item).State)
                 {
                     case EntityState.Detached:
@@ -215,6 +217,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories
                                     if (!i.IsLoaded)
                                         i.Load();
 
+                                    //HACK: change to i.IsModified = true; and test https://learn.microsoft.com/en-us/ef/core/change-tracking/change-detection
                                     UpdateCollections(old, i, item, _db.Entry(item).Collections.First(w => w.Metadata.Name == i.Metadata.Name));
                                 }
 
@@ -223,6 +226,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories
                                     if (!i.IsLoaded)
                                         i.Load();
 
+                                    //HACK: change to i.IsModified = true; and test https://learn.microsoft.com/en-us/ef/core/change-tracking/change-detection
                                     UpdateReferences(old, i, item, _db.Entry(item).References.First(w => w.Metadata.Name == i.Metadata.Name));
                                 }
                             }
@@ -239,6 +243,8 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories
                         }
                     case EntityState.Unchanged:
                         {
+                            //table.Update(item);
+
                             break;
                         }
                 }
@@ -254,8 +260,10 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories
         /// <inheritdoc/>
         public async Task UpdateAsync(T item)
         {
-            if (_db.ChangeTracker.QueryTrackingBehavior == QueryTrackingBehavior.TrackAll) 
+            if (_db.ChangeTracker.QueryTrackingBehavior == QueryTrackingBehavior.TrackAll)
             {
+                _db.ChangeTracker.DetectChanges();
+
                 switch (_db.Entry(item).State)
                 {
                     case EntityState.Detached:
@@ -266,11 +274,13 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories
                             {
                                 _db.Entry(old).CurrentValues.SetValues(item);
 
+
                                 foreach (var i in _db.Entry(old).Collections)
                                 {
                                     if (!i.IsLoaded)
                                         await i.LoadAsync();
 
+                                    //HACK: change to i.IsModified = true; and test https://learn.microsoft.com/en-us/ef/core/change-tracking/change-detection
                                     UpdateCollections(old, i, item, _db.Entry(item).Collections.First(w => w.Metadata.Name == i.Metadata.Name));
                                 }
 
@@ -279,6 +289,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories
                                     if (!i.IsLoaded)
                                         await i.LoadAsync();
 
+                                    //HACK: change to i.IsModified = true; and test https://learn.microsoft.com/en-us/ef/core/change-tracking/change-detection
                                     UpdateReferences(old, i, item, _db.Entry(item).References.First(w => w.Metadata.Name == i.Metadata.Name));
                                 }
                             }
@@ -295,6 +306,8 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories
                         }
                     case EntityState.Unchanged:
                         {
+                            //table.Update(item);
+
                             break;
                         }
                 }

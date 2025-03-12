@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for Data - Utah.Udot.Atspm.Data.Models/Device.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -27,6 +27,16 @@ namespace Utah.Udot.Atspm.Data.Models
     /// </summary>
     public partial class Device : AtspmConfigModelBase<int>, IRelatedLocation, IRelatedDeviceConfiguration
     {
+        /// <summary>
+        /// Device identifier from external systems
+        /// </summary>
+        public string DeviceIdentifier { get; set; }
+
+        /// <summary>
+        /// Used for additional device properties
+        /// </summary>
+        public Dictionary<string, object> DeviceProperties { get; set; }
+
         /// <summary>
         /// Enable Location to be logged
         /// </summary>
@@ -73,6 +83,6 @@ namespace Utah.Udot.Atspm.Data.Models
         #endregion
 
         /// <inheritdoc/>
-        public override string ToString() => $"{Id} - {Ipaddress} - {Location?.LocationIdentifier} - {DeviceType} - {DeviceStatus} --- {DeviceConfiguration}";
+        public override string ToString() => $"{Id} - {DeviceIdentifier} - {Ipaddress} - {Location?.LocationIdentifier} - {DeviceType} - {DeviceStatus} --- {DeviceConfiguration}";
     }
 }

@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for Application - Utah.Udot.Atspm.Business.WaitTime/WaitTimeService.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -211,7 +211,12 @@ namespace Utah.Udot.Atspm.Business.WaitTime
                 }
 
 
-                var splits = plans.Select(p => new DataPointForDouble(p.Start, p.Splits[phaseDetail.PhaseNumber])).ToList();
+                var splits = new List<DataPointForDouble>();
+                foreach (var plan in plans)
+                {
+                    var splitForPhase = plan.Splits.Where(s => s.Key == phaseDetail.PhaseNumber).FirstOrDefault();
+                    splits.Add(new DataPointForDouble(plan.Start, splitForPhase.Value));
+                }
                 var waitTimePlans = GetWaitTimePlans(plans, waitTimeTrackerList);
                 //}
 

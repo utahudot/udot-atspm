@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
+// Copyright 2025 Utah Departement of Transportation
 // for ConfigApi - Utah.Udot.Atspm.ConfigApi.Configuration/DeviceOdataConfiguration.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -31,6 +31,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Configuration
         public void Apply(ODataModelBuilder builder, ApiVersion apiVersion, string? routePrefix)
         {
             var model = builder.EntitySet<Device>("Device").EntityType;
+
             model.Page(default, default);
             model.Expand(2, SelectExpandType.Automatic, new string[] { "location", "deviceConfiguration", "product" });
 
@@ -38,6 +39,9 @@ namespace Utah.Udot.Atspm.ConfigApi.Configuration
             {
                 case 1:
                     {
+                        model.Property(p => p.DeviceIdentifier).IsRequired();
+                        model.Property(p => p.DeviceIdentifier).MaxLength = 50;
+
                         model.Property(p => p.Ipaddress).IsRequired();
                         model.Property(p => p.Ipaddress).MaxLength = 15;
 
