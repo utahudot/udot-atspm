@@ -61,7 +61,7 @@ export function SelectLocation({
     },
     [setLocation]
   )
-
+          
   const updateFilters = useCallback((newFilters: Partial<Filters>) => {
     setFilters((prevFilters) => ({ ...prevFilters, ...newFilters }))
   }, [])

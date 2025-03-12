@@ -14,7 +14,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 // #endregion
-import { Approach, DetectionType } from '@/features/locations/types'
+import {
+  Approach,
+  DetectionType,
+} from '@/api/config/aTSPMConfigurationApi.schemas'
 
 export interface Detector {
   dectectorIdentifier: string

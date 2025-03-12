@@ -1,11 +1,9 @@
-// LeftTurnGapReport.tsx
 import { useLeftTurnApproaches } from '@/features/leftTurnGapReport/api/getLeftTurnApproaches'
 import { useLeftTurnGapReportDataCheck } from '@/features/leftTurnGapReport/api/getLeftTurnGapReportDataCheck'
 import { useLeftTurnGapReport } from '@/features/leftTurnGapReport/api/getLTGRData'
 import LeftTurnGapReportForm from '@/features/leftTurnGapReport/components/LeftTurnGapReportForm'
 import LTGRReportView from '@/features/leftTurnGapReport/components/LTGRReportView'
 import RunCheckGrid from '@/features/leftTurnGapReport/components/RunCheckGrid'
-import { Location } from '@/features/locations/types'
 import Authorization from '@/lib/Authorization'
 import { LoadingButton } from '@mui/lab'
 import { Alert, Box } from '@mui/material'

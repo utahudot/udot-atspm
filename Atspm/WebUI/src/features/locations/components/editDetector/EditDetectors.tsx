@@ -1,3 +1,4 @@
+import { Detector } from '@/api/config/aTSPMConfigurationApi.schemas'
 import { modalButtonLocation } from '@/components/GenericAdminChart'
 import { useDeleteDetector } from '@/features/locations/api/detector'
 import CommentCell from '@/features/locations/components/editDetector/CommentCell'
@@ -7,7 +8,6 @@ import HardwareTypeCell from '@/features/locations/components/editDetector/Hardw
 import LaneTypeCell from '@/features/locations/components/editDetector/LaneTypeCell'
 import MovementTypeCell from '@/features/locations/components/editDetector/MovementTypeCell'
 import EditableTableCell from '@/features/locations/components/editableTableCell/EditableTableCell'
-import { Detector } from '@/features/locations/types'
 import DeleteIcon from '@mui/icons-material/Delete'
 import {
   Box,
@@ -24,8 +24,11 @@ import {
   TableRow,
   Typography,
 } from '@mui/material'
-import React, { useState } from 'react'
-import { ApproachForConfig } from '../editLocation/editLocationConfigHandler'
+import React, { useCallback, useState } from 'react'
+import {
+  ApproachForConfig,
+  DetectorForConfig,
+} from '../editLocation/editLocationConfigHandler'
 
 export const modalStyle = {
   position: 'absolute',
@@ -44,7 +47,7 @@ export const modalStyle = {
 }
 
 interface EditDetectorsProps {
-  detectors: Detector[]
+  detectors: DetectorForConfig[]
   approach: ApproachForConfig
   updateApproach: (approach: ApproachForConfig) => void
   errors?: Record<string, { error: string; id: string }> | null
@@ -59,44 +62,33 @@ const EditDetectors = ({
   updateApproach,
 }: EditDetectorsProps) => {
   const [modalOpen, setModalOpen] = useState(false)
-  const [selectedDetectorId, setSelectedDetectorId] = useState<number | null>(
-    null
-  )
+  const [selectedDetectorId, setSelectedDetectorId] = useState<number>()
   const { mutate: deleteDetector } = useDeleteDetector()
 
-  const updateDetector = (id: number, name: string, val: unknown) => {
-    val = val === '' ? null : val
-    updateApproach({
-      ...approach,
-      detectors: approach.detectors.map((detector) =>
-        detector.id === id ? { ...detector, [name]: val } : detector
-      ),
-    })
-  }
+  const updateDetector = useCallback(
+    (id: number | undefined, name: string, val: unknown) => {
+      if (!id) return
+      val = val === '' ? null : val
+      updateApproach({
+        ...approach,
+        detectors: approach.detectors.map((detector) =>
+          detector.id === id ? { ...detector, [name]: val } : detector
+        ),
+      })
+    },
+    [approach, updateApproach]
+  )
 
-  const handleDeleteClick = (id: number) => {
-    updateApproach({
-      ...approach,
-      detectors: approach.detectors.filter((detector) => detector.id !== id),
-    })
-    deleteDetector(id)
-    setModalOpen(false)
-  }
-
-  const deleteModal = (id: number) => (
-    <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
-      <Box sx={modalStyle}>
-        <Typography sx={{ fontWeight: 'bold' }}>Delete Detector</Typography>
-        <Divider sx={{ margin: '10px 0', backgroundColor: 'gray' }} />
-        <Typography>Are you sure you want to delete this detector?</Typography>
-        <Box sx={modalButtonLocation}>
-          <Button onClick={() => setModalOpen(false)}>Cancel</Button>
-          <Button onClick={() => handleDeleteClick(id)} sx={{ color: 'red' }}>
-            Delete Detector
-          </Button>
-        </Box>
-      </Box>
-    </Modal>
+  const handleDeleteClick = useCallback(
+    (id: number) => {
+      updateApproach({
+        ...approach,
+        detectors: approach.detectors.filter((detector) => detector.id !== id),
+      })
+      deleteDetector(id)
+      setModalOpen(false)
+    },
+    [approach, updateApproach, deleteDetector]
   )
 
   return (
@@ -189,14 +181,14 @@ const EditDetectors = ({
                     updateDetector(
                       detector.id,
                       'detectorChannel',
-                      parseInt(newValue)
+                      parseInt(newValue as string)
                     )
                   }
-                  error={errors?.[detector.id]?.error}
-                  warning={warnings?.[detector.id]?.error}
+                  error={errors?.[detector.id as number]?.error}
+                  warning={warnings?.[detector.id as number]?.warning}
                 />
                 <DetectionTypesCell
-                  detector={detector}
+                  detector={detector as Detector}
                   onUpdate={(newSelection) => {
                     updateDetector(detector.id, 'detectionTypes', newSelection)
                   }}
@@ -241,7 +233,7 @@ const EditDetectors = ({
                     )
                   }
                 />
-                <CommentCell detector={detector} />
+                <CommentCell detector={detector as Detector} />
                 <EditableTableCell
                   value={detector.distanceFromStopBar}
                   onUpdate={(newValue) =>
@@ -270,7 +262,7 @@ const EditDetectors = ({
                   <IconButton
                     aria-label="delete detector"
                     onClick={() => {
-                      setSelectedDetectorId(detector?.id)
+                      setSelectedDetectorId(detector.id)
                       setModalOpen(true)
                     }}
                     color="error"
@@ -283,7 +275,26 @@ const EditDetectors = ({
           </TableBody>
         </Table>
       </TableContainer>
-      {selectedDetectorId && deleteModal(selectedDetectorId)}
+      {selectedDetectorId && (
+        <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
+          <Box sx={modalStyle}>
+            <Typography sx={{ fontWeight: 'bold' }}>Delete Detector</Typography>
+            <Divider sx={{ margin: '10px 0', backgroundColor: 'gray' }} />
+            <Typography>
+              Are you sure you want to delete this detector?
+            </Typography>
+            <Box sx={modalButtonLocation}>
+              <Button onClick={() => setModalOpen(false)}>Cancel</Button>
+              <Button
+                onClick={() => handleDeleteClick(selectedDetectorId)}
+                sx={{ color: 'red' }}
+              >
+                Delete Detector
+              </Button>
+            </Box>
+          </Box>
+        </Modal>
+      )}
     </>
   )
 }

@@ -1,6 +1,6 @@
+import { Location } from '@/api/config/aTSPMConfigurationApi.schemas'
 import DirectionTypeCell from '@/features/locations/components/editApproach/DirectionTypeCell'
 import EditableTableCell from '@/features/locations/components/editableTableCell'
-import { LocationExpanded } from '@/features/locations/types'
 import {
   Divider,
   Paper,
@@ -27,7 +27,7 @@ interface EditApproachGridProps {
   errors: Record<string, { error: string; id: string }> | null
   approach: ApproachForConfig
   approaches: ApproachForConfig[]
-  location: LocationExpanded
+  location: Location
   updateApproach: (approach: ApproachForConfig) => void
   updateApproaches: (approaches: ApproachForConfig[]) => void
 }
