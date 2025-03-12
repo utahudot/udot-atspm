@@ -50,14 +50,14 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
     {
         public LogConsoleCommand() : base("log", "Pulls and uploads event logs from devices")
         {
-            IncludeOption.AddValidator(r =>
+            IncludeLocationOption.AddValidator(r =>
             {
-                if (r.GetValueForOption(ExcludeOption)?.Count() > 0)
+                if (r.GetValueForOption(ExcludeLocationOption)?.Count() > 0)
                     r.ErrorMessage = "Can't use include option when also using exclude option";
             });
-            ExcludeOption.AddValidator(r =>
+            ExcludeLocationOption.AddValidator(r =>
             {
-                if (r.GetValueForOption(IncludeOption)?.Count() > 0)
+                if (r.GetValueForOption(IncludeLocationOption)?.Count() > 0)
                     r.ErrorMessage = "Can't use exclude option when also using include option";
             });
 
@@ -69,15 +69,17 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
             AddGlobalOption(BatchSizeOption);
             AddGlobalOption(PrallelProcessesOption);
 
-            AddGlobalOption(IncludeOption);
-            AddGlobalOption(ExcludeOption);
-            AddGlobalOption(AreaOption);
-            AddGlobalOption(JurisdictionOption);
-            AddGlobalOption(RegionOption);
-            AddGlobalOption(LocationTypeOption);
+            AddGlobalOption(DeviceIdentifierOption);
+            AddGlobalOption(DeviceConfigurationOption);
             AddGlobalOption(DeviceTypeOption);
             AddGlobalOption(TransportProtocolOption);
             AddGlobalOption(DeviceStatusCommandOption);
+            AddGlobalOption(IncludeLocationOption);
+            AddGlobalOption(ExcludeLocationOption);
+            AddGlobalOption(LocationTypeOption);
+            AddGlobalOption(AreaOption);
+            AddGlobalOption(JurisdictionOption);
+            AddGlobalOption(RegionOption);
         }
 
         public Argument<bool?> DeleteRemoteFileArg { get; set; } = new Argument<bool?>("delete local", "Delete the remote file on the device after downloading");
@@ -92,23 +94,27 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
 
         public PrallelProcessesOption PrallelProcessesOption { get; set; } = new();
 
-        public LocationIncludeCommandOption IncludeOption { get; set; } = new();
+        public DeviceIncludeCommandOption DeviceIdentifierOption { get; set; } = new();
 
-        public LocationExcludeCommandOption ExcludeOption { get; set; } = new();
-
-        public LocationAreaCommandOption AreaOption { get; set; } = new();
-
-        public LocationJurisdictionCommandOption JurisdictionOption { get; set; } = new();
-
-        public LocationRegionCommandOption RegionOption { get; set; } = new();
-
-        public LocationTypeCommandOption LocationTypeOption { get; set; } = new();
+        public DeviceConfigurationIncludeCommandOption DeviceConfigurationOption { get; set; } = new();
 
         public DeviceTypeCommandOption DeviceTypeOption { get; set; } = new();
 
         public TransportProtocolCommandOption TransportProtocolOption { get; set; } = new();
 
         public DeviceStatusCommandOption DeviceStatusCommandOption { get; set; } = new();
+
+        public LocationIncludeCommandOption IncludeLocationOption { get; set; } = new();
+
+        public LocationExcludeCommandOption ExcludeLocationOption { get; set; } = new();
+
+        public LocationTypeCommandOption LocationTypeOption { get; set; } = new();
+
+        public LocationAreaCommandOption AreaOption { get; set; } = new();
+
+        public LocationJurisdictionCommandOption JurisdictionOption { get; set; } = new();
+
+        public LocationRegionCommandOption RegionOption { get; set; } = new();
 
         public void BindCommandOptions(HostBuilderContext host, IServiceCollection services)
         {
@@ -122,16 +128,18 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
 
             var deviceEventLoggingQueryOptions = new ModelBinder<DeviceEventLoggingQueryOptions>();
 
-            deviceEventLoggingQueryOptions.BindMemberFromValue(b => b.IncludedLocations, IncludeOption);
-            deviceEventLoggingQueryOptions.BindMemberFromValue(b => b.ExcludedLocations, ExcludeOption);
-            deviceEventLoggingQueryOptions.BindMemberFromValue(b => b.IncludedAreas, AreaOption);
-            deviceEventLoggingQueryOptions.BindMemberFromValue(b => b.IncludedJurisdictions, JurisdictionOption);
-            deviceEventLoggingQueryOptions.BindMemberFromValue(b => b.IncludedRegions, RegionOption);
-            deviceEventLoggingQueryOptions.BindMemberFromValue(b => b.IncludedLocationTypes, LocationTypeOption);
+            deviceEventLoggingQueryOptions.BindMemberFromValue(b => b.IncludedDevices, DeviceIdentifierOption);
+            deviceEventLoggingQueryOptions.BindMemberFromValue(b => b.IncludeConfigurations, DeviceConfigurationOption);
             deviceEventLoggingQueryOptions.BindMemberFromValue(b => b.DeviceType, DeviceTypeOption);
             deviceEventLoggingQueryOptions.BindMemberFromValue(b => b.TransportProtocol, TransportProtocolOption);
             deviceEventLoggingQueryOptions.BindMemberFromValue(b => b.TransportProtocol, TransportProtocolOption);
-
+            deviceEventLoggingQueryOptions.BindMemberFromValue(b => b.IncludedLocations, IncludeLocationOption);
+            deviceEventLoggingQueryOptions.BindMemberFromValue(b => b.ExcludedLocations, ExcludeLocationOption);
+            deviceEventLoggingQueryOptions.BindMemberFromValue(b => b.IncludedLocationTypes, LocationTypeOption);
+            deviceEventLoggingQueryOptions.BindMemberFromValue(b => b.IncludedAreas, AreaOption);
+            deviceEventLoggingQueryOptions.BindMemberFromValue(b => b.IncludedJurisdictions, JurisdictionOption);
+            deviceEventLoggingQueryOptions.BindMemberFromValue(b => b.IncludedRegions, RegionOption);
+            
             services.AddOptions<DeviceEventLoggingConfiguration>()
                 .Configure<BindingContext>((a, b) =>
                 {
@@ -140,6 +148,24 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
                 });
 
             services.AddHostedService<DeviceEventLogHostedService>();
+        }
+    }
+
+    public class DeviceIncludeCommandOption : Option<IEnumerable<string>>
+    {
+        public DeviceIncludeCommandOption() : base("--include-device", "List of device identifiers to include")
+        {
+            AllowMultipleArgumentsPerToken = true;
+            AddAlias("-id");
+        }
+    }
+
+    public class DeviceConfigurationIncludeCommandOption : Option<IEnumerable<string>>
+    {
+        public DeviceConfigurationIncludeCommandOption() : base("--include-device-configuration", "List of device configuration id's to include")
+        {
+            AllowMultipleArgumentsPerToken = true;
+            AddAlias("-idc");
         }
     }
 
