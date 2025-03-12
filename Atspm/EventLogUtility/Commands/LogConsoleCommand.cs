@@ -26,26 +26,6 @@ using Utah.Udot.Atspm.ValueObjects;
 
 namespace Utah.Udot.Atspm.EventLogUtility.Commands
 {
-    //public class DownloadCommand : Command, ICommandOption
-    //{
-    //    public DownloadCommand() : base("download", "Download data from devices")
-    //    {
-
-    //    }
-
-    //    public void BindCommandOptions(HostBuilderContext host, IServiceCollection services)
-    //    {
-    //        Console.WriteLine($"********************BindCommandOptions!********************");
-
-    //        var parent = this.Parents.FirstOrDefault();
-
-    //        if (parent is LogConsoleCommand opt)
-    //        {
-    //            opt.BindCommandOptions(host, services);
-    //        }
-    //    }
-    //}
-
     public class LogConsoleCommand : Command, ICommandOption
     {
         public LogConsoleCommand() : base("log", "Pulls and uploads event logs from devices")
@@ -139,7 +119,7 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
             deviceEventLoggingQueryOptions.BindMemberFromValue(b => b.IncludedAreas, AreaOption);
             deviceEventLoggingQueryOptions.BindMemberFromValue(b => b.IncludedJurisdictions, JurisdictionOption);
             deviceEventLoggingQueryOptions.BindMemberFromValue(b => b.IncludedRegions, RegionOption);
-            
+
             services.AddOptions<DeviceEventLoggingConfiguration>()
                 .Configure<BindingContext>((a, b) =>
                 {
