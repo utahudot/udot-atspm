@@ -1,3 +1,4 @@
+import { Location } from '@/api/config/aTSPMConfigurationApi.schemas'
 import CustomSelect from '@/components/customSelect'
 import {
   useAllVersionsOfLocation,
@@ -8,7 +9,6 @@ import {
   useDeleteVersion,
   useSetLocationToBeDeleted,
 } from '@/features/locations/api/location'
-import { Location, LocationExpanded } from '@/features/locations/types'
 import { getLocationTypeConfig } from '@/features/locations/utils'
 import { useNotificationStore } from '@/stores/notifications'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
@@ -29,7 +29,7 @@ import React, { useEffect, useState } from 'react'
 import { useQueryClient } from 'react-query'
 
 interface LocationAdminHeaderProps {
-  location: LocationExpanded
+  location: Location
   updateLocationVersion: (location: Location | null) => void
   refetchLocation: () => void
 }

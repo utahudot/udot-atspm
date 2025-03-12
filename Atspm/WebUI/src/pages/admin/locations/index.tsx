@@ -1,3 +1,4 @@
+import { Location } from '@/api/config/aTSPMConfigurationApi.schemas'
 import { ResponsivePageLayout } from '@/components/ResponsivePage'
 import { StyledPaper } from '@/components/StyledPaper'
 import { AddButton } from '@/components/addButton'
@@ -6,7 +7,6 @@ import EditLocation from '@/features/locations/components/editLocation/EditLocat
 import NewLocationModal from '@/features/locations/components/editLocation/NewLocationModal'
 import { useLocationConfigHandler } from '@/features/locations/components/editLocation/editLocationConfigHandler'
 import SelectLocation from '@/features/locations/components/selectLocation/SelectLocation'
-import { Location } from '@/features/locations/types/Location'
 import { useState } from 'react'
 
 const LocationsAdmin = () => {
@@ -14,17 +14,13 @@ const LocationsAdmin = () => {
 
   const [location, setLocation] = useState<Location | null>(null)
   const [isModalOpen, setModalOpen] = useState(false)
-  const locationHandler = useLocationConfigHandler({
-    location: location as Location,
-  })
-
-  // const data = useConfigEnums(ConfigEnum.WatchDogIssueTypes)
+  const locationHandler = useLocationConfigHandler({ location })
 
   if (pageAccess.isLoading) {
     return
   }
 
-  const handleLocationChange = (location: Location) => {
+  const handleLocationChange = (location: Location | null) => {
     setLocation(location)
   }
 
@@ -45,7 +41,7 @@ const LocationsAdmin = () => {
       {location !== null ? (
         <EditLocation
           handler={locationHandler}
-          updateLocationVersion={setLocation}
+          updateLocationVersion={handleLocationChange}
         />
       ) : null}
       {isModalOpen && (

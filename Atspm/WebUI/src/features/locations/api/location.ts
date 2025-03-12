@@ -32,8 +32,8 @@ const headers: AxiosHeaders = new AxiosHeaders({
   Authorization: `Bearer ${token}`,
 })
 
-export function useGetLocation(id: number) {
-  return useGetRequest<ApiResponse<LocationExpanded>>({
+export function useGetLocation(id: number | undefined) {
+  return useGetRequest<ApiResponse<Location>>({
     route: `/Location/${id}?$expand=areas, devices, approaches($expand=Detectors($expand=DetectionTypes, detectorComments))`,
     headers,
     enabled: false,

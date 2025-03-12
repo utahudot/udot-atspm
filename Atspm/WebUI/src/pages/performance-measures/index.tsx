@@ -3,6 +3,7 @@ import { Box, Paper, Tab, useMediaQuery, useTheme } from '@mui/material'
 import { differenceInMinutes, startOfToday, startOfTomorrow } from 'date-fns'
 import { useMemo, useState } from 'react'
 
+import { Location } from '@/api/config/aTSPMConfigurationApi.schemas'
 import { ResponsivePageLayout } from '@/components/ResponsivePage'
 import { StyledPaper } from '@/components/StyledPaper'
 import SelectDateTime from '@/components/selectTimeSpan'
@@ -11,7 +12,6 @@ import ChartsContainer from '@/features/charts/components/chartsContainer'
 import SelectChart from '@/features/charts/components/selectChart'
 import LocationsConfigContainer from '@/features/locations/components/locationConfigContainer'
 import SelectLocation from '@/features/locations/components/selectLocation'
-import { Location } from '@/features/locations/types'
 
 const PerformanceMeasures = () => {
   const theme = useTheme()
