@@ -38,8 +38,8 @@ cmdBuilder.UseHost(hostBuilder =>
     //.UseConsoleLifetime()
     .ConfigureAppConfiguration((h, c) =>
     {
-        //c.AddCommandLine(args);
-        c.AddUserSecrets<Program>(optional: true);
+        c.AddUserSecrets<Program>(optional: true); // Load secrets first
+        c.AddCommandLine(args);                    // Override with command-line args
 
     })
     //.ConfigureLogging((hostContext, logging) =>

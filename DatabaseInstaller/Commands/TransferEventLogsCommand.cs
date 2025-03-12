@@ -31,11 +31,15 @@ namespace DatabaseInstaller.Commands
             AddOption(SourceOption);
             AddOption(StartOption);
             AddOption(EndOption);
+            AddOption(BatchOption);
+            AddOption(DeviceOption);
         }
 
         public Option<string> SourceOption { get; set; } = new("--source", "Connection string for the source SQL Server");
         public Option<DateTime> StartOption { get; set; } = new("--start", "Start date");
         public Option<DateTime> EndOption { get; set; } = new("--end", "End date");
+        public Option<int?> DeviceOption { get; set; } = new("--device", "Id of Device Type used to import events for just that device type") { IsRequired = false};
+        public Option<int?> BatchOption { get; set; } = new("--batch", "Size of batches for importing event logs") { IsRequired = false};
 
         public ModelBinder<TransferCommandConfiguration> GetOptionsBinder()
         {
@@ -44,14 +48,16 @@ namespace DatabaseInstaller.Commands
             binder.BindMemberFromValue(b => b.Source, SourceOption);
             binder.BindMemberFromValue(b => b.Start, StartOption);
             binder.BindMemberFromValue(b => b.End, EndOption);
+            binder.BindMemberFromValue(b => b.Device, DeviceOption);
+            binder.BindMemberFromValue(b => b.Batch, BatchOption);
 
             return binder;
         }
 
         public void BindCommandOptions(HostBuilderContext host, IServiceCollection services)
         {
-            services.AddSingleton(GetOptionsBinder());
             services.AddOptions<TransferCommandConfiguration>().BindCommandLine();
+            services.AddSingleton(GetOptionsBinder());
             services.AddHostedService<TransferEventLogsHostedService>();
         }
     }
@@ -61,6 +67,7 @@ namespace DatabaseInstaller.Commands
         public string Source { get; set; }
         public DateTime Start { get; set; }
         public DateTime End { get; set; }
-        public int DeviceType { get; set; }
+        public int? Device { get; set; }
+        public int? Batch { get; set; }
     }
 }

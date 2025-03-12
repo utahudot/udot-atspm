@@ -830,7 +830,7 @@ public class TransferConfigCommandHostedService : IHostedService
     //private void ManuallyAddSpeedDevice()
     //{
     //    productRepository.Add(new Product { Id = 11, Manufacturer = "Wavetronix", Model = "Wavetronix Advance Detection" });
-    //    deviceConfigurationRepository.Add(new DeviceConfiguration
+    //    deviceConfigurationRepository.Add(new Device
     //    {
     //        Id = 11,
     //        Description = "None",
