@@ -151,24 +151,6 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
         }
     }
 
-    public class DeviceIncludeCommandOption : Option<IEnumerable<string>>
-    {
-        public DeviceIncludeCommandOption() : base("--include-device", "List of device identifiers to include")
-        {
-            AllowMultipleArgumentsPerToken = true;
-            AddAlias("-id");
-        }
-    }
-
-    public class DeviceConfigurationIncludeCommandOption : Option<IEnumerable<string>>
-    {
-        public DeviceConfigurationIncludeCommandOption() : base("--include-device-configuration", "List of device configuration id's to include")
-        {
-            AllowMultipleArgumentsPerToken = true;
-            AddAlias("-idc");
-        }
-    }
-
     public class BatchSizeOption : Option<int>
     {
         public BatchSizeOption() : base("--batch-size", "Batch size of event logs to save to repository")
@@ -186,7 +168,25 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
             //SetDefaultValue(50);
         }
     }
-    
+
+    public class DeviceIncludeCommandOption : Option<IEnumerable<string>>
+    {
+        public DeviceIncludeCommandOption() : base("--include-device", "List of device identifiers to include")
+        {
+            AllowMultipleArgumentsPerToken = true;
+            AddAlias("-id");
+        }
+    }
+
+    public class DeviceConfigurationIncludeCommandOption : Option<IEnumerable<int>>
+    {
+        public DeviceConfigurationIncludeCommandOption() : base("--include-device-configuration", "List of device configuration id's to include")
+        {
+            AllowMultipleArgumentsPerToken = true;
+            AddAlias("-idc");
+        }
+    }
+
     public class DeviceTypeCommandOption : Option<DeviceTypes>
     {
         public DeviceTypeCommandOption() : base("--device-type", "Device type to include")
