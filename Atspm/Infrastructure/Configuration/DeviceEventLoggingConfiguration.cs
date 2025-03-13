@@ -33,12 +33,12 @@ namespace Utah.Udot.Atspm.Infrastructure.Configuration
         /// <summary>
         /// Batch size of <see cref="EventLogModelBase"/> objects when saving to repository
         /// </summary>
-        public int BatchSize { get; set; } = 50000;
+        public int BatchSize { get; set; }
 
         /// <summary>
         /// Amount of processes that can be run in parallel
         /// </summary>
-        public int ParallelProcesses { get; set; } = 50;
+        public int ParallelProcesses { get; set; }
 
         /// <inheritdoc cref="DeviceEventLoggingQueryOptions"/>
         public DeviceEventLoggingQueryOptions DeviceEventLoggingQueryOptions { get; set; } = new DeviceEventLoggingQueryOptions();

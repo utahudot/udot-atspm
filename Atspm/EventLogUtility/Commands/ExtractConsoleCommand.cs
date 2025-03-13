@@ -71,7 +71,7 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
 
             //    Console.WriteLine($"Extraction path {p}");
 
-            //}, FileCommandOption, DateOption, IncludeOption, ExcludeOption, PathCommandOption);
+            //}, FileCommandOption, DateOption, IncludeLocationOption, ExcludeLocationOption, PathCommandOption);
         }
 
         public Option<string> FileCommandOption { get; set; } = new("--filetype", () => ".csv", "File type format to export to");

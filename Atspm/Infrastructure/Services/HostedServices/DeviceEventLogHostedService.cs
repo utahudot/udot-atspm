@@ -15,11 +15,10 @@
 // limitations under the License.
 #endregion
 
+using Lextm.SharpSnmpLib.Messaging;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System.Diagnostics;
 using System.Threading.Tasks.Dataflow;
 using Utah.Udot.Atspm.Data.Models.MeasureOptions;
 using Utah.Udot.ATSPM.Infrastructure.Workflows;
@@ -27,75 +26,10 @@ using Utah.Udot.ATSPM.Infrastructure.Workflows;
 namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
 {
     /// <summary>
-    /// Base class for <see cref="IHostedService"/> with service scope, logging and exit codes
-    /// </summary>
-    public abstract class HostedServiceBase : IHostedService
-    {
-        protected readonly ILogger _log;
-        protected readonly IServiceScopeFactory _services;
-
-        /// <summary>
-        /// Base class for <see cref="IHostedService"/> with service scope, logging and exit codes
-        /// </summary>
-        /// <param name="log"></param>
-        /// <param name="serviceProvider"></param>
-        public HostedServiceBase(ILogger log, IServiceScopeFactory serviceProvider) => (_log, _services) = (log, serviceProvider);
-
-        /// <summary>
-        /// The process to execute given the current service scope
-        /// </summary>
-        /// <param name="scope"></param>
-        /// <returns>Exit Code</returns>
-        public abstract Task<int> Process(IServiceScope scope);
-
-        /// <inheritdoc/>
-        public async Task StartAsync(CancellationToken cancellationToken)
-        {
-            var serviceName = this.GetType().Name;
-            var logMessages = new HostedServiceLogMessages(_log, this.GetType().Name);
-
-            cancellationToken.Register(() => logMessages.StartingCancelled(serviceName));
-            logMessages.StartingService(serviceName);
-
-            var sw = new Stopwatch();
-            sw.Start();
-
-            using (var scope = _services.CreateAsyncScope())
-            {
-                if (scope.ServiceProvider.GetService<IHostEnvironment>().IsDevelopment())
-                    scope.ServiceProvider.PrintHostInformation();
-
-                Environment.ExitCode = await Process(scope);
-            }
-
-            sw.Stop();
-
-            logMessages.CompletingService(serviceName, sw.Elapsed);
-        }
-
-        /// <inheritdoc/>
-        public Task StopAsync(CancellationToken cancellationToken)
-        {
-            var serviceName = this.GetType().Name;
-            var logMessages = new HostedServiceLogMessages(_log, this.GetType().Name);
-
-            cancellationToken.Register(() => logMessages.StoppingCancelled(serviceName));
-            logMessages.StoppingService(serviceName);
-
-            Environment.ExitCode = 0;
-
-            return Task.CompletedTask;
-        }
-    }
-
-
-    /// <summary>
     /// Hosted service for running the <see cref="DeviceEventLogWorkflow"/>
     /// </summary>
-    public class DeviceEventLogHostedService : IHostedService
+    public class DeviceEventLogHostedService : HostedServiceBase
     {
-        private readonly ILogger _log;
-        private readonly IServiceScopeFactory _services;
         private readonly IOptions<DeviceEventLoggingConfiguration> _options;
 
         /// <summary>
@@ -104,97 +38,26 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
         /// <param name="log"></param>
         /// <param name="serviceProvider"></param>
         /// <param name="options"></param>
-        public DeviceEventLogHostedService(ILogger<DeviceEventLogHostedService> log, IServiceScopeFactory serviceProvider, IOptions<DeviceEventLoggingConfiguration> options) =>
-            (_log, _services, _options) = (log, serviceProvider, options);
-
-        /// <inheritdoc/>
-        public async Task StartAsync(CancellationToken cancellationToken)
+        public DeviceEventLogHostedService(ILogger<DeviceEventLogHostedService> log, IServiceScopeFactory serviceProvider, IOptions<DeviceEventLoggingConfiguration> options) : base(log, serviceProvider)
         {
-            var serviceName = this.GetType().Name;
-            var logMessages = new HostedServiceLogMessages(_log, this.GetType().Name);
-
-            cancellationToken.Register(() => logMessages.StartingCancelled(serviceName));
-            logMessages.StartingService(serviceName);
-
-            var sw = new Stopwatch();
-            sw.Start();
-
-            using (var scope = _services.CreateAsyncScope())
-            {
-                scope.ServiceProvider.PrintHostInformation();
-
-
-
-
-                var repo = scope.ServiceProvider.GetService<IMeasureOptionPresetRepository>();
-
-
-                //var test = new MeasureOptionPreset()
-                //{
-                //    Name = "Test1",
-                //    MeasureTypeId = 8,
-                //    Option = new ApproachDelayOptions()
-                //    {
-                //        BinSize = 15,
-                //        Start = DateTime.Now.AddMinutes(-15),
-                //        End = DateTime.Now,
-                //        GetPermissivePhase = true,
-                //        GetVolume = true,
-                //        LocationIdentifier = "1234"
-                //    }
-                //};
-
-                //await repo.AddAsync(test);
-
-                foreach (var i in repo.GetList())
-                {
-                    Console.WriteLine($"stuff: {i} --- {i.Option.GetType()} --- {i.Option}");
-                }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                //var workflow = new DeviceEventLogWorkflow(_services, _options.Value.BatchSize, _options.Value.ParallelProcesses, cancellationToken);
-
-                //var repo = scope.ServiceProvider.GetService<IDeviceRepository>();
-
-                //await foreach (var d in repo.GetDevicesForLogging(_options.Value.DeviceEventLoggingQueryOptions))
-                //{
-                //    await workflow.Input.SendAsync(d);
-                //}
-
-                //workflow.Input.Complete();
-
-                //await Task.WhenAll(workflow.Steps.Select(s => s.Completion));
-            }
-
-            sw.Stop();
-
-            logMessages.CompletingService(serviceName, sw.Elapsed);
+            _options = options;
         }
 
         /// <inheritdoc/>
-        public Task StopAsync(CancellationToken cancellationToken)
+        public override async Task Process(IServiceScope scope, CancellationToken cancellationToken = default)
         {
-            var serviceName = this.GetType().Name;
-            var logMessages = new HostedServiceLogMessages(_log, this.GetType().Name);
+            var repo = scope.ServiceProvider.GetService<IDeviceRepository>();
 
-            cancellationToken.Register(() => logMessages.StoppingCancelled(serviceName));
-            logMessages.StoppingService(serviceName);
+            var workflow = new DeviceEventLogWorkflow(scope.ServiceProvider.GetService<IServiceScopeFactory>(), _options.Value.BatchSize, _options.Value.ParallelProcesses, cancellationToken);
 
-            return Task.CompletedTask;
+            await foreach (var d in repo.GetDevicesForLogging(_options.Value.DeviceEventLoggingQueryOptions))
+            {
+                await workflow.Input.SendAsync(d);
+            }
+
+            workflow.Input.Complete();
+
+            await Task.WhenAll(workflow.Steps.Select(s => s.Completion));
         }
     }
 }

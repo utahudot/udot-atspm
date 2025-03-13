@@ -26,38 +26,18 @@ using Utah.Udot.Atspm.ValueObjects;
 
 namespace Utah.Udot.Atspm.EventLogUtility.Commands
 {
-    //public class DownloadCommand : Command, ICommandOption
-    //{
-    //    public DownloadCommand() : base("download", "Download data from devices")
-    //    {
-
-    //    }
-
-    //    public void BindCommandOptions(HostBuilderContext host, IServiceCollection services)
-    //    {
-    //        Console.WriteLine($"********************BindCommandOptions!********************");
-
-    //        var parent = this.Parents.FirstOrDefault();
-
-    //        if (parent is LogConsoleCommand opt)
-    //        {
-    //            opt.BindCommandOptions(host, services);
-    //        }
-    //    }
-    //}
-
     public class LogConsoleCommand : Command, ICommandOption
     {
         public LogConsoleCommand() : base("log", "Pulls and uploads event logs from devices")
         {
-            IncludeOption.AddValidator(r =>
+            IncludeLocationOption.AddValidator(r =>
             {
-                if (r.GetValueForOption(ExcludeOption)?.Count() > 0)
+                if (r.GetValueForOption(ExcludeLocationOption)?.Count() > 0)
                     r.ErrorMessage = "Can't use include option when also using exclude option";
             });
-            ExcludeOption.AddValidator(r =>
+            ExcludeLocationOption.AddValidator(r =>
             {
-                if (r.GetValueForOption(IncludeOption)?.Count() > 0)
+                if (r.GetValueForOption(IncludeLocationOption)?.Count() > 0)
                     r.ErrorMessage = "Can't use exclude option when also using include option";
             });
 
@@ -69,17 +49,17 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
             AddGlobalOption(BatchSizeOption);
             AddGlobalOption(PrallelProcessesOption);
 
-            AddGlobalOption(IncludeOption);
-            AddGlobalOption(ExcludeOption);
-            AddGlobalOption(AreaOption);
-            AddGlobalOption(JurisdictionOption);
-            AddGlobalOption(RegionOption);
-            AddGlobalOption(LocationTypeOption);
+            AddGlobalOption(DeviceIdentifierOption);
+            AddGlobalOption(DeviceConfigurationOption);
             AddGlobalOption(DeviceTypeOption);
             AddGlobalOption(TransportProtocolOption);
             AddGlobalOption(DeviceStatusCommandOption);
-
-            //this.AddCommand(new DownloadCommand());
+            AddGlobalOption(IncludeLocationOption);
+            AddGlobalOption(ExcludeLocationOption);
+            AddGlobalOption(LocationTypeOption);
+            AddGlobalOption(AreaOption);
+            AddGlobalOption(JurisdictionOption);
+            AddGlobalOption(RegionOption);
         }
 
         public Argument<bool?> DeleteRemoteFileArg { get; set; } = new Argument<bool?>("delete local", "Delete the remote file on the device after downloading");
@@ -94,23 +74,27 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
 
         public PrallelProcessesOption PrallelProcessesOption { get; set; } = new();
 
-        public LocationIncludeCommandOption IncludeOption { get; set; } = new();
+        public DeviceIncludeCommandOption DeviceIdentifierOption { get; set; } = new();
 
-        public LocationExcludeCommandOption ExcludeOption { get; set; } = new();
-
-        public LocationAreaCommandOption AreaOption { get; set; } = new();
-
-        public LocationJurisdictionCommandOption JurisdictionOption { get; set; } = new();
-
-        public LocationRegionCommandOption RegionOption { get; set; } = new();
-
-        public LocationTypeCommandOption LocationTypeOption { get; set; } = new();
+        public DeviceConfigurationIncludeCommandOption DeviceConfigurationOption { get; set; } = new();
 
         public DeviceTypeCommandOption DeviceTypeOption { get; set; } = new();
 
         public TransportProtocolCommandOption TransportProtocolOption { get; set; } = new();
 
         public DeviceStatusCommandOption DeviceStatusCommandOption { get; set; } = new();
+
+        public LocationIncludeCommandOption IncludeLocationOption { get; set; } = new();
+
+        public LocationExcludeCommandOption ExcludeLocationOption { get; set; } = new();
+
+        public LocationTypeCommandOption LocationTypeOption { get; set; } = new();
+
+        public LocationAreaCommandOption AreaOption { get; set; } = new();
+
+        public LocationJurisdictionCommandOption JurisdictionOption { get; set; } = new();
+
+        public LocationRegionCommandOption RegionOption { get; set; } = new();
 
         public void BindCommandOptions(HostBuilderContext host, IServiceCollection services)
         {
@@ -124,15 +108,17 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
 
             var deviceEventLoggingQueryOptions = new ModelBinder<DeviceEventLoggingQueryOptions>();
 
-            deviceEventLoggingQueryOptions.BindMemberFromValue(b => b.IncludedLocations, IncludeOption);
-            deviceEventLoggingQueryOptions.BindMemberFromValue(b => b.ExcludedLocations, ExcludeOption);
-            deviceEventLoggingQueryOptions.BindMemberFromValue(b => b.IncludedAreas, AreaOption);
-            deviceEventLoggingQueryOptions.BindMemberFromValue(b => b.IncludedJurisdictions, JurisdictionOption);
-            deviceEventLoggingQueryOptions.BindMemberFromValue(b => b.IncludedRegions, RegionOption);
-            deviceEventLoggingQueryOptions.BindMemberFromValue(b => b.IncludedLocationTypes, LocationTypeOption);
+            deviceEventLoggingQueryOptions.BindMemberFromValue(b => b.IncludedDevices, DeviceIdentifierOption);
+            deviceEventLoggingQueryOptions.BindMemberFromValue(b => b.IncludeConfigurations, DeviceConfigurationOption);
             deviceEventLoggingQueryOptions.BindMemberFromValue(b => b.DeviceType, DeviceTypeOption);
             deviceEventLoggingQueryOptions.BindMemberFromValue(b => b.TransportProtocol, TransportProtocolOption);
             deviceEventLoggingQueryOptions.BindMemberFromValue(b => b.TransportProtocol, TransportProtocolOption);
+            deviceEventLoggingQueryOptions.BindMemberFromValue(b => b.IncludedLocations, IncludeLocationOption);
+            deviceEventLoggingQueryOptions.BindMemberFromValue(b => b.ExcludedLocations, ExcludeLocationOption);
+            deviceEventLoggingQueryOptions.BindMemberFromValue(b => b.IncludedLocationTypes, LocationTypeOption);
+            deviceEventLoggingQueryOptions.BindMemberFromValue(b => b.IncludedAreas, AreaOption);
+            deviceEventLoggingQueryOptions.BindMemberFromValue(b => b.IncludedJurisdictions, JurisdictionOption);
+            deviceEventLoggingQueryOptions.BindMemberFromValue(b => b.IncludedRegions, RegionOption);
 
             services.AddOptions<DeviceEventLoggingConfiguration>()
                 .Configure<BindingContext>((a, b) =>
@@ -150,7 +136,7 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
         public BatchSizeOption() : base("--batch-size", "Batch size of event logs to save to repository")
         {
             AddAlias("-bs");
-            SetDefaultValue(50000);
+            //SetDefaultValue(50000);
         }
     }
 
@@ -159,7 +145,25 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
         public PrallelProcessesOption() : base("--parallel-processes", "Amount of processes that can be run in parallel")
         {
             AddAlias("-pp");
-            SetDefaultValue(50);
+            //SetDefaultValue(50);
+        }
+    }
+
+    public class DeviceIncludeCommandOption : Option<IEnumerable<string>>
+    {
+        public DeviceIncludeCommandOption() : base("--include-device", "List of device identifiers to include")
+        {
+            AllowMultipleArgumentsPerToken = true;
+            AddAlias("-id");
+        }
+    }
+
+    public class DeviceConfigurationIncludeCommandOption : Option<IEnumerable<int>>
+    {
+        public DeviceConfigurationIncludeCommandOption() : base("--include-device-configuration", "List of device configuration id's to include")
+        {
+            AllowMultipleArgumentsPerToken = true;
+            AddAlias("-idc");
         }
     }
 

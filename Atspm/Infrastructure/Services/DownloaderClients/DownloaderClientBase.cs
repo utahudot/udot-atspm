@@ -81,8 +81,8 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
         {
             token.ThrowIfCancellationRequested();
 
-            if (!IsConnected)
-                throw new DownloaderClientConnectionException(null, this, "Client not connected");
+            //if (!IsConnected)
+            //    throw new DownloaderClientConnectionException(null, this, "Client not connected");
 
             try
             {
@@ -101,8 +101,8 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
         {
             token.ThrowIfCancellationRequested();
 
-            if (!IsConnected)
-                throw new DownloaderClientConnectionException(null, this, "Client not connected");
+            //if (!IsConnected)
+            //    throw new DownloaderClientConnectionException(null, this, "Client not connected");
 
             try
             {
@@ -115,9 +115,6 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
 
                 if (TryCreateFileInfo(local, out FileInfo file))
                 {
-                    Console.WriteLine($"==============================================================file: {file.FullName}");
-
-
                     file.Directory.Create();
 
                     return await DownloadResource(file, remote, token);
@@ -163,12 +160,8 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
             {
                 var path = uri.LocalPath.Replace("\\\\localhost\\", "");
 
-                //var driveCheck = Path.IsPathRooted(path);
-                //var pathCheck = Path.IsPathFullyQualified(path);
                 var fileCheck = !Path.GetFileName(path).Any(a => Path.GetInvalidFileNameChars().Contains(a));
                 var extCheck = Path.HasExtension(path);
-
-                //if (driveCheck && pathCheck && fileCheck && extCheck)
                 if (fileCheck && extCheck)
                 {
                     file = new FileInfo(path);
