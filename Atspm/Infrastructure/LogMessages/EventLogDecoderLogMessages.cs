@@ -73,7 +73,7 @@ namespace Utah.Udot.Atspm.Infrastructure.LogMessages
         [LoggerMessage(EventId = 1003, EventName = "Decode Exception", Level = LogLevel.Warning, Message = "Exception decoding {file}")]
         public partial void DecodeLogFileException(string file, Exception ex);
 
-        
+
 
         #endregion
 

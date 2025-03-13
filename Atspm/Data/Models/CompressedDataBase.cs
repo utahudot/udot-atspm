@@ -58,7 +58,7 @@ namespace Utah.Udot.Atspm.Data.Models
                 }
                 else
                 {
-                   data = new List<ILocationLayer>();
+                    data = new List<ILocationLayer>();
                 }
 
                 return data?.ToList();
