@@ -120,18 +120,6 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
     /// </summary>
     public interface ISftpClientWrapper : ISftpClient
     {
-        //ConnectionInfo ConnectionInfo { get; }
-        //bool IsConnected { get; }
-        //TimeSpan KeepAliveInterval { get; set; }
-
-        //event EventHandler<ExceptionEventArgs> ErrorOccurred;
-        //event EventHandler<HostKeyEventArgs> HostKeyReceived;
-
-        //void Connect();
-        //void Disconnect();
-        //void Dispose();
-        //void SendKeepAlive();
-
         Task<FileInfo> DownloadFileAsync(string localPath, string remotePath);
 
         Task<IEnumerable<ISftpFile>> ListDirectoryAsync(string directory, params string[] filters);
