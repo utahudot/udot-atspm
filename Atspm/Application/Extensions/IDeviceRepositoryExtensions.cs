@@ -37,17 +37,19 @@ namespace Utah.Udot.Atspm.Extensions
         {
             var result = repo.GetList()
                 .Where(w => w.LoggingEnabled)
-                .Where(w => queryOptions.DeviceType == DeviceTypes.Unknown ? true : w.DeviceType == queryOptions.DeviceType)
-                .Where(w => queryOptions.DeviceStatus == DeviceStatus.Unknown ? true : w.DeviceStatus == queryOptions.DeviceStatus)
-                .Where(w => queryOptions.TransportProtocol == TransportProtocols.Unknown ? true : w.DeviceConfiguration.Protocol == queryOptions.TransportProtocol)
+                .Where(w => queryOptions.DeviceType == DeviceTypes.Unknown || w.DeviceType == queryOptions.DeviceType)
+                .Where(w => queryOptions.DeviceStatus == DeviceStatus.Unknown || w.DeviceStatus == queryOptions.DeviceStatus)
+                .Where(w => queryOptions.TransportProtocol == TransportProtocols.Unknown || w.DeviceConfiguration.Protocol == queryOptions.TransportProtocol)
                 .AsQueryable()
                 .AsAsyncEnumerable()
-                .Where(w => (queryOptions.IncludedLocations?.Count() > 0) ? queryOptions.IncludedLocations.Any(a => w.Location.LocationIdentifier == a) : true)
-                .Where(w => (queryOptions.ExcludedLocations?.Count() > 0) ? !queryOptions.ExcludedLocations.Any(a => w.Location.LocationIdentifier == a) : true)
-                .Where(w => (queryOptions.IncludedAreas?.Count() > 0) ? queryOptions.IncludedAreas.Any(l => w.Location.Areas.Any(a => a.Name == l)) : true)
-                .Where(w => (queryOptions.IncludedRegions?.Count() > 0) ? queryOptions.IncludedRegions.Any(a => w.Location.Region.Description == a) : true)
-                .Where(w => (queryOptions.IncludedJurisdictions?.Count() > 0) ? queryOptions.IncludedJurisdictions.Any(a => w.Location.Jurisdiction.Name == a) : true)
-                .Where(w => (queryOptions.IncludedLocationTypes?.Count() > 0) ? queryOptions.IncludedLocationTypes.Any(a => w.Location.LocationType.Name == a) : true);
+                .Where(w => !(queryOptions.IncludedDevices?.Count() > 0) || queryOptions.IncludedDevices.Any(a => w.DeviceIdentifier == a))
+                .Where(w => !(queryOptions.IncludeConfigurations?.Count() > 0) || queryOptions.IncludeConfigurations.Any(a => w.DeviceConfigurationId == a))
+                .Where(w => !(queryOptions.IncludedLocations?.Count() > 0) || queryOptions.IncludedLocations.Any(a => w.Location.LocationIdentifier == a))
+                .Where(w => !(queryOptions.ExcludedLocations?.Count() > 0) || !queryOptions.ExcludedLocations.Any(a => w.Location.LocationIdentifier == a))
+                .Where(w => !(queryOptions.IncludedAreas?.Count() > 0) || queryOptions.IncludedAreas.Any(l => w.Location.Areas.Any(a => a.Name == l)))
+                .Where(w => !(queryOptions.IncludedRegions?.Count() > 0) || queryOptions.IncludedRegions.Any(a => w.Location.Region.Description == a))
+                .Where(w => !(queryOptions.IncludedJurisdictions?.Count() > 0) || queryOptions.IncludedJurisdictions.Any(a => w.Location.Jurisdiction.Name == a))
+                .Where(w => !(queryOptions.IncludedLocationTypes?.Count() > 0) || queryOptions.IncludedLocationTypes.Any(a => w.Location.LocationType.Name == a));
 
             return result;
         }
