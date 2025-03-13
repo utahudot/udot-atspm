@@ -1,4 +1,4 @@
-import { ApproachForConfig } from '@/features/locations/components/editLocation/editLocationConfigHandler'
+import { ConfigApproach } from '@/features/locations/components/editLocation/locationStore'
 import { Box, ButtonBase, IconButton, Tooltip, Typography } from '@mui/material'
 
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
@@ -7,7 +7,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import SaveIcon from '@mui/icons-material/Save'
 
 interface ApproachEditorRowProps {
-  approach: ApproachForConfig
+  approach: ConfigApproach
   open: boolean
   handleApproachClick: () => void
   handleCopyApproach: () => void

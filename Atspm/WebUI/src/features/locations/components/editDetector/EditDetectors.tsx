@@ -1,12 +1,15 @@
 import { Detector } from '@/api/config/aTSPMConfigurationApi.schemas'
 import { modalButtonLocation } from '@/components/GenericAdminChart'
-import { useDeleteDetector } from '@/features/locations/api/detector'
 import CommentCell from '@/features/locations/components/editDetector/CommentCell'
 import DateAddedCell from '@/features/locations/components/editDetector/DateAddedCell'
 import DetectionTypesCell from '@/features/locations/components/editDetector/DetectionTypesCell'
 import HardwareTypeCell from '@/features/locations/components/editDetector/HardwareTypeCell'
 import LaneTypeCell from '@/features/locations/components/editDetector/LaneTypeCell'
 import MovementTypeCell from '@/features/locations/components/editDetector/MovementTypeCell'
+import {
+  ConfigApproach,
+  useLocationStore,
+} from '@/features/locations/components/editLocation/locationStore'
 import EditableTableCell from '@/features/locations/components/editableTableCell/EditableTableCell'
 import DeleteIcon from '@mui/icons-material/Delete'
 import {
@@ -24,14 +27,10 @@ import {
   TableRow,
   Typography,
 } from '@mui/material'
-import React, { useCallback, useState } from 'react'
-import {
-  ApproachForConfig,
-  DetectorForConfig,
-} from '../editLocation/editLocationConfigHandler'
+import { useState } from 'react'
 
 export const modalStyle = {
-  position: 'absolute',
+  position: 'absolute' as const,
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
@@ -40,119 +39,55 @@ export const modalStyle = {
   border: 'none',
   borderRadius: '10px',
   boxShadow: 24,
-  p: 4,
-  '@media (max-width: 400px)': {
-    width: '100%',
-  },
 }
 
-interface EditDetectorsProps {
-  detectors: DetectorForConfig[]
-  approach: ApproachForConfig
-  updateApproach: (approach: ApproachForConfig) => void
-  errors?: Record<string, { error: string; id: string }> | null
-  warnings?: Record<string, { warning: string; id: string }> | null
-}
-
-const EditDetectors = ({
-  detectors,
+export default function EditDetectors({
   approach,
-  errors,
-  warnings,
-  updateApproach,
-}: EditDetectorsProps) => {
+}: {
+  approach: ConfigApproach
+}) {
+  const { errors, warnings, updateDetector, deleteDetector } =
+    useLocationStore()
   const [modalOpen, setModalOpen] = useState(false)
   const [selectedDetectorId, setSelectedDetectorId] = useState<number>()
-  const { mutate: deleteDetector } = useDeleteDetector()
-
-  const updateDetector = useCallback(
-    (id: number | undefined, name: string, val: unknown) => {
-      if (!id) return
-      val = val === '' ? null : val
-      updateApproach({
-        ...approach,
-        detectors: approach.detectors.map((detector) =>
-          detector.id === id ? { ...detector, [name]: val } : detector
-        ),
-      })
-    },
-    [approach, updateApproach]
-  )
-
-  const handleDeleteClick = useCallback(
-    (id: number) => {
-      updateApproach({
-        ...approach,
-        detectors: approach.detectors.filter((detector) => detector.id !== id),
-      })
-      deleteDetector(id)
-      setModalOpen(false)
-    },
-    [approach, updateApproach, deleteDetector]
-  )
 
   return (
     <>
       <TableContainer component={Paper}>
-        <Table stickyHeader aria-label="detectors table">
-          <TableHead
-            sx={{
-              '& .MuiTableCell-head': {
-                fontSize: '0.8rem',
-                bgcolor: 'white',
-                lineHeight: '1rem',
-                padding: '0.5rem',
-              },
-            }}
-          >
+        <Table stickyHeader>
+          <TableHead>
             <TableRow>
-              <TableCell
-                colSpan={9}
-                sx={{ borderBottom: 'none', pb: 0 }}
-                component={'td'}
-              />
-              <TableCell
-                colSpan={2}
-                align="center"
-                sx={{ borderBottom: 'none', pb: 0 }}
-              >
-                <Typography variant="caption" fontStyle={'italic'}>
+              <TableCell colSpan={9} />
+              <TableCell colSpan={2} align="center">
+                <Typography variant="caption" fontStyle="italic">
                   Advanced Count Only
                 </Typography>
               </TableCell>
-              <TableCell
-                colSpan={2}
-                align="center"
-                sx={{ borderBottom: 'none', pb: 0 }}
-              >
-                <Typography variant="caption" fontStyle={'italic'}>
+              <TableCell colSpan={2} align="center">
+                <Typography variant="caption" fontStyle="italic">
                   Advanced Speed Only
                 </Typography>
               </TableCell>
             </TableRow>
             <TableRow>
               <TableCell>Channel</TableCell>
-              <TableCell sx={{ minWidth: '225px' }}>Detection Types</TableCell>
+              <TableCell>Detection Types</TableCell>
               <TableCell>Hardware</TableCell>
               <TableCell>Latency Correction</TableCell>
               <TableCell>Lane Number</TableCell>
-              <TableCell sx={{ maxWidth: '100px' }}>Movement Type</TableCell>
+              <TableCell>Movement Type</TableCell>
               <TableCell>Lane Type</TableCell>
               <TableCell>Date Added</TableCell>
               <TableCell>Comments</TableCell>
-              <TableCell sx={{ minWidth: '100px' }}>
-                Distance to Stop Bar
-              </TableCell>
+              <TableCell>Distance to Stop Bar</TableCell>
               <TableCell>Decision Point</TableCell>
-              <TableCell sx={{ minWidth: '100px' }}>
-                Minimum Speed Filter
-              </TableCell>
+              <TableCell>Minimum Speed Filter</TableCell>
               <TableCell>Movement Delay</TableCell>
               <TableCell>Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {detectors.length === 0 && (
+            {approach.detectors.length === 0 && (
               <TableRow>
                 <TableCell colSpan={15}>
                   <Typography variant="h6" align="center">
@@ -161,111 +96,105 @@ const EditDetectors = ({
                 </TableCell>
               </TableRow>
             )}
-            {detectors.map((detector) => (
+            {approach.detectors.map((detector) => (
               <TableRow
                 key={detector.id}
                 sx={{
                   backgroundColor: detector.isNew
                     ? 'rgba(100, 210, 100, 0.3)'
                     : 'white',
-                  '& .MuiTableCell-body': {
-                    fontSize: '0.9rem',
-                    borderRight: '1px solid #e0e0e0',
-                    padding: '.5rem',
-                  },
                 }}
               >
                 <EditableTableCell
                   value={detector.detectorChannel}
-                  onUpdate={(newValue) =>
+                  onUpdate={(newVal) =>
                     updateDetector(
                       detector.id,
                       'detectorChannel',
-                      parseInt(newValue as string)
+                      parseInt(newVal as string)
                     )
                   }
-                  error={errors?.[detector.id as number]?.error}
-                  warning={warnings?.[detector.id as number]?.warning}
+                  error={errors?.[String(detector.id)]?.error}
+                  warning={warnings?.[String(detector.id)]?.warning}
                 />
                 <DetectionTypesCell
                   detector={detector as Detector}
-                  onUpdate={(newSelection) => {
+                  onUpdate={(newSelection) =>
                     updateDetector(detector.id, 'detectionTypes', newSelection)
-                  }}
+                  }
                 />
                 <HardwareTypeCell
                   value={detector.detectionHardware}
-                  onUpdate={(newValue) =>
-                    updateDetector(detector.id, 'detectionHardware', newValue)
+                  onUpdate={(newVal) =>
+                    updateDetector(detector.id, 'detectionHardware', newVal)
                   }
                 />
                 <EditableTableCell
                   value={detector.latencyCorrection}
-                  onUpdate={(newValue) =>
-                    updateDetector(detector.id, 'latencyCorrection', newValue)
+                  onUpdate={(newVal) =>
+                    updateDetector(detector.id, 'latencyCorrection', newVal)
                   }
                 />
                 <EditableTableCell
                   value={detector.laneNumber}
-                  onUpdate={(newValue) =>
-                    updateDetector(detector.id, 'laneNumber', newValue)
+                  onUpdate={(newVal) =>
+                    updateDetector(detector.id, 'laneNumber', newVal)
                   }
                 />
                 <MovementTypeCell
                   value={detector.movementType}
-                  onUpdate={(newValue) =>
-                    updateDetector(detector.id, 'movementType', newValue)
+                  onUpdate={(newVal) =>
+                    updateDetector(detector.id, 'movementType', newVal)
                   }
                 />
                 <LaneTypeCell
                   value={detector.laneType}
-                  onUpdate={(newValue) =>
-                    updateDetector(detector.id, 'laneType', newValue)
+                  onUpdate={(newVal) =>
+                    updateDetector(detector.id, 'laneType', newVal)
                   }
                 />
                 <DateAddedCell
                   value={detector.dateAdded}
-                  onUpdate={(newValue) =>
+                  onUpdate={(newVal) =>
                     updateDetector(
                       detector.id,
                       'dateAdded',
-                      newValue.toISOString()
+                      newVal.toISOString()
                     )
                   }
                 />
                 <CommentCell detector={detector as Detector} />
                 <EditableTableCell
                   value={detector.distanceFromStopBar}
-                  onUpdate={(newValue) =>
-                    updateDetector(detector.id, 'distanceFromStopBar', newValue)
+                  onUpdate={(newVal) =>
+                    updateDetector(detector.id, 'distanceFromStopBar', newVal)
                   }
                 />
                 <EditableTableCell
                   value={detector.decisionPoint}
-                  onUpdate={(newValue) =>
-                    updateDetector(detector.id, 'decisionPoint', newValue)
+                  onUpdate={(newVal) =>
+                    updateDetector(detector.id, 'decisionPoint', newVal)
                   }
                 />
                 <EditableTableCell
                   value={detector.minSpeedFilter}
-                  onUpdate={(newValue) =>
-                    updateDetector(detector.id, 'minSpeedFilter', newValue)
+                  onUpdate={(newVal) =>
+                    updateDetector(detector.id, 'minSpeedFilter', newVal)
                   }
                 />
                 <EditableTableCell
                   value={detector.movementDelay}
-                  onUpdate={(newValue) =>
-                    updateDetector(detector.id, 'movementDelay', newValue)
+                  onUpdate={(newVal) =>
+                    updateDetector(detector.id, 'movementDelay', newVal)
                   }
                 />
                 <TableCell align="center">
                   <IconButton
-                    aria-label="delete detector"
+                    color="error"
                     onClick={() => {
                       setSelectedDetectorId(detector.id)
                       setModalOpen(true)
                     }}
-                    color="error"
                   >
                     <DeleteIcon />
                   </IconButton>
@@ -275,19 +204,23 @@ const EditDetectors = ({
           </TableBody>
         </Table>
       </TableContainer>
+
       {selectedDetectorId && (
         <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
           <Box sx={modalStyle}>
-            <Typography sx={{ fontWeight: 'bold' }}>Delete Detector</Typography>
-            <Divider sx={{ margin: '10px 0', backgroundColor: 'gray' }} />
+            <Typography fontWeight="bold">Delete Detector</Typography>
+            <Divider sx={{ my: 2, backgroundColor: 'gray' }} />
             <Typography>
               Are you sure you want to delete this detector?
             </Typography>
             <Box sx={modalButtonLocation}>
               <Button onClick={() => setModalOpen(false)}>Cancel</Button>
               <Button
-                onClick={() => handleDeleteClick(selectedDetectorId)}
                 sx={{ color: 'red' }}
+                onClick={() => {
+                  deleteDetector(selectedDetectorId)
+                  setModalOpen(false)
+                }}
               >
                 Delete Detector
               </Button>
@@ -298,5 +231,3 @@ const EditDetectors = ({
     </>
   )
 }
-
-export default React.memo(EditDetectors)

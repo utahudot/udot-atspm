@@ -14,11 +14,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 // #endregion
-import { ApproachForConfig } from '../../editLocation/editLocationConfigHandler'
+import { ConfigApproach } from '@/features/locations/components/editLocation/locationStore'
 
-export const sortApproachesByPhaseNumber = (
-  approaches: ApproachForConfig[]
-) => {
+export const sortApproachesByPhaseNumber = (approaches: ConfigApproach[]) => {
   return [...approaches].sort((a, b) => {
     // Extract the digit from the description, if present
     const aNum = a.description.match(/\d+/) // Match all digits to handle multi-digit numbers

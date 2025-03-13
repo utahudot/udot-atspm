@@ -14,10 +14,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 // #endregion
-import { ApproachForConfig } from '@/features/locations/components/editLocation/editLocationConfigHandler'
+import { ConfigApproach } from '@/features/locations/components/editLocation/locationStore'
 
 export const hasUniqueDetectorChannels = (
-  approaches: ApproachForConfig[]
+  approaches: ConfigApproach[]
 ): {
   isValid: boolean
   errors: Record<string, { error: string; id: string }>
