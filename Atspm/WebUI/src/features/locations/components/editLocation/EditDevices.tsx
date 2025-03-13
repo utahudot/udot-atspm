@@ -5,17 +5,18 @@ import {
   useGetDevicesForLocation,
 } from '@/features/devices/api/devices'
 import DeviceCard from '@/features/locations/components/editLocation/DeviceCard'
+import { useLocationStore } from '@/features/locations/components/editLocation/locationStore'
 import DeviceModal from '@/features/locations/components/editLocation/NewDeviceModal'
 import AddIcon from '@mui/icons-material/Add'
 import { Avatar, Box, Button, Modal, Typography, useTheme } from '@mui/material'
 import { useState } from 'react'
 
-interface EditDevicesProps {
-  locationId: number
-}
-
-const EditDevices = ({ locationId }: EditDevicesProps) => {
+const EditDevices = () => {
   const theme = useTheme()
+
+  const { location } = useLocationStore()
+  const locationId = location?.id
+
   const [isModalOpen, setModalOpen] = useState(false)
   const [currentDevice, setCurrentDevice] = useState<Device | null>(null)
   const [openDeleteModal, setOpenDeleteModal] = useState(false)

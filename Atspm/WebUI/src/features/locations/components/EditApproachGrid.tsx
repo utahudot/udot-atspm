@@ -1,5 +1,8 @@
-import { Location } from '@/api/config/aTSPMConfigurationApi.schemas'
 import DirectionTypeCell from '@/features/locations/components/editApproach/DirectionTypeCell'
+import {
+  ConfigApproach,
+  useLocationStore,
+} from '@/features/locations/components/editLocation/locationStore'
 import EditableTableCell from '@/features/locations/components/editableTableCell'
 import {
   Divider,
@@ -13,7 +16,6 @@ import {
   Typography,
 } from '@mui/material'
 import React from 'react'
-import { ApproachForConfig } from './editLocation/editLocationConfigHandler'
 
 const StyledTC = ({
   children,
@@ -23,26 +25,19 @@ const StyledTC = ({
   width?: string
 }) => <TableCell sx={{ minWidth: width }}>{children}</TableCell>
 
-interface EditApproachGridProps {
-  errors: Record<string, { error: string; id: string }> | null
-  approach: ApproachForConfig
-  approaches: ApproachForConfig[]
-  location: Location
-  updateApproach: (approach: ApproachForConfig) => void
-  updateApproaches: (approaches: ApproachForConfig[]) => void
-}
-
-const EditApproachGrid = ({
-  errors,
+export default function EditApproachGrid({
   approach,
-  location,
-  updateApproach,
-}: EditApproachGridProps) => {
-  const { pedsAre1to1 } = location
+}: {
+  approach: ConfigApproach
+}) {
+  const { location, errors, updateApproach } = useLocationStore()
+  const pedsAre1to1 = location?.pedsAre1to1 ?? false
 
-  const handleUpdate = (field: string, value: any) => {
-    const updatedApproach = { ...approach, [field]: value }
-    updateApproach(updatedApproach)
+  const handleUpdate = (
+    field: keyof ConfigApproach,
+    value: string | number | boolean
+  ) => {
+    updateApproach({ ...approach, [field]: value })
   }
 
   return (
@@ -59,34 +54,26 @@ const EditApproachGrid = ({
           }}
         >
           <TableRow>
-            <TableCell
-              colSpan={2}
-              sx={{ borderBottom: 'none', pb: 0 }}
-              component={'td'}
-            />
+            <TableCell colSpan={2} sx={{ borderBottom: 'none', pb: 0 }} />
             <TableCell
               colSpan={3}
               align="center"
               sx={{ borderBottom: 'none', pb: 0 }}
             >
               <Divider>
-                <Typography variant="caption" fontStyle={'italic'}>
+                <Typography variant="caption" fontStyle="italic">
                   Phase/Overlap
                 </Typography>
               </Divider>
             </TableCell>
-            <TableCell
-              colSpan={2}
-              sx={{ borderBottom: 'none', pb: 0 }}
-              component={'td'}
-            />
+            <TableCell colSpan={2} sx={{ borderBottom: 'none', pb: 0 }} />
             <TableCell
               colSpan={3}
               align="center"
               sx={{ borderBottom: 'none', pb: 0 }}
             >
               <Divider>
-                <Typography variant="caption" fontStyle={'italic'}>
+                <Typography variant="caption" fontStyle="italic">
                   Overlap
                 </Typography>
               </Divider>
@@ -116,60 +103,50 @@ const EditApproachGrid = ({
           >
             <DirectionTypeCell
               value={approach.directionTypeId}
-              onUpdate={(value) => handleUpdate('directionTypeId', value)}
+              onUpdate={(v) => handleUpdate('directionTypeId', v)}
             />
             <EditableTableCell
               value={approach.description}
-              onUpdate={(value) => handleUpdate('description', value)}
+              onUpdate={(v) => handleUpdate('description', v)}
             />
             <EditableTableCell
-              sx={{ minWidth: '50px' }}
               value={approach.protectedPhaseNumber}
-              onUpdate={(value) => handleUpdate('protectedPhaseNumber', value)}
+              onUpdate={(v) => handleUpdate('protectedPhaseNumber', v)}
               error={errors?.protectedPhaseNumber?.error}
             />
             <EditableTableCell
               value={approach.permissivePhaseNumber}
-              onUpdate={(value) => handleUpdate('permissivePhaseNumber', value)}
+              onUpdate={(v) => handleUpdate('permissivePhaseNumber', v)}
             />
             <EditableTableCell
               value={approach.pedestrianPhaseNumber}
-              onUpdate={(value) => handleUpdate('pedestrianPhaseNumber', value)}
-              lockable={true}
+              onUpdate={(v) => handleUpdate('pedestrianPhaseNumber', v)}
+              lockable
               isLocked={pedsAre1to1}
             />
             <EditableTableCell
-              value={
-                approach.pedestrianDetectors &&
-                approach.pedestrianDetectors.toString()
+              value={approach.pedestrianDetectors?.toString() || ''}
+              onUpdate={(v) =>
+                handleUpdate('pedestrianDetectors', v?.toString())
               }
-              onUpdate={(value) =>
-                handleUpdate('pedestrianDetectors', value?.toString())
-              }
-              lockable={true}
+              lockable
               isLocked={pedsAre1to1}
             />
             <EditableTableCell
               value={approach.mph}
-              onUpdate={(value) => handleUpdate('mph', value)}
+              onUpdate={(v) => handleUpdate('mph', v)}
             />
             <EditableTableCell
               value={approach.isProtectedPhaseOverlap}
-              onUpdate={(value) =>
-                handleUpdate('isProtectedPhaseOverlap', value)
-              }
+              onUpdate={(v) => handleUpdate('isProtectedPhaseOverlap', v)}
             />
             <EditableTableCell
               value={approach.isPermissivePhaseOverlap}
-              onUpdate={(value) =>
-                handleUpdate('isPermissivePhaseOverlap', value)
-              }
+              onUpdate={(v) => handleUpdate('isPermissivePhaseOverlap', v)}
             />
             <EditableTableCell
               value={approach.isPedestrianPhaseOverlap}
-              onUpdate={(value) =>
-                handleUpdate('isPedestrianPhaseOverlap', value)
-              }
+              onUpdate={(v) => handleUpdate('isPedestrianPhaseOverlap', v)}
             />
           </TableRow>
         </TableBody>
@@ -177,5 +154,3 @@ const EditApproachGrid = ({
     </TableContainer>
   )
 }
-
-export default EditApproachGrid

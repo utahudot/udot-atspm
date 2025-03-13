@@ -1,9 +1,9 @@
-import { Location } from '@/api/config/aTSPMConfigurationApi.schemas'
 import CustomSelect from '@/components/customSelect'
 import { useAreas } from '@/features/areas/api'
 import { useJurisdictions } from '@/features/jurisdictions/api'
 import { useEditLocation } from '@/features/locations/api'
 import { useLocationTypes } from '@/features/locations/api/getLocationTypes'
+import { useLocationStore } from '@/features/locations/components/editLocation/locationStore'
 import { useRegions } from '@/features/regions/api'
 import { dateToTimestamp } from '@/utils/dateTime'
 import SaveIcon from '@mui/icons-material/Save'
@@ -24,17 +24,8 @@ import { format, parseISO } from 'date-fns'
 import { ChangeEvent } from 'react'
 import { useQueryClient } from 'react-query'
 
-interface EditGeneralLocationProps {
-  location: Location
-  updateLocation: (location: Location) => void
-  handleLocationEdit: (name: string, value: string) => void
-}
-
-function EditGeneralLocation({
-  location,
-  handleLocationEdit,
-  updateLocation,
-}: EditGeneralLocationProps) {
+const LocationGeneralOptionsEditor = () => {
+  const { location, handleLocationEdit, setLocation } = useLocationStore()
   const queryClient = useQueryClient()
   const { data: areasData } = useAreas()
   const { data: regionsData } = useRegions()
@@ -44,7 +35,7 @@ function EditGeneralLocation({
   const { mutate: updateGeneralInfo } = useEditLocation()
 
   const handleAreaDelete = (id: number | string) => {
-    updateLocation({
+    setLocation({
       ...location,
       areas: location?.areas?.filter((area) => area.id !== id),
     })
@@ -53,7 +44,7 @@ function EditGeneralLocation({
   const handleDateChange = (value: Date | null) => {
     if (!value) return
 
-    updateLocation({
+    setLocation({
       ...location,
       start: dateToTimestamp(value),
     })
@@ -61,7 +52,7 @@ function EditGeneralLocation({
 
   const handleCheckboxChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, checked } = e.target
-    updateLocation({
+    setLocation({
       ...location,
       [name]: checked,
     })
@@ -78,7 +69,7 @@ function EditGeneralLocation({
       }
     }
 
-    updateLocation({
+    setLocation({
       ...location,
       areas,
     })
@@ -338,4 +329,4 @@ function EditGeneralLocation({
   )
 }
 
-export default EditGeneralLocation
+export default LocationGeneralOptionsEditor
