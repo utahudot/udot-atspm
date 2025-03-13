@@ -65,11 +65,10 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
             {
                 ArgumentNullException.ThrowIfNull(resource);
 
-                //HACK: took this out until it could be tested
-                //if (resource.IsAbsoluteUri && Uri.IsWellFormedUriString(resource.ToString(), UriKind.Absolute))
-                await DeleteResource(resource, token);
-                //else
-                //    throw new UriFormatException($"Invalid Uri {resource}");
+                if (resource.IsAbsoluteUri && Uri.IsWellFormedUriString(resource.ToString(), UriKind.Absolute))
+                    await DeleteResource(resource, token);
+                else
+                    throw new UriFormatException($"Invalid Uri {resource}");
             }
             catch (Exception e)
             {
@@ -161,12 +160,8 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
             {
                 var path = uri.LocalPath.Replace("\\\\localhost\\", "");
 
-                //var driveCheck = Path.IsPathRooted(path);
-                //var pathCheck = Path.IsPathFullyQualified(path);
                 var fileCheck = !Path.GetFileName(path).Any(a => Path.GetInvalidFileNameChars().Contains(a));
                 var extCheck = Path.HasExtension(path);
-
-                //if (driveCheck && pathCheck && fileCheck && extCheck)
                 if (fileCheck && extCheck)
                 {
                     file = new FileInfo(path);
