@@ -15,19 +15,14 @@
 // limitations under the License.
 #endregion
 
-using Google.Cloud.Diagnostics.Common;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System.CommandLine.Builder;
 using System.CommandLine.Hosting;
 using System.CommandLine.Parsing;
 using System.Diagnostics;
-using System.Reflection;
 using Utah.Udot.Atspm.EventLogUtility.Commands;
 using Utah.Udot.Atspm.Infrastructure.Extensions;
-
-//tricking github 11111111111
 
 if (OperatingSystem.IsWindows())
 {
@@ -73,8 +68,6 @@ cmdBuilder.UseHost(a =>
         s.AddDeviceDownloaders(h);
         s.AddEventLogDecoders();
         s.AddEventLogImporters(h);
-
-        //s.Configure<DeviceEventLoggingConfiguration>(h.Configuration.GetSection(nameof(DeviceEventLoggingConfiguration)));
     });
 },
 h =>
@@ -92,36 +85,3 @@ h =>
 
 var cmdParser = cmdBuilder.Build();
 await cmdParser.InvokeAsync(args);
-
-//var host = Host.CreateDefaultBuilder(args)
-//    .ConfigureLogging((h, l) =>
-//    {
-//        l.AddGoogle(new LoggingServiceOptions
-//        {
-//            //ProjectId = "1022556126938",
-//            ServiceName = AppDomain.CurrentDomain.FriendlyName,
-//            Version = Assembly.GetEntryAssembly().GetName().Version.ToString(),
-//            Options = LoggingOptions.Create(LogLevel.Debug, AppDomain.CurrentDomain.FriendlyName)
-//        });
-//    }).Build();
-
-//using (var scope = host.Services.CreateScope())
-//{
-//    var logger = scope.ServiceProvider.GetService<ILogger<Program>>()
-//    .WithAddedLabels(new Dictionary<string, string>()
-//{
-//    {"key1", "value1"},
-//    {"key2", "value2"},
-//    {"key3", "value3"},
-//    {"key4", "value4"},
-//    {"key5", "value5"},
-//});
-
-//    logger.LogDebug("log debug test");
-//    logger.LogInformation("log info test");
-//    logger.LogWarning("log warning test");
-//    logger.LogError("log error test");
-//    logger.LogError(new Exception("exception test"), "log error with exception test");
-
-//    await Task.Delay(TimeSpan.FromSeconds(10));
-//}
