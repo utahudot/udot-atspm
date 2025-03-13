@@ -24,8 +24,6 @@ using System.Diagnostics;
 using Utah.Udot.Atspm.EventLogUtility.Commands;
 using Utah.Udot.Atspm.Infrastructure.Extensions;
 
-//tricking github 11111111111
-
 if (OperatingSystem.IsWindows())
 {
     if (!EventLog.SourceExists("Atspm"))
