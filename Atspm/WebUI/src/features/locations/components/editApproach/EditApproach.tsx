@@ -163,6 +163,7 @@ function EditApproach({ approach }: ApproachAdminProps) {
       delete detector.isNew
       delete detector.approach
       delete detector.detectorComments
+
       detector.latencyCorrection =
         detector.latencyCorrection === null ||
         detector.latencyCorrection === undefined ||
