@@ -14,9 +14,6 @@ interface TspReportProps {
   report: TransitSignalPriorityResult[]
 }
 
-const round = (value: number | undefined) =>
-  value != null ? Number(value.toFixed(1)) : value
-
 const TspReport = ({ report }: TspReportProps) => {
   const contentRef = useRef<HTMLDivElement>(null)
   const handlePrint = useReactToPrint({ contentRef })
@@ -144,11 +141,11 @@ const TspReport = ({ report }: TspReportProps) => {
             .flat()
           console.log('rows', rows)
           return (
-          <TabPanel
-            key={locationReport?.locationPhases?.locationIdentifier}
-            value={index.toString()}
-            sx={{ p: 0 }}
-          >
+            <TabPanel
+              key={locationReport?.locationPhases?.locationIdentifier}
+              value={index.toString()}
+              sx={{ p: 0 }}
+            >
               <div style={{ height: 700, width: '100%' }}>
                 <DataGrid
                   getRowId={(row) => `${row.plan}-${row.phaseNumber}`}
@@ -161,7 +158,7 @@ const TspReport = ({ report }: TspReportProps) => {
                       CustomToolbar(
                         locationReport?.locationPhases?.locationIdentifier ?? ''
                       ),
-                    }}
+                  }}
                   disableColumnFilter
                   disableColumnMenu
                   disableColumnSelector
@@ -169,12 +166,12 @@ const TspReport = ({ report }: TspReportProps) => {
                   disableRowSelectionOnClick
                   disableColumnSorting
                   hideFooter
-                      sx={{
+                  sx={{
                     '& .MuiDataGrid-cell': {
                       borderRight: '1px solid lightgray',
                     },
                     '& .purple-text': {
-                        color: 'purple',
+                      color: 'purple',
                     },
                     '& .blue-text': {
                       color: 'blue',
@@ -190,12 +187,7 @@ const TspReport = ({ report }: TspReportProps) => {
               </div>
             </TabPanel>
           )
-                  })}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </TabPanel>
-        ))}
+        })}
       </Paper>
     </TabContext>
   )
