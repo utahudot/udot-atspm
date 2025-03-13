@@ -48,6 +48,7 @@
 	  <Using Include="Utah.Udot.Atspm.Services" />
 	  <Using Include="Utah.Udot.Atspm.TempExtensions" />
 	  <Using Include="Utah.Udot.NetStandardToolkit.Extensions" />
+	  <Using Include="Utah.Udot.Atspm.Data.Models.MeasureOptions"/>
 	</ItemGroup>
 
 </Project>

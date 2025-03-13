@@ -8,19 +8,78 @@ import {
   GridToolbarExport,
 } from '@mui/x-data-grid'
 import { useRef, useState } from 'react'
+import { useReactToPrint } from 'react-to-print'
 
 interface TspReportProps {
   report: TransitSignalPriorityResult[]
 }
 
+const round = (value: number | undefined) =>
+  value != null ? Number(value.toFixed(1)) : value
+
 const TspReport = ({ report }: TspReportProps) => {
   const contentRef = useRef<HTMLDivElement>(null)
+  const handlePrint = useReactToPrint({ contentRef })
   const [currentTab, setCurrentTab] = useState('0')
+
   const handleTabChange = (_: React.SyntheticEvent, newTab: string) => {
     setCurrentTab(newTab)
   }
+
+  const handleDownloadPdf = async () => {
+    if (!contentRef.current) return
+    try {
+      const canvas = await html2canvas(contentRef.current)
+      const imgData = canvas.toDataURL('image/png')
+      const pdf = new jsPDF({
+        orientation: 'landscape',
+        unit: 'px',
+        format: 'a4',
+      })
+      const pdfWidth = pdf.internal.pageSize.getWidth()
+      const pdfHeight = pdf.internal.pageSize.getHeight()
+
+      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight)
+      pdf.save('TSP_Report.pdf')
+    } catch (error) {
+      console.error('PDF generation error:', error)
+    }
+  }
+
   return (
     <TabContext value={currentTab}>
+      {/* <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2, gap: 2 }}>
+        <Button
+          size="small"
+          variant="outlined"
+          startIcon={<PrintIcon />}
+          color="primary"
+          onClick={handlePrint}
+        >
+          Print
+        </Button>
+
+        <Button
+          size="small"
+          variant="outlined"
+          startIcon={<DownloadIcon />}
+          color="primary"
+          onClick={handleDownloadPdf}
+        >
+          Download
+        </Button>
+
+        <Button
+          size="small"
+          variant="outlined"
+          startIcon={<SaveIcon />}
+          color="primary"
+          onClick={handlePrint}
+        >
+          Save Parameters
+        </Button>
+      </Box> */}
+
       <Paper
         ref={contentRef}
         sx={{ position: 'relative', p: 2, backgroundColor: 'white' }}
@@ -28,6 +87,8 @@ const TspReport = ({ report }: TspReportProps) => {
         <Typography variant="h4" sx={{ textAlign: 'center', mb: 3 }}>
           Transit Signal Priority Report
         </Typography>
+
+        {/* Tabs for Locations */}
         <TabList onChange={handleTabChange} aria-label="Location Tabs">
           {report.map((locationReport, index) => (
             <Tab
@@ -83,11 +144,11 @@ const TspReport = ({ report }: TspReportProps) => {
             .flat()
           console.log('rows', rows)
           return (
-            <TabPanel
-              key={locationReport?.locationPhases?.locationIdentifier}
-              value={index.toString()}
-              sx={{ p: 0 }}
-            >
+          <TabPanel
+            key={locationReport?.locationPhases?.locationIdentifier}
+            value={index.toString()}
+            sx={{ p: 0 }}
+          >
               <div style={{ height: 700, width: '100%' }}>
                 <DataGrid
                   getRowId={(row) => `${row.plan}-${row.phaseNumber}`}
@@ -100,7 +161,7 @@ const TspReport = ({ report }: TspReportProps) => {
                       CustomToolbar(
                         locationReport?.locationPhases?.locationIdentifier ?? ''
                       ),
-                  }}
+                    }}
                   disableColumnFilter
                   disableColumnMenu
                   disableColumnSelector
@@ -108,12 +169,12 @@ const TspReport = ({ report }: TspReportProps) => {
                   disableRowSelectionOnClick
                   disableColumnSorting
                   hideFooter
-                  sx={{
+                      sx={{
                     '& .MuiDataGrid-cell': {
                       borderRight: '1px solid lightgray',
                     },
                     '& .purple-text': {
-                      color: 'purple',
+                        color: 'purple',
                     },
                     '& .blue-text': {
                       color: 'blue',
@@ -129,7 +190,12 @@ const TspReport = ({ report }: TspReportProps) => {
               </div>
             </TabPanel>
           )
-        })}
+                  })}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </TabPanel>
+        ))}
       </Paper>
     </TabContext>
   )
