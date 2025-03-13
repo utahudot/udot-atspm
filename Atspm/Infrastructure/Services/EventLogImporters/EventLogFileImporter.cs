@@ -106,6 +106,8 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.EventLogImporters
 
                         decodedLogs = decoder.Decode(device, memoryStream, cancelToken).ToList();
 
+                        logMessages.DeletingFileLogsMessage(file.FullName, _options.DeleteSource);
+
                         if (_options.DeleteSource)
                             file.Delete();
                     }
@@ -117,8 +119,10 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.EventLogImporters
                     {
                         logMessages.OperationCancelledException(file.FullName, e);
                     }
-
-                    memoryStream.Dispose();
+                    finally
+                    {
+                        memoryStream.Dispose();
+                    }
 
                     logMessages.DecodedLogsMessage(file.FullName, decodedLogs.Count);
 

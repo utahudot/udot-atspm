@@ -24,8 +24,6 @@ using System.Diagnostics;
 using Utah.Udot.Atspm.EventLogUtility.Commands;
 using Utah.Udot.Atspm.Infrastructure.Extensions;
 
-//tricking github
-
 if (OperatingSystem.IsWindows())
 {
     if (!EventLog.SourceExists("Atspm"))
@@ -50,16 +48,18 @@ cmdBuilder.UseHost(a =>
                 c.LogName = "Atspm";
             });
         }
+
         //l.AddGoogle(new LoggingServiceOptions
         //{
-        //    //ProjectId = "",
         //    ServiceName = AppDomain.CurrentDomain.FriendlyName,
         //    Version = Assembly.GetEntryAssembly().GetName().Version.ToString(),
-        //    Options = WatchdogLoggingOptions.Create(LogLevel.Debug, AppDomain.CurrentDomain.FriendlyName)
+        //    Options = LoggingOptions.Create(LogLevel.Debug, AppDomain.CurrentDomain.FriendlyName)
         //});
     })
     .ConfigureServices((h, s) =>
     {
+        //s.AddGoogleDiagnostics(loggingOptions: LoggingOptions.Create(LogLevel.Debug));
+
         s.AddAtspmDbContext(h);
         s.AddAtspmEFConfigRepositories();
         s.AddAtspmEFEventLogRepositories();
@@ -68,8 +68,6 @@ cmdBuilder.UseHost(a =>
         s.AddDeviceDownloaders(h);
         s.AddEventLogDecoders();
         s.AddEventLogImporters(h);
-
-        //s.Configure<DeviceEventLoggingConfiguration>(h.Configuration.GetSection(nameof(DeviceEventLoggingConfiguration)));
     });
 },
 h =>
