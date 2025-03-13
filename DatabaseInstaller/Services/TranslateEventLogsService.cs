@@ -97,12 +97,16 @@ namespace DatabaseInstaller.Services
                 var locationsQuery = _locationRepository.GetList()
                     .Include(s => s.Devices) // Always include Devices
                     .AsQueryable(); // Ensure it remains IQueryable<Location>
-                locationsQuery = locationsQuery
-                        .Where(l => l.Devices.Any(d => d.DeviceType == DeviceTypes.SpeedSensor)); // Use Any() for efficient filtering
                 if (_config.Device != null)
                 {
                     locationsQuery = locationsQuery
                         .Where(l => l.Devices.Any(d => d.DeviceType == (DeviceTypes)_config.Device)); // Use Any() for efficient filtering
+                }
+                if (!string.IsNullOrEmpty(_config.Locations))
+                {
+                    var locationIdentifiers = _config.Locations.Split(',', StringSplitOptions.RemoveEmptyEntries);
+                    locationsQuery = locationsQuery
+                        .Where(l => locationIdentifiers.Contains(l.LocationIdentifier)); // Use Contains() for efficient filtering
                 }
 
                 var locations = locationsQuery
