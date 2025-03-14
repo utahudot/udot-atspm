@@ -192,6 +192,9 @@ export const useLocationStore = create<LocationStore>()(
         detectionTypes: [],
         dateAdded: new Date().toISOString(),
         detectorComments: [],
+        detectionHardware: 'NA',
+        movementType: 'NA',
+        laneType: 'NA',
       }
 
       updateApproach({
