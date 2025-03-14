@@ -17,6 +17,7 @@ import {
   useLocationStore,
 } from '@/features/locations/components/editLocation/locationStore'
 import { ConfigEnum, useConfigEnums } from '@/hooks/useConfigEnums'
+import { useNotificationStore } from '@/stores/notifications'
 import { Box, Collapse, Paper } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 
@@ -44,6 +45,7 @@ function EditApproach({ approach }: ApproachAdminProps) {
     string,
     { warning: string; id: string }
   > | null>(null)
+  const { addNotification } = useNotificationStore()
 
   const { mutate: editApproach } = useEditApproach()
 
