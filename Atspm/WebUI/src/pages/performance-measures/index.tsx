@@ -3,6 +3,7 @@ import { Box, Paper, Tab, useMediaQuery, useTheme } from '@mui/material'
 import { differenceInMinutes, startOfToday, startOfTomorrow } from 'date-fns'
 import { useMemo, useState } from 'react'
 
+import { getEventLogDaysWithEventLogsFromLocationIdentifier } from '@/api/data/aTSPMLogDataApi'
 import { ResponsivePageLayout } from '@/components/ResponsivePage'
 import { StyledPaper } from '@/components/StyledPaper'
 import SelectDateTime from '@/components/selectTimeSpan'
@@ -19,6 +20,7 @@ const PerformanceMeasures = () => {
 
   const [currentTab, setCurrentTab] = useState('1')
   const [location, setLocation] = useState<Location | null>(null)
+  const [availableDays, setAvailableDays] = useState<Date[]>([])
   const [chartType, setChartType] = useState<ChartType | null>(null)
   const [chartOptions, setChartOptions] = useState<Partial<ChartOptions>>()
   const [startDateTime, setStartDateTime] = useState(startOfToday())
@@ -36,10 +38,15 @@ const PerformanceMeasures = () => {
     setCurrentTab(newValue)
   }
 
-  const handleLocationChange = (newLocation: Location) => {
+  const handleLocationChange = async (newLocation: Location) => {
     if (!location) {
       setChartType(ChartType.SplitMonitor)
     }
+    const availableDays =
+      (await getEventLogDaysWithEventLogsFromLocationIdentifier(
+        newLocation.locationIdentifier
+      )) as unknown as Date[]
+    setAvailableDays(availableDays)
     setLocation(newLocation)
   }
 
@@ -117,6 +124,7 @@ const PerformanceMeasures = () => {
                 changeEndDate={handleEndDateTimeChange}
                 noCalendar={isMobileView}
                 warning={binSizeWarning ?? timespanWarning}
+                markDays={availableDays}
               />
             </Paper>
 

@@ -1,5 +1,6 @@
 import {
   Alert,
+  Badge,
   Box,
   Button,
   Divider,
@@ -10,9 +11,10 @@ import {
   DateCalendar,
   DateOrTimeView,
   DateTimePicker,
+  PickersDay,
   TimePicker,
 } from '@mui/x-date-pickers'
-import { add, startOfToday } from 'date-fns'
+import { add, isSameDay, startOfToday } from 'date-fns'
 import { useEffect, useState } from 'react'
 
 export interface SelectDateTimeProps {
@@ -30,6 +32,7 @@ export interface SelectDateTimeProps {
   endTimePeriod?: Date
   changeStartTimePeriod?(date: Date): void
   changeEndTimePeriod?(date: Date): void
+  markDays?: Date[]
   warning?: string | null
 }
 
@@ -48,6 +51,7 @@ export default function SelectDateTime({
   startDateOnly,
   changeStartTimePeriod,
   changeEndTimePeriod,
+  markDays = [],
   warning = null,
 }: SelectDateTimeProps) {
   const [showWarning, setShowWarning] = useState(false)
@@ -106,6 +110,12 @@ export default function SelectDateTime({
         onChange={handleCalendarChange}
         showDaysOutsideCurrentMonth={true}
         disableFuture={true}
+        slots={{
+          day: MarkedDay,
+        }}
+        slotProps={{
+          day: { highlightedDays: markDays } as any,
+        }}
       />
     ) : (
       <Skeleton width={320} height={334} />
@@ -144,10 +154,7 @@ export default function SelectDateTime({
           sx={
             calendarLocation === 'right'
               ? sideBySideStyleInnerBoxStyle
-              : {
-                  display: 'flex',
-                  flexDirection: 'column',
-                }
+              : { display: 'flex', flexDirection: 'column' }
           }
         >
           <DateTimePicker
@@ -211,5 +218,34 @@ export default function SelectDateTime({
       </Box>
       {showWarning && warning && <Alert severity="warning">{warning}</Alert>}
     </>
+  )
+}
+
+const MarkedDay = (props: any & { highlightedDays?: Date[] }) => {
+  const { highlightedDays = [], day, outsideCurrentMonth, ...other } = props
+
+  // Use isSameDay to correctly compare the rendered day with each highlighted day
+  const isSelected =
+    !outsideCurrentMonth &&
+    highlightedDays.some((markDay: Date) => isSameDay(markDay, day))
+
+  console.log('isSelected', highlightedDays)
+
+  return (
+    <Badge
+      variant="dot"
+      overlap="circular"
+      sx={{
+        '& .MuiBadge-badge': {
+          backgroundColor: isSelected ? '#b2ff00' : 'transparent',
+        },
+      }}
+    >
+      <PickersDay
+        {...other}
+        outsideCurrentMonth={outsideCurrentMonth}
+        day={day}
+      />
+    </Badge>
   )
 }
