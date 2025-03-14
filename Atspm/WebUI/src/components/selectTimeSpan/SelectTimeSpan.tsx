@@ -67,9 +67,20 @@ export default function SelectDateTime({
 
   const handleCalendarChange = (newDate: Date | null) => {
     if (!newDate) return
+    if (!endDateTime || !startDateTime) return
 
     changeStartDate(newDate)
-    changeEndDate(add(newDate, { days: 1 }))
+    const newEndDate = new Date(newDate)
+    newEndDate.setHours(endDateTime.getHours())
+    newEndDate.setMinutes(endDateTime.getMinutes())
+    if (
+      startDateTime.getMonth() == endDateTime.getMonth() &&
+      startDateTime.getDate() === endDateTime.getDate()
+    ) {
+      changeEndDate(newEndDate)
+    } else {
+      changeEndDate(add(newEndDate, { days: 1 }))
+    }
   }
 
   const handleResetDate = () => {
@@ -104,10 +115,8 @@ export default function SelectDateTime({
   const handleSameDay = () => {
     if (!startDateTime || !endDateTime) return
     const newEndDate = new Date(startDateTime)
-    newEndDate.setHours(startDateTime.getHours())
+    newEndDate.setHours(endDateTime.getHours())
     newEndDate.setMinutes(endDateTime.getMinutes())
-    newEndDate.setSeconds(endDateTime.getSeconds())
-    newEndDate.setMilliseconds(endDateTime.getMilliseconds())
     changeEndDate(newEndDate)
   }
 
