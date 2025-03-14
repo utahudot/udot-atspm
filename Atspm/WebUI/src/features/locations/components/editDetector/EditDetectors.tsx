@@ -1,5 +1,4 @@
 import { Detector } from '@/api/config/aTSPMConfigurationApi.schemas'
-import { modalButtonLocation } from '@/components/GenericAdminChart'
 import CommentCell from '@/features/locations/components/editDetector/CommentCell'
 import DateAddedCell from '@/features/locations/components/editDetector/DateAddedCell'
 import DetectionTypesCell from '@/features/locations/components/editDetector/DetectionTypesCell'
@@ -13,11 +12,12 @@ import {
 import EditableTableCell from '@/features/locations/components/editableTableCell/EditableTableCell'
 import DeleteIcon from '@mui/icons-material/Delete'
 import {
-  Box,
   Button,
-  Divider,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   IconButton,
-  Modal,
   Paper,
   Table,
   TableBody,
@@ -28,18 +28,6 @@ import {
   Typography,
 } from '@mui/material'
 import { useState } from 'react'
-
-export const modalStyle = {
-  position: 'absolute' as const,
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: 400,
-  bgcolor: 'background.paper',
-  border: 'none',
-  borderRadius: '10px',
-  boxShadow: 24,
-}
 
 export default function EditDetectors({
   approach,
@@ -206,27 +194,32 @@ export default function EditDetectors({
       </TableContainer>
 
       {selectedDetectorId && (
-        <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
-          <Box sx={modalStyle}>
-            <Typography fontWeight="bold">Delete Detector</Typography>
-            <Divider sx={{ my: 2, backgroundColor: 'gray' }} />
+        <Dialog open={modalOpen} onClose={() => setModalOpen(false)}>
+          <DialogTitle sx={{ fontWeight: 'bold' }} id="delete-dialog-title">
+            Delete Detector
+          </DialogTitle>
+          <DialogContent>
             <Typography>
               Are you sure you want to delete this detector?
             </Typography>
-            <Box sx={modalButtonLocation}>
-              <Button onClick={() => setModalOpen(false)}>Cancel</Button>
-              <Button
-                sx={{ color: 'red' }}
-                onClick={() => {
-                  deleteDetector(selectedDetectorId)
-                  setModalOpen(false)
-                }}
-              >
-                Delete Detector
-              </Button>
-            </Box>
-          </Box>
-        </Modal>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setModalOpen(false)} variant="outlined">
+              Cancel
+            </Button>
+            <Button
+              onClick={() => {
+                deleteDetector(selectedDetectorId)
+                setModalOpen(false)
+              }}
+              variant="contained"
+              color="error"
+            >
+              Delete Detector
+            </Button>
+          </DialogActions>
+          {/* </Box> */}
+        </Dialog>
       )}
     </>
   )
