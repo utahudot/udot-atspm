@@ -224,12 +224,9 @@ export default function SelectDateTime({
 const MarkedDay = (props: any & { highlightedDays?: Date[] }) => {
   const { highlightedDays = [], day, outsideCurrentMonth, ...other } = props
 
-  // Use isSameDay to correctly compare the rendered day with each highlighted day
   const isSelected =
     !outsideCurrentMonth &&
     highlightedDays.some((markDay: Date) => isSameDay(markDay, day))
-
-  console.log('isSelected', highlightedDays)
 
   return (
     <Badge
@@ -237,7 +234,7 @@ const MarkedDay = (props: any & { highlightedDays?: Date[] }) => {
       overlap="circular"
       sx={{
         '& .MuiBadge-badge': {
-          backgroundColor: isSelected ? '#b2ff00' : 'transparent',
+          backgroundColor: isSelected ? '#6abf2f' : 'transparent',
         },
       }}
     >
