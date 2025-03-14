@@ -1,0 +1,1726 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "ATSPM Log Data Api",
+    "description": "ATSPM Log Data with OpenAPI, Swashbuckle, and API versioning.",
+    "contact": {
+      "name": "udotdevelopment",
+      "url": "https://udottraffic.utah.gov/atspm/",
+      "email": "udotdevelopment@gmail.com"
+    },
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
+    },
+    "version": "1.0"
+  },
+  "paths": {
+    "/api/v1/Aggregation/GetDataTypes": {
+      "get": {
+        "tags": ["Aggregation"],
+        "summary": "Returns the possible aggregated data types",
+        "operationId": "GetAggregationDataTypes",
+        "parameters": [
+          {
+            "name": "X-Timestamp-Format",
+            "in": "header",
+            "description": "Change CSV timestamp format https://learn.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "406": {
+            "description": "Not Acceptable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Call completed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "text/xml": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "oauth2": ["CanViewData"]
+          }
+        ]
+      }
+    },
+    "/api/v1/Aggregation/GetArchivedAggregations/{locationIdentifier}": {
+      "get": {
+        "tags": ["Aggregation"],
+        "summary": "Get all aggregations for location by date",
+        "operationId": "GetAggregationArchivedAggregationsFromLocationIdentifier",
+        "parameters": [
+          {
+            "name": "locationIdentifier",
+            "in": "path",
+            "description": "Location identifier",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "start",
+            "in": "query",
+            "description": "Archive date of aggregation to start with",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "end",
+            "in": "query",
+            "description": "Archive date of aggregation to end with",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "X-Timestamp-Format",
+            "in": "header",
+            "description": "Change CSV timestamp format https://learn.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "406": {
+            "description": "Not Acceptable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Call completed successfully"
+          },
+          "400": {
+            "description": "Invalid request (date)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "oauth2": ["CanViewData"]
+          }
+        ]
+      }
+    },
+    "/api/v1/Aggregation/GetArchivedAggregations/{locationIdentifier}/{dataType}": {
+      "get": {
+        "tags": ["Aggregation"],
+        "summary": "Get all aggregations for location by date and datatype",
+        "operationId": "GetAggregationArchivedAggregationsFromLocationIdentifierAndDataType",
+        "parameters": [
+          {
+            "name": "locationIdentifier",
+            "in": "path",
+            "description": "Location identifier",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "dataType",
+            "in": "path",
+            "description": "Type that inherits from Utah.Udot.Atspm.Data.Models.AggregationModelBase",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "start",
+            "in": "query",
+            "description": "Archive date of aggregation to start with",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "end",
+            "in": "query",
+            "description": "Archive date of aggregation to end with",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "X-Timestamp-Format",
+            "in": "header",
+            "description": "Change CSV timestamp format https://learn.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "406": {
+            "description": "Not Acceptable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Call completed successfully"
+          },
+          "400": {
+            "description": "Invalid request (date)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "oauth2": ["CanViewData"]
+          }
+        ]
+      }
+    },
+    "/api/v1/EventLog/GetDataTypes": {
+      "get": {
+        "tags": ["EventLog"],
+        "summary": "Returns the possible event log data types",
+        "operationId": "GetEventLogDataTypes",
+        "parameters": [
+          {
+            "name": "X-Timestamp-Format",
+            "in": "header",
+            "description": "Change CSV timestamp format https://learn.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "406": {
+            "description": "Not Acceptable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Call completed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "text/xml": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "oauth2": ["CanViewData"]
+          }
+        ]
+      }
+    },
+    "/api/v1/EventLog/GetArchivedEvents/{locationIdentifier}": {
+      "get": {
+        "tags": ["EventLog"],
+        "summary": "Get all event logs for location by date",
+        "operationId": "GetEventLogArchivedEventsFromLocationIdentifier",
+        "parameters": [
+          {
+            "name": "locationIdentifier",
+            "in": "path",
+            "description": "Location identifier",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "start",
+            "in": "query",
+            "description": "Archive date of event to start with",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "end",
+            "in": "query",
+            "description": "Archive date of event to end with",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "X-Timestamp-Format",
+            "in": "header",
+            "description": "Change CSV timestamp format https://learn.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "406": {
+            "description": "Not Acceptable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Call completed successfully"
+          },
+          "400": {
+            "description": "Invalid request (date)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "oauth2": ["CanViewData"]
+          }
+        ]
+      }
+    },
+    "/api/v1/EventLog/GetArchivedEvents/{locationIdentifier}/{deviceId}": {
+      "get": {
+        "tags": ["EventLog"],
+        "summary": "Get all event logs for location by date and device id",
+        "operationId": "GetEventLogArchivedEventsFromLocationIdentifierAndDeviceId",
+        "parameters": [
+          {
+            "name": "locationIdentifier",
+            "in": "path",
+            "description": "Location identifier",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "deviceId",
+            "in": "path",
+            "description": "Device id events came from",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "start",
+            "in": "query",
+            "description": "Archive date of event to start with",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "end",
+            "in": "query",
+            "description": "Archive date of event to end with",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "X-Timestamp-Format",
+            "in": "header",
+            "description": "Change CSV timestamp format https://learn.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "406": {
+            "description": "Not Acceptable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Call completed successfully"
+          },
+          "400": {
+            "description": "Invalid request (date)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "oauth2": ["CanViewData"]
+          }
+        ]
+      }
+    },
+    "/api/v1/EventLog/GetArchivedEvents/{locationIdentifier}/{dataType}": {
+      "get": {
+        "tags": ["EventLog"],
+        "summary": "Get all event logs for location by date and datatype",
+        "operationId": "GetEventLogArchivedEventsFromLocationIdentifierAndDataType",
+        "parameters": [
+          {
+            "name": "locationIdentifier",
+            "in": "path",
+            "description": "Location identifier",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "dataType",
+            "in": "path",
+            "description": "Type that inherits from Utah.Udot.Atspm.Data.Models.EventLogModels.EventLogModelBase",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "start",
+            "in": "query",
+            "description": "Archive date of event to start with",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "end",
+            "in": "query",
+            "description": "Archive date of event to end with",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "X-Timestamp-Format",
+            "in": "header",
+            "description": "Change CSV timestamp format https://learn.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "406": {
+            "description": "Not Acceptable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Call completed successfully"
+          },
+          "400": {
+            "description": "Invalid request (date)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "oauth2": ["CanViewData"]
+          }
+        ]
+      }
+    },
+    "/api/v1/EventLog/GetArchivedEvents/{locationIdentifier}/{deviceId}/{dataType}": {
+      "get": {
+        "tags": ["EventLog"],
+        "summary": "Get all event logs for location by date, device id and datatype",
+        "operationId": "GetEventLogArchivedEventsFromLocationIdentifierAndDeviceIdAndDataType",
+        "parameters": [
+          {
+            "name": "locationIdentifier",
+            "in": "path",
+            "description": "Location identifier",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "deviceId",
+            "in": "path",
+            "description": "Device id events came from",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "dataType",
+            "in": "path",
+            "description": "Type that inherits from Utah.Udot.Atspm.Data.Models.EventLogModels.EventLogModelBase",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "start",
+            "in": "query",
+            "description": "Archive date of event to start with",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "end",
+            "in": "query",
+            "description": "Archive date of event to end with",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "X-Timestamp-Format",
+            "in": "header",
+            "description": "Change CSV timestamp format https://learn.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "406": {
+            "description": "Not Acceptable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Call completed successfully"
+          },
+          "400": {
+            "description": "Invalid request (date)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "oauth2": ["CanViewData"]
+          }
+        ]
+      }
+    },
+    "/api/v1/EventLog/GetDaysWithEventLogs/{locationIdentifier}": {
+      "get": {
+        "tags": ["EventLog"],
+        "summary": "Get all days that have event logs for a given location.",
+        "operationId": "GetEventLogDaysWithEventLogsFromLocationIdentifier",
+        "parameters": [
+          {
+            "name": "locationIdentifier",
+            "in": "path",
+            "description": "Location identifier",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Timestamp-Format",
+            "in": "header",
+            "description": "Change CSV timestamp format https://learn.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "406": {
+            "description": "Not Acceptable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Call completed successfully"
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "oauth2": ["CanViewData"]
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ApproachPcdAggregation": {
+        "type": "object",
+        "properties": {
+          "start": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "end": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "locationIdentifier": {
+            "type": "string",
+            "nullable": true
+          },
+          "binStartTime": {
+            "type": "string",
+            "format": "date-time",
+            "deprecated": true
+          },
+          "phaseNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "approachId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "isProtectedPhase": {
+            "type": "boolean"
+          },
+          "arrivalsOnGreen": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "arrivalsOnRed": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "arrivalsOnYellow": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "volume": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalDelay": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ApproachSpeedAggregation": {
+        "type": "object",
+        "properties": {
+          "start": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "end": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "locationIdentifier": {
+            "type": "string",
+            "nullable": true
+          },
+          "binStartTime": {
+            "type": "string",
+            "format": "date-time",
+            "deprecated": true
+          },
+          "approachId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "summedSpeed": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "speedVolume": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "speed85th": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "speed15th": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ApproachSplitFailAggregation": {
+        "type": "object",
+        "properties": {
+          "start": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "end": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "locationIdentifier": {
+            "type": "string",
+            "nullable": true
+          },
+          "binStartTime": {
+            "type": "string",
+            "format": "date-time",
+            "deprecated": true
+          },
+          "phaseNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "approachId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "isProtectedPhase": {
+            "type": "boolean"
+          },
+          "splitFailures": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "greenOccupancySum": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "redOccupancySum": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "greenTimeSum": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "redTimeSum": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "cycles": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ApproachYellowRedActivationAggregation": {
+        "type": "object",
+        "properties": {
+          "start": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "end": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "locationIdentifier": {
+            "type": "string",
+            "nullable": true
+          },
+          "binStartTime": {
+            "type": "string",
+            "format": "date-time",
+            "deprecated": true
+          },
+          "phaseNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "approachId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "isProtectedPhase": {
+            "type": "boolean"
+          },
+          "severeRedLightViolations": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalRedLightViolations": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "yellowActivations": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "violationTime": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "cycles": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "DetectorEventCountAggregation": {
+        "type": "object",
+        "properties": {
+          "start": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "end": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "locationIdentifier": {
+            "type": "string",
+            "nullable": true
+          },
+          "binStartTime": {
+            "type": "string",
+            "format": "date-time",
+            "deprecated": true
+          },
+          "approachId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "detectorPrimaryId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "eventCount": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "IndianaEvent": {
+        "type": "object",
+        "properties": {
+          "locationIdentifier": {
+            "type": "string",
+            "nullable": true
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "eventCode": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "eventParam": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "PedestrianCounter": {
+        "type": "object",
+        "properties": {
+          "locationIdentifier": {
+            "type": "string",
+            "nullable": true
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "in": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "out": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "PhaseCycleAggregation": {
+        "type": "object",
+        "properties": {
+          "start": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "end": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "locationIdentifier": {
+            "type": "string",
+            "nullable": true
+          },
+          "binStartTime": {
+            "type": "string",
+            "format": "date-time",
+            "deprecated": true
+          },
+          "approachId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "phaseNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "redTime": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "yellowTime": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "greenTime": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalRedToRedCycles": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalGreenToGreenCycles": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "PhaseLeftTurnGapAggregation": {
+        "type": "object",
+        "properties": {
+          "start": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "end": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "locationIdentifier": {
+            "type": "string",
+            "nullable": true
+          },
+          "binStartTime": {
+            "type": "string",
+            "format": "date-time",
+            "deprecated": true
+          },
+          "phaseNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "approachId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "gapCount1": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "gapCount2": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "gapCount3": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "gapCount4": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "gapCount5": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "gapCount6": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "gapCount7": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "gapCount8": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "gapCount9": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "gapCount10": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "gapCount11": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "sumGapDuration1": {
+            "type": "number",
+            "format": "double"
+          },
+          "sumGapDuration2": {
+            "type": "number",
+            "format": "double"
+          },
+          "sumGapDuration3": {
+            "type": "number",
+            "format": "double"
+          },
+          "sumGreenTime": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "additionalProperties": false
+      },
+      "PhasePedAggregation": {
+        "type": "object",
+        "properties": {
+          "start": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "end": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "locationIdentifier": {
+            "type": "string",
+            "nullable": true
+          },
+          "binStartTime": {
+            "type": "string",
+            "format": "date-time",
+            "deprecated": true
+          },
+          "phaseNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pedCycles": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pedDelay": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "minPedDelay": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "maxPedDelay": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "imputedPedCallsRegistered": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "uniquePedDetections": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pedBeginWalkCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pedCallsRegisteredCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pedRequests": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "PhaseSplitMonitorAggregation": {
+        "type": "object",
+        "properties": {
+          "start": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "end": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "locationIdentifier": {
+            "type": "string",
+            "nullable": true
+          },
+          "binStartTime": {
+            "type": "string",
+            "format": "date-time",
+            "deprecated": true
+          },
+          "phaseNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "eightyFifthPercentileSplit": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "skippedCount": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "PhaseTerminationAggregation": {
+        "type": "object",
+        "properties": {
+          "start": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "end": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "locationIdentifier": {
+            "type": "string",
+            "nullable": true
+          },
+          "binStartTime": {
+            "type": "string",
+            "format": "date-time",
+            "deprecated": true
+          },
+          "phaseNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "gapOuts": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "forceOffs": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "maxOuts": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "unknown": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "PreemptionAggregation": {
+        "type": "object",
+        "properties": {
+          "start": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "end": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "locationIdentifier": {
+            "type": "string",
+            "nullable": true
+          },
+          "binStartTime": {
+            "type": "string",
+            "format": "date-time",
+            "deprecated": true
+          },
+          "preemptNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "preemptRequests": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "preemptServices": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "PriorityAggregation": {
+        "type": "object",
+        "properties": {
+          "start": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "end": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "locationIdentifier": {
+            "type": "string",
+            "nullable": true
+          },
+          "binStartTime": {
+            "type": "string",
+            "format": "date-time",
+            "deprecated": true
+          },
+          "priorityNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "priorityRequests": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "priorityServiceEarlyGreen": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "priorityServiceExtendedGreen": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ProblemDetails": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "detail": {
+            "type": "string",
+            "nullable": true
+          },
+          "instance": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": {}
+      },
+      "SignalEventCountAggregation": {
+        "type": "object",
+        "properties": {
+          "start": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "end": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "locationIdentifier": {
+            "type": "string",
+            "nullable": true
+          },
+          "binStartTime": {
+            "type": "string",
+            "format": "date-time",
+            "deprecated": true
+          },
+          "eventCount": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "SignalPlanAggregation": {
+        "type": "object",
+        "properties": {
+          "start": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "end": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "locationIdentifier": {
+            "type": "string",
+            "nullable": true
+          },
+          "binStartTime": {
+            "type": "string",
+            "format": "date-time",
+            "deprecated": true
+          },
+          "planNumber": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "SpeedEvent": {
+        "type": "object",
+        "properties": {
+          "locationIdentifier": {
+            "type": "string",
+            "nullable": true
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "detectorId": {
+            "type": "string",
+            "nullable": true
+          },
+          "mph": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "kph": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "securitySchemes": {
+      "Bearer": {
+        "type": "http",
+        "description": "Put **_ONLY_** your JWT Bearer token on textbox below!",
+        "scheme": "Bearer",
+        "bearerFormat": "JWT"
+      },
+      "oauth2": {
+        "type": "apiKey",
+        "name": "Authorization",
+        "in": "header"
+      }
+    }
+  },
+  "security": [
+    {
+      "Bearer": []
+    }
+  ]
+}

@@ -87,6 +87,21 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.EventLogRepositories
                 .ToList();
         }
 
+        /// <summary>
+        /// Returns a list of unique days that have event logs for the given location.
+        /// </summary>
+        /// <param name="locationIdentifier">The location identifier.</param>
+        /// <returns>A read-only list of days with event log data.</returns>
+        public IReadOnlyList<DateOnly> GetDaysWithEventLogs(string locationIdentifier)
+        {
+            return GetList()
+                .Where(x => x.LocationIdentifier == locationIdentifier)
+                .Select(x => x.ArchiveDate)
+                .Distinct()
+                .OrderBy(d => d)
+                .ToList();
+        }
+
         #endregion
     }
 }
