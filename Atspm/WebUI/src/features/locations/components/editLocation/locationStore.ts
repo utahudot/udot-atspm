@@ -225,12 +225,21 @@ export const useLocationStore = create<LocationStore>()(
       const { location } = get()
       if (!location?.approaches) return
 
+      let shouldCallDeleteDetectorFromKey = false
+
       const newApproaches = location.approaches.map((approach) => ({
         ...approach,
-        detectors: approach.detectors?.filter((d) => d.id !== detectorId),
+        detectors: approach.detectors?.filter((d) => {
+          if (d.id === detectorId && !d.isNew) {
+            shouldCallDeleteDetectorFromKey = true
+          }
+          return d.id !== detectorId
+        }),
       }))
 
-      deleteDetectorFromKey(detectorId)
+      if (shouldCallDeleteDetectorFromKey) {
+        deleteDetectorFromKey(detectorId)
+      }
 
       set({
         location: {
