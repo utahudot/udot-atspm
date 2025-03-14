@@ -101,7 +101,7 @@ const SelectChart = ({
         }, {} as ChartOptions)
       : {}
   }
-  
+
   const availableCharts = useMemo(() => {
     if (!measureTypesData || !location) return {}
 
@@ -161,7 +161,7 @@ const SelectChart = ({
     } else if (
       location &&
       !chartType &&
-      availableCharts[ChartType.SplitMonitor]
+      availableCharts[ChartType.PurduePhaseTermination]
     ) {
       setChartType(ChartType.SplitMonitor)
     }
