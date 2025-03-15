@@ -92,10 +92,12 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.EventLogRepositories
         /// </summary>
         /// <param name="locationIdentifier">The location identifier.</param>
         /// <returns>A read-only list of days with event log data.</returns>
-        public IReadOnlyList<DateOnly> GetDaysWithEventLogs(string locationIdentifier)
+        public IReadOnlyList<DateOnly> GetDaysWithEventLogs(string locationIdentifier, Type dataType, DateOnly month)
         {
             return GetList()
                 .Where(x => x.LocationIdentifier == locationIdentifier)
+                .Where(x => x.DataType == dataType)
+                .Where(x => x.ArchiveDate.Year == month.Year && x.ArchiveDate.Month == month.Month)
                 .Select(x => x.ArchiveDate)
                 .Distinct()
                 .OrderBy(d => d)

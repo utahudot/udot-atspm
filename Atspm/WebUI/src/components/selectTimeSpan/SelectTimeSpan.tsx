@@ -5,6 +5,7 @@ import {
   Button,
   Divider,
   Skeleton,
+  Tooltip,
   Typography,
 } from '@mui/material'
 import {
@@ -12,6 +13,7 @@ import {
   DateOrTimeView,
   DateTimePicker,
   PickersDay,
+  PickersDayProps,
   TimePicker,
 } from '@mui/x-date-pickers'
 import { add, isSameDay, startOfToday } from 'date-fns'
@@ -33,6 +35,7 @@ export interface SelectDateTimeProps {
   changeStartTimePeriod?(date: Date): void
   changeEndTimePeriod?(date: Date): void
   markDays?: Date[]
+  onMonthChange?(date: Date): void
   warning?: string | null
 }
 
@@ -52,6 +55,7 @@ export default function SelectDateTime({
   changeStartTimePeriod,
   changeEndTimePeriod,
   markDays = [],
+  onMonthChange,
   warning = null,
 }: SelectDateTimeProps) {
   const [showWarning, setShowWarning] = useState(false)
@@ -108,13 +112,20 @@ export default function SelectDateTime({
       <DateCalendar
         value={startDateTime}
         onChange={handleCalendarChange}
+        onMonthChange={onMonthChange}
+        onYearChange={onMonthChange}
         showDaysOutsideCurrentMonth={true}
         disableFuture={true}
         slots={{
           day: MarkedDay,
         }}
         slotProps={{
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           day: { highlightedDays: markDays } as any,
+        }}
+        shouldDisableDate={(date) => {
+          if (!markDays) return false
+          return markDays.some((missing: Date) => isSameDay(missing, date))
         }}
       />
     ) : (
@@ -221,28 +232,49 @@ export default function SelectDateTime({
   )
 }
 
-const MarkedDay = (props: any & { highlightedDays?: Date[] }) => {
-  const { highlightedDays = [], day, outsideCurrentMonth, ...other } = props
+interface MarkedDayProps extends PickersDayProps<Date> {
+  highlightedDays?: Date[] | undefined
+}
 
-  const isSelected =
-    !outsideCurrentMonth &&
-    highlightedDays.some((markDay: Date) => isSameDay(markDay, day))
+function MarkedDay(props: MarkedDayProps) {
+  const { highlightedDays, day, outsideCurrentMonth, ...other } = props
 
-  return (
-    <Badge
-      variant="dot"
-      overlap="circular"
-      sx={{
-        '& .MuiBadge-badge': {
-          backgroundColor: isSelected ? '#6abf2f' : 'transparent',
-        },
-      }}
-    >
+  // 1) If no location is selected, don't mark anything.
+  if (highlightedDays === undefined) {
+    return (
       <PickersDay
         {...other}
         outsideCurrentMonth={outsideCurrentMonth}
         day={day}
       />
-    </Badge>
+    )
+  }
+
+  // 3) If the day is in the missing-days array, it has no data.
+  const isMissing = highlightedDays.some((missing: Date) =>
+    isSameDay(missing, day)
+  )
+  const badgeContent = isMissing ? (
+    <span
+      style={{
+        color: 'red',
+        fontSize: '0.6rem',
+        transform: 'translate(-50%, 50%)',
+      }}
+    >
+      ✖
+    </span>
+  ) : null
+
+  return (
+    <Tooltip title={isMissing ? 'No data available' : ''} enterDelay={500}>
+      <Badge overlap="circular" badgeContent={badgeContent}>
+        <PickersDay
+          {...other}
+          outsideCurrentMonth={outsideCurrentMonth}
+          day={day}
+        />
+      </Badge>
+    </Tooltip>
   )
 }

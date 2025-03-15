@@ -892,6 +892,23 @@
             }
           },
           {
+            "name": "dataType",
+            "in": "query",
+            "description": "Type that inherits from Utah.Udot.Atspm.Data.Models.EventLogModels.EventLogModelBase",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "month",
+            "in": "query",
+            "description": "Month to get days with event logs",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
             "name": "X-Timestamp-Format",
             "in": "header",
             "description": "Change CSV timestamp format https://learn.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings",
@@ -933,19 +950,8 @@
                 }
               }
             }
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
           }
-        },
-        "security": [
-          {
-            "oauth2": ["CanViewData"]
-          }
-        ]
+        }
       }
     }
   },
