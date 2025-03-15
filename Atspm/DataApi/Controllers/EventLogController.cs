@@ -210,6 +210,8 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
         /// Get all days that have event logs for a given location.
         /// </summary>
         /// <param name="locationIdentifier">Location identifier</param>
+        /// <param name="dataType">Type that inherits from <see cref="EventLogModelBase"/></param>
+        /// <param name="month" >Month to get days with event logs</param>
         /// <returns>A list of unique days with event logs.</returns>
         /// <response code="200">Call completed successfully</response>
         /// <response code="404">Resource not found</response>
@@ -218,11 +220,22 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
         [Produces("application/json", "application/xml")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult GetDaysWithEventLogs(string locationIdentifier)
+        public IActionResult GetDaysWithEventLogs(string locationIdentifier, string dataType, DateOnly month)
         {
-            var result = _repository.GetDaysWithEventLogs(locationIdentifier);
 
-            HttpContext.Response.Headers.Add("X-Total-Count", result.Count.ToString());
+            Type type;
+
+            try
+            {
+                type = Type.GetType($"{typeof(EventLogModelBase).Namespace}.{dataType}, {typeof(EventLogModelBase).Assembly}", true);
+            }
+            catch (Exception)
+            {
+                return BadRequest("Invalid data type");
+            }
+
+            var result = _repository.GetDaysWithEventLogs(locationIdentifier, type, month);
+
             return Ok(result);
         }
     }

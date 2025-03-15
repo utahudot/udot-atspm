@@ -5,6 +5,17 @@
  * ATSPM Log Data with OpenAPI, Swashbuckle, and API versioning.
  * OpenAPI spec version: 1.0
  */
+export type GetEventLogDaysWithEventLogsFromLocationIdentifierParams = {
+/**
+ * Type that inherits from Utah.Udot.Atspm.Data.Models.EventLogModels.EventLogModelBase
+ */
+dataType?: string;
+/**
+ * Month to get days with event logs
+ */
+month?: string;
+};
+
 export type GetEventLogArchivedEventsFromLocationIdentifierAndDeviceIdAndDataTypeParams = {
 /**
  * Archive date of event to start with

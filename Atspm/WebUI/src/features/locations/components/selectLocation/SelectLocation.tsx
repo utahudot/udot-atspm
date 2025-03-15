@@ -6,7 +6,7 @@ import { Button } from '@mui/material'
 import { memo } from 'react'
 
 interface SelectLocationProps {
-  location: Location | undefined
+  location: Location | undefined | null
   setLocation: (location: Location) => void
   chartsDisabled?: boolean
   route?: number[][]

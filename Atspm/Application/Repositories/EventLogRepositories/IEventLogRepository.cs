@@ -93,7 +93,7 @@ namespace Utah.Udot.Atspm.Repositories.EventLogRepositories
         /// </summary>
         /// <param name="locationIdentifier">Location identifier</param>
         /// <returns>A read-only list of days with event logs.</returns>
-        IReadOnlyList<DateOnly> GetDaysWithEventLogs(string locationIdentifier);
+        IReadOnlyList<DateOnly> GetDaysWithEventLogs(string locationIdentifier, Type dataType, DateOnly month);
     }
 
     /// <summary>

@@ -20,6 +20,7 @@ import type {
   GetEventLogArchivedEventsFromLocationIdentifierAndDeviceIdAndDataTypeParams,
   GetEventLogArchivedEventsFromLocationIdentifierAndDeviceIdParams,
   GetEventLogArchivedEventsFromLocationIdentifierParams,
+  GetEventLogDaysWithEventLogsFromLocationIdentifierParams,
   ProblemDetails,
 } from './aTSPMLogDataApi.schemas'
 
@@ -1022,19 +1023,25 @@ export const useGetEventLogArchivedEventsFromLocationIdentifierAndDeviceIdAndDat
  */
 export const getEventLogDaysWithEventLogsFromLocationIdentifier = (
   locationIdentifier: string,
+  params?: GetEventLogDaysWithEventLogsFromLocationIdentifierParams,
   signal?: AbortSignal
 ) => {
   return dataRequest<void>({
     url: `/EventLog/GetDaysWithEventLogs/${locationIdentifier}`,
     method: 'GET',
+    params,
     signal,
   })
 }
 
 export const getGetEventLogDaysWithEventLogsFromLocationIdentifierQueryKey = (
-  locationIdentifier: string
+  locationIdentifier: string,
+  params?: GetEventLogDaysWithEventLogsFromLocationIdentifierParams
 ) => {
-  return [`/EventLog/GetDaysWithEventLogs/${locationIdentifier}`] as const
+  return [
+    `/EventLog/GetDaysWithEventLogs/${locationIdentifier}`,
+    ...(params ? [params] : []),
+  ] as const
 }
 
 export const getGetEventLogDaysWithEventLogsFromLocationIdentifierQueryOptions =
@@ -1045,6 +1052,7 @@ export const getGetEventLogDaysWithEventLogsFromLocationIdentifierQueryOptions =
     TError = ProblemDetails,
   >(
     locationIdentifier: string,
+    params?: GetEventLogDaysWithEventLogsFromLocationIdentifierParams,
     options?: {
       query?: UseQueryOptions<
         Awaited<
@@ -1060,7 +1068,8 @@ export const getGetEventLogDaysWithEventLogsFromLocationIdentifierQueryOptions =
     const queryKey =
       queryOptions?.queryKey ??
       getGetEventLogDaysWithEventLogsFromLocationIdentifierQueryKey(
-        locationIdentifier
+        locationIdentifier,
+        params
       )
 
     const queryFn: QueryFunction<
@@ -1070,6 +1079,7 @@ export const getGetEventLogDaysWithEventLogsFromLocationIdentifierQueryOptions =
     > = ({ signal }) =>
       getEventLogDaysWithEventLogsFromLocationIdentifier(
         locationIdentifier,
+        params,
         signal
       )
 
@@ -1106,6 +1116,7 @@ export const useGetEventLogDaysWithEventLogsFromLocationIdentifier = <
   TError = ProblemDetails,
 >(
   locationIdentifier: string,
+  params?: GetEventLogDaysWithEventLogsFromLocationIdentifierParams,
   options?: {
     query?: UseQueryOptions<
       Awaited<
@@ -1119,6 +1130,7 @@ export const useGetEventLogDaysWithEventLogsFromLocationIdentifier = <
   const queryOptions =
     getGetEventLogDaysWithEventLogsFromLocationIdentifierQueryOptions(
       locationIdentifier,
+      params,
       options
     )
 
