@@ -215,10 +215,10 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
                         continue;
                     }
 
-                    phase.SkipsGreaterThan70TSPMax = phase.ProgrammedSplit - phase.MinTime;
-                    phase.ForceOffsLessThan40TSPMax = phase.ProgrammedSplit - ((phase.MinTime + phase.PercentileSplit50th) / 2);
-                    phase.ForceOffsLessThan60TSPMax = phase.ProgrammedSplit - phase.PercentileSplit50th;
-                    phase.ForceOffsLessThan80TSPMax = phase.ProgrammedSplit - phase.PercentileSplit85th;
+                    phase.SkipsGreaterThan70TSPMax = Math.Round(phase.ProgrammedSplit - phase.MinTime, 1);
+                    phase.ForceOffsLessThan40TSPMax = Math.Round(phase.ProgrammedSplit - ((phase.MinTime + phase.PercentileSplit50th) / 2), 1);
+                    phase.ForceOffsLessThan60TSPMax = Math.Round(phase.ProgrammedSplit - phase.PercentileSplit50th, 1);
+                    phase.ForceOffsLessThan80TSPMax = Math.Round(phase.ProgrammedSplit - phase.PercentileSplit85th, 1);
 
                     if (phase.PercentSkips > 70)
                     {
@@ -359,10 +359,16 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
             }
             var firstPlanEvent = planEvents.Min(p => p.Timestamp);
             var firstDate = inputParameters.Dates.OrderBy(d => d).First();
+            firstDate = firstPlanEvent < firstDate ? firstPlanEvent : firstDate;
+            var endDate = inputParameters.Dates.OrderBy(d => d).Last();
+            if (firstDate == endDate)
+            {
+                endDate = endDate.AddDays(1);
+            }
 
             var plans = GetTransitSignalPriorityPlans(
-                firstPlanEvent < firstDate ? firstPlanEvent : firstDate,
-                inputParameters.Dates.OrderBy(d => d).Last(),
+                firstDate,
+                endDate,
                 inputParameters.LocationPhases.LocationIdentifier,
                 planEvents,
                 splitsEvents,
@@ -625,12 +631,12 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
                     if (cyclesForPhase.Any() && programmedSplits.ContainsKey(phaseNumber))
                     {
                         double skippedCycles = maxCycleCount - cyclesForPhase.Count;
-                        double percentSkips = maxCycleCount > 0 ? (skippedCycles / maxCycleCount) * 100 : 0;
+                        double percentSkips = maxCycleCount > 0 ? Math.Round((skippedCycles / maxCycleCount) * 100,1) : 0;
                         double percentGapOuts = maxCycleCount > 0
-                            ? (cyclesForPhase.Count(c => c.TerminationEvent == 4) / (double)maxCycleCount) * 100
+                            ? Math.Round((cyclesForPhase.Count(c => c.TerminationEvent == 4) / (double)maxCycleCount) * 100, 1)
                             : 0;
                         double averageSplit = cyclesForPhase.Any()
-                            ? cyclesForPhase.Average(c => c.DurationSeconds)
+                            ? Math.Round(cyclesForPhase.Average(c => c.DurationSeconds), 1)
                             : 0;
 
                         var tspPhase = new TransitSignalPhase
@@ -804,7 +810,7 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
                 var step2 = orderedCycles.ElementAt(Convert.ToInt16(indexInt)).DurationSeconds;
                 var stepDiff = step2 - step1;
                 var step3 = stepDiff * indexMod;
-                return step1 + step3;
+                return Math.Round(step1 + step3,1);
             }
         }
 

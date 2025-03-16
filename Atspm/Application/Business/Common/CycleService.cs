@@ -277,7 +277,8 @@ namespace Utah.Udot.Atspm.Business.Common
                         EndRedClearanceEvent = cycleEventsForPhase[i + 3].Timestamp, 
                         TerminationEvent  = GetTerminationEventBetweenStartAndEnd(cycleEventsForPhase[i].Timestamp, cycleEventsForPhase[i + 3].Timestamp, terminationEvents)
                     };
-                })                
+                })
+                .Where(c => c.GreenDurationSeconds > 0 && c.DurationSeconds > 0)
                 .ToList();
 
             return cycles;
