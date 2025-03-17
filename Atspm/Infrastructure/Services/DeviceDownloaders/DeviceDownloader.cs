@@ -63,7 +63,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders
 
             var path = Path.Combine
                 (_options.BasePath,
-                $"{device.Location?.LocationIdentifier}",
+                $"{device.Location?.LocationIdentifier} - {device.Location?.PrimaryName} - {device.Location?.SecondaryName}",
                 device.DeviceType.ToString(),
                  $"{device.DeviceIdentifier}-{device.Ipaddress}");
 
@@ -299,10 +299,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders
                 {
                     if (_obj is Device d && d.DeviceConfiguration != null)
                     {
-                        //https://stackoverflow.com/questions/33639571/get-local-time-based-on-coordinates
-                        DateTime localTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("America/Boise"));
-
-                        builder.AppendFormat("{0" + i.Replace("LogStartTime", "") + "}", localTime.AddMinutes(-d.DeviceConfiguration.LoggingOffset));
+                        builder.AppendFormat("{0" + i.Replace("LogStartTime", "") + "}", DateTime.Now.AddMinutes(-d.DeviceConfiguration.LoggingOffset));
                     }
                 }
 
