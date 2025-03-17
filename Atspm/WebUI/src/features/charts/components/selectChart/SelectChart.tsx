@@ -163,7 +163,7 @@ const SelectChart = ({
       !chartType &&
       availableCharts[ChartType.PurduePhaseTermination]
     ) {
-      setChartType(ChartType.SplitMonitor)
+      setChartType(ChartType.PurduePhaseTermination)
     }
   }, [location, chartType, availableCharts, setChartType, isChartTypeAvailable])
 
