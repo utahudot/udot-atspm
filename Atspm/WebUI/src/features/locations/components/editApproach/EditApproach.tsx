@@ -7,6 +7,7 @@ import {
 } from '@/api/config/aTSPMConfigurationApi.schemas'
 import { AddButton } from '@/components/addButton'
 import { useEditApproach } from '@/features/locations/api/approach'
+// import { useUpsertApproachApproach } from '@/api/config/aTSPMConfigurationApi'
 import ApproachEditorRowHeader from '@/features/locations/components/editApproach/ApproachEditorRow'
 import DeleteApproachModal from '@/features/locations/components/editApproach/DeleteApproachModal'
 import { hasUniqueDetectorChannels } from '@/features/locations/components/editApproach/utils/checkDetectors'
@@ -32,22 +33,18 @@ function EditApproach({ approach }: ApproachAdminProps) {
     copyApproach,
     deleteApproach,
     addDetector,
+    setErrors,
+    setWarnings,
+    clearErrorsAndWarnings,
   } = useLocationStore()
   const approaches = location?.approaches || []
 
   const [open, setOpen] = useState(false)
   const [openModal, setOpenModal] = useState(false)
-  const [errors, setErrors] = useState<Record<
-    string,
-    { error: string; id: string }
-  > | null>(null)
-  const [warnings, setWarnings] = useState<Record<
-    string,
-    { warning: string; id: string }
-  > | null>(null)
   const { addNotification } = useNotificationStore()
 
   const { mutate: editApproach } = useEditApproach()
+  // const { mutate: editApproach } = useUpsertApproachApproach() //giving me 415 errors
 
   const { findEnumByNameOrAbbreviation: findDetectionType } = useConfigEnums(
     ConfigEnum.DetectionTypes
@@ -69,10 +66,8 @@ function EditApproach({ approach }: ApproachAdminProps) {
     const { isValid, errors } = hasUniqueDetectorChannels(location.approaches)
 
     if (isValid) {
-      setWarnings(null)
-      setErrors(null)
+      clearErrorsAndWarnings() // Clear both in the store
     } else {
-      // Convert the errors object to warnings
       setWarnings(
         Object.keys(errors).reduce(
           (acc, key) => {
@@ -83,7 +78,7 @@ function EditApproach({ approach }: ApproachAdminProps) {
         )
       )
     }
-  }, [location?.approaches])
+  }, [location?.approaches, setWarnings, clearErrorsAndWarnings])
 
   const handleApproachClick = () => {
     setOpen((prev) => !prev)
@@ -173,11 +168,9 @@ function EditApproach({ approach }: ApproachAdminProps) {
           ? 0
           : Number(detector.latencyCorrection)
 
-      // Build an identifier
-      detector.dectectorIdentifier =
+      detector.detectorIdentifier = // Fixed typo
         (location?.locationIdentifier || '') + (detector.detectorChannel || '')
 
-      // Convert detection type abbreviations -> numeric enum
       detector.detectionTypes.forEach((detectionType) => {
         detectionType.id = findDetectionType(detectionType.abbreviation)?.value
       })
@@ -191,33 +184,87 @@ function EditApproach({ approach }: ApproachAdminProps) {
 
     editApproach(modifiedApproach, {
       onSuccess: (saved) => {
-        // Convert the numeric enums we got back from the API back to strings:
-        saved.directionTypeId =
-          findDirectionType(saved.directionTypeId)?.name || DirectionTypes.NA
-
-        saved.detectors.forEach((det) => {
-          det.detectionTypes.forEach((dType) => {
-            dType.abbreviation =
-              findDetectionType(dType.abbreviation)?.name || DetectionTypes.NA
+        try {
+          // Normalize the response
+          const detectorsArray = saved.detectors?.$values || []
+          detectorsArray.forEach((detector) => {
+            detector.detectionTypes = detector.detectionTypes?.$values || []
+            detector.detectionTypes.forEach((dType) => {
+              dType.abbreviation =
+                findDetectionType(dType.abbreviation)?.name || DetectionTypes.NA
+            })
+            detector.detectionHardware =
+              findDetectionHardware(detector.detectionHardware)?.name ||
+              DetectionHardwareTypes.NA
+            detector.movementType =
+              findMovementType(detector.movementType)?.name || MovementTypes.NA
+            detector.laneType =
+              findLaneType(detector.laneType)?.name || LaneTypes.NA
           })
-          det.detectionHardware =
-            findDetectionHardware(det.detectionHardware)?.name ||
-            DetectionHardwareTypes.NA
-          det.movementType =
-            findMovementType(det.movementType)?.name || MovementTypes.NA
-          det.laneType = findLaneType(det.laneType)?.name || LaneTypes.NA
-        })
 
-        updateApproaches(
-          approaches.map((item) => (item.id === approach.id ? saved : item))
-        )
+          const normalizedSaved: ConfigApproach = {
+            ...saved,
+            directionTypeId:
+              findDirectionType(saved.directionTypeId)?.name ||
+              DirectionTypes.NA,
+            detectors: detectorsArray,
+          }
+
+          updateApproaches(
+            approaches.map((item) =>
+              item.id === approach.id ? normalizedSaved : item
+            )
+          )
+
+          addNotification({
+            title: 'Approach saved successfully',
+            type: 'success',
+          })
+        } catch (error) {
+          console.error('Error processing saved approach:', error)
+          addNotification({
+            title: 'Failed to process saved approach',
+            type: 'error',
+            message:
+              error instanceof Error
+                ? error.message
+                : 'An unexpected error occurred',
+          })
+        }
+      },
+      onError: (error) => {
+        console.error('Failed to save approach:', error)
+        addNotification({
+          title: 'Failed to save approach',
+          type: 'error',
+          message:
+            error instanceof Error
+              ? error.message
+              : 'An unexpected error occurred',
+        })
       },
     })
   }
 
   const handleDeleteApproach = () => {
-    deleteApproach(approach)
-    setOpenModal(false)
+    try {
+      deleteApproach(approach)
+      addNotification({
+        title: 'Approach deleted',
+        type: 'success',
+      })
+    } catch (error) {
+      console.error('Failed to delete:', error)
+      addNotification({
+        title: 'Failed to delete approach',
+        type: 'error',
+        message:
+          error instanceof Error
+            ? error.message
+            : 'An unexpected error occurred',
+      })
+      setOpenModal(false)
+    }
   }
 
   return (

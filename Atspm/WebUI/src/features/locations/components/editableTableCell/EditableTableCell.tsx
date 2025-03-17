@@ -46,7 +46,7 @@ const EditableTableCell = ({
     }
     timeoutRef.current = window.setTimeout(() => {
       onUpdate(newValue)
-    }, 700)
+    }, 300)
   }
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
