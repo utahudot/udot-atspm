@@ -54,6 +54,13 @@ export interface LocationStore {
     val: string | number | null
   ) => void
   deleteDetector: (detectorId: number) => void
+  setErrors: (
+    errors: Record<string, { error: string; id: string }> | null
+  ) => void
+  setWarnings: (
+    warnings: Record<string, { warning: string; id: string }> | null
+  ) => void
+  clearErrorsAndWarnings: () => void
 }
 
 export const useLocationStore = create<LocationStore>()(
@@ -249,6 +256,22 @@ export const useLocationStore = create<LocationStore>()(
           approaches: newApproaches,
         },
       })
+    },
+
+    setErrors: (
+      errors: Record<string, { error: string; id: string }> | null
+    ) => {
+      set({ errors })
+    },
+
+    setWarnings: (
+      warnings: Record<string, { warning: string; id: string }> | null
+    ) => {
+      set({ warnings })
+    },
+
+    clearErrorsAndWarnings: () => {
+      set({ errors: null, warnings: null })
     },
   }))
 )

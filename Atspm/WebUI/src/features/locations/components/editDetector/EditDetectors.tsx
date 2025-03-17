@@ -38,7 +38,6 @@ export default function EditDetectors({
     useLocationStore()
   const [modalOpen, setModalOpen] = useState(false)
   const [selectedDetectorId, setSelectedDetectorId] = useState<number>()
-
   return (
     <>
       <TableContainer component={Paper}>
