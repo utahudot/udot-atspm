@@ -59,7 +59,15 @@ function EditApproach({ approach, handler }: ApproachAdminProps) {
       setWarnings(null)
       setErrors(null)
     } else {
-      setWarnings(errors)
+      setWarnings(
+        Object.keys(errors).reduce(
+          (acc, key) => {
+            acc[key] = { warning: errors[key].error, id: errors[key].id }
+            return acc
+          },
+          {} as Record<string, { warning: string; id: string }>
+        )
+      )
     }
   }, [handler.approaches])
 
@@ -74,7 +82,7 @@ function EditApproach({ approach, handler }: ApproachAdminProps) {
       index: handler.approaches.length,
       open: false,
       description: `${approach.description} (copy)`,
-      detectors: detectors.map(({ id, ...restDetector }) => ({
+      detectors: detectors?.map(({ id, ...restDetector }) => ({
         ...restDetector,
       })),
     }
@@ -155,6 +163,14 @@ function EditApproach({ approach, handler }: ApproachAdminProps) {
       delete detector.isNew
       delete detector.approach
       delete detector.detectorComments
+
+      detector.latencyCorrection =
+        detector.latencyCorrection === null ||
+        detector.latencyCorrection === undefined ||
+        detector.latencyCorrection === ''
+          ? 0
+          : Number(detector.latencyCorrection)
+
       detector.dectectorIdentifier =
         handler.expandedLocation?.locationIdentifier + detector.detectorChannel
       detector.detectionTypes.forEach((detectionType) => {
@@ -225,9 +241,6 @@ function EditApproach({ approach, handler }: ApproachAdminProps) {
       laneNumber: null,
       latencyCorrection: 0,
       movementDelay: null,
-      movementType: 'NA',
-      laneType: 'NA',
-      detectionHardware: 'NA',
       detectionTypes: [],
       dateAdded: new Date().toISOString(),
       detectorComments: [],

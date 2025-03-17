@@ -1,4 +1,4 @@
-﻿#region license
+#region license
 // Copyright 2025 Utah Departement of Transportation
 // for Infrastructure - Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients/DownloaderClientBase.cs
 // 
@@ -115,9 +115,6 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
 
                 if (TryCreateFileInfo(local, out FileInfo file))
                 {
-                    Console.WriteLine($"==============================================================file: {file.FullName}");
-
-
                     file.Directory.Create();
 
                     return await DownloadResource(file, remote, token);
@@ -168,7 +165,6 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
                 var fileCheck = !Path.GetFileName(path).Any(a => Path.GetInvalidFileNameChars().Contains(a));
                 var extCheck = Path.HasExtension(path);
 
-                //if (driveCheck && pathCheck && fileCheck && extCheck)
                 if (fileCheck && extCheck)
                 {
                     file = new FileInfo(path);

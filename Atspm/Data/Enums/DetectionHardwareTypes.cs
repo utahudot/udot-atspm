@@ -65,5 +65,11 @@ namespace Utah.Udot.Atspm.Data.Enums
         /// </summary>
         [Display(Name = "FLIR: Thermal Camera", Order = 6)]
         FLIRThermalCamera = 6,
+
+        /// <summary>
+        /// LiDar
+        /// </summary> 
+        [Display(Name = "LiDar", Order = 7)]
+        LiDar = 7,
     }
 }
