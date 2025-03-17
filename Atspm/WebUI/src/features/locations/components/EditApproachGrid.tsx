@@ -30,7 +30,11 @@ export default function EditApproachGrid({
 }: {
   approach: ConfigApproach
 }) {
-  const { location, errors, updateApproach } = useLocationStore()
+  const { location, errors, updateApproach } = useLocationStore((state) => ({
+    location: state.location,
+    errors: state.errors,
+    updateApproach: state.updateApproach,
+  }))
   const pedsAre1to1 = location?.pedsAre1to1 ?? false
 
   const handleUpdate = (
