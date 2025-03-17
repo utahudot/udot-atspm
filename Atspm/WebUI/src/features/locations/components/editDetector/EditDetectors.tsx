@@ -56,6 +56,7 @@ export default function EditDetectors({
                   Advanced Speed Only
                 </Typography>
               </TableCell>
+              <TableCell />
             </TableRow>
             <TableRow>
               <TableCell>Channel</TableCell>

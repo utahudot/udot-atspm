@@ -73,18 +73,17 @@ export const useLocationStore = create<LocationStore>()(
           : state.location,
       }))
     },
-
     updateApproach: (updatedApproach: ConfigApproach) =>
       set((state) => {
         if (!state.location) return state
+        const approachIndex = state.location.approaches.findIndex(
+          (a) => a.id === updatedApproach.id
+        )
+        if (approachIndex === -1) return state
+        const newApproaches = [...state.location.approaches]
+        newApproaches[approachIndex] = updatedApproach
         return {
-          location: {
-            ...state.location,
-            approaches:
-              state?.location?.approaches?.map((a) =>
-                a.id === updatedApproach.id ? updatedApproach : a
-              ) || [],
-          },
+          location: { ...state.location, approaches: newApproaches },
         }
       }),
 
