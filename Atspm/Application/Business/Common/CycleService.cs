@@ -18,7 +18,6 @@
 using Utah.Udot.Atspm.Business.ApproachSpeed;
 using Utah.Udot.Atspm.Business.PreemptService;
 using Utah.Udot.Atspm.Business.SplitFail;
-using Utah.Udot.Atspm.Business.TransitSignalPriority;
 using Utah.Udot.Atspm.Business.YellowRedActivations;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
 using Utah.Udot.Atspm.Extensions;
@@ -245,39 +244,6 @@ namespace Utah.Udot.Atspm.Business.Common
                                               cycleEvents[i + 3].Timestamp, termEvent, options.FirstSecondsOfRed);
                 })
                 .Where(c => c.EndTime >= options.Start && c.EndTime <= options.End || c.StartTime <= options.End && c.StartTime >= options.Start)
-                .ToList();
-
-            return cycles;
-        }
-        
-        public List<TransitSignalPriorityCycle> GetTransitSignalPriorityCycles(int phaseNumber, List<IndianaEvent> cycleEvents, List<IndianaEvent> terminationEvents)
-        {
-            if(cycleEvents.IsNullOrEmpty()) return new List<TransitSignalPriorityCycle>();
-            var cycleEventsForPhase = cycleEvents.Where(c => c.EventParam == phaseNumber).OrderBy(c => c.Timestamp).ToList();
-            var terminationEventsForPhase = terminationEvents.Where(c => c.EventParam == phaseNumber).ToList();
-
-            var cleanTerminationEvents = CleanTerminationEvents(terminationEventsForPhase);
-            var cycles = Enumerable.Range(0, cycleEventsForPhase.Count - 3)
-                .Where(i => cycleEventsForPhase[i].EventCode ==1 &&
-                            cycleEventsForPhase[i + 1].EventCode == 8 &&
-                            cycleEventsForPhase[i + 2].EventCode == 10 &&
-                            cycleEventsForPhase[i + 3].EventCode == 11                             
-                            )
-                .Select(i =>
-                {
-                    var termEvent = GetTerminationTypeBetweenStartAndEnd(
-                        cycleEventsForPhase[i].Timestamp, 
-                        cycleEventsForPhase[i + 3].Timestamp,
-                        cleanTerminationEvents);
-                    return new TransitSignalPriorityCycle { 
-                        PhaseNumber = phaseNumber,
-                        GreenEvent = cycleEventsForPhase[i].Timestamp, 
-                        YellowEvent = cycleEventsForPhase[i + 1].Timestamp, 
-                        RedEvent = cycleEventsForPhase[i + 2].Timestamp,  
-                        EndRedClearanceEvent = cycleEventsForPhase[i + 3].Timestamp, 
-                        TerminationEvent  = GetTerminationEventBetweenStartAndEnd(cycleEventsForPhase[i].Timestamp, cycleEventsForPhase[i + 3].Timestamp, terminationEvents)
-                    };
-                })                
                 .ToList();
 
             return cycles;
