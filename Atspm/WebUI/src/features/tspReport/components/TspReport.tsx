@@ -1,6 +1,11 @@
 import { TransitSignalPriorityResult } from '@/api/reports/aTSPMReportDataApi.schemas'
+import DownloadIcon from '@mui/icons-material/Download'
+import PrintIcon from '@mui/icons-material/Print'
+import SaveIcon from '@mui/icons-material/Save'
 import { TabContext, TabList, TabPanel } from '@mui/lab'
 import {
+  Box,
+  Button,
   Paper,
   Tab,
   Table,
@@ -54,7 +59,7 @@ const TspReport = ({ report }: TspReportProps) => {
 
   return (
     <TabContext value={currentTab}>
-      {/* <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2, gap: 2 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2, gap: 2 }}>
         <Button
           size="small"
           variant="outlined"
@@ -84,7 +89,7 @@ const TspReport = ({ report }: TspReportProps) => {
         >
           Save Parameters
         </Button>
-      </Box> */}
+      </Box>
 
       <Paper
         ref={contentRef}

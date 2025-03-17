@@ -23,7 +23,6 @@ import {
   Select,
 } from '@mui/material'
 import { AxiosError } from 'axios'
-import { startOfYesterday, subDays } from 'date-fns'
 import { useState } from 'react'
 
 const savedReportsMock = [
@@ -68,7 +67,7 @@ interface TspReportOptions {
 
 export default function TspReportPage() {
   const [reportOptions, setReportOptions] = useState<TspReportOptions>({
-    selectedDays: [subDays(startOfYesterday(), 1), startOfYesterday()],
+    selectedDays: [],
     locations: [],
   })
   const [selectedReport, setSelectedReport] = useState(0)
