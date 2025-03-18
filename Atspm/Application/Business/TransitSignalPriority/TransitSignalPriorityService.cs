@@ -289,7 +289,7 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
                         phase.PriorityMax = 0;
                         continue;
                     }
-                    if(parameters.LocationPhases.DesignatedPhases.Contains(phase.PhaseNumber) && phase.PhaseNumber >=1 && phase.PhaseNumber <=16)
+                    if (parameters.LocationPhases.DesignatedPhases.Contains(phase.PhaseNumber) && phase.PhaseNumber >= 1 && phase.PhaseNumber <= 16)
                     {
                         //Sum of the non designated phase TSP Max for ring assume 16 phases 4 rings
                         if (parameters.LocationPhases.DesignatedPhases.Contains(phase.PhaseNumber))
@@ -311,11 +311,15 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
                         {
                             phase.MaxExtension = 0;
                         }
-
+                        phase.MaxReduction = phase.RecommendedTSPMax.HasValue ? Convert.ToInt32(Math.Round(phase.RecommendedTSPMax.Value)) : 0; //TSP MAX
+                        phase.PriorityMin = phase.ProgrammedSplit > 0 ? Convert.ToInt32(Math.Round(phase.ProgrammedSplit - (phase.RecommendedTSPMax.HasValue ? phase.RecommendedTSPMax.Value : 0d))) : 0; // Program split minus tsp max
+                        phase.PriorityMax = phase.ProgrammedSplit > 0 ? Convert.ToInt32(Math.Round(phase.ProgrammedSplit + (phase.RecommendedTSPMax.HasValue ? phase.RecommendedTSPMax.Value : 0d))) : 0; // Program split minus tsp max; //Program split plus the max extension
                     }
-                    phase.MaxReduction = phase.RecommendedTSPMax.HasValue?Convert.ToInt32(Math.Round(phase.RecommendedTSPMax.Value)):0; //TSP MAX
-                    phase.PriorityMin = phase.ProgrammedSplit>0?Convert.ToInt32(Math.Round(phase.ProgrammedSplit-(phase.RecommendedTSPMax.HasValue?phase.RecommendedTSPMax.Value:0d))):0; // Program split minus tsp max
-                    phase.PriorityMax = phase.ProgrammedSplit > 0 ? Convert.ToInt32(Math.Round(phase.ProgrammedSplit + (phase.RecommendedTSPMax.HasValue ? phase.RecommendedTSPMax.Value : 0d))) : 0; // Program split minus tsp max; //Program split plus the max extension
+                    else
+                    {
+                        phase.PriorityMin = phase.ProgrammedSplit > 0 ? Convert.ToInt32(Math.Round(phase.ProgrammedSplit)) : 0; // Program split minus tsp max
+                        phase.PriorityMax = phase.ProgrammedSplit > 0 ? Convert.ToInt32(Math.Round(phase.ProgrammedSplit)) : 0; // Program split minus tsp max; //Program split plus the max extension
+                    }
                 }
             }
 
