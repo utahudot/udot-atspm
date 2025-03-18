@@ -46,7 +46,7 @@ const EditableTableCell = ({
     }
     timeoutRef.current = window.setTimeout(() => {
       onUpdate(newValue)
-    }, 300)
+    }, 700)
   }
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -89,7 +89,6 @@ const EditableTableCell = ({
   useEffect(() => {
     setLocalValue(initialValue || '')
   }, [initialValue])
-
   return (
     <Tooltip
       title={
@@ -173,4 +172,12 @@ const EditableTableCell = ({
   )
 }
 
-export default EditableTableCell
+export default React.memo(EditableTableCell, (prevProps, nextProps) => {
+  return (
+    prevProps.value === nextProps.value &&
+    prevProps.disabled === nextProps.disabled &&
+    prevProps.isLocked === nextProps.isLocked &&
+    prevProps.error === nextProps.error &&
+    prevProps.warning === nextProps.warning
+  )
+})

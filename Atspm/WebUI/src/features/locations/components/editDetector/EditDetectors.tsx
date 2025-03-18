@@ -27,15 +27,17 @@ import {
   TableRow,
   Typography,
 } from '@mui/material'
-import { useState } from 'react'
+import React, { useState } from 'react'
 
-export default function EditDetectors({
-  approach,
-}: {
-  approach: ConfigApproach
-}) {
-  const { errors, warnings, updateDetector, deleteDetector } =
-    useLocationStore()
+function EditDetectors({ approach }: { approach: ConfigApproach }) {
+  const { errors, warnings, updateDetector, deleteDetector } = useLocationStore(
+    (state) => ({
+      errors: state.errors,
+      warnings: state.warnings,
+      updateDetector: state.updateDetector,
+      deleteDetector: state.deleteDetector,
+    })
+  )
   const [modalOpen, setModalOpen] = useState(false)
   const [selectedDetectorId, setSelectedDetectorId] = useState<number>()
   return (
@@ -218,9 +220,12 @@ export default function EditDetectors({
               Delete Detector
             </Button>
           </DialogActions>
-          {/* </Box> */}
         </Dialog>
       )}
     </>
   )
 }
+export default React.memo(
+  EditDetectors,
+  (prevProps, nextProps) => prevProps.approach === nextProps.approach
+)

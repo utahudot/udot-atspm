@@ -32,6 +32,7 @@ export interface ConfigDetector extends Omit<Detector, 'id' | 'approachId'> {
 
 export interface LocationStore {
   location: ConfigLocation | null
+  channelMap: Map<number, number>
   errors: Record<string, { error: string; id: string }> | null
   warnings: Record<string, { warning: string; id: string }> | null
 
@@ -47,13 +48,12 @@ export interface LocationStore {
   deleteApproach: (approach: ConfigApproach) => void
 
   // detector
+
   addDetector: (approach: ConfigApproach) => void
-  updateDetector: (
-    detectorId: number,
-    name: string,
-    val: string | number | null
-  ) => void
+  updateDetector: (detectorId: number, name: string, val: unknown) => void
   deleteDetector: (detectorId: number) => void
+
+  // errors and warnings
   setErrors: (
     errors: Record<string, { error: string; id: string }> | null
   ) => void
@@ -68,9 +68,20 @@ export const useLocationStore = create<LocationStore>()(
     location: null,
     errors: null,
     warnings: null,
+    channelMap: new Map(),
 
     setLocation: (location: ConfigLocation | null) => {
-      set({ location })
+      set((state) => {
+        const newMap = new Map()
+        if (location?.approaches) {
+          location.approaches.forEach((approach) =>
+            approach.detectors.forEach((detector) =>
+              newMap.set(detector.id, detector.detectorChannel || 0)
+            )
+          )
+        }
+        return { location, channelMap: newMap }
+      })
     },
 
     handleLocationEdit: (name: string, value: string) => {
@@ -169,10 +180,8 @@ export const useLocationStore = create<LocationStore>()(
       )
 
       if (approach.isNew) {
-        // If it wasn't saved yet, just remove it from local store
         updateApproaches(newApproaches)
       } else {
-        // Otherwise, delete from API
         try {
           deleteApproachFromKey(approach.id)
           updateApproaches(newApproaches)
@@ -210,7 +219,7 @@ export const useLocationStore = create<LocationStore>()(
     },
 
     updateDetector: (detectorId: number, name: string, val: unknown) => {
-      const { location } = get()
+      const { location, channelMap } = get()
       if (!location?.approaches) return
 
       val = val === '' ? null : val
@@ -222,11 +231,18 @@ export const useLocationStore = create<LocationStore>()(
         ),
       }))
 
+      if (name === 'detectorChannel') {
+        const newChannel =
+          typeof val === 'number' ? val : parseInt(val as string) || 0
+        channelMap.set(detectorId, newChannel)
+      }
+
       set({
         location: {
           ...location,
           approaches: newApproaches,
         },
+        channelMap: new Map(channelMap),
       })
     },
 
