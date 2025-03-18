@@ -69,6 +69,20 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
             return GetNavigationProperty<IEnumerable<MeasureComment>>(key);
         }
 
+        /// <summary>
+        /// <see cref="MeasureOptionPreset"/> navigation property action
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        [EnableQuery(AllowedQueryOptions = Count | Filter | Select | OrderBy | Top | Skip)]
+        [ProducesResponseType(Status200OK)]
+        [ProducesResponseType(Status404NotFound)]
+        [ProducesResponseType(Status400BadRequest)]
+        public ActionResult<IEnumerable<MeasureOptionPreset>> GetMeasureOptionPresets([FromRoute] int key)
+        {
+            return GetNavigationProperty<IEnumerable<MeasureOptionPreset>>(key);
+        }
+
         #endregion
 
         #region Actions

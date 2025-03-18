@@ -33,9 +33,12 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories
         public override IQueryable<MeasureOptionPreset> GetList()
         {
             return base.GetList()
-                .Include(i => i.MeasureType)
-                .OrderBy(o => o.Name);
+                .Include(i => i.MeasureType);
         }
+
+        #endregion
+
+        #region IMeasureOptionPresetRepository
 
         #endregion
     }
