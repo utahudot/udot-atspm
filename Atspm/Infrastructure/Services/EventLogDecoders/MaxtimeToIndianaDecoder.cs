@@ -71,8 +71,6 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.EventLogDecoders
                             LocationIdentifier = locationIdentifider,
                             EventCode = eventCode,
                             EventParam = eventParam,
-                            //EventCode = Convert.ToInt16(l.Attribute("EventTypeID").Value),
-                            //EventParam = Convert.ToInt16(l.Attribute("Parameter").Value),
                             Timestamp = Convert.ToDateTime(l.Attribute("TimeStamp").Value)
                         };
 
