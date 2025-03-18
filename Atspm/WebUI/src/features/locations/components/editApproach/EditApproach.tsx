@@ -63,7 +63,6 @@ function EditApproach({ approach }: ApproachAdminProps) {
     useConfigEnums(ConfigEnum.DetectionHardwareTypes)
 
   useEffect(() => {
-    console.log('useEffect is called')
     const { isValid, errors } = hasUniqueDetectorChannels(channelMap)
     if (isValid) {
       clearErrorsAndWarnings()
