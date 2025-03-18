@@ -96,7 +96,7 @@ export const MapLayerCreateEditModal = ({
       name: mapLayer?.name || '',
       mapLayerUrl: mapLayer?.mapLayerUrl || '',
       showByDefault: mapLayer?.showByDefault || false,
-      refreshIntervalSeconds: mapLayer?.refreshIntervalSeconds ?? null,
+      refreshIntervalSeconds: mapLayer?.refreshIntervalSeconds ?? '',
       serviceType: mapLayer?.serviceType || ServiceType.FeatureServer,
     },
   })
@@ -201,6 +201,7 @@ export const MapLayerCreateEditModal = ({
               render={({ field }) => (
                 <TextField
                   {...field}
+                  value={field.value ?? ''}
                   onChange={(e) => {
                     const value = e.target.value
                     field.onChange(value === '' ? null : Number(value))
