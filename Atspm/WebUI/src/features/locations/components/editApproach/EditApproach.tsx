@@ -35,6 +35,7 @@ function EditApproach({ approach }: ApproachAdminProps) {
     addDetector,
     setErrors,
     setWarnings,
+    channelMap,
     clearErrorsAndWarnings,
   } = useLocationStore()
   const approaches = location?.approaches || []
@@ -62,11 +63,10 @@ function EditApproach({ approach }: ApproachAdminProps) {
     useConfigEnums(ConfigEnum.DetectionHardwareTypes)
 
   useEffect(() => {
-    if (!location?.approaches) return
-    const { isValid, errors } = hasUniqueDetectorChannels(location.approaches)
-
+    console.log('useEffect is called')
+    const { isValid, errors } = hasUniqueDetectorChannels(channelMap)
     if (isValid) {
-      clearErrorsAndWarnings() // Clear both in the store
+      clearErrorsAndWarnings()
     } else {
       setWarnings(
         Object.keys(errors).reduce(
@@ -94,7 +94,7 @@ function EditApproach({ approach }: ApproachAdminProps) {
 
     // Check detector channel uniqueness across all approaches
     const { isValid, errors: channelErrors } =
-      hasUniqueDetectorChannels(approaches)
+      hasUniqueDetectorChannels(channelMap)
     if (!isValid) {
       newErrors = { ...newErrors, ...channelErrors }
     }
