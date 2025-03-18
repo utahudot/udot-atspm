@@ -51,7 +51,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="Google.Cloud.Diagnostics.Common" Version="5.2.0" />
-		<PackageReference Include="FluentFTP" Version="51.1.0" />
+		<PackageReference Include="FluentFTP" Version="52.1.0" />
 		<PackageReference Include="Google.Cloud.Diagnostics.Common" Version="5.2.0" />
 		<PackageReference Include="Lextm.SharpSnmpLib" Version="12.5.5" />
 		<PackageReference Include="MailKit" Version="4.8.0" />
