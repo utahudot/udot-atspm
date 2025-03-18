@@ -216,7 +216,7 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
                     }
 
                     phase.SkipsGreaterThan70TSPMax = Math.Round(phase.ProgrammedSplit - phase.MinTime, 1);
-                    phase.ForceOffsLessThan40TSPMax = Math.Round(phase.ProgrammedSplit - ((phase.MinTime + phase.PercentileSplit50th) / 2), 1);
+                    phase.ForceOffsLessThan40TSPMax = Math.Round((phase.MinTime + phase.PercentileSplit50th) / 2, 1);
                     phase.ForceOffsLessThan60TSPMax = Math.Round(phase.ProgrammedSplit - phase.PercentileSplit50th, 1);
                     phase.ForceOffsLessThan80TSPMax = Math.Round(phase.ProgrammedSplit - phase.PercentileSplit85th, 1);
 
