@@ -54,7 +54,7 @@ const PerformanceMeasures = () => {
 
   const handleLocationChange = async (newLocation: Location) => {
     if (!location) {
-      setChartType(ChartType.SplitMonitor)
+      setChartType(ChartType.PurduePhaseTermination)
     }
     const computedMissing = await computeMissingDays(
       newLocation,
