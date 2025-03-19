@@ -160,12 +160,13 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
             {
                 var path = uri.LocalPath.Replace("\\\\localhost\\", "");
 
-                var driveCheck = Path.IsPathRooted(path);
-                var pathCheck = Path.IsPathFullyQualified(path);
+                //var driveCheck = Path.IsPathRooted(path);
+                //var pathCheck = Path.IsPathFullyQualified(path);
                 var fileCheck = !Path.GetFileName(path).Any(a => Path.GetInvalidFileNameChars().Contains(a));
                 var extCheck = Path.HasExtension(path);
 
-                if (driveCheck && pathCheck && fileCheck && extCheck)
+                //if (driveCheck && pathCheck && fileCheck && extCheck)
+                if (fileCheck && extCheck)
                 {
                     file = new FileInfo(path);
                     return true;
