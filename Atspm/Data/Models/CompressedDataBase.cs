@@ -17,6 +17,7 @@
 
 using Utah.Udot.Atspm.Data.Interfaces;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
+using Utah.Udot.NetStandardToolkit.Common;
 
 #nullable disable
 
@@ -25,7 +26,7 @@ namespace Utah.Udot.Atspm.Data.Models
     /// <summary>
     /// Base for compressed database table models
     /// </summary>
-    public abstract class CompressedDataBase : ILocationLayer
+    public abstract class CompressedDataBase : StartEndRange, ILocationLayer
     {
         private IEnumerable<ILocationLayer> data;
 

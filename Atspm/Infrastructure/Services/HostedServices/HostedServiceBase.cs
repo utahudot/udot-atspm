@@ -52,6 +52,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
             var logMessages = new HostedServiceLogMessages(_log, this.GetType().Name);
 
             cancellationToken.Register(() => logMessages.StartingCancelled(serviceName));
+
             logMessages.StartingService(serviceName);
 
             var sw = new Stopwatch();

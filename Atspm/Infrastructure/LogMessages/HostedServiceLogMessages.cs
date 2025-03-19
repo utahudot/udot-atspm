@@ -37,7 +37,8 @@ namespace Utah.Udot.Atspm.Infrastructure.LogMessages
         {
             _logger = logger.WithAddedLabels(new Dictionary<string, string>()
             {
-                { "service", serviceName }
+                { "service", serviceName },
+                { "commandline", Environment.CommandLine}
             });
         }
 
