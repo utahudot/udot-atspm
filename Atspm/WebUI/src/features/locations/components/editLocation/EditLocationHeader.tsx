@@ -1,9 +1,7 @@
+import { useGetLocationAllVersionsOfLocationFromIdentifier } from '@/api/config/aTSPMConfigurationApi'
 import { Location } from '@/api/config/aTSPMConfigurationApi.schemas'
 import CustomSelect from '@/components/customSelect'
-import {
-  useAllVersionsOfLocation,
-  useLocationTypes,
-} from '@/features/locations/api'
+import { useLocationTypes } from '@/features/locations/api'
 import {
   useCopyLocationToNewVersion,
   useDeleteVersion,
@@ -11,6 +9,7 @@ import {
 } from '@/features/locations/api/location'
 import { useLocationStore } from '@/features/locations/components/editLocation/locationStore'
 import { getLocationTypeConfig } from '@/features/locations/utils'
+import { getLocation } from '@/pages/admin/locations'
 import { useNotificationStore } from '@/stores/notifications'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import {
@@ -52,8 +51,13 @@ export default function EditLocationHeader() {
   const { mutate: deleteVersion } = useDeleteVersion()
   const { mutate: deleteLocation } = useSetLocationToBeDeleted(location.id)
 
-  const { data: versionData, refetch: refetchAllVersionsOfLocation } =
-    useAllVersionsOfLocation(location.locationIdentifier, { enabled: false })
+  const { data: versionsData, refetch: fetchLocationVersions } =
+    useGetLocationAllVersionsOfLocationFromIdentifier(
+      `'${location.locationIdentifier}'`,
+      { enabled: false }
+    )
+
+  const locationVersions = versionsData?.value
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
@@ -63,8 +67,10 @@ export default function EditLocationHeader() {
 
   if (!location) return null
 
-  const updateLocationVersion = (newLoc: Location | null) => {
-    setLocation(newLoc)
+  const updateLocationVersion = async (newLoc: Location | null) => {
+    if (!newLoc) return
+
+    setLocation(await getLocation(newLoc.id))
   }
 
   function buildDisplayName(loc: Location) {
@@ -79,7 +85,7 @@ export default function EditLocationHeader() {
     return displayName
   }
 
-  const locationsVersions = versionData?.value.map((ver: Location) => ({
+  const locationsVersions = locationVersions?.map((ver: Location) => ({
     id: ver.id,
     note: formatVersionNote(ver.note, ver.start),
     startDate: ver.start,
@@ -105,7 +111,7 @@ export default function EditLocationHeader() {
 
   const handleVersionChange = (e: SelectChangeEvent<unknown>) => {
     const selectedId = e.target.value
-    const newLocation = versionData?.value.find((ver) => ver.id === selectedId)
+    const newLocation = locationVersions?.find((ver) => ver.id === selectedId)
     updateLocationVersion(newLocation || null)
   }
 
@@ -113,7 +119,7 @@ export default function EditLocationHeader() {
     copyVersion(location.id, {
       onSuccess: (newLoc) => {
         updateLocationVersion(newLoc)
-        refetchAllVersionsOfLocation()
+        fetchLocationVersions()
       },
     })
     setOpenModal(false)
@@ -122,9 +128,9 @@ export default function EditLocationHeader() {
   const handleDeleteCurrentVersionConfirm = () => {
     deleteVersion(location.id, {
       onSuccess: () => {
-        refetchAllVersionsOfLocation()
+        fetchLocationVersions()
         updateLocationVersion(
-          versionData?.value.find((ver) => ver.id !== location.id) || null
+          locationVersions?.find((ver) => ver.id !== location.id) || null
         )
       },
     })

@@ -11,6 +11,21 @@ import { useLocationStore } from '@/features/locations/components/editLocation/l
 import SelectLocation from '@/features/locations/components/selectLocation/SelectLocation'
 import { useState } from 'react'
 
+export async function getLocation(locationId: number) {
+  const locationResponse = await getLocationFromKey(locationId, {
+    expand:
+      'areas, devices, approaches($expand=Detectors($expand=DetectionTypes, detectorComments))',
+  })
+
+  if (locationResponse?.value?.length) {
+    const newestLocation = locationResponse.value[0]
+    newestLocation.approaches = sortApproachesByPhaseNumber(
+      newestLocation.approaches
+    )
+    return newestLocation
+  }
+}
+
 const LocationsAdmin = () => {
   const pageAccess = useViewPage(PageNames.Location)
 
@@ -18,24 +33,9 @@ const LocationsAdmin = () => {
 
   const { location, setLocation } = useLocationStore()
 
-  async function getLocation(locationId: number) {
-    const locationResponse = await getLocationFromKey(locationId, {
-      expand:
-        'areas, devices, approaches($expand=Detectors($expand=DetectionTypes, detectorComments))',
-    })
-
-    if (locationResponse?.value?.length) {
-      const newestLocation = locationResponse.value[0]
-      newestLocation.approaches = sortApproachesByPhaseNumber(
-        newestLocation.approaches
-      )
-      setLocation(newestLocation)
-    }
-  }
-
-  const handleSetLocation = (selectedLocation: Location | null) => {
+  const handleSetLocation = async (selectedLocation: Location | null) => {
     if (selectedLocation) {
-      getLocation(selectedLocation.id)
+      setLocation(await getLocation(selectedLocation.id))
     } else {
       setLocation(null)
     }
