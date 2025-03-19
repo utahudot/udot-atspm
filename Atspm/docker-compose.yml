@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   postgres:
     image: postgres:16
@@ -10,3 +12,32 @@ services:
       test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER}"]
       interval: 10s
       retries: 5
+
+  database-installer:
+    build:
+      context: .
+      dockerfile: DatabaseInstaller/Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      CONFIG_CONNECTION: ${CONFIG_CONNECTION}
+      AGGREGATION_CONNECTION: ${AGGREGATION_CONNECTION}
+      EVENTLOG_CONNECTION: ${EVENTLOG_CONNECTION}
+      IDENTITY_CONNECTION: ${IDENTITY_CONNECTION}
+      ADMIN_EMAIL: ${ADMIN_EMAIL}
+      ADMIN_ROLE: ${ADMIN_ROLE}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      SEED_ADMIN: ${SEED_ADMIN}
+    entrypoint: >
+      dotnet DatabaseInstaller.dll 
+      update 
+      --config-connection "${CONFIG_CONNECTION}" 
+      --aggregation-connection "${AGGREGATION_CONNECTION}" 
+      --eventlog-connection "${EVENTLOG_CONNECTION}" 
+      --identity-connection "${IDENTITY_CONNECTION}" 
+      --provider "PostgreSQL" 
+      --admin-email "${ADMIN_EMAIL}" 
+      --admin-role "${ADMIN_ROLE}" 
+      --admin-password "${ADMIN_PASSWORD}" 
+      --seed-admin "${SEED_ADMIN}"
