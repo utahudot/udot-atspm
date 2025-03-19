@@ -34,7 +34,7 @@ namespace Utah.Udot.Atspm.Infrastructure.LogMessages
         /// <param name="logger"></param>
         /// <param name="serviceName"></param>
         /// <param name="device"></param>
-        public DeviceDownloaderLogMessages(ILogger logger, string serviceName,  Device device)
+        public DeviceDownloaderLogMessages(ILogger logger, string serviceName, Device device)
         {
             _logger = logger.WithAddedLabels(new Dictionary<string, string>()
             {

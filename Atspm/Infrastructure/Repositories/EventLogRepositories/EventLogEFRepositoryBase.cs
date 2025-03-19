@@ -34,14 +34,14 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.EventLogRepositories
         #region IEventLogRepository
 
         ///<inheritdoc/>
-        public virtual IReadOnlyList<T> GetEventsBetweenDates(string locationId, DateTime startTime, DateTime endTime)
+        public virtual IReadOnlyList<T> GetEventsBetweenDates(string locationIdentifier, DateTime start, DateTime end)
         {
             var result = table
-                .FromSpecification(new CompressedEventLogSpecification(locationId, DateOnly.FromDateTime(startTime), DateOnly.FromDateTime(endTime)))
+                .FromSpecification(new CompressedEventLogSpecification(locationIdentifier, start, end))
                 .AsNoTracking()
                 .AsEnumerable()
                 .SelectMany(m => m.Data)
-                .FromSpecification(new EventLogSpecification(locationId, startTime, endTime))
+                .FromSpecification(new EventLogSpecification(locationIdentifier, start, end))
                 .Cast<T>()
                 .ToList();
 
