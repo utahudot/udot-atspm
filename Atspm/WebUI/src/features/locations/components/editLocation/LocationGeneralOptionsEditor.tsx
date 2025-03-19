@@ -308,7 +308,6 @@ const LocationGeneralOptionsEditor = () => {
               <CustomSelect
                 label="Areas"
                 name="areas"
-                displayEmpty
                 value={location?.areas?.map((area) => area.id)}
                 data={areasData?.value}
                 onChange={handleAreaChange}
