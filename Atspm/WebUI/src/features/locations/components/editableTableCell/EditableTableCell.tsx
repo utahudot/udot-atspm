@@ -13,7 +13,7 @@ import {
   TableCell,
   Tooltip,
 } from '@mui/material'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useState } from 'react'
 
 interface EditableTableCellProps {
   value: string | number | boolean | null | undefined
@@ -27,7 +27,7 @@ interface EditableTableCellProps {
 }
 
 const EditableTableCell = ({
-  value: initialValue,
+  value,
   onUpdate,
   disabled = false,
   lockable = false,
@@ -37,48 +37,28 @@ const EditableTableCell = ({
   sx,
 }: EditableTableCellProps) => {
   const [isEditing, setIsEditing] = useState(false)
-  const [localValue, setLocalValue] = useState(initialValue || '')
-  const timeoutRef = useRef<number | null>(null)
 
-  const debounceUpdate = (newValue: string | number | boolean | null) => {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current)
+  const toggleBoolean = () => {
+    if (typeof value === 'boolean' && !disabled && !isLocked) {
+      onUpdate(!value)
     }
-    timeoutRef.current = window.setTimeout(() => {
-      onUpdate(newValue)
-    }, 700)
   }
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = event.target.value
-    setLocalValue(newValue)
-    debounceUpdate(newValue)
+    onUpdate(event.target.value)
   }
 
   const handleBlur = () => {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current)
-      onUpdate(localValue)
-    }
     setIsEditing(false)
   }
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current)
-        onUpdate(localValue)
-      }
       setIsEditing(false)
     }
   }
 
-  const toggleBoolean = () => {
-    if (typeof initialValue === 'boolean' && !disabled && !isLocked) {
-      onUpdate(!initialValue)
-    }
-  }
-
+  // Red if error, yellow if warning, blue if editing, else none
   const actionColor = (gradient = 0.5) => {
     if (error) return `rgba(255, 0, 0, ${gradient})`
     if (warning) return `rgba(255, 255, 0, ${gradient})`
@@ -86,9 +66,6 @@ const EditableTableCell = ({
     return 'none'
   }
 
-  useEffect(() => {
-    setLocalValue(initialValue || '')
-  }, [initialValue])
   return (
     <Tooltip
       title={
@@ -98,7 +75,7 @@ const EditableTableCell = ({
       }
     >
       <TableCell
-        onClick={typeof initialValue === 'boolean' ? toggleBoolean : undefined}
+        onClick={typeof value === 'boolean' ? toggleBoolean : undefined}
         sx={{
           ...sx,
           backgroundColor: `${actionColor(0.1)}`,
@@ -115,10 +92,8 @@ const EditableTableCell = ({
             width: '100%',
           }}
         >
-          {typeof initialValue === 'boolean' ? (
-            <Box>
-              {initialValue ? <CheckBoxIcon /> : <CheckBoxOutlineBlankIcon />}
-            </Box>
+          {typeof value === 'boolean' ? (
+            <Box>{value ? <CheckBoxIcon /> : <CheckBoxOutlineBlankIcon />}</Box>
           ) : (
             <Box sx={{ width: '100%', position: 'relative' }}>
               <FormControl
@@ -150,7 +125,7 @@ const EditableTableCell = ({
                   }
                   size="small"
                   fullWidth
-                  value={localValue || ''}
+                  value={value || ''}
                   onChange={handleChange}
                   onBlur={handleBlur}
                   onKeyDown={handleKeyDown}
@@ -172,12 +147,4 @@ const EditableTableCell = ({
   )
 }
 
-export default React.memo(EditableTableCell, (prevProps, nextProps) => {
-  return (
-    prevProps.value === nextProps.value &&
-    prevProps.disabled === nextProps.disabled &&
-    prevProps.isLocked === nextProps.isLocked &&
-    prevProps.error === nextProps.error &&
-    prevProps.warning === nextProps.warning
-  )
-})
+export default EditableTableCell
