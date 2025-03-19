@@ -72,7 +72,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.HostedServices
                 catch (Exception)
                 {
                     Environment.ExitCode = 0;
-                    
+
                     throw;
                 }
             }
