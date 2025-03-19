@@ -59,8 +59,8 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
             _client.Host = connection.Address.ToString();
             _client.Port = connection.Port;
             _client.Credentials = credentials;
-            _client.Config.DataConnectionConnectTimeout = connectionTimeout;
-            _client.Config.DataConnectionReadTimeout = operationTimeout;
+            //_client.Config.DataConnectionConnectTimeout = connectionTimeout;
+            //_client.Config.DataConnectionReadTimeout = operationTimeout;
             _client.Config.ConnectTimeout = connectionTimeout;
             _client.Config.ReadTimeout = operationTimeout;
             _client.Config.DataConnectionType = FtpDataConnectionType.AutoActive;

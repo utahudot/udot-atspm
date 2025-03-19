@@ -198,8 +198,8 @@ namespace DatabaseInstaller.Services
                             Console.WriteLine($"Getting logs for {location}...");
                             var logs = sqltestSeverRepository.GetArchivedEvents(
                                 location,
-                                DateOnly.FromDateTime(_config.Start),
-                                DateOnly.FromDateTime(_config.End));
+                                _config.Start,
+                                _config.End);
                             Console.WriteLine($"Logs for {location} retrieved");
                             Console.WriteLine($"Saving logs for {location}...");
                             postgresSeverRepository.AddRange(logs);

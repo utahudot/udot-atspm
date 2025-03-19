@@ -20,32 +20,16 @@ using Utah.Udot.NetStandardToolkit.Specifications;
 
 namespace Utah.Udot.Atspm.Specifications
 {
-    public class CompressedEventLogSpecification : BaseSpecification<CompressedEventLogBase>
-    {
-        public CompressedEventLogSpecification(Location Location) : base()
-        {
-            Criteria = c => c.LocationIdentifier == Location.LocationIdentifier;
-
-            ApplyOrderBy(o => o.ArchiveDate);
-        }
-
-        public CompressedEventLogSpecification(string locationId, DateOnly startDate, DateOnly endDate) : base()
-        {
-            Criteria = c => c.LocationIdentifier == locationId && c.ArchiveDate >= startDate && c.ArchiveDate <= endDate;
-
-            ApplyOrderBy(o => o.ArchiveDate);
-        }
-
-        public CompressedEventLogSpecification(string locationId, DateOnly startDate, DateOnly endDate, int deviceId) : base()
-        {
-            Criteria = c => c.LocationIdentifier == locationId && c.ArchiveDate >= startDate && c.ArchiveDate <= endDate && c.DeviceId == deviceId;
-
-            ApplyOrderBy(o => o.ArchiveDate);
-        }
-    }
-
+    /// <summary>
+    /// Specification for <see cref="EventLogModelBase"/>
+    /// </summary>
     public class EventLogSpecification : BaseSpecification<EventLogModelBase>
     {
+        /// <summary>
+        /// Matches <see cref="EventLogModelBase"/> by <see cref="EventLogModelBase.LocationIdentifier"/>
+        /// and orders by <see cref="EventLogModelBase.Timestamp"/>
+        /// </summary>
+        /// <param name="Location"></param>
         public EventLogSpecification(Location Location) : base()
         {
             Criteria = c => c.LocationIdentifier == Location.LocationIdentifier;
@@ -53,29 +37,17 @@ namespace Utah.Udot.Atspm.Specifications
             ApplyOrderBy(o => o.Timestamp);
         }
 
-        public EventLogSpecification(DateTime startDate, DateTime endDate) : base()
+        /// <summary>
+        /// Matches <see cref="EventLogModelBase"/> by <see cref="EventLogModelBase.LocationIdentifier"/>
+        /// and <see cref="EventLogModelBase.Timestamp"/> is within <paramref name="start"/> and <paramref name="end"/>
+        /// then orders by <see cref="EventLogModelBase.Timestamp"/>
+        /// </summary>
+        /// <param name="locationIdentifier"></param>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        public EventLogSpecification(string locationIdentifier, DateTime start, DateTime end) : base()
         {
-            Criteria = c => c.Timestamp >= startDate && c.Timestamp <= endDate;
-
-            ApplyOrderBy(o => o.Timestamp);
-        }
-
-        public EventLogSpecification(string locationId, DateTime startDate, DateTime endDate) : base()
-        {
-            Criteria = c => c.LocationIdentifier == locationId && c.Timestamp >= startDate && c.Timestamp <= endDate;
-
-            ApplyOrderBy(o => o.Timestamp);
-        }
-
-        public EventLogSpecification(int startHour, int startMinute, int endHour, int endMinute) : base()
-        {
-            Criteria = l => l.Timestamp.Hour > startHour && l.Timestamp.Hour < endHour
-            || l.Timestamp.Hour == startHour && l.Timestamp.Hour == endHour
-            && l.Timestamp.Minute >= startMinute && l.Timestamp.Minute <= endMinute
-            || l.Timestamp.Hour == startHour && l.Timestamp.Hour < endHour
-            && l.Timestamp.Minute >= startMinute
-            || l.Timestamp.Hour < startHour && l.Timestamp.Hour == endHour
-            && l.Timestamp.Minute <= endMinute;
+            Criteria = c => c.LocationIdentifier == locationIdentifier && c.Timestamp >= start && c.Timestamp <= end;
 
             ApplyOrderBy(o => o.Timestamp);
         }
