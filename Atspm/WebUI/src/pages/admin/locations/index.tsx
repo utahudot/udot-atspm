@@ -9,14 +9,13 @@ import LocationEditor from '@/features/locations/components/editLocation/EditLoc
 import NewLocationModal from '@/features/locations/components/editLocation/NewLocationModal'
 import { useLocationStore } from '@/features/locations/components/editLocation/locationStore'
 import SelectLocation from '@/features/locations/components/selectLocation/SelectLocation'
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 
 export async function getLocation(locationId: number) {
   const locationResponse = await getLocationFromKey(locationId, {
     expand:
       'areas, devices, approaches($expand=Detectors($expand=DetectionTypes, detectorComments))',
   })
-
   if (locationResponse?.value?.length) {
     const newestLocation = locationResponse.value[0]
     newestLocation.approaches = sortApproachesByPhaseNumber(
@@ -24,22 +23,27 @@ export async function getLocation(locationId: number) {
     )
     return newestLocation
   }
+  return null
 }
 
 const LocationsAdmin = () => {
   const pageAccess = useViewPage(PageNames.Location)
-
   const [isModalOpen, setModalOpen] = useState(false)
-
   const { location, setLocation } = useLocationStore()
 
-  const handleSetLocation = async (selectedLocation: Location | null) => {
-    if (selectedLocation) {
-      setLocation(await getLocation(selectedLocation.id))
-    } else {
-      setLocation(null)
-    }
-  }
+  const handleSetLocation = useCallback(
+    async (selectedLocation: Location | null) => {
+      if (selectedLocation) {
+        setLocation(await getLocation(selectedLocation.id))
+      } else {
+        setLocation(null)
+      }
+    },
+    [setLocation]
+  )
+
+  const openNewLocationModal = useCallback(() => setModalOpen(true), [])
+  const closeModal = useCallback(() => setModalOpen(false), [])
 
   if (pageAccess.isLoading) return null
 
@@ -47,10 +51,9 @@ const LocationsAdmin = () => {
     <ResponsivePageLayout title="Manage Locations">
       <AddButton
         label="New Location"
-        onClick={() => setModalOpen(true)}
+        onClick={openNewLocationModal}
         sx={{ mb: 1, width: '200px' }}
       />
-
       <StyledPaper sx={{ width: '50%', minWidth: '400px', p: 3 }}>
         <SelectLocation
           location={location}
@@ -58,12 +61,10 @@ const LocationsAdmin = () => {
           mapHeight={400}
         />
       </StyledPaper>
-
       {location && <LocationEditor />}
-
       {isModalOpen && (
         <NewLocationModal
-          closeModal={() => setModalOpen(false)}
+          closeModal={closeModal}
           setLocation={handleSetLocation}
         />
       )}
