@@ -1,15 +1,15 @@
-import { useGetLocationAllVersionsOfLocationFromIdentifier } from '@/api/config/aTSPMConfigurationApi'
-import { Location } from '@/api/config/aTSPMConfigurationApi.schemas'
 import CustomSelect from '@/components/customSelect'
-import { useLocationTypes } from '@/features/locations/api'
+import {
+  useAllVersionsOfLocation,
+  useLocationTypes,
+} from '@/features/locations/api'
 import {
   useCopyLocationToNewVersion,
   useDeleteVersion,
   useSetLocationToBeDeleted,
 } from '@/features/locations/api/location'
-import { useLocationStore } from '@/features/locations/components/editLocation/locationStore'
+import { Location, LocationExpanded } from '@/features/locations/types'
 import { getLocationTypeConfig } from '@/features/locations/utils'
-import { getLocation } from '@/pages/admin/locations'
 import { useNotificationStore } from '@/stores/notifications'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import {
@@ -25,11 +25,17 @@ import {
   SelectChangeEvent,
   Typography,
 } from '@mui/material'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useQueryClient } from 'react-query'
 
+interface LocationAdminHeaderProps {
+  location: LocationExpanded
+  updateLocationVersion: (location: Location | null) => void
+  refetchLocation: () => void
+}
+
 const modalStyle = {
-  position: 'absolute' as const,
+  position: 'absolute',
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
@@ -41,85 +47,73 @@ const modalStyle = {
   p: 4,
 }
 
-export default function EditLocationHeader() {
-  const { location, setLocation } = useLocationStore()
+const EditLocationHeader = ({
+  location,
+  updateLocationVersion,
+  refetchLocation,
+}: LocationAdminHeaderProps) => {
   const { addNotification } = useNotificationStore()
 
-  const queryClient = useQueryClient()
-  const { data: locationTypeData } = useLocationTypes()
-  const { mutate: copyVersion } = useCopyLocationToNewVersion(location.id)
-  const { mutate: deleteVersion } = useDeleteVersion()
-  const { mutate: deleteLocation } = useSetLocationToBeDeleted(location.id)
-
-  const { data: versionsData, refetch: fetchLocationVersions } =
-    useGetLocationAllVersionsOfLocationFromIdentifier(
-      `'${location.locationIdentifier}'`,
-      { enabled: false }
-    )
-
-  const locationVersions = versionsData?.value
-
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
-  const open = Boolean(anchorEl)
-
   const [openModal, setOpenModal] = useState(false)
   const [modalAction, setModalAction] = useState('')
 
-  if (!location) return null
+  const queryClient = useQueryClient()
+  const { mutate: copyVersion } = useCopyLocationToNewVersion(location.id)
+  const { mutate: deleteLocation } = useSetLocationToBeDeleted(location.id)
+  const { mutate: deleteVersion } = useDeleteVersion()
+  const { data: versionData, refetch: refetchAllVersionsOfLocation } =
+    useAllVersionsOfLocation(location?.locationIdentifier, { enabled: false })
 
-  const updateLocationVersion = async (newLoc: Location | null) => {
-    if (!newLoc) return
+  const open = Boolean(anchorEl)
 
-    setLocation(await getLocation(newLoc.id))
-  }
+  const { data: locationTypeData } = useLocationTypes()
 
-  function buildDisplayName(loc: Location) {
-    const { locationIdentifier, primaryName, secondaryName } = loc
-    let displayName = locationIdentifier || ''
-    if (primaryName) {
-      displayName += ` - ${primaryName}`
-    }
-    if (primaryName && secondaryName) {
-      displayName += ` & ${secondaryName}`
-    }
-    return displayName
-  }
+  const locationType = locationTypeData?.value.find(
+    (type) => type.id === location?.locationTypeId
+  )
 
-  const locationsVersions = locationVersions?.map((ver: Location) => ({
-    id: ver.id,
-    note: formatVersionNote(ver.note, ver.start),
-    startDate: ver.start,
+  
+
+  const locationsVersions = versionData?.value.map((version: Location) => ({
+    id: version.id,
+    note: version.note,
+    startDate: version.start,
   }))
 
-  function formatVersionNote(note: string, date: string) {
-    const [year, month, day] = date.split('T')[0].split('-')
-    return `${+month}/${+day}/${year} - ${note}`
+  locationsVersions?.map((obj) => {
+    const [year, month, day] = obj.startDate.split('T')[0].split('-');
+    obj.note = `${parseInt(month)}/${parseInt(day)}/${year} - ${obj.note}`
+    return obj
+  })
+  useEffect(() => {
+    if (location.locationIdentifier) {
+      refetchAllVersionsOfLocation()
+    }
+  }, [location.locationIdentifier, refetchAllVersionsOfLocation])
+
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget)
   }
 
-  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(e.currentTarget)
-  }
   const handleClose = () => {
     setAnchorEl(null)
   }
 
-  const handleModalPopup = (action: string) => {
-    setModalAction(action)
-    setOpenModal(true)
-    handleClose()
-  }
-
   const handleVersionChange = (e: SelectChangeEvent<unknown>) => {
-    const selectedId = e.target.value
-    const newLocation = locationVersions?.find((ver) => ver.id === selectedId)
-    updateLocationVersion(newLocation || null)
+    const { value } = e.target
+    const newLocation = versionData?.value.find(
+      (version) => version.id === value
+    )
+    updateLocationVersion(newLocation as Location)
   }
 
   const handleAddNewVersionConfirm = () => {
     copyVersion(location.id, {
-      onSuccess: (newLoc) => {
-        updateLocationVersion(newLoc)
-        fetchLocationVersions()
+      onSuccess: (location) => {
+        updateLocationVersion(location)
+        refetchLocation()
+        refetchAllVersionsOfLocation()
       },
     })
     setOpenModal(false)
@@ -128,13 +122,19 @@ export default function EditLocationHeader() {
   const handleDeleteCurrentVersionConfirm = () => {
     deleteVersion(location.id, {
       onSuccess: () => {
-        fetchLocationVersions()
+        refetchAllVersionsOfLocation()
         updateLocationVersion(
-          locationVersions?.find((ver) => ver.id !== location.id) || null
+          versionData?.value.find(
+            (version) => version.id !== location.id
+          ) as Location
         )
       },
     })
-    setOpenModal(false)
+  }
+
+  const handleModalPopup = (action: string) => {
+    setModalAction(action)
+    setOpenModal(true)
   }
 
   const handleDeleteLocationConfirm = () => {
@@ -143,15 +143,28 @@ export default function EditLocationHeader() {
         updateLocationVersion(null)
         addNotification({
           type: 'error',
-          title: 'Location Deleted',
+          title: `Location Deleted`,
         })
         await queryClient.invalidateQueries()
       },
     })
+  }
+
+  const handleModalAction = () => {
+    switch (modalAction) {
+      case 'addVersion':
+        handleAddNewVersionConfirm()
+        break
+      case 'deleteVersion':
+        handleDeleteCurrentVersionConfirm()
+        break
+      case 'deleteLocation':
+        handleDeleteLocationConfirm()
+        break
+    }
     setOpenModal(false)
   }
 
-  // Decide which text/action to use based on the chosen menu item
   const modalText =
     modalAction === 'addVersion'
       ? 'Are you sure you want to add a new version of this location?'
@@ -166,29 +179,26 @@ export default function EditLocationHeader() {
         ? 'Delete Version'
         : 'Delete Location'
 
-  const handleModalAction = () => {
-    switch (modalAction) {
-      case 'addVersion':
-        handleAddNewVersionConfirm()
-        break
-      case 'deleteVersion':
-        handleDeleteCurrentVersionConfirm()
-        break
-      case 'deleteLocation':
-        handleDeleteLocationConfirm()
-        break
-    }
+  const { locationIdentifier, primaryName, secondaryName } = location || {}
+
+  let displayName = locationIdentifier || ''
+  if (primaryName) {
+    displayName += ` - ${primaryName}`
+  }
+  if (primaryName && secondaryName) {
+    displayName += ` & ${secondaryName}`
   }
 
-  const locationType = locationTypeData?.value.find(
-    (type) => type.id === location.locationTypeId
-  )
-  const locationTypeConfig = getLocationTypeConfig(locationType?.id)
+  const locationTypeConfig = getLocationTypeConfig(location?.locationTypeId)
 
   return (
     <Paper sx={{ mt: 2, p: 2 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-        {/* Left side: Location Type + Avatar */}
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+        }}
+      >
         <Box sx={{ display: 'flex', alignItems: 'flex-end', mb: '10px' }}>
           <Avatar
             sx={{
@@ -200,7 +210,7 @@ export default function EditLocationHeader() {
             variant="rounded"
           >
             <Icon
-              component={locationTypeConfig?.MuiIcon}
+              component={locationTypeConfig.MuiIcon}
               sx={{ ml: locationType?.id === 2 ? '2px' : '0px' }}
             />
           </Avatar>
@@ -208,8 +218,6 @@ export default function EditLocationHeader() {
             {locationType?.name}
           </Typography>
         </Box>
-
-        {/* Right side: Actions button */}
         <Box>
           <Button
             variant="contained"
@@ -232,13 +240,9 @@ export default function EditLocationHeader() {
           </Menu>
         </Box>
       </Box>
-
-      {/* Main Title */}
       <Typography variant="h2" marginBottom={'10px'}>
-        {buildDisplayName(location)}
+        {displayName}
       </Typography>
-
-      {/* Version Dropdown */}
       <Box sx={{ display: 'flex', alignItems: 'center', mt: '10px' }}>
         <InputLabel sx={{ marginRight: '10px' }} htmlFor="version-select-label">
           <Typography variant="h4" marginRight={'10px'} component={'p'}>
@@ -258,12 +262,19 @@ export default function EditLocationHeader() {
           sx={{ color: 'primary.main', minWidth: '200px' }}
         />
       </Box>
-
-      {/* Modal Confirmation */}
-      <Modal open={openModal} onClose={() => setOpenModal(false)}>
+      <Modal
+        open={openModal}
+        onClose={() => setOpenModal(false)}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
         <Box sx={modalStyle}>
-          <Typography sx={{ fontWeight: 'bold' }}>Confirm Action</Typography>
-          <Typography sx={{ mt: 2 }}>{modalText}</Typography>
+          <Typography id="modal-modal-title" sx={{ fontWeight: 'bold' }}>
+            Confirm Action
+          </Typography>
+          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+            {modalText}
+          </Typography>
           <Box sx={{ mt: 4, display: 'flex', justifyContent: 'flex-end' }}>
             <Button onClick={() => setOpenModal(false)} color="inherit">
               Cancel
@@ -282,3 +293,5 @@ export default function EditLocationHeader() {
     </Paper>
   )
 }
+
+export default EditLocationHeader

@@ -1,67 +1,67 @@
-import { Box, Menu, MenuItem, TableCell, Tooltip } from '@mui/material'
-import { SvgIconProps } from '@mui/material/SvgIcon'
-import React, { MouseEvent, useState } from 'react'
+import { MenuItem, Select, SelectChangeEvent } from '@mui/material'
+import React, { useEffect, useState } from 'react'
 
-interface OptionType {
-  id: string
+interface DropdownOption {
+  id: string | number
   description: string
   abbreviation?: string
-  icon?: React.ReactElement<SvgIconProps>
+  displayOrder?: number
 }
 
-interface SelectCellProps {
-  options: OptionType[]
-  value: string | number
-  onUpdate: (id: string | number) => void
+interface DropdownCellProps {
+  value: string
+  options: DropdownOption[]
+  icons?: Record<string, React.ReactNode>
+  onValueChange: (newValue: string) => void
 }
 
-function DropdownCell({ options, value, onUpdate }: SelectCellProps) {
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
-  const isOpen = Boolean(anchorEl)
+function DropdownCell({
+  value,
+  options,
+  icons,
+  onValueChange,
+}: DropdownCellProps) {
+  const [open, setOpen] = useState(false)
 
-  const handleClick = (event: MouseEvent<HTMLDivElement>) => {
-    setAnchorEl(event.currentTarget)
+  useEffect(() => {
+    setOpen(true)
+  }, [])
+
+  const handleChange = (event: SelectChangeEvent) => {
+    onValueChange(event.target.value as string)
+    setOpen(false)
   }
 
   const handleClose = () => {
-    setAnchorEl(null)
+    setOpen(false)
   }
 
-  const handleSelect = (id: string) => {
-    onUpdate(id)
-    handleClose()
-  }
-
-  const currentOption = options.find((option) => option.id === value)
+  const sortedOptions = options.sort(
+    (a, b) => (a.displayOrder || 0) - (b.displayOrder || 0)
+  )
 
   return (
-    <TableCell
-      sx={{
-        minWidth: '180px',
-        backgroundColor: isOpen ? 'rgba(0, 123, 255, 0.1)' : 'none',
-        boxShadow: isOpen ? '0 0 0 2px rgba(0, 123, 255, 0.5) inset' : 'none',
-        cursor: 'pointer',
-      }}
+    <Select
+      value={value || ''}
+      open={open}
+      onClose={handleClose}
+      fullWidth
+      onChange={handleChange}
     >
-      <Box sx={{ display: 'flex', alignItems: 'center' }} onClick={handleClick}>
-        {currentOption?.icon && (
-          <Tooltip title={currentOption.description}>
-            {currentOption.icon}
-          </Tooltip>
-        )}
-        <Box sx={{ ml: 1 }}>{currentOption?.description}</Box>
-      </Box>
-      <Menu anchorEl={anchorEl} open={isOpen} onClose={handleClose}>
-        {options.map((option) => (
-          <MenuItem key={option.id} onClick={() => handleSelect(option.id)}>
-            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              {option.icon}
-              <Box sx={{ ml: 1 }}>{option.description}</Box>
-            </Box>
-          </MenuItem>
-        ))}
-      </Menu>
-    </TableCell>
+      {sortedOptions.map((option) => (
+        <MenuItem
+          key={option.id}
+          value={option.abbreviation || option.description}
+        >
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            {icons && icons[option.abbreviation || option.description]}
+            <span style={{ marginLeft: icons ? 8 : 0 }}>
+              {option.description}
+            </span>
+          </div>
+        </MenuItem>
+      ))}
+    </Select>
   )
 }
 
