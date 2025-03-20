@@ -217,6 +217,7 @@ const DeviceModal = ({
   }
 
   if (!products || !deviceTypes || !deviceConfigurations) return null
+
   return (
     <Modal open={true} onClose={handleClose}>
       <Box sx={modalStyle}>
@@ -353,17 +354,6 @@ const DeviceModal = ({
                 {...register('ipaddress')}
               />
             </FormControl>
-
-            <TextField
-              fullWidth
-              multiline
-              label="Device Identifier"
-              sx={{ mb: 2 }}
-              maxRows={6}
-              error={!!errors.notes}
-              helperText={errors.notes ? 'String(errors.notes.message) ' : ''}
-              {...register('deviceIdentifier')}
-            />
 
             <TextField
               fullWidth
