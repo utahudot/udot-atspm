@@ -25,7 +25,7 @@ using Utah.Udot.Atspm.Data.Models.MeasureOptions;
 namespace Utah.Udot.Atspm.Data.Configuration
 {
     /// <summary>
-    /// Measure options configuration
+    /// Measure option presets configuration
     /// </summary>
     public class MeasureOptionPresetConfiguration : IEntityTypeConfiguration<MeasureOptionPreset>
     {
