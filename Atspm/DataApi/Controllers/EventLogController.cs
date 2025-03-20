@@ -220,7 +220,7 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
         [HttpGet("[Action]/{locationIdentifier}")]
         [Produces("application/json", "application/xml")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult GetDaysWithEventLogs(string locationIdentifier, string dataType, DateOnly month)
         {
 
