@@ -165,7 +165,6 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
                 var fileCheck = !Path.GetFileName(path).Any(a => Path.GetInvalidFileNameChars().Contains(a));
                 var extCheck = Path.HasExtension(path);
 
-                //if (driveCheck && pathCheck && fileCheck && extCheck)
                 if (fileCheck && extCheck)
                 {
                     file = new FileInfo(path);

@@ -143,7 +143,7 @@ const DeviceCard = ({ device, onEdit, onDelete }: DeviceCardProps) => {
           </Avatar>
           <Box sx={{ textAlign: 'left' }}>
             <Typography variant="h4" fontWeight={'bold'} component={'h3'}>
-              {deviceTypeMap[device.deviceType].label}
+              {deviceTypeMap[device.deviceType]?.label}
             </Typography>
           </Box>
         </Box>
