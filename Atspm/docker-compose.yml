@@ -1,15 +1,41 @@
-version: '3.8'
+version: "3.8"
+
+x-environment: &default-environment
+  ASPNETCORE_ENVIRONMENT: "Development"
+  ASPNETCORE_Kestrel__Certificates__Default__Password: "password"
+  ASPNETCORE_Kestrel__Certificates__Default__Path: "/root/.aspnet/https/aspnetapp.pfx"
+  ASPNETCORE_URLS: "https://+:443"
+
+  # Allowed Hosts
+  AllowedHosts: "${ALLOWED_HOSTS}"
+
+  # Database Connection Strings (Using Double Underscore Format)
+  ConnectionStrings__ConfigContext__ConnectionString: "${CONFIG_CONNECTION}"
+  ConnectionStrings__AggregationContext__ConnectionString: "${AGGREGATION_CONNECTION}"
+  ConnectionStrings__EventLogContext__ConnectionString: "${EVENTLOG_CONNECTION}"
+  ConnectionStrings__IdentityContext__ConnectionString: "${IDENTITY_CONNECTION}"
+
+  # Database Providers
+  ConnectionStrings__ConfigContext__Provider: "PostgreSQL"
+  ConnectionStrings__AggregationContext__Provider: "PostgreSQL"
+  ConnectionStrings__EventLogContext__Provider: "PostgreSQL"
+  ConnectionStrings__IdentityContext__Provider: "PostgreSQL"
+
+  # JWT Configuration
+  Jwt__ExpireDays: "${JWT_EXPIRE_DAYS}"
+  Jwt__Key: "${JWT_KEY}"
+  Jwt__Issuer: "${JWT_ISSUER}"
 
 services:
   postgres:
     image: postgres:16
     environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_USER: "${POSTGRES_USER}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
     ports:
       - "5432:5432"
     healthcheck:
-      test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER}"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
       interval: 10s
       retries: 5
 
@@ -21,23 +47,79 @@ services:
       postgres:
         condition: service_healthy
     environment:
-      CONFIG_CONNECTION: ${CONFIG_CONNECTION}
-      AGGREGATION_CONNECTION: ${AGGREGATION_CONNECTION}
-      EVENTLOG_CONNECTION: ${EVENTLOG_CONNECTION}
-      IDENTITY_CONNECTION: ${IDENTITY_CONNECTION}
-      ADMIN_EMAIL: ${ADMIN_EMAIL}
-      ADMIN_ROLE: ${ADMIN_ROLE}
-      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
-      SEED_ADMIN: ${SEED_ADMIN}
+      <<: *default-environment
+      ADMIN_EMAIL: "${ADMIN_EMAIL}"
+      ADMIN_ROLE: "${ADMIN_ROLE}"
+      ADMIN_PASSWORD: "${ADMIN_PASSWORD}"
+      SEED_ADMIN: "${SEED_ADMIN}"
     entrypoint: >
-      dotnet DatabaseInstaller.dll 
-      update 
-      --config-connection "${CONFIG_CONNECTION}" 
-      --aggregation-connection "${AGGREGATION_CONNECTION}" 
-      --eventlog-connection "${EVENTLOG_CONNECTION}" 
-      --identity-connection "${IDENTITY_CONNECTION}" 
-      --provider "PostgreSQL" 
-      --admin-email "${ADMIN_EMAIL}" 
-      --admin-role "${ADMIN_ROLE}" 
-      --admin-password "${ADMIN_PASSWORD}" 
+      dotnet DatabaseInstaller.dll update
+      --config-connection "${CONFIG_CONNECTION}"
+      --aggregation-connection "${AGGREGATION_CONNECTION}"
+      --eventlog-connection "${EVENTLOG_CONNECTION}"
+      --identity-connection "${IDENTITY_CONNECTION}"
+      --provider "PostgreSQL"
+      --admin-email "${ADMIN_EMAIL}"
+      --admin-role "${ADMIN_ROLE}"
+      --admin-password "${ADMIN_PASSWORD}"
       --seed-admin "${SEED_ADMIN}"
+
+  configapi:
+    build:
+      context: .
+      dockerfile: ConfigApi/Dockerfile
+    ports:
+      - "44313:443"
+    environment:
+      <<: *default-environment
+    volumes:
+      - "C:/Users/AVENUE/.aspnet/https:/root/.aspnet/https:ro"  # Explicitly mount correct cert location
+    user: root
+    depends_on:
+      database-installer:
+        condition: service_completed_successfully
+
+  dataapi:
+    build:
+      context: .
+      dockerfile: DataApi/Dockerfile
+    ports:
+      - "8082:80"
+    environment:
+      <<: *default-environment
+    volumes:
+      - "C:/Users/AVENUE/.aspnet/https:/root/.aspnet/https:ro"  # Explicitly mount correct cert location
+    depends_on:
+      database-installer:
+        condition: service_completed_successfully
+
+  reportapi:
+    build:
+      context: .
+      dockerfile: ReportApi/Dockerfile
+    ports:
+      - "8085:80"
+    environment:
+      <<: *default-environment
+    volumes:
+      - "C:/Users/AVENUE/.aspnet/https:/root/.aspnet/https:ro"  # Explicitly mount correct cert location
+    depends_on:
+      database-installer:
+        condition: service_completed_successfully
+
+  identityapi:
+    build:
+      context: .
+      dockerfile: IdentityApi/Dockerfile
+    ports:
+      - "8086:80"
+    environment:
+      <<: *default-environment
+    volumes:
+      - "C:/Users/AVENUE/.aspnet/https:/root/.aspnet/https:ro"  # Explicitly mount correct cert location
+    depends_on:
+      database-installer:
+        condition: service_completed_successfully
+
+volumes:
+  aspnet_https:
