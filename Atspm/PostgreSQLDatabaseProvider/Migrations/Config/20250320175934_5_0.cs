@@ -1,14 +1,15 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
 #pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
 
-namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
+namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations.Config
 {
     /// <inheritdoc />
-    public partial class tsp : Migration
+    public partial class _5_0 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -233,7 +234,7 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "character varying(64)", unicode: false, maxLength: 64, nullable: false),
                     Notes = table.Column<string>(type: "character varying(512)", unicode: false, maxLength: 512, nullable: true),
-                    Date = table.Column<DateTime>(type: "timestamp", nullable: false, defaultValue: new DateTime(2025, 3, 4, 18, 54, 29, 807, DateTimeKind.Local).AddTicks(8289)),
+                    Date = table.Column<DateTime>(type: "timestamp", nullable: false, defaultValue: new DateTime(2025, 3, 20, 11, 59, 34, 480, DateTimeKind.Local).AddTicks(2399)),
                     Version = table.Column<int>(type: "integer", nullable: false),
                     ParentId = table.Column<int>(type: "integer", nullable: true)
                 },
