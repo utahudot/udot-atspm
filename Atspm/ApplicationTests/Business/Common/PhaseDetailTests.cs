@@ -77,34 +77,22 @@ namespace Utah.Udot.Atspm.ApplicationTests.Business.Common
             var result = phaseDetail.GetApproachDescription();
 
             // Assert
-            Assert.Equal("South Permissive Phase 2", result);
+            Assert.Equal("South Left Permissive Phase 2", result);
         }
 
         [Fact]
-        public void GetApproachDescriptionWithMovements_MultipleMovements_ReturnsDirectionMovementTypesPhaseNumber()
+        public void GetApproachDescription_MultipleMovements_ReturnsDirectionMovementTypesPhaseNumber()
         {
             // Arrange
             var directionType = new DirectionType { Description = "East" };
-            var detectionType = new DetectionType 
-            { 
-                Id = DetectionTypes.LLS 
-            };
             var approach = new Approach
             {
                 DirectionType = directionType,
                 ProtectedPhaseNumber = 3,
                 Detectors = new List<Detector>
                 {
-                    new Detector 
-                    { 
-                        MovementType = MovementTypes.L, 
-                        DetectionTypes = new List<DetectionType> { detectionType } 
-                    },
-                    new Detector 
-                    { 
-                        MovementType = MovementTypes.R,
-                        DetectionTypes = new List<DetectionType> { detectionType }
-                    }
+                    new Detector { MovementType = MovementTypes.L },
+                    new Detector { MovementType = MovementTypes.R }
                 }
             };
             var phaseDetail = new PhaseDetail
@@ -116,7 +104,7 @@ namespace Utah.Udot.Atspm.ApplicationTests.Business.Common
             };
 
             // Act
-            var result = phaseDetail.GetApproachDescriptionWithMovements(DetectionTypes.LLS);
+            var result = phaseDetail.GetApproachDescription();
 
             // Assert
             Assert.Equal("East Left,Right Protected Overlap 3", result);

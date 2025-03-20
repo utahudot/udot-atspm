@@ -11,8 +11,8 @@ interface OptionType {
 
 interface SelectCellProps {
   options: OptionType[]
-  value: string | number
-  onUpdate: (id: string | number) => void
+  value: string
+  onUpdate: (id: string) => void
 }
 
 function DropdownCell({ options, value, onUpdate }: SelectCellProps) {

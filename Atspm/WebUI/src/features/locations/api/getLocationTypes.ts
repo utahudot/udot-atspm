@@ -14,7 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 // #endregion
-import { LocationType } from '@/api/config/aTSPMConfigurationApi.schemas'
+import { LocationType } from '@/features/locations/types'
 import { configAxios } from '@/lib/axios'
 import { ExtractFnReturnType, QueryConfig } from '@/lib/react-query'
 import { ApiResponse } from '@/types'

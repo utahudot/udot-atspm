@@ -1,50 +1,42 @@
-import { DirectionTypes } from '@/api/config/aTSPMConfigurationApi.schemas'
 import { AddButton } from '@/components/addButton'
-import { useEditApproach } from '@/features/locations/api/approach'
+import {
+  useDeleteApproach,
+  useEditApproach,
+} from '@/features/locations/api/approach'
+import EditApproachGrid from '@/features/locations/components/EditApproachGrid'
 import ApproachEditorRowHeader from '@/features/locations/components/editApproach/ApproachEditorRow'
 import DeleteApproachModal from '@/features/locations/components/editApproach/DeleteApproachModal'
 import { hasUniqueDetectorChannels } from '@/features/locations/components/editApproach/utils/checkDetectors'
-import EditApproachGrid from '@/features/locations/components/EditApproachGrid'
 import EditDetectors from '@/features/locations/components/editDetector/EditDetectors'
-import {
-  ConfigApproach,
-  useLocationStore,
-} from '@/features/locations/components/editLocation/locationStore'
+import { Detector, LocationExpanded } from '@/features/locations/types'
 import { ConfigEnum, useConfigEnums } from '@/hooks/useConfigEnums'
-import { useNotificationStore } from '@/stores/notifications'
 import { Box, Collapse, Paper } from '@mui/material'
-import React, { useCallback, useState } from 'react'
+import React, { useEffect, useState } from 'react'
+import {
+  ApproachForConfig,
+  DetectorForConfig,
+  LocationConfigHandler,
+} from '../editLocation/editLocationConfigHandler'
 
 interface ApproachAdminProps {
-  approach: ConfigApproach
+  approach: ApproachForConfig
+  handler: LocationConfigHandler
 }
 
-function EditApproach({ approach }: ApproachAdminProps) {
-  console.log('EditApproach:', approach)
-
-  const locationIdentifier = useLocationStore(
-    (s) => s.location?.locationIdentifier
-  )
-  const channelMap = useLocationStore((s) => s.channelMap)
-  const errors = useLocationStore((s) => s.errors)
-  const warnings = useLocationStore((s) => s.warnings)
-  const setErrors = useLocationStore((s) => s.setErrors)
-  const setWarnings = useLocationStore((s) => s.setWarnings)
-  const clearErrorsAndWarnings = useLocationStore(
-    (s) => s.clearErrorsAndWarnings
-  )
-  const updateApproachInStore = useLocationStore((s) => s.updateApproach)
-  const copyApproachInStore = useLocationStore((s) => s.copyApproach)
-  const deleteApproachInStore = useLocationStore((s) => s.deleteApproach)
-  const addDetectorInStore = useLocationStore((s) => s.addDetector)
-
+function EditApproach({ approach, handler }: ApproachAdminProps) {
   const [open, setOpen] = useState(false)
   const [openModal, setOpenModal] = useState(false)
+  const [errors, setErrors] = useState<Record<
+    string,
+    { error: string; id: string }
+  > | null>(null)
+  const [warnings, setWarnings] = useState<Record<
+    string,
+    { warning: string; id: string }
+  > | null>(null)
 
-  const { addNotification } = useNotificationStore()
   const { mutate: editApproach } = useEditApproach()
-
-  // Lookups
+  const { mutate: deleteApproach } = useDeleteApproach()
   const { findEnumByNameOrAbbreviation: findDetectionType } = useConfigEnums(
     ConfigEnum.DetectionTypes
   )
@@ -79,9 +71,9 @@ function EditApproach({ approach }: ApproachAdminProps) {
     }
   }, [handler.approaches])
 
-  const openDeleteApproachModal = useCallback(() => {
-    setOpenModal(true)
-  }, [])
+  const handleApproachClick = () => {
+    setOpen(!open)
+  }
 
   const handleCopyApproach = () => {
     const { id, detectors, ...restOfApproach } = approach
@@ -105,56 +97,68 @@ function EditApproach({ approach }: ApproachAdminProps) {
     // Clear previous errors
     let newErrors: Record<string, { error: string; id: string }> = {}
 
+    const { isValid, errors: channelErrors } = hasUniqueDetectorChannels(
+      handler.approaches
+    )
+
     if (!isValid) {
       newErrors = { ...newErrors, ...channelErrors }
     }
+
     if (
-      !approach.protectedPhaseNumber ||
-      isNaN(approach.protectedPhaseNumber)
+      !approach?.protectedPhaseNumber ||
+      isNaN(approach?.protectedPhaseNumber)
     ) {
-      newErrors.protectedPhaseNumber = {
-        error: 'Protected Phase Number is required',
-        id: String(approach.id),
+      newErrors = {
+        ...newErrors,
+        protectedPhaseNumber: {
+          error: 'Protected Phase Number is required',
+          id: approach.id,
+        },
       }
     }
-    approach.detectors.forEach((det) => {
-      if (!det.detectorChannel) {
-        newErrors[String(det.id)] = {
-          error: 'Detector Channel is required',
-          id: String(det.id),
+
+    // Make sure all detectors have a channel
+    approach.detectors.forEach((detector) => {
+      if (!detector.detectorChannel) {
+        newErrors = {
+          ...newErrors,
+          [detector.id]: {
+            error: 'Detector Channel is required',
+            id: detector.id,
+          },
         }
       }
     })
 
-    if (Object.keys(newErrors).length > 0) {
+    // Set errors and exit if any errors are found
+    if (!isEmptyObject(newErrors)) {
       setErrors(newErrors)
       return
     }
+
     setErrors(null)
 
-    // Create a deep clone so we can safely mutate
     const modifiedApproach = JSON.parse(
       JSON.stringify(approach)
-    ) as ConfigApproach
-
-    // If the approach is new, remove the local ID so the server will create one
+    ) as ApproachForConfig
     if (modifiedApproach.isNew) {
       delete modifiedApproach.id
-      modifiedApproach.detectors.forEach((d) => delete d.approachId)
+      modifiedApproach.detectors?.forEach((detector) => {
+        delete detector.approachId
+      })
     }
+    delete modifiedApproach.directionType
     delete modifiedApproach.index
     delete modifiedApproach.open
     delete modifiedApproach.isNew
 
-    // Convert direction type from name -> numeric enum
-    modifiedApproach.directionTypeId =
-      findDirectionType(modifiedApproach.directionTypeId)?.value ||
-      DirectionTypes.NA
-
-    // Detectors
-    modifiedApproach.detectors.forEach((det) => {
-      if (det.isNew) {
-        delete det.id
+    modifiedApproach.directionTypeId = findDirectionType(
+      modifiedApproach.directionTypeId
+    )?.value
+    modifiedApproach.detectors.forEach((detector) => {
+      if (detector.isNew) {
+        delete detector.id
       }
       delete detector.isNew
       delete detector.approach
@@ -171,12 +175,11 @@ function EditApproach({ approach }: ApproachAdminProps) {
       detector.detectionTypes.forEach((detectionType) => {
         detectionType.id = findDetectionType(detectionType.abbreviation)?.value
       })
-
-      det.detectionHardware = findDetectionHardware(
-        det.detectionHardware
+      detector.detectionHardware = findDetectionHardware(
+        detector.detectionHardware
       )?.value
-      det.movementType = findMovementType(det.movementType)?.value
-      det.laneType = findLaneType(det.laneType)?.value
+      detector.movementType = findMovementType(detector.movementType)?.value
+      detector.laneType = findLaneType(detector.laneType)?.value
     })
 
     editApproach(modifiedApproach, {
@@ -269,27 +272,38 @@ function EditApproach({ approach }: ApproachAdminProps) {
           open={open}
           approach={approach}
           handleApproachClick={handleApproachClick}
-          handleCopyApproach={() => copyApproachInStore(approach)}
+          handleCopyApproach={handleCopyApproach}
           handleSaveApproach={handleSaveApproach}
           openDeleteApproachModal={openDeleteApproachModal}
         />
       </Paper>
-
       <Collapse in={open} unmountOnExit>
-        <Box minHeight="600px">
-          <EditApproachGrid approach={approach} />
+        <Box minHeight={'600px'}>
+          <EditApproachGrid
+            errors={errors}
+            approach={approach}
+            approaches={handler.approaches}
+            location={handler.expandedLocation as LocationExpanded}
+            updateApproach={updateApproach}
+            updateApproaches={handler.updateApproaches}
+          />
           <br />
           <Box display="flex" justifyContent="flex-end" mb={1}>
             <AddButton
               label="New Detector"
-              onClick={() => addDetectorInStore(approach.id)}
+              onClick={handleAddNewDetectorClick}
               sx={{ m: 1 }}
             />
           </Box>
-          <EditDetectors approach={approach} />
+          <EditDetectors
+            detectors={approach.detectors}
+            approach={approach}
+            updateApproach={updateApproach}
+            errors={errors}
+            warnings={warnings}
+          />
         </Box>
       </Collapse>
-
       <DeleteApproachModal
         openModal={openModal}
         setOpenModal={setOpenModal}
@@ -300,3 +314,7 @@ function EditApproach({ approach }: ApproachAdminProps) {
 }
 
 export default React.memo(EditApproach)
+
+const isEmptyObject = (obj: Record<string, any>): boolean => {
+  return Object.keys(obj).length === 0
+}

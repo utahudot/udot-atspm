@@ -1,10 +1,10 @@
-import { Detector } from '@/api/config/aTSPMConfigurationApi.schemas'
 import {
   useCreateDetectorComment,
   useDeleteDetectorComment,
   useGetDetectorComments,
   useUpdateDetectorComment,
 } from '@/features/locations/api/detector'
+import { Detector } from '@/features/locations/types'
 import ChatBubbleIcon from '@mui/icons-material/ChatBubble'
 import DeleteIcon from '@mui/icons-material/Delete'
 import EditIcon from '@mui/icons-material/Edit'

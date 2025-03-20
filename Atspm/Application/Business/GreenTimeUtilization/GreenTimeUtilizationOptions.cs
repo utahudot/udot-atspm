@@ -19,11 +19,10 @@ using Utah.Udot.Atspm.Business.Common;
 
 namespace Utah.Udot.Atspm.Business.GreenTimeUtilization
 {
-    public class GreenTimeUtilizationOptions : DateTimeOptionsBase, ILocationOptionsBase
+    public class GreenTimeUtilizationOptions : OptionsBase
     {
         public int MetricTypeId { get; set; } = 36;
         public int XAxisBinSize { get; set; }
         public int YAxisBinSize { get; set; }
-        public string LocationIdentifier { get; set; }
     }
 }

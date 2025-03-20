@@ -14,13 +14,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 // #endregion
-import {
-  Approach,
-  Device,
-  LocationType,
-} from '@/api/config/aTSPMConfigurationApi.schemas'
 import { Area } from '@/features/areas/types'
+import { Device } from '@/features/devices/types'
 import { Jurisdiction } from '@/features/jurisdictions/types'
+import { Approach, LocationType } from '@/features/locations/types'
 import { Region } from '@/features/regions/types'
 
 export type Location = {

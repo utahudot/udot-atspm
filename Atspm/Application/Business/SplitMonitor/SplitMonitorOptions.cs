@@ -19,10 +19,9 @@ using Utah.Udot.Atspm.Business.Common;
 
 namespace Utah.Udot.Atspm.Business.SplitMonitor
 {
-    public class SplitMonitorOptions : DateTimeOptionsBase, ILocationOptionsBase
+    public class SplitMonitorOptions : OptionsBase
     {
         public int PercentileSplit { get; set; }
-        public string LocationIdentifier { get; set; }
 
     }
 }

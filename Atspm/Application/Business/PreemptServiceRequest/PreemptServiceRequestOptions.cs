@@ -21,13 +21,11 @@ using Utah.Udot.Atspm.Business.Common;
 namespace Utah.Udot.Atspm.Business.PreemptServiceRequest
 {
     [DataContract]
-    public class PreemptServiceRequestOptions : DateTimeOptionsBase, ILocationOptionsBase
+    public class PreemptServiceRequestOptions : OptionsBase
     {
         public PreemptServiceRequestOptions()
         {
         }
-
-        public string LocationIdentifier { get; set; }
 
     }
 }

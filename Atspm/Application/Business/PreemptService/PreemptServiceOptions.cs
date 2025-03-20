@@ -22,8 +22,7 @@ namespace Utah.Udot.Atspm.Business.PreemptService
 
 {
     [DataContract]
-    public class PreemptServiceOptions : DateTimeOptionsBase, ILocationOptionsBase
+    public class PreemptServiceOptions : OptionsBase
     {
-        public string LocationIdentifier { get; set; }
     }
 }

@@ -1,4 +1,4 @@
-import { Location } from '@/api/config/aTSPMConfigurationApi.schemas'
+import { Location } from '@/features/locations/types'
 import RouteRow from '@/features/routes/components/routeEditor/RouteRow'
 import { Route, RouteLocation } from '@/features/routes/types'
 import { DragDropContext, DropResult, Droppable } from '@hello-pangea/dnd'

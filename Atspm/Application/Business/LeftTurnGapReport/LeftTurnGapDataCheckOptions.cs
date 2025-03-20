@@ -19,13 +19,12 @@ using Utah.Udot.Atspm.Business.Common;
 
 namespace Utah.Udot.Atspm.Business.LeftTurnGapReport
 {
-    public class LeftTurnGapDataCheckOptions : DateTimeOptionsBase, ILocationOptionsBase
+    public class LeftTurnGapDataCheckOptions : OptionsBase
     {
         public int ApproachId { get; set; }
         public int VolumePerHourThreshold { get; set; }
         public double GapOutThreshold { get; set; }
         public double PedestrianThreshold { get; set; }
         public int[] DaysOfWeek { get; set; }
-        public string LocationIdentifier { get; set; }
     }
 }

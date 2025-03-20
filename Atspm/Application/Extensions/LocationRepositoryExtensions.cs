@@ -15,7 +15,6 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.EntityFrameworkCore;
 using Utah.Udot.Atspm.Business.Watchdog;
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
@@ -119,24 +118,6 @@ namespace Utah.Udot.Atspm.Extensions
                     Count = g.Count()
                 })
                 .ToList();
-            return result;
-        }
-
-
-        public static IEnumerable<Location> GetVersionOfLocations(this ILocationRepository repo, List<string> locationIdentifiers, DateTime date)
-        {
-            var result = repo.GetList()
-                .Include(s => s.Approaches)
-                    .ThenInclude(a => a.DirectionType)
-                .Include(s => s.Approaches)
-                    .ThenInclude(a => a.Detectors)
-                        .ThenInclude(d => d.DetectionTypes)
-                .Where(Location =>locationIdentifiers.Contains(Location.LocationIdentifier) && Location.Start <= date)
-                .FromSpecification(new ActiveLocationSpecification())
-                .GroupBy(r => r.LocationIdentifier)
-                .Select(g => g.OrderByDescending(r => r.Start).FirstOrDefault())
-                .ToList();
-
             return result;
         }
 
