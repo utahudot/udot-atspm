@@ -20,6 +20,7 @@ import {
   createLegend,
   createTitle,
   createToolbox,
+  createTooltip,
   createXAxis,
   createYAxis,
   formatExportFileName,
@@ -245,6 +246,8 @@ function transformData(data: RawTimeSpaceAverageData[]): EChartsOption {
     numberOfLocations: data.length,
   })
 
+  const tooltip = createTooltip()
+
   const chartOptions: EChartsOption = {
     title: title,
     xAxis: xAxis,
@@ -255,6 +258,7 @@ function transformData(data: RawTimeSpaceAverageData[]): EChartsOption {
     toolbox: toolbox,
     animation: false,
     series: series,
+    tooltip,
     displayProps,
   }
 
