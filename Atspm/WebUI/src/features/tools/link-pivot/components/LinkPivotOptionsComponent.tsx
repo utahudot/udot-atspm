@@ -34,6 +34,7 @@ export const LinkPivotOptionsComponent = (props: Props) => {
       <StyledPaper
         sx={{
           padding: 3,
+          minWidth: '450.85px',
         }}
       >
         <RouteSelect
@@ -41,6 +42,13 @@ export const LinkPivotOptionsComponent = (props: Props) => {
           hasLocationNames={false}
           hasLocationMap={false}
         />
+      </StyledPaper>
+      <StyledPaper
+        sx={{
+          padding: 3,
+          maxWidth: '350px',
+        }}
+      >
         <SelectDateTime
           dateFormat={'MMM dd, yyyy'}
           startDateTime={handler.startDateTime}
