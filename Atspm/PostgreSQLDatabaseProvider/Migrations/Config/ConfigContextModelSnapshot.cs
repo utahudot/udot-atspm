@@ -2,21 +2,18 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Utah.Udot.Atspm.Data;
 
 #nullable disable
 
-namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
+namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations.Config
 {
     [DbContext(typeof(ConfigContext))]
-    [Migration("20250305015432_tsp")]
-    partial class tsp
+    partial class ConfigContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2109,7 +2106,7 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
                     b.Property<DateTime>("Date")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp")
-                        .HasDefaultValue(new DateTime(2025, 3, 4, 18, 54, 29, 807, DateTimeKind.Local).AddTicks(8289));
+                        .HasDefaultValue(new DateTime(2025, 3, 20, 11, 59, 34, 480, DateTimeKind.Local).AddTicks(2399));
 
                     b.Property<string>("Name")
                         .IsRequired()
