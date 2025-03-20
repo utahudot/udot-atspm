@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2025 Utah Departement of Transportation
+// Copyright 2024 Utah Departement of Transportation
 // for Application - Utah.Udot.Atspm.Business.Common/OptionsBase.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,34 +15,14 @@
 // limitations under the License.
 #endregion
 
+using Utah.Udot.Atspm.Data.Interfaces;
+
 namespace Utah.Udot.Atspm.Business.Common
 {
-    public class OptionsBase
+    public interface ILocationOptionsBase : IMeasureOption
     {
-        private DateTime _start;
-        private DateTime _end;
-        public DateTime Start
-        {
-            get
-            {
-                return _start;
-            }
-            set
-            {
-                _start = DateTime.SpecifyKind(value, DateTimeKind.Unspecified);
-            }
-        }
-        public DateTime End
-        {
-            get
-            {
-                return _end;
-            }
-            set
-            {
-                _end = DateTime.SpecifyKind(value, DateTimeKind.Unspecified);
-            }
-        }
+       
         public string LocationIdentifier { get; set; }
-    }
+    }    
+
 }

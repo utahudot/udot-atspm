@@ -19,6 +19,7 @@ using System.Text;
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.NetStandardToolkit.Extensions;
 
+
 namespace Utah.Udot.Atspm.Business.Common
 {
     public class PhaseDetail

@@ -48,7 +48,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Services
 
         public RouteDto UpsertRoute(RouteDto routeDto)
         {
-            // Find existing route or create a new one
+            // Find existing route or create a new one.
             var route = _routeRepository.GetList()
                 .Where(r => r.Id == routeDto.Id)
                 .Include(r => r.RouteLocations)

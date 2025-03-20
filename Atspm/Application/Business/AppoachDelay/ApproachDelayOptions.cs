@@ -19,10 +19,11 @@ using Utah.Udot.Atspm.Business.Common;
 
 namespace Utah.Udot.Atspm.Business.AppoachDelay
 {
-    public class ApproachDelayOptions : OptionsBase
+    public class ApproachDelayOptions : DateTimeOptionsBase, ILocationOptionsBase
     {
         public int BinSize { get; set; }
         public bool GetPermissivePhase { get; set; }
         public bool GetVolume { get; set; } = true;
+        public string LocationIdentifier { get; set; }
     }
 }
