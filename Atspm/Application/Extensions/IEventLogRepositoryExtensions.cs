@@ -16,7 +16,10 @@
 #endregion
 
 using System.Collections;
+using System.Collections.Generic;
 using Utah.Udot.Atspm.Repositories.EventLogRepositories;
+using Utah.Udot.Atspm.Specifications;
+using Utah.Udot.NetStandardToolkit.Extensions;
 
 namespace Utah.Udot.Atspm.Extensions
 {
@@ -73,10 +76,12 @@ namespace Utah.Udot.Atspm.Extensions
         /// <returns>A read-only list of days with event log data.</returns>
         public static IReadOnlyList<DateOnly> GetDaysWithEventLogs(this IEventLogRepository repo, string locationIdentifier, Type dataType, DateOnly month)
         {
+            var startDay = new DateTime(month.Year, month.Month, 1);
+            var endDay = startDay.AddMonths(1).AddMinutes(-1);
+
             return repo.GetList()
-                .Where(x => x.LocationIdentifier == locationIdentifier)
+                .FromSpecification(new CompressedEventLogSpecification(locationIdentifier, startDay, endDay))
                 .Where(x => x.DataType == dataType)
-                .Where(x => x.ArchiveDate.Year == month.Year && x.ArchiveDate.Month == month.Month)
                 .Select(x => x.ArchiveDate)
                 .Distinct()
                 .OrderBy(d => d)
