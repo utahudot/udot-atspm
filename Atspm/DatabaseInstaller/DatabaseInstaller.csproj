@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="..\Atspm\.dockerignore" Link=".dockerignore">
+    <None Include="..\.dockerignore" Link=".dockerignore">
       <DependentUpon>$(DockerDefaultDockerfile)</DependentUpon>
     </None>
   </ItemGroup>
@@ -28,8 +28,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Atspm\Data\Data.csproj" />
-    <ProjectReference Include="..\Atspm\Infrastructure\Infrastructure.csproj" />
+    <ProjectReference Include="..\Data\Data.csproj" />
+    <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>
