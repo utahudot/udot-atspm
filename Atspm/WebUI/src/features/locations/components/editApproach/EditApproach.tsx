@@ -7,7 +7,6 @@ import {
 } from '@/api/config/aTSPMConfigurationApi.schemas'
 import { AddButton } from '@/components/addButton'
 import { useEditApproach } from '@/features/locations/api/approach'
-// import { useUpsertApproachApproach } from '@/api/config/aTSPMConfigurationApi'
 import ApproachEditorRowHeader from '@/features/locations/components/editApproach/ApproachEditorRow'
 import DeleteApproachModal from '@/features/locations/components/editApproach/DeleteApproachModal'
 import { hasUniqueDetectorChannels } from '@/features/locations/components/editApproach/utils/checkDetectors'
@@ -20,33 +19,38 @@ import {
 import { ConfigEnum, useConfigEnums } from '@/hooks/useConfigEnums'
 import { useNotificationStore } from '@/stores/notifications'
 import { Box, Collapse, Paper } from '@mui/material'
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useState } from 'react'
 
 interface ApproachAdminProps {
   approach: ConfigApproach
 }
 
 function EditApproach({ approach }: ApproachAdminProps) {
-  const {
-    location,
-    updateApproaches,
-    copyApproach,
-    deleteApproach,
-    addDetector,
-    setErrors,
-    setWarnings,
-    channelMap,
-    clearErrorsAndWarnings,
-  } = useLocationStore()
-  const approaches = location?.approaches || []
+  console.log('EditApproach:', approach)
+
+  const locationIdentifier = useLocationStore(
+    (s) => s.location?.locationIdentifier
+  )
+  const channelMap = useLocationStore((s) => s.channelMap)
+  const errors = useLocationStore((s) => s.errors)
+  const warnings = useLocationStore((s) => s.warnings)
+  const setErrors = useLocationStore((s) => s.setErrors)
+  const setWarnings = useLocationStore((s) => s.setWarnings)
+  const clearErrorsAndWarnings = useLocationStore(
+    (s) => s.clearErrorsAndWarnings
+  )
+  const updateApproachInStore = useLocationStore((s) => s.updateApproach)
+  const copyApproachInStore = useLocationStore((s) => s.copyApproach)
+  const deleteApproachInStore = useLocationStore((s) => s.deleteApproach)
+  const addDetectorInStore = useLocationStore((s) => s.addDetector)
 
   const [open, setOpen] = useState(false)
   const [openModal, setOpenModal] = useState(false)
+
   const { addNotification } = useNotificationStore()
-
   const { mutate: editApproach } = useEditApproach()
-  // const { mutate: editApproach } = useUpsertApproachApproach() //giving me 415 errors
 
+  // Lookups
   const { findEnumByNameOrAbbreviation: findDetectionType } = useConfigEnums(
     ConfigEnum.DetectionTypes
   )
@@ -62,85 +66,55 @@ function EditApproach({ approach }: ApproachAdminProps) {
   const { findEnumByNameOrAbbreviation: findDetectionHardware } =
     useConfigEnums(ConfigEnum.DetectionHardwareTypes)
 
-  useEffect(() => {
-    const { isValid, errors } = hasUniqueDetectorChannels(channelMap)
-    if (isValid) {
-      clearErrorsAndWarnings()
-    } else {
-      setWarnings(
-        Object.keys(errors).reduce(
-          (acc, key) => {
-            acc[key] = { warning: errors[key].error, id: errors[key].id }
-            return acc
-          },
-          {} as Record<string, { warning: string; id: string }>
-        )
-      )
-    }
-  }, [location?.approaches, setWarnings, clearErrorsAndWarnings])
-
-  const handleApproachClick = () => {
+  const handleApproachClick = useCallback(() => {
     setOpen((prev) => !prev)
-  }
+  }, [])
 
-  const openDeleteApproachModal = () => {
+  const openDeleteApproachModal = useCallback(() => {
     setOpenModal(true)
-  }
+  }, [])
 
-  const handleSaveApproach = () => {
-    // Clear previous errors
-    let newErrors: Record<string, { error: string; id: string }> = {}
-
-    // Check detector channel uniqueness across all approaches
+  const handleSaveApproach = useCallback(() => {
     const { isValid, errors: channelErrors } =
       hasUniqueDetectorChannels(channelMap)
+    let newErrors: Record<string, { error: string; id: string }> = {}
+
     if (!isValid) {
       newErrors = { ...newErrors, ...channelErrors }
     }
-
-    // Protected phase required
     if (
       !approach.protectedPhaseNumber ||
       isNaN(approach.protectedPhaseNumber)
     ) {
-      newErrors = {
-        ...newErrors,
-        protectedPhaseNumber: {
-          error: 'Protected Phase Number is required',
-          id: String(approach.id),
-        },
+      newErrors.protectedPhaseNumber = {
+        error: 'Protected Phase Number is required',
+        id: String(approach.id),
       }
     }
-
-    // Each detector must have a channel
-    approach.detectors.forEach((detector) => {
-      if (!detector.detectorChannel) {
-        newErrors = {
-          ...newErrors,
-          [String(detector.id)]: {
-            error: 'Detector Channel is required',
-            id: String(detector.id),
-          },
+    approach.detectors.forEach((det) => {
+      if (!det.detectorChannel) {
+        newErrors[String(det.id)] = {
+          error: 'Detector Channel is required',
+          id: String(det.id),
         }
       }
     })
 
-    if (!isEmptyObject(newErrors)) {
+    if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors)
       return
     }
-
     setErrors(null)
 
-    // Prepare approach payload
+    // Create a deep clone so we can safely mutate
     const modifiedApproach = JSON.parse(
       JSON.stringify(approach)
     ) as ConfigApproach
 
-    // Clean up isNew, directionType, etc.
+    // If the approach is new, remove the local ID so the server will create one
     if (modifiedApproach.isNew) {
       delete modifiedApproach.id
-      modifiedApproach.detectors?.forEach((d) => delete d.approachId)
+      modifiedApproach.detectors.forEach((d) => delete d.approachId)
     }
     delete modifiedApproach.index
     delete modifiedApproach.open
@@ -152,39 +126,36 @@ function EditApproach({ approach }: ApproachAdminProps) {
       DirectionTypes.NA
 
     // Detectors
-    modifiedApproach.detectors.forEach((detector) => {
-      if (detector.isNew) {
-        delete detector.id
+    modifiedApproach.detectors.forEach((det) => {
+      if (det.isNew) {
+        delete det.id
       }
-      delete detector.isNew
-      delete detector.approach
-      delete detector.detectorComments
+      delete det.isNew
+      delete det.approach
+      delete det.detectorComments
 
-      detector.latencyCorrection =
-        detector.latencyCorrection === null ||
-        detector.latencyCorrection === undefined ||
-        detector.latencyCorrection === ''
+      det.latencyCorrection =
+        det.latencyCorrection == null || det.latencyCorrection === ''
           ? 0
-          : Number(detector.latencyCorrection)
+          : Number(det.latencyCorrection)
 
-      detector.detectorIdentifier = // Fixed typo
-        (location?.locationIdentifier || '') + (detector.detectorChannel || '')
+      det.dectectorIdentifier =
+        (locationIdentifier || '') + (det.detectorChannel || '')
 
-      detector.detectionTypes.forEach((detectionType) => {
-        detectionType.id = findDetectionType(detectionType.abbreviation)?.value
+      det.detectionTypes.forEach((dType) => {
+        dType.id = findDetectionType(dType.abbreviation)?.value
       })
 
-      detector.detectionHardware = findDetectionHardware(
-        detector.detectionHardware
+      det.detectionHardware = findDetectionHardware(
+        det.detectionHardware
       )?.value
-      detector.movementType = findMovementType(detector.movementType)?.value
-      detector.laneType = findLaneType(detector.laneType)?.value
+      det.movementType = findMovementType(det.movementType)?.value
+      det.laneType = findLaneType(det.laneType)?.value
     })
 
     editApproach(modifiedApproach, {
       onSuccess: (saved) => {
         try {
-          // Normalize the response
           const detectorsArray = saved.detectors?.$values || []
           detectorsArray.forEach((detector) => {
             detector.detectionTypes = detector.detectionTypes?.$values || []
@@ -201,19 +172,31 @@ function EditApproach({ approach }: ApproachAdminProps) {
               findLaneType(detector.laneType)?.name || LaneTypes.NA
           })
 
+          // Build final approach object for the store
           const normalizedSaved: ConfigApproach = {
             ...saved,
+            isNew: false,
             directionTypeId:
               findDirectionType(saved.directionTypeId)?.name ||
               DirectionTypes.NA,
             detectors: detectorsArray,
           }
 
-          updateApproaches(
-            approaches.map((item) =>
-              item.id === approach.id ? normalizedSaved : item
-            )
-          )
+          /**
+           * If the approach was new, we must remove the "local" approach
+           * (with its random ID) from the store, then add this saved approach
+           * (with the real server ID) so we don't end up with duplicates.
+           */
+          if (approach.isNew) {
+            // 1) remove the old approach from store (no server API call for new approaches)
+            deleteApproachInStore(approach)
+
+            // 2) updateApproachInStore() with the newly created approach
+            updateApproachInStore(normalizedSaved)
+          } else {
+            // If it wasn't new, we can just update existing approach
+            updateApproachInStore(normalizedSaved)
+          }
 
           addNotification({
             title: 'Approach saved successfully',
@@ -243,11 +226,25 @@ function EditApproach({ approach }: ApproachAdminProps) {
         })
       },
     })
-  }
+  }, [
+    approach,
+    channelMap,
+    locationIdentifier,
+    editApproach,
+    setErrors,
+    findDirectionType,
+    findMovementType,
+    findLaneType,
+    findDetectionHardware,
+    findDetectionType,
+    updateApproachInStore,
+    deleteApproachInStore,
+    addNotification,
+  ])
 
-  const handleDeleteApproach = () => {
+  const handleDeleteApproach = useCallback(() => {
     try {
-      deleteApproach(approach)
+      deleteApproachInStore(approach)
       addNotification({
         title: 'Approach deleted',
         type: 'success',
@@ -264,7 +261,7 @@ function EditApproach({ approach }: ApproachAdminProps) {
       })
       setOpenModal(false)
     }
-  }
+  }, [approach, deleteApproachInStore, addNotification])
 
   return (
     <>
@@ -273,11 +270,12 @@ function EditApproach({ approach }: ApproachAdminProps) {
           open={open}
           approach={approach}
           handleApproachClick={handleApproachClick}
-          handleCopyApproach={() => copyApproach(approach)}
+          handleCopyApproach={() => copyApproachInStore(approach)}
           handleSaveApproach={handleSaveApproach}
           openDeleteApproachModal={openDeleteApproachModal}
         />
       </Paper>
+
       <Collapse in={open} unmountOnExit>
         <Box minHeight="600px">
           <EditApproachGrid approach={approach} />
@@ -285,7 +283,7 @@ function EditApproach({ approach }: ApproachAdminProps) {
           <Box display="flex" justifyContent="flex-end" mb={1}>
             <AddButton
               label="New Detector"
-              onClick={() => addDetector(approach)}
+              onClick={() => addDetectorInStore(approach.id)}
               sx={{ m: 1 }}
             />
           </Box>
@@ -303,7 +301,3 @@ function EditApproach({ approach }: ApproachAdminProps) {
 }
 
 export default React.memo(EditApproach)
-
-function isEmptyObject(obj: Record<string, any>): boolean {
-  return Object.keys(obj).length === 0
-}

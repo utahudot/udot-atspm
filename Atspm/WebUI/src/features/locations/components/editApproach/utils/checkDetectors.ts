@@ -35,10 +35,10 @@ export const hasUniqueDetectorChannels = (
     }
   }
 
-  for (const [channel, ids] of channelToIds.entries()) {
+  for (const [_, ids] of channelToIds.entries()) {
     if (ids.length > 1) {
       ids.forEach((id) => {
-        errors[id] = { error: `Duplicate detector channel found`, id }
+        errors[id] = { error: `Duplicate detector channel`, id }
       })
     }
   }

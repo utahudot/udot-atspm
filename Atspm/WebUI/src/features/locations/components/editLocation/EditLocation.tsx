@@ -5,19 +5,22 @@ import LocationGeneralOptionsEditor from '@/features/locations/components/editLo
 import { useLocationStore } from '@/features/locations/components/editLocation/locationStore'
 import { TabContext, TabList, TabPanel } from '@mui/lab'
 import { Box, Tab, Typography } from '@mui/material'
-import { useState } from 'react'
+import React, { memo, useCallback, useState } from 'react'
 import EditLocationHeader from './EditLocationHeader'
 import WatchdogEditor from './WatchdogEditor'
 
-const EditLocation = () => {
-  const { location, addApproach } = useLocationStore()
+function EditLocation() {
+  const location = useLocationStore((state) => state.location)
   const [currentTab, setCurrentTab] = useState('1')
 
-  if (!location) return null
+  const handleTabChange = useCallback(
+    (_: React.SyntheticEvent, newTab: string) => {
+      setCurrentTab(newTab)
+    },
+    []
+  )
 
-  const handleTabChange = (_: React.SyntheticEvent, newTab: string) => {
-    setCurrentTab(newTab)
-  }
+  if (!location) return null
 
   return (
     <TabContext value={currentTab}>
@@ -28,37 +31,14 @@ const EditLocation = () => {
         <Tab label="Approaches" value="3" />
         <Tab label="Watchdog" value="4" />
       </TabList>
-      <TabPanel value="1" sx={{ padding: '0px' }}>
+      <TabPanel value="1" sx={{ padding: 0 }}>
         <LocationGeneralOptionsEditor />
       </TabPanel>
-      <TabPanel value="2" sx={{ padding: '0px', marginBottom: '100px' }}>
+      <TabPanel value="2" sx={{ padding: 0, marginBottom: '100px' }}>
         <EditDevices />
       </TabPanel>
       <TabPanel value="3" sx={{ padding: 0, minHeight: '400px' }}>
-        <Box sx={{ minHeight: '400px' }}>
-          <Box
-            sx={{
-              display: 'flex',
-              justifyContent: 'flex-end',
-            }}
-          >
-            <AddButton
-              label="New Approach"
-              onClick={addApproach}
-              sx={{ mb: 0.2 }}
-            />
-          </Box>
-          {location.approaches?.map((approach) => (
-            <EditApproach key={approach.id} approach={approach} />
-          ))}
-          {location?.approaches?.length === 0 && (
-            <Box sx={{ p: 2, mt: 2, textAlign: 'center' }}>
-              <Typography variant="caption" fontStyle={'italic'}>
-                No approaches found
-              </Typography>
-            </Box>
-          )}
-        </Box>
+        <ApproachesTab />
       </TabPanel>
       <TabPanel value="4" sx={{ padding: 0 }}>
         <WatchdogEditor />
@@ -67,4 +47,49 @@ const EditLocation = () => {
   )
 }
 
-export default EditLocation
+export default memo(EditLocation)
+
+function ApproachesTab() {
+  const [approachIds, addApproach] = useLocationStore((state) => [
+    state.approaches.map((a) => a.id),
+    state.addApproach,
+  ])
+
+  const handleAddApproach = useCallback(() => {
+    addApproach()
+  }, [addApproach])
+
+  return (
+    <Box sx={{ minHeight: '400px' }}>
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+        <AddButton
+          label="New Approach"
+          onClick={handleAddApproach}
+          sx={{ mb: 0.2 }}
+        />
+      </Box>
+
+      {approachIds.map((id) => (
+        <ApproachWrapper key={id} approachId={id} />
+      ))}
+
+      {approachIds.length === 0 && (
+        <Box sx={{ p: 2, mt: 2, textAlign: 'center' }}>
+          <Typography variant="caption" fontStyle="italic">
+            No approaches found
+          </Typography>
+        </Box>
+      )}
+    </Box>
+  )
+}
+
+function ApproachWrapper({ approachId }: { approachId: number }) {
+  const approach = useLocationStore((state) =>
+    state.approaches.find((a) => a.id === approachId)
+  )
+
+  if (!approach) return null
+
+  return <EditApproach approach={approach} />
+}
