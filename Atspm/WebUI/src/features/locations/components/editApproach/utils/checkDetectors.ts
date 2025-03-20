@@ -14,31 +14,34 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 // #endregion
+import { ApproachForConfig } from '@/features/locations/components/editLocation/editLocationConfigHandler'
 
 export const hasUniqueDetectorChannels = (
-  channelMap: Map<number, number>
+  approaches: ApproachForConfig[]
 ): {
   isValid: boolean
   errors: Record<string, { error: string; id: string }>
 } => {
-  const channelToIds = new Map<number, string[]>()
+  const channelMap = new Map<string, string[]>() // Map channel to array of detector IDs
   const errors: Record<string, { error: string; id: string }> = {}
 
-  for (const [detectorId, channel] of channelMap.entries()) {
-    if (channel !== 0 && channel !== null && channel !== undefined) {
-      const detectorIdStr = String(detectorId)
-      if (!channelToIds.has(channel)) {
-        channelToIds.set(channel, [detectorIdStr])
-      } else {
-        channelToIds.get(channel)!.push(detectorIdStr)
+  for (const approach of approaches) {
+    for (const detector of approach.detectors) {
+      if (detector.detectorChannel) {
+        if (!channelMap.has(detector.detectorChannel)) {
+          channelMap.set(detector.detectorChannel, [detector.id])
+        } else {
+          channelMap.get(detector.detectorChannel)!.push(detector.id)
+        }
       }
     }
   }
 
-  for (const [_, ids] of channelToIds.entries()) {
+  // Populate errors for duplicate channels
+  for (const [channel, ids] of channelMap.entries()) {
     if (ids.length > 1) {
       ids.forEach((id) => {
-        errors[id] = { error: `Duplicate detector channel`, id }
+        errors[id] = { error: 'Detector channels must be unique', id }
       })
     }
   }

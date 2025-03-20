@@ -1,95 +1,100 @@
 import { AddButton } from '@/components/addButton'
 import EditApproach from '@/features/locations/components/editApproach/EditApproach'
-import EditDevices from '@/features/locations/components/editLocation/EditDevices'
-import LocationGeneralOptionsEditor from '@/features/locations/components/editLocation/LocationGeneralOptionsEditor'
-import { useLocationStore } from '@/features/locations/components/editLocation/locationStore'
+import EditGeneralLocation from '@/features/locations/components/editLocation/editGeneralLocation'
 import { TabContext, TabList, TabPanel } from '@mui/lab'
 import { Box, Tab, Typography } from '@mui/material'
-import React, { memo, useCallback, useState } from 'react'
+import { useEffect, useState } from 'react'
+import { Location } from '../../types'
+import EditDevices from './EditDevices'
 import EditLocationHeader from './EditLocationHeader'
 import WatchdogEditor from './WatchdogEditor'
+import {
+  ApproachForConfig,
+  LocationConfigHandler,
+} from './editLocationConfigHandler'
 
-function EditLocation() {
-  const location = useLocationStore((state) => state.location)
+interface EditLocationProps {
+  handler: LocationConfigHandler
+  updateLocationVersion: (location: Location | null) => void
+}
+
+const EditLocation = ({
+  handler,
+  updateLocationVersion,
+}: EditLocationProps) => {
   const [currentTab, setCurrentTab] = useState('1')
-
-  const handleTabChange = useCallback(
-    (_: React.SyntheticEvent, newTab: string) => {
-      setCurrentTab(newTab)
-    },
+  const [sortedApproaches, setSortedApproaches] = useState<ApproachForConfig[]>(
     []
   )
 
-  if (!location) return null
+  useEffect(() => {
+    setSortedApproaches(handler.approaches)
+  }, [handler.approaches])
+
+  if (!handler.expandedLocation) return null
+
+  const handleTabChange = (_: React.SyntheticEvent, newTab: string) => {
+    setCurrentTab(newTab)
+  }
 
   return (
     <TabContext value={currentTab}>
-      <EditLocationHeader />
+      <EditLocationHeader
+        location={handler.expandedLocation}
+        updateLocationVersion={updateLocationVersion}
+        refetchLocation={handler.refetchLocation}
+      />
       <TabList onChange={handleTabChange} aria-label="Location Tabs">
         <Tab label="General" value="1" />
         <Tab label="Devices" value="2" />
         <Tab label="Approaches" value="3" />
         <Tab label="Watchdog" value="4" />
       </TabList>
-      <TabPanel value="1" sx={{ padding: 0 }}>
-        <LocationGeneralOptionsEditor />
+      <TabPanel value="1" sx={{ padding: '0px' }}>
+        <EditGeneralLocation
+          handleLocationEdit={handler.handleLocationEdit}
+          updateLocation={handler.updateExpandedLocation}
+          location={handler.expandedLocation}
+        />
       </TabPanel>
-      <TabPanel value="2" sx={{ padding: 0, marginBottom: '100px' }}>
-        <EditDevices />
+      <TabPanel value="2" sx={{ padding: '0px', marginBottom: '100px' }}>
+        <EditDevices locationId={handler.expandedLocation.id} />
       </TabPanel>
       <TabPanel value="3" sx={{ padding: 0, minHeight: '400px' }}>
-        <ApproachesTab />
+        <Box sx={{ minHeight: '400px' }}>
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'flex-end',
+            }}
+          >
+            <AddButton
+              label="New Approach"
+              onClick={handler.handleAddNewApproach}
+              sx={{ mb: 0.2 }}
+            />
+          </Box>
+          {sortedApproaches?.map((approach) => (
+            <EditApproach
+              key={approach.id}
+              approach={approach}
+              handler={handler}
+            />
+          ))}
+          {sortedApproaches.length === 0 && (
+            <Box sx={{ p: 2, mt: 2, textAlign: 'center' }}>
+              <Typography variant="caption" fontStyle={'italic'}>
+                No approaches found
+              </Typography>
+            </Box>
+          )}
+        </Box>
       </TabPanel>
       <TabPanel value="4" sx={{ padding: 0 }}>
-        <WatchdogEditor />
+        <WatchdogEditor handler={handler} />
       </TabPanel>
     </TabContext>
   )
 }
 
-export default memo(EditLocation)
-
-function ApproachesTab() {
-  const [approachIds, addApproach] = useLocationStore((state) => [
-    state.approaches.map((a) => a.id),
-    state.addApproach,
-  ])
-
-  const handleAddApproach = useCallback(() => {
-    addApproach()
-  }, [addApproach])
-
-  return (
-    <Box sx={{ minHeight: '400px' }}>
-      <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-        <AddButton
-          label="New Approach"
-          onClick={handleAddApproach}
-          sx={{ mb: 0.2 }}
-        />
-      </Box>
-
-      {approachIds.map((id) => (
-        <ApproachWrapper key={id} approachId={id} />
-      ))}
-
-      {approachIds.length === 0 && (
-        <Box sx={{ p: 2, mt: 2, textAlign: 'center' }}>
-          <Typography variant="caption" fontStyle="italic">
-            No approaches found
-          </Typography>
-        </Box>
-      )}
-    </Box>
-  )
-}
-
-function ApproachWrapper({ approachId }: { approachId: number }) {
-  const approach = useLocationStore((state) =>
-    state.approaches.find((a) => a.id === approachId)
-  )
-
-  if (!approach) return null
-
-  return <EditApproach approach={approach} />
-}
+export default EditLocation

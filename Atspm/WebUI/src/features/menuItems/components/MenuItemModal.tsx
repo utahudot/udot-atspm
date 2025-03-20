@@ -15,7 +15,7 @@ import {
   TextField,
   Tooltip,
 } from '@mui/material'
-import { useEffect, useMemo } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -41,7 +41,12 @@ const menuItemSchema = z.object({
 
 type MenuItemFormData = z.infer<typeof menuItemSchema>
 
-const MenuItemsModal = ({ isOpen, onClose, data, onSave }: ModalProps) => {
+const MenuItemsModal: React.FC<ModalProps> = ({
+  isOpen,
+  onClose,
+  data,
+  onSave,
+}) => {
   const { data: menuItemsData } = useGetMenuItems()
   const { control, handleSubmit, setValue, watch } = useForm<MenuItemFormData>({
     resolver: zodResolver(menuItemSchema),
