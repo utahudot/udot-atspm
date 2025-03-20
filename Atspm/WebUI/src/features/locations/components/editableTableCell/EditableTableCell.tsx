@@ -16,7 +16,7 @@ import {
 import React, { useState } from 'react'
 
 interface EditableTableCellProps {
-  value: string | number | boolean | null
+  value: string | number | boolean | null | undefined
   onUpdate: (value: string | number | boolean | null) => void
   disabled?: boolean
   lockable?: boolean

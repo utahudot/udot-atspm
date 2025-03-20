@@ -1,12 +1,12 @@
+import { Location } from '@/api/config/aTSPMConfigurationApi.schemas'
 import { useLatestVersionOfAllLocations } from '@/features/locations/api'
 import LocationInput from '@/features/locations/components/selectLocation/LocationInput'
 import SelectLocationMap from '@/features/locations/components/selectLocationMap'
-import { Location } from '@/features/locations/types'
 import { Button } from '@mui/material'
 import { memo, useCallback, useMemo, useState } from 'react'
 
 interface SelectLocationProps {
-  location: Location | null
+  location: Location | undefined
   setLocation: (location: Location) => void
   chartsDisabled?: boolean
   route?: number[][]
@@ -61,7 +61,7 @@ export function SelectLocation({
     },
     [setLocation]
   )
-
+          
   const updateFilters = useCallback((newFilters: Partial<Filters>) => {
     setFilters((prevFilters) => ({ ...prevFilters, ...newFilters }))
   }, [])

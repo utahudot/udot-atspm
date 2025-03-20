@@ -23,6 +23,16 @@ export default function Sidebar() {
   const hasWatchDogPermission = useSideBarPermission('watchdog:view')
   const hasLTGRPermission = useSideBarPermission('Report:view')
 
+  const reportsList = [
+    {
+      text: 'Transit Signal Priority',
+      url: '/reports/transit-signal-priority',
+    },
+  ]
+  if (hasLTGRPermission) {
+    reportsList.push({ text: 'Left Turn Gap', url: '/reports/left-turn-gap' })
+  }
+
   const toggleDrawer =
     () => (event: React.KeyboardEvent | React.MouseEvent) => {
       if (

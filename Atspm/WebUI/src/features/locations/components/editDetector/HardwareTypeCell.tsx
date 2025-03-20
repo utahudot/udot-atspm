@@ -12,8 +12,8 @@ export const hardwareTypeOptions = [
 ]
 
 interface HardwareTypeCellProps {
-  value: string
-  onUpdate: (id: string) => void
+  value: number
+  onUpdate: (id: number) => void
 }
 
 function HardwareTypeCell({ value, onUpdate }: HardwareTypeCellProps) {

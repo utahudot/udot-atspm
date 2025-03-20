@@ -1,4 +1,4 @@
-import { Location } from '@/features/locations/types'
+import { Location } from '@/api/config/aTSPMConfigurationApi.schemas'
 import { useState } from 'react'
 
 export interface LocationHandler {
