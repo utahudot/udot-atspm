@@ -1,8 +1,6 @@
-import RouteChecker from '@/features/charts/timeSpaceDiagram/components/RouteChecker'
 import { ExpandLocationHandler } from '@/features/data/aggregate/handlers/expandLocationHandler'
 import SelectLocation from '@/features/locations/components/selectLocation'
 import { Location } from '@/features/locations/types'
-import { useGetRouteWithExpandedLocations } from '@/features/routes/api/getRouteWithExpandedLocations'
 import {
   Box,
   Button,
@@ -12,7 +10,7 @@ import {
   Select,
   Skeleton,
 } from '@mui/material'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { LocationHandler } from '../handlers/locationHandler'
 import { RouteHandler } from '../handlers/routeHandler'
 import SelectedLocationsDisplay from './SelectedLocationsDisplay'
@@ -33,34 +31,6 @@ export const RouteSelect = ({
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(
     null
   )
-
-  const { data: routeData, refetch } = useGetRouteWithExpandedLocations({
-    routeId: handler.routeId,
-    includeLocationDetail: true,
-  })
-
-  useEffect(() => {
-    if (handler.routeId) refetch()
-  }, [handler.routeId, refetch])
-
-  const routeValuesToCheck =
-    routeData?.routeLocations
-      .map((location) => {
-        const approach = location.approaches.find((approach) => {
-          return approach.protectedPhaseNumber === location.primaryPhase
-        })
-
-        return {
-          locationIdentifier: location.locationIdentifier,
-          approachDescription: approach ? approach.description : null,
-          mph: approach ? approach.mph : null,
-          distance: location?.nextLocationDistance?.distance ?? null,
-          order: location.order,
-        }
-      })
-      // sort so 1 comes before 2, etc.
-      .sort((a, b) => a.order - b.order) || []
-
   if (!handler.routes.length || handler.routes === null) {
     return
   }
@@ -133,21 +103,6 @@ export const RouteSelect = ({
           )}
         </Box>
       </Box>
-      {handler.routeId && (
-        <>
-          <Box
-            sx={{
-              maxHeight: '350px',
-              overflowY: 'auto',
-              outline: '1px solid #ccc',
-              marginBottom: 2,
-              flexGrow: 1,
-            }}
-          >
-            {routeValuesToCheck && <RouteChecker data={routeValuesToCheck} />}
-          </Box>
-        </>
-      )}
     </Box>
   )
 }

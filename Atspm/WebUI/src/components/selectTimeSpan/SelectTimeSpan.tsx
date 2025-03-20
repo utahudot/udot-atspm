@@ -1,22 +1,18 @@
 import {
   Alert,
-  Badge,
   Box,
   Button,
   Divider,
   Skeleton,
-  Tooltip,
   Typography,
 } from '@mui/material'
 import {
   DateCalendar,
   DateOrTimeView,
   DateTimePicker,
-  PickersDay,
-  PickersDayProps,
   TimePicker,
 } from '@mui/x-date-pickers'
-import { add, isSameDay, startOfToday } from 'date-fns'
+import { add, startOfToday } from 'date-fns'
 import { useEffect, useState } from 'react'
 
 export interface SelectDateTimeProps {
@@ -34,8 +30,6 @@ export interface SelectDateTimeProps {
   endTimePeriod?: Date
   changeStartTimePeriod?(date: Date): void
   changeEndTimePeriod?(date: Date): void
-  markDays?: Date[]
-  onMonthChange?(date: Date): void
   warning?: string | null
 }
 
@@ -54,8 +48,6 @@ export default function SelectDateTime({
   startDateOnly,
   changeStartTimePeriod,
   changeEndTimePeriod,
-  markDays = [],
-  onMonthChange,
   warning = null,
 }: SelectDateTimeProps) {
   const [showWarning, setShowWarning] = useState(false)
@@ -75,20 +67,9 @@ export default function SelectDateTime({
 
   const handleCalendarChange = (newDate: Date | null) => {
     if (!newDate) return
-    if (!endDateTime || !startDateTime) return
 
     changeStartDate(newDate)
-    const newEndDate = new Date(newDate)
-    newEndDate.setHours(endDateTime.getHours())
-    newEndDate.setMinutes(endDateTime.getMinutes())
-    if (
-      startDateTime.getMonth() == endDateTime.getMonth() &&
-      startDateTime.getDate() === endDateTime.getDate()
-    ) {
-      changeEndDate(newEndDate)
-    } else {
-      changeEndDate(add(newEndDate, { days: 1 }))
-    }
+    changeEndDate(add(newDate, { days: 1 }))
   }
 
   const handleResetDate = () => {
@@ -112,21 +93,8 @@ export default function SelectDateTime({
       <DateCalendar
         value={startDateTime}
         onChange={handleCalendarChange}
-        onMonthChange={onMonthChange}
-        onYearChange={onMonthChange}
         showDaysOutsideCurrentMonth={true}
         disableFuture={true}
-        slots={{
-          day: MarkedDay,
-        }}
-        slotProps={{
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          day: { highlightedDays: markDays } as any,
-        }}
-        shouldDisableDate={(date) => {
-          if (!markDays) return false
-          return markDays.some((missing: Date) => isSameDay(missing, date))
-        }}
       />
     ) : (
       <Skeleton width={320} height={334} />
@@ -136,8 +104,10 @@ export default function SelectDateTime({
   const handleSameDay = () => {
     if (!startDateTime || !endDateTime) return
     const newEndDate = new Date(startDateTime)
-    newEndDate.setHours(endDateTime.getHours())
+    newEndDate.setHours(startDateTime.getHours())
     newEndDate.setMinutes(endDateTime.getMinutes())
+    newEndDate.setSeconds(endDateTime.getSeconds())
+    newEndDate.setMilliseconds(endDateTime.getMilliseconds())
     changeEndDate(newEndDate)
   }
 
@@ -165,7 +135,10 @@ export default function SelectDateTime({
           sx={
             calendarLocation === 'right'
               ? sideBySideStyleInnerBoxStyle
-              : { display: 'flex', flexDirection: 'column' }
+              : {
+                  display: 'flex',
+                  flexDirection: 'column',
+                }
           }
         >
           <DateTimePicker
@@ -229,52 +202,5 @@ export default function SelectDateTime({
       </Box>
       {showWarning && warning && <Alert severity="warning">{warning}</Alert>}
     </>
-  )
-}
-
-interface MarkedDayProps extends PickersDayProps<Date> {
-  highlightedDays?: Date[] | undefined
-}
-
-function MarkedDay(props: MarkedDayProps) {
-  const { highlightedDays, day, outsideCurrentMonth, ...other } = props
-
-  // 1) If no location is selected, don't mark anything.
-  if (highlightedDays === undefined) {
-    return (
-      <PickersDay
-        {...other}
-        outsideCurrentMonth={outsideCurrentMonth}
-        day={day}
-      />
-    )
-  }
-
-  // 3) If the day is in the missing-days array, it has no data.
-  const isMissing = highlightedDays.some((missing: Date) =>
-    isSameDay(missing, day)
-  )
-  const badgeContent = isMissing ? (
-    <span
-      style={{
-        color: 'red',
-        fontSize: '0.6rem',
-        transform: 'translate(-50%, 50%)',
-      }}
-    >
-      ✖
-    </span>
-  ) : null
-
-  return (
-    <Tooltip title={isMissing ? 'No data available' : ''} enterDelay={500}>
-      <Badge overlap="circular" badgeContent={badgeContent}>
-        <PickersDay
-          {...other}
-          outsideCurrentMonth={outsideCurrentMonth}
-          day={day}
-        />
-      </Badge>
-    </Tooltip>
   )
 }
