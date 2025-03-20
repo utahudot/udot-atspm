@@ -86,8 +86,8 @@ jobs:
               --image ${{ vars.GCP_ARTIFACT_REPO }}/$image:latest \
               --service-account ${{vars.RUN_SA}} \
               --vpc-connector ${{ vars.VPC_CONNECTOR }} \
-              --memory=2Gi \
-              --cpu=1 \
+              --memory=6Gi \
+              --cpu=2 \
               --max-retries 0 \
               --parallelism 0 
           else
@@ -96,8 +96,8 @@ jobs:
               --image ${{ vars.GCP_ARTIFACT_REPO }}/$image:latest \
               --service-account ${{vars.RUN_SA}} \
               --vpc-connector ${{ vars.VPC_CONNECTOR }} \
-              --memory=2Gi \
-              --cpu=1 \
+              --memory=6Gi \
+              --cpu=2 \
               --max-retries 0 \
               --parallelism 0 
           fi;
