@@ -92,20 +92,8 @@ const About = () => {
       title: 'Portland Oregon logo',
     },
     {
-      path: '/images/partners/vtrans.png',
-      title: 'Vermont Trans logo',
-    },
-    {
       path: '/images/partners/maricopa-county.png',
       title: 'Maricopa County logo',
-    },
-    {
-      path: '/images/partners/gilbert.png',
-      title: 'Gilbert logo',
-    },
-    {
-      path: '/images/partners/frisco.png',
-      title: 'Frisco logo',
     },
   ]
 

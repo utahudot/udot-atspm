@@ -3,7 +3,7 @@ import { useSideBarPermission } from '@/features/identity/pagesCheck'
 import { useSidebarStore } from '@/stores/sidebar'
 import AddchartOutlinedIcon from '@mui/icons-material/AddchartOutlined'
 import FileDownloadIcon from '@mui/icons-material/FileDownload'
-import ForkLeftIcon from '@mui/icons-material/ForkLeft'
+import ForkLeftOutlinedIcon from '@mui/icons-material/ForkLeftOutlined'
 import RouteOutlinedIcon from '@mui/icons-material/RouteOutlined'
 import ShowChartOutlinedIcon from '@mui/icons-material/ShowChartOutlined'
 import SignalCellularAltOutlinedIcon from '@mui/icons-material/SignalCellularAltOutlined'
@@ -81,9 +81,9 @@ export default function Sidebar() {
             />
             {hasLTGRPermission && (
               <NavItem
-                icon={<ForkLeftIcon />}
+                icon={<ForkLeftOutlinedIcon />}
                 text={'Left Turn Gap Report'}
-                url={'/reports/left-turn-gap'}
+                url={'/left-turn-gap-report'}
               />
             )}
             <NavItem
