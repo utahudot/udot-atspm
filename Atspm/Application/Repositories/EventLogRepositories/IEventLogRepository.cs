@@ -38,7 +38,7 @@ namespace Utah.Udot.Atspm.Repositories.EventLogRepositories
 
         /// <summary>
         /// Get archived events that match <paramref name="locationIdentifier"/>, <paramref name="start"/>/<paramref name="end"/> and <paramref name="deviceId"/>
-        /// Where date type of derrived from <typeparamref name="T"/>
+        /// Where date type is derived from <typeparamref name="T"/>
         /// </summary>
         /// <typeparam name="T">Data type of <see cref="EventLogModelBase"/></typeparam>
         /// <param name="locationIdentifier">Location identifier</param>
@@ -79,7 +79,7 @@ namespace Utah.Udot.Atspm.Repositories.EventLogRepositories
 
         /// <summary>
         /// Get archived events that match <paramref name="locationIdentifier"/> and <paramref name="start"/>/<paramref name="end"/>
-        /// Where date type of derrived from <typeparamref name="T"/>
+        /// Where date type of derived from <typeparamref name="T"/>
         /// </summary>
         /// <typeparam name="T">Data type of <see cref="EventLogModelBase"/></typeparam>
         /// <param name="locationIdentifier">Location identifier</param>
