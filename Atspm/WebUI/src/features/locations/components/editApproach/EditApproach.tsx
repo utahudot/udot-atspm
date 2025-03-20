@@ -26,8 +26,6 @@ interface ApproachAdminProps {
 }
 
 function EditApproach({ approach }: ApproachAdminProps) {
-  console.log('EditApproach:', approach)
-
   const locationIdentifier = useLocationStore(
     (s) => s.location?.locationIdentifier
   )
