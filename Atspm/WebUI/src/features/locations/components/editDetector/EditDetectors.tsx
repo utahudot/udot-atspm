@@ -1,4 +1,5 @@
 import { Detector } from '@/api/config/aTSPMConfigurationApi.schemas'
+import EditableTableCell from '@/features/locations/components/editableTableCell/EditableTableCell'
 import CommentCell from '@/features/locations/components/editDetector/CommentCell'
 import DateAddedCell from '@/features/locations/components/editDetector/DateAddedCell'
 import DetectionTypesCell from '@/features/locations/components/editDetector/DetectionTypesCell'
@@ -9,7 +10,6 @@ import {
   ConfigApproach,
   useLocationStore,
 } from '@/features/locations/components/editLocation/locationStore'
-import EditableTableCell from '@/features/locations/components/editableTableCell/EditableTableCell'
 import DeleteIcon from '@mui/icons-material/Delete'
 import {
   Button,
@@ -27,19 +27,43 @@ import {
   TableRow,
   Typography,
 } from '@mui/material'
-import React, { useState } from 'react'
+import { memo, useCallback, useState } from 'react'
 
 function EditDetectors({ approach }: { approach: ConfigApproach }) {
-  const { errors, warnings, updateDetector, deleteDetector } = useLocationStore(
-    (state) => ({
-      errors: state.errors,
-      warnings: state.warnings,
-      updateDetector: state.updateDetector,
-      deleteDetector: state.deleteDetector,
+  const approachErrors = useLocationStore((state) => {
+    if (!state.errors) return {}
+    const obj: Record<string, { error: string; id: string }> = {}
+    approach.detectors.forEach((d) => {
+      if (state.errors![String(d.id)]) {
+        obj[String(d.id)] = state.errors![String(d.id)]
+      }
     })
-  )
+    return obj
+  })
+
+  const approachWarnings = useLocationStore((state) => {
+    if (!state.warnings) return {}
+    const obj: Record<string, { warning: string; id: string }> = {}
+    approach.detectors.forEach((d) => {
+      if (state.warnings![String(d.id)]) {
+        obj[String(d.id)] = state.warnings![String(d.id)]
+      }
+    })
+    return obj
+  })
+
+  const updateDetector = useLocationStore((s) => s.updateDetector)
+  const deleteDetector = useLocationStore((s) => s.deleteDetector)
+
   const [modalOpen, setModalOpen] = useState(false)
   const [selectedDetectorId, setSelectedDetectorId] = useState<number>()
+
+  const handleConfirmDelete = useCallback(() => {
+    if (!selectedDetectorId) return
+    deleteDetector(selectedDetectorId)
+    setModalOpen(false)
+  }, [selectedDetectorId, deleteDetector])
+
   return (
     <>
       <TableContainer component={Paper}>
@@ -86,103 +110,95 @@ function EditDetectors({ approach }: { approach: ConfigApproach }) {
                 </TableCell>
               </TableRow>
             )}
-            {approach.detectors.map((detector) => (
+            {approach.detectors.map((det) => (
               <TableRow
-                key={detector.id}
+                key={det.id}
                 sx={{
-                  backgroundColor: detector.isNew
+                  backgroundColor: det.isNew
                     ? 'rgba(100, 210, 100, 0.3)'
                     : 'white',
                 }}
               >
                 <EditableTableCell
-                  value={detector.detectorChannel}
-                  onUpdate={(newVal) =>
+                  value={det.detectorChannel}
+                  onUpdate={(val) =>
                     updateDetector(
-                      detector.id,
+                      det.id,
                       'detectorChannel',
-                      parseInt(newVal as string)
+                      parseInt(val as string)
                     )
                   }
-                  error={errors?.[String(detector.id)]?.error}
-                  warning={warnings?.[String(detector.id)]?.warning}
+                  error={approachErrors[String(det.id)]?.error}
+                  warning={approachWarnings[String(det.id)]?.warning}
                 />
                 <DetectionTypesCell
-                  detector={detector as Detector}
-                  onUpdate={(newSelection) =>
-                    updateDetector(detector.id, 'detectionTypes', newSelection)
+                  detector={det as Detector}
+                  onUpdate={(val) =>
+                    updateDetector(det.id, 'detectionTypes', val)
                   }
                 />
                 <HardwareTypeCell
-                  value={detector.detectionHardware}
-                  onUpdate={(newVal) =>
-                    updateDetector(detector.id, 'detectionHardware', newVal)
+                  value={det.detectionHardware}
+                  onUpdate={(val) =>
+                    updateDetector(det.id, 'detectionHardware', val)
                   }
                 />
                 <EditableTableCell
-                  value={detector.latencyCorrection}
-                  onUpdate={(newVal) =>
-                    updateDetector(detector.id, 'latencyCorrection', newVal)
+                  value={det.latencyCorrection}
+                  onUpdate={(val) =>
+                    updateDetector(det.id, 'latencyCorrection', val)
                   }
                 />
                 <EditableTableCell
-                  value={detector.laneNumber}
-                  onUpdate={(newVal) =>
-                    updateDetector(detector.id, 'laneNumber', newVal)
-                  }
+                  value={det.laneNumber}
+                  onUpdate={(val) => updateDetector(det.id, 'laneNumber', val)}
                 />
                 <MovementTypeCell
-                  value={detector.movementType}
-                  onUpdate={(newVal) =>
-                    updateDetector(detector.id, 'movementType', newVal)
+                  value={det.movementType}
+                  onUpdate={(val) =>
+                    updateDetector(det.id, 'movementType', val)
                   }
                 />
                 <LaneTypeCell
-                  value={detector.laneType}
-                  onUpdate={(newVal) =>
-                    updateDetector(detector.id, 'laneType', newVal)
-                  }
+                  value={det.laneType}
+                  onUpdate={(val) => updateDetector(det.id, 'laneType', val)}
                 />
                 <DateAddedCell
-                  value={detector.dateAdded}
-                  onUpdate={(newVal) =>
-                    updateDetector(
-                      detector.id,
-                      'dateAdded',
-                      newVal.toISOString()
-                    )
+                  value={det.dateAdded}
+                  onUpdate={(val) =>
+                    updateDetector(det.id, 'dateAdded', val.toISOString())
                   }
                 />
-                <CommentCell detector={detector as Detector} />
+                <CommentCell detector={det as Detector} />
                 <EditableTableCell
-                  value={detector.distanceFromStopBar}
-                  onUpdate={(newVal) =>
-                    updateDetector(detector.id, 'distanceFromStopBar', newVal)
+                  value={det.distanceFromStopBar}
+                  onUpdate={(val) =>
+                    updateDetector(det.id, 'distanceFromStopBar', val)
                   }
                 />
                 <EditableTableCell
-                  value={detector.decisionPoint}
-                  onUpdate={(newVal) =>
-                    updateDetector(detector.id, 'decisionPoint', newVal)
+                  value={det.decisionPoint}
+                  onUpdate={(val) =>
+                    updateDetector(det.id, 'decisionPoint', val)
                   }
                 />
                 <EditableTableCell
-                  value={detector.minSpeedFilter}
-                  onUpdate={(newVal) =>
-                    updateDetector(detector.id, 'minSpeedFilter', newVal)
+                  value={det.minSpeedFilter}
+                  onUpdate={(val) =>
+                    updateDetector(det.id, 'minSpeedFilter', val)
                   }
                 />
                 <EditableTableCell
-                  value={detector.movementDelay}
-                  onUpdate={(newVal) =>
-                    updateDetector(detector.id, 'movementDelay', newVal)
+                  value={det.movementDelay}
+                  onUpdate={(val) =>
+                    updateDetector(det.id, 'movementDelay', val)
                   }
                 />
                 <TableCell align="center">
                   <IconButton
                     color="error"
                     onClick={() => {
-                      setSelectedDetectorId(detector.id)
+                      setSelectedDetectorId(det.id)
                       setModalOpen(true)
                     }}
                   >
@@ -195,37 +211,28 @@ function EditDetectors({ approach }: { approach: ConfigApproach }) {
         </Table>
       </TableContainer>
 
-      {selectedDetectorId && (
-        <Dialog open={modalOpen} onClose={() => setModalOpen(false)}>
-          <DialogTitle sx={{ fontWeight: 'bold' }} id="delete-dialog-title">
+      <Dialog open={modalOpen} onClose={() => setModalOpen(false)}>
+        <DialogTitle sx={{ fontWeight: 'bold' }}>Delete Detector</DialogTitle>
+        <DialogContent>
+          <Typography>
+            Are you sure you want to delete this detector?
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setModalOpen(false)} variant="outlined">
+            Cancel
+          </Button>
+          <Button
+            onClick={handleConfirmDelete}
+            variant="contained"
+            color="error"
+          >
             Delete Detector
-          </DialogTitle>
-          <DialogContent>
-            <Typography>
-              Are you sure you want to delete this detector?
-            </Typography>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={() => setModalOpen(false)} variant="outlined">
-              Cancel
-            </Button>
-            <Button
-              onClick={() => {
-                deleteDetector(selectedDetectorId)
-                setModalOpen(false)
-              }}
-              variant="contained"
-              color="error"
-            >
-              Delete Detector
-            </Button>
-          </DialogActions>
-        </Dialog>
-      )}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   )
 }
-export default React.memo(
-  EditDetectors,
-  (prevProps, nextProps) => prevProps.approach === nextProps.approach
-)
+
+export default memo(EditDetectors)

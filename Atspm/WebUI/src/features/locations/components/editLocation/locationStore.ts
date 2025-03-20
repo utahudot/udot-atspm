@@ -7,11 +7,11 @@ import {
   Detector,
   Location,
 } from '@/api/config/aTSPMConfigurationApi.schemas'
-import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
+import { createWithEqualityFn } from 'zustand/traditional'
 
 export interface ConfigLocation extends Omit<Location, 'id' | 'approaches'> {
-  approaches: ConfigApproach[]
+  id: number
 }
 
 export interface ConfigApproach
@@ -30,30 +30,14 @@ export interface ConfigDetector extends Omit<Detector, 'id' | 'approachId'> {
   isNew?: boolean
 }
 
-export interface LocationStore {
+interface LocationSlice {
   location: ConfigLocation | null
-  channelMap: Map<number, number>
   errors: Record<string, { error: string; id: string }> | null
   warnings: Record<string, { warning: string; id: string }> | null
 
-  // location
   setLocation: (location: ConfigLocation | null) => void
   handleLocationEdit: (name: string, value: string) => void
 
-  // approach
-  updateApproaches: (newApproaches: ConfigApproach[]) => void
-  addApproach: () => void
-  updateApproach: (updatedApproach: ConfigApproach) => void
-  copyApproach: (approach: ConfigApproach) => void
-  deleteApproach: (approach: ConfigApproach) => void
-
-  // detector
-
-  addDetector: (approach: ConfigApproach) => void
-  updateDetector: (detectorId: number, name: string, val: unknown) => void
-  deleteDetector: (detectorId: number) => void
-
-  // errors and warnings
   setErrors: (
     errors: Record<string, { error: string; id: string }> | null
   ) => void
@@ -63,86 +47,89 @@ export interface LocationStore {
   clearErrorsAndWarnings: () => void
 }
 
-export const useLocationStore = create<LocationStore>()(
+interface ApproachSlice {
+  approaches: ConfigApproach[]
+  channelMap: Map<number, number>
+
+  updateApproaches: (newApproaches: ConfigApproach[]) => void
+  addApproach: () => void
+  updateApproach: (updatedApproach: ConfigApproach) => void
+  copyApproach: (approach: ConfigApproach) => void
+  deleteApproach: (approach: ConfigApproach) => void
+
+  addDetector: (approachId: number) => void
+  updateDetector: (detectorId: number, name: string, val: unknown) => void
+  deleteDetector: (detectorId: number) => void
+}
+
+export type LocationStore = LocationSlice & ApproachSlice
+
+export const useLocationStore = createWithEqualityFn<LocationStore>()(
   devtools((set, get) => ({
     location: null,
     errors: null,
     warnings: null,
-    channelMap: new Map(),
 
-    setLocation: (location: ConfigLocation | null) => {
-      set((state) => {
-        const newMap = new Map()
-        if (location?.approaches) {
-          location.approaches.forEach((approach) =>
-            approach.detectors.forEach((detector) =>
-              newMap.set(detector.id, detector.detectorChannel || 0)
-            )
-          )
-        }
-        return { location, channelMap: newMap }
-      })
+    setLocation: (location) => {
+      const approachList = location?.approaches ?? []
+      const newMap = new Map<number, number>()
+      approachList.forEach((approach) =>
+        approach.detectors.forEach((detector) =>
+          newMap.set(detector.id, detector.detectorChannel || 0)
+        )
+      )
+
+      set(() => ({
+        location: location
+          ? {
+              ...location,
+              approaches: undefined,
+            }
+          : null,
+        approaches: approachList,
+        channelMap: newMap,
+      }))
     },
 
-    handleLocationEdit: (name: string, value: string) => {
+    handleLocationEdit: (name, value) => {
       set((state) => ({
         location: state.location
           ? { ...state.location, [name]: value }
           : state.location,
       }))
     },
-    updateApproach: (updatedApproach: ConfigApproach) =>
-      set((state) => {
-        if (!state.location) return state
-        const approachIndex = state.location.approaches.findIndex(
-          (a) => a.id === updatedApproach.id
-        )
-        if (approachIndex === -1) return state
-        const newApproaches = [...state.location.approaches]
-        newApproaches[approachIndex] = updatedApproach
-        return {
-          location: { ...state.location, approaches: newApproaches },
-        }
-      }),
 
-    updateApproaches: (newApproaches: ConfigApproach[]) =>
-      set((state) => {
-        if (!state.location) return state
-        return {
-          location: {
-            ...state.location,
-            approaches: newApproaches,
-          },
-        }
-      }),
+    setErrors: (errors) => set({ errors }),
+    setWarnings: (warnings) => set({ warnings }),
+    clearErrorsAndWarnings: () => set({ errors: null, warnings: null }),
 
-    copyApproach: (approach: ConfigApproach) => {
-      const { location, updateApproach } = get()
-      if (!location) return
+    approaches: [],
+    channelMap: new Map(),
 
-      const newApproach: ConfigApproach = {
-        ...approach,
-        index: location.approaches?.length || 0,
-        isNew: true,
-        description: `${approach.description} (copy)`,
-        detectors: (approach.detectors || []).map(
-          ({ id, ...restDetector }) => ({
-            id: Math.round(Math.random() * 10000),
-            ...restDetector,
-          })
-        ),
+    updateApproaches: (newApproaches) => {
+      set(() => ({ approaches: newApproaches }))
+    },
+
+    updateApproach: (updatedApproach) => {
+      const { approaches } = get()
+      const idx = approaches.findIndex((a) => a.id === updatedApproach.id)
+
+      if (idx === -1) {
+        set({ approaches: [...approaches, updatedApproach] })
+        return
       }
 
-      updateApproach(newApproach)
+      const copy = [...approaches]
+      copy[idx] = updatedApproach
+      set({ approaches: copy })
     },
 
     addApproach: () => {
-      const { location } = get()
-
+      const { location, approaches } = get()
       const id = Math.round(Math.random() * 10000)
-      const index = location?.approaches?.length || 0
+      const index = approaches.length
 
-      const approach: Partial<ConfigApproach> = {
+      const newApproach: ConfigApproach = {
         id,
         index,
         description: 'New Approach',
@@ -154,49 +141,59 @@ export const useLocationStore = create<LocationStore>()(
         permissivePhaseNumber: null,
         pedestrianPhaseNumber: null,
         pedestrianDetectors: '',
-        locationId: location.id,
+        locationId: location?.id,
         directionType: {
           id: '0',
           abbreviation: 'NA',
           description: 'Unknown',
           displayOrder: 0,
         },
+        protectedPhaseNumber: null,
       }
 
-      set({
-        location: {
-          ...location,
-          approaches: [...(location.approaches || []), approach],
-        },
-      })
+      set({ approaches: [...approaches, newApproach] })
     },
 
-    deleteApproach: (approach: ConfigApproach) => {
-      const { location, updateApproaches } = get()
-      if (!location) return
+    copyApproach: (approach) => {
+      const { approaches } = get()
+      const newApproach: ConfigApproach = {
+        ...approach,
+        id: Math.round(Math.random() * 10000),
+        index: approaches.length,
+        isNew: true,
+        description: `${approach.description} (copy)`,
+        detectors: approach.detectors.map(({ id, ...rest }) => ({
+          ...rest,
+          id: Math.round(Math.random() * 10000),
+          isNew: true,
+        })),
+      }
+      set({ approaches: [...approaches, newApproach] })
+    },
 
-      const newApproaches = location.approaches?.filter(
-        (a) => a.id !== approach.id
-      )
+    deleteApproach: (approach) => {
+      const { approaches } = get()
+      const filtered = approaches.filter((a) => a.id !== approach.id)
 
-      if (approach.isNew) {
-        updateApproaches(newApproaches)
-      } else {
+      if (!approach.isNew) {
         try {
           deleteApproachFromKey(approach.id)
-          updateApproaches(newApproaches)
-        } catch (e) {
-          console.error(e)
+        } catch (err) {
+          console.error(err)
         }
       }
+      set({ approaches: filtered })
     },
 
-    addDetector: (approach: ConfigApproach) => {
-      const { updateApproach } = get()
+    addDetector: (approachId) => {
+      const { approaches, updateApproach } = get()
+      const approach = approaches.find((a) => a.id === approachId)
+      if (!approach) return
+
       const newDetector: ConfigDetector = {
         isNew: true,
         id: Math.floor(Math.random() * 1e8),
-        approachId: approach.id,
+        approachId,
         dateDisabled: null,
         decisionPoint: null,
         dectectorIdentifier: '',
@@ -218,76 +215,62 @@ export const useLocationStore = create<LocationStore>()(
       })
     },
 
-    updateDetector: (detectorId: number, name: string, val: unknown) => {
-      const { location, channelMap } = get()
-      if (!location?.approaches) return
+    updateDetector: (detectorId, name, val) => {
+      const { approaches, channelMap } = get()
+      if (val === '') val = null
 
-      val = val === '' ? null : val
-
-      const newApproaches = location.approaches.map((approach) => ({
-        ...approach,
-        detectors: approach.detectors?.map((detector) =>
-          detector.id === detectorId ? { ...detector, [name]: val } : detector
-        ),
-      }))
+      const updatedApproaches = approaches.map((approach) => {
+        let found = false
+        const newDetectors = approach.detectors.map((det) => {
+          if (det.id === detectorId) {
+            found = true
+            return { ...det, [name]: val }
+          }
+          return det
+        })
+        if (!found) {
+          return approach
+        }
+        return { ...approach, detectors: newDetectors }
+      })
 
       if (name === 'detectorChannel') {
         const newChannel =
           typeof val === 'number' ? val : parseInt(val as string) || 0
         channelMap.set(detectorId, newChannel)
+        set({ channelMap: new Map(channelMap) })
       }
 
-      set({
-        location: {
-          ...location,
-          approaches: newApproaches,
-        },
-        channelMap: new Map(channelMap),
-      })
+      set({ approaches: updatedApproaches })
     },
 
-    deleteDetector: (detectorId: number) => {
-      const { location } = get()
-      if (!location?.approaches) return
+    deleteDetector: (detectorId) => {
+      const { approaches } = get()
+      let shouldCallApi = false
 
-      let shouldCallDeleteDetectorFromKey = false
-
-      const newApproaches = location.approaches.map((approach) => ({
-        ...approach,
-        detectors: approach.detectors?.filter((d) => {
+      const updatedApproaches = approaches.map((approach) => {
+        const index = approach.detectors.findIndex((d) => d.id === detectorId)
+        if (index === -1) {
+          return approach
+        }
+        const filtered = approach.detectors.filter((d) => {
           if (d.id === detectorId && !d.isNew) {
-            shouldCallDeleteDetectorFromKey = true
+            shouldCallApi = true
           }
           return d.id !== detectorId
-        }),
-      }))
+        })
+        return { ...approach, detectors: filtered }
+      })
 
-      if (shouldCallDeleteDetectorFromKey) {
-        deleteDetectorFromKey(detectorId)
+      if (shouldCallApi) {
+        try {
+          deleteDetectorFromKey(detectorId)
+        } catch (err) {
+          console.error(err)
+        }
       }
 
-      set({
-        location: {
-          ...location,
-          approaches: newApproaches,
-        },
-      })
-    },
-
-    setErrors: (
-      errors: Record<string, { error: string; id: string }> | null
-    ) => {
-      set({ errors })
-    },
-
-    setWarnings: (
-      warnings: Record<string, { warning: string; id: string }> | null
-    ) => {
-      set({ warnings })
-    },
-
-    clearErrorsAndWarnings: () => {
-      set({ errors: null, warnings: null })
+      set({ approaches: updatedApproaches })
     },
   }))
 )

@@ -27,9 +27,11 @@ export async function getLocation(locationId: number) {
 }
 
 const LocationsAdmin = () => {
+  const location = useLocationStore((s) => s.location)
+  const setLocation = useLocationStore((s) => s.setLocation)
+
   const pageAccess = useViewPage(PageNames.Location)
   const [isModalOpen, setModalOpen] = useState(false)
-  const { location, setLocation } = useLocationStore()
 
   const handleSetLocation = useCallback(
     async (selectedLocation: Location | null) => {
