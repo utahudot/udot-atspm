@@ -33,12 +33,11 @@ const DistanceInput = ({
     handleDistanceChange(link, distance)
   }
 
-  const handleRecalculateClick = async () => {
+  const handleRecalculateClick = () => {
     setRotate((prevState) => !prevState)
     if (nextLink) {
-      try {
-        const response = await fetchRouteDistance([link, nextLink])
-        if (response) {
+      fetchRouteDistance([link, nextLink]).then((response) => {
+        if (response?.distance) {
           const distance = Math.round(response.distance)
           handleDistanceChange(link, distance)
         } else {
@@ -47,12 +46,7 @@ const DistanceInput = ({
             title: 'Error Calculating Distance',
           })
         }
-      } catch (error) {
-        addNotification({
-          type: 'error',
-          title: 'Error Calculating Distance',
-        })
-      }
+      })
     }
   }
 

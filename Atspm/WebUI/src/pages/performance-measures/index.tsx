@@ -1,5 +1,8 @@
-import { Location } from '@/api/config/aTSPMConfigurationApi.schemas'
-import { getEventLogDaysWithEventLogsFromLocationIdentifier } from '@/api/data/aTSPMLogDataApi'
+import { TabContext, TabList, TabPanel } from '@mui/lab'
+import { Box, Paper, Tab, useMediaQuery, useTheme } from '@mui/material'
+import { differenceInMinutes, startOfToday, startOfTomorrow } from 'date-fns'
+import { useMemo, useState } from 'react'
+
 import { ResponsivePageLayout } from '@/components/ResponsivePage'
 import { StyledPaper } from '@/components/StyledPaper'
 import SelectDateTime from '@/components/selectTimeSpan'
@@ -8,23 +11,7 @@ import ChartsContainer from '@/features/charts/components/chartsContainer'
 import SelectChart from '@/features/charts/components/selectChart'
 import LocationsConfigContainer from '@/features/locations/components/locationConfigContainer'
 import SelectLocation from '@/features/locations/components/selectLocation'
-import { toUTCDateStamp } from '@/utils/dateTime'
-import { TabContext, TabList, TabPanel } from '@mui/lab'
-import { Box, Paper, Tab, useMediaQuery, useTheme } from '@mui/material'
-import {
-  differenceInMinutes,
-  eachDayOfInterval,
-  endOfMonth,
-  endOfWeek,
-  isAfter,
-  isSameDay,
-  parse,
-  startOfMonth,
-  startOfToday,
-  startOfTomorrow,
-  startOfWeek,
-} from 'date-fns'
-import { useMemo, useState } from 'react'
+import { Location } from '@/features/locations/types'
 
 const PerformanceMeasures = () => {
   const theme = useTheme()
@@ -32,15 +19,12 @@ const PerformanceMeasures = () => {
 
   const [currentTab, setCurrentTab] = useState('1')
   const [location, setLocation] = useState<Location | null>(null)
-  // Store the computed missing days.
-  const [missingDays, setMissingDays] = useState<Date[]>([])
-  const [calendarMonth, setCalendarMonth] = useState<Date>(startOfToday())
   const [chartType, setChartType] = useState<ChartType | null>(null)
   const [chartOptions, setChartOptions] = useState<Partial<ChartOptions>>()
   const [startDateTime, setStartDateTime] = useState(startOfToday())
   const [endDateTime, setEndDateTime] = useState(startOfTomorrow())
 
-  const handleStartDateTimeChange = async (date: Date) => {
+  const handleStartDateTimeChange = (date: Date) => {
     setStartDateTime(date)
   }
 
@@ -52,29 +36,11 @@ const PerformanceMeasures = () => {
     setCurrentTab(newValue)
   }
 
-  const handleLocationChange = async (newLocation: Location) => {
+  const handleLocationChange = (newLocation: Location) => {
     if (!location) {
-      setChartType(ChartType.PurduePhaseTermination)
+      setChartType(ChartType.SplitMonitor)
     }
-    const computedMissing = await computeMissingDays(
-      newLocation,
-      chartType as ChartType,
-      calendarMonth
-    )
-    setMissingDays(computedMissing)
     setLocation(newLocation)
-  }
-
-  const handleMonthChange = async (date: Date) => {
-    if (location) {
-      const computedMissing = await computeMissingDays(
-        location,
-        chartType as ChartType,
-        date
-      )
-      setMissingDays(computedMissing)
-    }
-    setCalendarMonth(date)
   }
 
   const locationIdentifier = location?.locationIdentifier
@@ -119,7 +85,7 @@ const PerformanceMeasures = () => {
             gap: 2,
           }}
         >
-          {/* Location selection */}
+          {/* LocationMapComponent */}
           <StyledPaper
             sx={{
               flexGrow: 1,
@@ -133,7 +99,7 @@ const PerformanceMeasures = () => {
               chartsDisabled
             />
           </StyledPaper>
-          {/* Side components */}
+          {/* SideComponents */}
           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
             <Paper
               sx={{
@@ -151,8 +117,6 @@ const PerformanceMeasures = () => {
                 changeEndDate={handleEndDateTimeChange}
                 noCalendar={isMobileView}
                 warning={binSizeWarning ?? timespanWarning}
-                markDays={location ? missingDays : undefined}
-                onMonthChange={handleMonthChange}
               />
             </Paper>
 
@@ -175,7 +139,7 @@ const PerformanceMeasures = () => {
           </Box>
         </Box>
 
-        {/* Charts Component */}
+        {/* ChartsComponent */}
         <TabPanel value="1" sx={{ padding: '0px' }}>
           <ChartsContainer
             location={location?.locationIdentifier ?? ''}
@@ -186,7 +150,7 @@ const PerformanceMeasures = () => {
           />
         </TabPanel>
 
-        {/* Configuration Component */}
+        {/* ConfigurationComponent */}
         <TabPanel value="2" sx={{ padding: '0px' }}>
           {locationIdentifier && currentTab === '2' && (
             <LocationsConfigContainer locationIdentifier={locationIdentifier} />
@@ -198,41 +162,3 @@ const PerformanceMeasures = () => {
 }
 
 export default PerformanceMeasures
-
-const computeMissingDays = async (
-  location: Location,
-  chartType: ChartType,
-  month: Date
-) => {
-  if (!location.locationIdentifier) return []
-  // Get available days as strings from the API.
-  const availableDaysRaw =
-    (await getEventLogDaysWithEventLogsFromLocationIdentifier(
-      location.locationIdentifier,
-      {
-        dataType:
-          chartType === ChartType.ApproachSpeed ? 'SpeedEvent' : 'IndianaEvent',
-        month: toUTCDateStamp(month),
-      }
-    )) as unknown as string[]
-
-  // Parse each available day string as a local date.
-  const availableDays = availableDaysRaw.map((dayStr) =>
-    parse(dayStr, 'yyyy-MM-dd', new Date())
-  )
-
-  // Compute the full calendar grid interval.
-  const start = startOfWeek(startOfMonth(month))
-  const end = endOfWeek(endOfMonth(month))
-
-  const allDays = eachDayOfInterval({ start, end })
-  const today = startOfToday()
-
-  return allDays.filter((day) => {
-    // Ignore future days.
-    if (isAfter(day, today)) return false
-    // Compare using isSameDay now that both sides are local dates.
-    const found = availableDays.some((avDay) => isSameDay(avDay, day))
-    return !found
-  })
-}

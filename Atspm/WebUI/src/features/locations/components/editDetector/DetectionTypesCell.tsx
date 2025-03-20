@@ -30,9 +30,7 @@ const DetectionTypesCell = ({
 
   const { data } = useGetDetectionType()
 
-  const detectionTypes = data?.value?.filter(
-    (d) => d.abbreviation !== 'B' && d.abbreviation !== 'NA'
-  ) as unknown as DetectionType[]
+  const detectionTypes = data?.value as unknown as DetectionType[]
 
   const valueAbbreviations = new Set(
     detector.detectionTypes?.map((dt) => dt.abbreviation)
