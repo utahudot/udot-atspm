@@ -17,6 +17,8 @@
 
 using System.Collections;
 using Utah.Udot.Atspm.Repositories.EventLogRepositories;
+using Utah.Udot.Atspm.Specifications;
+using Utah.Udot.NetStandardToolkit.Extensions;
 
 namespace Utah.Udot.Atspm.Extensions
 {
@@ -66,18 +68,21 @@ namespace Utah.Udot.Atspm.Extensions
         /// <summary>
         /// Returns a list of unique days that have event logs for the given location.
         /// </summary>
-        /// <param name="locationIdentifier">The location identifier.</param>
+        /// <param name="locationIdentifier">The location identifier</param>
         /// <param name="repo"></param>
         /// <param name="dataType">Type of event log data to filter by.</param>
-        /// <param name="month">The month to filter by.</param>
-        /// <returns>A read-only list of days with event log data.</returns>
+        /// <param name="month">The month to filter by</param>
+        /// <returns>A read-only list of days with event log data</returns>
         public static IReadOnlyList<DateOnly> GetDaysWithEventLogs(this IEventLogRepository repo, string locationIdentifier, Type dataType, DateOnly month)
         {
+            var start = month.ToDateTime(TimeOnly.MinValue);
+            var end = start.AddMonths(1).AddSeconds(-1);
+
             return repo.GetList()
                 .Where(x => x.LocationIdentifier == locationIdentifier)
+                .FromSpecification(new CompressedEventLogSpecification(locationIdentifier, start, end))
                 .Where(x => x.DataType == dataType)
-                .Where(x => x.ArchiveDate.Year == month.Year && x.ArchiveDate.Month == month.Month)
-                .Select(x => x.ArchiveDate)
+                .Select(x => DateOnly.FromDateTime(x.Start))
                 .Distinct()
                 .OrderBy(d => d)
                 .ToList();
