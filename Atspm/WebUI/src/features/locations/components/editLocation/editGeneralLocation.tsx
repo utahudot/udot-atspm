@@ -3,7 +3,7 @@ import { useAreas } from '@/features/areas/api'
 import { useJurisdictions } from '@/features/jurisdictions/api'
 import { useEditLocation } from '@/features/locations/api'
 import { useLocationTypes } from '@/features/locations/api/getLocationTypes'
-import { useLocationStore } from '@/features/locations/components/editLocation/locationStore'
+import { LocationExpanded } from '@/features/locations/types'
 import { useRegions } from '@/features/regions/api'
 import { dateToTimestamp } from '@/utils/dateTime'
 import SaveIcon from '@mui/icons-material/Save'
@@ -24,8 +24,17 @@ import { format, parseISO } from 'date-fns'
 import { ChangeEvent } from 'react'
 import { useQueryClient } from 'react-query'
 
-const LocationGeneralOptionsEditor = () => {
-  const { location, handleLocationEdit, setLocation } = useLocationStore()
+interface EditGeneralLocationProps {
+  location: LocationExpanded
+  updateLocation: (location: LocationExpanded) => void
+  handleLocationEdit: (name: string, value: string) => void
+}
+
+function EditGeneralLocation({
+  location,
+  handleLocationEdit,
+  updateLocation,
+}: EditGeneralLocationProps) {
   const queryClient = useQueryClient()
   const { data: areasData } = useAreas()
   const { data: regionsData } = useRegions()
@@ -35,16 +44,16 @@ const LocationGeneralOptionsEditor = () => {
   const { mutate: updateGeneralInfo } = useEditLocation()
 
   const handleAreaDelete = (id: number | string) => {
-    setLocation({
+    updateLocation({
       ...location,
-      areas: location?.areas?.filter((area) => area.id !== id),
+      areas: location.areas.filter((area) => area.id !== id),
     })
   }
 
   const handleDateChange = (value: Date | null) => {
     if (!value) return
 
-    setLocation({
+    updateLocation({
       ...location,
       start: dateToTimestamp(value),
     })
@@ -52,7 +61,7 @@ const LocationGeneralOptionsEditor = () => {
 
   const handleCheckboxChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, checked } = e.target
-    setLocation({
+    updateLocation({
       ...location,
       [name]: checked,
     })
@@ -69,7 +78,7 @@ const LocationGeneralOptionsEditor = () => {
       }
     }
 
-    setLocation({
+    updateLocation({
       ...location,
       areas,
     })
@@ -308,7 +317,8 @@ const LocationGeneralOptionsEditor = () => {
               <CustomSelect
                 label="Areas"
                 name="areas"
-                value={location?.areas?.map((area) => area.id)}
+                displayEmpty
+                value={location.areas.map((area) => area.id)}
                 data={areasData?.value}
                 onChange={handleAreaChange}
                 onDelete={handleAreaDelete}
@@ -328,4 +338,4 @@ const LocationGeneralOptionsEditor = () => {
   )
 }
 
-export default LocationGeneralOptionsEditor
+export default EditGeneralLocation

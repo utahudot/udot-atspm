@@ -43,18 +43,16 @@ const MeasureDefaults = () => {
   if (isLoading) return <div>Loading...</div>
 
   const renderChartOptionsComponent = (chartType: ChartType) => {
+    const ChartComponent =
+      chartComponents[chartType as keyof typeof chartComponents]
     const chartDefaults = getChartDefaults(
       chartType as keyof typeof chartComponents
     )
+    if (!ChartComponent) return null
+
     if (isLoading) return <div>Loading...</div>
 
-    if (chartDefaults === undefined || Object.keys(chartDefaults).length === 0)
-      return null
-
-    const ChartComponent =
-      chartComponents[chartType as keyof typeof chartComponents]
-
-    if (!ChartComponent) return null
+    if (!ChartComponent || chartDefaults === undefined) return null
     return (
       <ChartComponent
         chartDefaults={chartDefaults}

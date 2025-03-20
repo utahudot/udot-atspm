@@ -1,4 +1,4 @@
-import { useLocationStore } from '@/features/locations/components/editLocation/locationStore'
+import { LocationConfigHandler } from '@/features/locations/components/editLocation/editLocationConfigHandler'
 import WatchDogDatePopup from '@/features/locations/components/editLocation/WatchDogDatePopup'
 import {
   useCreateWatchdogIgnoreEvents,
@@ -11,6 +11,10 @@ import { toUTCDateStamp } from '@/utils/dateTime'
 import { Box, Button, Divider, Paper, Typography } from '@mui/material'
 import { addDays, format } from 'date-fns'
 import { useEffect, useState } from 'react'
+
+interface WatchdogEditorProps {
+  handler: LocationConfigHandler
+}
 
 interface WatchdogOption {
   id: number
@@ -76,9 +80,8 @@ const watchdogOptions = [
   },
 ]
 
-const WatchdogEditor = () => {
+const WatchdogEditor = ({ handler }: WatchdogEditorProps) => {
   const { addNotification } = useNotificationStore()
-  const { location } = useLocationStore()
   const [ignoreEvents, setIgnoreEvents] = useState<WatchdogOption[]>([])
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const [selectedOption, setSelectedOption] = useState<null | WatchdogOption>(
@@ -105,11 +108,13 @@ const WatchdogEditor = () => {
   useEffect(() => {
     if (watchdogIgnoreEvents?.value) {
       const filteredEvents = watchdogIgnoreEvents.value.filter(
-        (event) => event.locationIdentifier === location?.locationIdentifier
+        (event) =>
+          event.locationIdentifier ===
+          handler?.expandedLocation?.locationIdentifier
       )
       setIgnoreEvents(filteredEvents)
     }
-  }, [watchdogIgnoreEvents, location?.locationIdentifier])
+  }, [watchdogIgnoreEvents, handler?.expandedLocation?.locationIdentifier])
 
   const handlePillClick = (
     option: WatchdogOption,
@@ -140,8 +145,8 @@ const WatchdogEditor = () => {
       if (existingEvent) {
         await editWatchdogIgnoreEvents({
           data: {
-            locationId: location?.id,
-            locationIdentifier: location?.locationIdentifier,
+            locationId: handler.expandedLocation?.id,
+            locationIdentifier: handler.expandedLocation?.locationIdentifier,
             issueType: selectedOption.issueType.toString(),
             start: toUTCDateStamp(startDate),
             end: toUTCDateStamp(endDate),
@@ -154,8 +159,8 @@ const WatchdogEditor = () => {
         })
       } else {
         await addWatchdogIgnoreEvents({
-          locationId: location?.id,
-          locationIdentifier: location?.locationIdentifier,
+          locationId: handler.expandedLocation?.id,
+          locationIdentifier: handler.expandedLocation?.locationIdentifier,
           issueType: selectedOption.issueType.toString(),
           start: toUTCDateStamp(startDate),
           end: toUTCDateStamp(endDate),

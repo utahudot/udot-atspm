@@ -1,6 +1,7 @@
 import DropdownCell from '@/features/locations/components/dropdownCell'
 import ForkLeftOutlinedIcon from '@mui/icons-material/ForkLeftOutlined'
 import ForkRightOutlinedIcon from '@mui/icons-material/ForkRightOutlined'
+import NorthWestOutlinedIcon from '@mui/icons-material/NorthWestOutlined' // New icon for the additional type
 import NotInterestedOutlinedIcon from '@mui/icons-material/NotInterestedOutlined'
 import StraightOutlinedIcon from '@mui/icons-material/StraightOutlined'
 import TurnLeftOutlinedIcon from '@mui/icons-material/TurnLeftOutlined'
@@ -36,6 +37,11 @@ export const movementTypeOptions = [
     id: 'R',
     description: 'Right',
     icon: <TurnRightOutlinedIcon />,
+  },
+  {
+    id: 'NW',
+    description: 'Northwest',
+    icon: <NorthWestOutlinedIcon />,
   },
 ]
 
