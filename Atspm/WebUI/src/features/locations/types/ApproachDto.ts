@@ -14,7 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 // #endregion
-import { DetectorDto } from '@/api/config/aTSPMConfigurationApi.schemas'
+import { DetectorDto } from '@/features/locations/types'
 import { directionType } from './DirectionType'
 
 interface ApproachesDto {

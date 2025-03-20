@@ -1,4 +1,4 @@
-import { Location } from '@/api/config/aTSPMConfigurationApi.schemas'
+import { LocationExpanded } from '@/features/locations/types'
 import CheckBoxIcon from '@mui/icons-material/CheckBox'
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank'
 import { Box } from '@mui/material'
@@ -13,7 +13,7 @@ import {
 } from '@mui/x-data-grid'
 
 interface ApproachesInfoProps {
-  location: Location | undefined
+  location: LocationExpanded | undefined
 }
 
 const DataGridStyle: SxProps<Theme> = {
@@ -24,7 +24,7 @@ const DataGridStyle: SxProps<Theme> = {
   },
 } as const
 
-function CustomToolbar({ location }: { location: Location }) {
+function CustomToolbar({ location }: { location: LocationExpanded }) {
   const fileName =
     `${location.primaryName} & ${location.secondaryName} Approaches Configuration`.replace(
       / /g,

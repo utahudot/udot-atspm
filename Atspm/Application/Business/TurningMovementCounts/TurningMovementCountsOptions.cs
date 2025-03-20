@@ -19,10 +19,9 @@ using Utah.Udot.Atspm.Business.Common;
 
 namespace Utah.Udot.Atspm.Business.TurningMovementCounts
 {
-    public class TurningMovementCountsOptions : DateTimeOptionsBase, ILocationOptionsBase
+    public class TurningMovementCountsOptions : OptionsBase
     {
         public int BinSize { get; set; }
         public int MetricTypeId { get; internal set; } = 5;
-        public string LocationIdentifier { get; set; }
     }
 }

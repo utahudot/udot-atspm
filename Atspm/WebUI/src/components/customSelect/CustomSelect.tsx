@@ -26,7 +26,7 @@ interface CustomSelectProps
   extends Omit<SelectProps<unknown>, 'onChange' | 'value'> {
   label: string
   name: string
-  value: number | number[] | string | string[] | undefined | null
+  value: number | number[] | string | string[] | undefined
   data: DataType
   onChange: (event: SelectChangeEvent<unknown>) => void
   onDelete?: (id: number | string) => void

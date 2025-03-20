@@ -14,8 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 // #endregion
-import { Location } from '@/api/config/aTSPMConfigurationApi.schemas'
-import { LocationExpanded } from '@/features/locations/types'
+import { Location, LocationExpanded } from '@/features/locations/types'
 import { useDeleteRequest } from '@/hooks/useDeleteRequest'
 import { useGetRequest } from '@/hooks/useGetRequest'
 import { usePostRequest } from '@/hooks/usePostRequest'
@@ -32,8 +31,8 @@ const headers: AxiosHeaders = new AxiosHeaders({
   Authorization: `Bearer ${token}`,
 })
 
-export function useGetLocation(id: number | undefined) {
-  return useGetRequest<ApiResponse<Location>>({
+export function useGetLocation(id: number) {
+  return useGetRequest<ApiResponse<LocationExpanded>>({
     route: `/Location/${id}?$expand=areas, devices, approaches($expand=Detectors($expand=DetectionTypes, detectorComments))`,
     headers,
     enabled: false,

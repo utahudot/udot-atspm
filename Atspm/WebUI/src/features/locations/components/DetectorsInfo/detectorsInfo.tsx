@@ -1,8 +1,8 @@
-import { Location } from '@/api/config/aTSPMConfigurationApi.schemas'
 import DetectionTypesCell from '@/features/locations/components/editDetector/DetectionTypesCell'
 import { hardwareTypeOptions } from '@/features/locations/components/editDetector/HardwareTypeCell'
 import { laneTypeOptions } from '@/features/locations/components/editDetector/LaneTypeCell'
 import { movementTypeOptions } from '@/features/locations/components/editDetector/MovementTypeCell'
+import { LocationExpanded } from '@/features/locations/types'
 import CheckBoxIcon from '@mui/icons-material/CheckBox'
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank'
 import { Box } from '@mui/material'
@@ -25,7 +25,7 @@ const DataGridStyle: SxProps<Theme> = {
 } as const
 
 interface CustomToolbarProps {
-  location: Location
+  location: LocationExpanded
 }
 
 function CustomToolbar({ location }: CustomToolbarProps) {
@@ -209,7 +209,7 @@ const detectorsHeaders: GridColDef[] = [
 ]
 
 interface DetectorsInfoProps {
-  location: Location | undefined
+  location: LocationExpanded | undefined
 }
 
 function DetectorsInfo({ location }: DetectorsInfoProps) {

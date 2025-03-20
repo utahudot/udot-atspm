@@ -19,10 +19,9 @@ using Utah.Udot.Atspm.Business.Common;
 
 namespace Utah.Udot.Atspm.Business.ArrivalOnRed
 {
-    public class ArrivalOnRedOptions : DateTimeOptionsBase, ILocationOptionsBase
+    public class ArrivalOnRedOptions : OptionsBase
     {
         public int BinSize { get; set; }
         public bool GetPermissivePhase { get; set; }
-        public string LocationIdentifier { get; set; }
     }
 }

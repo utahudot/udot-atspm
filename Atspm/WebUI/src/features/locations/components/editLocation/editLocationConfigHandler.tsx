@@ -8,29 +8,23 @@ import { sortApproachesByPhaseNumber } from '@/features/locations/components/edi
 import { useEffect, useState } from 'react'
 
 interface LocationHandlerProps {
-  location: Location | null
+  location: Location
 }
 
-export interface ConfigApproach
-  extends Omit<Approach, 'id' | 'detectors' | 'protectedPhaseNumber'> {
-  id?: number
+export interface ApproachForConfig extends Approach {
   index?: number
   open?: boolean
   isNew?: boolean
-  detectors: ConfigDetector[]
-  protectedPhaseNumber: number | null
 }
 
-export interface ConfigDetector extends Omit<Detector, 'id' | 'approachId'> {
-  id?: number
-  approachId?: number
-  isNew?: boolean
+export interface DetectorForConfig extends Detector {
+  isNew: boolean
 }
 
 export interface LocationConfigHandler {
-  approaches: ConfigApproach[]
+  approaches: ApproachForConfig[]
   expandedLocation: Location | null
-  updateApproaches: (approaches: ConfigApproach[]) => void
+  updateApproaches: (approaches: ApproachForConfig[]) => void
   updateExpandedLocation: (location: Location) => void
   handleAddNewApproach: () => void
   handleLocationEdit: (name: string, value: string) => void
@@ -44,7 +38,7 @@ export const useLocationConfigHandler = ({
     null
   )
   const [activeLocationId, setActiveLocationId] = useState(location?.id)
-  const [approaches, setApproaches] = useState<ConfigApproach[]>([])
+  const [approaches, setApproaches] = useState<ApproachForConfig[]>([])
 
   const { data: expandedData, refetch: refetchLocation } =
     useGetLocation(activeLocationId)
@@ -74,7 +68,7 @@ export const useLocationConfigHandler = ({
     const newApproaches = approaches.filter((item) => item.isNew)
     setApproaches([
       ...newApproaches,
-      ...(existingApproaches as ConfigApproach[]),
+      ...(existingApproaches as ApproachForConfig[]),
     ])
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [expandedLocation])
@@ -87,7 +81,7 @@ export const useLocationConfigHandler = ({
   const addNewApproach = () => {
     const id = Math.round(Math.random() * 10000)
     const index = approaches.length
-    const newApproach: Partial<ConfigApproach> = {
+    const newApproach: Partial<ApproachForConfig> = {
       id: id,
       index,
       description: 'New Approach',
@@ -108,7 +102,7 @@ export const useLocationConfigHandler = ({
       },
     }
 
-    setApproaches((prev) => [newApproach as ConfigApproach, ...prev])
+    setApproaches((prev) => [newApproach as ApproachForConfig, ...prev])
   }
 
   const component: LocationConfigHandler = {

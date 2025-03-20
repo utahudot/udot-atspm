@@ -1,4 +1,4 @@
-import { Location } from '@/api/config/aTSPMConfigurationApi.schemas'
+import { Location } from '@/features/locations/types'
 import { Autocomplete, Box, TextField } from '@mui/material'
 import match from 'autosuggest-highlight/match'
 import parse from 'autosuggest-highlight/parse'

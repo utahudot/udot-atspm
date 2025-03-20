@@ -14,7 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 // #endregion
-import { Device } from '@/api/config/aTSPMConfigurationApi.schemas'
+import { Device } from '@/features/devices/types'
 import { useDeleteRequest } from '@/hooks/useDeleteRequest'
 import { useGetRequest } from '@/hooks/useGetRequest'
 import { usePatchRequest } from '@/hooks/usePatchRequest'
@@ -34,7 +34,7 @@ export function useGetDevices() {
   return useGetRequest<ApiResponse<Device>>({ route })
 }
 
-export function useGetDevicesForLocation(locationId: number) {
+export function useGetDevicesForLocation(locationId: string) {
   return useGetRequest<ApiResponse<Device>>({
     route: `/Location/${locationId}/Devices?expand=DeviceConfiguration`,
   })

@@ -14,10 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 // #endregion
-import {
-  Detector,
-  DirectionType,
-} from '@/api/config/aTSPMConfigurationApi.schemas'
+import { Detector, DirectionType } from '@/features/locations/types'
 
 export interface Approach {
   locationId: number

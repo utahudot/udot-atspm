@@ -183,14 +183,14 @@ namespace Utah.Udot.Atspm.Extensions
         /// Gets <see cref="IIndianaEventLogRepository"/> events by <paramref name="eventCodes"/>
         /// </summary>
         /// <param name="repo"></param>
-        /// <param name="locationIdentifier"></param>
+        /// <param name="locationId"></param>
         /// <param name="startTime"></param>
         /// <param name="endTime"></param>
         /// <param name="eventCodes"></param>
         /// <returns></returns>
-        public static IReadOnlyList<IndianaEvent> GetEventsByEventCodes(this IIndianaEventLogRepository repo, string locationIdentifier, DateTime startTime, DateTime endTime, IEnumerable<short> eventCodes)
+        public static IReadOnlyList<IndianaEvent> GetEventsByEventCodes(this IIndianaEventLogRepository repo, string locationId, DateTime startTime, DateTime endTime, IEnumerable<short> eventCodes)
         {
-            var result = repo.GetEventsBetweenDates(locationIdentifier, startTime, endTime)
+            var result = repo.GetEventsBetweenDates(locationId, startTime, endTime)
                 .FromSpecification(new IndianaLogCodeAndParamSpecification(eventCodes))
                 .OrderBy(o => o.EventParam)
                 .ToList();

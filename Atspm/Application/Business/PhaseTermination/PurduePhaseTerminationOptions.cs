@@ -19,10 +19,8 @@ using Utah.Udot.Atspm.Business.Common;
 
 namespace Utah.Udot.Atspm.Business.PhaseTermination
 {
-    public class PurduePhaseTerminationOptions : DateTimeOptionsBase, ILocationOptionsBase
+    public class PurduePhaseTerminationOptions : OptionsBase
     {
         public int SelectedConsecutiveCount { get; set; }
-        public int SelectedPhaseNumber { get; set; }
-        public string LocationIdentifier { get; set; }
     }
 }

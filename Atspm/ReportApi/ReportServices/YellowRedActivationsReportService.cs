@@ -16,7 +16,6 @@
 #endregion
 
 using Utah.Udot.Atspm.Business.YellowRedActivations;
-using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
 
 namespace Utah.Udot.Atspm.ReportApi.ReportServices
@@ -120,7 +119,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                 detectorEvents,
                 planEvents);
             viewModel.LocationDescription = LocationDescription;
-            viewModel.ApproachDescription = phaseDetail.GetApproachDescriptionWithMovements(DetectionTypes.LLS);
+            viewModel.ApproachDescription = phaseDetail.GetApproachDescription();
             return viewModel;
         }
 

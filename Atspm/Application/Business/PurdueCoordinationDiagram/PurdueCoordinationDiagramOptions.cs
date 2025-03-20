@@ -21,11 +21,10 @@ using Utah.Udot.Atspm.Business.Common;
 namespace Utah.Udot.Atspm.Business.PurdueCoordinationDiagram
 {
     [DataContract]
-    public class PurdueCoordinationDiagramOptions : DateTimeOptionsBase, ILocationOptionsBase
+    public class PurdueCoordinationDiagramOptions : OptionsBase
     {
         public int BinSize { get; set; }
         public bool GetVolume { get; set; } = true;
         public bool ShowPlanStatistics { get; set; }
-        public string LocationIdentifier { get; set; }
     }
 }

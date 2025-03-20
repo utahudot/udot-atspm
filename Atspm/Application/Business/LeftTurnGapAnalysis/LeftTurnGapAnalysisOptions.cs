@@ -19,7 +19,7 @@ using Utah.Udot.Atspm.Business.Common;
 
 namespace Utah.Udot.Atspm.Business.LeftTurnGapAnalysis
 {
-    public class LeftTurnGapAnalysisOptions : DateTimeOptionsBase, ILocationOptionsBase
+    public class LeftTurnGapAnalysisOptions : OptionsBase
     {
         public const int EVENT_GREEN = 1;
         public const int EVENT_RED = 10;
@@ -56,6 +56,7 @@ namespace Utah.Udot.Atspm.Business.LeftTurnGapAnalysis
         public double? SumDurationGap3 { get; set; }
         public double TrendLineGapThreshold { get; set; } = 7.4;
         public int BinSize { get; set; }
-        public string LocationIdentifier { get; set; }
+
+
     }
 }
