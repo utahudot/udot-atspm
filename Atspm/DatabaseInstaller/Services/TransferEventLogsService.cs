@@ -30,6 +30,7 @@ using Utah.Udot.Atspm.Data;
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
+using Utah.Udot.Atspm.Extensions;
 using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
 using Utah.Udot.Atspm.Specifications;
 using Utah.Udot.NetStandardToolkit.Extensions;
@@ -213,21 +214,27 @@ namespace DatabaseInstaller.Services
 
         private async Task InsertLogsWithRetryAsync(List<CompressedEventLogs<IndianaEvent>> archiveLogs)
         {
-            await _retryPolicy.ExecuteAsync(async () =>
+            var batchNum = 1;
+            var batchSize = _config.Batch.HasValue ? _config.Batch.Value : 500;
+            foreach (var logs in archiveLogs.Batch(batchSize))
             {
-                using var scope = _serviceProvider.CreateScope();
-                var context = scope.ServiceProvider.GetService<EventLogContext>();
-                if (context == null)
+                await _retryPolicy.ExecuteAsync(async () =>
                 {
-                    _logger.LogError("EventLogContext is not available.");
-                    return;
-                }
-                context.CompressedEvents.AddRange(archiveLogs);
-                //context.CompressedEvents.Add(archiveLog);
-                await context.SaveChangesAsync();
+                    using var scope = _serviceProvider.CreateScope();
+                    var context = scope.ServiceProvider.GetService<EventLogContext>();
+                    if (context == null)
+                    {
+                        _logger.LogError("EventLogContext is not available.");
+                        return;
+                    }
+                    context.CompressedEvents.AddRange(logs);
+                    //context.CompressedEvents.Add(archiveLog);
+                    await context.SaveChangesAsync();
 
-                _logger.LogInformation($"Successfully inserted log on {archiveLogs.FirstOrDefault()?.Start}");
-            });
+                    _logger.LogInformation($"Successfully inserted batch number {batchNum} of size {logs.Count()} for {archiveLogs.FirstOrDefault()?.Start}");
+                    batchNum++;
+                });
+            }
         }
 
         public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
