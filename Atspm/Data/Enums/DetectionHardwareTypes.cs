@@ -69,7 +69,7 @@ namespace Utah.Udot.Atspm.Data.Enums
         /// <summary>
         /// LiDar
         /// </summary> 
-        [Display(Name = "LiDar", Order = 7)]
+        [Display(Name = "LiDAR", Order = 7)]
         LiDar = 7,
     }
 }

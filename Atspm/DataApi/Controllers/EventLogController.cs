@@ -19,6 +19,7 @@ using Asp.Versioning;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Utah.Udot.ATSPM.DataApi.Controllers;
+using Utah.Udot.Atspm.Extensions;
 
 namespace Utah.Udot.Atspm.DataApi.Controllers
 {
@@ -69,9 +70,9 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult GetArchivedEvents(string locationIdentifier, DateOnly start, DateOnly end)
+        public IActionResult GetArchivedEvents(string locationIdentifier, DateTime start, DateTime end)
         {
-            if (start == DateOnly.MinValue || end == DateOnly.MinValue || end < start)
+            if (start == DateTime.MinValue || end == DateTime.MinValue || end < start)
                 return BadRequest("Invalid date range");
 
             var result = _repository.GetArchivedEvents(locationIdentifier, start, end);
@@ -79,7 +80,7 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
             if (result.Count == 0)
                 return NotFound();
 
-            HttpContext.Response.Headers.Add("X-Total-Count", result.Count.ToString());
+            HttpContext.Response.Headers.Append("X-Total-Count", result.Count.ToString());
 
             return Ok(result);
         }
@@ -100,9 +101,9 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult GetArchivedEvents(string locationIdentifier, int deviceId, DateOnly start, DateOnly end)
+        public IActionResult GetArchivedEvents(string locationIdentifier, int deviceId, DateTime start, DateTime end)
         {
-            if (start == DateOnly.MinValue || end == DateOnly.MinValue || end < start)
+            if (start == DateTime.MinValue || end == DateTime.MinValue || end < start)
                 return BadRequest("Invalid date range");
 
             if (deviceId == 0)
@@ -113,7 +114,7 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
             if (result.Count == 0)
                 return NotFound();
 
-            HttpContext.Response.Headers.Add("X-Total-Count", result.Count.ToString());
+            HttpContext.Response.Headers.Append("X-Total-Count", result.Count.ToString());
 
             return Ok(result);
         }
@@ -134,9 +135,9 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult GetArchivedEvents(string locationIdentifier, string dataType, DateOnly start, DateOnly end)
+        public IActionResult GetArchivedEvents(string locationIdentifier, string dataType, DateTime start, DateTime end)
         {
-            if (start == DateOnly.MinValue || end == DateOnly.MinValue || end < start)
+            if (start == DateTime.MinValue || end == DateTime.MinValue || end < start)
                 return BadRequest("Invalid date range");
 
             Type type;
@@ -155,7 +156,7 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
             if (result.Count == 0)
                 return NotFound();
 
-            HttpContext.Response.Headers.Add("X-Total-Count", result.Count.ToString());
+            HttpContext.Response.Headers.Append("X-Total-Count", result.Count.ToString());
 
             return Ok(result);
         }
@@ -177,9 +178,9 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult GetArchivedEvents(string locationIdentifier, int deviceId, string dataType, DateOnly start, DateOnly end)
+        public IActionResult GetArchivedEvents(string locationIdentifier, int deviceId, string dataType, DateTime start, DateTime end)
         {
-            if (start == DateOnly.MinValue || end == DateOnly.MinValue || end < start)
+            if (start == DateTime.MinValue || end == DateTime.MinValue || end < start)
                 return BadRequest("Invalid date range");
 
             if (deviceId == 0)
@@ -201,7 +202,7 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
             if (result.Count == 0)
                 return NotFound();
 
-            HttpContext.Response.Headers.Add("X-Total-Count", result.Count.ToString());
+            HttpContext.Response.Headers.Append("X-Total-Count", result.Count.ToString());
 
             return Ok(result);
         }
@@ -220,7 +221,7 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
         [Produces("application/json", "application/xml")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult GetDaysWithEventLogs(string locationIdentifier, string dataType, DateOnly month)
+        public IActionResult GetDaysWithEventLogs(string locationIdentifier, string dataType, DateTime start, DateTime end)
         {
 
             Type type;
@@ -234,7 +235,7 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
                 return BadRequest("Invalid data type");
             }
 
-            var result = _repository.GetDaysWithEventLogs(locationIdentifier, type, month);
+            var result = _repository.GetDaysWithEventLogs(locationIdentifier, type, start, end);
 
             return Ok(result);
         }

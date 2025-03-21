@@ -17,6 +17,7 @@
 
 using Moq;
 using Renci.SshNet;
+using Renci.SshNet.Sftp;
 using System;
 using System.IO;
 using System.Threading.Tasks;
@@ -303,7 +304,8 @@ namespace Utah.Udot.Atspm.InfrastructureTests.DownloaderClientTests
             client.SetupGet(p => p.IsConnected).Returns(true);
 
             client.Setup(s => s.ListDirectoryAsync(It.IsAny<string>(), It.Is<string[]>(a => true)))
-                .ReturnsAsync((string a, string[] b) => [a]);
+                .ReturnsAsync((string a, string[] b) => Mock.Of<ISftpFile[]>());
+            //.ReturnsAsync((string a, string[] b) => [a]);
 
             Sut = new SSHNetSFTPDownloaderClient(client.Object);
 
