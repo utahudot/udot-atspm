@@ -15,18 +15,17 @@
 // limitations under the License.
 #endregion
 
-using Google.Cloud.Diagnostics.Common;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System.CommandLine.Builder;
 using System.CommandLine.Hosting;
 using System.CommandLine.Parsing;
 using System.Diagnostics;
-using System.Reflection;
 using Utah.Udot.Atspm.EventLogUtility.Commands;
 using Utah.Udot.Atspm.Infrastructure.Extensions;
 
-//tricking github
+//trick github
+//"830379441974"
 
 if (OperatingSystem.IsWindows())
 {
@@ -52,16 +51,18 @@ cmdBuilder.UseHost(a =>
                 c.LogName = "Atspm";
             });
         }
+
         //l.AddGoogle(new LoggingServiceOptions
         //{
-        //    ProjectId = "",
         //    ServiceName = AppDomain.CurrentDomain.FriendlyName,
         //    Version = Assembly.GetEntryAssembly().GetName().Version.ToString(),
-        //    Options = LoggingOptions.Create(LogLevel.Debug, AppDomain.CurrentDomain.FriendlyName)
+        //    Options = LoggingOptions.Create(LogLevel.Information, AppDomain.CurrentDomain.FriendlyName)
         //});
     })
     .ConfigureServices((h, s) =>
     {
+        //s.AddGoogleDiagnostics(loggingOptions: LoggingOptions.Create(LogLevel.Debug));
+
         s.AddAtspmDbContext(h);
         s.AddAtspmEFConfigRepositories();
         s.AddAtspmEFEventLogRepositories();
@@ -70,8 +71,6 @@ cmdBuilder.UseHost(a =>
         s.AddDeviceDownloaders(h);
         s.AddEventLogDecoders();
         s.AddEventLogImporters(h);
-
-        //s.Configure<DeviceEventLoggingConfiguration>(h.Configuration.GetSection(nameof(DeviceEventLoggingConfiguration)));
     });
 },
 h =>
