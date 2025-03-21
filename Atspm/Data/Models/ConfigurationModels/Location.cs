@@ -20,6 +20,7 @@
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Interfaces;
 using Utah.Udot.Atspm.Data.Relationships;
+using Utah.Udot.NetStandardToolkit.Interfaces;
 
 namespace Utah.Udot.Atspm.Data.Models
 {
@@ -29,6 +30,7 @@ namespace Utah.Udot.Atspm.Data.Models
     public partial class Location :
         AtspmConfigModelBase<int>,
         ILocationLayer,
+        ICoordinates,
         IRelatedLocationType,
         IRelatedJurisdiction, 
         IRelatedRegion, 
@@ -36,14 +38,10 @@ namespace Utah.Udot.Atspm.Data.Models
         IRelatedAreas,
         IRelatedDevices
     {
-        /// <summary>
-        /// Latitude of location
-        /// </summary>
+        /// <inheritdoc cref="ICoordinates.Latitude"/>
         public double Latitude { get; set; }
 
-        /// <summary>
-        /// Longitude of location
-        /// </summary>
+        /// <inheritdoc cref="ICoordinates.Longitude"/>
         public double Longitude { get; set; }
 
         /// <summary>
