@@ -32,21 +32,21 @@ namespace Utah.Udot.Atspm.Repositories.EventLogRepositories
         /// <param name="start">Archive date of event to start with</param>
         /// <param name="end">Archive date of event to end with</param>
         /// <param name="dataType">Type that inherits from <see cref="EventLogModelBase"/></param>
-        /// <param name="deviceId">Device id events came from</param>
+        /// <param name="deviceId">Deivce id events came from</param>
         /// <returns></returns>
-        IReadOnlyList<CompressedEventLogBase> GetArchivedEvents(string locationIdentifier, DateOnly start, DateOnly end, Type dataType, int deviceId);
+        IReadOnlyList<CompressedEventLogBase> GetArchivedEvents(string locationIdentifier, DateTime start, DateTime end, Type dataType, int deviceId);
 
         /// <summary>
         /// Get archived events that match <paramref name="locationIdentifier"/>, <paramref name="start"/>/<paramref name="end"/> and <paramref name="deviceId"/>
-        /// Where data type is derived from <typeparamref name="T"/>
+        /// Where date type is derived from <typeparamref name="T"/>
         /// </summary>
         /// <typeparam name="T">Data type of <see cref="EventLogModelBase"/></typeparam>
         /// <param name="locationIdentifier">Location identifier</param>
         /// <param name="start">Archive date of event to start with</param>
         /// <param name="end">Archive date of event to end with</param>
-        /// <param name="deviceId">Device id events came from</param>
+        /// <param name="deviceId">Deivce id events came from</param>
         /// <returns></returns>
-        IReadOnlyList<CompressedEventLogs<T>> GetArchivedEvents<T>(string locationIdentifier, DateOnly start, DateOnly end, int deviceId) where T : EventLogModelBase;
+        IReadOnlyList<CompressedEventLogs<T>> GetArchivedEvents<T>(string locationIdentifier, DateTime start, DateTime end, int deviceId) where T : EventLogModelBase;
 
         /// <summary>
         /// Get archived events that match <paramref name="locationIdentifier"/> and <paramref name="start"/>/<paramref name="end"/>
@@ -55,7 +55,7 @@ namespace Utah.Udot.Atspm.Repositories.EventLogRepositories
         /// <param name="start">Archive date of event to start with</param>
         /// <param name="end">Archive date of event to end with</param>
         /// <returns></returns>
-        IReadOnlyList<CompressedEventLogBase> GetArchivedEvents(string locationIdentifier, DateOnly start, DateOnly end);
+        IReadOnlyList<CompressedEventLogBase> GetArchivedEvents(string locationIdentifier, DateTime start, DateTime end);
 
         /// <summary>
         /// Get archived events that match <paramref name="locationIdentifier"/>, <paramref name="start"/>/<paramref name="end"/> and <paramref name="dataType"/>
@@ -65,35 +65,28 @@ namespace Utah.Udot.Atspm.Repositories.EventLogRepositories
         /// <param name="end">Archive date of event to end with</param>
         /// <param name="dataType">Type that inherits from <see cref="EventLogModelBase"/></param>
         /// <returns></returns>
-        IReadOnlyList<CompressedEventLogBase> GetArchivedEvents(string locationIdentifier, DateOnly start, DateOnly end, Type dataType);
+        IReadOnlyList<CompressedEventLogBase> GetArchivedEvents(string locationIdentifier, DateTime start, DateTime end, Type dataType);
 
         /// <summary>
-        /// Get archived events that match <paramref name="locationIdentifier"/>, <paramref name="start"/>/<paramref name="end"/> and <paramref name="deviceId"/>
+        /// Get archived event that matches <paramref name="locationIdentifier"/>, <paramref name="start"/>/<paramref name="end"/> and <paramref name="deviceId"/>
         /// </summary>
         /// <param name="locationIdentifier">Location identifier</param>
         /// <param name="start">Archive date of event to start with</param>
         /// <param name="end">Archive date of event to end with</param>
-        /// <param name="deviceId">Device id events came from</param>
+        /// <param name="deviceId">Deivce id events came from</param>
         /// <returns></returns>
-        IReadOnlyList<CompressedEventLogBase> GetArchivedEvents(string locationIdentifier, DateOnly start, DateOnly end, int deviceId);
+        IReadOnlyList<CompressedEventLogBase> GetArchivedEvents(string locationIdentifier, DateTime start, DateTime end, int deviceId);
 
         /// <summary>
         /// Get archived events that match <paramref name="locationIdentifier"/> and <paramref name="start"/>/<paramref name="end"/>
-        /// Where data type is derived from <typeparamref name="T"/>
+        /// Where date type of derived from <typeparamref name="T"/>
         /// </summary>
         /// <typeparam name="T">Data type of <see cref="EventLogModelBase"/></typeparam>
         /// <param name="locationIdentifier">Location identifier</param>
         /// <param name="start">Archive date of event to start with</param>
         /// <param name="end">Archive date of event to end with</param>
         /// <returns></returns>
-        IReadOnlyList<CompressedEventLogs<T>> GetArchivedEvents<T>(string locationIdentifier, DateOnly start, DateOnly end) where T : EventLogModelBase;
-
-        /// <summary>
-        /// Returns a list of unique days that have event logs for the specified location.
-        /// </summary>
-        /// <param name="locationIdentifier">Location identifier</param>
-        /// <returns>A read-only list of days with event logs.</returns>
-        IReadOnlyList<DateOnly> GetDaysWithEventLogs(string locationIdentifier, Type dataType, DateOnly month);
+        IReadOnlyList<CompressedEventLogs<T>> GetArchivedEvents<T>(string locationIdentifier, DateTime start, DateTime end) where T : EventLogModelBase;
     }
 
     /// <summary>
@@ -103,12 +96,12 @@ namespace Utah.Udot.Atspm.Repositories.EventLogRepositories
     public interface IEventLogRepository<T> : IAsyncRepository<CompressedEventLogs<T>> where T : EventLogModelBase
     {
         /// <summary>
-        /// Get all <see cref="EventLogModelBase"/> logs by <c>LocationId</c> and date range
+        /// Get all <see cref="EventLogModelBase"/> logs by <see cref="EventLogModelBase.LocationIdentifier"/> and date range
         /// </summary>
-        /// <param name="locationId">Location identifier</param>
-        /// <param name="startTime">Start time</param>
-        /// <param name="endTime">End time</param>
+        /// <param name="locationIdentifier">Location identifier</param>
+        /// <param name="start">Start time</param>
+        /// <param name="end">End time</param>
         /// <returns></returns>
-        IReadOnlyList<T> GetEventsBetweenDates(string locationId, DateTime startTime, DateTime endTime);
+        IReadOnlyList<T> GetEventsBetweenDates(string locationIdentifier, DateTime start, DateTime end);
     }
 }

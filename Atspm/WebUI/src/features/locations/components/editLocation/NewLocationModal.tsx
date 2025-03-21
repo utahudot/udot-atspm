@@ -1,8 +1,8 @@
+import { Location } from '@/api/config/aTSPMConfigurationApi.schemas'
 import {
   useCreateLocation,
   useLatestVersionOfAllLocations,
 } from '@/features/locations/api'
-import { Location, LocationExpanded } from '@/features/locations/types'
 import { zodResolver } from '@hookform/resolvers/zod'
 import CheckCircleOutlineOutlinedIcon from '@mui/icons-material/CheckCircleOutlineOutlined'
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline'
@@ -42,7 +42,7 @@ const NewLocationModal = ({
     setValue,
     formState: { errors },
     watch,
-  } = useForm<LocationExpanded>({
+  } = useForm<Location>({
     resolver: zodResolver(locationSchema),
     defaultValues: {
       locationIdentifier: '',
@@ -63,7 +63,7 @@ const NewLocationModal = ({
 
   const locationIsLessThan10Characters = locationIdentifier?.length <= 10
 
-  const onSubmit = (data: LocationExpanded) => {
+  const onSubmit = (data: Location) => {
     if (!locationIsUnique) {
       setValue('locationIdentifier', data.locationIdentifier, {
         shouldValidate: true,

@@ -65,10 +65,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
             {
                 ArgumentNullException.ThrowIfNull(resource);
 
-                if (resource.IsAbsoluteUri && Uri.IsWellFormedUriString(resource.ToString(), UriKind.Absolute))
-                    await DeleteResource(resource, token);
-                else
-                    throw new UriFormatException($"Invalid Uri {resource}");
+                await DeleteResource(resource, token);
             }
             catch (Exception e)
             {
@@ -81,8 +78,8 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
         {
             token.ThrowIfCancellationRequested();
 
-            if (!IsConnected)
-                throw new DownloaderClientConnectionException(null, this, "Client not connected");
+            //if (!IsConnected)
+            //    throw new DownloaderClientConnectionException(null, this, "Client not connected");
 
             try
             {
@@ -101,8 +98,8 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
         {
             token.ThrowIfCancellationRequested();
 
-            if (!IsConnected)
-                throw new DownloaderClientConnectionException(null, this, "Client not connected");
+            //if (!IsConnected)
+            //    throw new DownloaderClientConnectionException(null, this, "Client not connected");
 
             try
             {
@@ -160,11 +157,8 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
             {
                 var path = uri.LocalPath.Replace("\\\\localhost\\", "");
 
-                //var driveCheck = Path.IsPathRooted(path);
-                //var pathCheck = Path.IsPathFullyQualified(path);
                 var fileCheck = !Path.GetFileName(path).Any(a => Path.GetInvalidFileNameChars().Contains(a));
                 var extCheck = Path.HasExtension(path);
-
                 if (fileCheck && extCheck)
                 {
                     file = new FileInfo(path);
