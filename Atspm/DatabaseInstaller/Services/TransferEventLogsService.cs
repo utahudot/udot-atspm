@@ -6,7 +6,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 // 
-// http://www.apache.org/licenses/LICENSE-2.
+// http://www.apache.org/licenses/LICENSE-2.0
 // 
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,25 +15,24 @@
 // limitations under the License.
 #endregion
 
-
 using DatabaseInstaller.Commands;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Polly;
+using Polly.Contrib.WaitAndRetry;
+using Polly.Retry;
+using System.Collections.Concurrent;
 using Utah.Udot.Atspm.Data;
+using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
 using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
-using Polly;
-using Polly.Retry;
-using Microsoft.EntityFrameworkCore;
-using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Specifications;
 using Utah.Udot.NetStandardToolkit.Extensions;
-using Polly.Contrib.WaitAndRetry;
-using Utah.Udot.Atspm.Extensions;
 
 namespace DatabaseInstaller.Services
 {
@@ -47,20 +46,19 @@ namespace DatabaseInstaller.Services
             .Handle<Exception>()
             .WaitAndRetryAsync(
                 sleepDurations: Backoff.DecorrelatedJitterBackoffV2(
-                    medianFirstRetryDelay: TimeSpan.FromSeconds(10), // Initial 5-second delay
-                    retryCount: 5 // First 5 retries at 5s
+                    TimeSpan.FromSeconds(10),
+                    retryCount: 5
                 )
-            .Concat(new[]
+                .Concat(new[]
                 {
                     TimeSpan.FromMinutes(5),
                     TimeSpan.FromMinutes(30)
                 })
-            .Concat(Enumerable.Repeat(TimeSpan.FromDays(1), 24)), // Next 24 retries every 1 hour
+                .Concat(Enumerable.Repeat(TimeSpan.FromDays(1), 24)),
                 onRetry: (exception, timeSpan, retryCount, context) =>
                 {
                     Console.WriteLine($"Retry {retryCount} after {timeSpan.TotalSeconds} seconds due to {exception.Message}");
-                }
-            );
+                });
 
         public TransferEventLogsHostedService(
             ILogger<TransferEventLogsHostedService> logger,
@@ -76,333 +74,161 @@ namespace DatabaseInstaller.Services
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            //var locationIdentifiers = new List<string>
-            //{
-            //    "6039",
-            //    "6087",
-            //    "6078",
-            //    "6014",
-            //    "6099",
-            //    "6079",
-            //    "6200",
-            //    "6201",
-            //    "6401",
-            //    "6511",
-            //    "6392",
-            //    "6391",
-            //    "6035",
-            //    "6036",
-            //    "6032",
-            //    "6037",
-            //    "6038",
-            //    "6206",
-            //    "6635",
-            //    "6634",
-            //    "6633",
-            //    "6417",
-            //    "6461",
-            //    "6325",
-            //    "6328",
-            //    "6324",
-            //    "6322",
-            //    "6330",
-            //    "6321",
-            //    "6316",
-            //    "6317",
-            //    "6402",
-            //    "6404",
-            //    "6315",
-            //    "6319",
-            //    "6320",
-            //    "6628",
-            //    "6627",
-            //    "6619",
-            //    "6625",
-            //    "6626",
-            //    "6624",
-            //    "6642",
-            //    "6643",
-            //    "6462",
-            //    "6410",
-            //    "6463",
-            //    "6409",
-            //    "6408",
-            //    "6407",
-            //    "6406",
-            //    "6427",
-            //    "6405",
-            //    "6465",
-            //    "6641",
-            //    "6411",
-            //    "6147",
-            //    "6137",
-            //    "6141",
-            //    "6133",
-            //    "6139",
-            //    "6142",
-            //    "6131",
-            //    "6393",
-            //    "6394",
-            //    "6303",
-            //    "6308",
-            //    "6311",
-            //    "6313",
-            //    "6314",
-            //    "6525",
-            //    "6526",
-            //    "6527",
-            //    "6528",
-            //    "6530",
-            //    "6326",
-            //    "6327",
-            //    "6449",
-            //    "6448",
-            //    "6447",
-            //    "6446",
-            //    "6445",
-            //    "6444",
-            //    "6443",
-            //    "6442",
-            //    "6023",
-            //    "6074",
-            //    "6024",
-            //    "6025",
-            //    "6016",
-            //    "6028",
-            //    "6134",
-            //    "6132",
-            //    "6026",
-            //    "6022",
-            //    "6021",
-            //    "6020",
-            //    "6066",
-            //    "6067",
-            //    "6065",
-            //    "6061",
-            //    "6017",
-            //    "6652",
-            //    "6654",
-            //    "6090",
-            //    "6012",
-            //    "6329",
-            //    "6312",
-            //    "6519",
-            //    "6532",
-            //    "6416",
-            //    "6415",
-            //    "6413",
-            //    "6412",
-            //    "6398",
-            //    "6399",
-            //    "6387",
-            //    "6388",
-            //    "6502",
-            //    "6503",
-            //    "6504",
-            //    "6506",
-            //    "6306",
-            //    "6518",
-            //    "6521",
-            //    "6082",
-            //    "6081",
-            //    "6080",
-            //    "6198",
-            //    "6323",
-            //    "6516",
-            //    "6515",
-            //    "6514",
-            //    "6513",
-            //    "6512",
-            //    "6310",
-            //    "6309",
-            //    "6423",
-            //    "6520",
-            //    "6529",
-            //    "6304",
-            //    "6305",
-            //    "6302",
-            //    "6510",
-            //    "6509",
-            //    "6524",
-            //    "6522"
-            //};
-            for (var date = _config.Start; date <= _config.End; date = date.AddDays(1))
+            for (var date = _config.Start; date <= _config.End.AddDays(1); date = date.AddHours(1))
             {
                 _logger.LogInformation($"Processing data for {date}");
 
                 var locationsQuery = _locationRepository.GetList()
-                    .Include(s => s.Devices) // Always include Devices
-                    .AsQueryable(); // Ensure it remains IQueryable<Location>
-                locationsQuery = locationsQuery
-                        .Where(l => l.Devices.Any(d => d.DeviceType == DeviceTypes.SpeedSensor)); // Use Any() for efficient filtering
+                    .Include(s => s.Devices)
+                    .AsQueryable();
+
                 if (_config.Device != null)
                 {
                     locationsQuery = locationsQuery
-                        .Where(l => l.Devices.Any(d => d.DeviceType == (DeviceTypes)_config.Device)); // Use Any() for efficient filtering
+                        .Where(l => l.Devices.Any(d => d.DeviceType == (DeviceTypes)_config.Device));
+                }
+
+                if (!string.IsNullOrEmpty(_config.Locations))
+                {
+                    var locationIdentifiers = _config.Locations.Split(',', StringSplitOptions.RemoveEmptyEntries);
+                    locationsQuery = locationsQuery
+                        .Where(l => locationIdentifiers.Contains(l.LocationIdentifier));
                 }
 
                 var locations = locationsQuery
-                    .FromSpecification(new ActiveLocationSpecification()) // Apply specification
+                    .FromSpecification(new ActiveLocationSpecification())
                     .GroupBy(r => r.LocationIdentifier)
-                    .Select(g => g.OrderByDescending(r => r.Start).FirstOrDefault()) // Get the latest location per identifier
+                    .Select(g => g.OrderByDescending(r => r.Start).FirstOrDefault())
                     .ToList();
 
-                int batchCount = _config.Batch ?? 100;
+                var hourLogs = new ConcurrentBag<CompressedEventLogs<IndianaEvent>>();
 
-                foreach (var batch in locations.Batch(batchCount))
+                await Task.WhenAll(locations.Select(async location =>
                 {
-
                     try
                     {
-                        // Process each batch in parallel, but process only one batch at a time.
-                        await Task.WhenAll(batch.Select(location =>
-                            ProcessLocationAsync(DateOnly.FromDateTime(date), location, cancellationToken)));
+                        var log = await GetLogsAsync(date, date.AddHours(1), _config.Source, location, cancellationToken);
+                        if (log != null)
+                        {
+                            hourLogs.Add(log);
+                        }
+                        else
+                        {
+                            _logger.LogWarning($"No logs found for location {location.LocationIdentifier} on {date}");
+                        }
                     }
                     catch (Exception ex)
                     {
-                        _logger.LogError($"Error processing batch for {date}: {ex.Message}");
+                        _logger.LogError($"Failed to retrieve logs for location {location.LocationIdentifier} on {date}: {ex.Message}");
                     }
-                }
+                }));
+                await InsertLogsWithRetryAsync(hourLogs.ToList());
+
             }
 
             _logger.LogInformation("Execution completed.");
         }
 
-
-            /// <summary>
-            /// Processes a single location for a specific date. Retrieves the logs and, if any are found,
-            /// immediately attempts to insert them into the database using retry logic.
-            /// </summary>
-            private async Task ProcessLocationAsync(DateOnly date, Location location, CancellationToken cancellationToken)
+        private async Task<CompressedEventLogs<IndianaEvent>?> GetLogsAsync(
+            DateTime start,
+            DateTime end,
+            string sourceConnectionString,
+            Location location,
+            CancellationToken cancellationToken)
         {
-            var logEntry = new CompressedEventLogs<IndianaEvent>();
-            logEntry = await GetLogsAsync(date, _config.Source, location, cancellationToken);
-            
-            if (logEntry != null)
+            string connectionString = $"{sourceConnectionString};Max Pool Size=200;Connection Timeout=60;";
+            string selectQuery = $"SELECT SignalId, Timestamp, EventCode, EventParam FROM [dbo].[Controller_Event_Log] " +
+                                 $"WHERE SignalId = '{location.LocationIdentifier}' " +
+                                 $"AND Timestamp >= '{start}' AND Timestamp < '{end}'";
+
+            try
             {
-                await InsertLogsWithRetryAsync(logEntry);
-            }
-            else
-            {
-                _logger.LogWarning($"No logs found for location {location.LocationIdentifier} on {date}");
-            }
-        }
-
-    private async Task<CompressedEventLogs<IndianaEvent>?> GetLogsAsync(
-        DateOnly dateToRetrieve,
-        string sourceConnectionString,
-        Location location,
-        CancellationToken cancellationToken)
-    {
-        string connectionString = $"{sourceConnectionString};Max Pool Size=200;Connection Timeout=60;";
-
-        string selectQuery = $"SELECT SignalId, Timestamp, EventCode, EventParam FROM [dbo].[Controller_Event_Log] " +
-                             $"WHERE SignalId = '{location.LocationIdentifier}' " +
-                             $"AND Timestamp >= '{dateToRetrieve}' AND Timestamp < '{dateToRetrieve.AddDays(1)}'";
-
-        // Define retry policy with incremental backoff (30s, 60s, 90s, 120s)
-        
-
-        try
-        {
-            return await _retryPolicy.ExecuteAsync(async () =>
-            {
-                using (var connection = new SqlConnection(connectionString))
+                return await _retryPolicy.ExecuteAsync(async () =>
                 {
-                    await connection.OpenAsync(cancellationToken);  // If this fails, Polly will retry
-
-                    using (var selectCommand = new SqlCommand(selectQuery, connection))
+                    using (var connection = new SqlConnection(connectionString))
                     {
-                        var eventLogs = new List<IndianaEvent>();
-                        selectCommand.CommandTimeout = 120;  // Ensure command timeout is set
+                        await connection.OpenAsync(cancellationToken);
 
-                        using (var reader = await selectCommand.ExecuteReaderAsync(cancellationToken))
+                        using (var selectCommand = new SqlCommand(selectQuery, connection))
                         {
-                            while (await reader.ReadAsync(cancellationToken))
+                            var eventLogs = new List<IndianaEvent>();
+                            selectCommand.CommandTimeout = 120;
+                            using (var reader = await selectCommand.ExecuteReaderAsync(cancellationToken))
                             {
-                                try
+                                while (await reader.ReadAsync(cancellationToken))
                                 {
-                                    var eventLog = new IndianaEvent
+                                    try
                                     {
-                                        Timestamp = (DateTime)reader["Timestamp"],
-                                        EventCode = Convert.ToInt16(reader["EventCode"]),
-                                        EventParam = Convert.ToInt16(reader["EventParam"])
+                                        var eventLog = new IndianaEvent
+                                        {
+                                            Timestamp = (DateTime)reader["Timestamp"],
+                                            EventCode = Convert.ToInt16(reader["EventCode"]),
+                                            EventParam = Convert.ToInt16(reader["EventParam"])
+                                        };
+                                        eventLogs.Add(eventLog);
+
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        _logger.LogWarning($"Error reading record for {location.LocationIdentifier} on {start}: {ex.Message}");
+
+                                    }
+                                }
+                            }
+
+                            _logger.LogInformation($"Found {eventLogs.Count} events for location {location.LocationIdentifier} on {start}");
+
+                            if (eventLogs.Any())
+                            {
+                                var device = location.Devices
+                                    .FirstOrDefault(d => d.DeviceType == DeviceTypes.SignalController);
+
+                                if (device != null)
+                                {
+                                    return new CompressedEventLogs<IndianaEvent>
+                                    {
+                                        LocationIdentifier = location.LocationIdentifier,
+                                        DeviceId = device.Id,
+                                        ArchiveDate = DateOnly.FromDateTime(start),
+                                        Start = start,
+                                        End = end,
+                                        Data = eventLogs
                                     };
-                                    eventLogs.Add(eventLog);
                                 }
-                                catch (Exception ex)
-                                {
-                                    _logger.LogWarning($"Error reading record for {location.LocationIdentifier} on {dateToRetrieve}: {ex.Message}");
-                                }
-                            }
-                        }
 
-                        _logger.LogInformation($"Found {eventLogs.Count} events for location {location.LocationIdentifier} on {dateToRetrieve}");
-
-                        if (eventLogs.Any())
-                        {
-                            var device = location.Devices
-                                .FirstOrDefault(d => d.DeviceType == Utah.Udot.Atspm.Data.Enums.DeviceTypes.SignalController);
-
-                            if (device != null)
-                            {
-                                return new CompressedEventLogs<IndianaEvent>
-                                {
-                                    LocationIdentifier = location.LocationIdentifier,
-                                    DeviceId = device.Id,
-                                    ArchiveDate = dateToRetrieve,
-                                    Data = eventLogs
-                                };
-                            }
-                            else
-                            {
                                 _logger.LogWarning($"No device found for location {location.LocationIdentifier}");
                             }
                         }
                     }
-                }
 
+                    return null;
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Failed to get logs for {location.LocationIdentifier} on {start} after multiple attempts: {ex.Message}");
                 return null;
-            });
+            }
         }
-        catch (Exception ex)
+
+        private async Task InsertLogsWithRetryAsync(List<CompressedEventLogs<IndianaEvent>> archiveLogs)
         {
-            // If all retries fail, log an error but do NOT throw the exception
-            _logger.LogError($"Failed to get logs for {location.LocationIdentifier} on {dateToRetrieve} after multiple attempts: {ex.Message}");
-            return null; // Continue processing other locations
-        }
-    }
-
-
-
-
-
-    /// <summary>
-    /// Attempts to insert the log entry into the database with retry logic.
-    /// Retries up to 4 times with a 30-second delay between attempts.
-    /// </summary>
-    private async Task InsertLogsWithRetryAsync(CompressedEventLogs<IndianaEvent> archiveLog)
-    {
-
             await _retryPolicy.ExecuteAsync(async () =>
             {
-                using (var scope = _serviceProvider.CreateScope())
+                using var scope = _serviceProvider.CreateScope();
+                var context = scope.ServiceProvider.GetService<EventLogContext>();
+                if (context == null)
                 {
-                    var context = scope.ServiceProvider.GetService<EventLogContext>();
-                    if (context == null)
-                    {
-                        _logger.LogError("EventLogContext is not available.");
-                        return;
-                    }
-                    context.CompressedEvents.Add(archiveLog);
-                    await context.SaveChangesAsync();
+                    _logger.LogError("EventLogContext is not available.");
+                    return;
                 }
+                context.CompressedEvents.AddRange(archiveLogs);
+                //context.CompressedEvents.Add(archiveLog);
+                await context.SaveChangesAsync();
 
-                _logger.LogInformation($"Successfully inserted log for location {archiveLog.LocationIdentifier} on {archiveLog.ArchiveDate}");
-                return;
+                _logger.LogInformation($"Successfully inserted log on {archiveLogs.FirstOrDefault()?.Start}");
             });
-            
-    }
+        }
 
         public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
     }

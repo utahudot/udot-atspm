@@ -103,6 +103,11 @@ namespace Utah.Udot.Atspm.Infrastructure.Repositories.EventLogRepositories
                 .ToList();
         }
 
+        IReadOnlyList<CompressedEventLogs<T>> IEventLogRepository.GetArchivedEvents<T>(string locationIdentifier, DateOnly start, DateOnly end)
+        {
+            throw new NotImplementedException();
+        }
+
         #endregion
     }
 }
