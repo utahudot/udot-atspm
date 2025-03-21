@@ -19,7 +19,7 @@ module.exports = {
   // },
   data: {
     input: {
-      target: './orval-api-specs/data-spec.json',
+      target: './data-spec.json',
     },
     output: {
       target: './src/api/data',

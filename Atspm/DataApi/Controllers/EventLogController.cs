@@ -220,8 +220,8 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
         [HttpGet("[Action]/{locationIdentifier}")]
         [Produces("application/json", "application/xml")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult GetDaysWithEventLogs(string locationIdentifier, string dataType, DateOnly month)
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public IActionResult GetDaysWithEventLogs(string locationIdentifier, string dataType, DateTime start, DateTime end)
         {
 
             Type type;
@@ -235,7 +235,7 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
                 return BadRequest("Invalid data type");
             }
 
-            var result = _repository.GetDaysWithEventLogs(locationIdentifier, type, month);
+            var result = _repository.GetDaysWithEventLogs(locationIdentifier, type, start, end);
 
             return Ok(result);
         }

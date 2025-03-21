@@ -92,19 +92,8 @@
                 }
               }
             }
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
           }
-        },
-        "security": [
-          {
-            "oauth2": ["CanViewData"]
-          }
-        ]
+        }
       }
     },
     "/api/v1/Aggregation/GetArchivedAggregations/{locationIdentifier}": {
@@ -197,19 +186,8 @@
                 }
               }
             }
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
           }
-        },
-        "security": [
-          {
-            "oauth2": ["CanViewData"]
-          }
-        ]
+        }
       }
     },
     "/api/v1/Aggregation/GetArchivedAggregations/{locationIdentifier}/{dataType}": {
@@ -311,19 +289,8 @@
                 }
               }
             }
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
           }
-        },
-        "security": [
-          {
-            "oauth2": ["CanViewData"]
-          }
-        ]
+        }
       }
     },
     "/api/v1/EventLog/GetDataTypes": {
@@ -403,19 +370,8 @@
                 }
               }
             }
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
           }
-        },
-        "security": [
-          {
-            "oauth2": ["CanViewData"]
-          }
-        ]
+        }
       }
     },
     "/api/v1/EventLog/GetArchivedEvents/{locationIdentifier}": {
@@ -439,7 +395,7 @@
             "description": "Archive date of event to start with",
             "schema": {
               "type": "string",
-              "format": "date"
+              "format": "date-time"
             }
           },
           {
@@ -448,7 +404,7 @@
             "description": "Archive date of event to end with",
             "schema": {
               "type": "string",
-              "format": "date"
+              "format": "date-time"
             }
           },
           {
@@ -508,19 +464,8 @@
                 }
               }
             }
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
           }
-        },
-        "security": [
-          {
-            "oauth2": ["CanViewData"]
-          }
-        ]
+        }
       }
     },
     "/api/v1/EventLog/GetArchivedEvents/{locationIdentifier}/{deviceId}": {
@@ -554,7 +499,7 @@
             "description": "Archive date of event to start with",
             "schema": {
               "type": "string",
-              "format": "date"
+              "format": "date-time"
             }
           },
           {
@@ -563,7 +508,7 @@
             "description": "Archive date of event to end with",
             "schema": {
               "type": "string",
-              "format": "date"
+              "format": "date-time"
             }
           },
           {
@@ -623,19 +568,8 @@
                 }
               }
             }
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
           }
-        },
-        "security": [
-          {
-            "oauth2": ["CanViewData"]
-          }
-        ]
+        }
       }
     },
     "/api/v1/EventLog/GetArchivedEvents/{locationIdentifier}/{dataType}": {
@@ -668,7 +602,7 @@
             "description": "Archive date of event to start with",
             "schema": {
               "type": "string",
-              "format": "date"
+              "format": "date-time"
             }
           },
           {
@@ -677,7 +611,7 @@
             "description": "Archive date of event to end with",
             "schema": {
               "type": "string",
-              "format": "date"
+              "format": "date-time"
             }
           },
           {
@@ -737,19 +671,8 @@
                 }
               }
             }
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
           }
-        },
-        "security": [
-          {
-            "oauth2": ["CanViewData"]
-          }
-        ]
+        }
       }
     },
     "/api/v1/EventLog/GetArchivedEvents/{locationIdentifier}/{deviceId}/{dataType}": {
@@ -792,7 +715,7 @@
             "description": "Archive date of event to start with",
             "schema": {
               "type": "string",
-              "format": "date"
+              "format": "date-time"
             }
           },
           {
@@ -801,7 +724,7 @@
             "description": "Archive date of event to end with",
             "schema": {
               "type": "string",
-              "format": "date"
+              "format": "date-time"
             }
           },
           {
@@ -861,19 +784,8 @@
                 }
               }
             }
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
           }
-        },
-        "security": [
-          {
-            "oauth2": ["CanViewData"]
-          }
-        ]
+        }
       }
     },
     "/api/v1/EventLog/GetDaysWithEventLogs/{locationIdentifier}": {
@@ -900,12 +812,19 @@
             }
           },
           {
-            "name": "month",
+            "name": "start",
             "in": "query",
-            "description": "Month to get days with event logs",
             "schema": {
               "type": "string",
-              "format": "date"
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "end",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
             }
           },
           {
@@ -936,8 +855,8 @@
           "200": {
             "description": "Call completed successfully"
           },
-          "404": {
-            "description": "Resource not found",
+          "400": {
+            "description": "Bad Request",
             "content": {
               "application/json": {
                 "schema": {
@@ -950,6 +869,9 @@
                 }
               }
             }
+          },
+          "404": {
+            "description": "Resource not found"
           }
         }
       }
@@ -1716,11 +1638,6 @@
         "description": "Put **_ONLY_** your JWT Bearer token on textbox below!",
         "scheme": "Bearer",
         "bearerFormat": "JWT"
-      },
-      "oauth2": {
-        "type": "apiKey",
-        "name": "Authorization",
-        "in": "header"
       }
     }
   },

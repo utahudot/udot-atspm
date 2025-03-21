@@ -10,10 +10,8 @@ export type GetEventLogDaysWithEventLogsFromLocationIdentifierParams = {
  * Type that inherits from Utah.Udot.Atspm.Data.Models.EventLogModels.EventLogModelBase
  */
 dataType?: string;
-/**
- * Month to get days with event logs
- */
-month?: string;
+start?: string;
+end?: string;
 };
 
 export type GetEventLogArchivedEventsFromLocationIdentifierAndDeviceIdAndDataTypeParams = {
