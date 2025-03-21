@@ -41,7 +41,7 @@ export const getGetAggregationDataTypesQueryKey = () => {
 
 export const getGetAggregationDataTypesQueryOptions = <
   TData = Awaited<ReturnType<typeof getAggregationDataTypes>>,
-  TError = void | ProblemDetails,
+  TError = ProblemDetails,
 >(options?: {
   query?: UseQueryOptions<
     Awaited<ReturnType<typeof getAggregationDataTypes>>,
@@ -68,14 +68,14 @@ export const getGetAggregationDataTypesQueryOptions = <
 export type GetAggregationDataTypesQueryResult = NonNullable<
   Awaited<ReturnType<typeof getAggregationDataTypes>>
 >
-export type GetAggregationDataTypesQueryError = void | ProblemDetails
+export type GetAggregationDataTypesQueryError = ProblemDetails
 
 /**
  * @summary Returns the possible aggregated data types
  */
 export const useGetAggregationDataTypes = <
   TData = Awaited<ReturnType<typeof getAggregationDataTypes>>,
-  TError = void | ProblemDetails,
+  TError = ProblemDetails,
 >(options?: {
   query?: UseQueryOptions<
     Awaited<ReturnType<typeof getAggregationDataTypes>>,
@@ -398,7 +398,7 @@ export const getGetEventLogDataTypesQueryKey = () => {
 
 export const getGetEventLogDataTypesQueryOptions = <
   TData = Awaited<ReturnType<typeof getEventLogDataTypes>>,
-  TError = void | ProblemDetails,
+  TError = ProblemDetails,
 >(options?: {
   query?: UseQueryOptions<
     Awaited<ReturnType<typeof getEventLogDataTypes>>,
@@ -424,14 +424,14 @@ export const getGetEventLogDataTypesQueryOptions = <
 export type GetEventLogDataTypesQueryResult = NonNullable<
   Awaited<ReturnType<typeof getEventLogDataTypes>>
 >
-export type GetEventLogDataTypesQueryError = void | ProblemDetails
+export type GetEventLogDataTypesQueryError = ProblemDetails
 
 /**
  * @summary Returns the possible event log data types
  */
 export const useGetEventLogDataTypes = <
   TData = Awaited<ReturnType<typeof getEventLogDataTypes>>,
-  TError = void | ProblemDetails,
+  TError = ProblemDetails,
 >(options?: {
   query?: UseQueryOptions<
     Awaited<ReturnType<typeof getEventLogDataTypes>>,
