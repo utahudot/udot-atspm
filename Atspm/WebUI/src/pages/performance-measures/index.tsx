@@ -8,7 +8,7 @@ import ChartsContainer from '@/features/charts/components/chartsContainer'
 import SelectChart from '@/features/charts/components/selectChart'
 import LocationsConfigContainer from '@/features/locations/components/locationConfigContainer'
 import SelectLocation from '@/features/locations/components/selectLocation'
-import { toUTCDateStamp } from '@/utils/dateTime'
+import { dateToTimestamp } from '@/utils/dateTime'
 import { TabContext, TabList, TabPanel } from '@mui/lab'
 import { Box, Paper, Tab, useMediaQuery, useTheme } from '@mui/material'
 import {
@@ -212,7 +212,8 @@ const computeMissingDays = async (
       {
         dataType:
           chartType === ChartType.ApproachSpeed ? 'SpeedEvent' : 'IndianaEvent',
-        month: toUTCDateStamp(month),
+        start: dateToTimestamp(startOfMonth(month)),
+        end: dateToTimestamp(endOfMonth(month)),
       }
     )) as unknown as string[]
 

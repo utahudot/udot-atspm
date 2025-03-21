@@ -40,12 +40,12 @@ namespace Utah.Udot.Atspm.Specifications
         /// Matches <see cref="CompressedEventLogBase"/> by <see cref="CompressedDataBase.LocationIdentifier"/>
         /// within <see cref="StartEndRange"/> and orders by <see cref="StartEndRange.Start"/>
         /// </summary>
-        /// <param name="locationIdenfier"></param>
+        /// <param name="locationIdentifier"></param>
         /// <param name="start"></param>
         /// <param name="end"></param>
-        public CompressedEventLogSpecification(string locationIdenfier, DateTime start, DateTime end) : base()
+        public CompressedEventLogSpecification(string locationIdentifier, DateTime start, DateTime end) : base()
         {
-            Criteria = c => c.LocationIdentifier == locationIdenfier && c.Start >= start && c.End <= end;
+            Criteria = c => c.LocationIdentifier == locationIdentifier && c.Start >= start && c.End <= end;
 
             ApplyOrderBy(o => o.Start);
         }
