@@ -69,20 +69,19 @@ namespace Utah.Udot.Atspm.Extensions
         /// <summary>
         /// Returns a list of unique days that have event logs for the given location.
         /// </summary>
-        /// <param name="locationIdentifier">The location identifier.</param>
+        /// <param name="locationIdentifier">The location identifier</param>
         /// <param name="repo"></param>
         /// <param name="dataType">Type of event log data to filter by.</param>
-        /// <param name="month">The month to filter by.</param>
-        /// <returns>A read-only list of days with event log data.</returns>
-        public static IReadOnlyList<DateOnly> GetDaysWithEventLogs(this IEventLogRepository repo, string locationIdentifier, Type dataType, DateOnly month)
+        /// <param name="start">Start date</param>
+        /// <param name="end">End date</param>
+        /// <returns>A read-only list of days with event log data</returns>
+        public static IReadOnlyList<DateOnly> GetDaysWithEventLogs(this IEventLogRepository repo, string locationIdentifier, Type dataType, DateTime start, DateTime end)
         {
-            var startDay = new DateTime(month.Year, month.Month, 1);
-            var endDay = startDay.AddMonths(1).AddMinutes(-1);
 
             return repo.GetList()
-                .FromSpecification(new CompressedEventLogSpecification(locationIdentifier, startDay, endDay))
+                .FromSpecification(new CompressedEventLogSpecification(locationIdentifier, start, end))
                 .Where(x => x.DataType == dataType)
-                .Select(x => x.ArchiveDate)
+                .Select(x => DateOnly.FromDateTime(x.Start))
                 .Distinct()
                 .OrderBy(d => d)
                 .ToList();
