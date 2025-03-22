@@ -150,6 +150,7 @@ const DeviceModal = ({
   })
 
   const selectedProductId = watch('productId')
+
   useEffect(() => {
     if (selectedProductId && deviceConfigurations) {
       const filtered = deviceConfigurations.filter(
@@ -217,6 +218,7 @@ const DeviceModal = ({
   }
 
   if (!products || !deviceTypes || !deviceConfigurations) return null
+
   return (
     <Modal open={true} onClose={handleClose}>
       <Box sx={modalStyle}>

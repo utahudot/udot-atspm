@@ -28,11 +28,29 @@ namespace Utah.Udot.Atspm.Business.Common
         public Approach Approach { get; set; }
         public bool IsPermissivePhase { get; set; }
 
+        public string GetApproachDescriptionWithMovements(DetectionTypes detectionTypes)
+        {
+            var movements = Approach.Detectors?
+                .Where(d => d.DetectionTypes.Select(d => d.Id).Contains(detectionTypes))
+                .Select(d => d.MovementType)
+                .Distinct()
+                .ToList();
+            string movementResult = GetMovementResult(movements);
+            return BuildApproachDescription(movementResult);
+        }
+
         public string GetApproachDescription()
         {
-            var movements = Approach.Detectors?.Select(d => d.MovementType).Distinct().ToList();
+            var movements = Approach.Detectors?
+                .Select(d => d.MovementType)
+                .Distinct()
+                .ToList();
             string movementResult = GetMovementResult(movements);
+            return BuildApproachDescription(movementResult);
+        }
 
+        private string BuildApproachDescription(string movementResult)
+        {
             var descriptionResult = new StringBuilder($"{Approach.DirectionType.Description} ");
             if (!string.IsNullOrEmpty(movementResult) && movementResult.Contains("Left"))
             {

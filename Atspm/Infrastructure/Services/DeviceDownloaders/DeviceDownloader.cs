@@ -97,7 +97,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DeviceDownloaders
 
             if (CanExecute(parameter))
             {
-                var logMessages = new DeviceDownloaderLogMessages(_log, parameter);
+                var logMessages = new DeviceDownloaderLogMessages(_log, this.GetType().Name, parameter);
 
                 if (!IPAddress.TryParse(parameter?.Ipaddress, out IPAddress ipaddress) || ipaddress == null || !ipaddress.IsValidIpAddress())
                 {

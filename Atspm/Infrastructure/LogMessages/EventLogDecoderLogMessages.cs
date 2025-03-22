@@ -30,12 +30,23 @@ namespace Utah.Udot.Atspm.Infrastructure.LogMessages
         /// <summary>
         /// Log messages for <see cref="IEventLogDecoder{T}"/> implementations
         /// </summary>
-        /// <param name="logger">Abstract logging providers</param>
-        /// <param name="file">File to decode</param>
-        public EventLogDecoderLogMessages(ILogger logger, FileInfo file)
+        /// <param name="logger"></param>
+        /// <param name="serviceName"></param>
+        /// <param name="device"></param>
+        /// <param name="file"></param>
+        public EventLogDecoderLogMessages(ILogger logger, string serviceName, Device device, FileInfo file)
         {
             _logger = logger.WithAddedLabels(new Dictionary<string, string>()
             {
+                { "service", serviceName },
+                { "DeviceId", device.Id.ToString() },
+                { "deviceIdentifier", device?.DeviceIdentifier },
+                { "DeviceType", device?.DeviceType.ToString() },
+                { "DeviceStatus", device?.DeviceStatus.ToString() },
+                { "IPAddress", device?.Ipaddress?.ToString() },
+                { "ConfigurationId", device?.DeviceConfigurationId?.ToString() },
+                { "TransportProtocol", device?.DeviceConfiguration.Protocol.ToString() },
+                { "Model", device?.DeviceConfiguration?.Product?.Model },
                 { "FileName", file.FullName }
             });
         }

@@ -22,7 +22,7 @@ namespace Utah.Udot.Atspm.TempExtensions
 {
     //public static class ControllerEventLogExtensions
     //{
-    //    public static IReadOnlyList<ControllerEventLog> SetFirstAndLastPlan(
+    //    public static IReadOnlyList<ControllerEventLog> GetPlanEvents(
     //       this IEnumerable<ControllerEventLog> events,
     //       DateTime start,
     //       DateTime end)

@@ -65,10 +65,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
             {
                 ArgumentNullException.ThrowIfNull(resource);
 
-                if (resource.IsAbsoluteUri && Uri.IsWellFormedUriString(resource.ToString(), UriKind.Absolute))
-                    await DeleteResource(resource, token);
-                else
-                    throw new UriFormatException($"Invalid Uri {resource}");
+                await DeleteResource(resource, token);
             }
             catch (Exception e)
             {
@@ -115,9 +112,6 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
 
                 if (TryCreateFileInfo(local, out FileInfo file))
                 {
-                    Console.WriteLine($"==============================================================file: {file.FullName}");
-
-
                     file.Directory.Create();
 
                     return await DownloadResource(file, remote, token);

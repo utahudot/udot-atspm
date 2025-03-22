@@ -59,14 +59,33 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
             _client.Host = connection.Address.ToString();
             _client.Port = connection.Port;
             _client.Credentials = credentials;
-            _client.Config.DataConnectionConnectTimeout = connectionTimeout;
-            _client.Config.DataConnectionReadTimeout = operationTimeout;
             _client.Config.ConnectTimeout = connectionTimeout;
             _client.Config.ReadTimeout = operationTimeout;
-            _client.Config.DataConnectionType = FtpDataConnectionType.AutoActive;
 
-            var result = await _client.AutoConnect(token);
-            //await _client.Connect(token);
+            //https://github.com/robinrodricks/FluentFTP/wiki/Timeouts
+            if (connectionProperties != null && connectionProperties.TryGetValue("DataConnectionConnectTimeout", out string v1) && int.TryParse(v1, out int r1))
+            {
+                _client.Config.DataConnectionConnectTimeout = r1;
+            }
+
+            if (connectionProperties != null && connectionProperties.TryGetValue("DataConnectionReadTimeout", out string v2) && int.TryParse(v2, out int r2))
+            {
+                _client.Config.DataConnectionConnectTimeout = r2;
+            }
+
+            if (connectionProperties != null && connectionProperties.TryGetValue("DataConnectionType", out string v3) && Enum.TryParse(typeof(FtpDataConnectionType), v3, true, out object r3))
+            {
+                _client.Config.DataConnectionType = (FtpDataConnectionType)r3;
+            }
+
+            if (connectionProperties != null && connectionProperties.TryGetValue("AutoConnect", out string v4) && bool.TryParse(v4, out bool r4) && r4)
+            {
+                var result = await _client.AutoConnect(token);
+            }
+            else
+            {
+                await _client.Connect(token);
+            }
         }
 
         ///<inheritdoc/>
@@ -95,7 +114,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.DownloaderClients
         ///<inheritdoc/>
         protected override async Task<IEnumerable<Uri>> ListResources(string path, CancellationToken token = default, params string[] query)
         {
-            var result = await _client.GetListing(".." + path, FtpListOption.Auto, token);
+            var result = await _client.GetListing(path, FtpListOption.Auto, token);
 
             return result
                 .Where(w => w.Type == FtpObjectType.File)
