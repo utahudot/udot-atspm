@@ -3,7 +3,7 @@ name: Build Containers
 on:
   push:
     branches:
-      - main
+      - Staging
 
 permissions:
   id-token: write
@@ -46,21 +46,15 @@ jobs:
         id: auth
         uses: google-github-actions/auth@v2
         with:
-          create_credentials_file: true
-          token_format: access_token
-          workload_identity_provider: ${{ secrets.IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.SERVICE_ACCOUNT_EMAIL }}
+          credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
 
       - name: 🐳 Set up Docker Buildx
         id: builder
         uses: docker/setup-buildx-action@v3
 
       - name: 🗝️ Authenticate Docker to Google Cloud
-        uses: docker/login-action@v3
-        with:
-          registry: us-west3-docker.pkg.dev
-          username: oauth2accesstoken
-          password: ${{ steps.auth.outputs.access_token }}
+        run: |
+          gcloud auth configure-docker "us-docker.pkg.dev"
 
       - name: 🏷️ Extract tags from GitHub
         id: meta
@@ -68,15 +62,11 @@ jobs:
         with:
           images: ${{ vars.GCP_ARTIFACT_REPO }}/${{ matrix.name }}
           tags: |
-            type=ref,suffix=-{{sha}},event=branch
-            type=ref,prefix=pr-,suffix=-{{sha}},event=pr
-            type=semver,pattern={{version}}
             type=sha
-            latest
 
       - name: 📦 Build and push image
         uses: docker/build-push-action@v6
-        if: ${{ matrix.name != 'atspm-webui'}}
+        if: ${{ matrix.name != 'atspmwebsite'}}
         with:
           builder: ${{ steps.builder.outputs.name }}
           tags: ${{ steps.meta.outputs.tags }}
@@ -88,7 +78,7 @@ jobs:
 
       - name: 📦 Build and push image WebUI
         uses: docker/build-push-action@v6
-        if: ${{ matrix.name == 'atspm-webui'}}
+        if: ${{ matrix.name == 'atspmwebsite'}}
         with:
           builder: ${{ steps.builder.outputs.name }}
           tags: ${{ steps.meta.outputs.tags }}
@@ -96,3 +86,20 @@ jobs:
           push: true
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      - name: 🚀 Set Service Name and Region from JSON
+        id: service_and_region
+        run: |
+          # Load the service name from the JSON file based on the matrix name
+          service_name=$(jq -r --arg matrix_name "${{ matrix.name }}" '.[$matrix_name]' .github/service-names.json)
+          echo "SERVICE_NAME=$service_name" >> $GITHUB_ENV
+
+      - name: 🚀 Deploy to Cloud Run
+        if: ${{ success() }}
+        uses: google-github-actions/deploy-cloudrun@v0
+        with:
+          service: ${{ env.SERVICE_NAME }}  # Use the service name from the previous step
+          image: ${{ steps.meta.outputs.tags }}
+          region: ${{ secrets.GCP_REGION }}  # Use the region from the previous step
+          platform: managed
+          credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
