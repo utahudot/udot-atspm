@@ -1,0 +1,8 @@
+{
+  "atspmwebsite": "atspm-website",
+  "configapi": "config-api",
+  "dataapi": "data-api",
+  "identityapi": "identity-api",
+  "reportapi": "report-api",
+  "watchdog": "watchdog-job"
+}
