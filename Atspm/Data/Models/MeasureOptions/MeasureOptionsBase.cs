@@ -286,4 +286,17 @@ namespace Utah.Udot.Atspm.Data.Models.MeasureOptions
         public int MetricTypeId { get; set; } = 11;
         //public string LocationIdentifier { get; set; }
     }
+
+    public class TransitSignalPriorityOptions : MeasureOptionsBase
+
+    {
+        public IEnumerable<LocationPhases> LocationsAndPhases { get; set; }
+        public IEnumerable<DateTime> Dates { get; set; }
+    }
+
+    public class LocationPhases
+    {
+        public string LocationIdentifier { get; set; }
+        public List<int> DesignatedPhases { get; set; }
+    }
 }
