@@ -1,8 +1,4 @@
-import {
-  getLocationApproachesFromKey,
-  useGetLocationLocationsForSearch,
-  useGetRoute,
-} from '@/api/config/aTSPMConfigurationApi'
+import { useGetLocationLocationsForSearch } from '@/api/config/aTSPMConfigurationApi'
 import {
   SearchLocation as Location,
   Route,
@@ -10,7 +6,7 @@ import {
 import { Filters } from '@/features/locations/components/selectLocation'
 import LocationInput from '@/features/locations/components/selectLocation/LocationInput'
 import SelectLocationMap from '@/features/locations/components/selectLocationMap'
-import { TspLocation } from '@/pages/reports/transit-signal-priority'
+import { useGetRoutes } from '@/features/routes/api'
 import AddIcon from '@mui/icons-material/Add'
 import {
   Box,
@@ -24,7 +20,7 @@ import {
 import { useCallback, useMemo, useState } from 'react'
 
 interface MultipleLocationsSelectProps {
-  selectedLocations: TspLocation[]
+  selectedLocations: Location[]
   setLocations: (locations: Location[]) => void
   center?: [number, number]
   zoom?: number
@@ -36,7 +32,7 @@ const MultipleLocationsSelect = ({
   selectedLocations,
   setLocations,
 }: MultipleLocationsSelectProps) => {
-  const { data: routesData } = useGetRoute({ expand: 'routeLocations' })
+  const { data: routesData } = useGetRoutes()
   const { data: locationsData } = useGetLocationLocationsForSearch()
 
   const routes = useMemo(() => routesData?.value || [], [routesData])
@@ -45,7 +41,7 @@ const MultipleLocationsSelect = ({
     [locationsData]
   ) as Location[]
 
-  const [selectedLocation, setSelectedLocation] = useState<TspLocation>()
+  const [selectedLocation, setSelectedLocation] = useState<Location>()
   const [selectedRoute, setSelectedRoute] = useState<Route>()
   const [filters, setFilters] = useState<Filters>({})
 
@@ -72,7 +68,7 @@ const MultipleLocationsSelect = ({
     setSelectedRoute(route)
   }
 
-  const onAddRoute = async () => {
+  const onAddRoute = () => {
     if (!selectedRoute?.routeLocations) return
 
     const routeLocs = selectedRoute.routeLocations
@@ -84,27 +80,22 @@ const MultipleLocationsSelect = ({
       (loc) => !selectedLocations.some((sel) => sel.id === loc.id)
     )
     if (newLocations.length > 0) {
-      const newLocationsWithApproaches =
-        await addApproachesToLocations(newLocations)
-      setLocations([...selectedLocations, ...newLocationsWithApproaches])
+      setLocations([...selectedLocations, ...newLocations])
     }
   }
 
-  const onAddLocation = async () => {
+  const onAddLocation = () => {
     if (
       selectedLocation &&
       !selectedLocations.some((loc) => loc.id === selectedLocation.id)
     ) {
-      const selectedLocationWithApproaches = await addApproachesToLocations([
-        selectedLocation,
-      ])
-      setLocations([...selectedLocations, ...selectedLocationWithApproaches])
+      setLocations([...selectedLocations, selectedLocation])
     }
   }
 
   const handleLocationInputChange = (
     _: React.SyntheticEvent,
-    value: TspLocation | null
+    value: Location | null
   ) => {
     if (value) {
       setSelectedLocation(value)
@@ -188,21 +179,3 @@ const MultipleLocationsSelect = ({
 }
 
 export default MultipleLocationsSelect
-
-const addApproachesToLocations = async (locations: Location[]) => {
-  const updatedLocations = await Promise.all(
-    locations.map(async (loc) => {
-      try {
-        const approaches = await getLocationApproachesFromKey(loc.id)
-        return { ...loc, approaches: approaches.value, designatedPhases: [] }
-      } catch (error) {
-        console.error(
-          `Failed to fetch approaches for location ${loc.id}:`,
-          error
-        )
-        return { ...loc, approaches: [] }
-      }
-    })
-  )
-  return updatedLocations
-}

@@ -1,6 +1,6 @@
-import { SearchLocation as Location } from '@/api/config/aTSPMConfigurationApi.schemas'
 import Markers from '@/components/LocationMap/Markers'
 import MapFilters from '@/components/MapFilters'
+import { Location } from '@/features/locations/types'
 import { getEnv } from '@/utils/getEnv'
 import ClearIcon from '@mui/icons-material/Clear'
 import {
@@ -183,7 +183,7 @@ const LocationMap = ({
       scrollWheelZoom={true}
       style={{
         height: mapHeight || 'calc(100% - 80px)',
-        minHeight: mapHeight || '400px',
+        minHeight: '400px',
         width: '100%',
       }}
       ref={setMapRef}

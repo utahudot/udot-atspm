@@ -30,7 +30,7 @@ const customSort = (options: Location[], value: string) => {
 }
 
 interface LocationInputProps {
-  location: Location | undefined
+  location: Location | null
   locations: Location[]
   chartsDisabled?: boolean
   filters: Filters

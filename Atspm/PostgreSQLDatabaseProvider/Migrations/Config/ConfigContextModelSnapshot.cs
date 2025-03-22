@@ -1392,26 +1392,26 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations.Config
                         new
                         {
                             Id = 117,
-                            MeasureTypeId = 2,
+                        {
+                            Id = 117,
+=========
+>>>>>>>>> Temporary merge branch 2
+=========
+>>>>>>>>> Temporary merge branch 2
+                            Id = 118,
                             Option = "yAxisDefault",
                             Value = "100"
                         },
                         new
                         {
-                            Id = 118,
-                            MeasureTypeId = 6,
-                            Option = "yAxisDefault",
-                            Value = "150"
-                        },
-                        new
-                        {
+<<<<<<<<< Temporary merge branch 1
                             Id = 119,
-                            MeasureTypeId = 3,
-                            Option = "yAxisDefault",
-                            Value = "180"
-                        },
-                        new
-                        {
+                            Id = 118,
+=========
+                            Id = 117,
+>>>>>>>>> Temporary merge branch 2
+=========
+                            Id = 117,
                             Id = 120,
                             MeasureTypeId = 11,
                             Option = "yAxisDefault",
@@ -1459,6 +1459,44 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations.Config
                     b.ToTable("MeasureOptionPresets", t =>
                         {
                             t.HasComment("Measure Option Presets");
+                    b.Property<int>("MeasureTypeId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ModifiedByUserId")
+                        .IsRequired()
+                        .IsUnicode(false)
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("ModifiedOn")
+                        .HasColumnType("timestamp");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(512)
+                        .IsUnicode(false)
+                        .HasColumnType("character varying(512)");
+
+                    b.Property<JsonDocument>("SelectedParametersJson")
+                        .IsRequired()
+                        .HasColumnType("jsonb");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MeasureTypeId");
+
+                    b.ToTable("MeasureOptionsSave", t =>
+                        {
+                            t.HasComment("Measure Options Save");
+=========
+=========
+>>>>>>>>> Temporary merge branch 2
+                            Id = 119,
+                            MeasureTypeId = 11,
+                            Option = "yAxisDefault",
+                            Value = "20"
+<<<<<<<<< Temporary merge branch 1
+>>>>>>>>> Temporary merge branch 2
+=========
+>>>>>>>>> Temporary merge branch 2
                         });
                 });
 
@@ -1811,15 +1849,6 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations.Config
                             Name = "Ramp Metering",
                             ShowOnAggregationSite = false,
                             ShowOnWebsite = true
-                        },
-                        new
-                        {
-                            Id = 38,
-                            Abbreviation = "TSP",
-                            DisplayOrder = 132,
-                            Name = "Transit Signal Priority",
-                            ShowOnAggregationSite = false,
-                            ShowOnWebsite = false
                         });
                 });
 
@@ -2068,7 +2097,7 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations.Config
                     b.Property<string>("UserId")
                         .IsUnicode(false)
                         .HasColumnType("text");
-
+                        .HasDefaultValue(new DateTime(2025, 3, 20, 11, 59, 34, 480, DateTimeKind.Local).AddTicks(2399));
                     b.Property<int>("JurisdictionId")
                         .HasColumnType("integer");
 
@@ -2106,7 +2135,15 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations.Config
                     b.Property<DateTime>("Date")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp")
-                        .HasDefaultValue(new DateTime(2025, 3, 20, 11, 59, 34, 480, DateTimeKind.Local).AddTicks(2399));
+<<<<<<<<< Temporary merge branch 1
+<<<<<<<<< Temporary merge branch 1
+                        .HasDefaultValue(new DateTime(2025, 3, 2, 11, 15, 19, 354, DateTimeKind.Local).AddTicks(5945));
+=========
+                        .HasDefaultValue(new DateTime(2025, 2, 27, 9, 24, 49, 960, DateTimeKind.Local).AddTicks(1714));
+>>>>>>>>> Temporary merge branch 2
+=========
+                        .HasDefaultValue(new DateTime(2025, 2, 27, 9, 24, 49, 960, DateTimeKind.Local).AddTicks(1714));
+>>>>>>>>> Temporary merge branch 2
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -2332,17 +2369,17 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations.Config
 
                     b.Navigation("DeviceConfiguration");
 
-                    b.Navigation("Location");
-                });
-
-            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.DeviceConfiguration", b =>
+            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.MeasureOptionPreset", b =>
                 {
-                    b.HasOne("Utah.Udot.Atspm.Data.Models.Product", "Product")
-                        .WithMany()
-                        .HasForeignKey("ProductId");
+                    b.HasOne("Utah.Udot.Atspm.Data.Models.MeasureType", "MeasureType")
+                        .WithMany("MeasureOptionPresets")
+                        .HasForeignKey("MeasureTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Navigation("Product");
+                    b.Navigation("MeasureType");
                 });
+
 
             modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.Location", b =>
                 {
@@ -2378,10 +2415,10 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations.Config
                     b.Navigation("MeasureType");
                 });
 
-            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.MeasureOptionPreset", b =>
+            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.MeasureOptionsSave", b =>
                 {
                     b.HasOne("Utah.Udot.Atspm.Data.Models.MeasureType", "MeasureType")
-                        .WithMany("MeasureOptionPresets")
+                        .WithMany()
                         .HasForeignKey("MeasureTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();

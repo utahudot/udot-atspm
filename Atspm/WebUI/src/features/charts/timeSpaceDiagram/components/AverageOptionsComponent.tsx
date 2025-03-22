@@ -39,6 +39,7 @@ export const AverageOptionsComponent = (props: Props) => {
             changeStartTimePeriod={handler.changeStartTime}
             changeEndTimePeriod={handler.changeEndTime}
             timePeriod={true}
+            noCalendar={true}
           />
         </Paper>
         <Box display={'flex'} flexDirection={'column'} gap={2}>

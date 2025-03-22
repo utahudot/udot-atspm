@@ -173,7 +173,7 @@ namespace Utah.Udot.Atspm.Business.SplitFail
                 //TODO: Verify that this is not needed
                 //if (!events.Any())
                 //{
-                //    CheckForDetectorOnBeforeStart(_options, detector, splitFailPhaseData);
+                //    CheckForDetectorOnBeforeStart(options, detector, splitFailPhaseData);
                 //}
                 //else
                 //{

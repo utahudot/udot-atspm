@@ -17,22 +17,40 @@ module.exports = {
   //     },
   //   },
   // },
-  reports: {
+  data: {
     input: {
-      target: './orval-api-specs/reports-spec.json',
+      target: './data-spec.json',
     },
     output: {
-      target: './src/api/reports',
+      target: './src/api/data',
       client: 'react-query',
       templates: './orval-templates',
-      mock: true,
+      // mock: true,
       mode: 'split',
       override: {
         mutator: {
           path: './src/lib/axios.ts',
-          name: 'reportsRequest',
+          name: 'dataRequest',
         },
       },
     },
   },
+  // reports: {
+  //   input: {
+  //     target: './orval-api-specs/reports-spec.json',
+  //   },
+  //   output: {
+  //     target: './src/api/reports',
+  //     client: 'react-query',
+  //     templates: './orval-templates',
+  //     mock: true,
+  //     mode: 'split',
+  //     override: {
+  //       mutator: {
+  //         path: './src/lib/axios.ts',
+  //         name: 'reportsRequest',
+  //       },
+  //     },
+  //   },
+  // },
 }
