@@ -1,18 +1,21 @@
-import { StyledPaper } from '@/components/StyledPaper'
+import {
+  useGetLocationLatestVersionOfAllLocations,
+  useGetRouteDistance,
+  useGetRouteRouteViewFromId,
+  useUpsertRouteRoute,
+} from '@/api/config/aTSPMConfigurationApi'
 import { PageNames, useViewPage } from '@/features/identity/pagesCheck'
-import { useLatestVersionOfAllLocations } from '@/features/locations/api'
 import SelectLocation from '@/features/locations/components/selectLocation/SelectLocation'
 import { Location } from '@/features/locations/types'
-import { useGetRoute, usePutRoute } from '@/features/routes/api'
-import { useGetRouteDistances } from '@/features/routes/api/updateRouteDistance'
 import RouteEditor from '@/features/routes/components/routeEditor'
 import { Route, RouteDistance, RouteLocation } from '@/features/routes/types'
 import { ConfigEnum, useConfigEnums } from '@/hooks/useConfigEnums'
+import { useNotificationStore } from '@/stores/notifications'
 import { fetchRouteDistance } from '@/utils/fetchRouteDistance'
 import { navigateToPage } from '@/utils/routes'
 import { DropResult } from '@hello-pangea/dnd'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
-import { Box, Button, TextField } from '@mui/material'
+import { Box, Button, Paper, TextField } from '@mui/material'
 import { useRouter } from 'next/router'
 import React, { memo, useEffect, useState } from 'react'
 
@@ -22,10 +25,12 @@ const RouteAdmin = () => {
   const router = useRouter()
   const { id } = router.query
 
-  const { data: locationsData } = useLatestVersionOfAllLocations()
-  const { data: route } = useGetRoute(id as string)
-  const { data: routeDistancesData } = useGetRouteDistances()
-  const { mutate: updateRoute } = usePutRoute()
+  const { addNotification } = useNotificationStore()
+
+  const { data: locationsData } = useGetLocationLatestVersionOfAllLocations()
+  const { data: route } = useGetRouteRouteViewFromId(id as unknown as number)
+  const { data: routeDistancesData } = useGetRouteDistance()
+  const { mutate: updateRoute } = useUpsertRouteRoute()
 
   const { data: directionTypes } = useConfigEnums(ConfigEnum.DirectionTypes)
 
@@ -58,9 +63,21 @@ const RouteAdmin = () => {
   const fetchRouteDistanceAndUpdatePolyline = async (
     routeLocations: RouteLocation[]
   ) => {
-    const polylineResponse = await fetchRouteDistance(routeLocations)
-    if (polylineResponse) {
-      setRoutePolyline(polylineResponse.shape)
+    if (routeLocations.length < 2) {
+      setRoutePolyline([])
+      return
+    }
+
+    try {
+      const polylineResponse = await fetchRouteDistance(routeLocations)
+      if (polylineResponse) {
+        setRoutePolyline(polylineResponse.shape)
+      }
+    } catch (error) {
+      addNotification({
+        type: 'error',
+        title: 'Error fetching route distance',
+      })
     }
   }
 
@@ -250,8 +267,8 @@ const RouteAdmin = () => {
       })
     }
 
+    fetchRouteDistanceAndUpdatePolyline(updatedLinks)
     setUpdatedRoute({ ...updatedRoute, routeLocations: updatedLinks })
-    fetchRouteDistanceAndUpdatePolyline(updatedRoute.routeLocations)
   }
 
   const handleEditRouteName = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -294,13 +311,27 @@ const RouteAdmin = () => {
         )?.value || null
     })
 
-    updateRoute(clonedRoute, {
-      onSuccess: (data: Route) => {
-        if (!data.routeLocations) return
-        data.routeLocations.sort((a, b) => a.order - b.order)
-        setUpdatedRoute(data)
-      },
-    })
+    updateRoute(
+      { key: clonedRoute.id, data: clonedRoute },
+      {
+        onSuccess: (savedRoute: Route) => {
+          addNotification({
+            type: 'success',
+            title: 'Route saved successfully',
+          })
+          if (!savedRoute.routeLocations) return
+          savedRoute.routeLocations.sort((a, b) => a.order - b.order)
+          setUpdatedRoute(savedRoute)
+        },
+        onError: (error) => {
+          addNotification({
+            type: 'error',
+            title: 'Error saving route',
+            message: error.message,
+          })
+        },
+      }
+    )
   }
 
   return (
@@ -325,7 +356,7 @@ const RouteAdmin = () => {
         />
       </Box>
       <Box sx={{ display: 'flex' }}>
-        <StyledPaper sx={{ flexGrow: 1, minWidth: '400px', p: 3 }}>
+        <Paper sx={{ flexGrow: 1, minWidth: '400px', p: 3 }}>
           <SelectLocation
             location={location}
             setLocation={setLocation}
@@ -339,7 +370,7 @@ const RouteAdmin = () => {
             zoom={13}
             mapHeight={'calc(100vh - 330px)'}
           />
-        </StyledPaper>
+        </Paper>
         <RouteEditor
           hasErrors={hasErrors}
           route={updatedRoute}
