@@ -955,6 +955,63 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
                         });
                 });
 
+            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.MapLayer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CreatedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("timestamp");
+
+                    b.Property<string>("DeletedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("DeletedOn")
+                        .HasColumnType("timestamp");
+
+                    b.Property<string>("MapLayerUrl")
+                        .IsUnicode(false)
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsUnicode(false)
+                        .HasColumnType("text");
+
+                    b.Property<int?>("RefreshIntervalSeconds")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ServiceType")
+                        .IsUnicode(false)
+                        .HasColumnType("text");
+
+                    b.Property<bool>("ShowByDefault")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("UpdatedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("UpdatedOn")
+                        .HasColumnType("timestamp");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name");
+
+                    b.ToTable("MapLayer", t =>
+                        {
+                            t.HasComment("Map Layer");
+                        });
+                });
+
             modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.MeasureComment", b =>
                 {
                     b.Property<int>("Id")

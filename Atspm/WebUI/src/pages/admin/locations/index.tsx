@@ -4,6 +4,8 @@ import { ResponsivePageLayout } from '@/components/ResponsivePage'
 import { StyledPaper } from '@/components/StyledPaper'
 import { AddButton } from '@/components/addButton'
 import { PageNames, useViewPage } from '@/features/identity/pagesCheck'
+import LocationSetupWizard from '@/features/locations/components/LocationSetupWizard'
+import EditLocation from '@/features/locations/components/editLocation/EditLocation'
 import { sortApproachesByPhaseNumber } from '@/features/locations/components/editApproach/utils/sortApproaches'
 import LocationEditor from '@/features/locations/components/editLocation/EditLocation'
 import NewLocationModal from '@/features/locations/components/editLocation/NewLocationModal'
@@ -33,6 +35,19 @@ const LocationsAdmin = () => {
   const pageAccess = useViewPage(PageNames.Location)
   const [isModalOpen, setModalOpen] = useState(false)
 
+  const [isWizardOpen, setIsWizardOpen] = useState(false)
+
+  const locationHandler = useLocationConfigHandler({
+    location: location as Location,
+  })
+
+  if (pageAccess.isLoading) {
+    return null
+  }
+
+  const handleLocationChange = (newLocation: Location) => {
+    setLocation(newLocation)
+  }
   const handleSetLocation = useCallback(
     async (selectedLocation: Location | null) => {
       if (selectedLocation) {
@@ -47,6 +62,9 @@ const LocationsAdmin = () => {
   const openNewLocationModal = useCallback(() => setModalOpen(true), [])
   const closeModal = useCallback(() => setModalOpen(false), [])
 
+  const handleOpenWizard = () => {
+    setIsWizardOpen(true)
+  }
   if (pageAccess.isLoading) return null
 
   return (
@@ -56,6 +74,7 @@ const LocationsAdmin = () => {
         onClick={openNewLocationModal}
         sx={{ mb: 1, width: '200px' }}
       />
+
       <StyledPaper sx={{ width: '50%', minWidth: '400px', p: 3 }}>
         <SelectLocation
           location={location}
@@ -70,6 +89,8 @@ const LocationsAdmin = () => {
           setLocation={handleSetLocation}
         />
       )}
+
+      {location && <LocationSetupWizard />}
     </ResponsivePageLayout>
   )
 }
