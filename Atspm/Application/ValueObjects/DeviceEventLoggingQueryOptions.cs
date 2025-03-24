@@ -36,11 +36,6 @@ namespace Utah.Udot.Atspm.ValueObjects
         public IEnumerable<int> IncludeConfigurations { get; set; } = [];
 
         /// <summary>
-        /// List of <see cref="Device.Id"/> to include
-        /// </summary>
-        public IEnumerable<string> IncludedDevices { get; set; }
-
-        /// <summary>
         /// <see cref="DeviceTypes"/> to include
         /// </summary>
         public DeviceTypes DeviceType { get; set; } = DeviceTypes.Unknown;
