@@ -1,5 +1,5 @@
+import { Device } from '@/api/config/aTSPMConfigurationApi.schemas'
 import { useGetDeviceConfigurations } from '@/features/devices/api'
-import { Device } from '@/features/locations/types'
 import CircleIcon from '@mui/icons-material/Circle'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
 import QuestionMarkIcon from '@mui/icons-material/QuestionMark'
@@ -38,6 +38,7 @@ const deviceTypeMap = {
   FIRCamera: { label: 'FIR Camera', icon: <VideocamOutlinedIcon /> },
   LidarSensor: { label: 'Lidar Sensor', icon: <SensorsIcon /> },
   WavetronixSpeed: { label: 'Wavetronix Speed', icon: <SettingsRemoteIcon /> },
+  SpeedSensor: { label: 'Speed Sensor', icon: <SettingsRemoteIcon /> },
 }
 
 const StyledLabel = ({ children }: { children: React.ReactNode }) => (
@@ -142,7 +143,7 @@ const DeviceCard = ({ device, onEdit, onDelete }: DeviceCardProps) => {
           </Avatar>
           <Box sx={{ textAlign: 'left' }}>
             <Typography variant="h4" fontWeight={'bold'} component={'h3'}>
-              {deviceTypeMap[device.deviceType].label}
+              {deviceTypeMap[device.deviceType]?.label}
             </Typography>
           </Box>
         </Box>
