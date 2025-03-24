@@ -21,7 +21,7 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
 {
     public class LocationJurisdictionCommandOption : Option<IEnumerable<string>>
     {
-        public LocationJurisdictionCommandOption() : base("--jurisdictions", "Jurisdictions to include in filter")
+        public LocationJurisdictionCommandOption() : base("--jurisdictions", "List of jurisdiction names to include")
         {
             AllowMultipleArgumentsPerToken = true;
             AddAlias("-j");

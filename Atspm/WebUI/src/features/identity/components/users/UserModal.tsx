@@ -49,7 +49,7 @@ const userSchema = z.object({
 
 type UserFormData = z.infer<typeof userSchema>
 
-const UserModal: React.FC<ModalProps> = ({ isOpen, onClose, data, onSave }) => {
+const UserModal = ({ isOpen, onClose, data, onSave }: ModalProps) => {
   const { data: roles, isLoading } = useGetRoles()
   const {
     control,

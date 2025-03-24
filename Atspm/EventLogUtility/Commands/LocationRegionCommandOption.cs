@@ -21,7 +21,7 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
 {
     public class LocationRegionCommandOption : Option<IEnumerable<string>>
     {
-        public LocationRegionCommandOption() : base("--regions", "Regions to include in filter")
+        public LocationRegionCommandOption() : base("--regions", "List of region names to include")
         {
             AllowMultipleArgumentsPerToken = true;
             AddAlias("-r");
