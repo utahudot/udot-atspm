@@ -1,38 +1,19 @@
-import { getLocationFromKey } from '@/api/config/aTSPMConfigurationApi'
-import { Location } from '@/api/config/aTSPMConfigurationApi.schemas'
 import { ResponsivePageLayout } from '@/components/ResponsivePage'
 import { StyledPaper } from '@/components/StyledPaper'
 import { AddButton } from '@/components/addButton'
 import { PageNames, useViewPage } from '@/features/identity/pagesCheck'
 import LocationSetupWizard from '@/features/locations/components/LocationSetupWizard'
 import EditLocation from '@/features/locations/components/editLocation/EditLocation'
-import { sortApproachesByPhaseNumber } from '@/features/locations/components/editApproach/utils/sortApproaches'
-import LocationEditor from '@/features/locations/components/editLocation/EditLocation'
 import NewLocationModal from '@/features/locations/components/editLocation/NewLocationModal'
-import { useLocationStore } from '@/features/locations/components/editLocation/locationStore'
+import { useLocationConfigHandler } from '@/features/locations/components/editLocation/editLocationConfigHandler'
 import SelectLocation from '@/features/locations/components/selectLocation/SelectLocation'
-import { useCallback, useState } from 'react'
-
-export async function getLocation(locationId: number) {
-  const locationResponse = await getLocationFromKey(locationId, {
-    expand:
-      'areas, devices, approaches($expand=Detectors($expand=DetectionTypes, detectorComments))',
-  })
-  if (locationResponse?.value?.length) {
-    const newestLocation = locationResponse.value[0]
-    newestLocation.approaches = sortApproachesByPhaseNumber(
-      newestLocation.approaches
-    )
-    return newestLocation
-  }
-  return null
-}
+import { Location } from '@/features/locations/types/Location'
+import { useState } from 'react'
 
 const LocationsAdmin = () => {
-  const location = useLocationStore((s) => s.location)
-  const setLocation = useLocationStore((s) => s.setLocation)
-
   const pageAccess = useViewPage(PageNames.Location)
+
+  const [location, setLocation] = useState<Location | null>(null)
   const [isModalOpen, setModalOpen] = useState(false)
 
   const [isWizardOpen, setIsWizardOpen] = useState(false)
@@ -48,45 +29,39 @@ const LocationsAdmin = () => {
   const handleLocationChange = (newLocation: Location) => {
     setLocation(newLocation)
   }
-  const handleSetLocation = useCallback(
-    async (selectedLocation: Location | null) => {
-      if (selectedLocation) {
-        setLocation(await getLocation(selectedLocation.id))
-      } else {
-        setLocation(null)
-      }
-    },
-    [setLocation]
-  )
-
-  const openNewLocationModal = useCallback(() => setModalOpen(true), [])
-  const closeModal = useCallback(() => setModalOpen(false), [])
 
   const handleOpenWizard = () => {
     setIsWizardOpen(true)
   }
-  if (pageAccess.isLoading) return null
 
   return (
-    <ResponsivePageLayout title="Manage Locations">
+    <ResponsivePageLayout title={'Manage Locations'}>
       <AddButton
         label="New Location"
-        onClick={openNewLocationModal}
+        onClick={() => setModalOpen(true)}
         sx={{ mb: 1, width: '200px' }}
       />
 
       <StyledPaper sx={{ width: '50%', minWidth: '400px', p: 3 }}>
         <SelectLocation
           location={location}
-          setLocation={handleSetLocation}
+          setLocation={setLocation}
           mapHeight={400}
         />
       </StyledPaper>
-      {location && <LocationEditor />}
+
+      {location !== null ? (
+        <EditLocation
+          handler={locationHandler}
+          updateLocationVersion={setLocation}
+        />
+      ) : null}
+
       {isModalOpen && (
         <NewLocationModal
-          closeModal={closeModal}
-          setLocation={handleSetLocation}
+          closeModal={() => setModalOpen(false)}
+          setLocation={handleLocationChange}
+          onCreatedFromTemplate={handleOpenWizard}
         />
       )}
 

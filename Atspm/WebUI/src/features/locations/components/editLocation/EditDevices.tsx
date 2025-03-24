@@ -5,7 +5,6 @@ import {
   useGetDevicesForLocation,
 } from '@/features/devices/api/devices'
 import DeviceCard from '@/features/locations/components/editLocation/DeviceCard'
-import { useLocationStore } from '@/features/locations/components/editLocation/locationStore'
 import DeviceModal from '@/features/locations/components/editLocation/NewDeviceModal'
 import DevicesWizardPanel from '@/features/locations/components/LocationSetupWizard/DevicesWizardPanel.tsx/DevicesWizardPanel'
 import { useLocationWizardStore } from '@/features/locations/components/LocationSetupWizard/locationSetupWizardStore'
@@ -24,11 +23,9 @@ import {
 } from '@mui/material'
 import { useEffect, useState } from 'react'
 
-const EditDevices = () => {
-  const theme = useTheme()
-
-  const { location } = useLocationStore()
-  const locationId = location?.id
+interface EditDevicesProps {
+  locationId: string
+}
 
 export default function EditDevices({ locationId }: EditDevicesProps) {
   const theme = useTheme()
