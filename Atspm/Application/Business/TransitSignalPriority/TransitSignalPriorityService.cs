@@ -281,6 +281,15 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
                         phase.PriorityMax = 0;
                         continue;
                     }
+                    //Max extension is only on designated phases, and will not have a max reduction
+                    //Max extension is based of the max reduction of the other phases in the ring
+                    //Max reduction is on non designated phases, and will not have a max extension
+                    //TSP Max is only for non designated phases and is the max reductions
+                    //Max extension is the sum of the max reductions of the other phases in the ring
+                    //then compare ring 1 and 2 and take the lower value
+
+                    //pri min and max should use max extension not tsp max
+
                     if (parameters.LocationPhases.DesignatedPhases.Contains(phase.PhaseNumber) && phase.PhaseNumber >= 1 && phase.PhaseNumber <= 16)
                     {
                         //Sum of the non designated phase TSP Max for ring assume 16 phases 4 rings
@@ -304,7 +313,10 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
                             phase.MaxExtension = 0;
                         }
                         phase.MaxReduction = phase.RecommendedTSPMax.HasValue ? Convert.ToInt32(Math.Round(phase.RecommendedTSPMax.Value)) : 0; //TSP MAX
+
+                        //should use max reduction
                         phase.PriorityMin = phase.ProgrammedSplit > 0 ? Convert.ToInt32(Math.Round(phase.ProgrammedSplit - (phase.RecommendedTSPMax.HasValue ? phase.RecommendedTSPMax.Value : 0d))) : 0; // Program split minus tsp max
+                        //should use max extension
                         phase.PriorityMax = phase.ProgrammedSplit > 0 ? Convert.ToInt32(Math.Round(phase.ProgrammedSplit + (phase.RecommendedTSPMax.HasValue ? phase.RecommendedTSPMax.Value : 0d))) : 0; // Program split minus tsp max; //Program split plus the max extension
                     }
                     else
