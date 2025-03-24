@@ -54,8 +54,10 @@ namespace Utah.Udot.Atspm.ConfigApi.Services
             var sourceLocation = _locationRepository.GetVersionByIdDetached(locationId);
             if (sourceLocation != null)
             {
+                DateOnly dateOnly = DateOnly.Parse(yesterday);
+                DateTime dateTime = dateOnly.ToDateTime(TimeOnly.MinValue);
 
-                var compressedLocationsEvents = _eventLogRepository.GetArchivedEvents(sourceLocation.LocationIdentifier, DateOnly.Parse(yesterday), DateOnly.Parse(yesterday));
+                var compressedLocationsEvents = _eventLogRepository.GetArchivedEvents(sourceLocation.LocationIdentifier, dateTime, dateTime);
                 var indianaEvents = compressedLocationsEvents.Where(l => l.DataType == typeof(IndianaEvent)).SelectMany(s => s.Data).Cast<IndianaEvent>();
                 return ModifyLocationWithEvents(sourceLocation, indianaEvents);
             }
