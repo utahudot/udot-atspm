@@ -108,7 +108,7 @@ const SelectChart = ({
     const unsortedCharts = measureTypesData.value.reduce(
       (acc, measureType) => {
         if (
-          location.charts.includes(measureType.id) &&
+          location?.charts?.includes(measureType.id) &&
           measureType.showOnWebsite
         ) {
           const chartType = abbreviationToChartType[measureType.abbreviation]

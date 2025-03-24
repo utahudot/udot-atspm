@@ -5,16 +5,11 @@
  * ATSPM Log Data with OpenAPI, Swashbuckle, and API versioning.
  * OpenAPI spec version: 1.0
  */
-export type GetEventLogDaysWithEventLogsFromLocationIdentifierParams = {
-/**
- * Type that inherits from Utah.Udot.Atspm.Data.Models.EventLogModels.EventLogModelBase
- */
-dataType?: string;
-start?: string;
-end?: string;
+export type GetV1LoggingLogParams = {
+deviceIds?: string;
 };
 
-export type GetEventLogArchivedEventsFromLocationIdentifierAndDeviceIdAndDataTypeParams = {
+export type GetV1EventLogGetArchivedEventsLocationIdentifierDeviceIdDataTypeParams = {
 /**
  * Archive date of event to start with
  */
@@ -25,7 +20,7 @@ start?: string;
 end?: string;
 };
 
-export type GetEventLogArchivedEventsFromLocationIdentifierAndDataTypeParams = {
+export type GetV1EventLogGetArchivedEventsLocationIdentifierDataTypeParams = {
 /**
  * Archive date of event to start with
  */
@@ -36,7 +31,7 @@ start?: string;
 end?: string;
 };
 
-export type GetEventLogArchivedEventsFromLocationIdentifierAndDeviceIdParams = {
+export type GetV1EventLogGetArchivedEventsLocationIdentifierDeviceIdParams = {
 /**
  * Archive date of event to start with
  */
@@ -47,7 +42,7 @@ start?: string;
 end?: string;
 };
 
-export type GetEventLogArchivedEventsFromLocationIdentifierParams = {
+export type GetV1EventLogGetArchivedEventsLocationIdentifierParams = {
 /**
  * Archive date of event to start with
  */
@@ -58,7 +53,7 @@ start?: string;
 end?: string;
 };
 
-export type GetAggregationArchivedAggregationsFromLocationIdentifierAndDataTypeParams = {
+export type GetV1AggregationGetArchivedAggregationsLocationIdentifierDataTypeParams = {
 /**
  * Archive date of aggregation to start with
  */
@@ -69,7 +64,7 @@ start?: string;
 end?: string;
 };
 
-export type GetAggregationArchivedAggregationsFromLocationIdentifierParams = {
+export type GetV1AggregationGetArchivedAggregationsLocationIdentifierParams = {
 /**
  * Archive date of aggregation to start with
  */
@@ -79,6 +74,32 @@ start?: string;
  */
 end?: string;
 };
+
+export interface VisionCameraStatisticsEvent {
+  averageSpeed?: number;
+  leftToRightCount?: number;
+  leftTurnCount?: number;
+  locationIdentifier?: string | null;
+  occupancy?: number;
+  rightToLeftCount?: number;
+  rightTurnCount?: number;
+  throughCount?: number;
+  timestamp?: string;
+  volume?: number;
+  zoneId?: number;
+  zoneName?: string | null;
+}
+
+export interface VisionCameraDetectionEvent {
+  direction?: string | null;
+  length?: number;
+  locationIdentifier?: string | null;
+  objectType?: string | null;
+  speed?: number;
+  timestamp?: string;
+  zoneId?: number;
+  zoneName?: string | null;
+}
 
 export interface SpeedEvent {
   detectorId?: string | null;
@@ -232,6 +253,29 @@ export interface IndianaEvent {
   eventParam?: number;
   locationIdentifier?: string | null;
   timestamp?: string;
+}
+
+export type DeviceTypes = typeof DeviceTypes[keyof typeof DeviceTypes];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const DeviceTypes = {
+  NUMBER_0: 0,
+  NUMBER_1: 1,
+  NUMBER_2: 2,
+  NUMBER_3: 3,
+  NUMBER_4: 4,
+  NUMBER_5: 5,
+  NUMBER_6: 6,
+} as const;
+
+export interface DeviceEventDownload {
+  afterWorkflowEventCount?: number;
+  beforeWorkflowEventCount?: number;
+  changeInEventCount?: number;
+  deviceId?: number;
+  deviceType?: DeviceTypes;
+  ipaddress?: string | null;
 }
 
 export interface DetectorEventCountAggregation {

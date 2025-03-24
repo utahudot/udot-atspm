@@ -49,7 +49,7 @@ const PageClaimsCard = ({
     GeneralConfiguration: 'Manage faqs, areas, regions, jurisdictions, etc.',
     Data: 'Export raw event logs.',
     Watchdog:
-      'View the system’s watchdog logs and subscribe to daily watchdog email updates.',
+      'View the system�s watchdog logs and subscribe to daily watchdog email updates.',
     Report: 'View the left turn gap report.',
   }
 

@@ -50,8 +50,9 @@ builder.Host
         {
             o.JsonSerializerOptions.DictionaryKeyPolicy = JsonNamingPolicy.CamelCase;
             o.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
-            //o.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
-        })
+            o.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
+            o.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.Never;
+    })
         .AddOData(o =>
         {
             o.Count().Select().OrderBy().Expand().Filter().SetMaxTop(null);
@@ -124,13 +125,17 @@ builder.Host
             l.ResponseBodyLogLimit = 4096;
         });
 
-        s.AddAtspmDbContext(h);
-        s.AddAtspmEFConfigRepositories();
-        s.AddScoped<IRouteService, RouteService>();
-        s.AddScoped<IApproachService, ApproachService>();
-        s.AddPathBaseFilter(h);
-        s.AddAtspmIdentity(h);
-    });
+    s.AddAtspmDbContext(h);
+    s.AddAtspmEFConfigRepositories();
+
+    s.AddScoped<IRouteService, RouteService>();
+    s.AddScoped<IApproachService, ApproachService>();
+    s.AddScoped<SignalTemplateService>();
+
+    s.AddPathBaseFilter(h);
+
+    s.AddAtspmIdentity(h);
+});
 
 var app = builder.Build();
 
