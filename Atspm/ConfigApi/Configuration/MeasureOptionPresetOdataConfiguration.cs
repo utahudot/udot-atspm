@@ -17,11 +17,8 @@
 
 using Asp.Versioning;
 using Asp.Versioning.OData;
-using Google.Api;
 using Microsoft.OData.ModelBuilder;
-using Utah.Udot.Atspm.Business.Watchdog;
 using Utah.Udot.Atspm.Data.Models;
-using Utah.Udot.Atspm.Data.Models.MeasureOptions;
 
 namespace Utah.Udot.Atspm.ConfigApi.Configuration
 {
@@ -46,7 +43,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Configuration
 
 
                         var a = model.Collection.Function("GetMeasureOptionPresetTypes");
-                        a.ReturnsCollection<MeasureOptionsBase>();
+                        a.ReturnsCollection<string>();
 
                         break;
                     }
