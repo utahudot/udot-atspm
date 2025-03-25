@@ -132,6 +132,7 @@ builder.Host
         s.AddPathBaseFilter(h);
         s.AddAtspmIdentity(h);
     });
+builder.Services.AddControllers();
 
 var app = builder.Build();
 
