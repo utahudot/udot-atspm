@@ -123,17 +123,14 @@ builder.Host
             l.ResponseBodyLogLimit = 4096;
         });
 
-    s.AddAtspmDbContext(h);
-    s.AddAtspmEFConfigRepositories();
-
-    s.AddScoped<IRouteService, RouteService>();
-    s.AddScoped<IApproachService, ApproachService>();
-    s.AddScoped<SignalTemplateService>();
-
-    s.AddPathBaseFilter(h);
-
-    s.AddAtspmIdentity(h);
-});
+        s.AddAtspmDbContext(h);
+        s.AddAtspmEFConfigRepositories();
+        s.AddScoped<IRouteService, RouteService>();
+        s.AddScoped<IApproachService, ApproachService>();
+        s.AddScoped<ISignalTemplateService, SignalTemplateService>();
+        s.AddPathBaseFilter(h);
+        s.AddAtspmIdentity(h);
+    });
 
 var app = builder.Build();
 
