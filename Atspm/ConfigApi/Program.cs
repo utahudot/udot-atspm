@@ -124,6 +124,7 @@ builder.Host
             l.ResponseBodyLogLimit = 4096;
         });
 
+        s.AddControllers();
         s.AddAtspmDbContext(h);
         s.AddAtspmEFConfigRepositories();
         s.AddScoped<IRouteService, RouteService>();
@@ -132,7 +133,6 @@ builder.Host
         s.AddPathBaseFilter(h);
         s.AddAtspmIdentity(h);
     });
-builder.Services.AddControllers();
 
 var app = builder.Build();
 
@@ -160,10 +160,10 @@ app.UseSwaggerUI(o =>
     }
 });
 
+app.UseRouting();
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseVersionedODataBatching();
 app.MapControllers();
-
 app.Run();
