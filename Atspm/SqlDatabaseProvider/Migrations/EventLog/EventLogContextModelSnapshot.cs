@@ -32,6 +32,12 @@ namespace Utah.Udot.ATSPM.SqlDatabaseProvider.Migrations.EventLog
                     b.Property<int>("DeviceId")
                         .HasColumnType("int");
 
+                    b.Property<DateTime>("Start")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("End")
+                        .HasColumnType("datetime2");
+
                     b.Property<DateTime>("ArchiveDate")
                         .HasColumnType("Date");
 
@@ -43,7 +49,7 @@ namespace Utah.Udot.ATSPM.SqlDatabaseProvider.Migrations.EventLog
                         .HasMaxLength(32)
                         .HasColumnType("nvarchar(32)");
 
-                    b.HasKey("LocationIdentifier", "DeviceId", "ArchiveDate");
+                    b.HasKey("LocationIdentifier", "DeviceId", "Start", "End");
 
                     b.ToTable("CompressedEvents", t =>
                         {

@@ -32,6 +32,7 @@ interface LocationMapProps {
   filteredLocations: Location[]
   route?: number[][]
   center?: [number, number]
+  zoom?: number
   mapHeight?: number | string
   filters: Filters
   updateFilters: (filters: Partial<Filters>) => void
@@ -44,6 +45,7 @@ const LocationMap = ({
   filteredLocations,
   route,
   center,
+  zoom,
   mapHeight,
   filters,
   updateFilters,
@@ -51,6 +53,7 @@ const LocationMap = ({
   const theme = useTheme()
   const [mapRef, setMapRef] = useState<LeafletMap | null>(null)
   const [isFiltersOpen, setIsFiltersOpen] = useState(false)
+  const [hasFocusedRoute, setHasFocusedRoute] = useState(false)
   const filtersButtonRef = useRef(null)
 
   const [mapInfo, setMapInfo] = useState<{
@@ -58,7 +61,6 @@ const LocationMap = ({
     attribution: string
     initialLat: number
     initialLong: number
-    mapZoom: number
   } | null>(null)
 
   const locationsEnabledLength = locations.filter((l) => l.chartEnabled).length
@@ -71,7 +73,6 @@ const LocationMap = ({
         attribution: env.MAP_TILE_ATTRIBUTION,
         initialLat: parseFloat(env.MAP_DEFAULT_LATITUDE),
         initialLong: parseFloat(env.MAP_DEFAULT_LONGITUDE),
-        mapZoom: parseInt(env?.MAP_DEFAULT_ZOOM),
       })
     }
     fetchEnv()
@@ -87,6 +88,23 @@ const LocationMap = ({
       }
     }
   }, [location, mapRef, locations])
+
+  useEffect(() => {
+    if (location && mapRef) {
+      const markerLocation = locations.find((loc) => loc.id === location.id)
+      if (markerLocation) {
+        const { latitude, longitude } = markerLocation
+        mapRef.setView([latitude, longitude], 16)
+      }
+    } else if (route && mapRef && !hasFocusedRoute) {
+      const bounds = L.latLngBounds(route.map((coord) => [coord[0], coord[1]]))
+
+      if (bounds.isValid()) {
+        mapRef.fitBounds(bounds)
+        setHasFocusedRoute(true)
+      }
+    }
+  }, [location, mapRef, locations, route, hasFocusedRoute])
 
   // Resize the map when the container resizes
   useEffect(() => {
@@ -161,7 +179,7 @@ const LocationMap = ({
   return (
     <MapContainer
       center={center || [mapInfo.initialLat, mapInfo.initialLong]}
-      zoom={mapInfo.mapZoom || 6}
+      zoom={zoom || 6}
       scrollWheelZoom={true}
       style={{
         height: mapHeight || 'calc(100% - 80px)',
