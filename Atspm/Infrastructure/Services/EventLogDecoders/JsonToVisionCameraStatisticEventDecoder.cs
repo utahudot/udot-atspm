@@ -11,7 +11,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.EventLogDecoders
             var memoryStream = (MemoryStream)stream;
             var rootStats = memoryStream.ToArray().FromEncodedJson<Root>().statistics;
 
-            return rootStats.Select(x => new VisionCameraStatisticsEvent
+            var response = rootStats.Select(x => new VisionCameraStatisticsEvent
             {
                 LocationIdentifier = device.Location.LocationIdentifier,
                 ZoneId = x.zoneId,
@@ -26,6 +26,7 @@ namespace Utah.Udot.ATSPM.Infrastructure.Services.EventLogDecoders
                 LeftTurnCount = x.leftTurnCount,
                 LeftToRightCount = x.leftToRightCount
             });
+            return response;
         }
 
         private class Root
