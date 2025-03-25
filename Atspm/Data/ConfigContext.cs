@@ -114,6 +114,11 @@ namespace Utah.Udot.Atspm.Data
         public virtual DbSet<MeasureOption> MeasureOptions { get; set; }
 
         /// <summary>
+        /// Measure option presets
+        /// </summary>
+        public virtual DbSet<MeasureOptionPreset> MeasureOptionPresets { get; set; }
+
+        /// <summary>
         /// Measure type table
         /// </summary>
         public virtual DbSet<MeasureType> MeasureType { get; set; }
@@ -212,6 +217,7 @@ namespace Utah.Udot.Atspm.Data
             modelBuilder.ApplyConfiguration(new MenuItemConfiguration());
             modelBuilder.ApplyConfiguration(new MeasureCommentConfiguration());
             modelBuilder.ApplyConfiguration(new MeasureOptionsConfiguration());
+            modelBuilder.ApplyConfiguration(new MeasureOptionPresetConfiguration());
             modelBuilder.ApplyConfiguration(new MeasureTypeConfiguration());
             modelBuilder.ApplyConfiguration(new ProductConfiguration());
             modelBuilder.ApplyConfiguration(new RegionConfiguration());

@@ -18,6 +18,7 @@
 using Utah.Udot.Atspm.Business.ApproachSpeed;
 using Utah.Udot.Atspm.Business.PreemptService;
 using Utah.Udot.Atspm.Business.SplitFail;
+using Utah.Udot.Atspm.Business.TransitSignalPriority;
 using Utah.Udot.Atspm.Business.YellowRedActivations;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
 using Utah.Udot.Atspm.Extensions;
@@ -239,7 +240,7 @@ namespace Utah.Udot.Atspm.Business.Common
                             cycleEvents[i + 3].EventCode == 66))
                 .Select(i =>
                 {
-                    var termEvent = GetTerminationEventBetweenStartAndEnd(cycleEvents[i].Timestamp, cycleEvents[i + 3].Timestamp, terminationEvents);
+                    var termEvent = GetTerminationTypeBetweenStartAndEnd(cycleEvents[i].Timestamp, cycleEvents[i + 3].Timestamp, terminationEvents);
                     return new CycleSplitFail(cycleEvents[i].Timestamp, cycleEvents[i + 2].Timestamp, cycleEvents[i + 1].Timestamp,
                                               cycleEvents[i + 3].Timestamp, termEvent, options.FirstSecondsOfRed);
                 })
@@ -248,8 +249,41 @@ namespace Utah.Udot.Atspm.Business.Common
 
             return cycles;
         }
+        
+        public List<TransitSignalPriorityCycle> GetTransitSignalPriorityCycles(int phaseNumber, List<IndianaEvent> cycleEvents, List<IndianaEvent> terminationEvents)
+        {
+            if(cycleEvents.IsNullOrEmpty()) return new List<TransitSignalPriorityCycle>();
+            var cycleEventsForPhase = cycleEvents.Where(c => c.EventParam == phaseNumber).OrderBy(c => c.Timestamp).ToList();
+            var terminationEventsForPhase = terminationEvents.Where(c => c.EventParam == phaseNumber).ToList();
 
-        private static CycleSplitFail.TerminationType GetTerminationEventBetweenStartAndEnd(DateTime start,
+            var cleanTerminationEvents = CleanTerminationEvents(terminationEventsForPhase);
+            var cycles = Enumerable.Range(0, cycleEventsForPhase.Count - 3)
+                .Where(i => cycleEventsForPhase[i].EventCode ==1 &&
+                            cycleEventsForPhase[i + 1].EventCode == 8 &&
+                            cycleEventsForPhase[i + 2].EventCode == 10 &&
+                            cycleEventsForPhase[i + 3].EventCode == 11                             
+                            )
+                .Select(i =>
+                {
+                    var termEvent = GetTerminationTypeBetweenStartAndEnd(
+                        cycleEventsForPhase[i].Timestamp, 
+                        cycleEventsForPhase[i + 3].Timestamp,
+                        cleanTerminationEvents);
+                    return new TransitSignalPriorityCycle { 
+                        PhaseNumber = phaseNumber,
+                        GreenEvent = cycleEventsForPhase[i].Timestamp, 
+                        YellowEvent = cycleEventsForPhase[i + 1].Timestamp, 
+                        RedEvent = cycleEventsForPhase[i + 2].Timestamp,  
+                        EndRedClearanceEvent = cycleEventsForPhase[i + 3].Timestamp, 
+                        TerminationEvent  = GetTerminationEventBetweenStartAndEnd(cycleEventsForPhase[i].Timestamp, cycleEventsForPhase[i + 3].Timestamp, terminationEvents)
+                    };
+                })                
+                .ToList();
+
+            return cycles;
+        }
+
+        private static CycleSplitFail.TerminationType GetTerminationTypeBetweenStartAndEnd(DateTime start,
             DateTime end, IReadOnlyList<IndianaEvent> terminationEvents)
         {
             var terminationType = CycleSplitFail.TerminationType.Unknown;
@@ -265,6 +299,11 @@ namespace Utah.Udot.Atspm.Business.Common
             return terminationType;
         }
 
+        private static short? GetTerminationEventBetweenStartAndEnd(DateTime start,
+            DateTime end, IReadOnlyList<IndianaEvent> terminationEvents)
+        {
+            return terminationEvents.Where(t => t.Timestamp > start && t.Timestamp <= end).OrderBy(t => t.Timestamp).LastOrDefault()?.EventCode;
+        }
 
         private static YellowRedEventType GetYellowToRedEventType(short EventCode)
         {
@@ -639,6 +678,31 @@ namespace Utah.Udot.Atspm.Business.Common
                 await Task.WhenAll(tasks);
             }
             return cycles.Where(c => c.GreenEvent >= start && c.GreenEvent <= end || c.RedEvent <= end && c.RedEvent >= end).ToList();
+        }
+
+        public List<IndianaEvent> CleanTerminationEvents(IReadOnlyList<IndianaEvent> terminationEvents)
+        {
+
+            var sortedEvents = terminationEvents.OrderBy(x => x.Timestamp).ThenBy(y => y.EventCode).ToList();
+            var duplicateList = new List<IndianaEvent>();
+            for (int i = 0; i < sortedEvents.Count - 1; i++)
+            {
+                var event1 = sortedEvents[i];
+                var event2 = sortedEvents[i + 1];
+                if (event1.Timestamp == event2.Timestamp)
+                {
+                    if (event1.EventCode == 7)
+                        duplicateList.Add(event1);
+                    if (event2.EventCode == 7)
+                        duplicateList.Add(event2);
+                }
+            }
+
+            foreach (var e in duplicateList)
+            {
+                sortedEvents.Remove(e);
+            }
+            return sortedEvents;
         }
     }
 }
