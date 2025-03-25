@@ -28,6 +28,7 @@ using Utah.Udot.Atspm.ConfigApi.Configuration;
 using Utah.Udot.Atspm.ConfigApi.Services;
 using Utah.Udot.Atspm.ConfigApi.Utility;
 using Utah.Udot.Atspm.Infrastructure.Extensions;
+using Utah.Udot.ATSPM.ConfigApi.Utility;
 using Utah.Udot.NetStandardToolkit.Extensions;
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
@@ -97,6 +98,7 @@ builder.Host
             o.CustomOperationIds((controller, verb, action) => $"{verb}{controller}{action}");
             o.EnableAnnotations();
             o.AddJwtAuthorization();
+            o.DocumentFilter<GenerateMeasureOptionSchemas>();
         });
 
         var allowedHosts = builder.Configuration.GetSection("AllowedHosts").Get<string>() ?? "*";
