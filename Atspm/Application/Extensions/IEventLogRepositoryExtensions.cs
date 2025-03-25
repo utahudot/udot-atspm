@@ -16,7 +16,10 @@
 #endregion
 
 using System.Collections;
+using System.Collections.Generic;
 using Utah.Udot.Atspm.Repositories.EventLogRepositories;
+using Utah.Udot.Atspm.Specifications;
+using Utah.Udot.NetStandardToolkit.Extensions;
 
 namespace Utah.Udot.Atspm.Extensions
 {
@@ -61,6 +64,27 @@ namespace Utah.Udot.Atspm.Extensions
 
                 return input;
             }
+        }
+
+        /// <summary>
+        /// Returns a list of unique days that have event logs for the given location.
+        /// </summary>
+        /// <param name="locationIdentifier">The location identifier</param>
+        /// <param name="repo"></param>
+        /// <param name="dataType">Type of event log data to filter by.</param>
+        /// <param name="start">Start date</param>
+        /// <param name="end">End date</param>
+        /// <returns>A read-only list of days with event log data</returns>
+        public static IReadOnlyList<DateOnly> GetDaysWithEventLogs(this IEventLogRepository repo, string locationIdentifier, Type dataType, DateTime start, DateTime end)
+        {
+
+            return repo.GetList()
+                .FromSpecification(new CompressedEventLogSpecification(locationIdentifier, start, end))
+                .Where(x => x.DataType == dataType)
+                .Select(x => DateOnly.FromDateTime(x.Start))
+                .Distinct()
+                .OrderBy(d => d)
+                .ToList();
         }
     }
 }

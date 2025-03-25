@@ -19,6 +19,7 @@ using Asp.Versioning;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Utah.Udot.ATSPM.DataApi.Controllers;
+using Utah.Udot.Atspm.Extensions;
 
 namespace Utah.Udot.Atspm.DataApi.Controllers
 {
@@ -220,7 +221,7 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
         [Produces("application/json", "application/xml")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult GetDaysWithEventLogs(string locationIdentifier, string dataType, DateOnly month)
+        public IActionResult GetDaysWithEventLogs(string locationIdentifier, string dataType, DateTime start, DateTime end)
         {
 
             Type type;
@@ -234,7 +235,7 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
                 return BadRequest("Invalid data type");
             }
 
-            var result = _repository.GetDaysWithEventLogs(locationIdentifier, type, month);
+            var result = _repository.GetDaysWithEventLogs(locationIdentifier, type, start, end);
 
             return Ok(result);
         }
