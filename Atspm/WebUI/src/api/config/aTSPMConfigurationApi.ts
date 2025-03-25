@@ -113,12 +113,17 @@ import type {
   GetMeasureOptionCountParams,
   GetMeasureOptionFromKeyParams,
   GetMeasureOptionParams,
+  GetMeasureOptionPresetCountParams,
+  GetMeasureOptionPresetFromKeyParams,
+  GetMeasureOptionPresetParams,
   GetMeasureTypeCountParams,
   GetMeasureTypeDetectionTypesCountFromKeyParams,
   GetMeasureTypeDetectionTypesFromKeyParams,
   GetMeasureTypeFromKeyParams,
   GetMeasureTypeMeasureCommentsCountFromKeyParams,
   GetMeasureTypeMeasureCommentsFromKeyParams,
+  GetMeasureTypeMeasureOptionPresetsCountFromKeyParams,
+  GetMeasureTypeMeasureOptionPresetsFromKeyParams,
   GetMeasureTypeParams,
   GetMenuItemsCountParams,
   GetMenuItemsFromKeyParams,
@@ -159,6 +164,7 @@ import type {
   LocationType,
   MeasureComment,
   MeasureOption,
+  MeasureOptionPreset,
   MeasureType,
   MenuItem,
   PatchApproachFromKeyParams,
@@ -175,6 +181,7 @@ import type {
   PatchLocationTypeFromKeyParams,
   PatchMeasureCommentFromKeyParams,
   PatchMeasureOptionFromKeyParams,
+  PatchMeasureOptionPresetFromKeyParams,
   PatchMeasureTypeFromKeyParams,
   PatchMenuItemsFromKeyParams,
   PatchProductFromKeyParams,
@@ -198,6 +205,7 @@ import type {
   PostLocationTypeParams,
   PostMeasureCommentParams,
   PostMeasureOptionParams,
+  PostMeasureOptionPresetParams,
   PostMeasureTypeParams,
   PostMenuItemsParams,
   PostProductParams,
@@ -222,6 +230,7 @@ import type {
   PutLocationTypeFromKeyParams,
   PutMeasureCommentFromKeyParams,
   PutMeasureOptionFromKeyParams,
+  PutMeasureOptionPresetFromKeyParams,
   PutMeasureTypeFromKeyParams,
   PutMenuItemsFromKeyParams,
   PutProductFromKeyParams,
@@ -813,10 +822,7 @@ export const usePatchApproachFromKey = <
 }
 
 export const deleteApproachFromKey = (key: number) => {
-  return configRequest<void>({
-    url: `/Approach/${key}`,
-    method: 'DELETE',
-  })
+  return configRequest<void>({ url: `/Approach/${key}`, method: 'DELETE' })
 }
 
 export const getDeleteApproachFromKeyMutationOptions = <
@@ -1369,12 +1375,7 @@ export const usePostArea = <TError = unknown, TContext = unknown>(options?: {
  * @summary Collection of objects from oData query.
  */
 export const getArea = (params?: GetAreaParams, signal?: AbortSignal) => {
-  return configRequest<Area[]>({
-    url: `/Area`,
-    method: 'GET',
-    params,
-    signal,
-  })
+  return configRequest<Area[]>({ url: `/Area`, method: 'GET', params, signal })
 }
 
 export const getGetAreaQueryKey = (params?: GetAreaParams) => {
@@ -2698,10 +2699,7 @@ export const usePatchDetectionTypeFromKey = <
  * @summary Delete object of specified type
  */
 export const deleteDetectionTypeFromKey = (key: string) => {
-  return configRequest<void>({
-    url: `/DetectionType/${key}`,
-    method: 'DELETE',
-  })
+  return configRequest<void>({ url: `/DetectionType/${key}`, method: 'DELETE' })
 }
 
 export const getDeleteDetectionTypeFromKeyMutationOptions = <
@@ -3629,10 +3627,7 @@ export const usePatchDetectorFromKey = <
  * @summary Delete object of specified type
  */
 export const deleteDetectorFromKey = (key: number) => {
-  return configRequest<void>({
-    url: `/Detector/${key}`,
-    method: 'DELETE',
-  })
+  return configRequest<void>({ url: `/Detector/${key}`, method: 'DELETE' })
 }
 
 export const getDeleteDetectorFromKeyMutationOptions = <
@@ -6973,10 +6968,7 @@ export const usePatchDirectionTypeFromKey = <
  * @summary Delete object of specified type
  */
 export const deleteDirectionTypeFromKey = (key: string) => {
-  return configRequest<void>({
-    url: `/DirectionType/${key}`,
-    method: 'DELETE',
-  })
+  return configRequest<void>({ url: `/DirectionType/${key}`, method: 'DELETE' })
 }
 
 export const getDeleteDirectionTypeFromKeyMutationOptions = <
@@ -7100,12 +7092,7 @@ export const usePostFaq = <TError = unknown, TContext = unknown>(options?: {
  * @summary Collection of objects from oData query.
  */
 export const getFaq = (params?: GetFaqParams, signal?: AbortSignal) => {
-  return configRequest<Faq[]>({
-    url: `/Faq`,
-    method: 'GET',
-    params,
-    signal,
-  })
+  return configRequest<Faq[]>({ url: `/Faq`, method: 'GET', params, signal })
 }
 
 export const getGetFaqQueryKey = (params?: GetFaqParams) => {
@@ -7949,10 +7936,7 @@ export const usePatchJurisdictionFromKey = <
 }
 
 export const deleteJurisdictionFromKey = (key: number) => {
-  return configRequest<void>({
-    url: `/Jurisdiction/${key}`,
-    method: 'DELETE',
-  })
+  return configRequest<void>({ url: `/Jurisdiction/${key}`, method: 'DELETE' })
 }
 
 export const getDeleteJurisdictionFromKeyMutationOptions = <
@@ -9940,10 +9924,7 @@ export const usePatchLocationFromKey = <
  * @summary Delete object of specified type
  */
 export const deleteLocationFromKey = (key: number) => {
-  return configRequest<void>({
-    url: `/Location/${key}`,
-    method: 'DELETE',
-  })
+  return configRequest<void>({ url: `/Location/${key}`, method: 'DELETE' })
 }
 
 export const getDeleteLocationFromKeyMutationOptions = <
@@ -10685,10 +10666,7 @@ export const usePatchLocationTypeFromKey = <
  * @summary Delete object of specified type
  */
 export const deleteLocationTypeFromKey = (key: number) => {
-  return configRequest<void>({
-    url: `/LocationType/${key}`,
-    method: 'DELETE',
-  })
+  return configRequest<void>({ url: `/LocationType/${key}`, method: 'DELETE' })
 }
 
 export const getDeleteLocationTypeFromKeyMutationOptions = <
@@ -12023,10 +12001,7 @@ export const usePatchMeasureOptionFromKey = <
  * @summary Delete object of specified type
  */
 export const deleteMeasureOptionFromKey = (key: number) => {
-  return configRequest<void>({
-    url: `/MeasureOption/${key}`,
-    method: 'DELETE',
-  })
+  return configRequest<void>({ url: `/MeasureOption/${key}`, method: 'DELETE' })
 }
 
 export const getDeleteMeasureOptionFromKeyMutationOptions = <
@@ -12080,6 +12055,587 @@ export const useDeleteMeasureOptionFromKey = <
   >
 }) => {
   const mutationOptions = getDeleteMeasureOptionFromKeyMutationOptions(options)
+
+  return useMutation(mutationOptions)
+}
+
+/**
+ * @summary Collection of objects from oData query.
+ */
+export const getMeasureOptionPreset = (
+  params?: GetMeasureOptionPresetParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<MeasureOptionPreset[]>({
+    url: `/MeasureOptionPreset`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getGetMeasureOptionPresetQueryKey = (
+  params?: GetMeasureOptionPresetParams
+) => {
+  return [`/MeasureOptionPreset`, ...(params ? [params] : [])] as const
+}
+
+export const getGetMeasureOptionPresetQueryOptions = <
+  TData = Awaited<ReturnType<typeof getMeasureOptionPreset>>,
+  TError = void,
+>(
+  params?: GetMeasureOptionPresetParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getMeasureOptionPreset>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ?? getGetMeasureOptionPresetQueryKey(params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getMeasureOptionPreset>>
+  > = ({ signal }) => getMeasureOptionPreset(params, signal)
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getMeasureOptionPreset>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type GetMeasureOptionPresetQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getMeasureOptionPreset>>
+>
+export type GetMeasureOptionPresetQueryError = void
+
+/**
+ * @summary Collection of objects from oData query.
+ */
+export const useGetMeasureOptionPreset = <
+  TData = Awaited<ReturnType<typeof getMeasureOptionPreset>>,
+  TError = void,
+>(
+  params?: GetMeasureOptionPresetParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getMeasureOptionPreset>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getGetMeasureOptionPresetQueryOptions(params, options)
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
+ * @summary Insert object of specified type
+ */
+export const postMeasureOptionPreset = (
+  measureOptionPreset: MeasureOptionPreset,
+  params?: PostMeasureOptionPresetParams
+) => {
+  return configRequest<void>({
+    url: `/MeasureOptionPreset`,
+    method: 'POST',
+    headers: {
+      'Content-Type':
+        'application/json;odata.metadata=minimal;odata.streaming=true',
+    },
+    data: measureOptionPreset,
+    params,
+  })
+}
+
+export const getPostMeasureOptionPresetMutationOptions = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postMeasureOptionPreset>>,
+    TError,
+    { data: MeasureOptionPreset; params?: PostMeasureOptionPresetParams },
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof postMeasureOptionPreset>>,
+  TError,
+  { data: MeasureOptionPreset; params?: PostMeasureOptionPresetParams },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof postMeasureOptionPreset>>,
+    { data: MeasureOptionPreset; params?: PostMeasureOptionPresetParams }
+  > = (props) => {
+    const { data, params } = props ?? {}
+
+    return postMeasureOptionPreset(data, params)
+  }
+
+  return { mutationFn, ...mutationOptions }
+}
+
+export type PostMeasureOptionPresetMutationResult = NonNullable<
+  Awaited<ReturnType<typeof postMeasureOptionPreset>>
+>
+export type PostMeasureOptionPresetMutationBody = MeasureOptionPreset
+export type PostMeasureOptionPresetMutationError = unknown
+
+/**
+ * @summary Insert object of specified type
+ */
+export const usePostMeasureOptionPreset = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postMeasureOptionPreset>>,
+    TError,
+    { data: MeasureOptionPreset; params?: PostMeasureOptionPresetParams },
+    TContext
+  >
+}) => {
+  const mutationOptions = getPostMeasureOptionPresetMutationOptions(options)
+
+  return useMutation(mutationOptions)
+}
+
+/**
+ * @summary Collection of objects from oData query.
+ */
+export const getMeasureOptionPresetCount = (
+  params?: GetMeasureOptionPresetCountParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<MeasureOptionPreset[]>({
+    url: `/MeasureOptionPreset/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getGetMeasureOptionPresetCountQueryKey = (
+  params?: GetMeasureOptionPresetCountParams
+) => {
+  return [`/MeasureOptionPreset/$count`, ...(params ? [params] : [])] as const
+}
+
+export const getGetMeasureOptionPresetCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof getMeasureOptionPresetCount>>,
+  TError = void,
+>(
+  params?: GetMeasureOptionPresetCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getMeasureOptionPresetCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ?? getGetMeasureOptionPresetCountQueryKey(params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getMeasureOptionPresetCount>>
+  > = ({ signal }) => getMeasureOptionPresetCount(params, signal)
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getMeasureOptionPresetCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type GetMeasureOptionPresetCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getMeasureOptionPresetCount>>
+>
+export type GetMeasureOptionPresetCountQueryError = void
+
+/**
+ * @summary Collection of objects from oData query.
+ */
+export const useGetMeasureOptionPresetCount = <
+  TData = Awaited<ReturnType<typeof getMeasureOptionPresetCount>>,
+  TError = void,
+>(
+  params?: GetMeasureOptionPresetCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getMeasureOptionPresetCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getGetMeasureOptionPresetCountQueryOptions(
+    params,
+    options
+  )
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
+ * @summary object with key from oData query.
+ */
+export const getMeasureOptionPresetFromKey = (
+  key: number,
+  params?: GetMeasureOptionPresetFromKeyParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<MeasureOptionPreset>({
+    url: `/MeasureOptionPreset/${key}`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getGetMeasureOptionPresetFromKeyQueryKey = (
+  key: number,
+  params?: GetMeasureOptionPresetFromKeyParams
+) => {
+  return [`/MeasureOptionPreset/${key}`, ...(params ? [params] : [])] as const
+}
+
+export const getGetMeasureOptionPresetFromKeyQueryOptions = <
+  TData = Awaited<ReturnType<typeof getMeasureOptionPresetFromKey>>,
+  TError = void,
+>(
+  key: number,
+  params?: GetMeasureOptionPresetFromKeyParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getMeasureOptionPresetFromKey>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getGetMeasureOptionPresetFromKeyQueryKey(key, params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getMeasureOptionPresetFromKey>>
+  > = ({ signal }) => getMeasureOptionPresetFromKey(key, params, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!key,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getMeasureOptionPresetFromKey>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type GetMeasureOptionPresetFromKeyQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getMeasureOptionPresetFromKey>>
+>
+export type GetMeasureOptionPresetFromKeyQueryError = void
+
+/**
+ * @summary object with key from oData query.
+ */
+export const useGetMeasureOptionPresetFromKey = <
+  TData = Awaited<ReturnType<typeof getMeasureOptionPresetFromKey>>,
+  TError = void,
+>(
+  key: number,
+  params?: GetMeasureOptionPresetFromKeyParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getMeasureOptionPresetFromKey>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getGetMeasureOptionPresetFromKeyQueryOptions(
+    key,
+    params,
+    options
+  )
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+export const putMeasureOptionPresetFromKey = (
+  key: number,
+  measureOptionPreset: MeasureOptionPreset,
+  params?: PutMeasureOptionPresetFromKeyParams
+) => {
+  return configRequest<void>({
+    url: `/MeasureOptionPreset/${key}`,
+    method: 'PUT',
+    headers: {
+      'Content-Type':
+        'application/json;odata.metadata=minimal;odata.streaming=true',
+    },
+    data: measureOptionPreset,
+    params,
+  })
+}
+
+export const getPutMeasureOptionPresetFromKeyMutationOptions = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof putMeasureOptionPresetFromKey>>,
+    TError,
+    {
+      key: number
+      data: MeasureOptionPreset
+      params?: PutMeasureOptionPresetFromKeyParams
+    },
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof putMeasureOptionPresetFromKey>>,
+  TError,
+  {
+    key: number
+    data: MeasureOptionPreset
+    params?: PutMeasureOptionPresetFromKeyParams
+  },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof putMeasureOptionPresetFromKey>>,
+    {
+      key: number
+      data: MeasureOptionPreset
+      params?: PutMeasureOptionPresetFromKeyParams
+    }
+  > = (props) => {
+    const { key, data, params } = props ?? {}
+
+    return putMeasureOptionPresetFromKey(key, data, params)
+  }
+
+  return { mutationFn, ...mutationOptions }
+}
+
+export type PutMeasureOptionPresetFromKeyMutationResult = NonNullable<
+  Awaited<ReturnType<typeof putMeasureOptionPresetFromKey>>
+>
+export type PutMeasureOptionPresetFromKeyMutationBody = MeasureOptionPreset
+export type PutMeasureOptionPresetFromKeyMutationError = unknown
+
+export const usePutMeasureOptionPresetFromKey = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof putMeasureOptionPresetFromKey>>,
+    TError,
+    {
+      key: number
+      data: MeasureOptionPreset
+      params?: PutMeasureOptionPresetFromKeyParams
+    },
+    TContext
+  >
+}) => {
+  const mutationOptions =
+    getPutMeasureOptionPresetFromKeyMutationOptions(options)
+
+  return useMutation(mutationOptions)
+}
+
+/**
+ * @summary Update object of specified type
+ */
+export const patchMeasureOptionPresetFromKey = (
+  key: number,
+  measureOptionPreset: MeasureOptionPreset,
+  params?: PatchMeasureOptionPresetFromKeyParams
+) => {
+  return configRequest<void>({
+    url: `/MeasureOptionPreset/${key}`,
+    method: 'PATCH',
+    headers: {
+      'Content-Type':
+        'application/json;odata.metadata=minimal;odata.streaming=true',
+    },
+    data: measureOptionPreset,
+    params,
+  })
+}
+
+export const getPatchMeasureOptionPresetFromKeyMutationOptions = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof patchMeasureOptionPresetFromKey>>,
+    TError,
+    {
+      key: number
+      data: MeasureOptionPreset
+      params?: PatchMeasureOptionPresetFromKeyParams
+    },
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof patchMeasureOptionPresetFromKey>>,
+  TError,
+  {
+    key: number
+    data: MeasureOptionPreset
+    params?: PatchMeasureOptionPresetFromKeyParams
+  },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof patchMeasureOptionPresetFromKey>>,
+    {
+      key: number
+      data: MeasureOptionPreset
+      params?: PatchMeasureOptionPresetFromKeyParams
+    }
+  > = (props) => {
+    const { key, data, params } = props ?? {}
+
+    return patchMeasureOptionPresetFromKey(key, data, params)
+  }
+
+  return { mutationFn, ...mutationOptions }
+}
+
+export type PatchMeasureOptionPresetFromKeyMutationResult = NonNullable<
+  Awaited<ReturnType<typeof patchMeasureOptionPresetFromKey>>
+>
+export type PatchMeasureOptionPresetFromKeyMutationBody = MeasureOptionPreset
+export type PatchMeasureOptionPresetFromKeyMutationError = unknown
+
+/**
+ * @summary Update object of specified type
+ */
+export const usePatchMeasureOptionPresetFromKey = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof patchMeasureOptionPresetFromKey>>,
+    TError,
+    {
+      key: number
+      data: MeasureOptionPreset
+      params?: PatchMeasureOptionPresetFromKeyParams
+    },
+    TContext
+  >
+}) => {
+  const mutationOptions =
+    getPatchMeasureOptionPresetFromKeyMutationOptions(options)
+
+  return useMutation(mutationOptions)
+}
+
+/**
+ * @summary Delete object of specified type
+ */
+export const deleteMeasureOptionPresetFromKey = (key: number) => {
+  return configRequest<void>({
+    url: `/MeasureOptionPreset/${key}`,
+    method: 'DELETE',
+  })
+}
+
+export const getDeleteMeasureOptionPresetFromKeyMutationOptions = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteMeasureOptionPresetFromKey>>,
+    TError,
+    { key: number },
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof deleteMeasureOptionPresetFromKey>>,
+  TError,
+  { key: number },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof deleteMeasureOptionPresetFromKey>>,
+    { key: number }
+  > = (props) => {
+    const { key } = props ?? {}
+
+    return deleteMeasureOptionPresetFromKey(key)
+  }
+
+  return { mutationFn, ...mutationOptions }
+}
+
+export type DeleteMeasureOptionPresetFromKeyMutationResult = NonNullable<
+  Awaited<ReturnType<typeof deleteMeasureOptionPresetFromKey>>
+>
+
+export type DeleteMeasureOptionPresetFromKeyMutationError = unknown
+
+/**
+ * @summary Delete object of specified type
+ */
+export const useDeleteMeasureOptionPresetFromKey = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteMeasureOptionPresetFromKey>>,
+    TError,
+    { key: number },
+    TContext
+  >
+}) => {
+  const mutationOptions =
+    getDeleteMeasureOptionPresetFromKeyMutationOptions(options)
 
   return useMutation(mutationOptions)
 }
@@ -12472,6 +13028,216 @@ export const useGetMeasureTypeMeasureCommentsCountFromKey = <
     params,
     options
   )
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
+ * @summary Utah.Udot.Atspm.Data.Models.MeasureOptionPreset navigation property action
+ */
+export const getMeasureTypeMeasureOptionPresetsFromKey = (
+  key: number,
+  params?: GetMeasureTypeMeasureOptionPresetsFromKeyParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<MeasureOptionPreset[]>({
+    url: `/MeasureType/${key}/measureOptionPresets`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getGetMeasureTypeMeasureOptionPresetsFromKeyQueryKey = (
+  key: number,
+  params?: GetMeasureTypeMeasureOptionPresetsFromKeyParams
+) => {
+  return [
+    `/MeasureType/${key}/measureOptionPresets`,
+    ...(params ? [params] : []),
+  ] as const
+}
+
+export const getGetMeasureTypeMeasureOptionPresetsFromKeyQueryOptions = <
+  TData = Awaited<ReturnType<typeof getMeasureTypeMeasureOptionPresetsFromKey>>,
+  TError = void,
+>(
+  key: number,
+  params?: GetMeasureTypeMeasureOptionPresetsFromKeyParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getMeasureTypeMeasureOptionPresetsFromKey>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getGetMeasureTypeMeasureOptionPresetsFromKeyQueryKey(key, params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getMeasureTypeMeasureOptionPresetsFromKey>>
+  > = ({ signal }) =>
+    getMeasureTypeMeasureOptionPresetsFromKey(key, params, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!key,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getMeasureTypeMeasureOptionPresetsFromKey>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type GetMeasureTypeMeasureOptionPresetsFromKeyQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getMeasureTypeMeasureOptionPresetsFromKey>>
+>
+export type GetMeasureTypeMeasureOptionPresetsFromKeyQueryError = void
+
+/**
+ * @summary Utah.Udot.Atspm.Data.Models.MeasureOptionPreset navigation property action
+ */
+export const useGetMeasureTypeMeasureOptionPresetsFromKey = <
+  TData = Awaited<ReturnType<typeof getMeasureTypeMeasureOptionPresetsFromKey>>,
+  TError = void,
+>(
+  key: number,
+  params?: GetMeasureTypeMeasureOptionPresetsFromKeyParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getMeasureTypeMeasureOptionPresetsFromKey>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getGetMeasureTypeMeasureOptionPresetsFromKeyQueryOptions(
+    key,
+    params,
+    options
+  )
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
+ * @summary Utah.Udot.Atspm.Data.Models.MeasureOptionPreset navigation property action
+ */
+export const getMeasureTypeMeasureOptionPresetsCountFromKey = (
+  key: number,
+  params?: GetMeasureTypeMeasureOptionPresetsCountFromKeyParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<MeasureOptionPreset[]>({
+    url: `/MeasureType/${key}/measureOptionPresets/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getGetMeasureTypeMeasureOptionPresetsCountFromKeyQueryKey = (
+  key: number,
+  params?: GetMeasureTypeMeasureOptionPresetsCountFromKeyParams
+) => {
+  return [
+    `/MeasureType/${key}/measureOptionPresets/$count`,
+    ...(params ? [params] : []),
+  ] as const
+}
+
+export const getGetMeasureTypeMeasureOptionPresetsCountFromKeyQueryOptions = <
+  TData = Awaited<
+    ReturnType<typeof getMeasureTypeMeasureOptionPresetsCountFromKey>
+  >,
+  TError = void,
+>(
+  key: number,
+  params?: GetMeasureTypeMeasureOptionPresetsCountFromKeyParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<
+        ReturnType<typeof getMeasureTypeMeasureOptionPresetsCountFromKey>
+      >,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getGetMeasureTypeMeasureOptionPresetsCountFromKeyQueryKey(key, params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getMeasureTypeMeasureOptionPresetsCountFromKey>>
+  > = ({ signal }) =>
+    getMeasureTypeMeasureOptionPresetsCountFromKey(key, params, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!key,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getMeasureTypeMeasureOptionPresetsCountFromKey>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type GetMeasureTypeMeasureOptionPresetsCountFromKeyQueryResult =
+  NonNullable<
+    Awaited<ReturnType<typeof getMeasureTypeMeasureOptionPresetsCountFromKey>>
+  >
+export type GetMeasureTypeMeasureOptionPresetsCountFromKeyQueryError = void
+
+/**
+ * @summary Utah.Udot.Atspm.Data.Models.MeasureOptionPreset navigation property action
+ */
+export const useGetMeasureTypeMeasureOptionPresetsCountFromKey = <
+  TData = Awaited<
+    ReturnType<typeof getMeasureTypeMeasureOptionPresetsCountFromKey>
+  >,
+  TError = void,
+>(
+  key: number,
+  params?: GetMeasureTypeMeasureOptionPresetsCountFromKeyParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<
+        ReturnType<typeof getMeasureTypeMeasureOptionPresetsCountFromKey>
+      >,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions =
+    getGetMeasureTypeMeasureOptionPresetsCountFromKeyQueryOptions(
+      key,
+      params,
+      options
+    )
 
   const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
     queryKey: QueryKey
@@ -12960,10 +13726,7 @@ export const usePatchMeasureTypeFromKey = <
  * @summary Delete object of specified type
  */
 export const deleteMeasureTypeFromKey = (key: number) => {
-  return configRequest<void>({
-    url: `/MeasureType/${key}`,
-    method: 'DELETE',
-  })
+  return configRequest<void>({ url: `/MeasureType/${key}`, method: 'DELETE' })
 }
 
 export const getDeleteMeasureTypeFromKeyMutationOptions = <
@@ -13495,10 +14258,7 @@ export const usePatchMenuItemsFromKey = <
  * @summary Delete object of specified type
  */
 export const deleteMenuItemsFromKey = (key: number) => {
-  return configRequest<void>({
-    url: `/MenuItems/${key}`,
-    method: 'DELETE',
-  })
+  return configRequest<void>({ url: `/MenuItems/${key}`, method: 'DELETE' })
 }
 
 export const getDeleteMenuItemsFromKeyMutationOptions = <
@@ -14018,10 +14778,7 @@ export const usePatchProductFromKey = <
  * @summary Delete object of specified type
  */
 export const deleteProductFromKey = (key: number) => {
-  return configRequest<void>({
-    url: `/Product/${key}`,
-    method: 'DELETE',
-  })
+  return configRequest<void>({ url: `/Product/${key}`, method: 'DELETE' })
 }
 
 export const getDeleteProductFromKeyMutationOptions = <
@@ -16703,10 +17460,7 @@ export const usePatchRouteDistanceFromKey = <
  * @summary Delete object of specified type
  */
 export const deleteRouteDistanceFromKey = (key: number) => {
-  return configRequest<void>({
-    url: `/RouteDistance/${key}`,
-    method: 'DELETE',
-  })
+  return configRequest<void>({ url: `/RouteDistance/${key}`, method: 'DELETE' })
 }
 
 export const getDeleteRouteDistanceFromKeyMutationOptions = <
@@ -17268,10 +18022,7 @@ export const usePatchRouteLocationFromKey = <
  * @summary Delete object of specified type
  */
 export const deleteRouteLocationFromKey = (key: number) => {
-  return configRequest<void>({
-    url: `/RouteLocation/${key}`,
-    method: 'DELETE',
-  })
+  return configRequest<void>({ url: `/RouteLocation/${key}`, method: 'DELETE' })
 }
 
 export const getDeleteRouteLocationFromKeyMutationOptions = <
