@@ -23,7 +23,7 @@ using Utah.Udot.Atspm.ValueObjects;
 
 namespace Utah.Udot.Atspm.ConfigApi.Services
 {
-    public class SignalTemplateService
+    public class SignalTemplateService : ISignalTemplateService
     {
         private readonly IApproachRepository _approachRepository;
         private readonly ILocationRepository _locationRepository;
