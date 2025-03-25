@@ -61,11 +61,6 @@ builder.Host
             o.RouteOptions.EnablePropertyNameCaseInsensitive = true;
             o.RouteOptions.EnableQualifiedOperationCall = false;
             o.RouteOptions.EnableUnqualifiedOperationCall = true;
-        })
-        // Configure JSON options to use custom DateTime converter
-        .AddJsonOptions(options =>
-        {
-            options.JsonSerializerOptions.Converters.Add(new CustomDateTimeConverter());
         });
         s.AddProblemDetails();
 

@@ -59,7 +59,11 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
         [ProducesResponseType(typeof(List<string>), Status200OK)]
         public IActionResult GetMeasureOptionPresetTypes()
         {
-            var result = typeof(MeasureOptionsBase).Assembly.GetTypes().Where(w => w.IsSubclassOf(typeof(MeasureOptionsBase))).Select(s => s.Name).ToList();
+            var result = typeof(AtspmOptionsBase).Assembly.GetTypes()
+                .Where(w => w.IsSubclassOf(typeof(AtspmOptionsBase)))
+                .Select(s => s.Name)
+                .OrderBy(o => o)
+                .ToList();
 
             return Ok(result);
         }
