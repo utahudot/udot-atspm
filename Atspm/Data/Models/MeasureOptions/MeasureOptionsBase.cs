@@ -8,37 +8,43 @@ namespace Utah.Udot.Atspm.Data.Models.MeasureOptions
     {
         public int BinSize { get; set; }
     }
-    
-    public abstract class MeasureOptionsBase : StartEndRange, ILocationLayer
-    {
-        //private DateTime _start;
-        //private DateTime _end;
 
+    public abstract class AtspmOptionsBase
+    {
+    }
+
+    public abstract class MeasureOptionsBase : AtspmOptionsBase, IStartEndRange, ILocationLayer
+    {
         /// <inheritdoc/>
         public string LocationIdentifier { get; set; }
 
-        //public DateTime Start
-        //{
-        //    get
-        //    {
-        //        return _start;
-        //    }
-        //    set
-        //    {
-        //        _start = DateTime.SpecifyKind(value, DateTimeKind.Unspecified);
-        //    }
-        //}
-        //public DateTime End
-        //{
-        //    get
-        //    {
-        //        return _end;
-        //    }
-        //    set
-        //    {
-        //        _end = DateTime.SpecifyKind(value, DateTimeKind.Unspecified);
-        //    }
-        //}
+        /// <inheritdoc/>
+        public DateTime Start { get; set; }
+
+        /// <inheritdoc/>
+        public DateTime End { get; set; }
+
+        /// <inheritdoc/>
+        public virtual bool InRange(DateTime time)
+        {
+            if (time >= Start)
+            {
+                return time < End;
+            }
+
+            return false;
+        }
+
+        /// <inheritdoc/>
+        public virtual bool InRange(IStartEndRange range)
+        {
+            if (range.Start >= Start)
+            {
+                return range.End < End;
+            }
+
+            return false;
+        }
     }
 
     public class ApproachDelayOptions : MeasureOptionsBase, IBinSize
@@ -285,5 +291,18 @@ namespace Utah.Udot.Atspm.Data.Models.MeasureOptions
         public double SevereLevelSeconds { get; set; }
         public int MetricTypeId { get; set; } = 11;
         //public string LocationIdentifier { get; set; }
+    }
+
+    public class TransitSignalPriorityOptions : AtspmOptionsBase
+
+    {
+        public IEnumerable<LocationPhases> LocationsAndPhases { get; set; }
+        public IEnumerable<DateTime> Dates { get; set; }
+    }
+
+    public class LocationPhases
+    {
+        public string LocationIdentifier { get; set; }
+        public List<int> DesignatedPhases { get; set; }
     }
 }
