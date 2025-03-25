@@ -26,7 +26,7 @@ namespace Utah.Udot.Atspm.Data.Models
     /// <summary>
     /// Measure types that ATSPM can analyse
     /// </summary>
-    public partial class MeasureType : AtspmConfigModelBase<int>, IRelatedDetectionType, IRelatedMeasureComments
+    public partial class MeasureType : AtspmConfigModelBase<int>, IRelatedDetectionType, IRelatedMeasureComments, IRelatedMeasureOptionPresets
     {
         /// <summary>
         /// Friendly name of measure
@@ -73,6 +73,13 @@ namespace Utah.Udot.Atspm.Data.Models
 
         /// <inheritdoc/>
         public virtual ICollection<MeasureOption> MeasureOptions { get; set; } = new HashSet<MeasureOption>();
+
+        #endregion
+
+        #region IRelatedMeasureOptionPresets
+
+        /// <inheritdoc/>
+        public virtual ICollection<MeasureOptionPreset> MeasureOptionPresets { get; set; } = new HashSet<MeasureOptionPreset>();
 
         #endregion
 

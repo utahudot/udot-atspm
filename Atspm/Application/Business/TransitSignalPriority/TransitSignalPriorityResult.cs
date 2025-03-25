@@ -1,6 +1,6 @@
-﻿#region license
-// Copyright 2025 Utah Departement of Transportation
-// for Application - Utah.Udot.Atspm.Business.RampMetering/RampMeteringOptions.cs
+#region license
+// Copyright 2024 Utah Departement of Transportation
+// for Application - Utah.Udot.Atspm.Business.PreemptServiceRequest/PreemptServiceRequestResult.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,11 +16,17 @@
 #endregion
 
 using Utah.Udot.Atspm.Business.Common;
+using Utah.Udot.Atspm.Business.SplitMonitor;
+using Utah.Udot.Atspm.Data.Models.EventLogModels;
 
-namespace Utah.Udot.Atspm.Business.RampMetering
+namespace Utah.Udot.Atspm.Business.TransitSignalPriority
 {
-    public class RampMeteringOptions : OptionsBase
+    /// <summary>
+    /// Preempt Service Request chart
+    /// </summary>
+    public class TransitSignalPriorityResult
     {
-        public bool CombineLanes { get; set; }
+        public LocationPhases LocationPhases { get; set; }
+        public List<TransitSignalPriorityPlan> TransitSignalPlans { get; set; }
     }
 }
