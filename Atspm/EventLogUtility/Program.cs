@@ -16,8 +16,12 @@
 #endregion
 
 using Microsoft.Extensions.Hosting;
-using System.Threading.Tasks.Dataflow;
-using Utah.Udot.Atspm.Data.Enums;
+using Microsoft.Extensions.Logging;
+using System.CommandLine.Builder;
+using System.CommandLine.Hosting;
+using System.CommandLine.Parsing;
+using System.Diagnostics;
+using Utah.Udot.Atspm.EventLogUtility.Commands;
 using Utah.Udot.Atspm.Infrastructure.Extensions;
 
 if (OperatingSystem.IsWindows())
