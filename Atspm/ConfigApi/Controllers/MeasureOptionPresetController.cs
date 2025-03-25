@@ -16,19 +16,11 @@
 #endregion
 
 using Asp.Versioning;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
-using Utah.Udot.Atspm.Business.Watchdog;
-using Utah.Udot.Atspm.ConfigApi.Models;
-using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models;
-using Utah.Udot.Atspm.Data.Models.EventLogModels;
 using Utah.Udot.Atspm.Data.Models.MeasureOptions;
-using Utah.Udot.Atspm.Extensions;
 using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
-using Utah.Udot.Atspm.Specifications;
-using Utah.Udot.NetStandardToolkit.Extensions;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 using static Microsoft.AspNetCore.OData.Query.AllowedQueryOptions;
 
@@ -64,7 +56,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
         /// <returns>An <see cref="IActionResult"/> containing a list of measure option preset type names.</returns>
         [HttpGet]
         [EnableQuery(AllowedQueryOptions = Count | Filter | Select | OrderBy | Top | Skip)]
-        [ProducesResponseType(typeof(List<MeasureOptionsBase>), Status200OK)]
+        [ProducesResponseType(typeof(List<string>), Status200OK)]
         public IActionResult GetMeasureOptionPresetTypes()
         {
             var result = typeof(MeasureOptionsBase).Assembly.GetTypes().Where(w => w.IsSubclassOf(typeof(MeasureOptionsBase))).Select(s => s.Name).ToList();
