@@ -305,4 +305,76 @@ namespace Utah.Udot.Atspm.Data.Models.MeasureOptions
         public string LocationIdentifier { get; set; }
         public List<int> DesignatedPhases { get; set; }
     }
+
+    public class TimeSpaceDiagramAverageOptions : AtspmOptionsBase
+    {
+        public int RouteId { get; set; }
+        public DateOnly StartDate { get; set; }
+        public DateOnly EndDate { get; set; }
+        public TimeOnly StartTime { get; set; }
+        public TimeOnly EndTime { get; set; }
+        public List<LocationWithSequence> Sequence { get; set; }
+        public List<LocationWithCoordPhases> CoordinatedPhases { get; set; }
+        public int[] DaysOfWeek { get; set; }
+        public int? SpeedLimit { get; set; }
+    }
+
+    public class LocationWithSequence
+    {
+        public string LocationIdentifier { get; set; }
+        public int[][] Sequence { get; set; }
+    }
+
+    public class LocationWithCoordPhases
+    {
+        public string LocationIdentifier { get; set; }
+        public int[] CoordinatedPhases { get; set; }
+    }
+
+    public class LinkPivotOptions : AtspmOptionsBase
+    {
+        public int RouteId { get; set; }
+        public int CycleLength { get; set; }
+        public string Direction { get; set; }
+        public double Bias { get; set; }
+        public string BiasDirection { get; set; }
+        public int[] DaysOfWeek { get; set; }
+        public DateOnly StartDate { get; set; }
+        public DateOnly EndDate { get; set; }
+        public TimeOnly StartTime { get; set; }
+        public TimeOnly EndTime { get; set; }
+    }
+
+    public class LinkPivotPcdOptions : AtspmOptionsBase
+    {
+        public string LocationIdentifier { get; set; }
+        public string DownstreamLocationIdentifier { get; set; }
+        public int Delta { get; set; }
+        public string DownstreamApproachDirection { get; set; }
+        public string UpstreamApproachDirection { get; set; }
+        public DateOnly StartDate { get; set; }
+        public DateTime? SelectedEndDate { get; set; }
+        public TimeOnly StartTime { get; set; }
+        public TimeOnly EndTime { get; set; }
+        public DateOnly EndDate { get; set; }
+    }
+
+    public class LeftTurnGapReportOptions : MeasureOptionsBase
+    {
+        public int[] ApproachIds { get; set; }
+        public int[] DaysOfWeek { get; set; }
+        public int? StartHour { get; set; }
+        public int? StartMinute { get; set; }
+        public int? EndHour { get; set; }
+        public int? EndMinute { get; set; }
+        public bool GetAMPMPeakPeriod { get; set; }
+        public bool GetAMPMPeakHour { get; set; }
+        public bool Get24HourPeriod { get; set; }
+        public bool GetGapReport { get; set; }
+        public double AcceptableGapPercentage { get; set; }
+        public bool GetSplitFail { get; set; }
+        public double AcceptableSplitFailPercentage { get; set; }
+        public bool GetPedestrianCall { get; set; }
+        public bool GetConflictingVolume { get; set; }
+    }
 }
