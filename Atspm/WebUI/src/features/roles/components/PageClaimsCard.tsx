@@ -1,288 +1,167 @@
-// PageClaimsCard.tsx
-import { Box, Checkbox, Typography } from '@mui/material'
+import { Box, MenuItem, Select, Typography } from '@mui/material'
 import { useEffect, useState } from 'react'
-import { Role } from '../types/roles'
 
 interface PageClaimsCardProps {
   currentClaims: { role: string; claims: string[] }[]
   onClaimsChange: (role: string, claims: string[]) => void
-  currentRole: string
-  setCurrentRole: (role: string) => void
   userClaims: string[]
   setUserClaims: (claims: string[]) => void
   id: string
+  claimsData?: string[]
+  isNewRole?: boolean
 }
 
 const PageClaimsCard = ({
   currentClaims,
   onClaimsChange,
-  currentRole,
-  setCurrentRole,
   userClaims,
   setUserClaims,
   id,
+  claimsData,
+  isNewRole,
 }: PageClaimsCardProps) => {
-  const claims = [
-    'User:View',
-    'User:Edit',
-    'User:Delete',
-    'Role:View',
-    'Role:Edit',
-    'Role:Delete',
-    'LocationConfiguration:View',
-    'LocationConfiguration:Edit',
-    'LocationConfiguration:Delete',
-    'GeneralConfiguration:View',
-    'GeneralConfiguration:Edit',
-    'GeneralConfiguration:Delete',
-    'Data:View',
-    'Data:Edit',
-    'Watchdog:View',
-    'Report:View',
-  ]
-
-  const SetInStone: Role[] = [
-    {
-      role: 'Admin',
-      claims: ['Admin'],
-    },
-    {
-      role: 'ReportAdmin',
-      claims: ['Report:View'],
-    },
-    {
-      role: 'RoleAdmin',
-      claims: ['Role:View', 'Role:Edit', 'Role:Delete'],
-    },
-    {
-      role: 'UserAdmin',
-      claims: ['User:Edit', 'User:Delete', 'User:View'],
-    },
-    {
-      role: 'LocationConfigurationAdmin',
-      claims: [
-        'LocationConfiguration:View',
-        'LocationConfiguration:Edit',
-        'LocationConfiguration:Delete',
-      ],
-    },
-    {
-      role: 'GeneralConfigurationAdmin',
-      claims: [
-        'GeneralConfiguration:View',
-        'GeneralConfiguration:Edit',
-        'GeneralConfiguration:Delete',
-      ],
-    },
-    {
-      role: 'DataAdmin',
-      claims: ['Data:View', 'Data:Edit'],
-    },
-    {
-      role: 'WatchdogSubscriber',
-      claims: ['Watchdog:View'],
-    },
-  ]
-
-  const spaceIdName = id
-    ? id
-        .toString()
-        .replace(/(\[A-Z\])/g, ' $1')
-        .trim()
-    : ''
-
+  const claims = claimsData?.filter((claim) => claim !== 'Admin') || []
   const roleCurrentClaims =
     currentClaims.find((item) => item.role === id)?.claims || []
-  const roleSetInStoneClaims =
-    SetInStone.find((item) => item.role === id)?.claims || []
 
-  const [selectedClaims, setSelectedClaims] =
-    useState<string[]>(roleCurrentClaims)
+  const [selectedPermissions, setSelectedPermissions] = useState<{
+    [key: string]: string
+  }>({})
 
-  useEffect(() => {
-    if (id === 'Admin') {
-      setSelectedClaims(claims)
-      onClaimsChange(id as string, claims)
-    }
-  }, [id])
-
-  const handleClaimChange = (claim: string, checked: boolean) => {
-    if (id === 'Admin' || roleSetInStoneClaims.includes(claim)) return
-
-    const updatedClaims = checked
-      ? [...selectedClaims, claim]
-      : selectedClaims.filter((c) => c !== claim)
-    setSelectedClaims(updatedClaims)
-    onClaimsChange(id as string, updatedClaims)
-  }
-
-  const getPermissionName = (claim: string) => {
-    return claim.split(':')[0]
-  }
-
+  const getPermissionName = (claim: string) => claim.split(':')[0]
   const uniquePermissions = Array.from(new Set(claims.map(getPermissionName)))
 
-  const formatPermissionName = (permission: string) => {
-    return permission.replace(/(?<!^)([A-Z])/g, ' $1')
+  const getAvailableOptions = (permission: string) => {
+    const availableClaims = claims.filter((c) => c.startsWith(permission))
+    const options: string[] = []
+    if (availableClaims.some((c) => c.endsWith('View'))) options.push('View')
+    if (availableClaims.some((c) => c.endsWith('Edit')))
+      options.push('View & Edit')
+    if (availableClaims.some((c) => c.endsWith('Delete')))
+      options.push('View, Edit, Delete')
+    return options
+  }
+
+  const permissionDescriptions: Record<string, string> = {
+    User: 'Update and delete user accounts, and assign roles to users.',
+    Role: 'Manage roles, and assign permissions to roles.',
+    LocationConfiguration: 'Manage locations info and settings.',
+    GeneralConfiguration: 'Manage faqs, areas, regions, jurisdictions, etc.',
+    Data: 'Export raw event logs.',
+    Watchdog:
+      'View the system’s watchdog logs and subscribe to daily watchdog email updates.',
+    Report: 'View the left turn gap report.',
   }
 
   useEffect(() => {
-    if (id === 'Admin') {
-      setUserClaims(claims)
-      onClaimsChange(id as string, claims)
-    } else {
-      setCurrentRole(id as string)
-      setUserClaims(roleCurrentClaims)
-    }
-  }, [id, roleCurrentClaims])
+    if (!id || !claims.length) return
+
+    const initialPermissions: { [key: string]: string } = {}
+    const initialClaims = isNewRole
+      ? userClaims
+      : userClaims.length > 0
+        ? userClaims
+        : roleCurrentClaims
+
+    uniquePermissions.forEach((permission) => {
+      const permClaims = initialClaims.filter((c) => c.startsWith(permission))
+      if (permClaims.includes(`${permission}:Delete`)) {
+        initialPermissions[permission] = 'View, Edit, Delete'
+      } else if (permClaims.includes(`${permission}:Edit`)) {
+        initialPermissions[permission] = 'View & Edit'
+      } else if (permClaims.includes(`${permission}:View`)) {
+        initialPermissions[permission] = 'View'
+      } else {
+        initialPermissions[permission] = ''
+      }
+    })
+
+    setSelectedPermissions(initialPermissions)
+  }, [id, roleCurrentClaims, isNewRole])
+
+  const formatPermissionName = (permission: string) =>
+    permission.replace(/(?<!^)([A-Z])/g, ' $1')
+
+  const handlePermissionChange = (permission: string, value: string) => {
+    const updatedPermissions = { ...selectedPermissions, [permission]: value }
+    setSelectedPermissions(updatedPermissions)
+
+    const newClaims: string[] = []
+
+    Object.entries(updatedPermissions).forEach(([perm, val]) => {
+      switch (val) {
+        case 'View':
+          newClaims.push(`${perm}:View`)
+          break
+        case 'View & Edit':
+          newClaims.push(`${perm}:View`, `${perm}:Edit`)
+          break
+        case 'View, Edit, Delete':
+          newClaims.push(`${perm}:View`, `${perm}:Edit`, `${perm}:Delete`)
+          break
+      }
+    })
+
+    setUserClaims(newClaims.length > 0 ? [...newClaims] : [])
+    onClaimsChange(id, newClaims.length > 0 ? [...newClaims] : [])
+  }
 
   return (
-    <Box>
-      <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-        <Box
-          sx={{
-            flexBasis: '35%',
-            display: 'flex',
-            justifyContent: 'flex-start',
-            paddingLeft: '4rem',
-          }}
-        >
-          <Typography sx={{ mr: 2 }}>Permission</Typography>
-        </Box>
-        <Box
-          sx={{
-            flexBasis: '66.67%',
-            display: 'flex',
-            alignItems: 'center',
-            paddingLeft: '8.5rem',
-          }}
-        >
-          <Typography sx={{ mr: 4 }}>View</Typography>
-          <Typography sx={{ mr: 4 }}>Edit</Typography>
-          <Typography>Delete</Typography>
-        </Box>
-      </Box>
+    <>
       {uniquePermissions.map((permission) => {
-        const permissionClaims = claims.filter((claim) =>
-          claim.startsWith(permission)
-        )
-        const hasView = permissionClaims.some((claim) => claim.endsWith('View'))
-        const hasEdit = permissionClaims.some((claim) => claim.endsWith('Edit'))
-        const hasDelete = permissionClaims.some((claim) =>
-          claim.endsWith('Delete')
-        )
-
+        const availableOptions = getAvailableOptions(permission)
         return (
           <Box
             key={permission}
-            sx={{ display: 'flex', alignItems: 'center', mb: 1 }}
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              mb: 2,
+              width: '100%',
+            }}
           >
             <Box
               sx={{
-                flexBasis: '35%',
                 display: 'flex',
-                paddingLeft: '4rem',
-                justifyContent: 'flex-start',
-              }}
-            >
-              <Typography sx={{ mr: 2 }}>{`${formatPermissionName(
-                permission
-              )}:`}</Typography>
-            </Box>
-            <Box
-              sx={{
-                flexBasis: '66.67%',
-                display: 'flex',
+                justifyContent: 'space-between',
                 alignItems: 'center',
-                paddingLeft: '8rem',
+                mb: 1,
               }}
             >
-              {hasView && (
-                <Box sx={{ display: 'flex', alignItems: 'center', mr: 4 }}>
-                  <Checkbox
-                    id={`${permission}-view-checkbox`}
-                    checked={
-                      id === 'Admin' ||
-                      selectedClaims.includes(`${permission}:View`)
-                    }
-                    onChange={(e) =>
-                      handleClaimChange(`${permission}:View`, e.target.checked)
-                    }
-                    disabled={
-                      id === 'Admin' ||
-                      roleSetInStoneClaims.includes(`${permission}:View`)
-                    }
-                  />
-                  <label
-                    htmlFor={`${permission}-view-checkbox`}
-                    style={{
-                      visibility: 'hidden',
-                      position: 'absolute',
-                      marginLeft: '-15rem',
-                    }}
-                  >{`${permission} View`}</label>
+              <Box>
+                <Typography variant="h6" component="div" fontWeight="bold">
+                  {formatPermissionName(permission)}
+                </Typography>
+                <Box sx={{ marginRight: 2, maxWidth: '400px' }}>
+                  <Typography variant="body2" color="text.secondary">
+                    {permissionDescriptions[permission] ||
+                      'No description available.'}
+                  </Typography>
                 </Box>
-              )}
-              {hasEdit && (
-                <Box sx={{ display: 'flex', alignItems: 'center', mr: 3 }}>
-                  <Checkbox
-                    id={`${permission}-edit-checkbox`}
-                    checked={
-                      id === 'Admin' ||
-                      selectedClaims.includes(`${permission}:Edit`)
-                    }
-                    onChange={(e) =>
-                      handleClaimChange(`${permission}:Edit`, e.target.checked)
-                    }
-                    disabled={
-                      id === 'Admin' ||
-                      roleSetInStoneClaims.includes(`${permission}:Edit`)
-                    }
-                  />
-                  <label
-                    htmlFor={`${permission}-edit-checkbox`}
-                    style={{
-                      visibility: 'hidden',
-                      position: 'absolute',
-                      marginLeft: '-15rem',
-                    }}
-                  >{`${permission} Edit`}</label>
-                </Box>
-              )}
-              {hasDelete && (
-                <Box sx={{ display: 'flex', alignItems: 'center', mr: 2 }}>
-                  <Checkbox
-                    id={`${permission}-delete-checkbox`}
-                    checked={
-                      id === 'Admin' ||
-                      selectedClaims.includes(`${permission}:Delete`)
-                    }
-                    onChange={(e) =>
-                      handleClaimChange(
-                        `${permission}:Delete`,
-                        e.target.checked
-                      )
-                    }
-                    disabled={
-                      id === 'Admin' ||
-                      roleSetInStoneClaims.includes(`${permission}:Delete`)
-                    }
-                  />
-                  <label
-                    htmlFor={`${permission}-delete-checkbox`}
-                    style={{
-                      visibility: 'hidden',
-                      position: 'absolute',
-                      marginLeft: '-15rem',
-                    }}
-                  >{`${permission} Delete`}</label>
-                </Box>
-              )}
+              </Box>
+              <Box sx={{ minWidth: 200 }}>
+                <Select
+                  fullWidth
+                  size="small"
+                  value={selectedPermissions[permission] || ''}
+                  onChange={(e) =>
+                    handlePermissionChange(permission, e.target.value)
+                  }
+                  displayEmpty
+                >
+                  <MenuItem value="">None</MenuItem>
+                  {availableOptions.map((option) => (
+                    <MenuItem key={option} value={option}>
+                      {option}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </Box>
             </Box>
           </Box>
         )
       })}
-    </Box>
+    </>
   )
 }
 

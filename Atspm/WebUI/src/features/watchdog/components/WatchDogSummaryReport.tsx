@@ -3,11 +3,16 @@ import WatchdogChartsContainer from '@/features/charts/watchdogDashboard/compone
 import { useGetDetectionTypeCount } from '@/features/watchdog/api/GetDetectionTypeCount'
 import { useGetDeviceCount } from '@/features/watchdog/api/getDeviceCount'
 import { useGetWatchdogDashboardData } from '@/features/watchdog/api/getWatchdogDashboardData'
-import { toUTCDateStamp } from '@/utils/dateTime'
 import PlayArrowIcon from '@mui/icons-material/PlayArrow'
 import { LoadingButton } from '@mui/lab'
 import { Box } from '@mui/material'
-import { startOfToday, startOfTomorrow, subDays, subYears } from 'date-fns'
+import {
+  format,
+  startOfToday,
+  startOfTomorrow,
+  subDays,
+  subYears,
+} from 'date-fns'
 import { useState } from 'react'
 import HorizontalDateInput from './HorizontalDateInputs'
 
@@ -16,16 +21,18 @@ const WatchdogSummaryReport = () => {
     subYears(startOfToday(), 1)
   )
   const [endDateTime, setEndDateTime] = useState(subDays(startOfTomorrow(), 1))
+  const [fetchData, setFetchData] = useState(false)
+  const formattedStartDate = format(startDateTime, "yyyy-MM-dd'T'HH:mm:ss'Z'")
+  const formattedEndDate = format(endDateTime, "yyyy-MM-dd'T'HH:mm:ss'Z'")
 
   const {
     data: dashboardData,
-    refetch: fetchDashboardData,
     isLoading,
     error,
   } = useGetWatchdogDashboardData({
-    start: toUTCDateStamp(startDateTime),
-    end: toUTCDateStamp(endDateTime),
-    enabled: false,
+    start: formattedStartDate,
+    end: formattedEndDate,
+    enabled: fetchData,
   })
 
   const { data: deviceCount } = useGetDeviceCount()
@@ -33,8 +40,8 @@ const WatchdogSummaryReport = () => {
     useGetDetectionTypeCount(toUTCDateStamp(endDateTime))
   const data = {
     ...dashboardData,
-    deviceCount,
-    detectionTypeCount,
+    deviceCount: deviceCount,
+    detectionTypeCount: detectionTypeCount,
   }
 
   const handleGenerateSummary = () => {

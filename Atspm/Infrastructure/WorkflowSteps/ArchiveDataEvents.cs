@@ -50,33 +50,41 @@ namespace Utah.Udot.ATSPM.Infrastructure.WorkflowSteps
         /// <inheritdoc/>
         protected override async IAsyncEnumerable<CompressedEventLogBase> Process(Tuple<Device, EventLogModelBase>[] input, [EnumeratorCancellation] CancellationToken cancelToken = default)
         {
-            var result = input.GroupBy(g => (g.Item2.LocationIdentifier, g.Item2.Timestamp.Date, g.Item1.Id, g.Item2.GetType()))
-                .Select(s =>
-                {
-                    dynamic list = Activator.CreateInstance(typeof(List<>).MakeGenericType(s.Key.Item4));
+            var group = input.GroupBy(g =>
+            (g.Item2.LocationIdentifier,
+            g.Item2.Timestamp.Year,
+            g.Item2.Timestamp.Month,
+            g.Item2.Timestamp.Day,
+            g.Item2.Timestamp.Hour,
+            g.Item1.Id,
+            g.Item2.GetType()));
 
-                    foreach (var i in s.Select(s => s.Item2))
-                    {
-                        if (list is IList l)
-                        {
-                            l.Add(i);
-                        }
-                    }
-
-                    dynamic comp = Activator.CreateInstance(typeof(CompressedEventLogs<>).MakeGenericType(s.Key.Item4));
-
-                    comp.LocationIdentifier = s.Key.LocationIdentifier;
-                    comp.ArchiveDate = DateOnly.FromDateTime(s.Key.Date);
-                    comp.DataType = s.Key.Item4;
-                    comp.DeviceId = s.Key.Id;
-                    comp.Data = list;
-
-                    return comp;
-                });
-
-            foreach (var r in result)
+            foreach (var g in group)
             {
-                yield return r;
+                dynamic list = Activator.CreateInstance(typeof(List<>).MakeGenericType(g.Key.Item7));
+
+                foreach (var i in g)
+                {
+                    if (list is IList l)
+                    {
+                        l.Add(i.Item2);
+                    }
+                }
+
+                var tl = new Timeline<StartEndRange>(list, TimeSpan.FromHours(1));
+
+                dynamic comp = Activator.CreateInstance(typeof(CompressedEventLogs<>).MakeGenericType(g.Key.Item7));
+
+                comp.LocationIdentifier = g.Key.LocationIdentifier;
+                //comp.ArchiveDate = DateOnly.FromDateTime(s.Key.Date);
+                comp.Start = tl.Start;
+                comp.End = tl.End;
+                comp.DataType = g.Key.Item7;
+                comp.DeviceId = g.Key.Id;
+                comp.Data = list;
+
+
+                yield return comp;
             }
         }
     }
