@@ -17,6 +17,8 @@
 
 using Google.Cloud.Diagnostics.Common;
 using Microsoft.Extensions.Hosting;
+using System.Threading.Tasks.Dataflow;
+using Utah.Udot.Atspm.Data.Enums;
 using Microsoft.Extensions.Logging;
 using System.CommandLine.Builder;
 using System.CommandLine.Hosting;
@@ -65,6 +67,8 @@ cmdBuilder.UseHost(a =>
     })
     .ConfigureServices((h, s) =>
     {
+        //s.AddGoogleDiagnostics(loggingOptions: LoggingOptions.Create(LogLevel.Debug));
+
         //s.AddDownloaderClients();
         //s.AddDeviceDownloaders(h);
         //s.AddEventLogDecoders();

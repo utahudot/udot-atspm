@@ -1,18 +1,14 @@
 import { useGetLocationSyncLocationFromKey } from '@/api/config/aTSPMConfigurationApi'
 import { AddButton } from '@/components/addButton'
 import ApproachesReconcilationReport from '@/features/locations/components/ApproachesReconcilationReport'
-import { LocationConfigHandler } from '@/features/locations/components/editLocation/editLocationConfigHandler'
+import { useLocationStore } from '@/features/locations/components/editLocation/locationStore'
 import { useLocationWizardStore } from '@/features/locations/components/LocationSetupWizard/locationSetupWizardStore'
 import SyncIcon from '@mui/icons-material/Sync'
 import { LoadingButton } from '@mui/lab'
 import { Box } from '@mui/material'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
-interface ApproachOptionsProps {
-  handler: LocationConfigHandler
-}
-
-const ApproachOptions = ({ handler }: ApproachOptionsProps) => {
+const ApproachOptions = () => {
   const {
     shouldSyncApproaches,
     approachesSynced,
@@ -21,6 +17,7 @@ const ApproachOptions = ({ handler }: ApproachOptionsProps) => {
     setBadApproaches,
     setBadDetectors,
   } = useLocationWizardStore()
+  const { approaches, location, addApproach } = useLocationStore()
 
   const { mutateAsync, isLoading } = useGetLocationSyncLocationFromKey()
 
@@ -33,31 +30,31 @@ const ApproachOptions = ({ handler }: ApproachOptionsProps) => {
 
   const syncedPhases = useMemo(
     () =>
-      handler.approaches.flatMap((approach) => [
+      approaches.flatMap((approach) => [
         approach.protectedPhaseNumber,
         approach.permissivePhaseNumber,
         approach.pedestrianPhaseNumber,
       ]),
-    [handler.approaches]
+    [approaches]
   )
 
   const syncedDetectors = useMemo(
     () =>
-      handler.approaches.flatMap((approach) =>
+      approaches.flatMap((approach) =>
         approach.detectors.map((det) => det.detectorChannel)
       ),
-    [handler.approaches]
+    [approaches]
   )
 
   const handleSyncLocation = useCallback(async () => {
     try {
       const response = await mutateAsync({
-        key: parseInt(handler.expandedLocation.id, 10),
+        key: parseInt(location.id, 10),
       })
 
       const notFoundApproaches = response.removedApproachIds.map(
         (id: number) => {
-          const approach = handler.approaches.find((a: any) => a.id === id)
+          const approach = approaches.find((a: any) => a.id === id)
           return approach
             ? approach.description
             : `Unknown Approach (ID: ${id})`
@@ -81,8 +78,8 @@ const ApproachOptions = ({ handler }: ApproachOptionsProps) => {
     }
   }, [
     mutateAsync,
-    handler.expandedLocation.id,
-    handler.approaches,
+    location.id,
+    approaches,
     setBadApproaches,
     setBadDetectors,
     setCategories,
@@ -115,11 +112,7 @@ const ApproachOptions = ({ handler }: ApproachOptionsProps) => {
           mb: 1,
         }}
       >
-        <AddButton
-          label="New Approach"
-          onClick={handler.handleAddNewApproach}
-          sx={{ mr: 1 }}
-        />
+        <AddButton label="New Approach" onClick={addApproach} sx={{ mr: 1 }} />
         <LoadingButton
           startIcon={<SyncIcon />}
           loading={isLoading}
