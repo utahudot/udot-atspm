@@ -24,6 +24,9 @@ using Utah.Udot.Atspm.Data.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
 using Utah.Udot.Atspm.Data.Utility;
+using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
 
 namespace Utah.Udot.Atspm.Data
 {
@@ -245,5 +248,110 @@ namespace Utah.Udot.Atspm.Data
         }
 
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+    }
+
+    /// <summary>
+    /// Intercepts save changes to update audit properties
+    /// </summary>
+    public class AuditPropertiesInterceptor : SaveChangesInterceptor
+    {
+        private readonly ICurrentUserService _currentUserService;
+
+        /// <summary>
+        /// Intercepts save changes to update audit properties
+        /// </summary>
+        /// <param name="currentUserService"></param>
+        public AuditPropertiesInterceptor(ICurrentUserService currentUserService) => _currentUserService = currentUserService;
+
+        /// <inheritdoc/>
+        public override InterceptionResult<int> SavingChanges(DbContextEventData eventData, InterceptionResult<int> result)
+        {
+            BeforeSaveTriggers(eventData.Context!);
+
+            return base.SavingChanges(eventData, result);
+        }
+
+        /// <inheritdoc/>
+        public override ValueTask<InterceptionResult<int>> SavingChangesAsync(DbContextEventData eventData,
+            InterceptionResult<int> result, CancellationToken cancellationToken = new())
+        {
+            BeforeSaveTriggers(eventData.Context!);
+
+            return base.SavingChangesAsync(eventData, result, cancellationToken);
+        }
+
+        private void BeforeSaveTriggers(DbContext context)
+        {
+            foreach (var entry in context.ChangeTracker.Entries())
+            {
+                if (entry.Entity is IAuditProperties auditProperties)
+                {
+                    if (entry.State == EntityState.Added)
+                    {
+                        var now = new Lazy<DateTime>(() => DateTime.UtcNow);
+                        auditProperties.Created = now.Value;
+                        auditProperties.Modified = now.Value;
+
+                        auditProperties.CreatedBy = _currentUserService.GetCurrentUser().Id;
+                        auditProperties.ModifiedBy = _currentUserService.GetCurrentUser().Id;
+                    }
+                    else if (entry.State == EntityState.Modified)
+                    {
+                        auditProperties.Modified = DateTime.UtcNow;
+                        auditProperties.ModifiedBy = _currentUserService.GetCurrentUser().Id;
+                    }
+                }
+            }
+        }
+    }
+
+    public interface IUserSession
+    {
+        string Id { get; set; }
+
+        string Email { get; set; }
+
+        bool? IsAuthenticated { get; set; }
+    }
+
+    public class UserSession : IUserSession
+    {
+        public string Id { get; set; }
+
+        public string Email { get; set; }
+
+        public bool? IsAuthenticated { get; set; }
+    }
+
+    public interface ICurrentUserService
+    {
+        IUserSession GetCurrentUser();
+    }
+
+    public class CurrentUserService : ICurrentUserService
+    {
+        private readonly IHttpContextAccessor _httpContextAccessor;
+
+        public CurrentUserService(IHttpContextAccessor httpContextAccessor)
+        {
+            _httpContextAccessor = httpContextAccessor;
+        }
+
+        public IUserSession GetCurrentUser()
+        {
+            if (_httpContextAccessor?.HttpContext == null)
+            {
+                return new UserSession();
+            }
+
+            IUserSession currentUser = new UserSession
+            {
+                IsAuthenticated = _httpContextAccessor?.HttpContext?.User?.Identity?.IsAuthenticated,
+                Id = _httpContextAccessor?.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier),
+                Email = _httpContextAccessor?.HttpContext?.User?.FindFirstValue(ClaimTypes.Email)
+            };
+
+            return currentUser;
+        }
     }
 }

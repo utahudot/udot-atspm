@@ -53,11 +53,19 @@ namespace Utah.Udot.Atspm.Data.Models
     }
 
     //HACK: This is temporary, this will be merged into AtspmConfigModelBase
-    public class TempConfigModelBase<T> : AtspmConfigModelBase<T>
+    public class TempConfigModelBase<T> : AtspmConfigModelBase<T>, IAuditProperties
     {
         public DateTime Created { get; set; }
         public DateTime Modified { get; set; }
         public string CreatedBy {  get; set; }
         public string ModifiedBy { get; set; }
+    }
+
+    public interface IAuditProperties
+    {
+        DateTime Created { get; set; }
+        DateTime Modified { get; set; }
+        string CreatedBy { get; set; }
+        string ModifiedBy { get; set; }
     }
 }

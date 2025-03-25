@@ -100,7 +100,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
         [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Post))]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public virtual async Task<IActionResult> Post([FromBody] T item)
+        public virtual async Task<IActionResult> Post(T item)
         {
             if (!ModelState.IsValid)
             {
@@ -113,7 +113,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
         }
 
         /// <summary>
-        /// 
+        /// Replace values of sepcified type
         /// </summary>
         /// <param name="key">Key value of object to update</param>
         /// <param name="item">Properites to update</param>
@@ -123,7 +123,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public virtual async Task<IActionResult> Put(TKey key, [FromBody] T item)
+        public virtual async Task<IActionResult> Put(TKey key, T item)
         {
             if (!ModelState.IsValid)
             {
@@ -161,7 +161,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public virtual async Task<IActionResult> Patch(TKey key, [FromBody] Delta<T> item)
+        public virtual async Task<IActionResult> Patch(TKey key, Delta<T> item)
         {
             if (!ModelState.IsValid)
             {
