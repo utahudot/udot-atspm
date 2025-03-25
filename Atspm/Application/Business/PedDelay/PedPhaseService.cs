@@ -1,5 +1,5 @@
 ﻿#region license
-// Copyright 2025 Utah Departement of Transportation
+// Copyright 2024 Utah Departement of Transportation
 // for Application - Utah.Udot.Atspm.Business.PedDelay/PedPhaseService.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -74,7 +74,7 @@ namespace Utah.Udot.Atspm.Business.PedDelay
         {
             var planService = new PlanService();
             var pedPlans = new List<PedPlan>();
-            var planEvents = planService.GetPlanEvents(options.Start, options.End, options.LocationIdentifier, plansData.ToList());
+            var planEvents = planService.SetFirstAndLastPlan(options.Start, options.End, options.LocationIdentifier, plansData.ToList());
             for (var i = 0; i < planEvents.Count; i++)
             {
                 //if this is the last plan then we want the end of the plan

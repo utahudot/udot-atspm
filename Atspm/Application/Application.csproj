@@ -32,6 +32,7 @@
 		<Compile Remove="Analysis\Workflows\ArrivalsOnRedWorkflow.cs" />
 		<Compile Remove="Analysis\Workflows\PhaseTerminationWorkflow.cs" />
 		<Compile Remove="Analysis\Workflows\PurdueCoordinationWorkflow.cs" />
+		<Compile Remove="Business\LeftTurnGapReport\LeftTurnTimeOptions.cs" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -68,6 +69,7 @@
 		<None Include="Analysis\Workflows\ArrivalsOnRedWorkflow.cs" />
 		<None Include="Analysis\Workflows\PhaseTerminationWorkflow.cs" />
 		<None Include="Analysis\Workflows\PurdueCoordinationWorkflow.cs" />
+		<None Include="Business\LeftTurnGapReport\LeftTurnTimeOptions.cs" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -78,6 +80,7 @@
 	  <Using Include="Utah.Udot.Atspm.Enums" />
 	  <Using Include="Utah.Udot.NetStandardToolkit.Common" />
 	  <Using Include="Utah.Udot.NetStandardToolkit.Workflows" />
+	  <Using Include="Utah.Udot.Atspm.Data.Models.MeasureOptions"/>
 	</ItemGroup>
 
 	<ItemGroup>

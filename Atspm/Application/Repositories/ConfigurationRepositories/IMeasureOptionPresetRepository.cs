@@ -1,6 +1,6 @@
 ﻿#region license
-// Copyright 2025 Utah Departement of Transportation
-// for Application - Utah.Udot.Atspm.Business.GreenTimeUtilization/GreenTimeUtilizationOptions.cs
+// Copyright 2024 Utah Departement of Transportation
+// for Application - Utah.Udot.Atspm.Repositories.ConfigurationRepositories/IMeasureOptionsRepository.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,14 +15,14 @@
 // limitations under the License.
 #endregion
 
-using Utah.Udot.Atspm.Business.Common;
+using Utah.Udot.NetStandardToolkit.Services;
 
-namespace Utah.Udot.Atspm.Business.GreenTimeUtilization
+namespace Utah.Udot.Atspm.Repositories.ConfigurationRepositories
 {
-    public class GreenTimeUtilizationOptions : OptionsBase
+    /// <summary>
+    /// Measure option preset repository
+    /// </summary>
+    public interface IMeasureOptionPresetRepository : IAsyncRepository<MeasureOptionPreset>
     {
-        public int MetricTypeId { get; set; } = 36;
-        public int XAxisBinSize { get; set; }
-        public int YAxisBinSize { get; set; }
     }
 }

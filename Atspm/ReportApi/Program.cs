@@ -39,6 +39,8 @@ using Utah.Udot.Atspm.Business.SplitFail;
 using Utah.Udot.Atspm.Business.SplitMonitor;
 using Utah.Udot.Atspm.Business.TimeSpaceDiagram;
 using Utah.Udot.Atspm.Business.TimingAndActuation;
+using Utah.Udot.Atspm.Business.TransitSignalPriority;
+using Utah.Udot.Atspm.Business.TransitSignalPriorityRequest;
 using Utah.Udot.Atspm.Business.TurningMovementCounts;
 using Utah.Udot.Atspm.Business.WaitTime;
 using Utah.Udot.Atspm.Business.Watchdog;
@@ -164,6 +166,7 @@ builder.Host
     s.AddScoped<IReportService<SplitMonitorOptions, IEnumerable<SplitMonitorResult>>, SplitMonitorReportService>();
     s.AddScoped<IReportService<TimeSpaceDiagramOptions, IEnumerable<TimeSpaceDiagramResultForPhase>>, TimeSpaceDiagramReportService>();
     s.AddScoped<IReportService<TimeSpaceDiagramAverageOptions, IEnumerable<TimeSpaceDiagramAverageResult>>, TimeSpaceDiagramAverageReportService>();
+    s.AddScoped<IReportService<TransitSignalPriorityOptions, List<TransitSignalPriorityResult>>, TransitSignalPriorityReportService>();
     s.AddScoped<IReportService<TimingAndActuationsOptions, IEnumerable<TimingAndActuationsForPhaseResult>>, TimingAndActuactionReportService>();
     s.AddScoped<IReportService<TurningMovementCountsOptions, TurningMovementCountsResult>, TurningMovementCountReportService>();
     s.AddScoped<IReportService<YellowRedActivationsOptions, IEnumerable<YellowRedActivationsResult>>, YellowRedActivationsReportService>();
@@ -197,6 +200,7 @@ builder.Host
     s.AddScoped<TimeSpaceDiagramForPhaseService>();
     s.AddScoped<TimeSpaceAverageService>();
     s.AddScoped<TimingAndActuationsForPhaseService>();
+    s.AddScoped<TransitSignalPriorityService>();
     s.AddScoped<TurningMovementCountsService>();
     s.AddScoped<WaitTimeService>();
     s.AddScoped<YellowRedActivationsService>();
