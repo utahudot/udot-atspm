@@ -720,7 +720,7 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
                             PhaseNumber = phaseNumber,
                             PercentSkips = percentSkips,
                             PercentGapOuts = percentGapOuts,
-                            PercentMaxOutsForceOffs = GetPercentMaxOutForceOffs(planNumber, maxCycleCount, cyclesForPhase) * 100,
+                            PercentMaxOutsForceOffs = Math.Round(GetPercentMaxOutForceOffs(planNumber, maxCycleCount, cyclesForPhase) * 100, 1),
                             AverageSplit = averageSplit,
                             MinTime = cyclesForPhase.Min(c => c.DurationSeconds),
                             ProgrammedSplit = programmedSplits[phaseNumber],
