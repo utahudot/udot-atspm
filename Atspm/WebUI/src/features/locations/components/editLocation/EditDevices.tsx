@@ -28,16 +28,15 @@ const EditDevices = () => {
   const theme = useTheme()
 
   const { location } = useLocationStore()
-  const locationId = location?.id
-
-export default function EditDevices({ locationId }: EditDevicesProps) {
-  const theme = useTheme()
   const {
     shouldDownloadData,
     dataDownloaded,
     setShouldDownloadData,
     setDataDownloaded,
   } = useLocationWizardStore()
+
+  const locationId = location?.id
+
   const [isModalOpen, setModalOpen] = useState(false)
   const [currentDevice, setCurrentDevice] = useState<Device | null>(null)
   const [openDeleteModal, setOpenDeleteModal] = useState(false)
@@ -49,13 +48,10 @@ export default function EditDevices({ locationId }: EditDevicesProps) {
     refetch: refetchDevices,
     isFetching: isResyncing,
   } = useGetDevicesForLocation(locationId)
-
   const { data: deviceConfigurationsData } = useGetDeviceConfigurations()
   const { mutate: deleteDevice } = useDeleteDevice()
 
-  async function handleResync() {
-    await refetchDevices()
-  }
+  const devices = devicesData?.value || []
 
   useEffect(() => {
     if (shouldDownloadData && !dataDownloaded) {
@@ -73,11 +69,13 @@ export default function EditDevices({ locationId }: EditDevicesProps) {
     setShouldDownloadData,
   ])
 
+  async function handleResync() {
+    await refetchDevices()
+  }
+
   if (!deviceConfigurationsData?.value || !devicesData?.value) {
     return <Typography variant="h6">Loading...</Typography>
   }
-
-  const devices = devicesData.value
 
   const handleAddClick = () => {
     setCurrentDevice(null)
@@ -115,7 +113,6 @@ export default function EditDevices({ locationId }: EditDevicesProps) {
           Sync
         </LoadingButton>
       </Box>
-
       <Collapse in={showSyncPanel} timeout="auto" unmountOnExit>
         <Paper
           sx={{
@@ -137,7 +134,6 @@ export default function EditDevices({ locationId }: EditDevicesProps) {
           </Box>
         </Paper>
       </Collapse>
-
       <Box
         sx={{
           display: 'flex',
@@ -147,7 +143,7 @@ export default function EditDevices({ locationId }: EditDevicesProps) {
           marginTop: '10px',
         }}
       >
-        {devices.map((device) => (
+        {devicesData.value.map((device) => (
           <DeviceCard
             key={device.id}
             device={device}
@@ -159,8 +155,9 @@ export default function EditDevices({ locationId }: EditDevicesProps) {
           onClick={handleAddClick}
           sx={{
             padding: 2,
+            mb: 1.95,
             minWidth: '400px',
-            height: '400px',
+            minHeight: '400px',
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'center',
@@ -171,59 +168,60 @@ export default function EditDevices({ locationId }: EditDevicesProps) {
           <Avatar sx={{ bgcolor: theme.palette.primary.main, mb: 1 }}>
             <AddIcon />
           </Avatar>
-          <Typography variant="h6" sx={{ marginTop: 2 }} component="p">
+          <Typography variant="h6" sx={{ marginTop: 2 }} component={'p'}>
             Add New Device
           </Typography>
         </Button>
-      </Box>
 
-      {isModalOpen && (
-        <DeviceModal
-          onClose={() => setModalOpen(false)}
-          device={currentDevice}
-          locationId={locationId}
-          refetchDevices={refetchDevices}
-        />
-      )}
-
-      <Modal
-        open={openDeleteModal}
-        onClose={() => setOpenDeleteModal(false)}
-        aria-labelledby="delete-confirmation"
-        aria-describedby="confirm-delete-device"
-      >
-        <Box
-          sx={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: 400,
-            bgcolor: 'background.paper',
-            boxShadow: 24,
-            p: 4,
-          }}
+        {isModalOpen && (
+          <DeviceModal
+            onClose={() => setModalOpen(false)}
+            device={currentDevice}
+            locationId={locationId}
+            refetchDevices={refetchDevices}
+          />
+        )}
+        <Modal
+          open={openDeleteModal}
+          onClose={() => setOpenDeleteModal(false)}
+          aria-labelledby="delete-confirmation"
+          aria-describedby="confirm-delete-approach"
         >
-          <Typography id="delete-confirmation" sx={{ fontWeight: 'bold' }}>
-            Confirm Delete
-          </Typography>
-          <Typography id="confirm-delete-device" sx={{ mt: 2 }}>
-            Are you sure you want to delete this device?
-          </Typography>
-          <Box sx={{ mt: 4, display: 'flex', justifyContent: 'flex-end' }}>
-            <Button onClick={() => setOpenDeleteModal(false)} color="inherit">
-              Cancel
-            </Button>
-            <Button
-              color="error"
-              variant="contained"
-              onClick={confirmDeleteDevice}
-            >
-              Delete Device
-            </Button>
+          <Box
+            sx={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              width: 400,
+              bgcolor: 'background.paper',
+              boxShadow: 24,
+              p: 4,
+            }}
+          >
+            <Typography id="delete-confirmation" sx={{ fontWeight: 'bold' }}>
+              Confirm Delete
+            </Typography>
+            <Typography id="confirm-delete-approach" sx={{ mt: 2 }}>
+              Are you sure you want to delete this device?
+            </Typography>
+            <Box sx={{ mt: 4, display: 'flex', justifyContent: 'flex-end' }}>
+              <Button onClick={() => setOpenDeleteModal(false)} color="inherit">
+                Cancel
+              </Button>
+              <Button
+                onClick={confirmDeleteDevice}
+                color="error"
+                variant="contained"
+              >
+                Delete Device
+              </Button>
+            </Box>
           </Box>
-        </Box>
-      </Modal>
+        </Modal>
+      </Box>
     </>
   )
 }
+
+export default EditDevices
