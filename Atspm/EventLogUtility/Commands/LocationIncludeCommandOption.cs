@@ -21,10 +21,10 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
 {
     public class LocationIncludeCommandOption : Option<IEnumerable<string>>
     {
-        public LocationIncludeCommandOption() : base("--include", "List of location identifiers to include")
+        public LocationIncludeCommandOption() : base("--include-locations", "List of location identifiers to include")
         {
             AllowMultipleArgumentsPerToken = true;
-            AddAlias("-i");
+            AddAlias("-il");
         }
     }
 }

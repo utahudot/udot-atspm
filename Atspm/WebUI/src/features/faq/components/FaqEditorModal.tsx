@@ -47,14 +47,9 @@ interface ModalProps {
   onSave: (faq: Faq) => void;
 }
 
-const FaqEditorModal: React.FC<ModalProps> = ({
-  data: faq,
-  isOpen,
-  onClose,
-  onSave,
-}) => {
-  const [createOrEditText, setCreateOrEditText] = useState("");
-  const [isClosing, setIsClosing] = useState(false); // Add this state
+const FaqEditorModal = ({ data: faq, isOpen, onClose, onSave }: ModalProps) => {
+  const [createOrEditText, setCreateOrEditText] = useState('')
+  const [isClosing, setIsClosing] = useState(false) // Add this state
 
   const {
     register,

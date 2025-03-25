@@ -26,6 +26,8 @@ export const TimeSpaceRouteSelect = ({ handler }: Props) => {
     if (handler.routeId) refetch()
   }, [handler.routeId, refetch])
 
+  if (routeData && routeData?.routeLocations === undefined) return null
+
   const routeValuesToCheck =
     routeData?.routeLocations
       .map((location) => {

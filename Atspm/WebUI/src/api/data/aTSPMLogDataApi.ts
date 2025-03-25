@@ -14,6 +14,8 @@ import type {
   UseQueryOptions,
   UseQueryResult
 } from 'react-query'
+import { useQuery } from 'react-query'
+import { dataRequest } from '../../lib/axios'
 import type {
   DeviceEventDownload,
   GetV1AggregationGetArchivedAggregationsLocationIdentifierDataTypeParams,
@@ -42,14 +44,25 @@ export const getV1AggregationGetDataTypes = (
       {url: `/v1/Aggregation/GetDataTypes`, method: 'GET', signal
     },
       );
-    }
-  
+}
+
 
 export const getGetV1AggregationGetDataTypesQueryKey = () => {
     return [`/v1/Aggregation/GetDataTypes`] as const;
-    }
+}
 
-    
+export const getGetAggregationDataTypesQueryOptions = <
+  TData = Awaited<ReturnType<typeof getAggregationDataTypes>>,
+  TError = ProblemDetails,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof getAggregationDataTypes>>,
+    TError,
+    TData
+  >
+}) => {
+  const { query: queryOptions } = options ?? {}
+
 export const getGetV1AggregationGetDataTypesQueryOptions = <TData = Awaited<ReturnType<typeof getV1AggregationGetDataTypes>>, TError = ProblemDetails>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getV1AggregationGetDataTypes>>, TError, TData>, }
 ) => {
 
@@ -95,19 +108,26 @@ export const useGetV1AggregationGetDataTypes = <TData = Awaited<ReturnType<typeo
  * @summary Get all aggregations for location by date
  */
 export const getV1AggregationGetArchivedAggregationsLocationIdentifier = (
-    locationIdentifier: string,
+  locationIdentifier: string,
     params?: GetV1AggregationGetArchivedAggregationsLocationIdentifierParams,
- signal?: AbortSignal
+  signal?: AbortSignal
 ) => {
-      
+  return dataRequest<void>({
+    url: `/Aggregation/GetArchivedAggregations/${locationIdentifier}`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
       
       return dataRequest<void>(
       {url: `/v1/Aggregation/GetArchivedAggregations/${locationIdentifier}`, method: 'GET',
         params, signal
     },
       );
-    }
-  
+  }
+
 
 export const getGetV1AggregationGetArchivedAggregationsLocationIdentifierQueryKey = (locationIdentifier: string,
     params?: GetV1AggregationGetArchivedAggregationsLocationIdentifierParams,) => {
@@ -117,7 +137,8 @@ export const getGetV1AggregationGetArchivedAggregationsLocationIdentifierQueryKe
     
 export const getGetV1AggregationGetArchivedAggregationsLocationIdentifierQueryOptions = <TData = Awaited<ReturnType<typeof getV1AggregationGetArchivedAggregationsLocationIdentifier>>, TError = ProblemDetails>(locationIdentifier: string,
     params?: GetV1AggregationGetArchivedAggregationsLocationIdentifierParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getV1AggregationGetArchivedAggregationsLocationIdentifier>>, TError, TData>, }
-) => {
+  ) => {
+    const { query: queryOptions } = options ?? {}
 
 const {query: queryOptions} = options ?? {};
 
@@ -132,7 +153,7 @@ const {query: queryOptions} = options ?? {};
       
 
    return  { queryKey, queryFn, enabled: !!(locationIdentifier), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getV1AggregationGetArchivedAggregationsLocationIdentifier>>, TError, TData> & { queryKey: QueryKey }
-}
+  }
 
 export type GetV1AggregationGetArchivedAggregationsLocationIdentifierQueryResult = NonNullable<Awaited<ReturnType<typeof getV1AggregationGetArchivedAggregationsLocationIdentifier>>>
 export type GetV1AggregationGetArchivedAggregationsLocationIdentifierQueryError = ProblemDetails
@@ -141,7 +162,7 @@ export type GetV1AggregationGetArchivedAggregationsLocationIdentifierQueryError 
  * @summary Get all aggregations for location by date
  */
 export const useGetV1AggregationGetArchivedAggregationsLocationIdentifier = <TData = Awaited<ReturnType<typeof getV1AggregationGetArchivedAggregationsLocationIdentifier>>, TError = ProblemDetails>(
- locationIdentifier: string,
+  locationIdentifier: string,
     params?: GetV1AggregationGetArchivedAggregationsLocationIdentifierParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getV1AggregationGetArchivedAggregationsLocationIdentifier>>, TError, TData>, }
 
   ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
@@ -165,8 +186,8 @@ export const getV1AggregationGetArchivedAggregationsLocationIdentifierDataType =
     locationIdentifier: string,
     dataType: string,
     params?: GetV1AggregationGetArchivedAggregationsLocationIdentifierDataTypeParams,
- signal?: AbortSignal
-) => {
+    signal?: AbortSignal
+  ) => {
       
       
       return dataRequest<void>(
@@ -174,20 +195,21 @@ export const getV1AggregationGetArchivedAggregationsLocationIdentifierDataType =
         params, signal
     },
       );
-    }
-  
+  }
+
 
 export const getGetV1AggregationGetArchivedAggregationsLocationIdentifierDataTypeQueryKey = (locationIdentifier: string,
     dataType: string,
     params?: GetV1AggregationGetArchivedAggregationsLocationIdentifierDataTypeParams,) => {
     return [`/v1/Aggregation/GetArchivedAggregations/${locationIdentifier}/${dataType}`, ...(params ? [params]: [])] as const;
-    }
+  }
 
     
 export const getGetV1AggregationGetArchivedAggregationsLocationIdentifierDataTypeQueryOptions = <TData = Awaited<ReturnType<typeof getV1AggregationGetArchivedAggregationsLocationIdentifierDataType>>, TError = ProblemDetails>(locationIdentifier: string,
     dataType: string,
     params?: GetV1AggregationGetArchivedAggregationsLocationIdentifierDataTypeParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getV1AggregationGetArchivedAggregationsLocationIdentifierDataType>>, TError, TData>, }
-) => {
+  ) => {
+    const { query: queryOptions } = options ?? {}
 
 const {query: queryOptions} = options ?? {};
 
@@ -202,7 +224,7 @@ const {query: queryOptions} = options ?? {};
       
 
    return  { queryKey, queryFn, enabled: !!(locationIdentifier && dataType), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getV1AggregationGetArchivedAggregationsLocationIdentifierDataType>>, TError, TData> & { queryKey: QueryKey }
-}
+  }
 
 export type GetV1AggregationGetArchivedAggregationsLocationIdentifierDataTypeQueryResult = NonNullable<Awaited<ReturnType<typeof getV1AggregationGetArchivedAggregationsLocationIdentifierDataType>>>
 export type GetV1AggregationGetArchivedAggregationsLocationIdentifierDataTypeQueryError = ProblemDetails
@@ -211,7 +233,7 @@ export type GetV1AggregationGetArchivedAggregationsLocationIdentifierDataTypeQue
  * @summary Get all aggregations for location by date and datatype
  */
 export const useGetV1AggregationGetArchivedAggregationsLocationIdentifierDataType = <TData = Awaited<ReturnType<typeof getV1AggregationGetArchivedAggregationsLocationIdentifierDataType>>, TError = ProblemDetails>(
- locationIdentifier: string,
+    locationIdentifier: string,
     dataType: string,
     params?: GetV1AggregationGetArchivedAggregationsLocationIdentifierDataTypeParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getV1AggregationGetArchivedAggregationsLocationIdentifierDataType>>, TError, TData>, }
 
@@ -224,7 +246,7 @@ export const useGetV1AggregationGetArchivedAggregationsLocationIdentifierDataTyp
   query.queryKey = queryOptions.queryKey ;
 
   return query;
-}
+  }
 
 
 
@@ -242,14 +264,25 @@ export const getV1EventLogGetDataTypes = (
       {url: `/v1/EventLog/GetDataTypes`, method: 'GET', signal
     },
       );
-    }
-  
+}
+
 
 export const getGetV1EventLogGetDataTypesQueryKey = () => {
     return [`/v1/EventLog/GetDataTypes`] as const;
-    }
+}
 
-    
+export const getGetEventLogDataTypesQueryOptions = <
+  TData = Awaited<ReturnType<typeof getEventLogDataTypes>>,
+  TError = ProblemDetails,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof getEventLogDataTypes>>,
+    TError,
+    TData
+  >
+}) => {
+  const { query: queryOptions } = options ?? {}
+
 export const getGetV1EventLogGetDataTypesQueryOptions = <TData = Awaited<ReturnType<typeof getV1EventLogGetDataTypes>>, TError = ProblemDetails>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getV1EventLogGetDataTypes>>, TError, TData>, }
 ) => {
 
@@ -295,29 +328,37 @@ export const useGetV1EventLogGetDataTypes = <TData = Awaited<ReturnType<typeof g
  * @summary Get all event logs for location by date
  */
 export const getV1EventLogGetArchivedEventsLocationIdentifier = (
-    locationIdentifier: string,
+  locationIdentifier: string,
     params?: GetV1EventLogGetArchivedEventsLocationIdentifierParams,
- signal?: AbortSignal
+  signal?: AbortSignal
 ) => {
-      
+  return dataRequest<void>({
+    url: `/EventLog/GetArchivedEvents/${locationIdentifier}`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
       
       return dataRequest<void>(
       {url: `/v1/EventLog/GetArchivedEvents/${locationIdentifier}`, method: 'GET',
         params, signal
     },
       );
-    }
-  
+}
+
 
 export const getGetV1EventLogGetArchivedEventsLocationIdentifierQueryKey = (locationIdentifier: string,
     params?: GetV1EventLogGetArchivedEventsLocationIdentifierParams,) => {
     return [`/v1/EventLog/GetArchivedEvents/${locationIdentifier}`, ...(params ? [params]: [])] as const;
-    }
+  }
 
     
 export const getGetV1EventLogGetArchivedEventsLocationIdentifierQueryOptions = <TData = Awaited<ReturnType<typeof getV1EventLogGetArchivedEventsLocationIdentifier>>, TError = ProblemDetails>(locationIdentifier: string,
     params?: GetV1EventLogGetArchivedEventsLocationIdentifierParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getV1EventLogGetArchivedEventsLocationIdentifier>>, TError, TData>, }
 ) => {
+  const { query: queryOptions } = options ?? {}
 
 const {query: queryOptions} = options ?? {};
 
@@ -341,7 +382,7 @@ export type GetV1EventLogGetArchivedEventsLocationIdentifierQueryError = Problem
  * @summary Get all event logs for location by date
  */
 export const useGetV1EventLogGetArchivedEventsLocationIdentifier = <TData = Awaited<ReturnType<typeof getV1EventLogGetArchivedEventsLocationIdentifier>>, TError = ProblemDetails>(
- locationIdentifier: string,
+  locationIdentifier: string,
     params?: GetV1EventLogGetArchivedEventsLocationIdentifierParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getV1EventLogGetArchivedEventsLocationIdentifier>>, TError, TData>, }
 
   ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
@@ -353,19 +394,32 @@ export const useGetV1EventLogGetArchivedEventsLocationIdentifier = <TData = Awai
   query.queryKey = queryOptions.queryKey ;
 
   return query;
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions =
+    getGetEventLogArchivedEventsFromLocationIdentifierQueryOptions(
+      locationIdentifier,
+      params,
+      options
+    )
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
 }
-
-
-
 
 /**
  * @summary Get all event logs for location by date and device id
  */
 export const getV1EventLogGetArchivedEventsLocationIdentifierDeviceId = (
-    locationIdentifier: string,
-    deviceId: number,
+  locationIdentifier: string,
+  deviceId: number,
     params?: GetV1EventLogGetArchivedEventsLocationIdentifierDeviceIdParams,
- signal?: AbortSignal
+  signal?: AbortSignal
 ) => {
       
       
@@ -374,20 +428,20 @@ export const getV1EventLogGetArchivedEventsLocationIdentifierDeviceId = (
         params, signal
     },
       );
-    }
-  
+}
+
 
 export const getGetV1EventLogGetArchivedEventsLocationIdentifierDeviceIdQueryKey = (locationIdentifier: string,
     deviceId: number,
     params?: GetV1EventLogGetArchivedEventsLocationIdentifierDeviceIdParams,) => {
     return [`/v1/EventLog/GetArchivedEvents/${locationIdentifier}/${deviceId}`, ...(params ? [params]: [])] as const;
-    }
+  }
 
     
 export const getGetV1EventLogGetArchivedEventsLocationIdentifierDeviceIdQueryOptions = <TData = Awaited<ReturnType<typeof getV1EventLogGetArchivedEventsLocationIdentifierDeviceId>>, TError = ProblemDetails>(locationIdentifier: string,
     deviceId: number,
     params?: GetV1EventLogGetArchivedEventsLocationIdentifierDeviceIdParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getV1EventLogGetArchivedEventsLocationIdentifierDeviceId>>, TError, TData>, }
-) => {
+  ) => {
 
 const {query: queryOptions} = options ?? {};
 
@@ -399,10 +453,30 @@ const {query: queryOptions} = options ?? {};
 
       
 
-      
+    const queryKey =
+      queryOptions?.queryKey ??
+      getGetEventLogArchivedEventsFromLocationIdentifierAndDeviceIdQueryKey(
+        locationIdentifier,
+        deviceId,
+        params
+      )
+
+    const queryFn: QueryFunction<
+      Awaited<
+        ReturnType<
+          typeof getEventLogArchivedEventsFromLocationIdentifierAndDeviceId
+        >
+      >
+    > = ({ signal }) =>
+      getEventLogArchivedEventsFromLocationIdentifierAndDeviceId(
+        locationIdentifier,
+        deviceId,
+        params,
+        signal
+      )
 
    return  { queryKey, queryFn, enabled: !!(locationIdentifier && deviceId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getV1EventLogGetArchivedEventsLocationIdentifierDeviceId>>, TError, TData> & { queryKey: QueryKey }
-}
+  }
 
 export type GetV1EventLogGetArchivedEventsLocationIdentifierDeviceIdQueryResult = NonNullable<Awaited<ReturnType<typeof getV1EventLogGetArchivedEventsLocationIdentifierDeviceId>>>
 export type GetV1EventLogGetArchivedEventsLocationIdentifierDeviceIdQueryError = ProblemDetails
@@ -411,8 +485,8 @@ export type GetV1EventLogGetArchivedEventsLocationIdentifierDeviceIdQueryError =
  * @summary Get all event logs for location by date and device id
  */
 export const useGetV1EventLogGetArchivedEventsLocationIdentifierDeviceId = <TData = Awaited<ReturnType<typeof getV1EventLogGetArchivedEventsLocationIdentifierDeviceId>>, TError = ProblemDetails>(
- locationIdentifier: string,
-    deviceId: number,
+  locationIdentifier: string,
+  deviceId: number,
     params?: GetV1EventLogGetArchivedEventsLocationIdentifierDeviceIdParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getV1EventLogGetArchivedEventsLocationIdentifierDeviceId>>, TError, TData>, }
 
   ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
@@ -424,19 +498,33 @@ export const useGetV1EventLogGetArchivedEventsLocationIdentifierDeviceId = <TDat
   query.queryKey = queryOptions.queryKey ;
 
   return query;
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions =
+    getGetEventLogArchivedEventsFromLocationIdentifierAndDeviceIdQueryOptions(
+      locationIdentifier,
+      deviceId,
+      params,
+      options
+    )
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
 }
-
-
-
 
 /**
  * @summary Get all event logs for location by date and datatype
  */
 export const getV1EventLogGetArchivedEventsLocationIdentifierDataType = (
-    locationIdentifier: string,
-    dataType: string,
+  locationIdentifier: string,
+  dataType: string,
     params?: GetV1EventLogGetArchivedEventsLocationIdentifierDataTypeParams,
- signal?: AbortSignal
+  signal?: AbortSignal
 ) => {
       
       
@@ -445,20 +533,20 @@ export const getV1EventLogGetArchivedEventsLocationIdentifierDataType = (
         params, signal
     },
       );
-    }
-  
+}
+
 
 export const getGetV1EventLogGetArchivedEventsLocationIdentifierDataTypeQueryKey = (locationIdentifier: string,
     dataType: string,
     params?: GetV1EventLogGetArchivedEventsLocationIdentifierDataTypeParams,) => {
     return [`/v1/EventLog/GetArchivedEvents/${locationIdentifier}/${dataType}`, ...(params ? [params]: [])] as const;
-    }
+  }
 
     
 export const getGetV1EventLogGetArchivedEventsLocationIdentifierDataTypeQueryOptions = <TData = Awaited<ReturnType<typeof getV1EventLogGetArchivedEventsLocationIdentifierDataType>>, TError = ProblemDetails>(locationIdentifier: string,
     dataType: string,
     params?: GetV1EventLogGetArchivedEventsLocationIdentifierDataTypeParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getV1EventLogGetArchivedEventsLocationIdentifierDataType>>, TError, TData>, }
-) => {
+  ) => {
 
 const {query: queryOptions} = options ?? {};
 
@@ -470,10 +558,30 @@ const {query: queryOptions} = options ?? {};
 
       
 
-      
+    const queryKey =
+      queryOptions?.queryKey ??
+      getGetEventLogArchivedEventsFromLocationIdentifierAndDataTypeQueryKey(
+        locationIdentifier,
+        dataType,
+        params
+      )
+
+    const queryFn: QueryFunction<
+      Awaited<
+        ReturnType<
+          typeof getEventLogArchivedEventsFromLocationIdentifierAndDataType
+        >
+      >
+    > = ({ signal }) =>
+      getEventLogArchivedEventsFromLocationIdentifierAndDataType(
+        locationIdentifier,
+        dataType,
+        params,
+        signal
+      )
 
    return  { queryKey, queryFn, enabled: !!(locationIdentifier && dataType), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getV1EventLogGetArchivedEventsLocationIdentifierDataType>>, TError, TData> & { queryKey: QueryKey }
-}
+  }
 
 export type GetV1EventLogGetArchivedEventsLocationIdentifierDataTypeQueryResult = NonNullable<Awaited<ReturnType<typeof getV1EventLogGetArchivedEventsLocationIdentifierDataType>>>
 export type GetV1EventLogGetArchivedEventsLocationIdentifierDataTypeQueryError = ProblemDetails
@@ -482,8 +590,8 @@ export type GetV1EventLogGetArchivedEventsLocationIdentifierDataTypeQueryError =
  * @summary Get all event logs for location by date and datatype
  */
 export const useGetV1EventLogGetArchivedEventsLocationIdentifierDataType = <TData = Awaited<ReturnType<typeof getV1EventLogGetArchivedEventsLocationIdentifierDataType>>, TError = ProblemDetails>(
- locationIdentifier: string,
-    dataType: string,
+  locationIdentifier: string,
+  dataType: string,
     params?: GetV1EventLogGetArchivedEventsLocationIdentifierDataTypeParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getV1EventLogGetArchivedEventsLocationIdentifierDataType>>, TError, TData>, }
 
   ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
@@ -495,10 +603,24 @@ export const useGetV1EventLogGetArchivedEventsLocationIdentifierDataType = <TDat
   query.queryKey = queryOptions.queryKey ;
 
   return query;
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions =
+    getGetEventLogArchivedEventsFromLocationIdentifierAndDataTypeQueryOptions(
+      locationIdentifier,
+      dataType,
+      params,
+      options
+    )
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
 }
-
-
-
 
 /**
  * @summary Get all event logs for location by date, device id and datatype
@@ -508,8 +630,8 @@ export const getV1EventLogGetArchivedEventsLocationIdentifierDeviceIdDataType = 
     deviceId: number,
     dataType: string,
     params?: GetV1EventLogGetArchivedEventsLocationIdentifierDeviceIdDataTypeParams,
- signal?: AbortSignal
-) => {
+    signal?: AbortSignal
+  ) => {
       
       
       return dataRequest<void>(
@@ -517,22 +639,22 @@ export const getV1EventLogGetArchivedEventsLocationIdentifierDeviceIdDataType = 
         params, signal
     },
       );
-    }
-  
+  }
+
 
 export const getGetV1EventLogGetArchivedEventsLocationIdentifierDeviceIdDataTypeQueryKey = (locationIdentifier: string,
     deviceId: number,
     dataType: string,
     params?: GetV1EventLogGetArchivedEventsLocationIdentifierDeviceIdDataTypeParams,) => {
     return [`/v1/EventLog/GetArchivedEvents/${locationIdentifier}/${deviceId}/${dataType}`, ...(params ? [params]: [])] as const;
-    }
+  }
 
     
 export const getGetV1EventLogGetArchivedEventsLocationIdentifierDeviceIdDataTypeQueryOptions = <TData = Awaited<ReturnType<typeof getV1EventLogGetArchivedEventsLocationIdentifierDeviceIdDataType>>, TError = ProblemDetails>(locationIdentifier: string,
     deviceId: number,
     dataType: string,
     params?: GetV1EventLogGetArchivedEventsLocationIdentifierDeviceIdDataTypeParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getV1EventLogGetArchivedEventsLocationIdentifierDeviceIdDataType>>, TError, TData>, }
-) => {
+  ) => {
 
 const {query: queryOptions} = options ?? {};
 
@@ -544,10 +666,32 @@ const {query: queryOptions} = options ?? {};
 
       
 
-      
+    const queryKey =
+      queryOptions?.queryKey ??
+      getGetEventLogArchivedEventsFromLocationIdentifierAndDeviceIdAndDataTypeQueryKey(
+        locationIdentifier,
+        deviceId,
+        dataType,
+        params
+      )
+
+    const queryFn: QueryFunction<
+      Awaited<
+        ReturnType<
+          typeof getEventLogArchivedEventsFromLocationIdentifierAndDeviceIdAndDataType
+        >
+      >
+    > = ({ signal }) =>
+      getEventLogArchivedEventsFromLocationIdentifierAndDeviceIdAndDataType(
+        locationIdentifier,
+        deviceId,
+        dataType,
+        params,
+        signal
+      )
 
    return  { queryKey, queryFn, enabled: !!(locationIdentifier && deviceId && dataType), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getV1EventLogGetArchivedEventsLocationIdentifierDeviceIdDataType>>, TError, TData> & { queryKey: QueryKey }
-}
+  }
 
 export type GetV1EventLogGetArchivedEventsLocationIdentifierDeviceIdDataTypeQueryResult = NonNullable<Awaited<ReturnType<typeof getV1EventLogGetArchivedEventsLocationIdentifierDeviceIdDataType>>>
 export type GetV1EventLogGetArchivedEventsLocationIdentifierDeviceIdDataTypeQueryError = ProblemDetails
@@ -556,7 +700,7 @@ export type GetV1EventLogGetArchivedEventsLocationIdentifierDeviceIdDataTypeQuer
  * @summary Get all event logs for location by date, device id and datatype
  */
 export const useGetV1EventLogGetArchivedEventsLocationIdentifierDeviceIdDataType = <TData = Awaited<ReturnType<typeof getV1EventLogGetArchivedEventsLocationIdentifierDeviceIdDataType>>, TError = ProblemDetails>(
- locationIdentifier: string,
+    locationIdentifier: string,
     deviceId: number,
     dataType: string,
     params?: GetV1EventLogGetArchivedEventsLocationIdentifierDeviceIdDataTypeParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getV1EventLogGetArchivedEventsLocationIdentifierDeviceIdDataType>>, TError, TData>, }
@@ -570,17 +714,32 @@ export const useGetV1EventLogGetArchivedEventsLocationIdentifierDeviceIdDataType
   query.queryKey = queryOptions.queryKey ;
 
   return query;
-}
+    }
+  ): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+    const queryOptions =
+      getGetEventLogArchivedEventsFromLocationIdentifierAndDeviceIdAndDataTypeQueryOptions(
+        locationIdentifier,
+        deviceId,
+        dataType,
+        params,
+        options
+      )
 
+    const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+      queryKey: QueryKey
+    }
 
+    query.queryKey = queryOptions.queryKey
 
+    return query
+  }
 
 /**
  * @summary This will kick off the workflow to pull events.
  */
 export const getV1LoggingLog = (
     params?: GetV1LoggingLogParams,
- signal?: AbortSignal
+  signal?: AbortSignal
 ) => {
       
       
@@ -589,16 +748,16 @@ export const getV1LoggingLog = (
         params, signal
     },
       );
-    }
-  
+}
+
 
 export const getGetV1LoggingLogQueryKey = (params?: GetV1LoggingLogParams,) => {
     return [`/v1/Logging/log`, ...(params ? [params]: [])] as const;
-    }
+}
 
     
 export const getGetV1LoggingLogQueryOptions = <TData = Awaited<ReturnType<typeof getV1LoggingLog>>, TError = ProblemDetails>(params?: GetV1LoggingLogParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getV1LoggingLog>>, TError, TData>, }
-) => {
+  ) => {
 
 const {query: queryOptions} = options ?? {};
 
@@ -610,10 +769,26 @@ const {query: queryOptions} = options ?? {};
 
       
 
-      
+    const queryKey =
+      queryOptions?.queryKey ??
+      getGetEventLogDaysWithEventLogsFromLocationIdentifierQueryKey(
+        locationIdentifier,
+        params
+      )
+
+    const queryFn: QueryFunction<
+      Awaited<
+        ReturnType<typeof getEventLogDaysWithEventLogsFromLocationIdentifier>
+      >
+    > = ({ signal }) =>
+      getEventLogDaysWithEventLogsFromLocationIdentifier(
+        locationIdentifier,
+        params,
+        signal
+      )
 
    return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getV1LoggingLog>>, TError, TData> & { queryKey: QueryKey }
-}
+  }
 
 export type GetV1LoggingLogQueryResult = NonNullable<Awaited<ReturnType<typeof getV1LoggingLog>>>
 export type GetV1LoggingLogQueryError = ProblemDetails
@@ -633,8 +808,14 @@ export const useGetV1LoggingLog = <TData = Awaited<ReturnType<typeof getV1Loggin
   query.queryKey = queryOptions.queryKey ;
 
   return query;
+  }
+
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
 }
-
-
-
-

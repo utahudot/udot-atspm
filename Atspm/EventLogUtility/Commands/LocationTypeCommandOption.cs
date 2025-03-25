@@ -21,7 +21,7 @@ namespace Utah.Udot.Atspm.EventLogUtility.Commands
 {
     public class LocationTypeCommandOption : Option<IEnumerable<string>>
     {
-        public LocationTypeCommandOption() : base("--location-type", "Location type to include in filter")
+        public LocationTypeCommandOption() : base("--location-type", "Location type to include")
         {
             AllowMultipleArgumentsPerToken = true;
             AddAlias("-t");

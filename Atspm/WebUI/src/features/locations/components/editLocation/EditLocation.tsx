@@ -24,7 +24,11 @@ const EditLocation = ({
 }: EditLocationProps) => {
   const { activeStep } = useLocationWizardStore()
   const [currentTab, setCurrentTab] = useState('1')
-  const [sortedApproaches, setSortedApproaches] = useState<ApproachForConfig[]>(
+
+  const handleTabChange = useCallback(
+    (_: React.SyntheticEvent, newTab: string) => {
+      setCurrentTab(newTab)
+    },
     []
   )
 
@@ -42,34 +46,20 @@ const EditLocation = ({
     setSortedApproaches(handler.approaches)
   }, [handler.approaches])
 
-  if (!handler.expandedLocation) return null
-
-  const handleTabChange = (_: React.SyntheticEvent, newTab: string) => {
-    setCurrentTab(newTab)
-  }
-
   return (
     <TabContext value={currentTab}>
-      <EditLocationHeader
-        location={handler.expandedLocation}
-        updateLocationVersion={updateLocationVersion}
-        refetchLocation={handler.refetchLocation}
-      />
+      <EditLocationHeader />
       <TabList onChange={handleTabChange} aria-label="Location Tabs">
         <Tab label="General" value="1" />
         <Tab label="Devices" value="2" />
         <Tab label="Approaches" value="3" />
         <Tab label="Watchdog" value="4" />
       </TabList>
-      <TabPanel value="1" sx={{ padding: '0px' }}>
-        <EditGeneralLocation
-          handleLocationEdit={handler.handleLocationEdit}
-          updateLocation={handler.updateExpandedLocation}
-          location={handler.expandedLocation}
-        />
+      <TabPanel value="1" sx={{ padding: 0 }}>
+        <LocationGeneralOptionsEditor />
       </TabPanel>
-      <TabPanel value="2" sx={{ padding: '0px', marginBottom: '100px' }}>
-        <EditDevices locationId={handler.expandedLocation.id} />
+      <TabPanel value="2" sx={{ padding: 0, marginBottom: '100px' }}>
+        <EditDevices />
       </TabPanel>
       <TabPanel value="3" sx={{ padding: 0, minHeight: '400px' }}>
         <ApproachOptions handler={handler} />
@@ -95,4 +85,12 @@ const EditLocation = ({
   )
 }
 
-export default EditLocation
+function ApproachWrapper({ approachId }: { approachId: number }) {
+  const approach = useLocationStore((state) =>
+    state.approaches.find((a) => a.id === approachId)
+  )
+
+  if (!approach) return null
+
+  return <EditApproach approach={approach} />
+}
