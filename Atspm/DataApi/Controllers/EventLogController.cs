@@ -19,6 +19,7 @@ using Asp.Versioning;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Utah.Udot.ATSPM.DataApi.Controllers;
+using Utah.Udot.Atspm.Extensions;
 
 namespace Utah.Udot.Atspm.DataApi.Controllers
 {
@@ -69,9 +70,9 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult GetArchivedEvents(string locationIdentifier, DateOnly start, DateOnly end)
+        public IActionResult GetArchivedEvents(string locationIdentifier, DateTime start, DateTime end)
         {
-            if (start == DateOnly.MinValue || end == DateOnly.MinValue || end < start)
+            if (start == DateTime.MinValue || end == DateTime.MinValue || end < start)
                 return BadRequest("Invalid date range");
 
             var result = _repository.GetArchivedEvents(locationIdentifier, start, end);
@@ -79,7 +80,7 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
             if (result.Count == 0)
                 return NotFound();
 
-            HttpContext.Response.Headers.Add("X-Total-Count", result.Count.ToString());
+            HttpContext.Response.Headers.Append("X-Total-Count", result.Count.ToString());
 
             return Ok(result);
         }
@@ -88,7 +89,7 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
         /// Get all event logs for location by date and device id
         /// </summary>
         /// <param name="locationIdentifier">Location identifier</param>
-        /// <param name="deviceId">Deivce id events came from</param>
+        /// <param name="deviceId">Device id events came from</param>
         /// <param name="start">Archive date of event to start with</param>
         /// <param name="end">Archive date of event to end with</param>
         /// <returns></returns>
@@ -100,9 +101,9 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult GetArchivedEvents(string locationIdentifier, int deviceId, DateOnly start, DateOnly end)
+        public IActionResult GetArchivedEvents(string locationIdentifier, int deviceId, DateTime start, DateTime end)
         {
-            if (start == DateOnly.MinValue || end == DateOnly.MinValue || end < start)
+            if (start == DateTime.MinValue || end == DateTime.MinValue || end < start)
                 return BadRequest("Invalid date range");
 
             if (deviceId == 0)
@@ -113,7 +114,7 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
             if (result.Count == 0)
                 return NotFound();
 
-            HttpContext.Response.Headers.Add("X-Total-Count", result.Count.ToString());
+            HttpContext.Response.Headers.Append("X-Total-Count", result.Count.ToString());
 
             return Ok(result);
         }
@@ -134,9 +135,9 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult GetArchivedEvents(string locationIdentifier, string dataType, DateOnly start, DateOnly end)
+        public IActionResult GetArchivedEvents(string locationIdentifier, string dataType, DateTime start, DateTime end)
         {
-            if (start == DateOnly.MinValue || end == DateOnly.MinValue || end < start)
+            if (start == DateTime.MinValue || end == DateTime.MinValue || end < start)
                 return BadRequest("Invalid date range");
 
             Type type;
@@ -155,7 +156,7 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
             if (result.Count == 0)
                 return NotFound();
 
-            HttpContext.Response.Headers.Add("X-Total-Count", result.Count.ToString());
+            HttpContext.Response.Headers.Append("X-Total-Count", result.Count.ToString());
 
             return Ok(result);
         }
@@ -164,7 +165,7 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
         /// Get all event logs for location by date, device id and datatype
         /// </summary>
         /// <param name="locationIdentifier">Location identifier</param>
-        /// <param name="deviceId">Deivce id events came from</param>
+        /// <param name="deviceId">Device id events came from</param>
         /// <param name="dataType">Type that inherits from <see cref="EventLogModelBase"/></param>
         /// <param name="start">Archive date of event to start with</param>
         /// <param name="end">Archive date of event to end with</param>
@@ -177,9 +178,9 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult GetArchivedEvents(string locationIdentifier, int deviceId, string dataType, DateOnly start, DateOnly end)
+        public IActionResult GetArchivedEvents(string locationIdentifier, int deviceId, string dataType, DateTime start, DateTime end)
         {
-            if (start == DateOnly.MinValue || end == DateOnly.MinValue || end < start)
+            if (start == DateTime.MinValue || end == DateTime.MinValue || end < start)
                 return BadRequest("Invalid date range");
 
             if (deviceId == 0)
@@ -201,7 +202,40 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
             if (result.Count == 0)
                 return NotFound();
 
-            HttpContext.Response.Headers.Add("X-Total-Count", result.Count.ToString());
+            HttpContext.Response.Headers.Append("X-Total-Count", result.Count.ToString());
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Get all days that have event logs for a given location.
+        /// </summary>
+        /// <param name="locationIdentifier">Location identifier</param>
+        /// <param name="dataType">Type that inherits from <see cref="EventLogModelBase"/></param>
+        /// <param name="month" >Month to get days with event logs</param>
+        /// <returns>A list of unique days with event logs.</returns>
+        /// <response code="200">Call completed successfully</response>
+        /// <response code="404">Resource not found</response>
+        [AllowAnonymous]
+        [HttpGet("[Action]/{locationIdentifier}")]
+        [Produces("application/json", "application/xml")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public IActionResult GetDaysWithEventLogs(string locationIdentifier, string dataType, DateTime start, DateTime end)
+        {
+
+            Type type;
+
+            try
+            {
+                type = Type.GetType($"{typeof(EventLogModelBase).Namespace}.{dataType}, {typeof(EventLogModelBase).Assembly}", true);
+            }
+            catch (Exception)
+            {
+                return BadRequest("Invalid data type");
+            }
+
+            var result = _repository.GetDaysWithEventLogs(locationIdentifier, type, start, end);
 
             return Ok(result);
         }
