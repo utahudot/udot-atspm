@@ -124,14 +124,14 @@ namespace Utah.Udot.Atspm.Data
             {
                 builder.ToTable(t => t.HasComment("Compressed aggregations"));
 
-                builder.HasKey(e => new { e.LocationIdentifier, e.ArchiveDate, e.DataType });
+                builder.HasKey(e => new { e.LocationIdentifier, e.ArchiveDate, e.Start, e.End });
 
                 builder.Property(e => e.LocationIdentifier)
                     .IsRequired()
                     .HasMaxLength(10);
 
                 builder.Property(e => e.ArchiveDate)
-                .IsRequired()
+                //.IsRequired()
                 .HasColumnType("Date")
                 .HasConversion<DateTime>(
                     v => v.ToDateTime(TimeOnly.MinValue),

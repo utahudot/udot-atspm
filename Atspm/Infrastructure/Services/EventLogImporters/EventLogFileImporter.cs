@@ -90,7 +90,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.EventLogImporters
 
             if (CanExecute(parameter))
             {
-                var logMessages = new EventLogDecoderLogMessages(_log, file);
+                var logMessages = new EventLogDecoderLogMessages(_log, this.GetType().Name, device, file);
 
                 foreach (IEventLogDecoder decoder in _decoders.Where(w => decoders.Contains(w.GetType().Name)))
                 {

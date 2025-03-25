@@ -8,6 +8,7 @@ export const hardwareTypeOptions = [
   { id: 'Sensys', description: 'Sensys' },
   { id: 'Video', description: 'Video' },
   { id: 'FLIRThermalCamera', description: 'FLIR: Thermal Camera' },
+  { id: 'LiDAR', description: 'LiDAR' },
 ]
 
 interface HardwareTypeCellProps {
