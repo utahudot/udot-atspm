@@ -57,12 +57,12 @@ interface AdminChartProps<T extends HasId> {
   headerKeys: string[]
   data: T[]
   pageName: string
-  hasEditPrivileges: boolean
-  hasDeletePrivileges: boolean
+  hasEditPrivileges?: boolean
+  hasDeletePrivileges?: boolean
   protectedFromDeleteItems?: string[]
   customEditFunction?: (selectedRow: T) => void
   editModal?: ReactElement<EditModalProps<T>>
-  deleteModal: ReactElement<DeleteModalProps<T>>
+  deleteModal?: ReactElement<DeleteModalProps<T>>
   createModal?: ReactElement<CreateModalProps>
   customCellRender?: CustomCellConfig[]
 }
@@ -139,14 +139,16 @@ const AdminTable = <T extends HasId>({
     return 0
   })
 
-  const deleteModalWithId = cloneElement(deleteModal, {
-    id: selectedRow?.id,
-    name: selectedRow?.name,
-    open: isDeleteModalOpen,
-    selectedRow: selectedRow ?? undefined,
-    onClose: handleClose,
-  })
-
+  let deleteModalWithId
+  if (deleteModal) {
+    deleteModalWithId = cloneElement(deleteModal, {
+      id: selectedRow?.id,
+      name: selectedRow?.name,
+      open: isDeleteModalOpen,
+      selectedRow: selectedRow ?? undefined,
+      onClose: handleClose,
+    })
+  }
   let editModalWithId
   if (editModal) {
     editModalWithId = cloneElement(editModal, {
@@ -241,7 +243,7 @@ const AdminTable = <T extends HasId>({
                     )
 
                     return (
-                      <TableCell key={header}>
+                      <TableCell key={header} sx={{ height: '53px' }}>
                         {customRenderer
                           ? customRenderer.component(
                               row[header as keyof T],
