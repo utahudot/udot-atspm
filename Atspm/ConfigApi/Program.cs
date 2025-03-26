@@ -124,10 +124,12 @@ builder.Host
             l.ResponseBodyLogLimit = 4096;
         });
 
+        s.AddControllers();
         s.AddAtspmDbContext(h);
         s.AddAtspmEFConfigRepositories();
         s.AddScoped<IRouteService, RouteService>();
         s.AddScoped<IApproachService, ApproachService>();
+        s.AddScoped<ISignalTemplateService, SignalTemplateService>();
         s.AddPathBaseFilter(h);
         s.AddAtspmIdentity(h);
     });
@@ -158,10 +160,10 @@ app.UseSwaggerUI(o =>
     }
 });
 
+app.UseRouting();
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseVersionedODataBatching();
 app.MapControllers();
-
 app.Run();
