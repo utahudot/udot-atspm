@@ -1,17 +1,29 @@
-import { AddButton } from '@/components/addButton'
+import ApproachOptions from '@/features/locations/components/ApproachOptions/ApproachOptions'
 import EditApproach from '@/features/locations/components/editApproach/EditApproach'
 import EditDevices from '@/features/locations/components/editLocation/EditDevices'
 import LocationGeneralOptionsEditor from '@/features/locations/components/editLocation/LocationGeneralOptionsEditor'
 import { useLocationStore } from '@/features/locations/components/editLocation/locationStore'
+import { useLocationWizardStore } from '@/features/locations/components/LocationSetupWizard/locationSetupWizardStore'
 import { TabContext, TabList, TabPanel } from '@mui/lab'
 import { Box, Tab, Typography } from '@mui/material'
-import React, { memo, useCallback, useState } from 'react'
+import React, { memo, useCallback, useEffect, useState } from 'react'
 import EditLocationHeader from './EditLocationHeader'
 import WatchdogEditor from './WatchdogEditor'
 
 function EditLocation() {
+  const { activeStep } = useLocationWizardStore()
   const location = useLocationStore((state) => state.location)
   const [currentTab, setCurrentTab] = useState('1')
+
+  useEffect(() => {
+    if (activeStep === 0) {
+      setCurrentTab('1')
+    } else if (activeStep === 1) {
+      setCurrentTab('2')
+    } else if (activeStep === 2) {
+      setCurrentTab('3')
+    }
+  }, [activeStep])
 
   const handleTabChange = useCallback(
     (_: React.SyntheticEvent, newTab: string) => {
@@ -61,14 +73,7 @@ function ApproachesTab() {
 
   return (
     <Box sx={{ minHeight: '400px' }}>
-      <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-        <AddButton
-          label="New Approach"
-          onClick={handleAddApproach}
-          sx={{ mb: 0.2 }}
-        />
-      </Box>
-
+      <ApproachOptions />
       {approachIds.map((id) => (
         <ApproachWrapper key={id} approachId={id} />
       ))}

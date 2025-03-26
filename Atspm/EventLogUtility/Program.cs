@@ -1,4 +1,4 @@
-﻿#region license
+#region license
 // Copyright 2025 Utah Departement of Transportation
 // for EventLogUtility - %Namespace%/Program.cs
 // 
@@ -17,6 +17,8 @@
 
 using Google.Cloud.Diagnostics.Common;
 using Microsoft.Extensions.Hosting;
+using System.Threading.Tasks.Dataflow;
+using Utah.Udot.Atspm.Data.Enums;
 using Microsoft.Extensions.Logging;
 using System.CommandLine.Builder;
 using System.CommandLine.Hosting;
@@ -24,6 +26,8 @@ using System.CommandLine.Parsing;
 using System.Diagnostics;
 using System.Reflection;
 using Utah.Udot.Atspm.EventLogUtility.Commands;
+using System.Threading.Tasks.Dataflow;
+using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Infrastructure.Extensions;
 
 //trick github
@@ -63,6 +67,14 @@ cmdBuilder.UseHost(a =>
     })
     .ConfigureServices((h, s) =>
     {
+        //s.AddGoogleDiagnostics(loggingOptions: LoggingOptions.Create(LogLevel.Debug));
+
+        //s.AddDownloaderClients();
+        //s.AddDeviceDownloaders(h);
+        //s.AddEventLogDecoders();
+        //s.AddEventLogImporters(h);
+        //s.AddAtspmEFEventLogRepositories();
+
         //s.AddGoogleDiagnostics(loggingOptions: LoggingOptions.Create(LogLevel.Debug));
 
         s.AddAtspmDbContext(h);

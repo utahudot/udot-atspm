@@ -177,7 +177,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                 splitFailData.Bins.Select(b => new DataPointForDouble(b.StartTime, b.AverageRedOccupancyPercent)).ToList(),
                 splitFailData.Bins.Select(b => new DataPointForDouble(b.StartTime, b.PercentSplitfails)).ToList()
                 );
-            result.ApproachDescription = phaseDetail.Approach.Description;
+            result.ApproachDescription = phaseDetail.Approach.Description + " - " + result.PhaseType;
             result.LocationDescription = phaseDetail.Approach.Location.LocationDescription();
             return result;
         }
