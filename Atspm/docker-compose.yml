@@ -120,6 +120,20 @@ services:
     depends_on:
       database-installer:
         condition: service_completed_successfully
+  
+  webui:
+    build:
+      context: ./WebUI
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      <<: *default-environment
+    volumes:
+      - "C:/Users/AVENUE/.aspnet/https:/root/.aspnet/https:ro"  # Explicitly mount correct cert location
+    depends_on:
+      database-installer:
+        condition: service_completed_successfully
 
 volumes:
   aspnet_https:
