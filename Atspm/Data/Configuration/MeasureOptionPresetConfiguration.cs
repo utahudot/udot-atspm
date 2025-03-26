@@ -40,7 +40,7 @@ namespace Utah.Udot.Atspm.Data.Configuration
             {
                 TypeNameHandling = TypeNameHandling.All
             }), 
-            v => JsonConvert.DeserializeObject<MeasureOptionsBase>(v, new JsonSerializerSettings()
+            v => JsonConvert.DeserializeObject<AtspmOptionsBase>(v, new JsonSerializerSettings()
             {
                 TypeNameHandling = TypeNameHandling.All
             }));

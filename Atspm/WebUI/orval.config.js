@@ -19,7 +19,7 @@ module.exports = {
   // },
   data: {
     input: {
-      target: './data-spec.json',
+      target: './config-spec.json',
     },
     output: {
       target: './src/api/data',
