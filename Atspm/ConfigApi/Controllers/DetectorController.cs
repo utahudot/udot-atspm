@@ -17,7 +17,9 @@
 
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Formatter;
 using Microsoft.AspNetCore.OData.Query;
+using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
 using static Microsoft.AspNetCore.Http.StatusCodes;
@@ -67,6 +69,59 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
         public ActionResult<IEnumerable<DetectionType>> GetDetectionTypes([FromRoute] int key)
         {
             return GetNavigationProperty<IEnumerable<DetectionType>>(key);
+        }
+
+        [HttpPost("api/v1/Detector/retrieveDetctionData")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> RetrieveDetectionIdentifierBasedOnDetectionType(ODataActionParameters ourParams)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest("Invalid model state.");
+            }
+
+            try
+            {
+                if (!ourParams.ContainsKey("IpAddress") || !ourParams.ContainsKey("port") || !ourParams.ContainsKey("detectionType"))
+                {
+                    return BadRequest("Missing required parameters.");
+                }
+
+                string ipAddress = ourParams["IpAddress"].ToString();
+                string port = ourParams["port"].ToString();
+                if (!Enum.TryParse(ourParams["detectionType"].ToString(), out DeviceTypes detectionType))
+                {
+                    return BadRequest("Invalid detectionType value.");
+                }
+
+                if (detectionType == DeviceTypes.FIRCamera)
+                {
+                    using (HttpClient client = new HttpClient())
+                    {
+                        string url = $"http://{ipAddress}:{port}/api/v1/cameras";
+                        HttpResponseMessage response = await client.GetAsync(url);
+
+                        if (response.IsSuccessStatusCode)
+                        {
+                            var responseData = await response.Content.ReadFromJsonAsync<object>();
+                            return Ok(responseData);
+                        }
+                        return StatusCode((int)response.StatusCode, "Failed to retrieve data from the external service.");
+                    }
+                }
+
+                return Ok("Detection type not supported yet.");
+            }
+            catch (HttpRequestException e)
+            {
+                return StatusCode(StatusCodes.Status503ServiceUnavailable, $"External service request failed: {e.Message}");
+            }
+            catch (Exception e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, $"An error occurred: {e.Message}");
+            }
         }
 
         #endregion
