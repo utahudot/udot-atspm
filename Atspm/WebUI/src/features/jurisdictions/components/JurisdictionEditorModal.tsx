@@ -1,4 +1,4 @@
-import { Jurisdiction } from '@/features/jurisdictions/types'
+import { Jurisdiction } from '@/api/config/aTSPMConfigurationApi.schemas'
 import { zodResolver } from '@hookform/resolvers/zod'
 import {
   Button,
