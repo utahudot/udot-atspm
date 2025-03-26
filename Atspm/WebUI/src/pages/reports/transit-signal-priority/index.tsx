@@ -67,7 +67,7 @@ export type TspErrorState =
   | { type: '400' }
   | { type: 'UNKNOWN'; message: string }
 
-interface TspReportOptions {
+export interface TspReportOptions {
   selectedDays: Date[]
   locations: TspLocation[]
 }
@@ -204,6 +204,9 @@ export default function TspReportPage() {
             designatedPhases: loc.designatedPhases,
           })),
           dates: reportOptions.selectedDays.map((date) => date.toISOString()),
+          locationIdentifier: '0',
+          start: new Date().toISOString(),
+          end: new Date().toISOString(),
         },
       })
     } catch (err: unknown) {
@@ -306,7 +309,9 @@ export default function TspReportPage() {
           </LoadingButton>
           {renderErrorAlert()}
         </Box>
-        {reportResponse && <TspReport report={reportResponse} />}
+        {reportResponse && (
+          <TspReport report={reportResponse} reportOptions={reportOptions} />
+        )}
       </Box>
     </ResponsivePageLayout>
   )
