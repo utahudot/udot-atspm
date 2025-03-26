@@ -1,33 +1,35 @@
+import {
+  useDeleteFaqFromKey,
+  useGetFaq,
+  usePatchFaqFromKey,
+  usePostFaq,
+} from '@/api/config/aTSPMConfigurationApi'
+import { Faq } from '@/api/config/aTSPMConfigurationApi.schemas'
 import AdminTable from '@/components/AdminTable/AdminTable'
 import DeleteModal from '@/components/AdminTable/DeleteModal'
 import { ResponsivePageLayout } from '@/components/ResponsivePage'
-import {
-  useCreateFaqs,
-  useDeleteFaqs,
-  useEditFaqs,
-  useGetFaqs,
-} from '@/features/faq/api'
 import FaqEditorModal from '@/features/faq/components/FaqEditorModal'
-import { Faq } from '@/features/faq/types'
 import {
   PageNames,
   useUserHasClaim,
   useViewPage,
 } from '@/features/identity/pagesCheck'
+import { useNotificationStore } from '@/stores/notifications'
 import { Backdrop, CircularProgress } from '@mui/material'
 import { Markup } from 'interweave'
 
 const FaqAdmin = () => {
   const pageAccess = useViewPage(PageNames.FAQs)
+  const { addNotification } = useNotificationStore()
 
   const hasGeneralEditClaim = useUserHasClaim('GeneralConfiguration:Edit')
   const hasGeneralDeleteClaim = useUserHasClaim('GeneralConfiguration:Delete')
 
-  const { mutateAsync: createMutation } = useCreateFaqs()
-  const { mutateAsync: deleteMutation } = useDeleteFaqs()
-  const { mutateAsync: editMutation } = useEditFaqs()
+  const { mutateAsync: createMutation } = usePostFaq()
+  const { mutateAsync: deleteMutation } = useDeleteFaqFromKey()
+  const { mutateAsync: editMutation } = usePatchFaqFromKey()
 
-  const { data: faqData, isLoading, refetch: refetchFaqData } = useGetFaqs()
+  const { data: faqData, isLoading, refetch: refetchFaqData } = useGetFaq()
   const faqs = faqData?.value
 
   if (pageAccess.isLoading) {
@@ -35,25 +37,13 @@ const FaqAdmin = () => {
   }
 
   const HandleCreateFaq = async (faqData: Faq) => {
-    const { header, body, displayOrder } = faqData
     try {
-      await createMutation({
-        header,
-        body,
-        displayOrder,
-      })
+      await createMutation({ data: faqData })
       refetchFaqData()
+      addNotification({ type: 'success', title: 'FAQ Created' })
     } catch (error) {
       console.error('Mutation Error:', error)
-    }
-  }
-
-  const HandleDeleteFaq = async (id: number) => {
-    try {
-      await deleteMutation(id)
-      refetchFaqData()
-    } catch (error) {
-      console.error('Mutation Error:', error)
+      addNotification({ type: 'error', title: 'Error Creating FAQ' })
     }
   }
 
@@ -61,12 +51,25 @@ const FaqAdmin = () => {
     const { id, header, body, displayOrder } = faqData
     try {
       await editMutation({
-        data: { header, body, displayOrder },
-        id,
+        data: faqData,
+        key: id,
       })
       refetchFaqData()
+      addNotification({ type: 'success', title: 'FAQ Edited' })
     } catch (error) {
       console.error('Mutation Error:', error)
+      addNotification({ type: 'error', title: 'Error Editing FAQ' })
+    }
+  }
+
+  const HandleDeleteFaq = async (id: number) => {
+    try {
+      await deleteMutation({ key: id })
+      refetchFaqData()
+      addNotification({ type: 'success', title: 'FAQ Deleted' })
+    } catch (error) {
+      console.error('Mutation Error:', error)
+      addNotification({ type: 'error', title: 'Error Deleting FAQ' })
     }
   }
 
