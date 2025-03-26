@@ -41,6 +41,7 @@ function EditApproach({ approach }: ApproachAdminProps) {
   const copyApproachInStore = useLocationStore((s) => s.copyApproach)
   const deleteApproachInStore = useLocationStore((s) => s.deleteApproach)
   const addDetectorInStore = useLocationStore((s) => s.addDetector)
+  const updateSavedApproaches = useLocationStore((s) => s.updateSavedApproaches)
 
   const [open, setOpen] = useState(false)
   const [openModal, setOpenModal] = useState(false)
@@ -196,6 +197,9 @@ function EditApproach({ approach }: ApproachAdminProps) {
             updateApproachInStore(normalizedSaved)
           }
 
+          // Update savedApproaches to reflect the saved state
+          updateSavedApproaches(normalizedSaved)
+
           addNotification({
             title: 'Approach saved successfully',
             type: 'success',
@@ -237,6 +241,7 @@ function EditApproach({ approach }: ApproachAdminProps) {
     findDetectionType,
     updateApproachInStore,
     deleteApproachInStore,
+    updateSavedApproaches,
     addNotification,
   ])
 
