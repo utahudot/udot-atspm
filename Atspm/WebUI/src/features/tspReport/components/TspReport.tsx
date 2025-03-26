@@ -450,7 +450,7 @@ export function exportToExcel(
     // Build the sheet name exactly like your tab label
     let sheetName = 'Sheet'
     if (matchedLoc) {
-      sheetName = `${matchedLoc.locationIdentifier} - ${matchedLoc.primaryName} & ${matchedLoc.secondaryName}`
+      sheetName = `${matchedLoc.locationIdentifier}`
     }
 
     // --- Build row objects (like you do for DataGrid) ---
