@@ -1,0 +1,63 @@
+﻿#region license
+// Copyright 2025 Utah Departement of Transportation
+// for ConfigApi - Utah.Udot.Atspm.ConfigApi.Controllers/GeneralPolicyControllerBase.cs
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+// http://www.apache.org/licenses/LICENSE-2.
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+#endregion
+
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Deltas;
+using Utah.Udot.Atspm.Data.Models;
+using Utah.Udot.NetStandardToolkit.Services;
+
+namespace Utah.Udot.Atspm.ConfigApi.Controllers
+{
+    /// <summary>
+    /// Base class for controllers using location policies
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="TKey"></typeparam>
+    /// <inheritdoc/>
+    public class LocationPolicyControllerBase<T, TKey>(IAsyncRepository<T> repository) : ConfigControllerBase<T, TKey>(repository) where T : AtspmConfigModelBase<TKey>
+    {
+        /// <inheritdoc/>
+        [Authorize(Policy = "CanEditLocationConfigurations")]
+        public override Task<IActionResult> Post(T item)
+        {
+            return base.Post(item);
+        }
+
+        /// <inheritdoc/>
+        [Authorize(Policy = "CanEditLocationConfigurations")]
+        public override Task<IActionResult> Put(TKey key, T item)
+        {
+            return base.Put(key, item);
+        }
+
+        /// <inheritdoc/>
+        [Authorize(Policy = "CanEditLocationConfigurations")]
+        public override Task<IActionResult> Patch(TKey key, Delta<T> item)
+        {
+            return base.Patch(key, item);
+        }
+
+        /// <inheritdoc/>
+        [Authorize(Policy = "CanDeleteLocationConfigurations")]
+        public override Task<IActionResult> Delete(TKey key)
+        {
+            return base.Delete(key);
+        }
+    }
+}
+

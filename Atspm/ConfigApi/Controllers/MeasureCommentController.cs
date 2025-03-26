@@ -29,7 +29,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
     /// Measure comments controller
     /// </summary>
     [ApiVersion(1.0)]
-    public class MeasureCommentController : AtspmConfigControllerBase<MeasureComment, int>
+    public class MeasureCommentController : ConfigControllerBase<MeasureComment, int>
     {
         private readonly IMeasureCommentRepository _repository;
 

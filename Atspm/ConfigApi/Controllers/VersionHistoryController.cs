@@ -25,7 +25,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
     /// Version history controller
     /// </summary>
     [ApiVersion(1.0)]
-    public class VersionHistoryController : AtspmConfigControllerBase<VersionHistory, int>
+    public class VersionHistoryController : GeneralPolicyControllerBase<VersionHistory, int>
     {
         private readonly IVersionHistoryRepository _repository;
 

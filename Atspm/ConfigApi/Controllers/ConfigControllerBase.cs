@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2025 Utah Departement of Transportation
-// for ConfigApi - Utah.Udot.Atspm.ConfigApi.Controllers/AtspmConfigControllerBase.cs
+// for ConfigApi - Utah.Udot.Atspm.ConfigApi.Controllers/ConfigControllerBase.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -37,12 +37,12 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
     //[ApiController]
     //[Route("[controller]")]
     [ApiConventionType(typeof(DefaultApiConventions))]
-    public class AtspmConfigControllerBase<T, TKey> : ODataController where T : AtspmConfigModelBase<TKey>
+    public class ConfigControllerBase<T, TKey> : ODataController where T : AtspmConfigModelBase<TKey>
     {
         private readonly IAsyncRepository<T> _repository;
 
         /// <inheritdoc/>
-        public AtspmConfigControllerBase(IAsyncRepository<T> repository)
+        public ConfigControllerBase(IAsyncRepository<T> repository)
         {
             _repository = repository;
         }
