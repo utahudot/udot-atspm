@@ -111,21 +111,20 @@ function EditApproach({ approach }: ApproachAdminProps) {
     ) as ConfigApproach
 
     // If the approach is new, remove the local ID so the server will create one
-    if (modifiedApproach.isNew) {
-      delete modifiedApproach.id
-      modifiedApproach.detectors.forEach((d) => delete d.approachId)
+    if (approach.isNew) {
+      delete approach.id
+      approach.detectors.forEach((d) => delete d.approachId)
     }
-    delete modifiedApproach.index
-    delete modifiedApproach.open
-    delete modifiedApproach.isNew
+    delete approach.index
+    delete approach.open
+    delete approach.isNew
 
     // Convert direction type from name -> numeric enum
-    modifiedApproach.directionTypeId =
-      findDirectionType(modifiedApproach.directionTypeId)?.value ||
-      DirectionTypes.NA
+    approach.directionTypeId =
+      findDirectionType(approach.directionTypeId)?.value || DirectionTypes.NA
 
     // Detectors
-    modifiedApproach.detectors.forEach((det) => {
+    approach.detectors.forEach((det) => {
       if (det.isNew) {
         delete det.id
       }
@@ -152,12 +151,12 @@ function EditApproach({ approach }: ApproachAdminProps) {
       det.laneType = findLaneType(det.laneType)?.value
     })
 
-    editApproach(modifiedApproach, {
+    editApproach(approach, {
       onSuccess: (saved) => {
         try {
-          const detectorsArray = saved.detectors?.$values || []
+          const detectorsArray = saved?.detectors || []
           detectorsArray.forEach((detector) => {
-            detector.detectionTypes = detector.detectionTypes?.$values || []
+            detector.detectionTypes = detector.detectionTypes || []
             detector.detectionTypes.forEach((dType) => {
               dType.abbreviation =
                 findDetectionType(dType.abbreviation)?.name || DetectionTypes.NA

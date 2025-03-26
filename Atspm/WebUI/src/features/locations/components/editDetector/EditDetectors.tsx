@@ -69,7 +69,7 @@ function EditDetectors({ approach }: { approach: ConfigApproach }) {
       <TableContainer component={Paper}>
         <Table stickyHeader>
           <TableHead>
-            <TableRow>
+            <TableRow key="header-info">
               <TableCell colSpan={9} />
               <TableCell colSpan={2} align="center">
                 <Typography variant="caption" fontStyle="italic">
@@ -83,7 +83,7 @@ function EditDetectors({ approach }: { approach: ConfigApproach }) {
               </TableCell>
               <TableCell />
             </TableRow>
-            <TableRow>
+            <TableRow key="header-columns">
               <TableCell>Channel</TableCell>
               <TableCell>Detection Types</TableCell>
               <TableCell>Hardware</TableCell>
