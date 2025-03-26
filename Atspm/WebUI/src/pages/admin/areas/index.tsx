@@ -1,12 +1,13 @@
-import { usePatchAreaFromKey } from '@/api/config/aTSPMConfigurationApi'
+import {
+  useDeleteAreaFromKey,
+  useGetArea,
+  useGetLocationLocationsForSearch,
+  usePatchAreaFromKey,
+  usePostArea,
+} from '@/api/config/aTSPMConfigurationApi'
 import AdminTable from '@/components/AdminTable/AdminTable'
 import DeleteModal from '@/components/AdminTable/DeleteModal'
 import { ResponsivePageLayout } from '@/components/ResponsivePage'
-import {
-  useCreateArea,
-  useDeleteArea,
-  useGetAreas,
-} from '@/features/areas/api/areaApi'
 import AreaEditorModal from '@/features/areas/components/AreaEditorModal'
 import { Area } from '@/features/areas/types'
 import {
@@ -14,22 +15,23 @@ import {
   useUserHasClaim,
   useViewPage,
 } from '@/features/identity/pagesCheck'
-import { useLatestVersionOfAllLocations } from '@/features/locations/api'
 import { Location } from '@/features/locations/types'
+import { useNotificationStore } from '@/stores/notifications'
 import { Backdrop, CircularProgress } from '@mui/material'
 const AreasAdmin = () => {
   const pageAccess = useViewPage(PageNames.Areas)
+  const { addNotification } = useNotificationStore()
   const hasLocationsEditClaim = useUserHasClaim('LocationConfiguration:Edit')
   const hasLocationsDeleteClaim = useUserHasClaim(
     'LocationConfiguration:Delete'
   )
 
-  const { mutateAsync: createArea } = useCreateArea()
-  const { mutateAsync: deleteArea } = useDeleteArea()
+  const { mutateAsync: createArea } = usePostArea()
+  const { mutateAsync: deleteArea } = useDeleteAreaFromKey()
   const { mutateAsync: updateArea } = usePatchAreaFromKey()
 
-  const { data: locationsData } = useLatestVersionOfAllLocations()
-  const { data: areaData, isLoading, refetch: refetchAreas } = useGetAreas()
+  const { data: locationsData } = useGetLocationLocationsForSearch()
+  const { data: areaData, isLoading, refetch: refetchAreas } = useGetArea()
 
   const locations = locationsData?.value
   const areas = areaData?.value
@@ -40,19 +42,37 @@ const AreasAdmin = () => {
 
   const handleCreateArea = async (areaData: Area) => {
     const { name } = areaData
-    await createArea({ name })
-    refetchAreas()
-  }
-
-  const handleDeleteArea = async (id: number) => {
-    await deleteArea(id)
-    refetchAreas()
+    try {
+      await createArea({ data: { name } })
+      refetchAreas()
+      addNotification({ title: 'Area Created', type: 'success' })
+    } catch (error) {
+      addNotification({
+        type: 'error',
+        title: 'Error Creating Area',
+      })
+    }
   }
 
   const handleEditArea = async (areaData: Area) => {
     const { id, name } = areaData
-    await updateArea({ data: { name }, key: id })
-    refetchAreas()
+    try {
+      await updateArea({ data: { name }, key: id })
+      refetchAreas()
+      addNotification({ type: 'success', title: 'Area Updated' })
+    } catch (error) {
+      addNotification({ type: 'error', title: 'Error Updating Area' })
+    }
+  }
+
+  const handleDeleteArea = async (id: number) => {
+    try {
+      await deleteArea({ key: id })
+      refetchAreas()
+      addNotification({ type: 'success', title: 'Area Deleted' })
+    } catch (error) {
+      addNotification({ type: 'error', title: 'Error Deleting Area' })
+    }
   }
 
   const onModalClose = () => {
