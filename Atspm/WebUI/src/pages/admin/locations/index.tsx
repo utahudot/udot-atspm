@@ -32,6 +32,7 @@ const LocationsAdmin = () => {
 
   const pageAccess = useViewPage(PageNames.Location)
   const [isModalOpen, setModalOpen] = useState(false)
+  const [isWizardOpen, setIsWizardOpen] = useState(false)
 
   const handleSetLocation = useCallback(
     async (selectedLocation: Location | null) => {
@@ -43,6 +44,10 @@ const LocationsAdmin = () => {
     },
     [setLocation]
   )
+
+  const handleOpenWizard = () => {
+    setIsWizardOpen(true)
+  }
 
   const openNewLocationModal = useCallback(() => setModalOpen(true), [])
   const closeModal = useCallback(() => setModalOpen(false), [])
@@ -68,6 +73,7 @@ const LocationsAdmin = () => {
         <NewLocationModal
           closeModal={closeModal}
           setLocation={handleSetLocation}
+          onCreatedFromTemplate={handleOpenWizard}
         />
       )}
     </ResponsivePageLayout>

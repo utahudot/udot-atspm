@@ -25,7 +25,7 @@ module.exports = {
       target: './src/api/data',
       client: 'react-query',
       templates: './orval-templates',
-      // mock: true,
+      mock: true,
       mode: 'split',
       override: {
         mutator: {
