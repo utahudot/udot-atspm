@@ -62,12 +62,12 @@ jobs:
 
       - name: 💾 Save Docker Image as Tar File
         run: |
-          docker save ${{ matrix.name }}:${{ env.VERSION }} -o ${{ matrix.name }}-${{ env.VERSION }}.tar
+          docker save ${{ matrix.name }}:v5.0 -o ${{ matrix.name }}.tar
 
       - name: 📤 Upload Docker Image to GitHub Release
         uses: softprops/action-gh-release@v1
         if: github.event_name == 'release'
         with:
-          files: ${{ matrix.name }}-${{ env.VERSION }}.tar
+          files: ${{ matrix.name }}.tar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
