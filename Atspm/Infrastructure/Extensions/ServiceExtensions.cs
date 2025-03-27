@@ -18,13 +18,13 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Utah.Udot.Atspm.Data;
+using Utah.Udot.Atspm.Data.Utility;
 using Utah.Udot.Atspm.Infrastructure.Repositories;
 using Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories;
 using Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories;
@@ -128,7 +128,6 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
         /// <returns></returns>
         public static IServiceCollection AddAtspmDbContext(this IServiceCollection services, HostBuilderContext host)
         {
-            services.AddScoped<ICurrentUserService, CurrentUserService>();
             services.AddScoped<AuditPropertiesInterceptor>();
 
             services.AddDbContext<ConfigContext>((s, db) => db.DbDefaults<ConfigContext>(host).AddInterceptors(s.GetService<AuditPropertiesInterceptor>()));
