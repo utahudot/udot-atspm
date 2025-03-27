@@ -55,6 +55,7 @@ jobs:
           context: Atspm/
           file: ${{ env.DOCKERFILE_DIR }}/Dockerfile
           push: false
+          load: true  # Load the image into Docker after building
 
       - name: 📦 Build Docker Image WebUI
         uses: docker/build-push-action@v6
@@ -63,6 +64,7 @@ jobs:
           context: ${{ env.DOCKERFILE_DIR }}
           file: ${{ env.DOCKERFILE_DIR }}/Dockerfile
           push: false
+          load: true  # Load the image into Docker after building
 
       - name: 📝 List Docker Images
         run: docker images
