@@ -18,6 +18,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Deltas;
+using Microsoft.AspNetCore.OData.Query;
 using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.NetStandardToolkit.Services;
 
@@ -31,6 +32,27 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
     /// <inheritdoc/>
     public class GeneralPolicyControllerBase<T, TKey>(IAsyncRepository<T> repository) : ConfigControllerBase<T, TKey>(repository) where T : AtspmConfigModelBase<TKey>
     {
+        /// <inheritdoc/>
+        [Authorize(Policy = "CanViewGeneralConfigurations")]
+        public override ActionResult<IQueryable<T>> Get(ODataQueryOptions<T> options)
+        {
+            return base.Get(options);
+        }
+
+        /// <inheritdoc/>
+        [Authorize(Policy = "CanViewGeneralConfigurations")]
+        public override ActionResult<T> Get(TKey key, ODataQueryOptions<T> options)
+        {
+            return base.Get(key, options);
+        }
+
+        /// <inheritdoc/>
+        [Authorize(Policy = "CanViewGeneralConfigurations")]
+        protected override ActionResult<TType> GetNavigationProperty<TType>(TKey key)
+        {
+            return base.GetNavigationProperty<TType>(key);
+        }
+
         /// <inheritdoc/>
         [Authorize(Policy = "CanEditGeneralConfigurations")]
         public override Task<IActionResult> Post(T item)
