@@ -10,6 +10,7 @@ using Moq;
 using Utah.Udot.Atspm.Business.Common;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
 using Microsoft.Extensions.Logging;
+using Utah.Udot.Atspm.Data.Models.MeasureOptions;
 
 namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest.Tests
 {

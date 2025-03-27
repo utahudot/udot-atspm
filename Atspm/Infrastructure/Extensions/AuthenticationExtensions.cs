@@ -27,6 +27,7 @@ using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using System.Text;
+using Utah.Udot.NetStandardToolkit.Authentication;
 
 namespace Utah.Udot.Atspm.Infrastructure.Extensions
 {
@@ -60,6 +61,8 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
         /// <returns></returns>
         public static IServiceCollection AddAtspmAuthentication(this IServiceCollection services, HostBuilderContext host)
         {
+            services.AddScoped<ICurrentUserService<JwtUserSession>, JwtCurrentUserService>();
+
             services.Configure<CookiePolicyOptions>(options =>
             {
                 options.MinimumSameSitePolicy = SameSiteMode.None;
