@@ -15,21 +15,32 @@
 // limitations under the License.
 #endregion
 
+using Utah.Udot.Atspm.Data.Interfaces;
 using Utah.Udot.NetStandardToolkit.BaseClasses;
 
-#nullable disable
-
-namespace Utah.Udot.Atspm.Data.Models
+namespace Utah.Udot.Atspm.Data.Models.ConfigurationModels
 {
     /// <summary>
     /// Base class for configuration context models.
     /// This base includes interfaces for working with user interfaces.
     /// </summary>
-    public class AtspmConfigModelBase<T> : ObjectModelBase
+    public class AtspmConfigModelBase<T> : ObjectModelBase, IAuditProperties
     {
         /// <summary>
         /// Primary key
         /// </summary>
-        public T Id { get; set; }
+        public T Id { get; set; } = default!;
+
+        /// <inheritdoc/>
+        public DateTime? Created { get; set; }
+
+        /// <inheritdoc/>
+        public DateTime? Modified { get; set; }
+
+        /// <inheritdoc/>
+        public string? CreatedBy { get; set; }
+
+        /// <inheritdoc/>
+        public string? ModifiedBy { get; set; }
     }
 }

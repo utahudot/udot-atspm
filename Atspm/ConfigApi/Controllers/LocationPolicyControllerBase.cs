@@ -19,7 +19,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Deltas;
 using Microsoft.AspNetCore.OData.Query;
-using Utah.Udot.Atspm.Data.Models;
+using Utah.Udot.Atspm.Data.Models.ConfigurationModels;
 using Utah.Udot.NetStandardToolkit.Services;
 
 namespace Utah.Udot.Atspm.ConfigApi.Controllers

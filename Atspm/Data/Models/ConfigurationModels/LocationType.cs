@@ -16,6 +16,7 @@
 #endregion
 
 #nullable disable
+using Utah.Udot.Atspm.Data.Models.ConfigurationModels;
 using Utah.Udot.Atspm.Data.Relationships;
 
 namespace Utah.Udot.Atspm.Data.Models
