@@ -16,6 +16,7 @@
 #endregion
 
 using System.Diagnostics.CodeAnalysis;
+using Utah.Udot.Atspm.Data.Models.ConfigurationModels;
 
 namespace Utah.Udot.Atspm.Common.EqualityComparers
 {

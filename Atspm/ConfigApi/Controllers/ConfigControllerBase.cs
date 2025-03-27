@@ -22,7 +22,7 @@ using Microsoft.AspNetCore.OData.Query;
 using Microsoft.AspNetCore.OData.Results;
 using Microsoft.AspNetCore.OData.Routing.Controllers;
 using Microsoft.EntityFrameworkCore;
-using Utah.Udot.Atspm.Data.Models;
+using Utah.Udot.Atspm.Data.Models.ConfigurationModels;
 using Utah.Udot.NetStandardToolkit.Extensions;
 using Utah.Udot.NetStandardToolkit.Services;
 
