@@ -59,6 +59,7 @@ jobs:
 
       - name: 📦 Build Docker Image WebUI
         uses: docker/build-push-action@v6
+        if: ${{ matrix.name == 'atspmwebsite'}}
         with:
           tags: ${{ matrix.name }}:${{ env.VERSION }}
           context: ${{ env.DOCKERFILE_DIR }}
@@ -68,7 +69,7 @@ jobs:
 
       - name: 📝 List Docker Images
         run: docker images
-
+  
       - name: 💾 Save Docker Image as Tar File
         run: |
           docker save ${{ matrix.name }}:${{ env.VERSION }} -o ${{ matrix.name }}.tar
