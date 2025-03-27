@@ -4,7 +4,7 @@ x-environment: &default-environment
   ASPNETCORE_ENVIRONMENT: "Development"
   ASPNETCORE_Kestrel__Certificates__Default__Password: "password"
   ASPNETCORE_Kestrel__Certificates__Default__Path: "/root/.aspnet/https/aspnetapp.pfx"
-  ASPNETCORE_URLS: "https://+:443"
+  ASPNETCORE_URLS: "https://+:5000"
 
   # Allowed Hosts
   AllowedHosts: "${ALLOWED_HOSTS}"
@@ -16,10 +16,10 @@ x-environment: &default-environment
   ConnectionStrings__IdentityContext__ConnectionString: "${IDENTITY_CONNECTION}"
 
   # Database Providers
-  ConnectionStrings__ConfigContext__Provider: "PostgreSQL"
-  ConnectionStrings__AggregationContext__Provider: "PostgreSQL"
-  ConnectionStrings__EventLogContext__Provider: "PostgreSQL"
-  ConnectionStrings__IdentityContext__Provider: "PostgreSQL"
+  ConnectionStrings__ConfigContext__Provider: "${ConfigContext_Provider}"
+  ConnectionStrings__AggregationContext__Provider: "${AggregationContext_Provider}"
+  ConnectionStrings__EventLogContext__Provider: "${EventLogContext_Provider}"
+  ConnectionStrings__IdentityContext__Provider: "${IdentityContext_Provider}"
 
   # JWT Configuration
   Jwt__ExpireDays: "${JWT_EXPIRE_DAYS}"
@@ -69,11 +69,12 @@ services:
       context: .
       dockerfile: ConfigApi/Dockerfile
     ports:
-      - "44313:443"
+      - "44400:5000"
     environment:
       <<: *default-environment
+      ASPNETCORE_URLS: "https://+:5000"
     volumes:
-      - "C:/Users/AVENUE/.aspnet/https:/root/.aspnet/https:ro"  # Explicitly mount correct cert location
+      - $CERT_LOCATION
     user: root
     depends_on:
       database-installer:
@@ -84,11 +85,12 @@ services:
       context: .
       dockerfile: DataApi/Dockerfile
     ports:
-      - "8082:80"
+      - "44401:5001"
     environment:
       <<: *default-environment
+      ASPNETCORE_URLS: "https://+:5001"
     volumes:
-      - "C:/Users/AVENUE/.aspnet/https:/root/.aspnet/https:ro"  # Explicitly mount correct cert location
+      - ${CERT_LOCATION}
     depends_on:
       database-installer:
         condition: service_completed_successfully
@@ -98,11 +100,12 @@ services:
       context: .
       dockerfile: ReportApi/Dockerfile
     ports:
-      - "8085:80"
+      - "44402:5002"
     environment:
       <<: *default-environment
+      ASPNETCORE_URLS: "https://+:5002"
     volumes:
-      - "C:/Users/AVENUE/.aspnet/https:/root/.aspnet/https:ro"  # Explicitly mount correct cert location
+      - ${CERT_LOCATION}
     depends_on:
       database-installer:
         condition: service_completed_successfully
@@ -112,11 +115,12 @@ services:
       context: .
       dockerfile: IdentityApi/Dockerfile
     ports:
-      - "8086:80"
+      - "44403:5003"
     environment:
       <<: *default-environment
-    volumes:
-      - "C:/Users/AVENUE/.aspnet/https:/root/.aspnet/https:ro"  # Explicitly mount correct cert location
+      ASPNETCORE_URLS: "https://+:5003"
+    volumes:      
+      - ${CERT_LOCATION}
     depends_on:
       database-installer:
         condition: service_completed_successfully
@@ -125,15 +129,37 @@ services:
     build:
       context: ./WebUI
       dockerfile: Dockerfile
+      args:
+        REACT_APP_CONFIG_URL: "https://configapi"
+        REACT_APP_IDENTITY_URL: "https://identityapi"
+        REACT_APP_REPORTS_URL: "https://reportapi"
+        REACT_APP_DATA_URL: "https://dataapi"
+        REACT_APP_SPEED_URL: "https://speedapi"
+    container_name: webui
     ports:
       - "3000:3000"
     environment:
-      <<: *default-environment
+      REACT_APP_MAP_DEFAULT_LATITUDE: ${REACT_APP_MAP_DEFAULT_LATITUDE}
+      REACT_APP_MAP_DEFAULT_LONGITUDE: ${REACT_APP_MAP_DEFAULT_LONGITUDE}
+      REACT_APP_MAP_TILE_LAYER: ${REACT_APP_MAP_TILE_LAYER}
+      REACT_APP_MAP_TILE_ATTRIBUTION: ${REACT_APP_MAP_TILE_ATTRIBUTION}
+      REACT_APP_POWERED_BY_IMAGE_URL: ${REACT_APP_POWERED_BY_IMAGE_URL}
+      REACT_APP_CONFIG_URL: "https://configapi"
+      REACT_APP_IDENTITY_URL: "https://identityapi"
+      REACT_APP_REPORTS_URL: "https://reportapi"
+      REACT_APP_DATA_URL: "https://dataapi"
+      REACT_APP_SPEED_URL: "https://speedapi"
     volumes:
-      - "C:/Users/AVENUE/.aspnet/https:/root/.aspnet/https:ro"  # Explicitly mount correct cert location
+      - ${CERT_LOCATION}
     depends_on:
-      database-installer:
-        condition: service_completed_successfully
+      configapi:
+        condition: service_started
+      identityapi:
+        condition: service_started
+      reportapi:
+        condition: service_started
+      dataapi:
+        condition: service_started
 
 volumes:
   aspnet_https:
