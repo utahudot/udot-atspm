@@ -1,9 +1,6 @@
 name: Build and Attach Docker Images to Release
 
 on:
-  push:
-    branches:
-      - Staging
   release:
     types: [published]  # Trigger on new GitHub release
 
@@ -66,6 +63,9 @@ jobs:
           context: ${{ env.DOCKERFILE_DIR }}
           file: ${{ env.DOCKERFILE_DIR }}/Dockerfile
           push: false
+
+      - name: 📝 List Docker Images
+        run: docker images
 
       - name: 💾 Save Docker Image as Tar File
         run: |
