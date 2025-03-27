@@ -47,6 +47,13 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
         }
 
         /// <inheritdoc/>
+        [Authorize(Policy = "CanViewWatchDog")]
+        protected override ActionResult<TType> GetNavigationProperty<TType>(TKey key)
+        {
+            return base.GetNavigationProperty<TType>(key);
+        }
+
+        /// <inheritdoc/>
         [Authorize(Policy = "CanEditGeneralConfigurations")]
         public override Task<IActionResult> Post(T item)
         {
