@@ -53,7 +53,7 @@ jobs:
       - name: 📦 Build Docker Image
         uses: docker/build-push-action@v6
         with:
-          tags: ${{ matrix.name }}:${{ env.VERSION }}
+          tags: ${{ matrix.name }}:v5.0
           context: ${{ env.DOCKERFILE_DIR }}
           file: ${{ env.DOCKERFILE_DIR }}/Dockerfile
           push: false  # Do not push to any registry
