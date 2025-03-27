@@ -31,7 +31,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
     /// Approaches Controller
     /// </summary>
     [ApiVersion(1.0)]
-    public class ApproachController : AtspmGeneralConfigBase<Approach, int>
+    public class ApproachController : LocationPolicyControllerBase<Approach, int>
     {
         private readonly IApproachRepository _repository;
         private readonly IApproachService approachService;

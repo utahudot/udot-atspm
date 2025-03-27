@@ -1,5 +1,10 @@
 import { useGetLocationLocationsForSearch } from '@/api/config/aTSPMConfigurationApi'
 import {
+  getLocationApproachesFromKey,
+  useGetLocationLocationsForSearch,
+  useGetRoute,
+} from '@/api/config/aTSPMConfigurationApi'
+import {
   SearchLocation as Location,
   Route,
 } from '@/api/config/aTSPMConfigurationApi.schemas'
@@ -179,3 +184,21 @@ const MultipleLocationsSelect = ({
 }
 
 export default MultipleLocationsSelect
+
+const addApproachesToLocations = async (locations: Location[]) => {
+  const updatedLocations = await Promise.all(
+    locations.map(async (loc) => {
+      try {
+        const approaches = await getLocationApproachesFromKey(loc.id)
+        return { ...loc, approaches: approaches.value, designatedPhases: [] }
+      } catch (error) {
+        console.error(
+          `Failed to fetch approaches for location ${loc.id}:`,
+          error
+        )
+        return { ...loc, approaches: [] }
+      }
+    })
+  )
+  return updatedLocations
+}

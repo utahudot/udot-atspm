@@ -19,7 +19,7 @@
 #nullable disable
 
 using Utah.Udot.Atspm.Data.Models;
-using Utah.Udot.Atspm.Data.Models;
+using Utah.Udot.Atspm.Data.Models.ConfigurationModels;
 
 namespace Utah.Udot.Atspm.Data.Models
 {

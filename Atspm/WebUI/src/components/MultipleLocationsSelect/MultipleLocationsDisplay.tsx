@@ -1,5 +1,9 @@
 import { SearchLocation as Location } from '@/api/config/aTSPMConfigurationApi.schemas'
 import {
+  TspErrorState,
+  TspLocation,
+} from '@/pages/reports/transit-signal-priority'
+import {
   DragDropContext,
   Draggable,
   Droppable,
@@ -11,7 +15,11 @@ import {
   Box,
   Button,
   Divider,
+  FormControl,
   IconButton,
+  InputLabel,
+  MenuItem,
+  Select,
   Table,
   TableBody,
   TableCell,
@@ -25,6 +33,8 @@ interface Props {
   onLocationDelete: (location: Location) => void
   onDeleteAllLocations: (locations: Location[]) => void
   onLocationsReorder: (result: DropResult) => void
+  onUpdateLocation: (updatedLocation: TspLocation) => void
+  errorState: TspErrorState
 }
 
 const MultipleLocationsDisplay = ({
@@ -34,6 +44,14 @@ const MultipleLocationsDisplay = ({
   onLocationsReorder,
 }: Props) => {
   return (
+      <Typography variant="body2" color="textSecondary" sx={{ width: '600px' }}>
+        No locations selected
+      </Typography>
+    )
+  }
+
+  return (
+    <>
     <DragDropContext onDragEnd={onLocationsReorder}>
       <Box display="flex" justifyContent="flex-end">
         <Button
@@ -66,6 +84,8 @@ const MultipleLocationsDisplay = ({
                       Selected Locations
                     </Typography>
                   </TableCell>
+                    <TableCell align="center">Designated Phases</TableCell>
+                    <TableCell />
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -99,6 +119,46 @@ const MultipleLocationsDisplay = ({
                             </Box>
                           </Box>
                         </TableCell>
+                            <TableCell align="center">
+                              <FormControl
+                                variant="outlined"
+                                size="small"
+                                sx={{ minWidth: 150 }}
+                                error={isInError}
+                                fullWidth
+                              >
+                                <InputLabel id={`phase-label-${location.id}`}>
+                                  Phases
+                                </InputLabel>
+                                <Select
+                                  labelId={`phase-label-${location.id}`}
+                                  multiple
+                                  label="Phases"
+                                  value={location.designatedPhases || []}
+                                  onChange={(e) =>
+                                    handlePhaseChange(
+                                      location,
+                                      e.target.value as number[]
+                                    )
+                                  }
+                                  renderValue={(selected) =>
+                                    (selected as number[]).join(', ')
+                                  }
+                                >
+                                  {locationPhaseOptions.length > 0 ? (
+                                    locationPhaseOptions.map((phase) => (
+                                      <MenuItem key={phase} value={phase}>
+                                        {phase}
+                                      </MenuItem>
+                                    ))
+                                  ) : (
+                                    <MenuItem disabled>
+                                      No Phases Available
+                                    </MenuItem>
+                                  )}
+                                </Select>
+                              </FormControl>
+                            </TableCell>
                         <TableCell align="right">
                           <IconButton
                             color="error"
@@ -118,6 +178,7 @@ const MultipleLocationsDisplay = ({
         )}
       </Droppable>
     </DragDropContext>
+    </>
   )
 }
 
