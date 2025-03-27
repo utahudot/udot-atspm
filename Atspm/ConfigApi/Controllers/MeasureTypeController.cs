@@ -29,7 +29,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
     /// Measure type controller
     /// </summary>
     [ApiVersion(1.0)]
-    public class MeasureTypeController : AtspmConfigControllerBase<MeasureType, int>
+    public class MeasureTypeController : GeneralPolicyControllerBase<MeasureType, int>
     {
         private readonly IMeasureTypeRepository _repository;
 
@@ -67,6 +67,20 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
         public ActionResult<IEnumerable<MeasureComment>> GetMeasureComments([FromRoute] int key)
         {
             return GetNavigationProperty<IEnumerable<MeasureComment>>(key);
+        }
+
+        /// <summary>
+        /// <see cref="MeasureOptionPreset"/> navigation property action
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        [EnableQuery(AllowedQueryOptions = Count | Filter | Select | OrderBy | Top | Skip)]
+        [ProducesResponseType(Status200OK)]
+        [ProducesResponseType(Status404NotFound)]
+        [ProducesResponseType(Status400BadRequest)]
+        public ActionResult<IEnumerable<MeasureOptionPreset>> GetMeasureOptionPresets([FromRoute] int key)
+        {
+            return GetNavigationProperty<IEnumerable<MeasureOptionPreset>>(key);
         }
 
         #endregion

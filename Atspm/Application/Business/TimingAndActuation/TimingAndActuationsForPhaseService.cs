@@ -77,7 +77,7 @@ namespace Utah.Udot.Atspm.Business.TimingAndActuation
 
         private string GetPhaseSort(PhaseDetail phaseDetail)
         {
-            return phaseDetail.IsPermissivePhase ?  // Check if the 'PhaseType' property of 'options' is true
+            return phaseDetail.IsPermissivePhase ?  // Check if the 'PhaseType' property of '_options' is true
                 phaseDetail.Approach.IsPermissivePhaseOverlap ?  // If true, check if the 'IsPermissivePhaseOverlap' property of 'approach' is true
                     $"zOverlap - {phaseDetail.Approach.PermissivePhaseNumber.Value.ToString("D2")}-1"  // If true, concatenate "zOverlap - " with 'PermissivePhaseNumber' formatted as a two-digit string
                     : $"Phase - {phaseDetail.Approach.PermissivePhaseNumber.Value.ToString("D2")}-1" // If false, concatenate "Phase - " with 'PermissivePhaseNumber' formatted as a two-digit string
