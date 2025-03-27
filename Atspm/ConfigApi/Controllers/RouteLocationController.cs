@@ -25,7 +25,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
     /// Route Location controller
     /// </summary>
     [ApiVersion(1.0)]
-    public class RouteLocationController : AtspmConfigControllerBase<RouteLocation, int>
+    public class RouteLocationController : GeneralPolicyControllerBase<RouteLocation, int>
     {
         private readonly IRouteLocationsRepository _repository;
 

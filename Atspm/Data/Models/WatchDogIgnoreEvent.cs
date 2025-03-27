@@ -17,6 +17,7 @@
 
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Interfaces;
+using Utah.Udot.Atspm.Data.Models.ConfigurationModels;
 
 namespace Utah.Udot.Atspm.Data.Models
 {

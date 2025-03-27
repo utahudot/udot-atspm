@@ -25,7 +25,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
     /// Measure options Controller
     /// </summary>
     [ApiVersion(1.0)]
-    public class MeasureOptionController : AtspmConfigControllerBase<MeasureOption, int>
+    public class MeasureOptionController : GeneralPolicyControllerBase<MeasureOption, int>
     {
         private readonly IMeasureOptionsRepository _repository;
 
