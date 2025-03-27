@@ -31,7 +31,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
     /// Route controller
     /// </summary>
     [ApiVersion(1.0)]
-    public class RouteController : AtspmConfigControllerBase<Data.Models.Route, int>
+    public class RouteController : GeneralPolicyControllerBase<Data.Models.Route, int>
     {
         private readonly IRouteRepository _repository;
         private readonly IRouteService _routeService;

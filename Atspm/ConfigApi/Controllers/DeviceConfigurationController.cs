@@ -31,7 +31,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
     /// Device configuration controller
     /// </summary>
     [ApiVersion(1.0)]
-    public class DeviceConfigurationController : AtspmConfigControllerBase<DeviceConfiguration, int>
+    public class DeviceConfigurationController : LocationPolicyControllerBase<DeviceConfiguration, int>
     {
         private readonly IDeviceConfigurationRepository _repository;
 
