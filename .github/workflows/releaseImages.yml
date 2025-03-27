@@ -48,21 +48,16 @@ jobs:
 
       - name: 🏷️ Extract Release Tag
         id: meta
-        run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+        run: echo "VERSION=v5.0" >> $GITHUB_ENV
 
       - name: 📦 Build Docker Image
         uses: docker/build-push-action@v6
         with:
-          tags: ${{ matrix.name }}:v5.0
-          context: ${{ env.DOCKERFILE_DIR }}
-          file: ${{ env.DOCKERFILE_DIR }}/Dockerfile
-          push: false  # Do not push to any registry
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          tags: ${{ matrix.name }}:${{ env.VERSION }}
 
       - name: 💾 Save Docker Image as Tar File
         run: |
-          docker save ${{ matrix.name }}:v5.0 -o ${{ matrix.name }}.tar
+          docker save ${{ matrix.name }}:${{ env.VERSION }} -o ${{ matrix.name }}.tar
 
       - name: 📤 Upload Docker Image to GitHub Release
         uses: softprops/action-gh-release@v1
