@@ -192,7 +192,7 @@ const MultipleLocationsSelect = ({
 
 export default MultipleLocationsSelect
 
-const getLocationWithApproaches = async (locations: Location[]) => {
+export const getLocationWithApproaches = async (locations: Location[]) => {
   const locationsWithApproaches = await Promise.all(
     locations.map((loc) =>
       getLocationFromKey(loc.id, {

@@ -1,9 +1,13 @@
-import { useGetMeasureType } from '@/api/config/aTSPMConfigurationApi'
+import {
+  postMeasureOptionPreset,
+  useGetMeasureType,
+} from '@/api/config/aTSPMConfigurationApi'
 import { MeasureType } from '@/api/config/aTSPMConfigurationApi.schemas'
 import { TransitSignalPriorityResult } from '@/api/reports/aTSPMReportDataApi.schemas'
 import { TspReportOptions } from '@/pages/reports/transit-signal-priority'
 import { useNotificationStore } from '@/stores/notifications'
 import DownloadIcon from '@mui/icons-material/Download'
+import SaveIcon from '@mui/icons-material/Save'
 import { TabContext, TabList, TabPanel } from '@mui/lab'
 import {
   Box,
@@ -53,15 +57,14 @@ const TspReport = ({ report, reportOptions }: TspReportProps) => {
         designatedPhases: loc.designatedPhases,
       })),
       dates: reportOptions.selectedDays.map((date) => date.toISOString()),
-      start: new Date().toISOString(),
-      end: new Date().toISOString(),
-      locationIdentifier: '0',
+      '@odata.type':
+        '#Utah.Udot.Atspm.Data.Models.MeasureOptions.TransitSignalPriorityOptions',
     }
-    // postMeasureOptionPreset({
-    //   name: paramName,
-    //   option: reportParams,
-    //   measureTypeId: measureTypes.find((m) => m.name === 'TSP')?.id,
-    // })
+    postMeasureOptionPreset({
+      name: paramName,
+      option: reportParams,
+      measureTypeId: measureTypes.find((m) => m.abbreviation === 'TSP')?.id,
+    })
     addNotification({
       title: 'Parameters saved successfully',
       type: 'success',
@@ -106,15 +109,15 @@ const TspReport = ({ report, reportOptions }: TspReportProps) => {
               Download
             </Button>
 
-            {/* <Button
+            <Button
               size="small"
               variant="outlined"
               startIcon={<SaveIcon />}
               color="primary"
-              onClick={handlePrint}
+              onClick={handleSaveParameters}
             >
               Save Parameters
-            </Button> */}
+            </Button>
           </Box>
         </Box>
         <Paper
