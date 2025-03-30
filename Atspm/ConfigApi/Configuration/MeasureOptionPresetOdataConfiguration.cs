@@ -40,6 +40,11 @@ namespace Utah.Udot.Atspm.ConfigApi.Configuration
                     {
                         model.Property(p => p.Name).MaxLength = 512;
 
+
+
+                        var a = model.Collection.Function("GetMeasureOptionPresetTypes");
+                        a.ReturnsCollection<string>();
+
                         break;
                     }
             }

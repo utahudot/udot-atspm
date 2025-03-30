@@ -19,9 +19,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks.Dataflow;
 using Utah.Udot.Atspm.Business.Common;
-using Utah.Udot.Atspm.Business.PhaseTermination;
 using Utah.Udot.Atspm.Business.TransitSignalPriority;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
+using Utah.Udot.Atspm.Data.Models.MeasureOptions;
 using Utah.Udot.Atspm.Extensions;
 using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
 using Utah.Udot.Atspm.Repositories.EventLogRepositories;
@@ -31,7 +31,7 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
     public class TransitSignalPriorityService
     {
         private static readonly short[] EventCodes =
-            (new short[] { 1, 4, 5, 6, 7, 8, 10, 11 })
+            (new short[] { 1, 3, 4, 5, 6, 7, 8, 10, 11 })
             .Concat(Enumerable.Range(130, 20).Select(x => (short)x))
             .ToArray();
 
@@ -208,13 +208,6 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
                         continue;
                     }
 
-                    if(input.Item1.LocationPhases.DesignatedPhases.Contains(phase.PhaseNumber))
-                    {
-                        phase.RecommendedTSPMax = 0;
-                        phase.Notes = "Designated phase, no TSP Max";
-                        continue;
-                    }
-
                     phase.SkipsGreaterThan70TSPMax = Math.Round(phase.ProgrammedSplit - phase.MinTime, 1);
                     phase.ForceOffsLessThan40TSPMax = Math.Round((phase.MinTime + phase.PercentileSplit50th) / 2, 1);
                     phase.ForceOffsLessThan60TSPMax = Math.Round(phase.ProgrammedSplit - phase.PercentileSplit50th, 1);
@@ -242,7 +235,7 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
                     }
                     else
                     {
-                        phase.RecommendedTSPMax = null; // Not recommended
+                        phase.RecommendedTSPMax = 0; // Not recommended
                         phase.Notes = "No recommended TSP Max";
                     }
 
@@ -310,48 +303,76 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
 
 
                 //2. Using ring 1 to 2, and 3 to 4 determine which has the lower summed max reduction and set that as the max extension for the designated phase
-                List<int> ring1NonDesignatedPhases = GetNonDesignatedPhasesInRing(ring1, parameters.LocationPhases.DesignatedPhases);
-                int ring1MaxExtension = plan.Phases
-                    .Where(p => ring1NonDesignatedPhases.Contains(p.PhaseNumber))
-                    .Sum(p => p.MaxReduction);
+                List<int> ring1DesignatedPhases = GetNonDesignatedPhasesInRing(ring1, parameters.LocationPhases.DesignatedPhases);
+                var ring1MaxReductionScenarios = new Dictionary<int, int>();
+                foreach (var ringPhase in ring1DesignatedPhases)
+                {
+                    var ring1PhaseMaxReduction = plan.Phases
+                        .Where(p => p.PhaseNumber != ringPhase)
+                        .Sum(p => p.MaxReduction);
+                    ring1MaxReductionScenarios.Add(ringPhase, ring1PhaseMaxReduction);
+                }
 
-                List<int> ring2NonDesignatedPhases = GetNonDesignatedPhasesInRing(ring2, parameters.LocationPhases.DesignatedPhases);
-                int ring2MaxExtension = plan.Phases
-                    .Where(p => ring2NonDesignatedPhases.Contains(p.PhaseNumber))
-                    .Sum(p => p.MaxReduction);
 
-                List<int> ring3NonDesignatedPhases = GetNonDesignatedPhasesInRing(ring3, parameters.LocationPhases.DesignatedPhases);
-                int ring3MaxExtension = plan.Phases
-                    .Where(p => ring3NonDesignatedPhases.Contains(p.PhaseNumber))
-                    .Sum(p => p.MaxReduction);
+                List<int> ring2DesignatedPhases = GetNonDesignatedPhasesInRing(ring2, parameters.LocationPhases.DesignatedPhases);
+                var ring2MaxReductionScenarios = new Dictionary<int, int>();
+                foreach (var ringPhase in ring2DesignatedPhases)
+                {
+                    var ring2PhaseMaxReduction = plan.Phases
+                        .Where(p => p.PhaseNumber != ringPhase)
+                        .Sum(p => p.MaxReduction);
+                    ring2MaxReductionScenarios.Add(ringPhase, ring2PhaseMaxReduction);
+                }
 
-                List<int> ring4NonDesignatedPhases = GetNonDesignatedPhasesInRing(ring4, parameters.LocationPhases.DesignatedPhases);
-                int ring4MaxExtension = plan.Phases
-                    .Where(p => ring4NonDesignatedPhases.Contains(p.PhaseNumber))
-                    .Sum(p => p.MaxReduction);
+
+                List<int> ring3DesignatedPhases = GetNonDesignatedPhasesInRing(ring3, parameters.LocationPhases.DesignatedPhases);
+                var ring3MaxReductionScenarios = new Dictionary<int, int>();
+                foreach (var ringPhase in ring3DesignatedPhases)
+                {
+                    var ring3PhaseMaxReduction = plan.Phases
+                        .Where(p => p.PhaseNumber != ringPhase)
+                        .Sum(p => p.MaxReduction);
+                    ring3MaxReductionScenarios.Add(ringPhase, ring3PhaseMaxReduction);
+                }
+
+
+                List<int> ring4DesignatedPhases = GetNonDesignatedPhasesInRing(ring4, parameters.LocationPhases.DesignatedPhases);
+                var ring4MaxReductionScenarios = new Dictionary<int, int>();
+                foreach (var ringPhase in ring4DesignatedPhases)
+                {
+                    var ring4PhaseMaxReduction = plan.Phases
+                        .Where(p => p.PhaseNumber != ringPhase)
+                        .Sum(p => p.MaxReduction);
+                    ring4MaxReductionScenarios.Add(ringPhase, ring4PhaseMaxReduction);
+                }
+
 
                 //Loop through each designated phase, determine the ring,
                 //if the ring is 1 or 2 set the max extension to lower of ring 1 or 2,
                 //if the ring is 3 or 4 set the max extension to the lower of ring 3 or 4
+
+
+
                 foreach (var phase in plan.Phases)
                 {
                     if (parameters.LocationPhases.DesignatedPhases.Contains(phase.PhaseNumber))
                     {
                         if (phase.PhaseNumber >= 1 && phase.PhaseNumber <= 4)
                         {
-                            phase.MaxExtension = Math.Min(ring1MaxExtension, ring2MaxExtension);
+                            //This only really works if they have designated match phases in ring 1 and 2 ie 2,6 or 4,8
+                            phase.MaxExtension = Math.Min(ring1MaxReductionScenarios[phase.PhaseNumber], GetMatchingPhase(phase.PhaseNumber) == 0 ? ring1MaxReductionScenarios[phase.PhaseNumber] : ring2MaxReductionScenarios[GetMatchingPhase(phase.PhaseNumber)]);
                         }
                         else if (phase.PhaseNumber >= 5 && phase.PhaseNumber <= 8)
                         {
-                            phase.MaxExtension = Math.Min(ring1MaxExtension, ring2MaxExtension);
+                            phase.MaxExtension = Math.Min(ring2MaxReductionScenarios[phase.PhaseNumber], GetMatchingPhase(phase.PhaseNumber) == 0 ? ring2MaxReductionScenarios[phase.PhaseNumber] : ring1MaxReductionScenarios[GetMatchingPhase(phase.PhaseNumber)]);
                         }
                         else if (phase.PhaseNumber >= 9 && phase.PhaseNumber <= 12)
                         {
-                            phase.MaxExtension = Math.Min(ring3MaxExtension, ring4MaxExtension);
+                            phase.MaxExtension = Math.Min(ring3MaxReductionScenarios[phase.PhaseNumber], GetMatchingPhase(phase.PhaseNumber) == 0 ? ring3MaxReductionScenarios[phase.PhaseNumber] : ring4MaxReductionScenarios[GetMatchingPhase(phase.PhaseNumber)]);
                         }
                         else if (phase.PhaseNumber >= 13 && phase.PhaseNumber <= 16)
                         {
-                            phase.MaxExtension = Math.Min(ring3MaxExtension, ring4MaxExtension);
+                            phase.MaxExtension = Math.Min(ring4MaxReductionScenarios[phase.PhaseNumber], GetMatchingPhase(phase.PhaseNumber) == 0 ? ring4MaxReductionScenarios[phase.PhaseNumber] : ring3MaxReductionScenarios[GetMatchingPhase(phase.PhaseNumber)]);
                         }
                     }
                 }
@@ -360,7 +381,7 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
                 foreach (var phase in plan.Phases)
                 {
                     phase.PriorityMin = Convert.ToInt32(Math.Round(phase.ProgrammedSplit)) - phase.MaxExtension;
-                    phase.PriorityMax = Convert.ToInt32(Math.Round(phase.ProgrammedSplit)) + phase.MaxExtension;                    
+                    phase.PriorityMax = Convert.ToInt32(Math.Round(phase.ProgrammedSplit)) + phase.MaxExtension;
                 }
 
             }
@@ -376,14 +397,50 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
             //phase.PriorityMax = phase.ProgrammedSplit > 0 ? Convert.ToInt32(Math.Round(phase.ProgrammedSplit)) : 0; // Program split minus tsp max; //Program split plus the max extension
 
 
-           
+
 
             return (parameters, plans);
 
         }
 
+        private static int GetMatchingPhase(int phaseNumber)
+        {
+            return phaseNumber switch
+            {
+                1 => 5,
+                2 => 6,
+                3 => 7,
+                4 => 8,
+                5 => 1,
+                6 => 2,
+                7 => 3,
+                8 => 4,
+                9 => 13,
+                10 => 14,
+                11 => 15,
+                12 => 16,
+                13 => 9,
+                14 => 10,
+                15 => 11,
+                16 => 12,
+                _ => 0,
+            };
+        }
+
         private static List<int> GetNonDesignatedPhasesInRing(List<int> ring, List<int> designatedPhases)
         {
+            //return the matching phases from the ring that are also in designated phases
+            return ring.Intersect(designatedPhases).ToList();
+
+        }
+
+        private static List<int> GetPhasesForMaxReduction(List<int> ring, List<int> designatedPhases)
+        {
+            //check to see if ring has more than one designated phase if so return all phases in the ring
+            if (ring.Intersect(designatedPhases).Count() > 1)
+            {
+                return ring;
+            }
             return ring.Except(designatedPhases).ToList();
         }
 
@@ -470,7 +527,7 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
                     if (new List<short> { 131 }.Contains(ev.EventCode))
                         categorizedEvents["planEvents"].Add(ev);
 
-                    if (new List<short> { 1, 8, 10, 11 }.Contains(ev.EventCode))
+                    if (new List<short> { 1,3, 8, 10, 11 }.Contains(ev.EventCode))
                         categorizedEvents["cycleEvents"].Add(ev);
 
                     if (Enumerable.Range(130, 20).Contains(ev.EventCode))
@@ -722,11 +779,11 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
                             PercentGapOuts = percentGapOuts,
                             PercentMaxOutsForceOffs = Math.Round(GetPercentMaxOutForceOffs(planNumber, maxCycleCount, cyclesForPhase) * 100, 1),
                             AverageSplit = averageSplit,
-                            MinTime = cyclesForPhase.Min(c => c.DurationSeconds),
+                            MinTime = Math.Round(cyclesForPhase.Min(c => c.MinTime),1),
                             ProgrammedSplit = programmedSplits[phaseNumber],
                             PercentileSplit85th = GetPercentSplit(cyclesForPhase.Count, 0.85, cyclesForPhase),
                             PercentileSplit50th = GetPercentSplit(cyclesForPhase.Count, 0.5, cyclesForPhase),
-                            MinGreen = cyclesForPhase.Min(c => c.GreenDurationSeconds),
+                            MinGreen = cyclesForPhase.Min(c => c.MinGreenDurationSeconds),
                             Yellow = cyclesForPhase.Min(c => c.YellowDurationSeconds),
                             RedClearance = cyclesForPhase.Min(c => c.RedDurationSeconds)
                         };

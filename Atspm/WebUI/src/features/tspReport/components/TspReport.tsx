@@ -1,7 +1,4 @@
-import {
-  postMeasureOptionPreset,
-  useGetMeasureType,
-} from '@/api/config/aTSPMConfigurationApi'
+import { useGetMeasureType } from '@/api/config/aTSPMConfigurationApi'
 import { MeasureType } from '@/api/config/aTSPMConfigurationApi.schemas'
 import { TransitSignalPriorityResult } from '@/api/reports/aTSPMReportDataApi.schemas'
 import { TspReportOptions } from '@/pages/reports/transit-signal-priority'
@@ -60,11 +57,11 @@ const TspReport = ({ report, reportOptions }: TspReportProps) => {
       end: new Date().toISOString(),
       locationIdentifier: '0',
     }
-    postMeasureOptionPreset({
-      name: paramName,
-      option: reportParams,
-      measureTypeId: measureTypes.find((m) => m.name === 'TSP')?.id,
-    })
+    // postMeasureOptionPreset({
+    //   name: paramName,
+    //   option: reportParams,
+    //   measureTypeId: measureTypes.find((m) => m.name === 'TSP')?.id,
+    // })
     addNotification({
       title: 'Parameters saved successfully',
       type: 'success',
