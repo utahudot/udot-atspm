@@ -1,10 +1,18 @@
 import {
+  useGetLocationLatestVersionOfAllLocations,
+  useGetMeasureType,
+  useGetMeasureTypeMeasureOptionPresetsFromKey,
+} from '@/api/config/aTSPMConfigurationApi'
+import {
   Approach,
   SearchLocation as Location,
+  MeasureType,
 } from '@/api/config/aTSPMConfigurationApi.schemas'
 import { useGetTransitSignalPriorityReportData } from '@/api/reports/aTSPMReportDataApi'
 import MultipleLocationsDisplay from '@/components/MultipleLocationsSelect/MultipleLocationsDisplay'
-import MultipleLocationsSelect from '@/components/MultipleLocationsSelect/MultipleLocationsSelect'
+import MultipleLocationsSelect, {
+  getLocationWithApproaches,
+} from '@/components/MultipleLocationsSelect/MultipleLocationsSelect'
 import { ResponsivePageLayout } from '@/components/ResponsivePage'
 import MultiDaySelect from '@/features/tspReport/components/DateCalendar'
 import TspReport from '@/features/tspReport/components/TspReport'
@@ -25,29 +33,6 @@ import {
 import { AxiosError } from 'axios'
 import { startOfYesterday, subDays } from 'date-fns'
 import { useState } from 'react'
-
-const savedReportsMock = [
-  {
-    id: 1,
-    name: 'Report 1',
-    start: new Date(),
-    end: new Date(),
-    locations: [
-      { id: 1, name: 'Location 1' },
-      { id: 2, name: 'Location 2' },
-    ],
-  },
-  {
-    id: 2,
-    name: 'Report 2',
-    start: new Date('2021-10-01'),
-    end: new Date('2021-10-31'),
-    locations: [
-      { id: 3, name: 'Location 3' },
-      { id: 4, name: 'Location 4' },
-    ],
-  },
-]
 
 export interface TspLocation extends Location {
   approaches: Approach[]
@@ -85,6 +70,18 @@ export default function TspReportPage() {
     mutateAsync: fetchTspReport,
     isLoading: loadingReport,
   } = useGetTransitSignalPriorityReportData()
+
+  const { data: locationsData } = useGetLocationLatestVersionOfAllLocations()
+  const locations = locationsData?.value || ([] as TspLocation[])
+
+  const { data: measureTypesData } = useGetMeasureType()
+  const measureTypes = measureTypesData?.value || ([] as MeasureType[])
+
+  const { data: savedOptionsData } =
+    useGetMeasureTypeMeasureOptionPresetsFromKey(
+      measureTypes.find((m) => m.abbreviation === 'TSP')?.id
+    )
+  const savedOptions = savedOptionsData?.value || ([] as MeasureType[])
 
   function renderErrorAlert() {
     if (errorState.type === 'NO_LOCATIONS') {
@@ -147,11 +144,37 @@ export default function TspReportPage() {
     setLocations(items)
   }
 
-  function handleSavedReportChange(e: React.ChangeEvent<{ value: unknown }>) {
-    const found = savedReportsMock.find((r) => r.id === e.target.value)
-    if (found) {
-      setSelectedReport(found.id)
-      setLocations(found.locations as TspLocation[])
+  const handleSavedReportParametersChange = async (
+    e: React.ChangeEvent<{ value: unknown }>
+  ) => {
+    const selectedParameters = savedOptions.find(
+      (option) => option.id === Number(e.target.value)
+    )
+    if (selectedParameters) {
+      setSelectedReport(selectedParameters.id)
+      const locationsWithApproaches = await getLocationWithApproaches(
+        selectedParameters.option.locationsAndPhases.map((loc) => {
+          return locations.find(
+            (l) => l.locationIdentifier === loc.locationIdentifier
+          )
+        })
+      )
+      const locationsWithApproachesWithPhases = locationsWithApproaches.map(
+        (loc) => {
+          return {
+            ...loc,
+            designatedPhases: selectedParameters.option.locationsAndPhases.find(
+              (l) => l.locationIdentifier === loc.locationIdentifier
+            )?.designatedPhases,
+          }
+        }
+      )
+      setReportOptions({
+        selectedDays: selectedParameters.option.dates.map(
+          (date) => new Date(date)
+        ),
+        locations: locationsWithApproachesWithPhases,
+      })
     } else {
       setSelectedReport(0)
       setLocations([])
@@ -233,16 +256,15 @@ export default function TspReportPage() {
             label="Saved Report Parameters"
             variant="outlined"
             value={selectedReport}
-            onChange={handleSavedReportChange}
+            onChange={handleSavedReportParametersChange}
             inputProps={{ id: 'route-parameters-select' }}
           >
             <MenuItem key={0} value={0}>
               None
             </MenuItem>
-            {savedReportsMock.map((report) => (
-              <MenuItem key={report.id} value={report.id}>
-                {report.name} - {report.start.toDateString()} -{' '}
-                {report.end.toDateString()}
+            {savedOptions.map((options) => (
+              <MenuItem key={options.id} value={options.id}>
+                {options.name}
               </MenuItem>
             ))}
           </Select>
