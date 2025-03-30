@@ -258,7 +258,7 @@ namespace Utah.Udot.Atspm.Business.Common
             var terminationEventsForPhase = terminationEvents.Where(c => c.EventParam == phaseNumber).ToList();
 
             var cleanTerminationEvents = CleanTerminationEvents(terminationEventsForPhase);
-            var cycles = Enumerable.Range(0, cycleEventsForPhase.Count - 3)
+            var cycles = Enumerable.Range(0, cycleEventsForPhase.Count - 4)
                 .Where(i => cycleEventsForPhase[i].EventCode ==1 &&
                             cycleEventsForPhase[i + 1].EventCode == 3 &&
                             cycleEventsForPhase[i + 2].EventCode == 8 &&
