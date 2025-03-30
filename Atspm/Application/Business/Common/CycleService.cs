@@ -21,6 +21,7 @@ using Utah.Udot.Atspm.Business.SplitFail;
 using Utah.Udot.Atspm.Business.TransitSignalPriority;
 using Utah.Udot.Atspm.Business.YellowRedActivations;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
+using Utah.Udot.Atspm.Data.Models.MeasureOptions;
 using Utah.Udot.Atspm.Extensions;
 
 namespace Utah.Udot.Atspm.Business.Common
@@ -259,9 +260,10 @@ namespace Utah.Udot.Atspm.Business.Common
             var cleanTerminationEvents = CleanTerminationEvents(terminationEventsForPhase);
             var cycles = Enumerable.Range(0, cycleEventsForPhase.Count - 3)
                 .Where(i => cycleEventsForPhase[i].EventCode ==1 &&
-                            cycleEventsForPhase[i + 1].EventCode == 8 &&
-                            cycleEventsForPhase[i + 2].EventCode == 10 &&
-                            cycleEventsForPhase[i + 3].EventCode == 11                             
+                            cycleEventsForPhase[i + 1].EventCode == 3 &&
+                            cycleEventsForPhase[i + 2].EventCode == 8 &&
+                            cycleEventsForPhase[i + 3].EventCode == 10 &&
+                            cycleEventsForPhase[i + 4].EventCode == 11                             
                             )
                 .Select(i =>
                 {
@@ -272,13 +274,14 @@ namespace Utah.Udot.Atspm.Business.Common
                     return new TransitSignalPriorityCycle { 
                         PhaseNumber = phaseNumber,
                         GreenEvent = cycleEventsForPhase[i].Timestamp, 
-                        YellowEvent = cycleEventsForPhase[i + 1].Timestamp, 
-                        RedEvent = cycleEventsForPhase[i + 2].Timestamp,  
-                        EndRedClearanceEvent = cycleEventsForPhase[i + 3].Timestamp, 
+                        MinGreen = cycleEventsForPhase[i + 1].Timestamp,
+                        YellowEvent = cycleEventsForPhase[i + 2].Timestamp, 
+                        RedEvent = cycleEventsForPhase[i + 3].Timestamp,  
+                        EndRedClearanceEvent = cycleEventsForPhase[i + 4].Timestamp, 
                         TerminationEvent  = GetTerminationEventBetweenStartAndEnd(cycleEventsForPhase[i].Timestamp, cycleEventsForPhase[i + 3].Timestamp, cleanTerminationEvents)
                     };
                 })
-                .Where(c => c.GreenDurationSeconds > 0 && c.DurationSeconds > 0)
+                .Where(c => c.MinGreenDurationSeconds > 0 && c.DurationSeconds > 0)
                 .ToList();
 
             return cycles;

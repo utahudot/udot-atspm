@@ -12,8 +12,8 @@ using Utah.Udot.Atspm.Data;
 namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations.Config
 {
     [DbContext(typeof(ConfigContext))]
-    [Migration("20250130230507_V05_0_3")]
-    partial class V05_0_3
+    [Migration("20250328172154_5_1")]
+    partial class _5_1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -379,6 +379,16 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations.Config
                     b.Property<int?>("DeviceConfigurationId")
                         .HasColumnType("integer");
 
+                    b.Property<string>("DeviceIdentifier")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .IsUnicode(false)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("DeviceProperties")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)");
+
                     b.Property<string>("DeviceStatus")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
@@ -432,6 +442,10 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations.Config
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("ConnectionProperties")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)");
+
                     b.Property<int>("ConnectionTimeout")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
@@ -443,16 +457,14 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations.Config
                         .HasColumnType("character varying(512)")
                         .HasDefaultValueSql("('[]')");
 
-                    b.Property<string>("Directory")
-                        .HasMaxLength(512)
-                        .IsUnicode(false)
-                        .HasColumnType("character varying(512)");
-
-                    b.Property<string>("Firmware")
+                    b.Property<string>("Description")
                         .IsRequired()
-                        .HasMaxLength(16)
+                        .HasMaxLength(24)
                         .IsUnicode(false)
-                        .HasColumnType("character varying(16)");
+                        .HasColumnType("character varying(24)");
+
+                    b.Property<int>("LoggingOffset")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Notes")
                         .HasMaxLength(512)
@@ -469,6 +481,11 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations.Config
                         .IsUnicode(false)
                         .HasColumnType("character varying(50)");
 
+                    b.Property<string>("Path")
+                        .HasMaxLength(512)
+                        .IsUnicode(false)
+                        .HasColumnType("character varying(512)");
+
                     b.Property<int>("Port")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
@@ -484,7 +501,7 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations.Config
                         .HasColumnType("character varying(7)")
                         .HasDefaultValue("Unknown");
 
-                    b.Property<string>("SearchTerms")
+                    b.Property<string>("Query")
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(512)
                         .HasColumnType("character varying(512)")
@@ -941,63 +958,6 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations.Config
                         });
                 });
 
-            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.MapLayer", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("CreatedBy")
-                        .IsUnicode(false)
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("timestamp");
-
-                    b.Property<string>("DeletedBy")
-                        .IsUnicode(false)
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("DeletedOn")
-                        .HasColumnType("timestamp");
-
-                    b.Property<string>("MapLayerUrl")
-                        .IsUnicode(false)
-                        .HasColumnType("text");
-
-                    b.Property<string>("Name")
-                        .IsUnicode(false)
-                        .HasColumnType("text");
-
-                    b.Property<int?>("RefreshIntervalSeconds")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("ServiceType")
-                        .IsUnicode(false)
-                        .HasColumnType("text");
-
-                    b.Property<bool>("ShowByDefault")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("UpdatedBy")
-                        .IsUnicode(false)
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("UpdatedOn")
-                        .HasColumnType("timestamp");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Name");
-
-                    b.ToTable("MapLayer", t =>
-                        {
-                            t.HasComment("Map Layer");
-                        });
-                });
-
             modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.MeasureComment", b =>
                 {
                     b.Property<int>("Id")
@@ -1424,6 +1384,77 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations.Config
                             MeasureTypeId = 32,
                             Option = "binSize",
                             Value = "15"
+                        },
+                        new
+                        {
+                            Id = 116,
+                            MeasureTypeId = 2,
+                            Option = "yAxisDefault",
+                            Value = "100"
+                        },
+                        new
+                        {
+                            Id = 117,
+                            MeasureTypeId = 6,
+                            Option = "yAxisDefault",
+                            Value = "150"
+                        },
+                        new
+                        {
+                            Id = 118,
+                            MeasureTypeId = 3,
+                            Option = "yAxisDefault",
+                            Value = "180"
+                        },
+                        new
+                        {
+                            Id = 119,
+                            MeasureTypeId = 11,
+                            Option = "yAxisDefault",
+                            Value = "20"
+                        });
+                });
+
+            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.MeasureOptionPreset", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("timestamp");
+
+                    b.Property<string>("CreatedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("text");
+
+                    b.Property<int>("MeasureTypeId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("Modified")
+                        .HasColumnType("timestamp");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(512)
+                        .IsUnicode(false)
+                        .HasColumnType("character varying(512)");
+
+                    b.Property<string>("Option")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MeasureTypeId");
+
+                    b.ToTable("MeasureOptionPresets", t =>
+                        {
+                            t.HasComment("Measure Option Presets");
                         });
                 });
 
@@ -2062,7 +2093,7 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations.Config
                     b.Property<DateTime>("Date")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp")
-                        .HasDefaultValue(new DateTime(2025, 1, 30, 16, 5, 6, 625, DateTimeKind.Local).AddTicks(9158));
+                        .HasDefaultValue(new DateTime(2025, 3, 28, 11, 21, 54, 311, DateTimeKind.Local).AddTicks(2615));
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -2334,6 +2365,17 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations.Config
                     b.Navigation("MeasureType");
                 });
 
+            modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.MeasureOptionPreset", b =>
+                {
+                    b.HasOne("Utah.Udot.Atspm.Data.Models.MeasureType", "MeasureType")
+                        .WithMany("MeasureOptionPresets")
+                        .HasForeignKey("MeasureTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("MeasureType");
+                });
+
             modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.MenuItem", b =>
                 {
                     b.HasOne("Utah.Udot.Atspm.Data.Models.MenuItem", "Parent")
@@ -2489,6 +2531,8 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations.Config
 
             modelBuilder.Entity("Utah.Udot.Atspm.Data.Models.MeasureType", b =>
                 {
+                    b.Navigation("MeasureOptionPresets");
+
                     b.Navigation("MeasureOptions");
                 });
 

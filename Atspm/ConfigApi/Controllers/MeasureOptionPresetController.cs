@@ -16,8 +16,13 @@
 #endregion
 
 using Asp.Versioning;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Query;
 using Utah.Udot.Atspm.Data.Models;
+using Utah.Udot.Atspm.Data.Models.MeasureOptions;
 using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
+using static Microsoft.AspNetCore.Http.StatusCodes;
+using static Microsoft.AspNetCore.OData.Query.AllowedQueryOptions;
 
 namespace Utah.Udot.Atspm.ConfigApi.Controllers
 {
@@ -44,6 +49,24 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
         #endregion
 
         #region Functions
+
+        /// <summary>
+        /// Retrieves a list of measure option preset types.
+        /// </summary>
+        /// <returns>An <see cref="IActionResult"/> containing a list of measure option preset type names.</returns>
+        [HttpGet]
+        [EnableQuery(AllowedQueryOptions = Count | Filter | Select | OrderBy | Top | Skip)]
+        [ProducesResponseType(typeof(List<string>), Status200OK)]
+        public IActionResult GetMeasureOptionPresetTypes()
+        {
+            var result = typeof(AtspmOptionsBase).Assembly.GetTypes()
+                .Where(w => w.IsSubclassOf(typeof(AtspmOptionsBase)))
+                .Select(s => s.Name)
+                .OrderBy(o => o)
+                .ToList();
+
+            return Ok(result);
+        }
 
         #endregion
     }
