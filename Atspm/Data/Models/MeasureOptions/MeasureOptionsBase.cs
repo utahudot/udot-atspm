@@ -303,6 +303,7 @@ namespace Utah.Udot.Atspm.Data.Models.MeasureOptions
     public class LocationPhases
     {
         public string LocationIdentifier { get; set; }
+        public string? ControllerManufacturer { get; set; }
         public List<int> DesignatedPhases { get; set; }
     }
 

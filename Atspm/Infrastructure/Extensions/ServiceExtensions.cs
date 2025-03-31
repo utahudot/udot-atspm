@@ -171,7 +171,6 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
             services.AddScoped<IWatchDogEventLogRepository, WatchDogLogEventEFRepository>();
             services.AddScoped<IWatchDogIgnoreEventRepository, WatchDogIgnoreEventEFRepository>();
             services.AddScoped<IEventLogRepository, EventLogEFRepository>();
-            services.AddScoped<IMapLayerRepository, MapLayerEFRepository>();
 
             return services;
         }

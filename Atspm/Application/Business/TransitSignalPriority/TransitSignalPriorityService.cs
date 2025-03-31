@@ -15,13 +15,14 @@
 // limitations under the License.
 #endregion
 
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks.Dataflow;
 using Utah.Udot.Atspm.Business.Common;
-using Utah.Udot.Atspm.Business.PhaseTermination;
 using Utah.Udot.Atspm.Business.TransitSignalPriority;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
+using Utah.Udot.Atspm.Data.Models.MeasureOptions;
 using Utah.Udot.Atspm.Extensions;
 using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
 using Utah.Udot.Atspm.Repositories.EventLogRepositories;
@@ -31,11 +32,17 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
     public class TransitSignalPriorityService
     {
         private static readonly short[] EventCodes =
-            (new short[] { 1, 4, 5, 6, 7, 8, 10, 11 })
+            (new short[] { 1, 3, 4, 5, 6, 7, 8, 10, 11 })
             .Concat(Enumerable.Range(130, 20).Select(x => (short)x))
             .ToArray();
 
         private static readonly int _maxDegreeOfParallelism = 5;
+
+
+        private static List<int> _ring1 = new List<int> { 1, 2, 3, 4 };
+        private static List<int> _ring2 = new List<int> { 5, 6, 7, 8 };
+        private static List<int> _ring3 = new List<int> { 9, 10, 11, 12 };
+        private static List<int> _ring4 = new List<int> { 13, 14, 15, 16 };
 
         private readonly IServiceProvider _serviceProvider;
         private readonly PlanService _planService;
@@ -105,8 +112,6 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
 
         public async Task<List<TransitSignalPriorityResult>> GetChartDataAsync(TransitSignalPriorityOptions options)
         {
-
-
             // Link the blocks, and add a predicate to filteringBlock's output if needed.
             _loadLocationDataBlock.LinkTo(
                 _filteringBlock,
@@ -208,13 +213,6 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
                         continue;
                     }
 
-                    if(input.Item1.LocationPhases.DesignatedPhases.Contains(phase.PhaseNumber))
-                    {
-                        phase.RecommendedTSPMax = 0;
-                        phase.Notes = "Designated phase, no TSP Max";
-                        continue;
-                    }
-
                     phase.SkipsGreaterThan70TSPMax = Math.Round(phase.ProgrammedSplit - phase.MinTime, 1);
                     phase.ForceOffsLessThan40TSPMax = Math.Round((phase.MinTime + phase.PercentileSplit50th) / 2, 1);
                     phase.ForceOffsLessThan60TSPMax = Math.Round(phase.ProgrammedSplit - phase.PercentileSplit50th, 1);
@@ -242,7 +240,7 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
                     }
                     else
                     {
-                        phase.RecommendedTSPMax = null; // Not recommended
+                        phase.RecommendedTSPMax = 0; // Not recommended
                         phase.Notes = "No recommended TSP Max";
                     }
 
@@ -260,10 +258,6 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
 
         public static (TransitSignalLoadParameters, List<TransitSignalPriorityPlan>) CalculateMaxExtension((TransitSignalLoadParameters, List<TransitSignalPriorityPlan>) input)
         {
-            var ring1 = new List<int> { 1, 2, 3, 4 };
-            var ring2 = new List<int> { 5, 6, 7, 8 };
-            var ring3 = new List<int> { 9, 10, 11, 12 };
-            var ring4 = new List<int> { 13, 14, 15, 16 };
             var (parameters, plans) = input;
 
             foreach (var plan in plans)
@@ -299,9 +293,11 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
                     //pri min and max should use max extension not tsp max
                     if (phase.PhaseNumber >= 1 && phase.PhaseNumber <= 16)
                     {
+                        var ring = GetRingForPhase(phase.PhaseNumber);
+                        var otherDesignatedPhasesInRing = ring.Intersect(parameters.LocationPhases.DesignatedPhases.Where(p => p != phase.PhaseNumber)?.ToList());
 
                         //1. Set Max reduction for non designated phases to TSP Max
-                        if (!parameters.LocationPhases.DesignatedPhases.Contains(phase.PhaseNumber))
+                        if (!parameters.LocationPhases.DesignatedPhases.Contains(phase.PhaseNumber)||(parameters.LocationPhases.DesignatedPhases.Contains(phase.PhaseNumber) && otherDesignatedPhasesInRing!= null))
                         {
                             phase.MaxReduction = phase.RecommendedTSPMax.HasValue ? Convert.ToInt32(Math.Round(phase.RecommendedTSPMax.Value)) : 0;
                         }
@@ -310,48 +306,80 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
 
 
                 //2. Using ring 1 to 2, and 3 to 4 determine which has the lower summed max reduction and set that as the max extension for the designated phase
-                List<int> ring1NonDesignatedPhases = GetNonDesignatedPhasesInRing(ring1, parameters.LocationPhases.DesignatedPhases);
-                int ring1MaxExtension = plan.Phases
-                    .Where(p => ring1NonDesignatedPhases.Contains(p.PhaseNumber))
-                    .Sum(p => p.MaxReduction);
+                List<int> ring1DesignatedPhases = GetDesignatedPhasesInRing(_ring1, parameters.LocationPhases.DesignatedPhases);
+                var ring1MaxReductionScenarios = new Dictionary<int, int>();
+                foreach (var ringPhase in ring1DesignatedPhases)
+                {
+                    var nonDesignatedPhasesInRing = _ring1.Except(parameters.LocationPhases.DesignatedPhases).ToList();
+                    var ring1PhaseMaxReduction = plan.Phases
+                        .Where(p => nonDesignatedPhasesInRing.Contains(p.PhaseNumber))
+                        .Sum(p => p.MaxReduction);
+                    ring1MaxReductionScenarios.Add(ringPhase, ring1PhaseMaxReduction);
+                }
 
-                List<int> ring2NonDesignatedPhases = GetNonDesignatedPhasesInRing(ring2, parameters.LocationPhases.DesignatedPhases);
-                int ring2MaxExtension = plan.Phases
-                    .Where(p => ring2NonDesignatedPhases.Contains(p.PhaseNumber))
-                    .Sum(p => p.MaxReduction);
 
-                List<int> ring3NonDesignatedPhases = GetNonDesignatedPhasesInRing(ring3, parameters.LocationPhases.DesignatedPhases);
-                int ring3MaxExtension = plan.Phases
-                    .Where(p => ring3NonDesignatedPhases.Contains(p.PhaseNumber))
-                    .Sum(p => p.MaxReduction);
+                List<int> ring2DesignatedPhases = GetDesignatedPhasesInRing(_ring2, parameters.LocationPhases.DesignatedPhases);
+                var ring2MaxReductionScenarios = new Dictionary<int, int>();
+                foreach (var ringPhase in ring2DesignatedPhases)
+                {
+                    var nonDesignatedPhasesInRing = _ring2.Except(parameters.LocationPhases.DesignatedPhases).ToList();
+                    var ring2PhaseMaxReduction = plan.Phases
+                        .Where(p => nonDesignatedPhasesInRing.Contains(p.PhaseNumber))
+                        .Sum(p => p.MaxReduction);
+                    ring2MaxReductionScenarios.Add(ringPhase, ring2PhaseMaxReduction);
+                }
 
-                List<int> ring4NonDesignatedPhases = GetNonDesignatedPhasesInRing(ring4, parameters.LocationPhases.DesignatedPhases);
-                int ring4MaxExtension = plan.Phases
-                    .Where(p => ring4NonDesignatedPhases.Contains(p.PhaseNumber))
-                    .Sum(p => p.MaxReduction);
+
+                List<int> ring3DesignatedPhases = GetDesignatedPhasesInRing(_ring3, parameters.LocationPhases.DesignatedPhases);
+                var ring3MaxReductionScenarios = new Dictionary<int, int>();
+                foreach (var ringPhase in ring3DesignatedPhases)
+                {
+                    var nonDesignatedPhasesInRing = _ring3.Except(parameters.LocationPhases.DesignatedPhases).ToList();
+                    var ring3PhaseMaxReduction = plan.Phases
+                        .Where(p => nonDesignatedPhasesInRing.Contains(p.PhaseNumber))
+                        .Sum(p => p.MaxReduction);
+                    ring3MaxReductionScenarios.Add(ringPhase, ring3PhaseMaxReduction);
+                }
+
+
+                List<int> ring4DesignatedPhases = GetDesignatedPhasesInRing(_ring4, parameters.LocationPhases.DesignatedPhases);
+                var ring4MaxReductionScenarios = new Dictionary<int, int>();
+                foreach (var ringPhase in ring4DesignatedPhases)
+                {
+                    var nonDesignatedPhasesInRing = _ring4.Except(parameters.LocationPhases.DesignatedPhases).ToList();
+                    var ring4PhaseMaxReduction = plan.Phases
+                        .Where(p => nonDesignatedPhasesInRing.Contains(p.PhaseNumber))
+                        .Sum(p => p.MaxReduction);
+                    ring4MaxReductionScenarios.Add(ringPhase, ring4PhaseMaxReduction);
+                }
+
 
                 //Loop through each designated phase, determine the ring,
                 //if the ring is 1 or 2 set the max extension to lower of ring 1 or 2,
                 //if the ring is 3 or 4 set the max extension to the lower of ring 3 or 4
+
+
+
                 foreach (var phase in plan.Phases)
                 {
                     if (parameters.LocationPhases.DesignatedPhases.Contains(phase.PhaseNumber))
                     {
                         if (phase.PhaseNumber >= 1 && phase.PhaseNumber <= 4)
                         {
-                            phase.MaxExtension = Math.Min(ring1MaxExtension, ring2MaxExtension);
+                            //This only really works if they have designated match phases in ring 1 and 2 ie 2,6 or 4,8
+                            phase.MaxExtension = Math.Min(ring1MaxReductionScenarios[phase.PhaseNumber], GetMatchingPhase(phase.PhaseNumber) == 0 ? ring1MaxReductionScenarios[phase.PhaseNumber] : ring2MaxReductionScenarios[GetMatchingPhase(phase.PhaseNumber)]);
                         }
                         else if (phase.PhaseNumber >= 5 && phase.PhaseNumber <= 8)
                         {
-                            phase.MaxExtension = Math.Min(ring1MaxExtension, ring2MaxExtension);
+                            phase.MaxExtension = Math.Min(ring2MaxReductionScenarios[phase.PhaseNumber], GetMatchingPhase(phase.PhaseNumber) == 0 ? ring2MaxReductionScenarios[phase.PhaseNumber] : ring1MaxReductionScenarios[GetMatchingPhase(phase.PhaseNumber)]);
                         }
                         else if (phase.PhaseNumber >= 9 && phase.PhaseNumber <= 12)
                         {
-                            phase.MaxExtension = Math.Min(ring3MaxExtension, ring4MaxExtension);
+                            phase.MaxExtension = Math.Min(ring3MaxReductionScenarios[phase.PhaseNumber], GetMatchingPhase(phase.PhaseNumber) == 0 ? ring3MaxReductionScenarios[phase.PhaseNumber] : ring4MaxReductionScenarios[GetMatchingPhase(phase.PhaseNumber)]);
                         }
                         else if (phase.PhaseNumber >= 13 && phase.PhaseNumber <= 16)
                         {
-                            phase.MaxExtension = Math.Min(ring3MaxExtension, ring4MaxExtension);
+                            phase.MaxExtension = Math.Min(ring4MaxReductionScenarios[phase.PhaseNumber], GetMatchingPhase(phase.PhaseNumber) == 0 ? ring4MaxReductionScenarios[phase.PhaseNumber] : ring3MaxReductionScenarios[GetMatchingPhase(phase.PhaseNumber)]);
                         }
                     }
                 }
@@ -360,7 +388,7 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
                 foreach (var phase in plan.Phases)
                 {
                     phase.PriorityMin = Convert.ToInt32(Math.Round(phase.ProgrammedSplit)) - phase.MaxExtension;
-                    phase.PriorityMax = Convert.ToInt32(Math.Round(phase.ProgrammedSplit)) + phase.MaxExtension;                    
+                    phase.PriorityMax = Convert.ToInt32(Math.Round(phase.ProgrammedSplit)) + phase.MaxExtension;
                 }
 
             }
@@ -376,14 +404,50 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
             //phase.PriorityMax = phase.ProgrammedSplit > 0 ? Convert.ToInt32(Math.Round(phase.ProgrammedSplit)) : 0; // Program split minus tsp max; //Program split plus the max extension
 
 
-           
+
 
             return (parameters, plans);
 
         }
 
-        private static List<int> GetNonDesignatedPhasesInRing(List<int> ring, List<int> designatedPhases)
+        private static int GetMatchingPhase(int phaseNumber)
         {
+            return phaseNumber switch
+            {
+                1 => 5,
+                2 => 6,
+                3 => 7,
+                4 => 8,
+                5 => 1,
+                6 => 2,
+                7 => 3,
+                8 => 4,
+                9 => 13,
+                10 => 14,
+                11 => 15,
+                12 => 16,
+                13 => 9,
+                14 => 10,
+                15 => 11,
+                16 => 12,
+                _ => 0,
+            };
+        }
+
+        private static List<int> GetDesignatedPhasesInRing(List<int> ring, List<int> designatedPhases)
+        {
+            //return the matching phases from the ring that are also in designated phases
+            return ring.Intersect(designatedPhases).ToList();
+
+        }
+
+        private static List<int> GetPhasesForMaxReduction(List<int> ring, List<int> designatedPhases)
+        {
+            //check to see if ring has more than one designated phase if so return all phases in the ring
+            if (ring.Intersect(designatedPhases).Count() > 1)
+            {
+                return ring;
+            }
             return ring.Except(designatedPhases).ToList();
         }
 
@@ -395,6 +459,18 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
                 >= 5 and <= 8 => ring2.Except(parameters.LocationPhases.DesignatedPhases).ToList(),
                 >= 9 and <= 12 => ring3.Except(parameters.LocationPhases.DesignatedPhases).ToList(),
                 >= 13 and <= 16 => ring4.Except(parameters.LocationPhases.DesignatedPhases).ToList(),
+                _ => new List<int>()
+            };
+        }
+
+        private static List<int> GetRingForPhase(int phaseNumber)
+        {
+            return phaseNumber switch
+            {
+                >= 1 and <= 4 => _ring1,
+                >= 5 and <= 8 => _ring2,
+                >= 9 and <= 12 => _ring3,
+                >= 13 and <= 16 => _ring4,
                 _ => new List<int>()
             };
         }
@@ -445,7 +521,7 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
             var plans = GetTransitSignalPriorityPlans(
                 firstDate,
                 endDate,
-                inputParameters.LocationPhases.LocationIdentifier,
+                inputParameters.LocationPhases,
                 planEvents,
                 splitsEvents,
                 cycles
@@ -470,7 +546,7 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
                     if (new List<short> { 131 }.Contains(ev.EventCode))
                         categorizedEvents["planEvents"].Add(ev);
 
-                    if (new List<short> { 1, 8, 10, 11 }.Contains(ev.EventCode))
+                    if (new List<short> { 1,3, 8, 10, 11 }.Contains(ev.EventCode))
                         categorizedEvents["cycleEvents"].Add(ev);
 
                     if (Enumerable.Range(130, 20).Contains(ev.EventCode))
@@ -523,6 +599,10 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
                         _logger.LogWarning($"Location not found for {input.LocationPhases} on {input.Dates.First()}");
                         return null;
                     }
+                    else
+                    {
+                        input.LocationPhases.ControllerManufacturer = input.Location.Devices.Where(d => d.DeviceType == Data.Enums.DeviceTypes.SignalController)?.FirstOrDefault()?.DeviceConfiguration.Product.Manufacturer;
+                    }
 
                     _logger.LogInformation($"Location found: {input.LocationPhases}");
 
@@ -545,7 +625,7 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
             using (var scope = _serviceProvider.CreateScope())
             {
                 var locationRepository = scope.ServiceProvider.GetRequiredService<ILocationRepository>();
-                return locationRepository.GetLatestVersionOfLocation(locationIdentifier, date);
+                return locationRepository.GetLatestVersionOfLocationWithDevice(locationIdentifier, date);
             }
         }
 
@@ -594,7 +674,7 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
         public List<TransitSignalPriorityPlan> GetTransitSignalPriorityPlans(
             DateTime startDate,
             DateTime endDate,
-            string locationId,
+            LocationPhases locationPhases,
             IReadOnlyList<IndianaEvent> planEvents,
             IReadOnlyList<IndianaEvent> splitEvents,
             List<TransitSignalPriorityCycle> cycles)
@@ -605,7 +685,7 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
                 throw new ArgumentNullException(nameof(splitEvents));
             if (cycles == null)
                 throw new ArgumentNullException(nameof(cycles));
-            var plans = _planService.GetTransitSignalPriorityBasicPlans(startDate, endDate, locationId, planEvents).OrderBy(p => p.Start).ToList();
+            var plans = _planService.GetTransitSignalPriorityBasicPlans(startDate, endDate, locationPhases.LocationIdentifier, planEvents).OrderBy(p => p.Start).ToList();
             var validSplitEvents = new List<IndianaEvent>();
             for (int i = 0; i < plans.Count(); i++)
             {
@@ -697,6 +777,7 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
 
                 // Determine the highest cycle count among all phases for percentage calculations
                 int maxCycleCount = phaseCyclesDict.Values.Max(cycleList => cycleList.Count);
+                tspPlan.NumberOfCycles = maxCycleCount;
 
                 // Process each phase that has cycles and a corresponding programmed split
                 foreach (var phasePair in phaseCyclesDict)
@@ -722,11 +803,12 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
                             PercentGapOuts = percentGapOuts,
                             PercentMaxOutsForceOffs = Math.Round(GetPercentMaxOutForceOffs(planNumber, maxCycleCount, cyclesForPhase) * 100, 1),
                             AverageSplit = averageSplit,
-                            MinTime = cyclesForPhase.Min(c => c.DurationSeconds),
+                            MinTime = Math.Round(cyclesForPhase.Min(c => c.MinTime),1),
                             ProgrammedSplit = programmedSplits[phaseNumber],
                             PercentileSplit85th = GetPercentSplit(cyclesForPhase.Count, 0.85, cyclesForPhase),
                             PercentileSplit50th = GetPercentSplit(cyclesForPhase.Count, 0.5, cyclesForPhase),
-                            MinGreen = cyclesForPhase.Min(c => c.GreenDurationSeconds),
+                            //MinGreen = locationPhases.ControllerManufacturer == "Econolite" ? cyclesForPhase.Min(c => c.GreenDurationSeconds) : cyclesForPhase.Min(c => c.MinGreenDurationSeconds),
+                            MinGreen = cyclesForPhase.Min(c => c.MinGreenDurationSeconds),
                             Yellow = cyclesForPhase.Min(c => c.YellowDurationSeconds),
                             RedClearance = cyclesForPhase.Min(c => c.RedDurationSeconds)
                         };
