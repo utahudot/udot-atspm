@@ -1,10 +1,17 @@
 import {
+  useGetLocationLatestVersionOfAllLocations,
+  useGetMeasureType,
+  useGetMeasureTypeMeasureOptionPresetsFromKey,
+} from '@/api/config/aTSPMConfigurationApi'
+import {
   Approach,
   SearchLocation as Location,
 } from '@/api/config/aTSPMConfigurationApi.schemas'
 import { useGetTransitSignalPriorityReportData } from '@/api/reports/aTSPMReportDataApi'
 import MultipleLocationsDisplay from '@/components/MultipleLocationsSelect/MultipleLocationsDisplay'
-import MultipleLocationsSelect from '@/components/MultipleLocationsSelect/MultipleLocationsSelect'
+import MultipleLocationsSelect, {
+  getLocationWithApproaches,
+} from '@/components/MultipleLocationsSelect/MultipleLocationsSelect'
 import { ResponsivePageLayout } from '@/components/ResponsivePage'
 import MultiDaySelect from '@/features/tspReport/components/DateCalendar'
 import TspReport from '@/features/tspReport/components/TspReport'
@@ -25,29 +32,6 @@ import {
 import { AxiosError } from 'axios'
 import { startOfYesterday, subDays } from 'date-fns'
 import { useState } from 'react'
-
-const savedReportsMock = [
-  {
-    id: 1,
-    name: 'Report 1',
-    start: new Date(),
-    end: new Date(),
-    locations: [
-      { id: 1, name: 'Location 1' },
-      { id: 2, name: 'Location 2' },
-    ],
-  },
-  {
-    id: 2,
-    name: 'Report 2',
-    start: new Date('2021-10-01'),
-    end: new Date('2021-10-31'),
-    locations: [
-      { id: 3, name: 'Location 3' },
-      { id: 4, name: 'Location 4' },
-    ],
-  },
-]
 
 export interface TspLocation extends Location {
   approaches: Approach[]
@@ -79,12 +63,20 @@ export default function TspReportPage() {
   })
   const [selectedReport, setSelectedReport] = useState(0)
   const [errorState, setErrorState] = useState<TspErrorState>({ type: 'NONE' })
-
   const {
     data: reportResponse,
     mutateAsync: fetchTspReport,
     isLoading: loadingReport,
   } = useGetTransitSignalPriorityReportData()
+  const { data: locationsData } = useGetLocationLatestVersionOfAllLocations()
+  const locations = locationsData?.value || []
+  const { data: measureTypesData } = useGetMeasureType()
+  const measureTypes = measureTypesData?.value || []
+  const { data: savedOptionsData } =
+    useGetMeasureTypeMeasureOptionPresetsFromKey(
+      measureTypes.find((m) => m.abbreviation === 'TSP')?.id
+    )
+  const savedOptions = savedOptionsData?.value || []
 
   function renderErrorAlert() {
     if (errorState.type === 'NO_LOCATIONS') {
@@ -118,16 +110,13 @@ export default function TspReportPage() {
 
   function setLocations(locations: TspLocation[]) {
     const hadNoLocations = errorState.type === 'NO_LOCATIONS'
-    // check each location, and set it's designated phases to 2 and 6 if available.
     locations.forEach((loc) => {
       const phases = getPhases(loc)
       if (phases.includes(2) && phases.includes(6)) {
         loc.designatedPhases = [2, 6]
       }
     })
-
     setReportOptions((prev) => ({ ...prev, locations }))
-
     if (hadNoLocations && locations.length > 0) {
       setErrorState({ type: 'NONE' })
     }
@@ -147,11 +136,37 @@ export default function TspReportPage() {
     setLocations(items)
   }
 
-  function handleSavedReportChange(e: React.ChangeEvent<{ value: unknown }>) {
-    const found = savedReportsMock.find((r) => r.id === e.target.value)
-    if (found) {
-      setSelectedReport(found.id)
-      setLocations(found.locations as TspLocation[])
+  const handleSavedReportParametersChange = async (
+    e: React.ChangeEvent<{ value: unknown }>
+  ) => {
+    const selectedParameters = savedOptions.find(
+      (option) => option.id === Number(e.target.value)
+    )
+    if (selectedParameters) {
+      setSelectedReport(selectedParameters.id)
+      const locationsWithApproaches = await getLocationWithApproaches(
+        selectedParameters.option.locationsAndPhases.map((loc) => {
+          return locations.find(
+            (l) => l.locationIdentifier === loc.locationIdentifier
+          )
+        })
+      )
+      const locationsWithApproachesWithPhases = locationsWithApproaches.map(
+        (loc) => {
+          return {
+            ...loc,
+            designatedPhases: selectedParameters.option.locationsAndPhases.find(
+              (l) => l.locationIdentifier === loc.locationIdentifier
+            )?.designatedPhases,
+          }
+        }
+      )
+      setReportOptions({
+        selectedDays: selectedParameters.option.dates.map(
+          (date) => new Date(date)
+        ),
+        locations: locationsWithApproachesWithPhases,
+      })
     } else {
       setSelectedReport(0)
       setLocations([])
@@ -159,25 +174,28 @@ export default function TspReportPage() {
   }
 
   function handleUpdateLocation(updatedLocation: TspLocation) {
-    const updatedLocations = reportOptions.locations.map((loc) =>
-      loc.id === updatedLocation.id ? updatedLocation : loc
-    )
-    setReportOptions((prev) => ({ ...prev, locations: updatedLocations }))
-
-    if (errorState.type === 'MISSING_PHASES') {
-      const newIDs = new Set(errorState.locationIDs)
-      if (
-        updatedLocation.designatedPhases &&
-        updatedLocation.designatedPhases.length > 0
-      ) {
-        newIDs.delete(String(updatedLocation.id))
+    setReportOptions((prev) => {
+      const updatedLocations = prev.locations.map((loc) =>
+        loc.id === updatedLocation.id ? updatedLocation : loc
+      )
+      return { ...prev, locations: updatedLocations }
+    })
+    setErrorState((prevErr) => {
+      if (prevErr.type === 'MISSING_PHASES') {
+        const newIDs = new Set(prevErr.locationIDs)
+        if (
+          updatedLocation.designatedPhases &&
+          updatedLocation.designatedPhases.length > 0
+        ) {
+          newIDs.delete(String(updatedLocation.id))
+        }
+        if (newIDs.size === 0) {
+          return { type: 'NONE' }
+        }
+        return { type: 'MISSING_PHASES', locationIDs: newIDs }
       }
-      if (newIDs.size === 0) {
-        setErrorState({ type: 'NONE' })
-      } else {
-        setErrorState({ type: 'MISSING_PHASES', locationIDs: newIDs })
-      }
-    }
+      return prevErr
+    })
   }
 
   async function generateReport() {
@@ -221,98 +239,93 @@ export default function TspReportPage() {
   }
 
   return (
-    <ResponsivePageLayout title="Transit Signal Priority">
-      <Box>
-        <FormControl
-          sx={{ minWidth: 200, marginBottom: 2, bgcolor: 'paper.default' }}
+    <ResponsivePageLayout title="Transit Signal Priority Report">
+      <FormControl
+        size="small"
+        sx={{ width: 200, marginBottom: 2, bgcolor: 'paper.default' }}
+      >
+        <InputLabel htmlFor="route-parameters-select">
+          Saved Report Parameters
+        </InputLabel>
+        <Select
+          label="Saved Report Parameters"
+          variant="outlined"
+          value={selectedReport}
+          onChange={handleSavedReportParametersChange}
+          inputProps={{ id: 'route-parameters-select' }}
         >
-          <InputLabel htmlFor="route-parameters-select">
-            Saved Report Parameters
-          </InputLabel>
-          <Select
-            label="Saved Report Parameters"
-            variant="outlined"
-            value={selectedReport}
-            onChange={handleSavedReportChange}
-            inputProps={{ id: 'route-parameters-select' }}
-          >
-            <MenuItem key={0} value={0}>
-              None
+          <MenuItem key={0} value={0}>
+            None
+          </MenuItem>
+          {savedOptions.map((options) => (
+            <MenuItem key={options.id} value={options.id}>
+              {options.name}
             </MenuItem>
-            {savedReportsMock.map((report) => (
-              <MenuItem key={report.id} value={report.id}>
-                {report.name} - {report.start.toDateString()} -{' '}
-                {report.end.toDateString()}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-
-        <Box sx={{ display: 'flex', flexDirection: 'row', gap: 2 }}>
-          <Paper sx={{ p: 3, display: 'flex', flexDirection: 'row' }}>
-            <Box sx={{ width: '400px' }}>
-              <MultipleLocationsSelect
-                selectedLocations={reportOptions.locations}
-                setLocations={setLocations}
-              />
-            </Box>
-            <Divider orientation="vertical" sx={{ mx: 2 }} />
-            <Box>
-              <MultipleLocationsDisplay
-                locations={reportOptions.locations}
-                onLocationDelete={handleLocationDelete}
-                onDeleteAllLocations={() => setLocations([])}
-                onLocationsReorder={handleReorderLocations}
-                onUpdateLocation={handleUpdateLocation}
-                errorState={errorState}
-              />
-            </Box>
-          </Paper>
-
-          <Paper sx={{ maxWidth: '390px' }}>
-            <Box display="flex" justifyContent="flex-end">
-              <Button
-                size="small"
-                variant="outlined"
-                sx={{ m: 2, mb: 0 }}
-                onClick={() =>
-                  setReportOptions((prev) => ({
-                    ...prev,
-                    selectedDays: [],
-                  }))
-                }
-              >
-                Clear All
-              </Button>
-            </Box>
-            <MultiDaySelect
-              selectedDays={reportOptions.selectedDays}
-              onSelectedDaysChange={(newSelectedDays) =>
+          ))}
+        </Select>
+      </FormControl>
+      <Box sx={{ display: 'flex', flexDirection: 'row', gap: 2 }}>
+        <Paper sx={{ p: 3, display: 'flex', flexDirection: 'row' }}>
+          <Box sx={{ width: '400px' }}>
+            <MultipleLocationsSelect
+              selectedLocations={reportOptions.locations}
+              setLocations={setLocations}
+            />
+          </Box>
+          <Divider orientation="vertical" sx={{ mx: 2 }} />
+          <Box>
+            <MultipleLocationsDisplay
+              locations={reportOptions.locations}
+              onLocationDelete={handleLocationDelete}
+              onDeleteAllLocations={() => setLocations([])}
+              onLocationsReorder={handleReorderLocations}
+              onUpdateLocation={handleUpdateLocation}
+              errorState={errorState}
+            />
+          </Box>
+        </Paper>
+        <Paper sx={{ maxWidth: '390px' }}>
+          <Box display="flex" justifyContent="flex-end">
+            <Button
+              size="small"
+              variant="outlined"
+              sx={{ m: 2, mb: 0 }}
+              onClick={() =>
                 setReportOptions((prev) => ({
                   ...prev,
-                  selectedDays: newSelectedDays,
+                  selectedDays: [],
                 }))
               }
-            />
-          </Paper>
-        </Box>
-
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mt: 2 }}>
-          <LoadingButton
-            startIcon={<PlayArrowIcon />}
-            loading={loadingReport}
-            variant="contained"
-            sx={{ padding: '10px', mb: 2 }}
-            onClick={generateReport}
-          >
-            Generate Report
-          </LoadingButton>
-          {renderErrorAlert()}
-        </Box>
-        {reportResponse && (
-          <TspReport report={reportResponse} reportOptions={reportOptions} />
-        )}
+            >
+              Clear All
+            </Button>
+          </Box>
+          <MultiDaySelect
+            selectedDays={reportOptions.selectedDays}
+            onSelectedDaysChange={(newSelectedDays) =>
+              setReportOptions((prev) => ({
+                ...prev,
+                selectedDays: newSelectedDays,
+              }))
+            }
+          />
+        </Paper>
       </Box>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mt: 2 }}>
+        <LoadingButton
+          startIcon={<PlayArrowIcon />}
+          loading={loadingReport}
+          variant="contained"
+          sx={{ padding: '10px', mb: 2 }}
+          onClick={generateReport}
+        >
+          Generate Report
+        </LoadingButton>
+        {renderErrorAlert()}
+      </Box>
+      {reportResponse && (
+        <TspReport report={reportResponse} reportOptions={reportOptions} />
+      )}
     </ResponsivePageLayout>
   )
 }
