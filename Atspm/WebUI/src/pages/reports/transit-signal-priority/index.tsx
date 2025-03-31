@@ -222,9 +222,6 @@ export default function TspReportPage() {
             designatedPhases: loc.designatedPhases,
           })),
           dates: reportOptions.selectedDays.map((date) => date.toISOString()),
-          locationIdentifier: '0',
-          start: new Date().toISOString(),
-          end: new Date().toISOString(),
         },
       })
     } catch (err: unknown) {
