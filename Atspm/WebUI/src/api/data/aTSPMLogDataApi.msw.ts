@@ -5,110 +5,166 @@
  * ATSPM Log Data with OpenAPI, Swashbuckle, and API versioning.
  * OpenAPI spec version: 1.0
  */
-import {
-  faker
-} from '@faker-js/faker'
-import {
-  HttpResponse,
-  delay,
-  http
-} from 'msw'
+import { faker } from '@faker-js/faker'
+import { HttpResponse, delay, http } from 'msw'
 
-export const getGetV1AggregationGetDataTypesMock = () => (Array.from({length: faker.number.int({min: 1,max: 10})}, () => faker.word.sample()))
+export const getGetAggregationDataTypesMock = () =>
+  Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, () =>
+    faker.word.sample()
+  )
 
-export const getGetV1EventLogGetDataTypesMock = () => (Array.from({length: faker.number.int({min: 1,max: 10})}, () => faker.word.sample()))
+export const getGetEventLogDataTypesMock = () =>
+  Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, () =>
+    faker.word.sample()
+  )
 
-export const getGetV1LoggingLogMock = () => (Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({afterWorkflowEventCount: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), beforeWorkflowEventCount: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), changeInEventCount: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), deviceId: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), deviceType: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), ipaddress: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.word.sample(), null]), undefined])})))
+export const getGetLoggingSyncNewLocationEventsMock = () =>
+  Array.from(
+    { length: faker.number.int({ min: 1, max: 10 }) },
+    (_, i) => i + 1
+  ).map(() => ({
+    afterWorkflowEventCount: faker.helpers.arrayElement([
+      faker.number.int({ min: undefined, max: undefined }),
+      undefined,
+    ]),
+    beforeWorkflowEventCount: faker.helpers.arrayElement([
+      faker.number.int({ min: undefined, max: undefined }),
+      undefined,
+    ]),
+    changeInEventCount: faker.helpers.arrayElement([
+      faker.number.int({ min: undefined, max: undefined }),
+      undefined,
+    ]),
+    deviceId: faker.helpers.arrayElement([
+      faker.number.int({ min: undefined, max: undefined }),
+      undefined,
+    ]),
+    deviceType: faker.helpers.arrayElement([
+      faker.number.int({ min: undefined, max: undefined }),
+      undefined,
+    ]),
+    ipaddress: faker.helpers.arrayElement([
+      faker.helpers.arrayElement([faker.word.sample(), null]),
+      undefined,
+    ]),
+  }))
 
 export const getATSPMLogDataApiMock = () => [
-http.get('*/v1/Aggregation/GetDataTypes', async () => {
-        await delay(1000);
-        return new HttpResponse(JSON.stringify(getGetV1AggregationGetDataTypesMock()),
-          { 
-            status: 200,
-            headers: {
-              'Content-Type': 'application/json',
-            }
-          }
-        )
-      }),http.get('*/v1/Aggregation/GetArchivedAggregations/:locationIdentifier', async () => {
-        await delay(1000);
-        return new HttpResponse(null,
-          { 
-            status: 200,
-            headers: {
-              'Content-Type': 'application/json',
-            }
-          }
-        )
-      }),http.get('*/v1/Aggregation/GetArchivedAggregations/:locationIdentifier/:dataType', async () => {
-        await delay(1000);
-        return new HttpResponse(null,
-          { 
-            status: 200,
-            headers: {
-              'Content-Type': 'application/json',
-            }
-          }
-        )
-      }),http.get('*/v1/EventLog/GetDataTypes', async () => {
-        await delay(1000);
-        return new HttpResponse(JSON.stringify(getGetV1EventLogGetDataTypesMock()),
-          { 
-            status: 200,
-            headers: {
-              'Content-Type': 'application/json',
-            }
-          }
-        )
-      }),http.get('*/v1/EventLog/GetArchivedEvents/:locationIdentifier', async () => {
-        await delay(1000);
-        return new HttpResponse(null,
-          { 
-            status: 200,
-            headers: {
-              'Content-Type': 'application/json',
-            }
-          }
-        )
-      }),http.get('*/v1/EventLog/GetArchivedEvents/:locationIdentifier/:deviceId', async () => {
-        await delay(1000);
-        return new HttpResponse(null,
-          { 
-            status: 200,
-            headers: {
-              'Content-Type': 'application/json',
-            }
-          }
-        )
-      }),http.get('*/v1/EventLog/GetArchivedEvents/:locationIdentifier/:dataType', async () => {
-        await delay(1000);
-        return new HttpResponse(null,
-          { 
-            status: 200,
-            headers: {
-              'Content-Type': 'application/json',
-            }
-          }
-        )
-      }),http.get('*/v1/EventLog/GetArchivedEvents/:locationIdentifier/:deviceId/:dataType', async () => {
-        await delay(1000);
-        return new HttpResponse(null,
-          { 
-            status: 200,
-            headers: {
-              'Content-Type': 'application/json',
-            }
-          }
-        )
-      }),http.get('*/v1/Logging/log', async () => {
-        await delay(1000);
-        return new HttpResponse(JSON.stringify(getGetV1LoggingLogMock()),
-          { 
-            status: 200,
-            headers: {
-              'Content-Type': 'application/json',
-            }
-          }
-        )
-      }),]
+  http.get('*/Aggregation/GetDataTypes', async () => {
+    await delay(1000)
+    return new HttpResponse(JSON.stringify(getGetAggregationDataTypesMock()), {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+  }),
+  http.get(
+    '*/Aggregation/GetArchivedAggregations/:locationIdentifier',
+    async () => {
+      await delay(1000)
+      return new HttpResponse(null, {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+    }
+  ),
+  http.get(
+    '*/Aggregation/GetArchivedAggregations/:locationIdentifier/:dataType',
+    async () => {
+      await delay(1000)
+      return new HttpResponse(null, {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+    }
+  ),
+  http.get('*/EventLog/GetDataTypes', async () => {
+    await delay(1000)
+    return new HttpResponse(JSON.stringify(getGetEventLogDataTypesMock()), {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+  }),
+  http.get('*/EventLog/GetArchivedEvents/:locationIdentifier', async () => {
+    await delay(1000)
+    return new HttpResponse(null, {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+  }),
+  http.get(
+    '*/EventLog/GetArchivedEvents/:locationIdentifier/:deviceId',
+    async () => {
+      await delay(1000)
+      return new HttpResponse(null, {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+    }
+  ),
+  http.get(
+    '*/EventLog/GetArchivedEvents/:locationIdentifier/:dataType',
+    async () => {
+      await delay(1000)
+      return new HttpResponse(null, {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+    }
+  ),
+  http.get(
+    '*/EventLog/GetArchivedEvents/:locationIdentifier/:deviceId/:dataType',
+    async () => {
+      await delay(1000)
+      return new HttpResponse(null, {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+    }
+  ),
+  http.get('*/EventLog/GetDaysWithEventLogs/:locationIdentifier', async () => {
+    await delay(1000)
+    return new HttpResponse(null, {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+  }),
+  http.get('*/v1/Logging/log', async () => {
+    await delay(1000)
+    return new HttpResponse(
+      JSON.stringify(getGetLoggingSyncNewLocationEventsMock()),
+      {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    )
+  }),
+  http.post('*/v1/Logging/deviceEventLoggin', async () => {
+    await delay(1000)
+    return new HttpResponse(null, {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+  }),
+]

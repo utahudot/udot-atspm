@@ -5,11 +5,20 @@
  * ATSPM Log Data with OpenAPI, Swashbuckle, and API versioning.
  * OpenAPI spec version: 1.0
  */
-export type GetV1LoggingLogParams = {
+export type GetLoggingSyncNewLocationEventsParams = {
 deviceIds?: string;
 };
 
-export type GetV1EventLogGetArchivedEventsLocationIdentifierDeviceIdDataTypeParams = {
+export type GetEventLogDaysWithEventLogsFromLocationIdentifierParams = {
+/**
+ * Type that inherits from Utah.Udot.Atspm.Data.Models.EventLogModels.EventLogModelBase
+ */
+dataType?: string;
+start?: string;
+end?: string;
+};
+
+export type GetEventLogArchivedEventsFromLocationIdentifierAndDeviceIdAndDataTypeParams = {
 /**
  * Archive date of event to start with
  */
@@ -20,7 +29,7 @@ start?: string;
 end?: string;
 };
 
-export type GetV1EventLogGetArchivedEventsLocationIdentifierDataTypeParams = {
+export type GetEventLogArchivedEventsFromLocationIdentifierAndDataTypeParams = {
 /**
  * Archive date of event to start with
  */
@@ -31,7 +40,7 @@ start?: string;
 end?: string;
 };
 
-export type GetV1EventLogGetArchivedEventsLocationIdentifierDeviceIdParams = {
+export type GetEventLogArchivedEventsFromLocationIdentifierAndDeviceIdParams = {
 /**
  * Archive date of event to start with
  */
@@ -42,7 +51,7 @@ start?: string;
 end?: string;
 };
 
-export type GetV1EventLogGetArchivedEventsLocationIdentifierParams = {
+export type GetEventLogArchivedEventsFromLocationIdentifierParams = {
 /**
  * Archive date of event to start with
  */
@@ -53,7 +62,7 @@ start?: string;
 end?: string;
 };
 
-export type GetV1AggregationGetArchivedAggregationsLocationIdentifierDataTypeParams = {
+export type GetAggregationArchivedAggregationsFromLocationIdentifierAndDataTypeParams = {
 /**
  * Archive date of aggregation to start with
  */
@@ -64,7 +73,7 @@ start?: string;
 end?: string;
 };
 
-export type GetV1AggregationGetArchivedAggregationsLocationIdentifierParams = {
+export type GetAggregationArchivedAggregationsFromLocationIdentifierParams = {
 /**
  * Archive date of aggregation to start with
  */
@@ -90,16 +99,17 @@ export interface VisionCameraStatisticsEvent {
   zoneName?: string | null;
 }
 
-export interface VisionCameraDetectionEvent {
-  direction?: string | null;
-  length?: number;
-  locationIdentifier?: string | null;
-  objectType?: string | null;
-  speed?: number;
-  timestamp?: string;
-  zoneId?: number;
-  zoneName?: string | null;
-}
+export type TransportProtocols = typeof TransportProtocols[keyof typeof TransportProtocols];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const TransportProtocols = {
+  NUMBER_0: 0,
+  NUMBER_1: 1,
+  NUMBER_2: 2,
+  NUMBER_3: 3,
+  NUMBER_4: 4,
+} as const;
 
 export interface SpeedEvent {
   detectorId?: string | null;
@@ -255,6 +265,17 @@ export interface IndianaEvent {
   timestamp?: string;
 }
 
+export interface EnhancedVehicleEvent {
+  direction?: string | null;
+  length?: number;
+  locationIdentifier?: string | null;
+  objectType?: string | null;
+  speed?: number;
+  timestamp?: string;
+  zoneId?: number;
+  zoneName?: string | null;
+}
+
 export type DeviceTypes = typeof DeviceTypes[keyof typeof DeviceTypes];
 
 
@@ -268,6 +289,40 @@ export const DeviceTypes = {
   NUMBER_5: 5,
   NUMBER_6: 6,
 } as const;
+
+export type DeviceStatus = typeof DeviceStatus[keyof typeof DeviceStatus];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const DeviceStatus = {
+  NUMBER_0: 0,
+  NUMBER_1: 1,
+  NUMBER_2: 2,
+  NUMBER_3: 3,
+  NUMBER_4: 4,
+  NUMBER_5: 5,
+} as const;
+
+export interface DeviceEventLoggingQueryOptions {
+  deviceStatus?: DeviceStatus;
+  deviceType?: DeviceTypes;
+  excludedLocations?: string[] | null;
+  includeConfigurations?: number[] | null;
+  includedAreas?: string[] | null;
+  includedDevices?: string[] | null;
+  includedJurisdictions?: string[] | null;
+  includedLocations?: string[] | null;
+  includedLocationTypes?: string[] | null;
+  includedRegions?: string[] | null;
+  transportProtocol?: TransportProtocols;
+}
+
+export interface DeviceEventLoggingConfiguration {
+  batchSize?: number;
+  deviceEventLoggingQueryOptions?: DeviceEventLoggingQueryOptions;
+  parallelProcesses?: number;
+  path?: string | null;
+}
 
 export interface DeviceEventDownload {
   afterWorkflowEventCount?: number;
