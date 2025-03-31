@@ -147,7 +147,7 @@ export default function MultiDaySelect({
   return (
     <div onPointerUp={handlePointerUp}>
       <DateCalendar
-        value={null}
+        value={selectedDays.length ? selectedDays[0] : null}
         slots={{ day: MultiSelectDay }}
         slotProps={{
           day: (ownerState) => ({
