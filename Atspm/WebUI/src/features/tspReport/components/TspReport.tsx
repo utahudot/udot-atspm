@@ -2,7 +2,6 @@ import {
   postMeasureOptionPreset,
   useGetMeasureType,
 } from '@/api/config/aTSPMConfigurationApi'
-import { MeasureType } from '@/api/config/aTSPMConfigurationApi.schemas'
 import { TransitSignalPriorityResult } from '@/api/reports/aTSPMReportDataApi.schemas'
 import { TspReportOptions } from '@/pages/reports/transit-signal-priority'
 import { useNotificationStore } from '@/stores/notifications'
@@ -20,18 +19,17 @@ import {
 } from '@mui/material'
 import { DataGrid, GridColDef } from '@mui/x-data-grid'
 import { useRef, useState } from 'react'
+import * as XLSX from 'xlsx'
 
 interface TspReportProps {
   report: TransitSignalPriorityResult[]
   reportOptions: TspReportOptions
 }
 
-const TspReport = ({ report, reportOptions }: TspReportProps) => {
+export default function TspReport({ report, reportOptions }: TspReportProps) {
   const { addNotification } = useNotificationStore()
-
   const { data: measureTypesData } = useGetMeasureType()
-  const measureTypes = measureTypesData?.value || ([] as MeasureType[])
-
+  const measureTypes = measureTypesData?.value || []
   const contentRef = useRef<HTMLDivElement>(null)
   const [currentTab, setCurrentTab] = useState('0')
   const [isModalOpen, setModalOpen] = useState(false)
@@ -80,25 +78,7 @@ const TspReport = ({ report, reportOptions }: TspReportProps) => {
     <>
       <TabContext value={currentTab}>
         <Box sx={{ display: 'flex', justifyContent: 'right', my: 1 }}>
-          {/* <Button variant="outlined" onClick={handleSaveParameters}> */}
-          <Box
-            sx={{
-              display: 'flex',
-              justifyContent: 'flex-end',
-              mb: 2,
-              gap: 2,
-            }}
-          >
-            {/* <Button
-              size="small"
-              variant="outlined"
-              startIcon={<PrintIcon />}
-              color="primary"
-              onClick={handlePrint}
-            >
-              Print
-            </Button> */}
-
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
             <Button
               size="small"
               variant="outlined"
@@ -108,7 +88,6 @@ const TspReport = ({ report, reportOptions }: TspReportProps) => {
             >
               Download
             </Button>
-
             <Button
               size="small"
               variant="outlined"
@@ -122,11 +101,8 @@ const TspReport = ({ report, reportOptions }: TspReportProps) => {
         </Box>
         <Paper
           ref={contentRef}
-          sx={{ position: 'relative', p: 2, backgroundColor: 'white' }}
+          sx={{ position: 'relative', backgroundColor: 'white' }}
         >
-          <Typography variant="h4" sx={{ textAlign: 'center', mb: 3 }}>
-            Transit Signal Priority Report
-          </Typography>
           <TabList
             onChange={handleTabChange}
             aria-label="Location Tabs"
@@ -154,50 +130,50 @@ const TspReport = ({ report, reportOptions }: TspReportProps) => {
             })}
           </TabList>
           {report.map((locationReport, index) => {
-            const rows = locationReport.transitSignalPlans
-              ?.map((plan) => {
-                return plan.phases?.map((phase) => {
-                  return {
-                    plan: plan.planNumber,
-                    phaseNumber: phase.phaseNumber,
-                    programmedSplit: round(phase.programmedSplit),
-                    recommendedTSPMax:
-                      phase.recommendedTSPMax !== null
-                        ? round(phase.recommendedTSPMax)
-                        : '',
-                    maxReduction: round(phase.maxReduction),
-                    maxExtension: round(phase.maxExtension),
-                    priorityMin: round(phase.priorityMin),
-                    priorityMax: round(phase.priorityMax),
-                    minGreen: round(phase.minGreen),
-                    yellow: round(phase.yellow),
-                    redClearance: round(phase.redClearance),
-                    minTime: round(phase.minTime),
-                    percentileSplit85th: round(phase.percentileSplit85th),
-                    percentileSplit50th: round(phase.percentileSplit50th),
-                    averageSplit: round(phase.averageSplit),
-                    percentMaxOutsForceOffs: round(
-                      phase.percentMaxOutsForceOffs
-                    ),
-                    percentGapOuts: round(phase.percentGapOuts),
-                    percentSkips: round(phase.percentSkips),
-                    notes: phase.notes,
-                    skipsGreaterThan70TSPMax: round(
-                      phase.skipsGreaterThan70TSPMax
-                    ),
-                    forceOffsLessThan40TSPMax: round(
-                      phase.forceOffsLessThan40TSPMax
-                    ),
-                    forceOffsLessThan60TSPMax: round(
-                      phase.forceOffsLessThan60TSPMax
-                    ),
-                    forceOffsLessThan80TSPMax: round(
-                      phase.forceOffsLessThan80TSPMax
-                    ),
-                  }
-                })
-              })
-              .flat()
+            const location = reportOptions.locations.find(
+              (loc) =>
+                loc.locationIdentifier ===
+                locationReport.locationPhases?.locationIdentifier
+            )
+            const rows =
+              locationReport.transitSignalPlans?.flatMap((plan) =>
+                plan.phases?.map((phase) => ({
+                  plan: plan.planNumber,
+                  phaseNumber: phase.phaseNumber,
+                  programmedSplit: round(phase.programmedSplit),
+                  recommendedTSPMax:
+                    phase.recommendedTSPMax != null
+                      ? round(phase.recommendedTSPMax)
+                      : '',
+                  maxReduction: round(phase.maxReduction),
+                  maxExtension: round(phase.maxExtension),
+                  priorityMin: round(phase.priorityMin),
+                  priorityMax: round(phase.priorityMax),
+                  minGreen: round(phase.minGreen),
+                  yellow: round(phase.yellow),
+                  redClearance: round(phase.redClearance),
+                  minTime: round(phase.minTime),
+                  percentileSplit85th: round(phase.percentileSplit85th),
+                  percentileSplit50th: round(phase.percentileSplit50th),
+                  averageSplit: round(phase.averageSplit),
+                  percentMaxOutsForceOffs: round(phase.percentMaxOutsForceOffs),
+                  percentGapOuts: round(phase.percentGapOuts),
+                  percentSkips: round(phase.percentSkips),
+                  notes: phase.notes,
+                  skipsGreaterThan70TSPMax: round(
+                    phase.skipsGreaterThan70TSPMax
+                  ),
+                  forceOffsLessThan40TSPMax: round(
+                    phase.forceOffsLessThan40TSPMax
+                  ),
+                  forceOffsLessThan60TSPMax: round(
+                    phase.forceOffsLessThan60TSPMax
+                  ),
+                  forceOffsLessThan80TSPMax: round(
+                    phase.forceOffsLessThan80TSPMax
+                  ),
+                }))
+              ) || []
 
             return (
               <TabPanel
@@ -210,7 +186,7 @@ const TspReport = ({ report, reportOptions }: TspReportProps) => {
                     getRowId={(row) => `${row.plan}-${row.phaseNumber}`}
                     rows={rows}
                     columns={columns}
-                    unstable_rowSpanning={true}
+                    unstable_rowSpanning
                     density="compact"
                     disableColumnFilter
                     disableColumnMenu
@@ -219,6 +195,13 @@ const TspReport = ({ report, reportOptions }: TspReportProps) => {
                     disableRowSelectionOnClick
                     disableColumnSorting
                     hideFooter
+                    getRowClassName={(params) =>
+                      location?.designatedPhases?.includes(
+                        params.row.phaseNumber
+                      )
+                        ? 'highlightRow'
+                        : ''
+                    }
                     sx={{
                       '& .MuiDataGrid-cell': {
                         borderRight: '1px solid lightgray',
@@ -235,6 +218,9 @@ const TspReport = ({ report, reportOptions }: TspReportProps) => {
                       '& .green-text': {
                         color: 'green',
                       },
+                      '& .highlightRow .MuiDataGrid-cell:not(:first-of-type)': {
+                        backgroundColor: '#8cd0f230',
+                      },
                     }}
                   />
                 </div>
@@ -243,8 +229,6 @@ const TspReport = ({ report, reportOptions }: TspReportProps) => {
           })}
         </Paper>
       </TabContext>
-
-      {/* Save Parameters Modal */}
       <Modal open={isModalOpen} onClose={handleCloseModal}>
         <Paper
           sx={{
@@ -266,14 +250,6 @@ const TspReport = ({ report, reportOptions }: TspReportProps) => {
             value={paramName}
             onChange={(e) => setParamName(e.target.value)}
           />
-          <Box>
-            <Typography variant="subtitle2" sx={{ mb: 1 }}>
-              Options:
-            </Typography>
-            <Box sx={{ maxHeight: 200, overflowY: 'auto', pl: 1 }}>
-              Selected Locations: {reportOptions?.locations?.join(', ')}
-            </Box>
-          </Box>
           <Box
             sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, mt: 2 }}
           >
@@ -288,10 +264,9 @@ const TspReport = ({ report, reportOptions }: TspReportProps) => {
   )
 }
 
-export default TspReport
-
-const round = (value: number | undefined) =>
-  value != null ? Number(value.toFixed(1)) : value
+function round(value: number | undefined) {
+  return value != null ? Number(value.toFixed(1)) : value
+}
 
 const columns: GridColDef[] = [
   { field: 'plan', headerName: 'Plan', width: 100 },
@@ -425,8 +400,6 @@ const columns: GridColDef[] = [
   },
 ]
 
-import * as XLSX from 'xlsx'
-
 export function exportToExcel(
   report: TransitSignalPriorityResult[],
   locations: {
@@ -435,25 +408,14 @@ export function exportToExcel(
     secondaryName?: string
   }[]
 ) {
-  // 1) Create a new Workbook
   const workbook = XLSX.utils.book_new()
-
-  // 2) For each location in `report`, create a worksheet
   report.forEach((locationReport) => {
-    // Find the matching entry in `locations[]` so we can build the sheet name
     const matchedLoc = locations.find(
       (loc) =>
         loc.locationIdentifier ===
         locationReport.locationPhases?.locationIdentifier
     )
-
-    // Build the sheet name exactly like your tab label
-    let sheetName = 'Sheet'
-    if (matchedLoc) {
-      sheetName = `${matchedLoc.locationIdentifier}`
-    }
-
-    // --- Build row objects (like you do for DataGrid) ---
+    const sheetName = matchedLoc ? `${matchedLoc.locationIdentifier}` : 'Sheet'
     const rows =
       locationReport.transitSignalPlans?.flatMap((plan) =>
         plan.phases?.map((phase) => ({
@@ -461,7 +423,7 @@ export function exportToExcel(
           phaseNumber: phase.phaseNumber,
           programmedSplit: round(phase.programmedSplit),
           recommendedTSPMax:
-            phase.recommendedTSPMax !== null
+            phase.recommendedTSPMax != null
               ? round(phase.recommendedTSPMax)
               : '',
           maxReduction: round(phase.maxReduction),
@@ -485,8 +447,6 @@ export function exportToExcel(
           forceOffsLessThan80TSPMax: round(phase.forceOffsLessThan80TSPMax),
         }))
       ) || []
-
-    // --- Define the human-readable header row for Excel ---
     const headerRow = [
       'Plan',
       'Phase Number',
@@ -512,13 +472,8 @@ export function exportToExcel(
       'Force Offs < 60% TSP Max',
       'Force Offs < 80% TSP Max',
     ]
-
-    // --- Convert our rows into a 2D array (first row = headers) ---
     const sheetData: (string | number)[][] = []
-    // push the header row
     sheetData.push(headerRow)
-
-    // push each data row in the same order as our headerRow
     rows.forEach((r) => {
       sheetData.push([
         r.plan ?? '',
@@ -546,22 +501,13 @@ export function exportToExcel(
         r.forceOffsLessThan80TSPMax ?? '',
       ])
     })
-
-    // --- Build a worksheet from this 2D array ---
     const worksheet = XLSX.utils.aoa_to_sheet(sheetData)
-
-    // Truncate sheetName if necessary (Excel imposes a 31 char limit)
     const truncatedSheetName = sheetName.substring(0, 31)
-
-    // --- Append the worksheet to the workbook ---
     XLSX.utils.book_append_sheet(workbook, worksheet, truncatedSheetName)
   })
-
-  // 3) Write the workbook to a Blob & trigger download
   const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' })
   const blob = new Blob([excelBuffer], { type: 'application/octet-stream' })
   const url = window.URL.createObjectURL(blob)
-
   const link = document.createElement('a')
   link.href = url
   link.setAttribute('download', `TSP_Report.xlsx`)

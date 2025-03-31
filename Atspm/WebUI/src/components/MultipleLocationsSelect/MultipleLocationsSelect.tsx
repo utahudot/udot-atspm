@@ -10,7 +10,7 @@ import {
 import { Filters } from '@/features/locations/components/selectLocation'
 import LocationInput from '@/features/locations/components/selectLocation/LocationInput'
 import SelectLocationMap from '@/features/locations/components/selectLocationMap'
-import AddIcon from '@mui/icons-material/Add'
+import { ChevronRight } from '@mui/icons-material'
 import {
   Box,
   Button,
@@ -143,9 +143,10 @@ const MultipleLocationsSelect = ({
         </FormControl>
         <Button
           variant="contained"
-          startIcon={<AddIcon />}
+          endIcon={<ChevronRight />}
           onClick={onAddRoute}
           sx={{ ml: 2, width: 100 }}
+          disabled={!selectedRoute?.routeLocations}
         >
           Add
         </Button>
@@ -168,9 +169,10 @@ const MultipleLocationsSelect = ({
         </Box>
         <Button
           variant="contained"
-          startIcon={<AddIcon />}
+          endIcon={<ChevronRight />}
           onClick={onAddLocation}
           sx={{ ml: 2 }}
+          disabled={!selectedLocation}
         >
           Add
         </Button>
