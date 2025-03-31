@@ -133,7 +133,8 @@ export default function MultipleLocationsDisplay({
       <Box
         sx={{
           maxHeight: '505px',
-          width: '600px',
+          minWidth: '450px',
+          maxWidth: '600px',
           overflowY: 'auto',
         }}
       >
@@ -148,7 +149,7 @@ export default function MultipleLocationsDisplay({
             </TableRow>
           </TableHead>
           <TableBody>
-            {locations.map((location, index) => {
+            {locations.map((location) => {
               const locationPhaseOptions = Array.from(
                 new Set(
                   location.approaches?.map((a) => a.protectedPhaseNumber) || []
