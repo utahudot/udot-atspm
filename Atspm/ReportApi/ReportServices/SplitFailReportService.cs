@@ -17,6 +17,7 @@
 
 using Utah.Udot.Atspm.Business.SplitFail;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
+using Utah.Udot.Atspm.Data.Models.MeasureOptions;
 
 namespace Utah.Udot.Atspm.ReportApi.ReportServices
 {

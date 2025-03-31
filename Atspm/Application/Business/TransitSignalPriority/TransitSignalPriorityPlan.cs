@@ -10,5 +10,6 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriority
     {
         public int PlanNumber { get; set; }
         public List<TransitSignalPhase> Phases { get; set; } = new List<TransitSignalPhase>();
+        public int NumberOfCycles { get; set; }
     }
 }
