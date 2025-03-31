@@ -139,6 +139,7 @@ export default function TspReport({ report, reportOptions }: TspReportProps) {
               locationReport.transitSignalPlans?.flatMap((plan) =>
                 plan.phases?.map((phase) => ({
                   plan: plan.planNumber,
+                  numberOfCycles: plan.numberOfCycles,
                   phaseNumber: phase.phaseNumber,
                   programmedSplit: round(phase.programmedSplit),
                   recommendedTSPMax:
@@ -181,6 +182,14 @@ export default function TspReport({ report, reportOptions }: TspReportProps) {
                 value={index.toString()}
                 sx={{ p: 0 }}
               >
+                <Box>
+                  <Typography variant="h4" sx={{ m: 1 }}>
+                    Manufacturer:
+                    <span style={{ fontWeight: 'bold', marginLeft: 4 }}>
+                      {locationReport?.locationPhases?.controllerManufacturer}
+                    </span>
+                  </Typography>
+                </Box>
                 <div style={{ height: 700, width: '100%' }}>
                   <DataGrid
                     getRowId={(row) => `${row.plan}-${row.phaseNumber}`}
@@ -270,6 +279,7 @@ function round(value: number | undefined) {
 
 const columns: GridColDef[] = [
   { field: 'plan', headerName: 'Plan', width: 100 },
+  { field: 'numberOfCycles', headerName: '# of Cycles', width: 100 },
   {
     field: 'phaseNumber',
     headerName: 'Phase #',
@@ -420,6 +430,7 @@ export function exportToExcel(
       locationReport.transitSignalPlans?.flatMap((plan) =>
         plan.phases?.map((phase) => ({
           plan: plan.planNumber,
+          numberOfCycles: plan.numberOfCycles,
           phaseNumber: phase.phaseNumber,
           programmedSplit: round(phase.programmedSplit),
           recommendedTSPMax:
