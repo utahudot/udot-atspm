@@ -17,6 +17,7 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriority
         public DateTime EndRedClearanceEvent { get; set; }
         public Double DurationSeconds { get { return (RedEvent - GreenEvent).TotalSeconds; } }
         public Double MinTime { get { return MinGreenDurationSeconds + YellowDurationSeconds + RedDurationSeconds; } }
+        public Double GreenDurationSeconds { get { return (YellowEvent - GreenEvent).TotalSeconds; } }
         public Double MinGreenDurationSeconds { get { return (MinGreen - GreenEvent).TotalSeconds; } }
         public Double YellowDurationSeconds { get { return (RedEvent - YellowEvent).TotalSeconds; } }
         public Double RedDurationSeconds { get { return (EndRedClearanceEvent - RedEvent).TotalSeconds; } }

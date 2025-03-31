@@ -86,6 +86,7 @@ namespace Utah.Udot.Atspm.Repositories.ConfigurationRepositories
         /// <param name="endDate">Date controllers are newer than</param>
         /// <returns>List of <see cref="Location"/> in decescing order of start date</returns>
         IReadOnlyList<Location> GetLocationsBetweenDates(string LocationIdentifier, DateTime startDate, DateTime endDate);
+        Location GetLatestVersionOfLocationWithDevice(string LocationIdentifier, DateTime startDate);
 
 
         //ReadOnlyList<Location> GetLocationsForMetricType(int metricTypeId);

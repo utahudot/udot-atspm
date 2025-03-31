@@ -112,8 +112,6 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
 
         public async Task<List<TransitSignalPriorityResult>> GetChartDataAsync(TransitSignalPriorityOptions options)
         {
-
-
             // Link the blocks, and add a predicate to filteringBlock's output if needed.
             _loadLocationDataBlock.LinkTo(
                 _filteringBlock,
@@ -523,7 +521,7 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
             var plans = GetTransitSignalPriorityPlans(
                 firstDate,
                 endDate,
-                inputParameters.LocationPhases.LocationIdentifier,
+                inputParameters.LocationPhases,
                 planEvents,
                 splitsEvents,
                 cycles
@@ -601,6 +599,10 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
                         _logger.LogWarning($"Location not found for {input.LocationPhases} on {input.Dates.First()}");
                         return null;
                     }
+                    else
+                    {
+                        input.LocationPhases.ControllerManufacturer = input.Location.Devices.Where(d => d.DeviceType == Data.Enums.DeviceTypes.SignalController)?.FirstOrDefault()?.DeviceConfiguration.Product.Manufacturer;
+                    }
 
                     _logger.LogInformation($"Location found: {input.LocationPhases}");
 
@@ -623,7 +625,7 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
             using (var scope = _serviceProvider.CreateScope())
             {
                 var locationRepository = scope.ServiceProvider.GetRequiredService<ILocationRepository>();
-                return locationRepository.GetLatestVersionOfLocation(locationIdentifier, date);
+                return locationRepository.GetLatestVersionOfLocationWithDevice(locationIdentifier, date);
             }
         }
 
@@ -672,7 +674,7 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
         public List<TransitSignalPriorityPlan> GetTransitSignalPriorityPlans(
             DateTime startDate,
             DateTime endDate,
-            string locationId,
+            LocationPhases locationPhases,
             IReadOnlyList<IndianaEvent> planEvents,
             IReadOnlyList<IndianaEvent> splitEvents,
             List<TransitSignalPriorityCycle> cycles)
@@ -683,7 +685,7 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
                 throw new ArgumentNullException(nameof(splitEvents));
             if (cycles == null)
                 throw new ArgumentNullException(nameof(cycles));
-            var plans = _planService.GetTransitSignalPriorityBasicPlans(startDate, endDate, locationId, planEvents).OrderBy(p => p.Start).ToList();
+            var plans = _planService.GetTransitSignalPriorityBasicPlans(startDate, endDate, locationPhases.LocationIdentifier, planEvents).OrderBy(p => p.Start).ToList();
             var validSplitEvents = new List<IndianaEvent>();
             for (int i = 0; i < plans.Count(); i++)
             {
@@ -775,6 +777,7 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
 
                 // Determine the highest cycle count among all phases for percentage calculations
                 int maxCycleCount = phaseCyclesDict.Values.Max(cycleList => cycleList.Count);
+                tspPlan.NumberOfCycles = maxCycleCount;
 
                 // Process each phase that has cycles and a corresponding programmed split
                 foreach (var phasePair in phaseCyclesDict)
@@ -804,6 +807,7 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
                             ProgrammedSplit = programmedSplits[phaseNumber],
                             PercentileSplit85th = GetPercentSplit(cyclesForPhase.Count, 0.85, cyclesForPhase),
                             PercentileSplit50th = GetPercentSplit(cyclesForPhase.Count, 0.5, cyclesForPhase),
+                            //MinGreen = locationPhases.ControllerManufacturer == "Econolite" ? cyclesForPhase.Min(c => c.GreenDurationSeconds) : cyclesForPhase.Min(c => c.MinGreenDurationSeconds),
                             MinGreen = cyclesForPhase.Min(c => c.MinGreenDurationSeconds),
                             Yellow = cyclesForPhase.Min(c => c.YellowDurationSeconds),
                             RedClearance = cyclesForPhase.Min(c => c.RedDurationSeconds)
