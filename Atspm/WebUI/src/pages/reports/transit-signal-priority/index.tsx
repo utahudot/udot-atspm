@@ -222,9 +222,6 @@ export default function TspReportPage() {
             designatedPhases: loc.designatedPhases,
           })),
           dates: reportOptions.selectedDays.map((date) => date.toISOString()),
-          locationIdentifier: '0',
-          start: new Date().toISOString(),
-          end: new Date().toISOString(),
         },
       })
     } catch (err: unknown) {
@@ -316,7 +313,7 @@ export default function TspReportPage() {
           startIcon={<PlayArrowIcon />}
           loading={loadingReport}
           variant="contained"
-          sx={{ padding: '10px', mb: 2 }}
+          sx={{ padding: '10px' }}
           onClick={generateReport}
         >
           Generate Report

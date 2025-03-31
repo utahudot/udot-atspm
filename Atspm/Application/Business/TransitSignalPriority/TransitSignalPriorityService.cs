@@ -804,7 +804,7 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
                             PercentGapOuts = percentGapOuts,
                             PercentMaxOutsForceOffs = Math.Round(GetPercentMaxOutForceOffs(planNumber, maxCycleCount, cyclesForPhase) * 100, 1),
                             AverageSplit = averageSplit,
-                            MinTime = Math.Round(cyclesForPhase.Min(c => c.MinTime),1),
+                            MinTime = Math.Round(cyclesForPhase.Min(c => c.MinTime), 1),
                             ProgrammedSplit = programmedSplits[phaseNumber],
                             PercentileSplit85th = GetPercentSplit(cyclesForPhase.Count, 0.85, cyclesForPhase),
                             PercentileSplit50th = GetPercentSplit(cyclesForPhase.Count, 0.5, cyclesForPhase),
@@ -841,28 +841,35 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
                 }
 
                 tspPlans.Add(tspPlan);
-                if (distinctPlanNumbers.Contains("254") || distinctPlanNumbers.Contains("100"))
+                SetMinGreenTimeToMinGreenOfFree(tspPlans);
+            }
+
+            return tspPlans;
+        }
+
+        private static void SetMinGreenTimeToMinGreenOfFree(List<TransitSignalPriorityPlan> tspPlans)
+        {
+            var freePlan = tspPlans.Where(p => p.PlanNumber == 254 || p.PlanNumber == 100)?.FirstOrDefault();
+            if (freePlan != null && !freePlan.Phases.IsNullOrEmpty())
+            {
+                var freePlanMinGreens = new Dictionary<int, double>();
+                foreach (var phase in freePlan.Phases)
                 {
-                    var freePlanMinGreens = new Dictionary<int, double>();                    
-                    foreach(var phase in tspPlans.Where(p => p.PlanNumber == 254 || p.PlanNumber == 100)?.FirstOrDefault().Phases)
+                    freePlanMinGreens.Add(phase.PhaseNumber, phase.MinGreen);
+                }
+
+                foreach (var plan in tspPlans.Where(p => p.PlanNumber != 254 && p.PlanNumber != 100))
+                {
+                    foreach (var phase in plan.Phases)
                     {
-                        freePlanMinGreens.Add(phase.PhaseNumber, phase.MinGreen);
-                    }
-                    foreach(var plan in tspPlans)
-                    {
-                        foreach (var phase in plan.Phases)
+                        if (freePlanMinGreens.ContainsKey(phase.PhaseNumber))
                         {
-                            if (freePlanMinGreens.ContainsKey(phase.PhaseNumber))
-                            {
-                                phase.MinGreen = freePlanMinGreens[phase.PhaseNumber];
-                                phase.MinTime = phase.MinGreen + phase.Yellow + phase.RedClearance;
-                            }
+                            phase.MinGreen = freePlanMinGreens[phase.PhaseNumber];
+                            phase.MinTime = phase.MinGreen + phase.Yellow + phase.RedClearance;
                         }
                     }
                 }
             }
-
-            return tspPlans;
         }
 
         private int GetPreviousSplit(int v, List<TransitSignalPriorityBasicPlan> plans, int plansIndex)
