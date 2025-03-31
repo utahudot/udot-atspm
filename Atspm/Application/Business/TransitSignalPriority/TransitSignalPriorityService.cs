@@ -747,6 +747,7 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
             // Process each distinct plan number
             var tspPlans = new List<TransitSignalPriorityPlan>();
             var distinctPlanNumbers = plans.Select(p => p.PlanNumber).Distinct().ToList();
+            
 
             foreach (var planNumber in distinctPlanNumbers)
             {
@@ -840,6 +841,25 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
                 }
 
                 tspPlans.Add(tspPlan);
+                if (distinctPlanNumbers.Contains("254") || distinctPlanNumbers.Contains("100"))
+                {
+                    var freePlanMinGreens = new Dictionary<int, double>();                    
+                    foreach(var phase in tspPlans.Where(p => p.PlanNumber == 254 || p.PlanNumber == 100)?.FirstOrDefault().Phases)
+                    {
+                        freePlanMinGreens.Add(phase.PhaseNumber, phase.MinGreen);
+                    }
+                    foreach(var plan in tspPlans)
+                    {
+                        foreach (var phase in plan.Phases)
+                        {
+                            if (freePlanMinGreens.ContainsKey(phase.PhaseNumber))
+                            {
+                                phase.MinGreen = freePlanMinGreens[phase.PhaseNumber];
+                                phase.MinTime = phase.MinGreen + phase.Yellow + phase.RedClearance;
+                            }
+                        }
+                    }
+                }
             }
 
             return tspPlans;
