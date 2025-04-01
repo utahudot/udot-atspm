@@ -251,40 +251,50 @@ namespace Utah.Udot.Atspm.Business.Common
             return cycles;
         }
         
-        public List<TransitSignalPriorityCycle> GetTransitSignalPriorityCycles(int phaseNumber, List<IndianaEvent> cycleEvents, List<IndianaEvent> terminationEvents)
+        public List<TransitSignalPriorityCycle> GetTransitSignalPriorityCycles(int phaseNumber, List<IndianaEvent> cycleEvents, List<IndianaEvent> terminationEvents, List<IndianaEvent> minGreenEvents)
         {
             if(cycleEvents.IsNullOrEmpty()) return new List<TransitSignalPriorityCycle>();
             var cycleEventsForPhase = cycleEvents.Where(c => c.EventParam == phaseNumber).OrderBy(c => c.Timestamp).ToList();
             var terminationEventsForPhase = terminationEvents.Where(c => c.EventParam == phaseNumber).ToList();
 
             var cleanTerminationEvents = CleanTerminationEvents(terminationEventsForPhase);
-            var cycles = Enumerable.Range(0, cycleEventsForPhase.Count - 4)
-                .Where(i => cycleEventsForPhase[i].EventCode ==1 &&
-                            cycleEventsForPhase[i + 1].EventCode == 3 &&
-                            cycleEventsForPhase[i + 2].EventCode == 8 &&
-                            cycleEventsForPhase[i + 3].EventCode == 10 &&
-                            cycleEventsForPhase[i + 4].EventCode == 11                             
-                            )
-                .Select(i =>
+            var cycles = new List<TransitSignalPriorityCycle>();
+            //var combinedEvents = cycleEvents.Concat(cleanTerminationEvents).Concat(minGreenEvents).Where(c => c.EventParam == phaseNumber).OrderBy(c => c.Timestamp).OrderBy(e => e.Timestamp).ToList();
+            TransitSignalPriorityCycle cycle = null;
+            foreach (var cycleEvent in cycleEventsForPhase)
+            {
+                if (cycleEvent.EventCode == (short)1)
                 {
-                    var termEvent = GetTerminationTypeBetweenStartAndEnd(
-                        cycleEventsForPhase[i].Timestamp, 
-                        cycleEventsForPhase[i + 3].Timestamp,
-                        cleanTerminationEvents);
-                    return new TransitSignalPriorityCycle { 
-                        PhaseNumber = phaseNumber,
-                        GreenEvent = cycleEventsForPhase[i].Timestamp, 
-                        MinGreen = cycleEventsForPhase[i + 1].Timestamp,
-                        YellowEvent = cycleEventsForPhase[i + 2].Timestamp, 
-                        RedEvent = cycleEventsForPhase[i + 3].Timestamp,  
-                        EndRedClearanceEvent = cycleEventsForPhase[i + 4].Timestamp, 
-                        TerminationEvent  = GetTerminationEventBetweenStartAndEnd(cycleEventsForPhase[i].Timestamp, cycleEventsForPhase[i + 3].Timestamp, cleanTerminationEvents)
-                    };
-                })
-                .Where(c => c.MinGreenDurationSeconds > 0 && c.DurationSeconds > 0)
-                .ToList();
+                    cycle = new TransitSignalPriorityCycle { GreenEvent = cycleEvent.Timestamp};
+                }
 
+                if (cycle != null && cycleEvent.EventCode == 8)
+                    cycle.YellowEvent = cycleEvent.Timestamp;
+
+                if (cycle != null && cycleEvent.EventCode == 10)
+                {
+                    cycle.RedEvent = cycleEvent.Timestamp;
+                }
+
+                if (cycle != null && cycleEvent.EventCode == 11 && cycle.YellowEvent != DateTime.MinValue && cycle.RedEvent != DateTime.MinValue)
+                {
+                    cycle.EndRedClearanceEvent = cycleEvent.Timestamp;
+                    cycle.PhaseNumber = cycleEvent.EventParam;
+                    cycles.Add(cycle);
+                }                
+            }
+
+            //Assign the termination event from the list of termation events to each cycle. If multiple are found use the last event. Also add the min green timestamp
+            foreach (var c in cycles)
+            {
+                c.TerminationEvent = GetTerminationEventBetweenStartAndEnd(c.GreenEvent, c.EndRedClearanceEvent, cleanTerminationEvents);
+                var minGreenEvent = minGreenEvents.Where(e => e.Timestamp >= c.GreenEvent && e.Timestamp <= c.EndRedClearanceEvent).FirstOrDefault();
+                c.MinGreen = minGreenEvent == null ? c.YellowEvent : minGreenEvent.Timestamp;
+            }
             return cycles;
+
+
+            
         }
 
         private static CycleSplitFail.TerminationType GetTerminationTypeBetweenStartAndEnd(DateTime start,
