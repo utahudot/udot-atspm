@@ -480,6 +480,7 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
             var (inputParameters, eventGroups) = input;
             var cycleEvents = eventGroups["cycleEvents"];
             var terminationEvents = eventGroups["terminationEvents"];
+            var minGreenEvents = eventGroups["minGreenEvents"];
             var phases = cycleEvents.Select(c => c.EventParam).Distinct();
             var cycles = new List<TransitSignalPriorityCycle>();
 
@@ -490,7 +491,8 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
                     cycles.AddRange(_cycleService.GetTransitSignalPriorityCycles(
                         phase,
                         cycleEvents.Where(e => e.EventParam == phase).ToList(),
-                        terminationEvents.Where(e => e.EventParam == phase).ToList()
+                        terminationEvents.Where(e => e.EventParam == phase).ToList(),
+                        minGreenEvents.Where(e => e.EventParam == phase).ToList()
                     ));
                 }
             }
@@ -538,6 +540,7 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
                         { "planEvents", new List<IndianaEvent>() },
                         { "cycleEvents", new List<IndianaEvent>() },
                         { "splitsEvents", new List<IndianaEvent>() },
+                        { "minGreenEvents", new List<IndianaEvent>() },
                         { "terminationEvents", new List<IndianaEvent>() }
                     };
 
@@ -546,8 +549,11 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
                     if (new List<short> { 131 }.Contains(ev.EventCode))
                         categorizedEvents["planEvents"].Add(ev);
 
-                    if (new List<short> { 1,3, 8, 10, 11 }.Contains(ev.EventCode))
+                    if (new List<short> { 1, 8, 10, 11 }.Contains(ev.EventCode))
                         categorizedEvents["cycleEvents"].Add(ev);
+
+                    if (new List<short> { 3 }.Contains(ev.EventCode))
+                        categorizedEvents["minGreenEvents"].Add(ev);
 
                     if (Enumerable.Range(130, 20).Contains(ev.EventCode))
                         categorizedEvents["splitsEvents"].Add(ev);
@@ -900,11 +906,14 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
 
         private static double GetPercentMaxOutForceOffs(string planNumber, int highCycleCount, List<TransitSignalPriorityCycle> cycles)
         {
+            var phaseNumber = cycles.FirstOrDefault().PhaseNumber;
+            var sixes = cycles.Count(c => c.TerminationEvent == 6);
+            var fives = cycles.Count(c => c.TerminationEvent == 5);
             if (highCycleCount == 0)
             {
                 return 0;
             }
-            return planNumber == "254" ? Convert.ToDouble(cycles.Count(c => c.TerminationEvent == 5)) / highCycleCount :
+            return planNumber == "254" || planNumber == "100" ? Convert.ToDouble(cycles.Count(c => c.TerminationEvent == 5)) / highCycleCount :
                                         Convert.ToDouble(cycles.Count(c => c.TerminationEvent == 6)) / highCycleCount;
         }
 
