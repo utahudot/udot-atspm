@@ -40,12 +40,12 @@ namespace Utah.Udot.Atspm.Data.Configuration
             builder.Property(e => e.Option).HasConversion(v => JsonConvert.SerializeObject(v, new JsonSerializerSettings()
             {
                 TypeNameHandling = TypeNameHandling.Objects,
-                SerializationBinder = new AssemblySerializationBinder()
+                SerializationBinder = new AssemblySerializationBinder<AtspmOptionsBase>()
             }), 
             v => JsonConvert.DeserializeObject<AtspmOptionsBase>(v, new JsonSerializerSettings()
             {
                 TypeNameHandling = TypeNameHandling.Objects,
-                SerializationBinder = new AssemblySerializationBinder()
+                SerializationBinder = new AssemblySerializationBinder<AtspmOptionsBase>()
             }));
         }
     }

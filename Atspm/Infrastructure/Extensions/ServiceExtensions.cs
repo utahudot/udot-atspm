@@ -35,6 +35,7 @@ using Utah.Udot.Atspm.PostgreSQLDatabaseProvider;
 using Utah.Udot.Atspm.Repositories;
 using Utah.Udot.Atspm.SqlDatabaseProvider;
 using Utah.Udot.Atspm.SqlLiteDatabaseProvider;
+using Utah.Udot.NetStandardToolkit.Authentication;
 
 namespace Utah.Udot.Atspm.Infrastructure.Extensions
 {
@@ -128,6 +129,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
         /// <returns></returns>
         public static IServiceCollection AddAtspmDbContext(this IServiceCollection services, HostBuilderContext host)
         {
+            services.AddScoped<ICurrentUserService<JwtUserSession>, JwtCurrentUserService>();
             services.AddScoped<AuditPropertiesInterceptor>();
 
             services.AddDbContext<ConfigContext>((s, db) => db.DbDefaults<ConfigContext>(host).AddInterceptors(s.GetService<AuditPropertiesInterceptor>()));
