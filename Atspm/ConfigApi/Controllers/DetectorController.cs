@@ -22,6 +22,7 @@ using Microsoft.AspNetCore.OData.Query;
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
+using Utah.Udot.ATSPM.ConfigApi.Models;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 using static Microsoft.AspNetCore.OData.Query.AllowedQueryOptions;
 
@@ -105,8 +106,9 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
 
                         if (response.IsSuccessStatusCode)
                         {
-                            var responseData = await response.Content.ReadFromJsonAsync<object>();
-                            return Ok(responseData);
+                            var responseData = await response.Content.ReadFromJsonAsync<CameraDetailsResponse>();
+                            List<String> availableCameraIds = responseData.Cameras.Select(i => i.Index).ToList();
+                            return Ok(availableCameraIds.ToArray());
                         }
                         return StatusCode((int)response.StatusCode, "Failed to retrieve data from the external service.");
                     }
