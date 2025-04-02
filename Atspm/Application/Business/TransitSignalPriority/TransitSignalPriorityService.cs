@@ -770,7 +770,7 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
 
                 if (!planCycles.Any()) continue;
 
-                // Group cycles by phase
+                // Group cycles by phase based on the complete phase list 
                 var phaseCyclesDict = GetPhaseCyclesDictionary(planCycles, completePhases);
                 if (!phaseCyclesDict.Any()) continue;
 
