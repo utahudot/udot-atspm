@@ -161,10 +161,18 @@ export default function TspReport({ report, reportOptions }: TspReportProps) {
                   percentGapOuts: round(phase.percentGapOuts),
                   percentSkips: round(phase.percentSkips),
                   notes: phase.notes,
-                  skipsGreaterThan70TSPMax: phase.skipsGreaterThan70TSPMax,
-                  forceOffsLessThan40TSPMax: phase.forceOffsLessThan40TSPMax,
-                  forceOffsLessThan60TSPMax: phase.forceOffsLessThan60TSPMax,
-                  forceOffsLessThan80TSPMax: phase.forceOffsLessThan80TSPMax,
+                  skipsGreaterThan70TSPMax: round(
+                    phase.skipsGreaterThan70TSPMax
+                  ),
+                  forceOffsLessThan40TSPMax: round(
+                    phase.forceOffsLessThan40TSPMax
+                  ),
+                  forceOffsLessThan60TSPMax: round(
+                    phase.forceOffsLessThan60TSPMax
+                  ),
+                  forceOffsLessThan80TSPMax: round(
+                    phase.forceOffsLessThan80TSPMax
+                  ),
                 }))
               ) || []
 
