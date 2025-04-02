@@ -1,0 +1,83 @@
+name: Build and Attach Docker Images to Release
+
+on:
+  release:
+    types: [published]  # Trigger on new GitHub release
+
+permissions:
+  id-token: write
+  contents: write  # Needed to upload assets to GitHub release
+
+jobs:
+  changes:
+    name: Find Containers to build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4     
+      - uses: dorny/paths-filter@v3
+        id: changes
+        with:
+          filters: .github/filters.json
+    outputs:
+      changes: ${{ steps.changes.outputs.changes }}
+
+  build:
+    name: Build Docker Images
+    needs: changes
+    if: ${{ needs.changes.outputs.changes != '[]'}}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        name: ${{ fromJson(needs.changes.outputs.changes) }}
+
+    steps:
+      - name: ⬇️ Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: 📁 Get Working Dir
+        run: |
+          docker_dir="$(cat .github/filters.json | jq '."${{ matrix.name }}"' | tr -d '**\n"')"
+          echo "DOCKERFILE_DIR=${docker_dir}" >> $GITHUB_ENV
+
+      - name: 🐳 Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: 🏷️ Extract Release Tag
+        id: meta
+        run: echo "VERSION=v5.0" >> $GITHUB_ENV
+
+      - name: 📦 Build Docker Image
+        uses: docker/build-push-action@v6
+        if: ${{ matrix.name != 'atspmwebsite'}}
+        with:
+          tags: ${{ matrix.name }}:${{ env.VERSION }}
+          context: Atspm/
+          file: ${{ env.DOCKERFILE_DIR }}/Dockerfile
+          push: false
+          load: true  # Load the image into Docker after building
+
+      - name: 📦 Build Docker Image WebUI
+        uses: docker/build-push-action@v6
+        if: ${{ matrix.name == 'atspmwebsite'}}
+        with:
+          tags: ${{ matrix.name }}:${{ env.VERSION }}
+          context: ${{ env.DOCKERFILE_DIR }}
+          file: ${{ env.DOCKERFILE_DIR }}/Dockerfile
+          push: false
+          load: true  # Load the image into Docker after building
+
+      - name: 📝 List Docker Images
+        run: docker images
+  
+      - name: 💾 Save Docker Image as Tar File
+        run: |
+          docker save ${{ matrix.name }}:${{ env.VERSION }} -o ${{ matrix.name }}.tar
+
+      - name: 📤 Upload Docker Image to GitHub Release
+        uses: softprops/action-gh-release@v1
+        if: github.event_name == 'release'
+        with:
+          files: ${{ matrix.name }}.tar
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
