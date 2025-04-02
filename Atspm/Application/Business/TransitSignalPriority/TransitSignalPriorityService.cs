@@ -218,29 +218,29 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
                     //phase.ForceOffsLessThan60TSPMax = Math.Round(phase.ProgrammedSplit - phase.PercentileSplit50th, 1);
                     //phase.ForceOffsLessThan80TSPMax = Math.Round(phase.ProgrammedSplit - phase.PercentileSplit85th, 1);
 
-                    var skipsGreaterThan70TSPMax = Math.Round(phase.ProgrammedSplit - phase.MinTime, 1);
-                    var forceOffsLessThan40TSPMax = Math.Round(phase.ProgrammedSplit - (phase.MinTime + phase.PercentileSplit50th) / 2, 1);
-                    var forceOffsLessThan60TSPMax = Math.Round(phase.ProgrammedSplit - phase.PercentileSplit50th, 1);
-                    var forceOffsLessThan80TSPMax = Math.Round(phase.ProgrammedSplit - phase.PercentileSplit85th, 1);
+                    phase.SkipsGreaterThan70TSPMax = Math.Round(phase.ProgrammedSplit - phase.MinTime, 1);
+                    phase.ForceOffsLessThan40TSPMax = Math.Round(phase.ProgrammedSplit - (phase.MinTime + phase.PercentileSplit50th) / 2, 1);
+                    phase.ForceOffsLessThan60TSPMax = Math.Round(phase.ProgrammedSplit - phase.PercentileSplit50th, 1); ;
+                    phase.ForceOffsLessThan80TSPMax = Math.Round(phase.ProgrammedSplit - phase.PercentileSplit85th, 1);
 
-                    if (phase.SkipsGreaterThan70TSPMax)
+                    if (phase.IsSkipsGreaterThan70TSPMax)
                     {
-                        phase.RecommendedTSPMax = Math.Floor(skipsGreaterThan70TSPMax);
+                        phase.RecommendedTSPMax = Math.Floor(phase.SkipsGreaterThan70TSPMax);
                         phase.Notes = "Skips greater than 70%";
                     }
-                    else if (phase.ForceOffsLessThan40TSPMax)
+                    else if (phase.IsForceOffsLessThan40TSPMax)
                     {
-                        phase.RecommendedTSPMax = Math.Floor(forceOffsLessThan40TSPMax);
+                        phase.RecommendedTSPMax = Math.Floor(phase.ForceOffsLessThan40TSPMax);
                         phase.Notes = "Force offs less than 40%";
                     }
-                    else if (phase.ForceOffsLessThan60TSPMax)
+                    else if (phase.IsForceOffsLessThan60TSPMax)
                     {
-                        phase.RecommendedTSPMax = Math.Floor(forceOffsLessThan60TSPMax);
+                        phase.RecommendedTSPMax = Math.Floor(phase.ForceOffsLessThan60TSPMax);
                         phase.Notes = "Force offs less than 60%";
                     }
-                    else if (phase.ForceOffsLessThan80TSPMax)
+                    else if (phase.IsForceOffsLessThan80TSPMax)
                     {
-                        phase.RecommendedTSPMax = Math.Floor(forceOffsLessThan80TSPMax);
+                        phase.RecommendedTSPMax = Math.Floor(phase.ForceOffsLessThan80TSPMax);
                         phase.Notes = "Force offs less than 80%";
                     }
                     else
@@ -811,10 +811,10 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
                         PercentSkips = percentSkips,
                         PercentGapOuts = percentGapOuts,
                         PercentMaxOutsForceOffs = Math.Round(GetPercentMaxOutForceOffs(planNumber, maxCycleCount, cyclesForPhase) * 100, 1),
-                        SkipsGreaterThan70TSPMax = skipsForPlans.Max() >= 70,
-                        ForceOffsLessThan40TSPMax = forceOffsForPlans.Max() <= 40,
-                        ForceOffsLessThan60TSPMax = forceOffsForPlans.Max() <= 60,
-                        ForceOffsLessThan80TSPMax = forceOffsForPlans.Max() <= 80,
+                        IsSkipsGreaterThan70TSPMax = skipsForPlans.Max() >= 70,
+                        IsForceOffsLessThan40TSPMax = forceOffsForPlans.Max() <= 40,
+                        IsForceOffsLessThan60TSPMax = forceOffsForPlans.Max() <= 60,
+                        IsForceOffsLessThan80TSPMax = forceOffsForPlans.Max() <= 80,
                         AverageSplit = averageSplit,
                         MinTime = Math.Round(cyclesForPhase.Min(c => c.MinTime), 1),
                         ProgrammedSplit = programmedSplits[phaseNumber],
