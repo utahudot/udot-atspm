@@ -374,8 +374,18 @@ const columns: GridColDef[] = [
     cellClassName: 'green-text',
     rowSpanValueGetter: () => null,
   },
-  { field: 'percentSkips', headerName: 'Skips (%)', width: 120 },
-  { field: 'notes', headerName: 'Result Notes', width: 200 },
+  {
+    field: 'percentSkips',
+    headerName: 'Skips (%)',
+    width: 120,
+    rowSpanValueGetter: () => null,
+  },
+  {
+    field: 'notes',
+    headerName: 'Result Notes',
+    width: 200,
+    rowSpanValueGetter: () => null,
+  },
   {
     field: 'skipsGreaterThan70TSPMax',
     headerName: 'Skips > 70% TSP Max',
