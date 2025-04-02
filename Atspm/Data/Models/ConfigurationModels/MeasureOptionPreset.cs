@@ -27,7 +27,7 @@ namespace Utah.Udot.Atspm.Data.Models
     /// <summary>
     /// Measure option presets
     /// </summary>
-    public partial class MeasureOptionPreset : TempConfigModelBase<int>, IRelatedMeasureType
+    public partial class MeasureOptionPreset : AtspmConfigModelBase<int>, IRelatedMeasureType
     {
         /// <summary>
         /// Preset name
@@ -51,14 +51,5 @@ namespace Utah.Udot.Atspm.Data.Models
 
         /// <inheritdoc/>
         public override string ToString() => $"{Id} - {Name} - {Created}";
-    }
-
-    //HACK: This is temporary, this will be merged into AtspmConfigModelBase
-    public class TempConfigModelBase<T> : AtspmConfigModelBase<T>, IAuditProperties
-    {
-        public DateTime Created { get; set; }
-        public DateTime Modified { get; set; }
-        public string CreatedBy {  get; set; }
-        public string ModifiedBy { get; set; }
     }
 }
