@@ -6,14 +6,18 @@
  * OpenAPI spec version: 1.0
  */
 import type {
+  MutationFunction,
   QueryFunction,
   QueryKey,
+  UseMutationOptions,
   UseQueryOptions,
   UseQueryResult,
 } from 'react-query'
-import { useQuery } from 'react-query'
+import { useMutation, useQuery } from 'react-query'
 import { dataRequest } from '../../lib/axios'
 import type {
+  DeviceEventDownload,
+  DeviceEventLoggingConfiguration,
   GetAggregationArchivedAggregationsFromLocationIdentifierAndDataTypeParams,
   GetAggregationArchivedAggregationsFromLocationIdentifierParams,
   GetEventLogArchivedEventsFromLocationIdentifierAndDataTypeParams,
@@ -21,6 +25,7 @@ import type {
   GetEventLogArchivedEventsFromLocationIdentifierAndDeviceIdParams,
   GetEventLogArchivedEventsFromLocationIdentifierParams,
   GetEventLogDaysWithEventLogsFromLocationIdentifierParams,
+  GetLoggingSyncNewLocationEventsParams,
   ProblemDetails,
 } from './aTSPMLogDataApi.schemas'
 
@@ -1141,4 +1146,154 @@ export const useGetEventLogDaysWithEventLogsFromLocationIdentifier = <
   query.queryKey = queryOptions.queryKey
 
   return query
+}
+
+/**
+ * @summary This will kick off the workflow to pull events.
+ */
+export const getLoggingSyncNewLocationEvents = (
+  params?: GetLoggingSyncNewLocationEventsParams,
+  signal?: AbortSignal
+) => {
+  return dataRequest<DeviceEventDownload[]>({
+    url: `/Logging/log`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getGetLoggingSyncNewLocationEventsQueryKey = (
+  params?: GetLoggingSyncNewLocationEventsParams
+) => {
+  return [`/Logging/log`, ...(params ? [params] : [])] as const
+}
+
+export const getGetLoggingSyncNewLocationEventsQueryOptions = <
+  TData = Awaited<ReturnType<typeof getLoggingSyncNewLocationEvents>>,
+  TError = ProblemDetails,
+>(
+  params?: GetLoggingSyncNewLocationEventsParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getLoggingSyncNewLocationEvents>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ?? getGetLoggingSyncNewLocationEventsQueryKey(params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getLoggingSyncNewLocationEvents>>
+  > = ({ signal }) => getLoggingSyncNewLocationEvents(params, signal)
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getLoggingSyncNewLocationEvents>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type GetLoggingSyncNewLocationEventsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getLoggingSyncNewLocationEvents>>
+>
+export type GetLoggingSyncNewLocationEventsQueryError = ProblemDetails
+
+/**
+ * @summary This will kick off the workflow to pull events.
+ */
+export const useGetLoggingSyncNewLocationEvents = <
+  TData = Awaited<ReturnType<typeof getLoggingSyncNewLocationEvents>>,
+  TError = ProblemDetails,
+>(
+  params?: GetLoggingSyncNewLocationEventsParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getLoggingSyncNewLocationEvents>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getGetLoggingSyncNewLocationEventsQueryOptions(
+    params,
+    options
+  )
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+export const getLoggingDeviceEventLogging = (
+  deviceEventLoggingConfiguration: DeviceEventLoggingConfiguration
+) => {
+  return dataRequest<void>({
+    url: `/Logging/deviceEventLoggin`,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json-patch+json' },
+    data: deviceEventLoggingConfiguration,
+  })
+}
+
+export const getGetLoggingDeviceEventLoggingMutationOptions = <
+  TError = ProblemDetails,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof getLoggingDeviceEventLogging>>,
+    TError,
+    { data: DeviceEventLoggingConfiguration },
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof getLoggingDeviceEventLogging>>,
+  TError,
+  { data: DeviceEventLoggingConfiguration },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof getLoggingDeviceEventLogging>>,
+    { data: DeviceEventLoggingConfiguration }
+  > = (props) => {
+    const { data } = props ?? {}
+
+    return getLoggingDeviceEventLogging(data)
+  }
+
+  return { mutationFn, ...mutationOptions }
+}
+
+export type GetLoggingDeviceEventLoggingMutationResult = NonNullable<
+  Awaited<ReturnType<typeof getLoggingDeviceEventLogging>>
+>
+export type GetLoggingDeviceEventLoggingMutationBody =
+  DeviceEventLoggingConfiguration
+export type GetLoggingDeviceEventLoggingMutationError = ProblemDetails
+
+export const useGetLoggingDeviceEventLogging = <
+  TError = ProblemDetails,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof getLoggingDeviceEventLogging>>,
+    TError,
+    { data: DeviceEventLoggingConfiguration },
+    TContext
+  >
+}) => {
+  const mutationOptions =
+    getGetLoggingDeviceEventLoggingMutationOptions(options)
+
+  return useMutation(mutationOptions)
 }
