@@ -19,6 +19,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Newtonsoft.Json;
 using Utah.Udot.Atspm.Data.Models.MeasureOptions;
+using Utah.Udot.Atspm.Data.Utility;
 
 #nullable disable
 
@@ -38,11 +39,13 @@ namespace Utah.Udot.Atspm.Data.Configuration
 
             builder.Property(e => e.Option).HasConversion(v => JsonConvert.SerializeObject(v, new JsonSerializerSettings()
             {
-                TypeNameHandling = TypeNameHandling.All
+                TypeNameHandling = TypeNameHandling.Objects,
+                SerializationBinder = new AssemblySerializationBinder()
             }), 
             v => JsonConvert.DeserializeObject<AtspmOptionsBase>(v, new JsonSerializerSettings()
             {
-                TypeNameHandling = TypeNameHandling.All
+                TypeNameHandling = TypeNameHandling.Objects,
+                SerializationBinder = new AssemblySerializationBinder()
             }));
         }
     }
