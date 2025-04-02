@@ -46,8 +46,8 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
         {
             //if (!host.HostingEnvironment.IsDevelopment())
             //{
-            services.AddAtspmAuthentication(host);
-            services.AddAtspmAuthorization();
+                services.AddAtspmAuthentication(host);
+                services.AddAtspmAuthorization();
             //}
 
             return services;
@@ -61,8 +61,6 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
         /// <returns></returns>
         public static IServiceCollection AddAtspmAuthentication(this IServiceCollection services, HostBuilderContext host)
         {
-            services.AddScoped<ICurrentUserService<JwtUserSession>, JwtCurrentUserService>();
-
             services.Configure<CookiePolicyOptions>(options =>
             {
                 options.MinimumSameSitePolicy = SameSiteMode.None;

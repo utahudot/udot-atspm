@@ -19,6 +19,7 @@ using Asp.Versioning;
 using Asp.Versioning.OData;
 using Microsoft.OData.ModelBuilder;
 using Utah.Udot.Atspm.Data.Models;
+using Utah.Udot.Atspm.Data.Models.MeasureOptions;
 
 namespace Utah.Udot.Atspm.ConfigApi.Configuration
 {
@@ -34,13 +35,16 @@ namespace Utah.Udot.Atspm.ConfigApi.Configuration
             model.Page(default, default);
             model.Expand(1, SelectExpandType.Automatic, new string[] { "measureType" });
 
+            foreach (var opt in typeof(AtspmOptionsBase).Assembly.GetTypes().Where(w => w.IsSubclassOf(typeof(AtspmOptionsBase))))
+            {
+                builder.AddComplexType(opt).Namespace = nameof(AtspmOptionsBase);
+            }
+
             switch (apiVersion.MajorVersion)
             {
                 case 1:
                     {
                         model.Property(p => p.Name).MaxLength = 512;
-
-
 
                         var a = model.Collection.Function("GetMeasureOptionPresetTypes");
                         a.ReturnsCollection<string>();
