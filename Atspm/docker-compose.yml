@@ -74,7 +74,7 @@ services:
       <<: *default-environment
       ASPNETCORE_URLS: "https://+:5000"
     volumes:
-      - $CERT_LOCATION
+      - ${CERT_LOCATION}
     user: root
     depends_on:
       database-installer:
