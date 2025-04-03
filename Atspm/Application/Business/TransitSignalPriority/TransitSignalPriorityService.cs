@@ -816,13 +816,13 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
                         IsForceOffsLessThan60TSPMax = forceOffsForPlans.Max() <= 60,
                         IsForceOffsLessThan80TSPMax = forceOffsForPlans.Max() <= 80,
                         AverageSplit = averageSplit,
-                        MinTime = Math.Round(cyclesForPhase.Min(c => c.MinTime), 1),
+                        MinTime = Math.Round(cyclesForPhase.Where(c => c.MinTime >= 0).OrderBy(c => c.MinTime).Skip(1).First().MinTime, 1),
                         ProgrammedSplit = programmedSplits[phaseNumber],
                         PercentileSplit85th = percentileSplit85th.Average(),
                         PercentileSplit50th = percentileSplit50th.Average(),
-                        MinGreen = cyclesForPhase.Min(c => c.MinGreenDurationSeconds),
-                        Yellow = cyclesForPhase.Min(c => c.YellowDurationSeconds),
-                        RedClearance = cyclesForPhase.Min(c => c.RedDurationSeconds)
+                        MinGreen = cyclesForPhase.Where(c => c.MinGreenDurationSeconds >= 0).OrderBy(c => c.MinGreenDurationSeconds).Skip(1).First().MinGreenDurationSeconds,
+                        Yellow = cyclesForPhase.Where(c => c.YellowDurationSeconds >= 0).OrderBy(c => c.YellowDurationSeconds).Skip(1).First().YellowDurationSeconds,
+                        RedClearance = cyclesForPhase.Where(c => c.RedDurationSeconds >= 0).OrderBy(c => c.RedDurationSeconds).Skip(1).First().RedDurationSeconds
                     });
                 }
 
