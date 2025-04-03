@@ -24,6 +24,7 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Utah.Udot.Atspm.Data;
+using Utah.Udot.Atspm.Data.Utility;
 using Utah.Udot.Atspm.Infrastructure.Repositories;
 using Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories;
 using Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories;
@@ -34,6 +35,7 @@ using Utah.Udot.Atspm.PostgreSQLDatabaseProvider;
 using Utah.Udot.Atspm.Repositories;
 using Utah.Udot.Atspm.SqlDatabaseProvider;
 using Utah.Udot.Atspm.SqlLiteDatabaseProvider;
+using Utah.Udot.NetStandardToolkit.Authentication;
 
 namespace Utah.Udot.Atspm.Infrastructure.Extensions
 {
@@ -104,18 +106,18 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
         }
 
         /// <summary>
-        /// Registers the given context as a service in the <see cref="IServiceCollection"/> using the database provider specified in configuration
+        /// Adds database context based on connection string and assigns database provider
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="services"></param>
+        /// <param name="builder"></param>
         /// <param name="host"></param>
         /// <param name="tracking"></param>
         /// <returns></returns>
-        public static IServiceCollection AddDbContext<T>(this IServiceCollection services, HostBuilderContext host, QueryTrackingBehavior tracking = QueryTrackingBehavior.TrackAll) where T : DbContext
+        public static DbContextOptionsBuilder DbDefaults<T>(this DbContextOptionsBuilder builder, HostBuilderContext host, QueryTrackingBehavior tracking = QueryTrackingBehavior.TrackAll) where T : DbContext
         {
-            services.AddDbContext<T>(db => db.GetDbProviderInfo<T>(host).UseQueryTrackingBehavior(tracking).EnableSensitiveDataLogging(host.HostingEnvironment.IsDevelopment()));
+            builder.GetDbProviderInfo<T>(host).UseQueryTrackingBehavior(tracking).EnableSensitiveDataLogging(host.HostingEnvironment.IsDevelopment());
 
-            return services;
+            return builder;
         }
 
         /// <summary>
@@ -127,10 +129,13 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
         /// <returns></returns>
         public static IServiceCollection AddAtspmDbContext(this IServiceCollection services, HostBuilderContext host)
         {
-            services.AddDbContext<ConfigContext>(host);
-            services.AddDbContext<AggregationContext>(host, QueryTrackingBehavior.NoTracking);
-            services.AddDbContext<EventLogContext>(host, QueryTrackingBehavior.NoTracking);
-            services.AddDbContext<IdentityContext>(host, QueryTrackingBehavior.NoTracking);
+            services.AddScoped<ICurrentUserService<JwtUserSession>, JwtCurrentUserService>();
+            services.AddScoped<AuditPropertiesInterceptor>();
+
+            services.AddDbContext<ConfigContext>((s, db) => db.DbDefaults<ConfigContext>(host).AddInterceptors(s.GetService<AuditPropertiesInterceptor>()));
+            services.AddDbContext<AggregationContext>(db => db.DbDefaults<AggregationContext>(host, QueryTrackingBehavior.NoTracking));
+            services.AddDbContext<EventLogContext>(db => db.DbDefaults<EventLogContext>(host, QueryTrackingBehavior.NoTracking));
+            services.AddDbContext<IdentityContext>(db => db.DbDefaults<IdentityContext>(host, QueryTrackingBehavior.NoTracking));
 
             return services;
         }

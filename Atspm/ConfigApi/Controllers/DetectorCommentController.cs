@@ -25,7 +25,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
     /// Detector comments controller
     /// </summary>
     [ApiVersion(1.0)]
-    public class DetectorCommentController : AtspmConfigControllerBase<DetectorComment, int>
+    public class DetectorCommentController : LocationPolicyControllerBase<DetectorComment, int>
     {
         private readonly IDetectorCommentRepository _repository;
 
