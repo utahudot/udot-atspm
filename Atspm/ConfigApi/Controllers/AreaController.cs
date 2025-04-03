@@ -29,7 +29,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
     /// Area Controller
     /// </summary>
     [ApiVersion(1.0)]
-    public class AreaController : LocationPolicyControllerBase<Area, int>
+    public class AreaController : GeneralPolicyControllerBase<Area, int>
     {
         private readonly IAreaRepository _repository;
 
