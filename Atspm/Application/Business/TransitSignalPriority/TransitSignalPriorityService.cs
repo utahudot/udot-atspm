@@ -779,7 +779,16 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
 
                 foreach (var (phaseNumber, cyclesForPhase) in phaseCyclesDict)
                 {
-                    if (!cyclesForPhase.Any() || !programmedSplits.ContainsKey(phaseNumber)) continue;
+                    if (!cyclesForPhase.Any()) continue;
+                    //Still add phase to tsp even if not in programmed splits
+                    if (!programmedSplits.ContainsKey(phaseNumber))
+                    {
+                        tspPlan.Phases.Add(new TransitSignalPhase
+                        {
+                            PhaseNumber = phaseNumber,
+                        });
+                        continue;
+                    }
 
                     double skippedCycles = maxCycleCount - cyclesForPhase.Count;
                     double percentSkips = maxCycleCount > 0 ? Math.Round((skippedCycles / maxCycleCount) * 100, 1) : 0;
