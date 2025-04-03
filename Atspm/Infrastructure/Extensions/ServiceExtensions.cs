@@ -129,6 +129,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
         /// <returns></returns>
         public static IServiceCollection AddAtspmDbContext(this IServiceCollection services, HostBuilderContext host)
         {
+            services.AddHttpContextAccessor();
             services.AddScoped<ICurrentUserService<JwtUserSession>, JwtCurrentUserService>();
             services.AddScoped<AuditPropertiesInterceptor>();
 
