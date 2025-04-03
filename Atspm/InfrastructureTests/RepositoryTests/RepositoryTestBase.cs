@@ -20,6 +20,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
 using Utah.Udot.Atspm.Data.Models;
+using Utah.Udot.Atspm.Data.Models.ConfigurationModels;
 using Utah.Udot.Atspm.Infrastructure.Repositories;
 using Utah.Udot.Atspm.InfrastructureTests.Fixtures;
 using Xunit;

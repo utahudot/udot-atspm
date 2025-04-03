@@ -31,7 +31,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
     /// Detector Controller
     /// </summary>
     [ApiVersion(1.0)]
-    public class DetectorController : AtspmConfigControllerBase<Detector, int>
+    public class DetectorController : LocationPolicyControllerBase<Detector, int>
     {
         private readonly IDetectorRepository _repository;
 

@@ -29,7 +29,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
     /// Region controller
     /// </summary>
     [ApiVersion(1.0)]
-    public class RegionController : AtspmGeneralConfigBase<Region, int>
+    public class RegionController : GeneralPolicyControllerBase<Region, int>
     {
         private readonly IRegionsRepository _repository;
 
