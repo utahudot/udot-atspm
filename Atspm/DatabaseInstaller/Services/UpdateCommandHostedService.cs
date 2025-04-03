@@ -17,6 +17,7 @@
 
 using global::DatabaseInstaller.Commands;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -146,30 +147,52 @@ namespace DatabaseInstaller.Services
 
             // ConfigContext
             var configContext = serviceProvider.GetRequiredService<ConfigContext>();
+            if (!string.IsNullOrEmpty(_config.ConfigConnection))
+            {
+                _logger.LogInformation("Overriding ConfigContext connection string.");
+                configContext.Database.SetConnectionString(_config.ConfigConnection);
+            }
             _logger.LogInformation("Applying migrations for ConfigContext.");
             await configContext.Database.MigrateAsync(cancellationToken);
             _logger.LogInformation("Migrations applied for ConfigContext.");
 
             // AggregationContext
             var aggregationContext = serviceProvider.GetRequiredService<AggregationContext>();
+            if (!string.IsNullOrEmpty(_config.AggregationConnection))
+            {
+                _logger.LogInformation("Overriding AggregationContext connection string.");
+                aggregationContext.Database.SetConnectionString(_config.AggregationConnection);
+            }
             _logger.LogInformation("Applying migrations for AggregationContext.");
             await aggregationContext.Database.MigrateAsync(cancellationToken);
             _logger.LogInformation("Migrations applied for AggregationContext.");
 
             // EventLogContext
             var eventLogContext = serviceProvider.GetRequiredService<EventLogContext>();
+            if (!string.IsNullOrEmpty(_config.EventLogConnection))
+            {
+                _logger.LogInformation("Overriding EventLogContext connection string.");
+                eventLogContext.Database.SetConnectionString(_config.EventLogConnection);
+            }
             _logger.LogInformation("Applying migrations for EventLogContext.");
             await eventLogContext.Database.MigrateAsync(cancellationToken);
             _logger.LogInformation("Migrations applied for EventLogContext.");
 
             // IdentityContext
             var identityContext = serviceProvider.GetRequiredService<IdentityContext>();
+            if (!string.IsNullOrEmpty(_config.IdentityConnection))
+            {
+                _logger.LogInformation("Overriding IdentityContext connection string.");
+                identityContext.Database.SetConnectionString(_config.IdentityConnection);
+            }
             _logger.LogInformation("Applying migrations for IdentityContext.");
             await identityContext.Database.MigrateAsync(cancellationToken);
             _logger.LogInformation("Migrations applied for IdentityContext.");
 
-            await RolesAndClaimsDBInitializer.SeedRolesAndClaims(serviceProvider, null);
+            // Seed roles and claims
+            await RolesAndClaimsDBInitializer.SeedRolesAndClaims(serviceProvider, _config.IdentityConnection);
         }
+
 
 
         //private async Task ApplyMigrationsForAllContexts(CancellationToken cancellationToken)
@@ -232,9 +255,46 @@ namespace DatabaseInstaller.Services
         private async Task SeedAdminUserAndAssignRole()
         {
             using var scope = _serviceProvider.CreateScope();
-            var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-            // No need to retrieve IdentityContext here if not directly needed for seeding.
-            // The DI configuration for IdentityContext should already be correct.
+            var serviceProvider = scope.ServiceProvider;
+
+            // Manually create IdentityContext with the correct connection string
+            var dbContextOptions = serviceProvider.GetRequiredService<DbContextOptions<IdentityContext>>();
+            var identityContext = new IdentityContext(dbContextOptions);
+
+            if (!string.IsNullOrEmpty(_config.IdentityConnection))
+            {
+                _logger.LogInformation("Overriding IdentityContext connection string.");
+                identityContext.Database.SetConnectionString(_config.IdentityConnection);
+            }
+
+            // Ensure the database is migrated before proceeding
+            await identityContext.Database.MigrateAsync();
+
+            // Manually create the dependencies required for UserManager<ApplicationUser>
+            var userStore = new UserStore<ApplicationUser>(identityContext);
+            var passwordHasher = new PasswordHasher<ApplicationUser>();
+
+            // Explicitly configure IdentityOptions to allow the provided password
+            var identityOptions = new IdentityOptions();
+            identityOptions.Password.RequireDigit = true;
+            identityOptions.Password.RequiredLength = 6;
+            identityOptions.Password.RequireLowercase = true;
+            identityOptions.Password.RequireUppercase = true;
+            identityOptions.Password.RequireNonAlphanumeric = true;
+            identityOptions.Password.RequiredUniqueChars = 1;
+
+            var options = Options.Create(identityOptions);
+
+            var passwordValidators = new List<IPasswordValidator<ApplicationUser>> { new PasswordValidator<ApplicationUser>() };
+            var userValidators = new List<IUserValidator<ApplicationUser>> { new UserValidator<ApplicationUser>() };
+            var keyNormalizer = serviceProvider.GetRequiredService<ILookupNormalizer>();
+            var errors = serviceProvider.GetRequiredService<IdentityErrorDescriber>();
+            var logger = serviceProvider.GetRequiredService<ILogger<UserManager<ApplicationUser>>>();
+
+            // Manually create UserManager with configured password options
+            var userManager = new UserManager<ApplicationUser>(
+                userStore, options, passwordHasher, userValidators, passwordValidators,
+                keyNormalizer, errors, serviceProvider, logger);
 
             // Check if the admin user already exists.
             var adminUser = await userManager.FindByEmailAsync(_config.AdminEmail);
@@ -283,6 +343,11 @@ namespace DatabaseInstaller.Services
                 _logger.LogInformation("Admin user is already assigned to the Admin role.");
             }
         }
+
+
+
+
+
 
     }
 
