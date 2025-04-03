@@ -21,7 +21,6 @@ import { useEffect, useState } from 'react'
 export enum PageNames {
   Areas = 'Areas',
   DeviceConfigurations = 'Device Configurations',
-  MapLayers = 'Map Layers',
   FAQs = 'FAQs',
   Jurisdiction = 'Jurisdictions',
   MenuItems = 'Menu Items',
@@ -39,7 +38,6 @@ const generalConfigListToLink: Map<string, string> = new Map([
   [PageNames.FAQs, '/admin/faq'],
   [PageNames.MenuItems, '/admin/menu-items'],
   [PageNames.MeasureDefaults, '/admin/measure-defaults'],
-  [PageNames.MapLayers, '/admin/map-layers'],
 ])
 const locationConfigListToLink: Map<string, string> = new Map([
   [PageNames.Areas, '/admin/areas'],
