@@ -150,7 +150,7 @@ export default function TspReport({ report, reportOptions }: TspReportProps) {
                   maxExtension: round(phase.maxExtension),
                   priorityMin: round(phase.priorityMin),
                   priorityMax: round(phase.priorityMax),
-                  minGreen: round(phase.minGreen),
+                  minGreen: round(phase.minGreen, 0),
                   yellow: round(phase.yellow),
                   redClearance: round(phase.redClearance),
                   minTime: round(phase.minTime),
@@ -265,8 +265,8 @@ export default function TspReport({ report, reportOptions }: TspReportProps) {
   )
 }
 
-function round(value: number | undefined) {
-  return value != null ? Number(value.toFixed(1)) : value
+function round(value: number | undefined, roundedNumber?: number) {
+  return value != null ? Number(value.toFixed(roundedNumber || 1)) : value
 }
 
 const columns: GridColDef[] = [
@@ -443,7 +443,7 @@ export function exportToExcel(
           maxExtension: round(phase.maxExtension),
           priorityMin: round(phase.priorityMin),
           priorityMax: round(phase.priorityMax),
-          minGreen: round(phase.minGreen),
+          minGreen: round(phase.minGreen, 0),
           yellow: round(phase.yellow),
           redClearance: round(phase.redClearance),
           minTime: round(phase.minTime),
