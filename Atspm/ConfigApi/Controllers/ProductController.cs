@@ -29,7 +29,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
     /// Product controller
     /// </summary>
     [ApiVersion(1.0)]
-    public class ProductController : AtspmConfigControllerBase<Product, int>
+    public class ProductController : LocationPolicyControllerBase<Product, int>
     {
         private readonly IProductRepository _repository;
 

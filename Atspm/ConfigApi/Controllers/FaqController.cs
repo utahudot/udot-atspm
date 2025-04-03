@@ -25,7 +25,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
     /// FAQ Controller
     /// </summary>
     [ApiVersion(1.0)]
-    public class FaqController : AtspmGeneralConfigBase<Faq, int>
+    public class FaqController : GeneralPolicyControllerBase<Faq, int>
     {
         private readonly IFaqRepository _repository;
 

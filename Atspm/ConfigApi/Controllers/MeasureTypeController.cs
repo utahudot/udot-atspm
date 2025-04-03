@@ -29,7 +29,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
     /// Measure type controller
     /// </summary>
     [ApiVersion(1.0)]
-    public class MeasureTypeController : AtspmConfigControllerBase<MeasureType, int>
+    public class MeasureTypeController : GeneralPolicyControllerBase<MeasureType, int>
     {
         private readonly IMeasureTypeRepository _repository;
 
