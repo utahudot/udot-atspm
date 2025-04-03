@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2025 Utah Departement of Transportation
-// for ConfigApi - Utah.Udot.Atspm.ConfigApi.Controllers/AtspmGeneralConfigBase.cs
+// for ConfigApi - Utah.Udot.Atspm.ConfigApi.Controllers/GeneralPolicyControllerBase.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,27 +18,50 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Deltas;
-using Utah.Udot.Atspm.Data.Models;
+using Microsoft.AspNetCore.OData.Query;
+using Utah.Udot.Atspm.Data.Models.ConfigurationModels;
 using Utah.Udot.NetStandardToolkit.Services;
 
 namespace Utah.Udot.Atspm.ConfigApi.Controllers
 {
+    /// <summary>
+    /// Base class for controllers using general configuration policies
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="TKey"></typeparam>
     /// <inheritdoc/>
-    public class AtspmGeneralConfigBase<T, TKey> : AtspmConfigControllerBase<T, TKey> where T : AtspmConfigModelBase<TKey>
+    public class GeneralPolicyControllerBase<T, TKey>(IAsyncRepository<T> repository) : ConfigControllerBase<T, TKey>(repository) where T : AtspmConfigModelBase<TKey>
     {
-        private readonly IAsyncRepository<T> _repository;
+        /// <inheritdoc/>
+        public override ActionResult<IQueryable<T>> Get(ODataQueryOptions<T> options)
+        {
+            return base.Get(options);
+        }
 
         /// <inheritdoc/>
-        public AtspmGeneralConfigBase(IAsyncRepository<T> repository) : base(repository)
+        public override ActionResult<T> Get(TKey key, ODataQueryOptions<T> options)
         {
-            _repository = repository;
+            return base.Get(key, options);
+        }
+
+        /// <inheritdoc/>
+        protected override ActionResult<TType> GetNavigationProperty<TType>(TKey key)
+        {
+            return base.GetNavigationProperty<TType>(key);
         }
 
         /// <inheritdoc/>
         [Authorize(Policy = "CanEditGeneralConfigurations")]
-        public override Task<IActionResult> Post([FromBody] T item)
+        public override Task<IActionResult> Post([FromBody]T item)
         {
             return base.Post(item);
+        }
+
+        /// <inheritdoc/>
+        [Authorize(Policy = "CanEditGeneralConfigurations")]
+        public override Task<IActionResult> Put(TKey key, [FromBody] T item)
+        {
+            return base.Put(key, item);
         }
 
         /// <inheritdoc/>

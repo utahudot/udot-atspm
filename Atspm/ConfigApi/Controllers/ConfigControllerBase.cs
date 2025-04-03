@@ -1,6 +1,6 @@
 ﻿#region license
 // Copyright 2025 Utah Departement of Transportation
-// for ConfigApi - Utah.Udot.Atspm.ConfigApi.Controllers/AtspmConfigControllerBase.cs
+// for ConfigApi - Utah.Udot.Atspm.ConfigApi.Controllers/ConfigControllerBase.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ using Microsoft.AspNetCore.OData.Query;
 using Microsoft.AspNetCore.OData.Results;
 using Microsoft.AspNetCore.OData.Routing.Controllers;
 using Microsoft.EntityFrameworkCore;
-using Utah.Udot.Atspm.Data.Models;
+using Utah.Udot.Atspm.Data.Models.ConfigurationModels;
 using Utah.Udot.NetStandardToolkit.Extensions;
 using Utah.Udot.NetStandardToolkit.Services;
 
@@ -37,12 +37,12 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
     //[ApiController]
     //[Route("[controller]")]
     [ApiConventionType(typeof(DefaultApiConventions))]
-    public class AtspmConfigControllerBase<T, TKey> : ODataController where T : AtspmConfigModelBase<TKey>
+    public class ConfigControllerBase<T, TKey> : ODataController where T : AtspmConfigModelBase<TKey>
     {
         private readonly IAsyncRepository<T> _repository;
 
         /// <inheritdoc/>
-        public AtspmConfigControllerBase(IAsyncRepository<T> repository)
+        public ConfigControllerBase(IAsyncRepository<T> repository)
         {
             _repository = repository;
         }
@@ -100,7 +100,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
         [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Post))]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public virtual async Task<IActionResult> Post([FromBody] T item)
+        public virtual async Task<IActionResult> Post(T item)
         {
             if (!ModelState.IsValid)
             {
@@ -113,7 +113,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
         }
 
         /// <summary>
-        /// 
+        /// Replace values of sepcified type
         /// </summary>
         /// <param name="key">Key value of object to update</param>
         /// <param name="item">Properites to update</param>
@@ -123,7 +123,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public virtual async Task<IActionResult> Put(TKey key, [FromBody] T item)
+        public virtual async Task<IActionResult> Put(TKey key, T item)
         {
             if (!ModelState.IsValid)
             {
@@ -161,7 +161,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public virtual async Task<IActionResult> Patch(TKey key, [FromBody] Delta<T> item)
+        public virtual async Task<IActionResult> Patch(TKey key, Delta<T> item)
         {
             if (!ModelState.IsValid)
             {

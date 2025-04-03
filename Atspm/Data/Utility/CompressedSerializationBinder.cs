@@ -47,7 +47,7 @@ namespace Utah.Udot.Atspm.Data.Utility
         /// <inheritdoc/>
         public override Type BindToType(string assemblyName, string typeName)
         {
-            if (string.IsNullOrEmpty(assemblyName) && typeof(T).Assembly.GetTypes().Where(w => w.Name == typeName).Count() > 0)
+            if (string.IsNullOrEmpty(assemblyName) && typeof(T).Assembly.GetTypes().Count(w => w.Name == typeName) > 0)
             {
                 return typeof(List<>).MakeGenericType(Type.GetType($"{typeof(T).Namespace}.{typeName}"));
             }

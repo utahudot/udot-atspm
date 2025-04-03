@@ -40,7 +40,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
     /// </summary>
     /// 
     [ApiVersion(1.0)]
-    public class LocationController : AtspmConfigControllerBase<Location, int>
+    public class LocationController : LocationPolicyControllerBase<Location, int>
     {
         private readonly ILocationRepository _repository;
         private readonly ISignalTemplateService _signalTemplateService;

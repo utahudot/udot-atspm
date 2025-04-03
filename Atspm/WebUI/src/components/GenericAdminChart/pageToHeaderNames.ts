@@ -274,33 +274,6 @@ const deviceHeaders: GridColDef[] = [
   },
 ]
 
-const MapLayers: GridColDef[] = [
-  {
-    field: 'name',
-    headerName: 'Name',
-    editable: true,
-    flex: .2,
-  },
-  {
-    field: 'mapLayerUrl',
-    headerName: 'Map Layer Url',
-    editable: true,
-    flex: 1,
-  },
-  {
-    field: 'showByDefault',
-    headerName: 'Show By Default',
-    editable: true,
-    flex: .2,
-  },
-  {
-    field: 'serviceType',
-    headerName: 'Service Type',
-    editable: true,
-    flex: .2,
-  },
-]
-
 export const pageNameToHeaders: Map<string, GridColDef[]> = new Map()
   .set(PageNames.Areas, areaHeaders)
   .set(PageNames.Jurisdiction, jurisdictionHeaders)
@@ -312,4 +285,3 @@ export const pageNameToHeaders: Map<string, GridColDef[]> = new Map()
   .set(PageNames.Users, usersHeaders)
   .set(PageNames.Products, productHeaders)
   .set(PageNames.DeviceConfigurations, deviceHeaders)
-  .set(PageNames.MapLayers, MapLayers)
