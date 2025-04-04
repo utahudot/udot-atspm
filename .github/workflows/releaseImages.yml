@@ -1,4 +1,4 @@
-name: Build and Attach Docker Images to Release
+name: Build, Publish, and Attach Docker Images to Release
 
 on:
   release:
@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   changes:
-    name: Find Containers to build
+    name: Find Containers to Build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4     
@@ -22,7 +22,7 @@ jobs:
       changes: ${{ steps.changes.outputs.changes }}
 
   build:
-    name: Build Docker Images
+    name: Build and Publish Docker Images
     needs: changes
     if: ${{ needs.changes.outputs.changes != '[]'}}
     runs-on: ubuntu-latest
@@ -40,39 +40,45 @@ jobs:
           docker_dir="$(cat .github/filters.json | jq '."${{ matrix.name }}"' | tr -d '**\n"')"
           echo "DOCKERFILE_DIR=${docker_dir}" >> $GITHUB_ENV
 
+      - name: 🏷️ Extract Release Tag
+        id: meta
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/}
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: 🔑 Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
       - name: 🐳 Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: 🏷️ Extract Release Tag
-        id: meta
-        run: echo "VERSION=v5.0" >> $GITHUB_ENV
-
-      - name: 📦 Build Docker Image
+      - name: 📦 Build and Push Docker Image
         uses: docker/build-push-action@v6
-        if: ${{ matrix.name != 'atspmwebsite'}}
+        if: ${{ matrix.name != 'atspmwebsite' }}
         with:
-          tags: ${{ matrix.name }}:${{ env.VERSION }}
           context: Atspm/
           file: ${{ env.DOCKERFILE_DIR }}/Dockerfile
-          push: false
-          load: true  # Load the image into Docker after building
+          tags: ${{ secrets.DOCKER_USERNAME }}/${{ matrix.name }}:${{ env.VERSION }}
+          push: true
 
-      - name: 📦 Build Docker Image WebUI
+      - name: 📦 Build and Push Docker Image for WebUI
         uses: docker/build-push-action@v6
-        if: ${{ matrix.name == 'atspmwebsite'}}
+        if: ${{ matrix.name == 'atspmwebsite' }}
         with:
-          tags: ${{ matrix.name }}:${{ env.VERSION }}
           context: ${{ env.DOCKERFILE_DIR }}
           file: ${{ env.DOCKERFILE_DIR }}/Dockerfile
-          push: false
-          load: true  # Load the image into Docker after building
+          tags: ${{ secrets.DOCKER_USERNAME }}/${{ matrix.name }}:${{ env.VERSION }}
+          push: true
 
       - name: 📝 List Docker Images
         run: docker images
-  
+
       - name: 💾 Save Docker Image as Tar File
         run: |
-          docker save ${{ matrix.name }}:${{ env.VERSION }} -o ${{ matrix.name }}.tar
+          docker save ${{ secrets.DOCKER_USERNAME }}/${{ matrix.name }}:${{ env.VERSION }} -o ${{ matrix.name }}.tar
 
       - name: 📤 Upload Docker Image to GitHub Release
         uses: softprops/action-gh-release@v1
