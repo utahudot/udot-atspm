@@ -39,10 +39,7 @@ export default function TspReport({ report, reportOptions }: TspReportProps) {
     setCurrentTab(newTab)
   }
 
-  const handleSaveParameters = () => {
-    setModalOpen(true)
-  }
-
+  const handleSaveParameters = () => setModalOpen(true)
   const handleCloseModal = () => {
     setModalOpen(false)
     setParamName('')
@@ -55,23 +52,178 @@ export default function TspReport({ report, reportOptions }: TspReportProps) {
         designatedPhases: loc.designatedPhases,
       })),
       dates: reportOptions.selectedDays.map((date) => date.toISOString()),
-      '@odata.type':
-        '#Utah.Udot.Atspm.Data.Models.MeasureOptions.TransitSignalPriorityOptions',
+      '@odata.type': '#AtspmOptionsBase.TransitSignalPriorityOptions',
     }
     postMeasureOptionPreset({
       name: paramName,
       option: reportParams,
       measureTypeId: measureTypes.find((m) => m.abbreviation === 'TSP')?.id,
     })
-    addNotification({
-      title: 'Parameters saved successfully',
-      type: 'success',
-    })
+    addNotification({ title: 'Parameters saved successfully', type: 'success' })
     handleCloseModal()
   }
 
   const handleExportClick = () => {
     exportToExcel(report, reportOptions.locations)
+  }
+
+  function buildColumns(
+    designatedPhasesLookup: Record<string, boolean>
+  ): GridColDef[] {
+    const getColumn = ({
+      field,
+      headerName,
+      width,
+      baseClassName,
+      applyHighlight = true,
+      combineRows = false,
+    }: {
+      field: string
+      headerName: string
+      width: number
+      baseClassName?: string | ((params: any) => string)
+      applyHighlight?: boolean
+      combineRows?: boolean
+    }): GridColDef => {
+      return combineRows
+        ? {
+            field,
+            headerName,
+            width,
+            cellClassName: (params) => {
+              const base =
+                typeof baseClassName === 'function'
+                  ? baseClassName(params)
+                  : (baseClassName ?? '')
+              const shouldHighlight =
+                applyHighlight && designatedPhasesLookup[params.id]
+              return `${base} ${shouldHighlight ? 'highlightCell' : ''}`.trim()
+            },
+          }
+        : {
+            field,
+            headerName,
+            width,
+            rowSpanValueGetter: () => (combineRows ? 'inherit' : undefined),
+            cellClassName: (params) => {
+              const base =
+                typeof baseClassName === 'function'
+                  ? baseClassName(params)
+                  : (baseClassName ?? '')
+              const shouldHighlight =
+                applyHighlight && designatedPhasesLookup[params.id]
+              return `${base} ${shouldHighlight ? 'highlightCell' : ''}`.trim()
+            },
+          }
+    }
+
+    return [
+      getColumn({
+        field: 'plan',
+        headerName: 'Plan',
+        width: 100,
+        applyHighlight: false,
+        combineRows: true,
+      }),
+      getColumn({
+        field: 'numberOfCycles',
+        headerName: '# of Cycles',
+        width: 100,
+        applyHighlight: false,
+        combineRows: true,
+      }),
+      getColumn({ field: 'phaseNumber', headerName: 'Phase #', width: 100 }),
+      getColumn({
+        field: 'programmedSplit',
+        headerName: 'Programmed Split (sec)',
+        width: 160,
+      }),
+      getColumn({
+        field: 'recommendedTSPMax',
+        headerName: 'TSP Max',
+        width: 100,
+      }),
+      getColumn({
+        field: 'maxReduction',
+        headerName: 'Max Reduction',
+        width: 130,
+      }),
+      getColumn({
+        field: 'maxExtension',
+        headerName: 'Max Extension',
+        width: 130,
+      }),
+      getColumn({
+        field: 'priorityMin',
+        headerName: 'Priority Min',
+        width: 120,
+      }),
+      getColumn({
+        field: 'priorityMax',
+        headerName: 'Priority Max',
+        width: 120,
+      }),
+      getColumn({ field: 'minGreen', headerName: 'Min Green', width: 100 }),
+      getColumn({ field: 'yellow', headerName: 'Yellow', width: 100 }),
+      getColumn({
+        field: 'redClearance',
+        headerName: 'Red Clearance',
+        width: 120,
+      }),
+      getColumn({ field: 'minTime', headerName: 'Min Time', width: 100 }),
+      getColumn({
+        field: 'percentileSplit85th',
+        headerName: '85th Percentile Split (sec)',
+        width: 200,
+        baseClassName: 'purple-text',
+      }),
+      getColumn({
+        field: 'percentileSplit50th',
+        headerName: '50th Percentile Split (sec)',
+        width: 200,
+        baseClassName: 'purple-text',
+      }),
+      getColumn({
+        field: 'averageSplit',
+        headerName: 'Average Split (sec)',
+        width: 150,
+      }),
+      getColumn({
+        field: 'percentMaxOutsForceOffs',
+        headerName: 'Force Offs / Max Outs (%)',
+        width: 200,
+        baseClassName: (params) =>
+          params.row.plan === 254 ? 'red-text' : 'blue-text',
+      }),
+      getColumn({
+        field: 'percentGapOuts',
+        headerName: 'Gap Outs (%)',
+        width: 130,
+        baseClassName: 'green-text',
+      }),
+      getColumn({ field: 'percentSkips', headerName: 'Skips (%)', width: 120 }),
+      getColumn({ field: 'notes', headerName: 'Result Notes', width: 200 }),
+      getColumn({
+        field: 'skipsGreaterThan70TSPMax',
+        headerName: 'Skips > 70% TSP Max',
+        width: 180,
+      }),
+      getColumn({
+        field: 'forceOffsLessThan40TSPMax',
+        headerName: 'Force Offs < 40% TSP Max',
+        width: 200,
+      }),
+      getColumn({
+        field: 'forceOffsLessThan60TSPMax',
+        headerName: 'Force Offs < 60% TSP Max',
+        width: 200,
+      }),
+      getColumn({
+        field: 'forceOffsLessThan80TSPMax',
+        headerName: 'Force Offs < 80% TSP Max',
+        width: 200,
+      }),
+    ]
   }
 
   return (
@@ -119,11 +271,10 @@ export default function TspReport({ report, reportOptions }: TspReportProps) {
                   key={index}
                   label={
                     <Typography variant="subtitle2">
-                      {location?.locationIdentifier} - {location?.primaryName} &
+                      {location?.locationIdentifier} - {location?.primaryName} &{' '}
                       {location?.secondaryName}
                     </Typography>
                   }
-                  wrapped={false}
                   value={index.toString()}
                 />
               )
@@ -135,6 +286,7 @@ export default function TspReport({ report, reportOptions }: TspReportProps) {
                 loc.locationIdentifier ===
                 locationReport.locationPhases?.locationIdentifier
             )
+
             const rows =
               locationReport.transitSignalPlans?.flatMap((plan) =>
                 plan.phases?.map((phase) => ({
@@ -176,6 +328,16 @@ export default function TspReport({ report, reportOptions }: TspReportProps) {
                 }))
               ) || []
 
+            const designatedPhasesLookup = Object.fromEntries(
+              rows
+                .filter((r) =>
+                  location?.designatedPhases?.includes(r.phaseNumber)
+                )
+                .map((r) => [`${r.plan}-${r.phaseNumber}`, true])
+            )
+
+            const columns = buildColumns(designatedPhasesLookup)
+
             return (
               <TabPanel
                 key={locationReport?.locationPhases?.locationIdentifier}
@@ -204,13 +366,6 @@ export default function TspReport({ report, reportOptions }: TspReportProps) {
                     disableRowSelectionOnClick
                     disableColumnSorting
                     hideFooter
-                    getRowClassName={(params) =>
-                      location?.designatedPhases?.includes(
-                        params.row.phaseNumber
-                      )
-                        ? 'highlightRow'
-                        : ''
-                    }
                     sx={{
                       '& .MuiDataGrid-cell': {
                         borderRight: '1px solid lightgray',
@@ -227,7 +382,7 @@ export default function TspReport({ report, reportOptions }: TspReportProps) {
                       '& .green-text': {
                         color: 'green',
                       },
-                      '& .highlightRow .MuiDataGrid-cell:not(:first-of-type)': {
+                      '& .highlightCell': {
                         backgroundColor: '#8cd0f230',
                       },
                     }}
@@ -276,149 +431,6 @@ export default function TspReport({ report, reportOptions }: TspReportProps) {
 function round(value: number | undefined, roundedNumber?: number) {
   return value != null ? Number(value.toFixed(roundedNumber || 1)) : value
 }
-
-const columns: GridColDef[] = [
-  { field: 'plan', headerName: 'Plan', width: 100 },
-  { field: 'numberOfCycles', headerName: '# of Cycles', width: 100 },
-  {
-    field: 'phaseNumber',
-    headerName: 'Phase #',
-    width: 100,
-    rowSpanValueGetter: () => null,
-  },
-  {
-    field: 'programmedSplit',
-    headerName: 'Programmed Split (sec)',
-    width: 160,
-    rowSpanValueGetter: () => null,
-  },
-  {
-    field: 'recommendedTSPMax',
-    headerName: 'TSP Max',
-    width: 100,
-    rowSpanValueGetter: () => null,
-  },
-  {
-    field: 'maxReduction',
-    headerName: 'Max Reduction',
-    width: 130,
-    rowSpanValueGetter: () => null,
-  },
-  {
-    field: 'maxExtension',
-    headerName: 'Max Extension',
-    width: 130,
-    rowSpanValueGetter: () => null,
-  },
-  {
-    field: 'priorityMin',
-    headerName: 'Priority Min',
-    width: 120,
-    rowSpanValueGetter: () => null,
-  },
-  {
-    field: 'priorityMax',
-    headerName: 'Priority Max',
-    width: 120,
-    rowSpanValueGetter: () => null,
-  },
-  {
-    field: 'minGreen',
-    headerName: 'Min Green',
-    width: 100,
-    rowSpanValueGetter: () => null,
-  },
-  {
-    field: 'yellow',
-    headerName: 'Yellow',
-    width: 100,
-    rowSpanValueGetter: () => null,
-  },
-  {
-    field: 'redClearance',
-    headerName: 'Red Clearance',
-    width: 120,
-    rowSpanValueGetter: () => null,
-  },
-  {
-    field: 'minTime',
-    headerName: 'Min Time',
-    width: 100,
-    rowSpanValueGetter: () => null,
-  },
-  {
-    field: 'percentileSplit85th',
-    headerName: '85th Percentile Split (sec)',
-    width: 200,
-    cellClassName: 'purple-text',
-    rowSpanValueGetter: () => null,
-  },
-  {
-    field: 'percentileSplit50th',
-    headerName: '50th Percentile Split (sec)',
-    width: 200,
-    cellClassName: 'purple-text',
-    rowSpanValueGetter: () => null,
-  },
-  {
-    field: 'averageSplit',
-    headerName: 'Average Split (sec)',
-    width: 150,
-    rowSpanValueGetter: () => null,
-  },
-  {
-    field: 'percentMaxOutsForceOffs',
-    headerName: 'Force Offs / Max Outs (%)',
-    width: 200,
-    rowSpanValueGetter: () => null,
-    cellClassName: (params) => {
-      return params.row.plan === 254 ? 'red-text' : 'blue-text'
-    },
-  },
-  {
-    field: 'percentGapOuts',
-    headerName: 'Gap Outs (%)',
-    width: 130,
-    cellClassName: 'green-text',
-    rowSpanValueGetter: () => null,
-  },
-  {
-    field: 'percentSkips',
-    headerName: 'Skips (%)',
-    width: 120,
-    rowSpanValueGetter: () => null,
-  },
-  {
-    field: 'notes',
-    headerName: 'Result Notes',
-    width: 200,
-    rowSpanValueGetter: () => null,
-  },
-  {
-    field: 'skipsGreaterThan70TSPMax',
-    headerName: 'Skips > 70% TSP Max',
-    width: 180,
-    rowSpanValueGetter: () => null,
-  },
-  {
-    field: 'forceOffsLessThan40TSPMax',
-    headerName: 'Force Offs < 40% TSP Max',
-    width: 200,
-    rowSpanValueGetter: () => null,
-  },
-  {
-    field: 'forceOffsLessThan60TSPMax',
-    headerName: 'Force Offs < 60% TSP Max',
-    width: 200,
-    rowSpanValueGetter: () => null,
-  },
-  {
-    field: 'forceOffsLessThan80TSPMax',
-    headerName: 'Force Offs < 80% TSP Max',
-    width: 200,
-    rowSpanValueGetter: () => null,
-  },
-]
 
 export function exportToExcel(
   report: TransitSignalPriorityResult[],
