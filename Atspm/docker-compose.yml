@@ -119,6 +119,12 @@ services:
     environment:
       <<: *default-environment
       ASPNETCORE_URLS: "https://+:5003"
+
+      EmailConfiguration__SmtpEmailService__Host: "${EmailConfiguration__Host}"
+      EmailConfiguration__SmtpEmailService__Port: "${EmailConfiguration__Port}"
+      EmailConfiguration__SmtpEmailService__UserName: "${EmailConfiguration__UserName}"
+      EmailConfiguration__SmtpEmailService__Password: "${EmailConfiguration__Password}"
+      EmailConfiguration__SmtpEmailService__EnableSsl: "${EmailConfiguration__EnableSsl}"
     volumes:      
       - ${CERT_LOCATION}
     depends_on:
@@ -129,28 +135,11 @@ services:
     build:
       context: ./WebUI
       dockerfile: Dockerfile
-      args:
-        REACT_APP_CONFIG_URL: "https://configapi"
-        REACT_APP_IDENTITY_URL: "https://identityapi"
-        REACT_APP_REPORTS_URL: "https://reportapi"
-        REACT_APP_DATA_URL: "https://dataapi"
-        REACT_APP_SPEED_URL: "https://speedapi"
     container_name: webui
     ports:
       - "3000:3000"
-    environment:
-      REACT_APP_MAP_DEFAULT_LATITUDE: ${REACT_APP_MAP_DEFAULT_LATITUDE}
-      REACT_APP_MAP_DEFAULT_LONGITUDE: ${REACT_APP_MAP_DEFAULT_LONGITUDE}
-      REACT_APP_MAP_TILE_LAYER: ${REACT_APP_MAP_TILE_LAYER}
-      REACT_APP_MAP_TILE_ATTRIBUTION: ${REACT_APP_MAP_TILE_ATTRIBUTION}
-      REACT_APP_POWERED_BY_IMAGE_URL: ${REACT_APP_POWERED_BY_IMAGE_URL}
-      REACT_APP_CONFIG_URL: "https://configapi"
-      REACT_APP_IDENTITY_URL: "https://identityapi"
-      REACT_APP_REPORTS_URL: "https://reportapi"
-      REACT_APP_DATA_URL: "https://dataapi"
-      REACT_APP_SPEED_URL: "https://speedapi"
     volumes:
-      - ${CERT_LOCATION}
+      - ./frontend-env.txt:/app/Configuration/frontend-env/frontend-env.txt:ro
     depends_on:
       configapi:
         condition: service_started
@@ -160,6 +149,24 @@ services:
         condition: service_started
       dataapi:
         condition: service_started
-
+  
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "3443:443"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./nginx/certs:/etc/nginx/certs:ro
+    depends_on:
+      webui:
+        condition: service_started
+      configapi:
+        condition: service_started
+      identityapi:
+        condition: service_started
+      reportapi:
+        condition: service_started
+      dataapi:
+        condition: service_started
 volumes:
   aspnet_https:
