@@ -205,5 +205,17 @@ services:
         condition: service_completed_successfully
     entrypoint: ["dotnet", "WatchDog.dll"]
 
+  eventlogutility:
+    build:
+      context: .
+      dockerfile: EventLogUtility/Dockerfile
+    environment:
+      <<: *default-environment
+    depends_on:
+      database-installer:
+        condition: service_completed_successfully
+    entrypoint: ["dotnet", "EventLogUtility.dll"]
+
+
 volumes:
   aspnet_https:
