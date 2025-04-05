@@ -168,5 +168,42 @@ services:
         condition: service_started
       dataapi:
         condition: service_started
+
+  watchdog:
+    build:
+      context: .
+      dockerfile: WatchDog/Dockerfile
+    environment:
+      <<: *default-environment
+
+      EmailConfiguration__SmtpEmailService__Host: "${EmailConfiguration__Host}"
+      EmailConfiguration__SmtpEmailService__Port: "${EmailConfiguration__Port}"
+      EmailConfiguration__SmtpEmailService__UserName: "${EmailConfiguration__UserName}"
+      EmailConfiguration__SmtpEmailService__Password: "${EmailConfiguration__Password}"
+      EmailConfiguration__SmtpEmailService__EnableSsl: "${EmailConfiguration__EnableSsl}"
+      WatchdogConfiguration__ScanDate: "${WatchdogConfiguration__ScanDate}"
+      WatchdogConfiguration__ConsecutiveCount: "${WatchdogConfiguration__ConsecutiveCount}"
+      WatchdogConfiguration__LowHitThreshold: "${WatchdogConfiguration__LowHitThreshold}"
+      WatchdogConfiguration__MaximumPedestrianEvents: "${WatchdogConfiguration__MaximumPedestrianEvents}"
+      WatchdogConfiguration__MinimumRecords: "${WatchdogConfiguration__MinimumRecords}"
+      WatchdogConfiguration__MinPhaseTerminations: "${WatchdogConfiguration__MinPhaseTerminations}"
+      WatchdogConfiguration__PercentThreshold: "${WatchdogConfiguration__PercentThreshold}"
+      WatchdogConfiguration__PreviousDayPMPeakEnd: "${WatchdogConfiguration__PreviousDayPMPeakEnd}"
+      WatchdogConfiguration__PreviousDayPMPeakStart: "${WatchdogConfiguration__PreviousDayPMPeakStart}"
+      WatchdogConfiguration__ScanDayEndHour: "${WatchdogConfiguration__ScanDayEndHour}"
+      WatchdogConfiguration__ScanDayStartHour: "${WatchdogConfiguration__ScanDayStartHour}"
+      WatchdogConfiguration__RampMainlineStartHour: "${WatchdogConfiguration__RampMainlineStartHour}"
+      WatchdogConfiguration__RampMainlineEndHour: "${WatchdogConfiguration__RampMainlineEndHour}"
+      WatchdogConfiguration__RampStuckQueueStartHour: "${WatchdogConfiguration__RampStuckQueueStartHour}"
+      WatchdogConfiguration__RampStuckQueueEndHour: "${WatchdogConfiguration__RampStuckQueueEndHour}"
+      WatchdogConfiguration__WeekdayOnly: "${WatchdogConfiguration__WeekdayOnly}"
+      WatchdogConfiguration__DefaultEmailAddress: "${WatchdogConfiguration__DefaultEmailAddress}"
+      WatchdogConfiguration__EmailAllErrors: "${WatchdogConfiguration__EmailAllErrors}"
+      WatchdogConfiguration__Sort: "${WatchdogConfiguration__Sort}"
+    depends_on:
+      database-installer:
+        condition: service_completed_successfully
+    entrypoint: ["dotnet", "WatchDog.dll"]
+
 volumes:
   aspnet_https:
