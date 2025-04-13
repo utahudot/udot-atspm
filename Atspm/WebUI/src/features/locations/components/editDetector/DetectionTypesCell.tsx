@@ -66,7 +66,7 @@ const DetectionTypesCell = ({
 
   return (
     <TableCell
-      sx={{ p: readonly ? 0 : '', border: readonly ? 'none' : '' }}
+      sx={{ p: readonly ? 0 : '', border: readonly ? 'none' : '', paddingY: 1 }}
       component={readonly ? 'div' : 'td'}
     >
       <Box
