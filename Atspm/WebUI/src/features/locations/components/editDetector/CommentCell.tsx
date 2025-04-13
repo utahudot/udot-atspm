@@ -116,7 +116,7 @@ const CommentCell = ({ detector }: CommentCellProps) => {
   }
 
   return (
-    <TableCell>
+    <TableCell sx={{ paddingY: 1 }}>
       {detector.isNew ? (
         <Tooltip title="Please save before adding comments">
           <span>

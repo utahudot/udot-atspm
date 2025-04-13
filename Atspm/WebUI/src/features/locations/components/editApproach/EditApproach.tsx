@@ -281,7 +281,6 @@ function EditApproach({ approach }: ApproachAdminProps) {
       <Collapse in={open} unmountOnExit>
         <Box minHeight="600px">
           <EditApproachGrid approach={approach} />
-          <br />
           <Box display="flex" justifyContent="flex-end" mb={1}>
             <AddButton
               label="New Detector"
