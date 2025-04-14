@@ -27,7 +27,7 @@ import {
   TableRow,
   Typography,
 } from '@mui/material'
-import { memo, useCallback, useState } from 'react'
+import { memo, useCallback, useMemo, useState } from 'react'
 
 function EditDetectors({ approach }: { approach: ConfigApproach }) {
   const approachErrors = useLocationStore((state) => {
@@ -63,6 +63,18 @@ function EditDetectors({ approach }: { approach: ConfigApproach }) {
     deleteDetector(selectedDetectorId)
     setModalOpen(false)
   }, [selectedDetectorId, deleteDetector])
+
+  const sortedDetectors = useMemo(
+    () =>
+      approach?.detectors?.sort((a, b) => {
+        return a.detectorChannel < b.detectorChannel
+          ? -1
+          : a.detectorChannel > b.detectorChannel
+            ? 1
+            : 0
+      }),
+    [approach.detectors]
+  )
 
   return (
     <>
@@ -140,7 +152,7 @@ function EditDetectors({ approach }: { approach: ConfigApproach }) {
                 </TableCell>
               </TableRow>
             )}
-            {approach.detectors.map((det) => (
+            {sortedDetectors.map((det) => (
               <TableRow
                 key={det.id}
                 sx={{
