@@ -12,6 +12,7 @@ import { dateToTimestamp } from '@/utils/dateTime'
 import { TabContext, TabList, TabPanel } from '@mui/lab'
 import { Box, Paper, Tab, useMediaQuery, useTheme } from '@mui/material'
 import {
+  addDays,
   differenceInMinutes,
   eachDayOfInterval,
   endOfMonth,
@@ -56,23 +57,31 @@ const PerformanceMeasures = () => {
     if (!location) {
       setChartType(ChartType.PurduePhaseTermination)
     }
-    const computedMissing = await computeMissingDays(
-      newLocation,
-      chartType as ChartType,
-      calendarMonth
-    )
-    setMissingDays(computedMissing)
+    try {
+      const computedMissing = await computeMissingDays(
+        newLocation,
+        chartType as ChartType,
+        calendarMonth
+      )
+      setMissingDays(computedMissing)
+    } catch (error) {
+      console.error('Error computing missing days:', error)
+    }
     setLocation(newLocation)
   }
 
   const handleMonthChange = async (date: Date) => {
     if (location) {
-      const computedMissing = await computeMissingDays(
-        location,
-        chartType as ChartType,
-        date
-      )
-      setMissingDays(computedMissing)
+      try {
+        const computedMissing = await computeMissingDays(
+          location,
+          chartType as ChartType,
+          date
+        )
+        setMissingDays(computedMissing)
+      } catch (error) {
+        console.error('Error computing missing days:', error)
+      }
     }
     setCalendarMonth(date)
   }
@@ -205,15 +214,14 @@ const computeMissingDays = async (
   month: Date
 ) => {
   if (!location.locationIdentifier) return []
-  // Get available days as strings from the API.
   const availableDaysRaw =
     (await getEventLogDaysWithEventLogsFromLocationIdentifier(
       location.locationIdentifier,
       {
         dataType:
           chartType === ChartType.ApproachSpeed ? 'SpeedEvent' : 'IndianaEvent',
-        start: dateToTimestamp(startOfMonth(month)),
-        end: dateToTimestamp(endOfMonth(month)),
+        start: dateToTimestamp(addDays(startOfMonth(month), -7)),
+        end: dateToTimestamp(addDays(endOfMonth(month), 7)),
       }
     )) as unknown as string[]
 
