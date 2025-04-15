@@ -90,6 +90,13 @@ const PerformanceMeasures = () => {
     return null
   }, [chartOptions, startDateTime, endDateTime])
 
+  const handleDateChange = (date: Date | null) => {
+    if (!date) return
+    const newStart = startOfWeek(startOfMonth(date))
+    const newEnd = endOfWeek(endOfMonth(date))
+    handleCalendarRangeChange(newStart, newEnd)
+  }
+
   return (
     <ResponsivePageLayout title={'Performance Measures'} noBottomMargin>
       <TabContext value={currentTab}>
@@ -126,11 +133,8 @@ const PerformanceMeasures = () => {
                 noCalendar={isMobileView}
                 warning={binSizeWarning ?? timespanWarning}
                 markDays={location ? missingDays : undefined}
-                onMonthChange={(date) => {
-                  const newStart = startOfWeek(startOfMonth(date))
-                  const newEnd = endOfWeek(endOfMonth(date))
-                  handleCalendarRangeChange(newStart, newEnd)
-                }}
+                onMonthChange={handleDateChange}
+                onChange={handleDateChange}
               />
             </Paper>
 

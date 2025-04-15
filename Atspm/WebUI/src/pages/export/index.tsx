@@ -166,6 +166,13 @@ const ExportData = () => {
     setCalendarEndDate(end)
   }
 
+  const handleDateChange = (date: Date | null) => {
+    if (!date) return
+    const newStart = startOfWeek(startOfMonth(date))
+    const newEnd = endOfWeek(endOfMonth(date))
+    handleCalendarRangeChange(newStart, newEnd)
+  }
+
   const requiredClaim = 'Data:View'
   return (
     <Authorization requiredClaim={requiredClaim}>
@@ -201,11 +208,8 @@ const ExportData = () => {
                 changeEndDate={handleEndDateTimeChange}
                 noCalendar={isMobileView}
                 markDays={location ? missingDays : undefined}
-                onMonthChange={(date) => {
-                  const newStart = startOfWeek(startOfMonth(date))
-                  const newEnd = endOfWeek(endOfMonth(date))
-                  handleCalendarRangeChange(newStart, newEnd)
-                }}
+                onChange={handleDateChange}
+                onMonthChange={handleDateChange}
               />
             </Paper>
             <Box
