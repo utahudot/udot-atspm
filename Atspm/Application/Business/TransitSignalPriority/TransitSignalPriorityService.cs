@@ -849,7 +849,7 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
                         PercentSkips = percentSkips,
                         PercentGapOuts = percentGapOuts,
                         PercentMaxOutsForceOffs = Math.Round(GetPercentMaxOutForceOffs(planNumber, maxCycleCount, cyclesForPhase) * 100, 1),
-                        IsSkipsGreaterThan70TSPMax = skipsForPlans.Max() >= 70,
+                        IsSkipsGreaterThan70TSPMax = skipsForPlans.Min() >= 70,
                         IsForceOffsLessThan40TSPMax = forceOffsForPlans.Max() <= 40,
                         IsForceOffsLessThan60TSPMax = forceOffsForPlans.Max() <= 60,
                         IsForceOffsLessThan80TSPMax = forceOffsForPlans.Max() <= 80,
