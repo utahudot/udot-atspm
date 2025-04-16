@@ -220,7 +220,7 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
 
                     phase.SkipsGreaterThan70TSPMax = Math.Round(phase.ProgrammedSplit - phase.MinTime, 1);
                     phase.ForceOffsLessThan40TSPMax = Math.Round(phase.ProgrammedSplit - (phase.MinTime + phase.PercentileSplit50th) / 2, 1);
-                    phase.ForceOffsLessThan60TSPMax = Math.Round(phase.ProgrammedSplit - phase.PercentileSplit50th, 1); ;
+                    phase.ForceOffsLessThan60TSPMax = Math.Round(phase.ProgrammedSplit - phase.PercentileSplit50th, 1);
                     phase.ForceOffsLessThan80TSPMax = Math.Round(phase.ProgrammedSplit - phase.PercentileSplit85th, 1);
 
                     if (phase.IsSkipsGreaterThan70TSPMax)
@@ -761,7 +761,11 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
 
             foreach (var planNumber in distinctPlanNumbers)
             {
-                var programmedSplits = plans.First(p => p.PlanNumber == planNumber).ProgrammedSplits;
+                var programmedSplits = plans
+                    .Where(p => p.PlanNumber == planNumber)
+                    .OrderByDescending(p => p.ProgrammedSplits.Count)
+                    .First()
+                    .ProgrammedSplits;
                 var tspPlan = new TransitSignalPriorityPlan { PlanNumber = Convert.ToInt32(planNumber) };
 
                 // Get all plans with the same plan number
@@ -780,16 +784,8 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
                 foreach (var (phaseNumber, cyclesForPhase) in phaseCyclesDict)
                 {
                     if (!cyclesForPhase.Any()) continue;
-                    //Still add phase to tsp even if not in programmed splits
-                    if (!programmedSplits.ContainsKey(phaseNumber))
-                    {
-                        tspPlan.Phases.Add(new TransitSignalPhase
-                        {
-                            PhaseNumber = phaseNumber,
-                        });
-                        continue;
-                    }
 
+                    //Still add phase to tsp even if not in programmed splits
                     double skippedCycles = maxCycleCount - cyclesForPhase.Count;
                     double percentSkips = maxCycleCount > 0 ? Math.Round((skippedCycles / maxCycleCount) * 100, 1) : 0;
                     double percentGapOuts = maxCycleCount > 0 ? Math.Round(cyclesForPhase.Count(c => c.TerminationEvent == 4) / (double)maxCycleCount * 100, 1) : 0;
@@ -803,16 +799,49 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
                     foreach (var plan in plansForNumber)
                     {
                         var cyclesForPlan = cycles.Where(c => c.GreenEvent >= plan.Start && c.GreenEvent < plan.End).ToList();
-                        var phaseCyclesForPlan = GetPhaseCyclesDictionary(cyclesForPlan, completePhases).GetValueOrDefault(phaseNumber, new List<TransitSignalPriorityCycle>());
+                        var phaseCyclesForPlanDict = GetPhaseCyclesDictionary(cyclesForPlan, completePhases);
+                        var phaseCycles = phaseCyclesForPlanDict.GetValueOrDefault(phaseNumber, new List<TransitSignalPriorityCycle>());
 
-                        if (!phaseCyclesForPlan.Any()) continue;
+                        if (!phaseCycles.Any()) continue;
 
-                        int maxCycleCountForPlan = phaseCyclesForPlan.Count;
-                        forceOffsForPlans.Add(Math.Round(GetPercentMaxOutForceOffs(planNumber, maxCycleCountForPlan, phaseCyclesForPlan) * 100, 1));
-                        skipsForPlans.Add(maxCycleCountForPlan > 0 ? Math.Round((maxCycleCountForPlan - phaseCyclesForPlan.Count) / (double)maxCycleCountForPlan * 100, 1) : 0);
-                        percentileSplit50th.Add(GetPercentSplit(phaseCyclesForPlan.Count, 0.5, phaseCyclesForPlan));
-                        percentileSplit85th.Add(GetPercentSplit(phaseCyclesForPlan.Count, 0.85, phaseCyclesForPlan));
+                        int maxCycleCountForPlan = phaseCyclesForPlanDict.Values.Max(cycleList => cycleList.Count);
+                        forceOffsForPlans.Add(Math.Round(GetPercentMaxOutForceOffs(planNumber, maxCycleCountForPlan, phaseCycles) * 100, 1));
+                        skipsForPlans.Add(maxCycleCountForPlan > 0 ? Math.Round((maxCycleCountForPlan - phaseCycles.Count) / (double)maxCycleCountForPlan * 100, 1) : 0);
+                        percentileSplit50th.Add(GetPercentSplit(phaseCycles.Count, 0.5, phaseCycles));
+                        percentileSplit85th.Add(GetPercentSplit(phaseCycles.Count, 0.85, phaseCycles));
                     }
+
+                    var validMinTimes = cyclesForPhase.Where(c => c.MinTime >= 0).OrderBy(c => c.MinTime).ToList();
+                    var minTime = validMinTimes.Count > 1 ? Math.Round(validMinTimes.Skip(1).First().MinTime, 1) : 0;
+
+                    var validMinGreens = cyclesForPhase.Where(c => c.MinGreenDurationSeconds >= 0).OrderBy(c => c.MinGreenDurationSeconds).ToList();
+                    var minGreen = validMinGreens.Count > 1 ? validMinGreens.Skip(1).First().MinGreenDurationSeconds : 0;
+
+                    var validYellows = cyclesForPhase.Where(c => c.YellowDurationSeconds >= 0).OrderBy(c => c.YellowDurationSeconds).ToList();
+                    var yellow = validYellows.Count > 1 ? validYellows.Skip(1).First().YellowDurationSeconds : 0;
+
+                    var validReds = cyclesForPhase.Where(c => c.RedDurationSeconds >= 0).OrderBy(c => c.RedDurationSeconds).ToList();
+                    var redClearance = validReds.Count > 1 ? validReds.Skip(1).First().RedDurationSeconds : 0;
+
+                    if (!programmedSplits.ContainsKey(phaseNumber))
+                    {
+                        tspPlan.Phases.Add(new TransitSignalPhase
+                        {
+                            PhaseNumber = phaseNumber,
+                            PercentSkips = percentSkips,
+                            PercentGapOuts = percentGapOuts,
+                            PercentMaxOutsForceOffs = Math.Round(GetPercentMaxOutForceOffs(planNumber, maxCycleCount, cyclesForPhase) * 100, 1),
+                            AverageSplit = averageSplit,
+                            MinTime = minTime,
+                            PercentileSplit50th = percentileSplit50th.Average(),
+                            PercentileSplit85th = percentileSplit85th.Average(),
+                            MinGreen = minGreen,
+                            Yellow = yellow,
+                            RedClearance = redClearance
+                        });
+                        continue;
+                    }
+
 
                     tspPlan.Phases.Add(new TransitSignalPhase
                     {
@@ -825,13 +854,13 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
                         IsForceOffsLessThan60TSPMax = forceOffsForPlans.Max() <= 60,
                         IsForceOffsLessThan80TSPMax = forceOffsForPlans.Max() <= 80,
                         AverageSplit = averageSplit,
-                        MinTime = Math.Round(cyclesForPhase.Where(c => c.MinTime >= 0).OrderBy(c => c.MinTime).Skip(1).First().MinTime, 1),
+                        MinTime = minTime,
                         ProgrammedSplit = programmedSplits[phaseNumber],
                         PercentileSplit85th = percentileSplit85th.Average(),
                         PercentileSplit50th = percentileSplit50th.Average(),
-                        MinGreen = cyclesForPhase.Where(c => c.MinGreenDurationSeconds >= 0).OrderBy(c => c.MinGreenDurationSeconds).Skip(1).First().MinGreenDurationSeconds,
-                        Yellow = cyclesForPhase.Where(c => c.YellowDurationSeconds >= 0).OrderBy(c => c.YellowDurationSeconds).Skip(1).First().YellowDurationSeconds,
-                        RedClearance = cyclesForPhase.Where(c => c.RedDurationSeconds >= 0).OrderBy(c => c.RedDurationSeconds).Skip(1).First().RedDurationSeconds
+                        MinGreen = minGreen,
+                        Yellow = yellow,
+                        RedClearance = redClearance
                     });
                 }
 
