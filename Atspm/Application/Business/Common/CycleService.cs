@@ -284,6 +284,7 @@ namespace Utah.Udot.Atspm.Business.Common
                 }                
             }
 
+
             //Assign the termination event from the list of termation events to each cycle. If multiple are found use the last event. Also add the min green timestamp
             foreach (var c in cycles)
             {
@@ -291,6 +292,8 @@ namespace Utah.Udot.Atspm.Business.Common
                 var minGreenEvent = minGreenEvents.Where(e => e.Timestamp >= c.GreenEvent && e.Timestamp <= c.EndRedClearanceEvent).FirstOrDefault();
                 c.MinGreen = minGreenEvent == null ? c.YellowEvent : minGreenEvent.Timestamp;
             }
+            //Filter out cycles that are outliers
+            cycles = cycles.Where(c => c.MinGreenDurationSeconds >= 1 && c.RedDurationSeconds >= 1 && c.YellowDurationSeconds >= 1 && c.RedDurationSeconds < 10).ToList();
             return cycles;
 
 

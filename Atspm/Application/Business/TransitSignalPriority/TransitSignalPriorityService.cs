@@ -201,14 +201,14 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
                         && phase.Yellow == 0
                         && phase.RedClearance == 0)
                     {
-                        phase.RecommendedTSPMax = null;
+                        phase.RecommendedTSPMax = 0;
                         phase.Notes = "Phase not in use";
                         continue;
                     }
 
                     if (phase.ProgrammedSplit == 0)
                     {
-                        phase.RecommendedTSPMax = null;
+                        phase.RecommendedTSPMax = 0;
                         phase.Notes = "Programmed split is zero, manually calculate";
                         continue;
                     }
@@ -252,7 +252,7 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
                     // Ensure RecommendedTSPMax is null if it is negative
                     if (phase.RecommendedTSPMax.HasValue && phase.RecommendedTSPMax < 0)
                     {
-                        phase.RecommendedTSPMax = null;
+                        phase.RecommendedTSPMax = 0;
                         phase.Notes = "No recommended TSP Max";
                     }
                 }
@@ -783,7 +783,14 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
 
                 foreach (var (phaseNumber, cyclesForPhase) in phaseCyclesDict)
                 {
-                    if (!cyclesForPhase.Any()) continue;
+                    if (!cyclesForPhase.Any())
+                    {
+                        tspPlan.Phases.Add(new TransitSignalPhase
+                        {
+                            PhaseNumber = phaseNumber,
+                        });
+                        continue;
+                    };
 
                     //Still add phase to tsp even if not in programmed splits
                     double skippedCycles = maxCycleCount - cyclesForPhase.Count;
@@ -811,17 +818,10 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
                         percentileSplit85th.Add(GetPercentSplit(phaseCycles.Count, 0.85, phaseCycles));
                     }
 
-                    var validMinTimes = cyclesForPhase.Where(c => c.MinTime >= 0).OrderBy(c => c.MinTime).ToList();
-                    var minTime = validMinTimes.Count > 1 ? Math.Round(validMinTimes.Skip(1).First().MinTime, 1) : 0;
-
-                    var validMinGreens = cyclesForPhase.Where(c => c.MinGreenDurationSeconds >= 0).OrderBy(c => c.MinGreenDurationSeconds).ToList();
-                    var minGreen = validMinGreens.Count > 1 ? validMinGreens.Skip(1).First().MinGreenDurationSeconds : 0;
-
-                    var validYellows = cyclesForPhase.Where(c => c.YellowDurationSeconds >= 0).OrderBy(c => c.YellowDurationSeconds).ToList();
-                    var yellow = validYellows.Count > 1 ? validYellows.Skip(1).First().YellowDurationSeconds : 0;
-
-                    var validReds = cyclesForPhase.Where(c => c.RedDurationSeconds >= 0).OrderBy(c => c.RedDurationSeconds).ToList();
-                    var redClearance = validReds.Count > 1 ? validReds.Skip(1).First().RedDurationSeconds : 0;
+                    var minTime = Math.Round(cyclesForPhase.Max(c => c.MinTime), 1);
+                    var minGreen = cyclesForPhase.First().MinGreenDurationSeconds;
+                    var yellow = cyclesForPhase.First().YellowDurationSeconds;
+                    var redClearance = cyclesForPhase.First().RedDurationSeconds;
 
                     if (!programmedSplits.ContainsKey(phaseNumber))
                     {
