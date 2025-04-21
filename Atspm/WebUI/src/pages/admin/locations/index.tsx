@@ -50,7 +50,7 @@ const LocationsAdmin = () => {
   if (pageAccess.isLoading) return null
 
   return (
-    <ResponsivePageLayout title="Manage Locations">
+    <ResponsivePageLayout title="Manage Locations" useFullWidth>
       <AddButton
         label="New Location"
         onClick={openNewLocationModal}
