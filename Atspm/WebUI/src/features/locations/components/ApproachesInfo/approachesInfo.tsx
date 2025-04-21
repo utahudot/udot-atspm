@@ -145,6 +145,7 @@ function ApproachesInfo({ location }: ApproachesInfoProps) {
       <DataGrid
         autoHeight
         rows={data}
+        hideFooter
         columns={approachesHeaders}
         getRowId={(row) => row.id}
         rowSelection={false}
