@@ -1,4 +1,8 @@
-import { useGetDetectionType } from '@/api/config/aTSPMConfigurationApi'
+import {
+  useGetDetectionType,
+  useGetLocationType,
+} from '@/api/config/aTSPMConfigurationApi'
+import { useLocationStore } from '@/features/locations/components/editLocation/locationStore'
 import { DetectionType, Detector } from '@/features/locations/types'
 import {
   Avatar,
@@ -25,14 +29,24 @@ const DetectionTypesCell = ({
   onUpdate,
   readonly,
 }: DetectionTypesProps) => {
+  const { location } = useLocationStore()
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const theme = useTheme()
 
   const { data } = useGetDetectionType()
+  const { data: locationTypeData } = useGetLocationType()
 
-  const detectionTypes = data?.value?.filter(
-    (d) => d.abbreviation !== 'B' && d.abbreviation !== 'NA'
-  ) as unknown as DetectionType[]
+  const locationType = locationTypeData?.value?.find(
+    (type) => type.id === location?.locationTypeId
+  )
+
+  const detectionTypes = data?.value?.filter((d) => {
+    if (locationType.name === 'Intersection') {
+      return ['AC', 'AS', 'LLC', 'LLS', 'SBP', 'AP'].includes(d.abbreviation)
+    } else if (locationType.name === 'Ramp') {
+      return ['P', 'D', 'IQ', 'EQ'].includes(d.abbreviation)
+    }
+  }) as unknown as DetectionType[]
 
   const valueAbbreviations = new Set(
     detector.detectionTypes?.map((dt) => dt.abbreviation)
