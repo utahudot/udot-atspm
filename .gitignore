@@ -123,3 +123,4 @@ Thumbs.db
 **/nuget.config
 /Atspm/settings.env
 /Atspm/.env
+/Atspm/Data

@@ -1,4 +1,4 @@
-version: "3.8"
+
 
 x-environment: &default-environment
   ASPNETCORE_ENVIRONMENT: "Development"
@@ -211,10 +211,24 @@ services:
       dockerfile: EventLogUtility/Dockerfile
     environment:
       <<: *default-environment
+
+      DeviceDownloaderConfiguration__DeviceDownloader__BasePath: "${DeviceDownloaderConfiguration__DeviceDownloader__BasePath}"
+      DeviceDownloaderConfiguration__DeviceDownloader__DeleteRemoteFile: "${DeviceDownloaderConfiguration__DeviceDownloader__DeleteRemoteFile}"
+      DeviceDownloaderConfiguration__DeviceDownloader__Ping: "${DeviceDownloaderConfiguration__DeviceDownloader__Ping}"
+
+      EventLogImporterConfiguration__EventLogFileImporter__EarliestAcceptableDate: "${EventLogImporterConfiguration__EventLogFileImporter__EarliestAcceptableDate}"
+      EventLogImporterConfiguration__EventLogFileImporter__DeleteSource: "${EventLogImporterConfiguration__EventLogFileImporter__DeleteSource}"
+
+      EventLogUtility__SiemensDecoder: "${EventLogUtility__SiemensDecoder}"
+
+      DeviceEventLoggingConfiguration__Path: "${DeviceEventLoggingConfiguration__Path}"
+      DeviceEventLoggingConfiguration__BatchSize: "${DeviceEventLoggingConfiguration__BatchSize}"
+      DeviceEventLoggingConfiguration__ParallelProcesses: "${DeviceEventLoggingConfiguration__ParallelProcesses}"
     depends_on:
       database-installer:
         condition: service_completed_successfully
     entrypoint: ["dotnet", "EventLogUtility.dll"]
+
 
 
 volumes:
