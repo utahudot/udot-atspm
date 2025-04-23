@@ -53,5 +53,15 @@ namespace Utah.Udot.Atspm.Extensions
 
             return result;
         }
+
+        public static void UpdateDevicesForNewVersion(this IDeviceRepository repo,  List<int> deviceIds, int newVersionId)
+        {
+            var devices = repo.GetList().Where(w => deviceIds.Contains(w.Id)).ToList();
+            foreach (var device in devices)
+            {
+                device.LocationId = newVersionId;
+                repo.Update(device);
+            }
+        }
     }
 }
