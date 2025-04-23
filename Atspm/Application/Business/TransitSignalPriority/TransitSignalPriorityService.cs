@@ -766,7 +766,7 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
                     .OrderByDescending(p => p.ProgrammedSplits.Count)
                     .First()
                     .ProgrammedSplits;
-                var tspPlan = new TransitSignalPriorityPlan { PlanNumber = Convert.ToInt32(planNumber) };
+                var tspPlan = new TransitSignalPriorityPlan { PlanNumber = Convert.ToInt32(planNumber)};
 
                 // Get all plans with the same plan number
                 var plansForNumber = plans.Where(p => p.PlanNumber == planNumber).ToList();
@@ -890,7 +890,9 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
                     {
                         if (freePlanMinGreens.ContainsKey(phase.PhaseNumber))
                         {
-                            phase.MinGreen = freePlanMinGreens[phase.PhaseNumber];
+                            //As long as freePlanMinGreens doesnt have a value of 0 or lower, use the min value of the two, else continue to use the min green from the phase
+                            var minGreen = freePlanMinGreens[phase.PhaseNumber] > 0 ? Math.Min(freePlanMinGreens[phase.PhaseNumber], phase.MinGreen) : phase.MinGreen;
+                            phase.MinGreen = minGreen;
                             phase.MinTime = phase.MinGreen + phase.Yellow + phase.RedClearance;
                         }
                     }
