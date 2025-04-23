@@ -83,7 +83,7 @@ export default function MultipleLocationsDisplay({
 
   if (!locations.length) {
     return (
-      <Typography variant="body2" color="textSecondary" sx={{ width: '600px' }}>
+      <Typography variant="body2" color="textSecondary" sx={{ width: '480px' }}>
         No locations selected
       </Typography>
     )
