@@ -43,12 +43,14 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
     public class LocationController : LocationPolicyControllerBase<Location, int>
     {
         private readonly ILocationRepository _repository;
+        private readonly IDeviceRepository _deviceRepository;
         private readonly ISignalTemplateService _signalTemplateService;
 
         /// <inheritdoc/>
-        public LocationController(ILocationRepository repository, ISignalTemplateService signalTemplateService) : base(repository)
+        public LocationController(ILocationRepository repository, IDeviceRepository deviceRepository, ISignalTemplateService signalTemplateService) : base(repository)
         {
             _repository = repository;
+            _deviceRepository = deviceRepository;
             _signalTemplateService = signalTemplateService;
         }
 
@@ -117,7 +119,14 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
         {
             try
             {
-                return Ok(await _repository.CopyLocationToNewVersion(key));
+                var deviceIds = _deviceRepository.GetList()
+                    .Where(w => w.LocationId == key)
+                    .Select(s => s.Id)
+                    .ToList();
+                var newLocation = await _repository.CopyLocationToNewVersion(key);
+                _deviceRepository.UpdateDevicesForNewVersion(deviceIds, newLocation.Id);
+
+                return Ok();
             }
             catch (ArgumentException e)
             {

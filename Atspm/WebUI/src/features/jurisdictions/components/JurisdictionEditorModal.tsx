@@ -1,5 +1,5 @@
-import { Jurisdiction } from "@/features/jurisdictions/types";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { Jurisdiction } from '@/api/config/aTSPMConfigurationApi.schemas'
+import { zodResolver } from '@hookform/resolvers/zod'
 import {
   Button,
   Dialog,

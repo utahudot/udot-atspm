@@ -42,14 +42,20 @@ export const movementTypeOptions = [
 interface MovementTypeCellProps {
   value: string
   onUpdate: (value: string) => void
+  width?: number | string
 }
 
-const MovementTypeCell = ({ value, onUpdate }: MovementTypeCellProps) => {
+const MovementTypeCell = ({
+  value,
+  onUpdate,
+  width,
+}: MovementTypeCellProps) => {
   return (
     <DropdownCell
       options={movementTypeOptions}
       value={value}
       onUpdate={onUpdate}
+      width={width}
     />
   )
 }

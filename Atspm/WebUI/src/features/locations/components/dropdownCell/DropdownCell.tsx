@@ -13,9 +13,10 @@ interface SelectCellProps {
   options: OptionType[]
   value: string
   onUpdate: (id: string) => void
+  width?: string | number
 }
 
-function DropdownCell({ options, value, onUpdate }: SelectCellProps) {
+function DropdownCell({ options, value, onUpdate, width }: SelectCellProps) {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const isOpen = Boolean(anchorEl)
 
@@ -37,10 +38,11 @@ function DropdownCell({ options, value, onUpdate }: SelectCellProps) {
   return (
     <TableCell
       sx={{
-        minWidth: '180px',
+        minWidth: width ? width : '180px',
         backgroundColor: isOpen ? 'rgba(0, 123, 255, 0.1)' : 'none',
         boxShadow: isOpen ? '0 0 0 2px rgba(0, 123, 255, 0.5) inset' : 'none',
         cursor: 'pointer',
+        paddingY: 1,
       }}
     >
       <Box sx={{ display: 'flex', alignItems: 'center' }} onClick={handleClick}>

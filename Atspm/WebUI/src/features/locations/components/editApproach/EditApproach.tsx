@@ -41,6 +41,7 @@ function EditApproach({ approach }: ApproachAdminProps) {
   const copyApproachInStore = useLocationStore((s) => s.copyApproach)
   const deleteApproachInStore = useLocationStore((s) => s.deleteApproach)
   const addDetectorInStore = useLocationStore((s) => s.addDetector)
+  const updateSavedApproaches = useLocationStore((s) => s.updateSavedApproaches)
 
   const [open, setOpen] = useState(false)
   const [openModal, setOpenModal] = useState(false)
@@ -110,21 +111,20 @@ function EditApproach({ approach }: ApproachAdminProps) {
     ) as ConfigApproach
 
     // If the approach is new, remove the local ID so the server will create one
-    if (modifiedApproach.isNew) {
-      delete modifiedApproach.id
-      modifiedApproach.detectors.forEach((d) => delete d.approachId)
+    if (approach.isNew) {
+      delete approach.id
+      approach.detectors.forEach((d) => delete d.approachId)
     }
-    delete modifiedApproach.index
-    delete modifiedApproach.open
-    delete modifiedApproach.isNew
+    delete approach.index
+    delete approach.open
+    delete approach.isNew
 
     // Convert direction type from name -> numeric enum
-    modifiedApproach.directionTypeId =
-      findDirectionType(modifiedApproach.directionTypeId)?.value ||
-      DirectionTypes.NA
+    approach.directionTypeId =
+      findDirectionType(approach.directionTypeId)?.value || DirectionTypes.NA
 
     // Detectors
-    modifiedApproach.detectors.forEach((det) => {
+    approach.detectors.forEach((det) => {
       if (det.isNew) {
         delete det.id
       }
@@ -151,12 +151,12 @@ function EditApproach({ approach }: ApproachAdminProps) {
       det.laneType = findLaneType(det.laneType)?.value
     })
 
-    editApproach(modifiedApproach, {
+    editApproach(approach, {
       onSuccess: (saved) => {
         try {
-          const detectorsArray = saved.detectors?.$values || []
+          const detectorsArray = saved?.detectors || []
           detectorsArray.forEach((detector) => {
-            detector.detectionTypes = detector.detectionTypes?.$values || []
+            detector.detectionTypes = detector.detectionTypes || []
             detector.detectionTypes.forEach((dType) => {
               dType.abbreviation =
                 findDetectionType(dType.abbreviation)?.name || DetectionTypes.NA
@@ -195,6 +195,9 @@ function EditApproach({ approach }: ApproachAdminProps) {
             // If it wasn't new, we can just update existing approach
             updateApproachInStore(normalizedSaved)
           }
+
+          // Update savedApproaches to reflect the saved state
+          updateSavedApproaches(normalizedSaved)
 
           addNotification({
             title: 'Approach saved successfully',
@@ -237,6 +240,7 @@ function EditApproach({ approach }: ApproachAdminProps) {
     findDetectionType,
     updateApproachInStore,
     deleteApproachInStore,
+    updateSavedApproaches,
     addNotification,
   ])
 
@@ -277,7 +281,6 @@ function EditApproach({ approach }: ApproachAdminProps) {
       <Collapse in={open} unmountOnExit>
         <Box minHeight="600px">
           <EditApproachGrid approach={approach} />
-          <br />
           <Box display="flex" justifyContent="flex-end" mb={1}>
             <AddButton
               label="New Detector"

@@ -1,3 +1,11 @@
+import {
+  useDeleteJurisdictionFromKey,
+  useGetJurisdiction,
+  useGetLocationLocationsForSearch,
+  usePatchJurisdictionFromKey,
+  usePostJurisdiction,
+} from '@/api/config/aTSPMConfigurationApi'
+import { Jurisdiction } from '@/api/config/aTSPMConfigurationApi.schemas'
 import AdminTable from '@/components/AdminTable/AdminTable'
 import DeleteModal from '@/components/AdminTable/DeleteModal'
 import { ResponsivePageLayout } from '@/components/ResponsivePage'
@@ -6,35 +14,29 @@ import {
   useUserHasClaim,
   useViewPage,
 } from '@/features/identity/pagesCheck'
-import {
-  useCreateJurisdiction,
-  useDeleteJurisdiction,
-  useEditJurisdiction,
-  useGetJurisdiction,
-} from '@/features/jurisdictions/api/jurisdictionApi'
+
 import JurisdictionEditorModal from '@/features/jurisdictions/components/JurisdictionEditorModal'
-import { Jurisdiction } from '@/features/jurisdictions/types'
-import { useLatestVersionOfAllLocations } from '@/features/locations/api'
+import { useNotificationStore } from '@/stores/notifications'
 import { Backdrop, CircularProgress } from '@mui/material'
 
 const JurisdictionsAdmin = () => {
   const pageAccess = useViewPage(PageNames.Jurisdiction)
+  const { addNotification } = useNotificationStore()
   const hasLocationsEditClaim = useUserHasClaim('LocationConfiguration:Edit')
   const hasLocationsDeleteClaim = useUserHasClaim(
     'LocationConfiguration:Delete'
   )
-  const { mutateAsync: createMutation } = useCreateJurisdiction()
-  const { mutateAsync: deleteMutation } = useDeleteJurisdiction()
-  const { mutateAsync: editMutation } = useEditJurisdiction()
-
-  const { data: locationsData } = useLatestVersionOfAllLocations()
-  const locations = locationsData?.value
 
   const {
     data: jurisdictionData,
     isLoading,
     refetch: refetchJurisdictions,
   } = useGetJurisdiction()
+  const { mutateAsync: createMutation } = usePostJurisdiction()
+  const { mutateAsync: editMutation } = usePatchJurisdictionFromKey()
+  const { mutateAsync: deleteMutation } = useDeleteJurisdictionFromKey()
+  const { data: locationsData } = useGetLocationLocationsForSearch()
+  const locations = locationsData?.value
 
   const jurisdictions = jurisdictionData?.value
 
@@ -43,40 +45,40 @@ const JurisdictionsAdmin = () => {
   }
 
   const HandleCreateJurisdiction = async (jurisdictionData: Jurisdiction) => {
-    const { id, otherPartners, countyParish, name, mpo } = jurisdictionData
     try {
       await createMutation({
-        id,
-        otherPartners,
-        countyParish,
-        name,
-        mpo,
+        data: jurisdictionData,
       })
       refetchJurisdictions()
+      addNotification({ title: 'Jurisdiction Created', type: 'success' })
     } catch (error) {
       console.error('Mutation Error:', error)
+      addNotification({ title: 'Error Creating Jurisdiction', type: 'error' })
+    }
+  }
+
+  const HandleEditJurisdiction = async (jurisdictionData: Jurisdiction) => {
+    try {
+      await editMutation({
+        data: jurisdictionData,
+        key: jurisdictionData.id,
+      })
+      refetchJurisdictions()
+      addNotification({ title: 'Jurisdiction Edited', type: 'success' })
+    } catch (error) {
+      console.error('Mutation Error:', error)
+      addNotification({ title: 'Error Editing Jurisdiction', type: 'error' })
     }
   }
 
   const HandleDeleteJurisdiction = async (id: number) => {
     try {
-      await deleteMutation(id)
+      await deleteMutation({ key: id })
       refetchJurisdictions()
+      addNotification({ title: 'Jurisdiction Deleted', type: 'success' })
     } catch (error) {
       console.error('Mutation Error:', error)
-    }
-  }
-
-  const HandleEditJurisdiction = async (jurisdictionData: Jurisdiction) => {
-    const { id, otherPartners, countyParish, name, mpo } = jurisdictionData
-    try {
-      await editMutation({
-        data: { otherPartners, countyParish, name, mpo },
-        id,
-      })
-      refetchJurisdictions()
-    } catch (error) {
-      console.error('Mutation Error:', error)
+      addNotification({ title: 'Error Deleting Jurisdiction', type: 'error' })
     }
   }
 

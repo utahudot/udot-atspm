@@ -1,52 +1,54 @@
-import { usePutDeviceConfigurationFromKey } from '@/api/config/aTSPMConfigurationApi'
-import { Device } from '@/api/config/aTSPMConfigurationApi.schemas'
+import {
+  useDeleteDeviceConfigurationFromKey,
+  useGetDevice,
+  useGetDeviceConfiguration,
+  useGetLocationLocationsForSearch,
+  useGetProduct,
+  usePostDeviceConfiguration,
+  usePutDeviceConfigurationFromKey,
+} from '@/api/config/aTSPMConfigurationApi'
+import {
+  Device,
+  DeviceConfiguration,
+} from '@/api/config/aTSPMConfigurationApi.schemas'
 import AdminTable from '@/components/AdminTable/AdminTable'
 import DeleteModal from '@/components/AdminTable/DeleteModal'
 import { ResponsivePageLayout } from '@/components/ResponsivePage'
-import {
-  useCreateDeviceConfiguration,
-  useDeleteDeviceConfiguration,
-  useGetDeviceConfigurations,
-} from '@/features/devices/api/deviceConfigurations'
-import { useGetDevices } from '@/features/devices/api/devices'
 import { DeviceConfigCustomCellRender } from '@/features/devices/components/DeviceConfigCustomRenderCell'
 import DeviceConfigModal from '@/features/devices/components/DeviceConfigModal'
-import { DeviceConfiguration } from '@/features/devices/types/index'
 import {
   PageNames,
   useUserHasClaim,
   useViewPage,
 } from '@/features/identity/pagesCheck'
-import { useLatestVersionOfAllLocations } from '@/features/locations/api'
-import { useGetProducts } from '@/features/products/api'
 import { useNotificationStore } from '@/stores/notifications'
 import { Backdrop, CircularProgress } from '@mui/material'
 
 const DevicesAdmin = () => {
   const pageAccess = useViewPage(PageNames.DeviceConfigurations)
-  const {addNotification} = useNotificationStore()
+  const { addNotification } = useNotificationStore()
   const hasLocationsEditClaim = useUserHasClaim('LocationConfiguration:Edit')
   const hasLocationsDeleteClaim = useUserHasClaim(
     'LocationConfiguration:Delete'
   )
 
-  const { mutateAsync: createMutation } = useCreateDeviceConfiguration()
-  const { mutateAsync: deleteMutation } = useDeleteDeviceConfiguration()
+  const { mutateAsync: createMutation } = usePostDeviceConfiguration()
+  const { mutateAsync: deleteMutation } = useDeleteDeviceConfigurationFromKey()
   const { mutateAsync: editMutation } = usePutDeviceConfigurationFromKey()
 
-  const { data: allDevicesData } = useGetDevices()
+  const { data: allDevicesData } = useGetDevice()
   const devices = allDevicesData?.value
 
-  const { data: locationsData } = useLatestVersionOfAllLocations()
+  const { data: locationsData } = useGetLocationLocationsForSearch()
   const locations = locationsData?.value
   const {
     data: deviceConfigurationData,
     isLoading,
     refetch: refetchDeviceConfiguration,
-  } = useGetDeviceConfigurations()
+  } = useGetDeviceConfiguration()
   const deviceConfigurations = deviceConfigurationData?.value
 
-  const { data: productData } = useGetProducts()
+  const { data: productData } = useGetProduct()
 
   if (pageAccess.isLoading) {
     return
@@ -57,19 +59,18 @@ const DevicesAdmin = () => {
   ) => {
     try {
       const { id, ...dataWithoutId } = deviceConfigurationData
-      await createMutation(dataWithoutId)
+      await createMutation({ data: dataWithoutId })
       refetchDeviceConfiguration()
+      addNotification({
+        type: 'success',
+        title: 'Device Configuration Created',
+      })
     } catch (error) {
       console.error('Mutation Error:', error)
-    }
-  }
-
-  const HandleDeleteDevice = async (id: number) => {
-    try {
-      await deleteMutation(id)
-      refetchDeviceConfiguration()
-    } catch (error) {
-      console.error('Mutation Error:', error)
+      addNotification({
+        type: 'error',
+        title: 'Error Creating Device Configuration',
+      })
     }
   }
 
@@ -83,12 +84,34 @@ const DevicesAdmin = () => {
         data: dataWithoutProductName,
         key: deviceConfigurationData.id,
       })
-      addNotification({title:"Device Configuration Updated", type:'success'})
+      addNotification({
+        title: 'Device Configuration Updated',
+        type: 'success',
+      })
       refetchDeviceConfiguration()
     } catch (error) {
       console.error('Mutation Error:', error)
-      addNotification({title:"Device Configuration Update Unsuccessful", type:'error'})
+      addNotification({
+        title: 'Device Configuration Updated',
+        type: 'error',
+      })
+    }
+  }
 
+  const HandleDeleteDevice = async (id: number) => {
+    try {
+      await deleteMutation({ key: id })
+      refetchDeviceConfiguration()
+      addNotification({
+        type: 'success',
+        title: 'Device Configuration Deleted',
+      })
+    } catch (error) {
+      console.error('Mutation Error:', error)
+      addNotification({
+        type: 'error',
+        title: 'Device Configuration Delete Unsuccessful',
+      })
     }
   }
 
@@ -137,7 +160,7 @@ const DevicesAdmin = () => {
   const headers = [
     'Product Name',
     'Description',
-    
+
     'Protocol',
     'Port',
     'Path',
@@ -154,7 +177,7 @@ const DevicesAdmin = () => {
   const headerKeys = [
     'productName',
     'description',
-  
+
     'protocol',
     'port',
     'path',

@@ -17,11 +17,9 @@
 import {
   createDisplayProps,
   createTitle,
-  createToolbox,
   createTooltip,
   createXAxis,
   createYAxis,
-  formatExportFileName,
 } from '@/features/charts/common/transformers'
 import { ChartType } from '@/features/charts/common/types'
 import { TransformedChartResponse } from '@/features/charts/types'
@@ -35,6 +33,7 @@ import {
   EChartsOption,
   GridComponentOption,
   SeriesOption,
+  ToolboxComponentOption,
 } from 'echarts'
 import {
   AdvancedDetectors,
@@ -131,18 +130,27 @@ function transformData(data: RawTimingAndActuationData) {
     },
   ]
 
-  const toolbox = createToolbox(
-    {
-      title: formatExportFileName(
-        `Timing_and_Actuation_${data.locationDescription}`,
-        data.start,
-        data.end
-      ),
-      dateRange: {},
+  const toolbox: ToolboxComponentOption = {
+    feature: {
+      mySaveAsImage: {
+        name: `Timing_and_Actuation_${data.locationDescription}`,
+        show: true,
+        icon: 'M4.7,22.9L29.3,45.5L54.7,23.4M4.6,43.6L4.6,58L53.8,58L53.8,43.6M29.2,45.1L29.2,0',
+        onclick: () => {
+          // Dispatch a custom event with some text data
+          const event = new CustomEvent('saveChartImage', {
+            detail: {
+              text: title.text,
+            },
+          })
+          window.dispatchEvent(event)
+        },
+      },
+      dataView: {
+        readOnly: true,
+      },
     },
-    data.locationIdentifier,
-    ChartType.PreemptionDetails
-  )
+  }
 
   const series: SeriesOption[] = []
 
