@@ -60,12 +60,12 @@ namespace Utah.Udot.Atspm.Extensions
                         detector.Id = 0;
                     }
                 }
-                foreach (var device in newVersion.Devices)
-                {
-                    device.Id = 0;
-                }
+
+                newVersion.Devices = null;
 
                 await repo.AddAsync(newVersion);
+
+
 
                 return newVersion;
             }
