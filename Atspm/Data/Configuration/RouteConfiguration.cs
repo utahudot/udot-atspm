@@ -30,7 +30,7 @@ namespace Utah.Udot.Atspm.Data.Configuration
         {
             builder.ToTable(t => t.HasComment("Location Routes"));
 
-            builder.Property(e => e.Name).HasMaxLength(50);
+            builder.Property(e => e.Name).HasMaxLength(100);
         }
     }
 }

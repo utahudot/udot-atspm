@@ -27,7 +27,7 @@ import {
   TableRow,
   Typography,
 } from '@mui/material'
-import { memo, useCallback, useState } from 'react'
+import { memo, useCallback, useMemo, useState } from 'react'
 
 function EditDetectors({ approach }: { approach: ConfigApproach }) {
   const approachErrors = useLocationStore((state) => {
@@ -64,19 +64,31 @@ function EditDetectors({ approach }: { approach: ConfigApproach }) {
     setModalOpen(false)
   }, [selectedDetectorId, deleteDetector])
 
+  const sortedDetectors = useMemo(
+    () =>
+      approach?.detectors?.sort((a, b) => {
+        return a.detectorChannel < b.detectorChannel
+          ? -1
+          : a.detectorChannel > b.detectorChannel
+            ? 1
+            : 0
+      }),
+    [approach.detectors]
+  )
+
   return (
     <>
       <TableContainer component={Paper}>
         <Table stickyHeader>
           <TableHead>
             <TableRow>
-              <TableCell colSpan={9} />
-              <TableCell colSpan={2} align="center">
+              <TableCell colSpan={9} sx={{ paddingY: 1 }} />
+              <TableCell colSpan={2} align="center" sx={{ paddingY: 1 }}>
                 <Typography variant="caption" fontStyle="italic">
                   Advanced Count Only
                 </Typography>
               </TableCell>
-              <TableCell colSpan={2} align="center">
+              <TableCell colSpan={2} align="center" sx={{ paddingY: 1 }}>
                 <Typography variant="caption" fontStyle="italic">
                   Advanced Speed Only
                 </Typography>
@@ -84,20 +96,50 @@ function EditDetectors({ approach }: { approach: ConfigApproach }) {
               <TableCell />
             </TableRow>
             <TableRow>
-              <TableCell>Channel</TableCell>
-              <TableCell>Detection Types</TableCell>
-              <TableCell>Hardware</TableCell>
-              <TableCell>Latency Correction</TableCell>
-              <TableCell>Lane Number</TableCell>
-              <TableCell>Movement Type</TableCell>
-              <TableCell>Lane Type</TableCell>
-              <TableCell>Date Added</TableCell>
-              <TableCell>Comments</TableCell>
-              <TableCell>Distance to Stop Bar</TableCell>
-              <TableCell>Decision Point</TableCell>
-              <TableCell>Minimum Speed Filter</TableCell>
-              <TableCell>Movement Delay</TableCell>
-              <TableCell>Actions</TableCell>
+              <TableCell sx={{ paddingY: 1, paddingLeft: 1, fontSize: '12px' }}>
+                Channel
+              </TableCell>
+              <TableCell sx={{ paddingY: 1, fontSize: '12px' }}>
+                Detection Types
+              </TableCell>
+              <TableCell sx={{ paddingY: 1, fontSize: '12px' }}>
+                Hardware
+              </TableCell>
+              <TableCell sx={{ paddingY: 1, fontSize: '12px' }}>
+                Latency Correction
+              </TableCell>
+              <TableCell sx={{ paddingY: 1, fontSize: '12px' }}>
+                Lane Number
+              </TableCell>
+              <TableCell sx={{ paddingY: 1, fontSize: '12px' }}>
+                Movement Type
+              </TableCell>
+              <TableCell sx={{ paddingY: 1, fontSize: '12px' }}>
+                Lane Type
+              </TableCell>
+              <TableCell sx={{ paddingY: 1, fontSize: '12px' }}>
+                Date Added
+              </TableCell>
+              <TableCell sx={{ paddingY: 1, fontSize: '12px' }}>
+                Comments
+              </TableCell>
+              <TableCell sx={{ paddingY: 1, fontSize: '12px' }}>
+                Distance to Stop Bar
+              </TableCell>
+              <TableCell sx={{ paddingY: 1, fontSize: '12px' }}>
+                Decision Point
+              </TableCell>
+              <TableCell sx={{ paddingY: 1, fontSize: '12px' }}>
+                Minimum Speed Filter
+              </TableCell>
+              <TableCell sx={{ paddingY: 1, fontSize: '12px' }}>
+                Movement Delay
+              </TableCell>
+              <TableCell
+                sx={{ paddingY: 1, paddingRight: 1, fontSize: '12px' }}
+              >
+                Actions
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -110,7 +152,7 @@ function EditDetectors({ approach }: { approach: ConfigApproach }) {
                 </TableCell>
               </TableRow>
             )}
-            {approach.detectors.map((det) => (
+            {sortedDetectors.map((det) => (
               <TableRow
                 key={det.id}
                 sx={{
@@ -128,6 +170,7 @@ function EditDetectors({ approach }: { approach: ConfigApproach }) {
                       parseInt(val as string)
                     )
                   }
+                  sx={{ maxWidth: 85 }}
                   error={approachErrors[String(det.id)]?.error}
                   warning={approachWarnings[String(det.id)]?.warning}
                 />
@@ -148,21 +191,26 @@ function EditDetectors({ approach }: { approach: ConfigApproach }) {
                   onUpdate={(val) =>
                     updateDetector(det.id, 'latencyCorrection', val)
                   }
+                  sx={{ maxWidth: 85 }}
                 />
                 <EditableTableCell
                   value={det.laneNumber}
                   onUpdate={(val) => updateDetector(det.id, 'laneNumber', val)}
+                  sx={{ maxWidth: 80 }}
                 />
                 <MovementTypeCell
                   value={det.movementType}
                   onUpdate={(val) =>
                     updateDetector(det.id, 'movementType', val)
                   }
+                  width={100}
                 />
                 <LaneTypeCell
                   value={det.laneType}
                   onUpdate={(val) => updateDetector(det.id, 'laneType', val)}
+                  width={130}
                 />
+
                 <DateAddedCell
                   value={det.dateAdded}
                   onUpdate={(val) =>
@@ -194,7 +242,7 @@ function EditDetectors({ approach }: { approach: ConfigApproach }) {
                     updateDetector(det.id, 'movementDelay', val)
                   }
                 />
-                <TableCell align="center">
+                <TableCell align="center" sx={{ paddingY: 0 }}>
                   <IconButton
                     color="error"
                     onClick={() => {

@@ -36,6 +36,7 @@ export interface SelectDateTimeProps {
   changeEndTimePeriod?(date: Date): void
   markDays?: Date[]
   onMonthChange?(date: Date): void
+  onChange?(date: Date): void
   warning?: string | null
 }
 
@@ -56,6 +57,7 @@ export default function SelectDateTime({
   changeEndTimePeriod,
   markDays = [],
   onMonthChange,
+  onChange,
   warning = null,
 }: SelectDateTimeProps) {
   const [showWarning, setShowWarning] = useState(false)
@@ -65,7 +67,6 @@ export default function SelectDateTime({
     const timer = setTimeout(() => {
       setShowCalendar(true)
     }, 0)
-
     return () => clearTimeout(timer)
   }, [])
 
@@ -74,6 +75,7 @@ export default function SelectDateTime({
   }, [warning])
 
   const handleCalendarChange = (newDate: Date | null) => {
+    onChange?.(newDate as Date)
     if (!newDate) return
     if (!endDateTime || !startDateTime) return
 
@@ -82,7 +84,7 @@ export default function SelectDateTime({
     newEndDate.setHours(endDateTime.getHours())
     newEndDate.setMinutes(endDateTime.getMinutes())
     if (
-      startDateTime.getMonth() == endDateTime.getMonth() &&
+      startDateTime.getMonth() === endDateTime.getMonth() &&
       startDateTime.getDate() === endDateTime.getDate()
     ) {
       changeEndDate(newEndDate)
@@ -239,7 +241,7 @@ interface MarkedDayProps extends PickersDayProps<Date> {
 function MarkedDay(props: MarkedDayProps) {
   const { highlightedDays, day, outsideCurrentMonth, ...other } = props
 
-  // 1) If no location is selected, don't mark anything.
+  // If there are no highlighted days, render normally.
   if (highlightedDays === undefined) {
     return (
       <PickersDay
@@ -250,7 +252,7 @@ function MarkedDay(props: MarkedDayProps) {
     )
   }
 
-  // 3) If the day is in the missing-days array, it has no data.
+  // Determine if the day is marked as missing.
   const isMissing = highlightedDays.some((missing: Date) =>
     isSameDay(missing, day)
   )
