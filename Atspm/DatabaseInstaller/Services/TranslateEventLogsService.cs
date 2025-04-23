@@ -89,144 +89,130 @@ namespace DatabaseInstaller.Services
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            
-            for (var date = _config.Start; date <= _config.End; date = date.AddDays(1))
+            for (var currentDay = _config.Start.Date; currentDay <= _config.End.Date; currentDay = currentDay.AddDays(1))
             {
-                _logger.LogInformation($"Processing data for {date}");
+                _logger.LogInformation($"Processing data for {currentDay:yyyy-MM-dd}");
 
                 var locationsQuery = _locationRepository.GetList()
-                    .Include(s => s.Devices) // Always include Devices
-                    .AsQueryable(); // Ensure it remains IQueryable<Location>
+                    .Include(s => s.Devices)
+                    .AsQueryable();
+
                 if (_config.Device != null)
                 {
                     locationsQuery = locationsQuery
-                        .Where(l => l.Devices.Any(d => d.DeviceType == (DeviceTypes)_config.Device)); // Use Any() for efficient filtering
+                        .Where(l => l.Devices.Any(d => d.DeviceType == (DeviceTypes)_config.Device));
                 }
+
                 if (!string.IsNullOrEmpty(_config.Locations))
                 {
                     var locationIdentifiers = _config.Locations.Split(',', StringSplitOptions.RemoveEmptyEntries);
                     locationsQuery = locationsQuery
-                        .Where(l => locationIdentifiers.Contains(l.LocationIdentifier)); // Use Contains() for efficient filtering
+                        .Where(l => locationIdentifiers.Contains(l.LocationIdentifier));
                 }
 
                 var locations = locationsQuery
-                    .FromSpecification(new ActiveLocationSpecification()) // Apply specification
+                    .FromSpecification(new ActiveLocationSpecification())
                     .GroupBy(r => r.LocationIdentifier)
-                    .Select(g => g.OrderByDescending(r => r.Start).FirstOrDefault()) // Get the latest location per identifier
+                    .Select(g => g.OrderByDescending(r => r.Start).FirstOrDefault())
                     .ToList();
-
-
 
                 int batchCount = _config.Batch ?? 100;
 
-                _logger.LogInformation("Processing date: {Date} with {LocationCount} locations.", date, locations.Count());
-
                 foreach (var batch in locations.Batch(batchCount))
                 {
-                    await ProcessBatchAsync(batch, date, cancellationToken);
+                    await ProcessBatchAsync(batch, currentDay, cancellationToken);
                 }
             }
         }
 
-        private async Task ProcessBatchAsync(IEnumerable<Location> locations, DateTime date, CancellationToken cancellationToken)
+
+
+        private async Task ProcessBatchAsync(IEnumerable<Location> locations, DateTime currentDay, CancellationToken cancellationToken)
         {
             await Parallel.ForEachAsync(locations, async (location, token) =>
             {
-                var indianaEvents = new CompressedEventLogs<IndianaEvent>();
+                List<ControllerEventLog> dailyEvents = null;
+
                 await _retryPolicy.ExecuteAsync(async () =>
                 {
-                    indianaEvents = await GetCompressedEvents(date, location);
+                    dailyEvents = await GetDailyEvents(location, currentDay);
                 });
-                if (indianaEvents != null && indianaEvents.Data.Any())
-                {
-                    await _retryPolicy.ExecuteAsync(async () =>
-                    {
-                        await InsertWithRetryAsync(indianaEvents, location.LocationIdentifier, date, cancellationToken);
-                    });
-                }
 
+                if (dailyEvents != null && dailyEvents.Any())
+                {
+                    var hourlyGroups = dailyEvents
+                        .GroupBy(evt => evt.Timestamp.Hour)
+                        .OrderBy(g => g.Key);
+
+                    foreach (var hourlyGroup in hourlyGroups)
+                    {
+                        var hourStart = currentDay.AddHours(hourlyGroup.Key);
+                        var hourEnd = hourStart.AddHours(1);
+
+                        var hourlyCompressedEvents = ConvertToCompressedEvents(
+                            hourlyGroup.ToList(), location, DateOnly.FromDateTime(currentDay), hourStart, hourEnd);
+
+                        await _retryPolicy.ExecuteAsync(async () =>
+                        {
+                            await InsertWithRetryAsync(hourlyCompressedEvents, location.LocationIdentifier, hourStart, cancellationToken);
+                        });
+                    }
+                }
             });
-            //foreach (var location in locations)
-            //{
-            //    var indianaEvents = new CompressedEventLogs<IndianaEvent>();
-            //    await _retryPolicy.ExecuteAsync(async () =>
-            //    {
-            //        indianaEvents = await GetCompressedEvents(date, location);
-            //    });
-            //    if (indianaEvents != null &&  indianaEvents.Data.Any())
-            //    {
-            //        await _retryPolicy.ExecuteAsync(async () =>
-            //        {
-            //            await InsertWithRetryAsync(indianaEvents, location.LocationIdentifier, date, cancellationToken);
-            //        });
-            //    }
-            //}
         }
 
-        private async Task<CompressedEventLogs<IndianaEvent>> GetCompressedEvents(DateTime date, Location location)
+
+
+        private async Task<List<ControllerEventLog>> GetDailyEvents(Location location, DateTime date)
         {
-            string selectQuery = $"SELECT LogData FROM [dbo].[ControllerLogArchives] where SignalId = {location.LocationIdentifier} and ArchiveDate = '{date.Date}'";
+            string selectQuery = @$"
+        SELECT LogData FROM [dbo].[ControllerLogArchives]
+        WHERE SignalId = {location.LocationIdentifier}
+        AND ArchiveDate = '{date.Date:yyyy-MM-dd}'";
+
             var jsonObject = new List<ControllerEventLog>();
+
             await _retryPolicy.ExecuteAsync(async () =>
             {
-                try
+                using (var connection = new SqlConnection(_config.Source))
                 {
-                    using (SqlConnection connection = new SqlConnection(_config.Source))
+                    await connection.OpenAsync();
+
+                    using (var command = new SqlCommand(selectQuery, connection))
                     {
-                        connection.Open();
-
-                        using (SqlCommand command = new SqlCommand(selectQuery, connection))
+                        _logger.LogInformation($"Reading data from table for {location.LocationIdentifier} on {date:yyyy-MM-dd}");
+                        using (var reader = await command.ExecuteReaderAsync())
                         {
-                            _logger.LogInformation($"Reading data from table for {location.LocationIdentifier} on {date}");
-                            using (SqlDataReader reader = command.ExecuteReader())
+                            if (await reader.ReadAsync())
                             {
-                                if (reader.Read())
+                                byte[] compressedData = (byte[])reader["LogData"];
+                                byte[] decompressedData;
+
+                                using (var memoryStream = new MemoryStream(compressedData))
+                                using (var gzipStream = new GZipStream(memoryStream, CompressionMode.Decompress))
+                                using (var decompressedStream = new MemoryStream())
                                 {
-                                    byte[] compressedData = (byte[])reader["LogData"];
-
-                                    byte[] decompressedData;
-
-                                    using (MemoryStream memoryStream = new MemoryStream(compressedData))
-                                    {
-                                        using (GZipStream gzipStream = new GZipStream(memoryStream, CompressionMode.Decompress))
-                                        {
-                                            using (MemoryStream decompressedStream = new MemoryStream())
-                                            {
-                                                gzipStream.CopyTo(decompressedStream);
-                                                decompressedData = decompressedStream.ToArray();
-                                            }
-                                        }
-                                    }
-
-                                    _logger.LogInformation($"Data read from table for {location.LocationIdentifier} on {date}");
-                                    string json = System.Text.Encoding.UTF8.GetString(decompressedData);
-                                    if (string.IsNullOrEmpty(json))
-                                    {
-                                        _logger.LogError("No data found for Location: {LocationId} on Date: {Date}.", location.LocationIdentifier, date);
-                                    }
-
-                                    // Deserialize the JSON to an object
-                                    jsonObject = JsonConvert.DeserializeObject<List<ControllerEventLog>>(json);
-                                    jsonObject.ForEach(x => x.SignalIdentifier = location.LocationIdentifier);
-                                    
+                                    await gzipStream.CopyToAsync(decompressedStream);
+                                    decompressedData = decompressedStream.ToArray();
                                 }
-                                else
-                                {
-                                    _logger.LogError("No data found for Location: {LocationId} on Date: {Date}.", location.LocationIdentifier, date);
-                                }   
+
+                                string json = System.Text.Encoding.UTF8.GetString(decompressedData);
+                                jsonObject = JsonConvert.DeserializeObject<List<ControllerEventLog>>(json);
+                                jsonObject.ForEach(x => x.SignalIdentifier = location.LocationIdentifier);
+                            }
+                            else
+                            {
+                                _logger.LogWarning("No data found for Location: {LocationId} on Date: {Date}.", location.LocationIdentifier, date);
                             }
                         }
                     }
                 }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "Error reading data for Location: {LocationId} on Date: {Date}.", location.LocationIdentifier, date);
-                    throw;
-                }
             });
 
-            return ConvertToCompressedEvents(jsonObject, location, DateOnly.FromDateTime(date));
+            return jsonObject;
         }
+
+
 
         private async Task InsertWithRetryAsync(CompressedEventLogs<IndianaEvent> indianaEvents, string locationId, DateTime date, CancellationToken token)
         {            
@@ -253,49 +239,41 @@ namespace DatabaseInstaller.Services
             }
         }
 
-        private CompressedEventLogs<IndianaEvent> ConvertToCompressedEvents(List<ControllerEventLog> objectList, Location location, DateOnly archiveDate)
+        private CompressedEventLogs<IndianaEvent> ConvertToCompressedEvents(
+    List<ControllerEventLog> events, Location location, DateOnly archiveDate, DateTime hourStart, DateTime hourEnd)
         {
-            var compressedEvents = new CompressedEventLogs<IndianaEvent>() { Data = new List<IndianaEvent>()};
-            var indianaEvents = new List<IndianaEvent>();
-            foreach (var item in objectList.Distinct())
-            {
-                try
+            var indianaEvents = events
+                .Where(item => item.EventParam < 32000)
+                .Select(item => new IndianaEvent
                 {
-                    if (item.EventParam < 32000)
-                    {
-                        indianaEvents.Add(new IndianaEvent
-                        {
-                            LocationIdentifier = item.SignalIdentifier,
-                            Timestamp = item.Timestamp,
-                            EventCode = (short)item.EventCode,
-                            EventParam = (short)item.EventParam
-                        });
-                    }
-                }
-                catch
-                {
-                    _logger.LogWarning("Error converting data for Location: {LocationId} on Date: {Date}.",
-                        location.LocationIdentifier, archiveDate);
-                }
-            }
+                    LocationIdentifier = item.SignalIdentifier,
+                    Timestamp = item.Timestamp,
+                    EventCode = (short)item.EventCode,
+                    EventParam = (short)item.EventParam
+                })
+                .ToList();
 
-            var deviceId = location.Devices.FirstOrDefault(x => x.DeviceType == DeviceTypes.SignalController)?.Id;
+            var deviceId = location.Devices
+                .FirstOrDefault(x => x.DeviceType == DeviceTypes.SignalController)?.Id;
+
             if (deviceId == null)
             {
-                _logger.LogError("No device found for Location: {LocationId} on Date: {Date}.", location.LocationIdentifier, archiveDate);       
+                _logger.LogError("No device found for Location: {LocationId} on {HourStart} to {HourEnd}.",
+                    location.LocationIdentifier, hourStart, hourEnd);
+                return null;
             }
-            else
+
+            return new CompressedEventLogs<IndianaEvent>
             {
-                compressedEvents = new CompressedEventLogs<IndianaEvent>
-                {
-                    LocationIdentifier = location.LocationIdentifier,
-                    ArchiveDate = archiveDate,
-                    Data = indianaEvents,
-                    DeviceId = deviceId.Value
-                };
-            }
-            return compressedEvents;
+                LocationIdentifier = location.LocationIdentifier,
+                ArchiveDate = archiveDate,
+                Start = hourStart,
+                End = hourEnd,
+                Data = indianaEvents,
+                DeviceId = deviceId.Value
+            };
         }
+
 
         public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
     }

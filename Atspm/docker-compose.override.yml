@@ -1,0 +1,44 @@
+
+services:
+  device-emulator:
+    build:
+      context: .
+      dockerfile: DeviceEmulator/Dockerfile
+    container_name: device-emulator
+    ports:
+      - "8080:80"
+    volumes:
+      - device_data:/app/data  #  Named volume instead of local folder
+      - ./DeviceEmulator/devices.json:/app/config/devices.json:ro
+    environment:
+      DEVICE_CONFIG_PATH: "/app/config/devices.json"
+      LOG_INTERVAL_MINUTES: 1
+    restart: unless-stopped
+
+  ftp-server:
+    image: stilliard/pure-ftpd:hardened
+    ports:
+      - "21:21"
+      - "30000-30109:30000-30109"
+    environment:
+      PUBLICHOST: "0.0.0.0"
+      FTP_USER_NAME: "ftpuser"
+      FTP_USER_PASS: "password"
+      FTP_USER_HOME: "/home/ftpuser"
+      ADDED_FLAGS: "-c 100 -C 100 -d -E -p 30000:30109"
+    volumes:
+      - device_data:/home/ftpuser/data:rw
+    restart: unless-stopped
+        
+
+  sftp-server:
+    image: atmoz/sftp
+    ports:
+      - "2222:22"
+    volumes:
+      - device_data:/home/sftpuser/data:rw  #  Access shared logs
+    command: sftpuser:password:1001
+    restart: unless-stopped
+
+volumes:
+  device_data:  #  Define the named volume

@@ -65,6 +65,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GUIs", "GUIs", "{1CFBBB2E-F
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DatabaseInstaller", "DatabaseInstaller\DatabaseInstaller.csproj", "{BA44526F-97A0-4A68-9F77-5B3CD87AAF93}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeviceEmulator", "DeviceEmulator\DeviceEmulator.csproj", "{1FA2071F-20FF-48E7-9057-05E1AC9E4E32}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -245,6 +247,14 @@ Global
 		{BA44526F-97A0-4A68-9F77-5B3CD87AAF93}.Release|Any CPU.Build.0 = Release|Any CPU
 		{BA44526F-97A0-4A68-9F77-5B3CD87AAF93}.Release|x86.ActiveCfg = Release|Any CPU
 		{BA44526F-97A0-4A68-9F77-5B3CD87AAF93}.Release|x86.Build.0 = Release|Any CPU
+		{1FA2071F-20FF-48E7-9057-05E1AC9E4E32}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1FA2071F-20FF-48E7-9057-05E1AC9E4E32}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1FA2071F-20FF-48E7-9057-05E1AC9E4E32}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{1FA2071F-20FF-48E7-9057-05E1AC9E4E32}.Debug|x86.Build.0 = Debug|Any CPU
+		{1FA2071F-20FF-48E7-9057-05E1AC9E4E32}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1FA2071F-20FF-48E7-9057-05E1AC9E4E32}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1FA2071F-20FF-48E7-9057-05E1AC9E4E32}.Release|x86.ActiveCfg = Release|Any CPU
+		{1FA2071F-20FF-48E7-9057-05E1AC9E4E32}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -271,6 +281,7 @@ Global
 		{8EBCFA39-009D-450C-B4D6-8DAB84F1D0A5} = {9BAE6520-EDD0-4C01-B591-FA1C32B9BCD6}
 		{1DC2A63D-5DDF-4E51-BF29-1186A2ECDA53} = {35438977-FC79-4CF6-933F-7ADAF41841D1}
 		{BA44526F-97A0-4A68-9F77-5B3CD87AAF93} = {AEE33F3F-898A-4ABA-9D53-D174435F3536}
+		{1FA2071F-20FF-48E7-9057-05E1AC9E4E32} = {AEE33F3F-898A-4ABA-9D53-D174435F3536}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EEE1679F-AC1D-4DE8-93ED-A8CBCDC6F71F}
