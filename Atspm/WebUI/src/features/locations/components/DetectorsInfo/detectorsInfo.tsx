@@ -260,6 +260,7 @@ function DetectorsInfo({ location }: DetectorsInfoProps) {
         columns={detectorsHeaders}
         getRowId={(row) => row.id}
         rowSelection={false}
+        hideFooter={true}
         slots={{
           toolbar: CustomToolbar,
         }}

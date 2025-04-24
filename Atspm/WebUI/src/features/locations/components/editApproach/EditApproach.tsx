@@ -279,17 +279,15 @@ function EditApproach({ approach }: ApproachAdminProps) {
       </Paper>
 
       <Collapse in={open} unmountOnExit>
-        <Box minHeight="600px">
-          <EditApproachGrid approach={approach} />
-          <Box display="flex" justifyContent="flex-end" mb={1}>
-            <AddButton
-              label="New Detector"
-              onClick={() => addDetectorInStore(approach.id)}
-              sx={{ m: 1 }}
-            />
-          </Box>
-          <EditDetectors approach={approach} />
+        <EditApproachGrid approach={approach} />
+        <Box display="flex" justifyContent="flex-end" mb={1}>
+          <AddButton
+            label="New Detector"
+            onClick={() => addDetectorInStore(approach.id)}
+            sx={{ m: 1 }}
+          />
         </Box>
+        <EditDetectors approach={approach} />
       </Collapse>
 
       <DeleteApproachModal
