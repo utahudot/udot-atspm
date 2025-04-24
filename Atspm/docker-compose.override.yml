@@ -25,10 +25,13 @@ services:
       FTP_USER_NAME: "ftpuser"
       FTP_USER_PASS: "password"
       FTP_USER_HOME: "/home/ftpuser"
+      FTP_USER_UID: 0
+      FTP_USER_GID: 0
       ADDED_FLAGS: "-c 100 -C 100 -d -E -p 30000:30109"
     volumes:
       - device_data:/home/ftpuser/data:rw
     restart: unless-stopped
+
         
 
   sftp-server:

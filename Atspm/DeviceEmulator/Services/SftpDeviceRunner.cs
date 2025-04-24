@@ -1,6 +1,6 @@
 ﻿using DeviceEmulator.Models;
 using Microsoft.Extensions.Logging;
-using System.IO.Compression;
+using System.Text;
 
 namespace DeviceEmulator.Services
 {
@@ -8,13 +8,15 @@ namespace DeviceEmulator.Services
     {
         private readonly DeviceDefinition _device;
         private readonly ILogger _logger;
+        private readonly IConfiguration _config;
         private readonly string _deviceDirectory;
 
-        public SftpDeviceRunner(DeviceDefinition device, ILogger logger)
+        public SftpDeviceRunner(DeviceDefinition device, ILogger logger, IConfiguration config)
         {
             _device = device;
             _logger = logger;
-            _deviceDirectory = Path.Combine("data", "sftp", _device.DeviceIdentifier);
+            _config = config;
+            _deviceDirectory = Path.Combine("data", _device.DeviceIdentifier);
 
             Directory.CreateDirectory(_deviceDirectory);
         }
@@ -27,32 +29,46 @@ namespace DeviceEmulator.Services
 
         public async Task GenerateLogAsync()
         {
-            var timestamp = DateTime.UtcNow;
-            var extension = _device.UseCompression ? ".datZ" : ".dat";
-            var fileName = $"{_device.DeviceIdentifier}_{_device.IpAddress.Replace('.', '_')}_{timestamp:yyyy_MM_dd_HHmm}{extension}";
-            var filePath = Path.Combine(_deviceDirectory, fileName);
+            var sb = new StringBuilder();
 
-            byte[] mockData = GenerateBinaryLog();
+            var startTime = DateTime.Now;
+            sb.Append(startTime.ToString("G").PadRight(20)); // 20-character timestamp header
 
-            if (_device.UseCompression)
+            sb.AppendLine("Version: 5.0");
+            sb.AppendLine("Resource: TEST");
+            sb.AppendLine("Intersection: 9999");
+            sb.AppendLine("IP: 127.0.0.1");
+            sb.AppendLine("MAC: 00:11:22:33:44:55");
+            sb.AppendLine("Controller data log beginning: " + startTime.ToString("G"));
+            sb.AppendLine("Phases in use: 2,4,6");
+
+            var headerBytes = Encoding.ASCII.GetBytes(sb.ToString());
+
+            var random = new Random();
+            var logBytes = new List<byte>();
+            int rowsToCreatePerFile = _config.GetValue<int>("DeviceEmulator:RowsToCreatePerFile", 1000);
+
+            for (int i = 0; i < rowsToCreatePerFile; i++)
             {
-                using var fs = new FileStream(filePath, FileMode.Create);
-                using var gzip = new GZipStream(fs, CompressionLevel.Optimal);
-                await gzip.WriteAsync(mockData, 0, mockData.Length);
-            }
-            else
-            {
-                await File.WriteAllBytesAsync(filePath, mockData);
+                byte eventCode = (byte)random.Next(0, 201);
+                byte eventParam = (byte)random.Next(0, 201);
+                ushort offset = (ushort)(i * 10);
+
+                logBytes.Add(eventCode);
+                logBytes.Add(eventParam);
+                logBytes.AddRange(BitConverter.GetBytes(offset)); // little endian
             }
 
-            _logger.LogInformation("SFTP device {DeviceId} wrote binary log file: {FileName}", _device.DeviceIdentifier, fileName);
-        }
+            var fullLog = headerBytes.Concat(logBytes).ToArray();
 
-        private byte[] GenerateBinaryLog()
-        {
-            var buffer = new byte[1024];
-            new Random().NextBytes(buffer);
-            return buffer;
+            var timestamp = DateTime.Now.ToString("yyyy_MM_dd_HHmm");
+            var fileName = $"{_device.DeviceIdentifier}_127_0_0_1_{timestamp}.dat";
+            var fullPath = Path.Combine(_deviceDirectory, fileName);
+
+            Directory.CreateDirectory(_deviceDirectory);
+            await File.WriteAllBytesAsync(fullPath, fullLog);
+
+            _logger.LogInformation($"[SFTP Emulator] Wrote {rowsToCreatePerFile} events to: {fileName}");
         }
     }
 }

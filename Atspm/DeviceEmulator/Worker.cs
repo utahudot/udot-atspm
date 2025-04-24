@@ -45,7 +45,7 @@ namespace DeviceEmulator
                 {
                     "http" => new HttpXmlDeviceRunner(device, _logger),
                     "ftp" => new FtpDeviceRunner(device, _logger, _config),
-                    "sftp" => new SftpDeviceRunner(device, _logger),
+                    "sftp" => new SftpDeviceRunner(device, _logger, _config),
 
                     // Add other protocol cases here later
                     _ => null
