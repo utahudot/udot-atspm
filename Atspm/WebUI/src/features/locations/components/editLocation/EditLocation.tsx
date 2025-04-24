@@ -4,7 +4,15 @@ import EditDevices from '@/features/locations/components/editLocation/EditDevice
 import LocationGeneralOptionsEditor from '@/features/locations/components/editLocation/LocationGeneralOptionsEditor'
 import { useLocationStore } from '@/features/locations/components/editLocation/locationStore'
 import { TabContext, TabList, TabPanel } from '@mui/lab'
-import { Box, Button, Modal, Tab, Typography } from '@mui/material'
+import {
+  Box,
+  Button,
+  Divider,
+  Modal,
+  Paper,
+  Tab,
+  Typography,
+} from '@mui/material'
 import { useRouter } from 'next/router'
 import React, { memo, useCallback, useEffect, useState } from 'react'
 import EditLocationHeader from './EditLocationHeader'
@@ -39,11 +47,11 @@ function EditLocation() {
     setDialogOpen(false)
     if (confirm) {
       if (pendingTab) {
-        updateSavedApproachesFromCurrent() // Sync saved state before switching
+        updateSavedApproachesFromCurrent()
         setCurrentTab(pendingTab)
         setPendingTab(null)
       } else if (pendingRoute) {
-        updateSavedApproachesFromCurrent() // Sync saved state before leaving
+        updateSavedApproachesFromCurrent()
         router.push(pendingRoute)
         setPendingRoute(null)
       }
@@ -64,17 +72,12 @@ function EditLocation() {
     }
 
     router.events.on('routeChangeStart', handleRouteChangeStart)
-
     return () => {
       router.events.off('routeChangeStart', handleRouteChangeStart)
     }
   }, [router, hasUnsavedChanges])
 
-  useEffect(() => {
-    return () => {
-      resetStore() // Reset store when component unmounts
-    }
-  }, [resetStore])
+  useEffect(() => () => resetStore(), [resetStore])
 
   if (!location) return null
 
@@ -88,6 +91,7 @@ function EditLocation() {
           <Tab label="Approaches" value="3" />
           <Tab label="Watchdog" value="4" />
         </TabList>
+
         <TabPanel value="1" sx={{ padding: 0 }}>
           <LocationGeneralOptionsEditor />
         </TabPanel>
@@ -116,29 +120,25 @@ function EditLocation() {
             transform: 'translate(-50%, -50%)',
             width: 400,
             bgcolor: 'background.paper',
-            border: 'none',
             borderRadius: '10px',
             boxShadow: 24,
             p: 4,
           }}
         >
           <Typography id="leave-confirmation" sx={{ fontWeight: 'bold' }}>
-            {' '}
             Unsaved Changes
           </Typography>
           <Typography>
             There are unsaved changes. Are you sure you want to{' '}
             {pendingTab ? 'switch tabs' : 'navigate away'}?
           </Typography>
-          <Box sx={{ mt: 4, display: 'flex', justifyContent: 'flex-end' }}>
+          <Box
+            sx={{ mt: 4, display: 'flex', justifyContent: 'flex-end', gap: 1 }}
+          >
             <Button onClick={() => handleDialogClose(false)} color="inherit">
               Cancel
             </Button>
-            <Button
-              variant="contained"
-              onClick={() => handleDialogClose(true)}
-              color="primary"
-            >
+            <Button variant="contained" onClick={() => handleDialogClose(true)}>
               Proceed
             </Button>
           </Box>
@@ -151,14 +151,24 @@ function EditLocation() {
 export default memo(EditLocation)
 
 function ApproachesTab() {
-  const [approachIds, addApproach] = useLocationStore((state) => [
-    state.approaches.map((a) => a.id),
-    state.addApproach,
-  ])
+  const location = useLocationStore((state) => state.location)
+  const approaches = useLocationStore((state) => state.approaches)
+  const sortedApproaches = approaches.map((approach) => {
+    const sortedDetectors = approach.detectors.sort((a, b) => {
+      return a.detectorChannel - b.detectorChannel
+    })
+    return { ...approach, detectors: sortedDetectors }
+  })
+
+  const addApproach = useLocationStore((state) => state.addApproach)
+
+  const [showSummary, setShowSummary] = useState(false)
 
   const handleAddApproach = useCallback(() => {
     addApproach()
   }, [addApproach])
+
+  const combinedLocation = { ...location, approaches: sortedApproaches }
 
   return (
     <Box sx={{ minHeight: '400px' }}>
@@ -167,7 +177,11 @@ function ApproachesTab() {
         <ApproachWrapper key={id} approachId={id} />
       ))}
 
-      {approachIds.length === 0 && (
+      {approaches.length > 0 ? (
+        approaches.map((approach) => (
+          <EditApproach key={approach.id} approach={approach} />
+        ))
+      ) : (
         <Box sx={{ p: 2, mt: 2, textAlign: 'center' }}>
           <Typography variant="caption" fontStyle="italic">
             No approaches found
@@ -176,14 +190,4 @@ function ApproachesTab() {
       )}
     </Box>
   )
-}
-
-function ApproachWrapper({ approachId }: { approachId: number }) {
-  const approach = useLocationStore((state) =>
-    state.approaches.find((a) => a.id === approachId)
-  )
-
-  if (!approach) return null
-
-  return <EditApproach approach={approach} />
 }
