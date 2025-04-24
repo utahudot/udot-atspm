@@ -27,7 +27,7 @@ namespace Utah.Udot.Atspm.ReportApi.Controllers
     /// Preempt request report controller
     /// </summary>
     [ApiVersion(1.0)]
-    public class TransitSignalPriorityController : ReportControllerAuthBase<TransitSignalPriorityOptions, List<TransitSignalPriorityResult>>
+    public class TransitSignalPriorityController : ReportControllerBase<TransitSignalPriorityOptions, List<TransitSignalPriorityResult>>
     {
         /// <inheritdoc/>
         public TransitSignalPriorityController(IReportService<TransitSignalPriorityOptions, List<TransitSignalPriorityResult>> reportService, ILogger<TransitSignalPriorityController> logger) : base(reportService, logger) { }
