@@ -3,7 +3,6 @@ import EditApproach from '@/features/locations/components/editApproach/EditAppro
 import EditDevices from '@/features/locations/components/editLocation/EditDevices'
 import LocationGeneralOptionsEditor from '@/features/locations/components/editLocation/LocationGeneralOptionsEditor'
 import { useLocationStore } from '@/features/locations/components/editLocation/locationStore'
-import { useLocationWizardStore } from '@/features/locations/components/LocationSetupWizard/locationSetupWizardStore'
 import { TabContext, TabList, TabPanel } from '@mui/lab'
 import { Box, Button, Modal, Tab, Typography } from '@mui/material'
 import { useRouter } from 'next/router'
@@ -23,16 +22,6 @@ function EditLocation() {
   const [pendingTab, setPendingTab] = useState<string | null>(null)
   const [pendingRoute, setPendingRoute] = useState<string | null>(null)
   const [dialogOpen, setDialogOpen] = useState(false)
-
-  useEffect(() => {
-    if (activeStep === 0) {
-      setCurrentTab('1')
-    } else if (activeStep === 1) {
-      setCurrentTab('2')
-    } else if (activeStep === 2) {
-      setCurrentTab('3')
-    }
-  }, [activeStep])
 
   const handleTabChange = useCallback(
     (_: React.SyntheticEvent, newTab: string) => {
