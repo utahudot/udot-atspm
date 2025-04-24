@@ -40,11 +40,13 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
     public class LocationController : AtspmConfigControllerBase<Location, int>
     {
         private readonly ILocationRepository _repository;
+        private readonly IDeviceRepository _deviceRepository;
 
         /// <inheritdoc/>
-        public LocationController(ILocationRepository repository) : base(repository)
+        public LocationController(ILocationRepository repository, IDeviceRepository deviceRepository) : base(repository)
         {
             _repository = repository;
+            _deviceRepository = deviceRepository;
         }
 
         #region NavigationProperties
@@ -112,7 +114,14 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
         {
             try
             {
-                return Ok(await _repository.CopyLocationToNewVersion(key));
+                var deviceIds = _deviceRepository.GetList()
+                    .Where(w => w.LocationId == key)
+                    .Select(s => s.Id)
+                    .ToList();
+                var newLocation = await _repository.CopyLocationToNewVersion(key);
+                _deviceRepository.UpdateDevicesForNewVersion(deviceIds, newLocation.Id);
+
+                return Ok();
             }
             catch (ArgumentException e)
             {
