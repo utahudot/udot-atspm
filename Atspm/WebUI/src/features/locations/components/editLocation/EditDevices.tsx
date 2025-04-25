@@ -7,25 +7,71 @@ import {
 import DeviceCard from '@/features/locations/components/editLocation/DeviceCard'
 import { useLocationStore } from '@/features/locations/components/editLocation/locationStore'
 import DeviceModal from '@/features/locations/components/editLocation/NewDeviceModal'
+import DevicesWizardPanel from '@/features/locations/components/LocationSetupWizard/DevicesWizardPanel.tsx/DevicesWizardPanel'
+import { useLocationWizardStore } from '@/features/locations/components/LocationSetupWizard/locationSetupWizardStore'
 import AddIcon from '@mui/icons-material/Add'
-import { Avatar, Box, Button, Modal, Typography, useTheme } from '@mui/material'
-import { useState } from 'react'
+import SyncIcon from '@mui/icons-material/Sync'
+import { LoadingButton } from '@mui/lab'
+import {
+  Avatar,
+  Box,
+  Button,
+  Collapse,
+  Modal,
+  Paper,
+  Typography,
+  useTheme,
+} from '@mui/material'
+import { useEffect, useState } from 'react'
 
 const EditDevices = () => {
   const theme = useTheme()
 
   const { location } = useLocationStore()
+  const {
+    shouldDownloadData,
+    dataDownloaded,
+    setShouldDownloadData,
+    setDataDownloaded,
+  } = useLocationWizardStore()
+
   const locationId = location?.id
 
   const [isModalOpen, setModalOpen] = useState(false)
   const [currentDevice, setCurrentDevice] = useState<Device | null>(null)
   const [openDeleteModal, setOpenDeleteModal] = useState(false)
   const [deleteDeviceId, setDeleteDeviceId] = useState<string | null>(null)
+  const [showSyncPanel, setShowSyncPanel] = useState(false)
 
-  const { data: devicesData, refetch: refetchDevices } =
-    useGetDevicesForLocation(locationId)
+  const {
+    data: devicesData,
+    refetch: refetchDevices,
+    isFetching: isResyncing,
+  } = useGetDevicesForLocation(locationId)
   const { data: deviceConfigurationsData } = useGetDeviceConfigurations()
   const { mutate: deleteDevice } = useDeleteDevice()
+
+  const devices = devicesData?.value || []
+
+  useEffect(() => {
+    if (shouldDownloadData && !dataDownloaded) {
+      ;(async () => {
+        await handleResync()
+        setDataDownloaded(true)
+        setShouldDownloadData(false)
+        setShowSyncPanel(true)
+      })()
+    }
+  }, [
+    shouldDownloadData,
+    dataDownloaded,
+    setDataDownloaded,
+    setShouldDownloadData,
+  ])
+
+  async function handleResync() {
+    await refetchDevices()
+  }
 
   if (!deviceConfigurationsData?.value || !devicesData?.value) {
     return <Typography variant="h6">Loading...</Typography>
@@ -54,92 +100,127 @@ const EditDevices = () => {
   }
 
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        overflowX: 'auto',
-        flexWrap: 'nowrap',
-        gap: '30px',
-        marginTop: '10px',
-      }}
-    >
-      {devicesData.value.map((device) => (
-        <DeviceCard
-          key={device.id}
-          device={device}
-          onEdit={handleEditClick}
-          onDelete={() => handleDelete(device.id)}
-        />
-      ))}
-      <Button
-        onClick={handleAddClick}
-        sx={{
-          padding: 2,
-          mb: 1.95,
-          minWidth: '400px',
-          minHeight: '400px',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems: 'center',
-          border: `4px dashed ${theme.palette.primary.main}`,
-        }}
-      >
-        <Avatar sx={{ bgcolor: theme.palette.primary.main, mb: 1 }}>
-          <AddIcon />
-        </Avatar>
-        <Typography variant="h6" sx={{ marginTop: 2 }} component={'p'}>
-          Add New Device
-        </Typography>
-      </Button>
-
-      {isModalOpen && (
-        <DeviceModal
-          onClose={() => setModalOpen(false)}
-          device={currentDevice}
-          locationId={locationId}
-          refetchDevices={refetchDevices}
-        />
-      )}
-      <Modal
-        open={openDeleteModal}
-        onClose={() => setOpenDeleteModal(false)}
-        aria-labelledby="delete-confirmation"
-        aria-describedby="confirm-delete-approach"
-      >
-        <Box
+    <>
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
+        <LoadingButton
+          startIcon={<SyncIcon />}
+          loading={isResyncing}
+          loadingPosition="start"
+          variant="contained"
+          color="primary"
+          onClick={() => setShowSyncPanel((prev) => !prev)}
+        >
+          Sync
+        </LoadingButton>
+      </Box>
+      <Collapse in={showSyncPanel} timeout="auto" unmountOnExit>
+        <Paper
           sx={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: 400,
-            bgcolor: 'background.paper',
-            boxShadow: 24,
-            p: 4,
+            border: `1px solid ${theme.palette.divider}`,
+            borderRadius: 1,
+            p: 2,
+            mb: 2,
           }}
         >
-          <Typography id="delete-confirmation" sx={{ fontWeight: 'bold' }}>
-            Confirm Delete
-          </Typography>
-          <Typography id="confirm-delete-approach" sx={{ mt: 2 }}>
-            Are you sure you want to delete this device?
-          </Typography>
-          <Box sx={{ mt: 4, display: 'flex', justifyContent: 'flex-end' }}>
-            <Button onClick={() => setOpenDeleteModal(false)} color="inherit">
-              Cancel
-            </Button>
-            <Button
-              onClick={confirmDeleteDevice}
-              color="error"
-              variant="contained"
-            >
-              Delete Device
+          <DevicesWizardPanel
+            devices={devices}
+            onResync={handleResync}
+            isResyncing={isResyncing}
+          />
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+            <Button variant="outlined" onClick={() => setShowSyncPanel(false)}>
+              Close
             </Button>
           </Box>
-        </Box>
-      </Modal>
-    </Box>
+        </Paper>
+      </Collapse>
+      <Box
+        sx={{
+          display: 'flex',
+          overflowX: 'auto',
+          flexWrap: 'nowrap',
+          gap: '30px',
+          marginTop: '10px',
+        }}
+      >
+        {devicesData.value.map((device) => (
+          <DeviceCard
+            key={device.id}
+            device={device}
+            onEdit={handleEditClick}
+            onDelete={() => handleDelete(device.id)}
+          />
+        ))}
+        <Button
+          onClick={handleAddClick}
+          sx={{
+            padding: 2,
+            mb: 1.95,
+            minWidth: '400px',
+            minHeight: '400px',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+            border: `4px dashed ${theme.palette.primary.main}`,
+          }}
+        >
+          <Avatar sx={{ bgcolor: theme.palette.primary.main, mb: 1 }}>
+            <AddIcon />
+          </Avatar>
+          <Typography variant="h6" sx={{ marginTop: 2 }} component={'p'}>
+            Add New Device
+          </Typography>
+        </Button>
+
+        {isModalOpen && (
+          <DeviceModal
+            onClose={() => setModalOpen(false)}
+            device={currentDevice}
+            locationId={locationId}
+            refetchDevices={refetchDevices}
+          />
+        )}
+        <Modal
+          open={openDeleteModal}
+          onClose={() => setOpenDeleteModal(false)}
+          aria-labelledby="delete-confirmation"
+          aria-describedby="confirm-delete-approach"
+        >
+          <Box
+            sx={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              width: 400,
+              bgcolor: 'background.paper',
+              boxShadow: 24,
+              p: 4,
+            }}
+          >
+            <Typography id="delete-confirmation" sx={{ fontWeight: 'bold' }}>
+              Confirm Delete
+            </Typography>
+            <Typography id="confirm-delete-approach" sx={{ mt: 2 }}>
+              Are you sure you want to delete this device?
+            </Typography>
+            <Box sx={{ mt: 4, display: 'flex', justifyContent: 'flex-end' }}>
+              <Button onClick={() => setOpenDeleteModal(false)} color="inherit">
+                Cancel
+              </Button>
+              <Button
+                onClick={confirmDeleteDevice}
+                color="error"
+                variant="contained"
+              >
+                Delete Device
+              </Button>
+            </Box>
+          </Box>
+        </Modal>
+      </Box>
+    </>
   )
 }
 

@@ -26,8 +26,8 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Utah.Udot.Atspm.ConfigApi.Configuration;
 using Utah.Udot.Atspm.ConfigApi.Services;
-using Utah.Udot.Atspm.ConfigApi.Utility;
 using Utah.Udot.Atspm.Infrastructure.Extensions;
+using Utah.Udot.ATSPM.ConfigApi.Utility;
 using Utah.Udot.NetStandardToolkit.Extensions;
 
 //gitactions: II
@@ -60,11 +60,6 @@ builder.Host
             o.RouteOptions.EnablePropertyNameCaseInsensitive = true;
             o.RouteOptions.EnableQualifiedOperationCall = false;
             o.RouteOptions.EnableUnqualifiedOperationCall = true;
-        })
-        // Configure JSON options to use custom DateTime converter
-        .AddJsonOptions(options =>
-        {
-            options.JsonSerializerOptions.Converters.Add(new CustomDateTimeConverter());
         });
         s.AddProblemDetails();
 
@@ -99,6 +94,7 @@ builder.Host
             o.CustomOperationIds((controller, verb, action) => $"{verb}{controller}{action}");
             o.EnableAnnotations();
             o.AddJwtAuthorization();
+            o.DocumentFilter<GenerateMeasureOptionSchemas>();
         });
 
         var allowedHosts = builder.Configuration.GetSection("AllowedHosts").Get<string>() ?? "*";
@@ -124,10 +120,12 @@ builder.Host
             l.ResponseBodyLogLimit = 4096;
         });
 
+        s.AddControllers();
         s.AddAtspmDbContext(h);
         s.AddAtspmEFConfigRepositories();
         s.AddScoped<IRouteService, RouteService>();
         s.AddScoped<IApproachService, ApproachService>();
+        s.AddScoped<ISignalTemplateService, SignalTemplateService>();
         s.AddPathBaseFilter(h);
         s.AddAtspmIdentity(h);
     });
@@ -158,10 +156,10 @@ app.UseSwaggerUI(o =>
     }
 });
 
+app.UseRouting();
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseVersionedODataBatching();
 app.MapControllers();
-
 app.Run();

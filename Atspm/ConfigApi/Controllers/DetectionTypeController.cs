@@ -30,7 +30,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
     /// Detection type controller
     /// </summary>
     [ApiVersion(1.0)]
-    public class DetectionTypeController : AtspmConfigControllerBase<DetectionType, DetectionTypes>
+    public class DetectionTypeController : LocationPolicyControllerBase<DetectionType, DetectionTypes>
     {
         private readonly IDetectionTypeRepository _repository;
 
@@ -51,9 +51,9 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
         [ProducesResponseType(Status200OK)]
         [ProducesResponseType(Status404NotFound)]
         [ProducesResponseType(Status400BadRequest)]
-        public ActionResult<IEnumerable<Detector>> GetDetectors([FromRoute] int key)
+        public ActionResult<IEnumerable<Detector>> GetDetectors([FromRoute] DetectionTypes key)
         {
-            return GetNavigationProperty<IEnumerable<Detector>>((DetectionTypes)key);
+            return GetNavigationProperty<IEnumerable<Detector>>(key);
         }
 
         /// <summary>
@@ -65,9 +65,9 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
         [ProducesResponseType(Status200OK)]
         [ProducesResponseType(Status404NotFound)]
         [ProducesResponseType(Status400BadRequest)]
-        public ActionResult<IEnumerable<MeasureType>> GetMeasureTypes([FromRoute] int key)
+        public ActionResult<IEnumerable<MeasureType>> GetMeasureTypes([FromRoute] DetectionTypes key)
         {
-            return GetNavigationProperty<IEnumerable<MeasureType>>((DetectionTypes)key);
+            return GetNavigationProperty<IEnumerable<MeasureType>>(key);
         }
 
         #endregion

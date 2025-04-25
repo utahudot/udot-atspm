@@ -1,10 +1,13 @@
 import { ApproachForConfig } from '@/features/locations/components/editLocation/editLocationConfigHandler'
 import { Box, ButtonBase, IconButton, Tooltip, Typography } from '@mui/material'
+import { useEffect, useState } from 'react'
 
+import { useLocationWizardStore } from '@/features/locations/components/LocationSetupWizard/locationSetupWizardStore'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import DeleteIcon from '@mui/icons-material/Delete'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import SaveIcon from '@mui/icons-material/Save'
+import WarningIcon from '@mui/icons-material/Warning'
 
 interface ApproachEditorRowProps {
   approach: ApproachForConfig
@@ -23,6 +26,24 @@ const ApproachEditorRowHeader = ({
   handleSaveApproach,
   openDeleteApproachModal,
 }: ApproachEditorRowProps) => {
+  const { badApproaches } = useLocationWizardStore()
+  const [isBadApproach, setIsBadApproach] = useState(false)
+
+  // Recalculate bad approach status when `badApproaches` changes
+  useEffect(() => {
+    setIsBadApproach(badApproaches.includes(approach.id))
+  }, [badApproaches, approach.id])
+
+  const backgroundColor = () => {
+    if (isBadApproach) {
+      return 'rgba(255, 165, 0, 0.3)'
+    } else if (approach.isNew) {
+      return 'rgba(100, 210, 100, 0.3)'
+    } else {
+      return 'white'
+    }
+  }
+
   return (
     <Box
       sx={{
@@ -30,7 +51,8 @@ const ApproachEditorRowHeader = ({
         alignItems: 'center',
         justifyContent: 'space-between',
         padding: 1,
-        backgroundColor: approach.isNew ? 'rgba(100, 210, 100, 0.3)' : 'white',
+        backgroundColor: backgroundColor(),
+        position: 'relative', // Required for absolute positioning of the error icon
       }}
     >
       <ButtonBase

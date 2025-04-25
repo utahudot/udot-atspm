@@ -78,6 +78,7 @@
 	  <Using Include="Utah.Udot.Atspm.Enums" />
 	  <Using Include="Utah.Udot.NetStandardToolkit.Common" />
 	  <Using Include="Utah.Udot.NetStandardToolkit.Workflows" />
+	  <Using Include="Utah.Udot.Atspm.Data.Models.MeasureOptions" />
 	</ItemGroup>
 
 	<ItemGroup>

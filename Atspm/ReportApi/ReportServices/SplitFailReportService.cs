@@ -17,6 +17,7 @@
 
 using Utah.Udot.Atspm.Business.SplitFail;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
+using Utah.Udot.Atspm.Data.Models.MeasureOptions;
 
 namespace Utah.Udot.Atspm.ReportApi.ReportServices
 {
@@ -177,7 +178,7 @@ namespace Utah.Udot.Atspm.ReportApi.ReportServices
                 splitFailData.Bins.Select(b => new DataPointForDouble(b.StartTime, b.AverageRedOccupancyPercent)).ToList(),
                 splitFailData.Bins.Select(b => new DataPointForDouble(b.StartTime, b.PercentSplitfails)).ToList()
                 );
-            result.ApproachDescription = phaseDetail.Approach.Description;
+            result.ApproachDescription = phaseDetail.Approach.Description + " - " + result.PhaseType;
             result.LocationDescription = phaseDetail.Approach.Location.LocationDescription();
             return result;
         }

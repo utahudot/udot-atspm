@@ -30,7 +30,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
     /// Direction type controller
     /// </summary>
     [ApiVersion(1.0)]
-    public class DirectionTypeController : AtspmConfigControllerBase<DirectionType, DirectionTypes>
+    public class DirectionTypeController : LocationPolicyControllerBase<DirectionType, DirectionTypes>
     {
         private readonly IDirectionTypeRepository _repository;
 

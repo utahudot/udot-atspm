@@ -24,6 +24,9 @@ using Identity.Business.Users;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Utah.Udot.Atspm.Data;
 using Utah.Udot.Atspm.Data.Models;
@@ -92,7 +95,7 @@ builder.Host
             o.GroupNameFormat = "'v'VVV";
             o.SubstituteApiVersionInUrl = true;
         });
-        s.AddDbContext<IdentityContext>(h, Microsoft.EntityFrameworkCore.QueryTrackingBehavior.NoTracking);
+        s.AddDbContext<IdentityContext>(db => db.DbDefaults<IdentityContext>(h, QueryTrackingBehavior.NoTracking));
         s.AddIdentity<ApplicationUser, IdentityRole>() // Use AddDefaultIdentity if you don't need roles
         .AddEntityFrameworkStores<IdentityContext>()
         .AddDefaultTokenProviders();
