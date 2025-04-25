@@ -230,9 +230,12 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
                 }
                 else
                 {
-                    foreach (var device in location.Devices)
+                    if (location.Devices != null)
                     {
-                        _deviceRepository.Remove(device);
+                        foreach (var device in location.Devices)
+                        {
+                            _deviceRepository.Remove(device);
+                        }
                     }
                 }
                 await _repository.SetLocationToDeleted(key);
