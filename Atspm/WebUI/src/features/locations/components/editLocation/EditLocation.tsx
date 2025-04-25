@@ -1,5 +1,6 @@
 import { AddButton } from '@/components/addButton'
 import ApproachesInfo from '@/features/locations/components/ApproachesInfo/approachesInfo'
+import { NavigationProvider } from '@/features/locations/components/Cell/CellNavigation'
 import DetectorsInfo from '@/features/locations/components/DetectorsInfo/detectorsInfo'
 import EditApproach from '@/features/locations/components/editApproach/EditApproach'
 import EditDevices from '@/features/locations/components/editLocation/EditDevices'
@@ -155,12 +156,6 @@ export default memo(EditLocation)
 function ApproachesTab() {
   const location = useLocationStore((state) => state.location)
   const approaches = useLocationStore((state) => state.approaches)
-  const sortedApproaches = approaches.map((approach) => {
-    const sortedDetectors = approach.detectors.sort((a, b) => {
-      return a.detectorChannel - b.detectorChannel
-    })
-    return { ...approach, detectors: sortedDetectors }
-  })
 
   const addApproach = useLocationStore((state) => state.addApproach)
 
@@ -170,7 +165,7 @@ function ApproachesTab() {
     addApproach()
   }, [addApproach])
 
-  const combinedLocation = { ...location, approaches: sortedApproaches }
+  const combinedLocation = { ...location, approaches }
 
   return (
     <Box sx={{ minHeight: '400px' }}>
@@ -206,11 +201,12 @@ function ApproachesTab() {
           <DetectorsInfo location={combinedLocation} />
         </Paper>
       )}
-
       {approaches.length > 0 ? (
-        approaches.map((approach) => (
-          <EditApproach key={approach.id} approach={approach} />
-        ))
+        <NavigationProvider>
+          {approaches.map((approach) => (
+            <EditApproach key={approach.id} approach={approach} />
+          ))}
+        </NavigationProvider>
       ) : (
         <Box sx={{ p: 2, mt: 2, textAlign: 'center' }}>
           <Typography variant="caption" fontStyle="italic">

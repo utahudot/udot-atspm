@@ -210,7 +210,7 @@ export const useLocationStore = createWithEqualityFn<LocationStore>()(
         protectedPhaseNumber: null,
       }
 
-      set({ approaches: [...approaches, newApproach] })
+      set({ approaches: [newApproach, ...approaches] })
     },
 
     copyApproach: (approach) => {
@@ -287,7 +287,6 @@ export const useLocationStore = createWithEqualityFn<LocationStore>()(
 
     updateDetector: (detectorId, name, val) => {
       const { approaches, channelMap } = get()
-      if (val === '') val = null
 
       const updatedApproaches = approaches.map((approach) => {
         let found = false

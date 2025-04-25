@@ -137,7 +137,7 @@ function ApproachesInfo({ location }: ApproachesInfoProps) {
   const data = approaches.map((approach) => {
     return {
       ...approach,
-      directionType: approach.directionType.description,
+      directionType: approach?.directionType?.description,
     }
   })
   return (

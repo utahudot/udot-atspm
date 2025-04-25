@@ -33,43 +33,41 @@ const ApproachEditorRowHeader = ({
         backgroundColor: approach.isNew ? 'rgba(100, 210, 100, 0.3)' : 'white',
       }}
     >
-      <Tooltip title="Approach Details">
-        <ButtonBase
-          onClick={handleApproachClick}
-          sx={{
-            cursor: 'pointer',
-            textTransform: 'none',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            width: '100%',
-          }}
-        >
-          <Box display="flex" alignItems="center">
-            <Box
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                transition: 'transform 0.2s ease-in-out',
-                transform: open ? 'rotateZ(-180deg)' : 'rotateZ(0deg)',
-              }}
-            >
-              <ExpandMoreIcon />
-            </Box>
-            <Typography
-              variant="h4"
-              component={'h3'}
-              sx={{ padding: 1, marginRight: 2 }}
-            >
-              {approach.description}
-            </Typography>
-            <Typography variant="h5" component="p">
-              {approach.detectors.length}{' '}
-              {approach.detectors.length === 1 ? 'Detector' : 'Detectors'}
-            </Typography>
+      <ButtonBase
+        onClick={handleApproachClick}
+        sx={{
+          cursor: 'pointer',
+          textTransform: 'none',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          width: '100%',
+        }}
+      >
+        <Box display="flex" alignItems="center">
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              transition: 'transform 0.2s ease-in-out',
+              transform: open ? 'rotateZ(-180deg)' : 'rotateZ(0deg)',
+            }}
+          >
+            <ExpandMoreIcon />
           </Box>
-        </ButtonBase>
-      </Tooltip>
+          <Typography
+            variant="h4"
+            component={'h3'}
+            sx={{ padding: 1, marginRight: 2 }}
+          >
+            {approach.description}
+          </Typography>
+          <Typography variant="h5" component="p">
+            {approach.detectors.length}{' '}
+            {approach.detectors.length === 1 ? 'Detector' : 'Detectors'}
+          </Typography>
+        </Box>
+      </ButtonBase>
       <Box display="flex" alignItems="center">
         <Tooltip title="Copy Approach">
           <IconButton aria-label="copy approach" onClick={handleCopyApproach}>
