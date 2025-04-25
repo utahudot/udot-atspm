@@ -214,7 +214,8 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
             try
             {
                 var location = await _repository.LookupAsync(key);
-                var versions = _repository.GetAllVersionsOfLocation(location.LocationIdentifier);if (versions.Count() > 1)
+                var versions = _repository.GetAllVersionsOfLocation(location.LocationIdentifier);
+                if (versions.Count() > 1)
                 {
                     //get the version previous to the one being deleted
                     var previousVersion = versions.Where(w => w.Start < location.Start).OrderByDescending(o => o.Start).FirstOrDefault();
@@ -225,6 +226,13 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
                         {
                             device.LocationId = previousVersion.Id;
                         }
+                    }
+                }
+                else
+                {
+                    foreach (var device in location.Devices)
+                    {
+                        _deviceRepository.Remove(device);
                     }
                 }
                 await _repository.SetLocationToDeleted(key);
