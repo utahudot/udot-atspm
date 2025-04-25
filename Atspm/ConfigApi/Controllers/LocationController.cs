@@ -219,7 +219,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
                 {
                     //get the version previous to the one being deleted
                     var previousVersion = versions.Where(w => w.Start < location.Start).OrderByDescending(o => o.Start).FirstOrDefault();
-                    if (previousVersion != null)
+                    if (previousVersion != null && location.Devices != null)
                     {
                         //assign the devices of the deleted version to the location id of the previous version
                         foreach (var device in location.Devices)
