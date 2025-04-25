@@ -81,6 +81,8 @@ namespace Utah.Udot.Atspm.ConfigApi.Configuration
                         var g = model.Collection.Function("GetDetectionTypeCount");
                         g.ReturnsCollectionFromEntitySet<DetectionTypeGroup>("DetectionTypeGroups");
 
+                        var h = model.Action("DeleteAllVersions");
+
                         var detectionTypeGroup = builder.EntitySet<DetectionTypeGroup>("DetectionTypeGroups").EntityType;
                         detectionTypeGroup.Property(d => d.Id).IsRequired();
                         detectionTypeGroup.Property(d => d.Count).IsRequired();
