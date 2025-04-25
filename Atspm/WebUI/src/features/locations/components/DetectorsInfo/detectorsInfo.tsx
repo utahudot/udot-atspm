@@ -96,7 +96,7 @@ const detectorsHeaders: GridColDef[] = [
     ...defaults,
     field: 'detectionTypes',
     headerName: 'Detection Types',
-    minWidth: 320,
+    minWidth: 200,
     renderCell: (params) => {
       if (!params.value) return null
       return <DetectionTypesCell detector={params.row} readonly />
@@ -197,7 +197,7 @@ const detectorsHeaders: GridColDef[] = [
       const comments = params.value?.split(',') as string[]
       return (
         <Box display={'grid'} alignItems={'center'}>
-          {comments.map((comment) => (
+          {comments?.map((comment) => (
             <Box key={comment} mr={1}>
               {comment}
             </Box>

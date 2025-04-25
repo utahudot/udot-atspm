@@ -4,7 +4,7 @@ import { ResponsivePageLayout } from '@/components/ResponsivePage'
 import { StyledPaper } from '@/components/StyledPaper'
 import { AddButton } from '@/components/addButton'
 import { PageNames, useViewPage } from '@/features/identity/pagesCheck'
-import { sortApproachesByPhaseNumber } from '@/features/locations/components/editApproach/utils/sortApproaches'
+import { sortApproachesAndDetectors } from '@/features/locations/components/editApproach/utils/sortApproaches'
 import LocationEditor from '@/features/locations/components/editLocation/EditLocation'
 import NewLocationModal from '@/features/locations/components/editLocation/NewLocationModal'
 import { useLocationStore } from '@/features/locations/components/editLocation/locationStore'
@@ -18,7 +18,7 @@ export async function getLocation(locationId: number) {
   })
   if (locationResponse?.value?.length) {
     const newestLocation = locationResponse.value[0]
-    newestLocation.approaches = sortApproachesByPhaseNumber(
+    newestLocation.approaches = sortApproachesAndDetectors(
       newestLocation.approaches
     )
     return newestLocation
