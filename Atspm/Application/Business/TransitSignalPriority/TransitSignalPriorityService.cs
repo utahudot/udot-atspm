@@ -819,7 +819,7 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
                     }
 
                     var minTime = Math.Round(cyclesForPhase.Max(c => c.MinTime), 1);
-                    var minGreen = cyclesForPhase.First().MinGreenDurationSeconds;
+                    var minGreen = cyclesForPhase.OrderBy(c=> c.MinGreenDurationSeconds).First().MinGreenDurationSeconds;
                     var yellow = cyclesForPhase.First().YellowDurationSeconds;
                     var redClearance = cyclesForPhase.First().RedDurationSeconds;
 
