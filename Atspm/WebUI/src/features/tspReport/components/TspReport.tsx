@@ -18,6 +18,7 @@ import {
   Typography,
 } from '@mui/material'
 import { DataGrid, GridColDef } from '@mui/x-data-grid'
+import Cookies from 'js-cookie'
 import { useRef, useState } from 'react'
 import * as XLSX from 'xlsx'
 
@@ -27,6 +28,7 @@ interface TspReportProps {
 }
 
 export default function TspReport({ report, reportOptions }: TspReportProps) {
+  const isLoggedIn = !!Cookies.get('loggedIn')
   const { addNotification } = useNotificationStore()
   const { data: measureTypesData } = useGetMeasureType()
   const measureTypes = measureTypesData?.value || []
@@ -240,15 +242,17 @@ export default function TspReport({ report, reportOptions }: TspReportProps) {
             >
               Download
             </Button>
-            <Button
-              size="small"
-              variant="outlined"
-              startIcon={<SaveIcon />}
-              color="primary"
-              onClick={handleSaveParameters}
-            >
-              Save Parameters
-            </Button>
+            {isLoggedIn && (
+              <Button
+                size="small"
+                variant="outlined"
+                startIcon={<SaveIcon />}
+                color="primary"
+                onClick={handleSaveParameters}
+              >
+                Save Parameters
+              </Button>
+            )}
           </Box>
         </Box>
         <Paper
