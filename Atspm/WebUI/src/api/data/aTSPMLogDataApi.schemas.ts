@@ -6,6 +6,18 @@
  * OpenAPI spec version: 1.0
  */
 export type GetEventLogDaysWithEventLogsFromLocationIdentifierParams = {
+  /**
+   * Type that inherits from Utah.Udot.Atspm.Data.Models.EventLogModels.EventLogModelBase
+   */
+  dataType?: string
+  start?: string
+  end?: string
+}
+export type GetLoggingSyncNewLocationEventsParams = {
+deviceIds?: string;
+};
+
+export type GetEventLogDaysWithEventLogsFromLocationIdentifierParams = {
 /**
  * Type that inherits from Utah.Udot.Atspm.Data.Models.EventLogModels.EventLogModelBase
  */
@@ -80,151 +92,178 @@ start?: string;
 end?: string;
 };
 
-export interface SpeedEvent {
-  detectorId?: string | null;
-  kph?: number;
+export interface VisionCameraStatisticsEvent {
+  averageSpeed?: number;
+  leftToRightCount?: number;
+  leftTurnCount?: number;
   locationIdentifier?: string | null;
-  mph?: number;
+  occupancy?: number;
+  rightToLeftCount?: number;
+  rightTurnCount?: number;
+  throughCount?: number;
   timestamp?: string;
+  volume?: number;
+  zoneId?: number;
+  zoneName?: string | null;
+}
+
+export type TransportProtocols = typeof TransportProtocols[keyof typeof TransportProtocols];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const TransportProtocols = {
+  NUMBER_0: 0,
+  NUMBER_1: 1,
+  NUMBER_2: 2,
+  NUMBER_3: 3,
+  NUMBER_4: 4,
+} as const;
+
+export interface SpeedEvent {
+  detectorId?: string | null
+  kph?: number
+  locationIdentifier?: string | null
+  mph?: number
+  timestamp?: string
 }
 
 export interface SignalPlanAggregation {
   /** @deprecated */
-  binStartTime?: string;
-  end?: string;
-  locationIdentifier?: string | null;
-  planNumber?: number;
-  start?: string;
+  binStartTime?: string
+  end?: string
+  locationIdentifier?: string | null
+  planNumber?: number
+  start?: string
 }
 
 export interface SignalEventCountAggregation {
   /** @deprecated */
-  binStartTime?: string;
-  end?: string;
-  eventCount?: number;
-  locationIdentifier?: string | null;
-  start?: string;
+  binStartTime?: string
+  end?: string
+  eventCount?: number
+  locationIdentifier?: string | null
+  start?: string
 }
 
 export interface ProblemDetails {
-  detail?: string | null;
-  instance?: string | null;
-  status?: number | null;
-  title?: string | null;
-  type?: string | null;
-  [key: string]: unknown;
+  detail?: string | null
+  instance?: string | null
+  status?: number | null
+  title?: string | null
+  type?: string | null
+  [key: string]: unknown
 }
 
 export interface PriorityAggregation {
   /** @deprecated */
-  binStartTime?: string;
-  end?: string;
-  locationIdentifier?: string | null;
-  priorityNumber?: number;
-  priorityRequests?: number;
-  priorityServiceEarlyGreen?: number;
-  priorityServiceExtendedGreen?: number;
-  start?: string;
+  binStartTime?: string
+  end?: string
+  locationIdentifier?: string | null
+  priorityNumber?: number
+  priorityRequests?: number
+  priorityServiceEarlyGreen?: number
+  priorityServiceExtendedGreen?: number
+  start?: string
 }
 
 export interface PreemptionAggregation {
   /** @deprecated */
-  binStartTime?: string;
-  end?: string;
-  locationIdentifier?: string | null;
-  preemptNumber?: number;
-  preemptRequests?: number;
-  preemptServices?: number;
-  start?: string;
+  binStartTime?: string
+  end?: string
+  locationIdentifier?: string | null
+  preemptNumber?: number
+  preemptRequests?: number
+  preemptServices?: number
+  start?: string
 }
 
 export interface PhaseTerminationAggregation {
   /** @deprecated */
-  binStartTime?: string;
-  end?: string;
-  forceOffs?: number;
-  gapOuts?: number;
-  locationIdentifier?: string | null;
-  maxOuts?: number;
-  phaseNumber?: number;
-  start?: string;
-  unknown?: number;
+  binStartTime?: string
+  end?: string
+  forceOffs?: number
+  gapOuts?: number
+  locationIdentifier?: string | null
+  maxOuts?: number
+  phaseNumber?: number
+  start?: string
+  unknown?: number
 }
 
 export interface PhaseSplitMonitorAggregation {
   /** @deprecated */
-  binStartTime?: string;
-  eightyFifthPercentileSplit?: number;
-  end?: string;
-  locationIdentifier?: string | null;
-  phaseNumber?: number;
-  skippedCount?: number;
-  start?: string;
+  binStartTime?: string
+  eightyFifthPercentileSplit?: number
+  end?: string
+  locationIdentifier?: string | null
+  phaseNumber?: number
+  skippedCount?: number
+  start?: string
 }
 
 export interface PhasePedAggregation {
   /** @deprecated */
-  binStartTime?: string;
-  end?: string;
-  imputedPedCallsRegistered?: number;
-  locationIdentifier?: string | null;
-  maxPedDelay?: number;
-  minPedDelay?: number;
-  pedBeginWalkCount?: number;
-  pedCallsRegisteredCount?: number;
-  pedCycles?: number;
-  pedDelay?: number;
-  pedRequests?: number;
-  phaseNumber?: number;
-  start?: string;
-  uniquePedDetections?: number;
+  binStartTime?: string
+  end?: string
+  imputedPedCallsRegistered?: number
+  locationIdentifier?: string | null
+  maxPedDelay?: number
+  minPedDelay?: number
+  pedBeginWalkCount?: number
+  pedCallsRegisteredCount?: number
+  pedCycles?: number
+  pedDelay?: number
+  pedRequests?: number
+  phaseNumber?: number
+  start?: string
+  uniquePedDetections?: number
 }
 
 export interface PhaseLeftTurnGapAggregation {
-  approachId?: number;
+  approachId?: number
   /** @deprecated */
-  binStartTime?: string;
-  end?: string;
-  gapCount1?: number;
-  gapCount10?: number;
-  gapCount11?: number;
-  gapCount2?: number;
-  gapCount3?: number;
-  gapCount4?: number;
-  gapCount5?: number;
-  gapCount6?: number;
-  gapCount7?: number;
-  gapCount8?: number;
-  gapCount9?: number;
-  locationIdentifier?: string | null;
-  phaseNumber?: number;
-  start?: string;
-  sumGapDuration1?: number;
-  sumGapDuration2?: number;
-  sumGapDuration3?: number;
-  sumGreenTime?: number;
+  binStartTime?: string
+  end?: string
+  gapCount1?: number
+  gapCount10?: number
+  gapCount11?: number
+  gapCount2?: number
+  gapCount3?: number
+  gapCount4?: number
+  gapCount5?: number
+  gapCount6?: number
+  gapCount7?: number
+  gapCount8?: number
+  gapCount9?: number
+  locationIdentifier?: string | null
+  phaseNumber?: number
+  start?: string
+  sumGapDuration1?: number
+  sumGapDuration2?: number
+  sumGapDuration3?: number
+  sumGreenTime?: number
 }
 
 export interface PhaseCycleAggregation {
-  approachId?: number;
+  approachId?: number
   /** @deprecated */
-  binStartTime?: string;
-  end?: string;
-  greenTime?: number;
-  locationIdentifier?: string | null;
-  phaseNumber?: number;
-  redTime?: number;
-  start?: string;
-  totalGreenToGreenCycles?: number;
-  totalRedToRedCycles?: number;
-  yellowTime?: number;
+  binStartTime?: string
+  end?: string
+  greenTime?: number
+  locationIdentifier?: string | null
+  phaseNumber?: number
+  redTime?: number
+  start?: string
+  totalGreenToGreenCycles?: number
+  totalRedToRedCycles?: number
+  yellowTime?: number
 }
 
 export interface PedestrianCounter {
-  in?: number;
-  locationIdentifier?: string | null;
-  out?: number;
-  timestamp?: string;
+  in?: number
+  locationIdentifier?: string | null
+  out?: number
+  timestamp?: string
 }
 
 export interface IndianaEvent {
@@ -234,76 +273,143 @@ export interface IndianaEvent {
   timestamp?: string;
 }
 
-export interface DetectorEventCountAggregation {
-  approachId?: number;
-  /** @deprecated */
-  binStartTime?: string;
-  detectorPrimaryId?: number;
-  end?: string;
-  eventCount?: number;
+export interface EnhancedVehicleEvent {
+  direction?: string | null;
+  length?: number;
   locationIdentifier?: string | null;
-  start?: string;
+  objectType?: string | null;
+  speed?: number;
+  timestamp?: string;
+  zoneId?: number;
+  zoneName?: string | null;
+}
+
+export type DeviceTypes = typeof DeviceTypes[keyof typeof DeviceTypes];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const DeviceTypes = {
+  NUMBER_0: 0,
+  NUMBER_1: 1,
+  NUMBER_2: 2,
+  NUMBER_3: 3,
+  NUMBER_4: 4,
+  NUMBER_5: 5,
+  NUMBER_6: 6,
+} as const;
+
+export type DeviceStatus = typeof DeviceStatus[keyof typeof DeviceStatus];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const DeviceStatus = {
+  NUMBER_0: 0,
+  NUMBER_1: 1,
+  NUMBER_2: 2,
+  NUMBER_3: 3,
+  NUMBER_4: 4,
+  NUMBER_5: 5,
+} as const;
+
+export interface DeviceEventLoggingQueryOptions {
+  deviceStatus?: DeviceStatus;
+  deviceType?: DeviceTypes;
+  excludedLocations?: string[] | null;
+  includeConfigurations?: number[] | null;
+  includedAreas?: string[] | null;
+  includedDevices?: string[] | null;
+  includedJurisdictions?: string[] | null;
+  includedLocations?: string[] | null;
+  includedLocationTypes?: string[] | null;
+  includedRegions?: string[] | null;
+  transportProtocol?: TransportProtocols;
+}
+
+export interface DeviceEventLoggingConfiguration {
+  batchSize?: number;
+  deviceEventLoggingQueryOptions?: DeviceEventLoggingQueryOptions;
+  parallelProcesses?: number;
+  path?: string | null;
+}
+
+export interface DeviceEventDownload {
+  afterWorkflowEventCount?: number;
+  beforeWorkflowEventCount?: number;
+  changeInEventCount?: number;
+  deviceId?: number;
+  deviceType?: DeviceTypes;
+  ipaddress?: string | null;
+}
+
+export interface DetectorEventCountAggregation {
+  approachId?: number
+  /** @deprecated */
+  binStartTime?: string
+  detectorPrimaryId?: number
+  end?: string
+  eventCount?: number
+  locationIdentifier?: string | null
+  start?: string
 }
 
 export interface ApproachYellowRedActivationAggregation {
-  approachId?: number;
+  approachId?: number
   /** @deprecated */
-  binStartTime?: string;
-  cycles?: number;
-  end?: string;
-  isProtectedPhase?: boolean;
-  locationIdentifier?: string | null;
-  phaseNumber?: number;
-  severeRedLightViolations?: number;
-  start?: string;
-  totalRedLightViolations?: number;
-  violationTime?: number;
-  yellowActivations?: number;
+  binStartTime?: string
+  cycles?: number
+  end?: string
+  isProtectedPhase?: boolean
+  locationIdentifier?: string | null
+  phaseNumber?: number
+  severeRedLightViolations?: number
+  start?: string
+  totalRedLightViolations?: number
+  violationTime?: number
+  yellowActivations?: number
 }
 
 export interface ApproachSplitFailAggregation {
-  approachId?: number;
+  approachId?: number
   /** @deprecated */
-  binStartTime?: string;
-  cycles?: number;
-  end?: string;
-  greenOccupancySum?: number;
-  greenTimeSum?: number;
-  isProtectedPhase?: boolean;
-  locationIdentifier?: string | null;
-  phaseNumber?: number;
-  redOccupancySum?: number;
-  redTimeSum?: number;
-  splitFailures?: number;
-  start?: string;
+  binStartTime?: string
+  cycles?: number
+  end?: string
+  greenOccupancySum?: number
+  greenTimeSum?: number
+  isProtectedPhase?: boolean
+  locationIdentifier?: string | null
+  phaseNumber?: number
+  redOccupancySum?: number
+  redTimeSum?: number
+  splitFailures?: number
+  start?: string
 }
 
 export interface ApproachSpeedAggregation {
-  approachId?: number;
+  approachId?: number
   /** @deprecated */
-  binStartTime?: string;
-  end?: string;
-  locationIdentifier?: string | null;
-  speed15th?: number;
-  speed85th?: number;
-  speedVolume?: number;
-  start?: string;
-  summedSpeed?: number;
+  binStartTime?: string
+  end?: string
+  locationIdentifier?: string | null
+  speed15th?: number
+  speed85th?: number
+  speedVolume?: number
+  start?: string
+  summedSpeed?: number
 }
 
 export interface ApproachPcdAggregation {
-  approachId?: number;
-  arrivalsOnGreen?: number;
-  arrivalsOnRed?: number;
-  arrivalsOnYellow?: number;
+  approachId?: number
+  arrivalsOnGreen?: number
+  arrivalsOnRed?: number
+  arrivalsOnYellow?: number
   /** @deprecated */
-  binStartTime?: string;
-  end?: string;
-  isProtectedPhase?: boolean;
-  locationIdentifier?: string | null;
-  phaseNumber?: number;
-  start?: string;
-  totalDelay?: number;
-  volume?: number;
+  binStartTime?: string
+  end?: string
+  isProtectedPhase?: boolean
+  locationIdentifier?: string | null
+  phaseNumber?: number
+  start?: string
+  totalDelay?: number
+  volume?: number
 }
-

@@ -18,10 +18,10 @@
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
-using Utah.Udot.Atspm.ConfigApi.Models;
 using Utah.Udot.Atspm.ConfigApi.Services;
 using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
+using Utah.Udot.Atspm.ValueObjects;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 using static Microsoft.AspNetCore.OData.Query.AllowedQueryOptions;
 
@@ -31,7 +31,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
     /// Route controller
     /// </summary>
     [ApiVersion(1.0)]
-    public class RouteController : AtspmConfigControllerBase<Data.Models.Route, int>
+    public class RouteController : GeneralPolicyControllerBase<Data.Models.Route, int>
     {
         private readonly IRouteRepository _repository;
         private readonly IRouteService _routeService;

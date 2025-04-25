@@ -57,6 +57,49 @@ import type {
   GetDetectorDetectorCommentsFromKeyParams,
   GetDetectorFromKeyParams,
   GetDetectorParams,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyEight,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyFive,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyFour,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyFourone,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyFourtwo,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyFourzero,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyNine,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOne,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOneeight,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnefive,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnefour,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnenine,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOneone,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOneseven,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnesix,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnethree,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnetwo,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnezero,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodySeven,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodySix,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThree,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreeeight,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreefive,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreefour,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreenine,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreeone,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreeseven,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreesix,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreethree,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreetwo,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreezero,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwo,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwoeight,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwofive,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwofour,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwonine,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwoone,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwoseven,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwosix,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwothree,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwotwo,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwozero,
+  GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeParams,
   GetDeviceActiveDevicesByLocationFromLocationIdParams,
   GetDeviceActiveDevicesCountParams,
   GetDeviceConfigurationCountParams,
@@ -100,11 +143,16 @@ import type {
   GetLocationLatestVersionOfLocationFromIdentifierParams,
   GetLocationLocationsForSearchParams,
   GetLocationParams,
+  GetLocationSaveTemplatedLocationFromKeyParams,
+  GetLocationSyncLocationFromKeyParams,
   GetLocationTypeCountParams,
   GetLocationTypeFromKeyParams,
   GetLocationTypeLocationsCountFromKeyParams,
   GetLocationTypeLocationsFromKeyParams,
   GetLocationTypeParams,
+  GetMapLayerCountParams,
+  GetMapLayerFromKeyParams,
+  GetMapLayerParams,
   GetMeasureCommentCountParams,
   GetMeasureCommentFromKeyParams,
   GetMeasureCommentMeasureTypesCountFromKeyParams,
@@ -113,12 +161,18 @@ import type {
   GetMeasureOptionCountParams,
   GetMeasureOptionFromKeyParams,
   GetMeasureOptionParams,
+  GetMeasureOptionPresetCountParams,
+  GetMeasureOptionPresetFromKeyParams,
+  GetMeasureOptionPresetMeasureOptionPresetTypesParams,
+  GetMeasureOptionPresetParams,
   GetMeasureTypeCountParams,
   GetMeasureTypeDetectionTypesCountFromKeyParams,
   GetMeasureTypeDetectionTypesFromKeyParams,
   GetMeasureTypeFromKeyParams,
   GetMeasureTypeMeasureCommentsCountFromKeyParams,
   GetMeasureTypeMeasureCommentsFromKeyParams,
+  GetMeasureTypeMeasureOptionPresetsCountFromKeyParams,
+  GetMeasureTypeMeasureOptionPresetsFromKeyParams,
   GetMeasureTypeParams,
   GetMenuItemsCountParams,
   GetMenuItemsFromKeyParams,
@@ -156,9 +210,12 @@ import type {
   GetWatchDogIgnoreEventParams,
   Jurisdiction,
   Location,
+  LocationSaveTemplatedLocationParameters,
   LocationType,
+  MapLayer,
   MeasureComment,
   MeasureOption,
+  MeasureOptionPreset,
   MeasureType,
   MenuItem,
   PatchApproachFromKeyParams,
@@ -173,8 +230,10 @@ import type {
   PatchJurisdictionFromKeyParams,
   PatchLocationFromKeyParams,
   PatchLocationTypeFromKeyParams,
+  PatchMapLayerFromKeyParams,
   PatchMeasureCommentFromKeyParams,
   PatchMeasureOptionFromKeyParams,
+  PatchMeasureOptionPresetFromKeyParams,
   PatchMeasureTypeFromKeyParams,
   PatchMenuItemsFromKeyParams,
   PatchProductFromKeyParams,
@@ -196,8 +255,10 @@ import type {
   PostJurisdictionParams,
   PostLocationParams,
   PostLocationTypeParams,
+  PostMapLayerParams,
   PostMeasureCommentParams,
   PostMeasureOptionParams,
+  PostMeasureOptionPresetParams,
   PostMeasureTypeParams,
   PostMenuItemsParams,
   PostProductParams,
@@ -220,8 +281,10 @@ import type {
   PutJurisdictionFromKeyParams,
   PutLocationFromKeyParams,
   PutLocationTypeFromKeyParams,
+  PutMapLayerFromKeyParams,
   PutMeasureCommentFromKeyParams,
   PutMeasureOptionFromKeyParams,
+  PutMeasureOptionPresetFromKeyParams,
   PutMeasureTypeFromKeyParams,
   PutMenuItemsFromKeyParams,
   PutProductFromKeyParams,
@@ -237,6 +300,7 @@ import type {
   RouteDto,
   RouteLocation,
   SearchLocation,
+  TemplateLocationModifiedDto,
   UpsertApproachApproachParams,
   UpsertRouteRouteParams,
   VersionHistory,
@@ -813,10 +877,7 @@ export const usePatchApproachFromKey = <
 }
 
 export const deleteApproachFromKey = (key: number) => {
-  return configRequest<void>({
-    url: `/Approach/${key}`,
-    method: 'DELETE',
-  })
+  return configRequest<void>({ url: `/Approach/${key}`, method: 'DELETE' })
 }
 
 export const getDeleteApproachFromKeyMutationOptions = <
@@ -1369,12 +1430,7 @@ export const usePostArea = <TError = unknown, TContext = unknown>(options?: {
  * @summary Collection of objects from oData query.
  */
 export const getArea = (params?: GetAreaParams, signal?: AbortSignal) => {
-  return configRequest<Area[]>({
-    url: `/Area`,
-    method: 'GET',
-    params,
-    signal,
-  })
+  return configRequest<Area[]>({ url: `/Area`, method: 'GET', params, signal })
 }
 
 export const getGetAreaQueryKey = (params?: GetAreaParams) => {
@@ -1801,7 +1857,7 @@ export const useGetAreaCount = <
  * @summary Utah.Udot.Atspm.Data.Models.Detector navigation property action
  */
 export const getDetectionTypeDetectorsFromKey = (
-  key: number,
+  key: string,
   params?: GetDetectionTypeDetectorsFromKeyParams,
   signal?: AbortSignal
 ) => {
@@ -1814,7 +1870,7 @@ export const getDetectionTypeDetectorsFromKey = (
 }
 
 export const getGetDetectionTypeDetectorsFromKeyQueryKey = (
-  key: number,
+  key: string,
   params?: GetDetectionTypeDetectorsFromKeyParams
 ) => {
   return [
@@ -1827,7 +1883,7 @@ export const getGetDetectionTypeDetectorsFromKeyQueryOptions = <
   TData = Awaited<ReturnType<typeof getDetectionTypeDetectorsFromKey>>,
   TError = void,
 >(
-  key: number,
+  key: string,
   params?: GetDetectionTypeDetectorsFromKeyParams,
   options?: {
     query?: UseQueryOptions<
@@ -1871,7 +1927,7 @@ export const useGetDetectionTypeDetectorsFromKey = <
   TData = Awaited<ReturnType<typeof getDetectionTypeDetectorsFromKey>>,
   TError = void,
 >(
-  key: number,
+  key: string,
   params?: GetDetectionTypeDetectorsFromKeyParams,
   options?: {
     query?: UseQueryOptions<
@@ -1900,7 +1956,7 @@ export const useGetDetectionTypeDetectorsFromKey = <
  * @summary Utah.Udot.Atspm.Data.Models.Detector navigation property action
  */
 export const getDetectionTypeDetectorsCountFromKey = (
-  key: number,
+  key: string,
   params?: GetDetectionTypeDetectorsCountFromKeyParams,
   signal?: AbortSignal
 ) => {
@@ -1913,7 +1969,7 @@ export const getDetectionTypeDetectorsCountFromKey = (
 }
 
 export const getGetDetectionTypeDetectorsCountFromKeyQueryKey = (
-  key: number,
+  key: string,
   params?: GetDetectionTypeDetectorsCountFromKeyParams
 ) => {
   return [
@@ -1926,7 +1982,7 @@ export const getGetDetectionTypeDetectorsCountFromKeyQueryOptions = <
   TData = Awaited<ReturnType<typeof getDetectionTypeDetectorsCountFromKey>>,
   TError = void,
 >(
-  key: number,
+  key: string,
   params?: GetDetectionTypeDetectorsCountFromKeyParams,
   options?: {
     query?: UseQueryOptions<
@@ -1970,7 +2026,7 @@ export const useGetDetectionTypeDetectorsCountFromKey = <
   TData = Awaited<ReturnType<typeof getDetectionTypeDetectorsCountFromKey>>,
   TError = void,
 >(
-  key: number,
+  key: string,
   params?: GetDetectionTypeDetectorsCountFromKeyParams,
   options?: {
     query?: UseQueryOptions<
@@ -1999,7 +2055,7 @@ export const useGetDetectionTypeDetectorsCountFromKey = <
  * @summary Utah.Udot.Atspm.Data.Models.MeasureType navigation property action
  */
 export const getDetectionTypeMeasureTypesFromKey = (
-  key: number,
+  key: string,
   params?: GetDetectionTypeMeasureTypesFromKeyParams,
   signal?: AbortSignal
 ) => {
@@ -2012,7 +2068,7 @@ export const getDetectionTypeMeasureTypesFromKey = (
 }
 
 export const getGetDetectionTypeMeasureTypesFromKeyQueryKey = (
-  key: number,
+  key: string,
   params?: GetDetectionTypeMeasureTypesFromKeyParams
 ) => {
   return [
@@ -2025,7 +2081,7 @@ export const getGetDetectionTypeMeasureTypesFromKeyQueryOptions = <
   TData = Awaited<ReturnType<typeof getDetectionTypeMeasureTypesFromKey>>,
   TError = void,
 >(
-  key: number,
+  key: string,
   params?: GetDetectionTypeMeasureTypesFromKeyParams,
   options?: {
     query?: UseQueryOptions<
@@ -2069,7 +2125,7 @@ export const useGetDetectionTypeMeasureTypesFromKey = <
   TData = Awaited<ReturnType<typeof getDetectionTypeMeasureTypesFromKey>>,
   TError = void,
 >(
-  key: number,
+  key: string,
   params?: GetDetectionTypeMeasureTypesFromKeyParams,
   options?: {
     query?: UseQueryOptions<
@@ -2098,7 +2154,7 @@ export const useGetDetectionTypeMeasureTypesFromKey = <
  * @summary Utah.Udot.Atspm.Data.Models.MeasureType navigation property action
  */
 export const getDetectionTypeMeasureTypesCountFromKey = (
-  key: number,
+  key: string,
   params?: GetDetectionTypeMeasureTypesCountFromKeyParams,
   signal?: AbortSignal
 ) => {
@@ -2111,7 +2167,7 @@ export const getDetectionTypeMeasureTypesCountFromKey = (
 }
 
 export const getGetDetectionTypeMeasureTypesCountFromKeyQueryKey = (
-  key: number,
+  key: string,
   params?: GetDetectionTypeMeasureTypesCountFromKeyParams
 ) => {
   return [
@@ -2124,7 +2180,7 @@ export const getGetDetectionTypeMeasureTypesCountFromKeyQueryOptions = <
   TData = Awaited<ReturnType<typeof getDetectionTypeMeasureTypesCountFromKey>>,
   TError = void,
 >(
-  key: number,
+  key: string,
   params?: GetDetectionTypeMeasureTypesCountFromKeyParams,
   options?: {
     query?: UseQueryOptions<
@@ -2169,7 +2225,7 @@ export const useGetDetectionTypeMeasureTypesCountFromKey = <
   TData = Awaited<ReturnType<typeof getDetectionTypeMeasureTypesCountFromKey>>,
   TError = void,
 >(
-  key: number,
+  key: string,
   params?: GetDetectionTypeMeasureTypesCountFromKeyParams,
   options?: {
     query?: UseQueryOptions<
@@ -2698,10 +2754,7 @@ export const usePatchDetectionTypeFromKey = <
  * @summary Delete object of specified type
  */
 export const deleteDetectionTypeFromKey = (key: string) => {
-  return configRequest<void>({
-    url: `/DetectionType/${key}`,
-    method: 'DELETE',
-  })
+  return configRequest<void>({ url: `/DetectionType/${key}`, method: 'DELETE' })
 }
 
 export const getDeleteDetectionTypeFromKeyMutationOptions = <
@@ -3154,6 +3207,361 @@ export const useGetDetectorDetectionTypesCountFromKey = <
   query.queryKey = queryOptions.queryKey
 
   return query
+}
+
+export const getDetectorRetrieveDetectionIdentifierBasedOnDetectionType = (
+  getDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBody:
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOne
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwo
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThree
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyFour
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyFive
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodySix
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodySeven
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyEight
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyNine
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnezero
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOneone
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnetwo
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnethree
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnefour
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnefive
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnesix
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOneseven
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOneeight
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnenine
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwozero
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwoone
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwotwo
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwothree
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwofour
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwofive
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwosix
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwoseven
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwoeight
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwonine
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreezero
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreeone
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreetwo
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreethree
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreefour
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreefive
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreesix
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreeseven
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreeeight
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreenine
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyFourzero
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyFourone
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyFourtwo,
+  params?: GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeParams
+) => {
+  return configRequest<void>({
+    url: `/Detector/retrieveDetctionData`,
+    method: 'POST',
+    data: getDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBody,
+    params,
+  })
+}
+
+export const getGetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeMutationOptions =
+  <TError = unknown, TContext = unknown>(options?: {
+    mutation?: UseMutationOptions<
+      Awaited<
+        ReturnType<
+          typeof getDetectorRetrieveDetectionIdentifierBasedOnDetectionType
+        >
+      >,
+      TError,
+      {
+        data:
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOne
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwo
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThree
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyFour
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyFive
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodySix
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodySeven
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyEight
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyNine
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnezero
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOneone
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnetwo
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnethree
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnefour
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnefive
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnesix
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOneseven
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOneeight
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnenine
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwozero
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwoone
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwotwo
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwothree
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwofour
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwofive
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwosix
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwoseven
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwoeight
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwonine
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreezero
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreeone
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreetwo
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreethree
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreefour
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreefive
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreesix
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreeseven
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreeeight
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreenine
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyFourzero
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyFourone
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyFourtwo
+        params?: GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeParams
+      },
+      TContext
+    >
+  }): UseMutationOptions<
+    Awaited<
+      ReturnType<
+        typeof getDetectorRetrieveDetectionIdentifierBasedOnDetectionType
+      >
+    >,
+    TError,
+    {
+      data:
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOne
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwo
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThree
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyFour
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyFive
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodySix
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodySeven
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyEight
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyNine
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnezero
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOneone
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnetwo
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnethree
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnefour
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnefive
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnesix
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOneseven
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOneeight
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnenine
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwozero
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwoone
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwotwo
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwothree
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwofour
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwofive
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwosix
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwoseven
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwoeight
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwonine
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreezero
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreeone
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreetwo
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreethree
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreefour
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreefive
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreesix
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreeseven
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreeeight
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreenine
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyFourzero
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyFourone
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyFourtwo
+      params?: GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeParams
+    },
+    TContext
+  > => {
+    const { mutation: mutationOptions } = options ?? {}
+
+    const mutationFn: MutationFunction<
+      Awaited<
+        ReturnType<
+          typeof getDetectorRetrieveDetectionIdentifierBasedOnDetectionType
+        >
+      >,
+      {
+        data:
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOne
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwo
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThree
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyFour
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyFive
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodySix
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodySeven
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyEight
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyNine
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnezero
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOneone
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnetwo
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnethree
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnefour
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnefive
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnesix
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOneseven
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOneeight
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnenine
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwozero
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwoone
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwotwo
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwothree
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwofour
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwofive
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwosix
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwoseven
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwoeight
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwonine
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreezero
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreeone
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreetwo
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreethree
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreefour
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreefive
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreesix
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreeseven
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreeeight
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreenine
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyFourzero
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyFourone
+          | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyFourtwo
+        params?: GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeParams
+      }
+    > = (props) => {
+      const { data, params } = props ?? {}
+
+      return getDetectorRetrieveDetectionIdentifierBasedOnDetectionType(
+        data,
+        params
+      )
+    }
+
+    return { mutationFn, ...mutationOptions }
+  }
+
+export type GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeMutationResult =
+  NonNullable<
+    Awaited<
+      ReturnType<
+        typeof getDetectorRetrieveDetectionIdentifierBasedOnDetectionType
+      >
+    >
+  >
+export type GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeMutationBody =
+
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOne
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwo
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThree
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyFour
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyFive
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodySix
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodySeven
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyEight
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyNine
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnezero
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOneone
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnetwo
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnethree
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnefour
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnefive
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnesix
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOneseven
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOneeight
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnenine
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwozero
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwoone
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwotwo
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwothree
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwofour
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwofive
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwosix
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwoseven
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwoeight
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwonine
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreezero
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreeone
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreetwo
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreethree
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreefour
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreefive
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreesix
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreeseven
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreeeight
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreenine
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyFourzero
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyFourone
+    | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyFourtwo
+export type GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeMutationError =
+  unknown
+
+export const useGetDetectorRetrieveDetectionIdentifierBasedOnDetectionType = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<
+      ReturnType<
+        typeof getDetectorRetrieveDetectionIdentifierBasedOnDetectionType
+      >
+    >,
+    TError,
+    {
+      data:
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOne
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwo
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThree
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyFour
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyFive
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodySix
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodySeven
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyEight
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyNine
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnezero
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOneone
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnetwo
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnethree
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnefour
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnefive
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnesix
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOneseven
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOneeight
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyOnenine
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwozero
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwoone
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwotwo
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwothree
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwofour
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwofive
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwosix
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwoseven
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwoeight
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyTwonine
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreezero
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreeone
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreetwo
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreethree
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreefour
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreefive
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreesix
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreeseven
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreeeight
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyThreenine
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyFourzero
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyFourone
+        | GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeBodyFourtwo
+      params?: GetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeParams
+    },
+    TContext
+  >
+}) => {
+  const mutationOptions =
+    getGetDetectorRetrieveDetectionIdentifierBasedOnDetectionTypeMutationOptions(
+      options
+    )
+
+  return useMutation(mutationOptions)
 }
 
 /**
@@ -3629,10 +4037,7 @@ export const usePatchDetectorFromKey = <
  * @summary Delete object of specified type
  */
 export const deleteDetectorFromKey = (key: number) => {
-  return configRequest<void>({
-    url: `/Detector/${key}`,
-    method: 'DELETE',
-  })
+  return configRequest<void>({ url: `/Detector/${key}`, method: 'DELETE' })
 }
 
 export const getDeleteDetectorFromKeyMutationOptions = <
@@ -6973,10 +7378,7 @@ export const usePatchDirectionTypeFromKey = <
  * @summary Delete object of specified type
  */
 export const deleteDirectionTypeFromKey = (key: string) => {
-  return configRequest<void>({
-    url: `/DirectionType/${key}`,
-    method: 'DELETE',
-  })
+  return configRequest<void>({ url: `/DirectionType/${key}`, method: 'DELETE' })
 }
 
 export const getDeleteDirectionTypeFromKeyMutationOptions = <
@@ -7100,12 +7502,7 @@ export const usePostFaq = <TError = unknown, TContext = unknown>(options?: {
  * @summary Collection of objects from oData query.
  */
 export const getFaq = (params?: GetFaqParams, signal?: AbortSignal) => {
-  return configRequest<Faq[]>({
-    url: `/Faq`,
-    method: 'GET',
-    params,
-    signal,
-  })
+  return configRequest<Faq[]>({ url: `/Faq`, method: 'GET', params, signal })
 }
 
 export const getGetFaqQueryKey = (params?: GetFaqParams) => {
@@ -7949,10 +8346,7 @@ export const usePatchJurisdictionFromKey = <
 }
 
 export const deleteJurisdictionFromKey = (key: number) => {
-  return configRequest<void>({
-    url: `/Jurisdiction/${key}`,
-    method: 'DELETE',
-  })
+  return configRequest<void>({ url: `/Jurisdiction/${key}`, method: 'DELETE' })
 }
 
 export const getDeleteJurisdictionFromKeyMutationOptions = <
@@ -8900,6 +9294,169 @@ export const useGetLocationCopyLocationToNewVersionFromKey = <
 }) => {
   const mutationOptions =
     getGetLocationCopyLocationToNewVersionFromKeyMutationOptions(options)
+
+  return useMutation(mutationOptions)
+}
+
+/**
+ * @summary Copies Utah.Udot.Atspm.Data.Models.Location and associated Utah.Udot.Atspm.Data.Models.Approach to new version
+ */
+export const getLocationSyncLocationFromKey = (
+  key: number,
+  params?: GetLocationSyncLocationFromKeyParams
+) => {
+  return configRequest<TemplateLocationModifiedDto>({
+    url: `/Location/${key}/SyncLocation`,
+    method: 'POST',
+    params,
+  })
+}
+
+export const getGetLocationSyncLocationFromKeyMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof getLocationSyncLocationFromKey>>,
+    TError,
+    { key: number; params?: GetLocationSyncLocationFromKeyParams },
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof getLocationSyncLocationFromKey>>,
+  TError,
+  { key: number; params?: GetLocationSyncLocationFromKeyParams },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof getLocationSyncLocationFromKey>>,
+    { key: number; params?: GetLocationSyncLocationFromKeyParams }
+  > = (props) => {
+    const { key, params } = props ?? {}
+
+    return getLocationSyncLocationFromKey(key, params)
+  }
+
+  return { mutationFn, ...mutationOptions }
+}
+
+export type GetLocationSyncLocationFromKeyMutationResult = NonNullable<
+  Awaited<ReturnType<typeof getLocationSyncLocationFromKey>>
+>
+
+export type GetLocationSyncLocationFromKeyMutationError = void
+
+/**
+ * @summary Copies Utah.Udot.Atspm.Data.Models.Location and associated Utah.Udot.Atspm.Data.Models.Approach to new version
+ */
+export const useGetLocationSyncLocationFromKey = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof getLocationSyncLocationFromKey>>,
+    TError,
+    { key: number; params?: GetLocationSyncLocationFromKeyParams },
+    TContext
+  >
+}) => {
+  const mutationOptions =
+    getGetLocationSyncLocationFromKeyMutationOptions(options)
+
+  return useMutation(mutationOptions)
+}
+
+/**
+ * @summary Templates Utah.Udot.Atspm.Data.Models.Location and associated Utah.Udot.Atspm.Data.Models.Approach to new version
+ */
+export const getLocationSaveTemplatedLocationFromKey = (
+  key: number,
+  locationSaveTemplatedLocationParameters: LocationSaveTemplatedLocationParameters,
+  params?: GetLocationSaveTemplatedLocationFromKeyParams
+) => {
+  return configRequest<Location>({
+    url: `/Location/${key}/SaveTemplatedLocation`,
+    method: 'POST',
+    headers: {
+      'Content-Type':
+        'application/json;odata.metadata=minimal;odata.streaming=true',
+    },
+    data: locationSaveTemplatedLocationParameters,
+    params,
+  })
+}
+
+export const getGetLocationSaveTemplatedLocationFromKeyMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof getLocationSaveTemplatedLocationFromKey>>,
+    TError,
+    {
+      key: number
+      data: LocationSaveTemplatedLocationParameters
+      params?: GetLocationSaveTemplatedLocationFromKeyParams
+    },
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof getLocationSaveTemplatedLocationFromKey>>,
+  TError,
+  {
+    key: number
+    data: LocationSaveTemplatedLocationParameters
+    params?: GetLocationSaveTemplatedLocationFromKeyParams
+  },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof getLocationSaveTemplatedLocationFromKey>>,
+    {
+      key: number
+      data: LocationSaveTemplatedLocationParameters
+      params?: GetLocationSaveTemplatedLocationFromKeyParams
+    }
+  > = (props) => {
+    const { key, data, params } = props ?? {}
+
+    return getLocationSaveTemplatedLocationFromKey(key, data, params)
+  }
+
+  return { mutationFn, ...mutationOptions }
+}
+
+export type GetLocationSaveTemplatedLocationFromKeyMutationResult = NonNullable<
+  Awaited<ReturnType<typeof getLocationSaveTemplatedLocationFromKey>>
+>
+export type GetLocationSaveTemplatedLocationFromKeyMutationBody =
+  LocationSaveTemplatedLocationParameters
+export type GetLocationSaveTemplatedLocationFromKeyMutationError = void
+
+/**
+ * @summary Templates Utah.Udot.Atspm.Data.Models.Location and associated Utah.Udot.Atspm.Data.Models.Approach to new version
+ */
+export const useGetLocationSaveTemplatedLocationFromKey = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof getLocationSaveTemplatedLocationFromKey>>,
+    TError,
+    {
+      key: number
+      data: LocationSaveTemplatedLocationParameters
+      params?: GetLocationSaveTemplatedLocationFromKeyParams
+    },
+    TContext
+  >
+}) => {
+  const mutationOptions =
+    getGetLocationSaveTemplatedLocationFromKeyMutationOptions(options)
 
   return useMutation(mutationOptions)
 }
@@ -9940,10 +10497,7 @@ export const usePatchLocationFromKey = <
  * @summary Delete object of specified type
  */
 export const deleteLocationFromKey = (key: number) => {
-  return configRequest<void>({
-    url: `/Location/${key}`,
-    method: 'DELETE',
-  })
+  return configRequest<void>({ url: `/Location/${key}`, method: 'DELETE' })
 }
 
 export const getDeleteLocationFromKeyMutationOptions = <
@@ -10685,10 +11239,7 @@ export const usePatchLocationTypeFromKey = <
  * @summary Delete object of specified type
  */
 export const deleteLocationTypeFromKey = (key: number) => {
-  return configRequest<void>({
-    url: `/LocationType/${key}`,
-    method: 'DELETE',
-  })
+  return configRequest<void>({ url: `/LocationType/${key}`, method: 'DELETE' })
 }
 
 export const getDeleteLocationTypeFromKeyMutationOptions = <
@@ -10742,6 +11293,537 @@ export const useDeleteLocationTypeFromKey = <
   >
 }) => {
   const mutationOptions = getDeleteLocationTypeFromKeyMutationOptions(options)
+
+  return useMutation(mutationOptions)
+}
+
+/**
+ * @summary Collection of objects from oData query.
+ */
+export const getMapLayer = (
+  params?: GetMapLayerParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<MapLayer[]>({
+    url: `/MapLayer`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getGetMapLayerQueryKey = (params?: GetMapLayerParams) => {
+  return [`/MapLayer`, ...(params ? [params] : [])] as const
+}
+
+export const getGetMapLayerQueryOptions = <
+  TData = Awaited<ReturnType<typeof getMapLayer>>,
+  TError = void,
+>(
+  params?: GetMapLayerParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getMapLayer>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey = queryOptions?.queryKey ?? getGetMapLayerQueryKey(params)
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getMapLayer>>> = ({
+    signal,
+  }) => getMapLayer(params, signal)
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getMapLayer>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type GetMapLayerQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getMapLayer>>
+>
+export type GetMapLayerQueryError = void
+
+/**
+ * @summary Collection of objects from oData query.
+ */
+export const useGetMapLayer = <
+  TData = Awaited<ReturnType<typeof getMapLayer>>,
+  TError = void,
+>(
+  params?: GetMapLayerParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getMapLayer>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getGetMapLayerQueryOptions(params, options)
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
+ * @summary Insert object of specified type
+ */
+export const postMapLayer = (
+  mapLayer: MapLayer,
+  params?: PostMapLayerParams
+) => {
+  return configRequest<void>({
+    url: `/MapLayer`,
+    method: 'POST',
+    headers: {
+      'Content-Type':
+        'application/json;odata.metadata=minimal;odata.streaming=true',
+    },
+    data: mapLayer,
+    params,
+  })
+}
+
+export const getPostMapLayerMutationOptions = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postMapLayer>>,
+    TError,
+    { data: MapLayer; params?: PostMapLayerParams },
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof postMapLayer>>,
+  TError,
+  { data: MapLayer; params?: PostMapLayerParams },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof postMapLayer>>,
+    { data: MapLayer; params?: PostMapLayerParams }
+  > = (props) => {
+    const { data, params } = props ?? {}
+
+    return postMapLayer(data, params)
+  }
+
+  return { mutationFn, ...mutationOptions }
+}
+
+export type PostMapLayerMutationResult = NonNullable<
+  Awaited<ReturnType<typeof postMapLayer>>
+>
+export type PostMapLayerMutationBody = MapLayer
+export type PostMapLayerMutationError = unknown
+
+/**
+ * @summary Insert object of specified type
+ */
+export const usePostMapLayer = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postMapLayer>>,
+    TError,
+    { data: MapLayer; params?: PostMapLayerParams },
+    TContext
+  >
+}) => {
+  const mutationOptions = getPostMapLayerMutationOptions(options)
+
+  return useMutation(mutationOptions)
+}
+
+/**
+ * @summary Collection of objects from oData query.
+ */
+export const getMapLayerCount = (
+  params?: GetMapLayerCountParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<MapLayer[]>({
+    url: `/MapLayer/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getGetMapLayerCountQueryKey = (
+  params?: GetMapLayerCountParams
+) => {
+  return [`/MapLayer/$count`, ...(params ? [params] : [])] as const
+}
+
+export const getGetMapLayerCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof getMapLayerCount>>,
+  TError = void,
+>(
+  params?: GetMapLayerCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getMapLayerCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey = queryOptions?.queryKey ?? getGetMapLayerCountQueryKey(params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getMapLayerCount>>
+  > = ({ signal }) => getMapLayerCount(params, signal)
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getMapLayerCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type GetMapLayerCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getMapLayerCount>>
+>
+export type GetMapLayerCountQueryError = void
+
+/**
+ * @summary Collection of objects from oData query.
+ */
+export const useGetMapLayerCount = <
+  TData = Awaited<ReturnType<typeof getMapLayerCount>>,
+  TError = void,
+>(
+  params?: GetMapLayerCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getMapLayerCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getGetMapLayerCountQueryOptions(params, options)
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
+ * @summary object with key from oData query.
+ */
+export const getMapLayerFromKey = (
+  key: number,
+  params?: GetMapLayerFromKeyParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<MapLayer>({
+    url: `/MapLayer/${key}`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getGetMapLayerFromKeyQueryKey = (
+  key: number,
+  params?: GetMapLayerFromKeyParams
+) => {
+  return [`/MapLayer/${key}`, ...(params ? [params] : [])] as const
+}
+
+export const getGetMapLayerFromKeyQueryOptions = <
+  TData = Awaited<ReturnType<typeof getMapLayerFromKey>>,
+  TError = void,
+>(
+  key: number,
+  params?: GetMapLayerFromKeyParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getMapLayerFromKey>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ?? getGetMapLayerFromKeyQueryKey(key, params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getMapLayerFromKey>>
+  > = ({ signal }) => getMapLayerFromKey(key, params, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!key,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getMapLayerFromKey>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type GetMapLayerFromKeyQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getMapLayerFromKey>>
+>
+export type GetMapLayerFromKeyQueryError = void
+
+/**
+ * @summary object with key from oData query.
+ */
+export const useGetMapLayerFromKey = <
+  TData = Awaited<ReturnType<typeof getMapLayerFromKey>>,
+  TError = void,
+>(
+  key: number,
+  params?: GetMapLayerFromKeyParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getMapLayerFromKey>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getGetMapLayerFromKeyQueryOptions(key, params, options)
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+export const putMapLayerFromKey = (
+  key: number,
+  mapLayer: MapLayer,
+  params?: PutMapLayerFromKeyParams
+) => {
+  return configRequest<void>({
+    url: `/MapLayer/${key}`,
+    method: 'PUT',
+    headers: {
+      'Content-Type':
+        'application/json;odata.metadata=minimal;odata.streaming=true',
+    },
+    data: mapLayer,
+    params,
+  })
+}
+
+export const getPutMapLayerFromKeyMutationOptions = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof putMapLayerFromKey>>,
+    TError,
+    { key: number; data: MapLayer; params?: PutMapLayerFromKeyParams },
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof putMapLayerFromKey>>,
+  TError,
+  { key: number; data: MapLayer; params?: PutMapLayerFromKeyParams },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof putMapLayerFromKey>>,
+    { key: number; data: MapLayer; params?: PutMapLayerFromKeyParams }
+  > = (props) => {
+    const { key, data, params } = props ?? {}
+
+    return putMapLayerFromKey(key, data, params)
+  }
+
+  return { mutationFn, ...mutationOptions }
+}
+
+export type PutMapLayerFromKeyMutationResult = NonNullable<
+  Awaited<ReturnType<typeof putMapLayerFromKey>>
+>
+export type PutMapLayerFromKeyMutationBody = MapLayer
+export type PutMapLayerFromKeyMutationError = unknown
+
+export const usePutMapLayerFromKey = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof putMapLayerFromKey>>,
+    TError,
+    { key: number; data: MapLayer; params?: PutMapLayerFromKeyParams },
+    TContext
+  >
+}) => {
+  const mutationOptions = getPutMapLayerFromKeyMutationOptions(options)
+
+  return useMutation(mutationOptions)
+}
+
+/**
+ * @summary Update object of specified type
+ */
+export const patchMapLayerFromKey = (
+  key: number,
+  mapLayer: MapLayer,
+  params?: PatchMapLayerFromKeyParams
+) => {
+  return configRequest<void>({
+    url: `/MapLayer/${key}`,
+    method: 'PATCH',
+    headers: {
+      'Content-Type':
+        'application/json;odata.metadata=minimal;odata.streaming=true',
+    },
+    data: mapLayer,
+    params,
+  })
+}
+
+export const getPatchMapLayerFromKeyMutationOptions = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof patchMapLayerFromKey>>,
+    TError,
+    { key: number; data: MapLayer; params?: PatchMapLayerFromKeyParams },
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof patchMapLayerFromKey>>,
+  TError,
+  { key: number; data: MapLayer; params?: PatchMapLayerFromKeyParams },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof patchMapLayerFromKey>>,
+    { key: number; data: MapLayer; params?: PatchMapLayerFromKeyParams }
+  > = (props) => {
+    const { key, data, params } = props ?? {}
+
+    return patchMapLayerFromKey(key, data, params)
+  }
+
+  return { mutationFn, ...mutationOptions }
+}
+
+export type PatchMapLayerFromKeyMutationResult = NonNullable<
+  Awaited<ReturnType<typeof patchMapLayerFromKey>>
+>
+export type PatchMapLayerFromKeyMutationBody = MapLayer
+export type PatchMapLayerFromKeyMutationError = unknown
+
+/**
+ * @summary Update object of specified type
+ */
+export const usePatchMapLayerFromKey = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof patchMapLayerFromKey>>,
+    TError,
+    { key: number; data: MapLayer; params?: PatchMapLayerFromKeyParams },
+    TContext
+  >
+}) => {
+  const mutationOptions = getPatchMapLayerFromKeyMutationOptions(options)
+
+  return useMutation(mutationOptions)
+}
+
+/**
+ * @summary Delete object of specified type
+ */
+export const deleteMapLayerFromKey = (key: number) => {
+  return configRequest<void>({ url: `/MapLayer/${key}`, method: 'DELETE' })
+}
+
+export const getDeleteMapLayerFromKeyMutationOptions = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteMapLayerFromKey>>,
+    TError,
+    { key: number },
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof deleteMapLayerFromKey>>,
+  TError,
+  { key: number },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof deleteMapLayerFromKey>>,
+    { key: number }
+  > = (props) => {
+    const { key } = props ?? {}
+
+    return deleteMapLayerFromKey(key)
+  }
+
+  return { mutationFn, ...mutationOptions }
+}
+
+export type DeleteMapLayerFromKeyMutationResult = NonNullable<
+  Awaited<ReturnType<typeof deleteMapLayerFromKey>>
+>
+
+export type DeleteMapLayerFromKeyMutationError = unknown
+
+/**
+ * @summary Delete object of specified type
+ */
+export const useDeleteMapLayerFromKey = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteMapLayerFromKey>>,
+    TError,
+    { key: number },
+    TContext
+  >
+}) => {
+  const mutationOptions = getDeleteMapLayerFromKeyMutationOptions(options)
 
   return useMutation(mutationOptions)
 }
@@ -12023,10 +13105,7 @@ export const usePatchMeasureOptionFromKey = <
  * @summary Delete object of specified type
  */
 export const deleteMeasureOptionFromKey = (key: number) => {
-  return configRequest<void>({
-    url: `/MeasureOption/${key}`,
-    method: 'DELETE',
-  })
+  return configRequest<void>({ url: `/MeasureOption/${key}`, method: 'DELETE' })
 }
 
 export const getDeleteMeasureOptionFromKeyMutationOptions = <
@@ -12080,6 +13159,687 @@ export const useDeleteMeasureOptionFromKey = <
   >
 }) => {
   const mutationOptions = getDeleteMeasureOptionFromKeyMutationOptions(options)
+
+  return useMutation(mutationOptions)
+}
+
+/**
+ * @summary Retrieves a list of measure option preset types.
+ */
+export const getMeasureOptionPresetMeasureOptionPresetTypes = (
+  params?: GetMeasureOptionPresetMeasureOptionPresetTypesParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<string[]>({
+    url: `/MeasureOptionPreset/GetMeasureOptionPresetTypes`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getGetMeasureOptionPresetMeasureOptionPresetTypesQueryKey = (
+  params?: GetMeasureOptionPresetMeasureOptionPresetTypesParams
+) => {
+  return [
+    `/MeasureOptionPreset/GetMeasureOptionPresetTypes`,
+    ...(params ? [params] : []),
+  ] as const
+}
+
+export const getGetMeasureOptionPresetMeasureOptionPresetTypesQueryOptions = <
+  TData = Awaited<
+    ReturnType<typeof getMeasureOptionPresetMeasureOptionPresetTypes>
+  >,
+  TError = void,
+>(
+  params?: GetMeasureOptionPresetMeasureOptionPresetTypesParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<
+        ReturnType<typeof getMeasureOptionPresetMeasureOptionPresetTypes>
+      >,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getGetMeasureOptionPresetMeasureOptionPresetTypesQueryKey(params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getMeasureOptionPresetMeasureOptionPresetTypes>>
+  > = ({ signal }) =>
+    getMeasureOptionPresetMeasureOptionPresetTypes(params, signal)
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getMeasureOptionPresetMeasureOptionPresetTypes>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type GetMeasureOptionPresetMeasureOptionPresetTypesQueryResult =
+  NonNullable<
+    Awaited<ReturnType<typeof getMeasureOptionPresetMeasureOptionPresetTypes>>
+  >
+export type GetMeasureOptionPresetMeasureOptionPresetTypesQueryError = void
+
+/**
+ * @summary Retrieves a list of measure option preset types.
+ */
+export const useGetMeasureOptionPresetMeasureOptionPresetTypes = <
+  TData = Awaited<
+    ReturnType<typeof getMeasureOptionPresetMeasureOptionPresetTypes>
+  >,
+  TError = void,
+>(
+  params?: GetMeasureOptionPresetMeasureOptionPresetTypesParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<
+        ReturnType<typeof getMeasureOptionPresetMeasureOptionPresetTypes>
+      >,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions =
+    getGetMeasureOptionPresetMeasureOptionPresetTypesQueryOptions(
+      params,
+      options
+    )
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
+ * @summary Collection of objects from oData query.
+ */
+export const getMeasureOptionPreset = (
+  params?: GetMeasureOptionPresetParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<MeasureOptionPreset[]>({
+    url: `/MeasureOptionPreset`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getGetMeasureOptionPresetQueryKey = (
+  params?: GetMeasureOptionPresetParams
+) => {
+  return [`/MeasureOptionPreset`, ...(params ? [params] : [])] as const
+}
+
+export const getGetMeasureOptionPresetQueryOptions = <
+  TData = Awaited<ReturnType<typeof getMeasureOptionPreset>>,
+  TError = void,
+>(
+  params?: GetMeasureOptionPresetParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getMeasureOptionPreset>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ?? getGetMeasureOptionPresetQueryKey(params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getMeasureOptionPreset>>
+  > = ({ signal }) => getMeasureOptionPreset(params, signal)
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getMeasureOptionPreset>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type GetMeasureOptionPresetQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getMeasureOptionPreset>>
+>
+export type GetMeasureOptionPresetQueryError = void
+
+/**
+ * @summary Collection of objects from oData query.
+ */
+export const useGetMeasureOptionPreset = <
+  TData = Awaited<ReturnType<typeof getMeasureOptionPreset>>,
+  TError = void,
+>(
+  params?: GetMeasureOptionPresetParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getMeasureOptionPreset>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getGetMeasureOptionPresetQueryOptions(params, options)
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
+ * @summary Insert object of specified type
+ */
+export const postMeasureOptionPreset = (
+  measureOptionPreset: MeasureOptionPreset,
+  params?: PostMeasureOptionPresetParams
+) => {
+  // TODO: fix streaming bug here.
+  return configRequest<void>({
+    url: `/MeasureOptionPreset`,
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json;odata.metadata=minimal',
+    },
+    data: measureOptionPreset,
+    params,
+  })
+}
+
+export const getPostMeasureOptionPresetMutationOptions = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postMeasureOptionPreset>>,
+    TError,
+    { data: MeasureOptionPreset; params?: PostMeasureOptionPresetParams },
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof postMeasureOptionPreset>>,
+  TError,
+  { data: MeasureOptionPreset; params?: PostMeasureOptionPresetParams },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof postMeasureOptionPreset>>,
+    { data: MeasureOptionPreset; params?: PostMeasureOptionPresetParams }
+  > = (props) => {
+    const { data, params } = props ?? {}
+
+    return postMeasureOptionPreset(data, params)
+  }
+
+  return { mutationFn, ...mutationOptions }
+}
+
+export type PostMeasureOptionPresetMutationResult = NonNullable<
+  Awaited<ReturnType<typeof postMeasureOptionPreset>>
+>
+export type PostMeasureOptionPresetMutationBody = MeasureOptionPreset
+export type PostMeasureOptionPresetMutationError = unknown
+
+/**
+ * @summary Insert object of specified type
+ */
+export const usePostMeasureOptionPreset = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postMeasureOptionPreset>>,
+    TError,
+    { data: MeasureOptionPreset; params?: PostMeasureOptionPresetParams },
+    TContext
+  >
+}) => {
+  const mutationOptions = getPostMeasureOptionPresetMutationOptions(options)
+
+  return useMutation(mutationOptions)
+}
+
+/**
+ * @summary Collection of objects from oData query.
+ */
+export const getMeasureOptionPresetCount = (
+  params?: GetMeasureOptionPresetCountParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<MeasureOptionPreset[]>({
+    url: `/MeasureOptionPreset/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getGetMeasureOptionPresetCountQueryKey = (
+  params?: GetMeasureOptionPresetCountParams
+) => {
+  return [`/MeasureOptionPreset/$count`, ...(params ? [params] : [])] as const
+}
+
+export const getGetMeasureOptionPresetCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof getMeasureOptionPresetCount>>,
+  TError = void,
+>(
+  params?: GetMeasureOptionPresetCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getMeasureOptionPresetCount>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ?? getGetMeasureOptionPresetCountQueryKey(params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getMeasureOptionPresetCount>>
+  > = ({ signal }) => getMeasureOptionPresetCount(params, signal)
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getMeasureOptionPresetCount>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type GetMeasureOptionPresetCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getMeasureOptionPresetCount>>
+>
+export type GetMeasureOptionPresetCountQueryError = void
+
+/**
+ * @summary Collection of objects from oData query.
+ */
+export const useGetMeasureOptionPresetCount = <
+  TData = Awaited<ReturnType<typeof getMeasureOptionPresetCount>>,
+  TError = void,
+>(
+  params?: GetMeasureOptionPresetCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getMeasureOptionPresetCount>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getGetMeasureOptionPresetCountQueryOptions(
+    params,
+    options
+  )
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
+ * @summary object with key from oData query.
+ */
+export const getMeasureOptionPresetFromKey = (
+  key: number,
+  params?: GetMeasureOptionPresetFromKeyParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<MeasureOptionPreset>({
+    url: `/MeasureOptionPreset/${key}`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getGetMeasureOptionPresetFromKeyQueryKey = (
+  key: number,
+  params?: GetMeasureOptionPresetFromKeyParams
+) => {
+  return [`/MeasureOptionPreset/${key}`, ...(params ? [params] : [])] as const
+}
+
+export const getGetMeasureOptionPresetFromKeyQueryOptions = <
+  TData = Awaited<ReturnType<typeof getMeasureOptionPresetFromKey>>,
+  TError = void,
+>(
+  key: number,
+  params?: GetMeasureOptionPresetFromKeyParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getMeasureOptionPresetFromKey>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getGetMeasureOptionPresetFromKeyQueryKey(key, params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getMeasureOptionPresetFromKey>>
+  > = ({ signal }) => getMeasureOptionPresetFromKey(key, params, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!key,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getMeasureOptionPresetFromKey>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type GetMeasureOptionPresetFromKeyQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getMeasureOptionPresetFromKey>>
+>
+export type GetMeasureOptionPresetFromKeyQueryError = void
+
+/**
+ * @summary object with key from oData query.
+ */
+export const useGetMeasureOptionPresetFromKey = <
+  TData = Awaited<ReturnType<typeof getMeasureOptionPresetFromKey>>,
+  TError = void,
+>(
+  key: number,
+  params?: GetMeasureOptionPresetFromKeyParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getMeasureOptionPresetFromKey>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getGetMeasureOptionPresetFromKeyQueryOptions(
+    key,
+    params,
+    options
+  )
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+export const putMeasureOptionPresetFromKey = (
+  key: number,
+  measureOptionPreset: MeasureOptionPreset,
+  params?: PutMeasureOptionPresetFromKeyParams
+) => {
+  return configRequest<void>({
+    url: `/MeasureOptionPreset/${key}`,
+    method: 'PUT',
+    headers: {
+      'Content-Type':
+        'application/json;odata.metadata=minimal;odata.streaming=true',
+    },
+    data: measureOptionPreset,
+    params,
+  })
+}
+
+export const getPutMeasureOptionPresetFromKeyMutationOptions = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof putMeasureOptionPresetFromKey>>,
+    TError,
+    {
+      key: number
+      data: MeasureOptionPreset
+      params?: PutMeasureOptionPresetFromKeyParams
+    },
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof putMeasureOptionPresetFromKey>>,
+  TError,
+  {
+    key: number
+    data: MeasureOptionPreset
+    params?: PutMeasureOptionPresetFromKeyParams
+  },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof putMeasureOptionPresetFromKey>>,
+    {
+      key: number
+      data: MeasureOptionPreset
+      params?: PutMeasureOptionPresetFromKeyParams
+    }
+  > = (props) => {
+    const { key, data, params } = props ?? {}
+
+    return putMeasureOptionPresetFromKey(key, data, params)
+  }
+
+  return { mutationFn, ...mutationOptions }
+}
+
+export type PutMeasureOptionPresetFromKeyMutationResult = NonNullable<
+  Awaited<ReturnType<typeof putMeasureOptionPresetFromKey>>
+>
+export type PutMeasureOptionPresetFromKeyMutationBody = MeasureOptionPreset
+export type PutMeasureOptionPresetFromKeyMutationError = unknown
+
+export const usePutMeasureOptionPresetFromKey = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof putMeasureOptionPresetFromKey>>,
+    TError,
+    {
+      key: number
+      data: MeasureOptionPreset
+      params?: PutMeasureOptionPresetFromKeyParams
+    },
+    TContext
+  >
+}) => {
+  const mutationOptions =
+    getPutMeasureOptionPresetFromKeyMutationOptions(options)
+
+  return useMutation(mutationOptions)
+}
+
+/**
+ * @summary Update object of specified type
+ */
+export const patchMeasureOptionPresetFromKey = (
+  key: number,
+  measureOptionPreset: MeasureOptionPreset,
+  params?: PatchMeasureOptionPresetFromKeyParams
+) => {
+  return configRequest<void>({
+    url: `/MeasureOptionPreset/${key}`,
+    method: 'PATCH',
+    headers: {
+      'Content-Type':
+        'application/json;odata.metadata=minimal;odata.streaming=true',
+    },
+    data: measureOptionPreset,
+    params,
+  })
+}
+
+export const getPatchMeasureOptionPresetFromKeyMutationOptions = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof patchMeasureOptionPresetFromKey>>,
+    TError,
+    {
+      key: number
+      data: MeasureOptionPreset
+      params?: PatchMeasureOptionPresetFromKeyParams
+    },
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof patchMeasureOptionPresetFromKey>>,
+  TError,
+  {
+    key: number
+    data: MeasureOptionPreset
+    params?: PatchMeasureOptionPresetFromKeyParams
+  },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof patchMeasureOptionPresetFromKey>>,
+    {
+      key: number
+      data: MeasureOptionPreset
+      params?: PatchMeasureOptionPresetFromKeyParams
+    }
+  > = (props) => {
+    const { key, data, params } = props ?? {}
+
+    return patchMeasureOptionPresetFromKey(key, data, params)
+  }
+
+  return { mutationFn, ...mutationOptions }
+}
+
+export type PatchMeasureOptionPresetFromKeyMutationResult = NonNullable<
+  Awaited<ReturnType<typeof patchMeasureOptionPresetFromKey>>
+>
+export type PatchMeasureOptionPresetFromKeyMutationBody = MeasureOptionPreset
+export type PatchMeasureOptionPresetFromKeyMutationError = unknown
+
+/**
+ * @summary Update object of specified type
+ */
+export const usePatchMeasureOptionPresetFromKey = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof patchMeasureOptionPresetFromKey>>,
+    TError,
+    {
+      key: number
+      data: MeasureOptionPreset
+      params?: PatchMeasureOptionPresetFromKeyParams
+    },
+    TContext
+  >
+}) => {
+  const mutationOptions =
+    getPatchMeasureOptionPresetFromKeyMutationOptions(options)
+
+  return useMutation(mutationOptions)
+}
+
+/**
+ * @summary Delete object of specified type
+ */
+export const deleteMeasureOptionPresetFromKey = (key: number) => {
+  return configRequest<void>({
+    url: `/MeasureOptionPreset/${key}`,
+    method: 'DELETE',
+  })
+}
+
+export const getDeleteMeasureOptionPresetFromKeyMutationOptions = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteMeasureOptionPresetFromKey>>,
+    TError,
+    { key: number },
+    TContext
+  >
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof deleteMeasureOptionPresetFromKey>>,
+  TError,
+  { key: number },
+  TContext
+> => {
+  const { mutation: mutationOptions } = options ?? {}
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof deleteMeasureOptionPresetFromKey>>,
+    { key: number }
+  > = (props) => {
+    const { key } = props ?? {}
+
+    return deleteMeasureOptionPresetFromKey(key)
+  }
+
+  return { mutationFn, ...mutationOptions }
+}
+
+export type DeleteMeasureOptionPresetFromKeyMutationResult = NonNullable<
+  Awaited<ReturnType<typeof deleteMeasureOptionPresetFromKey>>
+>
+
+export type DeleteMeasureOptionPresetFromKeyMutationError = unknown
+
+/**
+ * @summary Delete object of specified type
+ */
+export const useDeleteMeasureOptionPresetFromKey = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteMeasureOptionPresetFromKey>>,
+    TError,
+    { key: number },
+    TContext
+  >
+}) => {
+  const mutationOptions =
+    getDeleteMeasureOptionPresetFromKeyMutationOptions(options)
 
   return useMutation(mutationOptions)
 }
@@ -12472,6 +14232,216 @@ export const useGetMeasureTypeMeasureCommentsCountFromKey = <
     params,
     options
   )
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
+ * @summary Utah.Udot.Atspm.Data.Models.MeasureOptionPreset navigation property action
+ */
+export const getMeasureTypeMeasureOptionPresetsFromKey = (
+  key: number,
+  params?: GetMeasureTypeMeasureOptionPresetsFromKeyParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<MeasureOptionPreset[]>({
+    url: `/MeasureType/${key}/measureOptionPresets`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getGetMeasureTypeMeasureOptionPresetsFromKeyQueryKey = (
+  key: number,
+  params?: GetMeasureTypeMeasureOptionPresetsFromKeyParams
+) => {
+  return [
+    `/MeasureType/${key}/measureOptionPresets`,
+    ...(params ? [params] : []),
+  ] as const
+}
+
+export const getGetMeasureTypeMeasureOptionPresetsFromKeyQueryOptions = <
+  TData = Awaited<ReturnType<typeof getMeasureTypeMeasureOptionPresetsFromKey>>,
+  TError = void,
+>(
+  key: number,
+  params?: GetMeasureTypeMeasureOptionPresetsFromKeyParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getMeasureTypeMeasureOptionPresetsFromKey>>,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getGetMeasureTypeMeasureOptionPresetsFromKeyQueryKey(key, params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getMeasureTypeMeasureOptionPresetsFromKey>>
+  > = ({ signal }) =>
+    getMeasureTypeMeasureOptionPresetsFromKey(key, params, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!key,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getMeasureTypeMeasureOptionPresetsFromKey>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type GetMeasureTypeMeasureOptionPresetsFromKeyQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getMeasureTypeMeasureOptionPresetsFromKey>>
+>
+export type GetMeasureTypeMeasureOptionPresetsFromKeyQueryError = void
+
+/**
+ * @summary Utah.Udot.Atspm.Data.Models.MeasureOptionPreset navigation property action
+ */
+export const useGetMeasureTypeMeasureOptionPresetsFromKey = <
+  TData = Awaited<ReturnType<typeof getMeasureTypeMeasureOptionPresetsFromKey>>,
+  TError = void,
+>(
+  key: number,
+  params?: GetMeasureTypeMeasureOptionPresetsFromKeyParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getMeasureTypeMeasureOptionPresetsFromKey>>,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getGetMeasureTypeMeasureOptionPresetsFromKeyQueryOptions(
+    key,
+    params,
+    options
+  )
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
+ * @summary Utah.Udot.Atspm.Data.Models.MeasureOptionPreset navigation property action
+ */
+export const getMeasureTypeMeasureOptionPresetsCountFromKey = (
+  key: number,
+  params?: GetMeasureTypeMeasureOptionPresetsCountFromKeyParams,
+  signal?: AbortSignal
+) => {
+  return configRequest<MeasureOptionPreset[]>({
+    url: `/MeasureType/${key}/measureOptionPresets/$count`,
+    method: 'GET',
+    params,
+    signal,
+  })
+}
+
+export const getGetMeasureTypeMeasureOptionPresetsCountFromKeyQueryKey = (
+  key: number,
+  params?: GetMeasureTypeMeasureOptionPresetsCountFromKeyParams
+) => {
+  return [
+    `/MeasureType/${key}/measureOptionPresets/$count`,
+    ...(params ? [params] : []),
+  ] as const
+}
+
+export const getGetMeasureTypeMeasureOptionPresetsCountFromKeyQueryOptions = <
+  TData = Awaited<
+    ReturnType<typeof getMeasureTypeMeasureOptionPresetsCountFromKey>
+  >,
+  TError = void,
+>(
+  key: number,
+  params?: GetMeasureTypeMeasureOptionPresetsCountFromKeyParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<
+        ReturnType<typeof getMeasureTypeMeasureOptionPresetsCountFromKey>
+      >,
+      TError,
+      TData
+    >
+  }
+) => {
+  const { query: queryOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getGetMeasureTypeMeasureOptionPresetsCountFromKeyQueryKey(key, params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getMeasureTypeMeasureOptionPresetsCountFromKey>>
+  > = ({ signal }) =>
+    getMeasureTypeMeasureOptionPresetsCountFromKey(key, params, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!key,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getMeasureTypeMeasureOptionPresetsCountFromKey>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey }
+}
+
+export type GetMeasureTypeMeasureOptionPresetsCountFromKeyQueryResult =
+  NonNullable<
+    Awaited<ReturnType<typeof getMeasureTypeMeasureOptionPresetsCountFromKey>>
+  >
+export type GetMeasureTypeMeasureOptionPresetsCountFromKeyQueryError = void
+
+/**
+ * @summary Utah.Udot.Atspm.Data.Models.MeasureOptionPreset navigation property action
+ */
+export const useGetMeasureTypeMeasureOptionPresetsCountFromKey = <
+  TData = Awaited<
+    ReturnType<typeof getMeasureTypeMeasureOptionPresetsCountFromKey>
+  >,
+  TError = void,
+>(
+  key: number,
+  params?: GetMeasureTypeMeasureOptionPresetsCountFromKeyParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<
+        ReturnType<typeof getMeasureTypeMeasureOptionPresetsCountFromKey>
+      >,
+      TError,
+      TData
+    >
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions =
+    getGetMeasureTypeMeasureOptionPresetsCountFromKeyQueryOptions(
+      key,
+      params,
+      options
+    )
 
   const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
     queryKey: QueryKey
@@ -12960,10 +14930,7 @@ export const usePatchMeasureTypeFromKey = <
  * @summary Delete object of specified type
  */
 export const deleteMeasureTypeFromKey = (key: number) => {
-  return configRequest<void>({
-    url: `/MeasureType/${key}`,
-    method: 'DELETE',
-  })
+  return configRequest<void>({ url: `/MeasureType/${key}`, method: 'DELETE' })
 }
 
 export const getDeleteMeasureTypeFromKeyMutationOptions = <
@@ -13495,10 +15462,7 @@ export const usePatchMenuItemsFromKey = <
  * @summary Delete object of specified type
  */
 export const deleteMenuItemsFromKey = (key: number) => {
-  return configRequest<void>({
-    url: `/MenuItems/${key}`,
-    method: 'DELETE',
-  })
+  return configRequest<void>({ url: `/MenuItems/${key}`, method: 'DELETE' })
 }
 
 export const getDeleteMenuItemsFromKeyMutationOptions = <
@@ -14018,10 +15982,7 @@ export const usePatchProductFromKey = <
  * @summary Delete object of specified type
  */
 export const deleteProductFromKey = (key: number) => {
-  return configRequest<void>({
-    url: `/Product/${key}`,
-    method: 'DELETE',
-  })
+  return configRequest<void>({ url: `/Product/${key}`, method: 'DELETE' })
 }
 
 export const getDeleteProductFromKeyMutationOptions = <
@@ -16703,10 +18664,7 @@ export const usePatchRouteDistanceFromKey = <
  * @summary Delete object of specified type
  */
 export const deleteRouteDistanceFromKey = (key: number) => {
-  return configRequest<void>({
-    url: `/RouteDistance/${key}`,
-    method: 'DELETE',
-  })
+  return configRequest<void>({ url: `/RouteDistance/${key}`, method: 'DELETE' })
 }
 
 export const getDeleteRouteDistanceFromKeyMutationOptions = <
@@ -17268,10 +19226,7 @@ export const usePatchRouteLocationFromKey = <
  * @summary Delete object of specified type
  */
 export const deleteRouteLocationFromKey = (key: number) => {
-  return configRequest<void>({
-    url: `/RouteLocation/${key}`,
-    method: 'DELETE',
-  })
+  return configRequest<void>({ url: `/RouteLocation/${key}`, method: 'DELETE' })
 }
 
 export const getDeleteRouteLocationFromKeyMutationOptions = <

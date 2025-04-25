@@ -28,10 +28,10 @@ using static Microsoft.AspNetCore.OData.Query.AllowedQueryOptions;
 namespace Utah.Udot.Atspm.ConfigApi.Controllers
 {
     /// <summary>
-    /// Device controller
+    /// Device Controller
     /// </summary>
     [ApiVersion(1.0)]
-    public class DeviceController : AtspmConfigControllerBase<Device, int>
+    public class DeviceController : LocationPolicyControllerBase<Device, int>
     {
         private readonly IDeviceRepository _repository;
 

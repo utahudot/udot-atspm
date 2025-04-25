@@ -25,7 +25,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
     /// Menu items controller
     /// </summary>
     [ApiVersion(1.0)]
-    public class MenuItemsController : AtspmConfigControllerBase<MenuItem, int>
+    public class MenuItemsController : GeneralPolicyControllerBase<MenuItem, int>
     {
         private readonly IMenuItemReposiotry _repository;
 

@@ -19,6 +19,7 @@
 
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Interfaces;
+using Utah.Udot.Atspm.Data.Models.ConfigurationModels;
 using Utah.Udot.Atspm.Data.Relationships;
 using Utah.Udot.NetStandardToolkit.Interfaces;
 
