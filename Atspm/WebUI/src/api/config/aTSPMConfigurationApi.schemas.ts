@@ -11,6 +11,77 @@ expand?: string;
 };
 
 export type PutWatchDogIgnoreEventFromKeyParams = {
+LocationId?: number;
+'Location.Latitude'?: number;
+'Location.Longitude'?: number;
+'Location.PrimaryName'?: string;
+'Location.SecondaryName'?: string;
+'Location.ChartEnabled'?: boolean;
+'Location.VersionAction'?: string;
+'Location.Note'?: string;
+'Location.Start'?: string;
+'Location.PedsAre1to1'?: boolean;
+'Location.LocationIdentifier'?: string;
+'Location.JurisdictionId'?: number;
+'Location.Jurisdiction.Name'?: string;
+'Location.Jurisdiction.Mpo'?: string;
+'Location.Jurisdiction.CountyParish'?: string;
+'Location.Jurisdiction.OtherPartners'?: string;
+'Location.Jurisdiction.UserJurisdictions'?: UserJurisdiction[];
+'Location.Jurisdiction.Locations'?: Location[];
+'Location.Jurisdiction.Id'?: number;
+'Location.Jurisdiction.Created'?: string;
+'Location.Jurisdiction.Modified'?: string;
+'Location.Jurisdiction.CreatedBy'?: string;
+'Location.Jurisdiction.ModifiedBy'?: string;
+'Location.Jurisdiction.HasErrors'?: boolean;
+'Location.Jurisdiction.IsChanged'?: boolean;
+'Location.LocationTypeId'?: number;
+'Location.LocationType.Name'?: string;
+'Location.LocationType.Icon'?: string;
+'Location.LocationType.Locations'?: Location[];
+'Location.LocationType.Id'?: number;
+'Location.LocationType.Created'?: string;
+'Location.LocationType.Modified'?: string;
+'Location.LocationType.CreatedBy'?: string;
+'Location.LocationType.ModifiedBy'?: string;
+'Location.LocationType.HasErrors'?: boolean;
+'Location.LocationType.IsChanged'?: boolean;
+'Location.RegionId'?: number;
+'Location.Region.Description'?: string;
+'Location.Region.UserRegions'?: UserRegion[];
+'Location.Region.Locations'?: Location[];
+'Location.Region.Id'?: number;
+'Location.Region.Created'?: string;
+'Location.Region.Modified'?: string;
+'Location.Region.CreatedBy'?: string;
+'Location.Region.ModifiedBy'?: string;
+'Location.Region.HasErrors'?: boolean;
+'Location.Region.IsChanged'?: boolean;
+'Location.Approaches'?: Approach[];
+'Location.Areas'?: Area[];
+'Location.Devices'?: Device[];
+'Location.Id'?: number;
+'Location.Created'?: string;
+'Location.Modified'?: string;
+'Location.CreatedBy'?: string;
+'Location.ModifiedBy'?: string;
+'Location.HasErrors'?: boolean;
+'Location.IsChanged'?: boolean;
+LocationIdentifier?: string;
+Start?: string;
+End?: string;
+ComponentType?: string;
+ComponentId?: number;
+IssueType?: string;
+Phase?: number;
+Id?: number;
+Created?: string;
+Modified?: string;
+CreatedBy?: string;
+ModifiedBy?: string;
+HasErrors?: boolean;
+IsChanged?: boolean;
 select?: string;
 expand?: string;
 };
@@ -31,6 +102,77 @@ count?: boolean;
 };
 
 export type PostWatchDogIgnoreEventParams = {
+LocationId?: number;
+'Location.Latitude'?: number;
+'Location.Longitude'?: number;
+'Location.PrimaryName'?: string;
+'Location.SecondaryName'?: string;
+'Location.ChartEnabled'?: boolean;
+'Location.VersionAction'?: string;
+'Location.Note'?: string;
+'Location.Start'?: string;
+'Location.PedsAre1to1'?: boolean;
+'Location.LocationIdentifier'?: string;
+'Location.JurisdictionId'?: number;
+'Location.Jurisdiction.Name'?: string;
+'Location.Jurisdiction.Mpo'?: string;
+'Location.Jurisdiction.CountyParish'?: string;
+'Location.Jurisdiction.OtherPartners'?: string;
+'Location.Jurisdiction.UserJurisdictions'?: UserJurisdiction[];
+'Location.Jurisdiction.Locations'?: Location[];
+'Location.Jurisdiction.Id'?: number;
+'Location.Jurisdiction.Created'?: string;
+'Location.Jurisdiction.Modified'?: string;
+'Location.Jurisdiction.CreatedBy'?: string;
+'Location.Jurisdiction.ModifiedBy'?: string;
+'Location.Jurisdiction.HasErrors'?: boolean;
+'Location.Jurisdiction.IsChanged'?: boolean;
+'Location.LocationTypeId'?: number;
+'Location.LocationType.Name'?: string;
+'Location.LocationType.Icon'?: string;
+'Location.LocationType.Locations'?: Location[];
+'Location.LocationType.Id'?: number;
+'Location.LocationType.Created'?: string;
+'Location.LocationType.Modified'?: string;
+'Location.LocationType.CreatedBy'?: string;
+'Location.LocationType.ModifiedBy'?: string;
+'Location.LocationType.HasErrors'?: boolean;
+'Location.LocationType.IsChanged'?: boolean;
+'Location.RegionId'?: number;
+'Location.Region.Description'?: string;
+'Location.Region.UserRegions'?: UserRegion[];
+'Location.Region.Locations'?: Location[];
+'Location.Region.Id'?: number;
+'Location.Region.Created'?: string;
+'Location.Region.Modified'?: string;
+'Location.Region.CreatedBy'?: string;
+'Location.Region.ModifiedBy'?: string;
+'Location.Region.HasErrors'?: boolean;
+'Location.Region.IsChanged'?: boolean;
+'Location.Approaches'?: Approach[];
+'Location.Areas'?: Area[];
+'Location.Devices'?: Device[];
+'Location.Id'?: number;
+'Location.Created'?: string;
+'Location.Modified'?: string;
+'Location.CreatedBy'?: string;
+'Location.ModifiedBy'?: string;
+'Location.HasErrors'?: boolean;
+'Location.IsChanged'?: boolean;
+LocationIdentifier?: string;
+Start?: string;
+End?: string;
+ComponentType?: string;
+ComponentId?: number;
+IssueType?: string;
+Phase?: number;
+Id?: number;
+Created?: string;
+Modified?: string;
+CreatedBy?: string;
+ModifiedBy?: string;
+HasErrors?: boolean;
+IsChanged?: boolean;
 select?: string;
 expand?: string;
 };
@@ -276,14 +418,9 @@ skip?: number;
 count?: boolean;
 };
 
-export type GetRegionCountParams = {
+export type PatchRegionFromKeyParams = {
 select?: string;
 expand?: string;
-filter?: string;
-orderby?: string;
-top?: number;
-skip?: number;
-count?: boolean;
 };
 
 export type PutRegionFromKeyParams = {
@@ -296,12 +433,7 @@ select?: string;
 expand?: string;
 };
 
-export type PatchRegionFromKeyParams = {
-select?: string;
-expand?: string;
-};
-
-export type GetRegionParams = {
+export type GetRegionCountParams = {
 select?: string;
 expand?: string;
 filter?: string;
@@ -314,6 +446,16 @@ count?: boolean;
 export type PostRegionParams = {
 select?: string;
 expand?: string;
+};
+
+export type GetRegionParams = {
+select?: string;
+expand?: string;
+filter?: string;
+orderby?: string;
+top?: number;
+skip?: number;
+count?: boolean;
 };
 
 export type GetRegionLocationsCountFromKeyParams = {
@@ -655,46 +797,6 @@ skip?: number;
 count?: boolean;
 };
 
-export type PatchMapLayerFromKeyParams = {
-select?: string;
-expand?: string;
-};
-
-export type PutMapLayerFromKeyParams = {
-select?: string;
-expand?: string;
-};
-
-export type GetMapLayerFromKeyParams = {
-select?: string;
-expand?: string;
-};
-
-export type GetMapLayerCountParams = {
-select?: string;
-expand?: string;
-filter?: string;
-orderby?: string;
-top?: number;
-skip?: number;
-count?: boolean;
-};
-
-export type PostMapLayerParams = {
-select?: string;
-expand?: string;
-};
-
-export type GetMapLayerParams = {
-select?: string;
-expand?: string;
-filter?: string;
-orderby?: string;
-top?: number;
-skip?: number;
-count?: boolean;
-};
-
 export type PatchLocationTypeFromKeyParams = {
 select?: string;
 expand?: string;
@@ -851,6 +953,11 @@ select?: string;
 expand?: string;
 };
 
+export type DeleteLocationAllVersionsFromKeyParams = {
+select?: string;
+expand?: string;
+};
+
 export type DeleteLocationSetLocationTodFromKeyParams = {
 select?: string;
 expand?: string;
@@ -931,14 +1038,9 @@ skip?: number;
 count?: boolean;
 };
 
-export type GetJurisdictionCountParams = {
+export type PatchJurisdictionFromKeyParams = {
 select?: string;
 expand?: string;
-filter?: string;
-orderby?: string;
-top?: number;
-skip?: number;
-count?: boolean;
 };
 
 export type PutJurisdictionFromKeyParams = {
@@ -951,12 +1053,7 @@ select?: string;
 expand?: string;
 };
 
-export type PatchJurisdictionFromKeyParams = {
-select?: string;
-expand?: string;
-};
-
-export type GetJurisdictionParams = {
+export type GetJurisdictionCountParams = {
 select?: string;
 expand?: string;
 filter?: string;
@@ -969,6 +1066,16 @@ count?: boolean;
 export type PostJurisdictionParams = {
 select?: string;
 expand?: string;
+};
+
+export type GetJurisdictionParams = {
+select?: string;
+expand?: string;
+filter?: string;
+orderby?: string;
+top?: number;
+skip?: number;
+count?: boolean;
 };
 
 export type GetJurisdictionLocationsCountFromKeyParams = {
@@ -989,14 +1096,9 @@ skip?: number;
 count?: boolean;
 };
 
-export type GetFaqCountParams = {
+export type PatchFaqFromKeyParams = {
 select?: string;
 expand?: string;
-filter?: string;
-orderby?: string;
-top?: number;
-skip?: number;
-count?: boolean;
 };
 
 export type PutFaqFromKeyParams = {
@@ -1009,12 +1111,7 @@ select?: string;
 expand?: string;
 };
 
-export type PatchFaqFromKeyParams = {
-select?: string;
-expand?: string;
-};
-
-export type GetFaqParams = {
+export type GetFaqCountParams = {
 select?: string;
 expand?: string;
 filter?: string;
@@ -1027,6 +1124,16 @@ count?: boolean;
 export type PostFaqParams = {
 select?: string;
 expand?: string;
+};
+
+export type GetFaqParams = {
+select?: string;
+expand?: string;
+filter?: string;
+orderby?: string;
+top?: number;
+skip?: number;
+count?: boolean;
 };
 
 export type PatchDirectionTypeFromKeyParams = {
@@ -1530,14 +1637,9 @@ skip?: number;
 count?: boolean;
 };
 
-export type GetAreaCountParams = {
+export type PatchAreaFromKeyParams = {
 select?: string;
 expand?: string;
-filter?: string;
-orderby?: string;
-top?: number;
-skip?: number;
-count?: boolean;
 };
 
 export type PutAreaFromKeyParams = {
@@ -1550,12 +1652,7 @@ select?: string;
 expand?: string;
 };
 
-export type PatchAreaFromKeyParams = {
-select?: string;
-expand?: string;
-};
-
-export type GetAreaParams = {
+export type GetAreaCountParams = {
 select?: string;
 expand?: string;
 filter?: string;
@@ -1568,6 +1665,16 @@ count?: boolean;
 export type PostAreaParams = {
 select?: string;
 expand?: string;
+};
+
+export type GetAreaParams = {
+select?: string;
+expand?: string;
+filter?: string;
+orderby?: string;
+top?: number;
+skip?: number;
+count?: boolean;
 };
 
 export type GetAreaLocationsCountFromKeyParams = {
@@ -1588,14 +1695,9 @@ skip?: number;
 count?: boolean;
 };
 
-export type GetApproachCountParams = {
+export type PatchApproachFromKeyParams = {
 select?: string;
 expand?: string;
-filter?: string;
-orderby?: string;
-top?: number;
-skip?: number;
-count?: boolean;
 };
 
 export type PutApproachFromKeyParams = {
@@ -1608,12 +1710,7 @@ select?: string;
 expand?: string;
 };
 
-export type PatchApproachFromKeyParams = {
-select?: string;
-expand?: string;
-};
-
-export type GetApproachParams = {
+export type GetApproachCountParams = {
 select?: string;
 expand?: string;
 filter?: string;
@@ -1626,6 +1723,16 @@ count?: boolean;
 export type PostApproachParams = {
 select?: string;
 expand?: string;
+};
+
+export type GetApproachParams = {
+select?: string;
+expand?: string;
+filter?: string;
+orderby?: string;
+top?: number;
+skip?: number;
+count?: boolean;
 };
 
 export type GetApproachApproachDtoFromIdParams = {
@@ -1695,12 +1802,16 @@ export const WatchDogComponentTypes = {
 export interface WatchDogIgnoreEvent {
   componentId?: number | null;
   componentType?: WatchDogComponentTypes;
+  created?: string | null;
+  createdBy?: string | null;
   end?: string;
   id?: number;
   issueType?: WatchDogIssueTypes;
   location?: Location;
   locationId?: number;
   locationIdentifier?: string | null;
+  modified?: string | null;
+  modifiedBy?: string | null;
   phase?: number | null;
   start?: string;
 }
@@ -1726,8 +1837,12 @@ export interface VolumeOptions {
 
 export interface VersionHistory {
   children?: VersionHistory[] | null;
+  created?: string | null;
+  createdBy?: string | null;
   date?: string;
   id?: number;
+  modified?: string | null;
+  modifiedBy?: string | null;
   name?: string | null;
   notes?: string | null;
   parent?: VersionHistory;
@@ -1879,10 +1994,14 @@ export interface RouteLocationDto {
 }
 
 export interface RouteLocation {
+  created?: string | null;
+  createdBy?: string | null;
   id?: number;
   isOpposingOverlap?: boolean;
   isPrimaryOverlap?: boolean;
   locationIdentifier?: string | null;
+  modified?: string | null;
+  modifiedBy?: string | null;
   nextLocationDistance?: RouteDistance;
   nextLocationDistanceId?: number | null;
   opposingDirection?: DirectionType;
@@ -1912,10 +2031,14 @@ export interface RouteDistanceDto {
 }
 
 export interface RouteDistance {
+  created?: string | null;
+  createdBy?: string | null;
   distance?: number;
   id?: number;
   locationIdentifierA?: string | null;
   locationIdentifierB?: string | null;
+  modified?: string | null;
+  modifiedBy?: string | null;
   nextLocations?: RouteLocation[] | null;
   previousLocations?: RouteLocation[] | null;
 }
@@ -1954,15 +2077,23 @@ export interface RouteApproachDto {
 }
 
 export interface Route {
+  created?: string | null;
+  createdBy?: string | null;
   id?: number;
+  modified?: string | null;
+  modifiedBy?: string | null;
   name?: string | null;
   routeLocations?: RouteLocation[] | null;
 }
 
 export interface Region {
+  created?: string | null;
+  createdBy?: string | null;
   description?: string | null;
   id?: number;
   locations?: Location[] | null;
+  modified?: string | null;
+  modifiedBy?: string | null;
   userRegions?: UserRegion[] | null;
 }
 
@@ -1991,9 +2122,13 @@ export interface PurdueCoordinationDiagramOptions {
 }
 
 export interface Product {
+  created?: string | null;
+  createdBy?: string | null;
   id?: number;
   manufacturer?: string | null;
   model?: string | null;
+  modified?: string | null;
+  modifiedBy?: string | null;
   notes?: string | null;
   webPage?: string | null;
 }
@@ -2065,11 +2200,15 @@ export const MovementTypes = {
 
 export interface MenuItem {
   children?: MenuItem[] | null;
+  created?: string | null;
+  createdBy?: string | null;
   displayOrder?: number;
   document?: string | null;
   icon?: string | null;
   id?: number;
   link?: string | null;
+  modified?: string | null;
+  modifiedBy?: string | null;
   name?: string | null;
   parent?: MenuItem;
   parentId?: number | null;
@@ -2088,12 +2227,16 @@ export interface MeasureTypeDto {
 
 export interface MeasureType {
   abbreviation?: string | null;
+  created?: string | null;
+  createdBy?: string | null;
   detectionTypes?: DetectionType[] | null;
   displayOrder?: number;
   id?: number;
   measureComments?: MeasureComment[] | null;
   measureOptionPresets?: MeasureOptionPreset[] | null;
   measureOptions?: MeasureOption[] | null;
+  modified?: string | null;
+  modifiedBy?: string | null;
   name?: string | null;
   showOnAggregationSite?: boolean;
   showOnWebsite?: boolean;
@@ -2106,12 +2249,12 @@ export interface MeasureOptionsBase {
 }
 
 export interface MeasureOptionPreset {
-  created?: string;
+  created?: string | null;
   createdBy?: string | null;
   id?: number;
   measureType?: MeasureType;
   measureTypeId?: number;
-  modified?: string;
+  modified?: string | null;
   modifiedBy?: string | null;
   name?: string | null;
   option?: AtspmOptionsBase;
@@ -2125,9 +2268,13 @@ export interface MeasureOptionDto {
 }
 
 export interface MeasureOption {
+  created?: string | null;
+  createdBy?: string | null;
   id?: number;
   measureType?: MeasureType;
   measureTypeId?: number;
+  modified?: string | null;
+  modifiedBy?: string | null;
   option?: string | null;
   value?: string | null;
 }
@@ -2141,25 +2288,14 @@ export interface MeasureCommentsDto {
 
 export interface MeasureComment {
   comment?: string | null;
+  created?: string | null;
+  createdBy?: string | null;
   id?: number;
   locationIdentifier?: string | null;
   measureTypes?: MeasureType[] | null;
+  modified?: string | null;
+  modifiedBy?: string | null;
   timeStamp?: string;
-}
-
-export interface MapLayer {
-  createdBy?: string | null;
-  createdOn?: string;
-  deletedBy?: string | null;
-  deletedOn?: string | null;
-  id?: number;
-  mapLayerUrl?: string | null;
-  name?: string | null;
-  refreshIntervalSeconds?: number | null;
-  serviceType?: string | null;
-  showByDefault?: boolean;
-  updatedBy?: string | null;
-  updatedOn?: string;
 }
 
 export interface LocationWithSequence {
@@ -2186,6 +2322,7 @@ export const LocationVersionActions = {
 } as const;
 
 export interface LocationPhases {
+  controllerManufacturer?: string | null;
   designatedPhases?: number[] | null;
   locationIdentifier?: string | null;
 }
@@ -2194,6 +2331,8 @@ export interface Location {
   approaches?: Approach[] | null;
   areas?: Area[] | null;
   chartEnabled?: boolean;
+  created?: string | null;
+  createdBy?: string | null;
   devices?: Device[] | null;
   id?: number;
   jurisdiction?: Jurisdiction;
@@ -2203,6 +2342,8 @@ export interface Location {
   locationType?: LocationType;
   locationTypeId?: number;
   longitude?: number;
+  modified?: string | null;
+  modifiedBy?: string | null;
   note?: string | null;
   pedsAre1to1?: boolean;
   primaryName?: string | null;
@@ -2214,9 +2355,13 @@ export interface Location {
 }
 
 export interface LocationType {
+  created?: string | null;
+  createdBy?: string | null;
   icon?: string | null;
   id?: number;
   locations?: Location[] | null;
+  modified?: string | null;
+  modifiedBy?: string | null;
   name?: string | null;
 }
 
@@ -2338,8 +2483,12 @@ export const LaneTypes = {
 
 export interface Jurisdiction {
   countyParish?: string | null;
+  created?: string | null;
+  createdBy?: string | null;
   id?: number;
   locations?: Location[] | null;
+  modified?: string | null;
+  modifiedBy?: string | null;
   mpo?: string | null;
   name?: string | null;
   otherPartners?: string | null;
@@ -2369,9 +2518,13 @@ export interface GapDurationOptions {
 
 export interface Faq {
   body?: string | null;
+  created?: string | null;
+  createdBy?: string | null;
   displayOrder?: number;
   header?: string | null;
   id?: number;
+  modified?: string | null;
+  modifiedBy?: string | null;
 }
 
 export type DirectionTypes = typeof DirectionTypes[keyof typeof DirectionTypes];
@@ -2393,9 +2546,13 @@ export const DirectionTypes = {
 export interface DirectionType {
   abbreviation?: string | null;
   approaches?: Approach[] | null;
+  created?: string | null;
+  createdBy?: string | null;
   description?: string | null;
   displayOrder?: number;
   id?: DirectionTypes;
+  modified?: string | null;
+  modifiedBy?: string | null;
   opposingDirections?: RouteLocation[] | null;
   primaryDirections?: RouteLocation[] | null;
 }
@@ -2435,6 +2592,8 @@ export interface DeviceGroup {
 }
 
 export interface Device {
+  created?: string | null;
+  createdBy?: string | null;
   deviceConfiguration?: DeviceConfiguration;
   deviceConfigurationId?: number | null;
   deviceIdentifier?: string | null;
@@ -2445,6 +2604,8 @@ export interface Device {
   location?: Location;
   locationId?: number;
   loggingEnabled?: boolean;
+  modified?: string | null;
+  modifiedBy?: string | null;
   notes?: string | null;
 }
 
@@ -2460,11 +2621,15 @@ export interface LocationSaveTemplatedLocationParameters {
 
 export interface DeviceConfiguration {
   connectionTimeout?: number;
+  created?: string | null;
+  createdBy?: string | null;
   decoders?: string[] | null;
   description?: string | null;
   devices?: Device[] | null;
   id?: number;
   loggingOffset?: number;
+  modified?: string | null;
+  modifiedBy?: string | null;
   notes?: string | null;
   operationTimeout?: number;
   password?: string | null;
@@ -2499,6 +2664,8 @@ export interface DetectorDto {
 export interface Detector {
   approach?: Approach;
   approachId?: number;
+  created?: string | null;
+  createdBy?: string | null;
   dateAdded?: string;
   dateDisabled?: string | null;
   decisionPoint?: number | null;
@@ -2513,15 +2680,21 @@ export interface Detector {
   laneType?: LaneTypes;
   latencyCorrection?: number;
   minSpeedFilter?: number | null;
+  modified?: string | null;
+  modifiedBy?: string | null;
   movementDelay?: number | null;
   movementType?: MovementTypes;
 }
 
 export interface DetectorComment {
   comment?: string | null;
+  created?: string | null;
+  createdBy?: string | null;
   detector?: Detector;
   detectorId?: number;
   id?: number;
+  modified?: string | null;
+  modifiedBy?: string | null;
   timeStamp?: string;
 }
 
@@ -2559,11 +2732,15 @@ export interface DetectionTypeDto {
 
 export interface DetectionType {
   abbreviation?: string | null;
+  created?: string | null;
+  createdBy?: string | null;
   description?: string | null;
   detectors?: Detector[] | null;
   displayOrder?: number;
   id?: DetectionTypes;
   measureTypes?: MeasureType[] | null;
+  modified?: string | null;
+  modifiedBy?: string | null;
 }
 
 export type DetectionHardwareTypes = typeof DetectionHardwareTypes[keyof typeof DetectionHardwareTypes];
@@ -2592,8 +2769,12 @@ export interface ArrivalOnRedOptions {
 }
 
 export interface Area {
+  created?: string | null;
+  createdBy?: string | null;
   id?: number;
   locations?: Location[] | null;
+  modified?: string | null;
+  modifiedBy?: string | null;
   name?: string | null;
   userAreas?: UserArea[] | null;
 }
@@ -2646,6 +2827,8 @@ export interface ApproachDelayOptions {
 }
 
 export interface Approach {
+  created?: string | null;
+  createdBy?: string | null;
   description?: string | null;
   detectors?: Detector[] | null;
   directionType?: DirectionType;
@@ -2656,6 +2839,8 @@ export interface Approach {
   isProtectedPhaseOverlap?: boolean;
   location?: Location;
   locationId?: number;
+  modified?: string | null;
+  modifiedBy?: string | null;
   mph?: number | null;
   pedestrianDetectors?: string | null;
   pedestrianPhaseNumber?: number | null;
