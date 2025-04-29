@@ -196,11 +196,9 @@ export default MultipleLocationsSelect
 
 export const getLocationWithApproaches = async (locations: Location[]) => {
   const locationsWithApproaches = await Promise.all(
-    locations.map((loc) =>
-      getLocationFromKey(loc.id, {
-        expand: 'approaches',
-      })
-    )
+    locations
+      .filter((loc) => loc?.id)
+      .map((loc) => getLocationFromKey(loc.id, { expand: 'approaches' }))
   )
-  return locationsWithApproaches.map((loc) => loc.value[0])
+  return locationsWithApproaches.map((res) => res.value[0])
 }
