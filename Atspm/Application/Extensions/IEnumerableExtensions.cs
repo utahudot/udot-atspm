@@ -32,5 +32,13 @@ namespace Utah.Udot.Atspm.Extensions
         {
             return enumerable == null || !enumerable.Any();
         }
+
+        public static IEnumerable<IEnumerable<T>> Batch<T>(this IEnumerable<T> source, int batchSize)
+        {
+            return source
+                .Select((item, index) => new { item, index })
+                .GroupBy(x => x.index / batchSize)
+                .Select(group => group.Select(x => x.item));
+        }
     }
 }

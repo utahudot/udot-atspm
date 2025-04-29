@@ -29,6 +29,7 @@ using Utah.Udot.Atspm.Infrastructure.Repositories;
 using Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories;
 using Utah.Udot.Atspm.Infrastructure.Repositories.EventLogRepositories;
 using Utah.Udot.Atspm.Infrastructure.Services.EmailServices;
+using Utah.Udot.Atspm.Services;
 using Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices;
 using Utah.Udot.ATSPM.WatchDog.Commands;
 using Utah.Udot.NetStandardToolkit.Configuration;
@@ -56,7 +57,8 @@ cmdBuilder.UseHost(hostBuilder =>
     {
         s.AddEmailServices(h);
         s.AddScoped<IEmailService, SmtpEmailService>();
-        s.AddScoped<WatchdogEmailService>();
+        s.AddScoped<IWatchdogEmailService, WatchdogEmailService>();
+
 
         s.AddAtspmDbContext(h);
         s.AddScoped<ILocationRepository, LocationEFRepository>();
@@ -75,8 +77,9 @@ cmdBuilder.UseHost(hostBuilder =>
         s.AddScoped<AnalysisPhaseCollectionService>();
         s.AddScoped<AnalysisPhaseService>();
         s.AddScoped<PhaseService>();
-        s.AddScoped<SegmentedErrorsService>();
-        s.AddScoped<WatchDogIgnoreEventService>();
+        s.AddScoped<SegmentedErrorsService>(); 
+        s.AddScoped<IWatchDogIgnoreEventService, WatchDogIgnoreEventService>();
+
 
         // Register the hosted service with the date
         s.AddIdentity<ApplicationUser, IdentityRole>() // Add this line to register Identity

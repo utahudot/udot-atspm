@@ -19,10 +19,12 @@ using DatabaseInstaller.Commands;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Text.Json;
+using Utah.Udot.Atspm.Data;
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
@@ -43,6 +45,7 @@ public class TransferConfigCommandHostedService : IHostedService
     private readonly IMeasureTypeRepository _measureTypeRepository;
     private readonly IRouteRepository _routeRepository;
     private readonly IRouteLocationsRepository _routeLocationsRepository;
+    private readonly IServiceProvider _serviceProvider;
     private readonly IDeviceRepository _deviceRepository;
     private readonly TransferConfigCommandConfiguration _config;
 
@@ -62,7 +65,8 @@ public class TransferConfigCommandHostedService : IHostedService
         IMeasureTypeRepository measureTypeRepository,
         IRouteRepository routeRepository,
         IRouteLocationsRepository routeLocationsRepository,
-        IOptions<TransferConfigCommandConfiguration> config
+        IOptions<TransferConfigCommandConfiguration> config,
+        IServiceProvider serviceProvider
         )
     {
         _logger = logger;
@@ -79,6 +83,7 @@ public class TransferConfigCommandHostedService : IHostedService
         _measureTypeRepository = measureTypeRepository;
         _routeRepository = routeRepository;
         _routeLocationsRepository = routeLocationsRepository;
+        _serviceProvider = serviceProvider;
         _deviceRepository = deviceRepository;
         _config = config.Value;
     }
@@ -117,15 +122,61 @@ public class TransferConfigCommandHostedService : IHostedService
             ImportRoutes(queries, columnMappings);
             ImportRouteLocations(queries, columnMappings);
             ImportDevices(queries, columnMappings);
+            ResetSequences();
         }
         if (_config.ImportSpeedDevices)
         {
             ImportSpeedDevices(queries, columnMappings);
+            ResetSequences();
         }
     }
 
+    private void ResetSequences()
+    {
+        using var scope = _serviceProvider.CreateScope();
+        var configContext = scope.ServiceProvider.GetRequiredService<ConfigContext>();
+
+        // Check if the provider is PostgreSQL
+        var databaseProvider = configContext.Database.ProviderName;
+        if (databaseProvider != "Npgsql.EntityFrameworkCore.PostgreSQL")
+        {
+            Console.WriteLine("Skipping sequence reset: Database provider is not PostgreSQL.");
+            return;
+        }
+
+        string[] sequences = new string[]
+        {
+        "\"Locations_Id_seq\"",
+        "\"Jurisdictions_Id_seq\"",
+        "\"Approaches_Id_seq\"",
+        "\"Detectors_Id_seq\"",
+        "\"Products_Id_seq\"",
+        "\"DeviceConfigurations_Id_seq\"",
+        "\"Regions_Id_seq\"",
+        "\"Devices_Id_seq\"",
+        "\"Routes_Id_seq\"",
+        "\"Areas_Id_seq\"",
+        "\"MenuItems_Id_seq\"",
+        "\"RouteLocations_Id_seq\""
+        };
+
+        foreach (string sequence in sequences)
+        {
+            // Correctly format table name derived from sequence name
+            string tableName = sequence.Replace("_Id_seq\"", "").Replace("\"", "");
+
+            string query = $"SELECT setval('public.{sequence}',(SELECT COALESCE(MAX(\"Id\"), 0) FROM public.\"{tableName}\") + 1);";
+
+            configContext.Database.ExecuteSqlRaw(query);
+
+            Console.WriteLine($"Sequence {sequence} reset successfully.");
+        }
+    }
+
+
     private void ImportSpeedDevices(Dictionary<string, string> queries, Dictionary<string, Dictionary<string, string>> columnMappings)
     {
+        var products = _productRepository.GetList().ToList();
         if (_productRepository.GetList().Any(p => p.Manufacturer == "Wavetronix"))
         {
             _logger.LogInformation("Speed Product already exist");
@@ -165,10 +216,38 @@ public class TransferConfigCommandHostedService : IHostedService
         foreach (var device in devices)
         {
             device.DeviceConfiguration = speedDeviceConfiguration;
+            device.LocationId = _locationRepository.GetLatestVersionOfLocation(device.DeviceIdentifier).Id;
         }
-
-        _deviceRepository.AddRange(devices);
-        _logger.LogInformation($"Speed Devices Imported");
+        if (_config.Delete)
+        {
+            try
+            {
+                _deviceRepository.AddRange(devices);
+                _logger.LogInformation($"Speed Devices Imported");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, "Error importing speed devices");
+                throw;
+            }
+        }
+        else
+        {
+            var deviceIds = _deviceRepository.GetList().Select(d => d.Id).ToList();
+            var newDevices = devices.Where(d => !deviceIds.Contains(d.Id)).ToList();
+            foreach (var device in newDevices)
+            {
+                try
+                {
+                    _deviceRepository.Add(device);
+                    _logger.LogInformation($"Speed Device ${device.DeviceIdentifier} Imported");
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex.Message, $"Error importing speed device {device.DeviceIdentifier}");
+                }
+            }
+        }
     }
 
     private void DeleteProducts()
@@ -273,7 +352,7 @@ public class TransferConfigCommandHostedService : IHostedService
             return;
         }
         _logger.LogInformation("Adding Device Configurations");
-        var deviceConfigurations = ImportData<DeviceConfiguration>(queries["DeviceConfigurations"], columnMappings["DeviceConfigurations"]);
+        var deviceConfigurations = ImportData<DeviceConfiguration>(queries["DeviceConfigurations"], columnMappings["DeviceConfigurations"]);      
         _deviceConfigurationRepository.AddRange(deviceConfigurations);
         _logger.LogInformation("Device Configurations Added");
     }
@@ -293,7 +372,7 @@ public class TransferConfigCommandHostedService : IHostedService
 
     private void ImportApproaches(Dictionary<string, string> queries, Dictionary<string, Dictionary<string, string>> columnMappings)
     {
-        if (_approachRepository.GetList().Any())
+        if (_config.Delete && _approachRepository.GetList().Any())
         {
             _logger.LogInformation("Approaches already exist");
             return;
@@ -304,18 +383,40 @@ public class TransferConfigCommandHostedService : IHostedService
         // Import all approaches at once
         var approaches = ImportData<Approach>(queries["Approaches"], columnMappings["Approaches"]);
 
-        const int batchSize = 5000;
-        int total = approaches.Count;
-        int batches = (int)Math.Ceiling(total / (double)batchSize);
-
-        for (int i = 0; i < batches; i++)
+        if (_config.Delete == true)
         {
-            var batch = approaches.Skip(i * batchSize).Take(batchSize).ToList();
-            _approachRepository.AddRange(batch);
-            _logger.LogInformation($"Batch {i + 1}/{batches} imported ({batch.Count} approaches).");
-        }
+            const int batchSize = 5000;
+            int total = approaches.Count;
+            int batches = (int)Math.Ceiling(total / (double)batchSize);
 
-        _logger.LogInformation($"All Approaches Imported");
+            for (int i = 0; i < batches; i++)
+            {
+                var batch = approaches.Skip(i * batchSize).Take(batchSize).ToList();
+                _approachRepository.AddRange(batch);
+                _logger.LogInformation($"Batch {i + 1}/{batches} imported ({batch.Count} approaches).");
+            }
+
+            _logger.LogInformation($"All Approaches Imported");
+        }
+        else
+        {
+            var approachIds = approaches.Select(a => a.Id).ToList();
+            //Get approaches that are not in the approachIds list
+            var newApproaches = approaches.Where(a => !approachIds.Contains(a.Id)).ToList();
+            foreach (var approach in newApproaches)
+            {
+                try
+                {
+                    _approachRepository.Add(approach);
+                    _logger.LogInformation($"Approach {approach.Id} Imported");
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex.Message, $"Error importing approach {approach.Id}");
+                }
+                
+            }
+        }
     }
 
 
@@ -347,7 +448,7 @@ public class TransferConfigCommandHostedService : IHostedService
 
     private void ImportDetectors(Dictionary<string, string> queries, Dictionary<string, Dictionary<string, string>> columnMappings)
     {
-        if (_detectorRepository.GetList().Any())
+        if (_config.Delete == true && _detectorRepository.GetList().Any())
         {
             _logger.LogInformation("Detectors already exist");
             return;
@@ -359,45 +460,64 @@ public class TransferConfigCommandHostedService : IHostedService
         var detectionTypeDetectors = ImportData<DetectionTypeDetector>(queries["DetectionTypeDetector"], columnMappings["DetectionTypeDetector"]);
 
         var detectors = ImportData<Detector>(queries["Detectors"], columnMappings["Detectors"]);
-
-        const int batchSize = 5000;
-        for (int i = 0; i < detectors.Count; i += batchSize)
+        
+        
+        if (_config.Delete)
         {
-            var batch = detectors.Skip(i).Take(batchSize).ToList();
-
-            foreach (var detectionType in detectionTypes)
+            const int batchSize = 5000;
+            for (int i = 0; i < detectors.Count; i += batchSize)
             {
-                if (detectionType.Id == DetectionTypes.B)
+                var batch = detectors.Skip(i).Take(batchSize).ToList();
+                foreach (var detectionType in detectionTypes)
                 {
-                    foreach (var detector in batch)
+
+                    if (detectionType.Id == DetectionTypes.B)
                     {
-                        detectionType.Detectors.Add(detector);
+                        foreach (var detector in batch)
+                        {
+                            detectionType.Detectors.Add(detector);
+                        }
                     }
-                }
-                else
-                {
-                    var detectorIds = detectionTypeDetectors
+                    else
+                    {
+                        var detectorIds = detectionTypeDetectors
                         .Where(d => d.DetectionTypesId == (int)detectionType.Id)
                         .Select(d => d.DetectorsId)
                         .ToList();
-
-                    foreach (var detector in batch.Where(d => detectorIds.Contains(d.Id)))
-                    {
-                        detectionType.Detectors.Add(detector);
+                        foreach (var detector in batch.Where(d => detectorIds.Contains(d.Id)))
+                        {
+                            detectionType.Detectors.Add(detector);
+                        }
                     }
                 }
+                _detectorRepository.AddRange(batch);
+                _logger.LogInformation($"Processed batch of {batch.Count} detectors");
             }
 
-            _detectorRepository.AddRange(batch);
-            _logger.LogInformation($"Processed batch of {batch.Count} detectors");
+            _logger.LogInformation($"Detectors Imported");
         }
-
-        _logger.LogInformation($"Detectors Imported");
+        else
+        {
+            var detectorIds = _detectorRepository.GetList().Select(d => d.Id).ToList();
+            var newDetectors = detectors.Where(d => !detectorIds.Contains(d.Id)).ToList();
+            foreach (var detector in newDetectors)
+            {                
+                try
+                {
+                    _detectorRepository.Add(detector);
+                    _logger.LogInformation($"Detector {detector.DectectorIdentifier} Imported");
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex.Message, $"Error importing detector {detector.DectectorIdentifier}");
+                }                
+            }
+        }
     }
 
     private void ImportLocations(Dictionary<string, string> queries, Dictionary<string, Dictionary<string, string>> columnMappings)
     {
-        if (_locationRepository.GetList().Any())
+        if (_config.Delete == true && _locationRepository.GetList().Any())
         {
             _logger.LogInformation("Locations already exist");
             return;
@@ -418,9 +538,36 @@ public class TransferConfigCommandHostedService : IHostedService
                 location.Areas.Add(area);
             }
         }
-
-        _locationRepository.AddRange(locations);
-        _logger.LogInformation($"Locations Imported");
+        if (_config.Delete)
+        {
+            try
+            {
+                _locationRepository.AddRange(locations);
+                _logger.LogInformation($"Locations Imported");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, "Error importing locations");
+                throw;
+            }
+        }
+        else
+        {
+            var locationIds = _locationRepository.GetList().Select(l => l.Id).ToList();
+            var newLocations = locations.Where(l => !locationIds.Contains(l.Id)).ToList();
+            foreach (var location in newLocations)
+            {
+                try
+                {
+                    _locationRepository.Add(location);
+                    _logger.LogInformation($"Location {location.LocationIdentifier} Imported");
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex.Message, $"Error importing location {location.LocationIdentifier}");
+                }                
+            }
+        }
     }
 
     private void SetDetectionTypeMesureType()
@@ -683,7 +830,7 @@ public class TransferConfigCommandHostedService : IHostedService
     //private void ManuallyAddSpeedDevice()
     //{
     //    productRepository.Add(new Product { Id = 11, Manufacturer = "Wavetronix", Model = "Wavetronix Advance Detection" });
-    //    deviceConfigurationRepository.Add(new DeviceConfiguration
+    //    deviceConfigurationRepository.Add(new Device
     //    {
     //        Id = 11,
     //        Description = "None",
