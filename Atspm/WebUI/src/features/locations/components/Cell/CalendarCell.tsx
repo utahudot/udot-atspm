@@ -99,7 +99,7 @@ const CalendarCell: React.FC<CalendarCellProps> = ({
         p: 0,
         position: 'relative',
         outline: 'none',
-        bgcolor: cellIsActive ? innerColor : '',
+        bgcolor: cellIsActive ? innerColor : undefined,
         caretColor: 'transparent',
         borderRight: `1px solid ${theme.palette.divider}`,
       }}

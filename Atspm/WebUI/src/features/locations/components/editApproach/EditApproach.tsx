@@ -32,7 +32,7 @@ import {
   Divider,
   Paper,
 } from '@mui/material'
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useMemo, useState } from 'react'
 
 interface ApproachAdminProps {
   approach: ConfigApproach
@@ -91,22 +91,44 @@ function EditApproach({ approach }: ApproachAdminProps) {
   }, [])
 
   const handleSaveApproach = useCallback(() => {
+    // 1) check for duplicate detectorChannel errors
     const { isValid, errors: channelErrors } =
       hasUniqueDetectorChannels(channelMap)
-    let newErrors: Record<string, { error: string; id: string }> = {}
 
+    // collect all our errors here
+    let newErrors: Record<string, { error: string; id: string }> = {}
     if (!isValid) {
       newErrors = { ...newErrors, ...channelErrors }
     }
-    if (
-      !!approach.protectedPhaseNumber ||
-      (approach.protectedPhaseNumber === 0 && !!approach.permissivePhaseNumber)
-    ) {
-      newErrors.protectedPhaseNumber = {
+
+    // ── parse phase inputs into number | null ──
+    const rawProt = approach.protectedPhaseNumber
+    const rawPerm = approach.permissivePhaseNumber
+    const rawPed = approach.pedestrianPhaseNumber
+
+    const protectedPhaseNumber =
+      rawProt === '' || rawProt == null ? null : Number(rawProt)
+    const permissivePhaseNumber =
+      rawPerm === '' || rawPerm == null ? null : Number(rawPerm)
+    const pedestrianPhaseNumber =
+      rawPed === '' || rawPed == null ? null : Number(rawPed)
+
+    console.log(
+      'parsed phases',
+      protectedPhaseNumber,
+      permissivePhaseNumber,
+      pedestrianPhaseNumber
+    )
+
+    // 2) protectedPhaseNumber is always required (even if it’s zero)
+    if (protectedPhaseNumber == null) {
+      newErrors[approach.id] = {
         error: 'A Phase Number is required',
         id: String(approach.id),
       }
     }
+
+    // 3) every detector must have a channel
     approach.detectors.forEach((det) => {
       if (!det.detectorChannel) {
         newErrors[String(det.id)] = {
@@ -116,6 +138,7 @@ function EditApproach({ approach }: ApproachAdminProps) {
       }
     })
 
+    // if any errors, stop here and render them
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors)
       return
@@ -127,21 +150,27 @@ function EditApproach({ approach }: ApproachAdminProps) {
       JSON.stringify(approach)
     ) as ConfigApproach
 
+    // overwrite with our parsed phase values
+    modifiedApproach.protectedPhaseNumber = protectedPhaseNumber
+    modifiedApproach.permissivePhaseNumber = permissivePhaseNumber
+    modifiedApproach.pedestrianPhaseNumber = pedestrianPhaseNumber
+
     // If the approach is new, remove the local ID so the server will create one
-    if (approach.isNew) {
-      delete approach.id
-      approach.detectors.forEach((d) => delete d.approachId)
+    if (modifiedApproach.isNew) {
+      delete modifiedApproach.id
+      modifiedApproach.detectors.forEach((d) => delete d.approachId)
     }
-    delete approach.index
-    delete approach.open
-    delete approach.isNew
+    delete modifiedApproach.index
+    delete modifiedApproach.open
+    delete modifiedApproach.isNew
 
     // Convert direction type from name -> numeric enum
-    approach.directionTypeId =
-      findDirectionType(approach.directionTypeId)?.value || DirectionTypes.NA
+    modifiedApproach.directionTypeId =
+      findDirectionType(modifiedApproach.directionTypeId)?.value ||
+      DirectionTypes.NA
 
     // Detectors
-    approach.detectors.forEach((det) => {
+    modifiedApproach.detectors.forEach((det) => {
       if (det.isNew) {
         delete det.id
       }
@@ -168,10 +197,10 @@ function EditApproach({ approach }: ApproachAdminProps) {
       det.laneType = findLaneType(det.laneType)?.value
     })
 
-    editApproach(approach, {
+    editApproach(modifiedApproach, {
       onSuccess: (saved) => {
         try {
-          const detectorsArray = saved?.detectors || []
+          const detectorsArray = saved.detectors || []
           detectorsArray.forEach((detector) => {
             detector.detectionTypes = detector.detectionTypes || []
             detector.detectionTypes.forEach((dType) => {
@@ -194,27 +223,17 @@ function EditApproach({ approach }: ApproachAdminProps) {
             directionTypeId:
               findDirectionType(saved.directionTypeId)?.name ||
               DirectionTypes.NA,
-            detectors: detectorsArray,
+            detectors: detectorsArray.sort(
+              (a, b) => a.detectorChannel - b.detectorChannel
+            ),
           }
 
-          /**
-           * If the approach was new, we must remove the "local" approach
-           * (with its random ID) from the store, then add this saved approach
-           * (with the real server ID) so we don't end up with duplicates.
-           */
           if (approach.isNew) {
-            // 1) remove the old approach from store (no server API call for new approaches)
             deleteApproachInStore(approach)
-
-            // 2) updateApproachInStore() with the newly created approach
             updateApproachInStore(normalizedSaved)
           } else {
-            // If it wasn't new, we can just update existing approach
             updateApproachInStore(normalizedSaved)
           }
-
-          // Update savedApproaches to reflect the saved state
-          updateSavedApproaches(normalizedSaved)
 
           addNotification({
             title: 'Approach saved successfully',
@@ -257,7 +276,6 @@ function EditApproach({ approach }: ApproachAdminProps) {
     findDetectionType,
     updateApproachInStore,
     deleteApproachInStore,
-    updateSavedApproaches,
     addNotification,
   ])
 
@@ -290,6 +308,25 @@ function EditApproach({ approach }: ApproachAdminProps) {
     }
   }, [approach, deleteApproachInStore, addNotification])
 
+  const leftBorderColor = useMemo(() => {
+    if (approach.directionTypeId === DirectionTypes.NA) {
+      return 'lightgrey'
+    }
+    const dir = approach.directionTypeId?.charAt(0).toUpperCase()
+    switch (dir) {
+      case 'N':
+        return Color.Blue
+      case 'S':
+        return Color.BrightRed
+      case 'E':
+        return Color.Yellow
+      case 'W':
+        return Color.Orange
+      default:
+        return 'lightgrey'
+    }
+  }, [approach.directionTypeId])
+
   return (
     <>
       <Paper
@@ -297,24 +334,7 @@ function EditApproach({ approach }: ApproachAdminProps) {
         sx={{
           mb: '6px',
           border: '2px solid lightgrey',
-          borderLeft: (() => {
-            if (approach.isNew || approach.description?.includes('New')) {
-              return `7px solid lightgrey`
-            }
-            const dir = approach.description?.charAt(0).toUpperCase()
-            switch (dir) {
-              case 'N':
-                return `7px solid ${Color.Blue}`
-              case 'S':
-                return `7px solid ${Color.BrightRed}`
-              case 'E':
-                return `7px solid ${Color.Yellow}`
-              case 'W':
-                return `7px solid ${Color.Orange}`
-              default:
-                return '7px solid lightgrey'
-            }
-          })(),
+          borderLeft: `7px solid ${leftBorderColor}`,
         }}
       >
         <ApproachEditorRowHeader

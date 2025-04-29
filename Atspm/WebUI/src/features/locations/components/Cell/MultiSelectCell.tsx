@@ -32,7 +32,7 @@ export function MultiSelectCell<T>({
   col,
   rowCount,
   colCount,
-  value,
+  value = [],
   onUpdate,
   options,
   renderValue,
@@ -50,28 +50,50 @@ export function MultiSelectCell<T>({
   } = useCellNavigation(approachId, row, col, rowCount, colCount)
 
   const cellRef = useRef<HTMLElement>(null)
+  const isFocused = tabIndex === 0 && !isEditing
 
   useEffect(() => {
-    if (tabIndex === 0 && !isEditing) cellRef.current?.focus()
-  }, [tabIndex, isEditing])
-
-  const handleCellClick = () => {
-    if (!isEditing) openEditor()
+    if (isFocused) {
+      cellRef.current?.focus()
   }
+  }, [isFocused])
+
+  // 1) Tab always jumps cell; Enter opens menu; arrows navigate
   const handleCellKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
-    if (isEditing && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) {
-      e.preventDefault()
-      return
-    }
-    if (!isEditing && e.key === 'Enter') {
+    if (isEditing) return
+    if (e.key === 'Enter') {
       e.preventDefault()
       openEditor()
       return
     }
-    if (!isEditing && e.key.startsWith('Arrow')) {
+    if (e.key.startsWith('Arrow')) {
       e.preventDefault()
       navKeyDown(e)
+      return
     }
+    // delegate Tab (and any other) to navKeyDown => Tab moves to next cell
+    navKeyDown(e)
+  }
+
+  // 2) Inside menu: Tab toggles focused option, closes menu, moves to next cell
+  const handleSelectKeyDown = (e: KeyboardEvent<HTMLElement>) => {
+    if (e.key === 'Tab') {
+      e.preventDefault()
+      const active = document.activeElement as HTMLElement | null
+      if (active?.getAttribute('role') === 'option') {
+        const valAttr = active.getAttribute('data-value')
+        if (valAttr != null) {
+          const optionValue = valAttr as unknown as T
+          const isSel = value.includes(optionValue)
+          const newVals = isSel
+            ? value.filter((v) => v !== optionValue)
+            : [...value, optionValue]
+          onUpdate(newVals)
+        }
+      }
+      closeEditor()
+      navKeyDown(e)
+      return
   }
   const handleSelectKeyDown = (
     e: KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -82,6 +104,7 @@ export function MultiSelectCell<T>({
       setTimeout(() => cellRef.current?.focus())
     }
   }
+
   const handleChange = (e: SelectChangeEvent<T[]>) => {
     onUpdate(e.target.value as T[])
   }
@@ -100,7 +123,7 @@ export function MultiSelectCell<T>({
       tabIndex={tabIndex}
       onFocusCapture={onFocus}
       onKeyDown={handleCellKeyDown}
-      onClick={handleCellClick}
+      onClick={() => !isEditing && openEditor()}
       data-row={row}
       data-col={col}
       sx={{
@@ -110,7 +133,7 @@ export function MultiSelectCell<T>({
         position: 'relative',
         outline: 'none',
         caretColor: isEditing ? theme.palette.text.primary : 'transparent',
-        bgcolor: isEditing ? innerColor : '',
+        bgcolor: isEditing ? innerColor : undefined,
         borderRight: '0.5px solid lightgrey',
         '&:focus-visible': { outline: 'none' },
       }}
@@ -142,7 +165,11 @@ export function MultiSelectCell<T>({
             renderValue={renderValue}
             MenuProps={{
               disablePortal: true,
-              onClose: () => closeEditor(),
+              onClose: closeEditor,
+              MenuListProps: {
+                onKeyDown: handleSelectKeyDown,
+                autoFocus: true,
+              },
             }}
             sx={{
               height: '100%',
@@ -158,11 +185,12 @@ export function MultiSelectCell<T>({
             }}
           >
             {options.map((opt) => (
-              <MenuItem key={opt.value} value={opt.value}>
-                <Checkbox
-                  checked={(value ?? []).includes(opt.value)}
-                  tabIndex={-1}
-                />
+              <MenuItem
+                key={String(opt.value)}
+                value={opt.value}
+                data-value={String(opt.value)}
+              >
+                <Checkbox checked={value.includes(opt.value)} tabIndex={-1} />
                 {opt.label}
               </MenuItem>
             ))}

@@ -35,16 +35,14 @@ const BooleanCell = ({
 
   // Ensure the DOM focus moves to this cell when nav context focuses it
   useEffect(() => {
-    if (isFocused) {
-      cellRef.current?.focus()
-    }
+    if (isFocused) cellRef.current?.focus()
   }, [isFocused])
 
   const handleToggle = (
     e: MouseEvent<HTMLElement> | KeyboardEvent<HTMLElement>
   ) => {
     e.preventDefault()
-    onUpdate(value === true ? false : true)
+    onUpdate(value !== true)
   }
 
   const handleKeyDown = (e: KeyboardEvent<HTMLElement>) => {
@@ -87,9 +85,7 @@ const BooleanCell = ({
         textAlign: 'center',
         verticalAlign: 'middle',
         outline: 'none',
-        '&:focus, &:focus-visible': {
-          outline: 'none',
-        },
+        '&:focus, &:focus-visible': { outline: 'none' },
       }}
     >
       {isFocused && (
@@ -114,7 +110,7 @@ const BooleanCell = ({
           height: '100%',
         }}
       >
-        {(value ?? false) ? <CheckIcon /> : <ClearIcon />}
+        {value ? <CheckIcon /> : <ClearIcon />}
       </Box>
     </TableCell>
   )

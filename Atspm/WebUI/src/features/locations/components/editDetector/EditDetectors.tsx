@@ -7,6 +7,7 @@ import CommentCell from '@/features/locations/components/Cell/CommentCell'
 import { MultiSelectCell } from '@/features/locations/components/Cell/MultiSelectCell'
 import SelectCell from '@/features/locations/components/Cell/SelectCell'
 import { TextCell } from '@/features/locations/components/Cell/TextCell'
+import { hasUniqueDetectorChannels } from '@/features/locations/components/editApproach/utils/checkDetectors'
 import {
   hardwareTypeOptions,
   laneTypeOptions,
@@ -67,8 +68,16 @@ const EditDetectors = ({
     })
   }
 
-  const location = useLocationStore((s) => s.location)
-  const updateDetector = useLocationStore((s) => s.updateDetector)
+  const { updateDetector, errors, setErrors, warnings, location, channelMap } =
+    useLocationStore((s) => ({
+      updateDetector: s.updateDetector,
+      errors: s.errors,
+      setErrors: s.setErrors,
+      warnings: s.warnings,
+      location: s.location,
+      channelMap: s.channelMap,
+    }))
+
   const { data: dtData } = useGetDetectionType()
   const { data: ltData } = useGetLocationType()
   const detectionTypes = useMemo(
@@ -142,7 +151,7 @@ const EditDetectors = ({
         </TableHead>
 
         <TableBody>
-          {detectors.length === 0 && (
+          {detectors.length === 0 ? (
             <TableRow>
               <TableCell colSpan={colCount} sx={{ textAlign: 'center' }}>
                 <Typography variant="body2" color="text.secondary">
@@ -150,64 +159,98 @@ const EditDetectors = ({
                 </Typography>
               </TableCell>
             </TableRow>
-          )}
-          {detectors.map((det, i) => {
-            const rowIdx = i + 1
-            const isSelected = selectedIds.includes(det.id)
-            const outline = isSelected
-              ? `2px solid ${errorColor}`
-              : det.isNew
-                ? `2px solid ${successColor}`
-                : undefined
+          ) : (
+            detectors.map((det, i) => {
+              const rowIdx = i + 1
+              const isSelected = selectedIds.includes(det.id)
+              const outline = isSelected
+                ? `2px solid ${errorColor}`
+                : det.isNew
+                  ? `2px solid ${successColor}`
+                  : undefined
 
-            return (
-              <TableRow
-                key={det.id}
-                sx={{
-                  position: 'relative',
-                  cursor: deleteMode ? 'pointer' : 'default',
-                  caretColor: 'transparent',
-                  outline,
-                  outlineOffset: outline ? '-2px' : undefined,
-                  borderRadius: outline ? 1 : undefined,
-                  bgcolor: isSelected
-                    ? innerErrorBg
-                    : det.isNew
-                      ? innerSuccessBg
-                      : undefined,
-                }}
-              >
-                <TextCell
-                  approachId={approach.id}
-                  row={rowIdx}
-                  col={0}
-                  rowCount={rowCount}
-                  colCount={colCount}
-                  value={det.detectorChannel}
-                  onUpdate={(v) => updateDetector(det.id, 'detectorChannel', v)}
-                />
-                <MultiSelectCell<string>
-                  approachId={approach.id}
-                  row={rowIdx}
-                  col={1}
-                  rowCount={rowCount}
-                  colCount={colCount}
-                  value={det?.detectionTypes?.map((dt) => dt.abbreviation)}
-                  options={detectionOptions}
-                  onUpdate={(abbrs) => {
-                    const types = detectionTypes.filter((d) =>
-                      abbrs.includes(d.abbreviation)
-                    )
-                    updateDetector(det.id, 'detectionTypes', types)
+              return (
+                <TableRow
+                  key={det.id}
+                  sx={{
+                    position: 'relative',
+                    cursor: deleteMode ? 'pointer' : 'default',
+                    caretColor: 'transparent',
+                    outline,
+                    outlineOffset: outline ? '-2px' : undefined,
+                    borderRadius: outline ? 1 : undefined,
+                    bgcolor: isSelected
+                      ? innerErrorBg
+                      : det.isNew
+                        ? innerSuccessBg
+                        : undefined,
                   }}
-                  renderValue={(selected) => (
-                    <AvatarGroup max={12}>
-                      {detectionOptions.map((d) =>
-                        selected.includes(d.value) ? (
-                          <Tooltip key={d.value} title={d.label}>
+                >
+                  <TextCell
+                    approachId={approach.id}
+                    row={rowIdx}
+                    col={0}
+                    rowCount={rowCount}
+                    colCount={colCount}
+                    value={det.detectorChannel}
+                    onUpdate={(v) => {
+                      updateDetector(det.id, 'detectorChannel', v)
+                      // recompute channel errors for all detectors
+                      const { isValid, errors: channelErrors } =
+                        hasUniqueDetectorChannels(channelMap)
+                      // preserve non-channel errors
+                      const prev = errors || {}
+                      const nonChannel = Object.fromEntries(
+                        Object.entries(prev).filter(
+                          ([key]) => !channelMap.has(Number(key))
+                        )
+                      )
+                      if (!isValid) {
+                        setErrors({ ...nonChannel, ...channelErrors })
+                      } else {
+                        setErrors(
+                          Object.keys(nonChannel).length ? nonChannel : null
+                        )
+                      }
+                    }}
+                    error={errors && errors[det.id]}
+                    warning={warnings && warnings[det.id]}
+                  />
+                  <MultiSelectCell<string>
+                    approachId={approach.id}
+                    row={rowIdx}
+                    col={1}
+                    rowCount={rowCount}
+                    colCount={colCount}
+                    value={det.detectionTypes.map((dt) => dt.abbreviation)}
+                    options={detectionOptions}
+                    onUpdate={(abbrs) => {
+                      const types = detectionTypes.filter((d) =>
+                        abbrs.includes(d.abbreviation)
+                      )
+                      updateDetector(det.id, 'detectionTypes', types)
+                    }}
+                    renderValue={(selected) => (
+                      <AvatarGroup max={12}>
+                        {detectionOptions.map((d) =>
+                          selected.includes(d.value) ? (
+                            <Tooltip key={d.value} title={d.label}>
+                              <Avatar
+                                sx={{
+                                  bgcolor: theme.palette.primary.main,
+                                  width: 26,
+                                  height: 26,
+                                  fontSize: '11px',
+                                }}
+                              >
+                                {d.value}
+                              </Avatar>
+                            </Tooltip>
+                          ) : (
                             <Avatar
+                              key={d.value}
                               sx={{
-                                bgcolor: theme.palette.primary.main,
+                                bgcolor: theme.palette.grey[400],
                                 width: 26,
                                 height: 26,
                                 fontSize: '11px',
@@ -215,148 +258,138 @@ const EditDetectors = ({
                             >
                               {d.value}
                             </Avatar>
-                          </Tooltip>
-                        ) : (
-                          <Avatar
-                            key={d.value}
-                            sx={{
-                              bgcolor: theme.palette.grey[400],
-                              width: 26,
-                              height: 26,
-                              fontSize: '11px',
-                            }}
-                          >
-                            {d.value}
-                          </Avatar>
-                        )
-                      )}
-                    </AvatarGroup>
-                  )}
-                />
-                <SelectCell
-                  approachId={approach.id}
-                  row={rowIdx}
-                  col={2}
-                  rowCount={rowCount}
-                  colCount={colCount}
-                  options={hardwareTypeOptions}
-                  value={det.detectionHardware}
-                  onUpdate={(v) =>
-                    updateDetector(det.id, 'detectionHardware', v)
-                  }
-                />
-                <TextCell
-                  approachId={approach.id}
-                  row={rowIdx}
-                  col={3}
-                  rowCount={rowCount}
-                  colCount={colCount}
-                  value={det.latencyCorrection}
-                  onUpdate={(v) =>
-                    updateDetector(det.id, 'latencyCorrection', v)
-                  }
-                />
-                <TextCell
-                  approachId={approach.id}
-                  row={rowIdx}
-                  col={4}
-                  rowCount={rowCount}
-                  colCount={colCount}
-                  value={det.laneNumber}
-                  onUpdate={(v) => updateDetector(det.id, 'laneNumber', v)}
-                />
-                <SelectCell
-                  approachId={approach.id}
-                  row={rowIdx}
-                  col={5}
-                  rowCount={rowCount}
-                  colCount={colCount}
-                  options={movementTypeOptions}
-                  value={det.movementType}
-                  onUpdate={(v) => updateDetector(det.id, 'movementType', v)}
-                />
-                <SelectCell
-                  approachId={approach.id}
-                  row={rowIdx}
-                  col={6}
-                  rowCount={rowCount}
-                  colCount={colCount}
-                  options={laneTypeOptions}
-                  value={det.laneType}
-                  onUpdate={(v) => updateDetector(det.id, 'laneType', v)}
-                />
-                <CalendarCell
-                  approachId={approach.id}
-                  row={rowIdx}
-                  col={7}
-                  rowCount={rowCount}
-                  colCount={colCount}
-                  value={det.dateAdded}
-                  onUpdate={(v) => updateDetector(det.id, 'dateAdded', v)}
-                />
-                <CommentCell
-                  approachId={approach.id}
-                  detector={det}
-                  row={rowIdx}
-                  col={8}
-                  rowCount={rowCount}
-                  colCount={colCount}
-                />
-                <TextCell
-                  approachId={approach.id}
-                  row={rowIdx}
-                  col={9}
-                  rowCount={rowCount}
-                  colCount={colCount}
-                  value={det.distanceFromStopBar}
-                  onUpdate={(v) =>
-                    updateDetector(det.id, 'distanceFromStopBar', v)
-                  }
-                />
-                <TextCell
-                  approachId={approach.id}
-                  row={rowIdx}
-                  col={10}
-                  rowCount={rowCount}
-                  colCount={colCount}
-                  value={det.decisionPoint}
-                  onUpdate={(v) => updateDetector(det.id, 'decisionPoint', v)}
-                />
-                <TextCell
-                  approachId={approach.id}
-                  row={rowIdx}
-                  col={11}
-                  rowCount={rowCount}
-                  colCount={colCount}
-                  value={det.minSpeedFilter}
-                  onUpdate={(v) => updateDetector(det.id, 'minSpeedFilter', v)}
-                />
-                <TextCell
-                  approachId={approach.id}
-                  row={rowIdx}
-                  col={12}
-                  rowCount={rowCount}
-                  colCount={colCount}
-                  value={det.movementDelay}
-                  onUpdate={(v) => updateDetector(det.id, 'movementDelay', v)}
-                />
-                {deleteMode && (
-                  <TableCell
-                    colSpan={colCount}
-                    onClick={() => handleRowClick(det.id)}
-                    sx={{
-                      p: 0,
-                      position: 'absolute',
-                      inset: 0,
-                      zIndex: 1,
-                      bgcolor: 'transparent',
-                      cursor: 'pointer',
-                    }}
+                          )
+                        )}
+                      </AvatarGroup>
+                    )}
                   />
-                )}
-              </TableRow>
-            )
-          })}
+                  <SelectCell
+                    approachId={approach.id}
+                    row={rowIdx}
+                    col={2}
+                    rowCount={rowCount}
+                    colCount={colCount}
+                    options={hardwareTypeOptions}
+                    value={det.detectionHardware}
+                    onUpdate={(v) =>
+                      updateDetector(det.id, 'detectionHardware', v)
+                    }
+                  />
+                  <TextCell
+                    approachId={approach.id}
+                    row={rowIdx}
+                    col={3}
+                    rowCount={rowCount}
+                    colCount={colCount}
+                    value={det.latencyCorrection}
+                    onUpdate={(v) =>
+                      updateDetector(det.id, 'latencyCorrection', v)
+                    }
+                  />
+                  <TextCell
+                    approachId={approach.id}
+                    row={rowIdx}
+                    col={4}
+                    rowCount={rowCount}
+                    colCount={colCount}
+                    value={det.laneNumber}
+                    onUpdate={(v) => updateDetector(det.id, 'laneNumber', v)}
+                  />
+                  <SelectCell
+                    approachId={approach.id}
+                    row={rowIdx}
+                    col={5}
+                    rowCount={rowCount}
+                    colCount={colCount}
+                    options={movementTypeOptions}
+                    value={det.movementType}
+                    onUpdate={(v) => updateDetector(det.id, 'movementType', v)}
+                  />
+                  <SelectCell
+                    approachId={approach.id}
+                    row={rowIdx}
+                    col={6}
+                    rowCount={rowCount}
+                    colCount={colCount}
+                    options={laneTypeOptions}
+                    value={det.laneType}
+                    onUpdate={(v) => updateDetector(det.id, 'laneType', v)}
+                  />
+                  <CalendarCell
+                    approachId={approach.id}
+                    row={rowIdx}
+                    col={7}
+                    rowCount={rowCount}
+                    colCount={colCount}
+                    value={det.dateAdded}
+                    onUpdate={(v) => updateDetector(det.id, 'dateAdded', v)}
+                  />
+                  <CommentCell
+                    approachId={approach.id}
+                    detector={det}
+                    row={rowIdx}
+                    col={8}
+                    rowCount={rowCount}
+                    colCount={colCount}
+                  />
+                  <TextCell
+                    approachId={approach.id}
+                    row={rowIdx}
+                    col={9}
+                    rowCount={rowCount}
+                    colCount={colCount}
+                    value={det.distanceFromStopBar}
+                    onUpdate={(v) =>
+                      updateDetector(det.id, 'distanceFromStopBar', v)
+                    }
+                  />
+                  <TextCell
+                    approachId={approach.id}
+                    row={rowIdx}
+                    col={10}
+                    rowCount={rowCount}
+                    colCount={colCount}
+                    value={det.decisionPoint}
+                    onUpdate={(v) => updateDetector(det.id, 'decisionPoint', v)}
+                  />
+                  <TextCell
+                    approachId={approach.id}
+                    row={rowIdx}
+                    col={11}
+                    rowCount={rowCount}
+                    colCount={colCount}
+                    value={det.minSpeedFilter}
+                    onUpdate={(v) =>
+                      updateDetector(det.id, 'minSpeedFilter', v)
+                    }
+                  />
+                  <TextCell
+                    approachId={approach.id}
+                    row={rowIdx}
+                    col={12}
+                    rowCount={rowCount}
+                    colCount={colCount}
+                    value={det.movementDelay}
+                    onUpdate={(v) => updateDetector(det.id, 'movementDelay', v)}
+                  />
+                  {deleteMode && (
+                    <TableCell
+                      colSpan={colCount}
+                      onClick={() => handleRowClick(det.id)}
+                      sx={{
+                        p: 0,
+                        position: 'absolute',
+                        inset: 0,
+                        zIndex: 1,
+                        bgcolor: 'transparent',
+                        cursor: 'pointer',
+                      }}
+                    />
+                  )}
+                </TableRow>
+              )
+            })
+          )}
         </TableBody>
       </Table>
     </TableContainer>
