@@ -61,7 +61,18 @@ export default function TspReport({ report, reportOptions }: TspReportProps) {
       option: reportParams,
       measureTypeId: measureTypes.find((m) => m.abbreviation === 'TSP')?.id,
     })
-    addNotification({ title: 'Parameters saved successfully', type: 'success' })
+      .then(() => {
+        addNotification({
+          title: 'Parameters saved successfully',
+          type: 'success',
+        })
+      })
+      .catch(() => {
+        addNotification({
+          title: 'Failed to save parameters',
+          type: 'error',
+        })
+      })
     handleCloseModal()
   }
 
