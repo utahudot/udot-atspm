@@ -150,7 +150,7 @@ public class SetupTestCommandHostedService : IHostedService
                 Description = $"Test config for {device.DeviceIdentifier}",
                 Protocol = protocolEnum,
                 Port = device.Port,
-                Path = $"/data/{device.DeviceIdentifier}",
+                Path = $"/files/{device.DeviceIdentifier}",
                 Query = new[] { "dat", "datZ" },
                 ConnectionProperties = new Dictionary<string, object>
                 {
