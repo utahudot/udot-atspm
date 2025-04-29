@@ -57,15 +57,9 @@ const SelectCell = ({
   }
 
   const handleCellKeyDown = (e: KeyboardEvent<HTMLElement>) => {
-    if (isEditing && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) {
-      e.stopPropagation()
-      e.preventDefault()
-      return
-    }
     if (isEditing) return
     if (e.key === 'Backspace') {
       e.preventDefault()
-      openEditor()
       onUpdate('')
       openEditor()
       return
@@ -77,7 +71,6 @@ const SelectCell = ({
       !e.key.startsWith('Arrow')
     ) {
       e.preventDefault()
-      openEditor()
       onUpdate((value ?? '') + e.key)
       openEditor()
       return
@@ -106,13 +99,11 @@ const SelectCell = ({
     if (e.key === 'Enter') {
       e.preventDefault()
       closeEditor()
-      setTimeout(() => cellRef.current?.focus())
     }
   }
 
   const handleClose = () => {
     closeEditor()
-    setTimeout(() => cellRef.current?.focus())
   }
 
   const outlineColor = theme.palette.primary.main
@@ -162,7 +153,6 @@ const SelectCell = ({
             <Select
               open={isEditing}
               onClose={handleClose}
-              onBlur={handleClose}
               value={value ?? ''}
               onChange={(e) => {
                 onUpdate(e.target.value)
@@ -188,9 +178,6 @@ const SelectCell = ({
                   lineHeight: '44px',
                   padding: 0,
                 },
-              }}
-              MenuProps={{
-                onClick: handleClose,
               }}
             >
               {options.map((opt) => (

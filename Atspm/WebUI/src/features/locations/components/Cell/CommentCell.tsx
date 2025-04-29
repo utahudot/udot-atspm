@@ -211,7 +211,6 @@ const CommentCell = ({
 
       <Tooltip title={detector.isNew ? 'Save before commenting' : ''}>
         <span>
-          {/* can't have a disabled element as the child of a tooltip */}
           <IconButton onClick={handleIconClick} disabled={detector.isNew}>
             <Badge
               badgeContent={comments.length}

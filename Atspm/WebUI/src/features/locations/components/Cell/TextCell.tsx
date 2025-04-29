@@ -133,7 +133,6 @@ export const TextCell = ({
       if (e.key === 'Enter') {
         e.preventDefault()
         closeEditor()
-        setTimeout(() => cellRef.current?.focus())
       } else if (e.key.startsWith('Arrow')) {
         e.preventDefault()
         closeEditor()
@@ -148,13 +147,9 @@ export const TextCell = ({
       const to = e.relatedTarget as HTMLElement | null
       if (to?.hasAttribute('data-row') && to.hasAttribute('data-col')) return
       closeEditor()
-      setTimeout(() => cellRef.current?.focus())
     },
     [closeEditor]
   )
-
-  const outlineColor = theme.palette.primary.main
-  const innerColor = alpha(outlineColor, 0.15)
 
   return (
     <TableCell
@@ -184,43 +179,43 @@ export const TextCell = ({
       }}
     >
       {(isEditing || isFocused || showIssue) && (
-            <Box
-              sx={{
-                pointerEvents: 'none',
-                position: 'absolute',
-                inset: 0,
-                border: `2px solid ${outlineColor}`,
-                borderRadius: 1,
-                zIndex: 1,
-              }}
-            />
-          )}
-          <Box sx={{ position: 'relative', width: '100%', height: '100%' }}>
-            {isEditing ? (
-              <Input
-                inputRef={inputRef}
-                disableUnderline
-                fullWidth
+        <Box
+          sx={{
+            pointerEvents: 'none',
+            position: 'absolute',
+            inset: 0,
+            border: `2px solid ${outlineColor}`,
+            borderRadius: 1,
+            zIndex: 1,
+          }}
+        />
+      )}
+      <Box sx={{ position: 'relative', width: '100%', height: '100%' }}>
+        {isEditing ? (
+          <Input
+            inputRef={inputRef}
+            disableUnderline
+            fullWidth
             value={value ?? ''}
-                onChange={(e) => onUpdate(e.target.value)}
-                onKeyDown={handleInputKeyDown}
-                onBlur={handleInputBlur}
+            onChange={(e) => onUpdate(e.target.value)}
+            onKeyDown={handleInputKeyDown}
+            onBlur={handleInputBlur}
             error={isError}
-                sx={{
-                  height: '100%',
-                  py: 0,
-                  px: 1,
-                  boxSizing: 'border-box',
-                  '& .MuiInput-input': {
-                    height: '100%',
-                    padding: 0,
-                    lineHeight: '44px',
-                    outline: 'none',
-                  },
-                }}
-                endAdornment={
+            sx={{
+              height: '100%',
+              py: 0,
+              px: 1,
+              boxSizing: 'border-box',
+              '& .MuiInput-input': {
+                height: '100%',
+                padding: 0,
+                lineHeight: '44px',
+                outline: 'none',
+              },
+            }}
+            endAdornment={
               isError ? (
-                    <InputAdornment position="end">
+                <InputAdornment position="end">
                   <Tooltip title={errorText!}>
                     <ErrorOutlineIcon
                       role="img"
@@ -228,36 +223,36 @@ export const TextCell = ({
                       aria-label={errorText!}
                     />
                   </Tooltip>
-                    </InputAdornment>
+                </InputAdornment>
               ) : isWarning ? (
-                    <InputAdornment position="end">
+                <InputAdornment position="end">
                   <Tooltip title={warningText!}>
-                      <WarningAmberOutlinedIcon
-                        role="img"
+                    <WarningAmberOutlinedIcon
+                      role="img"
                       color="warning"
                       aria-label={warningText!}
-                      />
+                    />
                   </Tooltip>
-                    </InputAdornment>
-                  ) : (
-                    <InputAdornment position="end" sx={{ width: 24 }} />
-                  )
-                }
-              />
-            ) : (
+                </InputAdornment>
+              ) : (
+                <InputAdornment position="end" sx={{ width: 24 }} />
+              )
+            }
+          />
+        ) : (
           <>
-              <Typography
-                onDoubleClick={openEditor}
-                noWrap
-                sx={{
-                  height: '100%',
-                  lineHeight: '44px',
-                  px: 1,
-                  cursor: 'text',
-                }}
-              >
-                {value}
-              </Typography>
+            <Typography
+              onDoubleClick={openEditor}
+              noWrap
+              sx={{
+                height: '100%',
+                lineHeight: '44px',
+                px: 1,
+                cursor: 'text',
+              }}
+            >
+              {value}
+            </Typography>
             {showIssue && (
               <Box
                 sx={{
@@ -283,10 +278,10 @@ export const TextCell = ({
                       aria-label={warningText!}
                     />
                   </Tooltip>
+                )}
+              </Box>
             )}
-          </Box>
-            )}
-        </>
+          </>
         )}
       </Box>
     </TableCell>
