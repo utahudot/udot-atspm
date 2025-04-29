@@ -1,3 +1,7 @@
+import {
+  useGetDetectionType,
+  useGetLocationType,
+} from '@/api/config/aTSPMConfigurationApi'
 import DetectionTypesCell from '@/features/locations/components/editDetector/DetectionTypesCell'
 import { hardwareTypeOptions } from '@/features/locations/components/editDetector/HardwareTypeCell'
 import { laneTypeOptions } from '@/features/locations/components/editDetector/LaneTypeCell'
@@ -5,8 +9,7 @@ import { movementTypeOptions } from '@/features/locations/components/editDetecto
 import { LocationExpanded } from '@/features/locations/types'
 import CheckBoxIcon from '@mui/icons-material/CheckBox'
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank'
-import { Box } from '@mui/material'
-import { SxProps, Theme } from '@mui/system'
+import { Box, SxProps, Theme } from '@mui/material'
 import {
   DataGrid,
   GridColDef,
@@ -15,6 +18,7 @@ import {
   GridToolbarExport,
   GridToolbarFilterButton,
 } from '@mui/x-data-grid'
+import React from 'react'
 
 const DataGridStyle: SxProps<Theme> = {
   '@media print': {
@@ -49,175 +53,37 @@ function CustomToolbar({ location }: CustomToolbarProps) {
   )
 }
 
-const defaults = {
-  editable: false,
-  flex: 1,
-  minWidth: 100,
-}
-
-const detectorsHeaders: GridColDef[] = [
-  {
-    ...defaults,
-    field: 'dectectorIdentifier',
-    headerName: 'Detector Identifier',
-  },
-  {
-    ...defaults,
-    field: 'detectorChannel',
-    headerName: 'Det. Channel',
-  },
-  {
-    ...defaults,
-    field: 'direction',
-    headerName: 'Direction',
-  },
-  {
-    ...defaults,
-    field: 'phase',
-    headerName: 'Phase',
-    minWidth: 70,
-  },
-  {
-    ...defaults,
-    field: 'permPhase',
-    headerName: 'Perm. Phase',
-    minWidth: 70,
-  },
-  {
-    ...defaults,
-    field: 'overlap',
-    headerName: 'Overlap',
-    renderCell: (params) => {
-      return params.value ? <CheckBoxIcon /> : <CheckBoxOutlineBlankIcon />
-    },
-    minWidth: 70,
-  },
-  {
-    ...defaults,
-    field: 'detectionTypes',
-    headerName: 'Detection Types',
-    minWidth: 200,
-    renderCell: (params) => {
-      if (!params.value) return null
-      return <DetectionTypesCell detector={params.row} readonly />
-    },
-  },
-  {
-    ...defaults,
-    field: 'detectionHardware',
-    headerName: 'Detection Hardware',
-    minWidth: 170,
-    renderCell: (params) => {
-      const hardware = hardwareTypeOptions.find(
-        (option) => option.id === params.value
-      )?.description
-      return (
-        <Box display={'grid'} alignItems={'center'}>
-          {hardware}
-        </Box>
-      )
-    },
-  },
-  {
-    ...defaults,
-    field: 'latencyCorrection',
-    headerName: 'Latency Correction',
-    minWidth: 70,
-  },
-  {
-    ...defaults,
-    field: 'movementType',
-    headerName: 'Movement Type',
-    minWidth: 150,
-    renderCell: (params) => {
-      const movementType = movementTypeOptions.find(
-        (option) => option.id === params.value
-      )
-      return (
-        <Box display={'flex'} alignItems={'center'}>
-          <Box>{movementType?.icon}</Box>
-          <Box>{movementType?.description}</Box>
-        </Box>
-      )
-    },
-  },
-  {
-    ...defaults,
-    field: 'laneNumber',
-    headerName: 'Lane Number',
-    minWidth: 70,
-  },
-  {
-    ...defaults,
-    field: 'laneType',
-    headerName: 'Lane Type',
-    minWidth: 150,
-    renderCell: (params) => {
-      const laneType = laneTypeOptions.find(
-        (option) => option.description === params.value
-      )
-      return (
-        <Box display={'flex'} alignItems={'center'}>
-          <Box>{laneType?.icon}</Box>
-          <Box ml={0.5}>{laneType?.description}</Box>
-        </Box>
-      )
-    },
-  },
-  {
-    ...defaults,
-    field: 'distanceFromStopBar',
-    headerName: 'Dist. From Stop Bar',
-    minWidth: 70,
-  },
-  {
-    ...defaults,
-    field: 'decisionPoint',
-    headerName: 'Decision Point',
-    minWidth: 70,
-  },
-  {
-    ...defaults,
-    field: 'movementDelay',
-    headerName: 'Move. Delay',
-    minWidth: 70,
-  },
-  {
-    ...defaults,
-    field: 'minSpeedFilter',
-    headerName: 'Min Speed Filter',
-    minWidth: 70,
-  },
-  {
-    ...defaults,
-    field: 'comment',
-    headerName: 'Comment',
-    disableExport: true,
-    renderCell: (params) => {
-      const comments = params.value?.split(',') as string[]
-      return (
-        <Box display={'grid'} alignItems={'center'}>
-          {comments?.map((comment) => (
-            <Box key={comment} mr={1}>
-              {comment}
-            </Box>
-          ))}
-        </Box>
-      )
-    },
-  },
-]
-
 interface DetectorsInfoProps {
   location: LocationExpanded | undefined
 }
 
 function DetectorsInfo({ location }: DetectorsInfoProps) {
+  const detectionRes = useGetDetectionType()
+  const locationTypeRes = useGetLocationType()
+
+  const locationType = locationTypeRes.data?.value.find(
+    (lt) => lt.id === location?.locationTypeId
+  )
+
+  const availableDetectionTypes = React.useMemo(() => {
+    if (!locationType || !detectionRes.data?.value) return []
+    const all = detectionRes.data.value as any[]
+    if (locationType.name === 'Intersection') {
+      return all.filter((d) =>
+        ['AC', 'AS', 'LLC', 'LLS', 'SBP', 'AP'].includes(d.abbreviation)
+      )
+    }
+    if (locationType.name === 'Ramp') {
+      return all.filter((d) => ['P', 'D', 'IQ', 'EQ'].includes(d.abbreviation))
+    }
+    return []
+  }, [locationType, detectionRes.data])
+
   const detectors = location?.approaches?.flatMap(
     (approach) => approach.detectors || []
   )
 
-  if (!location || !location?.approaches || !detectors?.length) {
+  if (!location || !location.approaches?.length || !detectors?.length) {
     return (
       <div>
         <h3>No detectors found</h3>
@@ -225,8 +91,8 @@ function DetectorsInfo({ location }: DetectorsInfoProps) {
     )
   }
 
-  const data = detectors.map((detector) => {
-    return {
+  const data = detectors
+    .map((detector) => ({
       id: detector.id,
       dectectorIdentifier: detector.dectectorIdentifier,
       detectorChannel: detector.detectorChannel,
@@ -249,24 +115,194 @@ function DetectorsInfo({ location }: DetectorsInfoProps) {
       comment: detector.detectorComments
         ?.map((comment) => comment.comment)
         .join(', '),
-    }
-  })
+    }))
+    .sort((a, b) => {
+      if (a.detectorChannel < b.detectorChannel) return -1
+      if (a.detectorChannel > b.detectorChannel) return 1
+    })
+
+  const columns: GridColDef[] = [
+    {
+      field: 'dectectorIdentifier',
+      ...{
+        headerName: 'Detector Identifier',
+        editable: false,
+        flex: 1,
+        minWidth: 100,
+      },
+    },
+    {
+      field: 'detectorChannel',
+      headerName: 'Det. Channel',
+      editable: false,
+      flex: 1,
+      minWidth: 100,
+    },
+    {
+      field: 'direction',
+      headerName: 'Direction',
+      editable: false,
+      flex: 1,
+      minWidth: 100,
+    },
+    {
+      field: 'phase',
+      headerName: 'Phase',
+      editable: false,
+      flex: 1,
+      minWidth: 70,
+    },
+    {
+      field: 'permPhase',
+      headerName: 'Perm. Phase',
+      editable: false,
+      flex: 1,
+      minWidth: 70,
+    },
+    {
+      field: 'overlap',
+      headerName: 'Overlap',
+      editable: false,
+      flex: 1,
+      minWidth: 70,
+      renderCell: (params) =>
+        params.value ? <CheckBoxIcon /> : <CheckBoxOutlineBlankIcon />,
+    },
+    {
+      field: 'detectionTypes',
+      headerName: 'Detection Types',
+      editable: false,
+      flex: 1,
+      minWidth: 200,
+      renderCell: (params) => (
+        <DetectionTypesCell
+          detector={params.row as any}
+          detectionTypes={availableDetectionTypes as any}
+          readonly
+        />
+      ),
+    },
+    {
+      field: 'detectionHardware',
+      headerName: 'Detection Hardware',
+      editable: false,
+      flex: 1,
+      minWidth: 170,
+      renderCell: (params) => (
+        <Box display="grid" alignItems="center">
+          {
+            hardwareTypeOptions.find((opt) => opt.id === params.value)
+              ?.description
+          }
+        </Box>
+      ),
+    },
+    {
+      field: 'latencyCorrection',
+      headerName: 'Latency Correction',
+      editable: false,
+      flex: 1,
+      minWidth: 70,
+    },
+    {
+      field: 'movementType',
+      headerName: 'Movement Type',
+      editable: false,
+      flex: 1,
+      minWidth: 150,
+      renderCell: (params) => {
+        const mt = movementTypeOptions.find((opt) => opt.id === params.value)
+        return (
+          <Box display="flex" alignItems="center">
+            <Box>{mt?.icon}</Box>
+            <Box>{mt?.description}</Box>
+          </Box>
+        )
+      },
+    },
+    {
+      field: 'laneNumber',
+      headerName: 'Lane Number',
+      editable: false,
+      flex: 1,
+      minWidth: 70,
+    },
+    {
+      field: 'laneType',
+      headerName: 'Lane Type',
+      editable: false,
+      flex: 1,
+      minWidth: 150,
+      renderCell: (params) => {
+        const lt = laneTypeOptions.find(
+          (opt) => opt.description === params.value
+        )
+        return (
+          <Box display="flex" alignItems="center">
+            <Box>{lt?.icon}</Box>
+            <Box ml={0.5}>{lt?.description}</Box>
+          </Box>
+        )
+      },
+    },
+    {
+      field: 'distanceFromStopBar',
+      headerName: 'Dist. From Stop Bar',
+      editable: false,
+      flex: 1,
+      minWidth: 70,
+    },
+    {
+      field: 'decisionPoint',
+      headerName: 'Decision Point',
+      editable: false,
+      flex: 1,
+      minWidth: 70,
+    },
+    {
+      field: 'movementDelay',
+      headerName: 'Move. Delay',
+      editable: false,
+      flex: 1,
+      minWidth: 70,
+    },
+    {
+      field: 'minSpeedFilter',
+      headerName: 'Min Speed Filter',
+      editable: false,
+      flex: 1,
+      minWidth: 70,
+    },
+    {
+      field: 'comment',
+      headerName: 'Comment',
+      editable: false,
+      flex: 1,
+      minWidth: 100,
+      disableExport: true,
+      renderCell: (params) => (
+        <Box display="grid" alignItems="center">
+          {(params.value as string)?.split(',').map((c) => (
+            <Box key={c} mr={1}>
+              {c}
+            </Box>
+          ))}
+        </Box>
+      ),
+    },
+  ]
 
   return (
     <Box sx={{ overflowX: 'auto' }}>
       <DataGrid
         autoHeight
         rows={data}
-        columns={detectorsHeaders}
+        columns={columns}
         getRowId={(row) => row.id}
         rowSelection={false}
-        hideFooter={true}
-        slots={{
-          toolbar: CustomToolbar,
-        }}
-        slotProps={{
-          toolbar: { location },
-        }}
+        hideFooter
+        slots={{ toolbar: CustomToolbar }}
+        slotProps={{ toolbar: { location } }}
         pageSizeOptions={[{ value: 100, label: '100' }]}
         sx={{
           ...DataGridStyle,

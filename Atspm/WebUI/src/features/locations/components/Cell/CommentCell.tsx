@@ -28,13 +28,7 @@ import {
   alpha,
   useTheme,
 } from '@mui/material'
-import React, {
-  KeyboardEvent,
-  MouseEvent,
-  useEffect,
-  useRef,
-  useState,
-} from 'react'
+import { KeyboardEvent, MouseEvent, useEffect, useRef, useState } from 'react'
 
 interface CommentCellProps {
   approachId: number
@@ -84,10 +78,10 @@ const CommentCell = ({
       ) || []
 
   useEffect(() => {
-    if (tabIndex === 0 && !isEditing) {
+    if (tabIndex === 0 && !isEditing && !modalOpen && !deleteModalOpen) {
       cellRef.current?.focus()
     }
-  }, [tabIndex, isEditing])
+  }, [tabIndex, isEditing, modalOpen, deleteModalOpen])
 
   const handleIconClick = (e: MouseEvent<HTMLElement>) => {
     if (detector.isNew) return
@@ -197,7 +191,7 @@ const CommentCell = ({
         p: 0,
         position: 'relative',
         outline: 'none',
-        bgcolor: isEditing ? innerColor : '',
+        bgcolor: isEditing ? innerColor : undefined,
         borderRight: `1px solid ${theme.palette.divider}`,
         caretColor: 'transparent',
       }}
@@ -333,4 +327,4 @@ const CommentCell = ({
   )
 }
 
-export default React.memo(CommentCell)
+export default CommentCell

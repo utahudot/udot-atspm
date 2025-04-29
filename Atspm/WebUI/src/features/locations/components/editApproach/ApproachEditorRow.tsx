@@ -1,16 +1,24 @@
-import { ApproachForConfig } from '@/features/locations/components/editLocation/editLocationConfigHandler'
-import { Box, ButtonBase, IconButton, Tooltip, Typography } from '@mui/material'
-import { useEffect, useState } from 'react'
-
+import {
+  ConfigApproach,
+  useLocationStore,
+} from '@/features/locations/components/editLocation/locationStore'
 import { useLocationWizardStore } from '@/features/locations/components/LocationSetupWizard/locationSetupWizardStore'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import DeleteIcon from '@mui/icons-material/Delete'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import SaveIcon from '@mui/icons-material/Save'
-import WarningIcon from '@mui/icons-material/Warning'
+import {
+  Alert,
+  Box,
+  ButtonBase,
+  IconButton,
+  Tooltip,
+  Typography,
+} from '@mui/material'
+import { useEffect, useState } from 'react'
 
 interface ApproachEditorRowProps {
-  approach: ApproachForConfig
+  approach: ConfigApproach
   open: boolean
   handleApproachClick: () => void
   handleCopyApproach: () => void
@@ -26,95 +34,138 @@ const ApproachEditorRowHeader = ({
   handleSaveApproach,
   openDeleteApproachModal,
 }: ApproachEditorRowProps) => {
-  const { badApproaches } = useLocationWizardStore()
-  const [isBadApproach, setIsBadApproach] = useState(false)
+  const { errors, setErrors } = useLocationStore((s) => ({
+    errors: s.errors,
+    setErrors: s.setErrors,
+  }))
 
-  // Recalculate bad approach status when `badApproaches` changes
+  // track whether the user has tried saving
+  const [saveAttempted, setSaveAttempted] = useState(false)
+
+  // do we have any errors on this approach or its detectors?
+  const hasApproachError = Boolean(errors?.[approach.id])
+  const hasDetectorError = approach.detectors.some((det) =>
+    Boolean(errors?.[det.id])
+  )
+  const hasAnyError = hasApproachError || hasDetectorError
+
+  // if errors go away (because inputs auto-clear them), reset our "attempted" flag
   useEffect(() => {
-    setIsBadApproach(badApproaches.includes(approach.id))
-  }, [badApproaches, approach.id])
-
-  const backgroundColor = () => {
-    if (isBadApproach) {
-      return 'rgba(255, 165, 0, 0.3)'
-    } else if (approach.isNew) {
-      return 'rgba(100, 210, 100, 0.3)'
-    } else {
-      return 'white'
+    if (saveAttempted && !hasAnyError) {
+      setSaveAttempted(false)
     }
-  }
+  }, [hasAnyError, saveAttempted])
+
+  // existing phase-number auto-clear logic stays as is
+  useEffect(() => {
+    if (!hasApproachError) return
+    const { protectedPhaseNumber, permissivePhaseNumber, id } = approach
+    const phaseValid =
+      protectedPhaseNumber !== '' &&
+      !(protectedPhaseNumber === 0 && permissivePhaseNumber === '')
+    if (phaseValid) {
+      const newErrors = { ...errors }
+      delete newErrors[id]
+      setErrors(Object.keys(newErrors).length ? newErrors : null)
+    }
+  }, [
+    approach.protectedPhaseNumber,
+    approach.permissivePhaseNumber,
+    hasApproachError,
+    errors,
+    setErrors,
+    approach,
+  ])
 
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        padding: 1,
-        backgroundColor: backgroundColor(),
-        position: 'relative', // Required for absolute positioning of the error icon
-      }}
-    >
-      <ButtonBase
-        onClick={handleApproachClick}
+    <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+      <Box
         sx={{
-          cursor: 'pointer',
-          textTransform: 'none',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          width: '100%',
+          padding: 1,
+          backgroundColor: approach.isNew
+            ? 'rgba(100, 210, 100, 0.3)'
+            : 'white',
         }}
       >
-        <Box display="flex" alignItems="center">
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              transition: 'transform 0.2s ease-in-out',
-              transform: open ? 'rotateZ(-180deg)' : 'rotateZ(0deg)',
-            }}
-          >
-            <ExpandMoreIcon />
+        <ButtonBase
+          onClick={handleApproachClick}
+          sx={{
+            cursor: 'pointer',
+            textTransform: 'none',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            width: '100%',
+          }}
+        >
+          <Box display="flex" alignItems="center">
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                transition: 'transform 0.2s ease-in-out',
+                transform: open ? 'rotateZ(-180deg)' : 'rotateZ(0deg)',
+              }}
+            >
+              <ExpandMoreIcon />
+            </Box>
+            <Typography
+              variant="h4"
+              component="h3"
+              sx={{ padding: 1, marginRight: 2 }}
+            >
+              {approach.description}
+            </Typography>
+            <Typography variant="h5" component="p">
+              {approach.detectors.length}{' '}
+              {approach.detectors.length === 1 ? 'Detector' : 'Detectors'}
+            </Typography>
           </Box>
-          <Typography
-            variant="h4"
-            component={'h3'}
-            sx={{ padding: 1, marginRight: 2 }}
-          >
-            {approach.description}
-          </Typography>
-          <Typography variant="h5" component="p">
-            {approach.detectors.length}{' '}
-            {approach.detectors.length === 1 ? 'Detector' : 'Detectors'}
-          </Typography>
+        </ButtonBase>
+
+        <Box display="flex" alignItems="center">
+          <Tooltip title="Copy Approach">
+            <IconButton aria-label="copy approach" onClick={handleCopyApproach}>
+              <ContentCopyIcon />
+            </IconButton>
+          </Tooltip>
+
+          <Tooltip title="Save Approach">
+            <IconButton
+              aria-label="save approach"
+              color="success"
+              onClick={() => {
+                // mark that we tried to save, then run your handler
+                setSaveAttempted(true)
+                handleSaveApproach()
+              }}
+            >
+              <SaveIcon />
+            </IconButton>
+          </Tooltip>
+
+          <Tooltip title="Delete Approach">
+            <IconButton
+              aria-label="delete approach"
+              color="error"
+              onClick={openDeleteApproachModal}
+            >
+              <DeleteIcon />
+            </IconButton>
+          </Tooltip>
         </Box>
-      </ButtonBase>
-      <Box display="flex" alignItems="center">
-        <Tooltip title="Copy Approach">
-          <IconButton aria-label="copy approach" onClick={handleCopyApproach}>
-            <ContentCopyIcon />
-          </IconButton>
-        </Tooltip>
-        <Tooltip title="Save Approach">
-          <IconButton
-            aria-label="save approach"
-            color="success"
-            onClick={handleSaveApproach}
-          >
-            <SaveIcon />
-          </IconButton>
-        </Tooltip>
-        <Tooltip title="Delete Approach">
-          <IconButton
-            aria-label="delete approach"
-            color="error"
-            onClick={openDeleteApproachModal}
-          >
-            <DeleteIcon />
-          </IconButton>
-        </Tooltip>
       </Box>
+
+      {saveAttempted && hasAnyError && (
+        <Box>
+          <Alert severity="error">
+            Please fix the highlighted errors before saving
+          </Alert>
+        </Box>
+      )}
     </Box>
   )
 }
