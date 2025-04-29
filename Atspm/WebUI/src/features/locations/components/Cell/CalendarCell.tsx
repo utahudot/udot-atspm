@@ -37,7 +37,6 @@ const CalendarCell: React.FC<CalendarCellProps> = ({
     openEditor: activateCell,
     closeEditor: deactivateCell,
   } = useCellNavigation(approachId, row, col, rowCount, colCount)
-
   const cellRef = useRef<HTMLElement>(null)
   const [pickerOpen, setPickerOpen] = useState(false)
   const [typedDate, setTypedDate] = useState(value)
@@ -67,7 +66,6 @@ const CalendarCell: React.FC<CalendarCellProps> = ({
   const handlePickerClose = () => {
     setPickerOpen(false)
     deactivateCell()
-    setTimeout(() => cellRef.current?.focus())
   }
 
   const handleDateChange = (d: Date | null) => {
@@ -116,7 +114,6 @@ const CalendarCell: React.FC<CalendarCellProps> = ({
           }}
         />
       )}
-
       <DatePicker
         open={pickerOpen}
         onClose={handlePickerClose}
@@ -130,7 +127,6 @@ const CalendarCell: React.FC<CalendarCellProps> = ({
               activateCell()
             },
             onPointerDown: (e) => {
-              /* allow text editing without opening picker */
               e.stopPropagation()
             },
           },

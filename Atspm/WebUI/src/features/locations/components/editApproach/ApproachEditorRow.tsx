@@ -2,7 +2,6 @@ import {
   ConfigApproach,
   useLocationStore,
 } from '@/features/locations/components/editLocation/locationStore'
-import { useLocationWizardStore } from '@/features/locations/components/LocationSetupWizard/locationSetupWizardStore'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import DeleteIcon from '@mui/icons-material/Delete'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'

@@ -2,10 +2,6 @@ import BooleanCell from '@/features/locations/components/Cell/BooleanCell'
 import SelectCell from '@/features/locations/components/Cell/SelectCell'
 import { TextCell } from '@/features/locations/components/Cell/TextCell'
 import { directionTypeOptions } from '@/features/locations/components/editDetector/selectOptions'
-import BooleanCell from '@/features/locations/components/Cell/BooleanCell'
-import SelectCell from '@/features/locations/components/Cell/SelectCell'
-import { TextCell } from '@/features/locations/components/Cell/TextCell'
-import { directionTypeOptions } from '@/features/locations/components/editDetector/selectOptions'
 import {
   ConfigApproach,
   useLocationStore,
@@ -46,12 +42,8 @@ function EditApproachGrid({ approach }: EditApproachGridProps) {
   const rowCount = approach.detectors?.length + 1 || 1
   const colCount = 10
 
-  const rowCount = approach.detectors?.length + 1 || 1
-  const colCount = 10
-
   return (
     <TableContainer component={Paper}>
-      <Table stickyHeader aria-label="edit approach table">
       <Table stickyHeader aria-label="edit approach table">
         <TableHead>
           <TableRow>
@@ -60,21 +52,11 @@ function EditApproachGrid({ approach }: EditApproachGridProps) {
               sx={{ borderBottom: 'none', pb: 0, pt: 1 }}
             />
             <TableCell
-              colSpan={2}
-              sx={{ borderBottom: 'none', pb: 0, pt: 1 }}
-            />
-            <TableCell
               colSpan={3}
               align="center"
               sx={{ borderBottom: 'none', pb: 0, pt: 1 }}
-              sx={{ borderBottom: 'none', pb: 0, pt: 1 }}
             >
               <Divider>
-                <Typography
-                  variant="caption"
-                  fontStyle="italic"
-                  fontSize="12px"
-                >
                 <Typography
                   variant="caption"
                   fontStyle="italic"
@@ -89,17 +71,11 @@ function EditApproachGrid({ approach }: EditApproachGridProps) {
               sx={{ borderBottom: 'none', pb: 0, pt: 1 }}
             />
             <TableCell
-              colSpan={2}
-              sx={{ borderBottom: 'none', pb: 0, pt: 1 }}
-            />
-            <TableCell
               colSpan={3}
               align="center"
               sx={{ borderBottom: 'none', pb: 0, pt: 1 }}
-              sx={{ borderBottom: 'none', pb: 0, pt: 1 }}
             >
               <Divider>
-                <Typography variant="caption" fontStyle="italic" fontSize={12}>
                 <Typography variant="caption" fontStyle="italic" fontSize={12}>
                   Overlap
                 </Typography>
@@ -107,33 +83,6 @@ function EditApproachGrid({ approach }: EditApproachGridProps) {
             </TableCell>
           </TableRow>
           <TableRow>
-            {[
-              'Direction',
-              'Description',
-              'Protected',
-              'Permissive',
-              'Pedestrian',
-              'Pedestrian Detectors',
-              'Approach Speed (mph)',
-              'Protected',
-              'Permissive',
-              'Pedestrian',
-            ].map((header, i) => (
-              <TableCell
-                key={i}
-                sx={{
-                  py: 1,
-                  fontSize: '12px',
-                  minWidth: '100px',
-                  maxWidth:
-                    header === 'Protected' || header === 'Permissive'
-                      ? '40px'
-                      : '100px',
-                }}
-              >
-                {header}
-              </TableCell>
-            ))}
             {[
               'Direction',
               'Description',
@@ -173,24 +122,10 @@ function EditApproachGrid({ approach }: EditApproachGridProps) {
               rowCount={rowCount}
               colCount={colCount}
               options={directionTypeOptions}
-            <SelectCell
-              approachId={approach.id}
-              row={0}
-              col={0}
-              rowCount={rowCount}
-              colCount={colCount}
-              options={directionTypeOptions}
               value={approach.directionTypeId}
-              onUpdate={(v) => handleUpdate('directionTypeId', v)}
               onUpdate={(v) => handleUpdate('directionTypeId', v)}
             />
 
-            <TextCell
-              approachId={approach.id}
-              row={0}
-              col={1}
-              rowCount={rowCount}
-              colCount={colCount}
             <TextCell
               approachId={approach.id}
               row={0}
@@ -199,15 +134,8 @@ function EditApproachGrid({ approach }: EditApproachGridProps) {
               colCount={colCount}
               value={approach.description}
               onUpdate={(v) => handleUpdate('description', v)}
-              onUpdate={(v) => handleUpdate('description', v)}
             />
 
-            <TextCell
-              approachId={approach.id}
-              row={0}
-              col={2}
-              rowCount={rowCount}
-              colCount={colCount}
             <TextCell
               approachId={approach.id}
               row={0}
@@ -225,23 +153,10 @@ function EditApproachGrid({ approach }: EditApproachGridProps) {
               col={3}
               rowCount={rowCount}
               colCount={colCount}
-            <TextCell
-              approachId={approach.id}
-              row={0}
-              col={3}
-              rowCount={rowCount}
-              colCount={colCount}
               value={approach.permissivePhaseNumber}
-              onUpdate={(v) => handleUpdate('permissivePhaseNumber', v)}
               onUpdate={(v) => handleUpdate('permissivePhaseNumber', v)}
             />
 
-            <TextCell
-              approachId={approach.id}
-              row={0}
-              col={4}
-              rowCount={rowCount}
-              colCount={colCount}
             <TextCell
               approachId={approach.id}
               row={0}
@@ -259,32 +174,13 @@ function EditApproachGrid({ approach }: EditApproachGridProps) {
               col={5}
               rowCount={rowCount}
               colCount={colCount}
-              onUpdate={(v) => handleUpdate('pedestrianPhaseNumber', v)}
-              disabled={pedsAre1to1}
-            />
-
-            <TextCell
-              approachId={approach.id}
-              row={0}
-              col={5}
-              rowCount={rowCount}
-              colCount={colCount}
               value={approach.pedestrianDetectors?.toString() || ''}
-              onUpdate={(v) =>
-                handleUpdate('pedestrianDetectors', v?.toString())
               onUpdate={(v) =>
                 handleUpdate('pedestrianDetectors', v?.toString())
               }
               disabled={pedsAre1to1}
-              disabled={pedsAre1to1}
             />
 
-            <TextCell
-              approachId={approach.id}
-              row={0}
-              col={6}
-              rowCount={rowCount}
-              colCount={colCount}
             <TextCell
               approachId={approach.id}
               row={0}
@@ -293,15 +189,8 @@ function EditApproachGrid({ approach }: EditApproachGridProps) {
               colCount={colCount}
               value={approach.mph}
               onUpdate={(v) => handleUpdate('mph', v)}
-              onUpdate={(v) => handleUpdate('mph', v)}
             />
 
-            <BooleanCell
-              approachId={approach.id}
-              row={0}
-              col={7}
-              rowCount={rowCount}
-              colCount={colCount}
             <BooleanCell
               approachId={approach.id}
               row={0}
@@ -310,15 +199,7 @@ function EditApproachGrid({ approach }: EditApproachGridProps) {
               colCount={colCount}
               value={approach.isProtectedPhaseOverlap}
               onUpdate={(v) => handleUpdate('isProtectedPhaseOverlap', v)}
-              onUpdate={(v) => handleUpdate('isProtectedPhaseOverlap', v)}
             />
-
-            <BooleanCell
-              approachId={approach.id}
-              row={0}
-              col={8}
-              rowCount={rowCount}
-              colCount={colCount}
 
             <BooleanCell
               approachId={approach.id}
@@ -328,7 +209,6 @@ function EditApproachGrid({ approach }: EditApproachGridProps) {
               colCount={colCount}
               value={approach.isPermissivePhaseOverlap}
               onUpdate={(v) => handleUpdate('isPermissivePhaseOverlap', v)}
-              onUpdate={(v) => handleUpdate('isPermissivePhaseOverlap', v)}
             />
 
             <BooleanCell
@@ -337,15 +217,7 @@ function EditApproachGrid({ approach }: EditApproachGridProps) {
               col={9}
               rowCount={rowCount}
               colCount={colCount}
-
-            <BooleanCell
-              approachId={approach.id}
-              row={0}
-              col={9}
-              rowCount={rowCount}
-              colCount={colCount}
               value={approach.isPedestrianPhaseOverlap}
-              onUpdate={(v) => handleUpdate('isPedestrianPhaseOverlap', v)}
               onUpdate={(v) => handleUpdate('isPedestrianPhaseOverlap', v)}
             />
           </TableRow>
