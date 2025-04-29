@@ -268,9 +268,9 @@ namespace Utah.Udot.Atspm.Data.Models.MeasureOptions
     public class TimingAndActuationsOptions : MeasureOptionsBase
     {
         //public string LocationIdentifier { get; set; }
-        public List<short> GlobalEventCodesList { get; set; }
-        public List<short> GlobalEventParamsList { get; set; }
-        public List<short> PhaseEventCodesList { get; set; }
+        public List<short>? GlobalEventCodesList { get; set; }
+        public List<short>? GlobalEventParamsList { get; set; }
+        public List<short>? PhaseEventCodesList { get; set; }
     }
 
     public class TurningMovementCountsOptions : MeasureOptionsBase, IBinSize
