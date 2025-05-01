@@ -71,9 +71,9 @@ export const useChangePasswordHandler = ({
       return 'Password should be at least 8 characters long.'
     }
 
-    const hasUpperCase = /(?=.*[A-Z])/
+    const hasUpperCase = /[A-Z]/
     const hasDigit = /\d/
-    const hasSpecialChar = /[!@#$%^&*()_+\[\]{};':"\\|,.<>?]/
+    const hasSpecialChar = /[!@#$%^&*()_+\[\]{};:'"\\|,.<>?]/
 
     if (
       !hasUpperCase.test(password) ||
