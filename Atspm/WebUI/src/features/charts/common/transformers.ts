@@ -317,13 +317,11 @@ export function formatExportFileName(
 ) {
   // Clean the title
   const cleanedTitle = title
-    .replace(/#/g, '') // Remove the pound sign
-    .replace(/-/g, '_') // Replace hyphens with underscores
-    .replace(/&/g, '_') // Replace '&' with underscores
-    .replace(/ /g, '_') // Replace spaces with underscores
-    .replace(/[:/]/g, '_') // Replace ':' and '/' with underscores
-    .replace(/_+/g, '_') // Replace multiple underscores with a single underscore
-    .replace(/^_+|_+$/g, '') // Remove leading or trailing underscores
+    .normalize('NFKC')
+    .replace(/[#&:\-/ ]/g, '_')
+    .split('_')
+    .filter((s) => s.length > 0)
+    .join('_')
 
   return (
     cleanedTitle +
