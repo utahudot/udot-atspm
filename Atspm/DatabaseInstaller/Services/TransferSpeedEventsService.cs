@@ -222,34 +222,49 @@ namespace DatabaseInstaller.Services
 
             using (var connection = new SqlConnection(sourceConnectionString))
             {
-                await connection.OpenAsync(cancellationToken);
+                try
+                {
+                    await connection.OpenAsync(cancellationToken);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError($"Error connecting to source database: {ex.Message} for location {location.LocationIdentifier} for {dateToRetrieve}");
+                    return;
+                }
 
                 using (var selectCommand = new SqlCommand(selectQuery, connection))
                 {
                     var eventLogs = new List<SpeedEvent>();
                     selectCommand.CommandTimeout = 120;
 
-                    using (var reader = await selectCommand.ExecuteReaderAsync(cancellationToken))
+                    try
                     {
-                        while (await reader.ReadAsync(cancellationToken))
+                        using (var reader = await selectCommand.ExecuteReaderAsync(cancellationToken))
                         {
-                            try
+                            while (await reader.ReadAsync(cancellationToken))
                             {
-                                var speedEvent = new SpeedEvent
+                                try
                                 {
-                                    Timestamp = (DateTime)reader["Timestamp"],
-                                    DetectorId = (String)reader["DetectorID"],
-                                    Mph = (int)reader["MPH"],
-                                    Kph = (int)reader["KPH"]
-                                };
+                                    var speedEvent = new SpeedEvent
+                                    {
+                                        Timestamp = (DateTime)reader["Timestamp"],
+                                        DetectorId = (String)reader["DetectorID"],
+                                        Mph = (int)reader["MPH"],
+                                        Kph = (int)reader["KPH"]
+                                    };
 
-                                eventLogs.Add(speedEvent);
-                            }
-                            catch (Exception ex)
-                            {
-                                _logger.LogInformation($" Event: {location}-{reader["Timestamp"]} Detector Id:{reader["DetectorID"]} MPH:{reader["MPH"]} KPH:{reader["KPH"]} Error reading record: {ex.Message}");
+                                    eventLogs.Add(speedEvent);
+                                }
+                                catch (Exception ex)
+                                {
+                                    _logger.LogInformation($" Event: {location}-{reader["Timestamp"]} Detector Id:{reader["DetectorID"]} MPH:{reader["MPH"]} KPH:{reader["KPH"]} Error reading record: {ex.Message}");
+                                }
                             }
                         }
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError($"Error reading records: {ex.Message} for location {location.LocationIdentifier} for {dateToRetrieve}");
                     }
 
                     if (eventLogs.Count > 0)
