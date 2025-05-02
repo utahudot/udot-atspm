@@ -483,10 +483,6 @@ const WatchDogLogs = () => {
                 '& .MuiDataGrid-row.selected-row': {
                   backgroundColor: 'lightgrey',
                 },
-                [`& .${gridClasses.cell}`]: {
-                  paddingTop: '20px',
-                  paddingBottom: '20px',
-                },
                 [`& .${gridClasses.columnHeaders}`]: {
                   position: 'sticky',
                   backgroundColor: 'white',
