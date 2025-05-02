@@ -2,7 +2,6 @@ import {
   useDeleteDeviceConfigurationFromKey,
   useGetDevice,
   useGetDeviceConfiguration,
-  useGetLocationLocationsForSearch,
   useGetProduct,
   usePostDeviceConfiguration,
   usePutDeviceConfigurationFromKey,
@@ -22,6 +21,7 @@ import {
   useViewPage,
 } from '@/features/identity/pagesCheck'
 import { useNotificationStore } from '@/stores/notifications'
+import { removeAuditFields } from '@/utils/removeAuditFields'
 import { Backdrop, CircularProgress } from '@mui/material'
 
 const DevicesAdmin = () => {
@@ -39,8 +39,6 @@ const DevicesAdmin = () => {
   const { data: allDevicesData } = useGetDevice()
   const devices = allDevicesData?.value
 
-  const { data: locationsData } = useGetLocationLocationsForSearch()
-  const locations = locationsData?.value
   const {
     data: deviceConfigurationData,
     isLoading,
@@ -80,8 +78,10 @@ const DevicesAdmin = () => {
     try {
       const { productName, ...dataWithoutProductName } = deviceConfigurationData
 
+      const deviceConfigDTO = removeAuditFields(dataWithoutProductName)
+
       await editMutation({
-        data: dataWithoutProductName,
+        data: deviceConfigDTO,
         key: deviceConfigurationData.id,
       })
       addNotification({
@@ -153,6 +153,7 @@ const DevicesAdmin = () => {
     const productName = getProductDetails(obj.productId)
     return {
       ...obj,
+      name: obj.product?.manufacturer + ' ' + obj.product?.model || '',
       productName: productName,
     }
   })
@@ -160,7 +161,6 @@ const DevicesAdmin = () => {
   const headers = [
     'Product Name',
     'Description',
-
     'Protocol',
     'Port',
     'Path',
@@ -177,7 +177,6 @@ const DevicesAdmin = () => {
   const headerKeys = [
     'productName',
     'description',
-
     'protocol',
     'port',
     'path',
@@ -218,7 +217,7 @@ const DevicesAdmin = () => {
         deleteModal={
           <DeleteModal
             id={0}
-            name={'test'}
+            name={'This device configuration'}
             deleteLabel={(selectedRow: (typeof filteredData)[number]) =>
               `${selectedRow.product?.manufacturer} ${selectedRow.product?.model}`
             }
