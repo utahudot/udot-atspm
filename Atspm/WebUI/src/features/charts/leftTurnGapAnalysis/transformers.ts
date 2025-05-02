@@ -15,6 +15,7 @@
 // limitations under the License.
 // #endregion
 import {
+  createDataZoom,
   createDisplayProps,
   createGrid,
   createInfoString,
@@ -35,11 +36,7 @@ import {
   DashedLineSeriesSymbol,
   formatChartDateTimeRange,
 } from '@/features/charts/utils'
-import {
-  DataZoomComponentOption,
-  EChartsOption,
-  TooltipComponentOption,
-} from 'echarts'
+import { EChartsOption, TooltipComponentOption } from 'echarts'
 import { RawLeftTurnGapAnalysisResponse, RawLeftTurnGapData } from './types'
 
 export default function transformLeftTurnGapAnalysisData(
@@ -133,20 +130,7 @@ function transformData(data: RawLeftTurnGapData) {
     ],
   })
 
-  const dataZoom: DataZoomComponentOption[] = [
-    {
-      type: 'slider',
-      filterMode: 'weakFilter',
-      show: true,
-      minSpan: 0.2,
-    },
-    {
-      type: 'inside',
-      filterMode: 'weakFilter',
-      show: true,
-      minSpan: 0.2,
-    },
-  ]
+  const dataZoom = createDataZoom()
 
   const toolbox = createToolbox(
     {
