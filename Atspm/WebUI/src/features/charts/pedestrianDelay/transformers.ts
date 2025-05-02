@@ -15,6 +15,7 @@
 // limitations under the License.
 // #endregion
 import {
+  createDataZoom,
   createDisplayProps,
   createGrid,
   createInfoString,
@@ -42,7 +43,7 @@ import {
   SolidLineSeriesSymbol,
   formatChartDateTimeRange,
 } from '@/features/charts/utils'
-import { DataZoomComponentOption, EChartsOption } from 'echarts'
+import { EChartsOption } from 'echarts'
 
 export default function transformPedestrianDelayData(
   response: RawPedestrianDelayResponse
@@ -131,12 +132,7 @@ function transformData(data: RawPedestrianDelayData) {
     ],
   })
 
-  const dataZoom: DataZoomComponentOption[] = [
-    {
-      type: 'slider',
-      filterMode: 'none',
-      minSpan: 0.2,
-    },
+  const dataZoom = createDataZoom([
     {
       type: 'slider',
       orient: 'vertical',
@@ -146,12 +142,7 @@ function transformData(data: RawPedestrianDelayData) {
       minSpan: 0.2,
       yAxisIndex: [0, 1],
     },
-    {
-      type: 'inside',
-      filterMode: 'none',
-      minSpan: 0.2,
-    },
-  ]
+  ])
 
   const toolbox = createToolbox(
     {
