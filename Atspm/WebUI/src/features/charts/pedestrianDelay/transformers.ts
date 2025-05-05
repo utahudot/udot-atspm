@@ -138,7 +138,6 @@ function transformData(data: RawPedestrianDelayData) {
       orient: 'vertical',
       filterMode: 'none',
       right: 160,
-      endValue: 180,
       minSpan: 0.2,
       yAxisIndex: [0, 1],
     },

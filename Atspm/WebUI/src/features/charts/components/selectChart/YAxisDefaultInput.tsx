@@ -1,23 +1,22 @@
+import { useChartsStore } from '@/stores/charts'
 import {
   Alert,
   Box,
   Button,
   FormControl,
   InputLabel,
-  SelectChangeEvent,
+  Paper,
   TextField,
+  Typography,
 } from '@mui/material'
-
-import { useChartsStore } from '@/stores/charts'
 import { ChangeEvent, useEffect, useState } from 'react'
 
 interface YAxisDefaultInputProps {
   value: string | null
-  handleChange:
-    | ((event: SelectChangeEvent<string>) => void)
-    | ((value: string | null) => void)
+  handleChange: (value: string | null) => void
   isMeasureDefaultView: boolean
 }
+
 export const YAxisDefaultInput = ({
   value,
   handleChange,
@@ -41,14 +40,11 @@ export const YAxisDefaultInput = ({
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value
     setInputValue(newValue)
-
-    // For admin view, update immediately
     if (isMeasureDefaultView) {
-      ;(handleChange as (event: SelectChangeEvent<string>) => void)({
-        target: { value: newValue },
-      } as SelectChangeEvent<string>)
+      handleChange(newValue)
     }
   }
+
   useEffect(() => {
     if (value === undefined) {
       setShowError(true)
@@ -88,14 +84,14 @@ export const YAxisDefaultInput = ({
         marginRight: '29.3px',
       }}
     >
-      <InputLabel sx={{ color: 'black' }}>Y-Axis Chart Default </InputLabel>
+      <InputLabel sx={{ color: 'black' }}>Y-Axis Chart Default</InputLabel>
       <Box sx={{ display: 'flex' }}>
         <FormControl sx={{ width: '60px' }}>
-          <label htmlFor="yAxis-defualt" style={visuallyHidden}>
+          <label htmlFor="yAxis-default" style={visuallyHidden}>
             YAxis Chart Default
           </label>
           <TextField
-            id="yAxis-defualt"
+            id="yAxis-default"
             type="number"
             value={value}
             onChange={handleInputChange}
@@ -105,51 +101,63 @@ export const YAxisDefaultInput = ({
       </Box>
     </Box>
   ) : (
-    <Box
+    <Paper
       sx={{
+        px: 2,
+        py: 1,
+        my: 1,
+        bgcolor: 'background.default',
+        flexGrow: 1,
         display: 'flex',
         flexDirection: 'column',
-        alignItems: 'flex-start',
-        position: 'relative',
-        height: '300px',
       }}
+      elevation={0}
     >
+      <Typography variant="caption">Display</Typography>
       <Box
         sx={{
           display: 'flex',
-          justifyContent: 'space-between',
-          width: '100%',
-          alignItems: 'center',
+          flexDirection: 'column',
+          flexGrow: 1,
         }}
       >
-        <InputLabel sx={{ color: 'black' }}>Y-Axis Max</InputLabel>
-        <Box sx={{ display: 'flex' }}>
-          <FormControl sx={{ width: '60px' }}>
-            <label htmlFor="yAxis-defualt" style={visuallyHidden}>
-              YAxis Chart Default
-            </label>
-            <TextField
-              id="yAxis-defualt"
-              type="number"
-              value={inputValue}
-              onChange={handleInputChange}
-              variant="standard"
-            />
-          </FormControl>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            width: '100%',
+            alignItems: 'center',
+          }}
+        >
+          <InputLabel sx={{ color: 'black' }}>Y-Axis Max</InputLabel>
+          <Box sx={{ display: 'flex' }}>
+            <FormControl sx={{ width: '60px' }}>
+              <label htmlFor="yAxis-max" style={visuallyHidden}>
+                YAxis Max
+              </label>
+              <TextField
+                id="yAxis-max"
+                type="number"
+                value={inputValue}
+                onChange={handleInputChange}
+                variant="standard"
+              />
+            </FormControl>
+          </Box>
         </Box>
+        <Button
+          variant="contained"
+          size="small"
+          sx={{
+            alignSelf: 'flex-end',
+            mt: 'auto',
+          }}
+          onClick={applyChange}
+          disabled={inputValue === yAxisMaxStore}
+        >
+          Apply
+        </Button>
       </Box>
-      <Button
-        variant="contained"
-        size="small"
-        sx={{
-          alignSelf: 'flex-end',
-          marginTop: 'auto',
-        }}
-        onClick={applyChange}
-        disabled={inputValue === yAxisMaxStore}
-      >
-        Apply
-      </Button>
-    </Box>
+    </Paper>
   )
 }

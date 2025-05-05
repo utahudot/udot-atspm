@@ -140,6 +140,10 @@ const PerformanceMeasures = () => {
 
             <StyledPaper
               sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                flex: '1 1 336px',
+                minHeight: 0,
                 padding: 3,
                 width: '336px',
                 [theme.breakpoints.down('sm')]: { minWidth: '100%' },

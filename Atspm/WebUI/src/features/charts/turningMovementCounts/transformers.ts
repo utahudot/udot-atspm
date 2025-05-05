@@ -125,7 +125,6 @@ function transformData(data: RawTurningMovementCountsData) {
       type: 'slider',
       orient: 'vertical',
       right: 140,
-      endValue: 100,
       yAxisIndex: 0,
     },
   ])

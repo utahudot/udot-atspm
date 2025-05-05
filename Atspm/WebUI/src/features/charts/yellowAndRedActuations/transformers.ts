@@ -114,7 +114,6 @@ function transformData(data: RawYellowAndRedActuationsData) {
       orient: 'vertical',
       filterMode: 'none',
       right: 160,
-      endValue: 20, // todo - should use measure default or something
       yAxisIndex: 0,
     },
   ])
