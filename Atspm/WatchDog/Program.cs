@@ -56,7 +56,6 @@ cmdBuilder.UseHost(hostBuilder =>
     .ConfigureServices((h, s) =>
     {
         s.AddEmailServices(h);
-        s.AddScoped<IEmailService, SmtpEmailService>();
         s.AddScoped<IWatchdogEmailService, WatchdogEmailService>();
 
 
@@ -92,7 +91,7 @@ cmdBuilder.UseHost(hostBuilder =>
         s.AddOptions<WatchdogConfiguration>().Bind(h.Configuration.GetSection("WatchdogConfiguration"));
         s.AddHostedService<ScanHostedService>();
 
-        s.Configure<EmailConfiguration>(h.Configuration.GetSection("EmailConfiguration"));
+        //s.Configure<EmailConfiguration>(h.Configuration.GetSection("EmailConfiguration"));
 
     });
 },
