@@ -216,7 +216,13 @@ public class TransferConfigCommandHostedService : IHostedService
         foreach (var device in devices)
         {
             device.DeviceConfiguration = speedDeviceConfiguration;
-            device.LocationId = _locationRepository.GetLatestVersionOfLocation(device.DeviceIdentifier).Id;
+            var location = _locationRepository.GetLatestVersionOfLocation(device.DeviceIdentifier);
+            if (location == null)
+            {
+                _logger.LogInformation($"Location not found for device {device.DeviceIdentifier}");
+                continue;
+            }
+            device.LocationId = location.Id;
         }
         if (_config.Delete)
         {
