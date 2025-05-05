@@ -223,7 +223,6 @@ namespace Utah.Udot.Atspm.ConfigApi.Configuration
                         //measureOptionType.Property(mo => mo.Value);
                         //measureOptionType.Property(mo => mo.MeasureTypeId);
 
-                        var i = model.Action("SyncLocation").ReturnsFromEntitySet<TemplateLocationModifiedDto>("templateLocationModifiedDto");
 
                         var j = model.Action("DeleteAllVersions");
 
