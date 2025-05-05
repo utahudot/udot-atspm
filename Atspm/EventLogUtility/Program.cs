@@ -47,12 +47,12 @@ cmdBuilder.UseHost(a =>
 {
     return Host.CreateDefaultBuilder(a)
     //.UseConsoleLifetime()
-    .ConfigureAppConfiguration((h, c) =>
-    {
-        c.AddUserSecrets<Program>(optional: true); // Load secrets first
-        c.AddCommandLine(args);                    // Override with command-line args
+    //.ConfigureAppConfiguration((h, c) =>
+    //{
+    //    c.AddUserSecrets<Program>(optional: true); // Load secrets first
+    //    c.AddCommandLine(args);                    // Override with command-line args
 
-    })
+    //})
     .ApplyVolumeConfiguration()
     .ConfigureLogging((h, l) =>
     {
