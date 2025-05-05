@@ -192,7 +192,6 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
 
             services.AddScoped<IIndianaEventLogRepository, IndianaEventLogEFRepository>();
             services.AddScoped<ISpeedEventLogRepository, SpeedEventLogEFRepository>();
-            services.AddScoped<IVisionCameraStatisticsEventLogRepository, VisionCameraStatisticsEventLogEFRepository>();
 
             return services;
         }
