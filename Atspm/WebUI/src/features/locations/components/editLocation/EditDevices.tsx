@@ -7,33 +7,14 @@ import {
 import DeviceCard from '@/features/locations/components/editLocation/DeviceCard'
 import { useLocationStore } from '@/features/locations/components/editLocation/locationStore'
 import DeviceModal from '@/features/locations/components/editLocation/NewDeviceModal'
-import DevicesWizardPanel from '@/features/locations/components/LocationSetupWizard/DevicesWizardPanel.tsx/DevicesWizardPanel'
-import { useLocationWizardStore } from '@/features/locations/components/LocationSetupWizard/locationSetupWizardStore'
 import AddIcon from '@mui/icons-material/Add'
-import SyncIcon from '@mui/icons-material/Sync'
-import { LoadingButton } from '@mui/lab'
-import {
-  Avatar,
-  Box,
-  Button,
-  Collapse,
-  Modal,
-  Paper,
-  Typography,
-  useTheme,
-} from '@mui/material'
-import { useEffect, useState } from 'react'
+import { Avatar, Box, Button, Modal, Typography, useTheme } from '@mui/material'
+import { useState } from 'react'
 
 const EditDevices = () => {
   const theme = useTheme()
 
   const { location } = useLocationStore()
-  const {
-    shouldDownloadData,
-    dataDownloaded,
-    setShouldDownloadData,
-    setDataDownloaded,
-  } = useLocationWizardStore()
 
   const locationId = location?.id
 
@@ -41,7 +22,6 @@ const EditDevices = () => {
   const [currentDevice, setCurrentDevice] = useState<Device | null>(null)
   const [openDeleteModal, setOpenDeleteModal] = useState(false)
   const [deleteDeviceId, setDeleteDeviceId] = useState<string | null>(null)
-  const [showSyncPanel, setShowSyncPanel] = useState(false)
 
   const {
     data: devicesData,
@@ -52,26 +32,6 @@ const EditDevices = () => {
   const { mutate: deleteDevice } = useDeleteDevice()
 
   const devices = devicesData?.value || []
-
-  useEffect(() => {
-    if (shouldDownloadData && !dataDownloaded) {
-      ;(async () => {
-        await handleResync()
-        setDataDownloaded(true)
-        setShouldDownloadData(false)
-        setShowSyncPanel(true)
-      })()
-    }
-  }, [
-    shouldDownloadData,
-    dataDownloaded,
-    setDataDownloaded,
-    setShouldDownloadData,
-  ])
-
-  async function handleResync() {
-    await refetchDevices()
-  }
 
   if (!deviceConfigurationsData?.value || !devicesData?.value) {
     return <Typography variant="h6">Loading...</Typography>
@@ -101,39 +61,7 @@ const EditDevices = () => {
 
   return (
     <>
-      <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
-        <LoadingButton
-          startIcon={<SyncIcon />}
-          loading={isResyncing}
-          loadingPosition="start"
-          variant="contained"
-          color="primary"
-          onClick={() => setShowSyncPanel((prev) => !prev)}
-        >
-          Sync
-        </LoadingButton>
-      </Box>
-      <Collapse in={showSyncPanel} timeout="auto" unmountOnExit>
-        <Paper
-          sx={{
-            border: `1px solid ${theme.palette.divider}`,
-            borderRadius: 1,
-            p: 2,
-            mb: 2,
-          }}
-        >
-          <DevicesWizardPanel
-            devices={devices}
-            onResync={handleResync}
-            isResyncing={isResyncing}
-          />
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
-            <Button variant="outlined" onClick={() => setShowSyncPanel(false)}>
-              Close
-            </Button>
-          </Box>
-        </Paper>
-      </Collapse>
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}></Box>
       <Box
         sx={{
           display: 'flex',
