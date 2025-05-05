@@ -215,7 +215,7 @@ function transformData(data: RawPedestrianDelayData) {
     pedPresses: (value: number) => `${value} PP`,
   }
 
-  const plansSeries = createPlans(plans, yAxis.length, planOptions)
+  const plansSeries = createPlans(plans, yAxis.length, planOptions, 125)
 
   const displayProps = createDisplayProps({
     description: data.phaseDescription,
