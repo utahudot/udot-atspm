@@ -12,7 +12,6 @@ import { LoadingButton } from '@mui/lab'
 import {
   Box,
   Button,
-  Checkbox,
   Dialog,
   DialogActions,
   DialogContent,
@@ -20,11 +19,9 @@ import {
   InputAdornment,
   TextField,
 } from '@mui/material'
-import FormControlLabel from '@mui/material/FormControlLabel'
 import { useMemo, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
-import LocationTemplateInputs from './LocationTemplateInputs'
 
 interface NewLocationModalProps {
   closeModal: () => void
@@ -200,15 +197,6 @@ const NewLocationModal = ({
     return ''
   }
 
-  const handleCopyLocationCheckBoxChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setCopyLocationFromTemplate(event.target.checked)
-    if (!event.target.checked) {
-      setSelectedLocation(null)
-    }
-  }
-
   return (
     <Dialog
       open={true}
@@ -259,25 +247,6 @@ const NewLocationModal = ({
               )}
             />
           </Box>
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={copyLocationFromTemplate}
-                onChange={handleCopyLocationCheckBoxChange}
-              />
-            }
-            label={'Copy existing Location'}
-          />
-          {copyLocationFromTemplate && (
-            <LocationTemplateInputs
-              locationHandler={locationHandler}
-              control={control}
-              selectedLocation={selectedLocation}
-              setSelectedLocation={setSelectedLocation}
-              locations={allLocations}
-              errors={errors}
-            />
-          )}
         </DialogContent>
         <DialogActions sx={{ p: 2 }}>
           <Button
