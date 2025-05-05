@@ -14,8 +14,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 // #endregion
-import { DataZoomComponentOption, EChartsOption, SeriesOption } from 'echarts'
+import { EChartsOption, SeriesOption } from 'echarts'
 import {
+  createDataZoom,
   createGrid,
   createLegend,
   createPolyLines,
@@ -219,12 +220,7 @@ function transformData(data: RampMeteringData): EChartsOption[] {
     ],
   })
 
-  const dataZoom: DataZoomComponentOption[] = [
-    {
-      type: 'slider',
-      filterMode: 'none',
-      minSpan: 0.2,
-    },
+  const dataZoom = createDataZoom([
     {
       type: 'slider',
       orient: 'vertical',
@@ -233,12 +229,7 @@ function transformData(data: RampMeteringData): EChartsOption[] {
       yAxisIndex: 0,
       minSpan: 0.2,
     },
-    {
-      type: 'inside',
-      filterMode: 'none',
-      minSpan: 0.2,
-    },
-  ]
+  ])
 
   const toolbox = createToolbox(
     { title: titleHeader1, dateRange },

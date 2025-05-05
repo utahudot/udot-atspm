@@ -55,6 +55,10 @@ const knownDeviceKeys = new Set([
   'deviceIdentifier',
   'location',
   'deviceConfiguration',
+  'created',
+  'modified',
+  'createdBy',
+  'modifiedBy',
 ])
 
 const deviceSchema = z.object({

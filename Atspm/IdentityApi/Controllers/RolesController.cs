@@ -77,11 +77,11 @@ namespace Identity.Controllers
             }
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{roleName}")]
         [Authorize(Policy = "CanDeleteRoles")]
         public async Task<IActionResult> DeleteRole(string roleName)
         {
-            var role = await roleManager.FindByIdAsync(roleName);
+            var role = await roleManager.FindByNameAsync(roleName);
             if (role == null)
             {
                 return NotFound();

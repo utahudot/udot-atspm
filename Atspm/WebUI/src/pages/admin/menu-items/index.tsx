@@ -1,3 +1,10 @@
+import {
+  useDeleteMenuItemsFromKey,
+  useGetMenuItems,
+  usePatchMenuItemsFromKey,
+  usePostMenuItems,
+} from '@/api/config/aTSPMConfigurationApi'
+import { MenuItem } from '@/api/config/aTSPMConfigurationApi.schemas'
 import AdminTable from '@/components/AdminTable/AdminTable'
 import DeleteModal from '@/components/AdminTable/DeleteModal'
 import { ResponsivePageLayout } from '@/components/ResponsivePage'
@@ -6,14 +13,8 @@ import {
   useUserHasClaim,
   useViewPage,
 } from '@/features/identity/pagesCheck'
-import { useGetMenuItems } from '@/features/menuItems/api/getMenuItems'
-import {
-  useCreateMenuItem,
-  useDeleteMenuItem,
-  useEditMenuItem,
-} from '@/features/menuItems/api/postMenuItems'
 import MenuItemsModal from '@/features/menuItems/components/MenuItemModal'
-import { MenuItems } from '@/features/menuItems/types/linkDto'
+import { useNotificationStore } from '@/stores/notifications'
 import { Backdrop, CircularProgress } from '@mui/material'
 
 const MenuItemsAdmin = () => {
@@ -21,9 +22,11 @@ const MenuItemsAdmin = () => {
   const hasGeneralEditClaim = useUserHasClaim('GeneralConfiguration:Edit')
   const hasGeneralDeleteClaim = useUserHasClaim('GeneralConfiguration:Delete')
 
-  const { mutateAsync: createMutation } = useCreateMenuItem()
-  const { mutateAsync: deleteMutation } = useDeleteMenuItem()
-  const { mutateAsync: editMutation } = useEditMenuItem()
+  const { addNotification } = useNotificationStore()
+
+  const { mutateAsync: addMenuItem } = usePostMenuItems()
+  const { mutateAsync: deleteMenuItem } = useDeleteMenuItemsFromKey()
+  const { mutateAsync: editMenuItem } = usePatchMenuItemsFromKey()
 
   const {
     data: menuItemsData,
@@ -36,10 +39,10 @@ const MenuItemsAdmin = () => {
     return
   }
 
-  const handleCreateMenuItem = async (menuItem: MenuItems) => {
+  const handleCreateMenuItem = async (menuItem: MenuItem) => {
     const { name, icon, displayOrder, document, parentId, link } = menuItem
 
-    const sanitizedMenuItem: Partial<MenuItems> = {}
+    const sanitizedMenuItem: Partial<MenuItem> = {}
 
     if (name) sanitizedMenuItem.name = name
     if (icon) sanitizedMenuItem.icon = icon
@@ -49,26 +52,43 @@ const MenuItemsAdmin = () => {
     if (link) sanitizedMenuItem.link = link
 
     try {
-      await createMutation(sanitizedMenuItem)
+      await addMenuItem({ data: menuItem })
+      addNotification({
+        type: 'success',
+        title: 'Menu Item Created',
+      })
       refetchMenuItems()
     } catch (error) {
       console.error('Mutation Error:', error)
+      addNotification({
+        type: 'error',
+        title: 'Error Creating Menu Item',
+      })
     }
   }
 
   const HandleDeleteMenuItem = async (id: number) => {
+    console.log('Deleting Menu Item with ID:', id)
     try {
-      await deleteMutation(id)
+      await deleteMenuItem({ key: id })
       refetchMenuItems()
+      addNotification({
+        type: 'success',
+        title: 'Menu Item Deleted',
+      })
     } catch (error) {
       console.error('Mutation Error:', error)
+      addNotification({
+        type: 'error',
+        title: 'Error Deleting Menu Item',
+      })
     }
   }
 
-  const handleEditMenuItem = async (menuItem: MenuItems) => {
+  const handleEditMenuItem = async (menuItem: MenuItem) => {
     const { id, name, icon, displayOrder, document, parentId, link } = menuItem
 
-    const sanitizedMenuItem: Partial<MenuItems> = {}
+    const sanitizedMenuItem: Partial<MenuItem> = {}
 
     if (name !== undefined) sanitizedMenuItem.name = name
     if (icon !== undefined) sanitizedMenuItem.icon = icon || null
@@ -79,10 +99,18 @@ const MenuItemsAdmin = () => {
     if (link !== undefined) sanitizedMenuItem.link = link
 
     try {
-      await editMutation({ data: sanitizedMenuItem, id })
+      await editMenuItem({ data: sanitizedMenuItem, key: id })
       refetchMenuItems()
+      addNotification({
+        type: 'success',
+        title: 'Menu Item Edited',
+      })
     } catch (error) {
       console.error('Mutation Error:', error)
+      addNotification({
+        type: 'error',
+        title: 'Error Editing Menu Item',
+      })
     }
   }
 
@@ -102,60 +130,7 @@ const MenuItemsAdmin = () => {
     //do something?? potentially just delete
   }
 
-  const filteredData = menuItems.map((obj: MenuItems, index: number) => {
-    return {
-      id: obj.id,
-      name: obj.name,
-      link: obj.link,
-      displayOrder: obj.displayOrder,
-      document: obj.document,
-      parentId: obj.parentId,
-      children: obj.children,
-    }
-  })
-  const sortMenuItems = (menuItems) => {
-    const baseObjects = []
-    const childObjects = []
-    const nameMap = {}
-
-    // Separate base objects and child objects, and create a name map
-    menuItems.forEach((item) => {
-      nameMap[item.id] = item.name
-      if (item.parentId === null) {
-        baseObjects.push(item)
-      } else {
-        childObjects.push(item)
-      }
-    })
-
-    const childrenMap = {}
-
-    childObjects.forEach((child) => {
-      if (!childrenMap[child.parentId]) {
-        childrenMap[child.parentId] = []
-      }
-      childrenMap[child.parentId].push(child)
-    })
-
-    const sortedMenuItems = baseObjects
-      .sort((a, b) => a.displayOrder - b.displayOrder)
-      .flatMap((base) => {
-        const children = childrenMap[base.id] || []
-        const sortedChildren = children
-          .sort((a, b) => a.displayOrder - b.displayOrder)
-          .map((child) => ({
-            ...child,
-            parentIdName: nameMap[child.parentId] || null,
-          }))
-        return [{ ...base, parentIdName: null }, ...sortedChildren]
-      })
-
-    return sortedMenuItems
-  }
-
-  const sortedFilteredData = sortMenuItems(filteredData)
-
-  const headers = ['Name', 'Link', 'Display Order', 'ParentId Name']
+  const headers = ['Name', 'Link', 'Display Order', 'Parent']
   const headerKeys = ['name', 'link', 'displayOrder', 'parentIdName']
 
   return (
