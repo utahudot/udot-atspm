@@ -15,6 +15,7 @@
 // limitations under the License.
 // #endregion
 import {
+  createDataZoom,
   createDisplayProps,
   createTitle,
   createTooltip,
@@ -29,7 +30,6 @@ import {
   formatChartDateTimeRange,
 } from '@/features/charts/utils'
 import {
-  DataZoomComponentOption,
   EChartsOption,
   GridComponentOption,
   SeriesOption,
@@ -114,21 +114,12 @@ function transformData(data: RawTimingAndActuationData) {
 
   const cycleSeries = generateCycles(cycleAllEvents, end)
 
-  const dataZoom: DataZoomComponentOption[] = [
+  const dataZoom = createDataZoom([
     {
       type: 'slider',
-      filterMode: 'none',
-      show: true,
       height: 25,
-      minSpan: 0.2,
     },
-    {
-      type: 'inside',
-      filterMode: 'none',
-      show: true,
-      minSpan: 0.2,
-    },
-  ]
+  ])
 
   const toolbox: ToolboxComponentOption = {
     feature: {

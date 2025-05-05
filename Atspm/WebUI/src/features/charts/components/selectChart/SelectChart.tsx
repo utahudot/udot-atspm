@@ -220,7 +220,15 @@ const SelectChart = ({
           ))}
         </Select>
       </FormControl>
-      <Box marginTop={1} minHeight={'32px'}>
+      <Box
+        marginTop={1}
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          flex: '1 1 0%',
+          minHeight: 0,
+        }}
+      >
         <Divider sx={{ mb: 2 }}>
           <Typography variant="caption">Options</Typography>
         </Divider>
