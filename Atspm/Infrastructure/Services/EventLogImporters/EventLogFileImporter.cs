@@ -54,13 +54,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.EventLogImporters
 
         private bool IsAcceptableDateRange(EventLogModelBase log)
         {
-            DateTime now = DateTime.Now; // Local time
-            if (log.Timestamp.Kind == DateTimeKind.Utc)
-            {
-                DateTime utcNow = now.ToUniversalTime(); // Convert to UTC
-                return log.Timestamp <= utcNow && log.Timestamp > _options.EarliestAcceptableDate;
-            }
-            return log.Timestamp <= now && log.Timestamp > _options.EarliestAcceptableDate;
+            return log.Timestamp <= DateTime.Now && log.Timestamp > _options.EarliestAcceptableDate;
         }
 
         /// <inheritdoc/>
@@ -98,8 +92,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.EventLogImporters
             {
                 var logMessages = new EventLogDecoderLogMessages(_log, this.GetType().Name, device, file);
 
-                foreach (var decoder in _decoders.Where(w => decoders.Any(d => d.Replace(" ", "").Equals(w.GetType().Name, StringComparison.OrdinalIgnoreCase))))
-
+                foreach (IEventLogDecoder decoder in _decoders.Where(w => decoders.Contains(w.GetType().Name)))
                 {
                     List<EventLogModelBase> decodedLogs = new();
 
