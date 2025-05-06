@@ -16,6 +16,7 @@
 #endregion
 
 using Utah.Udot.Atspm.ValueObjects;
+using Utah.Udot.ATSPM.ConfigApi.DTO;
 
 namespace Utah.Udot.Atspm.ConfigApi.Services
 {

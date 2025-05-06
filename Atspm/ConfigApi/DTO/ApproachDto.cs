@@ -34,8 +34,9 @@
 #endregion
 
 using Utah.Udot.Atspm.Data.Enums;
+using Utah.Udot.ATSPM.ConfigApi.DTO;
 
-namespace Utah.Udot.Atspm.ValueObjects
+namespace Utah.Udot.ATSPM.ConfigApi.DTO
 {
     public class ApproachDto
     {
