@@ -24,7 +24,10 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Utah.Udot.Atspm.Data;
+using Utah.Udot.Atspm.Data.Models.EventLogModels;
 using Utah.Udot.Atspm.Data.Utility;
+using Utah.Udot.Atspm.Infrastructure.Messaging.Kafka;
+using Utah.Udot.Atspm.Infrastructure.Messaging.PubSub;
 using Utah.Udot.Atspm.Infrastructure.Repositories;
 using Utah.Udot.Atspm.Infrastructure.Repositories.AggregationRepositories;
 using Utah.Udot.Atspm.Infrastructure.Repositories.ConfigurationRepositories;
@@ -363,6 +366,31 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
             });
 
             return configurationBuilder;
+        }
+
+        public static IServiceCollection AddEventBusPublishers(this IServiceCollection services, HostBuilderContext host)
+        {
+            // 1) bind each sub-section
+            services.Configure<KafkaConfiguration>(host.Configuration.GetSection("Kafka"));
+            services.Configure<PubSubConfiguration>(host.Configuration.GetSection("PubSub"));
+
+            // 2) pick which implementation
+            var busType = host.Configuration.GetValue<string>("Bus:Type");
+            switch (busType)
+            {
+                case "Kafka":
+                    services.AddSingleton<IEventBusPublisher<SpeedEvent>, KafkaPublisher>();
+                    break;
+
+                case "PubSub":
+                    services.AddSingleton<IEventBusPublisher<SpeedEvent>, PubSubPublisher>();
+                    break;
+
+                default:
+                    throw new InvalidOperationException($"Unsupported bus type '{busType}'");
+            }
+
+            return services;
         }
     }
 

@@ -117,6 +117,7 @@ builder.Host
     });
 
     s.AddAtspmDbContext(h);
+    s.AddEventBusPublishers(h);
     s.AddAtspmEFEventLogRepositories();
     s.AddAtspmEFAggregationRepositories();
   

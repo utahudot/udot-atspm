@@ -228,6 +228,48 @@ services:
       database-installer:
         condition: service_completed_successfully
     entrypoint: ["dotnet", "EventLogUtility.dll"]
+  
+
+   # ------------------------------------------------------------------------------
+  # 1) ZooKeeper (required by Kafka)
+  zookeeper:
+    image: confluentinc/cp-zookeeper:8.5.0
+    hostname: zookeeper
+    container_name: zookeeper
+    ports:
+      - "2181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_SYNC_LIMIT: 2
+
+  # ------------------------------------------------------------------------------
+  # 2) Kafka broker
+  kafka:
+    image: confluentinc/cp-kafka:8.5.0
+    hostname: kafka
+    container_name: kafka
+    ports:
+      - "9092:9092"
+      # optional: 29092 for internal Docker-to-Docker
+      - "29092:29092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      # tell Kafka where ZooKeeper lives
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      # listeners that Kafka will bind to
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,INTERNAL://0.0.0.0:29092
+      # what address it advertises to clients
+      KAFKA_ADVERTISED_LISTENERS: |
+        PLAINTEXT://localhost:9092
+        ,INTERNAL://kafka:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,INTERNAL:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
+    # wait on ZooKeeper before starting
+    depends_on:
+      - zookeeper
 
 
 
