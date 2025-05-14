@@ -53,5 +53,21 @@ namespace Utah.Udot.Atspm.Extensions
 
             return result;
         }
+
+        /// <summary>
+        /// Updates the <see cref="Device.LocationId"/> to new location version
+        /// </summary>
+        /// <param name="repo"></param>
+        /// <param name="deviceIds"></param>
+        /// <param name="locationId"></param>
+        public static void UpdateDevicesForNewVersion(this IDeviceRepository repo, List<int> deviceIds, int locationId)
+        {
+            var devices = repo.GetList().Where(w => deviceIds.Contains(w.Id)).ToList();
+            foreach (var device in devices)
+            {
+                device.LocationId = locationId;
+                repo.Update(device);
+            }
+        }
     }
 }

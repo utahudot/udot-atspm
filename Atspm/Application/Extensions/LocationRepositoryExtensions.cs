@@ -61,10 +61,8 @@ namespace Utah.Udot.Atspm.Extensions
                         detector.Id = 0;
                     }
                 }
-                foreach (var device in newVersion.Devices)
-                {
-                    device.Id = 0;
-                }
+
+                newVersion.Devices = null;
 
                 await repo.AddAsync(newVersion);
 
@@ -98,6 +96,14 @@ namespace Utah.Udot.Atspm.Extensions
             }
         }
 
+        /// <summary>
+        /// Gets the count of each detection type for all active locations as of the specified date.
+        /// </summary>
+        /// <param name="repo">The location repository.</param>
+        /// <param name="date">The date to filter active locations.</param>
+        /// <returns>
+        /// A list of <see cref="DetectionTypeGroup"/> objects, each containing the detection type description and the count of occurrences across all active locations.
+        /// </returns>
         public static List<DetectionTypeGroup> GetDetectionTypeCountForVersions(this ILocationRepository repo, DateTime date)
         {
             var result = repo.GetList()
@@ -121,135 +127,5 @@ namespace Utah.Udot.Atspm.Extensions
                 .ToList();
             return result;
         }
-
-
-        public static IEnumerable<Location> GetVersionOfLocations(this ILocationRepository repo, List<string> locationIdentifiers, DateTime date)
-        {
-            var result = repo.GetList()
-                .Include(s => s.Approaches)
-                    .ThenInclude(a => a.DirectionType)
-                .Include(s => s.Approaches)
-                    .ThenInclude(a => a.Detectors)
-                        .ThenInclude(d => d.DetectionTypes)
-                .Where(Location =>locationIdentifiers.Contains(Location.LocationIdentifier) && Location.Start <= date)
-                .FromSpecification(new ActiveLocationSpecification())
-                .GroupBy(r => r.LocationIdentifier)
-                .Select(g => g.OrderByDescending(r => r.Start).FirstOrDefault())
-                .ToList();
-
-            return result;
-        }
-
-        #region Obsolete
-
-        //[Obsolete("This method isn't currently being used")]
-        //public static void AddList(this ILocationRepository repo, List<Location> Locations)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        //[Obsolete("Use the add in respository base class")]
-        //public static void AddOrUpdate(this ILocationRepository repo, Location Location)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        //[Obsolete("This method isn't currently being used")]
-        //public static int CheckVersionWithFirstDate(this ILocationRepository repo, string LocationId)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        //[Obsolete("Redundant to GetAllLocations")]
-        //public static IReadOnlyList<Location> EagerLoadAllLocations(this ILocationRepository repo)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        //[Obsolete("Not Required anymore")]
-        //public static bool Exists(this ILocationRepository repo, string LocationId)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        //[Obsolete("Redundant to GetLatestVersionOfAllLocations")]
-        //public static IReadOnlyList<Location> GetAllEnabledLocations(this ILocationRepository repo)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        //[Obsolete("Redundant to GetLatestVersionOfAllLocations")]
-        //public static IList<Location> GetAllLocations(this ILocationRepository repo)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        //[Obsolete("Use overload of GetLatestVersionOfAllLocations")]
-        //public static IReadOnlyList<Location> GetAllVersionsOfLocationBylocationId(this ILocationRepository repo, string LocationId)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        //[Obsolete("Use overload of GetLatestVersionOfAllLocations")]
-        //public static IReadOnlyList<Location> GetLatestVerionOfAllLocationsByControllerType(this ILocationRepository repo, int controllerTypeId)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        //[Obsolete("This method isn't currently being used")]
-        //public static string GetLocationDescription(this ILocationRepository repo, string LocationId)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        //[Obsolete("Use GetLatestVersionOfLocation")]
-        //public static Location GetLatestVersionOfLocationBylocationId(this ILocationRepository repo, string LocationId)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        //[Obsolete("This should not be in respository")]
-        //public static IReadOnlyList<Pin> GetPinInfo(this ILocationRepository repo)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        //[Obsolete("Use GetLatestVersionOfLocation")]
-        //public static string GetLocationLocation(this ILocationRepository repo, string LocationId)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        //[Obsolete("Use Lookup instead")]
-        //public static Location GetLocationVersionByVersionId(this ILocationRepository repo, int versionId)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        //[Obsolete("Use GetLatestVersionOfLocation")]
-        //public static Location GetVersionOfLocationByDate(this ILocationRepository repo, string LocationId, DateTime startDate)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        //[Obsolete("Use GetLatestVersionOfLocation")]
-        //public static Location GetVersionOfLocationByDateWithDetectionTypes(this ILocationRepository repo, string LocationId, DateTime startDate)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        //[Obsolete("Use SetLocationToDeleted")]
-        //public static void SetAllVersionsOfALocationToDeleted(this ILocationRepository repo, string id)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        //[Obsolete("Use SetLocationToDeleted")]
-        //public static void SetVersionToDeleted(this ILocationRepository repo, int versionId)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        #endregion
     }
 }
