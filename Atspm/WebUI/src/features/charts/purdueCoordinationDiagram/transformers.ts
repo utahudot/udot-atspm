@@ -15,6 +15,7 @@
 // limitations under the License.
 // #endregion
 import {
+  createDataZoom,
   createDisplayProps,
   createGrid,
   createInfoString,
@@ -41,7 +42,7 @@ import {
   SolidLineSeriesSymbol,
   formatChartDateTimeRange,
 } from '@/features/charts/utils'
-import { DataZoomComponentOption, EChartsOption } from 'echarts'
+import { EChartsOption } from 'echarts'
 
 export default function transformPurdueCoordinationDiagramData(
   response: RawPurdueCoordinationDiagramResponse
@@ -117,27 +118,16 @@ export function transformPcdData(
     ],
   })
 
-  const dataZoom: DataZoomComponentOption[] = [
-    {
-      type: 'slider',
-      filterMode: 'none',
-      minSpan: 0.2,
-    },
+  const dataZoom = createDataZoom([
     {
       type: 'slider',
       orient: 'vertical',
       filterMode: 'none',
       right: 160,
       minSpan: 0.2,
-      endValue: 150,
       yAxisIndex: [0, 1],
     },
-    {
-      type: 'inside',
-      filterMode: 'none',
-      minSpan: 0.2,
-    },
-  ]
+  ])
 
   const toolbox = createToolbox(
     {

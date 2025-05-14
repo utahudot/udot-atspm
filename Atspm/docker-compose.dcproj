@@ -10,8 +10,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include=".env" />
+    <None Include="docker-compose.override.yml">
+      <DependentUpon>docker-compose.yml</DependentUpon>
+    </None>
     <None Include="docker-compose.yml" />
     <None Include=".dockerignore" />
+    <None Include="pure-ftpd.conf" />
     <None Include="README.md" />
     <None Include="frontend-env.txt" />
     <None Include="nginx\certs\aspnetapp.pfx" />

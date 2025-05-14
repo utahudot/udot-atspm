@@ -1,4 +1,4 @@
-﻿#region license
+#region license
 // Copyright 2025 Utah Departement of Transportation
 // for EventLogUtility - %Namespace%/Program.cs
 // 
@@ -61,10 +61,11 @@ cmdBuilder.UseHost(a =>
         //    Options = LoggingOptions.Create(LogLevel.Information, AppDomain.CurrentDomain.FriendlyName)
         //});
     })
+
     .ConfigureServices((h, s) =>
     {
         //s.AddGoogleDiagnostics(loggingOptions: LoggingOptions.Create(LogLevel.Debug));
-
+      
         s.AddAtspmDbContext(h);
         s.AddAtspmEFConfigRepositories();
         s.AddAtspmEFEventLogRepositories();

@@ -45,6 +45,7 @@ using Utah.Udot.Atspm.Business.TurningMovementCounts;
 using Utah.Udot.Atspm.Business.WaitTime;
 using Utah.Udot.Atspm.Business.Watchdog;
 using Utah.Udot.Atspm.Business.YellowRedActivations;
+using Utah.Udot.Atspm.Data.Models.MeasureOptions;
 using Utah.Udot.Atspm.ReportApi.DataAggregation;
 using Utah.Udot.Atspm.ReportApi.ReportServices;
 using Utah.Udot.ATSPM.Infrastructure.Services.WatchDogServices;
@@ -166,8 +167,8 @@ builder.Host
     s.AddScoped<IReportService<SplitMonitorOptions, IEnumerable<SplitMonitorResult>>, SplitMonitorReportService>();
     s.AddScoped<IReportService<TimeSpaceDiagramOptions, IEnumerable<TimeSpaceDiagramResultForPhase>>, TimeSpaceDiagramReportService>();
     s.AddScoped<IReportService<TimeSpaceDiagramAverageOptions, IEnumerable<TimeSpaceDiagramAverageResult>>, TimeSpaceDiagramAverageReportService>();
-    s.AddScoped<IReportService<TimingAndActuationsOptions, IEnumerable<TimingAndActuationsForPhaseResult>>, TimingAndActuactionReportService>();
     s.AddScoped<IReportService<TransitSignalPriorityOptions, List<TransitSignalPriorityResult>>, TransitSignalPriorityReportService>();
+    s.AddScoped<IReportService<TimingAndActuationsOptions, IEnumerable<TimingAndActuationsForPhaseResult>>, TimingAndActuactionReportService>();
     s.AddScoped<IReportService<TurningMovementCountsOptions, TurningMovementCountsResult>, TurningMovementCountReportService>();
     s.AddScoped<IReportService<YellowRedActivationsOptions, IEnumerable<YellowRedActivationsResult>>, YellowRedActivationsReportService>();
     s.AddScoped<IReportService<WaitTimeOptions, IEnumerable<WaitTimeResult>>, WaitTimeReportService>();

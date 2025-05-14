@@ -1581,34 +1581,27 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
                         new
                         {
                             Id = 116,
-                            MeasureTypeId = 37,
-                            Option = "combineLanes",
-                            Value = "FALSE"
-                        },
-                        new
-                        {
-                            Id = 117,
                             MeasureTypeId = 2,
                             Option = "yAxisDefault",
                             Value = "100"
                         },
                         new
                         {
-                            Id = 118,
+                            Id = 117,
                             MeasureTypeId = 6,
                             Option = "yAxisDefault",
                             Value = "150"
                         },
                         new
                         {
-                            Id = 119,
+                            Id = 118,
                             MeasureTypeId = 3,
                             Option = "yAxisDefault",
                             Value = "180"
                         },
                         new
                         {
-                            Id = 120,
+                            Id = 119,
                             MeasureTypeId = 11,
                             Option = "yAxisDefault",
                             Value = "20"
@@ -1623,7 +1616,7 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("Created")
+                    b.Property<DateTime?>("Created")
                         .HasColumnType("timestamp");
 
                     b.Property<string>("CreatedBy")
@@ -1633,7 +1626,7 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
                     b.Property<int>("MeasureTypeId")
                         .HasColumnType("integer");
 
-                    b.Property<DateTime>("Modified")
+                    b.Property<DateTime?>("Modified")
                         .HasColumnType("timestamp");
 
                     b.Property<string>("ModifiedBy")
@@ -2021,15 +2014,6 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
                             Name = "Ramp Metering",
                             ShowOnAggregationSite = false,
                             ShowOnWebsite = true
-                        },
-                        new
-                        {
-                            Id = 38,
-                            Abbreviation = "TSP",
-                            DisplayOrder = 132,
-                            Name = "Transit Signal Priority",
-                            ShowOnAggregationSite = false,
-                            ShowOnWebsite = false
                         });
                 });
 
@@ -2407,7 +2391,7 @@ namespace Utah.Udot.ATSPM.PostgreSQLDatabaseProvider.Migrations
                     b.Property<DateTime>("Date")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp")
-                        .HasDefaultValue(new DateTime(2025, 3, 27, 11, 41, 43, 790, DateTimeKind.Local).AddTicks(6193));
+                        .HasDefaultValue(new DateTime(2025, 4, 3, 12, 11, 1, 914, DateTimeKind.Local).AddTicks(4508));
 
                     b.Property<DateTime?>("Modified")
                         .HasColumnType("timestamp");

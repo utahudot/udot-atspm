@@ -69,6 +69,7 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
             return GetNavigationProperty<IEnumerable<DetectionType>>(key);
         }
 
+
         #endregion
 
         #region Actions
