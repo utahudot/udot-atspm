@@ -23,14 +23,32 @@ namespace Utah.Udot.Atspm.Extensions
     public static class IEnumerableExtensions
     {
         /// <summary>
-        /// Checks to see if <paramref name="enumerable"/> is null or empty
+        /// Checks to see if <paramref name="source"/> is null or empty
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="enumerable"></param>
+        /// <param name="source"></param>
         /// <returns></returns>
-        public static bool IsNullOrEmpty<T>(this IEnumerable<T> enumerable)
+        public static bool IsNullOrEmpty<T>(this IEnumerable<T> source)
         {
-            return enumerable == null || !enumerable.Any();
+            return source == null || !source.Any();
+        }
+
+        /// <summary>
+        /// Splits the elements of a sequence into batches of a specified size.
+        /// </summary>
+        /// <typeparam name="T">The type of elements in the source sequence.</typeparam>
+        /// <param name="source">The source sequence to split into batches.</param>
+        /// <param name="batchSize">The maximum number of elements in each batch.</param>
+        /// <returns>An <see cref="IEnumerable{T}"/> of batches, where each batch is an <see cref="IEnumerable{T}"/> containing up to <paramref name="batchSize"/> elements.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        public static IEnumerable<IEnumerable<T>> Batch<T>(this IEnumerable<T> source, int batchSize)
+        {
+            if (batchSize <= 0) ArgumentOutOfRangeException.ThrowIfNegativeOrZero(batchSize, nameof(batchSize));
+
+            return source
+                .Select((item, index) => new { item, index })
+                .GroupBy(x => x.index / batchSize)
+                .Select(group => group.Select(x => x.item));
         }
     }
 }
