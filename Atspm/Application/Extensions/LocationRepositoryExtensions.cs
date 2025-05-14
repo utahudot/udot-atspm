@@ -15,11 +15,11 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.EntityFrameworkCore;
 using Utah.Udot.Atspm.Business.Watchdog;
 using Utah.Udot.Atspm.Data.Enums;
 using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
 using Utah.Udot.Atspm.Specifications;
+using Utah.Udot.Atspm.ValueObjects;
 using Utah.Udot.NetStandardToolkit.Extensions;
 
 namespace Utah.Udot.Atspm.Extensions
@@ -34,11 +34,11 @@ namespace Utah.Udot.Atspm.Extensions
         /// and archives old version
         /// </summary>
         /// <param name="repo"></param>
-        /// <param name="id">Location version to copy</param>
+        /// <param name="locationId">Location version to copy</param>
         /// <returns>New version of copied <see cref="Location"/></returns>
-        public static async Task<Location> CopyLocationToNewVersion(this ILocationRepository repo, int id)
+        public static async Task<Location> CopyLocationToNewVersion(this ILocationRepository repo, int locationId)
         {
-            var sourceLocation = repo.GetVersionByIdDetached(id);
+            var sourceLocation = repo.GetVersionByIdDetached(locationId);
             if (sourceLocation != null)
             {
                 var newVersion = (Location)sourceLocation.Clone();
@@ -61,20 +61,21 @@ namespace Utah.Udot.Atspm.Extensions
                         detector.Id = 0;
                     }
                 }
-                foreach (var device in newVersion.Devices)
-                {
-                    device.Id = 0;
-                }
+
+                newVersion.Devices = null;
 
                 await repo.AddAsync(newVersion);
+
+
 
                 return newVersion;
             }
             else
             {
-                throw new ArgumentException($"{id} is not a valid Location");
+                throw new ArgumentException($"{locationId} is not a valid Location");
             }
         }
+
 
         /// <summary>
         /// Marks <see cref="Location.VersionAction"/> to deleted
@@ -119,24 +120,6 @@ namespace Utah.Udot.Atspm.Extensions
                     Count = g.Count()
                 })
                 .ToList();
-            return result;
-        }
-
-
-        public static IEnumerable<Location> GetVersionOfLocations(this ILocationRepository repo, List<string> locationIdentifiers, DateTime date)
-        {
-            var result = repo.GetList()
-                .Include(s => s.Approaches)
-                    .ThenInclude(a => a.DirectionType)
-                .Include(s => s.Approaches)
-                    .ThenInclude(a => a.Detectors)
-                        .ThenInclude(d => d.DetectionTypes)
-                .Where(Location =>locationIdentifiers.Contains(Location.LocationIdentifier) && Location.Start <= date)
-                .FromSpecification(new ActiveLocationSpecification())
-                .GroupBy(r => r.LocationIdentifier)
-                .Select(g => g.OrderByDescending(r => r.Start).FirstOrDefault())
-                .ToList();
-
             return result;
         }
 

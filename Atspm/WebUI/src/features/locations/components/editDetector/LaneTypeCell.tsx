@@ -63,11 +63,17 @@ export const laneTypeOptions = [
 interface LaneTypeCellProps {
   value: string
   onUpdate: (value: string) => void
+  width?: number | string
 }
 
-function LaneTypeCell({ value, onUpdate }: LaneTypeCellProps) {
+function LaneTypeCell({ value, onUpdate, width }: LaneTypeCellProps) {
   return (
-    <DropdownCell options={laneTypeOptions} value={value} onUpdate={onUpdate} />
+    <DropdownCell
+      options={laneTypeOptions}
+      value={value}
+      onUpdate={onUpdate}
+      width={width}
+    />
   )
 }
 

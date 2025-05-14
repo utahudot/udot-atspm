@@ -23,6 +23,7 @@ namespace DatabaseInstaller.Commands
         public Option<string> SourceTableOption { get; set; } = new("--source-table", "String for the source SQL table");
         public Option<DateTime> StartOption { get; set; } = new("--start", "Start date");
         public Option<DateTime> EndOption { get; set; } = new("--end", "End date");
+        public Option<string> DataTypeOption { get; set; } = new("--data-type", "Type of data to import") { IsRequired = false };
         public Option<int?> DeviceOption { get; set; } = new("--device", "Id of Device Type used to import events for just that device type") { IsRequired = false };
         public Option<int?> BatchOption { get; set; } = new("--batch", "Size of batches for importing event logs") { IsRequired = false };
 
@@ -35,6 +36,7 @@ namespace DatabaseInstaller.Commands
             binder.BindMemberFromValue(b => b.End, EndOption);
             binder.BindMemberFromValue(b => b.Device, DeviceOption);
             binder.BindMemberFromValue(b => b.Batch, BatchOption);
+            binder.BindMemberFromValue(b => b.DataType, DataTypeOption);
 
             return binder;
         }
@@ -53,6 +55,7 @@ namespace DatabaseInstaller.Commands
         public string SourceTable { get; set; }
         public DateTime Start { get; set; }
         public DateTime End { get; set; }
+        public string DataType { get; set; } = "IndianaEvent";
         public int? Device { get; set; }
         public int? Batch { get; set; }
     }

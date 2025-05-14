@@ -55,21 +55,21 @@ namespace Utah.Udot.Atspm.ConfigApi.Controllers
 
         /// <inheritdoc/>
         [Authorize(Policy = "CanEditGeneralConfigurations")]
-        public override Task<IActionResult> Post(T item)
+        public override Task<IActionResult> Post([FromBody] T item)
         {
             return base.Post(item);
         }
 
         /// <inheritdoc/>
         [Authorize(Policy = "CanEditGeneralConfigurations")]
-        public override Task<IActionResult> Put(TKey key, T item)
+        public override Task<IActionResult> Put(TKey key, [FromBody] T item)
         {
             return base.Put(key, item);
         }
 
         /// <inheritdoc/>
         [Authorize(Policy = "CanEditGeneralConfigurations")]
-        public override Task<IActionResult> Patch(TKey key, Delta<T> item)
+        public override Task<IActionResult> Patch(TKey key, [FromBody] Delta<T> item)
         {
             return base.Patch(key, item);
         }

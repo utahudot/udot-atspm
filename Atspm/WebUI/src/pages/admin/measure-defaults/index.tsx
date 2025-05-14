@@ -77,7 +77,8 @@ const MeasureDefaults = () => {
             <Divider />
             <AccordionDetails>
               {/* The Timing and Actuation should not have any defaults */}
-              {type === ChartType.TimingAndActuation ? (
+              {type === ChartType.TimingAndActuation ||
+              type == ChartType.PreemptionDetails ? (
                 <Box
                   key={type}
                   sx={{

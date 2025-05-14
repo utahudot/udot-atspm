@@ -6,7 +6,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 // 
-// http://www.apache.org/licenses/LICENSE-2.
+//      http://www.apache.org/licenses/LICENSE-2.0
 // 
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,13 +15,18 @@
 // limitations under the License.
 #endregion
 
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using DatabaseInstaller.Commands;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System.Collections.Concurrent;
 using Utah.Udot.Atspm.Data;
 using Utah.Udot.Atspm.Data.Models;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
@@ -50,26 +55,27 @@ namespace DatabaseInstaller.Services
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-
             for (var date = _config.Start; date <= _config.End; date = date.AddDays(1))
             {
-                var locations = _locationRepository
-                .GetLatestVersionOfAllLocations(date)
-                .Where(l => l.Approaches
-                    .SelectMany(a => a.Detectors)
-                    .SelectMany(d => d.DetectionTypes)
-                    .Any(dt => (int)dt.Id == 3)
-                    && l.VersionAction != Utah.Udot.Atspm.Data.Enums.LocationVersionActions.Delete)
-                .ToList();
-
-                try
+                for (int hour = 0; hour < 24; hour++)
                 {
+                    var periodStart = new DateTime(DateOnly.FromDateTime(date), new TimeOnly(hour, 0));
+                    var periodEnd = periodStart.AddHours(1);
+
+                    _logger.LogInformation(
+                        $"Processing speed events from {periodStart:yyyy-MM-dd HH:mm} to {periodEnd:HH:mm}");
+
+                    var locations = _locationRepository
+                        .GetLatestVersionOfAllLocations(periodStart)
+                        .Where(loc => loc.Devices.Any(d => d.DeviceType == Utah.Udot.Atspm.Data.Enums.DeviceTypes.SpeedSensor))
+                        .ToList();
+
                     var archiveLogs = new ConcurrentBag<CompressedEventLogs<SpeedEvent>>();
 
-                    // Process locations in batches of 10
-                    var locationBatches = locations.Select((location, index) => new { location, index })
-                                                   .GroupBy(x => x.index / 10)
-                                                   .Select(g => g.Select(x => x.location).ToList());
+                    var locationBatches = locations
+                        .Select((location, index) => new { location, index })
+                        .GroupBy(x => x.index / 10)
+                        .Select(g => g.Select(x => x.location).ToList());
 
                     foreach (var batch in locationBatches)
                     {
@@ -84,21 +90,28 @@ namespace DatabaseInstaller.Services
                                 {
                                     try
                                     {
-                                        await ProcessLocationAsync(DateOnly.FromDateTime(date), location, archiveLogs, cancellationToken);
-                                        break; // Break out of the retry loop on success
+                                        await ProcessLocationAsync(
+                                            periodStart,
+                                            periodEnd,
+                                            location,
+                                            archiveLogs,
+                                            cancellationToken);
+                                        break;
                                     }
                                     catch (Exception ex) when (attempt < retryCount)
                                     {
-                                        _logger.LogInformation($"Attempt {attempt} failed for location {location}. Retrying...");
-                                        await Task.Delay(TimeSpan.FromSeconds(30)); // Wait before retrying
+                                        _logger.LogWarning(
+                                            $"Attempt {attempt} failed for {location.LocationIdentifier}: {ex.Message}. Retrying...");
+                                        await Task.Delay(TimeSpan.FromSeconds(30), cancellationToken);
                                     }
                                     catch (Exception ex)
                                     {
-                                        _logger.LogInformation($"Failed to process location {location} after {retryCount} attempts: {ex.Message}");
-                                        break; // Exit the loop on a permanent failure
+                                        _logger.LogError(
+                                            $"Failed after {retryCount} attempts for {location.LocationIdentifier}: {ex.Message}");
+                                        break;
                                     }
                                 }
-                            }));
+                            }, cancellationToken));
                         }
 
                         await Task.WhenAll(tasks);
@@ -109,196 +122,148 @@ namespace DatabaseInstaller.Services
                         }
                     }
 
-                    // Final flush after processing all batches
                     if (archiveLogs.Any())
                     {
                         await FlushLogsAsync(archiveLogs);
                     }
                 }
-                catch (Exception ex)
-                {
-                    _logger.LogError($"Error inserting data: {ex.Message}");
-                }
             }
 
-            _logger.LogInformation("Execution completed.");
+            _logger.LogInformation("Hourly transfer completed.");
         }
 
         private async Task ProcessLocationAsync(
-            DateOnly date,
+            DateTime startUtc,
+            DateTime endUtc,
             Location location,
             ConcurrentBag<CompressedEventLogs<SpeedEvent>> archiveLogs,
             CancellationToken cancellationToken)
         {
-            await GetLogsAsync(date, _config.Source, archiveLogs, location, cancellationToken);
+            await GetLogsAsync(
+                startUtc,
+                endUtc,
+                _config.Source,
+                archiveLogs,
+                location,
+                cancellationToken);
         }
 
         private async Task FlushLogsAsync(ConcurrentBag<CompressedEventLogs<SpeedEvent>> archiveLogs)
         {
-            var logsToInsert = new List<CompressedEventLogs<SpeedEvent>>();
-            while (archiveLogs.TryTake(out var log))
+            var toInsert = new List<CompressedEventLogs<SpeedEvent>>();
+            while (archiveLogs.TryTake(out var item))
             {
-                logsToInsert.Add(log);
+                toInsert.Add(item);
             }
 
-            await InsertLogsAsync(logsToInsert);
-        }
-
-        private async Task InsertLogsAsync(List<CompressedEventLogs<SpeedEvent>> archiveLogs)
-        {
-            _logger.LogInformation($"Inserting {archiveLogs.Count} archive logs");
-            const int maxRetryCount = 3; // Number of retries
-            int delay = 500; // Initial delay in milliseconds
-
-            for (int retry = 0; retry <= maxRetryCount; retry++)
+            try
             {
-                try
+                using var scope = _serviceProvider.CreateScope();
+                var context = scope.ServiceProvider.GetService<EventLogContext>();
+                if (context != null)
                 {
-                    using (var scope = _serviceProvider.CreateScope())
-                    {
-                        var context = scope.ServiceProvider.GetService<EventLogContext>();
-
-                        if (context != null)
-                        {
-                            foreach (var archiveLog in archiveLogs)
-                            {
-                                context.CompressedEvents.Add(archiveLog);
-                            }
-
-                            await context.SaveChangesAsync(); // Ensure this is awaited
-                        }
-                    }
-
-                    // Exit the loop if successful
+                    context.CompressedEvents.AddRange(toInsert);
+                    await context.SaveChangesAsync();
+                    _logger.LogInformation($"Flushed {toInsert.Count} compressed event logs.");
                     return;
                 }
-                catch (Exception ex) when (retry < maxRetryCount)
-                {
-                    _logger.LogWarning($"InsertLogsAsync failed (attempt {retry + 1} of {maxRetryCount + 1}). Retrying in {delay}ms. Error: {ex.Message}");
-
-                    await Task.Delay(delay);
-                    delay *= 2; // Double the delay for the next retry
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError($"InsertLogsAsync failed after {maxRetryCount + 1} attempts. Switching to individual log insertion. Error: {ex.Message}");
-                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Bulk flush failed: {ex.Message}. Falling back to individual inserts.");
             }
 
-            // Fallback: Insert logs one by one
             using (var scope = _serviceProvider.CreateScope())
             {
                 var context = scope.ServiceProvider.GetService<EventLogContext>();
-
                 if (context != null)
                 {
-                    foreach (var archiveLog in archiveLogs)
+                    foreach (var log in toInsert)
                     {
                         try
                         {
-                            context.CompressedEvents.Add(archiveLog);
+                            context.CompressedEvents.Add(log);
                             await context.SaveChangesAsync();
                         }
                         catch (Exception ex)
                         {
-                            _logger.LogError($"Failed to insert individual archive log (Location: {archiveLog.LocationIdentifier}, Date: {archiveLog.ArchiveDate}). Error: {ex.Message}");
+                            _logger.LogError($"Failed to insert single log for {log.LocationIdentifier} between {log.Start:HH:mm} and {log.End:HH:mm}: {ex.Message}");
                         }
                     }
                 }
             }
         }
 
-
-
         private async Task GetLogsAsync(
-            DateOnly dateToRetrieve,
+            DateTime startUtc,
+            DateTime endUtc,
             string sourceConnectionString,
             ConcurrentBag<CompressedEventLogs<SpeedEvent>> archiveLogs,
             Location location,
             CancellationToken cancellationToken)
         {
-            var locationIdentifier = location.LocationIdentifier;
-            string selectQuery = $"Select DISTINCT [DetectorID],[MPH],[KPH],[timestamp] FROM [MOE].[dbo].[Speed_Events] Where timestamp between '{dateToRetrieve}' and '{dateToRetrieve.AddDays(1)}' and DetectorID like '{location.LocationIdentifier}%'";
+            var query = @"
+                SELECT DISTINCT DetectorID, MPH, KPH, Timestamp
+                  FROM MOE.dbo.Speed_Events
+                 WHERE Timestamp >= @startUtc
+                   AND Timestamp <  @endUtc
+                   AND DetectorID LIKE @detectorPrefix";
 
-            using (var connection = new SqlConnection(sourceConnectionString))
+            var eventLogs = new List<SpeedEvent>();
+
+            using (var conn = new SqlConnection(sourceConnectionString))
             {
-                try
+                await conn.OpenAsync(cancellationToken);
+                using var cmd = new SqlCommand(query, conn);
+                cmd.Parameters.AddWithValue("@startUtc", startUtc);
+                cmd.Parameters.AddWithValue("@endUtc", endUtc);
+                cmd.Parameters.AddWithValue("@detectorPrefix", location.LocationIdentifier + "%");
+                cmd.CommandTimeout = 120;
+
+                using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
+                while (await reader.ReadAsync(cancellationToken))
                 {
-                    await connection.OpenAsync(cancellationToken);
+                    eventLogs.Add(new SpeedEvent
+                    {
+                        DetectorId = reader.GetString(reader.GetOrdinal("DetectorID")),
+                        Mph = reader.GetInt32(reader.GetOrdinal("MPH")),
+                        Kph = reader.GetInt32(reader.GetOrdinal("KPH")),
+                        Timestamp = reader.GetDateTime(reader.GetOrdinal("Timestamp"))
+                    });
                 }
-                catch (Exception ex)
+            }
+
+            if (eventLogs.Count > 0)
+            {
+                var device = location.Devices
+                    .FirstOrDefault(d => d.DeviceType == Utah.Udot.Atspm.Data.Enums.DeviceTypes.SpeedSensor);
+
+                if (device != null)
                 {
-                    _logger.LogError($"Error connecting to source database: {ex.Message} for location {location.LocationIdentifier} for {dateToRetrieve}");
-                    return;
-                }
+                    archiveLogs.Add(new CompressedEventLogs<SpeedEvent>
+                    {
+                        LocationIdentifier = location.LocationIdentifier,
+                        DeviceId = device.Id,
+                        Start = startUtc,
+                        End = endUtc,
+                        Data = eventLogs
+                    });
 
-                using (var selectCommand = new SqlCommand(selectQuery, connection))
+                    _logger.LogInformation(
+                        $"Retrieved {eventLogs.Count} events for {location.LocationIdentifier} between {startUtc:HH:mm} and {endUtc:HH:mm}");
+                }
+                else
                 {
-                    var eventLogs = new List<SpeedEvent>();
-                    selectCommand.CommandTimeout = 120;
-
-                    try
-                    {
-                        using (var reader = await selectCommand.ExecuteReaderAsync(cancellationToken))
-                        {
-                            while (await reader.ReadAsync(cancellationToken))
-                            {
-                                try
-                                {
-                                    var speedEvent = new SpeedEvent
-                                    {
-                                        Timestamp = (DateTime)reader["Timestamp"],
-                                        DetectorId = (String)reader["DetectorID"],
-                                        Mph = (int)reader["MPH"],
-                                        Kph = (int)reader["KPH"]
-                                    };
-
-                                    eventLogs.Add(speedEvent);
-                                }
-                                catch (Exception ex)
-                                {
-                                    _logger.LogInformation($" Event: {location}-{reader["Timestamp"]} Detector Id:{reader["DetectorID"]} MPH:{reader["MPH"]} KPH:{reader["KPH"]} Error reading record: {ex.Message}");
-                                }
-                            }
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError($"Error reading records: {ex.Message} for location {location.LocationIdentifier} for {dateToRetrieve}");
-                    }
-
-                    if (eventLogs.Count > 0)
-                    {
-                        var device = location.Devices.FirstOrDefault(d => d.DeviceType == Utah.Udot.Atspm.Data.Enums.DeviceTypes.SpeedSensor);
-                        if (device != null)
-                        {
-                            var archiveLog = new CompressedEventLogs<SpeedEvent>
-                            {
-                                LocationIdentifier = location.LocationIdentifier,
-                                DeviceId = device.Id,
-                                ArchiveDate = dateToRetrieve,
-                                Data = eventLogs
-                            };
-
-                            archiveLogs.Add(archiveLog);
-                            _logger.LogInformation($"{eventLogs.Count} Speed logs retrieved {location.LocationIdentifier} on {dateToRetrieve}");
-                        }
-                        else
-                        {
-                            _logger.LogWarning($"No speed device found for signal {location.LocationIdentifier}");
-                        }
-                    }
-                    else
-                    {
-                        _logger.LogWarning($"No speed records found for {location.LocationIdentifier} on {dateToRetrieve}");
-                    }
+                    _logger.LogWarning($"No speed device found for {location.LocationIdentifier}");
                 }
+            }
+            else
+            {
+                _logger.LogWarning(
+                    $"No speed events for {location.LocationIdentifier} between {startUtc:HH:mm} and {endUtc:HH:mm}");
             }
         }
 
         public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
-
-
-
     }
 }

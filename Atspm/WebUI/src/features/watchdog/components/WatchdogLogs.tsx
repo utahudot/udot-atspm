@@ -295,7 +295,7 @@ const WatchDogLogs = () => {
         flex: 1,
         headerAlign: 'center',
         valueGetter: (params) =>
-          addSpaces(issueTypes?.[params.value as number]) ?? '',
+          addSpaces(issueTypes?.[params as number]) ?? '',
       },
       { field: 'phase', headerName: 'Phase', flex: 1, headerAlign: 'center' },
       {
@@ -482,10 +482,6 @@ const WatchDogLogs = () => {
               sx={{
                 '& .MuiDataGrid-row.selected-row': {
                   backgroundColor: 'lightgrey',
-                },
-                [`& .${gridClasses.cell}`]: {
-                  paddingTop: '20px',
-                  paddingBottom: '20px',
                 },
                 [`& .${gridClasses.columnHeaders}`]: {
                   position: 'sticky',

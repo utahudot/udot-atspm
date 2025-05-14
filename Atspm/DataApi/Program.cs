@@ -119,6 +119,7 @@ builder.Host
     s.AddAtspmDbContext(h);
     s.AddAtspmEFEventLogRepositories();
     s.AddAtspmEFAggregationRepositories();
+  
 
     s.AddPathBaseFilter(h);
 

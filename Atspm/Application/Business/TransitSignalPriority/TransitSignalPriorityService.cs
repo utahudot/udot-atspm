@@ -15,34 +15,34 @@
 // limitations under the License.
 #endregion
 
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
-using Utah.Udot.Atspm.Business.SplitMonitor;
-using Utah.Udot.Atspm.Data.Models.EventLogModels;
-using Utah.Udot.Atspm.Repositories.EventLogRepositories;
-using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
-using Utah.Udot.Atspm.Business.TransitSignalPriority;
-using Utah.Udot.Atspm.Extensions;
 using Utah.Udot.Atspm.Business.Common;
-using Utah.Udot.Atspm.Business.PhaseTermination;
-using Utah.Udot.Atspm.Analysis.Plans;
-using Utah.Udot.Atspm.Business.GreenTimeUtilization;
+using Utah.Udot.Atspm.Business.TransitSignalPriority;
+using Utah.Udot.Atspm.Data.Models.EventLogModels;
+using Utah.Udot.Atspm.Data.Models.MeasureOptions;
+using Utah.Udot.Atspm.Extensions;
+using Utah.Udot.Atspm.Repositories.ConfigurationRepositories;
+using Utah.Udot.Atspm.Repositories.EventLogRepositories;
 
 namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
 {
     public class TransitSignalPriorityService
     {
         private static readonly short[] EventCodes =
-            (new short[] { 1, 4, 5, 6, 7, 8, 10, 11 })
+            (new short[] { 1, 3, 4, 5, 6, 7, 8, 10, 11 })
             .Concat(Enumerable.Range(130, 20).Select(x => (short)x))
             .ToArray();
 
         private static readonly int _maxDegreeOfParallelism = 5;
+
+
+        private static List<int> _ring1 = new List<int> { 1, 2, 3, 4 };
+        private static List<int> _ring2 = new List<int> { 5, 6, 7, 8 };
+        private static List<int> _ring3 = new List<int> { 9, 10, 11, 12 };
+        private static List<int> _ring4 = new List<int> { 13, 14, 15, 16 };
 
         private readonly IServiceProvider _serviceProvider;
         private readonly PlanService _planService;
@@ -51,7 +51,7 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
 
         // New block that gets all data for a single inputParameters (across multiple dates)
         private readonly TransformBlock<TransitSignalLoadParameters, (TransitSignalLoadParameters, List<IndianaEvent>)?> _loadLocationDataBlock;
-        private readonly TransformBlock<(TransitSignalLoadParameters, List<IndianaEvent>), (TransitSignalLoadParameters, Dictionary<string, List<IndianaEvent>>)> _classifyEventsBlock; 
+        private readonly TransformBlock<(TransitSignalLoadParameters, List<IndianaEvent>), (TransitSignalLoadParameters, Dictionary<string, List<IndianaEvent>>)> _classifyEventsBlock;
         private readonly TransformBlock<(TransitSignalLoadParameters, Dictionary<string, List<IndianaEvent>>), (TransitSignalLoadParameters, List<TransitSignalPriorityCycle>, Dictionary<string, List<IndianaEvent>>)> _processCyclesBlock;
         private readonly TransformBlock<(TransitSignalLoadParameters, List<TransitSignalPriorityCycle>, Dictionary<string, List<IndianaEvent>>), (TransitSignalLoadParameters, List<TransitSignalPriorityPlan>)> _processPlansBlock;
         private readonly TransformBlock<(TransitSignalLoadParameters, List<IndianaEvent>)?, (TransitSignalLoadParameters, List<IndianaEvent>)> _filteringBlock;
@@ -90,7 +90,7 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
                 input => ProcessCycles(input),
                 new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = _maxDegreeOfParallelism }
             );
-            
+
 
             _processPlansBlock = new TransformBlock<(TransitSignalLoadParameters, List<TransitSignalPriorityCycle>, Dictionary<string, List<IndianaEvent>>), (TransitSignalLoadParameters, List<TransitSignalPriorityPlan>)>(
                 input => ProcessPlans(input),
@@ -107,13 +107,11 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
                 new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = _maxDegreeOfParallelism }
             );
 
-        }        
+        }
 
 
         public async Task<List<TransitSignalPriorityResult>> GetChartDataAsync(TransitSignalPriorityOptions options)
         {
-
-
             // Link the blocks, and add a predicate to filteringBlock's output if needed.
             _loadLocationDataBlock.LinkTo(
                 _filteringBlock,
@@ -203,53 +201,58 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
                         && phase.Yellow == 0
                         && phase.RedClearance == 0)
                     {
-                        phase.RecommendedTSPMax = null;
+                        phase.RecommendedTSPMax = 0;
                         phase.Notes = "Phase not in use";
                         continue;
                     }
 
                     if (phase.ProgrammedSplit == 0)
                     {
-                        phase.RecommendedTSPMax = null;
+                        phase.RecommendedTSPMax = 0;
                         phase.Notes = "Programmed split is zero, manually calculate";
                         continue;
                     }
 
-                    phase.SkipsGreaterThan70TSPMax = phase.ProgrammedSplit - phase.MinTime;
-                    phase.ForceOffsLessThan40TSPMax = phase.ProgrammedSplit - ((phase.MinTime + phase.PercentileSplit50th) / 2);
-                    phase.ForceOffsLessThan60TSPMax = phase.ProgrammedSplit - phase.PercentileSplit50th;
-                    phase.ForceOffsLessThan80TSPMax = phase.ProgrammedSplit - phase.PercentileSplit85th;
+                    //phase.SkipsGreaterThan70TSPMax = Math.Round(phase.ProgrammedSplit - phase.MinTime, 1);
+                    //phase.ForceOffsLessThan40TSPMax = Math.Round(phase.ProgrammedSplit - (phase.MinTime + phase.PercentileSplit50th) / 2, 1);
+                    //phase.ForceOffsLessThan60TSPMax = Math.Round(phase.ProgrammedSplit - phase.PercentileSplit50th, 1);
+                    //phase.ForceOffsLessThan80TSPMax = Math.Round(phase.ProgrammedSplit - phase.PercentileSplit85th, 1);
 
-                    if (phase.PercentSkips > 70)
+                    phase.SkipsGreaterThan70TSPMax = Math.Round(phase.ProgrammedSplit - phase.MinTime, 1);
+                    phase.ForceOffsLessThan40TSPMax = Math.Round(phase.ProgrammedSplit - (phase.MinTime + phase.PercentileSplit50th) / 2, 1);
+                    phase.ForceOffsLessThan60TSPMax = Math.Round(phase.ProgrammedSplit - phase.PercentileSplit50th, 1);
+                    phase.ForceOffsLessThan80TSPMax = Math.Round(phase.ProgrammedSplit - phase.PercentileSplit85th, 1);
+
+                    if (phase.IsSkipsGreaterThan70TSPMax)
                     {
-                        phase.RecommendedTSPMax = phase.SkipsGreaterThan70TSPMax;
+                        phase.RecommendedTSPMax = Math.Floor(phase.SkipsGreaterThan70TSPMax);
                         phase.Notes = "Skips greater than 70%";
                     }
-                    else if (phase.PercentMaxOutsForceOffs < 40)
+                    else if (phase.IsForceOffsLessThan40TSPMax)
                     {
-                        phase.RecommendedTSPMax = phase.ForceOffsLessThan40TSPMax;
+                        phase.RecommendedTSPMax = Math.Floor(phase.ForceOffsLessThan40TSPMax);
                         phase.Notes = "Force offs less than 40%";
                     }
-                    else if (phase.PercentMaxOutsForceOffs < 60)
+                    else if (phase.IsForceOffsLessThan60TSPMax)
                     {
-                        phase.RecommendedTSPMax = phase.ForceOffsLessThan60TSPMax;
+                        phase.RecommendedTSPMax = Math.Floor(phase.ForceOffsLessThan60TSPMax);
                         phase.Notes = "Force offs less than 60%";
                     }
-                    else if (phase.PercentMaxOutsForceOffs < 80)
+                    else if (phase.IsForceOffsLessThan80TSPMax)
                     {
-                        phase.RecommendedTSPMax = phase.ForceOffsLessThan80TSPMax;
+                        phase.RecommendedTSPMax = Math.Floor(phase.ForceOffsLessThan80TSPMax);
                         phase.Notes = "Force offs less than 80%";
                     }
                     else
                     {
-                        phase.RecommendedTSPMax = null; // Not recommended
+                        phase.RecommendedTSPMax = 0; // Not recommended
                         phase.Notes = "No recommended TSP Max";
                     }
 
                     // Ensure RecommendedTSPMax is null if it is negative
                     if (phase.RecommendedTSPMax.HasValue && phase.RecommendedTSPMax < 0)
                     {
-                        phase.RecommendedTSPMax = null;
+                        phase.RecommendedTSPMax = 0;
                         phase.Notes = "No recommended TSP Max";
                     }
                 }
@@ -259,11 +262,7 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
         }
 
         public static (TransitSignalLoadParameters, List<TransitSignalPriorityPlan>) CalculateMaxExtension((TransitSignalLoadParameters, List<TransitSignalPriorityPlan>) input)
-        {            
-            var ring1 = new List<int> { 1, 2, 3, 4 };
-            var ring2 = new List<int> { 5, 6, 7, 8 };
-            var ring3 = new List<int> { 9, 10, 11, 12 };
-            var ring4 = new List<int> { 13, 14, 15, 16 };
+        {
             var (parameters, plans) = input;
 
             foreach (var plan in plans)
@@ -283,44 +282,202 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
 
                         )
                     {
-                        phase.MaxReduction = 0; 
-                        phase.MaxExtension = 0; 
-                        phase.PriorityMin = 0; 
+                        phase.MaxReduction = 0;
+                        phase.MaxExtension = 0;
+                        phase.PriorityMin = 0;
                         phase.PriorityMax = 0;
                         continue;
                     }
-                    if(parameters.LocationPhases.DesignatedPhases.Contains(phase.PhaseNumber) && phase.PhaseNumber >=1 && phase.PhaseNumber <=16)
+                    //Max extension is only on designated phases, and will not have a max reduction
+                    //Max extension is based of the max reduction of the other phases in the ring
+                    //Max reduction is on non designated phases, and will not have a max extension
+                    //TSP Max is only for non designated phases and is the max reductions
+                    //Max extension is the sum of the max reductions of the other phases in the ring
+                    //then compare ring 1 and 2 and take the lower value
+
+                    //pri min and max should use max extension not tsp max
+                    if (phase.PhaseNumber >= 1 && phase.PhaseNumber <= 16)
                     {
-                        //Sum of the non designated phase TSP Max for ring assume 16 phases 4 rings
-                        if (parameters.LocationPhases.DesignatedPhases.Contains(phase.PhaseNumber))
-                        {
-                            List<int> nonDesignatedPhases = phase.PhaseNumber switch
-                            {
-                                >= 1 and <= 4 => ring1.Except(parameters.LocationPhases.DesignatedPhases).ToList(),
-                                >= 5 and <= 8 => ring2.Except(parameters.LocationPhases.DesignatedPhases).ToList(),
-                                >= 9 and <= 12 => ring3.Except(parameters.LocationPhases.DesignatedPhases).ToList(),
-                                >= 13 and <= 16 => ring4.Except(parameters.LocationPhases.DesignatedPhases).ToList(),
-                                _ => new List<int>()
-                            };
+                        var ring = GetRingForPhase(phase.PhaseNumber);
+                        var otherDesignatedPhasesInRing = ring.Intersect(parameters.LocationPhases.DesignatedPhases.Where(p => p != phase.PhaseNumber)?.ToList());
 
-                            phase.MaxExtension = plan.Phases
-                                .Where(p => nonDesignatedPhases.Contains(p.PhaseNumber))
-                                .Sum(p => p.RecommendedTSPMax.HasValue ? Convert.ToInt32(Math.Round(p.RecommendedTSPMax.Value)) : 0);
-                        }
-                        else
+                        //1. Set Max reduction for non designated phases to TSP Max
+                        if (!parameters.LocationPhases.DesignatedPhases.Contains(phase.PhaseNumber) || (parameters.LocationPhases.DesignatedPhases.Contains(phase.PhaseNumber) && otherDesignatedPhasesInRing != null))
                         {
-                            phase.MaxExtension = 0;
+                            phase.MaxReduction = phase.RecommendedTSPMax.HasValue ? Convert.ToInt32(Math.Round(phase.RecommendedTSPMax.Value)) : 0;
                         }
-
                     }
-                    phase.MaxReduction = phase.RecommendedTSPMax.HasValue?Convert.ToInt32(Math.Round(phase.RecommendedTSPMax.Value)):0; //TSP MAX
-                    phase.PriorityMin = phase.ProgrammedSplit>0?Convert.ToInt32(Math.Round(phase.ProgrammedSplit-(phase.RecommendedTSPMax.HasValue?phase.RecommendedTSPMax.Value:0d))):0; // Program split minus tsp max
-                    phase.PriorityMax = phase.ProgrammedSplit > 0 ? Convert.ToInt32(Math.Round(phase.ProgrammedSplit + (phase.RecommendedTSPMax.HasValue ? phase.RecommendedTSPMax.Value : 0d))) : 0; // Program split minus tsp max; //Program split plus the max extension
                 }
+
+
+                //2. Using ring 1 to 2, and 3 to 4 determine which has the lower summed max reduction and set that as the max extension for the designated phase
+                List<int> ring1DesignatedPhases = GetDesignatedPhasesInRing(_ring1, parameters.LocationPhases.DesignatedPhases);
+                var ring1MaxReductionScenarios = new Dictionary<int, int>();
+                foreach (var ringPhase in ring1DesignatedPhases)
+                {
+                    var nonDesignatedPhasesInRing = _ring1.Except(parameters.LocationPhases.DesignatedPhases).ToList();
+                    var ring1PhaseMaxReduction = plan.Phases
+                        .Where(p => nonDesignatedPhasesInRing.Contains(p.PhaseNumber))
+                        .Sum(p => p.MaxReduction);
+                    ring1MaxReductionScenarios.Add(ringPhase, ring1PhaseMaxReduction);
+                }
+
+
+                List<int> ring2DesignatedPhases = GetDesignatedPhasesInRing(_ring2, parameters.LocationPhases.DesignatedPhases);
+                var ring2MaxReductionScenarios = new Dictionary<int, int>();
+                foreach (var ringPhase in ring2DesignatedPhases)
+                {
+                    var nonDesignatedPhasesInRing = _ring2.Except(parameters.LocationPhases.DesignatedPhases).ToList();
+                    var ring2PhaseMaxReduction = plan.Phases
+                        .Where(p => nonDesignatedPhasesInRing.Contains(p.PhaseNumber))
+                        .Sum(p => p.MaxReduction);
+                    ring2MaxReductionScenarios.Add(ringPhase, ring2PhaseMaxReduction);
+                }
+
+
+                List<int> ring3DesignatedPhases = GetDesignatedPhasesInRing(_ring3, parameters.LocationPhases.DesignatedPhases);
+                var ring3MaxReductionScenarios = new Dictionary<int, int>();
+                foreach (var ringPhase in ring3DesignatedPhases)
+                {
+                    var nonDesignatedPhasesInRing = _ring3.Except(parameters.LocationPhases.DesignatedPhases).ToList();
+                    var ring3PhaseMaxReduction = plan.Phases
+                        .Where(p => nonDesignatedPhasesInRing.Contains(p.PhaseNumber))
+                        .Sum(p => p.MaxReduction);
+                    ring3MaxReductionScenarios.Add(ringPhase, ring3PhaseMaxReduction);
+                }
+
+
+                List<int> ring4DesignatedPhases = GetDesignatedPhasesInRing(_ring4, parameters.LocationPhases.DesignatedPhases);
+                var ring4MaxReductionScenarios = new Dictionary<int, int>();
+                foreach (var ringPhase in ring4DesignatedPhases)
+                {
+                    var nonDesignatedPhasesInRing = _ring4.Except(parameters.LocationPhases.DesignatedPhases).ToList();
+                    var ring4PhaseMaxReduction = plan.Phases
+                        .Where(p => nonDesignatedPhasesInRing.Contains(p.PhaseNumber))
+                        .Sum(p => p.MaxReduction);
+                    ring4MaxReductionScenarios.Add(ringPhase, ring4PhaseMaxReduction);
+                }
+
+
+                //Loop through each designated phase, determine the ring,
+                //if the ring is 1 or 2 set the max extension to lower of ring 1 or 2,
+                //if the ring is 3 or 4 set the max extension to the lower of ring 3 or 4
+
+
+
+                foreach (var phase in plan.Phases)
+                {
+                    if (parameters.LocationPhases.DesignatedPhases.Contains(phase.PhaseNumber))
+                    {
+                        if (phase.PhaseNumber >= 1 && phase.PhaseNumber <= 4)
+                        {
+                            //This only really works if they have designated match phases in ring 1 and 2 ie 2,6 or 4,8
+                            phase.MaxExtension = Math.Min(ring1MaxReductionScenarios[phase.PhaseNumber], GetMatchingPhase(phase.PhaseNumber) == 0 ? ring1MaxReductionScenarios[phase.PhaseNumber] : ring2MaxReductionScenarios[GetMatchingPhase(phase.PhaseNumber)]);
+                        }
+                        else if (phase.PhaseNumber >= 5 && phase.PhaseNumber <= 8)
+                        {
+                            phase.MaxExtension = Math.Min(ring2MaxReductionScenarios[phase.PhaseNumber], GetMatchingPhase(phase.PhaseNumber) == 0 ? ring2MaxReductionScenarios[phase.PhaseNumber] : ring1MaxReductionScenarios[GetMatchingPhase(phase.PhaseNumber)]);
+                        }
+                        else if (phase.PhaseNumber >= 9 && phase.PhaseNumber <= 12)
+                        {
+                            phase.MaxExtension = Math.Min(ring3MaxReductionScenarios[phase.PhaseNumber], GetMatchingPhase(phase.PhaseNumber) == 0 ? ring3MaxReductionScenarios[phase.PhaseNumber] : ring4MaxReductionScenarios[GetMatchingPhase(phase.PhaseNumber)]);
+                        }
+                        else if (phase.PhaseNumber >= 13 && phase.PhaseNumber <= 16)
+                        {
+                            phase.MaxExtension = Math.Min(ring4MaxReductionScenarios[phase.PhaseNumber], GetMatchingPhase(phase.PhaseNumber) == 0 ? ring4MaxReductionScenarios[phase.PhaseNumber] : ring3MaxReductionScenarios[GetMatchingPhase(phase.PhaseNumber)]);
+                        }
+                    }
+                }
+
+                //3. Set the priority min and max to the programmed split +/- the max extension
+                foreach (var phase in plan.Phases)
+                {
+                    phase.PriorityMin = Convert.ToInt32(Math.Round(phase.ProgrammedSplit)) - phase.MaxReduction;
+                    phase.PriorityMax = Convert.ToInt32(Math.Round(phase.ProgrammedSplit)) + phase.MaxExtension;
+                }
+
             }
 
+            //these need to move to after all max reductions and max extensions are calculated
+            //should use max reduction
+            //phase.PriorityMin = phase.ProgrammedSplit > 0 ? Convert.ToInt32(Math.Round(phase.ProgrammedSplit - phase.MaxReduction)) : 0; // Program split minus tsp max
+            //                                                                                                                             //should use max extension
+            //phase.PriorityMax = phase.ProgrammedSplit > 0 ? Convert.ToInt32(Math.Round(phase.ProgrammedSplit + phase.MaxExtension)) : 0; // Program split minus tsp max; //Program split plus the max extension
+
+            //phase.MaxReduction = phase.RecommendedTSPMax.HasValue ? Convert.ToInt32(Math.Round(phase.RecommendedTSPMax.Value)) : 0; //TSP MAX
+            //phase.PriorityMin = phase.ProgrammedSplit > 0 ? Convert.ToInt32(Math.Round(phase.ProgrammedSplit)) : 0; // Program split minus tsp max
+            //phase.PriorityMax = phase.ProgrammedSplit > 0 ? Convert.ToInt32(Math.Round(phase.ProgrammedSplit)) : 0; // Program split minus tsp max; //Program split plus the max extension
+
+
+
+
             return (parameters, plans);
-            
+
+        }
+
+        private static int GetMatchingPhase(int phaseNumber)
+        {
+            return phaseNumber switch
+            {
+                1 => 5,
+                2 => 6,
+                3 => 7,
+                4 => 8,
+                5 => 1,
+                6 => 2,
+                7 => 3,
+                8 => 4,
+                9 => 13,
+                10 => 14,
+                11 => 15,
+                12 => 16,
+                13 => 9,
+                14 => 10,
+                15 => 11,
+                16 => 12,
+                _ => 0,
+            };
+        }
+
+        private static List<int> GetDesignatedPhasesInRing(List<int> ring, List<int> designatedPhases)
+        {
+            //return the matching phases from the ring that are also in designated phases
+            return ring.Intersect(designatedPhases).ToList();
+
+        }
+
+        private static List<int> GetPhasesForMaxReduction(List<int> ring, List<int> designatedPhases)
+        {
+            //check to see if ring has more than one designated phase if so return all phases in the ring
+            if (ring.Intersect(designatedPhases).Count() > 1)
+            {
+                return ring;
+            }
+            return ring.Except(designatedPhases).ToList();
+        }
+
+        private static List<int> GetNonDesignatedPhasesInRing(List<int> ring1, List<int> ring2, List<int> ring3, List<int> ring4, TransitSignalLoadParameters parameters, TransitSignalPhase phase)
+        {
+            return phase.PhaseNumber switch
+            {
+                >= 1 and <= 4 => ring1.Except(parameters.LocationPhases.DesignatedPhases).ToList(),
+                >= 5 and <= 8 => ring2.Except(parameters.LocationPhases.DesignatedPhases).ToList(),
+                >= 9 and <= 12 => ring3.Except(parameters.LocationPhases.DesignatedPhases).ToList(),
+                >= 13 and <= 16 => ring4.Except(parameters.LocationPhases.DesignatedPhases).ToList(),
+                _ => new List<int>()
+            };
+        }
+
+        private static List<int> GetRingForPhase(int phaseNumber)
+        {
+            return phaseNumber switch
+            {
+                >= 1 and <= 4 => _ring1,
+                >= 5 and <= 8 => _ring2,
+                >= 9 and <= 12 => _ring3,
+                >= 13 and <= 16 => _ring4,
+                _ => new List<int>()
+            };
         }
 
         private (TransitSignalLoadParameters, List<TransitSignalPriorityCycle>, Dictionary<string, List<IndianaEvent>>) ProcessCycles((TransitSignalLoadParameters, Dictionary<string, List<IndianaEvent>>) input)
@@ -328,6 +485,7 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
             var (inputParameters, eventGroups) = input;
             var cycleEvents = eventGroups["cycleEvents"];
             var terminationEvents = eventGroups["terminationEvents"];
+            var minGreenEvents = eventGroups["minGreenEvents"];
             var phases = cycleEvents.Select(c => c.EventParam).Distinct();
             var cycles = new List<TransitSignalPriorityCycle>();
 
@@ -338,7 +496,8 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
                     cycles.AddRange(_cycleService.GetTransitSignalPriorityCycles(
                         phase,
                         cycleEvents.Where(e => e.EventParam == phase).ToList(),
-                        terminationEvents.Where(e => e.EventParam == phase).ToList()
+                        terminationEvents.Where(e => e.EventParam == phase).ToList(),
+                        minGreenEvents.Where(e => e.EventParam == phase).ToList()
                     ));
                 }
             }
@@ -353,17 +512,23 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
             var (inputParameters, cycles, eventGroups) = input;
             var planEvents = eventGroups["planEvents"];
             var splitsEvents = eventGroups["splitsEvents"];
-            if(planEvents.Count == 0)
+            if (planEvents.Count == 0)
             {
                 return (inputParameters, new List<TransitSignalPriorityPlan>());
             }
             var firstPlanEvent = planEvents.Min(p => p.Timestamp);
             var firstDate = inputParameters.Dates.OrderBy(d => d).First();
+            firstDate = firstPlanEvent < firstDate ? firstPlanEvent : firstDate;
+            var endDate = inputParameters.Dates.OrderBy(d => d).Last();
+            if (firstDate == endDate)
+            {
+                endDate = endDate.AddDays(1);
+            }
 
             var plans = GetTransitSignalPriorityPlans(
-                firstPlanEvent < firstDate ? firstPlanEvent : firstDate,
-                inputParameters.Dates.OrderBy(d => d).Last(),
-                inputParameters.LocationPhases.LocationIdentifier,
+                firstDate,
+                endDate,
+                inputParameters.LocationPhases,
                 planEvents,
                 splitsEvents,
                 cycles
@@ -380,6 +545,7 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
                         { "planEvents", new List<IndianaEvent>() },
                         { "cycleEvents", new List<IndianaEvent>() },
                         { "splitsEvents", new List<IndianaEvent>() },
+                        { "minGreenEvents", new List<IndianaEvent>() },
                         { "terminationEvents", new List<IndianaEvent>() }
                     };
 
@@ -390,6 +556,9 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
 
                     if (new List<short> { 1, 8, 10, 11 }.Contains(ev.EventCode))
                         categorizedEvents["cycleEvents"].Add(ev);
+
+                    if (new List<short> { 3 }.Contains(ev.EventCode))
+                        categorizedEvents["minGreenEvents"].Add(ev);
 
                     if (Enumerable.Range(130, 20).Contains(ev.EventCode))
                         categorizedEvents["splitsEvents"].Add(ev);
@@ -441,6 +610,10 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
                         _logger.LogWarning($"Location not found for {input.LocationPhases} on {input.Dates.First()}");
                         return null;
                     }
+                    else
+                    {
+                        input.LocationPhases.ControllerManufacturer = input.Location.Devices.Where(d => d.DeviceType == Data.Enums.DeviceTypes.SignalController)?.FirstOrDefault()?.DeviceConfiguration.Product.Manufacturer;
+                    }
 
                     _logger.LogInformation($"Location found: {input.LocationPhases}");
 
@@ -463,8 +636,8 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
             using (var scope = _serviceProvider.CreateScope())
             {
                 var locationRepository = scope.ServiceProvider.GetRequiredService<ILocationRepository>();
-                return locationRepository.GetLatestVersionOfLocation(locationIdentifier, date);
-            }            
+                return locationRepository.GetLatestVersionOfLocationWithDevice(locationIdentifier, date);
+            }
         }
 
         private async Task<List<IndianaEvent>> GetEvents(string locationIdentifier, DateTime date)
@@ -491,7 +664,7 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
             {
                 var eventLogRepository = innerScope.ServiceProvider.GetRequiredService<IIndianaEventLogRepository>();
                 var events = eventLogRepository
-                    .GetEventsByEventCodes(locationIdentifier, date, date.AddDays(1), (new short[] { 131}).Concat(Enumerable.Range(130, 20).Select(x => (short)x)).ToArray())
+                    .GetEventsByEventCodes(locationIdentifier, date, date.AddDays(1), (new short[] { 131 }).Concat(Enumerable.Range(130, 20).Select(x => (short)x)).ToArray())
                     .OrderBy(e => e.Timestamp)
                     .ToList();
                 if (!events.Any())
@@ -512,7 +685,7 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
         public List<TransitSignalPriorityPlan> GetTransitSignalPriorityPlans(
             DateTime startDate,
             DateTime endDate,
-            string locationId,
+            LocationPhases locationPhases,
             IReadOnlyList<IndianaEvent> planEvents,
             IReadOnlyList<IndianaEvent> splitEvents,
             List<TransitSignalPriorityCycle> cycles)
@@ -523,7 +696,7 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
                 throw new ArgumentNullException(nameof(splitEvents));
             if (cycles == null)
                 throw new ArgumentNullException(nameof(cycles));
-            var plans = _planService.GetTransitSignalPriorityBasicPlans(startDate, endDate, locationId, planEvents).OrderBy(p => p.Start).ToList();
+            var plans = _planService.GetTransitSignalPriorityBasicPlans(startDate, endDate, locationPhases.LocationIdentifier, planEvents).OrderBy(p => p.Start).ToList();
             var validSplitEvents = new List<IndianaEvent>();
             for (int i = 0; i < plans.Count(); i++)
             {
@@ -531,8 +704,8 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
                 validSplitEvents.AddRange(splitEvents.Where(s => s.Timestamp >= plans[i].Start && s.Timestamp < plans[i].End).ToList());
                 SetProgrammedSplits(programmedSplits, validSplitEvents);
                 plans[i].ProgrammedSplits = programmedSplits;
-                var zeroPhaseList = new List<int>(); 
-                foreach(var split in programmedSplits)
+                var zeroPhaseList = new List<int>();
+                foreach (var split in programmedSplits)
                 {
                     if (split.Value == 0)
                     {
@@ -545,8 +718,8 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
                 }
             }
             //Get all the planNumbers and splits with a zero value
-            List<Tuple<string,int, int>> zeroValues = new List<Tuple<string, int, int>>();
-            List<Tuple<string,int, int>> nonZeroValues = new List<Tuple<string, int, int>>();
+            List<Tuple<string, int, int>> zeroValues = new List<Tuple<string, int, int>>();
+            List<Tuple<string, int, int>> nonZeroValues = new List<Tuple<string, int, int>>();
             foreach (var plan in plans)
             {
                 foreach (var split in plan.ProgrammedSplits)
@@ -584,101 +757,147 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
 
             // Process each distinct plan number
             var tspPlans = new List<TransitSignalPriorityPlan>();
-            var distinctPlanNumbers = plans.Select(p => p.PlanNumber).Distinct().ToList();
+            var distinctPlanNumbers = plans.Select(p => p.PlanNumber).Distinct();
 
             foreach (var planNumber in distinctPlanNumbers)
-            { 
-                var programmedSplits = plans.First(p => p.PlanNumber == planNumber).ProgrammedSplits;
-                var tspPlan = new TransitSignalPriorityPlan
-                {
-                    PlanNumber = Convert.ToInt32(planNumber)
-                };
+            {
+                var programmedSplits = plans
+                    .Where(p => p.PlanNumber == planNumber)
+                    .OrderByDescending(p => p.ProgrammedSplits.Count)
+                    .First()
+                    .ProgrammedSplits;
+                var tspPlan = new TransitSignalPriorityPlan { PlanNumber = Convert.ToInt32(planNumber)};
 
-                // Get all plans that share the current plan number
+                // Get all plans with the same plan number
                 var plansForNumber = plans.Where(p => p.PlanNumber == planNumber).ToList();
+                var planCycles = plansForNumber.SelectMany(plan => cycles.Where(c => c.GreenEvent >= plan.Start && c.GreenEvent < plan.End)).ToList();
 
-                // Aggregate cycles that occur within any of these plans' time windows
-                var planCycles = new List<TransitSignalPriorityCycle>();
-                foreach (var plan in plansForNumber)
-                {
-                    planCycles.AddRange(cycles.Where(c => c.GreenEvent >= plan.Start && c.GreenEvent < plan.End).ToList());
-                    
-                }
+                if (!planCycles.Any()) continue;
 
-                if (!planCycles.Any())
-                    continue;
-
-                // Group cycles by phase based on the complete phase list
+                // Group cycles by phase based on the complete phase list 
                 var phaseCyclesDict = GetPhaseCyclesDictionary(planCycles, completePhases);
-                if (!phaseCyclesDict.Any())
-                    continue;
+                if (!phaseCyclesDict.Any()) continue;
 
-                // Determine the highest cycle count among all phases for percentage calculations
                 int maxCycleCount = phaseCyclesDict.Values.Max(cycleList => cycleList.Count);
+                tspPlan.NumberOfCycles = maxCycleCount;
 
-                // Process each phase that has cycles and a corresponding programmed split
-                foreach (var phasePair in phaseCyclesDict)
+                foreach (var (phaseNumber, cyclesForPhase) in phaseCyclesDict)
                 {
-                    int phaseNumber = phasePair.Key;
-                    var cyclesForPhase = phasePair.Value;
-
-                    if (cyclesForPhase.Any() && programmedSplits.ContainsKey(phaseNumber))
+                    if (!cyclesForPhase.Any())
                     {
-                        double skippedCycles = maxCycleCount - cyclesForPhase.Count;
-                        double percentSkips = maxCycleCount > 0 ? (skippedCycles / maxCycleCount) * 100 : 0;
-                        double percentGapOuts = maxCycleCount > 0
-                            ? (cyclesForPhase.Count(c => c.TerminationEvent == 4) / (double)maxCycleCount) * 100
-                            : 0;
-                        double averageSplit = cyclesForPhase.Any()
-                            ? cyclesForPhase.Average(c => c.DurationSeconds)
-                            : 0;
+                        tspPlan.Phases.Add(new TransitSignalPhase
+                        {
+                            PhaseNumber = phaseNumber,
+                        });
+                        continue;
+                    };
 
-                        var tspPhase = new TransitSignalPhase
+                    //Still add phase to tsp even if not in programmed splits
+                    double skippedCycles = maxCycleCount - cyclesForPhase.Count;
+                    double percentSkips = maxCycleCount > 0 ? Math.Round((skippedCycles / maxCycleCount) * 100, 1) : 0;
+                    double percentGapOuts = maxCycleCount > 0 ? Math.Round(cyclesForPhase.Count(c => c.TerminationEvent == 4) / (double)maxCycleCount * 100, 1) : 0;
+                    double averageSplit = cyclesForPhase.Any() ? Math.Round(cyclesForPhase.Average(c => c.DurationSeconds), 1) : 0;
+
+                    var forceOffsForPlans = new List<double>();
+                    var skipsForPlans = new List<double>();
+                    var percentileSplit50th = new List<double>();
+                    var percentileSplit85th = new List<double>();
+
+                    foreach (var plan in plansForNumber)
+                    {
+                        var cyclesForPlan = cycles.Where(c => c.GreenEvent >= plan.Start && c.GreenEvent < plan.End).ToList();
+                        var phaseCyclesForPlanDict = GetPhaseCyclesDictionary(cyclesForPlan, completePhases);
+                        var phaseCycles = phaseCyclesForPlanDict.GetValueOrDefault(phaseNumber, new List<TransitSignalPriorityCycle>());
+
+                        if (!phaseCycles.Any()) continue;
+
+                        int maxCycleCountForPlan = phaseCyclesForPlanDict.Values.Max(cycleList => cycleList.Count);
+                        forceOffsForPlans.Add(Math.Round(GetPercentMaxOutForceOffs(planNumber, maxCycleCountForPlan, phaseCycles) * 100, 1));
+                        skipsForPlans.Add(maxCycleCountForPlan > 0 ? Math.Round((maxCycleCountForPlan - phaseCycles.Count) / (double)maxCycleCountForPlan * 100, 1) : 0);
+                        percentileSplit50th.Add(GetPercentSplit(phaseCycles.Count, 0.5, phaseCycles));
+                        percentileSplit85th.Add(GetPercentSplit(phaseCycles.Count, 0.85, phaseCycles));
+                    }
+
+                    var minTime = Math.Round(cyclesForPhase.Max(c => c.MinTime), 1);
+                    var minGreen = cyclesForPhase.OrderBy(c=> c.MinGreenDurationSeconds).First().MinGreenDurationSeconds;
+                    var yellow = cyclesForPhase.First().YellowDurationSeconds;
+                    var redClearance = cyclesForPhase.First().RedDurationSeconds;
+
+                    if (!programmedSplits.ContainsKey(phaseNumber))
+                    {
+                        tspPlan.Phases.Add(new TransitSignalPhase
                         {
                             PhaseNumber = phaseNumber,
                             PercentSkips = percentSkips,
                             PercentGapOuts = percentGapOuts,
-                            PercentMaxOutsForceOffs = GetPercentMaxOutForceOffs(planNumber, maxCycleCount, cyclesForPhase) * 100,
+                            PercentMaxOutsForceOffs = Math.Round(GetPercentMaxOutForceOffs(planNumber, maxCycleCount, cyclesForPhase) * 100, 1),
                             AverageSplit = averageSplit,
-                            MinTime = cyclesForPhase.Min(c => c.DurationSeconds),
-                            ProgrammedSplit = programmedSplits[phaseNumber],
-                            PercentileSplit85th = GetPercentSplit(cyclesForPhase.Count, 0.85, cyclesForPhase),
-                            PercentileSplit50th = GetPercentSplit(cyclesForPhase.Count, 0.5, cyclesForPhase),
-                            MinGreen = cyclesForPhase.Min(c => c.GreenDurationSeconds),
-                            Yellow = cyclesForPhase.Min(c => c.YellowDurationSeconds),
-                            RedClearance = cyclesForPhase.Min(c => c.RedDurationSeconds)
-                        };
-
-                        tspPlan.Phases.Add(tspPhase);
+                            MinTime = minTime,
+                            PercentileSplit50th = percentileSplit50th.Average(),
+                            PercentileSplit85th = percentileSplit85th.Average(),
+                            MinGreen = minGreen,
+                            Yellow = yellow,
+                            RedClearance = redClearance
+                        });
+                        continue;
                     }
-                    else
+
+
+                    tspPlan.Phases.Add(new TransitSignalPhase
                     {
-                        //set everything to zero
-                        var tspPhase = new TransitSignalPhase
-                        {
-                            PhaseNumber = phaseNumber,
-                            PercentSkips = 0,
-                            PercentGapOuts = 0,
-                            PercentMaxOutsForceOffs = 0,
-                            AverageSplit = 0,
-                            MinTime = 0,
-                            ProgrammedSplit = 0,
-                            PercentileSplit85th = 0,
-                            PercentileSplit50th = 0,
-                            MinGreen = 0,
-                            Yellow = 0,
-                            RedClearance = 0
-                        };
-
-                        tspPlan.Phases.Add(tspPhase);
-                    }
-
+                        PhaseNumber = phaseNumber,
+                        PercentSkips = percentSkips,
+                        PercentGapOuts = percentGapOuts,
+                        PercentMaxOutsForceOffs = Math.Round(GetPercentMaxOutForceOffs(planNumber, maxCycleCount, cyclesForPhase) * 100, 1),
+                        IsSkipsGreaterThan70TSPMax = skipsForPlans.Min() >= 70,
+                        IsForceOffsLessThan40TSPMax = forceOffsForPlans.Max() <= 40,
+                        IsForceOffsLessThan60TSPMax = forceOffsForPlans.Max() <= 60,
+                        IsForceOffsLessThan80TSPMax = forceOffsForPlans.Max() <= 80,
+                        AverageSplit = averageSplit,
+                        MinTime = minTime,
+                        ProgrammedSplit = programmedSplits[phaseNumber],
+                        PercentileSplit85th = percentileSplit85th.Average(),
+                        PercentileSplit50th = percentileSplit50th.Average(),
+                        MinGreen = minGreen,
+                        Yellow = yellow,
+                        RedClearance = redClearance
+                    });
                 }
 
                 tspPlans.Add(tspPlan);
             }
 
+            SetMinGreenTimeToMinGreenOfFree(tspPlans);
+
+
             return tspPlans;
+        }
+
+        private static void SetMinGreenTimeToMinGreenOfFree(List<TransitSignalPriorityPlan> tspPlans)
+        {
+            var freePlan = tspPlans.Where(p => p.PlanNumber == 254 || p.PlanNumber == 100)?.FirstOrDefault();
+            if (freePlan != null && !freePlan.Phases.IsNullOrEmpty())
+            {
+                var freePlanMinGreens = new Dictionary<int, double>();
+                foreach (var phase in freePlan.Phases)
+                {
+                    freePlanMinGreens.Add(phase.PhaseNumber, phase.MinGreen);
+                }
+
+                foreach (var plan in tspPlans.Where(p => p.PlanNumber != 254 && p.PlanNumber != 100))
+                {
+                    foreach (var phase in plan.Phases)
+                    {
+                        if (freePlanMinGreens.ContainsKey(phase.PhaseNumber))
+                        {
+                            //As long as freePlanMinGreens doesnt have a value of 0 or lower, use the min value of the two, else continue to use the min green from the phase
+                            var minGreen = freePlanMinGreens[phase.PhaseNumber] > 0 ? Math.Min(freePlanMinGreens[phase.PhaseNumber], phase.MinGreen) : phase.MinGreen;
+                            phase.MinGreen = minGreen;
+                            phase.MinTime = phase.MinGreen + phase.Yellow + phase.RedClearance;
+                        }
+                    }
+                }
+            }
         }
 
         private int GetPreviousSplit(int v, List<TransitSignalPriorityBasicPlan> plans, int plansIndex)
@@ -709,12 +928,15 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
 
         private static double GetPercentMaxOutForceOffs(string planNumber, int highCycleCount, List<TransitSignalPriorityCycle> cycles)
         {
+            var phaseNumber = cycles.FirstOrDefault().PhaseNumber;
+            var sixes = cycles.Count(c => c.TerminationEvent == 6);
+            var fives = cycles.Count(c => c.TerminationEvent == 5);
             if (highCycleCount == 0)
             {
                 return 0;
             }
-            return planNumber == "254" ? Convert.ToDouble(cycles.Count(c => c.TerminationEvent == 5)) / highCycleCount :
-                                        Convert.ToDouble(cycles.Count(c => c.TerminationEvent == 6)) / highCycleCount;
+            return planNumber == "254" || planNumber == "100" ? Convert.ToDouble(fives) / highCycleCount :
+                                        Convert.ToDouble(sixes) / highCycleCount;
         }
 
         /// <summary>
@@ -791,7 +1013,7 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
             var percentilIndex = percentile * orderedCycles.Count;
             if ((percentilIndex % 1).AreEqual(0))
             {
-                return orderedCycles.ElementAt(Convert.ToInt16(percentilIndex) - 1).DurationSeconds;
+                return orderedCycles.ElementAt(Convert.ToInt16(percentilIndex) - 1).DurationSeconds + orderedCycles.ElementAt(Convert.ToInt16(percentilIndex) - 1).RedDurationSeconds;
             }
             else
             {
@@ -800,11 +1022,11 @@ namespace Utah.Udot.Atspm.Business.TransitSignalPriorityRequest
                 //There was probably another way to do that, but this is easy.
                 int indexInt = Convert.ToInt16(percentilIndex - .5);
 
-                var step1 = orderedCycles.ElementAt(Convert.ToInt16(indexInt) - 1).DurationSeconds;
-                var step2 = orderedCycles.ElementAt(Convert.ToInt16(indexInt)).DurationSeconds;
+                var step1 = orderedCycles.ElementAt(Convert.ToInt16(indexInt) - 1).DurationSeconds + orderedCycles.ElementAt(Convert.ToInt16(indexInt) - 1).RedDurationSeconds;
+                var step2 = orderedCycles.ElementAt(Convert.ToInt16(indexInt)).DurationSeconds + orderedCycles.ElementAt(Convert.ToInt16(indexInt)).RedDurationSeconds;
                 var stepDiff = step2 - step1;
                 var step3 = stepDiff * indexMod;
-                return step1 + step3;
+                return Math.Round(step1 + step3, 1);
             }
         }
 

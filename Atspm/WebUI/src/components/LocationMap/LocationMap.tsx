@@ -1,6 +1,6 @@
-import { SearchLocation as Location } from '@/api/config/aTSPMConfigurationApi.schemas'
 import Markers from '@/components/LocationMap/Markers'
 import MapFilters from '@/components/MapFilters'
+import { Location } from '@/features/locations/types'
 import { getEnv } from '@/utils/getEnv'
 import ClearIcon from '@mui/icons-material/Clear'
 import {
@@ -12,6 +12,7 @@ import {
   Skeleton,
   useTheme,
 } from '@mui/material'
+import 'esri-leaflet-renderers'
 import L, { Map as LeafletMap } from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { memo, useCallback, useEffect, useRef, useState } from 'react'
@@ -78,7 +79,6 @@ const LocationMap = ({
     fetchEnv()
   }, [])
 
-  // Pan to the selected location
   useEffect(() => {
     if (location && mapRef) {
       const markerLocation = locations.find((loc) => loc.id === location.id)
@@ -142,14 +142,12 @@ const LocationMap = ({
           .map((loc) => [loc.latitude, loc.longitude])
       )
 
-      // Check if bounds are valid before fitting the map to these bounds
       if (bounds.isValid()) {
         mapRef.fitBounds(bounds)
       }
     }
-  }, [mapRef, filteredLocations, locations])
+  }, [mapRef, filteredLocations, locations, locationsEnabledLength])
 
-  // Handle filter changes using MapFilters
   const handleFiltersClick = useCallback(() => {
     setIsFiltersOpen((prev) => !prev)
   }, [])
@@ -162,11 +160,10 @@ const LocationMap = ({
       jurisdictionId: null,
       measureTypeId: null,
     })
-
     if (mapInfo?.initialLat && mapInfo?.initialLong) {
       mapRef?.setView([mapInfo.initialLat, mapInfo.initialLong], 6)
     }
-  }, [updateFilters])
+  }, [updateFilters, mapInfo, mapRef])
 
   const handleClosePopper = useCallback(() => {
     setIsFiltersOpen(false)
@@ -183,7 +180,7 @@ const LocationMap = ({
       scrollWheelZoom={true}
       style={{
         height: mapHeight || 'calc(100% - 80px)',
-        minHeight: mapHeight || '400px',
+        minHeight: '400px',
         width: '100%',
       }}
       ref={setMapRef}
@@ -233,6 +230,7 @@ const LocationMap = ({
           </Popper>
         </Box>
       </ClickAwayListener>
+
       <TileLayer attribution={mapInfo.attribution} url={mapInfo.tile_layer} />
       <Markers locations={filteredLocations} setLocation={setLocation} />
       {route && route.length > 0 && (
