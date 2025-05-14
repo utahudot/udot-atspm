@@ -1,5 +1,32 @@
 
-# services:
+
+services:
+  speed-emitter-udp:
+    build:
+      context: .
+      dockerfile: SpeedEventEmitter/Dockerfile
+    environment:
+      EVENT_LISTENER_HOST: eventlistener
+      EVENT_LISTENER_PORT: "${EVENT_LISTENER_UDP_PORT}"
+      EMITTER_PROTOCOL: udp
+      EMITTER_INTERVAL_MS: "${EMITTER_INTERVAL_MS}"
+    depends_on:
+      eventlistener:
+        condition: service_started
+
+  speed-emitter-tcp:
+    build:
+      context: .
+      dockerfile: SpeedEventEmitter/Dockerfile
+    environment:
+      EVENT_LISTENER_HOST: eventlistener
+      EVENT_LISTENER_PORT: "${EVENT_LISTENER_TCP_PORT}"
+      EMITTER_PROTOCOL: tcp
+      EMITTER_INTERVAL_MS: "${EMITTER_INTERVAL_MS}"
+    depends_on:
+      eventlistener:
+        condition: service_started
+
 #   device-emulator:
 #     build:
 #       context: .

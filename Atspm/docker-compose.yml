@@ -89,6 +89,9 @@ services:
     environment:
       <<: *default-environment
       ASPNETCORE_URLS: "https://+:5001"
+      Bus__Type: ${Bus_Type}
+      Kafka__BootstrapServers: ${KAFKA_BOOTSTRAPSERVERS}
+      Kafka__Topic: ${KAFKA_TOPIC}
     volumes:
       - ${CERT_LOCATION}
     depends_on:
@@ -120,11 +123,11 @@ services:
       <<: *default-environment
       ASPNETCORE_URLS: "https://+:5003"
 
-      EmailConfiguration__SmtpEmailService__Host: "${EmailConfiguration__Host}"
-      EmailConfiguration__SmtpEmailService__Port: "${EmailConfiguration__Port}"
-      EmailConfiguration__SmtpEmailService__UserName: "${EmailConfiguration__UserName}"
-      EmailConfiguration__SmtpEmailService__Password: "${EmailConfiguration__Password}"
-      EmailConfiguration__SmtpEmailService__EnableSsl: "${EmailConfiguration__EnableSsl}"
+      EmailConfiguration__SmtpEmailService__Host: "${EmailConfiguration__SmtpEmailService__Host}"
+      EmailConfiguration__SmtpEmailService__Port: "${EmailConfiguration__SmtpEmailService__Port}"
+      EmailConfiguration__SmtpEmailService__UserName: "${EmailConfiguration__SmtpEmailService__UserName}"
+      EmailConfiguration__SmtpEmailService__Password: "${EmailConfiguration__SmtpEmailService__Password}"
+      EmailConfiguration__SmtpEmailService__EnableSsl: "${EmailConfiguration__SmtpEmailService__EnableSsl}"
     volumes:      
       - ${CERT_LOCATION}
     depends_on:
@@ -233,7 +236,7 @@ services:
    # ------------------------------------------------------------------------------
   # 1) ZooKeeper (required by Kafka)
   zookeeper:
-    image: confluentinc/cp-zookeeper:8.5.0
+    image: confluentinc/cp-zookeeper:latest
     hostname: zookeeper
     container_name: zookeeper
     ports:
@@ -246,7 +249,7 @@ services:
   # ------------------------------------------------------------------------------
   # 2) Kafka broker
   kafka:
-    image: confluentinc/cp-kafka:8.5.0
+    image: confluentinc/cp-kafka:latest
     hostname: kafka
     container_name: kafka
     ports:
@@ -254,23 +257,38 @@ services:
       # optional: 29092 for internal Docker-to-Docker
       - "29092:29092"
     environment:
-      KAFKA_BROKER_ID: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_BROKER_ID: ${KAFKA_BROKER_ID}
       # tell Kafka where ZooKeeper lives
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ZOOKEEPER_CONNECT: ${KAFKA_ZOOKEEPER_CONNECT}
       # listeners that Kafka will bind to
-      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,INTERNAL://0.0.0.0:29092
+      KAFKA_LISTENERS: ${KAFKA_LISTENERS}
       # what address it advertises to clients
-      KAFKA_ADVERTISED_LISTENERS: |
-        PLAINTEXT://localhost:9092
-        ,INTERNAL://kafka:29092
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,INTERNAL:PLAINTEXT
-      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_ADVERTISED_LISTENERS: ${KAFKA_ADVERTISED_LISTENERS}
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: ${KAFKA_LISTENER_SECURITY_PROTOCOL_MAP}
+      KAFKA_INTER_BROKER_LISTENER_NAME: ${KAFKA_INTER_BROKER_LISTENER_NAME}
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: ${KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR}
 
     # wait on ZooKeeper before starting
     depends_on:
       - zookeeper
 
+  eventlistener:
+    build:
+      context: .
+      dockerfile: EventListener/Dockerfile
+    environment:
+      <<: *default-environment
+    
+      EventListenerConfiguration__ApiBaseUrl: "${EVENT_API_BASEURL}"
+      EventListenerConfiguration__BatchSize: "${EVENT_LISTENER_BATCH_SIZE}"
+      EventListenerConfiguration__IntervalSeconds: "${EVENT_LISTENER_INTERVAL_SECONDS}"
+      EventListenerConfiguration__UdpPort: "${EVENT_LISTENER_UDP_PORT}"
+      EventListenerConfiguration__TcpPort: "${EVENT_LISTENER_TCP_PORT}"
+    depends_on:
+      dataapi:
+        condition: service_started
+    entrypoint: ["dotnet", "EventListener.dll"]
 
 
 volumes:

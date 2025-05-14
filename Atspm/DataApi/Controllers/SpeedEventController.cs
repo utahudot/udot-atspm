@@ -29,7 +29,7 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
     /// for querying raw device log data
     /// </summary>
     [ApiVersion("1.0")]
-    [Authorize(Policy = "CanViewData")]
+    //[Authorize(Policy = "CanViewData")]
     public class SpeedEventController : DataControllerBase
     {
         private readonly ILogger _log;
