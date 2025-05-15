@@ -9,12 +9,12 @@ using Utah.Udot.Atspm.Data.Models.EventLogModels;
 
 namespace Utah.Udot.Atspm.Infrastructure.Messaging.Http
 {
-    public class HttpBatchingPublisher : IEventBusPublisher<SpeedEvent>, IDisposable
+    public class HttpBatchingPublisher : IEventBusPublisher<RawSpeedPacket>, IDisposable
     {
         private readonly HttpClient _client;
         private readonly int _batchSize;
         private readonly TimeSpan _flushInterval;
-        private readonly List<SpeedEvent> _buffer = new();
+        private readonly List<RawSpeedPacket> _buffer = new();
         private readonly Timer _timer;
         private readonly object _lock = new();
 
@@ -31,15 +31,15 @@ namespace Utah.Udot.Atspm.Infrastructure.Messaging.Http
                                _flushInterval);
         }
 
-        public async Task PublishAsync(SpeedEvent msg, CancellationToken ct = default)
+        public async Task PublishAsync(RawSpeedPacket msg, CancellationToken ct = default)
         {
-            List<SpeedEvent>? toSend = null;
+            List<RawSpeedPacket>? toSend = null;
             lock (_lock)
             {
                 _buffer.Add(msg);
                 if (_buffer.Count >= _batchSize)
                 {
-                    toSend = new List<SpeedEvent>(_buffer);
+                    toSend = new List<RawSpeedPacket>(_buffer);
                     _buffer.Clear();
                 }
             }
@@ -50,12 +50,12 @@ namespace Utah.Udot.Atspm.Infrastructure.Messaging.Http
 
         private async Task FlushAsync()
         {
-            List<SpeedEvent>? toSend = null;
+            List<RawSpeedPacket>? toSend = null;
             lock (_lock)
             {
                 if (_buffer.Count > 0)
                 {
-                    toSend = new List<SpeedEvent>(_buffer);
+                    toSend = new List<RawSpeedPacket>(_buffer);
                     _buffer.Clear();
                 }
             }
@@ -64,7 +64,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Messaging.Http
                 await SendBatchAsync(toSend, CancellationToken.None);
         }
 
-        private async Task SendBatchAsync(List<SpeedEvent> batch, CancellationToken ct)
+        private async Task SendBatchAsync(List<RawSpeedPacket> batch, CancellationToken ct)
         {
             // Assumes your API POST /SpeedEvent accepts a JSON array
             var response = await _client.PostAsJsonAsync("SpeedEvent", batch, ct);

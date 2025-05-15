@@ -21,6 +21,7 @@ using Microsoft.AspNetCore.Mvc;
 using Utah.Udot.ATSPM.DataApi.Controllers;
 using Utah.Udot.Atspm.Extensions;
 using Utah.Udot.Atspm.Services;
+using Utah.Udot.Atspm.Infrastructure.Messaging;
 
 namespace Utah.Udot.Atspm.DataApi.Controllers
 {
@@ -33,19 +34,19 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
     public class SpeedEventController : DataControllerBase
     {
         private readonly ILogger<SpeedEventController> _log;
-        private readonly IEventBusPublisher<SpeedEvent> _publisher;
+        private readonly IEventBusPublisher<RawSpeedPacket> _publisher;
 
         // Single constructor taking both dependencies
         public SpeedEventController(
             ILogger<SpeedEventController> log,
-            IEventBusPublisher<SpeedEvent> publisher)
+            IEventBusPublisher<RawSpeedPacket> publisher)
         {
             _log = log;
             _publisher = publisher;
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] List<SpeedEvent> batch)
+        public async Task<IActionResult> Post([FromBody] List<RawSpeedPacket> batch)
         {
             if (batch == null || batch.Count == 0)
                 return BadRequest("No events provided.");

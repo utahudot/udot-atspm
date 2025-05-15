@@ -7,18 +7,25 @@ var host = Environment.GetEnvironmentVariable("EVENT_LISTENER_HOST") ?? "eventli
 var port = int.Parse(Environment.GetEnvironmentVariable("EVENT_LISTENER_PORT") ?? "10088");
 var protocol = Environment.GetEnvironmentVariable("EMITTER_PROTOCOL") ?? "udp";
 var interval = int.Parse(Environment.GetEnvironmentVariable("EMITTER_INTERVAL_MS") ?? "100");
+
+// allow either a single sensor or a comma-separated list
+var rawSensors = (Environment.GetEnvironmentVariable("EMITTER_SENSORS") ?? "D01")
+                   .Split(',', StringSplitOptions.RemoveEmptyEntries);
 var rand = new Random();
 
 Console.WriteLine($"Emitter starting → {protocol.ToUpper()} → {host}:{port} @ {interval}ms");
+Console.WriteLine($"Using sensors: {string.Join(", ", rawSensors)}");
 
 while (true)
 {
-    // build a CSV: LocationIdentifier,Ticks,DetectorId,Mph,Kph
+    // pick a random sensor from the list
+    var sensorId = rawSensors[rand.Next(rawSensors.Length)];
     var tick = DateTime.UtcNow.Ticks;
-    var detector = $"D{rand.Next(1, 100):D2}";
+
+    // raw packet only needs SensorId,Ticks,Mph,Kph
     var mph = rand.Next(20, 80);
     var kph = (int)(mph * 1.609);
-    var msg = $"Loc1,{tick},{detector},{mph},{kph}";
+    var msg = $"{sensorId},{tick},{mph},{kph}";
     var data = Encoding.UTF8.GetBytes(msg);
 
     if (protocol.Equals("udp", StringComparison.OrdinalIgnoreCase))

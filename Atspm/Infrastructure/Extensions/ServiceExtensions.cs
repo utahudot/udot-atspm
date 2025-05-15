@@ -26,6 +26,7 @@ using Microsoft.Extensions.Options;
 using Utah.Udot.Atspm.Data;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
 using Utah.Udot.Atspm.Data.Utility;
+using Utah.Udot.Atspm.Infrastructure.Messaging;
 using Utah.Udot.Atspm.Infrastructure.Messaging.Kafka;
 using Utah.Udot.Atspm.Infrastructure.Messaging.PubSub;
 using Utah.Udot.Atspm.Infrastructure.Repositories;
@@ -379,11 +380,11 @@ namespace Utah.Udot.Atspm.Infrastructure.Extensions
             switch (busType)
             {
                 case "Kafka":
-                    services.AddSingleton<IEventBusPublisher<SpeedEvent>, KafkaPublisher>();
+                    services.AddSingleton<IEventBusPublisher<RawSpeedPacket>, KafkaPublisher>();
                     break;
 
                 case "PubSub":
-                    services.AddSingleton<IEventBusPublisher<SpeedEvent>, PubSubPublisher>();
+                    services.AddSingleton<IEventBusPublisher<RawSpeedPacket>, PubSubPublisher>();
                     break;
 
                 default:

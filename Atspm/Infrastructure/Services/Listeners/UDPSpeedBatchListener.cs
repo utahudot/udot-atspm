@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Org.BouncyCastle.Bcpg;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
+using Utah.Udot.Atspm.Infrastructure.Messaging;
 using Utah.Udot.Atspm.Infrastructure.Services.Receivers;
 using static MailKit.Telemetry;
 
@@ -21,7 +22,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.Listeners
         private readonly IUdpReceiver _receiver;
         private readonly ILogger<UDPSpeedBatchListener> _logger;
         private readonly HttpClient _http;
-        private readonly List<SpeedEvent> _batch = new();
+        private readonly List<RawSpeedPacket> _batch = new();
         private readonly int _batchSize;
         private readonly Timer _timer;
         private readonly object _lock = new();
@@ -55,7 +56,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.Listeners
         {
             return _receiver.ReceiveAsync(async (buffer, endpoint) =>
             {
-                var speedEvent = SpeedEventParser.Parse(buffer, endpoint.ToString());
+                var speedEvent = RawSpeedPacketParser.Parse(buffer, endpoint.ToString());
                 Enqueue(speedEvent);
             }, ct);
         }
@@ -63,16 +64,16 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.Listeners
         /// <summary>
         /// Adds an event to the batch; triggers send when batch size reached.
         /// </summary>
-        public void Enqueue(SpeedEvent msg)
+        public void Enqueue(RawSpeedPacket msg)
         {
-            List<SpeedEvent>? toSend = null;
+            List<RawSpeedPacket>? toSend = null;
 
             lock (_lock)
             {
                 _batch.Add(msg);
                 if (_batch.Count >= _batchSize)
                 {
-                    toSend = new List<SpeedEvent>(_batch);
+                    toSend = new List<RawSpeedPacket>(_batch);
                     _batch.Clear();
                 }
             }
@@ -83,13 +84,13 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.Listeners
 
         private async Task FlushAsync()
         {
-            List<SpeedEvent>? toSend = null;
+            List<RawSpeedPacket>? toSend = null;
 
             lock (_lock)
             {
                 if (_batch.Count > 0)
                 {
-                    toSend = new List<SpeedEvent>(_batch);
+                    toSend = new List<RawSpeedPacket>(_batch);
                     _batch.Clear();
                 }
             }
@@ -98,7 +99,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.Listeners
                 await SendBatchAsync(toSend);
         }
 
-        private async Task SendBatchAsync(List<SpeedEvent> batch)
+        private async Task SendBatchAsync(List<RawSpeedPacket> batch)
         {
             try
             {

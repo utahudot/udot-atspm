@@ -257,6 +257,7 @@ services:
       # optional: 29092 for internal Docker-to-Docker
       - "29092:29092"
     environment:
+      KAFKA_DEFAULT_NUM_PARTITIONS: 6
       ZOOKEEPER_CLIENT_PORT: 2181
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
       KAFKA_BROKER_ID: ${KAFKA_BROKER_ID}

@@ -12,7 +12,7 @@ using Utah.Udot.Atspm.Data.Models.EventLogModels;
 namespace Utah.Udot.Atspm.Infrastructure.Messaging.PubSub
 {
  
-        public class PubSubPublisher : IEventBusPublisher<SpeedEvent>
+        public class PubSubPublisher : IEventBusPublisher<RawSpeedPacket>
         {
             private readonly PublisherClient _client;
 
@@ -22,7 +22,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Messaging.PubSub
                 _client = PublisherClient.Create(topicName);
             }
 
-            public async Task PublishAsync(SpeedEvent msg, CancellationToken ct = default)
+            public async Task PublishAsync(RawSpeedPacket msg, CancellationToken ct = default)
             {
                 string json = JsonSerializer.Serialize(msg);
                 // PubSub requires UTF8 bytes

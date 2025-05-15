@@ -13,7 +13,8 @@ using Utah.Udot.Atspm.Data.Models.EventLogModels;
 using Utah.Udot.Atspm.Infrastructure.Configuration;
 using Utah.Udot.Atspm.Infrastructure.Services.Listeners;
 using Utah.Udot.Atspm.Infrastructure.Services.Receivers;
-using Microsoft.Extensions.Logging.Abstractions;  // for IUdpReceiver
+using Microsoft.Extensions.Logging.Abstractions;
+using Utah.Udot.Atspm.Infrastructure.Messaging;  // for IUdpReceiver
 
 namespace Utah.Udot.Atspm.Infrastructure.Services.Listeners.Tests
 {
@@ -73,19 +74,18 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.Listeners.Tests
                 nullLogger
             );
             // 4) Act: enqueue two SpeedEvents → should trigger a POST
-            listener.Enqueue(new SpeedEvent
-            {
-                LocationIdentifier = "Loc1",
+            listener.Enqueue(new RawSpeedPacket
+            {   SenderIp = "127.0.0.1",
                 Timestamp = DateTime.UtcNow,
-                DetectorId = "D1",
+                SensorId = "D1",
                 Mph = 30,
                 Kph = 48
             });
-            listener.Enqueue(new SpeedEvent
+            listener.Enqueue(new RawSpeedPacket
             {
-                LocationIdentifier = "Loc2",
+                SenderIp = "127.0.0.1",
                 Timestamp = DateTime.UtcNow.AddSeconds(1),
-                DetectorId = "D2",
+                SensorId = "D2",
                 Mph = 25,
                 Kph = 40
             });
