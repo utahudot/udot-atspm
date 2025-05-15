@@ -88,7 +88,7 @@ services:
       - "44401:5001"
     environment:
       <<: *default-environment
-      ASPNETCORE_URLS: "https://+:5001"
+      ASPNETCORE_URLS: "http://+:5000;https://+:5001"
       Bus__Type: ${Bus_Type}
       Kafka__BootstrapServers: ${KAFKA_BOOTSTRAPSERVERS}
       Kafka__Topic: ${KAFKA_TOPIC}
@@ -179,11 +179,11 @@ services:
     environment:
       <<: *default-environment
 
-      EmailConfiguration__SmtpEmailService__Host: "${EmailConfiguration__Host}"
-      EmailConfiguration__SmtpEmailService__Port: "${EmailConfiguration__Port}"
-      EmailConfiguration__SmtpEmailService__UserName: "${EmailConfiguration__UserName}"
-      EmailConfiguration__SmtpEmailService__Password: "${EmailConfiguration__Password}"
-      EmailConfiguration__SmtpEmailService__EnableSsl: "${EmailConfiguration__EnableSsl}"
+      EmailConfiguration__SmtpEmailService__Host: "${EmailConfiguration__SmtpEmailService__Host}"
+      EmailConfiguration__SmtpEmailService__Port: "${EmailConfiguration__SmtpEmailService__Port}"
+      EmailConfiguration__SmtpEmailService__UserName: "${EmailConfiguration__SmtpEmailService__UserName}"
+      EmailConfiguration__SmtpEmailService__Password: "${EmailConfiguration__SmtpEmailService__Password}"
+      EmailConfiguration__SmtpEmailService__EnableSsl: "${EmailConfiguration__SmtpEmailService__EnableSsl}"
       WatchdogConfiguration__ScanDate: "${WatchdogConfiguration__ScanDate}"
       WatchdogConfiguration__ConsecutiveCount: "${WatchdogConfiguration__ConsecutiveCount}"
       WatchdogConfiguration__LowHitThreshold: "${WatchdogConfiguration__LowHitThreshold}"
@@ -257,6 +257,7 @@ services:
       # optional: 29092 for internal Docker-to-Docker
       - "29092:29092"
     environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
       KAFKA_BROKER_ID: ${KAFKA_BROKER_ID}
       # tell Kafka where ZooKeeper lives
@@ -280,7 +281,7 @@ services:
     environment:
       <<: *default-environment
     
-      EventListenerConfiguration__ApiBaseUrl: "${EVENT_API_BASEURL}"
+      EventListenerConfiguration__ApiBaseUrl: "http://dataapi:5000"
       EventListenerConfiguration__BatchSize: "${EVENT_LISTENER_BATCH_SIZE}"
       EventListenerConfiguration__IntervalSeconds: "${EVENT_LISTENER_INTERVAL_SECONDS}"
       EventListenerConfiguration__UdpPort: "${EVENT_LISTENER_UDP_PORT}"

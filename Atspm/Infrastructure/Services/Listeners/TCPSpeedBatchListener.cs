@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System.Net.Http.Json;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
 using Utah.Udot.Atspm.Infrastructure.Services.Receivers;
@@ -11,6 +12,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.Listeners
     public class TCPSpeedBatchListener : IDisposable
     {
         private readonly ITcpReceiver _receiver;
+        private readonly ILogger<TCPSpeedBatchListener> _logger;
         private readonly HttpClient _http;
         private readonly List<SpeedEvent> _batch = new();
         private readonly int _batchSize;
@@ -20,11 +22,13 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.Listeners
         public TCPSpeedBatchListener(
             ITcpReceiver tcpReceiver,
             IHttpClientFactory httpFactory,
-            IOptions<EventListenerConfiguration> opts)
+            IOptions<EventListenerConfiguration> opts,
+            ILogger<TCPSpeedBatchListener> logger)
         {
             var config = opts.Value;
             _receiver = tcpReceiver;
-            _http = httpFactory.CreateClient("SpeedEvent");
+            _logger = logger;
+            _http = httpFactory.CreateClient("IngestApi");
             _batchSize = config.BatchSize;
 
             // schedule periodic flush
@@ -85,8 +89,23 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.Listeners
                 await SendBatchAsync(toSend);
         }
 
-        private Task SendBatchAsync(List<SpeedEvent> batch)
-            => _http.PostAsJsonAsync("SpeedEvent", batch);
+        private async Task SendBatchAsync(List<SpeedEvent> batch)
+        {
+            try
+            {
+                var resp = await _http.PostAsJsonAsync("api/v1/SpeedEvent", batch);
+                resp.EnsureSuccessStatusCode();
+                _logger.LogInformation("Posted {Count} TCP events successfully.", batch.Count);
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogError(ex, "HTTP error when posting TCP batch of {Count} events.", batch.Count);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Unexpected error in TCPSpeedBatchListener.SendBatchAsync");
+            }
+        }
 
         public void Dispose()
         {

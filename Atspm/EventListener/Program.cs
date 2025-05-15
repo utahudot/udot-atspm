@@ -4,6 +4,24 @@ using Utah.Udot.Atspm.Infrastructure.Services.Listeners;
 using Utah.Udot.Atspm.Infrastructure.Services.Receivers; // UDPSpeedBatchListener
 
 var host = Host.CreateDefaultBuilder(args)
+    .ConfigureLogging((h, l) =>
+    {
+        if (OperatingSystem.IsWindows())
+        {
+            l.AddEventLog(c =>
+            {
+                c.SourceName = AppDomain.CurrentDomain.FriendlyName;
+                c.LogName = "Atspm";
+            });
+        }
+
+        //l.AddGoogle(new LoggingServiceOptions
+        //{
+        //    ServiceName = AppDomain.CurrentDomain.FriendlyName,
+        //    Version = Assembly.GetEntryAssembly().GetName().Version.ToString(),
+        //    Options = LoggingOptions.Create(LogLevel.Information, AppDomain.CurrentDomain.FriendlyName)
+        //});
+    })
     .ConfigureServices((context, services) =>
     {
         // 1) Bind batch options from config

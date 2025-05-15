@@ -8,22 +8,25 @@ public class EventListenerWorker : BackgroundService
 {
     private readonly UDPSpeedBatchListener _udp;
     private readonly TCPSpeedBatchListener _tcp;
+    private readonly ILogger<EventListenerWorker> _logger;
+
     public EventListenerWorker(
         UDPSpeedBatchListener udp,
-        TCPSpeedBatchListener tcp)
+        TCPSpeedBatchListener tcp,
+        ILogger<EventListenerWorker> logger)
     {
         _udp = udp;
         _tcp = tcp;
+        _logger = logger;
     }
 
-    protected override Task ExecuteAsync(CancellationToken stoppingToken)
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        const int udpPort = 10088;
-        const int tcpPort = 10088;  // or distinct
-
+        _logger.LogInformation("EventListenerWorker starting up.");
         var udpTask = _udp.StartListeningAsync(stoppingToken);
         var tcpTask = _tcp.StartListeningAsync(stoppingToken);
 
-        return Task.WhenAll(udpTask, tcpTask);
+        await Task.WhenAll(udpTask, tcpTask);
+        _logger.LogInformation("EventListenerWorker shutting down.");
     }
 }

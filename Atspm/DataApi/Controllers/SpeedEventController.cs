@@ -32,18 +32,17 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
     //[Authorize(Policy = "CanViewData")]
     public class SpeedEventController : DataControllerBase
     {
-        private readonly ILogger _log;
+        private readonly ILogger<SpeedEventController> _log;
         private readonly IEventBusPublisher<SpeedEvent> _publisher;
 
-        /// <inheritdoc/>
-        public SpeedEventController( ILogger<EventLogController> log)
+        // Single constructor taking both dependencies
+        public SpeedEventController(
+            ILogger<SpeedEventController> log,
+            IEventBusPublisher<SpeedEvent> publisher)
         {
             _log = log;
+            _publisher = publisher;
         }
-
-
-        public SpeedEventController(IEventBusPublisher<SpeedEvent> publisher)
-            => _publisher = publisher;
 
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] List<SpeedEvent> batch)
@@ -51,8 +50,10 @@ namespace Utah.Udot.Atspm.DataApi.Controllers
             if (batch == null || batch.Count == 0)
                 return BadRequest("No events provided.");
 
-            // publish in parallel
-            await Task.WhenAll(batch.Select(evt => _publisher.PublishAsync(evt, HttpContext.RequestAborted)));
+            _log.LogInformation("Publishing {Count} events to Kafka", batch.Count);
+            await Task.WhenAll(batch.Select(evt =>
+                _publisher.PublishAsync(evt, HttpContext.RequestAborted)));
+
             return Ok(new { published = batch.Count });
         }
     }

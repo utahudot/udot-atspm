@@ -15,6 +15,7 @@ using Utah.Udot.Atspm.Data.Models.EventLogModels;
 using Utah.Udot.Atspm.Infrastructure.Configuration;
 using Utah.Udot.Atspm.Infrastructure.Services.Listeners;
 using Utah.Udot.Atspm.Infrastructure.Services.Receivers;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Utah.Udot.Atspm.Infrastructure.Services.Listeners.Tests
 {
@@ -82,12 +83,16 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.Listeners.Tests
               .Setup(f => f.CreateClient(It.IsAny<string>()))
               .Returns(httpClient);
 
+
+
+            var tcpNullLogger = NullLogger<TCPSpeedBatchListener>.Instance;
             // 3) Create listener with fake receiver
             var options = Options.Create(GetConfig(batchSize: 2));
             var listener = new TCPSpeedBatchListener(
                 fakeReceiver,
                 clientFactory.Object,
-                options
+                options,
+                tcpNullLogger
             );
 
             // *** Add this line so the fakeReceiver.ReceiveAsync(...) runs ***
@@ -109,7 +114,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.Listeners.Tests
             // 5) Assert: we POSTed once to /SpeedEvent with two events
             captured.Should().NotBeNull();
             captured!.Method.Should().Be(HttpMethod.Post);
-            captured.RequestUri!.PathAndQuery.Should().Be("/SpeedEvent");
+            captured.RequestUri!.PathAndQuery.Should().Be("/api/v1/SpeedEvent");
 
             var body = await captured.Content!.ReadFromJsonAsync<List<SpeedEvent>>();
             body.Should().HaveCount(2);

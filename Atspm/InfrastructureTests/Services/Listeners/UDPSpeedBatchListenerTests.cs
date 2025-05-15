@@ -12,7 +12,8 @@ using Xunit;
 using Utah.Udot.Atspm.Data.Models.EventLogModels;
 using Utah.Udot.Atspm.Infrastructure.Configuration;
 using Utah.Udot.Atspm.Infrastructure.Services.Listeners;
-using Utah.Udot.Atspm.Infrastructure.Services.Receivers;  // for IUdpReceiver
+using Utah.Udot.Atspm.Infrastructure.Services.Receivers;
+using Microsoft.Extensions.Logging.Abstractions;  // for IUdpReceiver
 
 namespace Utah.Udot.Atspm.Infrastructure.Services.Listeners.Tests
 {
@@ -61,14 +62,16 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.Listeners.Tests
               .Setup(f => f.CreateClient(It.IsAny<string>()))
               .Returns(httpClient);
 
+            var nullLogger = NullLogger<UDPSpeedBatchListener>.Instance;
+
             // 3) Create the listener, injecting the fake receiver & http factory
             var options = Options.Create(GetConfig(batchSize: 2));
             var listener = new UDPSpeedBatchListener(
                 fakeReceiver.Object,
                 clientFactory.Object,
-                options
+                options,
+                nullLogger
             );
-
             // 4) Act: enqueue two SpeedEvents → should trigger a POST
             listener.Enqueue(new SpeedEvent
             {
@@ -93,7 +96,7 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.Listeners.Tests
             // 5) Assert: we did POST exactly once to /SpeedEvent with our two events
             captured.Should().NotBeNull();
             captured!.Method.Should().Be(HttpMethod.Post);
-            captured.RequestUri!.PathAndQuery.Should().Be("/SpeedEvent");
+            captured.RequestUri!.PathAndQuery.Should().Be("/api/v1/SpeedEvent");
 
             var body = await captured.Content!.ReadFromJsonAsync<List<SpeedEvent>>();
             body.Should().HaveCount(2);

@@ -15,7 +15,6 @@ namespace Utah.Udot.Atspm.Infrastructure.Services.Listeners
 
             // ticks → DateTime (UTC)
             var timestamp = new DateTime(long.Parse(parts[1]), DateTimeKind.Utc);
-
             return new SpeedEvent
             {
                 LocationIdentifier = parts[0],
