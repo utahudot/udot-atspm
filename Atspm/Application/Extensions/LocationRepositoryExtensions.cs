@@ -76,48 +76,6 @@ namespace Utah.Udot.Atspm.Extensions
             }
         }
 
-        public static async Task<Location> SaveTemplatedLocation(this ILocationRepository repo, int locationId, TemplateLocationDto replacementInformation)
-        {
-            var sourceLocation = repo.GetVersionByIdDetached(locationId);
-            if (sourceLocation != null)
-            {
-                var newVersion = (Location)sourceLocation.Clone();
-                // Detach the original entity
-
-                newVersion.LocationIdentifier = replacementInformation.LocationIdentifier;
-                newVersion.Latitude = replacementInformation.Latitude;
-                newVersion.Longitude = replacementInformation.Longitude;
-                newVersion.PrimaryName = replacementInformation.PrimaryName;
-                newVersion.SecondaryName = replacementInformation.SecondaryName;
-                newVersion.VersionAction = LocationVersionActions.New;
-                newVersion.Start = DateTime.Today;
-                newVersion.Note = replacementInformation.Note == null ? $"Copy of {sourceLocation.Note}" : replacementInformation.Note;
-
-                newVersion.Id = 0;
-
-                //old devices point to the new objects
-
-
-                foreach (var approach in newVersion.Approaches)
-                {
-                    approach.Id = 0;
-                    foreach (var detector in approach.Detectors)
-                    {
-                        detector.Id = 0;
-                    }
-                }
-
-                newVersion.Devices = replacementInformation.Devices;
-
-                await repo.AddAsync(newVersion);
-
-                return newVersion;
-            }
-            else
-            {
-                throw new ArgumentException($"{locationId} is not a valid Location");
-            }
-        }
 
         /// <summary>
         /// Marks <see cref="Location.VersionAction"/> to deleted

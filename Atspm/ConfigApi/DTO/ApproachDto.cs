@@ -1,6 +1,6 @@
 ﻿#region license
-// Copyright 2024 Utah Departement of Transportation
-// for ConfigApi - ATSPM.ConfigApi.Models/ApproachDto.cs
+// Copyright 2025 Utah Departement of Transportation
+// for ConfigApi - Utah.Udot.Atspm.ConfigApi.Models/ApproachDto.cs
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -33,12 +33,25 @@
 // limitations under the License.
 #endregion
 
-namespace Utah.Udot.Atspm.ValueObjects
+using Utah.Udot.Atspm.Data.Enums;
+using Utah.Udot.ATSPM.ConfigApi.DTO;
+
+namespace Utah.Udot.ATSPM.ConfigApi.DTO
 {
-    public class LocationTypeDto
+    public class ApproachDto
     {
         public int? Id { get; set; }
-        public string Name { get; set; }
-        public string Icon { get; set; }
+        public string Description { get; set; }
+        public int? Mph { get; set; }
+        public int ProtectedPhaseNumber { get; set; }
+        public bool IsProtectedPhaseOverlap { get; set; }
+        public int? PermissivePhaseNumber { get; set; }
+        public bool IsPermissivePhaseOverlap { get; set; }
+        public int? PedestrianPhaseNumber { get; set; }
+        public bool IsPedestrianPhaseOverlap { get; set; }
+        public string PedestrianDetectors { get; set; }
+        public int LocationId { get; set; }
+        public DirectionTypes DirectionTypeId { get; set; }
+        public ICollection<DetectorDto> Detectors { get; set; }
     }
 }

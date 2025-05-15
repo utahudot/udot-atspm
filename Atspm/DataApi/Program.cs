@@ -119,11 +119,7 @@ builder.Host
     s.AddAtspmDbContext(h);
     s.AddAtspmEFEventLogRepositories();
     s.AddAtspmEFAggregationRepositories();
-    s.AddAtspmEFConfigRepositories();
-    s.AddDownloaderClients();
-    s.AddDeviceDownloaders(h);
-    s.AddEventLogDecoders();
-    s.AddEventLogImporters(h);
+  
 
     s.AddPathBaseFilter(h);
 
